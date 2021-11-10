@@ -1,0 +1,24 @@
+name: Wiki Conversion with Pandoc Markdown to HTML
+
+on: 
+  # push: 
+    # branches: [ main ]
+    
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  convert_via_pandoc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pandoc Script 
+        run: ./.github/scripts/convert.sh
+        shell bash
+      - uses: actions/checkout@v2
+      
+      - uses: docker://pandoc/core:2.14.1
+        with:
+          args: "--help" # gets appended to pandoc command
+          
+        env:
+          GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}

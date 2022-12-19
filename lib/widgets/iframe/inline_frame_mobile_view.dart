@@ -23,11 +23,12 @@ class InlineFrameView extends StatefulWidget implements IFRAME.View
 
 class _InlineFrameViewState extends State<InlineFrameView>
 {
-  WebView? iframe;
-
+  WebViewWidget? iframe;
+  late WebViewController controller;
   @override
   void initState()
   {
+    controller = WebViewController();
     super.initState();
   }
 
@@ -71,7 +72,12 @@ class _InlineFrameViewState extends State<InlineFrameView>
     if (view == null)
     {
       String url = Url.toAbsolute(widget.model.url ?? "");
-      view = WebView(initialUrl: url, javascriptMode: JavascriptMode.unrestricted, javascriptChannels: [JavascriptChannel(name: 'TOFLUTTER', onMessageReceived: onMessageReceived)].toSet());
+      controller
+        ..setNavigationDelegate(NavigationDelegate())
+        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..loadRequest(Uri.parse(url))
+        ..addJavaScriptChannel('TOFLUTTER', onMessageReceived: onMessageReceived);
+      view = WebViewWidget(controller: controller);
     }
 
     //////////////////

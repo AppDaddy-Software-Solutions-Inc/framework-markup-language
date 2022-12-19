@@ -1,4 +1,4 @@
-# Flutter Markup Language Repo
+# Flutter Markup Language
 
 #### FML was designed with 3 provisions for developers
 ##### 1. **Prototype to Application**

@@ -236,6 +236,7 @@ dev_dependencies:
   test: ^1.21.1
 
 dependency_overrides:
+  firebase_core_platform_interface: 4.5.1
 
 flutter:
 

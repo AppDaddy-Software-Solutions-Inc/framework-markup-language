@@ -1,0 +1,13 @@
+<FML>
+    <CENTER>
+        <TEXT style="h1" value="FML Offline Application" />
+        <TEXT style="h3" value="Local Template" />
+        <!--
+        <LINK onclick="open('file://templates/another-localtemplate.xml', 'fade')">
+            <TEXT>
+                Open Another Local Template
+            </TEXT>
+        </LINK>
+        -->
+    </CENTER>
+</FML>

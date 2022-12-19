@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Reader</title>
+
+  <link rel="stylesheet" rel="preload" as="style" onload="this.rel='stylesheet';this.onload=null"
+        href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
+  <link rel="stylesheet" rel="preload" as="style" onload="this.rel='stylesheet';this.onload=null"
+        href="https://unpkg.com/normalize.css@8.0.0/normalize.css">
+  <link rel="stylesheet" rel="preload" as="style" onload="this.rel='stylesheet';this.onload=null"
+        href="https://unpkg.com/milligram@1.3.0/dist/milligram.min.css">
+
+  <style>
+
+  body {
+  background-color: #ffffff;
+  margin: 0;
+  padding: 0;
+  }
+
+.loading-container {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+.video-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.video-container video {
+  /* Make video to at least 100% wide and tall */
+  min-width: 100%;
+  min-height: 100%;
+
+  /* Setting width & height to auto prevents the browser from stretching or squishing the video */
+  width: auto;
+  height: auto;
+
+  /* Center the video */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+}
+
+.div-controls {
+  display: none;
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  right: 10px;
+}
+
+.div-source {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.scanner {
+  width:90%;
+  height:90%;
+   position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+.scanner span::before {
+  content:"";
+  position:absolute;
+  top:5%;
+  bottom:0;
+  left:4%;
+  width:2px;
+  height: 90%;
+  background:#18c89b;
+  box-shadow:0 0 50px 10px #18c89b;
+  clip-path:inset(0);
+  animation:
+    x 1s ease-in-out infinite alternate,
+    y 1s   ease-in-out infinite;
+}
+
+.scanner p::before {
+  content: '';
+  display:inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #18c89b;
+  position: relative;
+  right: 4px;
+}
+
+.scanner p {
+  color: #18c89b;
+  position: absolute;
+  bottom: -30px;
+  left: 38%;
+  font-size: 16px;
+  font-weight: 600;
+  animation: blinker 1s linear infinite;
+  font-family: sans-serif;
+  text-transform: uppercase;
+}
+
+.scanner:before,
+.scanner:after,
+.scanner em:after,
+.scanner em:before {
+  border-color: #18c89b;
+  content: "";
+  position: absolute;
+  width: 45px;
+  height: 46px;
+  border-style: solid;
+  border-width: 0px;
+}
+
+.scanner:before {
+  left: 0;
+  top: 0;
+  border-left-width: 5px;
+  border-top-width: 5px;
+  border-radius: 5px 0 0 0;
+}
+
+.scanner:after {
+  right: 0;
+  top: 0;
+  border-right-width: 5px;
+  border-top-width: 5px;
+  border-radius: 0 5px 0 0;
+}
+.scanner em:before {
+  left: 0;
+  bottom: 0;
+  border-left-width: 5px;
+  border-bottom-width: 5px;
+  border-radius: 0 0 0 5px;
+}
+.scanner em:after {
+  right: 0;
+  bottom: 0;
+  border-right-width: 5px;
+  border-bottom-width: 5px;
+  border-radius: 0 0 5px 0;
+}
+
+@keyframes move {
+  0%,
+  100% {
+    transform: translateY(190px);
+  }
+  50% {
+    transform: translateY(0%);
+  }
+  75% {
+    transform: translateY(160px);
+  }
+}
+
+@keyframes blinker {
+  50% { opacity: 0; }
+}
+
+@keyframes x {
+  to {
+    transform:translateX(-100%);
+    left:100%;
+  }
+}
+
+@keyframes y {
+   33% {
+     clip-path:inset(0 0 0 -100px);
+   }
+   50% {
+     clip-path:inset(0 0 0 0);
+   }
+   83%{
+     clip-path:inset(0 -100px 0 0);
+   }
+
+}
+</style>
+<script type="text/javascript" src="https://unpkg.com/@zxing/library@latest/umd/index.min.js"></script>
+<script type="text/javascript">
+
+  const ID = (parent.flutter) ? parent.flutter(window) : 'NO-FLUTTER-CONNECTOR';
+  window.parent.addEventListener('message', fromDart, false);
+
+  window.addEventListener('load', initializeBarcodeReader);
+
+  let selectedDeviceId;
+  let codeReader;
+  let playing  = false;
+  let scanning = false;
+
+  function toDart(type, data)
+  {
+    try
+    {
+      const from = 'JS-'   + ID;
+      const to   = 'DART-' + ID;
+
+      if (!data) data = new Object();
+      data['message:id']   = Date.now();
+      data['message:type'] = type;
+      data['message:from'] = from;
+      data['message:to']   = to;
+
+      const json = JSON.stringify(data);
+
+      console.log('Message Sent From: ' + from + ' To: ' + to + ' -> ' + json);
+
+      window.parent.postMessage(json, "*");
+    }
+    catch(e)
+    {
+      console.log('error ->' + e);
+    }
+  }
+
+  function fromDart(event)
+  {
+    try
+    {
+       var data = JSON.parse(event.data);
+       if (!data) data = new Object();
+
+       const json = JSON.stringify(data);
+
+       var me     = 'JS-' + ID;
+       var id     = data['message:id'];
+       var type   = data['message:type'];
+       var from   = data['message:from'];
+       var to     = data['message:to'];
+
+       if (to == me)
+       {
+        console.log('Message Received From: ' + from + ' To: ' + to + ' -> ' + json);
+       }
+       else
+       {
+        console.log('Message [' + type + '] Received From: ' + from + ' To: ' + to + ' -> ' + 'Wrong Address');
+       }
+    }
+    catch(ex)
+    {
+       console.log(ex);
+    }
+  }
+
+  function scan(off)
+  {
+    enableScanner(off ? false : true);
+  }
+
+  function play()
+  {
+    playing = true;
+    enableScanner(true);
+    console.log('Playing Video');
+
+    var video = document.getElementById('videoPlayer');
+    if (video) video.play();
+  }
+
+  function pause()
+  {
+    playing = false;
+    enableScanner(false);
+    console.log('Pausing Video');
+
+    var video = document.getElementById('videoPlayer');
+    if (video) video.pause();
+  }
+
+  function initializeBarcodeReader()
+  {
+    enableScanner(false);
+    const videoElement = document.getElementById("videoPlayer");
+    if (videoElement) videoElement.addEventListener('loadeddata', (e) =>
+    {
+       if(videoElement.readyState >= 3)
+       {
+          enableScanner(true);
+       }
+    });
+
+    console.log('ID: ' + ID);
+    console.log('Initializing Barcode Reader');
+
+    //codeReader = new ZXing.BrowserMultiFormatReader();
+
+    const hints = new Map();
+    hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
+
+    const formats = [ZXing.BarcodeFormat.CODE_39];
+    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, formats);
+    hints.set(ZXing.DecodeHintType.CHARACTER_SET, 'ASCII');
+    hints.set(ZXing.DecodeHintType.ASSUME_CODE_39_CHECK_DIGIT, true);
+
+    codeReader = new ZXing.BrowserMultiFormatReader(hints);
+
+    codeReader.listVideoInputDevices().then(initializeVideoDevices).catch((err) => console.error(err));
+  }
+
+  function initializeVideoDevices(videoDevices)
+  {
+    console.log('Initializing Video Devices');
+
+    const sourceSelect = document.getElementById('sourceSelect');
+    selectedDeviceId = videoDevices[0].deviceId;
+
+    if (videoDevices.length >= 1)
+    {
+      videoDevices.forEach((element) =>
+      {
+        const sourceOption = document.createElement('option');
+        sourceOption.text = element.label;
+        sourceOption.value = element.deviceId;
+        sourceSelect.appendChild(sourceOption)
+      });
+
+      sourceSelect.onchange = () =>
+      {
+        selectedDeviceId = sourceSelect.value;
+        alert('new source selected');
+        startBarcodeReader();
+      };
+
+      const sources = document.getElementById('sources')
+      if (videoDevices.length > 1)
+           sources.style.display = 'block'
+      else sources.style.display = 'none'
+    }
+
+    var start = document.getElementById('startButton');
+    if (start) start.addEventListener('click', play);
+
+    var stop = document.getElementById('pauseButton');
+    if (stop) stop.addEventListener('click', pause);
+
+    startBarcodeReader();
+  }
+
+  function startBarcodeReader()
+  {
+    playing = true;
+    if (codeReader)
+    {
+      console.log('Started continous decode from camera with id ${selectedDeviceId}');
+      codeReader.decodeFromVideoDevice(selectedDeviceId, 'videoPlayer', onBarcodeResult);
+    }
+  }
+
+  function onBarcodeResult(result, err)
+  {
+    if (!scanning) return;
+    if (result)
+    {
+      var barcode = result.getText();
+      var format  = toBarcodeFormat(result.getBarcodeFormat());
+
+      console.log('Found Barcode (' + format + ') -> ' + barcode);
+
+      data = new Object();
+      data['barcode'] = barcode;
+      data['format']  = format;
+
+      toDart("barcode",data);
+    }
+
+    if (err)
+    {
+      if (err instanceof ZXing.NotFoundException)
+      {
+        //console.log('No barcode found.')
+      }
+
+      if (err instanceof ZXing.ChecksumException)
+      {
+        console.log('A barcode was found, but it\'s read value was not valid.')
+      }
+
+      if (err instanceof ZXing.FormatException)
+      {
+        console.log('A barcode was found, but it was in a invalid format.')
+      }
+
+      if (err instanceof String)
+      {
+        console.log(err)
+      }
+    }
+  }
+
+  function toBarcodeFormat(format)
+  {
+    try
+    {
+      if (format == ZXing.BarcodeFormat.CODABAR)      return "CODEBAR";
+      if (format == ZXing.BarcodeFormat.CODE_128)     return "CODE128";
+      if (format == ZXing.BarcodeFormat.CODE_39)      return "CODE39";
+      if (format == ZXing.BarcodeFormat.CODE_93)      return "CODE93";
+      if (format == ZXing.BarcodeFormat.DATAMATRIX)   return "DATAMATRIX";
+      if (format == ZXing.BarcodeFormat.EAN_13)       return "EAN13";
+      if (format == ZXing.BarcodeFormat.EAN_8)        return "EAN8";
+      if (format == ZXing.BarcodeFormat.ITF)          return "ITF";
+      if (format == ZXing.BarcodeFormat.PDF417)       return "PDF417";
+      if (format == ZXing.BarcodeFormat.QR_CODE)      return "QRCODE";
+      if (format == ZXing.BarcodeFormat.RSS14)        return "RSS14";
+      if (format == ZXing.BarcodeFormat.RSS14)        return "RSS14";
+      if (format == ZXing.BarcodeFormat.RSS14)        return "RSS14";
+      if (format == ZXing.BarcodeFormat.RSS_EXPANDED) return "RSSEXPANDED";
+      if (format == ZXing.BarcodeFormat.UPC_A)        return "UPCA";
+      if (format == ZXing.BarcodeFormat.UPC_E)        return "UPCE";
+      if (format == ZXing.BarcodeFormat.UPC_EAN_EXTENSION) return "UPCEANEXTENSION";
+      return "UNKNOWN";
+    }
+    catch(e) {}
+    return "ERROR";
+  }
+
+  function enableScanner(on)
+  {
+    scanning = on;
+    if (scanning)
+         console.log('Starting continous decode from camera with id ${selectedDeviceId}')
+    else console.log('Stopping continous decode from camera with id ${selectedDeviceId}')
+
+    const scan = document.getElementById('scanner-container')
+    if (scan) scan.style.display = on ? 'block' : 'none'
+  }
+
+  function lightsOn(stream)
+  {
+    try
+    {
+      const track = stream.getVideoTracks()[0];
+      const imageCapture = new ImageCapture(track);
+      const photoCapabilities = imageCapture.getPhotoCapabilities().then(() =>
+      {
+         track.applyConstraints({advanced: [{torch: true}]});
+      });
+    }
+    catch(e){}
+  }
+
+  function showAlert(msg)
+  {
+    console.log('>>>>>>>>>>' + msg);
+    alert(msg);
+  }
+
+
+</script>
+
+</head>
+
+<body style="overflow:hidden">
+
+<div class="loading-container">
+  <img src="loading.gif" width="100" height="100"/>
+</div>
+
+<div class="video-container">
+  <video id="videoPlayer" muted playsinline/>
+</div>
+
+<div id="scanner-container" class="scanner" style="display:none">
+  <p>Scanning</p>
+  <em></em>
+  <span></span>
+</div>
+
+<div class="div-controls">
+  <a class="button" id="startButton">Play</a>
+  <a class="button" id="pauseButton">Pause</a>
+</div>
+
+<div id="sources" class="div-source" style="display:none">
+  <select id="sourceSelect" style="max-width:400px"/>
+  </select>
+</div>
+
+</body>
+
+</html>

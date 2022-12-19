@@ -1,0 +1,119 @@
+// © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:async';
+import 'dart:typed_data';
+import 'dart:html' as HTML;
+import 'package:camera/camera.dart';
+import 'package:fml/log/manager.dart';
+import 'file.base.dart';
+
+File create(dynamic file, String url, String name, String mimeType, int size)
+{
+  return File(file, url, name, mimeType, size);
+}
+
+class File extends FileBase
+{
+  File(dynamic file, String url, String name, String mimeType, int size) : super(file, url, name, mimeType, size);
+
+  @override
+  Future<Uint8List?> read({int? start, int? end}) async
+  {
+    try
+    {
+      // already read
+      if (this.bytes != null) return bytes;
+
+      // filepicker format read from file
+      if (file is HTML.File)
+      {
+        if ((start == null) && (end == null))
+        {
+          bytes = await _read();
+        }
+        else return await _readPart(start, end);
+      }
+
+      // camera format. read from blob
+      if (file is XFile)
+      {
+        bytes = await file.readAsBytes();
+      }
+
+      return bytes;
+    }
+    catch(e)
+    {
+      Log().exception(e);
+      return null;
+    }
+  }
+
+  Future<Uint8List?> _read() async
+  {
+      Uint8List? bytes;
+
+      final completer = Completer();
+
+      /////////////////
+      /* File Reader */
+      /////////////////
+      HTML.FileReader reader = HTML.FileReader();
+
+      ///////////////////
+      /* Read Complete */
+      ///////////////////
+      reader.onLoadEnd.listen((e) async
+      {
+        bytes = reader.result as Uint8List?;
+        completer.complete();
+      });
+
+      ///////////////////
+      /* Read the File */
+      ///////////////////
+      reader.readAsArrayBuffer(file);
+
+      /////////////////////
+      /* Wait for Result */
+      /////////////////////
+      await completer.future;
+
+      return bytes;
+  }
+
+  Future<Uint8List?> _readPart(int? start, int? end) async
+  {
+    Uint8List? bytes;
+
+    final completer = new Completer();
+
+    if ((start == null) || (start < 0)) start = 0;
+    if ((end == null)   || (end   > file.size)) end = file.size;
+
+    /////////////////
+    /* File Reader */
+    /////////////////
+    HTML.FileReader reader = HTML.FileReader();
+
+    ///////////////////
+    /* Read Complete */
+    ///////////////////
+    reader.onLoadEnd.listen((e) async
+    {
+      bytes = reader.result as Uint8List?;
+      completer.complete();
+    });
+
+    ///////////////////
+    /* Read the File */
+    ///////////////////
+    reader.readAsArrayBuffer(file.slice(start,end));
+
+    /////////////////////
+    /* Wait for Result */
+    /////////////////////
+    await completer.future;
+
+    return bytes;
+  }
+}

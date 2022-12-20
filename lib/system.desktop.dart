@@ -256,7 +256,7 @@ class SystemPlatform extends WidgetModel
     }
     // macOS
     try {
-      final appDocumentDirectory = await getApplicationSupportDirectory();
+      final appDocumentDirectory = await getApplicationDocumentsDirectory();
       return appDocumentDirectory.path;
     }
     catch(e) {

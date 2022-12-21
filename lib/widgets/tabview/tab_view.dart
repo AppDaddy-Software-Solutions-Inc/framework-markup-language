@@ -371,7 +371,7 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
             Padding(padding: EdgeInsets.only(top: barpadding), child: SizedBox(width: widget.model.maxwidth, height: barheight,
                 child: Row(children: [
                   SizedBox(width: (widget.model.maxwidth! - buttonWidth < 0 ? 0 : widget.model.maxwidth! - buttonWidth),
-                      height: barheight, 
+                      height: barheight,
                       child: bar),
                   SizedBox(width: buttonWidth, height: barheight, child: button),
                 ]),

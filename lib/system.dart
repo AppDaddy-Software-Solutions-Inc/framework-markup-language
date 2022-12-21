@@ -48,7 +48,7 @@ final ApplicationTypes appType  = ApplicationTypes.SingleApp;
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://config.xml to use the local assets
 
-final String defaultDomain = 'https://test.appdaddy.co';
+final String defaultDomain = 'https://fml.dev';
 
 // denotes FML support Level
 int? fmlVersion = currentVersion;

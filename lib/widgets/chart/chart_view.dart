@@ -148,14 +148,14 @@ class _ChartViewState extends State<ChartView>
     //////////////////
     if (true) {
       // Always constrain based on parent constraints
-      Map<String, double?> constraints = widget.model.constraints;
+      var constraints = widget.model.getConstraints();
       view = ConstrainedBox(
           child: view,
           constraints: BoxConstraints(
-              minHeight: constraints['minheight']!,
-              maxHeight: constraints['maxheight']!,
-              minWidth: constraints['minwidth']!,
-              maxWidth: constraints['maxwidth']!));
+              minHeight: constraints.minHeight!,
+              maxHeight: constraints.maxHeight!,
+              minWidth: constraints.minWidth!,
+              maxWidth: constraints.maxWidth!));
     }
 
     return view;

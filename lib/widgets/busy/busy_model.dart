@@ -16,7 +16,6 @@ import 'package:fml/helper/helper_barrel.dart';
 class BusyModel extends DecoratedWidgetModel implements IViewableWidget
 {
   // visible
-  @override
   BooleanObservable? _visible;
 
   @override

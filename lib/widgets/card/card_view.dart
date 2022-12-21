@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/card/card_model.dart';
-
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 
@@ -154,15 +153,15 @@ class _CardViewState extends State<CardView> implements IModelListener {
     /* Constrained? */
     //////////////////
     if (widget.model.constrained) {
-      Map<String, double?> constraints = widget.model.constraints;
+      var constraints = widget.model.getConstraints();
       view = UnconstrainedBox(
           child: ConstrainedBox(
               child: view,
               constraints: BoxConstraints(
-                  minHeight: constraints['minheight']!,
-                  maxHeight: constraints['maxheight']!,
-                  minWidth: constraints['minwidth']!,
-                  maxWidth: constraints['maxwidth']!)));
+                  minHeight: constraints.minHeight!,
+                  maxHeight: constraints.maxHeight!,
+                  minWidth: constraints.minWidth!,
+                  maxWidth: constraints.maxWidth!)));
     }
 
     return view;

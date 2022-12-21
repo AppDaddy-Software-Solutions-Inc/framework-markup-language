@@ -194,8 +194,9 @@ class DrawerViewState extends State<DrawerView> implements IModelListener, IDrag
     widget.model.minheight = constraints.minHeight;
     widget.model.maxheight = constraints.maxHeight;
 
-    double h = widget.model.constraints['maxheight'] ?? MediaQuery.of(context).size.height;
-    double w = widget.model.constraints['maxwidth'] ?? MediaQuery.of(context).size.width;
+    var con = widget.model.getConstraints();
+    double h = con.maxHeight ?? MediaQuery.of(context).size.height;
+    double w = con.maxWidth  ?? MediaQuery.of(context).size.width;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -385,8 +386,7 @@ class DrawerViewState extends State<DrawerView> implements IModelListener, IDrag
     //////////////////
     /* Constrained? */
     //////////////////
-
-    view = ConstrainedBox(child: view, constraints: BoxConstraints(minHeight: widget.model.constraints['minheight']!, maxHeight: widget.model.constraints['maxheight']!, minWidth: widget.model.constraints['minwidth']!, maxWidth: widget.model.constraints['maxwidth']!));
+    view = ConstrainedBox(child: view, constraints: BoxConstraints(minHeight: con.minHeight!, maxHeight: con.maxHeight!, minWidth: con.minWidth!, maxWidth: con.maxWidth!));
 
     view = WillPopScope(onWillPop: () async => preventPop(), child: view);
 
@@ -431,8 +431,10 @@ class DrawerViewState extends State<DrawerView> implements IModelListener, IDrag
     // print('drag open broadcast recieved');
     // if (animate == false) {
 
-    double h = widget.model.constraints['maxheight'] ?? MediaQuery.of(context).size.height;
-    double w = widget.model.constraints['maxwidth'] ?? MediaQuery.of(context).size.width;
+
+    var con = widget.model.getConstraints();
+    double h = con.maxHeight ?? MediaQuery.of(context).size.height;
+    double w = con.maxWidth  ?? MediaQuery.of(context).size.width;
 
     double screenHeight = h;
     double screenWidth = w;
@@ -487,10 +489,14 @@ class DrawerViewState extends State<DrawerView> implements IModelListener, IDrag
     }
   }
 
-  onDragEnd(dragEndDetails, String dir, bool isOpen) {
+  onDragEnd(dragEndDetails, String dir, bool isOpen)
+  {
     const int dragLeeway = 200; // drag leeway for completing open/closes on drag end
-    double h = widget.model.constraints['maxheight'] ?? MediaQuery.of(context).size.height;
-    double w = widget.model.constraints['maxwidth'] ?? MediaQuery.of(context).size.width;
+
+    var con = widget.model.getConstraints();
+    double h = con.maxHeight?? MediaQuery.of(context).size.height;
+    double w = con.maxWidth ?? MediaQuery.of(context).size.width;
+
     double screenHeight = h;
     double screenWidth = w;
     if (animate == false) {
@@ -670,9 +676,11 @@ class DrawerViewState extends State<DrawerView> implements IModelListener, IDrag
   }
 
   onDragSheet(DragUpdateDetails dragUpdateDetails, String dir, bool opening) {
-    if (animate == false) {
-      double h = widget.model.constraints['maxheight'] ?? MediaQuery.of(context).size.height;
-      double w = widget.model.constraints['maxwidth'] ?? MediaQuery.of(context).size.width;
+    if (animate == false)
+    {
+      var constraints = widget.model.getConstraints();
+      double h = constraints.maxHeight?? MediaQuery.of(context).size.height;
+      double w = constraints.maxWidth ?? MediaQuery.of(context).size.width;
       double screenHeight = h;
       double screenWidth = w;
 
@@ -849,7 +857,9 @@ class DrawerViewState extends State<DrawerView> implements IModelListener, IDrag
   }
 
   void openTop() {
-    double h = widget.model.constraints['maxheight'] ?? MediaQuery.of(context).size.height;
+    var constraints = widget.model.getConstraints();
+
+    double h = constraints.maxHeight?? MediaQuery.of(context).size.height;
     double screenHeight = h;
     setState(() {
       animate = true;
@@ -861,7 +871,8 @@ class DrawerViewState extends State<DrawerView> implements IModelListener, IDrag
   }
 
   void openBottom() {
-    double h = widget.model.constraints['maxheight'] ?? MediaQuery.of(context).size.height;
+    var constraints = widget.model.getConstraints();
+    double h = constraints.maxHeight?? MediaQuery.of(context).size.height;
     double screenHeight = h;
     setState(() {
       animate = true;
@@ -873,7 +884,8 @@ class DrawerViewState extends State<DrawerView> implements IModelListener, IDrag
   }
 
   void openLeft() {
-    double w = widget.model.constraints['maxwidth'] ?? MediaQuery.of(context).size.width;
+    var constraints = widget.model.getConstraints();
+    double w = constraints.maxWidth ?? MediaQuery.of(context).size.width;
     double screenWidth = w;
     setState(() {
       animate = true;
@@ -886,7 +898,8 @@ class DrawerViewState extends State<DrawerView> implements IModelListener, IDrag
   }
 
   void openRight() {
-    double w = widget.model.constraints['maxwidth'] ?? MediaQuery.of(context).size.width;
+    var constraints = widget.model.getConstraints();
+    double w = constraints.maxWidth ?? MediaQuery.of(context).size.width;
     double screenWidth = w;
     setState(() {
       animate = true;
@@ -899,8 +912,9 @@ class DrawerViewState extends State<DrawerView> implements IModelListener, IDrag
   }
 
   closeDrawer(String? drawer, {cb}) {
-    double h = widget.model.constraints['maxheight'] ?? MediaQuery.of(context).size.height;
-    double w = widget.model.constraints['maxwidth'] ?? MediaQuery.of(context).size.width;
+    var constraints = widget.model.getConstraints();
+    double h = constraints.maxHeight?? MediaQuery.of(context).size.height;
+    double w = constraints.maxWidth ?? MediaQuery.of(context).size.width;
     var screenHeight = h;
     var screenWidth = w;
     if (drawer == 'top') {

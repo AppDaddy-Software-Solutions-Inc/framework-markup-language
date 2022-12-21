@@ -76,14 +76,14 @@ class _ModalViewState extends State<ModalView> implements IModelListener
     //////////
     Widget view = SingleChildScrollView(child: child, scrollDirection: Axis.vertical);
 
-    Map<String, double?> constr = widget.model.constraints;
+    var constr = widget.model.getConstraints();
     view = ConstrainedBox(
         child: view,
         constraints: BoxConstraints(
-            minHeight: constr['minheight']!,
-            maxHeight: constr['maxheight']!,
-            minWidth: constr['minwidth']!,
-            maxWidth: constr['maxwidth']!));
+            minHeight: constr.minHeight!,
+            maxHeight: constr.maxHeight!,
+            minWidth: constr.minWidth!,
+            maxWidth: constr.maxWidth!));
 
     return view;
   }

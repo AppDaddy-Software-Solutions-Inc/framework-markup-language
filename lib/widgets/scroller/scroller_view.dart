@@ -275,15 +275,15 @@ class _ScrollerViewState extends State<ScrollerView> implements IModelListener {
         ),
       );
     }
-    Map<String, double?> constr = widget.model.constraints;
+    var constr = widget.model.getConstraints();
 
     return view = ConstrainedBox(
         child: view,
         constraints: BoxConstraints(
-            minHeight: constr['minheight']!,
-            maxHeight: constr['maxheight']!,
-            minWidth: constr['minwidth']!,
-            maxWidth: constr['maxwidth']!));
+            minHeight: constr.minHeight!,
+            maxHeight: constr.maxHeight!,
+            minWidth: constr.minWidth!,
+            maxWidth: constr.maxWidth!));
   }
 }
 

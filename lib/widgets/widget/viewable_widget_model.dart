@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:fml/widgets/widget/constraint.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -58,49 +59,45 @@ class ViewableWidgetModel extends WidgetModel
   double? get height => _height?.get();
 
   // Constraints
-  final Map<String, double?> _constraints = {'minwidth': null, 'maxwidth': null, 'minheight': null, 'maxheight': null};
+  final Constraint _constraints = Constraint();
 
-  Map<String, double?> get constraints
+  Constraint getConstraints()
   {
-    Map<String, double?> con = Map<String, double?>();
-    con['minheight'] = height ?? _constraints['minheight'] ?? minheight ?? 0.0;
-    con['maxheight'] = height ?? _constraints['maxheight'] ?? maxheight ?? double.infinity;
-    con['minwidth']  = width  ?? _constraints['minwidth'] ?? minwidth ?? 0.0;
-    con['maxwidth']  = width  ?? _constraints['maxwidth'] ?? maxwidth ?? double.infinity;
+    Constraint constraint = Constraint();
+    constraint.minHeight = height ?? _constraints.minHeight ?? minheight ?? 0.0;
+    constraint.maxHeight = height ?? _constraints.maxHeight ?? maxheight ?? double.infinity;
+    constraint.minWidth  = width  ?? _constraints.minWidth  ?? minwidth  ?? 0.0;
+    constraint.maxWidth  = width  ?? _constraints.maxWidth  ?? maxwidth  ?? double.infinity;
 
     // ensure not negative
-    if(con['minheight']! < 0) con['minheight'] = 0;
-    if(con['maxheight']! < 0) con['maxheight'] = double.infinity;
+    if(constraint.minHeight! < 0) constraint.minHeight = 0;
+    if(constraint.maxHeight! < 0) constraint.maxHeight = double.infinity;
 
     // ensure max > min
-    if (con['minheight']! > con['maxheight']!)
+    if (constraint.minHeight! > constraint.maxHeight!)
     {
-      if (_constraints['maxheight'] != null)
-           con['minheight'] = con['maxheight'];
-      else con['maxheight'] = con['minheight'];
+      if (_constraints.maxHeight != null)
+           constraint.minHeight = constraint.maxHeight;
+      else constraint.maxHeight = constraint.minHeight;
     }
 
     // ensure not negative
-    if(con['minwidth']! < 0) con['minwidth'] = 0;
-    if(con['maxwidth']! < 0) con['maxwidth'] = double.infinity;
+    if(constraint.minWidth! < 0) constraint.minWidth = 0;
+    if(constraint.maxWidth! < 0) constraint.maxWidth = double.infinity;
 
     // ensure max > min
-    if (con['minwidth']! > con['maxwidth']!)
+    if (constraint.minWidth! > constraint.maxWidth!)
     {
-      if (_constraints['maxwidth'] != null)
-           con['minwidth'] = con['maxwidth'];
-      else con['maxwidth'] = con['minwidth'];
+      if (_constraints.maxWidth != null)
+           constraint.minWidth = constraint.maxWidth;
+      else constraint.maxWidth = constraint.minWidth;
     }
-    return con;
+    return constraint;
   }
 
-  // is constrained?
-  bool get constrained => ((width != null) && (width! >= 0)) ||
-          ((height != null) && (height! >= 0)) ||
-          (_constraints['minwidth'] != null) ||
-          (_constraints['maxwidth'] != null) ||
-          (_constraints['minheight'] != null) ||
-          (_constraints['maxheight'] != null);
+  bool get constrainedVertically   => ((height != null) && (height! >= 0)) || (_constraints.minHeight!= null)  || (_constraints.maxHeight!= null);
+  bool get constrainedHorizontally => ((width  != null) && (width!  >= 0)) || (_constraints.minWidth  != null) || (_constraints.maxWidth  != null);
+  bool get constrained => constrainedVertically || constrainedHorizontally;
 
   // Min Width
   double? _minwidth;
@@ -138,8 +135,8 @@ class ViewableWidgetModel extends WidgetModel
       if (maxwidth != null)
       {
         width = maxwidth * (_widthPercentage! / 100.0);
-        if ((_constraints['minwidth'] != null) && (_constraints['minwidth']! > width))  width = _constraints['minwidth'];
-        if ((_constraints['maxwidth'] != null) && (_constraints['maxwidth']! < width!)) width = _constraints['maxwidth'];
+        if ((_constraints.minWidth != null) && (_constraints.minWidth! > width))  width = _constraints.minWidth;
+        if ((_constraints.maxWidth != null) && (_constraints.maxWidth! < width!)) width = _constraints.maxWidth;
       }
       _width?.set(width, notify: false);
     }
@@ -182,8 +179,8 @@ class ViewableWidgetModel extends WidgetModel
           if (parent != null) vpadding = getParentVPadding(parent.paddings, parent.padding, parent.padding2, parent.padding3, parent.padding4);
 
           height = ((maxheight - vpadding) * (_heightPercentage! / 100.0));
-          if ((_constraints['minheight'] != null) && (_constraints['minheight']! > height)) height = _constraints['minheight'] ?? 0;
-          if ((_constraints['maxheight'] != null) && (_constraints['maxheight']! < height)) height = _constraints['maxheight'];
+          if ((_constraints.minHeight!= null) && (_constraints.minHeight! > height)) height = _constraints.minHeight?? 0;
+          if ((_constraints.maxHeight!= null) && (_constraints.maxHeight! < height)) height = _constraints.maxHeight;
         }
       }
       _height?.set(height, notify: false);
@@ -339,10 +336,10 @@ class ViewableWidgetModel extends WidgetModel
     super.deserialize(xml);
 
     // set constraints
-    _constraints['minwidth']  = S.toDouble(Xml.get(node: xml, tag: 'minwidth'));
-    _constraints['maxwidth']  = S.toDouble(Xml.get(node: xml, tag: 'maxwidth'));
-    _constraints['minheight'] = S.toDouble(Xml.get(node: xml, tag: 'minheight'));
-    _constraints['maxheight'] = S.toDouble(Xml.get(node: xml, tag: 'maxheight'));
+    _constraints.minWidth  = S.toDouble(Xml.get(node: xml, tag: 'minwidth'));
+    _constraints.maxWidth  = S.toDouble(Xml.get(node: xml, tag: 'maxwidth'));
+    _constraints.minHeight= S.toDouble(Xml.get(node: xml, tag: 'minheight'));
+    _constraints.maxHeight= S.toDouble(Xml.get(node: xml, tag: 'maxheight'));
 
     // properties
     visible = Xml.get(node: xml, tag: 'visible');

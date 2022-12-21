@@ -532,8 +532,8 @@ class _ChartViewState extends State<ChartView> implements IModelListener
         {
       Map<String,double?> constraints = widget.model.constraints;
       view = ConstrainedBox(child: Padding(padding: EdgeInsets.only(bottom: 30.0), child: view), constraints: BoxConstraints(
-          minHeight: constraints['minheight']!, maxHeight: constraints['maxheight']!,
-          minWidth: constraints['minwidth']!, maxWidth: constraints['maxwidth']!));
+          minHeight: constraints.minHeight!, maxHeight: constraints.maxHeight!,
+          minWidth: constraints.minWidth!, maxWidth: constraints.maxWidth!));
     }
 
     return view;

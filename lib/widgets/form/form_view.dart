@@ -429,10 +429,10 @@ class _FormViewState extends State<FormView> implements IModelListener,  GPS.IGp
     /////////////////
     if (widget.model.constrained)
     {
-      Map<String,double?> constraints = widget.model.constraints;
+      var constraints = widget.model.getConstraints();
       view = ConstrainedBox(child: view, constraints: BoxConstraints(
-      minHeight: constraints['minheight']!, maxHeight: constraints['maxheight']!,
-          minWidth: constraints['minwidth']!, maxWidth: constraints['maxwidth']!));
+      minHeight: constraints.minHeight!, maxHeight: constraints.maxHeight!,
+          minWidth: constraints.minWidth!, maxWidth: constraints.maxWidth!));
     }
 
     return view;

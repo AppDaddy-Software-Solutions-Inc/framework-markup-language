@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'busy_model.dart';
@@ -131,7 +130,7 @@ class _BusyViewState extends State<BusyView> implements IModelListener
 
     view = Stack(alignment: Alignment(0.0, 0.0), children: children);
       bool expand = widget.model.expand;
-      Map<String, double?> constr = widget.model.constraints;
+      var constr = widget.model.getConstraints();
       view = Container(color: Colors.transparent, child: view);
       if (expand == false) {
         if (widget.model.height != null && widget.model.width != null)
@@ -144,14 +143,14 @@ class _BusyViewState extends State<BusyView> implements IModelListener
           view = UnconstrainedBox(
             child: LimitedBox(
               child: view,
-              maxWidth: constr['maxwidth']!,
+              maxWidth: constr.maxWidth!,
             ),
           );
         } else if (widget.model.height != null) {
           view = UnconstrainedBox(
             child: LimitedBox(
               child: view,
-              maxHeight: constr['maxheight']!,
+              maxHeight: constr.maxHeight!,
             ),
           );
         } else {
@@ -166,10 +165,10 @@ class _BusyViewState extends State<BusyView> implements IModelListener
         view = ConstrainedBox(
             child: view,
             constraints: BoxConstraints(
-                minHeight: constr['minheight']!,
-                maxHeight: constr['maxheight']!,
-                minWidth: constr['minwidth']!,
-                maxWidth: constr['maxwidth']!));
+                minHeight: constr.minHeight!,
+                maxHeight: constr.maxHeight!,
+                minWidth: constr.minWidth!,
+                maxWidth: constr.maxWidth!));
       }
       return view;
   }

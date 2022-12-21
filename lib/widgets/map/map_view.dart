@@ -123,12 +123,12 @@ class _MapViewState extends State<MapView> implements IModelListener
     // view
     dynamic view = Container(child: SizedBox(width: width, height: height, child: Stack(fit: StackFit.expand, children: [map!, busy!])));
 
-    Map<String,double?> constraints = widget.model.constraints;
+    var constraints = widget.model.getConstraints();
     view = ConstrainedBox(child: view, constraints: BoxConstraints(
-        minHeight: constraints['minheight']!,
-        maxHeight: constraints['maxheight']!,
-        minWidth: constraints['minwidth']!,
-        maxWidth: constraints['maxwidth']!));
+        minHeight: constraints.minHeight!,
+        maxHeight: constraints.maxHeight!,
+        minWidth: constraints.minWidth!,
+        maxWidth: constraints.maxWidth!));
     
     return view;
   }

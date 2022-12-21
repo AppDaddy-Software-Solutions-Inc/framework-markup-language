@@ -57,8 +57,8 @@ dependencies:
 
   # Microsoft Logon
   # Updated 2022/09/20
-  firebase_auth: 3.9.0
-  firebase_core: 1.22.0
+  firebase_auth: 4.2.1
+  firebase_core: 2.4.0
   # BSD-3-Clause
 
   # Updated 2021/09/23
@@ -236,7 +236,6 @@ dev_dependencies:
   test: ^1.21.1
 
 dependency_overrides:
-  firebase_core_platform_interface: 4.5.1
 
 flutter:
 

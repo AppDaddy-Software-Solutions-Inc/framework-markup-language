@@ -1,11 +1,13 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:fml/data/data.dart';
+import 'package:fml/datasources/transforms/image_transform_model.dart';
+import 'package:fml/datasources/transforms/transform_model.dart';
 import 'package:xml/xml.dart';
-import 'package:image/image.dart' as IMAGE;
+import 'package:image/image.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'model.dart';
 import 'package:fml/helper/helper_barrel.dart';
 
-class Grayscale extends TransformModel implements IImageTransform
+class Grayscale extends ImageTransformModel implements IDataTransform
 {
   Grayscale(WidgetModel parent, {String? id}) : super(parent, id);
 
@@ -23,15 +25,15 @@ class Grayscale extends TransformModel implements IImageTransform
   @override
   void deserialize(XmlElement xml)
   {
-
     // Deserialize
     super.deserialize(xml);
   }
 
-  IMAGE.Image? apply(IMAGE.Image? image)
+  apply(List? data) async
   {
-    if (image == null) return null;
-    if (enabled == false) return image;
-    return IMAGE.grayscale(image);
+    if (enabled == false) return;
+    if (data is Data) await transform(data, monochrome);
   }
+
+  Future<Image?> monochrome(Image image) async => grayscale(image);
 }

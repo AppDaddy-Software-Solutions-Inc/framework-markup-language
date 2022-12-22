@@ -89,17 +89,17 @@ import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/theme/theme_model.dart';
 import 'package:fml/widgets/timer/timer_model.dart';
 import 'package:fml/widgets/tooltip/tooltip_model.dart';
-import 'package:fml/datasources/transforms/calc.dart' as TRANSFORM;
-import 'package:fml/datasources/transforms/distinct.dart' as TRANSFORM;
-import 'package:fml/datasources/transforms/sort.dart' as TRANSFORM;
-import 'package:fml/datasources/transforms/eval.dart' as TRANSFORM;
-import 'package:fml/datasources/transforms/filter.dart' as TRANSFORM;
-import 'package:fml/datasources/transforms/pivot.dart' as TRANSFORM;
-import 'package:fml/datasources/transforms/format.dart' as TRANSFORM;
-import 'package:fml/datasources/transforms/flip.dart' as TRANSFORM;
-import 'package:fml/datasources/transforms/resize.dart' as TRANSFORM;
-import 'package:fml/datasources/transforms/crop.dart' as TRANSFORM;
-import 'package:fml/datasources/transforms/grayscale.dart' as TRANSFORM;
+import 'package:fml/datasources/transforms/calc.dart';
+import 'package:fml/datasources/transforms/distinct.dart';
+import 'package:fml/datasources/transforms/sort.dart';
+import 'package:fml/datasources/transforms/eval.dart';
+import 'package:fml/datasources/transforms/filter.dart';
+import 'package:fml/datasources/transforms/pivot.dart';
+import 'package:fml/datasources/transforms/format.dart';
+import 'package:fml/datasources/transforms/flip.dart';
+import 'package:fml/datasources/transforms/resize.dart';
+import 'package:fml/datasources/transforms/crop.dart';
+import 'package:fml/datasources/transforms/grayscale.dart';
 import 'package:fml/widgets/treeview/tree_model.dart';
 import 'package:fml/widgets/treeview/node/tree_node_model.dart';
 import 'package:fml/widgets/trigger/condition/trigger_condition_model.dart';
@@ -360,7 +360,7 @@ class WidgetModel implements IDataSourceListener
         break;
 
       case "calc":
-        if (parent is IDataSource) model = TRANSFORM.Calc.fromXml(model, node);
+        if (parent is IDataSource) model = Calc.fromXml(model, node);
         break;
 
       case "camera":
@@ -397,10 +397,7 @@ class WidgetModel implements IDataSourceListener
         break;
 
       case "crop":
-        if (parent is FilepickerModel)
-          model = TRANSFORM.Crop.fromXml(parent, node);
-        if (parent is CameraModel)
-          model = TRANSFORM.Crop.fromXml(parent, node);
+        if (parent is IDataSource) model = Crop.fromXml(parent, node);
         break;
 
       case "column":
@@ -427,8 +424,7 @@ class WidgetModel implements IDataSourceListener
         break;
 
       case "distinct":
-        if (parent is IDataSource)
-          model = TRANSFORM.Distinct.fromXml(model, node);
+        if (parent is IDataSource) model = Distinct.fromXml(model, node);
         break;
 
       case "drag": // Preferred case.
@@ -447,7 +443,7 @@ class WidgetModel implements IDataSourceListener
         break;
 
       case "eval":
-        if (parent is IDataSource) model = TRANSFORM.Eval.fromXml(model, node);
+        if (parent is IDataSource) model = Eval.fromXml(model, node);
         break;
 
       case "filepicker":
@@ -456,14 +452,11 @@ class WidgetModel implements IDataSourceListener
 
       case "filter":
         if (parent is IDataSource)
-          model = TRANSFORM.Filter.fromXml(model, node);
+          model = Filter.fromXml(model, node);
         break;
 
       case "flip":
-        if (parent is FilepickerModel)
-          model = TRANSFORM.Flip.fromXml(parent, node);
-        if (parent is CameraModel)
-          model = TRANSFORM.Flip.fromXml(parent, node);
+        if (parent is IDataSource) model = Flip.fromXml(parent, node);
         break;
 
       case "footer":
@@ -477,7 +470,7 @@ class WidgetModel implements IDataSourceListener
 
       case "format":
         if (parent is IDataSource)
-          model = TRANSFORM.Format.fromXml(parent, node);
+          model = Format.fromXml(parent, node);
         break;
 
       case "gesture":
@@ -490,10 +483,8 @@ class WidgetModel implements IDataSourceListener
 
       case "greyscale":
       case "grayscale":
-        if (parent is FilepickerModel)
-          model = TRANSFORM.Grayscale.fromXml(parent, node);
-        if (parent is CameraModel)
-          model = TRANSFORM.Grayscale.fromXml(parent, node);
+         if (parent is IDataSource)
+           model = Grayscale.fromXml(parent, node);
         break;
 
       case "gps":
@@ -599,7 +590,7 @@ class WidgetModel implements IDataSourceListener
         break;
 
       case "pivot":
-        if (parent is IDataSource) model = TRANSFORM.Pivot.fromXml(model, node);
+        if (parent is IDataSource) model = Pivot.fromXml(model, node);
         break;
 
       case "put":
@@ -634,10 +625,7 @@ class WidgetModel implements IDataSourceListener
         break;
 
       case "resize":
-        if (parent is FilepickerModel)
-          model = TRANSFORM.Resize.fromXml(parent, node);
-        if (parent is CameraModel)
-          model = TRANSFORM.Resize.fromXml(parent, node);
+        if (parent is IDataSource) model = Resize.fromXml(parent, node);
         break;
 
       case "row":
@@ -675,7 +663,7 @@ class WidgetModel implements IDataSourceListener
         break;
 
       case "sort":
-        if (parent is IDataSource) model = TRANSFORM.Sort.fromXml(model, node);
+        if (parent is IDataSource) model = Sort.fromXml(model, node);
         break;
 
       case "stack":

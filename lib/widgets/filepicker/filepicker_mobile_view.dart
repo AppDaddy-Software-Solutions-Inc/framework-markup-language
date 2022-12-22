@@ -7,8 +7,6 @@ import 'package:path/path.dart';
 import 'filepicker_view.dart' as ABSTRACT;
 import 'package:fml/datasources/file/file.dart' as FILE;
 import 'package:fml/datasources/detectors/iDetector.dart' ;
-import 'package:fml/datasources/transforms/model.dart' as TRANSFORM;
-import 'package:image/image.dart' as IMAGE;
 import 'package:fml/helper/helper_barrel.dart';
 
 FilePickerView create({String? accept}) => FilePickerView(accept: accept);
@@ -34,7 +32,7 @@ class FilePickerView implements ABSTRACT.FilePicker
     this.accept = accept;
   }
 
-  Future<FILE.File?> launchPicker(List<IDetector>? detectors, List<TRANSFORM.IImageTransform> transforms) async
+  Future<FILE.File?> launchPicker(List<IDetector>? detectors) async
   {
     try
     {
@@ -56,51 +54,6 @@ class FilePickerView implements ABSTRACT.FilePicker
 
           // detect
           if (detectable != null) detectors.forEach((detector) => detector.detect(detectable));
-        }
-
-        // apply image transforms
-        if ((transforms.length > 0))
-        {
-          IMAGE.Image? image;
-
-          IMAGE.Decoder? decoder;
-          if (type.endsWith("jpg"))  decoder = IMAGE.JpegDecoder();
-          if (type.endsWith("jpeg")) decoder = IMAGE.JpegDecoder();
-          if (type.endsWith("png"))  decoder = IMAGE.PngDecoder();
-          if (type.endsWith("gif"))  decoder = IMAGE.GifDecoder();
-          if (decoder != null)
-          {
-            try
-            {
-              image = decoder.decodeImage(await file.readAsBytes());
-            }
-            catch(e)
-            {
-              Log().debug("Error detecting image in bytes. Error is $e");
-              image = null;
-            }
-
-            for (var transform in transforms)
-            {
-              if ((image != null) && (transform.enabled == true)) image = transform.apply(image);
-            }
-
-            List<int>? bytes;
-            if (image != null)
-            {
-              if (decoder is IMAGE.PngDecoder)   bytes = IMAGE.encodePng(image);
-              if (decoder is IMAGE.JpegDecoder)  bytes = IMAGE.encodeJpg(image);
-              if (decoder is IMAGE.GifDecoder)   bytes = IMAGE.encodeGif(image);
-            }
-
-            if (bytes != null)
-            {
-              var uri  = UriData.fromBytes(bytes, mimeType: S.mimetype(name));
-              var url  = uri.toString();
-              var size = bytes.length;
-              return FILE.File(uri, url, name,type, size);
-            }
-          }
         }
 
         // return the file

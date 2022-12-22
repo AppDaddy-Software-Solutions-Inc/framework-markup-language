@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:fml/data/data.dart';
 import 'package:fml/datasources/file/model.dart' as FILE;
 import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/log/manager.dart';
@@ -98,7 +99,7 @@ class FilepickerModel extends FILE.FileModel implements IDataSource
         if (ok == false) return ok;
       }
 
-      FILE.File? file = await filepicker.launchPicker(detectors, itransforms);
+      FILE.File? file = await filepicker.launchPicker(detectors);
       if (file != null)
       {
         if ((this.file != null) && (this.scope != null) && (this.scope!.files.containsValue(this.file))) this.scope!.files.remove(this.file);
@@ -116,7 +117,7 @@ class FilepickerModel extends FILE.FileModel implements IDataSource
     }
     catch (e)
     {
-      ok = await onException(null, code: 500, message: e.toString());
+      ok = await onException(Data(), code: 500, message: e.toString());
     }
 
     return ok;

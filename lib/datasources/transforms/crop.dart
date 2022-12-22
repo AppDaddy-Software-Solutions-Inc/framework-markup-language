@@ -1,47 +1,90 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:fml/data/data.dart';
+import 'package:fml/datasources/transforms/image_transform_model.dart';
+import 'package:fml/datasources/transforms/transform_model.dart';
 import 'package:xml/xml.dart';
-import 'package:image/image.dart' as IMAGE;
 import 'package:fml/widgets/widget/widget_model.dart'  ;
-import 'model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/helper_barrel.dart';
+import 'package:image/image.dart';
 
-class Crop extends TransformModel implements IImageTransform
+class Crop extends ImageTransformModel implements IDataTransform
 {
-  String? width;
-  String? height;
-
-  /// Δ x value for transitions such as slide, defaults to 1.5
-  DoubleObservable? _dx;
-  set dx (dynamic v)
+  /// x-coordinate offset
+  IntegerObservable? _x;
+  set x (dynamic v)
   {
-    if (_dx != null)
+    if (_x != null)
     {
-      _dx!.set(v);
+      _x!.set(v);
     }
     else if (v != null)
     {
-      _dx = DoubleObservable(Binding.toKey(id, 'x'), v, scope: scope, listener: onPropertyChange);
+      _x = IntegerObservable(Binding.toKey(id, 'x'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  double get dx => _dx?.get() ?? 0.0;
+  int get x => _x?.get() ?? 0;
 
-  /// Δ y value for transitions such as slide
-  DoubleObservable? _dy;
-  set dy (dynamic v)
+  /// y-coordinate offset
+  IntegerObservable? _y;
+  set y (dynamic v)
   {
-    if (_dy != null)
+    if (_y != null)
     {
-      _dy!.set(v);
+      _y!.set(v);
     }
     else if (v != null)
     {
-      _dy = DoubleObservable(Binding.toKey(id, 'y'), v, scope: scope, listener: onPropertyChange);
+      _y = IntegerObservable(Binding.toKey(id, 'y'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  double get dy => _dy?.get() ?? 0.0;
+  int get y => _y?.get() ?? 0;
 
+  /// width
+  IntegerObservable? _width;
+  set width (dynamic v)
+  {
+    if (_width != null)
+    {
+      _width!.set(v);
+    }
+    else if (v != null)
+    {
+      _width = IntegerObservable(Binding.toKey(id, 'width'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  int get width => _width?.get() ?? 0;
 
+  /// height
+  IntegerObservable? _height;
+  set height (dynamic v)
+  {
+    if (_height != null)
+    {
+      _height!.set(v);
+    }
+    else if (v != null)
+    {
+      _height = IntegerObservable(Binding.toKey(id, 'height'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  int get height => _height?.get() ?? 0;
+
+  /// source
+  StringObservable? _source;
+  set source (dynamic v)
+  {
+    if (_source != null)
+    {
+      _source!.set(v);
+    }
+    else if (v != null)
+    {
+      _source = StringObservable(Binding.toKey(id, 'source'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get source => _source?.get();
+  
   Crop(WidgetModel parent, {String? id}) : super(parent, id);
 
   static Crop? fromXml(WidgetModel parent, XmlElement xml)
@@ -49,7 +92,7 @@ class Crop extends TransformModel implements IImageTransform
     Crop model = Crop
       (
         parent,
-        id : Xml.get(node: xml, tag: 'id')
+        id : Xml.get(node: xml, tag: 'id'),
     );
     model.deserialize(xml);
     return model;
@@ -58,19 +101,25 @@ class Crop extends TransformModel implements IImageTransform
   @override
   void deserialize(XmlElement xml)
   {
-
     // Deserialize
     super.deserialize(xml);
 
     // Properties
-    dx      = Xml.get(node: xml, tag: 'x');
-    dy      = Xml.get(node: xml, tag: 'y');
+    x      = Xml.get(node: xml, tag: 'x');
+    y      = Xml.get(node: xml, tag: 'y');
+    width  = Xml.get(node: xml, tag: 'width');
+    height = Xml.get(node: xml, tag: 'height');
   }
 
-  IMAGE.Image? apply(IMAGE.Image? image)
+  apply(List? data) async
   {
-    if (image == null) return null;
-    if (enabled == false) return image;
-    return IMAGE.copyCrop(image, S.toInt(dx)!, S.toInt(dy)!, S.toInt(width)!, S.toInt(height)!);
+    if (enabled == false) return;
+    if (data is Data) await transform(data, crop);
+  }
+
+  Future<Image?> crop(Image image) async
+  {
+    image = copyCrop(image, x, y, width, height);
+    return image;
   }
 }

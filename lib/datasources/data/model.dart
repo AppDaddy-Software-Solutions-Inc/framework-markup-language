@@ -23,7 +23,7 @@ class DataModel extends DataSourceModel implements IDataSource
     }
     catch(e)
     {
-      Log().exception(e, caller: 'transform.Model');
+      Log().exception(e, caller: 'data.Model');
       model = null;
     }
     return model;

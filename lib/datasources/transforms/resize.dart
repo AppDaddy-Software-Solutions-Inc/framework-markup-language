@@ -4,7 +4,6 @@ import 'package:fml/datasources/transforms/image_transform_model.dart';
 import 'package:fml/datasources/transforms/transform_model.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/integer.dart';
-import 'package:image/image.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/helper/helper_barrel.dart';
@@ -68,8 +67,6 @@ class Resize extends ImageTransformModel implements IDataTransform
   apply(List? data) async
   {
     if (enabled == false) return;
-    if (data is Data) await transform(data, resize);
+    if (data is Data) await resizeImage(data, width, height, runAsIsolate: background);
   }
-
-  Future<Image?> resize(Image image) async => copyResize(image, width: width, height: height);
 }

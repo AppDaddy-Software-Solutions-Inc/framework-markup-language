@@ -400,6 +400,9 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
 
   Future<bool> onResponse(Data data, {int? code, String? message}) async
   {
+    // set busy
+    busy = true;
+
     // max records
     int maxrecords = this.maxrecords ?? 10000;
     if (maxrecords < 0) maxrecords = 0;
@@ -487,7 +490,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
     // notify nested data sources
     if (datasources != null)
       for (IDataSource model in this.datasources!)
-        if (model is DataModel) await model.onResponse(data.clone());
+        if (model is DataModel) model.onResponse(data.clone());
 
     // requery?
     if (((autoquery ?? 0) > 0) && (timer == null) && (!disposed)) timer = Timer.periodic(Duration(seconds: autoquery!), onTimer);

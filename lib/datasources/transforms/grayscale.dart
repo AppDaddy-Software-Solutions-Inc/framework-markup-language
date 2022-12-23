@@ -3,7 +3,6 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/transforms/image_transform_model.dart';
 import 'package:fml/datasources/transforms/transform_model.dart';
 import 'package:xml/xml.dart';
-import 'package:image/image.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/helper/helper_barrel.dart';
 
@@ -32,8 +31,6 @@ class Grayscale extends ImageTransformModel implements IDataTransform
   apply(List? data) async
   {
     if (enabled == false) return;
-    if (data is Data) await transform(data, monochrome);
+    if (data is Data) await grayImage(data, runAsIsolate: background);
   }
-
-  Future<Image?> monochrome(Image image) async => grayscale(image);
 }

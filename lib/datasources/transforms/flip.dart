@@ -4,7 +4,6 @@ import 'package:fml/datasources/transforms/image_transform_model.dart';
 import 'package:fml/datasources/transforms/transform_model.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/string.dart';
-import 'package:image/image.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/helper/helper_barrel.dart';
@@ -52,8 +51,6 @@ class Flip extends ImageTransformModel implements IDataTransform
   apply(List? data) async
   {
     if (enabled == false) return;
-    if (data is Data) await transform(data, flip);
+    if (data is Data) await flipImage(data, axis, runAsIsolate: background);
   }
-
-  Future<Image?> flip(Image image) async => (this.axis.toLowerCase() == "vertical") ? flipVertical(image) : flipHorizontal(image);
 }

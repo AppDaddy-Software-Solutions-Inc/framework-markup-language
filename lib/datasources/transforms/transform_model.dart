@@ -1,12 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
-import 'package:image/image.dart' as IMAGE;
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/helper_barrel.dart';
-
-typedef TransformCallback = Future<IMAGE.Image?> Function(IMAGE.Image);
 
 abstract class IDataTransform
 {

@@ -6,7 +6,6 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/helper_barrel.dart';
-import 'package:image/image.dart';
 
 class Crop extends ImageTransformModel implements IDataTransform
 {
@@ -114,12 +113,6 @@ class Crop extends ImageTransformModel implements IDataTransform
   apply(List? data) async
   {
     if (enabled == false) return;
-    if (data is Data) await transform(data, crop);
-  }
-
-  Future<Image?> crop(Image image) async
-  {
-    image = copyCrop(image, x, y, width, height);
-    return image;
+    if (data is Data) await cropImage(data, x, y, width, height, runAsIsolate: background);
   }
 }

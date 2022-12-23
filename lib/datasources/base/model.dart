@@ -578,11 +578,52 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
   {
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
-    switch (function) {
+    switch (function)
+    {
+      // clear the list
       case "clear":
         int? start = S.toInt(S.item(arguments, 0)) ?? null;
         int? end = S.toInt(S.item(arguments, 1)) ?? null;
         return await clear(start: start, end: end);
+
+      // add to the list
+      case "add":
+        String? json  = S.toStr(S.item(arguments, 0)) ?? null;
+        int index = S.toInt(S.item(arguments, 1)) ?? (this.data != null ? this.data!.length : 0);
+        if (json != null)
+        {
+          Data? data = Data.fromJson(json);
+          if (data != null)
+          {
+            if (this.data == null) this.data = Data();
+            if (index > data.length) index = data.length;
+            if (index < 0) index = 0;
+            data.forEach((element) => this.data!.insert(index++, element));
+            notify();
+          }
+        }
+        return true;
+
+      // remove from the list
+      case "remove":
+        int index = S.toInt(S.item(arguments, 1)) ?? (this.data != null ? this.data!.length : 0);
+        if (this.data != null)
+        {
+          if (index >= this.data!.length) index = this.data!.length - 1;
+          if (index < 0) index = 0;
+          this.data!.removeAt(index);
+          notify();
+        }
+        return true;
+
+      // reverse the list
+      case "reverse":
+        if (this.data != null)
+        {
+          this.data = this.data!.reversed;
+          notify();
+        }
+        return true;
     }
     return super.execute(propertyOrFunction, arguments);
   }

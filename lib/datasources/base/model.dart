@@ -588,11 +588,11 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
 
       // add to the list
       case "add":
-        String? json  = S.toStr(S.item(arguments, 0)) ?? null;
+        String? jsonOrXml  = S.toStr(S.item(arguments, 0)) ?? null;
         int index = S.toInt(S.item(arguments, 1)) ?? (this.data != null ? this.data!.length : 0);
-        if (json != null)
+        if (jsonOrXml != null)
         {
-          Data? data = Data.fromJson(json);
+          Data? data = Data.fromData(jsonOrXml);
           if (data != null)
           {
             if (this.data == null) this.data = Data();

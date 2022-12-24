@@ -33,8 +33,8 @@ import 'package:fml/helper/helper_barrel.dart';
 
 // platform
 //  import 'package:fml/system.mobile.dart';
-// import 'package:fml/system.web.dart';
-import 'package:fml/system.desktop.dart';
+ import 'package:fml/system.web.dart';
+//import 'package:fml/system.desktop.dart';
 
 // application build version
 final String version = '1.0.0';
@@ -48,7 +48,7 @@ final ApplicationTypes appType  = ApplicationTypes.MultiApp;
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://config.xml to use the local assets
 
-final String defaultDomain = 'https://fml.dev';
+final String defaultDomain = 'https://test.appdaddy.co';
 
 // denotes FML support Level
 int? fmlVersion = currentVersion;

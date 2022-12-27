@@ -178,31 +178,7 @@ class _ButtonViewState extends State<ButtonView> implements IModelListener
 
 
 
-      //unsure how to make this work with maxwidth/maxheight, as it should yet constraints always come in. What should it do? same with minwidth/minheight...
 
-    if (widget.model.height != null && widget.model.width != null ) {
-      view = ConstrainedBox(
-          child: Container(child:view) ,
-          constraints: BoxConstraints(
-              minHeight: constr['minheight']!,
-              maxHeight: constr['maxheight']!,
-              minWidth: constr['minwidth']!,
-              maxWidth: constr['maxwidth']!));
-    } else if (widget.model.width != null) {
-        view = UnconstrainedBox(
-          child: LimitedBox(
-            child: view,
-            maxWidth: constr['maxwidth']!,
-          ),
-        );
-      } else if (widget.model.height != null) {
-        view = UnconstrainedBox(
-          child: LimitedBox(
-            child: view,
-            maxHeight: constr['maxheight']!,
-          ),
-        );
-      }
 
     // Build the Button Types
     if (wm.buttontype == 'outlined') {
@@ -237,24 +213,33 @@ class _ButtonViewState extends State<ButtonView> implements IModelListener
       view = Opacity(opacity: 0.9, child: view); // Disabled
     }
 
-    // For now we are going to have button ignore contraints otherwise it will get its parent size and set that as the min
-    
-    // if (widget.model.constrained) {
-    //   Map<String, double?> constraints = widget.model.constraints;
-    //   view = ConstrainedBox(
-    //       child: view,
-    //       constraints: BoxConstraints(
-    //           minHeight: constraints['minheight']!,
-    //           maxHeight: constraints['maxheight']!,
-    //           minWidth: constraints['minwidth']!,
-    //           maxWidth: constraints['maxwidth']!));
-    // }
-    // else {
-      view = UnconstrainedBox(
-        child: view,
-      );
-    // }
+    //unsure how to make this work with maxwidth/maxheight, as it should yet constraints always come in. What should it do? same with minwidth/minheight...
 
+    if (widget.model.height != null && widget.model.width != null ) {
+      view = ConstrainedBox(
+          child: Container(child:view) ,
+          constraints: BoxConstraints(
+              minHeight: constr['minheight']!,
+              maxHeight: constr['maxheight']!,
+              minWidth: constr['minwidth']!,
+              maxWidth: constr['maxwidth']!));
+    } else if (widget.model.width != null) {
+      view = UnconstrainedBox(
+        child: LimitedBox(
+          child: view,
+          maxWidth: constr['maxwidth']!,
+        ),
+      );
+    } else if (widget.model.height != null) {
+      view = UnconstrainedBox(
+        child: LimitedBox(
+          child: view,
+          maxHeight: constr['maxheight']!,
+        ),
+      );
+    } else {
+      UnconstrainedBox(child: view);
+    }
     return view;
   }
 

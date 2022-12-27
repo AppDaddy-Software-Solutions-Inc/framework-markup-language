@@ -237,6 +237,8 @@ class _ButtonViewState extends State<ButtonView> implements IModelListener
           maxHeight: constr['maxheight']!,
         ),
       );
+    } else {
+      UnconstrainedBox(child: view);
     }
     return view;
   }

@@ -96,7 +96,7 @@ class Http
     }
   }
 
-  static Future<HttpResponse> put(String url, {String? body, Map<String, String>? headers, int? timeout = 60}) async
+  static Future<HttpResponse> put(String url, String body, {Map<String, String>? headers, int? timeout = 60}) async
   {
     try
     {

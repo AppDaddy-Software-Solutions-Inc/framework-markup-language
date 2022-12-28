@@ -192,7 +192,7 @@ class HttpModel extends DataSourceModel implements IDataSource
         break;
 
       case Methods.put:
-        response = await Http.put(url!, headers: headers, body: body, timeout: timeout);
+        response = await Http.put(url!, body ?? '', headers: headers, timeout: timeout);
         break;
 
       case Methods.patch:

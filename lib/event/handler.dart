@@ -100,8 +100,9 @@ class EventHandler extends Eval
       functions[S.fromEnum(EventTypes.export)]        = _handleEventExport;
       functions[S.fromEnum(EventTypes.focusnode)]     = _handleEventFocusNode;
       functions[S.fromEnum(EventTypes.keypress)]      = _handleEventKeyPress;
-      functions[S.fromEnum(EventTypes.logoff)]        = _handleEventLogoff;
       functions[S.fromEnum(EventTypes.logon)]         = _handleEventLogon;
+      functions[S.fromEnum(EventTypes.logoff)]        = _handleEventLogoff;
+      functions[S.fromEnum(EventTypes.signin)]        = _handleEventSignin;
       functions[S.fromEnum(EventTypes.open)]          = _handleEventOpen;
       functions[S.fromEnum(EventTypes.replace)]       = _handleEventReplace;
       functions[S.fromEnum(EventTypes.page)]          = _handleEventPage;
@@ -385,7 +386,7 @@ class EventHandler extends Eval
   /// Login attempt
   ///
   /// Sets the user credentials on the client side to generate a secure token and attempts a login to the server side via databroker
-  Future<bool> _handleEventLogon([dynamic username, dynamic password, dynamic brokerId, dynamic provider, dynamic rememberMe, dynamic refresh]) async
+  Future<bool> _handleEventSignin([dynamic provider, dynamic rememberMe, dynamic refresh]) async
   {
     String? token;
     if (!S.isNullOrEmpty(provider))
@@ -393,41 +394,36 @@ class EventHandler extends Eval
       FIREBASE.User? user = await _firebaseLogon(provider,<String>['email', 'profile']);
       if (user != null) token = await user.getIdToken();
     }
-    else
-    {
-      Map<String, String?> claims = Map<String, String?>();
-      claims["email"] = username;
-
-      Jwt jwt = Jwt.encode(password, claims);
-      token = jwt.token;
-    }
     if (token == null) return false;
-    return await _handleLogon(S.toStr(brokerId), token, S.toBool(rememberMe), S.toBool(refresh));
+    return await _Logon(token, S.toBool(rememberMe), S.toBool(refresh));
   }
 
-  Future<bool> _handleLogon(String? sourceId, String jwt, bool? rememberMe, bool? refresh) async
+  Future<bool> _handleEventLogon([dynamic token, dynamic rememberMe, dynamic refresh]) async
   {
-    bool ok = true;
+    return _Logon(token, rememberMe, refresh);
+  }
 
-    // build auth token
-    Jwt token = Jwt(jwt);
-
-    // set system
-    System().jwt = token;
-
-    IDataSource? source;
-    if ((model.scope != null)) source = model.scope!.getDataSource(sourceId);
-    if (source != null) ok = await source.start(refresh: true);
-    if (ok)
+  Future<bool> _Logon(String token, bool? rememberMe, bool? refresh) async
+  {
+    // decode token
+    Jwt jwt = Jwt.decode(token);
+    if (jwt.valid)
     {
-       System().logon(System().jwt);
+      System().logon(jwt);
 
-       // Refresh the Framework
-       if ((ok) && (S.toBool(refresh) != false)) EventManager.of(model)?.broadcastEvent(model,Event(EventTypes.refresh, parameters: null, model: model));
+      // set user values
+      System().logon(System().jwt);
+
+      // refresh the framework
+      if (S.toBool(refresh) != false) EventManager.of(model)?.broadcastEvent(model,Event(EventTypes.refresh, parameters: null, model: model));
+
+      return true;
     }
-    else System().logoff();
-
-    return ok;
+    else
+    {
+      System().logoff();
+      return false;
+    }
   }
 
   /// Logs a user off

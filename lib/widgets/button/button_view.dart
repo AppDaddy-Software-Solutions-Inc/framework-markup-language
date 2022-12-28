@@ -178,7 +178,7 @@ class _ButtonViewState extends State<ButtonView> implements IModelListener
 
 
 
-view = UnconstrainedBox(child:view, );
+    view = UnconstrainedBox(child: view);
 
     // Build the Button Types
     if (wm.buttontype == 'outlined') {

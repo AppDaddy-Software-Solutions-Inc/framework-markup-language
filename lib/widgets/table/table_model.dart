@@ -601,7 +601,7 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
   // export to excel
   Future<bool> export() async
   {
-    var data = Data.fromData(this.data);
+    var data = Data.from(this.data);
 
     // convert to data
     String csv = await data.toCsv();

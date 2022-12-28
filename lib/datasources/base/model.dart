@@ -312,7 +312,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
     root = Xml.attribute(node: xml, tag: 'root');
 
     String? value = Xml.get(node: xml, tag: 'value');
-    if (!S.isNullOrEmpty(value)) onResponse(Data.fromData(value, root: root));
+    if (!S.isNullOrEmpty(value)) onResponse(Data.from(value, root: root));
 
     // custom body defined?
     XmlElement? body = Xml.getChildElement(node: xml, tag: 'body');
@@ -592,7 +592,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
         int index = S.toInt(S.item(arguments, 1)) ?? (this.data != null ? this.data!.length : 0);
         if (jsonOrXml != null)
         {
-          Data? d = Data.fromData(jsonOrXml);
+          Data? d = Data.from(jsonOrXml);
           if (d != null)
           {
             if (data != null)
@@ -602,7 +602,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
               if (d!= null)
               d.forEach((element) => data!.insert(index++, element));
             }
-            else data = Data.fromData(d);
+            else data = Data.from(d);
 
             // notify listeners of data change
             notify();

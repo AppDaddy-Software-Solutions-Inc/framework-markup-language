@@ -5,7 +5,22 @@ import 'package:fml/observable/scope.dart';
 
 class Binding
 {
-  static final RegExp reg = RegExp("\\{(.*?)\\}");
+  // This regex procures bindings from within FML/XML/JSON/Text
+  // It allows for bindings using alphanumeric in any combination with `.` `:` `_` `-`
+  // its not case sensitive and allows for spaces around the opening bracket `{`
+  // and around the closing bracket `}` but not anywhere within the binding itself
+  // See it in action: https://regex101.com/r/nEPb2T/2
+
+  static final RegExp reg = RegExp("\\{(\\s*?\\S[a-zA-Z0-9.:_-]*?\\s*?)\\}");
+  // Explanation:
+  // `\\{` => starts with {
+  // `(` => start of Matching Group
+  // `\\s*?` => any number of spaces
+  // `\\S` => must not contain only whitespace
+  // `[a-zA-Z0-9.:_-]*?` => character match alphanumeric (case-insensitive), [., :, _, -] any number of times
+  // `\\s*?` => any number of spaces
+  // `)` => end of Matching Group
+  // `\\}` => ends with }
 
   //////////////////////////////////////////////
   /**                                        **/

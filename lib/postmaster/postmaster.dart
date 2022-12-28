@@ -155,7 +155,7 @@ class PostMaster
           this.pending = pending;
 
           // Post the Data 
-          HttpResponse response = await Http.post(post.url!, headers: post.headers, body: post.body);
+          HttpResponse response = await Http.post(post.url!, post.body ?? '', headers: post.headers);
 
           // Error? 
           post.attempts = (post.attempts ?? 0) + 1;

@@ -14,7 +14,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/helper_barrel.dart';
 
-enum Methods {get, put, post, delete}
+enum Methods {get, put, post, patch, delete}
 enum Types   {background, foreground, either}
 
 class HttpModel extends DataSourceModel implements IDataSource
@@ -188,15 +188,19 @@ class HttpModel extends DataSourceModel implements IDataSource
         break;
 
       case Methods.post:
-        response = await Http.post(url!, headers: headers, body: body, timeout: timeout);
+        response = await Http.post(url!, body ?? '', headers: headers, timeout: timeout);
         break;
 
       case Methods.put:
         response = await Http.put(url!, headers: headers, body: body, timeout: timeout);
         break;
 
+      case Methods.patch:
+        response = await Http.patch(url!, body, headers: headers, timeout: timeout);
+        break;
+
       case Methods.delete:
-        response = await Http.delete(url!, headers: headers, body: body, timeout: timeout);
+        response = await Http.delete(url!, headers: headers, timeout: timeout);
         break;
     }
 

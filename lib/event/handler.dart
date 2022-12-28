@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart' as FIREBASE;
 import 'package:firebase_core/firebase_core.dart' as FIREBASE;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/dialog/service.dart';
 import 'package:fml/eval/evaluator.dart';
 import 'package:fml/eval/expressions.dart';
@@ -100,9 +99,9 @@ class EventHandler extends Eval
       functions[S.fromEnum(EventTypes.export)]        = _handleEventExport;
       functions[S.fromEnum(EventTypes.focusnode)]     = _handleEventFocusNode;
       functions[S.fromEnum(EventTypes.keypress)]      = _handleEventKeyPress;
-      functions[S.fromEnum(EventTypes.logon)]         = _handleEventLogon;
+      functions[S.fromEnum(EventTypes.signInWithJwt)] = _handleEventSignInWithJwt;
       functions[S.fromEnum(EventTypes.logoff)]        = _handleEventLogoff;
-      functions[S.fromEnum(EventTypes.signin)]        = _handleEventSignin;
+      functions[S.fromEnum(EventTypes.signInWithFirebase)] = _handleEventSignInWithFirebase;
       functions[S.fromEnum(EventTypes.open)]          = _handleEventOpen;
       functions[S.fromEnum(EventTypes.replace)]       = _handleEventReplace;
       functions[S.fromEnum(EventTypes.page)]          = _handleEventPage;
@@ -386,7 +385,7 @@ class EventHandler extends Eval
   /// Login attempt
   ///
   /// Sets the user credentials on the client side to generate a secure token and attempts a login to the server side via databroker
-  Future<bool> _handleEventSignin([dynamic provider, dynamic rememberMe, dynamic refresh]) async
+  Future<bool> _handleEventSignInWithFirebase([dynamic provider, dynamic rememberMe, dynamic refresh]) async
   {
     String? token;
     if (!S.isNullOrEmpty(provider))
@@ -395,15 +394,12 @@ class EventHandler extends Eval
       if (user != null) token = await user.getIdToken();
     }
     if (token == null) return false;
-    return await _Logon(token, S.toBool(rememberMe), S.toBool(refresh));
+    return await _logon(token, S.toBool(rememberMe), S.toBool(refresh));
   }
 
-  Future<bool> _handleEventLogon([dynamic token, dynamic rememberMe, dynamic refresh]) async
-  {
-    return _Logon(token, rememberMe, refresh);
-  }
+  Future<bool> _handleEventSignInWithJwt([dynamic token, dynamic rememberMe, dynamic refresh]) async => _logon(token, rememberMe, refresh);
 
-  Future<bool> _Logon(String token, bool? rememberMe, bool? refresh) async
+  Future<bool> _logon(String token, bool? rememberMe, bool? refresh) async
   {
     // decode token
     Jwt jwt = Jwt.decode(token);

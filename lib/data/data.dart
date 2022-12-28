@@ -35,7 +35,7 @@ class Data with ListMixin<dynamic>
   @override
   int get length => _list.length;
 
-  static Data fromData(dynamic value, {String? root})
+  static Data from(dynamic value, {String? root})
   {
     Data? data;
 

@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
-import 'package:fml/datasources/eventsource/lib/src/channel.dart';
-import 'package:fml/datasources/eventsource/lib/src/transformer.dart';
+import 'package:fml/datasources/sse/lib/src/channel.dart';
+import 'package:fml/datasources/sse/lib/src/transformer.dart';
 import 'package:http/http.dart';
 import 'package:stream_channel/stream_channel.dart';
 
@@ -41,7 +41,7 @@ class IOSseChannel extends StreamChannelMixin implements SseChannel
     {
       if (response.statusCode == 200)
       {
-        response.stream.transform(EventSourceTransformer()).listen((event)
+        response.stream.transform(SseTransformer()).listen((event)
         {
           if (!_controller.isClosed) _controller.sink.add(event.data);
         });

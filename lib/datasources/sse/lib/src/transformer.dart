@@ -3,10 +3,10 @@ import 'dart:convert';
 
 typedef RetryIndicator = void Function(Duration retry);
 
-class EventSourceTransformer implements StreamTransformer<List<int>, Event> {
+class SseTransformer implements StreamTransformer<List<int>, Event> {
   RetryIndicator? retryIndicator;
 
-  EventSourceTransformer({this.retryIndicator});
+  SseTransformer({this.retryIndicator});
 
   @override
   Stream<Event> bind(Stream<List<int>> stream) {

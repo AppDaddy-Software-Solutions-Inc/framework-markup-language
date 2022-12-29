@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'dart:html';
-import 'package:fml/datasources/eventsource/lib/src/channel.dart';
+import 'package:fml/datasources/sse/lib/src/channel.dart';
 import 'package:stream_channel/stream_channel.dart';
 
 class HtmlSseChannel extends StreamChannelMixin implements SseChannel

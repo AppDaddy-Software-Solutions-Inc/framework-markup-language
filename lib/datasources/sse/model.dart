@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/eventsource/lib/src/channel.dart';
+import 'package:fml/datasources/sse/lib/src/channel.dart';
 import 'package:fml/datasources/http/model.dart';
 import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/log/manager.dart';
@@ -11,7 +11,7 @@ import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:xml/xml.dart';
 import 'package:fml/helper/helper_barrel.dart';
 
-class EventSourceModel extends HttpModel implements IDataSource
+class SseModel extends HttpModel implements IDataSource
 {
   late final SseChannel channel;
 
@@ -31,22 +31,22 @@ class EventSourceModel extends HttpModel implements IDataSource
   }
   bool get connected => _connected?.get() ?? false;
   
-  EventSourceModel(WidgetModel parent, String? id) : super(parent, id)
+  SseModel(WidgetModel parent, String? id) : super(parent, id)
   {
     connected = false;
   }
 
-  static EventSourceModel? fromXml(WidgetModel parent, XmlElement xml)
+  static SseModel? fromXml(WidgetModel parent, XmlElement xml)
   {
-    EventSourceModel? model;
+    SseModel? model;
     try
     {
-      model = EventSourceModel(parent, Xml.get(node: xml, tag: 'id'));
+      model = SseModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
     catch(e)
     {
-      Log().exception(e,  caller: 'EventSourceModel');
+      Log().exception(e,  caller: 'SseModel');
       model = null;
     }
     return model;
@@ -86,7 +86,7 @@ class EventSourceModel extends HttpModel implements IDataSource
     catch(e)
     {
       connected = false;
-      Log().error('Error Connecting to $url. Error is $e',  caller: 'EventSourceModel');
+      Log().error('Error Connecting to $url. Error is $e',  caller: 'SseModel');
     }
 
     busy = false;
@@ -111,21 +111,21 @@ class EventSourceModel extends HttpModel implements IDataSource
 
   void _onData(var msg)
   {
-    Log().debug('Received message >> $msg', caller: 'EventSourceModel');
+    Log().debug('Received message >> $msg', caller: 'SseModel');
     Data data = Data.from(msg);
     onResponse(data);
   }
 
   _onError(var msg)
   {
-    Log().debug('Error is $msg', caller: 'EventSourceModel');
+    Log().debug('Error is $msg', caller: 'SseModel');
     Data data = Data.from(msg);
     onException(data);
   }
 
   _onDone()
   {
-    Log().debug('Done', caller: 'EventSourceModel');
+    Log().debug('Done', caller: 'SseModel');
     connected = false;
   }
 

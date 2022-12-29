@@ -362,14 +362,14 @@ class CameraViewState extends State<CameraView>
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     if (widget.model.constrained) {
-      Map<String, double?> constraints = widget.model.constraints;
+      var constraints = widget.model.getConstraints();
       view = ConstrainedBox(
           child: view,
           constraints: BoxConstraints(
-              minHeight: constraints['minheight']!,
-              maxHeight: constraints['maxheight']!,
-              minWidth: constraints['minwidth']!,
-              maxWidth: constraints['maxwidth']!));
+              minHeight: constraints.minHeight!,
+              maxHeight: constraints.maxHeight!,
+              minWidth: constraints.minWidth!,
+              maxWidth: constraints.maxWidth!));
     } else
       view = Container(child: view, width: width, height: height);
 

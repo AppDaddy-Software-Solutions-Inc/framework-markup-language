@@ -87,17 +87,11 @@ class _RowViewState extends State<RowView> implements IModelListener {
     WrapAlignment? mainWrapAlignment = align['mainWrapAlignment'];
     WrapCrossAlignment? crossWrapAlignment = align['crossWrapAlignment'];
 
-    ///////////////
-    /* Safeguard */
-    ///////////////
-    var mainAxisSize =
-        widget.model.shrinkwrap == true || widget.model.expand == false
-            ? MainAxisSize.min
-            : MainAxisSize.max;
-    if ((mainAxisSize == MainAxisSize.max) &&
-        (!widget.model.constrained) &&
-        (constraints.maxWidth == double.infinity))
-      mainAxisSize = MainAxisSize.min;
+    // set main axis size
+    var mainAxisSize = widget.model.shrinkwrap == true || widget.model.expand == false ? MainAxisSize.min : MainAxisSize.max;
+
+    /// safeguard - don't allow infinite size
+    if (mainAxisSize == MainAxisSize.max && constraints.maxHeight == double.infinity) mainAxisSize = MainAxisSize.min;
 
     // check if wrap is true,and return the wrap widgets children.
     Widget view;
@@ -139,18 +133,15 @@ class _RowViewState extends State<RowView> implements IModelListener {
               mainAxisAlignment: mainAlignment!,
               mainAxisSize: mainAxisSize));
 
-    //////////////////
-    /* Constrained? */
-    //////////////////
-    if (widget.model.constrained) {
-      Map<String, double?> constraints = widget.model.constraints;
-      view = ConstrainedBox(
-          child: view,
-          constraints: BoxConstraints(
-              minHeight: constraints['minheight']!,
-              maxHeight: constraints['maxheight']!,
-              minWidth: constraints['minwidth']!,
-              maxWidth: constraints['maxwidth']!));
+    // Constrained?
+    if (widget.model.constrained)
+    {
+      var constraints = widget.model.getConstraints();
+      double minWidth  = widget.model.constrainedHorizontally ? constraints.minWidth  ?? 0.0 : 0.0;
+      double maxWidth  = widget.model.constrainedHorizontally ? constraints.maxWidth  ?? double.infinity : double.infinity;
+      double minHeight = widget.model.constrainedVertically   ? constraints.minHeight ?? 0.0 : 0.0;
+      double maxHeight = widget.model.constrainedVertically   ? constraints.maxHeight ?? double.infinity : double.infinity;
+      view = ConstrainedBox(child: view, constraints: BoxConstraints(minHeight: minHeight, maxHeight: maxHeight, minWidth: minWidth, maxWidth: maxWidth));
     }
 
     return view;

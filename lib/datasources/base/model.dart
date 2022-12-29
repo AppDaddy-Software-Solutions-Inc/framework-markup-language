@@ -5,7 +5,7 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/datasources/iDataSourceListener.dart';
 import 'package:fml/hive/data.dart' as HIVE;
-import 'package:fml/datasources/transforms/model.dart' as TRANSFORM;
+import 'package:fml/datasources/transforms/transform_model.dart' as TRANSFORM;
 import 'package:fml/datasources/data/model.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
@@ -400,20 +400,17 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
 
   Future<bool> onResponse(Data data, {int? code, String? message}) async
   {
+    // set busy
+    busy = true;
+
     // max records
     int maxrecords = this.maxrecords ?? 10000;
     if (maxrecords < 0) maxrecords = 0;
 
-    // apply transforms
+    // apply data transforms
     if (children != null)
       for (WidgetModel model in this.children!)
-        if (model is TRANSFORM.IDataTransform) (model as TRANSFORM.IDataTransform).apply(data);
-
-    // apply transforms
-    if (datasources != null)
-      for (IDataSource model in this.datasources!)
-        if (model is DataModel)
-          await model.onResponse(data);
+        if (model is TRANSFORM.IDataTransform) await (model as TRANSFORM.IDataTransform).apply(data);
 
     // type - default is replace
     ListTypes? type = S.toEnum(this.type, ListTypes.values);
@@ -461,12 +458,9 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
     return await onSuccess(data, code, message);
   }
 
-  Future<bool> onSuccess(Data? data, int? code, String? message) async
+  Future<bool> onSuccess(Data data, int? code, String? message) async
   {
     bool ok = true;
-
-    // busy
-    busy = false;
 
     // set status
     status = "success";
@@ -493,16 +487,22 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
       await handler.execute(_onsuccess);
     }
 
+    // notify nested data sources
+    if (datasources != null)
+      for (IDataSource model in this.datasources!)
+        if (model is DataModel) model.onResponse(data.clone());
+
     // requery?
     if (((autoquery ?? 0) > 0) && (timer == null) && (!disposed)) timer = Timer.periodic(Duration(seconds: autoquery!), onTimer);
+
+    // busy
+    busy = false;
 
     return ok;
   }
 
-  Future<bool> onException(Data? data, {int? code, String? message}) async {
-    // busy
-    busy = false;
-
+  Future<bool> onException(Data data, {int? code, String? message}) async
+  {
     // set data
     this.data = data;
 
@@ -531,6 +531,9 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
 
     // notify listeners
     for (IDataSourceListener listener in listeners) listener.onDataSourceException(this, Exception(statusmessage));
+
+    // busy
+    busy = false;
 
     return false;
   }

@@ -101,6 +101,7 @@ class _SplitViewState extends State<SplitView> implements IModelListener
 
     if (_maxWidth == null)                  _maxWidth = widget.model.maxwidth! - _dividerWidth;
     if (_maxWidth != widget.model.maxwidth) _maxWidth = widget.model.maxwidth! - _dividerWidth;
+    if (_maxWidth != null && _maxWidth! < 0) _maxWidth = 0;
 
     ///////////
     /* Views */

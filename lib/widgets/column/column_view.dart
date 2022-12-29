@@ -97,26 +97,15 @@ return LayoutBuilder(builder: builder);
     WrapCrossAlignment? crossWrapAlignment = align['crossWrapAlignment'];
     //Alignment aligned = align['aligned'];
 
-    ///////////////
-    /* Safeguard */
-    ///////////////
-    var mainAxisSize =
-        widget.model.shrinkwrap == true || widget.model.expand == false
-            ? MainAxisSize.min
-            : MainAxisSize.max;
-    if ((mainAxisSize == MainAxisSize.max) &&
-        (!widget.model.constrained) &&
-        (constraints.maxHeight == double.infinity))
-      mainAxisSize = MainAxisSize.min;
+    // set main axis size
+    var mainAxisSize = widget.model.shrinkwrap == true || widget.model.expand == false ? MainAxisSize.min : MainAxisSize.max;
 
-    //////////
-    /* View */
-    //////////
+    /// safeguard - don't allow infinite size
+    if (mainAxisSize == MainAxisSize.max && constraints.maxHeight == double.infinity) mainAxisSize = MainAxisSize.min;
+
     Widget view;
 
-    ////////////////////
-    /* Padding values */
-    ////////////////////
+    // paddings
     EdgeInsets insets = EdgeInsets.only();
     if (widget.model.paddings > 0)
     {
@@ -132,7 +121,6 @@ return LayoutBuilder(builder: builder);
      // pad sides top, right, bottom
      else if (widget.model.paddings == 4) insets = EdgeInsets.only(top: widget.model.padding, right: widget.model.padding2, bottom: widget.model.padding3, left: widget.model.padding4);
     }
-
     if (widget.model.wrap == true)
       view = Padding( padding: insets, child: Wrap(
           children: children,
@@ -147,18 +135,15 @@ return LayoutBuilder(builder: builder);
           crossAxisAlignment: crossAlignment!,
           mainAxisSize: mainAxisSize));
 
-    //////////////////
-    /* Constrained? */
-    //////////////////
-    if (widget.model.constrained) {
-      Map<String, double?> constraints = widget.model.constraints;
-      view = ConstrainedBox(
-          child: view,
-          constraints: BoxConstraints(
-              minHeight: constraints['minheight']!,
-              maxHeight: constraints['maxheight']!,
-              minWidth: constraints['minwidth']!,
-              maxWidth: constraints['maxwidth']!));
+    // Constrained?
+    if (widget.model.constrained)
+    {
+      var constraints = widget.model.getConstraints();
+      double minWidth  = widget.model.constrainedHorizontally ? constraints.minWidth  ?? 0.0 : 0.0;
+      double maxWidth  = widget.model.constrainedHorizontally ? constraints.maxWidth  ?? double.infinity : double.infinity;
+      double minHeight = widget.model.constrainedVertically   ? constraints.minHeight ?? 0.0 : 0.0;
+      double maxHeight = widget.model.constrainedVertically   ? constraints.maxHeight ?? double.infinity : double.infinity;
+      view = ConstrainedBox(child: view, constraints: BoxConstraints(minHeight: minHeight, maxHeight: maxHeight, minWidth: minWidth, maxWidth: maxWidth));
     }
 
     return view;

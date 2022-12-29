@@ -4,7 +4,6 @@ import 'dart:html' as HTML;
 import 'dart:js' as JAVASCRIPT;
 import 'dart:ui' as UI;
 import 'package:flutter/material.dart';
-
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:uuid/uuid.dart';
 import '../../log/manager.dart';
@@ -70,14 +69,14 @@ class _InlineFrameViewState extends State<InlineFrameView>
     /* Constrained? */
     //////////////////
     if (model.constrained) {
-      Map<String, double?> constraints = model.constraints;
+      var constraints = model.getConstraints();
       view = ConstrainedBox(
           child: view,
           constraints: BoxConstraints(
-              minHeight: constraints['minheight']!,
-              maxHeight: constraints['maxheight']!,
-              minWidth: constraints['minwidth']!,
-              maxWidth: constraints['maxwidth']!));
+              minHeight: constraints.minHeight!,
+              maxHeight: constraints.maxHeight!,
+              minWidth: constraints.minWidth!,
+              maxWidth: constraints.maxWidth!));
     } else
       view = Container(
           child: view,

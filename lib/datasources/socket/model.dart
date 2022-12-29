@@ -203,8 +203,8 @@ class SocketModel extends DataSourceModel implements IDataSource, WEBSOCKET.IWeb
     }
 
     if (ok)
-         await onSuccess(this.data, HttpStatus.ok, websocket!.socket.closeReason);
-    else await onException(this.data, code: websocket!.socket.closeCode, message: websocket!.socket.closeReason);
+         await onSuccess(this.data ?? Data(), HttpStatus.ok, websocket!.socket.closeReason);
+    else await onException(this.data ?? Data(), code: websocket!.socket.closeCode, message: websocket!.socket.closeReason);
 
     return ok;
   }

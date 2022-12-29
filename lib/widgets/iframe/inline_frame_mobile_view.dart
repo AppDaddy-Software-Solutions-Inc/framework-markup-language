@@ -2,7 +2,6 @@
 import 'dart:convert';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/iframe/inline_frame_model.dart' as IFRAME;
-
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -85,10 +84,10 @@ class _InlineFrameViewState extends State<InlineFrameView>
     //////////////////
     if (model.constrained)
     {
-      Map<String,double?> constraints = model.constraints;
+      var constraints = model.getConstraints();
       view = ConstrainedBox(child: view, constraints: BoxConstraints(
-          minHeight: constraints['minheight']!, maxHeight: constraints['maxheight']!,
-          minWidth: constraints['minwidth']!, maxWidth: constraints['maxwidth']!));
+          minHeight: constraints.minHeight!, maxHeight: constraints.maxHeight!,
+          minWidth: constraints.minWidth!, maxWidth: constraints.maxWidth!));
     }
     else view = Container(child: view, width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.height);
     return view;

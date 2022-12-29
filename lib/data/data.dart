@@ -35,6 +35,43 @@ class Data with ListMixin<dynamic>
   @override
   int get length => _list.length;
 
+  // shallow copy clone of the list
+  Data clone()
+  {
+    Data clone = Data();
+    this.forEach((element)
+    {
+           if (element is List) clone.add(_cloneList(element));
+      else if (element is Map)  clone.add(_cloneMap(element));
+      else clone.add(element);
+    });
+    return clone;
+  }
+
+  List _cloneList(List list)
+  {
+    List clone = [];
+    list.forEach((element)
+    {
+           if (element is List) clone.add(_cloneList(element));
+      else if (element is Map)  clone.add(_cloneMap(element));
+      else clone.add(element);
+    });
+    return clone;
+  }
+
+  Map _cloneMap(Map map)
+  {
+    Map clone = {};
+    map.forEach((key, value)
+    {
+           if (value is List) clone[key] = _cloneList(value);
+      else if (value is Map)  clone[key] = _cloneMap(value);
+      else clone[key] = value;
+    });
+    return clone;
+  }
+
   static Data from(dynamic value, {String? root})
   {
     Data? data;

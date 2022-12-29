@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/widgets/iframe/inline_frame_model.dart' as IFRAME;
-
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:flutter/material.dart';
 import 'inline_frame_view.dart' as IFRAME;
@@ -66,10 +65,10 @@ class _InlineFrameViewState extends State<InlineFrameView>
     //////////////////
     if (widget.model.constrained)
     {
-      Map<String,double?> constraints = widget.model.constraints;
+      var constraints = widget.model.getConstraints();
       view = ConstrainedBox(child: view, constraints: BoxConstraints(
-          minHeight: constraints['minheight']!, maxHeight: constraints['maxheight']!,
-          minWidth: constraints['minwidth']!, maxWidth: constraints['maxwidth']!));
+          minHeight: constraints.minHeight!, maxHeight: constraints.maxHeight!,
+          minWidth: constraints.minWidth!, maxWidth: constraints.maxWidth!));
     }
 
     return view;

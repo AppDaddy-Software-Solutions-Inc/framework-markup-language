@@ -151,13 +151,13 @@ class _ButtonViewState extends State<ButtonView> implements IModelListener
         return 3.0;
       return 5.0;
     }) : null;
-    Map<String, double?> constr = widget.model.constraints;
+    var constr = widget.model.getConstraints();
 
-    if(constr['minwidth'] == null || constr['minwidth'] == 0.0) {constr['minwidth'] = (S.isNullOrEmpty(wm.label)) ? 36 : 72.0;} //if the button should size itself, the min width needs to be set if not defined.
+    if(constr.minWidth == null || constr.minWidth == 0.0) {constr.minWidth = (S.isNullOrEmpty(wm.label)) ? 36 : 72.0;} //if the button should size itself, the min width needs to be set if not defined.
 
     var style = ButtonStyle(
       minimumSize: MaterialStateProperty.all(
-          Size( constr['minwidth'] ?? 72, (constr['minheight'] ?? 0) + 36)), //add 36 to the constraint as the width is offset by 40
+          Size( constr.minWidth ?? 72, (constr.minHeight?? 0) + 36)), //add 36 to the constraint as the width is offset by 40
       foregroundColor: foregroundColorStyle,
       backgroundColor: backgroundColorStyle,
       // overlayColor: overlayColorStyle,
@@ -175,9 +175,7 @@ class _ButtonViewState extends State<ButtonView> implements IModelListener
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [...children],));
-
-
-
+      
     view = UnconstrainedBox(child: view);
 
     // Build the Button Types
@@ -190,7 +188,7 @@ class _ButtonViewState extends State<ButtonView> implements IModelListener
       // I had to override the MaterialStateProperties on ElevatedButton because the theme didn't play well with it
       view = ElevatedButton(
           style: ElevatedButton.styleFrom(
-              minimumSize:  Size(constr['minwidth'] ?? 72, (constr['minheight'] ?? 0) + 40), //add 40 to the constraint as the width is offset by 40
+              minimumSize:  Size(constr.minWidth ?? 72, (constr.minHeight?? 0) + 40), //add 40 to the constraint as the width is offset by 40
               backgroundColor: wm.color ?? Theme.of(context).colorScheme.primary,
               foregroundColor: Theme.of(context).colorScheme.onPrimary,
               disabledForegroundColor: Theme.of(context).colorScheme.onSurface,
@@ -214,27 +212,26 @@ class _ButtonViewState extends State<ButtonView> implements IModelListener
     }
 
     //unsure how to make this work with maxwidth/maxheight, as it should yet constraints always come in. What should it do? same with minwidth/minheight...
-
     if (widget.model.height != null && widget.model.width != null ) {
       view = ConstrainedBox(
           child: Container(child:view) ,
           constraints: BoxConstraints(
-              minHeight: constr['minheight']!,
-              maxHeight: constr['maxheight']!,
-              minWidth: constr['minwidth']!,
-              maxWidth: constr['maxwidth']!));
+              minHeight: constr.minHeight!,
+              maxHeight: constr.maxHeight!,
+              minWidth: constr.minWidth!,
+              maxWidth: constr.maxWidth!));
     } else if (widget.model.width != null) {
       view = UnconstrainedBox(
         child: LimitedBox(
           child: view,
-          maxWidth: constr['maxwidth']!,
+          maxWidth: constr.maxWidth!,
         ),
       );
     } else if (widget.model.height != null) {
       view = UnconstrainedBox(
         child: LimitedBox(
           child: view,
-          maxHeight: constr['maxheight']!,
+          maxHeight: constr.maxHeight!,
         ),
       );
     }

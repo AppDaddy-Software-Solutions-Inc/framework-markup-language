@@ -274,7 +274,7 @@ class GridModel extends DecoratedWidgetModel implements IViewableWidget, IScroll
     busy = true;
 
     TRANSFORM.Sort sort = TRANSFORM.Sort(null, field: field, type: type, ascending: ascending);
-    sort.apply(data);
+    await sort.apply(data);
 
     busy = false;
   }

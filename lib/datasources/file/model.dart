@@ -6,7 +6,6 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/datasources/detectors/iDetector.dart' ;
 import 'package:fml/datasources/file/file.dart' as FILE;
-import 'package:fml/datasources/transforms/model.dart' as TRANSFORM;
 import 'package:xml/xml.dart';
 import 'package:fml/helper/helper_barrel.dart';
 
@@ -14,9 +13,6 @@ class FileModel extends DataSourceModel implements IDataSource
 {
   // detectors
   List<IDetector>? detectors;
-
-  // image transforms
-  List<TRANSFORM.IImageTransform> itransforms = [];
 
   FileModel(WidgetModel parent, String? id) : super(parent, id);
 
@@ -52,11 +48,6 @@ class FileModel extends DataSourceModel implements IDataSource
       if (detectors == null) detectors = [];
       detectors!.add(source as IDetector);
     }
-
-    // get image transforms
-    if (children != null)
-      for (WidgetModel model in this.children!)
-        if (model is TRANSFORM.IImageTransform) itransforms.add(model as TRANSFORM.IImageTransform);
   }
 
   Future<bool> onFile(FILE.File file) async

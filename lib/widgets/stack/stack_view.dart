@@ -82,15 +82,15 @@ class _StackViewState extends State<StackView>
         }
       });
     if (children.isEmpty) children.add(Container());
-    Map<String, double?> constr = widget.model.constraints;
+    var constr = widget.model.getConstraints();
     if (widget.model.expand)
       children.add(ConstrainedBox(
           child: Container(),
           constraints: BoxConstraints(
-              minHeight: constr['minheight']!,
-              maxHeight: constr['maxheight']!,
-              minWidth: constr['minwidth']!,
-              maxWidth: constr['maxwidth']!)));
+              minHeight: constr.minHeight!,
+              maxHeight: constr.maxHeight!,
+              minWidth: constr.minWidth!,
+              maxWidth: constr.maxWidth!)));
 
     Map<String, dynamic> align = AlignmentHelper.alignWidgetAxis(
         children.length,
@@ -141,10 +141,10 @@ class _StackViewState extends State<StackView>
       view = ConstrainedBox(
           child: view,
           constraints: BoxConstraints(
-              minHeight: constr['minheight']!,
-              maxHeight: constr['maxheight']!,
-              minWidth: constr['minwidth']!,
-              maxWidth: constr['maxwidth']!));
+              minHeight: constr.minHeight!,
+              maxHeight: constr.maxHeight!,
+              minWidth: constr.minWidth!,
+              maxWidth: constr.maxWidth!));
     }
 
     return view;

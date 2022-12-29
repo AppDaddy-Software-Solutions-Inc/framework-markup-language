@@ -1,27 +1,33 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
-import 'package:image/image.dart' as IMAGE;
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/helper_barrel.dart';
 
-enum TransformTypes {calc, distinct, eval, filter, format, pivot, sort}
-
 abstract class IDataTransform
 {
   bool? get enabled;
-  void apply(List? list);
-}
-
-abstract class IImageTransform
-{
-  bool? get enabled;
-  IMAGE.Image? apply(IMAGE.Image? image);
+  Future<void> apply(List? list);
 }
 
 class TransformModel extends WidgetModel
 {
+  /// source
+  StringObservable? _source;
+  set source (dynamic v)
+  {
+    if (_source != null)
+    {
+      _source!.set(v);
+    }
+    else if (v != null)
+    {
+      _source = StringObservable(Binding.toKey(id, 'source'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get source => _source?.get();
+
   // enabled
   BooleanObservable? _enabled;
   set enabled(dynamic v)
@@ -65,5 +71,6 @@ class TransformModel extends WidgetModel
 
     // properties
     enabled = Xml.get(node: xml, tag: 'enabled');
+    source  = Xml.get(node: xml, tag: 'source');
   }
 }

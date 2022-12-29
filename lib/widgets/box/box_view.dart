@@ -408,7 +408,7 @@ class _BoxViewState extends State<BoxView> implements IModelListener {
 
     bool expand = widget.model.expand;
 
-    Map<String, double?> constr = widget.model.constraints;
+    var constr = widget.model.getConstraints();
 
     if (expand == false) {
       if (widget.model.height != null && widget.model.width != null)
@@ -421,14 +421,14 @@ class _BoxViewState extends State<BoxView> implements IModelListener {
         view = UnconstrainedBox(
           child: LimitedBox(
             child: view,
-            maxWidth: constr['maxwidth']!,
+            maxWidth: constr.maxWidth!,
           ),
         );
       } else if (widget.model.height != null) {
         view = UnconstrainedBox(
           child: LimitedBox(
             child: view,
-            maxHeight: constr['maxheight']!,
+            maxHeight: constr.maxHeight!,
           ),
         );
       } else {
@@ -440,10 +440,10 @@ class _BoxViewState extends State<BoxView> implements IModelListener {
       view = ConstrainedBox(
           child: view,
           constraints: BoxConstraints(
-              minHeight: constr['minheight']!,
-              maxHeight: constr['maxheight']!,
-              minWidth: constr['minwidth']!,
-              maxWidth: constr['maxwidth']!));
+              minHeight: constr.minHeight!,
+              maxHeight: constr.maxHeight!,
+              minWidth: constr.minWidth!,
+              maxWidth: constr.maxWidth!));
     }
 
     return view;

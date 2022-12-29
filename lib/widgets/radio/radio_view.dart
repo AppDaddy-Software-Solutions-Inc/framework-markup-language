@@ -177,7 +177,7 @@ return LayoutBuilder(builder: builder);
     // if (widget.model.constrained)
     // {
     //   Map<String,double> constraints = widget.model.constraints;
-    //   view = ConstrainedBox(child: view, constraints: BoxConstraints(minHeight: constraints['minheight'], maxHeight: constraints['maxheight'], minWidth: constraints['minwidth'], maxWidth: constraints['maxwidth']));
+    //   view = ConstrainedBox(child: view, constraints: BoxConstraints(minHeight: constraints.minHeight, maxHeight: constraints.maxHeight, minWidth: constraints.minWidth, maxWidth: constraints.maxWidth));
     // }
 
     return view;

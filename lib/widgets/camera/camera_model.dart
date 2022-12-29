@@ -364,30 +364,14 @@ class CameraModel extends CAMERA.CameraImageModel implements IViewableWidget
 
     IMAGE.Image? image;
 
-    bool transformed = false;
-
     //  image is mirrored. this is a stop gap measure. should be a transform
     if ((direction ?? "") == S.fromEnum(CameraLensDirection.front))
     {
       image = IMAGE.decodeJpg(await file.readAsBytes());
-      transformed = true;
       image = IMAGE.flipHorizontal(image!);
-    }
 
-    for (var transform in itransforms)
-    if (transform.enabled ?? false)
-    {
-      // decode from jpg
-      if (!transformed) image = IMAGE.decodeJpg(await file.readAsBytes());
-      transformed = true;
-      image = transform.apply(image);
-    }
-
-    // image has been transformed?
-    if (transformed)
-    {
       // encode back to jpg
-      var bytes = IMAGE.encodeJpg(image!);
+      var bytes = IMAGE.encodeJpg(image);
 
       var name = basename(S.isNullOrEmpty(file.name) ? "${Uuid().v4().toString()}.jpg" : file.name);
       var uri  = UriData.fromBytes(bytes, mimeType: S.mimetype(name));

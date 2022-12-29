@@ -4,12 +4,9 @@ import 'dart:html' as HTML;
 import 'dart:ui';
 import 'package:fml/datasources/detectors/detectable/detectable.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/system.dart';
 import 'filepicker_view.dart' as ABSTRACT;
 import 'package:fml/datasources/file/file.dart' as FILE;
-import 'package:fml/datasources/transforms/model.dart' as TRANSFORM;
 import 'package:fml/datasources/detectors/iDetector.dart' ;
-import 'package:image/image.dart' as IMAGE;
 
 FilePickerView create({String? accept}) => FilePickerView(accept: accept);
 
@@ -20,8 +17,7 @@ class FilePickerView implements ABSTRACT.FilePicker {
     this.accept = accept;
   }
 
-  Future<FILE.File?> launchPicker(List<IDetector>? detectors,
-      List<TRANSFORM.IImageTransform> transforms) async {
+  Future<FILE.File?> launchPicker(List<IDetector>? detectors) async {
     final completer = Completer();
     bool hasSelectedFile = false;
 
@@ -54,8 +50,10 @@ class FilePickerView implements ABSTRACT.FilePicker {
       //////////////////////
       /* On Picker Change */
       //////////////////////
-      picker.onChange.listen((e) async {
-        if (picker.files!.isNotEmpty) {
+      picker.onChange.listen((e) async
+      {
+        if (picker.files!.isNotEmpty)
+        {
           hasSelectedFile = true;
 
           // set file
@@ -66,70 +64,27 @@ class FilePickerView implements ABSTRACT.FilePicker {
           int? size = blob.size;
           var file = FILE.File(blob, url, name, type, size);
 
-          // apply image transforms
-          if (
-              (transforms.length > 0)) {
-            IMAGE.Image? image;
-
-            IMAGE.Decoder? decoder;
-            if (type.endsWith("jpg")) decoder = IMAGE.JpegDecoder();
-            if (type.endsWith("jpeg")) decoder = IMAGE.JpegDecoder();
-            if (type.endsWith("png")) decoder = IMAGE.PngDecoder();
-            if (type.endsWith("gif")) decoder = IMAGE.GifDecoder();
-            if (decoder != null) {
-              try
-              {
-                var bytes = await file.read() as List<int>;
-                image = decoder.decodeImage(bytes);
-              }
-              catch (e)
-              {
-                Log().debug("Error detecting image in bytes. Error is $e");
-                System.toast("Error decoding image $e", duration: 10);
-                image = null;
-              }
-
-              for (var transform in transforms) {
-                if ((image != null) && (transform.enabled == true))
-                  image = transform.apply(image);
-              }
-
-              List<int>? bytes;
-              if (image != null) {
-                if (decoder is IMAGE.PngDecoder) bytes = IMAGE.encodePng(image);
-                if (decoder is IMAGE.JpegDecoder)
-                  bytes = IMAGE.encodeJpg(image);
-                if (decoder is IMAGE.GifDecoder) bytes = IMAGE.encodeGif(image);
-              }
-
-              if (bytes != null) {
-                var uri = UriData.fromBytes(bytes, mimeType: type);
-                var url = uri.toString();
-                var size = bytes.length;
-                file = FILE.File(uri, url, name, type, size);
-              }
-            }
-          }
-
-          // detect in image
-          if ((detectors != null) && (type.startsWith("image"))) {
+          // process detectors
+          if ((detectors != null) && (type.startsWith("image")))
+          {
             // read the file
             await file.read();
 
             // convert to raw rgba format
-            var codec;
             if (file.bytes != null)
-              codec = await instantiateImageCodec(file.bytes!);
-            var frame = await codec.getNextFrame();
-            var data =
-                await frame.image.toByteData(format: ImageByteFormat.rawRgba);
-            var rgba = data.buffer.asUint8List();
+            {
+              var codec = await instantiateImageCodec(file.bytes!);
+              var frame = await codec.getNextFrame();
+              var data  = await frame.image.toByteData(format: ImageByteFormat.rawRgba);
+              if (data != null)
+              {
+                // create detectable image
+                DetectableImage? detectable = DetectableImage.fromRgba(data.buffer.asUint8List(), frame.image.width, frame.image.height);
 
-            // create detectable image
-            DetectableImage? detectable = DetectableImage.fromRgba(rgba, frame.image.dirtyObservable, frame.image.height);
-
-            // detect
-            if (detectable != null) detectors.forEach((detector) => detector.detect(detectable));
+                // detect in image
+                if (detectable != null) detectors.forEach((detector) => detector.detect(detectable));
+              }
+            }
           }
 
           // return the file

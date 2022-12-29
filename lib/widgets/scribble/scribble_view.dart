@@ -113,9 +113,11 @@ class _ScribbleViewState extends State<ScribbleView> implements IModelListener
         options: options,
         color: Colors.black // Hardcode color to black for export a there will be no background/theming
     );
+
+    var constraints = widget.model.getConstraints();
     return await painter.export(Size(
-        widget.model.width ?? widget.model.constraints['maxwidth'] ?? widget.model.constraints['minwidth'] ?? 300,
-        widget.model.height ?? widget.model.constraints['maxheight'] ?? widget.model.constraints['minheight'] ?? 200));
+        widget.model.width ?? constraints.maxWidth ?? constraints.minWidth ?? 300,
+        widget.model.height ?? constraints.maxHeight?? constraints.minHeight?? 200));
   }
 
   Future<void> updateSizeOption(double size) async {
@@ -150,17 +152,20 @@ class _ScribbleViewState extends State<ScribbleView> implements IModelListener
   }
 
   void onPointerMove(PointerMoveEvent details) {
-    if (canScribble == true) {
+    if (canScribble == true)
+    {
+      var constraints = widget.model.getConstraints();
+
       final box = context.findRenderObject() as RenderBox;
       final offset = box.globalToLocal(details.position);
       late final Point point;
       double w = widget.model.width ??
-          widget.model.constraints['maxwidth'] ??
-          widget.model.constraints['minwidth'] ??
+          constraints.maxWidth ??
+          constraints.minWidth ??
           300;
       double h = widget.model.height ??
-          widget.model.constraints['maxheight'] ??
-          widget.model.constraints['minheight'] ??
+          constraints.maxHeight??
+          constraints.minHeight??
           200;
       if (offset.dx < w && offset.dx > 0 && offset.dy < h && offset.dy > 0) {
         if (details.kind == PointerDeviceKind.stylus) {
@@ -426,13 +431,15 @@ class _ScribbleViewState extends State<ScribbleView> implements IModelListener
       ]),
     );
 
+    var con = widget.model.getConstraints();
+
     view = ConstrainedBox(
         child: view,
         constraints: BoxConstraints(
-            minHeight: widget.model.constraints['minheight']!,
-            maxHeight: widget.model.constraints['maxheight']!,
-            minWidth: widget.model.constraints['minwidth']!,
-            maxWidth: widget.model.constraints['maxwidth']!));
+            minHeight: con.minHeight!,
+            maxHeight: con.maxHeight!,
+            minWidth: con.minWidth!,
+            maxWidth: con.maxWidth!));
     return view;
   }
 

@@ -71,7 +71,7 @@ class Http
     }
   }
 
-  static Future<HttpResponse> post(String url, {String? body, Map<String, String>? headers, int? timeout = 60}) async
+  static Future<HttpResponse> post(String url, String body, {Map<String, String>? headers, int? timeout = 60}) async
   {
     try
     {
@@ -96,7 +96,7 @@ class Http
     }
   }
 
-  static Future<HttpResponse> put(String url, {String? body, Map<String, String>? headers, int? timeout = 60}) async
+  static Future<HttpResponse> put(String url, String body, {Map<String, String>? headers, int? timeout = 60}) async
   {
     try
     {
@@ -121,7 +121,32 @@ class Http
     }
   }
 
-  static Future<HttpResponse> delete(String url, {String? body, Map<String, String>? headers, int? timeout = 60}) async
+  static Future<HttpResponse> patch(String url, String? body, {Map<String, String>? headers, int? timeout = 60}) async
+  {
+    try
+    {
+      // convert url
+      Uri? uri = encodeUri(url, refresh: false);
+      if (uri != null)
+      {
+        // execute request
+        Response response = await HTTP.patch(uri, headers: encodeHeaders(headers), body: body).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : System.timeout)));
+
+        // decode headers
+        decodeHeaders(response);
+
+        // return response
+        return HttpResponse.factory(url, response);
+      }
+      else return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: "Url $url is invalid");
+    }
+    catch (e)
+    {
+      return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: e.toString());
+    }
+  }
+
+  static Future<HttpResponse> delete(String url, {Map<String, String>? headers, int? timeout = 60}) async
   {
     try
     {

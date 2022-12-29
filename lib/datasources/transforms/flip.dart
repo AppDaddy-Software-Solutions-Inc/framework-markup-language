@@ -51,6 +51,6 @@ class Flip extends ImageTransformModel implements IDataTransform
   apply(List? data) async
   {
     if (enabled == false) return;
-    if (data is Data) await flipImage(data, axis, runAsIsolate: background);
+    if (data is Data) await flipImage(data, axis);
   }
 }

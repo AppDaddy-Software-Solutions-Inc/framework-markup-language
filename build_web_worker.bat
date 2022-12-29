@@ -1,1 +1,0 @@
-call dart compile js .\lib\datasources\transforms\worker\browser\image_worker.dart -o .\web\workers\image_worker.dart.js -m

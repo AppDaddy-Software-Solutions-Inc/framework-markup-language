@@ -67,6 +67,6 @@ class Resize extends ImageTransformModel implements IDataTransform
   apply(List? data) async
   {
     if (enabled == false) return;
-    if (data is Data) await resizeImage(data, width, height, runAsIsolate: background);
+    if (data is Data) await resizeImage(data, width, height);
   }
 }

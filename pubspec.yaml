@@ -69,6 +69,10 @@ dependencies:
   flutter_html: ^3.0.0-alpha.5
   # MIT
 
+  # Updated 2022/12/29
+  flutter_image_transform: ^1.0.0
+  # MIT
+
   # Added 2022/12/13
   flutter_map: 3.0.0
   # BSD-3-Clause
@@ -182,8 +186,6 @@ dependencies:
   # Updated 2022/05/26
   provider: 6.0.3
   # MIT
-
-  squadron: ^4.2.0
 
   # Updated 2022/05/26
   # syncfusion_flutter_charts: 20.1.57

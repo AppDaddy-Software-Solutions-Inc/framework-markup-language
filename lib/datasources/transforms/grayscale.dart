@@ -31,6 +31,6 @@ class Grayscale extends ImageTransformModel implements IDataTransform
   apply(List? data) async
   {
     if (enabled == false) return;
-    if (data is Data) await grayImage(data, runAsIsolate: background);
+    if (data is Data) await grayImage(data);
   }
 }

@@ -113,6 +113,6 @@ class Crop extends ImageTransformModel implements IDataTransform
   apply(List? data) async
   {
     if (enabled == false) return;
-    if (data is Data) await cropImage(data, x, y, width, height, runAsIsolate: background);
+    if (data is Data) await cropImage(data, x, y, width, height);
   }
 }

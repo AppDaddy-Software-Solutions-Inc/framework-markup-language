@@ -37,7 +37,7 @@ import 'package:fml/system.web.dart';
 // import 'package:fml/system.desktop.dart';
 
 // application build version
-final String version = '1.0.0';
+final String version = '1.0.0+1';
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
@@ -49,7 +49,7 @@ final ApplicationTypes appType  = ApplicationTypes.SingleApp;
 // Set this to file://config.xml to use the local assets
 
 
-final String defaultDomain = 'https://fml.appdaddy.co';
+final String defaultDomain = 'https://fml.dev';
 
 // denotes FML support Level
 int? fmlVersion = currentVersion;

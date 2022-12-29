@@ -385,7 +385,7 @@ class EventHandler extends Eval
   /// Login attempt
   ///
   /// Sets the user credentials on the client side to generate a secure token and attempts a login to the server side via databroker
-  Future<bool> _handleEventSignInWithFirebase([dynamic provider, dynamic rememberMe, dynamic refresh]) async
+  Future<bool> _handleEventSignInWithFirebase([dynamic provider, dynamic refresh]) async
   {
     String? token;
     if (!S.isNullOrEmpty(provider))
@@ -394,15 +394,18 @@ class EventHandler extends Eval
       if (user != null) token = await user.getIdToken();
     }
     if (token == null) return false;
-    return await _logon(token, S.toBool(rememberMe), S.toBool(refresh));
+    return await _logon(token, false, false, S.toBool(refresh));
   }
 
-  Future<bool> _handleEventSignInWithJwt([dynamic token, dynamic rememberMe, dynamic refresh]) async => _logon(token, rememberMe, refresh);
+  Future<bool> _handleEventSignInWithJwt([dynamic token, dynamic validateSignature, dynamic validateAge, dynamic refresh]) async
+  {
+    return _logon(token, validateSignature, validateAge, refresh);
+  }
 
-  Future<bool> _logon(String token, bool? rememberMe, bool? refresh) async
+  Future<bool> _logon(String token, bool? validateAge, bool? validateSignature, bool? refresh) async
   {
     // decode token
-    Jwt jwt = Jwt.decode(token);
+    Jwt jwt = Jwt.decode(token, validateAge: validateAge ?? false, validateSignature: validateSignature ?? false);
     if (jwt.valid)
     {
       System().logon(jwt);

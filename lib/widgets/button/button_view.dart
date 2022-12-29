@@ -216,22 +216,22 @@ class _ButtonViewState extends State<ButtonView> implements IModelListener
       view = ConstrainedBox(
           child: Container(child:view) ,
           constraints: BoxConstraints(
-              minHeight: constr['minheight']!,
-              maxHeight: constr['maxheight']!,
-              minWidth: constr['minwidth']!,
-              maxWidth: constr['maxwidth']!));
+              minHeight: constr.minHeight!,
+              maxHeight: constr.maxHeight!,
+              minWidth: constr.minWidth!,
+              maxWidth: constr.maxWidth!));
     } else if (widget.model.width != null) {
       view = UnconstrainedBox(
         child: LimitedBox(
           child: view,
-          maxWidth: constr['maxwidth']!,
+          maxWidth: constr.maxWidth!,
         ),
       );
     } else if (widget.model.height != null) {
       view = UnconstrainedBox(
         child: LimitedBox(
           child: view,
-          maxHeight: constr['maxheight']!,
+          maxHeight: constr.maxHeight!,
         ),
       );
     }

@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/eventsource/event_source_model.dart';
+import 'package:fml/datasources/sse/model.dart';
 import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/datasources/iDataSourceListener.dart';
 import 'package:fml/datasources/log/log_model.dart';
@@ -443,10 +443,6 @@ class WidgetModel implements IDataSourceListener
         model = ExpandedModel.fromXml(parent, node);
         break;
 
-      case "eventsource":
-        model = EventSourceModel.fromXml(parent, node);
-        break;
-
       case "eval":
         if (parent is IDataSource) model = Eval.fromXml(model, node);
         break;
@@ -669,6 +665,10 @@ class WidgetModel implements IDataSourceListener
 
       case "sort":
         if (parent is IDataSource) model = Sort.fromXml(model, node);
+        break;
+
+      case "sse":
+        model = SseModel.fromXml(parent, node);
         break;
 
       case "stack":
@@ -1090,8 +1090,6 @@ class WidgetModel implements IDataSourceListener
         return true;
       case "detector":
         return true;
-      case "eventsource":
-        return true;
       case "filepicker":
         return true;
       case "get":
@@ -1109,6 +1107,8 @@ class WidgetModel implements IDataSourceListener
       case "put":
         return true;
       case "socket":
+        return true;
+      case "sse":
         return true;
       case "zebra":
         return true;

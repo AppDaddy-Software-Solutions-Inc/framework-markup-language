@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
+import 'package:fml/datasources/eventsource/event_source_model.dart';
 import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/datasources/iDataSourceListener.dart';
 import 'package:fml/datasources/log/log_model.dart';
@@ -440,6 +441,10 @@ class WidgetModel implements IDataSourceListener
       case "expand": // Preferred CaFooterModel
       case "expanded": // Expanded may be deprecated
         model = ExpandedModel.fromXml(parent, node);
+        break;
+
+      case "eventsource":
+        model = EventSourceModel.fromXml(parent, node);
         break;
 
       case "eval":
@@ -1084,6 +1089,8 @@ class WidgetModel implements IDataSourceListener
       case "delete":
         return true;
       case "detector":
+        return true;
+      case "eventsource":
         return true;
       case "filepicker":
         return true;

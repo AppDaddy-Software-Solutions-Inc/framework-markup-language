@@ -125,7 +125,9 @@ class _SplitViewState extends State<SplitView> implements IModelListener
     ///////////////
     /* Left Pane */
     ///////////////
-    var left = ClipRect(child: SizedBox(width: _width1, child: (widget.views.isNotEmpty ? widget.views[0] : Text ('Missing <View />'))));
+    var left = SizedBox(width: _width1,
+        child: Container(color: Theme.of(context).colorScheme.surface,
+            child: (widget.views.isNotEmpty ? widget.views[0] : Text ('Missing <View />'))));
 
     ////////////
     /* Handle */
@@ -136,7 +138,9 @@ class _SplitViewState extends State<SplitView> implements IModelListener
     ////////////////
     /* Right Pane */
     ////////////////
-    var right = ClipRect(child: SizedBox(width: _width2, child: (widget.views.length > 1 ? widget.views[1] : Text ('Missing <View />'))));
+    var right = SizedBox(width: _width2, child:
+    Container(color: Theme.of(context).colorScheme.surface,
+        child: (widget.views.length > 1 ? widget.views[1] : Text ('Missing <View />'))));
 
     //////////
     /* View */

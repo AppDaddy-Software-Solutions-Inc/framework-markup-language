@@ -213,7 +213,7 @@ class SocketModel extends DataSourceModel implements IDataSource, WEBSOCKET.IWeb
   {
     // enabled?
     if (enabled == false) return;
-    this.data = Data.fromData(data, root: root);
+    this.data = Data.from(data, root: root);
   }
 
   onWebSocketError(String error)

@@ -56,7 +56,7 @@ You will only be granted the License if:
 (a) You are a natural person and will only use the Work or Derivative Work for Your Personal
 Purposes; or,
 
-(b) You are a natural person or a legal entity that has less than $200,000 USD gross
+(b) You are a natural person or a legal entity that has less than $1 Million USD gross
 income / revenue in the prior tax year; or
 
 (c) You are a natural person or a legal entity that will solely

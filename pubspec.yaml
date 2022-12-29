@@ -45,11 +45,12 @@ dependencies:
 
   # Updated 2022/05/31
   date_time_picker: ^2.1.0
-
+  # UNKNOWN
+  
   # Updated 2022/05/26
   decimal: 1.5.0
   # Apache-2.0
-
+  
   # file picker with extension support
   # Updated 2022/09/01
   file_picker: 5.0.1
@@ -191,6 +192,10 @@ dependencies:
   # syncfusion_flutter_charts: 20.1.57
   # https://pub.dev/packages/syncfusion_flutter_charts/license
 
+  # Updated 2022/12/28
+  stream_channel:
+  # BSD-3-Clause
+
   # Updated 2022/05/26
   web_socket_channel: 2.2.0
   # BSD-3-Clause
@@ -212,7 +217,7 @@ dependencies:
   # BSD-3-Clause
 
   # Updated 2022/05/26
-  webview_flutter: 3.0.4
+  webview_flutter: 4.0.0
   # BSD-3-Clause
 
   # Updated 2022/05/26

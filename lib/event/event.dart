@@ -7,7 +7,7 @@ abstract class IEventScrolling
   onScroll(Event event);
 }
 
-enum EventTypes { alert, animate, back, build, clear, close, complete, cont, copy, execute /* Executed by dot notation datasource events */, export, faces, focusnode, home, keypress, logoff, logon, maximize, minimize, ocr, open, page, post, quit, refresh, replace, save, scroll, scrollto, set, showdebug, showlog, showtemplate, sort, sound, start, stash, stop, theme, toast, trigger, validate, wait }
+enum EventTypes { alert, animate, back, build, clear, close, complete, cont, copy, execute /* Executed by dot notation datasource events */, export, faces, focusnode, home, keypress, signInWithJwt, logoff, signInWithFirebase, maximize, minimize, ocr, open, page, post, quit, refresh, replace, save, scroll, scrollto, set, showdebug, showlog, showtemplate, sort, sound, start, stash, stop, theme, toast, trigger, validate, wait }
 
 /// Events are inline void function calls
 ///

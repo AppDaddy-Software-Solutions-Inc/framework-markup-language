@@ -72,7 +72,7 @@ class Data with ListMixin<dynamic>
     return clone;
   }
 
-  static Data fromData(dynamic value, {String? root})
+  static Data from(dynamic value, {String? root})
   {
     Data? data;
 

@@ -312,7 +312,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
     root = Xml.attribute(node: xml, tag: 'root');
 
     String? value = Xml.get(node: xml, tag: 'value');
-    if (!S.isNullOrEmpty(value)) onResponse(Data.fromData(value, root: root));
+    if (!S.isNullOrEmpty(value)) onResponse(Data.from(value, root: root));
 
     // custom body defined?
     XmlElement? body = Xml.getChildElement(node: xml, tag: 'body');
@@ -581,11 +581,54 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
   {
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
-    switch (function) {
+    switch (function)
+    {
+      // clear the list
       case "clear":
         int? start = S.toInt(S.item(arguments, 0)) ?? null;
         int? end = S.toInt(S.item(arguments, 1)) ?? null;
         return await clear(start: start, end: end);
+
+      // add to the list
+      case "add":
+        String? jsonOrXml  = S.toStr(S.item(arguments, 0)) ?? null;
+        int index = S.toInt(S.item(arguments, 1)) ?? (this.data != null ? this.data!.length : 0);
+        if (jsonOrXml != null)
+        {
+          Data? d = Data.from(jsonOrXml);
+          if (data != null)
+          {
+            if (index > d.length) index = d.length;
+            if (index < 0) index = 0;
+            d.forEach((element) => data!.insert(index++, element));
+          }
+          else data = Data.from(d);
+
+          // notify listeners of data change
+          notify();
+        }
+        return true;
+
+      // remove from the list
+      case "remove":
+        int index = S.toInt(S.item(arguments, 1)) ?? (this.data != null ? this.data!.length : 0);
+        if (this.data != null)
+        {
+          if (index >= this.data!.length) index = this.data!.length - 1;
+          if (index < 0) index = 0;
+          this.data!.removeAt(index);
+          notify();
+        }
+        return true;
+
+      // reverse the list
+      case "reverse":
+        if (this.data != null)
+        {
+          this.data = this.data!.reversed;
+          notify();
+        }
+        return true;
     }
     return super.execute(propertyOrFunction, arguments);
   }

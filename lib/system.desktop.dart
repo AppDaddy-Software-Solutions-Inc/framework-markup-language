@@ -252,9 +252,17 @@ class SystemPlatform extends WidgetModel
     }
     catch (e) 
     {
-      Log().exception(e, caller: 'system.desktop.dart => bool fileWriteBytes($folder)');
-      return null;
+      Log().exception(e, caller: 'system.desktop.dart => createFolder($folder)');
     }
+    // macOS
+    try {
+      final appDocumentDirectory = await getApplicationDocumentsDirectory();
+      return appDocumentDirectory.path;
+    }
+    catch(e) {
+      Log().exception(e, caller: 'system.desktop.dart => createFolder($folder)');
+    }
+    return null;
   }
 
   Future<bool> writeFile(String filename, dynamic content) async 

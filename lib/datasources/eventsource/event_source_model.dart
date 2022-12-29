@@ -113,14 +113,14 @@ class EventSourceModel extends HttpModel implements IDataSource
   {
     Log().debug('Received message >> $msg', caller: 'EventSourceModel');
     Data data = Data.from(msg);
-    if (data != null) onResponse(data);
+    onResponse(data);
   }
 
   _onError(var msg)
   {
     Log().debug('Error is $msg', caller: 'EventSourceModel');
     Data data = Data.from(msg);
-    if (data != null) onException(data);
+    onException(data);
   }
 
   _onDone()

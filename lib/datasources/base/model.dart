@@ -593,20 +593,16 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
         if (jsonOrXml != null)
         {
           Data? d = Data.from(jsonOrXml);
-          if (d != null)
+          if (data != null)
           {
-            if (data != null)
-            {
-              if (index > d.length) index = d.length;
-              if (index < 0) index = 0;
-              if (d!= null)
-              d.forEach((element) => data!.insert(index++, element));
-            }
-            else data = Data.from(d);
-
-            // notify listeners of data change
-            notify();
+            if (index > d.length) index = d.length;
+            if (index < 0) index = 0;
+            d.forEach((element) => data!.insert(index++, element));
           }
+          else data = Data.from(d);
+
+          // notify listeners of data change
+          notify();
         }
         return true;
 

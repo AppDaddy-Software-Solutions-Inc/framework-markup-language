@@ -11,11 +11,13 @@ class Jwt
   final String token;
   final Map<String, String> claims = Map<String, String>();
 
-  Jwt(this.token, {bool validate = false})
+  Jwt(this.token, {bool validateAge = false, bool validateSignature = false})
   {
     valid = false;
     try
     {
+      //final JwtClaim decClaimSet = verifyJwtHS256Signature(token, key);
+
       var parts = token.split(".");
       Map json = jsonDecode(S.fromBase64(parts[0])!);
       json.forEach((key, value)
@@ -43,11 +45,11 @@ class Jwt
     // future todo - encode ourselves
     final _claims = JwtClaim(subject: subject, issuer: issuer, audience: audience, otherClaims: claims, maxAge: Duration(minutes: shelflife));
     String token = issueJwtHS256(_claims, key);
-    return new Jwt(token, validate: false);
+    return new Jwt(token);
   }
 
-  factory Jwt.decode(String token, {bool validate = true})
+  factory Jwt.decode(String token, {bool validateSignature = false, validateAge = false})
   {
-    return Jwt(token, validate: validate);
+    return Jwt(token, validateSignature: validateSignature, validateAge: validateAge);
   }
 }

@@ -140,8 +140,8 @@ dependencies:
   latlong2: 0.8.1
   # BSD-3-Clause
 
-  # Updated 2022/05/19
-  location: 4.4.0
+  # Updated 2022/12/29
+  location: 5.0.0-dev.8
   # MIT
 
   # Updated 2022/05/26

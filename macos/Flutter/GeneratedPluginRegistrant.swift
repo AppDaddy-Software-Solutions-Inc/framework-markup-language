@@ -9,7 +9,7 @@ import audioplayers
 import connectivity_plus_macos
 import firebase_auth
 import firebase_core
-import location
+import location_macos
 import path_provider_macos
 import url_launcher_macos
 

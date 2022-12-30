@@ -80,6 +80,9 @@ class _MapViewState extends State<MapView> implements IModelListener
       if (b?.property == 'busy') return;
       if (property == 'busy') return;
 
+      if ((b?.property == 'latitude' || b?.property == 'longitude') && (widget.model.latitude != null && widget.model.longitude != null)) {
+        mapController.move(LatLng(widget.model.latitude!, widget.model.longitude!), widget.model.zoom);
+      }
       setState(() {});
     }
   }

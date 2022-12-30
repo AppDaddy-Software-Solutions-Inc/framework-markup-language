@@ -2,8 +2,8 @@
 @JS('navigator.geolocation') // navigator.geolocation namespace
 library jslocation; // library name can be whatever you want
 
+import 'dart:async';
 import 'package:fml/log/manager.dart';
-
 import 'package:js/js.dart';
 import 'package:fml/system.dart';
 import 'iGpsListener.dart';
@@ -11,48 +11,60 @@ import 'package:location/location.dart';
 import 'payload.dart';
 import 'gps.dart';
 
-@JS('getCurrentPosition') // Accessing method getCurrentPosition from       Geolocation API
-external void getCurrentPosition(Function success(GeolocationPosition pos));
-
 Gps getReceiver() => Receiver();
 
 class Receiver implements Gps
 {
   static final Receiver _singleton = Receiver._initialize();
   List<IGpsListener>? _listeners;
-  Location? _location;
+  LocationData? _location;
+  StreamSubscription<LocationData>? _subscription;
+  Payload? last;
 
   factory Receiver()
   {
     return _singleton;
   }
 
-  Receiver._initialize()
-  {
-    try
-    {
-      _location = null;
-      if (_location == null) _location = Location();
-    }
-    catch(e)
-    {
-      Log().debug("GPS Failed");
-    }
-  }
+  Receiver._initialize();
 
-  _start()
+  Future _start() async
   {
-      Payload? position = getCurrentLocation();
-      Log().debug(position.toString());
-      if(position != null)
+    _location = await getCurrentLocation();
+    if (_location != null)
+    {
+      if (_subscription == null)
       {
-        Payload data = position;
-        Log().debug(position.toString());
-        notifyListeners(data);
+        _subscription = onLocationChanged(inBackground: false)
+            .listen((LocationData currentLocation) async {
+              try {
+                last = Payload(accuracy: currentLocation.accuracy,
+                    latitude: currentLocation.latitude,
+                    longitude: currentLocation.longitude,
+                    altitude: currentLocation.altitude,
+                    speed: currentLocation.speed,
+                    speedaccuracy: currentLocation.speedAccuracy,
+                    heading: currentLocation.bearing,
+                    epoch: DateTime
+                        .now()
+                        .millisecondsSinceEpoch,
+                    user: System().setUserProperty('key'),
+                    username: System().setUserProperty('name'));
+                await notifyListeners(last!);
+              }
+              catch (e) {
+                Log().debug('GPD Data Point');
+                Log().exception(e);
+              }
+        });
       }
+    }
   }
 
-  _stop() {}
+  Future _stop() async
+  {
+    if (_subscription != null) _subscription?.cancel();
+  }
 
   registerListener(IGpsListener listener)
   {
@@ -62,6 +74,7 @@ class Receiver implements Gps
       _listeners!.add(listener);
       _start();
     }
+    listener.onGpsData(payload: last);
   }
 
   removeListener(IGpsListener listener)
@@ -87,35 +100,6 @@ class Receiver implements Gps
   }
 }
 
-@JS()
-@anonymous
-class GeolocationCoordinates {
-  external double get latitude;
-  external double get longitude;
-  external double get altitude;
-  external double get accuracy;
-  external double get altitudeAccuracy;
-  external double get heading;
-  external double get speed;
-
-  external factory GeolocationCoordinates(
-      {double? latitude,
-        double? longitude,
-        double? altitude,
-        double? accuracy,
-        double? altitudeAccuracy,
-        double? heading,
-        double? speed});
-}
-
-@JS()
-@anonymous
-class GeolocationPosition
-{
-  external GeolocationCoordinates get coords;
-  external factory GeolocationPosition({GeolocationCoordinates? coords});
-}
-
 Payload? payload;
 
 success(pos)
@@ -131,10 +115,12 @@ success(pos)
   }
 }
 
-Payload? getCurrentLocation()
-{
-  getCurrentPosition(allowInterop((pos) => success(pos)));
-  GeolocationCoordinates coordinates = GeolocationCoordinates();
-  payload = Payload(latitude: coordinates.latitude, longitude: coordinates.latitude, altitude: coordinates.altitude, epoch: DateTime.now().millisecondsSinceEpoch, user: System().setUserProperty('key'), username: System().setUserProperty('name'));
-  return payload;
+Future<LocationData?>? getCurrentLocation() async {
+  try {
+    final location = await getLocation();
+    return location;
+  }
+  catch(e) {
+    return null;
+  }
 }

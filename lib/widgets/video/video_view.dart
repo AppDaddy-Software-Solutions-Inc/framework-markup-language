@@ -32,6 +32,9 @@ class VideoViewState extends State<VideoView> implements IModelListener
     // register listener to the model
     widget.model.registerListener(this);
 
+    // set player
+    widget.model.player = this;
+
     // initialize the controller
     load(widget.model.url);
   }

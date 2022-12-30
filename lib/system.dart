@@ -37,7 +37,7 @@ import 'package:fml/system.web.dart';
 // import 'package:fml/system.desktop.dart';
 
 // application build version
-final String version = '1.0.0+1';
+final String version = '1.0.0+2';
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup

@@ -20,7 +20,7 @@ class VideoView extends StatefulWidget
 
 class VideoViewState extends State<VideoView> implements IModelListener
 {
-  late VideoPlayerController _controller;
+  VideoPlayerController? _controller;
   IconView? shutterbutton;
   IconModel shutterbuttonmodel = IconModel(null, null, icon: Icons.pause, size: 65, color: Colors.white);
 
@@ -33,29 +33,7 @@ class VideoViewState extends State<VideoView> implements IModelListener
     widget.model.registerListener(this);
 
     // initialize the controller
-    if (widget.model.url != null)
-    _controller = VideoPlayerController.network(widget.model.url!)..initialize().then((_)
-    {
-        // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
-        setState(() {});
-    });
-
-    _controller.addListener(onVideoController);
-  }
-
-  void onVideoController()
-  {
-    if(!_controller.value.isPlaying)
-    {
-      shutterbuttonmodel.icon = Icons.pause;
-      shutterbuttonmodel.size = 65;
-      if (_controller.value.position == _controller.value.duration) seek(0);
-    }
-    else
-    {
-      shutterbuttonmodel.icon = Icons.play_arrow;
-      shutterbuttonmodel.size = 65;
-    }
+    load(widget.model.url);
   }
 
   /// Callback to fire the [CameraViewState.build] when the [CameraModel] changes
@@ -70,15 +48,14 @@ class VideoViewState extends State<VideoView> implements IModelListener
   @override
   void dispose()
   {
-    _controller.removeListener;
-    _controller.dispose();
+    if (_controller != null) return;
+    _controller!.removeListener(onVideoController);
+    _controller!.dispose();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(builder: builder);
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
@@ -92,7 +69,7 @@ class VideoViewState extends State<VideoView> implements IModelListener
     if (!widget.model.visible) return Offstage();
 
     // create the view
-    Widget view = _controller.value.isInitialized ? AspectRatio(aspectRatio: _controller.value.aspectRatio, child: VideoPlayer(_controller)) : Container();
+    Widget view = (_controller != null && _controller!.value.isInitialized) ? AspectRatio(aspectRatio: _controller!.value.aspectRatio, child: VideoPlayer(_controller!)) : Container();
 
     //if (_controller.value.isInitialized) _controller.play();
 
@@ -145,27 +122,62 @@ class VideoViewState extends State<VideoView> implements IModelListener
     return Stack(children: children);
   }
 
+  void onVideoController()
+  {
+    if (_controller == null) return;
+    if(!_controller!.value.isPlaying)
+    {
+      shutterbuttonmodel.icon = Icons.pause;
+      shutterbuttonmodel.size = 65;
+      if (_controller!.value.position == _controller!.value.duration) seek(0);
+    }
+    else
+    {
+      shutterbuttonmodel.icon = Icons.play_arrow;
+      shutterbuttonmodel.size = 65;
+    }
+  }
+
   Future<bool> startstop() async
   {
-    print("${_controller.value.position},${_controller.value.duration}");
-    if (_controller.value.isPlaying) return await pause();
-    if (_controller.value.position == _controller.value.duration) return await start();
+    if (_controller == null) return false;
+    if (_controller!.value.isPlaying) return await pause();
+    if (_controller!.value.position == _controller!.value.duration) return await start();
     return await resume();
+  }
+
+  Future<bool> load(String? url) async
+  {
+    if (_controller != null) _controller!.dispose();
+    Uri? uri = Uri.tryParse(url ?? "");
+    if (uri != null)
+    {
+      // initialize the controller
+      _controller = VideoPlayerController.network(url!)..initialize().then((_)
+      {
+        // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+        if (mounted) setState(() {});
+      });
+      _controller!.addListener(onVideoController);
+    }
+    return true;
   }
 
   Future<bool> start() async
   {
-    if (!_controller.value.isInitialized) await _controller.initialize();
+    if (_controller == null) return false;
+    if (!_controller!.value.isInitialized) await _controller!.initialize();
     await seek(0);
-    _controller.play();
+    _controller!.play();
     return true;
   }
 
   Future<bool> stop() async
   {
-    if (_controller.value.isInitialized)
+    if (_controller == null) return false;
+    if (_controller!.value.isInitialized)
     {
-      await _controller.pause();
+      await _controller!.pause();
       await seek(0);
     }
     return true;
@@ -173,20 +185,23 @@ class VideoViewState extends State<VideoView> implements IModelListener
 
   Future<bool> pause() async
   {
-    if (_controller.value.isInitialized) await _controller.pause();
+    if (_controller == null) return false;
+    if (_controller!.value.isInitialized) await _controller!.pause();
     return true;
   }
 
   Future<bool> resume() async
   {
-    if (!_controller.value.isInitialized) await _controller.initialize();
-    _controller.play();
+    if (_controller == null) return false;
+    if (!_controller!.value.isInitialized) await _controller!.initialize();
+    _controller!.play();
     return true;
   }
 
   Future<bool> seek(int seconds) async
   {
-    if (_controller.value.isInitialized) await _controller.seekTo(Duration(seconds: seconds));
+    if (_controller == null) return false;
+    if (_controller!.value.isInitialized) await _controller!.seekTo(Duration(seconds: seconds));
     return true;
   }
 }

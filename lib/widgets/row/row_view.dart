@@ -91,7 +91,7 @@ class _RowViewState extends State<RowView> implements IModelListener {
     var mainAxisSize = widget.model.shrinkwrap == true || widget.model.expand == false ? MainAxisSize.min : MainAxisSize.max;
 
     /// safeguard - don't allow infinite size
-    if (mainAxisSize == MainAxisSize.max && constraints.maxHeight == double.infinity) mainAxisSize = MainAxisSize.min;
+    if (mainAxisSize == MainAxisSize.max && constraints.maxWidth == double.infinity) mainAxisSize = MainAxisSize.min;
 
     // check if wrap is true,and return the wrap widgets children.
     Widget view;

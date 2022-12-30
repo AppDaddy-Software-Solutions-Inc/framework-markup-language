@@ -32,7 +32,7 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/helper_barrel.dart';
 
 // platform
-//  import 'package:fml/system.mobile.dart';
+// import 'package:fml/system.mobile.dart';
 import 'package:fml/system.web.dart';
 // import 'package:fml/system.desktop.dart';
 
@@ -49,7 +49,7 @@ final ApplicationTypes appType  = ApplicationTypes.SingleApp;
 // Set this to file://config.xml to use the local assets
 
 
-final String defaultDomain = 'https://fml.dev';
+final String defaultDomain = 'https://fml.appdaddy.co';
 
 // denotes FML support Level
 int? fmlVersion = currentVersion;

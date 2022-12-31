@@ -1,11 +1,13 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/datasources/detectors/detectable/detectable.dart';
 import 'package:fml/data/data.dart';
 
-import 'barcode.mobile.dart'
-if (dart.library.io)   'barcode.mobile.dart'
-if (dart.library.html) 'barcode.web.dart';
-//import 'stub.dart';
+import 'barcode_detector.mobile.dart'
+if (dart.library.io)   'barcode_detector.mobile.dart'
+if (dart.library.html) 'barcode_detector.web.dart';
+
+import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
+if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
+if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
 
 enum BarcodeFormats { UNKNOWN, CODE128, CODE39, CODE93, CODABAR, DATAMATRIX, EAN13, EAN8, ITF, QRCODE, UPCA, UPCE, PDF417, AZTEC, ONDL}
 
@@ -60,9 +62,9 @@ class Payload
   }
 }
 
-abstract class BarcodeDetector
+abstract class iBarcodeDetector
 {
-  factory BarcodeDetector() => getDetector();
+  factory iBarcodeDetector() => getDetector();
   Future<Payload?> detect(DetectableImage image, List<BarcodeFormats>? formats, bool? tryharder, bool? invert);
 }
 

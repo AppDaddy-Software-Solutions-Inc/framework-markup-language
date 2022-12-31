@@ -3,19 +3,14 @@ import 'dart:ui';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart' as ML;
-import 'detectable.dart' as DETECTABLE;
 
-DetectableImage? fromCamera(CameraImage camera, CameraDescription description) => DetectableImage.fromCamera(camera, description);
-DetectableImage? fromFilePath(String path) => DetectableImage.fromFilePath(path);
-DetectableImage? fromRgba(List<int> bytes, int width, int height) => DetectableImage.fromRgba(bytes, width, height);
-
-class DetectableImage implements DETECTABLE.DetectableImage
+class DetectableImage
 {
   final dynamic image;
 
   DetectableImage(this.image);
 
-  static DetectableImage? fromCamera(CameraImage image, CameraDescription camera)
+  factory DetectableImage.fromCamera(CameraImage image, CameraDescription camera)
   {
     final WriteBuffer allBytes = WriteBuffer();
 
@@ -42,12 +37,12 @@ class DetectableImage implements DETECTABLE.DetectableImage
     return DetectableImage(ML.InputImage.fromBytes(bytes: bytes, inputImageData: inputImageData));
   }
 
-  static DetectableImage? fromFilePath(String path)
+  factory DetectableImage.fromFilePath(String path)
   {
      return DetectableImage(ML.InputImage.fromFilePath(path));
   }
 
-  static DetectableImage? fromRgba(List<int> bytes, int width, int height)
+  factory DetectableImage.fromRgba(List<int> bytes, int width, int height)
   {
     // not implemented
     return DetectableImage(null);

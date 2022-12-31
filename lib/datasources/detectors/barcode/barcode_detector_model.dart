@@ -1,18 +1,53 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/detectors/detectable/detectable.dart';
-import 'package:fml/datasources/detectors/iDetector.dart';
+import 'package:fml/datasources/detectors/iDetectable.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/datasources/detectors/detector_model.dart';
+import 'package:fml/observable/binding.dart';
+import 'package:fml/observable/observables/boolean.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
-import 'barcode.dart';
+import 'barcode_detector.dart';
 import 'package:fml/helper/helper_barrel.dart';
 
-class BarcodeDetectorModel extends DetectorModel implements IDetector
+import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
+if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
+if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
+
+class BarcodeDetectorModel extends DetectorModel implements IDetectable
 {
   List<BarcodeFormats>? barcodeFormats;
-  
+
+  // try harder
+  BooleanObservable? _tryharder;
+  set tryharder(dynamic v)
+  {
+    if (_tryharder != null)
+    {
+      _tryharder!.set(v);
+    }
+    else if (v != null)
+    {
+      _tryharder = BooleanObservable(Binding.toKey(id, 'tryharder'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get tryharder => _tryharder?.get() ?? true;
+
+  // invert the image on scan
+  BooleanObservable? _invert;
+  set invert(dynamic v)
+  {
+    if (_invert != null)
+    {
+      _invert!.set(v);
+    }
+    else if (v != null)
+    {
+      _invert = BooleanObservable(Binding.toKey(id, 'invert'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get invert => _invert?.get() ?? true;
+
   BarcodeDetectorModel(WidgetModel parent, String? id) : super(parent, id);
 
   static BarcodeDetectorModel? fromXml(WidgetModel parent, XmlElement xml)
@@ -35,12 +70,13 @@ class BarcodeDetectorModel extends DetectorModel implements IDetector
   @override
   void deserialize(XmlElement xml)
   {
-
     super.deserialize(xml);
-    
-    /////////////////////
-    /* Barcode Formats */
-    /////////////////////
+
+    // properties
+    tryharder = Xml.get(node: xml, tag: 'tryharder');
+    invert    = Xml.get(node: xml, tag: 'invert');
+
+    // barcode formats
     String? format = Xml.get(node: xml, tag: 'format');
     List<String> formats = [];
     if (format != null) formats = format.split(",");
@@ -70,7 +106,7 @@ class BarcodeDetectorModel extends DetectorModel implements IDetector
       busy = true;
 
       count++;
-      Payload? payload = await BarcodeDetector().detect(image, barcodeFormats, tryharder, invert);
+      Payload? payload = await iBarcodeDetector().detect(image, barcodeFormats, tryharder, invert);
       if (payload != null)
       {
         Data data = Payload.toData(payload);

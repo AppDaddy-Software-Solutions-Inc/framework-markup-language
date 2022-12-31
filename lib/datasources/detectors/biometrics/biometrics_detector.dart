@@ -1,11 +1,13 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/datasources/detectors/detectable/detectable.dart';
 import 'package:fml/data/data.dart';
 
-//import 'biometrics.mobile.dart'
-//if (dart.library.io)   'biometrics.mobile.dart'
-//if (dart.library.html) 'biometrics.web.dart';
-import 'stub.dart';
+import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
+if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
+if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
+
+import 'biometrics_detector.stub.dart'
+if (dart.library.io)   'biometrics_detector.mobile.dart'
+if (dart.library.html) 'biometrics_detector.web.dart';
 
 class Biometric
 {
@@ -33,8 +35,8 @@ class Payload
   }
 }
 
-abstract class BiometricsDetector
+abstract class iBiometricsDetector
 {
-  factory BiometricsDetector() => getDetector();
+  factory iBiometricsDetector() => getDetector();
   Future<Payload?> detect(DetectableImage image);
 }

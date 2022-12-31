@@ -1,15 +1,15 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
+import 'package:fml/datasources/detectors/biometrics/biometrics_detector_model.dart';
 import 'package:fml/datasources/sse/model.dart';
 import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/datasources/iDataSourceListener.dart';
 import 'package:fml/datasources/log/log_model.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/datasources/detectors/barcode/model.dart';
-import 'package:fml/datasources/detectors/biometrics/model.dart';
-import 'package:fml/datasources/detectors/text/model.dart';
+import 'package:fml/datasources/detectors/barcode/barcode_detector_model.dart';
+import 'package:fml/datasources/detectors/biometrics/biometrics_detector_model.dart';
+import 'package:fml/datasources/detectors/text/text_detector_model.dart';
 import 'package:fml/datasources/data/model.dart';
-import 'package:fml/datasources/detectors/detector_model.dart' ;
 import 'package:fml/datasources/gps/model.dart';
 import 'package:fml/datasources/http/model.dart';
 import 'package:fml/datasources/mqtt/model.dart';
@@ -313,30 +313,18 @@ class WidgetModel implements IDataSourceListener
         model = InputModel.fromXml(parent, node, type: "autocomplete");
         break;
 
-      case "detector":
-        // get detector type
-        DetectorTypes? type =
-            S.toEnum(Xml.get(node: node, tag: 'type'), DetectorTypes.values);
-        if (type == null)
-          type = S.toEnum(
-              Xml.get(node: node, tag: 'detect'), DetectorTypes.values);
-        if (type != null)
-          switch (type) {
-            case DetectorTypes.barcode:
-              model = BarcodeDetectorModel.fromXml(parent, node);
-              break;
-            case DetectorTypes.text:
-              model = TextDetectorModel.fromXml(parent, node);
-              break;
-            case DetectorTypes.face:
-              model = BiometricsDetectorModel.fromXml(parent, node);
-              break;
-          }
+      case "barcode":
+
+        model = BarcodeDetectorModel.fromXml(parent, node);
         break;
 
       // case "beacon:
       //   model = BEACON.Model.fromXml(parent, node);
       //   break;
+
+      case "biometic":
+        model = BiometricsDetectorModel.fromXml(parent, node);
+        break;
 
       case "box": // Preferred Case
       case "container": // Container may be deprecated
@@ -386,10 +374,6 @@ class WidgetModel implements IDataSourceListener
 
       case "html":
         model = HtmlModel.fromXml(parent, node);
-        break;
-
-      case "span":
-        model = SpanModel.fromXml(parent, node);
         break;
 
       case "checkbox":
@@ -567,6 +551,10 @@ class WidgetModel implements IDataSourceListener
         model = TreeNodeModel.fromXml(parent, node);
         break;
 
+      case "ocr":
+        model = TextDetectorModel.fromXml(parent, node);
+        break;
+
       case "option":
         if (parent is SelectModel)
           model = OptionModel.fromXml(parent, node);
@@ -665,6 +653,10 @@ class WidgetModel implements IDataSourceListener
 
       case "sort":
         if (parent is IDataSource) model = Sort.fromXml(model, node);
+        break;
+
+      case "span":
+        model = SpanModel.fromXml(parent, node);
         break;
 
       case "sse":
@@ -1082,7 +1074,11 @@ class WidgetModel implements IDataSourceListener
 
   static bool isDataSource(String element) {
     switch (element.toLowerCase()) {
+      case "barcode":
+        return true;
       case "beacon":
+        return true;
+      case "biometric":
         return true;
       case "data":
         return true;
@@ -1101,6 +1097,8 @@ class WidgetModel implements IDataSourceListener
       case "http":
         return true;
       case "nfc":
+        return true;
+      case "ocr":
         return true;
       case "post":
         return true;

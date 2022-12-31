@@ -2,33 +2,30 @@
 import 'package:camera/camera.dart';
 import 'package:zxing_lib/common.dart';
 import 'package:zxing_lib/zxing.dart';
-import 'detectable.dart' as DETECTABLE;
 import 'package:fml/helper/helper_barrel.dart';
 
-DetectableImage? fromCamera(CameraImage image, CameraDescription camera) => DetectableImage.fromCamera(image, camera);
-DetectableImage? fromFilePath(String path) => DetectableImage.fromFilePath(path);
-DetectableImage? fromRgba(List<int> bytes, int width, int height) => DetectableImage.fromRgba(bytes, width, height);
-
-class DetectableImage implements DETECTABLE.DetectableImage
+class DetectableImage
 {
   final dynamic image;
 
   DetectableImage(this.image);
 
-  static DetectableImage? fromCamera(CameraImage image, CameraDescription camera)
+  factory DetectableImage.fromCamera(CameraImage image, CameraDescription camera)
   {
     // not implemented
-    return null;
+    return DetectableImage(null);
   }
 
-  static DetectableImage? fromFilePath(String path)
+  factory DetectableImage.fromFilePath(String path)
   {
     // not implemented
-    return null;
+    return DetectableImage(null);
   }
 
   factory DetectableImage.fromRgba(List<int> bytes, int width, int height)
   {
+    print ('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+
       // decode pixels
       List<int> pixels = ImageHelper.toPixelsFromRgba(bytes);
 

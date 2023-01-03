@@ -2,11 +2,14 @@
 import 'dart:async';
 import 'dart:html' as HTML;
 import 'dart:ui';
-import 'package:fml/datasources/detectors/detectable/detectable.dart';
+import 'package:fml/datasources/detectors/iDetectable.dart';
 import 'package:fml/log/manager.dart';
 import 'filepicker_view.dart' as ABSTRACT;
 import 'package:fml/datasources/file/file.dart' as FILE;
-import 'package:fml/datasources/detectors/iDetector.dart' ;
+
+import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
+if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
+if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
 
 FilePickerView create({String? accept}) => FilePickerView(accept: accept);
 
@@ -17,7 +20,7 @@ class FilePickerView implements ABSTRACT.FilePicker {
     this.accept = accept;
   }
 
-  Future<FILE.File?> launchPicker(List<IDetector>? detectors) async {
+  Future<FILE.File?> launchPicker(List<IDetectable>? detectors) async {
     final completer = Completer();
     bool hasSelectedFile = false;
 
@@ -79,10 +82,10 @@ class FilePickerView implements ABSTRACT.FilePicker {
               if (data != null)
               {
                 // create detectable image
-                DetectableImage? detectable = DetectableImage.fromRgba(data.buffer.asUint8List(), frame.image.width, frame.image.height);
+                DetectableImage detectable = DetectableImage.fromRgba(data.buffer.asUint8List(), frame.image.width, frame.image.height);
 
                 // detect in image
-                if (detectable != null) detectors.forEach((detector) => detector.detect(detectable));
+                detectors.forEach((detector) => detector.detect(detectable));
               }
             }
           }

@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:camera/camera.dart';
 import 'package:fml/datasources/camera/model.dart' as CAMERA;
-import 'package:fml/datasources/detectors/detectable/detectable.dart';
 import 'package:fml/widgets/camera/camera_view.dart' as CAMERA;
 import 'package:fml/log/manager.dart';
 
@@ -17,6 +16,10 @@ import 'package:image/image.dart' as IMAGE;
 import 'package:fml/datasources/file/file.dart' as FILE;
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/helper_barrel.dart';
+
+import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
+if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
+if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
 
 class CameraModel extends CAMERA.CameraImageModel implements IViewableWidget
 {

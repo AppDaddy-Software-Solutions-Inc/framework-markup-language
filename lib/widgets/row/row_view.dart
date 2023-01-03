@@ -136,7 +136,7 @@ class _RowViewState extends State<RowView> implements IModelListener {
     // Constrained?
     if (widget.model.constrained)
     {
-      var constraints = widget.model.getConstraints();
+      var constraints =  widget.model.getConstraints();
       double minWidth  = widget.model.constrainedHorizontally ? constraints.minWidth  ?? 0.0 : 0.0;
       double maxWidth  = widget.model.constrainedHorizontally ? constraints.maxWidth  ?? double.infinity : double.infinity;
       double minHeight = widget.model.constrainedVertically   ? constraints.minHeight ?? 0.0 : 0.0;

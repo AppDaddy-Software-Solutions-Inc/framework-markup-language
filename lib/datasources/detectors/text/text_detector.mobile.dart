@@ -2,7 +2,7 @@
 import 'dart:ui';
 import 'package:fml/log/manager.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart' as ML;
-import 'text.dart' as TEXT;
+import 'text_detector.dart';
 
 class LineRow
 {
@@ -16,7 +16,7 @@ class LineRow
 
 TextDetector getDetector() => TextDetector();
 
-class TextDetector implements TEXT.TextDetector
+class TextDetector implements iTextDetector
 {
   static final TextDetector _singleton = new TextDetector._initialize();
 
@@ -29,11 +29,11 @@ class TextDetector implements TEXT.TextDetector
 
   TextDetector._initialize();
 
-  Future<TEXT.Payload?> detect(dynamic detectable) async
+  Future<Payload?> detect(dynamic detectable) async
   {
       try
       {
-        TEXT.Payload? result;
+        Payload? result;
 
         if (detectable?.image is ML.InputImage)
         {
@@ -55,9 +55,9 @@ class TextDetector implements TEXT.TextDetector
       }
   }
 
-  TEXT.Payload payload(ML.RecognizedText vtext)
+  Payload payload(ML.RecognizedText vtext)
   {
-    List<TEXT.Line> lines = [];
+    List<Line> lines = [];
     // BASIC LINE DETECTION
     // for (TextBlock block in vtext.blocks)
     // {
@@ -151,11 +151,11 @@ class TextDetector implements TEXT.TextDetector
       text.replaceAll('  ', ' ');
       text.trim();
       body += '\n$text';
-      TEXT.Line line = TEXT.Line(text: text);
+      Line line = Line(text: text);
       line.words.addAll(words);
       lines.add(line);
     });
 
-    return TEXT.Payload(body: body, lines: lines);
+    return Payload(body: body, lines: lines);
   }
 }

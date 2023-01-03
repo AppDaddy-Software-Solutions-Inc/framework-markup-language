@@ -8,16 +8,14 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/helper_barrel.dart';
 
-enum DetectorTypes {barcode, face, text}
 enum DetectorSources {image, stream, any}
 
 class DetectorModel extends DataSourceModel implements IDataSource
 {
+  // source of image
   DetectorSources? source;
 
-  ///////////
-  /* count */
-  ///////////
+  // count
   IntegerObservable? _count;
   set count(dynamic v)
   {
@@ -36,9 +34,7 @@ class DetectorModel extends DataSourceModel implements IDataSource
     return _count?.get() ?? 0;
   }
 
-  /////////////
-  /* detected */
-  /////////////
+  // item was detected
   IntegerObservable? _detected;
   set detected(dynamic v)
   {
@@ -52,40 +48,6 @@ class DetectorModel extends DataSourceModel implements IDataSource
     }
   }
   int get detected => _detected?.get() ?? 0;
-
-  ///////////////
-  /* tryharder */
-  ///////////////
-  BooleanObservable? _tryharder;
-  set tryharder(dynamic v)
-  {
-    if (_tryharder != null)
-    {
-      _tryharder!.set(v);
-    }
-    else if (v != null)
-    {
-      _tryharder = BooleanObservable(Binding.toKey(id, 'tryharder'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get tryharder => _tryharder?.get() ?? true;
-
-  ////////////
-  /* invert */
-  ////////////
-  BooleanObservable? _invert;
-  set invert(dynamic v)
-  {
-    if (_invert != null)
-    {
-      _invert!.set(v);
-    }
-    else if (v != null)
-    {
-      _invert = BooleanObservable(Binding.toKey(id, 'invert'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get invert => _invert?.get() ?? true;
 
   DetectorModel(WidgetModel parent, String? id) : super(parent, id);
 
@@ -113,8 +75,6 @@ class DetectorModel extends DataSourceModel implements IDataSource
     super.deserialize(xml);
 
     enabled   = Xml.get(node: xml, tag: 'enabled');
-    tryharder = Xml.get(node: xml, tag: 'tryharder');
-    invert    = Xml.get(node: xml, tag: 'invert');
     source    = S.toEnum(Xml.get(node: xml, tag: 'source'), DetectorSources.values) ?? DetectorSources.any;
   }
 

@@ -5,7 +5,7 @@ import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/datasources/zebra/wedge.dart' as ZEBRA;
-import 'package:fml/datasources/detectors/barcode/barcode.dart' as BARCODE;
+import 'package:fml/datasources/detectors/barcode/barcode_detector.dart';
 import 'package:fml/datasources/zebra/wedge.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helper/helper_barrel.dart';
@@ -65,7 +65,7 @@ class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener
     return true;
   }
 
-  onZebraData({BARCODE.Payload? payload})
+  onZebraData({Payload? payload})
   {
     // enabled?
     if (enabled == false) return;

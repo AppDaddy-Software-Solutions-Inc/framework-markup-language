@@ -15,7 +15,7 @@ class SseModel extends HttpModel implements IDataSource
 {
   late final SseChannel channel;
 
-  String? messageTypes;
+  String? events;
 
   BooleanObservable? _connected;
   set connected (dynamic v)
@@ -60,7 +60,7 @@ class SseModel extends HttpModel implements IDataSource
     super.deserialize(xml);
 
     // properties
-    messageTypes = Xml.get(node: xml, tag: 'messagetypes');
+    events = Xml.get(node: xml, tag: 'events');
   }
 
   @override
@@ -79,7 +79,7 @@ class SseModel extends HttpModel implements IDataSource
     try
     {
       connected = false;
-      channel = SseChannel.connect(Uri.parse(url!), headers: headers, body: body, method: method, messageTypes: messageTypes?.split(","));
+      channel = SseChannel.connect(Uri.parse(url!), headers: headers, body: body, method: method, events: events?.split(","));
       channel.stream.listen(_onData, onError: _onError, onDone: _onDone);
       connected = true;
     }

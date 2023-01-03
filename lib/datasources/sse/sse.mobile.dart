@@ -16,16 +16,18 @@ class IOSseChannel extends StreamChannelMixin implements SseChannel
   late final String? method;
   late final String? body;
   late final Map<String, String>? headers;
+  List<String> events = [];
 
-  IOSseChannel._(this.url, {String? method, String? body, Map<String, String>? headers, List<String>? messageTypes})
+  IOSseChannel._(this.url, {String? method, String? body, Map<String, String>? headers, List<String>? events})
   {
     this.method = method;
     this.headers = headers;
     this.body = body;
+    if (events != null) this.events.addAll(events!);
     _controller = StreamController<String?>.broadcast(onListen: _onListen, onCancel: _onCancel);
   }
 
-  factory IOSseChannel.connect(Uri url, {String? method, String? body, Map<String, String>? headers, List<String>? messageTypes}) => IOSseChannel._(url, method: method, body: body, headers: headers, messageTypes: messageTypes);
+  factory IOSseChannel.connect(Uri url, {String? method, String? body, Map<String, String>? headers, List<String>? events}) => IOSseChannel._(url, method: method, body: body, headers: headers, events: events);
 
   _onListen() async
   {
@@ -43,7 +45,10 @@ class IOSseChannel extends StreamChannelMixin implements SseChannel
       {
         response.stream.transform(SseTransformer()).listen((event)
         {
-          if (!_controller.isClosed) _controller.sink.add(event.data);
+          if (!_controller.isClosed)
+          {
+            if (events.contains(event.event))_controller.sink.add(event.data);
+          }
         });
         _onConnected.complete();
       }

@@ -2,12 +2,12 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/datasources/detectors/barcode/barcode.dart' as BARCODE;
+import 'package:fml/datasources/detectors/barcode/barcode_detector.dart';
 import 'package:fml/helper/helper_barrel.dart';
 
 abstract class IZebraListener
 {
-  onZebraData({BARCODE.Payload? payload});
+  onZebraData({Payload? payload});
 }
 
 class Reader
@@ -44,7 +44,7 @@ class Reader
   void _onEvent(event)
   {
       Map? result = jsonDecode(event);
-      BARCODE.Payload? payload = getPayload(result);
+      Payload? payload = getPayload(result);
       notifyListeners(payload);
   }
 
@@ -91,7 +91,7 @@ class Reader
     }
   }
 
-  notifyListeners(BARCODE.Payload? data)
+  notifyListeners(Payload? data)
   {
     if (_listeners != null && data != null)
     {
@@ -101,12 +101,12 @@ class Reader
     if (data == null) Log().debug('Zebra Wedge Payload is null');
   }
 
-  BARCODE.Payload? getPayload(Map? barcode)
+  Payload? getPayload(Map? barcode)
   {
     if ((barcode == null) || (barcode.isEmpty)) return null;
 
-    BARCODE.Payload payload = BARCODE.Payload();
-    BARCODE.Barcode bc = BARCODE.Barcode();
+    Payload payload = Payload();
+    Barcode bc = Barcode();
 
     String? display = barcode.containsKey("barcode") ? S.toStr(barcode["barcode"]) : "";
 
@@ -114,7 +114,7 @@ class Reader
     if (S.isNullOrEmpty(format)) format = "UNKNOWN";
     format = format!.trim().toUpperCase().replaceAll("LABEL-TYPE-", "");
 
-    BARCODE.BarcodeFormats fmt = S.toEnum(format, BARCODE.BarcodeFormats.values) ?? BARCODE.BarcodeFormats.UNKNOWN;
+    BarcodeFormats fmt = S.toEnum(format, BarcodeFormats.values) ?? BarcodeFormats.UNKNOWN;
 
     bc.type    = 0;
     bc.format  = S.fromEnum(fmt);

@@ -18,14 +18,12 @@ import 'package:fml/helper/helper_barrel.dart';
 class SystemPlatform extends WidgetModel {
   static String platform = "mobile";
 
-  get useragent {
+  String? get useragent
+  {
     const appleType = "ios";
     const androidType = "android";
-    if (Platform.isAndroid) {
-      return androidType;
-    } else if (Platform.isIOS) {
-      return appleType;
-    }
+    if (Platform.isAndroid) return androidType;
+    if (Platform.isIOS) return appleType;
     return null;
   }
 

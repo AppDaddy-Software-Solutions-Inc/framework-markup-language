@@ -12,16 +12,16 @@ class SystemPlatform extends WidgetModel
 {
   static String platform = "web";
 
-  get useragent
+  String? get useragent
   {
-    const appleType = "ios";
+    const appleType   = "ios";
     const androidType = "android";
     const desktopType = "desktop";
 
     final userAgent = window.navigator.userAgent.toString().toLowerCase();
 
     // smartphone
-    if( userAgent.contains("iphone"))  return appleType;
+    if( userAgent.contains("iphone"))   return appleType;
     if( userAgent.contains("android"))  return androidType;
 
     // tablet

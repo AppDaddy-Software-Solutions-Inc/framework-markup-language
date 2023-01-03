@@ -37,7 +37,7 @@ import 'package:fml/system.web.dart';
 // import 'package:fml/system.desktop.dart';
 
 // application build version
-final String version = '1.0.0+1';
+final String version = '1.0.0+3';
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
@@ -47,7 +47,6 @@ final ApplicationTypes appType  = ApplicationTypes.SingleApp;
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://config.xml to use the local assets
-
 
 final String defaultDomain = 'https://fml.appdaddy.co';
 
@@ -610,7 +609,7 @@ class System extends SystemPlatform implements IEventManager
   String? get platform => _platform?.get();
 
   StringObservable? _useragent;
-  String? get useragent => _useragent?.get();
+  String? get useragent => _useragent?.get() ?? super.useragent;
 
   StringObservable? _version;
   String get release => _version?.get() ?? "?";
@@ -657,7 +656,7 @@ class System extends SystemPlatform implements IEventManager
     _screenheight = IntegerObservable(Binding.toKey(id, 'screenheight'), null, scope: scope);
     _screenwidth  = IntegerObservable(Binding.toKey(id, 'screenwidth'), null, scope: scope);
     _platform     = StringObservable(Binding.toKey(id, 'platform'), SystemPlatform.platform, scope: scope);
-    _useragent    = StringObservable(Binding.toKey(id, 'useragent'), System().useragent, scope: scope);
+    _useragent    = StringObservable(Binding.toKey(id, 'useragent'), useragent, scope: scope);
     _version      = StringObservable(Binding.toKey(id, 'version'), version, scope: scope);
     _uuid         = _uuid == null ? StringObservable(Binding.toKey(id, 'uuid'), uuid(), scope: scope, getter: uuid) : null;
 

@@ -5,7 +5,6 @@ import 'package:camera/camera.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/foundation.dart';
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/detectors/detectable/detectable.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/camera/camera_model.dart';
 import 'package:fml/widgets/camera/stream/stream.dart' as STREAM;
@@ -17,6 +16,10 @@ import 'package:fml/datasources/file/file.dart' as FILE;
 import 'package:flutter/material.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/helper_barrel.dart';
+
+import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
+if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
+if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
 
 class CameraView extends StatefulWidget
 {
@@ -454,8 +457,8 @@ class CameraViewState extends State<CameraView>
   void onStream(CameraImage image, CameraDescription camera) {
     // detect in stream
     if (widget.model.detectors != null) {
-      DetectableImage? detectable = DetectableImage.fromCamera(image, camera);
-      if (detectable != null) widget.model.detectInStream(detectable);
+      DetectableImage detectable = DetectableImage.fromCamera(image, camera);
+      widget.model.detectInStream(detectable);
     }
   }
 

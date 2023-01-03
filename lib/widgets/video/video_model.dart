@@ -139,7 +139,7 @@ class VideoModel extends DecoratedWidgetModel implements IViewableWidget
 
   onUrlChange(Observable observable)
   {
-    //if ((initialized == true) && (autoexecute == true) && (enabled != false)) start();
+    if (player != null) player!.load(url);
   }
 
   Widget getView({Key? key}) => VideoView(this);

@@ -1,13 +1,16 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:cross_file/cross_file.dart';
 import 'package:file_picker/file_picker.dart' as FILEPICKER;
-import 'package:fml/datasources/detectors/detectable/detectable.dart';
+import 'package:fml/datasources/detectors/iDetectable.dart';
 import 'package:fml/log/manager.dart';
 import 'package:path/path.dart';
 import 'filepicker_view.dart' as ABSTRACT;
 import 'package:fml/datasources/file/file.dart' as FILE;
-import 'package:fml/datasources/detectors/iDetector.dart' ;
 import 'package:fml/helper/helper_barrel.dart';
+
+import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
+if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
+if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
 
 FilePickerView create({String? accept}) => FilePickerView(accept: accept);
 
@@ -32,7 +35,7 @@ class FilePickerView implements ABSTRACT.FilePicker
     this.accept = accept;
   }
 
-  Future<FILE.File?> launchPicker(List<IDetector>? detectors) async
+  Future<FILE.File?> launchPicker(List<IDetectable>? detectors) async
   {
     try
     {
@@ -50,10 +53,10 @@ class FilePickerView implements ABSTRACT.FilePicker
         if ((detectors != null) && (type.startsWith("image")))
         {
           // create detectable image
-          DetectableImage? detectable = DetectableImage.fromFilePath(result.files.single.path!);
+          DetectableImage detectable = DetectableImage.fromFilePath(result.files.single.path!);
 
           // detect
-          if (detectable != null) detectors.forEach((detector) => detector.detect(detectable));
+          detectors.forEach((detector) => detector.detect(detectable));
         }
 
         // return the file

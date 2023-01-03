@@ -3,10 +3,8 @@ import 'dart:async';
 import 'dart:html' as HTML;
 import 'dart:typed_data';
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/detectors/detectable/detectable.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
-
 import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
@@ -16,6 +14,9 @@ import 'package:fml/widgets/camera/camera_model.dart' as CAMERA;
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/camera/stream/stream.dart' as STREAM;
 import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
+if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
+if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
 
 View getView(model) => View(model);
 
@@ -397,7 +398,7 @@ class ViewState extends State<View> implements IModelListener
     // detect in stream
     if (widget.model.detectors != null) {
       DetectableImage? detectable = DetectableImage.fromRgba(bytes, width, height);
-      if (detectable != null) widget.model.detectInStream(detectable);
+      widget.model.detectInStream(detectable);
     }
   }
 
@@ -406,7 +407,7 @@ class ViewState extends State<View> implements IModelListener
     // detect in stream
     if (widget.model.detectors != null) {
       DetectableImage? detectable = DetectableImage.fromRgba(bytes, width, height);
-      if (detectable != null) widget.model.detectInImage(detectable);
+      widget.model.detectInImage(detectable);
     }
 
     // save file

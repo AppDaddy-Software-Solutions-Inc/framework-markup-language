@@ -1,30 +1,32 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/detectors/detectable/detectable.dart';
-import 'package:fml/datasources/detectors/iDetector.dart';
+import 'package:fml/datasources/detectors/iDetectable.dart';
 import 'package:fml/log/manager.dart';
-
 import 'package:fml/datasources/detectors/detector_model.dart' ;
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
-import 'package:fml/datasources/detectors/text/text.dart';
+import 'biometrics_detector.dart';
 import 'package:fml/helper/helper_barrel.dart';
 
-class TextDetectorModel extends DetectorModel implements IDetector
-{
-  TextDetectorModel(WidgetModel parent, String? id) : super(parent, id);
+import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
+if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
+if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
 
-  static TextDetectorModel? fromXml(WidgetModel parent, XmlElement xml)
+class BiometricsDetectorModel extends DetectorModel implements IDetectable
+{
+  BiometricsDetectorModel(WidgetModel parent, String? id) : super(parent, id);
+
+  static BiometricsDetectorModel? fromXml(WidgetModel parent, XmlElement xml)
   {
-    TextDetectorModel? model;
+    BiometricsDetectorModel? model;
     try
     {
-      model = TextDetectorModel(parent, Xml.get(node: xml, tag: 'id'));
+      model = BiometricsDetectorModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
     catch(e)
     {
-      Log().exception(e,  caller: 'ocr.Model');
+      Log().exception(e, caller: 'biometrics.Model');
       model = null;
     }
     return model;
@@ -42,7 +44,7 @@ class TextDetectorModel extends DetectorModel implements IDetector
     Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
   }
-  
+
   void detect(DetectableImage image) async
   {
     if (!busy)
@@ -50,13 +52,13 @@ class TextDetectorModel extends DetectorModel implements IDetector
       busy = true;
 
       count++;
-      Payload? payload = await TextDetector().detect(image);
+      Payload? payload = await iBiometricsDetector().detect(image);
       if (payload != null)
       {
         Data data = Payload.toData(payload);
         await onDetected(data);
       }
-      else await onDetectionFailed(Data(data: [{"message" : "Text detector $id failed to detect any text in the supplied image"}]));
+      else await onDetectionFailed(Data(data: [{"message" : "Biometrics detector $id failed to detect any faces in the supplied image"}]));
 
       busy = false;
     }

@@ -1,10 +1,10 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/base/model.dart';
+import 'package:fml/datasources/detectors/iDetectable.dart';
 import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
-import 'package:fml/datasources/detectors/iDetector.dart' ;
 import 'package:fml/datasources/file/file.dart' as FILE;
 import 'package:xml/xml.dart';
 import 'package:fml/helper/helper_barrel.dart';
@@ -12,7 +12,7 @@ import 'package:fml/helper/helper_barrel.dart';
 class FileModel extends DataSourceModel implements IDataSource
 {
   // detectors
-  List<IDetector>? detectors;
+  List<IDetectable>? detectors;
 
   FileModel(WidgetModel parent, String? id) : super(parent, id);
 
@@ -43,10 +43,10 @@ class FileModel extends DataSourceModel implements IDataSource
     // get detectors
     if (datasources != null)
     for (IDataSource source in datasources!)
-    if (source is IDetector)
+    if (source is IDetectable)
     {
       if (detectors == null) detectors = [];
-      detectors!.add(source as IDetector);
+      detectors!.add(source as IDetectable);
     }
   }
 

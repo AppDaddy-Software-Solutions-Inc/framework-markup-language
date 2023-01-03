@@ -1,11 +1,13 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/datasources/detectors/detectable/detectable.dart';
 import 'package:fml/data/data.dart';
 
-import 'text.mobile.dart'
-if (dart.library.io)   'text.mobile.dart'
-if (dart.library.html) 'text.web.dart';
-//import 'stub.dart';
+import 'text_detector.stub.dart'
+if (dart.library.io)   'text_detector.mobile.dart'
+if (dart.library.html) 'text_detector.web.dart';
+
+import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
+if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
+if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
 
 class Line
 {
@@ -43,8 +45,8 @@ class Payload
   }
 }
 
-abstract class TextDetector
+abstract class iTextDetector
 {
-  factory TextDetector() => getDetector();
+  factory iTextDetector() => getDetector();
   Future<Payload?> detect(DetectableImage image);
 }

@@ -1,8 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/text/text_model.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:google_fonts/google_fonts.dart' deferred as gf;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/phrase.dart';
@@ -18,11 +17,23 @@ class TextView extends StatefulWidget
 
 class _TextViewState extends State<TextView> implements IModelListener {
 
+  bool gfloaded = false;
+
   @override
-  void initState() {
+  void initState()
+  {
     super.initState();
 
-    
+    // load google fonts library
+    gf.loadLibrary().then((value)
+    {
+      // rebuild the view
+      setState(()
+      {
+        gfloaded = true;
+      });
+    });
+
     widget.model.registerListener(this);
 
     // If the model contains any databrokers we fire them before building so we can bind to the data
@@ -42,9 +53,9 @@ class _TextViewState extends State<TextView> implements IModelListener {
   }
 
   @override
-  void dispose() {
+  void dispose()
+  {
     widget.model.removeListener(this);
-
     super.dispose();
   }
 
@@ -57,7 +68,7 @@ class _TextViewState extends State<TextView> implements IModelListener {
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible || !gfloaded) return Offstage();
 
     String? label = widget.model.value;
     String? style = widget.model.style;
@@ -289,8 +300,8 @@ class _TextViewState extends State<TextView> implements IModelListener {
         if (widget.model.addWhitespace) text = ' ' + text;
 
         //4 ts here as dart interprets the tab character as a single space.
-
-        if (script == "sub") {
+        if (script == "sub")
+        {
           WidgetSpan widgetSpan = WidgetSpan(child: Transform.translate(
             offset: const Offset(2, 4),
             child: Text(text, textScaleFactor: 0.7,
@@ -306,7 +317,9 @@ class _TextViewState extends State<TextView> implements IModelListener {
                   decorationColor: widget.model.decorationcolor,
                   decorationThickness: widget.model.decorationweight),),),);
           textSpans.add(widgetSpan);
-        } else if (script == "sup") {
+        }
+        else if (script == "sup")
+        {
           WidgetSpan widgetSpan = WidgetSpan(child: Transform.translate(
             offset: const Offset(2, -4),
             child: Text(text, textScaleFactor: 0.7,
@@ -323,33 +336,40 @@ class _TextViewState extends State<TextView> implements IModelListener {
                   decorationThickness: widget.model.decorationweight),),),);
           textSpans.add(widgetSpan);
         }
-        else {
-          textSpan = TextSpan(text: text,
-              style: GoogleFonts.getFont(codeBlockFont ?? widget.model.font ?? System().font,
-                  backgroundColor: codeBlockBG,
-                  wordSpacing: wordSpace,
-                  letterSpacing: letterSpace,
-                  height: lineSpace,
-                  shadows: textShadow,
-                  fontWeight: weight,
-                  fontStyle: style,
-                  decoration: deco,
-                  decorationStyle: textDecoStyle,
-                  decorationColor: widget.model.decorationcolor,
-                  decorationThickness: widget.model.decorationweight)
-            // style: TextStyle(
-            //   wordSpacing: wordSpace,
-            //   letterSpacing: letterSpace,
-            //   height: lineSpace,
-            //   shadows: textShadow,
-            //   fontWeight: weight,
-            //   fontStyle: style,
-            //   decoration: deco,
-            //   decorationStyle: textDecoStyle,
-            //   decorationColor: widget.model.decorationcolor,
-            //   decorationThickness: widget.model.decorationweight
-            // ),
-          );
+        else
+        {
+          TextStyle? textstyle;
+          String? font = codeBlockFont ?? widget.model.font;
+          if (font != null)
+          {
+            textstyle = gf.GoogleFonts.getFont(font,
+                backgroundColor: codeBlockBG,
+                wordSpacing: wordSpace,
+                letterSpacing: letterSpace,
+                height: lineSpace,
+                shadows: textShadow,
+                fontWeight: weight,
+                fontStyle: style,
+                decoration: deco,
+                decorationStyle: textDecoStyle,
+                decorationColor: widget.model.decorationcolor,
+                decorationThickness: widget.model.decorationweight);
+          }
+          else
+          {
+            textstyle = TextStyle(
+                wordSpacing: wordSpace,
+                letterSpacing: letterSpace,
+                height: lineSpace,
+                shadows: textShadow,
+                fontWeight: weight,
+                fontStyle: style,
+                decoration: deco,
+                decorationStyle: textDecoStyle,
+                decorationColor: widget.model.decorationcolor,
+                decorationThickness: widget.model.decorationweight);
+          }
+          textSpan = TextSpan(text: text, style: textstyle);
           textSpans.add(textSpan);
         }
       });
@@ -376,25 +396,46 @@ class _TextViewState extends State<TextView> implements IModelListener {
 
 
 
-    if (widget.model.raw) {
-      view = SizedBox( //SizedBox is used to make the text fit the size of the widget.
-          width: widget.model.width,
-          child: Text(widget.model.value ?? '', style: GoogleFonts.getFont(
-              widget.model.font ?? System().font,
-              fontSize: size ?? textStyle!.fontSize,
-              wordSpacing: wordSpace,
-              letterSpacing: letterSpace,
-              height: lineSpace,
-              shadows: textShadow,
-              fontWeight: widget.model.bold ?? false ? FontWeight.bold : FontWeight
-                  .normal,
-              fontStyle: widget.model.italic ?? false ? FontStyle.italic : FontStyle
-                  .normal,
-              decoration: textDecoration,
-              decorationStyle: textDecoStyle,
-              decorationColor: widget.model.decorationcolor,
-              decorationThickness: widget.model.decorationweight)));
-    } else {
+    if (widget.model.raw)
+    {
+      TextStyle? textstyle;
+      String? font = widget.model.font;
+      if (font != null)
+      {
+         textstyle = gf.GoogleFonts.getFont(
+            font,
+            fontSize: size ?? textStyle!.fontSize,
+            wordSpacing: wordSpace,
+            letterSpacing: letterSpace,
+            height: lineSpace,
+            shadows: textShadow,
+            fontWeight: widget.model.bold ?? false ? FontWeight.bold : FontWeight.normal,
+            fontStyle: widget.model.italic ?? false ? FontStyle.italic : FontStyle.normal,
+            decoration: textDecoration,
+            decorationStyle: textDecoStyle,
+            decorationColor: widget.model.decorationcolor,
+            decorationThickness: widget.model.decorationweight);
+      }
+      else
+      {
+        textstyle = TextStyle(
+            wordSpacing: wordSpace,
+            letterSpacing: letterSpace,
+            height: lineSpace,
+            shadows: textShadow,
+            fontWeight: widget.model.bold ?? false ? FontWeight.bold : FontWeight.normal,
+            fontStyle: widget.model.italic ?? false ? FontStyle.italic : FontStyle.normal,
+            decoration: textDecoration,
+            decorationStyle: textDecoStyle,
+            decorationColor: widget.model.decorationcolor,
+            decorationThickness: widget.model.decorationweight);
+      }
+
+      //SizedBox is used to make the text fit the size of the widget.
+      view = SizedBox(width: widget.model.width, child: Text(widget.model.value ?? '', style: textstyle));
+    }
+    else
+    {
       view = SizedBox(
           width: widget.model.width,
           child: RichText(

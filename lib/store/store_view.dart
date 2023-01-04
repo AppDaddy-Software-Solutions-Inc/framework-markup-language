@@ -359,10 +359,21 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
     // set default domain
     await System().setDomain(domain);
 
+    // get config for domain
+    var config = await System().getConfigModel(domain);
+
     // push home page
     String? home = System().homePage;
     NavigationManager().setNewRoutePath(PageConfiguration(url: home, title: "Store"), source: "store");
 
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    if (config != null) {
+      String brightness = config.get('BRIGHTNESS') ?? 'light';
+      String color = config.get('COLOR_SCHEME') ?? 'lightblue';
+      themeNotifier.setTheme(brightness, color);
+      themeNotifier.mapSystemThemeBindables();
+      // var themedata = themeNotifier.getTheme();
+    }
     widget.model.busy = false;
   }
 }

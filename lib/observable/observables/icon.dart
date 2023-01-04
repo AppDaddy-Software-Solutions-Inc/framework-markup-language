@@ -1,13 +1,22 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/graphics.dart';
+import 'package:fml/graphics.dart' deferred as gf;
 import 'package:flutter/material.dart';
-
-import '../scope.dart';
-import '../observable.dart' ;
+import 'package:fml/observable/observable.dart';
+import 'package:fml/observable/scope.dart';
 
 class IconObservable extends Observable
 {
-  IconObservable(String? name, dynamic value, {Scope? scope, OnChangeCallback? listener, Getter? getter, Setter? setter}) : super(name, value, scope: scope, listener: listener, getter: getter, setter: setter);
+  bool _libraryLoaded = false;
+  String? _iconname;
+
+  IconObservable(String? name, dynamic value, {Scope? scope, OnChangeCallback? listener, Getter? getter, Setter? setter}) : super(name, value, scope: scope, listener: listener, getter: getter, setter: setter)
+  {
+    gf.loadLibrary().then((_)
+    {
+      _libraryLoaded = true;
+      if (_iconname != null) set(toIcon(_iconname!));
+    });
+  }
 
   @override
   IconData? get({String? dotnotation})
@@ -32,10 +41,19 @@ class IconObservable extends Observable
     }
   }
 
-  static IconData? toIcon(String name)
+  IconData? toIcon(String name)
   {
-    name = name.toLowerCase();
-    if (Graphics.icons.containsKey(name)) return Graphics.icons[name];
-    return null;
+    IconData? icon;
+    if (_libraryLoaded)
+    {
+      name = name.toLowerCase();
+      if (gf.Graphics.icons.containsKey(name)) icon = gf.Graphics.icons[name];
+    }
+    else
+    {
+      _iconname = name;
+      icon = Icons.hourglass_empty_rounded;
+    }
+    return icon;
   }
 }

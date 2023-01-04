@@ -1,7 +1,7 @@
 name: fml
 description: Flutter Markup Language
 
-version: 1.0.0+3
+version: 1.0.0+4
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
@@ -18,8 +18,8 @@ dependencies:
   audioplayers: 0.20.1
   # MIT
 
-  # Updated 2022/10/20
-  camera: 0.10.0+3
+  # Updated 2023/01/04
+  camera: 0.10.1
   # BSD-3-Clause
 
   # Updated 2022/11/17

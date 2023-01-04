@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:camera/camera.dart';
+import 'package:camera/camera.dart' show CameraImage;
+import 'package:camera/camera.dart' show CameraDescription;
 class DetectableImage
 {
   final dynamic image;

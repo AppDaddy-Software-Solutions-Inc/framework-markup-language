@@ -40,7 +40,8 @@ void runMainApp()
       {
         try
         {
-          return ThemeNotifier(THEMER.MyTheme().deriveTheme(System().colorscheme, googleFont: System().font));
+          var font = System().font;
+          return ThemeNotifier(THEMER.MyTheme().deriveTheme(System().colorscheme, googleFont: font));
         }
         catch (e)
         {

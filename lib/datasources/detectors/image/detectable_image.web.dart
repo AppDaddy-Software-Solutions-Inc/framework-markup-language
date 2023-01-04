@@ -1,8 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:camera/camera.dart';
-import 'package:zxing_lib/common.dart';
-import 'package:zxing_lib/zxing.dart' show RGBLuminanceSource;
-import 'package:zxing_lib/zxing.dart' show BinaryBitmap;
+import 'package:camera/camera.dart' show CameraImage;
+import 'package:camera/camera.dart' show CameraDescription;
+import 'package:zxing_lib/common.dart' show HybridBinarizer;
+import 'package:zxing_lib/zxing.dart'  show RGBLuminanceSource;
+import 'package:zxing_lib/zxing.dart'  show BinaryBitmap;
 import 'package:fml/helper/helper_barrel.dart';
 
 class DetectableImage

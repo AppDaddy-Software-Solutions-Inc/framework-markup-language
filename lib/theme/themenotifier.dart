@@ -2,15 +2,32 @@
 import 'package:flutter/material.dart';
 import 'package:fml/hive/settings.dart';
 import 'package:fml/system.dart';
-
+import 'package:google_fonts/google_fonts.dart' deferred as gf;
 import 'package:fml/observable/observables/color.dart';
 
 class ThemeNotifier with ChangeNotifier {
   ThemeData _themeData;
 
-  ThemeNotifier(this._themeData);
+  ThemeNotifier(this._themeData) {
+   init();
+  }
 
   getTheme() => _themeData;
+
+  bool gfloaded = false;
+
+  Future<bool> init() async
+  {
+    // load google fonts library
+    gf.loadLibrary().then((value)
+    {
+      gfloaded = true;
+      setTheme(System().brightness ?? 'light', System().colorscheme ?? 'lightblue');
+    });
+
+    // await getBrightness();
+    return true;
+  }
 
   void mapSystemThemeBindables() {
 
@@ -52,6 +69,7 @@ class ThemeNotifier with ChangeNotifier {
 
   setTheme(String sBrightness, [String? sColor, Map<String, String>? schemeColors]) async {
     Brightness brightness = await Settings().get('brightness') == 'dark' ? Brightness.dark : Brightness.light;
+    TextTheme? fontTheme = gfloaded ? gf.GoogleFonts.getTextTheme(System().font) : null;
     if (sBrightness.toLowerCase() == 'light'){
       brightness = Brightness.light;
       System().brightness = sBrightness.toLowerCase();
@@ -64,11 +82,11 @@ class ThemeNotifier with ChangeNotifier {
     if (sColor != null) {
       Color? colorScheme = ColorObservable.toColor(sColor);
       System().colorscheme = sColor;
-      ThemeData themeData = ThemeData(colorSchemeSeed: colorScheme, brightness: brightness, useMaterial3: true);
+      ThemeData themeData = ThemeData(colorSchemeSeed: colorScheme, brightness: brightness, fontFamily: System().font, textTheme: fontTheme, useMaterial3: true);
       _themeData = themeData;
     }
     else {
-      ThemeData themeData = ThemeData(brightness: brightness, useMaterial3: true);
+      ThemeData themeData = ThemeData(brightness: brightness, fontFamily: System().font, textTheme: fontTheme, useMaterial3: true);
       _themeData = themeData;
     }
     notifyListeners();

@@ -40,22 +40,22 @@ class StoreModel extends WidgetModel
       if (response.ok) found = true;
     }
 
-    //////////////
-    /* Try Http */
-    //////////////
-    if ((!found) && (!uri.hasScheme))
-    {
-      domain = 'http://' + url;
-      response = await Http.get(domain + '/' + 'config.xml', timeout: 5, refresh: true);
-      if (response.ok) found = true;
-    }
-
     ///////////////
     /* Try Https */
     ///////////////
     if ((!found) && (!uri.hasScheme))
     {
       domain = 'https://' + url;
+      response = await Http.get(domain + '/' + 'config.xml', timeout: 5, refresh: true);
+      if (response.ok) found = true;
+    }
+    
+    //////////////
+    /* Try Http */
+    //////////////
+    if ((!found) && (!uri.hasScheme))
+    {
+      domain = 'http://' + url;
       response = await Http.get(domain + '/' + 'config.xml', timeout: 5, refresh: true);
       if (response.ok) found = true;
     }

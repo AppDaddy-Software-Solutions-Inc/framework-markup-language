@@ -14,7 +14,7 @@ import 'package:fml/helper/helper_barrel.dart';
 class TextModel extends DecoratedWidgetModel implements IViewableWidget
 {
   String? markup;
-
+  
   ///////////
   /* Value */
   ///////////
@@ -430,7 +430,8 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
     dynamic overflow,
     dynamic halign,
     dynamic style,
-  }) : super(parent, id) {
+  }) : super(parent, id) 
+  {
     if (value != null) this.value = value;
     if (size != null) this.size = size;
     if (color != null) this.color = color;
@@ -459,7 +460,7 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
     if (style != null) this.style = style;
     if (raw != null) this.raw = raw;
   }
-
+  
   static TextModel? fromXml(WidgetModel parent, XmlElement xml) {
     TextModel? model;
     try {

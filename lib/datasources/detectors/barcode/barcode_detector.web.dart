@@ -1,10 +1,10 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:fml/log/manager.dart';
-import 'package:zxing_lib/oned.dart';
-import 'package:zxing_lib/pdf417.dart';
-import 'package:zxing_lib/qrcode.dart';
-import 'package:zxing_lib/zxing.dart';
+import 'package:zxing_lib/oned.dart'   deferred as code39;
+import 'package:zxing_lib/pdf417.dart' deferred as pdf417;
+import 'package:zxing_lib/qrcode.dart' deferred as qrcode;
+import 'package:zxing_lib/zxing.dart'  deferred as zxing;
 import 'barcode_detector.dart';
 import 'package:fml/helper/helper_barrel.dart';
 
@@ -27,7 +27,10 @@ class BarcodeDetector implements iBarcodeDetector
     try
     {
       Payload? result;
-      if (detectable.image is BinaryBitmap)
+
+      await zxing.loadLibrary();
+
+      if (detectable.image != null)
       {
         //set barcode format
         if (formats == null) formats = [];
@@ -51,44 +54,46 @@ class BarcodeDetector implements iBarcodeDetector
   }
 
   // any format
-  static MultiFormatReader? _multiFormatReader;
-  static Future<Payload> _multi(BinaryBitmap bitmap, List<BarcodeFormats>? formats, bool? tryharder, bool? invert) async
+  static dynamic _multiFormatReader;
+  static Future<Payload> _multi(dynamic bitmap, List<BarcodeFormats>? formats, bool? tryharder, bool? invert) async
   {
-    if (_multiFormatReader == null) _multiFormatReader = MultiFormatReader();
+    if (_multiFormatReader == null) _multiFormatReader = zxing.MultiFormatReader();
 
-    MultiFormatReader reader = _multiFormatReader!;
+    var reader = _multiFormatReader!;
 
-    Map<DecodeHintType, Object> hints   = Map<DecodeHintType, Object>();
-    hints[DecodeHintType.TRY_HARDER]    = (tryharder == true);
-    hints[DecodeHintType.ALSO_INVERTED] = (invert == true);
+    Map<dynamic, Object> hints   = Map<dynamic, Object>();
+    hints[zxing.DecodeHintType.TRY_HARDER]    = (tryharder == true);
+    hints[zxing.DecodeHintType.ALSO_INVERTED] = (invert == true);
     //hints[DecodeHintType.POSSIBLE_FORMATS] = BarcodeFormats.;
 
     Log().debug('Multi Decode Start');
-    Result result = reader.decode(bitmap, hints);
+    var result = reader.decode(bitmap, hints);
     Log().debug('Multi Decode End');
 
     return _buildPayload(result);
   }
 
   // pdf417 format
-  static PDF417Reader? _pDF417Reader;
-  static Future<Payload> _pdf417(BinaryBitmap bitmap, bool? tryharder, bool? invert) async
+  static dynamic _pDF417Reader;
+  static Future<Payload> _pdf417(dynamic bitmap, bool? tryharder, bool? invert) async
   {
-    if (_pDF417Reader == null) _pDF417Reader = PDF417Reader();
-    PDF417Reader reader = _pDF417Reader!;
+    await pdf417.loadLibrary();
 
-    Map<DecodeHintType, Object> hints   = Map<DecodeHintType, Object>();
-    hints[DecodeHintType.TRY_HARDER]    = (tryharder == true);
-    hints[DecodeHintType.ALSO_INVERTED] = (invert == true);
+    if (_pDF417Reader == null) _pDF417Reader = pdf417.PDF417Reader();
+    var reader = _pDF417Reader!;
+
+    Map<dynamic, Object> hints   = Map<dynamic, Object>();
+    hints[zxing.DecodeHintType.TRY_HARDER]    = (tryharder == true);
+    hints[zxing.DecodeHintType.ALSO_INVERTED] = (invert == true);
 
     Log().debug('PDF417 Decode Start');
-    Result result = reader.decode(bitmap, hints);
+    var result = reader.decode(bitmap, hints);
 
     return _buildPayload(result);
   }
 
   // ontario drivers license
-  static Future<Payload> _ondl(BinaryBitmap bitmap, bool? tryharder, bool? invert) async
+  static Future<Payload> _ondl(dynamic bitmap, bool? tryharder, bool? invert) async
   {
     Payload? payload;
     payload = await _pdf417(bitmap, tryharder, invert);
@@ -190,40 +195,45 @@ class BarcodeDetector implements iBarcodeDetector
   }
 
   // code 39
-  static Code39Reader? _code39Reader;
-  static Future<Payload> _code39(BinaryBitmap bitmap, bool? tryharder, bool? invert) async
+  static dynamic _code39Reader;
+  static Future<Payload> _code39(dynamic bitmap, bool? tryharder, bool? invert) async
   {
-    if (_code39Reader == null) _code39Reader = Code39Reader(false, true);
+    await code39.loadLibrary();
+
+    if (_code39Reader == null) _code39Reader = code39.Code39Reader(false, true);
     var reader = _code39Reader!;
 
-    Map<DecodeHintType, Object> hints = Map<DecodeHintType, Object>();
-    hints[DecodeHintType.TRY_HARDER] = (tryharder == true);
-    hints[DecodeHintType.ALSO_INVERTED] = (invert == true);
+    Map<dynamic, Object> hints   = Map<dynamic, Object>();
+    hints[zxing.DecodeHintType.TRY_HARDER]    = (tryharder == true);
+    hints[zxing.DecodeHintType.ALSO_INVERTED] = (invert == true);
 
     Log().debug('Code39 Decode Start');
-    Result result = reader.decode(bitmap, hints);
+    var result = reader.decode(bitmap, hints);
 
     return _buildPayload(result);
   }
 
   // qr code
-  static QRCodeReader? _qRCodeReader;
-  static Future<Payload> _qrcode(BinaryBitmap bitmap, bool? tryharder, bool? invert) async
+  static dynamic _qRCodeReader;
+  static Future<Payload> _qrcode(dynamic bitmap, bool? tryharder, bool? invert) async
   {
-    if (_qRCodeReader == null) _qRCodeReader = QRCodeReader();
+    // load deferred library
+    await qrcode.loadLibrary();
+
+    if (_qRCodeReader == null) _qRCodeReader = qrcode.QRCodeReader();
     var reader = _qRCodeReader!;
 
-    Map<DecodeHintType, Object> hints = Map<DecodeHintType, Object>();
-    hints[DecodeHintType.TRY_HARDER] = (tryharder == true);
-    hints[DecodeHintType.ALSO_INVERTED] = (invert == true);
+    Map<dynamic, Object> hints   = Map<dynamic, Object>();
+    hints[zxing.DecodeHintType.TRY_HARDER]    = (tryharder == true);
+    hints[zxing.DecodeHintType.ALSO_INVERTED] = (invert == true);
 
     Log().debug('QR Decode Start');
-    Result result = reader.decode(bitmap, hints);
+    var result = reader.decode(bitmap, hints);
 
     return _buildPayload(result);
   }
 
-  static Payload _buildPayload(Result result)
+  static Payload _buildPayload(dynamic result)
   {
     Barcode barcode = Barcode();
     barcode.barcode = result.text;

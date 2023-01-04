@@ -4,7 +4,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/transition.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/theme/theme_model.dart' as THEME;
-import 'package:google_fonts/google_fonts.dart';
+import 'package:google_fonts/google_fonts.dart' deferred as gf;
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/helper_barrel.dart';
 
@@ -16,31 +16,43 @@ class MyTheme
   static const String font = 'Roboto';
   static Brightness? brightnessPreference;
 
-  factory MyTheme()
-  {
-    return _singleton;
-  }
+  factory MyTheme() => _singleton;
 
   MyTheme._init()
   {
     init();
   }
 
+  bool gfloaded = false;
+
   Future<bool> init() async
   {
+    // load google fonts library
+    gf.loadLibrary().then((value)
+    {
+      //setState(()
+      {
+        gfloaded = true;
+      };
+    });
+
     // await getBrightness();
     return true;
   }
 
   /// Derive theme from a color value and a https://fonts.google.com/ font
-  ThemeData deriveTheme(String? fromValue, {String googleFont = font}) {
+  ThemeData deriveTheme(String? fromValue, {String googleFont = font})
+  {
     Color? col = ColorObservable.toColor(fromValue);
     Brightness? b = getBrightness();
+
+    TextTheme? fonttheme = gfloaded ? gf.GoogleFonts.getTextTheme(googleFont) : null;
+
     return ThemeData(
         colorSchemeSeed: col ?? Colors.blueGrey,
         brightness: b,
         fontFamily: font,
-        textTheme: GoogleFonts.getTextTheme(googleFont),
+        textTheme: fonttheme,
         pageTransitionsTheme: PageTransitionsTheme(builders: {
           TargetPlatform.android: CustomTransitionBuilder('android'),
           TargetPlatform.iOS: CustomTransitionBuilder('ios'),

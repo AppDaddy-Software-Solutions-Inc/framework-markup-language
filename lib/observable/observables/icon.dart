@@ -1,9 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/graphics.dart';
+import 'package:fml/graphics.dart' deferred as gf;
 import 'package:flutter/material.dart';
-
-import '../scope.dart';
-import '../observable.dart' ;
+import 'package:fml/observable/observable.dart';
+import 'package:fml/observable/scope.dart';
 
 class IconObservable extends Observable
 {
@@ -35,7 +34,7 @@ class IconObservable extends Observable
   static IconData? toIcon(String name)
   {
     name = name.toLowerCase();
-    if (Graphics.icons.containsKey(name)) return Graphics.icons[name];
+    if (gf.Graphics.icons.containsKey(name)) return gf.Graphics.icons[name];
     return null;
   }
 }

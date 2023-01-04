@@ -3,7 +3,7 @@ import 'dart:collection';
 import 'dart:convert';
 import 'dart:core';
 import 'dart:ui';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_core/firebase_core.dart' show FirebaseApp;
 import 'package:flutter/foundation.dart';
 import 'package:fml/datasources/log/log_model.dart';
 import 'package:fml/event/event.dart';
@@ -48,7 +48,7 @@ final ApplicationTypes appType  = ApplicationTypes.SingleApp;
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://config.xml to use the local assets
 
-final String defaultDomain = 'https://fml.appdaddy.co';
+final String defaultDomain = 'https://fml.dev';
 
 // denotes FML support Level
 int? fmlVersion = currentVersion;

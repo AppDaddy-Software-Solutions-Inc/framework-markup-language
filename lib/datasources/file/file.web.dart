@@ -2,7 +2,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:html' as HTML;
-import 'package:camera/camera.dart';
+import 'package:camera/camera.dart' show XFile;
 import 'package:fml/log/manager.dart';
 import 'file.base.dart';
 

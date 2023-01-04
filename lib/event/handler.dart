@@ -1,8 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:core';
 import 'package:collection/collection.dart' show IterableExtension;
-import 'package:firebase_auth/firebase_auth.dart' as FIREBASE;
-import 'package:firebase_core/firebase_core.dart' as FIREBASE;
+import 'package:firebase_auth/firebase_auth.dart' deferred as fbauth;
+import 'package:firebase_core/firebase_core.dart' deferred as fbcore;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/dialog/service.dart';
@@ -390,7 +390,7 @@ class EventHandler extends Eval
     String? token;
     if (!S.isNullOrEmpty(provider))
     {
-      FIREBASE.User? user = await _firebaseLogon(provider,<String>['email', 'profile']);
+      var user = await _firebaseLogon(provider,<String>['email', 'profile']);
       if (user != null) token = await user.getIdToken();
     }
     if (token == null) return false;
@@ -443,27 +443,31 @@ class EventHandler extends Eval
       String  apiKey     = System().config?.get("FIREBASE_API_KEY") ?? '0000000000';
       String? authDomain = System().config?.get("FIREBASE_AUTH_DOMAIN");
 
-      FIREBASE.FirebaseOptions options = FIREBASE.FirebaseOptions(appId: "FML", messagingSenderId: "FML", projectId: "FML", apiKey: apiKey, authDomain: authDomain);
-      System().firebase = await FIREBASE.Firebase.initializeApp(options: options);
+      await fbauth.loadLibrary();
+      await fbcore.loadLibrary();
+
+      var options = fbcore.FirebaseOptions(appId: "FML", messagingSenderId: "FML", projectId: "FML", apiKey: apiKey, authDomain: authDomain);
+      System().firebase = await fbcore.Firebase.initializeApp(options: options);
     }
     return true;
   }
 
-  Future<FIREBASE.User?> _firebaseLogon(String provider, List<String> scopes) async
+  Future<dynamic> _firebaseLogon(String provider, List<String> scopes) async
   {
-    FIREBASE.User? user;
+    var user;
     try
     {
       await _firebaseInit();
       await _firebaseLogoff();
-      FIREBASE.OAuthProvider _provider = FIREBASE.OAuthProvider(provider);
+
+      var _provider = fbauth.OAuthProvider(provider);
       _provider.scopes.addAll(scopes);
 
       Map<String,String> parameters = Map<String,String>();
       parameters["prompt"] = 'select_account';
       _provider.setCustomParameters(parameters);
 
-      FIREBASE.UserCredential credential = await FIREBASE.FirebaseAuth.instance.signInWithPopup(_provider);
+      var credential = await fbauth.FirebaseAuth.instance.signInWithPopup(_provider);
       user = credential.user;
     }
     catch(e)
@@ -481,7 +485,7 @@ class EventHandler extends Eval
     try
     {
       await _firebaseInit();
-      await FIREBASE.FirebaseAuth.instance.signOut();
+      await fbauth.FirebaseAuth.instance.signOut();
     }
     catch(e)
     {

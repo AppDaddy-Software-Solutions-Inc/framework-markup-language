@@ -23,7 +23,7 @@ class IOSseChannel extends StreamChannelMixin implements SseChannel
     this.method = method;
     this.headers = headers;
     this.body = body;
-    if (events != null) this.events.addAll(events!);
+    if (events != null) this.events.addAll(events);
     _controller = StreamController<String?>.broadcast(onListen: _onListen, onCancel: _onCancel);
   }
 

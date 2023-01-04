@@ -386,9 +386,7 @@ class SpanModel extends DecoratedWidgetModel implements IViewableWidget
     if (textvalue == null) textvalue = Xml.get(node: xml, tag: 'label');
     if (textvalue == null) textvalue = Xml.getText(xml);
 
-
     // properties
-
     shadowcolor = Xml.get(node: xml, tag: 'shadowcolor');
     elevation = Xml.get(node: xml, tag: 'elevation');
     shadowx = Xml.get(node: xml, tag: 'shadowx');
@@ -413,13 +411,9 @@ class SpanModel extends DecoratedWidgetModel implements IViewableWidget
     style = Xml.get(node: xml, tag: 'style');
     raw = Xml.get(node: xml, tag: 'raw');
 
-
+    // build spans
     List<TextModel> textSpans = findChildrenOfExactType(TextModel).cast<TextModel>();
-
-      // build spans
-      textSpans.forEach((text) => this.spanTextValues.add(text));
-
-
+    textSpans.forEach((text) => this.spanTextValues.add(text));
   }
 
   @override

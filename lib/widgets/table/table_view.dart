@@ -72,6 +72,7 @@ class _TableViewState extends State<TableView> implements IModelListener, IEvent
     EventManager.of(widget.model)?.registerEventListener(EventTypes.scroll,   onScroll);
     EventManager.of(widget.model)?.registerEventListener(EventTypes.export,   onExport);
     EventManager.of(widget.model)?.registerEventListener(EventTypes.complete, onComplete);
+    EventManager.of(widget.model)?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
 
     super.didChangeDependencies();
   }
@@ -86,11 +87,13 @@ class _TableViewState extends State<TableView> implements IModelListener, IEvent
       EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.scroll,   onScroll);
       EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.export,   onExport);
       EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.complete, onComplete);
+      EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.scrollto, onScrollTo);
 
       // register new event listeners
       EventManager.of(widget.model)?.registerEventListener(EventTypes.scroll,   onScroll);
       EventManager.of(widget.model)?.registerEventListener(EventTypes.export,   onExport);
       EventManager.of(widget.model)?.registerEventListener(EventTypes.complete, onComplete);
+      EventManager.of(widget.model)?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
 
       // remove old model listener
       oldWidget.model.removeListener(this);
@@ -110,6 +113,7 @@ class _TableViewState extends State<TableView> implements IModelListener, IEvent
     EventManager.of(widget.model)?.removeEventListener(EventTypes.scroll,   onScroll);
     EventManager.of(widget.model)?.removeEventListener(EventTypes.export,   onExport);
     EventManager.of(widget.model)?.removeEventListener(EventTypes.complete, onComplete);
+    EventManager.of(widget.model)?.removeEventListener(EventTypes.scrollto, onScrollTo);
 
     hScroller?.dispose();
     vScroller?.dispose();
@@ -125,6 +129,20 @@ class _TableViewState extends State<TableView> implements IModelListener, IEvent
     catch(e)
     {
       Log().exception(e);
+    }
+  }
+
+  /// Takes an event (onscroll) and uses the id to scroll to that widget
+  onScrollTo(Event event) {
+    // BuildContext context;
+    event.handled = true;
+    if (event.parameters!.containsKey('id')) {
+      String? id = event.parameters!['id'];
+      var child = widget.model.findDescendantOfExactType(null, id: id);
+
+      // if there is an error with this, we need to check _controller.hasClients as it must not be false when using [ScrollPosition],such as [position], [offset], [animateTo], and [jumpTo],
+      if ((child != null) && (child.context != null))
+        Scrollable.ensureVisible(child.context, duration: Duration(seconds: 1), alignment: 0.2);
     }
   }
 

@@ -11,26 +11,24 @@ import 'payload.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/helper_barrel.dart';
 
-enum Methods {read, write}
-
 class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
 {
   IMqtt? mqtt;
 
-  // method
-  StringObservable? _method;
-  set method(dynamic v)
+  // connected
+  BooleanObservable? _connected;
+  set connected (dynamic v)
   {
-    if (_method != null)
+    if (_connected != null)
     {
-      _method!.set(v);
+      _connected!.set(v);
     }
     else if (v != null)
     {
-      _method = StringObservable(Binding.toKey(id, 'method'), v, scope: scope, listener: onPropertyChange);
+      _connected = BooleanObservable(Binding.toKey(id, 'connected'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  String? get method => _method?.get();
+  bool get connected => _connected?.get() ?? false;
 
   // url
   StringObservable? _url;
@@ -68,7 +66,6 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
   @override
   void dispose()
   {
-    mqtt?.removeListener(this);
     mqtt?.dispose();
     super.dispose();
   }
@@ -77,45 +74,30 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
   @override
   void deserialize(XmlElement xml)
   {
-
     // deserialize
     super.deserialize(xml);
 
     // properties
-    method = Xml.get(node: xml, tag: 'method');
-    url    = Xml.get(node: xml, tag: 'url');
+    url = Xml.get(node: xml, tag: 'url');
   }
 
+  @override
   Future<bool> start({bool refresh: false, String? key}) async
   {
     bool ok = true;
-
-    if (mqtt == null) mqtt = IMqtt.create(url);
+    if (mqtt == null && url != null) mqtt = IMqtt.create(url!, this);
     if (mqtt != null)
-    {
-      mqtt!.registerListener(this);
-
-      Methods method = S.toEnum(this.method, Methods.values) ?? Methods.read;
-      if (method == Methods.write)
-      {
-          // replace file references
-          String? body = await scope?.replaceFileReferences(this.body);
-
-          // publish the message
-          ok = await mqtt!.publish(msg: body);
-
-          // process response
-          ok = await onResponse(Data(), code: ok ? 200 : 500);
-      }
-    }
+         ok = await mqtt!.connect();
     else ok = false;
+    connected = ok;
     return ok;
   }
 
   Future<bool> stop() async
   {
-    if (mqtt != null) mqtt!.removeListener(this);
+    mqtt?.disconnect();
     super.stop();
+    connected = false;
     return true;
   }
 
@@ -132,11 +114,37 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
       if (document != null) map = Xml.toMap(node: document.rootElement);
 
       map['topic'] = payload.topic;
-      map['body'] = payload.payload;
+      map['body']  = payload.payload;
 
       Data data = Data();
       data.add(map);
       onResponse(data, code: 200);
     }
+  }
+
+  @override
+  Future<bool?> execute(String propertyOrFunction, List<dynamic> arguments) async
+  {
+    var function = propertyOrFunction.toLowerCase().trim();
+    switch (function)
+    {
+      case "publish":
+        String? topic = S.toStr(S.item(arguments, 0));
+        String? message = S.toStr(S.item(arguments, 1));
+        if (mqtt != null && topic != null && message != null) mqtt!.publish(topic, message);
+        return true;
+
+      case "subscribe":
+        String? topic = S.toStr(S.item(arguments, 0));
+        if (mqtt != null && topic != null) mqtt!.subscribe(topic);
+        return true;
+
+      case "connect":
+        return await start();
+
+      case "disconnect":
+        return await stop();
+    }
+    return super.execute(propertyOrFunction, arguments);
   }
 }

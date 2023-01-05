@@ -10,48 +10,36 @@ import 'payload.dart';
 import 'iMqtt.dart';
 import 'package:fml/helper/helper_barrel.dart';
 
-IMqtt? getMqtt(String? url, {IMqttListener? listener}) => MqttWeb(url, listener: listener);
+IMqtt? getMqtt(String url, IMqttListener listener) => MqttWeb(url, listener);
 
 class MqttWeb implements IMqtt
 {
   late String url;
   late String scheme;
   late String server;
-  int?    port;
-  String? topic;
-  String id    = '';
-  String identifier = (System().setUserProperty('name') ?? 'unknown') + " : " + Uuid().v1();
-  int    keepalive = 60;
-  bool?   connected;
-  List<String?> pending = [];
+  late int    port;
+  int  keepalive = 60;
+  bool connected = false;
 
+  String identifier = (System().userProperty('name') ?? 'unknown') + " : " + Uuid().v1();
   late MqttBrowserClient client;
 
-  List<IMqttListener>? _listeners;
+  IMqttListener listener;
   bool stop = false;
 
-  MqttWeb(String? url, {IMqttListener? listener})
+  MqttWeb(String url, this.listener)
   {
-    if (url == null) return;
-
-    /////////////////////
-    /* Convert the URL */
-    /////////////////////
     Uri? uri = S.toURI(url);
     if (uri == null) return;
     this.scheme = 'ws';
     this.server = uri.host;
-    this.port   = (uri.port <= 0) ? 61614 : uri.port;
-    this.topic  = uri.path;
-    if (topic != null) topic = topic!.substring(1);
-    this.url = scheme + '://' + server;
+    this.port   = url.contains(":") ? uri.port : 61614;
+    this.url    = scheme + '://' + server;
 
     Log().debug('MQTT:: Domain - $url');
 
-    ///////////////////
-    /* Create Client */
-    ///////////////////
-    client = MqttBrowserClient(this.url, id);
+    /// Create Client
+    client = MqttBrowserClient(this.url, identifier);
 
     /// Set logging on if needed, defaults to off
     client.logging(on: false);
@@ -79,40 +67,6 @@ class MqttWeb implements IMqtt
     /// Set a ping received callback if needed, called whenever a ping response(pong) is received
     /// from the source.
     client.pongCallback = pong;
-
-    ///////////////////////
-    /* Register Listener */
-    ///////////////////////
-    if (listener != null) registerListener(listener);
-
-    ////////////////
-    /* Initialize */
-    ////////////////
-    _initialize();
-  }
-
-  Future<bool> _initialize() async
-  {
-    bool ok = true;
-    if (ok) ok = await connect();
-    if (ok) ok = await subscribe(topic!);
-    return ok;
-  }
-
-  /// The client has a change notifier object(see the Observable class) which we then listen to to get
-  /// notifications of published updates to each subscribed topic.
-  void onMessage (List<MqttReceivedMessage<MqttMessage>> messages)
-  {
-    messages.forEach((msg)
-    {
-      final MqttPublishMessage recMess = msg.payload as MqttPublishMessage;
-      final pt = MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
-
-      Log().debug('MQTT -> Message received for topic [${msg.topic}] Message[$pt]');
-
-      Payload data = Payload(topic: msg.topic, payload: pt);
-      notifyListeners(data);
-    });
   }
 
   Future<bool> connect() async
@@ -127,7 +81,7 @@ class MqttWeb implements IMqtt
         .withWillTopic('willtopic') // If you set this you must set a will message
         .withWillMessage('My Will message')
         .startClean() // Non persistent session for testing
-        .withWillQos(MqttQos.atLeastOnce);
+        .withWillQos(MqttQos.atMostOnce);
 
     client.connectionMessage = connMess;
     client.keepAlivePeriod = keepalive;
@@ -163,20 +117,41 @@ class MqttWeb implements IMqtt
   {
     Log().debug('MQTT:: OnConnected');
 
-    ///////////////////
-    /* Set Connected */
-    ///////////////////
+    // Set Connected
     connected = true;
 
-    /////////////////////////
-    /* Listen for Messages */
-    /////////////////////////
-    client.updates!.listen((msg) => onMessage(msg));
+    /// Notify that messages have been published
+    client.published?.listen((MqttPublishMessage message) => Log().debug('MQTT::Published notification:: topic is ${message.variableHeader?.topicName}, with message ${message.payload.toString()}with Qos ${message.header?.qos}'));
 
-    //////////////////////////////
-    /* Publish Penning Messages */
-    //////////////////////////////
-    publish();
+    /// Listen for Messages
+    client.updates?.listen(onData, onDone: onDone, onError: onError);
+  }
+
+  /// The client has a change notifier object(see the Observable class) which we then listen to to get
+  /// notifications of published updates to each subscribed topic.
+  void onData (List messages)
+  {
+    Log().debug('MQTT -> Messages received');
+    messages.forEach((msg)
+    {
+      final MqttPublishMessage recMess = msg.payload as MqttPublishMessage;
+      final pt = MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
+
+      Log().debug('MQTT -> Message received for topic [${msg.topic}] Message[$pt]');
+
+      /// notify listener
+      listener.onMqttData(payload: Payload(topic: msg.topic, payload: pt));
+    });
+  }
+
+  void onDone()
+  {
+    Log().debug('MQTT -> Done');
+  }
+
+  void onError(error)
+  {
+    Log().debug('MQTT -> Error');
   }
 
   Future<bool> disconnect() async
@@ -198,10 +173,13 @@ class MqttWeb implements IMqtt
     }
   }
 
-  Future<bool> subscribe(String topic) async
+  Future<bool> subscribe(String? topic) async
   {
-    Log().debug('MQTT:: Subscribing to topic -> $topic');
-    client.subscribe(topic, MqttQos.atMostOnce);
+    if (topic != null)
+    {
+      Log().debug('MQTT:: Subscribing to topic -> $topic');
+      if (topic != null) client.subscribe(topic, MqttQos.atMostOnce);
+    }
     return true;
   }
 
@@ -213,7 +191,7 @@ class MqttWeb implements IMqtt
   Future<bool> unsubsribe(String topic) async
   {
     Log().debug('MQTT:: Unsubscribing from topic -> $topic');
-    client.unsubscribe(topic);
+    client.subscriptionsManager?.subscriptions.forEach((key, value) => client.unsubscribe(key));
     return true;
   }
 
@@ -227,34 +205,14 @@ class MqttWeb implements IMqtt
     await MqttUtilities.asyncSleep(seconds);
   }
 
-  Future<bool> publish({String? msg}) async
+  Future<bool> publish(String topic, String msg) async
   {
-    if (!S.isNullOrEmpty(msg)) pending.add(msg);
+    // connected?
+    if (!connected) return false;
 
-    ////////////////
-    /* Connected? */
-    ////////////////
-    if (connected != true) return true;
-
-    //////////////////////
-    /* Process Messages */
-    //////////////////////
-    pending.forEach((msg)
-    {
-      /// If needed you can listen for published messages that have completed the publishing
-      /// handshake which is Qos dependant. Any message received on this stream has completed its
-      /// publishing handshake with the source.
-      client.published!.listen((MqttPublishMessage message) => Log().debug('MQTT::Published notification:: topic is ${message.variableHeader!.topicName}, with Qos ${message.header!.qos}'));
-
-      final builder = MqttClientPayloadBuilder();
-      builder.addString(msg!);
-      client.publishMessage(topic!, MqttQos.exactlyOnce, builder.payload!);
-    });
-
-    ///////////////////
-    /* Clear Pending */
-    ///////////////////
-    pending.clear();
+    final builder = MqttClientPayloadBuilder();
+    builder.addString(msg);
+    if (builder.payload != null) client.publishMessage(topic, MqttQos.atMostOnce, builder.payload!);
 
     return true;
   }
@@ -262,26 +220,6 @@ class MqttWeb implements IMqtt
   void pong()
   {
     Log().debug('MQTT:: Ping response client callback invoked');
-  }
-
-  registerListener(IMqttListener listener)
-  {
-    if (_listeners == null) _listeners = [];
-    if (!_listeners!.contains(listener)) _listeners!.add(listener);
-  }
-
-  removeListener(IMqttListener listener)
-  {
-    if ((_listeners != null) && (_listeners!.contains(listener)))
-    {
-      _listeners!.remove(listener);
-      if (_listeners!.isEmpty) _listeners = null;
-    }
-  }
-
-  notifyListeners(Payload data)
-  {
-    if (_listeners != null) _listeners!.forEach((listener) => listener.onMqttData(payload: data));
   }
 
   dispose()

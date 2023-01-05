@@ -946,7 +946,7 @@ class System extends SystemPlatform implements IEventManager
   }
 
   // return specific user claim
-  String? setUserProperty(String property)
+  String? userProperty(String property)
   {
     if ((_user.containsKey(property)) && (_user[property] is Observable)) return _user[property]?.get();
     return null;

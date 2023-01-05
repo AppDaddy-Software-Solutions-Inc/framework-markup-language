@@ -11,7 +11,7 @@ import 'package:fml/datasources/detectors/text/text_detector_model.dart';
 import 'package:fml/datasources/data/model.dart';
 import 'package:fml/datasources/gps/model.dart';
 import 'package:fml/datasources/http/model.dart';
-import 'package:fml/datasources/mqtt/model.dart';
+import 'package:fml/datasources/mqtt/mqtt_model.dart';
 import 'package:fml/datasources/nfc/model.dart';
 import 'package:fml/datasources/socket/model.dart';
 import 'package:fml/datasources/zebra/model.dart';
@@ -1095,6 +1095,8 @@ class WidgetModel implements IDataSourceListener
       case "get":
         return true;
       case "http":
+        return true;
+      case "mqtt":
         return true;
       case "nfc":
         return true;

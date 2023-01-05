@@ -6,9 +6,11 @@ if (dart.library.html) 'mqtt.web.dart';
 
 abstract class IMqtt
 {
-  static IMqtt? create(String? url, {IMqttListener? listener}) => getMqtt(url, listener: listener);
-  registerListener(IMqttListener listener);
-  removeListener(IMqttListener listener);
-  Future<bool> publish({String? msg});
+  static IMqtt? create(String url, IMqttListener listener) => getMqtt(url, listener);
+  Future<bool> connect();
+  Future<bool> disconnect();
+  Future<bool> publish(String topic, String msg);
+  Future<bool> subscribe(String topic);
+  Future<bool> unsubscribe(String topic);
   dispose();
 }

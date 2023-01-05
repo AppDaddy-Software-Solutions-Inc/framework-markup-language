@@ -247,8 +247,8 @@ class FormFieldModel extends DecoratedWidgetModel
           longitude: System().currentLocation?.longitude,
           altitude: System().currentLocation?.altitude,
           epoch: DateTime.now().millisecondsSinceEpoch,
-          user: System().setUserProperty('key'),
-          username: System().setUserProperty('name'));
+          user: System().userProperty('key'),
+          username: System().userProperty('name'));
 
       // save the value
       //ok = await save();

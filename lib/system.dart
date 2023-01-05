@@ -939,14 +939,13 @@ class System extends SystemPlatform implements IEventManager
           scope: scope);
     else
       _user['connected']!.set(false);
-
     // remember token
     this.jwt = null;
     return true;
   }
 
   // return specific user claim
-  String? setUserProperty(String property)
+  String? userProperty(String property)
   {
     if ((_user.containsKey(property)) && (_user[property] is Observable)) return _user[property]?.get();
     return null;

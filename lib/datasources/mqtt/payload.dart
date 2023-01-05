@@ -2,6 +2,6 @@
 class Payload
 {
   final String? topic;
-  final String? payload;
-  Payload({this.topic,this.payload});
+  final String? message;
+  Payload({this.topic,this.message});
 }

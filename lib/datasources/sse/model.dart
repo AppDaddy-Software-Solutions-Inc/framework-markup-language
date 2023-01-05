@@ -17,6 +17,7 @@ class SseModel extends HttpModel implements IDataSource
 
   String? events;
 
+  // connected
   BooleanObservable? _connected;
   set connected (dynamic v)
   {

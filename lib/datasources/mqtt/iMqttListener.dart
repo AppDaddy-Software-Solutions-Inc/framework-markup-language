@@ -2,5 +2,11 @@
 import 'payload.dart';
 abstract class IMqttListener
 {
-  onMqttData({Payload? payload});
+  onMessage(Payload payload);
+  onConnected();
+  onDisconnected();
+  onPublished(String topic, String message);
+  onSubscribed(String topic);
+  onUnsubscribed(String topic);
+  onError(String error);
 }

@@ -939,7 +939,6 @@ class System extends SystemPlatform implements IEventManager
           scope: scope);
     else
       _user['connected']!.set(false);
-
     // remember token
     this.jwt = null;
     return true;

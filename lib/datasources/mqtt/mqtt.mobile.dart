@@ -74,8 +74,6 @@ class MqttMobile implements IMqtt
     /// and clean session, an example of a specific one below.
     final connMess = MqttConnectMessage()
         .withClientIdentifier(identifier)
-        .withWillTopic('willtopic') // If you set this you must set a will message
-        .withWillMessage('My Will message')
         .startClean() // Non persistent session for testing
         .withWillQos(MqttQos.atLeastOnce);
 
@@ -229,7 +227,7 @@ class MqttMobile implements IMqtt
 
   void _onPong()
   {
-    Log().debug('MQTT:: Ping response client callback invoked');
+    Log().debug('MQTT:: Keep alive');
   }
 
   dispose()

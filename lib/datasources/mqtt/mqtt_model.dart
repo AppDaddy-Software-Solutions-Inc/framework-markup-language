@@ -16,6 +16,18 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
 {
   IMqtt? mqtt;
 
+  // message count
+  late IntegerObservable _received;
+  int get received => _received.get() ?? 0;
+
+  // topic
+  late StringObservable _topic;
+  String? get topic => _topic.get();
+
+  // message
+  late StringObservable _message;
+  String? get message => _message.get();
+
   // on connected event
   StringObservable? _onconnected;
   set onconnected(dynamic v) 
@@ -139,7 +151,12 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
   // subscriptions
   List<String> subscriptions = [];
 
-  MqttModel(WidgetModel parent, String? id) : super(parent, id);
+  MqttModel(WidgetModel parent, String? id) : super(parent, id)
+  {
+    _received = IntegerObservable(Binding.toKey(id, 'received'), 0, scope: scope);
+    _topic    = StringObservable(Binding.toKey(id, 'topic'), null, scope: scope);
+    _message  = StringObservable(Binding.toKey(id, 'message'), null, scope: scope);
+  }
 
   static MqttModel? fromXml(WidgetModel parent, XmlElement xml)
   {
@@ -253,12 +270,17 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
   {
     // enabled?
     if (enabled == false) return;
-
     busy = false;
     if (payload != null)
     {
-      Data data = Data.from(payload.message);
+      _received.set(received + 1);
+      _topic.set(payload.topic);
+      _message.set(payload.message);
+
+      // transpose data
+      Data data = Data.from(payload.message, root: root);
       if (data.length == 0) data.insert(0, {'topic': payload.topic , 'message' : payload.message});
+
       onResponse(data, code: 200);
     }
   }

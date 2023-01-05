@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-
 import 'package:fml/system.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_browser_client.dart';
@@ -14,32 +13,24 @@ IMqtt? getMqtt(String url, IMqttListener listener) => MqttWeb(url, listener);
 
 class MqttWeb implements IMqtt
 {
-  late String url;
-  late String scheme;
-  late String server;
-  late int    port;
-  int  keepalive = 60;
-  bool connected = false;
-
-  String identifier = (System().userProperty('name') ?? 'unknown') + " : " + Uuid().v1();
   late MqttBrowserClient client;
-
+  String url;
+  String identifier = (System().userProperty('name') ?? 'unknown') + " : " + Uuid().v1();
+  int    keepalive = 60;
+  bool   connected = false;
   IMqttListener listener;
-  bool stop = false;
 
-  MqttWeb(String url, this.listener)
+  MqttWeb(this.url, this.listener)
   {
-    Uri? uri = S.toURI(url);
+    Uri? uri = S.toURI(this.url);
     if (uri == null) return;
-    this.scheme = 'ws';
-    this.server = uri.host;
-    this.port   = url.contains(":") ? uri.port : 61614;
-    this.url    = scheme + '://' + server;
-
-    Log().debug('MQTT:: Domain - $url');
+    var scheme = 'ws';
+    var server = uri.host;
+    var port   = (uri.port == 443 || uri.port == 80) ? 61614 : uri.port;
+    var url    = scheme + '://' + server;
 
     /// Create Client
-    client = MqttBrowserClient(this.url, identifier);
+    client = MqttBrowserClient(url, identifier);
 
     /// Set logging on if needed, defaults to off
     client.logging(on: false);
@@ -51,27 +42,27 @@ class MqttWeb implements IMqtt
     client.port = port;
 
     /// Add the unsolicited disconnection callback
-    client.onDisconnected = onDisconnected;
+    client.onDisconnected = _onDisconnected;
 
     /// Add the successful connection callback
-    client.onConnected = onConnected;
+    client.onConnected = _onConnected;
 
     /// Add a subscribed callback, there is also an unsubscribed callback if you need it.
     /// You can add these before connection or change them dynamically after connection if
     /// you wish. There is also an onSubscribeFail callback for failed subscriptions, these
     /// can fail either because you have tried to subscribe to an invalid topic or the source
     /// rejects the subscribe request.
-    client.onSubscribed   = onSubscribed;
-    client.onUnsubscribed = onUnSubscribed;
+    client.onSubscribed   = _onSubscribed;
+    client.onUnsubscribed = _onUnSubscribed;
 
     /// Set a ping received callback if needed, called whenever a ping response(pong) is received
     /// from the source.
-    client.pongCallback = pong;
+    client.pongCallback = _onPong;
   }
 
   Future<bool> connect() async
   {
-    Log().debug('MQTT:: Connecting to $url on port $port');
+    Log().debug('MQTT:: Connecting to $url on port ${client.port}');
 
     /// Create a connection message to use or use the default one. The default one sets the
     /// client identifier, any supplied username/password, the default keepalive interval(60s)
@@ -95,7 +86,7 @@ class MqttWeb implements IMqtt
     }
     on Exception catch(e)
     {
-      Log().debug('MQTT:: Error Connecting to $url on port $port. Status is $e');
+      Log().debug('MQTT:: Error Connecting to $url on port ${client.port}. Status is $e');
       client.disconnect();
     }
 
@@ -105,7 +96,7 @@ class MqttWeb implements IMqtt
     }
     else
     {
-      Log().debug('MQTT:: Error Connecting to $url on port $port. Status is ${client.connectionStatus}');
+      Log().debug('MQTT:: Error Connecting to $url on port ${client.port}. Status is ${client.connectionStatus}');
       client.disconnect();
       return false;
     }
@@ -113,7 +104,7 @@ class MqttWeb implements IMqtt
     return true;
   }
 
-  void onConnected()
+  void _onConnected()
   {
     Log().debug('MQTT:: OnConnected');
 
@@ -121,35 +112,38 @@ class MqttWeb implements IMqtt
     connected = true;
 
     /// Notify that messages have been published
-    client.published?.listen((MqttPublishMessage message) => Log().debug('MQTT::Published notification:: topic is ${message.variableHeader?.topicName}, with message ${message.payload.toString()}with Qos ${message.header?.qos}'));
+    client.published?.listen((MqttPublishMessage message) => _onPublished(message));
 
     /// Listen for Messages
-    client.updates?.listen(onData, onDone: onDone, onError: onError);
+    client.updates?.listen(_onData, onDone: _onDone, onError: _onError);
+
+    // notify listener
+    listener.onConnected();
   }
 
   /// The client has a change notifier object(see the Observable class) which we then listen to to get
   /// notifications of published updates to each subscribed topic.
-  void onData (List messages)
+  void _onData (List messages)
   {
     Log().debug('MQTT -> Messages received');
     messages.forEach((msg)
     {
       final MqttPublishMessage recMess = msg.payload as MqttPublishMessage;
-      final pt = MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
+      final message = MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
 
-      Log().debug('MQTT -> Message received for topic [${msg.topic}] Message[$pt]');
+      Log().debug('MQTT -> Message received for topic [${msg.topic}] Message[$message]');
 
       /// notify listener
-      listener.onMqttData(payload: Payload(topic: msg.topic, payload: pt));
+      listener.onMessage(Payload(topic: msg.topic, message: message));
     });
   }
 
-  void onDone()
+  void _onDone()
   {
     Log().debug('MQTT -> Done');
   }
 
-  void onError(error)
+  void _onError(error)
   {
     Log().debug('MQTT -> Error');
   }
@@ -157,52 +151,51 @@ class MqttWeb implements IMqtt
   Future<bool> disconnect() async
   {
     Log().debug('MQTT:: Disconnecting');
+    client.subscriptionsManager?.subscriptions.forEach((topic, subscription) => client.unsubscribe(topic));
     client.disconnect();
     return true;
   }
 
-  void onDisconnected()
+  void _onDisconnected()
   {
+    connected = false;
+
     if (client.connectionStatus!.disconnectionOrigin == MqttDisconnectionOrigin.solicited)
-    {
-      Log().debug('MQTT:: Disconnected (Solicited)');
-    }
-    else
-    {
-      Log().debug('MQTT:: Disconnected (Unsolicited)');
-    }
+         Log().debug('MQTT:: Disconnected (Solicited)');
+    else Log().debug('MQTT:: Disconnected');
+
+    // notify listener
+    listener.onDisconnected();
   }
 
-  Future<bool> subscribe(String? topic) async
+  Future<bool> subscribe(String topic) async
   {
-    if (topic != null)
-    {
-      Log().debug('MQTT:: Subscribing to topic -> $topic');
-      if (topic != null) client.subscribe(topic, MqttQos.atMostOnce);
-    }
+    Log().debug('MQTT:: Subscribing to topic -> $topic');
+    if (topic != null) client.subscribe(topic, MqttQos.atMostOnce);
     return true;
   }
 
-  void onSubscribed(String topic)
+  void _onSubscribed(String topic)
   {
     Log().debug('MQTT:: Subscribed to topic -> $topic');
+
+    // notify listener
+    listener.onSubscribed(topic);
   }
 
-  Future<bool> unsubsribe(String topic) async
+  Future<bool> unsubscribe(String topic) async
   {
     Log().debug('MQTT:: Unsubscribing from topic -> $topic');
-    client.subscriptionsManager?.subscriptions.forEach((key, value) => client.unsubscribe(key));
+    client.unsubscribe(topic);
     return true;
   }
 
-  void onUnSubscribed(String? topic)
+  void _onUnSubscribed(String? topic)
   {
     Log().debug('MQTT:: Unsubscribed from topic -> $topic');
-  }
 
-  void sleep(int seconds) async
-  {
-    await MqttUtilities.asyncSleep(seconds);
+    // notify listener
+    if (topic != null) listener.onUnsubscribed(topic);
   }
 
   Future<bool> publish(String topic, String msg) async
@@ -217,14 +210,23 @@ class MqttWeb implements IMqtt
     return true;
   }
 
-  void pong()
+  void _onPublished(MqttPublishMessage message)
+  {
+    var topic = message.variableHeader?.topicName;
+    var msg   = MqttPublishPayload.bytesToStringAsString(message.payload.message);
+    Log().debug('MQTT::Published notification:: topic is $topic, with message $msg');
+
+    // notify listener
+    if (topic != null) listener.onPublished(topic, msg);
+  }
+
+  void _onPong()
   {
     Log().debug('MQTT:: Ping response client callback invoked');
   }
 
   dispose()
   {
-    unsubsribe(topic!);
     disconnect();
   }
 }

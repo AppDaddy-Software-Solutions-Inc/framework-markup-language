@@ -11,5 +11,6 @@ abstract class IMqtt
   Future<bool> disconnect();
   Future<bool> publish(String topic, String msg);
   Future<bool> subscribe(String topic);
+  Future<bool> unsubscribe(String topic);
   dispose();
 }

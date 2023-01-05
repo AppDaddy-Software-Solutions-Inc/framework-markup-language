@@ -270,19 +270,26 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
   {
     // enabled?
     if (enabled == false) return;
-    busy = false;
-    if (payload != null)
-    {
-      _received.set(received + 1);
-      _topic.set(payload.topic);
-      _message.set(payload.message);
 
-      // transpose data
-      Data data = Data.from(payload.message, root: root);
-      if (data.length == 0) data.insert(0, {'topic': payload.topic , 'message' : payload.message});
+    // increment the number of messages received
+    _received.set(received + 1);
 
-      onResponse(data, code: 200);
-    }
+    // set last topic bindable
+    _topic.set(payload.topic);
+
+    // set last message bindable
+    _message.set(payload.message);
+
+    // deserialize the data
+    Data data = Data.from(payload.message, root: root);
+
+    // if the message didn't deserialize (length 0)
+    // so create a simple map with topic and message bindables <id>.data.topic and <id>.data.message
+    // otherwise the data is the deserialized message payload
+    if (data.length == 0) data.insert(0, {'topic': payload.topic , 'message' : payload.message});
+
+    // fire the onresponse
+    onResponse(data, code: 200);
   }
 
   @override

@@ -145,10 +145,6 @@ dependencies:
   # BSD-3-Clause
 
   # Updated 2022/05/26
-  mime: 1.0.2
-  # BSD-3-Clause
-
-  # Updated 2022/05/26
   mqtt_client: 9.6.8
   # BSD-3-Clause, MIT
 

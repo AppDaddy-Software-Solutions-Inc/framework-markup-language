@@ -378,9 +378,9 @@ class CameraModel extends CAMERA.CameraImageModel implements IViewableWidget
       var bytes = IMAGE.encodeJpg(image);
 
       var name = basename(S.isNullOrEmpty(file.name) ? "${Uuid().v4().toString()}.jpg" : file.name);
-      var uri  = UriData.fromBytes(bytes, mimeType: S.mimetype(name));
+      var uri  = UriData.fromBytes(bytes, mimeType: await S.mimetype(name));
       var url  = uri.toString();
-      var type = S.mimetype(name);
+      var type = await S.mimetype(name);
       var size = bytes.length;
 
       // save the image
@@ -394,7 +394,7 @@ class CameraModel extends CAMERA.CameraImageModel implements IViewableWidget
       // set file - 'file:' required so image widget will decode as a file path.
       var url  = file.path.startsWith("blob:") ? file.path : "file:${file.path}";
       var name = basename(S.isNullOrEmpty(file.name) ? "${Uuid().v4().toString()}.jpg" : file.name);
-      var type = S.mimetype(name);
+      var type = await S.mimetype(name);
       var size = await file.length();
 
       // save the image

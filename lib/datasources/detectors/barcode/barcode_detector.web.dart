@@ -14,7 +14,7 @@ if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image
 
 BarcodeDetector getDetector() => BarcodeDetector();
 
-class BarcodeDetector implements iBarcodeDetector
+class BarcodeDetector implements IBarcodeDetector
 {
   static final BarcodeDetector _singleton = BarcodeDetector._initialize();
 

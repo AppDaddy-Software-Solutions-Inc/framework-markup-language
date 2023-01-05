@@ -52,7 +52,7 @@ class TextDetectorModel extends DetectorModel implements IDetectable
       busy = true;
 
       count++;
-      Payload? payload = await iTextDetector().detect(image);
+      Payload? payload = await ITextDetector().detect(image);
       if (payload != null)
       {
         Data data = Payload.toData(payload);

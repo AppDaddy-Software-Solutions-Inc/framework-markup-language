@@ -416,7 +416,7 @@ class ViewState extends State<View> implements IModelListener
 
     String name = "${Uuid().v4().toString()}.pdf";
 
-    var file = FILE.File(blob, url, name, S.mimetype(name), bytes.length);
+    var file = FILE.File(blob, url, name, await S.mimetype(name), bytes.length);
     widget.model.onFile(file);
   }
 }

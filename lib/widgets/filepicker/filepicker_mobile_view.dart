@@ -45,7 +45,7 @@ class FilePickerView implements ABSTRACT.FilePicker
         // set file
         XFile  file = XFile(result.files.single.path!);
         String url  = "file:${file.path}";
-        String type = S.mimetype(file.path).toLowerCase();
+        String type = (await S.mimetype(file.path)).toLowerCase();
         String name = basename(file.path);
         int    size = await file.length();
 

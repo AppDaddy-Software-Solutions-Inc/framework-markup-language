@@ -8,11 +8,10 @@ import 'package:fml/helper/xml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/observable/binding.dart';
-
 import 'package:intl/intl.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/observable/observables/color.dart';
-import 'package:mime/mime.dart';
+import 'package:mime/mime.dart' deferred as mime;
 import 'package:xml/xml.dart';
 
 /// String Helpers
@@ -604,12 +603,13 @@ class S
     return DateTime.now().hour.toString().padLeft(2,'0') + ':' + DateTime.now().minute.toString().padLeft(2,'0') + ":" + DateTime.now().second.toString().padLeft(2,'0') + "." + DateTime.now().millisecond.toString().padLeft(3,'0');
   }
 
-  static String mimetype(String path, {String defaultType = ""})
+  static Future<String> mimetype(String path, {String defaultType = ""}) async
   {
     String type;
     try
     {
-      type = lookupMimeType(path) ?? defaultType;
+      await mime.loadLibrary();
+      type = mime.lookupMimeType(path) ?? defaultType;
     }
     catch(e)
     {
@@ -617,6 +617,7 @@ class S
     }
     return type;
   }
+
   /// Returns a given String with all the first chars of each word capitalised and other chars lowercase
   static String toTitleCase(String text)
   {

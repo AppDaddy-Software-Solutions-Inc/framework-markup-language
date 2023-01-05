@@ -52,7 +52,7 @@ class BiometricsDetectorModel extends DetectorModel implements IDetectable
       busy = true;
 
       count++;
-      Payload? payload = await iBiometricsDetector().detect(image);
+      Payload? payload = await IBiometricsDetector().detect(image);
       if (payload != null)
       {
         Data data = Payload.toData(payload);

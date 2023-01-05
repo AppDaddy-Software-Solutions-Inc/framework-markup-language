@@ -16,7 +16,7 @@ class LineRow
 
 TextDetector getDetector() => TextDetector();
 
-class TextDetector implements iTextDetector
+class TextDetector implements ITextDetector
 {
   static final TextDetector _singleton = new TextDetector._initialize();
 

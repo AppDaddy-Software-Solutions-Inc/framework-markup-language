@@ -35,8 +35,8 @@ class Payload
   }
 }
 
-abstract class iBiometricsDetector
+abstract class IBiometricsDetector
 {
-  factory iBiometricsDetector() => getDetector();
+  factory IBiometricsDetector() => getDetector();
   Future<Payload?> detect(DetectableImage image);
 }

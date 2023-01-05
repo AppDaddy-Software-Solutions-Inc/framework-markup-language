@@ -5,8 +5,8 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/helper_barrel.dart';
 
-enum Axis {X, Y}
-enum AxisType {category, numeric, datetime, date, time}
+enum ChartAxis {X, Y}
+enum ChartAxisType {category, numeric, datetime, date, time}
 
 /// Chart Axis [ChartAxisModel]
 ///
@@ -17,9 +17,9 @@ class ChartAxisModel extends WidgetModel
   /// Axis type: `category`, `numeric`, `datetime`, `date` or `time`
   ///
   /// This is used to help display the data on an axis correctly based on the data type
-  AxisType type = AxisType.category;
+  ChartAxisType type = ChartAxisType.category;
 
-  final Axis axis;
+  final ChartAxis axis;
 
   /// The title of an axis, displayed beside the axis
   StringObservable? _title;
@@ -107,26 +107,26 @@ class ChartAxisModel extends WidgetModel
 
     if (S.isNullOrEmpty(type)) type = type?.trim().toLowerCase() ?? null;
     try {
-      switch (S.toEnum(type, AxisType.values))
+      switch (S.toEnum(type, ChartAxisType.values))
       {
-        case AxisType.category:
-          this.type = AxisType.category;
+        case ChartAxisType.category:
+          this.type = ChartAxisType.category;
           break;
-        case AxisType.numeric:
-          this.type = AxisType.numeric;
+        case ChartAxisType.numeric:
+          this.type = ChartAxisType.numeric;
           break;
-        case AxisType.datetime:
-          this.type = AxisType.datetime;
+        case ChartAxisType.datetime:
+          this.type = ChartAxisType.datetime;
           break;
-        case AxisType.date:
-          this.type = AxisType.date;
+        case ChartAxisType.date:
+          this.type = ChartAxisType.date;
           break;
-        case AxisType.time:
-          this.type = AxisType.time;
+        case ChartAxisType.time:
+          this.type = ChartAxisType.time;
           break;
         default:
           Log().info('axis type unset, defaulting to category');
-          this.type = AxisType.category;
+          this.type = ChartAxisType.category;
           break;
       }
     } catch(e) {
@@ -135,7 +135,7 @@ class ChartAxisModel extends WidgetModel
 
   }
 
-  static ChartAxisModel? fromXml(WidgetModel parent, XmlElement xml, Axis axis)
+  static ChartAxisModel? fromXml(WidgetModel parent, XmlElement xml, ChartAxis axis)
   {
     ChartAxisModel? model;
     try

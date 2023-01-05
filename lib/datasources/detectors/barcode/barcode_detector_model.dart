@@ -106,7 +106,7 @@ class BarcodeDetectorModel extends DetectorModel implements IDetectable
       busy = true;
 
       count++;
-      Payload? payload = await iBarcodeDetector().detect(image, barcodeFormats, tryharder, invert);
+      Payload? payload = await IBarcodeDetector().detect(image, barcodeFormats, tryharder, invert);
       if (payload != null)
       {
         Data data = Payload.toData(payload);

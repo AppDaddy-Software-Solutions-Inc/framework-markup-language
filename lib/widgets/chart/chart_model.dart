@@ -107,8 +107,8 @@ class ChartModel extends DecoratedWidgetModel implements IViewableWidget {
     List<ChartAxisModel> axis = findChildrenOfExactType(ChartAxisModel).cast<ChartAxisModel>();
     axis.forEach((axis)
     {
-      if (axis.axis == Axis.X) this.xaxis = axis;
-      if (axis.axis == Axis.Y) this.yaxis = axis;
+      if (axis.axis == ChartAxis.X) this.xaxis = axis;
+      if (axis.axis == ChartAxis.Y) this.yaxis = axis;
     });
   }
 

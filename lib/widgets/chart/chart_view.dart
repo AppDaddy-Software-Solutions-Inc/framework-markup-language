@@ -177,9 +177,9 @@ class _ChartViewState extends State<ChartView>
     // x axis is a date/time based axis you must use a TimeSeriesChart.
     // You can still have grouped bars in a TimeSeries but not in combo charts.
     // Check for pie type before letting the category axis determine a combo chart.
-    if (widget.model.xaxis!.type == AxisType.datetime ||
-        widget.model.xaxis!.type == AxisType.date ||
-        widget.model.xaxis!.type == AxisType.time) {
+    if (widget.model.xaxis!.type == ChartAxisType.datetime ||
+        widget.model.xaxis!.type == ChartAxisType.date ||
+        widget.model.xaxis!.type == ChartAxisType.time) {
       // Determine if the X Axis is time based
       return ChartType.TimeSeriesChart;
     }
@@ -192,9 +192,9 @@ class _ChartViewState extends State<ChartView>
         (widget.model.type!.toLowerCase() == 'pie' ||
             widget.model.type!.toLowerCase() == 'circle')) {
       return ChartType.PieChart;
-    } else if (widget.model.xaxis!.type == AxisType.category) {
+    } else if (widget.model.xaxis!.type == ChartAxisType.category) {
       return ChartType.OrdinalComboChart;
-    } else if (widget.model.xaxis!.type == AxisType.numeric) {
+    } else if (widget.model.xaxis!.type == ChartAxisType.numeric) {
       return ChartType.NumericComboChart;
     } else {
       Log().warning(
@@ -468,7 +468,7 @@ class _ChartViewState extends State<ChartView>
     for (ChartSeriesModel series in widget.model.series) {
       // Auto group bar series if not specified
       if ((series.stack == null ||
-              widget.model.xaxis!.type != AxisType.category) &&
+              widget.model.xaxis!.type != ChartAxisType.category) &&
           series.group == null &&
           pureBar == true) series.group = 'defaultgrouping';
       // Build the data points
@@ -528,9 +528,9 @@ class _ChartViewState extends State<ChartView>
 
       switch (widget.model.xaxis!.type) {
         // Date/Time based X Axis
-        case AxisType.datetime:
-        case AxisType.date:
-        case AxisType.time:
+        case ChartAxisType.datetime:
+        case ChartAxisType.date:
+        case ChartAxisType.time:
           timeSeriesList.add(CF.Series(
               id: series.id,
               displayName: series.name ?? series.id,
@@ -552,7 +552,7 @@ class _ChartViewState extends State<ChartView>
             ..setAttribute(CF.rendererIdKey, getRendererKey(series)));
           break;
         // Numeric based X axis
-        case AxisType.numeric:
+        case ChartAxisType.numeric:
           numericSeriesList.add(CF.Series(
               id: series.id,
               displayName: series.name ?? series.id,
@@ -574,7 +574,7 @@ class _ChartViewState extends State<ChartView>
             ..setAttribute(CF.rendererIdKey, getRendererKey(series)));
           break;
         // Category/String based X axis
-        case AxisType.category:
+        case ChartAxisType.category:
           categorySeriesList.add(CF.Series(
               id: series.id,
               displayName: series.name ?? series.id,
@@ -603,13 +603,13 @@ class _ChartViewState extends State<ChartView>
     }
     // We return the series of the correct data type here
     switch (widget.model.xaxis!.type) {
-      case AxisType.datetime:
-      case AxisType.date:
-      case AxisType.time:
+      case ChartAxisType.datetime:
+      case ChartAxisType.date:
+      case ChartAxisType.time:
         return timeSeriesList;
-      case AxisType.numeric:
+      case ChartAxisType.numeric:
         return numericSeriesList;
-      case AxisType.category:
+      case ChartAxisType.category:
         return categorySeriesList;
       default:
         return null;
@@ -625,14 +625,14 @@ class _ChartViewState extends State<ChartView>
   }
 
   /// Parser for databroker data to convert it from a String to appropriate data type for the axis
-  dynamic parsePlotPoint(String? val, AxisType type) {
-    if (type == AxisType.category) {
+  dynamic parsePlotPoint(String? val, ChartAxisType type) {
+    if (type == ChartAxisType.category) {
       return val;
-    } else if (type == AxisType.numeric) {
+    } else if (type == ChartAxisType.numeric) {
       return num.tryParse(val!) ?? 0;
-    } else if (type == AxisType.date ||
-        type == AxisType.time ||
-        type == AxisType.datetime) {
+    } else if (type == ChartAxisType.date ||
+        type == ChartAxisType.time ||
+        type == ChartAxisType.datetime) {
       DateTime? formatted;
       formatted = S.toDate(val); //, format: 'yMd Hm');
       return formatted; //DateTime.tryParse(val);
@@ -641,39 +641,39 @@ class _ChartViewState extends State<ChartView>
 
   /// Each series needs a specific type of renderer, this method passes back a
   /// function that builds the specific type needed with the correct attributes
-  Function? getSeriesRenderer(ChartSeriesModel series, AxisType type) {
+  Function? getSeriesRenderer(ChartSeriesModel series, ChartAxisType type) {
     dynamic rendererConfig;
     // if (chartType == ChartType.BarChart)
     //   type = 'category';
     switch (series.type) {
       case 'bar':
-        if (type == AxisType.category)
+        if (type == ChartAxisType.category)
           rendererConfig = buildCategoryBarRenderer;
-        else if (type == AxisType.datetime ||
-            type == AxisType.date ||
-            type == AxisType.time)
+        else if (type == ChartAxisType.datetime ||
+            type == ChartAxisType.date ||
+            type == ChartAxisType.time)
           rendererConfig = buildDateTimeBarRenderer;
-        else if (type == AxisType.numeric)
+        else if (type == ChartAxisType.numeric)
           rendererConfig = buildNumericBarRenderer;
         break;
       case 'line':
-        if (type == AxisType.category)
+        if (type == ChartAxisType.category)
           rendererConfig = buildCategoryLineRenderer;
-        else if (type == AxisType.datetime ||
-            type == AxisType.date ||
-            type == AxisType.time)
+        else if (type == ChartAxisType.datetime ||
+            type == ChartAxisType.date ||
+            type == ChartAxisType.time)
           rendererConfig = buildDateTimeLineRenderer;
-        else if (type == AxisType.numeric)
+        else if (type == ChartAxisType.numeric)
           rendererConfig = buildNumericLineRenderer;
         break;
       case 'point':
-        if (type == AxisType.category)
+        if (type == ChartAxisType.category)
           rendererConfig = buildCategoryPointRenderer;
-        else if (type == AxisType.datetime ||
-            type == AxisType.date ||
-            type == AxisType.time)
+        else if (type == ChartAxisType.datetime ||
+            type == ChartAxisType.date ||
+            type == ChartAxisType.time)
           rendererConfig = buildDateTimePointRenderer;
-        else if (type == AxisType.numeric)
+        else if (type == ChartAxisType.numeric)
           rendererConfig = buildNumericPointRenderer;
         break;
     }

@@ -45,8 +45,8 @@ class Payload
   }
 }
 
-abstract class iTextDetector
+abstract class ITextDetector
 {
-  factory iTextDetector() => getDetector();
+  factory ITextDetector() => getDetector();
   Future<Payload?> detect(DetectableImage image);
 }

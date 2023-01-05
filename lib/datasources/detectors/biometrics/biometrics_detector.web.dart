@@ -7,7 +7,7 @@ if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image
 
 BiometricsDetector getDetector() => BiometricsDetector();
 
-class BiometricsDetector implements iBiometricsDetector
+class BiometricsDetector implements IBiometricsDetector
 {
   static final BiometricsDetector _singleton = BiometricsDetector._initialize();
 

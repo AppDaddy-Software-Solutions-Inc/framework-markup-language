@@ -6,7 +6,7 @@ if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image
 
 TextDetector getDetector() => TextDetector();
 
-class TextDetector implements iTextDetector
+class TextDetector implements ITextDetector
 {
   static final TextDetector _singleton = new TextDetector._initialize();
 

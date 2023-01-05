@@ -62,9 +62,9 @@ class Payload
   }
 }
 
-abstract class iBarcodeDetector
+abstract class IBarcodeDetector
 {
-  factory iBarcodeDetector() => getDetector();
+  factory IBarcodeDetector() => getDetector();
   Future<Payload?> detect(DetectableImage image, List<BarcodeFormats>? formats, bool? tryharder, bool? invert);
 }
 

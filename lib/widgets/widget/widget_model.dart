@@ -7,7 +7,6 @@ import 'package:fml/datasources/iDataSourceListener.dart';
 import 'package:fml/datasources/log/log_model.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/datasources/detectors/barcode/barcode_detector_model.dart';
-import 'package:fml/datasources/detectors/biometrics/biometrics_detector_model.dart';
 import 'package:fml/datasources/detectors/text/text_detector_model.dart';
 import 'package:fml/datasources/data/model.dart';
 import 'package:fml/datasources/gps/model.dart';
@@ -25,9 +24,10 @@ import 'package:fml/widgets/button/button_model.dart';
 import 'package:fml/widgets/camera/camera_model.dart';
 import 'package:fml/widgets/card/card_model.dart';
 import 'package:fml/widgets/center/center_model.dart';
-import 'package:fml/widgets/chart/chart_model.dart' as CHART;
-import 'package:fml/widgets/chart/axis/chart_axis_model.dart' as CHART;
-import 'package:fml/widgets/chart/series/chart_series_model.dart' as CHART;
+import 'package:fml/widgets/chart/chart_model.dart';
+import 'package:fml/widgets/chart/axis/chart_axis_model.dart';
+import 'package:fml/widgets/chart/series/chart_series_model.dart';
+
 // import 'package:fml/widgets/chart_syncfusion/chart_model.dart' as SFCHART;
 // import 'package:fml/widgets/chart_syncfusion/axis/chart_axis_model.dart' as SFCHART;
 // import 'package:fml/widgets/chart_syncfusion/series/chart_series_model.dart' as SFCHART;
@@ -365,7 +365,7 @@ class WidgetModel implements IDataSourceListener
         break;
 
       case "chart":
-        model = CHART.ChartModel.fromXml(parent, node);
+        model = ChartModel.fromXml(parent, node);
         break;
 
       // case "sfchart":
@@ -639,7 +639,7 @@ class WidgetModel implements IDataSourceListener
         break;
 
       case "series":
-        if (parent is CHART.ChartModel) model = CHART.ChartSeriesModel.fromXml(parent, node);
+        if (parent is ChartModel) model = ChartSeriesModel.fromXml(parent, node);
         // else if (parent is SFCHART.ChartModel) model = SFCHART.ChartSeriesModel.fromXml(parent, node);
         break;
 
@@ -748,14 +748,14 @@ class WidgetModel implements IDataSourceListener
         break;
 
       case "xaxis":
-        if (parent is CHART.ChartModel)
-          model = CHART.ChartAxisModel.fromXml(parent, node, CHART.Axis.X);
+        if (parent is ChartModel)
+          model = ChartAxisModel.fromXml(parent, node, ChartAxis.X);
         // else if (parent is SFCHART.ChartModel) model = SFCHART.ChartAxisModel.fromXml(parent, node, SFCHART.Axis.X);
         break;
 
       case "yaxis":
-        if (parent is CHART.ChartModel)
-                model = CHART.ChartAxisModel.fromXml(parent, node, CHART.Axis.Y);
+        if (parent is ChartModel)
+                model = ChartAxisModel.fromXml(parent, node, ChartAxis.Y);
         // else if (parent is SFCHART.ChartModel) model = SFCHART.ChartAxisModel.fromXml(parent, node, SFCHART.Axis.Y);
         break;
 

@@ -6,7 +6,7 @@ import 'package:fml/helper/helper_barrel.dart';
 
 BarcodeDetector getDetector() => BarcodeDetector();
 
-class BarcodeDetector implements iBarcodeDetector
+class BarcodeDetector implements IBarcodeDetector
 {
   static final BarcodeDetector _singleton = BarcodeDetector._initialize();
 
@@ -58,7 +58,7 @@ class BarcodeDetector implements iBarcodeDetector
         result = _buildPayload(barcodes);
 
         // debug
-        if (result != null) result.barcodes.forEach((barcode) => Log().debug("Found barcode ${barcode}"));
+        if (result != null) result.barcodes.forEach((barcode) => Log().debug("Found barcode $barcode"));
       }
 
       return result;

@@ -262,31 +262,21 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
   // posting body
   StringObservable? get bodyObservable => _body;
   StringObservable? _body;
-  set body(dynamic v) {
-    if (_body != null) {
+  set body(dynamic v)
+  {
+    if (_body != null)
+    {
       _body!.set(v);
-    } else if (v != null) {
-      _body = StringObservable(Binding.toKey(id, 'body'), v,
-          scope: scope, listener: onPropertyChange);
-      bytes = 0;
     }
-    if (_bytes != null) _bytes!.set(body!.length);
+    else if (v != null)
+    {
+      _body = StringObservable(Binding.toKey(id, 'body'), v, scope: scope, listener: onPropertyChange);
+    }
   }
   String? get body => _body?.get();
 
   bool _custombody = false;
-  IntegerObservable? _bytes;
-  set bytes(dynamic v) {
-    if (_bytes != null) {
-      _bytes!.set(v);
-    } else if (v != null) {
-      _bytes = IntegerObservable(Binding.toKey(id, 'bytes'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
   bool get custombody => _custombody;
-
-  int? get bytes => _bytes?.get();
 
   DataSourceModel(WidgetModel parent, String? id) : super(parent, id);
 

@@ -220,7 +220,6 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
 
     // properties
     url = Xml.get(node: xml, tag: 'url');
-
     onconnected = Xml.get(node: xml, tag: 'onconnected');
     ondisconnected = Xml.get(node: xml, tag: 'ondisconnected');
     onsubscribed = Xml.get(node: xml, tag: 'onsubscribed');
@@ -271,10 +270,15 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
     switch (function)
     {
       case "write":
-      case "post":
       case "publish":
         String? topic   = S.toStr(S.item(arguments, 0));
-        String? message = (function == "post") ? body : S.toStr(S.item(arguments, 1));
+        String? message = S.toStr(S.item(arguments, 1));
+        if (mqtt != null && topic != null && message != null) mqtt!.publish(topic,message);
+        return true;
+
+      case "post":
+        String? topic   = S.toStr(S.item(arguments, 0));
+        String? message = await scope?.replaceFileReferences(this.body);
         if (mqtt != null && topic != null && message != null) mqtt!.publish(topic,message);
         return true;
 

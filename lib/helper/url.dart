@@ -86,7 +86,7 @@ class Url
     parameters.addAll(uri.queryParametersAll);
 
     if (!parameters.containsKey(key)) parameters[key] = [];
-    parameters[key]!.add(Uri.encodeComponent(value!));
+    parameters[key]!.add(Uri.encodeComponent(value ?? ""));
 
     //////////////////////////////
     /* Replace the Query String */

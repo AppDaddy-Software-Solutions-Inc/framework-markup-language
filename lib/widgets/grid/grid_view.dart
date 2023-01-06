@@ -2,6 +2,7 @@
 import 'dart:math';
 
 import 'package:fml/event/manager.dart';
+import 'package:fml/helper/scroll_behavior.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/phrase.dart';
@@ -218,7 +219,12 @@ class _GridViewState extends State<GridView> implements IModelListener
       prototypeHeight = (widget.model.maxheight ?? widget.model.height ?? widget.model.itemSize?.height ?? MediaQuery.of(context).size.height) / (sqrt(widget.model.items.length) + 1);
     }
 
+
     widget.model.direction == 'horizontal' ? direction = Axis.horizontal : direction = Axis.vertical;
+
+    // Protect against infinity calculations when screen is smaller than the grid item in the none expanding direction
+    if (direction == Axis.vertical && gridWidth < prototypeWidth) gridWidth = prototypeWidth;
+    else if (direction == Axis.horizontal && gridHeight < prototypeHeight) gridHeight = prototypeHeight;
 
     if (direction == Axis.vertical)
     {
@@ -258,7 +264,12 @@ class _GridViewState extends State<GridView> implements IModelListener
 
     // Build the Grid Rows
     Widget view = ListView.custom(scrollDirection: direction, controller: scroller,
-        childrenDelegate: SliverChildBuilderDelegate((BuildContext context, int rowIndex) => rowBuilder(context, rowIndex), childCount: (widget.model.items.length! / count).ceil()));
+        childrenDelegate: SliverChildBuilderDelegate(
+            (BuildContext context, int rowIndex) => rowBuilder(context, rowIndex),
+            childCount: (widget.model.items.length / count).ceil()
+        ));
+
+    view = ScrollConfiguration(behavior: ProperScrollBehavior(), child: view);
 
     // Constrain the View
     var w  = widget.model.width;

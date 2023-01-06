@@ -4,7 +4,7 @@ abstract class IMqttListener
 {
   onMessage(Payload payload);
   onConnected();
-  onDisconnected();
+  onDisconnected(String origin);
   onPublished(String topic, String message);
   onSubscribed(String topic);
   onUnsubscribed(String topic);

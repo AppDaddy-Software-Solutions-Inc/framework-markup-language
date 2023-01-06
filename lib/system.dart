@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:collection';
-import 'dart:convert';
 import 'dart:core';
 import 'dart:ui';
 import 'package:firebase_core/firebase_core.dart' show FirebaseApp;
@@ -32,8 +31,8 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/helper_barrel.dart';
 
 // platform
- import 'package:fml/system.mobile.dart';
-//import 'package:fml/system.web.dart';
+//import 'package:fml/system.mobile.dart';
+import 'package:fml/system.web.dart';
 // import 'package:fml/system.desktop.dart';
 
 // application build version
@@ -42,7 +41,7 @@ final String version = '1.0.0+4';
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
 enum ApplicationTypes{ SingleApp, MultiApp }
-final ApplicationTypes appType  = ApplicationTypes.SingleApp;
+final ApplicationTypes appType  = ApplicationTypes.MultiApp;
 
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost

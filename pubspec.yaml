@@ -144,8 +144,8 @@ dependencies:
   latlong2: 0.8.1
   # BSD-3-Clause
 
-  # Updated 2022/05/26
-  mqtt_client: 9.6.8
+  # Updated 2023/01/05
+  mqtt_client: 9.7.4
   # BSD-3-Clause, MIT
 
   # Updated 2022/10/31

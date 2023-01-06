@@ -29,7 +29,7 @@ class MqttMobile implements IMqtt
     var scheme = uri.scheme;
     var server = uri.host;
     var port   = (uri.port == 443 || uri.port == 80) ? 1883 : uri.port;
-    var url = scheme + '://' + server;
+    var url = server;
 
     /// Create Client
     client = MqttServerClient(url, identifier);

@@ -59,6 +59,7 @@ class _GridViewState extends State<GridView> implements IModelListener
     EventManager.of(widget.model)?.registerEventListener(EventTypes.scroll,  onScroll);
     EventManager.of(widget.model)?.registerEventListener(EventTypes.sort,    onSort);
     EventManager.of(widget.model)?.registerEventListener(EventTypes.export,  onExport);
+    EventManager.of(widget.model)?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
 
     super.didChangeDependencies();
   }
@@ -73,11 +74,13 @@ class _GridViewState extends State<GridView> implements IModelListener
       EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.scroll,  onScroll);
       EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.sort,    onSort);
       EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.export,  onExport);
+      EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.scrollto, onScrollTo);
 
       // register new event listeners
       EventManager.of(widget.model)?.registerEventListener(EventTypes.scroll,  onScroll);
       EventManager.of(widget.model)?.registerEventListener(EventTypes.sort,    onSort);
       EventManager.of(widget.model)?.registerEventListener(EventTypes.export,  onExport);
+      EventManager.of(widget.model)?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
 
       oldWidget.model.removeListener(this);
       widget.model.registerListener(this);
@@ -93,9 +96,24 @@ class _GridViewState extends State<GridView> implements IModelListener
     EventManager.of(widget.model)?.removeEventListener(EventTypes.scroll,  onScroll);
     EventManager.of(widget.model)?.removeEventListener(EventTypes.sort,    onSort);
     EventManager.of(widget.model)?.removeEventListener(EventTypes.export,  onExport);
+    EventManager.of(widget.model)?.removeEventListener(EventTypes.scrollto, onScrollTo);
 
     scroller?.dispose();
     super.dispose();
+  }
+
+  /// Takes an event (onscroll) and uses the id to scroll to that widget
+  onScrollTo(Event event) {
+    // BuildContext context;
+    event.handled = true;
+    if (event.parameters!.containsKey('id')) {
+      String? id = event.parameters!['id'];
+      var child = widget.model.findDescendantOfExactType(null, id: id);
+
+      // if there is an error with this, we need to check _controller.hasClients as it must not be false when using [ScrollPosition],such as [position], [offset], [animateTo], and [jumpTo],
+      if ((child != null) && (child.context != null))
+        Scrollable.ensureVisible(child.context, duration: Duration(seconds: 1), alignment: 0.2);
+    }
   }
 
   void onSort(Event event) async

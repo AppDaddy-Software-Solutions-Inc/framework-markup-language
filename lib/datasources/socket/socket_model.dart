@@ -190,11 +190,20 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     busy = true;
     if ((chunksize ?? 0) <= 0) chunksize = 30000;
 
+    // mark start of transfer
+    await start();
+
     // Message is a file?
     FILE.File? file = scope!.files.containsKey(message) ? scope!.files[message] : null;
     if (file != null)
          ok = await _streamFile(file, chunksize!);
     else ok = await _streamMessage(message, chunksize!);
+
+    // mark end of transfer
+    //await stop();
+
+    // reconnect
+    //if (autoexecute == true) start();
 
     return ok;
   }
@@ -208,18 +217,22 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
       int size = file.size ?? 0;
       int parts = (size/chunksize).ceil();
 
-      await socket?.send("SOM;$size;$parts;");
+      // start of message
+      // await socket?.send("SOM;$size;$parts;");
+
+      // message body
       for (int i = 0; i < parts; i++)
       {
         int start = i * chunksize;
         int end   = start + chunksize;
 
         Uint8List? bytes = await file.read(start: start, end: end);
-        await socket!.send(bytes);
+        socket!.send(bytes);
       }
 
       // end of message stream
-      await send("EOM");
+      // await send("EOM");
+
       ok = true;
     }
     catch(e)
@@ -239,7 +252,10 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
       int size = message.length;
       int parts = (size/chunksize).ceil();
 
-      await socket?.send("SOM;$size;$parts;");
+      // start of message
+      // await socket?.send("SOM;$size;$parts;");
+
+      // message body
       for (int i = 0; i < parts; i++)
       {
         int start = i * chunksize;
@@ -247,11 +263,11 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
         if (end >= message.length) end = message.length - 1;
         if (start > end) start = end;
         String bytes = message.substring(start, end);
-        await socket!.send(bytes);
+        socket!.send(bytes);
       }
 
       // end of message stream
-      await send("EOM");
+      // await send("EOM");
       ok = true;
     }
     catch(e)
@@ -265,16 +281,13 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
   Future<bool> send(String message) async
   {
     busy = true;
-    try
-    {
-      // send the message
-      await socket!.send(message);
-    }
-    catch(e)
-    {
-      await onException(Data(), code: HttpStatus.internalServerError, message: e.toString());
-      return false;
-    }
+
+    // ensure socket is connected
+    await start();
+
+    // send the message
+    await socket?.send(message);
+
     busy = false;
     return true;
   }

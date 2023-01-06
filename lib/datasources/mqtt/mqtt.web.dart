@@ -9,18 +9,21 @@ import 'payload.dart';
 import 'iMqtt.dart';
 import 'package:fml/helper/helper_barrel.dart';
 
-IMqtt? getMqtt(String url, IMqttListener listener) => MqttWeb(url, listener);
+IMqtt? getMqtt(String url, IMqttListener listener, {String? username, String? password}) => MqttWeb(url, listener, username: username, password: password);
 
 class MqttWeb implements IMqtt
 {
   late MqttBrowserClient client;
-  String url;
-  String identifier = (System().userProperty('name') ?? 'unknown') + " : " + Uuid().v1();
-  int    keepalive = 60;
-  bool   connected = false;
+  final String url;
+  final String? username;
+  final String? password;
+  final String identifier = (System().userProperty('name') ?? 'unknown') + " : " + Uuid().v1();
+  final int    keepalive = 60;
+
+  bool connected = false;
   IMqttListener listener;
 
-  MqttWeb(this.url, this.listener)
+  MqttWeb(this.url, this.listener, {this.username, this.password})
   {
     Uri? uri = S.toURI(this.url);
     if (uri == null) return;
@@ -67,10 +70,10 @@ class MqttWeb implements IMqtt
     /// Create a connection message to use or use the default one. The default one sets the
     /// client identifier, any supplied username/password, the default keepalive interval(60s)
     /// and clean session, an example of a specific one below.
-    final connMess = MqttConnectMessage()
-        .withClientIdentifier(identifier)
-        .startClean() // Non persistent session for testing
-        .withWillQos(MqttQos.atMostOnce);
+    final connMess = MqttConnectMessage();
+    connMess.withClientIdentifier(identifier);
+    connMess.startClean();
+    if (username != null) connMess.authenticateAs(username, password);
 
     client.connectionMessage = connMess;
     client.keepAlivePeriod = keepalive;
@@ -149,7 +152,6 @@ class MqttWeb implements IMqtt
   Future<bool> disconnect() async
   {
     Log().debug('MQTT:: Disconnecting');
-    client.subscriptionsManager?.subscriptions.forEach((topic, subscription) => client.unsubscribe(topic));
     client.disconnect();
     return true;
   }
@@ -158,18 +160,17 @@ class MqttWeb implements IMqtt
   {
     connected = false;
 
-    if (client.connectionStatus!.disconnectionOrigin == MqttDisconnectionOrigin.solicited)
-         Log().debug('MQTT:: Disconnected (Solicited)');
-    else Log().debug('MQTT:: Disconnected');
+    String origin = (client.connectionStatus!.disconnectionOrigin == MqttDisconnectionOrigin.solicited) ? "client" : "server";
+    Log().debug('MQTT:: Disconnected (by $origin)');
 
     // notify listener
-    listener.onDisconnected();
+    listener.onDisconnected(origin);
   }
 
   Future<bool> subscribe(String topic) async
   {
     Log().debug('MQTT:: Subscribing to topic -> $topic');
-    if (topic != null) client.subscribe(topic, MqttQos.atMostOnce);
+    client.subscribe(topic, MqttQos.atMostOnce);
     return true;
   }
 

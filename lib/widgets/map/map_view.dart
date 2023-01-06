@@ -230,25 +230,4 @@ class _MapViewState extends State<MapView> implements IModelListener
     if (_children.length >  1) child = Column(children: _children);
     return child;
   }
-
-  void _showAll() async
-  {
-    if (map != null) {
-
-    }
-
-    //////////
-    /* Busy */
-    //////////
-    widget.model.busy = false;
-  }
-
-  void _show(final double? latitude, final double? longitude) async
-  {
-
-    //////////
-    /* Busy */
-    //////////
-    widget.model.busy = false;
-  }
 }

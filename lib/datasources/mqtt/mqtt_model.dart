@@ -147,6 +147,36 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
     }
   }
   String? get url => _url?.get();
+
+  // username
+  StringObservable? _username;
+  set username(dynamic v)
+  {
+    if (_username != null)
+    {
+      _username!.set(v);
+    }
+    else if (v != null)
+    {
+      _username = StringObservable(Binding.toKey(id, 'username'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get username => _username?.get();
+  
+  // password
+  StringObservable? _password;
+  set password(dynamic v)
+  {
+    if (_password != null)
+    {
+      _password!.set(v);
+    }
+    else if (v != null)
+    {
+      _password = StringObservable(Binding.toKey(id, 'password'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get password => _password?.get();
   
   // subscriptions
   List<String> subscriptions = [];
@@ -197,6 +227,8 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
     onunsubscribed = Xml.get(node: xml, tag: 'onunsubscribed');
     onpublished = Xml.get(node: xml, tag: 'onpublished');
     onerror = Xml.get(node: xml, tag: 'onerror');
+    username = Xml.get(node: xml, tag: 'username');
+    password = Xml.get(node: xml, tag: 'password');
     
     // subscriptions
     var subscriptions = Xml.get(node: xml, tag: 'subscriptions')?.split(",");
@@ -210,7 +242,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
   Future<bool> start({bool refresh: false, String? key}) async
   {
     bool ok = true;
-    if (mqtt == null && url != null) mqtt = IMqtt.create(url!, this);
+    if (mqtt == null && url != null) mqtt = IMqtt.create(url!, this, username: username, password: password);
     if (mqtt != null)
     {
          ok = await mqtt!.connect();
@@ -304,7 +336,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
   }
 
   @override
-  onDisconnected() async
+  onDisconnected(String origin) async
   {
     if (!S.isNullOrEmpty(ondisconnected))
     {

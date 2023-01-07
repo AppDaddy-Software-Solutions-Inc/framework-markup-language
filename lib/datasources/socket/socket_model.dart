@@ -20,7 +20,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
   Socket? socket;
 
   static int minPartSize = 1024;
-  
+
   // message count
   late IntegerObservable _received;
   int get received => _received.get() ?? 0;
@@ -39,7 +39,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     }
     else if (v != null)
     {
-      _connected = BooleanObservable(Binding.toKey(id, 'connected'), v, scope: scope, listener: onPropertyChange);
+      _connected = BooleanObservable(Binding.toKey(id, 'connected'), v, scope: scope);
     }
   }
   bool get connected => _connected?.get() ?? false;
@@ -54,7 +54,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     }
     else if (v != null)
     {
-      _url = StringObservable(Binding.toKey(id, 'url'), v, scope: scope, listener: onPropertyChange);
+      _url = StringObservable(Binding.toKey(id, 'url'), v, scope: scope, listener: onUrlChange);
     }
   }
   String? get url => _url?.get();
@@ -69,7 +69,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     }
     else if (v != null)
     {
-      _onconnected = StringObservable(Binding.toKey(id, 'onconnected'), v, scope: scope, lazyEval: true);
+      _onconnected = StringObservable(Binding.toKey(id, 'onconnected'), v, scope: scope);
     }
   }
   String? get onconnected => _onconnected?.get();
@@ -84,7 +84,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     }
     else if (v != null)
     {
-      _ondisconnected = StringObservable(Binding.toKey(id, 'ondisconnected'), v, scope: scope, lazyEval: true);
+      _ondisconnected = StringObservable(Binding.toKey(id, 'ondisconnected'), v, scope: scope);
     }
   }
   String? get ondisconnected => _ondisconnected?.get();
@@ -99,7 +99,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     }
     else if (v != null)
     {
-      _onerror = StringObservable(Binding.toKey(id, 'onerror'), v, scope: scope, lazyEval: true);
+      _onerror = StringObservable(Binding.toKey(id, 'onerror'), v, scope: scope);
     }
   }
   String? get onerror => _onerror?.get();
@@ -413,5 +413,11 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
         return await stop();
     }
     return super.execute(propertyOrFunction, arguments);
+  }
+
+  onUrlChange(Observable observable) async
+  {
+    // reconnect if the url changes
+    if (socket != null && !S.isNullOrEmpty(url)) await socket!.reconnect(url!);
   }
 }

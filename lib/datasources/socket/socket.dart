@@ -9,30 +9,98 @@ import 'iSocketListener.dart';
 
 class Socket
 {
-  late final String url;
+  Uri? _uri;
+  set uri (dynamic url)
+  {
+    if (url is String)
+    {
+      url = Url.toAbsolute(url, domain : System().secure ? "wss://${System().host}" : "ws://${System().host}");
+      Uri? uri = Uri.tryParse(url);
+      _uri = uri;
+    }
+    else if (url is Uri) _uri = url;
+  }
+  Uri? get uri => _uri;
+
+  String? get url => _uri?.toString();
+
   final ISocketListener listener;
   String? lastMessage;
   late WebSocketChannel socket;
   bool connected = false;
 
-  Socket(String url, this.listener)
+  Socket(String? url, this.listener)
   {
-    // set url
-    this.url = Url.toAbsolute(url, domain : System().secure ? "wss://${System().host}" : "ws://${System().host}");
+    uri = url;
+    if (!S.isNullOrEmpty(url) != null && uri == null) Log().error('SOCKET:: Invalid Url');
+  }
+
+  Future reconnect(String url) async
+  {
+    // set the uri if url is passed and reconnect
+    if (!S.isNullOrEmpty(url))
+    {
+      // set the uri
+      var uri = url;
+
+      // valid url?
+      if (uri != null)
+      {
+        // reconnect
+        if (connected && this.url != uri.toString())
+        {
+          Log().info('SOCKET:: Reconnecting ...');
+
+          // disconnect from existing
+          await disconnect();
+
+          // set new uri
+          this.uri = uri;
+
+          // reconnect
+          await connect();
+        }
+      }
+
+      // invalid url?
+      else
+      {
+        Log().error('SOCKET:: The supplied url => $url is invalid');
+
+        // disconnect?
+        if (connected) await disconnect();
+
+        // clear existing uri
+        this.uri = null;
+      }
+    }
   }
 
   Future<bool> connect() async
   {
-    Log().debug('SOCKET:: Connecting to $url');
-    connected = false;
+    // cannot connect to an invalid uri
+    if (uri == null)
+    {
+      Log().error('SOCKET:: Uri has not been set. Cannot connect');
+      return false;
+    }
+
+    Log().debug('SOCKET:: Connecting to ${this.url}');
     try
     {
-      // authorization must be sent as a query parameter since headers are not supported in web sockets
-      String url = Url.addParameter(this.url, 'token', System().jwt?.token);
-      socket = WebSocketChannel.connect(Uri.parse(url));
-      socket.stream.listen(_onData, onError: _onError, onDone: _onDone);
       lastMessage = null;
+
+      // connect to the socket
+      connected = false;
+      socket = WebSocketChannel.connect(this.uri!);
       connected = true;
+
+      Log().debug('SOCKET:: Connected');
+
+      // listen for messages
+      socket.stream.listen(_onData, onError: _onError, onDone: _onDone);
+
+      // notify listener of connection
       listener.onConnected();
     }
     catch(e)
@@ -58,7 +126,7 @@ class Socket
       Log().error('SOCKET:: Error closing connection to $url. Error is $e');
     }
 
-    Log().debug('SOCKET:: Connection to $url closed');
+    Log().debug('SOCKET:: Connection Closed');
 
     return true;
   }

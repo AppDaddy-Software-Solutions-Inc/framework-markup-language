@@ -26,13 +26,13 @@ class Socket
 
   final ISocketListener listener;
   String? lastMessage;
-  late WebSocketChannel socket;
+  WebSocketChannel? _socket;
   bool connected = false;
 
   Socket(String? url, this.listener)
   {
     uri = url;
-    if (!S.isNullOrEmpty(url) != null && uri == null) Log().error('SOCKET:: Invalid Url');
+    if (!S.isNullOrEmpty(url) && uri == null) Log().error('SOCKET:: Invalid Url');
   }
 
   Future reconnect(String url) async
@@ -40,8 +40,10 @@ class Socket
     // set the uri if url is passed and reconnect
     if (!S.isNullOrEmpty(url))
     {
+      Log().info('SOCKET:: Attempting Reconnect ...');
+
       // set the uri
-      var uri = url;
+      Uri? uri = Uri.tryParse(url);
 
       // valid url?
       if (uri != null)
@@ -58,7 +60,7 @@ class Socket
           this.uri = uri;
 
           // reconnect
-          await connect();
+          await connect(forceReconnect: true);
         }
       }
 
@@ -76,7 +78,7 @@ class Socket
     }
   }
 
-  Future<bool> connect() async
+  Future<bool> connect({bool forceReconnect = false}) async
   {
     // cannot connect to an invalid uri
     if (uri == null)
@@ -88,20 +90,27 @@ class Socket
     Log().debug('SOCKET:: Connecting to ${this.url}');
     try
     {
-      lastMessage = null;
-
       // connect to the socket
-      connected = false;
-      socket = WebSocketChannel.connect(this.uri!);
-      connected = true;
+      if (!connected || forceReconnect)
+      {
+        lastMessage = null;
 
-      Log().debug('SOCKET:: Connected');
+        // close the old socket
+        if (_socket != null) await _socket!.sink.close();
 
-      // listen for messages
-      socket.stream.listen(_onData, onError: _onError, onDone: _onDone);
+        // connect
+        connected = false;
+        _socket = WebSocketChannel.connect(this.uri!);
+        connected = true;
 
-      // notify listener of connection
-      listener.onConnected();
+        Log().debug('SOCKET:: Connected');
+
+        // listen for messages
+        _socket!.stream.listen(_onData, onError: _onError, onDone: _onDone);
+
+        // notify listener of connection
+        listener.onConnected();
+      }
     }
     catch(e)
     {
@@ -118,7 +127,7 @@ class Socket
     try
     {
       // Close the channel
-      await socket.sink.close();
+      if (_socket != null) await _socket!.sink.close();
       connected = false;
     }
     on Exception catch(e)
@@ -150,13 +159,12 @@ class Socket
 
   _onDone()
   {
-    return;
-    Log().debug('SOCKET:: Done. Close code is ${socket.closeCode} and reason is ${socket.closeReason}');
+    Log().debug('SOCKET:: Done. Close code is ${_socket?.closeCode} and reason is ${_socket?.closeReason}');
     if (connected)
     {
       connected = false;
-      int? code = socket.closeCode;
-      String? msg = socket.closeReason ?? lastMessage;
+      int? code = _socket?.closeCode;
+      String? msg = _socket?.closeReason ?? lastMessage;
       listener.onDisconnected(code, msg);
     }
   }
@@ -166,8 +174,11 @@ class Socket
     bool ok = true;
     try
     {
-      if (!connected) await connect();
-      if (connected && message != null) socket.sink.add(message);
+      // ensure connected
+      await connect();
+
+      // send the message
+      if (connected && message != null && _socket != null) _socket!.sink.add(message);
     }
     catch(e)
     {
@@ -182,5 +193,6 @@ class Socket
   dispose()
   {
     disconnect();
+    _socket = null;
   }
 }

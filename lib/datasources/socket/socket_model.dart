@@ -243,10 +243,10 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
             String part = message.substring(start, end);
 
             // send as binary
-            if (asBinary) socket?.socket.sink.add(utf8.encode(part));
+            if (asBinary) socket?.send(utf8.encode(part));
 
             // send as string
-            else socket?.socket.sink.add(part);
+            else socket?.send(part);
           }
         }
       }
@@ -255,10 +255,10 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
       else
       {
         // send as binary
-        if (asBinary) socket?.socket.sink.add(utf8.encode(message));
+        if (asBinary) socket?.send(utf8.encode(message));
 
         // send as string
-        else socket?.socket.sink.add(message);
+        else socket?.send(message);
       }
 
       ok = true;
@@ -301,10 +301,10 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
           Uint8List? bytes = await file.read(start: start, end: end);
 
           // send as binary
-          if (asBinary) socket?.socket.sink.add(bytes);
+          if (asBinary) socket?.send(bytes);
 
           // send as string
-          else socket?.socket.sink.add(bytes);
+          else socket?.send(bytes);
         }
       }
 
@@ -315,10 +315,10 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
         if (bytes != null)
         {
           // send as binary
-          if (asBinary) socket?.socket.sink.add(bytes);
+          if (asBinary) socket?.send(bytes);
 
           // send as string
-          else socket?.socket.sink.add(utf8.decode(bytes));
+          else socket?.send(utf8.decode(bytes));
         }
       }
 

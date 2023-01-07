@@ -431,7 +431,7 @@ class Scope
     for (String key in files.keys)
     {
       var file = files[key];
-      if ((body!.contains(key)) && (file != null))
+      if (file != null && body!.contains(key))
       {
         if (file.uri == null) await file.read();
         body = body.replaceAll(key, (file.uri ?? ''));

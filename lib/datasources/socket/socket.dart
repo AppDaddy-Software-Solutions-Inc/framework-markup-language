@@ -82,6 +82,7 @@ class Socket
 
   _onDone()
   {
+    return;
     Log().debug('SOCKET:: Done. Close code is ${socket.closeCode} and reason is ${socket.closeReason}');
     if (connected)
     {

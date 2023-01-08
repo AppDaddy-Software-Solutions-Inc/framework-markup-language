@@ -77,8 +77,13 @@ class ExpressionEvaluator {
         ((expression.callee as MemberExpression).object is Variable) &&
         ((expression.arguments is List)))
     {
+      // evaluate id. id may be a bindable
       String id = (expression.callee as MemberExpression).object.toString();
+      if (context.containsKey(id)) id = context[id];
+
+      // evaluate function. function may be a bindable
       String fn = (expression.callee as MemberExpression).property.toString();
+      if (context.containsKey(fn)) fn = context[fn];
 
       expression = CallExpression(Variable(Identifier("execute")), expression.arguments);
       var callee = eval(expression.callee, context);

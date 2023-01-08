@@ -290,7 +290,8 @@ class WidgetModel implements IDataSourceListener
     if ((!S.isNullOrEmpty(id)) && (this.scope != null)) this.scope!.registerModel(this);
   }
 
-  static WidgetModel? fromXml(WidgetModel parent, XmlElement node, {String? type}) {
+  static WidgetModel? fromXml(WidgetModel parent, XmlElement node)
+  {
     // exclude this element?
     if (excludeFromTemplate(node, parent.scope)) return null;
 
@@ -1027,14 +1028,52 @@ class WidgetModel implements IDataSourceListener
     //notifyListeners('busy', this.busy);
   }
 
+  /// This will be overridden for more complex widgets such as TABLE
+  /// where children may actually be header or footer declarations that require
+  /// a complete restructuring/rebuild of the parent
+  Future<bool> appendChild(XmlElement element, int? index) async
+  {
+      WidgetModel? model = fromXml(this, element);
+      if (model != null)
+      {
+        // model is a datasource
+        if (model is IDataSource)
+        {
+          // add it to the datasource list
+          if (this.datasources == null) this.datasources = [];
+          this.datasources!.add(model as IDataSource);
+
+          // start it
+          (model as IDataSource).start();
+        }
+
+        // model is widget
+        else
+        {
+          // add it to the child list
+          if (this.children == null) this.children = [];
+
+          // position specified?
+          if (index != null && index < this.children!.length)
+               this.children!.insert(index, model);
+          else this.children!.add(model);
+
+          // force rebuild
+          notifyListeners("rebuild", "true");
+        }
+      }
+      return (model != null);
+  }
+
   Future<bool?> execute(String propertyOrFunction, List<dynamic> arguments) async
   {
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
-    switch (function) {
+    switch (function)
+    {
       case "set":
 
-        // value
+      // value
         var value = S.item(arguments, 0);
 
         // property - default is value
@@ -1051,11 +1090,42 @@ class WidgetModel implements IDataSourceListener
         if (scope == null) return false;
 
         // set the variable
-        scope.setObservable(
-            "$id.$property", value != null ? value.toString() : null);
+        scope.setObservable("$id.$property", value != null ? value.toString() : null);
 
         return true;
+
+      case "dispose":
+
+        // dispose of this model
+        this.dispose();
+
+        // force parent rebuild
+        if (this.parent != null) this.parent!.notifyListeners("rebuild", "true");
+
+        return true;
+
+      case "appendchild" :
+
+        // fml to process
+        var xml = S.item(arguments, 0);
+
+        // fml to process
+        int? index = S.toInt(S.item(arguments, 1));
+
+        // parse the xml
+        XmlDocument? document;
+        if (xml is String) document = Xml.tryParse(xml, silent: true);
+
+        // valid fml?
+        if (document == null)
+        {
+          Log().error("Invalid xml => $xml");
+          return false;
+        }
+        document.childElements.forEach((element) => appendChild(element, index));
+        return true;
     }
+
     return false;
   }
 

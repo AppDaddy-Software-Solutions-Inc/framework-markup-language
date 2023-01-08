@@ -35,7 +35,7 @@ class Socket
     if (!S.isNullOrEmpty(url) && uri == null) Log().error('SOCKET:: Invalid Url');
   }
 
-  Future reconnect(String url) async
+  Future reconnect(String? url) async
   {
     // set the uri if url is passed and reconnect
     if (!S.isNullOrEmpty(url))
@@ -43,7 +43,7 @@ class Socket
       Log().info('SOCKET:: Attempting Reconnect ...');
 
       // set the uri
-      Uri? uri = Uri.tryParse(url);
+      Uri? uri = Uri.tryParse(url!);
 
       // valid url?
       if (uri != null)
@@ -87,12 +87,13 @@ class Socket
       return false;
     }
 
-    Log().debug('SOCKET:: Connecting to ${this.url}');
     try
     {
       // connect to the socket
       if (!connected || forceReconnect)
       {
+        Log().debug('SOCKET:: Connecting to ${this.url}');
+
         lastMessage = null;
 
         // close the old socket

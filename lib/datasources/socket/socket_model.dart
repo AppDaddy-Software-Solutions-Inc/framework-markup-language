@@ -206,6 +206,8 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     // send file
     else ok = await _sendFile(file, asBinary: asBinary, maxPartSize: maxPartSize);
 
+    busy = false;
+
     return ok;
   }
 
@@ -232,6 +234,8 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
         // determine number of parts to send
         int parts = (size/maxPartSize).ceil();
 
+        Log().debug('SOCKET:: Sending message (binary:  $asBinary, parts: $parts) to ${this.url}');
+
         // send each file part as an single message
         for (int i = 0; i < parts; i++)
         {
@@ -243,10 +247,10 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
             String part = message.substring(start, end);
 
             // send as binary
-            if (asBinary) socket?.send(utf8.encode(part));
+            if (asBinary) await socket?.send(utf8.encode(part));
 
             // send as string
-            else socket?.send(part);
+            else await socket?.send(part);
           }
         }
       }
@@ -254,11 +258,13 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
       // send file as a single message
       else
       {
+        Log().debug('SOCKET:: Sending message (binary: $asBinary, bytes:${message?.length}) to ${this.url}');
+
         // send as binary
-        if (asBinary) socket?.send(utf8.encode(message));
+        if (asBinary) await socket?.send(utf8.encode(message));
 
         // send as string
-        else socket?.send(message);
+        else await socket?.send(message);
       }
 
       ok = true;
@@ -291,6 +297,8 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
         // determine number of parts to send
         int parts = (size/maxPartSize).ceil();
 
+        Log().debug('SOCKET:: Sending file (binary:  $asBinary, parts: $parts) to ${this.url}');
+
         // send each file part as an single message
         for (int i = 0; i < parts; i++)
         {
@@ -301,10 +309,10 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
           Uint8List? bytes = await file.read(start: start, end: end);
 
           // send as binary
-          if (asBinary) socket?.send(bytes);
+          if (asBinary) await socket?.send(bytes);
 
           // send as string
-          else socket?.send(bytes);
+          else await socket?.send(bytes);
         }
       }
 
@@ -312,13 +320,16 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
       else
       {
         Uint8List? bytes = await file.read();
+
+        Log().debug('SOCKET:: Sending file (binary: $asBinary, bytes:${bytes?.length}) to ${this.url}');
+
         if (bytes != null)
         {
           // send as binary
-          if (asBinary) socket?.send(bytes);
+          if (asBinary) await socket?.send(bytes);
 
           // send as string
-          else socket?.send(utf8.decode(bytes));
+          else await socket?.send(utf8.decode(bytes));
         }
       }
 
@@ -418,6 +429,6 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
   onUrlChange(Observable observable) async
   {
     // reconnect if the url changes
-    if (socket != null && !S.isNullOrEmpty(url)) await socket!.reconnect(url!);
+    await socket?.reconnect(url);
   }
 }

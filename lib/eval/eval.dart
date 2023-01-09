@@ -50,8 +50,8 @@ class Eval
       // add functions
       _functions.addAll(functions);
 
-      // add alternate functions
-      if (altFunctions != null) _functions.addAll(altFunctions);
+      // add alternate functions that dont clash
+      altFunctions?.forEach((key, value) => _functions.containsKey(key) ? null : _functions[key] = value);
 
       // parse the expression
       _parsed  = Expression.tryParse(_expression);

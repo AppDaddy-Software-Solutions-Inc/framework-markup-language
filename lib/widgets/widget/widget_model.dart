@@ -290,7 +290,8 @@ class WidgetModel implements IDataSourceListener
     if ((!S.isNullOrEmpty(id)) && (this.scope != null)) this.scope!.registerModel(this);
   }
 
-  static WidgetModel? fromXml(WidgetModel parent, XmlElement node, {String? type}) {
+  static WidgetModel? fromXml(WidgetModel parent, XmlElement node)
+  {
     // exclude this element?
     if (excludeFromTemplate(node, parent.scope)) return null;
 
@@ -854,9 +855,6 @@ class WidgetModel implements IDataSourceListener
       children!.forEach((child) => child.dispose());
       children!.clear();
     }
-
-    this.scope = null;
-    this.parent = null;
   }
 
   registerListener(IModelListener listener) {
@@ -890,15 +888,16 @@ class WidgetModel implements IDataSourceListener
   {
     // start datasources
     if (datasources != null)
-      datasources!.forEach((datasource) {
+      datasources!.forEach((datasource)
+      {
         // already started?
-        if (!datasource.initialized!) {
+        if (!datasource.initialized!)
+        {
           // mark as started
           datasource.initialized = true;
 
           // announce data for late binding
-          if ((datasource.data != null) && (datasource.data!.isNotEmpty))
-            datasource.notify();
+          if ((datasource.data != null) && (datasource.data!.isNotEmpty)) datasource.notify();
 
           // start the datasource if autoexecute = true
           if (datasource.autoexecute == true) datasource.start();
@@ -1027,14 +1026,64 @@ class WidgetModel implements IDataSourceListener
     //notifyListeners('busy', this.busy);
   }
 
+  /// This will be overridden for more complex widgets such as TABLE
+  /// where children may actually be header or footer declarations that require
+  /// a complete restructuring/rebuild of the parent
+  Future<bool> _appendChild(XmlElement element, int? index) async
+  {
+      WidgetModel? model = fromXml(this, element);
+      if (model != null)
+      {
+        // model is a datasource
+        if (model is IDataSource)
+        {
+          // add it to the datasource list
+          if (this.datasources == null) this.datasources = [];
+          this.datasources!.add(model as IDataSource);
+
+          // start brokers
+          this.initialize();
+        }
+
+        // model is widget
+        else
+        {
+          // add it to the child list
+          if (this.children == null) this.children = [];
+
+          // position specified?
+          if (index != null && index < this.children!.length)
+               this.children!.insert(index, model);
+          else this.children!.add(model);
+        }
+      }
+      return (model != null);
+  }
+
+  Future<bool> _appendXml(String xml, index) async
+  {
+    // parse the xml
+    XmlDocument? document = Xml.tryParse(xml, silent: true);
+
+    // valid fml?
+    if (document != null)
+    {
+      // add elements
+      document.childElements.forEach((element) => _appendChild(element, index));
+      return true;
+    }
+    else return false;
+  }
+
   Future<bool?> execute(String propertyOrFunction, List<dynamic> arguments) async
   {
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
-    switch (function) {
+    switch (function)
+    {
       case "set":
 
-        // value
+      // value
         var value = S.item(arguments, 0);
 
         // property - default is value
@@ -1051,11 +1100,49 @@ class WidgetModel implements IDataSourceListener
         if (scope == null) return false;
 
         // set the variable
-        scope.setObservable(
-            "$id.$property", value != null ? value.toString() : null);
+        scope.setObservable("$id.$property", value != null ? value.toString() : null);
+
+        return true;
+
+      case "removewidget":
+
+        // dispose of this model
+        this.dispose();
+
+        // force parent rebuild
+        parent?.notifyListeners("rebuild", "true");
+
+        return true;
+
+      case "addchildwidget" :
+
+        // add elements
+        var xml = S.item(arguments, 0);
+        if (xml is String) await _appendXml(xml, S.toInt(S.item(arguments, 1)));
+
+        // force parent rebuild
+        parent?.notifyListeners("rebuild", "true");
+
+        return true;
+
+      case "replacewidget" :
+
+        // get my position in my parents child list
+        int? index = (parent?.children?.contains(this) ?? false) ? parent?.children?.indexOf(this) : null;
+
+        // add new fml
+        var xml = S.item(arguments, 0);
+        if (xml is String) await _appendXml(xml, index);
+
+        // dispose of myself
+        dispose();
+
+        // force parent rebuild
+        parent?.notifyListeners("rebuild", "true");
 
         return true;
     }
+
     return false;
   }
 

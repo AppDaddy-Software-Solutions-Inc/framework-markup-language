@@ -294,19 +294,6 @@ class EventHandler extends Eval
     return await System().stashValue(key,value);
   }
 
-  /// Executes an Object Function - Olajos Match 14, 2020
-  Future<bool?> _handleEventExecute(String id, String function, dynamic arguments) async
-  {
-    bool ok = true;
-    if (this.model.scope == null) return ok;
-
-    // call function
-    dynamic model = this.model.scope!.getModel(id);
-    if (model != null) return await model.execute(function, arguments);
-
-    return true;
-  }
-
   /// Creates an alert dialog
   Future<bool> _handleEventAlert([dynamic type, dynamic title, dynamic message]) async
   {
@@ -770,6 +757,20 @@ class EventHandler extends Eval
   {
     EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.showtemplate, parameters: null));
     return true;
+  }
+
+  /// Executes an Object Function - Olajos Match 14, 2020
+  /// This is a catch all and is used to manage all of the <id>.func() calls
+  Future<bool?> _handleEventExecute(String id, String function, dynamic arguments) async
+  {
+    bool ok = true;
+    if (this.model.scope == null) return ok;
+
+    // call function
+    WidgetModel? model = this.model.scope!.getModel(id);
+    if (model != null) return await model.execute(function, arguments);
+    Log().debug("Parent element $id not found");
+    return false;
   }
 }
 

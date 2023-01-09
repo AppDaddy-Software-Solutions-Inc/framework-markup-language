@@ -1060,7 +1060,7 @@ class WidgetModel implements IDataSourceListener
       return (model != null);
   }
 
-  Future<bool> _appendXml(String xml, index) async
+  Future<bool> _appendXml(String xml, int? index) async
   {
     // parse the xml
     XmlDocument? document = Xml.tryParse(xml, silent: true);
@@ -1114,7 +1114,7 @@ class WidgetModel implements IDataSourceListener
 
         return true;
 
-      case "addchildwidget" :
+      case "addchildwidget":
 
         // add elements
         var xml = S.item(arguments, 0);
@@ -1125,7 +1125,7 @@ class WidgetModel implements IDataSourceListener
 
         return true;
 
-      case "replacewidget" :
+      case "replacewidget":
 
         // get my position in my parents child list
         int? index = (parent?.children?.contains(this) ?? false) ? parent?.children?.indexOf(this) : null;

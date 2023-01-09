@@ -38,6 +38,7 @@ class EventHandler extends Eval
   final WidgetModel model;
 
   static final ExpressionEvaluator evaluator = const ExpressionEvaluator();
+  bool initialized = false;
 
   /// The String value mapping of all the functions
   final Map<String?, dynamic> functions = Map<String?, dynamic>();
@@ -84,7 +85,7 @@ class EventHandler extends Eval
   initialize()
   {
     // initialize event handlers
-    if (!functions.containsValue(_handleEventSet))
+    if (!initialized)
     {
       functions[S.fromEnum(EventTypes.alert)]         = _handleEventAlert;
       functions[S.fromEnum(EventTypes.animate)]       = _handleEventAnimate;
@@ -103,7 +104,9 @@ class EventHandler extends Eval
       functions[S.fromEnum(EventTypes.logoff)]        = _handleEventLogoff;
       functions[S.fromEnum(EventTypes.signInWithFirebase)] = _handleEventSignInWithFirebase;
       functions[S.fromEnum(EventTypes.open)]          = _handleEventOpen;
+      // replace (legacy) overlaps with Eval() function replace. use replaceRoute()
       functions[S.fromEnum(EventTypes.replace)]       = _handleEventReplace;
+      functions[S.fromEnum(EventTypes.replaceroute)]  = _handleEventReplace;
       functions[S.fromEnum(EventTypes.page)]          = _handleEventPage;
       functions[S.fromEnum(EventTypes.refresh)]       = _handleEventRefresh;
       functions[S.fromEnum(EventTypes.save)]          = _handleEventSave;
@@ -127,6 +130,8 @@ class EventHandler extends Eval
         String? t = S.fromEnum(type);
         if (!functions.containsKey(t)) functions[t] = () => _broadcast(type);
       });
+
+      initialized = true;
     }
   }
 

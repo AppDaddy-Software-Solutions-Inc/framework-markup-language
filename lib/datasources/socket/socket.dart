@@ -9,31 +9,109 @@ import 'iSocketListener.dart';
 
 class Socket
 {
-  late final String url;
+  Uri? _uri;
+  set uri (dynamic url)
+  {
+    if (url is String)
+    {
+      url = Url.toAbsolute(url, domain : System().secure ? "wss://${System().host}" : "ws://${System().host}");
+      Uri? uri = Uri.tryParse(url);
+      _uri = uri;
+    }
+    else if (url is Uri) _uri = url;
+  }
+  Uri? get uri => _uri;
+
+  String? get url => _uri?.toString();
+
   final ISocketListener listener;
   String? lastMessage;
-  late WebSocketChannel socket;
+  WebSocketChannel? _socket;
   bool connected = false;
 
-  Socket(String url, this.listener)
+  Socket(String? url, this.listener)
   {
-    // set url
-    this.url = Url.toAbsolute(url, domain : System().secure ? "wss://${System().host}" : "ws://${System().host}");
+    uri = url;
+    if (!S.isNullOrEmpty(url) && uri == null) Log().error('SOCKET:: Invalid Url');
   }
 
-  Future<bool> connect() async
+  Future reconnect(String? url) async
   {
-    Log().debug('SOCKET:: Connecting to $url');
-    connected = false;
+    // set the uri if url is passed and reconnect
+    if (!S.isNullOrEmpty(url))
+    {
+      Log().info('SOCKET:: Attempting Reconnect ...');
+
+      // set the uri
+      Uri? uri = Uri.tryParse(url!);
+
+      // valid url?
+      if (uri != null)
+      {
+        // reconnect
+        if (connected && this.url != uri.toString())
+        {
+          Log().info('SOCKET:: Reconnecting ...');
+
+          // disconnect from existing
+          await disconnect();
+
+          // set new uri
+          this.uri = uri;
+
+          // reconnect
+          await connect(forceReconnect: true);
+        }
+      }
+
+      // invalid url?
+      else
+      {
+        Log().error('SOCKET:: The supplied url => $url is invalid');
+
+        // disconnect?
+        if (connected) await disconnect();
+
+        // clear existing uri
+        this.uri = null;
+      }
+    }
+  }
+
+  Future<bool> connect({bool forceReconnect = false}) async
+  {
+    // cannot connect to an invalid uri
+    if (uri == null)
+    {
+      Log().error('SOCKET:: Uri has not been set. Cannot connect');
+      return false;
+    }
+
     try
     {
-      // authorization must be sent as a query parameter since headers are not supported in web sockets
-      String url = Url.addParameter(this.url, 'token', System().jwt?.token);
-      socket = WebSocketChannel.connect(Uri.parse(url));
-      socket.stream.listen(_onData, onError: _onError, onDone: _onDone);
-      lastMessage = null;
-      connected = true;
-      listener.onConnected();
+      // connect to the socket
+      if (!connected || forceReconnect)
+      {
+        Log().debug('SOCKET:: Connecting to ${this.url}');
+
+        lastMessage = null;
+
+        // close the old socket
+        if (_socket != null) await _socket!.sink.close();
+
+        // connect
+        connected = false;
+        _socket = WebSocketChannel.connect(this.uri!);
+        connected = true;
+
+        Log().debug('SOCKET:: Connected');
+
+        // listen for messages
+        _socket!.stream.listen(_onData, onError: _onError, onDone: _onDone);
+
+        // notify listener of connection
+        listener.onConnected();
+      }
     }
     catch(e)
     {
@@ -50,7 +128,7 @@ class Socket
     try
     {
       // Close the channel
-      await socket.sink.close();
+      if (_socket != null) await _socket!.sink.close();
       connected = false;
     }
     on Exception catch(e)
@@ -58,7 +136,7 @@ class Socket
       Log().error('SOCKET:: Error closing connection to $url. Error is $e');
     }
 
-    Log().debug('SOCKET:: Connection to $url closed');
+    Log().debug('SOCKET:: Connection Closed');
 
     return true;
   }
@@ -82,12 +160,12 @@ class Socket
 
   _onDone()
   {
-    Log().debug('SOCKET:: Done. Close code is ${socket.closeCode} and reason is ${socket.closeReason}');
+    Log().debug('SOCKET:: Done. Close code is ${_socket?.closeCode} and reason is ${_socket?.closeReason}');
     if (connected)
     {
       connected = false;
-      int? code = socket.closeCode;
-      String? msg = socket.closeReason ?? lastMessage;
+      int? code = _socket?.closeCode;
+      String? msg = _socket?.closeReason ?? lastMessage;
       listener.onDisconnected(code, msg);
     }
   }
@@ -97,8 +175,11 @@ class Socket
     bool ok = true;
     try
     {
-      if (!connected) await connect();
-      if (connected && message != null) socket.sink.add(message);
+      // ensure connected
+      await connect();
+
+      // send the message
+      if (connected && message != null && _socket != null) _socket!.sink.add(message);
     }
     catch(e)
     {
@@ -113,5 +194,6 @@ class Socket
   dispose()
   {
     disconnect();
+    _socket = null;
   }
 }

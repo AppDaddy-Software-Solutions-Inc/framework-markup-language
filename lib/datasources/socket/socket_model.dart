@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:fml/data/data.dart';
@@ -18,6 +19,8 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
 {
   Socket? socket;
 
+  static int minPartSize = 1024;
+
   // message count
   late IntegerObservable _received;
   int get received => _received.get() ?? 0;
@@ -36,7 +39,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     }
     else if (v != null)
     {
-      _connected = BooleanObservable(Binding.toKey(id, 'connected'), v, scope: scope, listener: onPropertyChange);
+      _connected = BooleanObservable(Binding.toKey(id, 'connected'), v, scope: scope);
     }
   }
   bool get connected => _connected?.get() ?? false;
@@ -51,7 +54,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     }
     else if (v != null)
     {
-      _url = StringObservable(Binding.toKey(id, 'url'), v, scope: scope, listener: onPropertyChange);
+      _url = StringObservable(Binding.toKey(id, 'url'), v, scope: scope, listener: onUrlChange);
     }
   }
   String? get url => _url?.get();
@@ -66,7 +69,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     }
     else if (v != null)
     {
-      _onconnected = StringObservable(Binding.toKey(id, 'onconnected'), v, scope: scope, lazyEval: true);
+      _onconnected = StringObservable(Binding.toKey(id, 'onconnected'), v, scope: scope);
     }
   }
   String? get onconnected => _onconnected?.get();
@@ -81,7 +84,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     }
     else if (v != null)
     {
-      _ondisconnected = StringObservable(Binding.toKey(id, 'ondisconnected'), v, scope: scope, lazyEval: true);
+      _ondisconnected = StringObservable(Binding.toKey(id, 'ondisconnected'), v, scope: scope);
     }
   }
   String? get ondisconnected => _ondisconnected?.get();
@@ -96,7 +99,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     }
     else if (v != null)
     {
-      _onerror = StringObservable(Binding.toKey(id, 'onerror'), v, scope: scope, lazyEval: true);
+      _onerror = StringObservable(Binding.toKey(id, 'onerror'), v, scope: scope);
     }
   }
   String? get onerror => _onerror?.get();
@@ -184,99 +187,160 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     return true;
   }
 
-  Future<bool> stream(String message, {int? chunksize = 30000}) async
+  Future<bool> send(String message, {bool? asBinary, int? maxPartSize}) async
   {
     bool ok = true;
+
     busy = true;
-    if ((chunksize ?? 0) <= 0) chunksize = 30000;
 
-    // Message is a file?
+    // ensure broker is started
+    ok = await start();
+    if (!ok) return ok;
+
+    // message is a file pointer?
     FILE.File? file = scope!.files.containsKey(message) ? scope!.files[message] : null;
-    if (file != null)
-         ok = await _streamFile(file, chunksize!);
-    else ok = await _streamMessage(message, chunksize!);
+
+    // send message
+    if (file == null) ok = await _send(message, asBinary: asBinary, maxPartSize: maxPartSize);
+
+    // send file
+    else ok = await _sendFile(file, asBinary: asBinary, maxPartSize: maxPartSize);
+
+    busy = false;
 
     return ok;
   }
 
-  Future<bool> _streamFile(FILE.File file, int chunksize) async
+  Future<bool> _send(String message, {bool? asBinary, int? maxPartSize}) async
   {
     bool ok = true;
 
-    try
-    {
-      int size = file.size ?? 0;
-      int parts = (size/chunksize).ceil();
-
-      await socket?.send("SOM;$size;$parts;");
-      for (int i = 0; i < parts; i++)
-      {
-        int start = i * chunksize;
-        int end   = start + chunksize;
-
-        Uint8List? bytes = await file.read(start: start, end: end);
-        await socket!.send(bytes);
-      }
-
-      // end of message stream
-      await send("EOM");
-      ok = true;
-    }
-    catch(e)
-    {
-      Log().error("Error streaming file. Error is $e");
-      ok = false;
-    }
-    return ok;
-  }
-
-  Future<bool> _streamMessage(String message, int chunksize) async
-  {
-    bool ok = true;
+    // default format for message is string
+    if (asBinary == null) asBinary = false;
 
     try
     {
       int size = message.length;
-      int parts = (size/chunksize).ceil();
 
-      await socket?.send("SOM;$size;$parts;");
-      for (int i = 0; i < parts; i++)
+      // nothing to send
+      if (size == 0) return ok;
+
+      // replace file references
+      if (scope != null) message = await scope!.replaceFileReferences(message) ?? "";
+
+      // send message in parts?
+      if (maxPartSize != null && maxPartSize >= minPartSize && maxPartSize < size)
       {
-        int start = i * chunksize;
-        int end   = start + chunksize;
-        if (end >= message.length) end = message.length - 1;
-        if (start > end) start = end;
-        String bytes = message.substring(start, end);
-        await socket!.send(bytes);
+        // determine number of parts to send
+        int parts = (size/maxPartSize).ceil();
+
+        Log().debug('SOCKET:: Sending message (binary:  $asBinary, parts: $parts) to ${this.url}');
+
+        // send each file part as an single message
+        for (int i = 0; i < parts; i++)
+        {
+          int start = i * maxPartSize;
+          int end   = start + maxPartSize;
+          if (end >= message.length) end = message.length - 1;
+          if (start <= end)
+          {
+            String part = message.substring(start, end);
+
+            // send as binary
+            if (asBinary) await socket?.send(utf8.encode(part));
+
+            // send as string
+            else await socket?.send(part);
+          }
+        }
       }
 
-      // end of message stream
-      await send("EOM");
+      // send file as a single message
+      else
+      {
+        Log().debug('SOCKET:: Sending message (binary: $asBinary, bytes:${message?.length}) to ${this.url}');
+
+        // send as binary
+        if (asBinary) await socket?.send(utf8.encode(message));
+
+        // send as string
+        else await socket?.send(message);
+      }
+
       ok = true;
     }
     catch(e)
     {
-      Log().error("Error streaming file. Error is $e");
+      Log().error("Error sending file. Error is $e");
       ok = false;
     }
     return ok;
   }
 
-  Future<bool> send(String message) async
+  Future<bool> _sendFile(FILE.File file, {bool? asBinary, int? maxPartSize}) async
   {
-    busy = true;
+    bool ok = true;
+
+    // default format for a file is binary
+    if (asBinary == null) asBinary = true;
+
     try
     {
-      // send the message
-      await socket!.send(message);
+      int size = file.size ?? 0;
+
+      // nothing to send
+      if (size == 0) return ok;
+
+      // send in parts?
+      if (maxPartSize != null && maxPartSize >= minPartSize && maxPartSize < size)
+      {
+        // determine number of parts to send
+        int parts = (size/maxPartSize).ceil();
+
+        Log().debug('SOCKET:: Sending file (binary:  $asBinary, parts: $parts) to ${this.url}');
+
+        // send each file part as an single message
+        for (int i = 0; i < parts; i++)
+        {
+          int start = i * maxPartSize;
+          int end   = start + maxPartSize;
+
+          // read part from file
+          Uint8List? bytes = await file.read(start: start, end: end);
+
+          // send as binary
+          if (asBinary) await socket?.send(bytes);
+
+          // send as string
+          else await socket?.send(bytes);
+        }
+      }
+
+      // send file as a single message
+      else
+      {
+        Uint8List? bytes = await file.read();
+
+        Log().debug('SOCKET:: Sending file (binary: $asBinary, bytes:${bytes?.length}) to ${this.url}');
+
+        if (bytes != null)
+        {
+          // send as binary
+          if (asBinary) await socket?.send(bytes);
+
+          // send as string
+          else await socket?.send(utf8.decode(bytes));
+        }
+      }
+
+      ok = true;
     }
     catch(e)
     {
-      await onException(Data(), code: HttpStatus.internalServerError, message: e.toString());
-      return false;
+      Log().error("Error sending file. Error is $e");
+      ok = false;
     }
-    busy = false;
-    return true;
+    return ok;
   }
 
   @override
@@ -346,19 +410,10 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     {
       case "send":
       case "write":
-        String? message = S.toStr(S.item(arguments, 0));
-        if (message != null) send(message);
-        return true;
-
-      case "post":
-        String? message = await scope?.replaceFileReferences(this.body);
-        if (message != null) send(message);
-        return true;
-
-      case "stream":
-        String? message = S.toStr(S.item(arguments, 0));
-        int? chunksize = S.toInt(S.item(arguments, 1));
-        if (message != null) stream(message, chunksize: chunksize);
+        String? message     = S.toStr(S.item(arguments, 0));
+        bool?   asBinary    = S.toBool(S.item(arguments, 1));
+        int?    maxPartSize = S.toInt(S.item(arguments, 2));
+        if (!S.isNullOrEmpty(message)) send(message!, asBinary: asBinary, maxPartSize: maxPartSize);
         return true;
 
       case "read":
@@ -369,5 +424,11 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
         return await stop();
     }
     return super.execute(propertyOrFunction, arguments);
+  }
+
+  onUrlChange(Observable observable) async
+  {
+    // reconnect if the url changes
+    await socket?.reconnect(url);
   }
 }

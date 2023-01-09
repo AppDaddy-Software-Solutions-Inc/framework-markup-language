@@ -855,9 +855,6 @@ class WidgetModel implements IDataSourceListener
       children!.forEach((child) => child.dispose());
       children!.clear();
     }
-
-    this.scope = null;
-    this.parent = null;
   }
 
   registerListener(IModelListener listener) {
@@ -891,15 +888,16 @@ class WidgetModel implements IDataSourceListener
   {
     // start datasources
     if (datasources != null)
-      datasources!.forEach((datasource) {
+      datasources!.forEach((datasource)
+      {
         // already started?
-        if (!datasource.initialized!) {
+        if (!datasource.initialized!)
+        {
           // mark as started
           datasource.initialized = true;
 
           // announce data for late binding
-          if ((datasource.data != null) && (datasource.data!.isNotEmpty))
-            datasource.notify();
+          if ((datasource.data != null) && (datasource.data!.isNotEmpty)) datasource.notify();
 
           // start the datasource if autoexecute = true
           if (datasource.autoexecute == true) datasource.start();
@@ -1031,7 +1029,7 @@ class WidgetModel implements IDataSourceListener
   /// This will be overridden for more complex widgets such as TABLE
   /// where children may actually be header or footer declarations that require
   /// a complete restructuring/rebuild of the parent
-  Future<bool> appendChild(XmlElement element, int? index) async
+  Future<bool> _appendChild(XmlElement element, int? index) async
   {
       WidgetModel? model = fromXml(this, element);
       if (model != null)
@@ -1043,8 +1041,8 @@ class WidgetModel implements IDataSourceListener
           if (this.datasources == null) this.datasources = [];
           this.datasources!.add(model as IDataSource);
 
-          // start it
-          (model as IDataSource).start();
+          // start brokers
+          this.initialize();
         }
 
         // model is widget
@@ -1057,12 +1055,24 @@ class WidgetModel implements IDataSourceListener
           if (index != null && index < this.children!.length)
                this.children!.insert(index, model);
           else this.children!.add(model);
-
-          // force rebuild
-          notifyListeners("rebuild", "true");
         }
       }
       return (model != null);
+  }
+
+  Future<bool> _appendXml(String xml, index) async
+  {
+    // parse the xml
+    XmlDocument? document = Xml.tryParse(xml, silent: true);
+
+    // valid fml?
+    if (document != null)
+    {
+      // add elements
+      document.childElements.forEach((element) => _appendChild(element, index));
+      return true;
+    }
+    else return false;
   }
 
   Future<bool?> execute(String propertyOrFunction, List<dynamic> arguments) async
@@ -1094,35 +1104,42 @@ class WidgetModel implements IDataSourceListener
 
         return true;
 
-      case "dispose":
+      case "removewidget":
 
         // dispose of this model
         this.dispose();
 
         // force parent rebuild
-        if (this.parent != null) this.parent!.notifyListeners("rebuild", "true");
+        parent?.notifyListeners("rebuild", "true");
 
         return true;
 
-      case "appendchild" :
+      case "addchildwidget" :
 
-        // fml to process
+        // add elements
         var xml = S.item(arguments, 0);
+        if (xml is String) await _appendXml(xml, S.toInt(S.item(arguments, 1)));
 
-        // fml to process
-        int? index = S.toInt(S.item(arguments, 1));
+        // force parent rebuild
+        parent?.notifyListeners("rebuild", "true");
 
-        // parse the xml
-        XmlDocument? document;
-        if (xml is String) document = Xml.tryParse(xml, silent: true);
+        return true;
 
-        // valid fml?
-        if (document == null)
-        {
-          Log().error("Invalid xml => $xml");
-          return false;
-        }
-        document.childElements.forEach((element) => appendChild(element, index));
+      case "replacewidget" :
+
+        // get my position in my parents child list
+        int? index = (parent?.children?.contains(this) ?? false) ? parent?.children?.indexOf(this) : null;
+
+        // add new fml
+        var xml = S.item(arguments, 0);
+        if (xml is String) await _appendXml(xml, index);
+
+        // dispose of myself
+        dispose();
+
+        // force parent rebuild
+        parent?.notifyListeners("rebuild", "true");
+
         return true;
     }
 

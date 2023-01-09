@@ -11,18 +11,21 @@ import 'payload.dart';
 import 'iMqtt.dart';
 import 'package:fml/helper/helper_barrel.dart';
 
-IMqtt? getMqtt(String url, IMqttListener listener) => MqttMobile(url, listener);
+IMqtt? getMqtt(String url, IMqttListener listener, {String? username, String? password}) => MqttMobile(url, listener, username: username, password: password);
 
 class MqttMobile implements IMqtt
 {
   late MqttServerClient client;
-  String url;
-  String identifier = (System().userProperty('name') ?? 'unknown') + " : " + Uuid().v1();
-  int    keepalive = 60;
-  bool   connected = false;
+  final String url;
+  final String? username;
+  final String? password;
+  final String identifier = (System().userProperty('name') ?? 'unknown') + " : " + Uuid().v1();
+  final int    keepalive = 60;
+
+  bool connected = false;
   IMqttListener listener;
 
-  MqttMobile(this.url, this.listener)
+  MqttMobile(this.url, this.listener, {this.username, this.password})
   {
     Uri? uri = S.toURI(this.url);
     if (uri == null) return;
@@ -72,10 +75,10 @@ class MqttMobile implements IMqtt
     /// Create a connection message to use or use the default one. The default one sets the
     /// client identifier, any supplied username/password, the default keepalive interval(60s)
     /// and clean session, an example of a specific one below.
-    final connMess = MqttConnectMessage()
-        .withClientIdentifier(identifier)
-        .startClean() // Non persistent session for testing
-        .withWillQos(MqttQos.atLeastOnce);
+    final connMess = MqttConnectMessage();
+    connMess.withClientIdentifier(identifier);
+    connMess.startClean();
+    if (username != null) connMess.authenticateAs(username, password);
 
     client.connectionMessage = connMess;
     client.keepAlivePeriod = keepalive;
@@ -114,6 +117,9 @@ class MqttMobile implements IMqtt
     // Set Connected
     connected = true;
 
+    /// Notify that messages have been published
+    client.published?.listen((MqttPublishMessage message) => _onPublished(message));
+
     // Listen for Messages
     client.updates?.listen(_onData, onDone: _onDone, onError: _onError);
 
@@ -150,7 +156,6 @@ class MqttMobile implements IMqtt
   Future<bool> disconnect() async
   {
     Log().debug('MQTT:: Disconnecting');
-    client.subscriptionsManager?.subscriptions.forEach((key, subscription) => client.unsubscribe(key));
     client.disconnect();
     return true;
   }
@@ -159,12 +164,11 @@ class MqttMobile implements IMqtt
   {
     connected = false;
 
-    if (client.connectionStatus!.disconnectionOrigin == MqttDisconnectionOrigin.solicited)
-         Log().debug('MQTT:: Disconnected (Solicited)');
-    else Log().debug('MQTT:: Disconnected');
+    String origin = (client.connectionStatus!.disconnectionOrigin == MqttDisconnectionOrigin.solicited) ? "client" : "server";
+    Log().debug('MQTT:: Disconnected (by $origin)');
 
     // notify listener
-    listener.onDisconnected();
+    listener.onDisconnected(origin);
   }
 
   Future<bool> subscribe(String topic) async
@@ -199,17 +203,12 @@ class MqttMobile implements IMqtt
 
   Future<bool> publish(String topic, String msg) async
   {
-    // connected
+    // connected?
     if (!connected) return false;
-
-    /// If needed you can listen for published messages that have completed the publishing
-    /// handshake which is Qos dependant. Any message received on this stream has completed its
-    /// publishing handshake with the source.
-    client.published!.listen((MqttPublishMessage message) => Log().debug('MQTT::Published notification:: topic is ${message.variableHeader!.topicName}, with Qos ${message.header!.qos}'));
 
     final builder = MqttClientPayloadBuilder();
     builder.addString(msg);
-    client.publishMessage(topic, MqttQos.exactlyOnce, builder.payload!);
+    if (builder.payload != null) client.publishMessage(topic, MqttQos.atMostOnce, builder.payload!);
 
     return true;
   }

@@ -12,9 +12,9 @@ The syntactic sugar FML provides for designing user interfaces with the function
 
 #### More Resources
 
-To see what FML can do and get started building applications, visit [**fml.dev**](https://fml.dev/).
+To learn more about what FML can do for you or your company and get started building applications, visit [**fml.dev**](https://fml.dev/)
 
-For a language overview of FML and templating applications, visit the [**Language Documentation**](https://github.com/AppDaddy-Software-Solutions-Inc/Flutter-Markup-Language/wiki/Home) page.
+For a language overview of FML and templating applications, check out the [**Language Documentation**](https://github.com/AppDaddy-Software-Solutions-Inc/Flutter-Markup-Language/wiki/Home)
 
-To try out functional demonstrations of all our widgets check out our [**Examples**](https://fml.dev/#/assets/templates/examples/examples.xml)
+To try out functional demonstrations of all the widgets see our [**Examples**](https://fml.dev/#/assets/templates/examples/examples.xml)
 

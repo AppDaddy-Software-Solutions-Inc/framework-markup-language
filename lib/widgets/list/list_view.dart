@@ -46,6 +46,7 @@ class _ListLayoutViewState extends State<ListLayoutView> implements IModelListen
   {
     // register event listeners
     EventManager.of(widget.model)?.registerEventListener(EventTypes.scroll,  onScroll);
+    EventManager.of(widget.model)?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
 
     super.didChangeDependencies();
   }
@@ -60,9 +61,11 @@ class _ListLayoutViewState extends State<ListLayoutView> implements IModelListen
 
       // remove old event listeners
       EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.scroll,  onScroll);
+      EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.scrollto, onScrollTo);
 
       // register new event listeners
       EventManager.of(widget.model)?.registerEventListener(EventTypes.scroll,  onScroll);
+      EventManager.of(widget.model)?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
 
       widget.model.registerListener(this);
     }
@@ -76,9 +79,24 @@ class _ListLayoutViewState extends State<ListLayoutView> implements IModelListen
 
     // remove event listeners
     EventManager.of(widget.model)?.removeEventListener(EventTypes.scroll,  onScroll);
+    EventManager.of(widget.model)?.removeEventListener(EventTypes.scrollto, onScrollTo);
 
     scroller?.dispose();
     super.dispose();
+  }
+
+  /// Takes an event (onscroll) and uses the id to scroll to that widget
+  onScrollTo(Event event) {
+    // BuildContext context;
+    event.handled = true;
+    if (event.parameters!.containsKey('id')) {
+      String? id = event.parameters!['id'];
+      var child = widget.model.findDescendantOfExactType(null, id: id);
+
+      // if there is an error with this, we need to check _controller.hasClients as it must not be false when using [ScrollPosition],such as [position], [offset], [animateTo], and [jumpTo],
+      if ((child != null) && (child.context != null))
+        Scrollable.ensureVisible(child.context, duration: Duration(seconds: 1), alignment: 0.2);
+    }
   }
 
   @override

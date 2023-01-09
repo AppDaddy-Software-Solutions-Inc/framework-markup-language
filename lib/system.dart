@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:collection';
-import 'dart:convert';
 import 'dart:core';
 import 'dart:ui';
 import 'package:firebase_core/firebase_core.dart' show FirebaseApp;
@@ -42,7 +41,7 @@ final String version = '1.0.0+4';
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
 enum ApplicationTypes{ SingleApp, MultiApp }
-final ApplicationTypes appType  = ApplicationTypes.SingleApp;
+final ApplicationTypes appType  = ApplicationTypes.MultiApp;
 
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost

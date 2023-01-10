@@ -223,8 +223,7 @@ class GridModel extends DecoratedWidgetModel implements IViewableWidget, IScroll
     List<GridItemModel> items = findChildrenOfExactType(GridItemModel).cast<GridItemModel>();
 
     // set prototype
-    if ((!S.isNullOrEmpty(datasource)) && (items.isNotEmpty))
-    {
+    if (!S.isNullOrEmpty(datasource) && items.isNotEmpty) {
       prototype = S.toPrototype(items[0].element.toString());
       items.removeAt(0);
     }
@@ -232,43 +231,35 @@ class GridModel extends DecoratedWidgetModel implements IViewableWidget, IScroll
     items.forEach((item) => this.items[i++] = item);
   }
 
-  GridItemModel? getItemModel(int item)
-  {
+  GridItemModel? getItemModel(int item) {
     if ((item < 0) || (items.length <= item)) return null;
     return items[item];
   }
 
   @override
-  Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async
-  {
+  Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async {
     busy = true;
-
-    // build options
     int i = 0;
-    if ((list != null) )
-    {
+
+    if (list != null) {
       clean = true;
       items.clear();
 
-      list.forEach((row)
-      {
+      // Populate grid items from datasource
+      list.forEach((row) {
         XmlElement? prototype = S.fromPrototype(this.prototype, "${this.id}-$i");
-        i = i + 1;
-
         var model = GridItemModel.fromXml(parent, prototype, data: row);
-        if (model != null) items[i] = model;
+        if (model != null) items[i++] = model;
       });
 
       notifyListeners('list', items);
     }
 
     busy = false;
-
     return true;
   }
 
-  void sort(String? field, String? type, bool? ascending) async
-  {
+  void sort(String? field, String? type, bool? ascending) async {
     if ((this.data == null) ||  (this.data.isEmpty) || (field == null)) return;
 
     busy = true;

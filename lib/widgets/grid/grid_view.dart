@@ -2,6 +2,7 @@
 import 'dart:math';
 
 import 'package:fml/event/manager.dart';
+import 'package:fml/helper/scroll_behavior.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/phrase.dart';
@@ -35,6 +36,12 @@ class _GridViewState extends State<GridView> implements IModelListener
   bool startup = true;
   ScrollController? scroller;
   late ScrollShadowModel scrollShadow;
+  late double gridWidth;
+  late double gridHeight;
+  late double prototypeWidth;
+  late double prototypeHeight;
+  late int count;
+  dynamic direction = Axis.vertical;
 
   @override
   void initState()
@@ -193,11 +200,62 @@ class _GridViewState extends State<GridView> implements IModelListener
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    //////////////////////
-    /* Scroll Direction */
-    //////////////////////
-    dynamic direction = Axis.vertical;
-    if (widget.model.direction == 'horizontal') direction = Axis.horizontal;
+    // Check if grid has items before wasting resources on building it
+    List<Widget> children = [];
+    if (widget.model.itemSize == null || widget.model.items.length == 0)
+    {
+      GridItemModel? prototypeModel;
+      Widget prototypeGrid;
+      try
+      {
+        // build prototype
+        XmlElement? prototype = S.fromPrototype(widget.model.prototype, "${widget.model.id}-0");
+        // build model
+        prototypeModel = GridItemModel.fromXml(this.widget.model, prototype);
+        prototypeGrid = Offstage(child: MeasuredView(UnconstrainedBox(
+            child: GridItemView(model: prototypeModel)),
+            onMeasuredItem));
+      }
+      catch(e)
+      {
+        prototypeModel = widget.model.items.isNotEmpty ? widget.model.items.values.first : null;
+        prototypeGrid = Text('Error Prototyping GridModel');
+      }
+
+      return prototypeGrid;
+    }
+
+    gridWidth = widget.model.maxwidth ?? widget.model.width ?? MediaQuery.of(context).size.width;
+    gridHeight = widget.model.maxheight ?? widget.model.height ?? MediaQuery.of(context).size.height;
+
+    if (widget.model.items.isNotEmpty) {
+      prototypeWidth  = widget.model.items.entries.first.value.width ?? (widget.model.maxwidth ?? widget.model.width ?? widget.model.itemSize?.width ?? MediaQuery.of(context).size.width) / (sqrt(widget.model.items.length) + 1);
+      prototypeHeight = widget.model.items.entries.first.value.height ?? (widget.model.maxheight ?? widget.model.height ?? widget.model.itemSize?.height ?? MediaQuery.of(context).size.height) / (sqrt(widget.model.items.length) + 1);
+    }
+    else {
+      prototypeWidth  = (widget.model.maxwidth ?? widget.model.width ?? widget.model.itemSize?.width ?? MediaQuery.of(context).size.width) / (sqrt(widget.model.items.length) + 1);
+      prototypeHeight = (widget.model.maxheight ?? widget.model.height ?? widget.model.itemSize?.height ?? MediaQuery.of(context).size.height) / (sqrt(widget.model.items.length) + 1);
+    }
+
+
+    widget.model.direction == 'horizontal' ? direction = Axis.horizontal : direction = Axis.vertical;
+
+    // Protect against infinity calculations when screen is smaller than the grid item in the none expanding direction
+    if (direction == Axis.vertical && gridWidth < prototypeWidth) gridWidth = prototypeWidth;
+    else if (direction == Axis.horizontal && gridHeight < prototypeHeight) gridHeight = prototypeHeight;
+
+    if (direction == Axis.vertical)
+    {
+      double cellWidth = prototypeWidth;
+      if (cellWidth == 0) cellWidth = 160;
+      count = (gridWidth / cellWidth).floor();
+    }
+    else
+    {
+      double cellHeight = prototypeHeight;
+      if (cellHeight == 0) cellHeight = 160;
+      count = (gridHeight / cellHeight).floor();
+    }
 
     /// Busy / Loading Indicator
     if (busy == null) busy = BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
@@ -221,39 +279,24 @@ class _GridViewState extends State<GridView> implements IModelListener
     //////////
     /* View */
     //////////
-    List<Widget> children = [];
-    if (widget.model.itemSize == null)
-    {
-      var model;
-      try
-      {
-        // build prototype
-        XmlElement? prototype = S.fromPrototype(widget.model.prototype, "${widget.model.id}-${0}");
 
-        // build model
-        model = GridItemModel.fromXml(this.widget.model, prototype);
-      }
-      catch(e)
-      {
-        model = widget.model.items.isNotEmpty ? widget.model.items.values.first : null;
-      }
+    // Build the Grid Rows
+    Widget view = ListView.custom(scrollDirection: direction, controller: scroller,
+        childrenDelegate: SliverChildBuilderDelegate(
+            (BuildContext context, int rowIndex) => rowBuilder(context, rowIndex),
+            childCount: (widget.model.items.length / count).ceil()
+        ));
 
-      var protoView    = model != null ? GridItemView(model: model) : Text('null');
-      var measuredView = MeasuredView(UnconstrainedBox(child: protoView), onMeasuredItem);
-      var offstageView = Offstage(child: measuredView);
-      return offstageView;
-    }
+    view = ScrollConfiguration(behavior: ProperScrollBehavior(), child: view);
 
-    Widget view = ListView.custom(scrollDirection: direction, controller: scroller, childrenDelegate: SliverChildBuilderDelegate((BuildContext context, int index) {return itemBuilder(context, index);}));
-
-    ////////////////////////
-    /* Constrain the View */
-    ////////////////////////
-    var width  = widget.model.width;
-    var height = widget.model.height;
-    if (constraints.maxHeight == double.infinity || constraints.maxHeight == double.negativeInfinity || height == null) height = widget.model.maxheight ?? constraints.maxHeight;
-    if (constraints.maxWidth  == double.infinity || constraints.maxWidth  == double.negativeInfinity || width  == null) width  = widget.model.maxwidth ?? constraints.maxWidth;
-    view = UnconstrainedBox(child: SizedBox(height: height, width: width, child: view));
+    // Constrain the View
+    var w  = widget.model.width;
+    var h = widget.model.height;
+    if (constraints.maxHeight == double.infinity || constraints.maxHeight == double.negativeInfinity || h == null)
+      h = widget.model.maxheight ?? constraints.maxHeight;
+    if (constraints.maxWidth  == double.infinity || constraints.maxWidth  == double.negativeInfinity || w  == null)
+      w  = widget.model.maxwidth ?? constraints.maxWidth;
+    view = UnconstrainedBox(child: SizedBox(height: h, width: w, child: view));
 
     children.add(view);
 
@@ -269,48 +312,22 @@ class _GridViewState extends State<GridView> implements IModelListener
     return Stack(children: children);
   }
 
-  Widget? itemBuilder(BuildContext context, int index)
+  Widget? rowBuilder(BuildContext context, int rowIndex)
   {
-    if (index > widget.model.items.length - 1) return null; // make sure list builder doesn't try and build past
-    int count;
-    double width = widget.model.maxwidth ?? widget.model.width ?? MediaQuery.of(context).size.width;
-    double height = widget.model.maxheight ?? widget.model.height ?? MediaQuery.of(context).size.height;
-    dynamic direction = Axis.vertical;
-    if (widget.model.direction == 'horizontal') direction = Axis.horizontal;
 
-    double? prototypeWidth;
-    double? prototypeHeight;
-    if (widget.model.items.length > 0)
-    {
-      prototypeWidth  = widget.model.items.entries.first.value.width ?? (widget.model.maxwidth ?? widget.model.width ?? MediaQuery.of(context).size.width) / (sqrt(widget.model.items.length) + 1);
-      prototypeHeight = widget.model.items.entries.first.value.height ?? (widget.model.maxheight ?? widget.model.height ?? MediaQuery.of(context).size.height) / (sqrt(widget.model.items.length) + 1);
-    }
+    int startIndex = (rowIndex * count);
+    int endIndex   = (startIndex + count);
 
-    if (direction == Axis.vertical)
-    {
-      double cellwidth = prototypeWidth ?? widget.model.itemSize!.width;
-      if (cellwidth == 0) cellwidth = 200;
-      count = (width / cellwidth).floor();
-    }
-    else
-    {
-      double cellheight = prototypeHeight ?? widget.model.itemSize!.height;
-      if (cellheight == 0) cellheight = 200;
-      count = (height / cellheight).floor();
-    }
-
-    int start = (index * count);
-    int end   = (start + count);
-
-    if (start >= widget.model.items.length) return null;
+    // If all rows are built return null to the SliverChildBuilderDelegate
+    if (startIndex >= widget.model.items.length) return null;
 
     List<Widget> children = [];
-    for (int i = start; i < end; i++)
+    for (int i = startIndex; i < endIndex; i++)
     {
       if (i < widget.model.items.length)
       {
         var view = GridItemView(model: widget.model.items[i]);
-        children.add(Expanded(child: SizedBox(width: prototypeWidth ?? widget.model.itemSize!.width, height: prototypeHeight ?? widget.model.itemSize!.height, child: view)));
+        children.add(Expanded(child: SizedBox(width: prototypeWidth, height: prototypeHeight, child: view)));
       }
       else children.add(Expanded(child: Container()));
     }

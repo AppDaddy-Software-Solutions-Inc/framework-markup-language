@@ -49,7 +49,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
   {
     _received = IntegerObservable(Binding.toKey(id, 'received'), 0, scope: scope);
     _serial   = StringObservable(Binding.toKey(id, 'serial'), null, scope: scope);
-    _message  = StringObservable(Binding.toKey(id, 'message'), null, scope: scope);
+    _message  = StringObservable(Binding.toKey(id, 'payload'), null, scope: scope);
   }
 
   static NcfModel? fromXml(WidgetModel parent, XmlElement xml)
@@ -180,6 +180,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
     {
       switch (function)
       {
+        case "start" :
         case "write" :
           String? message = S.toStr(S.item(arguments, 0)) ?? body;
           return await _write(message);

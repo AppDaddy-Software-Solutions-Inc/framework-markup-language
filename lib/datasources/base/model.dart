@@ -56,17 +56,17 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
   }
   bool get enabled => _enabled?.get() ?? true;
 
-  // type
-  StringObservable? _type;
-  set type(dynamic v) {
+  // queue
+  StringObservable? _queuetype;
+  set queuetype(dynamic v) {
     if ((v != null) && (v is String)) v = v.toLowerCase();
-    if (_type != null) {
-      _type!.set(v);
+    if (_queuetype != null) {
+      _queuetype!.set(v);
     } else if (v != null) {
-      _type = StringObservable(Binding.toKey(id, 'type'), v, scope: scope);
+      _queuetype = StringObservable(Binding.toKey(id, 'queuetype'), v, scope: scope);
     }
   }
-  String get type => _type?.get() ?? 'replace';
+  String get queuetype => _queuetype?.get() ?? 'replace';
 
   // max record to retain
   IntegerObservable? _maxrecords;
@@ -289,7 +289,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
     rowcount = 0;
 
     // properties
-    type = Xml.get(node: xml, tag: 'type');
+    queuetype = Xml.get(node: xml, tag: 'queuetype');
     timetolive = Xml.get(node: xml, tag: 'ttl');
     timetoidle = S.toInt(Xml.get(node: xml, tag: 'tti'));
     autoexecute = Xml.get(node: xml, tag: 'autoexecute');
@@ -403,7 +403,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
         if (model is TRANSFORM.IDataTransform) await (model as TRANSFORM.IDataTransform).apply(data);
 
     // type - default is replace
-    ListTypes? type = S.toEnum(this.type, ListTypes.values);
+    ListTypes? type = S.toEnum(this.queuetype, ListTypes.values);
 
     // Fifo - Oldest -> Newest
     if (type == ListTypes.fifo) {

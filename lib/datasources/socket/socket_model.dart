@@ -258,7 +258,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
       // send file as a single message
       else
       {
-        Log().debug('SOCKET:: Sending message (binary: $asBinary, bytes:${message?.length}) to ${this.url}');
+        Log().debug('SOCKET:: Sending message (binary: $asBinary, bytes:${message.length}) to ${this.url}');
 
         // send as binary
         if (asBinary) await socket?.send(utf8.encode(message));

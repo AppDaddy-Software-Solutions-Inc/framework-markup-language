@@ -133,9 +133,11 @@ class System extends SystemPlatform implements IEventManager
     {
       // get initial domain and route
       String initialDomain = Uri.base.toString();
+      int    initialPort   = Uri.base.port;
 
-      // LocalHost? - use the default domain and route
-      if (Url.host(initialDomain)?.toLowerCase().startsWith("localhost") == true)
+      // LocalHost (testing)? - use the default domain and route
+      // Port 9000 is used by node.js by our installer
+      if (Url.host(initialDomain)?.toLowerCase().startsWith("localhost") == true && initialPort != 9000)
       {
         var segments = defaultDomain.split("#");
         String host  = segments[0].trim();

@@ -208,9 +208,24 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
     Data data = Data.from(payload.message, root: root);
 
     // if the message didn't deserialize (length 0)
-    // so create a simple map with topic and message bindables <id>.data.topic and <id>.data.message
+    // is the payload url encoded?
+    if (data.length == 0)
+    {
+      // is a valud uri?
+      Uri? uri = S.toURI("http://localhost?${payload.message}");
+      if (uri != null && uri.hasQuery)
+      {
+        // add payload url parameters
+        Map<String, String> parameters = Map<String, String>();
+        uri.queryParameters.forEach((k, v) => parameters[k] = v);
+        data.add(parameters);
+      }
+    }
+
+    // if the message didn't deserialize (length 0)
+    // create a simple map with topic and message bindables <id>.data.topic and <id>.data.message
     // otherwise the data is the deserialized message payload
-    if (data.length == 0) data.insert(0, {'serial': payload.id , 'message' : payload.message});
+    if (data.length == 0) data.insert(0, {'id' : payload.id, 'serial': payload.id , 'payload' : payload.message});
 
     // fire the onresponse
     onResponse(data, code: 200);

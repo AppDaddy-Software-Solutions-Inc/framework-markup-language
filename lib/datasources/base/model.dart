@@ -289,7 +289,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
     rowcount = 0;
 
     // properties
-    queuetype = Xml.get(node: xml, tag: 'type');
+    queuetype = Xml.get(node: xml, tag: 'queuetype');
     timetolive = Xml.get(node: xml, tag: 'ttl');
     timetoidle = S.toInt(Xml.get(node: xml, tag: 'tti'));
     autoexecute = Xml.get(node: xml, tag: 'autoexecute');

@@ -209,16 +209,18 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
 
     // if the message didn't deserialize (length 0)
     // is the payload url encoded?
-    if (data.length == 0)
+    if (data.length == 0 && payload.message != null)
     {
-      // is a valud uri?
-      Uri? uri = S.toURI("http://localhost?${payload.message}");
+      // is a valid url query string?
+      String msg = payload.message!.trim();
+      Uri? uri = S.toURI(msg);
+      if (uri == null) uri = S.toURI("http://localhost" + (msg.startsWith("?") ? "" : "?") + msg);
       if (uri != null && uri.hasQuery)
       {
         // add payload url parameters
-        Map<String, String> parameters = Map<String, String>();
-        uri.queryParameters.forEach((k, v) => parameters[k] = v);
-        data.add(parameters);
+        Map<String, dynamic> map = Map<String, dynamic>();
+        uri.queryParameters.forEach((k, v) => map[k] = v);
+        data.add(map);
       }
     }
 

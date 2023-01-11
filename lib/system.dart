@@ -36,7 +36,7 @@ import 'package:fml/system.web.dart';
 // import 'package:fml/system.desktop.dart';
 
 // application build version
-final String version = '1.0.0+4';
+final String version = '1.0.0+10';
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
@@ -133,9 +133,11 @@ class System extends SystemPlatform implements IEventManager
     {
       // get initial domain and route
       String initialDomain = Uri.base.toString();
+      int    initialPort   = Uri.base.port;
 
-      // LocalHost? - use the default domain and route
-      if (Url.host(initialDomain)?.toLowerCase().startsWith("localhost") == true)
+      // LocalHost (testing)? - use the default domain and route
+      // Port 9000 is used by node.js by our installer
+      if (Url.host(initialDomain)?.toLowerCase().startsWith("localhost") == true && initialPort != 9000)
       {
         var segments = defaultDomain.split("#");
         String host  = segments[0].trim();

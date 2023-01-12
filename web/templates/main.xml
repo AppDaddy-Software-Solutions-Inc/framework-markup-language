@@ -1,0 +1,38 @@
+<FML id="Home" version="1.00">
+
+ <BOX center="true" pad="20">
+		
+		<IMAGE url="assets/images/fml-logo.png" width="100"/>
+		
+		<PAD top="20"/>
+		<TXT value="Flutter Markup Language" style="h4" wrap="true"/>
+		<PAD top="40"/>
+		<TXT maxwidth="350" halign="center" width="80%" value="Welcome to the sample app for Flutter Markup Language! For more info visit our githib and wiki, subscribe to our youtube channel, follow us on medium, or chat with us on discord!" color="grey"/>
+		<PAD top="40"/>
+		<BTN maxwidth="350" width="80%" type="outlined" label="Counter App Example" onclick="open('templates/counter_app.xml');"/>
+		<PAD top="20"/>
+		<BTN maxwidth="350" width="80%" type="outlined" label="See The Demos" onclick="open('https://fml.dev/#/assets/templates/examples/examples.xml')"/>
+		<PAD top="30"/>
+		<TXT value="Find us on:" color="grey"/>
+		<PAD top="10"/>
+		
+		<ROW wrap="true">
+		
+			<BTN onclick="open('https://discord.gg/NEXAXmNXTZ');">
+				<IMAGE url="assets/images/discord.svg" height="40"/>
+			</BTN>
+			<BTN onclick="open('https://www.youtube.com/@fluttermarkuplanguage7328');" center="true">
+				<IMAGE url="assets/images/youtube.svg" height="40"/>
+			</BTN>
+			<BTN onclick="open('https://medium.com/@TheOlajos');" center="true">
+				<IMAGE url="assets/images/medium.svg" height="40"/>
+			</BTN>
+			<BTN onclick="open('https://github.com/AppDaddy-Software-Solutions-Inc/Flutter-Markup-Language');" center="true">
+				<IMAGE url="assets/images/github.svg" height="40"/>
+			</BTN>
+			
+		</ROW>
+		
+	</BOX>
+	
+</FML> 

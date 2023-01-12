@@ -249,7 +249,11 @@ class Template
     }
 
     // nothing to process
-    if (template == null) return null;
+    if (template == null)
+    {
+      Log().error("Template $url not found!");
+      return null;
+    }
 
     // parse the document
     XmlDocument? document;
@@ -310,26 +314,34 @@ class Template
         // get template segment
         String url = Binding.applyMap(Xml.get(node: element, tag: 'url'), parameters, caseSensitive: false)!;
 
-        // fetcgh the include template
-        XmlElement? include = await _getIncludeTemplate(url);
-
-        // inject include segment into document
-        if (include != null)
+        // fetch the include template
+        Uri? uri = Uri.tryParse(url);
+        if (uri != null)
         {
-          int position = element.parent!.children.indexOf(element);
-          try
-          {
-            List<XmlElement> nodes = [];
+          // parameters
+          Map<String, String> parameters = Map<String, String>();
+          parameters.addAll(uri.queryParameters);
 
-            // include must always be wrapped in a parent that is ignored, often <FML>
-            for (dynamic node in include.children)
-              if (node is XmlElement) nodes.add(node.copy());
+          // fetch the template
+          var template = await Template.fetchTemplate(url: url, parameters: parameters);
 
-            element.parent!.children.insertAll(position, nodes);
-          }
-          catch (e)
+          // inject include segment into document
+          if (template != null)
           {
-            Log().debug(e.toString());
+            int position = element.parent!.children.indexOf(element);
+            try
+            {
+              // include must always be wrapped in a parent that is ignored, often <FML>
+              List<XmlElement> nodes = [];
+              XmlElement? include = template.document!.rootElement;
+              for (dynamic node in include.children)
+                if (node is XmlElement) nodes.add(node.copy());
+              element.parent!.children.insertAll(position, nodes);
+            }
+            catch (e)
+            {
+              Log().debug("Error parsing include file $url. Error is $e");
+            }
           }
         }
       }
@@ -340,24 +352,6 @@ class Template
       element.parent!.children.remove(element);
     }
     return true;
-  }
-
-  static Future<XmlElement?> _getIncludeTemplate(String url) async
-  {
-    // decode url
-    Uri uri = Uri.parse(url);
-    if (!uri.hasAuthority) uri = Uri.parse(System().domain! + '/' + url);
-    String templateName = uri.path;
-
-    // parameters
-    Map<String, String> parameters = Map<String, String>();
-    parameters.addAll(uri.queryParameters);
-
-    // fetch the template
-    var template = await Template.fetchTemplate(url: templateName, parameters: parameters);
-
-    // return template xml
-    return (template != null) ? template.document!.rootElement : null;
   }
 
   static String? _buildErrorTemplate(String err1, [String? err2, String? err3])

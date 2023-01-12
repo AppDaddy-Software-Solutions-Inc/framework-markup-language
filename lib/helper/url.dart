@@ -51,9 +51,14 @@ class Url
     Uri? uri = toUri(url);
     if (uri?.scheme.toLowerCase() == "file")
     {
+      // remove file prefix
       url = url.replaceFirst(RegExp("file://", caseSensitive: false), "");
+      // substitute localhost for base folder name
       url = url.replaceFirst(RegExp("localhost", caseSensitive: false), dirname(Platform.resolvedExecutable));
+      // replace all path seperators with system path seperator
       url = url.replaceAll("\\", Platform.pathSeparator).replaceAll("/", Platform.pathSeparator);
+      // remove hash tags and parameter strings
+      url = url.split("?")[0].split("#")[0];
     }
     return url;
   }

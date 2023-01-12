@@ -187,7 +187,7 @@ class System extends SystemPlatform implements IEventManager
         if (scheme!.toLowerCase() == "file")
         {
           // build host
-          String host = url.split("?")[0].replaceFirst("file://", "");
+          String host = url.replaceFirst(RegExp("file://", caseSensitive: false), "").split("?")[0].split("#")[0];
 
           // set host
           if (_host == null)
@@ -802,7 +802,8 @@ class System extends SystemPlatform implements IEventManager
       if (document == null) refresh = true;
 
       // refresh the config file?
-      if (refresh == true) document = await Template.fetchTemplate(url: "$domain/config.xml", refresh: refresh);
+      var url = "${domain.split("?")[0].split("#")[0]}/config.xml";
+      if (refresh == true) document = await Template.fetchTemplate(url: url, refresh: refresh);
 
       // create the model
       if (document != null) model = ConfigModel.fromXml(null, document.rootElement);

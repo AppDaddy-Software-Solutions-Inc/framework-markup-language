@@ -21,7 +21,7 @@
 			<BTN onclick="open('https://discord.gg/NEXAXmNXTZ');">
 				<IMAGE url="assets/images/discord.svg" height="40"/>
 			</BTN>
-			<BTN onclick="open('https://www.youtube.com/@fluttermarkuplanguage7328');" center="true">
+			<BTN onclick="open('https://www.youtube.com/channel/UC96zHGCBQT_yklB1cKgR0qQ?sub_confirmation=1');" center="true">
 				<IMAGE url="assets/images/youtube.svg" height="40"/>
 			</BTN>
 			<BTN onclick="open('https://medium.com/@TheOlajos');" center="true">

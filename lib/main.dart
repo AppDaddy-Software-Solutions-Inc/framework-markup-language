@@ -35,6 +35,15 @@ main()
 
 void runMainApp()
 {
+  // hides all render flex exceptions
+  FlutterError.onError = (details)
+  {
+    bool show = false;
+    if (details.exception.toString().startsWith("A Render")) show = false;
+    if (show) FlutterError.presentError(details);
+  };
+
+  // run the application
   runApp(ChangeNotifierProvider<ThemeNotifier>(
       create: (_)
       {

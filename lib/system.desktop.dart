@@ -44,7 +44,7 @@ class SystemPlatform extends WidgetModel
     try
     {
         String directory = dirname(Platform.resolvedExecutable);
-        _rootFolder = join(directory,"data","flutter_assets");
+        _rootFolder = directory;
         return _rootFolder;
     }
     catch (e)

@@ -29,9 +29,11 @@ class ConfigModel
 
   void deserialize(XmlElement xml) async
   {
-    var config = Xml.element(node: xml, tag: "CONFIG");
+    XmlElement? e = Xml.getChildElement(node: xml, tag: "CONFIG");
+    if (e == null) return;
+
     // settings
-    for (dynamic node in xml.children)
+    for (dynamic node in e.children)
     if (node is XmlElement)
     {
       String key   = node.localName;

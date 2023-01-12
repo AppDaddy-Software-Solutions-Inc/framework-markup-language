@@ -17,7 +17,7 @@ import 'package:fml/widgets/input/input_model.dart';
 import 'package:fml/widgets/menu/menu_view.dart';
 import 'package:fml/widgets/menu/menu_model.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
-import 'package:fml/config/model.dart' as CONFIG;
+import 'package:fml/config/config_model.dart';
 import 'package:provider/provider.dart';
 import 'package:fml/helper/helper_barrel.dart';
 
@@ -111,10 +111,8 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
     {
       try
       {
-        ////////////////////////////
-        /* Get Configuration File */
-        ////////////////////////////
-        CONFIG.ConfigModel? config = await System().getConfigModel(entry.key, refresh: true);
+        // get configuration model
+        ConfigModel? config = await System().getConfigModel(entry.key, refresh: true);
         if (config != null)
         {
           appicons[entry.key] = config.get('APP_ICON') ?? null;
@@ -152,14 +150,14 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
           if (appicons[key] != null) { // application has custom icon
             String imageurl = key + '/' + appicons[key]!;
             if (!S.isNullOrEmpty(iconBase64[key])) {// custom icon is saved in hive
-              menuModel.items.add(MenuItemModel(menuModel, value, url: key, title: value, subtitle: '', icon: 'appdaddy', iconBase64: iconBase64[key], onTap: () => start(key), onLongPress: () => removeAppDialog(key, value)));
+              menuModel.items.add(MenuItemModel(menuModel, value, url: key, title: value, subtitle: '', icon: 'appdaddy', iconBase64: iconBase64[key], onTap: () => _launchApp(key), onLongPress: () => removeAppDialog(key, value)));
             }
             else { // custom icon from network
-              menuModel.items.add(MenuItemModel(menuModel, value, url: key, title: value, subtitle: '', icon: 'appdaddy', iconImage: imageurl, onTap: () => start(key), onLongPress: () => removeAppDialog(key, value)));
+              menuModel.items.add(MenuItemModel(menuModel, value, url: key, title: value, subtitle: '', icon: 'appdaddy', iconImage: imageurl, onTap: () => _launchApp(key), onLongPress: () => removeAppDialog(key, value)));
             }
           }
           else {
-            menuModel.items.add(MenuItemModel(menuModel, value, url: key, title: value, subtitle: '', icon: 'appdaddy', iconcolor: 'orange', onTap: () => start(key), onLongPress: () => removeAppDialog(key, value)));
+            menuModel.items.add(MenuItemModel(menuModel, value, url: key, title: value, subtitle: '', icon: 'appdaddy', iconcolor: 'orange', onTap: () => _launchApp(key), onLongPress: () => removeAppDialog(key, value)));
           }
         });
       }
@@ -250,34 +248,42 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
     widget.model.busy = true;
     try
     {
-      String? appLink = await widget.model.link(url); // Get the config from the app link
-      if (appLink != null)
+      // fetch the config
+      var config = await System().getConfigModel(url, refresh: true);
+      if (config != null)
       {
+        // questionable if this should go here?????
+        //await System().initializeDomainConnection(url);
 
         Map<String, String?> linkedApps = await widget.model.store();
-        if (linkedApps.containsValue(appLink)) {
+        if (linkedApps.containsValue(url))
+        {
           // pop dialog showing app already linked
           widget.model.busy = false;
           return "already connected to this application";
         }
-        else {
-          await widget.model.addApp(appLink, friendlyName: friendlyName);
+        else
+        {
+          await widget.model.addApp(url, friendlyName: friendlyName);
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Connected $friendlyName'), duration: Duration(milliseconds: 1000)));
           loadLinkedApps();
         }
-        // start(url);
+
         widget.model.busy = false;
         return null;
       }
-      else {
-        if (appLink == null) {
-          // Navigator.of(context).pop();
-          widget.model.busy = false;
-          return 'Unable to connect, ensure the address is correct';
-        }
+
+      else
+      {
+        widget.model.busy = false;
+        return 'Unable to connect, ensure the address is correct';
       }
     }
-    catch (e) {}
+    catch (e)
+    {
+      Log().error("Error in linkApp. Error is $e");
+    }
+
     widget.model.busy = false;
     return "Unable to connect, check the address is correct and that you connected to the internet";
   }
@@ -352,7 +358,7 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
     );
   }
 
-  start(String domain) async
+  _launchApp(String domain) async
   {
     widget.model.busy = true;
 

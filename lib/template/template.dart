@@ -63,7 +63,28 @@ class Template
     }
     catch (e)
     {
-      Log().error("Can't find valid template $url in asset bundle. Error is $e");
+      template = null;
+    }
+    return template;
+  }
+
+  static Future<String?> _fromFile(String url) async
+  {
+    String? template;
+    try
+    {
+      // not supported on web
+      if (isWeb)    throw('Local Files not supported in Browser');
+      if (isMobile) throw('Local Files not supported in Mobile');
+
+      // get template from asset bundle
+      url = Url.toLocalPath(url);
+      var file = System().getFile(url);
+      if (file != null) template = await System().readFile(url);
+    }
+    catch (e)
+    {
+      template = null;
     }
     return template;
   }
@@ -83,7 +104,7 @@ class Template
       }
       else
       {
-        Log().debug("Unable to fetch template from serve not connected to the internet");
+        Log().debug("Unable to fetch template from server. No internet connection");
       }
     }
     catch (e)
@@ -165,12 +186,14 @@ class Template
     return template;
   }
 
-  static Future<Template> fetch({required String url, Map<String, String?>? parameters, bool? refresh = false}) async
+  static Future<XmlDocument?> fetchTemplate({required String url, Map<String, String?>? parameters, bool? refresh = false}) async
   {
     Log().debug('Getting template ' + url);
 
+    url = Url.toAbsolute(url);
+
     String? template;
-    bool isFileUrl = (url.toLowerCase().trim().startsWith("file://") && url.toLowerCase().trim().endsWith(".xml"));
+    bool isFileUrl = url.toLowerCase().trim().startsWith("file://");
 
     // get template from file
     if (template == null && !isFileUrl)
@@ -192,7 +215,7 @@ class Template
       if (template == null)
       {
         XmlDocument? document = _fromMemory(url);
-        if (document != null) return Template.fromDocument(name: url, xml: document, parameters: parameters);
+        if (document != null) return document;
       }
 
       // get template from disk
@@ -218,34 +241,60 @@ class Template
       // from assets archive
       if (template == null) template = await _fromAssetsBundle(url);
 
+      // from assets archive
+      if (template == null) template = await _fromFile(url);
+
       // from file
       if (template == null) template = await _fromDisk(url);
     }
 
-    // not found - build error template
-    bool error = (template == null);
-    if (error) template = _buildErrorTemplate('Template $url not found!');
+    // nothing to process
+    if (template == null) return null;
 
     // parse the document
     XmlDocument? document;
     try
     {
-      document = XmlDocument.parse(template!);
+      document = XmlDocument.parse(template);
     }
-    on  Exception catch(e)
+    catch(e)
     {
-      error = true;
-      template = _buildErrorTemplate('Template Syntax is Invalid', e.toString());
-      document = Xml.tryParse(template);
+      Log().error("Error fetching template. Error is $e");
+      document = null;
     }
 
     // process includes
     if (document != null) await _processIncludes(document, parameters);
 
     // cache in memory after processing include files
-    if ((document != null) && (!error)) await toMemory(url, document);
+    if (document != null) await toMemory(url, document);
 
     // return the template
+    return document;
+  }
+
+  static Future<Template> fetch({required String url, Map<String, String?>? parameters, bool? refresh = false}) async
+  {
+    Log().debug('Building template');
+
+    XmlDocument? document = await fetchTemplate(url: url);
+    if (document != null) return Template.fromDocument(name: url, xml: document, parameters: parameters);
+
+    // not found - build error template
+    String? xml404 = _buildErrorTemplate('Page Not Found', null, "${Url.toLocalPath(url)}");
+
+    // parse the error template created
+    try
+    {
+      document = XmlDocument.parse(xml404!);
+    }
+    on  Exception catch(e)
+    {
+      xml404 = _buildErrorTemplate('Error on Page', '${Url.toLocalPath(url)}', e.toString());
+      document = Xml.tryParse(xml404);
+    }
+
+    // return the error template
     return Template.fromDocument(name: url, xml: document, parameters: parameters);
   }
 
@@ -305,13 +354,13 @@ class Template
     parameters.addAll(uri.queryParameters);
 
     // fetch the template
-    var template = await Template.fetch(url: templateName, parameters: parameters);
+    var template = await Template.fetchTemplate(url: templateName, parameters: parameters);
 
     // return template xml
-    return (template.document != null) ? template.document!.rootElement : null;
+    return (template != null) ? template.document!.rootElement : null;
   }
 
-  static String? _buildErrorTemplate(String err1, [String? err2])
+  static String? _buildErrorTemplate(String err1, [String? err2, String? err3])
   {
     String backbutton = NavigationManager().pages.length > 1 ? '<BUTTON onclick="back()" value="go back" type="text" color="#35363A" />' : '';
 
@@ -320,12 +369,18 @@ class Template
       <BOX width="100%" height="100%" color1="white" color2="grey" start="topleft" end="bottomright" center="true">
         <ICON icon="error_outline" size="128" color="red" />
         <PAD top="30" />
+        <CENTER>
         <TEXT id="e1" size="26" color="#35363A" bold="true">
         <VALUE><![CDATA[$err1]]></VALUE>
         </TEXT> 
+        </CENTER>
         <PAD top="10" visible="=!noe({e2})" />
-        <TEXT id="e2" visible="=!noe({e2})" size="20" color="#35363A">
+        <TEXT id="e2" visible="=!noe({e2})" size="16" color="red">
         <VALUE><![CDATA[$err2]]></VALUE>
+        </TEXT> 
+        <PAD top="10" visible="=!noe({e3})" />
+        <TEXT id="e3" visible="=!noe({e3})" size="16" color="#35363A">
+        <VALUE><![CDATA[$err3]]></VALUE>
         </TEXT> 
         <PAD top="30" />
         $backbutton

@@ -14,6 +14,7 @@ import 'package:fml/navigation/manager.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/postmaster/postmaster.dart';
 import 'package:fml/janitor/janitor.dart';
+import 'package:fml/template/template.dart';
 import 'package:fml/token/token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,19 +22,18 @@ import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:async';
 import 'package:xml/xml.dart';
-import 'package:fml/datasources/http/http.dart';
 import 'package:fml/hive/database.dart';
 import 'package:fml/datasources/gps/gps.dart' as GPS;
 import 'package:fml/datasources/gps/payload.dart' as GPS;
-import 'package:fml/config/model.dart' as CONFIG;
+import 'package:fml/config/config_model.dart';
 import 'package:fml/mirror/mirror.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/helper_barrel.dart';
 
 // platform
 //  import 'package:fml/system.mobile.dart';
-import 'package:fml/system.web.dart';
-// import 'package:fml/system.desktop.dart';
+//import 'package:fml/system.web.dart';
+ import 'package:fml/system.desktop.dart';
 
 // application build version
 final String version = '1.0.0+10';
@@ -184,34 +184,67 @@ class System extends SystemPlatform implements IEventManager
       {
         // set the scheme
         scheme = uri.hasScheme ? uri.scheme : 'http';
-
-        // build host
-        String host = (uri.hasAuthority ? uri.authority : '');
-        uri.pathSegments.forEach((segment) => host += '/' + segment);
-
-        // set host
-        if (_host == null)
-              _host = StringObservable(Binding.toKey(id, 'host'), host, scope: scope, listener: onPropertyChange);
-        else  _host!.set(host);
-
-        // set fqdn
-        String fqdn = "$scheme://$host";
-        if (_domain == null)
-             _domain = StringObservable(Binding.toKey(id, 'domain'), fqdn, scope: scope, listener: onPropertyChange);
-        else _domain!.set(fqdn);
-
-        // set the startup parameters
-        Uri? uri2 = S.toURI(url.replaceAll('/#', '')); // Because flutter is a SWA we need to ignore the /#/ for uri query param detection
-        if ((uri2 is Uri) && (uri2.hasQuery)) uri2.queryParameters.forEach((key, value) => queryParameters[key] = value);
-
-        // set the start page
-        if (uri.hasFragment)
+        if (scheme!.toLowerCase() == "file")
         {
-          List<String> parts = uri.fragment.split("?");
-          if (parts[0].trim().toLowerCase().endsWith(".xml"))
+          // build host
+          String host = url.split("?")[0].replaceFirst("file://", "");
+
+          // set host
+          if (_host == null)
+                _host = StringObservable(Binding.toKey(id, 'host'), host, scope: scope, listener: onPropertyChange);
+          else  _host!.set(host);
+
+          // set fqdn
+          String fqdn = "$scheme://$host";
+          if (_domain == null)
+               _domain = StringObservable(Binding.toKey(id, 'domain'), fqdn, scope: scope, listener: onPropertyChange);
+          else _domain!.set(fqdn);
+
+          // set the startup parameters
+          Uri? uri2 = S.toURI(url.replaceAll('/#', '')); // Because flutter is a SWA we need to ignore the /#/ for uri query param detection
+          if ((uri2 is Uri) && (uri2.hasQuery)) uri2.queryParameters.forEach((key, value) => queryParameters[key] = value);
+
+          // set the start page
+          if (uri.hasFragment)
           {
-            requestedPage = uri.fragment;
-            if (requestedPage!.startsWith("/")) requestedPage = requestedPage!.replaceFirst("/", "");
+            List<String> parts = uri.fragment.split("?");
+            if (parts[0].trim().toLowerCase().endsWith(".xml"))
+            {
+              requestedPage = uri.fragment;
+              if (requestedPage!.startsWith("/")) requestedPage = requestedPage!.replaceFirst("/", "");
+            }
+          }
+        }
+        else
+        {
+          // build host
+          String host = (uri.hasAuthority ? uri.authority : '');
+          uri.pathSegments.forEach((segment) => host += '/' + segment);
+
+          // set host
+          if (_host == null)
+                _host = StringObservable(Binding.toKey(id, 'host'), host, scope: scope, listener: onPropertyChange);
+          else  _host!.set(host);
+
+          // set fqdn
+          String fqdn = "$scheme://$host";
+          if (_domain == null)
+               _domain = StringObservable(Binding.toKey(id, 'domain'), fqdn, scope: scope, listener: onPropertyChange);
+          else _domain!.set(fqdn);
+
+          // set the startup parameters
+          Uri? uri2 = S.toURI(url.replaceAll('/#', '')); // Because flutter is a SWA we need to ignore the /#/ for uri query param detection
+          if ((uri2 is Uri) && (uri2.hasQuery)) uri2.queryParameters.forEach((key, value) => queryParameters[key] = value);
+
+          // set the start page
+          if (uri.hasFragment)
+          {
+            List<String> parts = uri.fragment.split("?");
+            if (parts[0].trim().toLowerCase().endsWith(".xml"))
+            {
+              requestedPage = uri.fragment;
+              if (requestedPage!.startsWith("/")) requestedPage = requestedPage!.replaceFirst("/", "");
+            }
           }
         }
       }
@@ -229,7 +262,7 @@ class System extends SystemPlatform implements IEventManager
   Map<String, String> queryParameters = Map<String, String>();
 
   // config file
-  CONFIG.ConfigModel? config;
+  ConfigModel? config;
 
   // end point urls used to prefetch templates
   static final Map<String, Mirror> mirrors = Map<String, Mirror>();
@@ -258,7 +291,7 @@ class System extends SystemPlatform implements IEventManager
       System().logon(await (Settings().get("jwt:$domain")));
 
       // get configuration file from server
-      config = await getConfigModel(domain, refresh: true);
+      config = await getConfigModel(domain!, refresh: true);
 
       // set template refresh
       refresh = S.toBool(config?.get("REFRESH")) ?? false;
@@ -277,7 +310,7 @@ class System extends SystemPlatform implements IEventManager
         if ((!S.isNullOrEmpty(url)) && (!isWeb))
         {
           Mirror mirror = Mirror(domain, url);
-          mirrors[domain!] = mirror;
+          mirrors[domain] = mirror;
           mirror.execute();
         }
       }
@@ -686,10 +719,8 @@ class System extends SystemPlatform implements IEventManager
     return true;
   }
 
-  Future<bool> setDomain(String? domain) async {
-    // empty domain
-    //if (S.isNullOrEmpty(domain)) return false;
-
+  Future<bool> setDomain(String? domain) async
+  {
     // start the process
     await initializeDomainConnection(domain);
 
@@ -754,89 +785,33 @@ class System extends SystemPlatform implements IEventManager
     }
   }
 
-  Future<CONFIG.ConfigModel?> getConfigModel(String? domain, {bool refresh = false}) async
+  Future<ConfigModel?> getConfigModel(String domain, {bool refresh = false}) async
   {
-    CONFIG.ConfigModel? model;
+    ConfigModel? model;
 
-    bool isLocalUrl = defaultDomain.toLowerCase().trim().startsWith("file://");
-    if (appType == ApplicationTypes.SingleApp && isLocalUrl)
-    {
-      String cfg = await rootBundle.loadString('assets/config.xml', cache: false);
-      if (!S.isNullOrEmpty(cfg)) model = await buildConfigModel(cfg);
-      return model;
-    }
-
-    if (S.isNullOrEmpty(domain)) return model;
-    domain = domain!.trim();
-
+    // fetch the template
     try
     {
+      XmlDocument? document;
+
       // get config from settings
       var xml = await Settings().get('config' + ":" + domain);
-      if (xml is String)
-      {
-        XmlDocument? document = Xml.tryParse(xml, silent: true);
-        if (document != null) model = CONFIG.ConfigModel.fromXml(null, document.rootElement);
-      }
-      if (model == null) refresh = true;
+      if (xml is String) document = Xml.tryParse(xml, silent: true);
+
+      // refresh if not archived
+      if (document == null) refresh = true;
 
       // refresh the config file?
-      if ((refresh == true) && (System().connected == true))
-      {
-        // get the config file from web
-        String url = domain + (domain.endsWith("/") ? "" : "/") + "config.xml";
-        HttpResponse response = await Http.get(url, refresh: true);
+      if (refresh == true) document = await Template.fetchTemplate(url: "$domain/config.xml", refresh: refresh);
 
-        // found?
-        if (response.statusCode == 200)
-        {
-          model = await buildConfigModel(response.body);
-        }
-        else if (response.statusCode == 404)
-        {
-          Log().info('[404] ' + url);
-        }
-      }
-      Log().info('No network connection, unable to fetch config');
-    }
+      // create the model
+      if (document != null) model = ConfigModel.fromXml(null, document.rootElement);
+  }
     catch (e)
     {
-      Log().debug("Failed host lookup: $domain");
+      Log().debug("Error building the config model: $domain");
     }
 
-    return model;
-  }
-
-  Future<CONFIG.ConfigModel?> buildConfigModel(String? xml) async {
-    CONFIG.ConfigModel? model;
-    ////////////////////
-    /* Parse Response */
-    ////////////////////
-    XmlDocument? document = Xml.tryParse(xml);
-    if (document != null) {
-      /////////////////
-      /* Build Model */
-      /////////////////
-      Iterable<XmlElement> nodes =
-          document.rootElement.findAllElements("CONFIG", namespace: "*");
-      if ((nodes.isNotEmpty)) {
-        XmlElement node = nodes.first;
-
-        /////////////////
-        /* Build Model */
-        /////////////////
-        model = CONFIG.ConfigModel.fromXml(null, node);
-
-        //////////////////
-        /* Save to Hive */
-        //////////////////
-        if (model != null)
-        {
-          bool configSaved = await Settings().set('config' + ":" + domain!, node.toXmlString());
-          if (configSaved != true) Log().error('Unable to save configuration settings to Hive', caller: 'System.dart buildConfigModel()');
-        }
-      }
-    }
     return model;
   }
 

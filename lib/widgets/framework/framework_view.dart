@@ -384,7 +384,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   void onDragStart(DragStartDetails details)
   {
     // IOS back button functionality
-    if ((System().useragent == "ios") && (details.globalPosition.dx < 50))
+    if ((System().useragent == "ios" || isDesktop) && (details.globalPosition.dx < 50))
     {
       swiping = true;
       start = details.globalPosition.dx;

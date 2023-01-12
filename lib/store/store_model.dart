@@ -5,9 +5,7 @@ import 'dart:convert';
 import 'package:fml/hive/settings.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/scope.dart';
-import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:fml/datasources/http/http.dart';
 import 'package:fml/helper/helper_barrel.dart';
 import 'package:http/http.dart' as http;
 
@@ -17,55 +15,6 @@ class StoreModel extends WidgetModel
   {
     // instantiate busy observable
     busy = false;
-  }
-
-  Future<String?> link(String url) async
-  {
-    bool found = false;
-    String domain = url;
-
-    ///////////////////
-    /* Verify Domain */
-    ///////////////////
-    Uri? uri = Uri.tryParse(domain);
-    HttpResponse response;
-
-    //////////////
-    /* Try Http */
-    //////////////
-    if ((!found) && (uri!.hasScheme))
-    {
-      domain = url;
-      response = await Http.get(domain + '/' + 'config.xml', timeout: 5, refresh: true);
-      if (response.ok) found = true;
-    }
-
-    ///////////////
-    /* Try Https */
-    ///////////////
-    if ((!found) && (!uri.hasScheme))
-    {
-      domain = 'https://' + url;
-      response = await Http.get(domain + '/' + 'config.xml', timeout: 5, refresh: true);
-      if (response.ok) found = true;
-    }
-    
-    //////////////
-    /* Try Http */
-    //////////////
-    if ((!found) && (!uri.hasScheme))
-    {
-      domain = 'http://' + url;
-      response = await Http.get(domain + '/' + 'config.xml', timeout: 5, refresh: true);
-      if (response.ok) found = true;
-    }
-
-    if (found)
-    {
-      await System().initializeDomainConnection(domain);
-    }
-
-    return found == true ? domain : null;
   }
 
   Future<Map<String, String?>> store() async

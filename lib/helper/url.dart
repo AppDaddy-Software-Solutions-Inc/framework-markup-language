@@ -1,6 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:io';
+
 import 'package:fml/system.dart';
 import 'package:fml/helper/helper_barrel.dart';
+import 'package:path/path.dart';
 
 /// URL Helpers
 ///
@@ -37,7 +40,21 @@ class Url
   /// Takes a Url String and if it is a relative path, prepends it with the domain
   static String toAbsolute(String url, {String? domain})
   {
-    if (isRelative(url)) url = (domain ?? System().domain ?? "") + (url.startsWith('/') ? '' : '/') + url;
+    Uri? uri = toUri(url);
+    if (uri != null && !uri.hasAuthority) url = (domain ?? System().domain ?? "") + (url.startsWith('/') ? '' : '/') + url;
+    return url;
+  }
+
+  static String toLocalPath(String url, {String? domain})
+  {
+    url = toAbsolute(url, domain: domain);
+    Uri? uri = toUri(url);
+    if (uri?.scheme.toLowerCase() == "file")
+    {
+      url = url.replaceFirst(RegExp("file://", caseSensitive: false), "");
+      url = url.replaceFirst(RegExp("localhost", caseSensitive: false), dirname(Platform.resolvedExecutable));
+      url = url.replaceAll("\\", Platform.pathSeparator).replaceAll("/", Platform.pathSeparator);
+    }
     return url;
   }
 

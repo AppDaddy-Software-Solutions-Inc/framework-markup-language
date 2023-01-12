@@ -52,7 +52,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     if (home.split("?")[0].toLowerCase() != start.split("?")[0].toLowerCase())
     {
       // fetch the template
-      Template template = await Template.fetch(url: start, refresh: true);
+      Template? template = await Template.fetch(url: start, refresh: true);
 
       // document is linkable?
       // default - if singlePageApplication then false, otherwise true

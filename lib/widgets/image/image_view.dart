@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/log/manager.dart';
 import 'package:fml/observable/scope.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -61,10 +62,10 @@ class ImageView extends StatefulWidget
         }
 
         ImageType type;
-              if (url!.startsWith("data:"))  type = ImageType.data;
-        else if (url.startsWith("blob:"))  type = ImageType.blob;
-        else if (url.startsWith("file:"))  type = ImageType.file;
-        else if (url.startsWith("asset:")) type = ImageType.asset;
+              if (url!.startsWith("data:"))          type = ImageType.data;
+        else if (url.startsWith("blob:"))            type = ImageType.blob;
+        else if (url.startsWith("file:"))            type = ImageType.file;
+        else if (url.startsWith("asset:"))           type = ImageType.asset;
         else if (url.split('?')[0].endsWith('.svg')) type = ImageType.svg;
         else if (!isWeb && Url.path(url) != null && System().fileExists(Url.path(url)!)) type = ImageType.asset;
         else type = ImageType.web;
@@ -83,12 +84,15 @@ class ImageView extends StatefulWidget
 
           /// file image from camera or file picker
           case ImageType.file:
-            image = Image.file(File(url.replaceFirst("file:", "")));
+            image = Image.file(File(Url.toLocalPath(url)));
             break;
 
           /// svg picture from web
           case ImageType.svg:
-            image = getSvgImage(Url.toAbsolute(url), getFit(fit), width, height, errorHandler);
+            url = Url.toAbsolute(url);
+            if (url.startsWith("file:"))
+                 image = SvgPicture.file(File(Url.toLocalPath(url)), fit: getFit(fit), width: width, height: height);
+            else image = SvgPicture.network(url, fit: getFit(fit), width: width, height: height);
             break;
 
           /// asset image
@@ -208,11 +212,6 @@ class ImageView extends StatefulWidget
       default:
         break;
     }
-  }
-
-  static dynamic getSvgImage(String url, BoxFit fit, double? width, double? height, dynamic errorBuilder)
-  {
-    return SvgPicture.network(url, fit: fit, width: width, height: height);
   }
 
   static dynamic getByteImage(Uint8List bytes, BoxFit fit, double? width, double? height, int? fadeDuration, dynamic errorBuilder)

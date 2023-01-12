@@ -7,7 +7,7 @@
 		<PAD top="20"/>
 		<TXT value="Flutter Markup Language" style="h4" wrap="true"/>
 		<PAD top="40"/>
-		<TXT maxwidth="350" halign="center" width="80%" value="Welcome to the sample app for Flutter Markup Language! For more info visit our githib and wiki, subscribe to our youtube channel, follow us on medium, or chat with us on discord!" color="grey"/>
+		<TXT maxwidth="350" halign="center" width="80%" value="Welcome to the sample app for Flutter Markup Language! For more info visit our github wiki, subscribe to our youtube channel, follow us on medium, or chat with us on discord!" color="grey"/>
 		<PAD top="40"/>
 		<BTN maxwidth="350" width="80%" type="outlined" label="Counter App Example" onclick="open('templates/counter_app.xml');"/>
 		<PAD top="20"/>

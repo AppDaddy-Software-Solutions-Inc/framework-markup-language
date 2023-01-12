@@ -274,6 +274,22 @@ class Xml {
     return v;
   }
 
+  /// Given an [XmlElement] and an attribute tag(name) we will return true if exists
+  static bool hasAttribute({required XmlElement node, required String tag})
+  {
+    try
+    {
+      if (node.getAttributeNode(tag.toLowerCase()) != null) return true;
+      if (node.getAttributeNode(tag.toUpperCase()) != null) return true;
+      if (node.getAttributeNode(tag) != null) return true;
+    }
+    catch(e)
+    {
+      Log().exception(e, caller: 'xml.dart => String attribute({XmlElement node, String tag})');
+    }
+    return false;
+  }
+
   /// Changes an [XmlElement] attribute value
   static void setAttribute(XmlElement node, String tag, String? value)
   {
@@ -312,6 +328,22 @@ class Xml {
     return v;
   }
 
+  /// Returns the value of a child [XmlElement] element
+  static bool hasElement({required XmlElement node, required String tag})
+  {
+    try
+    {
+      if (getChildElement(node: node, tag: tag.toUpperCase()) != null) return true;
+      if (getChildElement(node: node, tag: tag.toLowerCase()) != null) return true;
+      if (getChildElement(node: node, tag: tag)               != null) return true;
+    }
+    catch(e)
+    {
+      Log().exception(e, caller: 'xml.dart => String element({XmlElement node, String tag})');
+    }
+    return false;
+  }
+
   /// Gets the value of a attribute else a child element
   static String? get({XmlElement? node, String? tag})
   {
@@ -327,6 +359,21 @@ class Xml {
       Log().exception(e, caller: 'xml.dart => String get({XmlElement node, String tag})');
     }
     return v;
+  }
+
+  /// Gets the value of a attribute else a child element
+  static bool has({required XmlElement node, required String tag})
+  {
+    try
+    {
+      if (hasAttribute(node: node, tag: tag)) return true;
+      if (hasElement(node: node, tag: tag)) return true;
+    }
+    catch(e)
+    {
+      Log().exception(e, caller: 'xml.dart => String get({XmlElement node, String tag})');
+    }
+    return false;
   }
 
   /// Returns true if there is 1 or more child [XmlElement]s

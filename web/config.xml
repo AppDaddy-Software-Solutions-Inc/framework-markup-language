@@ -4,7 +4,7 @@
         <!-- Settings -->
         <APPLICATION_NAME 		value="YOUR_APP_NAME" />
         <APP_ICON	 			value="resources/images/appicon.png" />
-        <HOME_PAGE       		value="file://templates/localtemplate.xml" />
+        <HOME_PAGE       		value="templates/main.xml" />
         <LOGIN_PAGE             value=""/>
         <UNAUTHORIZED_PAGE      value=""/>
         <MIRROR_API 	        value="" />

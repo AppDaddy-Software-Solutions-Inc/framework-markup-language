@@ -29,9 +29,8 @@ class ConfigModel
 
   void deserialize(XmlElement xml) async
   {
-    //////////////
-    /* Settings */
-    //////////////
+    var config = Xml.element(node: xml, tag: "CONFIG");
+    // settings
     for (dynamic node in xml.children)
     if (node is XmlElement)
     {
@@ -42,9 +41,7 @@ class ConfigModel
       if (!S.isNullOrEmpty(key) && (key.toLowerCase() != 'parameter')) settings[key] = value;
     }
 
-    ////////////////
-    /* Parameters */
-    ////////////////
+    // parameters
     List<XmlElement>? nodes = Xml.getChildElements(node: xml, tag: 'parameter');
     if (nodes != null)
     nodes.forEach((element)

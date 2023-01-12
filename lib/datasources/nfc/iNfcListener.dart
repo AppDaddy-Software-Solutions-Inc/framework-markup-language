@@ -2,5 +2,5 @@
 import 'payload.dart';
 abstract class INfcListener
 {
-  onNfcData({Payload? payload});
+  onMessage(Payload payload);
 }

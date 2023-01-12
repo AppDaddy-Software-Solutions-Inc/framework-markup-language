@@ -94,7 +94,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
   String? get onsuccess => _onsuccess?.get();
 
   // on fail event
-  StringObservable? get onFail => _onfail;
+  StringObservable? get onFailObservable => _onfail;
   StringObservable? _onfail;
   set onfail(dynamic v) {
     if (_onfail != null) {

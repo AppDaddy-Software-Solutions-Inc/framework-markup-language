@@ -12,7 +12,7 @@ import 'package:fml/datasources/data/model.dart';
 import 'package:fml/datasources/gps/model.dart';
 import 'package:fml/datasources/http/model.dart';
 import 'package:fml/datasources/mqtt/mqtt_model.dart';
-import 'package:fml/datasources/nfc/model.dart';
+import 'package:fml/datasources/nfc/nfc_model.dart';
 import 'package:fml/datasources/socket/socket_model.dart';
 import 'package:fml/datasources/zebra/model.dart';
 import 'package:fml/system.dart';

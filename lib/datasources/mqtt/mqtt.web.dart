@@ -27,7 +27,7 @@ class MqttWeb implements IMqtt
   {
     Uri? uri = S.toURI(this.url);
     if (uri == null) return;
-    var scheme = 'ws';
+    var scheme = System().secure ? "wss" : "ws";
     var server = uri.host;
     var port   = (uri.port == 443 || uri.port == 80) ? 61614 : uri.port;
     var url    = scheme + '://' + server;

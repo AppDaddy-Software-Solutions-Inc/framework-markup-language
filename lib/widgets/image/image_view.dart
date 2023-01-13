@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/log/manager.dart';
 import 'package:fml/observable/scope.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;

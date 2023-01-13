@@ -1,14 +1,10 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fml/helper/color.dart';
-import 'package:fml/observable/scope.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:fml/widgets/image/image_view.dart';
-import 'package:fml/helper/helper_barrel.dart';
 
 class MenuItemView extends StatefulWidget
 {
@@ -61,14 +57,16 @@ class _MenuItemViewState extends State<MenuItemView>
   }
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
+  onModelChange(WidgetModel model, {String? property, dynamic value})
+  {
     if (this.mounted) setState(() {});
   }
 
   bool isHovered = false;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context)
+  {
     ColorScheme t = Theme.of(context).colorScheme;
 
     // Check if widget is visible before wasting resources on building it
@@ -76,12 +74,10 @@ class _MenuItemViewState extends State<MenuItemView>
 
     Widget menuItem = SizedBox.shrink();
     double borderRadius = widget.model.radius ?? 8.0;
-    var shape = RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(borderRadius));
+    var shape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius));
 
-    if (widget.model.children != null) {
-      // Custom Item
-
+    if (widget.model.children != null)
+    {
       ////////////////////
       /* Build Children */
       ////////////////////
@@ -127,39 +123,29 @@ class _MenuItemViewState extends State<MenuItemView>
             ),
           ));
       menuItem = customButton;
-    } else {
+    }
+    else
+    {
       //  Static Item
       String? backgroundImage = widget.model.backgroundimage;
-      Widget? iconImage;
-      if (!S.isNullOrEmpty(widget.model.iconBase64))
-        iconImage = Image.memory(base64Decode(widget.model.iconBase64!),
-            width: 48, height: 48, fit: null);
-      else if (widget.model.iconImage != null)
-        iconImage = ImageView.getImage(widget.model.iconImage,
-            scope: Scope.of(widget.model), width: 48, height: 48, fit: null);
-      Widget? icon;
-      if (widget.model.icon != null) {
-        double size =
-            (widget.model.iconsize ?? 48.0) - (isMobile ? 4 : 0);
-        Color color =
-            widget.model.iconcolor ?? t.primary; //System.colorDefault;
-        icon = Icon(widget.model.icon ?? Icons.touch_app,
-            size: size, color: color);
+      Widget? image;
+      if (widget.model.image != null) image = Image.memory(widget.model.image!.contentAsBytes(), width: 48, height: 48, fit: null);
 
+      Widget? icon;
+      if (widget.model.icon != null)
+      {
+        double size = (widget.model.iconsize ?? 48.0) - (isMobile ? 4 : 0);
+        Color color = widget.model.iconcolor ?? t.primary; //System.colorDefault;
+        icon = Icon(widget.model.icon ?? Icons.touch_app, size: size, color: color);
         double? opacity = widget.model.iconopacity;
         if (opacity != null) icon = Opacity(opacity: opacity, child: icon);
-
         icon = Center(child: icon);
       }
 
       var title;
-      if (widget.model.title != null) {
-        title = Text(widget.model.title ?? '',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontSize:
-                    (widget.model.fontsize ?? 16.0) - (isMobile ? 2 : 0),
-                color: backgroundImage != null
+      if (widget.model.title != null)
+      {
+        title = Text(widget.model.title ?? '', textAlign: TextAlign.center, style: TextStyle(fontSize: (widget.model.fontsize ?? 16.0) - (isMobile ? 2 : 0), color: backgroundImage != null
                     ? (widget.model.fontcolor ?? Colors.black)
                     : widget.model.fontcolor ?? t.primary,
                 fontWeight:
@@ -182,8 +168,8 @@ class _MenuItemViewState extends State<MenuItemView>
 
       List<Widget> btn = [];
 
-      if (iconImage != null)
-        btn.add(iconImage);
+      if (image != null)
+        btn.add(image);
       else if (icon != null) btn.add(icon);
       btn.add(Container(height: 10));
       if (title != null) btn.add(title);

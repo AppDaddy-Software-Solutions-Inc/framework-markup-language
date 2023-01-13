@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'dart:io';
+import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:fml/token/token.dart';
 import 'package:http/http.dart';
@@ -207,6 +208,40 @@ class Http
     // decode token
     Jwt jwt = Jwt.decode(token);
     if (jwt.valid) System().logon(jwt);
+  }
+  static Future<UriData?> toUriData(String url) async
+  {
+    try
+    {
+      url = Url.toLocalPath(Url.toAbsolute(url));
+      Uri? uri = Uri.tryParse(url);
+      if (uri != null)
+      {
+        // file reference
+        if (uri.scheme.toLowerCase() == "file")
+        {
+          var file  = File(url);
+          var bytes = await file.readAsBytes();
+          var mime  = await S.mimetype(url);
+          return UriData.fromBytes(bytes,mimeType: mime);
+        }
+        else
+        {
+          HttpResponse response = await get(url);
+          if (response.statusCode == HttpStatus.ok)
+          {
+            var bytes = response.bytes;
+            var mime  = await S.mimetype(url);
+            return UriData.fromBytes(bytes, mimeType: mime);
+          }
+        }
+      }
+    }
+    catch(e)
+    {
+      Log().error("Error in toUriData() getting $url. rror is $e");
+    }
+    return null;
   }
 }
 

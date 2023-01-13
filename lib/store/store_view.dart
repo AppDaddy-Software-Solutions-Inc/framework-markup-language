@@ -1,7 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/hive/app.dart';
-import 'package:fml/navigation/manager.dart';
-import 'package:fml/navigation/page.dart';
 import 'package:fml/theme/themenotifier.dart';
 import 'package:fml/navigation/observer.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
@@ -32,9 +30,6 @@ class StoreView extends StatefulWidget
 
 class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin implements IModelListener, INavigatorObserver
 {
-
-  BusyView? busy;
-
   bool _visible = false;
   late InputModel appURLInput;
   ButtonModel? storeButton;
@@ -46,12 +41,7 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
   {
     super.initState();
     appURLInput = InputModel(null, null, hint: phrase.store, value: "", icon: Icons.link, keyboardtype: 'url', keyboardinput: 'done');
-  }
-
-  @override
-  void didUpdateWidget(oldWidget)
-  {
-    super.didUpdateWidget(oldWidget);
+    Store().registerListener(this);
   }
 
   @override
@@ -65,6 +55,9 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
   @override
   void dispose()
   {
+    // stop listening to model changes
+    Store().removeListener(this);
+
     // stop listening to route changes
     NavigationObserver().removeListener(this);
 
@@ -94,12 +87,14 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
   @override
   Widget build(BuildContext context)
   {
+    var busy = Store().busy;
+
     // build menu items
     menuModel.items = [];
-    var apps = Store().apps.toList();
+    var apps = Store().getApps();
     for (var app in apps)
     {
-      var item = MenuItemModel(menuModel, app.key, url: app.url, title: app.title, subtitle: '', icon: app.icon == null ? 'appdaddy' : null, image: app.icon, onTap: () => _launchApp(app.url), onLongPress: () => removeApp(app));
+      var item = MenuItemModel(menuModel, app.key, url: app.url, title: app.title, subtitle: '', icon: app.icon == null ? 'appdaddy' : null, image: app.icon, onTap: () => _launchApp(app), onLongPress: () => removeApp(app));
       menuModel.items.add(item);
     }
 
@@ -116,7 +111,7 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
 
     return WillPopScope(onWillPop: () => quitDialog().then((value) => value as bool),
         child: Scaffold(
-          floatingActionButton: !Store().busy
+          floatingActionButton: !busy
               ? FloatingActionButton.extended(label: Text('Add App'), icon: Icon(Icons.add), onPressed: () => addAppDialog(), foregroundColor: Theme.of(context).colorScheme.onSurface, backgroundColor: Theme.of(context).colorScheme.onInverseSurface, splashColor: Theme.of(context).colorScheme.inversePrimary, hoverColor: Theme.of(context).colorScheme.surface, focusColor: Theme.of(context).colorScheme.inversePrimary)
               : FloatingActionButton.extended(onPressed: null, foregroundColor: Theme.of(context).colorScheme.onSurface, backgroundColor: Theme.of(context).colorScheme.onInverseSurface, splashColor: Theme.of(context).colorScheme.inversePrimary, hoverColor: Theme.of(context).colorScheme.surface, focusColor: Theme.of(context).colorScheme.inversePrimary, label: Text('Loading Apps'),),
           body: SafeArea(child: Stack(children: [Container(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.bottomRight, end: Alignment.topLeft, stops: [0.4, 1.0], colors: [/*Theme.of(context).colorScheme.inversePrimary*/Theme.of(context).colorScheme.surfaceVariant, Theme.of(context).colorScheme.surface])),),
@@ -219,27 +214,9 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
     );
   }
 
-  _launchApp(String domain) async
+  _launchApp(App app) async
   {
-    Store().busy = true;
-
-    // set default domain
-    await System().setDomain(domain);
-
-    // get config for domain
-    var config = await System().getConfigModel(domain);
-
-    // push home page
-    String? home = System().homePage;
-    NavigationManager().setNewRoutePath(PageConfiguration(url: home, title: "Store"), source: "store");
-
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    if (config != null) {
-      String brightness = config.get('BRIGHTNESS') ?? 'light';
-      String color = config.get('COLOR_SCHEME') ?? 'lightblue';
-      themeNotifier.setTheme(brightness, color);
-      themeNotifier.mapSystemThemeBindables();
-    }
+    Store().launch(app, context);
   }
 }
 
@@ -259,9 +236,29 @@ class AppFormState extends State<AppForm>
   final   _formKey  = GlobalKey<FormState>();
   String  errorText = '';
   String? title;
+  String? url;
 
-  String? validateUrl(url)
+  String? _validateTitle(title)
   {
+    this.title = null;
+    errorText = '';
+
+    // missing title
+    if (S.isNullOrEmpty(title))
+    {
+      errorText = "Title must be supplied";
+      return errorText;
+    }
+
+    // assign url
+    this.title = title;
+
+    return null;
+  }
+
+  String? _validateUrl(url)
+  {
+    this.url = null;
     errorText = '';
 
     // missing url
@@ -301,33 +298,37 @@ class AppFormState extends State<AppForm>
       return errorText;
     }
 
+    // assign url
+    this.url = url;
+
     return null;
   }
 
-  Future tryAdd() async
+  Future _addApp() async
   {
     // validate the form
-    bool errors = _formKey.currentState!.validate();
-    if (!errors)
+    bool ok = _formKey.currentState!.validate();
+    if (ok)
     {
       System.toast('Attempting to Connect Application',duration: 2);
+      App app = App(url: url!, title: title!);
+      Store().add(app);
+      Navigator.of(context).pop();
     }
   }
 
   @override
   Widget build(BuildContext context)
   {
-    var name =  TextFormField(onChanged: (v) => title = v, decoration: InputDecoration(labelText: "Application Name", labelStyle: TextStyle(color: Colors.grey, fontSize: 12), fillColor: Colors.white,
+    var name =  TextFormField(validator: _validateTitle, decoration: InputDecoration(labelText: "Application Name", labelStyle: TextStyle(color: Colors.grey, fontSize: 12), fillColor: Colors.white,
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide())));
 
-    var url = TextFormField(validator: validateUrl, keyboardType: TextInputType.url, decoration: InputDecoration(labelText: "Application Web Address", labelStyle: TextStyle(color: Colors.grey, fontSize: 12),
+    var url = TextFormField(validator: _validateUrl, keyboardType: TextInputType.url, decoration: InputDecoration(labelText: "Application Web Address", labelStyle: TextStyle(color: Colors.grey, fontSize: 12),
           fillColor: Colors.white, border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide())));
-
-    var error = Text(errorText, style: TextStyle(fontSize: 12, color: Colors.red));
 
     var cancel = TextButton(child: Text(phrase.cancel),  onPressed: () => Navigator.of(context).pop());
 
-    var connect =  TextButton(child: Text(phrase.connect), onPressed: tryAdd);
+    var connect =  TextButton(child: Text(phrase.connect), onPressed: _addApp);
 
     List<Widget> layout = [];
 
@@ -336,8 +337,6 @@ class AppFormState extends State<AppForm>
     layout.add(name);
     layout.add(Padding(padding: EdgeInsets.only(top: 10)));
     layout.add(url);
-    layout.add(Padding(padding: EdgeInsets.only(top: 10)));
-    layout.add(error);
 
     // buttons
     var buttons = Padding(padding: const EdgeInsets.only(top: 0.0),child: Align(alignment: Alignment.bottomCenter, child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [cancel,connect])));

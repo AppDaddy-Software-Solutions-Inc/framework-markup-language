@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/log/manager.dart';
 import 'package:fml/observable/scope.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -44,10 +45,16 @@ class ImageView extends StatefulWidget
         int?    fadeDuration
       })
   {
-    Widget image;
+    Widget? image;
+
+    // dummy image is default
+    var dummy = getByteImage(placeholderImage, getFit(fit), width, height, fadeDuration, null);
+    if (url == null) return dummy;
+
     try
     {
-      if (!S.isNullOrEmpty(url))
+      var uri = Url.toUrlData(url);
+      if (uri != null)
       {
         // error handler
         Widget errorHandler(BuildContext content, Object object, StackTrace? stacktrace)
@@ -60,14 +67,41 @@ class ImageView extends StatefulWidget
           else return Icon(Icons.broken_image_outlined, size: 36, color: Colors.grey);
         }
 
-        ImageType type;
-              if (url!.startsWith("data:"))          type = ImageType.data;
-        else if (url.startsWith("blob:"))            type = ImageType.blob;
-        else if (url.startsWith("file:"))            type = ImageType.file;
-        else if (url.startsWith("asset:"))           type = ImageType.asset;
-        else if (url.split('?')[0].endsWith('.svg')) type = ImageType.svg;
-        else if (!isWeb && Url.path(url) != null && System().fileExists(Url.path(url)!)) type = ImageType.asset;
-        else type = ImageType.web;
+        ImageType? type;
+        switch (uri.scheme)
+        {
+          case "data":
+            type = ImageType.data;
+            break;
+
+          case "blob":
+            type = ImageType.blob;
+            break;
+
+          case "file":
+            type = ImageType.web;
+            if (uri.page != null && uri.page!.toLowerCase().endsWith(".svg")) type = ImageType.svg;
+            if (uri.page != null && System().fileExists(uri.page!)) type = ImageType.file;
+            break;
+
+          case "asset":
+            type = ImageType.web;
+            if (uri.page != null && uri.page!.toLowerCase().endsWith(".svg")) type = ImageType.svg;
+            if (uri.page != null && System().fileExists(uri.page!)) type = ImageType.asset;
+            break;
+
+          case "data":
+            type = ImageType.data;
+            break;
+
+          case "blob":
+            type = ImageType.blob;
+            break;
+
+          case "asset":
+            type = ImageType.asset;
+            break;
+        }
 
         switch (type)
         {
@@ -83,14 +117,13 @@ class ImageView extends StatefulWidget
 
           /// file image from camera or file picker
           case ImageType.file:
-            image = Image.file(File(Url.toLocalPath(url)));
+            image = Image.file(File(uri.filepath!));
             break;
 
           /// svg picture from web
           case ImageType.svg:
-            url = Url.toAbsolute(url);
-            if (url.startsWith("file:"))
-                 image = SvgPicture.file(File(Url.toLocalPath(url)), fit: getFit(fit), width: width, height: height);
+            if (uri.filepath != null && System().fileExists(uri.filepath!))
+                 image = SvgPicture.file(File(uri.filepath!), fit: getFit(fit), width: width, height: height);
             else image = SvgPicture.network(url, fit: getFit(fit), width: width, height: height);
             break;
 
@@ -111,15 +144,14 @@ class ImageView extends StatefulWidget
             break;
         }
       }
-      else image = getByteImage(placeholderImage, getFit(fit), width, height, fadeDuration, null);
     }
     catch(e)
     {
-      image = getByteImage(placeholderImage, getFit(fit), width, height, fadeDuration, null);
+      Log().error("Error decoding image from $url. Error is $e");
     }
 
     // return widget
-    return image;
+    return image ?? dummy;
   }
 
   /// how the image will fit within the space it is given

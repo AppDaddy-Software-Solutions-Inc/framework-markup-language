@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
+import 'package:fml/template/template.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:xml/xml.dart';
 import 'package:fml/helper/helper_barrel.dart';
@@ -9,7 +10,7 @@ class ConfigModel
   ConfigModel();
 
   Map<String, String?> settings   = Map<String,String?>();
-  Map<String?, String> parameters = Map<String?,String>();
+  Map<String, String?> parameters = Map<String,String?>();
 
   static ConfigModel? fromXml(WidgetModel? parent, XmlElement xml)
   {
@@ -25,6 +26,17 @@ class ConfigModel
       model = null;
     }
     return model;
+  }
+
+  static Future<ConfigModel?> fromUrl(WidgetModel? parent, String url) async
+  {
+    var uri = Url.toUrlData(url);
+    if (uri != null)
+    {
+      var template = await Template.fetchTemplate(url: "$uri/config.xml");
+      if (template != null) return fromXml(parent, template.rootElement);
+    }
+    return null;
   }
 
   void deserialize(XmlElement xml) async
@@ -51,7 +63,7 @@ class ConfigModel
       String? key   = Xml.get(node: element, tag: 'key');
       String? value = Xml.get(node: element, tag: 'value');
       if (S.isNullOrEmpty(value)) value = Xml.getText(element);
-      if (!S.isNullOrEmpty(key)) parameters[key] = value ?? "";
+      if (!S.isNullOrEmpty(key)) parameters[key!] = value ?? "";
     });
   }
 

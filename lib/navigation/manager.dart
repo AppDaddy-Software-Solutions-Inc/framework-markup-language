@@ -44,9 +44,10 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     _pages.clear();
 
     // get start page
-    String home  = System().homePage ?? "main.xml";
+    String? home  = System().app?.homePage;
     if (((isMobile) || (isDesktop)) && (appType == ApplicationTypes.MultiApp)) home = "store";
-    String start = System().requestedPage ?? home;
+    String? start = System().app?.page ?? home;
+    if (start == null || home == null) return;
 
     // start page is different than home page?
     if (home.split("?")[0].toLowerCase() != start.split("?")[0].toLowerCase())
@@ -56,16 +57,16 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
 
       // document is linkable?
       // default - if singlePageApplication then false, otherwise true
-      bool linkable = S.toBool(Xml.attribute(node: template.document!.rootElement, tag: "linkable")) ?? !System().singlePageApplication;
+      bool linkable = S.toBool(Xml.attribute(node: template.document!.rootElement, tag: "linkable")) ?? (System().app?.singlePage ?? false);
 
       // set start page = home page if not linkable
       if (!linkable) start = home;
 
       // clear requested page if the same as home page
-      if (home.split("?")[0].toLowerCase() == start.split("?")[0].toLowerCase()) System().requestedPage = null;
+      //if (home.split("?")[0].toLowerCase() == start.split("?")[0].toLowerCase()) System().Application?.requestedPage = null;
 
       // single page applications always load the home page
-      if (System().singlePageApplication) start = home;
+      if (System().app?.singlePage ?? false) start = home;
     }
 
     //  web browser - user hit refresh?
@@ -77,13 +78,13 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
 
   Future<void> onPageLoaded() async
   {
-    String? page = System().requestedPage;
+    String? page = System().app?.requestedPage;
 
     // open the page
     if (page != null) _open(page);
 
     // clear requested page
-    if (page != null) System().requestedPage = null;
+    //if (page != null) System().requestedPage = null;
   }
 
   @override

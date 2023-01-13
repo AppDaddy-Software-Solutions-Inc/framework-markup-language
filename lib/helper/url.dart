@@ -45,24 +45,6 @@ class Url
     return url;
   }
 
-  static String toLocalPath(String url, {String? domain})
-  {
-    url = toAbsolute(url, domain: domain);
-    Uri? uri = toUri(url);
-    if (uri?.scheme.toLowerCase() == "file")
-    {
-      // remove file prefix
-      url = url.replaceFirst(RegExp("file://", caseSensitive: false), "");
-      // substitute localhost for base folder name
-      url = url.replaceFirst(RegExp("localhost", caseSensitive: false), dirname(Platform.resolvedExecutable));
-      // replace all path seperators with system path seperator
-      url = url.replaceAll("\\", Platform.pathSeparator).replaceAll("/", Platform.pathSeparator);
-      // remove hash tags and parameter strings
-      url = url.split("?")[0].split("#")[0];
-    }
-    return url;
-  }
-
   /// Checks if a String is a valid Uri
   static bool isUrl(String url)
   {
@@ -223,5 +205,72 @@ class Url
     return parameters;
   }
 
+  static UrlData? toUrlData(String url)
+  {
+    UrlData? urldata;
+
+    // parse the uri
+    Uri? uri = S.toURI(url);
+
+    // Because flutter is a SWA we need to ignore the /#/ for uri query param detection
+    if (uri is Uri && uri.hasFragment) uri = S.toURI(url.replaceFirst("#", "/"));
+
+    // Deconstruct the uri
+    if (uri is Uri)
+    {
+      urldata = UrlData();
+
+      // scheme
+      urldata.scheme = uri.hasScheme ? uri.scheme.toLowerCase() : "http";
+
+      // port
+      urldata.port = uri.hasPort ? uri.port : null;
+
+      // query parameters
+      urldata.parameters = uri.hasQuery ? uri.queryParameters : null;
+
+      // host authority
+      String host  = uri.hasAuthority ? uri.authority : '';
+      var segments = uri.pathSegments.toList();
+      if (segments.isNotEmpty && segments.last.contains("."))
+      {
+        var last = segments.last.trim();
+        if (last.split(".").length > 1 && last.split(".")[1].toLowerCase() == "xml") urldata.page = segments.last.trim();
+        segments.removeLast();
+      }
+      segments.forEach((segment) => S.isNullOrEmpty(segment) ? null : host = "$host/${segment.trim()}");
+      urldata.host = host;
+
+      // fully qualified domain name
+      urldata.fqdn = urldata.port != null ? "${urldata.scheme}::${urldata.port}://${urldata.host}" : "${urldata.scheme}://${urldata.host}";
+
+      // filepath
+      switch (urldata.scheme)
+      {
+        case "asset":
+        case "file":
+          var file = urldata.host?.replaceAll("/", Platform.pathSeparator).replaceAll("\\", Platform.pathSeparator);
+          var path = dirname(Platform.resolvedExecutable);
+          if (urldata.scheme == "asset") path = "$path${Platform.pathSeparator}assets";
+          urldata.filepath = "$path${Platform.pathSeparator}$file";
+          break;
+        default: urldata.filepath = null;
+        break;
+      }
+    }
+
+    return urldata;
+  }
+}
+
+class UrlData
+{
+  late final String? scheme;
+  late final int?    port;
+  late final String? host;
+  late final String? fqdn;
+  late final String? page;
+  late final Map<String,String>? parameters;
+  late final String? filepath;
 }
 

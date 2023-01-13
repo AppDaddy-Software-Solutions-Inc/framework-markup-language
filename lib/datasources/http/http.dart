@@ -209,22 +209,23 @@ class Http
     Jwt jwt = Jwt.decode(token);
     if (jwt.valid) System().logon(jwt);
   }
+
   static Future<UriData?> toUriData(String url) async
   {
     try
     {
-      url = Url.toLocalPath(Url.toAbsolute(url));
-      Uri? uri = Uri.tryParse(url);
+      var uri = Url.toUrlData(url);
       if (uri != null)
       {
         // file reference
-        if (uri.scheme.toLowerCase() == "file")
+        if (uri.scheme == "file")
         {
           var file  = File(url);
           var bytes = await file.readAsBytes();
           var mime  = await S.mimetype(url);
           return UriData.fromBytes(bytes,mimeType: mime);
         }
+        // url
         else
         {
           HttpResponse response = await get(url);

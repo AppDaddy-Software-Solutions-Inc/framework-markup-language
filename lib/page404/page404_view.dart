@@ -24,7 +24,7 @@ class Page404View extends StatelessWidget
               Text('Page Not Found', textAlign: TextAlign.center, style: TextStyle(fontSize: 30, color: Theme.of(context).colorScheme.onSurface),
               ),
               const Padding(padding: EdgeInsets.all(8)),
-              System().singlePageApplication ?
+              (System().app?.singlePage ?? false) ?
               Text('Check local assets folder and ensure the file exists', textAlign: TextAlign.center, style: TextStyle(fontSize: 26, color: Theme.of(context).colorScheme.onSurface))
               :
               Text('Check your network connection and nsure the address is correct', textAlign: TextAlign.center, style: TextStyle(fontSize: 26,color: Theme.of(context).colorScheme.onSurface))

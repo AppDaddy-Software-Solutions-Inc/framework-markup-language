@@ -326,8 +326,8 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
         if (!connected)
         {
           // fetch logon template
-          if (!S.isNullOrEmpty(System().loginPage)) template =
-          await Template.fetch(url: System().loginPage!, refresh: refresh);
+          var login = System().app?.loginPage;
+          if (!S.isNullOrEmpty(login)) template = await Template.fetch(url:login!, refresh: refresh);
           xml = template.document!.rootElement;
         }
 
@@ -335,8 +335,8 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
         else if (myrights! < requiredRights)
         {
           // fetch not authorized template
-          if (!S.isNullOrEmpty(System().unauthorizedPage)) template =
-          await Template.fetch(url: System().unauthorizedPage!, refresh: refresh);
+          var unauthorized = System().app?.unauthorizedPage;
+          if (!S.isNullOrEmpty(unauthorized)) template = await Template.fetch(url: unauthorized!, refresh: refresh);
           xml = template.document!.rootElement;
         }
       }
@@ -345,7 +345,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
       deserialize(xml);
 
       // inject debug window
-      if (!S.isNullOrEmpty(System().debugPage)) await _injectDebugModal(this, refresh);
+      if (!S.isNullOrEmpty(System().app?.debugPage)) await _injectDebugModal(this, refresh);
 
       // set template name
       templateName = url.split("?")[0];
@@ -472,14 +472,16 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
       // logged on?
       if (!connected)
       {
-        if (!S.isNullOrEmpty(System().loginPage)) template = await Template.fetch(url: System().loginPage!, refresh: refresh);
+        var login = System().app?.loginPage;
+        if (!S.isNullOrEmpty(login)) template = await Template.fetch(url: login!, refresh: refresh);
         xml = template.document!.rootElement;
       }
 
       // authorized?
       else if (myrights! < requiredRights)
       {
-        if (!S.isNullOrEmpty(System().unauthorizedPage)) template = await Template.fetch(url: System().unauthorizedPage!, refresh: refresh);
+        var unauthorized = System().app?.unauthorizedPage;
+        if (!S.isNullOrEmpty(unauthorized)) template = await Template.fetch(url: unauthorized!, refresh: refresh);
         xml = template.document!.rootElement;
       }
     }
@@ -488,7 +490,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
     if (model != null)
     {
       // inject debug window
-      if (!S.isNullOrEmpty(System().debugPage)) await _injectDebugModal(model, refresh);
+      if (!S.isNullOrEmpty(System().app?.debugPage)) await _injectDebugModal(model, refresh);
 
       model.templateName = templateName.split("?")[0];
       if (model.dependency != null) model.dependency = dependency;
@@ -509,19 +511,24 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
   {
     {
       // get the debug template
-      var debug = await Template.fetch(url: System().debugPage!, refresh: refresh);
-
-      // build modal node
-      XmlElement node = XmlElement(XmlName("MODAL"));
-      node.attributes.add(XmlAttribute(XmlName("id"), "DEBUG"));
-      debug.document!.rootElement.children.forEach((child) => node.children.insert(0, child.copy()));
-
-      // build modal model
-      ModalModel? modal = ModalModel.fromXml(model,node);
-      if (modal != null)
+      var debug = System().app?.debugPage;
+      if (!S.isNullOrEmpty(debug))
       {
-        if (model.children == null) model.children = [];
-        model.children!.insert(0, modal);
+        // get the debug template
+        var doc = await Template.fetch(url: debug!, refresh: refresh);
+
+        // build modal node
+        XmlElement node = XmlElement(XmlName("MODAL"));
+        node.attributes.add(XmlAttribute(XmlName("id"), "DEBUG"));
+        doc.document!.rootElement.children.forEach((child) => node.children.insert(0, child.copy()));
+
+        // build modal model
+        ModalModel? modal = ModalModel.fromXml(model,node);
+        if (modal != null)
+        {
+          if (model.children == null) model.children = [];
+          model.children!.insert(0, modal);
+        }
       }
     }
   }

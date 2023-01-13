@@ -449,10 +449,8 @@ class Eval
   /// Hash a String
   static String? _hash(dynamic s, [dynamic key])
   {
-    if (key == null)
-      key = System().config!.settings["HASHKEY"];
-    if (key == null)
-      return null;
+    if (key == null) key = System().app?.settings("HASHKEY");
+    if (key == null) return null;
     key = S.toStr(key);
     try
     {

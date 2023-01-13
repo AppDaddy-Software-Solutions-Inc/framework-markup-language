@@ -77,10 +77,13 @@ class Template
       if (isWeb)    throw('Local Files not supported in Browser');
       if (isMobile) throw('Local Files not supported in Mobile');
 
-      // get template from asset bundle
-      url = Url.toLocalPath(url);
-      var file = System().getFile(url);
-      if (file != null) template = await System().readFile(url);
+      // get template from file
+      var uri = Url.toUrlData(url);
+      if (uri?.filepath != null)
+      {
+        var file = System().getFile(uri!.filepath!);
+        if (file != null) template = await System().readFile(url);
+      }
     }
     catch (e)
     {
@@ -162,11 +165,11 @@ class Template
       // Replace Bindings in Xml
       if (parameters != null) xml = Binding.applyMap(xml, parameters, caseSensitive: false);
 
-      // Replace System Parameters in Xml
-      xml = Binding.applyMap(xml, System().queryParameters, caseSensitive: false);
+      // Replace query parameters
+      xml = Binding.applyMap(xml, System().app?.parameters, caseSensitive: false);
 
-      // Replace Config Parameters in Xml
-      if (System().config != null) xml = Binding.applyMap(xml, System().config!.parameters, caseSensitive: false);
+      // Replace config parameters
+      xml = Binding.applyMap(xml, System().app?.configParameters, caseSensitive: false);
 
       // Replace System Uuid
       String s = Binding.toKey("SYSTEM", 'uuid')!;
@@ -202,7 +205,7 @@ class Template
       if (isUUID(url)) template = await _fromDatabase(url);
 
       // get template from server
-      if (template == null && (refresh == true || System.refresh))
+      if (template == null && (refresh == true || (System().app?.refresh ?? false)))
       {
         // get template
         template = await _fromServer(url);
@@ -285,7 +288,7 @@ class Template
     if (document != null) return Template.fromDocument(name: url, xml: document, parameters: parameters);
 
     // not found - build error template
-    String? xml404 = _buildErrorTemplate('Page Not Found', null, "${Url.toLocalPath(url)}");
+    String? xml404 = _buildErrorTemplate('Page Not Found', null, "$url");
 
     // parse the error template created
     try
@@ -294,7 +297,7 @@ class Template
     }
     on  Exception catch(e)
     {
-      xml404 = _buildErrorTemplate('Error on Page', '${Url.toLocalPath(url)}', e.toString());
+      xml404 = _buildErrorTemplate('Error on Page', '$url', e.toString());
       document = Xml.tryParse(xml404);
     }
 

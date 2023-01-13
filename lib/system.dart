@@ -14,7 +14,6 @@ import 'package:fml/navigation/manager.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/postmaster/postmaster.dart';
 import 'package:fml/janitor/janitor.dart';
-import 'package:fml/template/template.dart';
 import 'package:fml/token/token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,13 +24,13 @@ import 'package:xml/xml.dart';
 import 'package:fml/hive/database.dart';
 import 'package:fml/datasources/gps/gps.dart' as GPS;
 import 'package:fml/datasources/gps/payload.dart' as GPS;
-import 'package:fml/config/config_model.dart';
+import 'package:fml/hive/app.dart';
 import 'package:fml/mirror/mirror.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/helper_barrel.dart';
 
 // platform
-//  import 'package:fml/system.mobile.dart';
+//import 'package:fml/system.mobile.dart';
 //import 'package:fml/system.web.dart';
  import 'package:fml/system.desktop.dart';
 
@@ -48,10 +47,6 @@ final ApplicationTypes appType  = ApplicationTypes.MultiApp;
 // Set this to file://config.xml to use the local assets
 
 final String defaultDomain = 'https://fml.appdaddy.co';
-
-// denotes FML support Level
-int? fmlVersion = currentVersion;
-final int? currentVersion = S.toVersionNumber(version);
 
 typedef CommitCallback = Future<bool> Function();
 
@@ -70,6 +65,19 @@ bool get isDesktop => SystemPlatform.platform == "desktop";
 
 class System extends SystemPlatform implements IEventManager
 {
+  factory System() => _singleton;
+
+  // current application
+  App? _app;
+  set app(App? app)
+  {
+    _app = app;
+
+    // update bindables
+    domain  = app?.fqdn;
+  }
+  App? get app => _app;
+
   /// Event Manager Host
   final EventManager manager = EventManager();
   registerEventListener(EventTypes type, OnEventCallback callback, {int? priority}) => manager.register(type, callback, priority: priority);
@@ -77,29 +85,8 @@ class System extends SystemPlatform implements IEventManager
   broadcastEvent(WidgetModel source, Event event) => manager.broadcast(this, event);
   executeEvent(WidgetModel source, String event) => manager.execute(this, event);
 
-  // if set to true in config file, forces server template refresh
-  static bool refresh = false;
-
   // used for social media
   FirebaseApp? firebase;
-
-  // authentication scheme
-  bool singlePageApplication = true;
-
-  /// home page
-  String? homePage;
-
-  /// requested page
-  String? requestedPage;
-
-  // authorization login page
-  String? loginPage;
-
-  // debug page
-  String? debugPage;
-
-  // unauthorized page
-  String? unauthorizedPage;
 
   /// holds user observables bound to claims
   Map<String, StringObservable> _user = Map<String, StringObservable>();
@@ -116,9 +103,7 @@ class System extends SystemPlatform implements IEventManager
 
   /// Global callback to close any stray overlays avoiding overlay overlap
   dynamic closeOpenOverlay; // always call this if != null before setting
-
-  factory System() => _singleton;
-
+  
   System.initialize()
   {
     initialized = _init();
@@ -128,28 +113,19 @@ class System extends SystemPlatform implements IEventManager
   {
     Log().info('Initializing FML Engine V$version ...');
 
-    // set the URI
+    // set the domain
     if (isWeb)
     {
-      // get initial domain and route
-      String initialDomain = Uri.base.toString();
-      int    initialPort   = Uri.base.port;
+      // parse base url
+      var uri = Url.toUrlData(Uri.base.toString());
 
-      // LocalHost (testing)? - use the default domain and route
-      // Port 9000 is used by node.js by our installer
-      if (Url.host(initialDomain)?.toLowerCase().startsWith("localhost") == true && initialPort != 9000)
-      {
-        var segments = defaultDomain.split("#");
-        String host  = segments[0].trim();
-        String route = PlatformDispatcher.instance.defaultRouteName.trim();
-        if (route == "/") route = (segments.length > 1) ? segments[1].trim() : "/";
+      // if localhost - use the default domain and route
+      // port 9000 is used by node.js by our installer
+      bool localhost = uri?.host?.startsWith(RegExp("localhost", caseSensitive: false)) ?? false;
+      if (localhost && uri?.port != 9000) uri = Url.toUrlData(defaultDomain);
 
-        // set the domain
-        initialDomain = host + (host.endsWith("/") ? "" : "/") + "#" + (route.startsWith("/") ? "" : "/") + route;
-      }
-
-      // set the domain
-      domain = initialDomain;
+      // create an app
+      System().app = App(url: uri!.fqdn!, title: "web");
     }
 
     // initialize platform
@@ -171,82 +147,31 @@ class System extends SystemPlatform implements IEventManager
     return true;
   }
 
-  // domain
+  // fully qualified domain name
   StringObservable? _domain;
   set domain(String? url)
   {
     if (url != null)
     {
       Log().info("Setting domain to $url");
-
-      Uri? uri = S.toURI(url);
+      var uri = Url.toUrlData(url);
       if (uri != null)
       {
-        // set the scheme
-        scheme = uri.hasScheme ? uri.scheme : 'http';
-        if (scheme!.toLowerCase() == "file")
-        {
-          // build host
-          String host = url.replaceFirst(RegExp("file://", caseSensitive: false), "").split("?")[0].split("#")[0];
+        // set scheme
+        scheme = uri.scheme;
 
-          // set host
-          if (_host == null)
-                _host = StringObservable(Binding.toKey(id, 'host'), host, scope: scope, listener: onPropertyChange);
-          else  _host!.set(host);
+        // set host
+        if (_host == null)
+              _host = StringObservable(Binding.toKey(id, 'host'), uri.host, scope: scope, listener: onPropertyChange);
+        else  _host!.set(uri.host);
 
-          // set fqdn
-          String fqdn = "$scheme://$host";
-          if (_domain == null)
-               _domain = StringObservable(Binding.toKey(id, 'domain'), fqdn, scope: scope, listener: onPropertyChange);
-          else _domain!.set(fqdn);
+        // set domain
+        if (_domain == null)
+             _domain = StringObservable(Binding.toKey(id, 'domain'), uri.fqdn, scope: scope, listener: onPropertyChange);
+        else _domain!.set(uri.fqdn);
 
-          // set the startup parameters
-          Uri? uri2 = S.toURI(url.replaceAll('/#', '')); // Because flutter is a SWA we need to ignore the /#/ for uri query param detection
-          if ((uri2 is Uri) && (uri2.hasQuery)) uri2.queryParameters.forEach((key, value) => queryParameters[key] = value);
-
-          // set the start page
-          if (uri.hasFragment)
-          {
-            List<String> parts = uri.fragment.split("?");
-            if (parts[0].trim().toLowerCase().endsWith(".xml"))
-            {
-              requestedPage = uri.fragment;
-              if (requestedPage!.startsWith("/")) requestedPage = requestedPage!.replaceFirst("/", "");
-            }
-          }
-        }
-        else
-        {
-          // build host
-          String host = (uri.hasAuthority ? uri.authority : '');
-          uri.pathSegments.forEach((segment) => host += '/' + segment);
-
-          // set host
-          if (_host == null)
-                _host = StringObservable(Binding.toKey(id, 'host'), host, scope: scope, listener: onPropertyChange);
-          else  _host!.set(host);
-
-          // set fqdn
-          String fqdn = "$scheme://$host";
-          if (_domain == null)
-               _domain = StringObservable(Binding.toKey(id, 'domain'), fqdn, scope: scope, listener: onPropertyChange);
-          else _domain!.set(fqdn);
-
-          // set the startup parameters
-          Uri? uri2 = S.toURI(url.replaceAll('/#', '')); // Because flutter is a SWA we need to ignore the /#/ for uri query param detection
-          if ((uri2 is Uri) && (uri2.hasQuery)) uri2.queryParameters.forEach((key, value) => queryParameters[key] = value);
-
-          // set the start page
-          if (uri.hasFragment)
-          {
-            List<String> parts = uri.fragment.split("?");
-            if (parts[0].trim().toLowerCase().endsWith(".xml"))
-            {
-              requestedPage = uri.fragment;
-              if (requestedPage!.startsWith("/")) requestedPage = requestedPage!.replaceFirst("/", "");
-            }
-          }
-        }
+        // set start page
+        requestedPage = uri.page;
       }
     }
   }
@@ -260,10 +185,7 @@ class System extends SystemPlatform implements IEventManager
 
   // query parameters from startup url
   Map<String, String> queryParameters = Map<String, String>();
-
-  // config file
-  ConfigModel? config;
-
+  
   // end point urls used to prefetch templates
   static final Map<String, Mirror> mirrors = Map<String, Mirror>();
 
@@ -274,9 +196,6 @@ class System extends SystemPlatform implements IEventManager
 
     // set system domain
     this.domain = domain;
-
-    // clear config
-    config = null;
 
     // clear firebase sign on
     firebase = null;
@@ -291,29 +210,27 @@ class System extends SystemPlatform implements IEventManager
       System().logon(await (Settings().get("jwt:$domain")));
 
       // get configuration file from server
-      config = await getConfigModel(domain!, refresh: true);
+      //config = await getConfigModel(domain!, refresh: true);
 
-      // set template refresh
-      refresh = S.toBool(config?.get("REFRESH")) ?? false;
 
       // set fml version support level
-      if (config?.get("FML_VERSION") != null) fmlVersion = S.toVersionNumber(config!.get("FML_VERSION")!) ?? currentVersion;
+      //if (config?.get("FML_VERSION") != null) fmlVersion = S.toVersionNumber(config!.get("FML_VERSION")!) ?? currentVersion;
 
       // build the STASH
       List<StashEntry> entries = await Stash.findAll(System().host);
       entries.forEach((entry) => scope?.setObservable("STASH.${entry.key}", entry.value));
 
       // mirror assets from server
-      if (!mirrors.containsKey(domain))
-      {
-        String? url = S.toStr(config?.get('MIRROR_API'));
-        if ((!S.isNullOrEmpty(url)) && (!isWeb))
-        {
-          Mirror mirror = Mirror(domain, url);
-          mirrors[domain] = mirror;
-          mirror.execute();
-        }
-      }
+      //if (!mirrors.containsKey(domain))
+     // {
+     //   String? url = S.toStr(config?.get('MIRROR_API'));
+     //   if ((!S.isNullOrEmpty(url)) && (!isWeb))
+     //   {
+     //     Mirror mirror = Mirror(domain, url);
+     //     mirrors[domain] = mirror;
+     //     mirror.execute();
+     //   }
+     // }
     }
   }
 
@@ -343,8 +260,8 @@ class System extends SystemPlatform implements IEventManager
     }
   }
   String? get scheme => _scheme?.get();
-  bool get secure => scheme?.toLowerCase().startsWith("https") ?? false;
 
+  // current host
   StringObservable? _host;
   String? get host => _host?.get();
 
@@ -725,19 +642,19 @@ class System extends SystemPlatform implements IEventManager
     await initializeDomainConnection(domain);
 
     // single page application?
-    singlePageApplication = S.toBool(config?.get('SINGLE_PAGE_APPLICATION')) ?? false;
+    //singlePageApplication = S.toBool(config?.get('SINGLE_PAGE_APPLICATION')) ?? false;
 
     // set home page
-    homePage = config?.get('HOME_PAGE');
+    //homePage = config?.get('HOME_PAGE');
 
     // set login page
-    loginPage = config?.get('LOGIN_PAGE');
+    //loginPage = config?.get('LOGIN_PAGE');
 
     // set login page
-    debugPage = config?.get('DEBUG_PAGE');
+    //debugPage = config?.get('DEBUG_PAGE');
 
     // set unauthorized page
-    unauthorizedPage = config?.get('UNAUTHORIZED_PAGE');
+    //unauthorizedPage = config?.get('UNAUTHORIZED_PAGE');
 
     // initialize the theme
     initTheme();
@@ -748,8 +665,7 @@ class System extends SystemPlatform implements IEventManager
   initTheme() {
     /// Initial Theme Setting
     String def = 'light';
-    String cBrightness =
-        System().config?.get('BRIGHTNESS')?.toLowerCase() ?? def;
+    String cBrightness = System().app?.settings('BRIGHTNESS')?.toLowerCase() ?? def;
     if (cBrightness == 'system' || cBrightness == 'platform')
       try {
         cBrightness = MediaQueryData.fromWindow(WidgetsBinding.instance.window)
@@ -762,12 +678,12 @@ class System extends SystemPlatform implements IEventManager
       }
     System().brightness = cBrightness;
     System().colorscheme =
-        System().config?.get('PRIMARY_COLOR')?.toLowerCase() ??
+        System().app?.settings('PRIMARY_COLOR')?.toLowerCase() ??
             'lightblue'; // backwards compatibility
     System().colorscheme =
-        System().config?.get('COLOR_SCHEME')?.toLowerCase() ??
+        System().app?.settings('COLOR_SCHEME')?.toLowerCase() ??
             System().colorscheme;
-    System().font = System().config?.get('FONT');
+    System().font = System().app?.settings('FONT');
   }
 
   static toast(String? msg, {int? duration})
@@ -783,37 +699,6 @@ class System extends SystemPlatform implements IEventManager
       var messenger = ScaffoldMessenger.of(context);
       messenger.showSnackBar(snackbar);
     }
-  }
-
-  Future<ConfigModel?> getConfigModel(String domain, {bool refresh = false}) async
-  {
-    ConfigModel? model;
-
-    // fetch the template
-    try
-    {
-      XmlDocument? document;
-
-      // get config from settings
-      var xml = await Settings().get('config' + ":" + domain);
-      if (xml is String) document = Xml.tryParse(xml, silent: true);
-
-      // refresh if not archived
-      if (document == null) refresh = true;
-
-      // refresh the config file?
-      var url = "${domain.split("?")[0].split("#")[0]}/config.xml";
-      if (refresh == true) document = await Template.fetchTemplate(url: url, refresh: refresh);
-
-      // create the model
-      if (document != null) model = ConfigModel.fromXml(null, document.rootElement);
-  }
-    catch (e)
-    {
-      Log().debug("Error building the config model: $domain");
-    }
-
-    return model;
   }
 
   Future<bool> stashValue(String key, dynamic value) async {
@@ -930,7 +815,7 @@ class System extends SystemPlatform implements IEventManager
 
   void setApplicationTitle(String? title) async
   {
-    title = title ?? System().config?.get("APPLICATION_NAME");
+    title = title ?? System().app?.settings("APPLICATION_NAME");
     if (!S.isNullOrEmpty(title))
     {
       // print('setting title to $title');

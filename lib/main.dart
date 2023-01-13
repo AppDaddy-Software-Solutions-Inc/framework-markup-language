@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:fml/theme/theme.dart' as THEMER;
 import 'package:fml/theme/themenotifier.dart';
-import 'helper/string.dart';
 import 'package:fml/phrase.dart';
 
 main()
@@ -70,7 +69,6 @@ class Application extends StatelessWidget
   {
     // set title
     String title = "Flutter Markup Language " + version;
-    if (!S.isNullOrEmpty(System().config?.settings["APPLICATION_NAME"])) title = System().config!.settings["APPLICATION_NAME"]!;
 
     // initializes the theme bindables and updates on theme change
     final themeNotifier = Provider.of<ThemeNotifier>(context);

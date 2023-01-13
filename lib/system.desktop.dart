@@ -89,7 +89,7 @@ class SystemPlatform extends WidgetModel
     {
       connected = false;
       Log().debug('Error initializing connectivity');
-      Log().exception(e, caller: 'system.mobile.dart => _init_connectivity() async');
+      Log().exception(e, caller: 'system.desktp[.dart => _init_connectivity() async');
     }
   }
 

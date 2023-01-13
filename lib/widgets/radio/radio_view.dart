@@ -92,17 +92,17 @@ return LayoutBuilder(builder: builder);
             size: widget.model.size,
             color: widget.model.enabled != false
                 ? widget.model.color ?? Theme.of(context).colorScheme.primary
-                : widget.model.color!.withOpacity(0.5));
+                : (widget.model.color ?? Theme.of(context).colorScheme.primary).withOpacity(0.5));
         var unchecked = Icon(Icons.radio_button_unchecked,
             size: widget.model.size,
             color: widget.model.enabled != false
                 ? widget.model.color ?? Theme.of(context).colorScheme.surfaceVariant
-                : widget.model.color!.withOpacity(0.5));
+                : (widget.model.color ?? Theme.of(context).colorScheme.primary).withOpacity(0.5));
         var radio = GestureDetector(
             onTap: () => {
-                  if (widget.model.enabled != false &&
-                      widget.model.editable != false)
-                    _onCheck(option)
+                  widget.model.enabled != false && widget.model.editable != false
+                    ? _onCheck(option)
+                    : () => {}
                 },
             child: (widget.model.value == option.value) ? checked : unchecked);
 

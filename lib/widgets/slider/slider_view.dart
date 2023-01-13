@@ -173,8 +173,8 @@ class _SliderViewState extends State<SliderView>
   }
 
   onChange(double value) async {
-    var editable = (widget.model.editable != false);
-    if (!editable) return;
+    if (widget.model.editable == false || widget.model.enabled == false)
+      return;
 
     ////////////////////
     /* Value Changed? */
@@ -201,7 +201,7 @@ class _SliderViewState extends State<SliderView>
     List modelValues = widget.model.value?.split(',') ?? [widget.model.minimum, widget.model.maximum];
     double value1 = S.toDouble(modelValues[0]) ??  widget.model.minimum ?? 0;
     double value2 = (modelValues.length > 1 ?  S.toDouble(modelValues[1]) : value1) ??  widget.model.maximum ?? 0;
-    if (widget.model.editable == false)
+    if (widget.model.editable == false || widget.model.enabled == false)
       return;
 
     //////////////////////////

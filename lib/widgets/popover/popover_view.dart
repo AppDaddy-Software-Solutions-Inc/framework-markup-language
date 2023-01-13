@@ -70,14 +70,14 @@ class _PopoverViewState extends State<PopoverView>
     List<PopupMenuEntry> itemsList = [];
     widget.model.items.forEach((item) {
       itemsList.add(PopupMenuItem(
-          child: Text(item.label!), value: item.onclickObservable));
+          child: Text(item.label!, style: TextStyle(color: Theme.of(context).colorScheme.onSecondaryContainer),), value: item.onclickObservable));
     });
     return SizedBox(
         height: 50,
         child:
             PopupMenuButton(
                 enabled: widget.model.enabled != false,
-                color: Theme.of(context).colorScheme.surface,
+                color: Theme.of(context).colorScheme.surfaceVariant,
                 icon: Column(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,

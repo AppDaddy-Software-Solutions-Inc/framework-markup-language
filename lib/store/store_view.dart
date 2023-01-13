@@ -94,46 +94,38 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
   @override
   Widget build(BuildContext context)
   {
-    if (!isWeb)
+    // build menu items
+    menuModel.items = [];
+    var apps = Store().apps.toList();
+    for (var app in apps)
     {
-      // build menu items
-      menuModel.items = [];
-      var apps = Store().apps.toList();
-      for (var app in apps)
-      {
-        var item = MenuItemModel(menuModel, app.key, url: app.url, title: app.title, subtitle: '', icon: app.icon == null ? 'appdaddy' : null, image: app.icon, onTap: () => _launchApp(app.url), onLongPress: () => removeApp(app));
-        menuModel.items.add(item);
-      }
-
-      Widget storeDisplay = MenuView(menuModel);
-
-      storeButton = ButtonModel(null, null, enabled: !S.isNullOrEmpty(appURLInput.value), label: phrase.loadApp, buttontype: "raised", color: Theme.of(context).colorScheme.secondary);
-
-      Widget noAppDisplay = Center(
-        child: AnimatedOpacity(
-          opacity: _visible ? 1.0 : 0.0,
-          duration: Duration(milliseconds: 200),
-          child: Text(phrase.clickToConnect, style: TextStyle(color: Theme.of(context).colorScheme.outline)))
-      );
-
-      return WillPopScope(onWillPop: () => quitDialog().then((value) => value as bool),
-          child: Scaffold(
-            floatingActionButton: !Store().busy
-                ? FloatingActionButton.extended(label: Text('Add App'), icon: Icon(Icons.add), onPressed: () => addAppDialog(), foregroundColor: Theme.of(context).colorScheme.onSurface, backgroundColor: Theme.of(context).colorScheme.onInverseSurface, splashColor: Theme.of(context).colorScheme.inversePrimary, hoverColor: Theme.of(context).colorScheme.surface, focusColor: Theme.of(context).colorScheme.inversePrimary)
-                : FloatingActionButton.extended(onPressed: null, foregroundColor: Theme.of(context).colorScheme.onSurface, backgroundColor: Theme.of(context).colorScheme.onInverseSurface, splashColor: Theme.of(context).colorScheme.inversePrimary, hoverColor: Theme.of(context).colorScheme.surface, focusColor: Theme.of(context).colorScheme.inversePrimary, label: Text('Loading Apps'),),
-            body: SafeArea(child: Stack(children: [Container(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.bottomRight, end: Alignment.topLeft, stops: [0.4, 1.0], colors: [/*Theme.of(context).colorScheme.inversePrimary*/Theme.of(context).colorScheme.surfaceVariant, Theme.of(context).colorScheme.surface])),),
-            Center(child: Opacity(opacity: 0.03, child: Image(image: AssetImage('assets/images/fml-logo.png')))),
-            Center(child: apps.isEmpty ? noAppDisplay : storeDisplay),
-            Align(alignment: Alignment.bottomLeft, child: Padding(padding: EdgeInsets.only(left: 5), child: Text(phrase.version + ' ' + version, style: TextStyle(color: Colors.black26))),),
-            Center(child: BusyView(BusyModel(Store(), visible: Store().busy, observable: Store().busyObservable, modal: true)))]))
-          )
-      );
+      var item = MenuItemModel(menuModel, app.key, url: app.url, title: app.title, subtitle: '', icon: app.icon == null ? 'appdaddy' : null, image: app.icon, onTap: () => _launchApp(app.url), onLongPress: () => removeApp(app));
+      menuModel.items.add(item);
     }
 
-    // Busy
-    else {
-      return Scaffold(body: Center(child: BusyView(BusyModel(null, visible:true))));
-    }
+    Widget storeDisplay = MenuView(menuModel);
+
+    storeButton = ButtonModel(null, null, enabled: !S.isNullOrEmpty(appURLInput.value), label: phrase.loadApp, buttontype: "raised", color: Theme.of(context).colorScheme.secondary);
+
+    Widget noAppDisplay = Center(
+      child: AnimatedOpacity(
+        opacity: _visible ? 1.0 : 0.0,
+        duration: Duration(milliseconds: 200),
+        child: Text(phrase.clickToConnect, style: TextStyle(color: Theme.of(context).colorScheme.outline)))
+    );
+
+    return WillPopScope(onWillPop: () => quitDialog().then((value) => value as bool),
+        child: Scaffold(
+          floatingActionButton: !Store().busy
+              ? FloatingActionButton.extended(label: Text('Add App'), icon: Icon(Icons.add), onPressed: () => addAppDialog(), foregroundColor: Theme.of(context).colorScheme.onSurface, backgroundColor: Theme.of(context).colorScheme.onInverseSurface, splashColor: Theme.of(context).colorScheme.inversePrimary, hoverColor: Theme.of(context).colorScheme.surface, focusColor: Theme.of(context).colorScheme.inversePrimary)
+              : FloatingActionButton.extended(onPressed: null, foregroundColor: Theme.of(context).colorScheme.onSurface, backgroundColor: Theme.of(context).colorScheme.onInverseSurface, splashColor: Theme.of(context).colorScheme.inversePrimary, hoverColor: Theme.of(context).colorScheme.surface, focusColor: Theme.of(context).colorScheme.inversePrimary, label: Text('Loading Apps'),),
+          body: SafeArea(child: Stack(children: [Container(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.bottomRight, end: Alignment.topLeft, stops: [0.4, 1.0], colors: [/*Theme.of(context).colorScheme.inversePrimary*/Theme.of(context).colorScheme.surfaceVariant, Theme.of(context).colorScheme.surface])),),
+          Center(child: Opacity(opacity: 0.03, child: Image(image: AssetImage('assets/images/fml-logo.png')))),
+          Center(child: apps.isEmpty ? noAppDisplay : storeDisplay),
+          Align(alignment: Alignment.bottomLeft, child: Padding(padding: EdgeInsets.only(left: 5), child: Text(phrase.version + ' ' + version, style: TextStyle(color: Colors.black26))),),
+          Center(child: BusyView(BusyModel(Store(), visible: Store().busy, observable: Store().busyObservable, modal: true)))]))
+        )
+    );
   }
 
   Future<void> addAppDialog() async {
@@ -264,15 +256,51 @@ class AppForm extends StatefulWidget
 
 class AppFormState extends State<AppForm>
 {
-  final   _formKey = GlobalKey<FormState>();
+  final   _formKey  = GlobalKey<FormState>();
   String  errorText = '';
   String? title;
 
   String? validateUrl(url)
   {
-    if (url == null || url == "") return phrase.missingURL;
-    if (S.toDataUri(url) == null) return 'The address in not a valid web address';
-    if (Store().find(url: url) != null) return 'You are already connected to this application';
+    errorText = '';
+
+    // missing url
+    if (S.isNullOrEmpty(url))
+    {
+      errorText = phrase.missingURL;
+      return errorText;
+    }
+
+    var uri = Url.toUri(url);
+
+    // invalid url
+    if (uri == null)
+    {
+      errorText = 'The address in not a valid web address';
+      return errorText;
+    }
+
+    // missing scheme
+    if (!uri.hasScheme)
+    {
+      errorText = 'Missing scheme in address (ex. https://, http://, file://))';
+      return errorText;
+    }
+
+    // missing host
+    if (S.isNullOrEmpty(uri.authority))
+    {
+      errorText = 'Missing host in address (ex. https://host.com))';
+      return errorText;
+    }
+
+    // already defined
+    if (Store().find(url: url) != null)
+    {
+      errorText = 'You are already connected to this application';
+      return errorText;
+    }
+
     return null;
   }
 
@@ -299,12 +327,22 @@ class AppFormState extends State<AppForm>
 
     var cancel = TextButton(child: Text(phrase.cancel),  onPressed: () => Navigator.of(context).pop());
 
-    var add =  TextButton(child: Text(phrase.connect), onPressed: tryAdd);
+    var connect =  TextButton(child: Text(phrase.connect), onPressed: tryAdd);
 
-    var fields = <Widget>[Padding(padding: EdgeInsets.only(top: 10)),name,url,error,cancel,add];
+    List<Widget> layout = [];
 
-    var form = Form(key: _formKey, child: Column(children: fields,mainAxisSize: MainAxisSize.min, mainAxisAlignment: MainAxisAlignment.end, crossAxisAlignment: CrossAxisAlignment.start));
+    // form fields
+    layout.add(Padding(padding: EdgeInsets.only(top: 10)));
+    layout.add(name);
+    layout.add(Padding(padding: EdgeInsets.only(top: 10)));
+    layout.add(url);
+    layout.add(Padding(padding: EdgeInsets.only(top: 10)));
+    layout.add(error);
 
-    return form;
+    // buttons
+    var buttons = Padding(padding: const EdgeInsets.only(top: 0.0),child: Align(alignment: Alignment.bottomCenter, child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [cancel,connect])));
+    layout.add(buttons);
+
+    return Form(key: _formKey, child: Column(children: layout, mainAxisSize: MainAxisSize.min, mainAxisAlignment: MainAxisAlignment.end, crossAxisAlignment: CrossAxisAlignment.start));
   }
 }

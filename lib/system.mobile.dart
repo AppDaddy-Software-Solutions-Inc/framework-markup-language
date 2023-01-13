@@ -136,10 +136,6 @@ class SystemPlatform extends WidgetModel {
       // Add connection listener
       _connection.isConnected.listen((onData)
       {
-        if (System().domain != null)
-        {
-          checkInternetConnection(System().domain);
-        }
         connected = onData;
       });
 
@@ -154,39 +150,6 @@ class SystemPlatform extends WidgetModel {
       Log().debug('Error initializing connectivity');
       Log().exception(e, caller: 'system.mobile.dart => _init_connectivity() async');
     }
-  }
-
-  //Timer? _connectionTimer;
-  Future<bool> checkInternetConnection(String? domain) async
-  {
-    return true; // now done with isConnected.listen(), leaving code for ease of revert
-    // bool connected = this.connected;
-    // try {
-    //   if (!S.isNullOrEmpty(domain)) {
-    //     if ((_connectionTimer != null) && (_connectionTimer!.isActive))
-    //       _connectionTimer!.cancel();
-    //     Uri? uri = Url.toUri(domain!);
-    //     if (uri != null) {
-    //       Socket socket =
-    //           await Socket.connect(uri.host, 80, timeout: Duration(seconds: 5));
-    //       socket.destroy();
-    //       connected = true;
-    //       print('Network: Connected');
-    //     } else {
-    //       connected = false;
-    //       print('Network: Failed to connect to socket');
-    //     }
-    //   } else {
-    //     print('Network: No domain to check connection');
-    //   }
-    // } catch (e) {
-    //   connected = false;
-    // }
-    // if (connected == false)
-    //   _connectionTimer =
-    //       Timer(Duration(seconds: 5), () => checkInternetConnection(domain));
-    // this.connected = connected;
-    // return connected;
   }
 
   Future<dynamic> fileSaveAs(List<int> bytes, String filename) async

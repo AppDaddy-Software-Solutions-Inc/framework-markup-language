@@ -2,6 +2,8 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:cross_connectivity/cross_connectivity.dart';
+import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:open_filex/open_filex.dart';
@@ -65,52 +67,32 @@ class SystemPlatform extends WidgetModel
     await _initConnectivity();
   }
 
-  _initConnectivity() async
-  {
+  Connectivity _connection = Connectivity();
+  _initConnectivity() async {
     try
     {
-      connected = true;
+      ConnectivityStatus initialConnection = await _connection.checkConnectivity();
+      if (initialConnection == ConnectivityStatus.none) System.toast(Phrases().checkConnection, duration: 3);
+
+      // Add connection listener
+      _connection.isConnected.listen((onData)
+      {
+        connected = onData;
+      });
+
+      // For the initial connectivity test we want to give checkConnection some time
+      // but it still needs to run synchronous so we give it a second
+      await Future.delayed(Duration(seconds: 1));
+      Log().debug('initConnectivity status: ${System().connected}');
     }
     catch (e)
     {
       connected = false;
       Log().debug('Error initializing connectivity');
-      Log().exception(e, caller: 'system.desktop.dart => _init_connectivity() async');
+      Log().exception(e, caller: 'system.mobile.dart => _init_connectivity() async');
     }
   }
 
-  Timer? _connectionTimer;
-  Future<bool> checkInternetConnection(String? domain) async
-  {
-    bool connected = this.connected;
-    bool local = (appType == ApplicationTypes.SingleApp && defaultDomain.toLowerCase().startsWith("file://"));
-    if (!local)
-    {
-      try
-      {
-        if (!S.isNullOrEmpty(domain))
-        {
-          if ((_connectionTimer != null) && (_connectionTimer!.isActive)) _connectionTimer!.cancel();
-          Uri? uri = Url.toUri(domain!);
-          if (uri != null)
-          {
-            Socket socket = await Socket.connect(uri.host, 80, timeout: Duration(seconds: 5));
-            socket.destroy();
-            connected = true;
-          }
-          else connected = false;
-        }
-      }
-      catch (e)
-      {
-        Log().error('desktop - CheckConnection(): $e');
-        connected = false;
-      }
-      if (connected == false) _connectionTimer = Timer(Duration(seconds: 5), () => checkInternetConnection(domain));
-      this.connected = connected;
-    }
-    return connected;
-  }
 
   void openPrinterDialog() 
   {

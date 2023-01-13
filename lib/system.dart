@@ -31,8 +31,8 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/helper_barrel.dart';
 
 // platform
-//  import 'package:fml/system.mobile.dart';
-import 'package:fml/system.web.dart';
+ import 'package:fml/system.mobile.dart';
+// import 'package:fml/system.web.dart';
 // import 'package:fml/system.desktop.dart';
 
 // application build version
@@ -251,9 +251,6 @@ class System extends SystemPlatform implements IEventManager
     // domain is defined?
     if (!S.isNullOrEmpty(this.domain))
     {
-      // check connection
-      System().checkInternetConnection(domain);
-
       // set credentials
       System().logon(await (Settings().get("jwt:$domain")));
 

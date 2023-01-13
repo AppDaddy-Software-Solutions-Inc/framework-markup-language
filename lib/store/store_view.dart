@@ -247,7 +247,6 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
       String color = config.get('COLOR_SCHEME') ?? 'lightblue';
       themeNotifier.setTheme(brightness, color);
       themeNotifier.mapSystemThemeBindables();
-      // var themedata = themeNotifier.getTheme();
     }
   }
 }
@@ -269,21 +268,21 @@ class AppFormState extends State<AppForm>
   String  errorText = '';
   String? title;
 
-  String? addApp(url)
+  String? validateUrl(url)
   {
-    if (url == null || url == "")       return phrase.missingURL;
+    if (url == null || url == "") return phrase.missingURL;
+    if (S.toDataUri(url) == null) return 'The address in not a valid web address';
     if (Store().find(url: url) != null) return 'You are already connected to this application';
-    App app = App(url: url, title: title);
-    Navigator.of(context).pop();
     return null;
   }
 
-  Future onAdd() async
+  Future tryAdd() async
   {
     // validate the form
-    if (_formKey.currentState!.validate())
+    bool errors = _formKey.currentState!.validate();
+    if (!errors)
     {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Attempting to Connect Application',), duration: Duration(milliseconds: 2000)));
+      System.toast('Attempting to Connect Application',duration: 2);
     }
   }
 
@@ -293,18 +292,18 @@ class AppFormState extends State<AppForm>
     var name =  TextFormField(onChanged: (v) => title = v, decoration: InputDecoration(labelText: "Application Name", labelStyle: TextStyle(color: Colors.grey, fontSize: 12), fillColor: Colors.white,
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide())));
 
-    var url = TextFormField(keyboardType: TextInputType.url, decoration: InputDecoration(labelText: "Application Web Address", labelStyle: TextStyle(color: Colors.grey, fontSize: 12),
+    var url = TextFormField(validator: validateUrl, keyboardType: TextInputType.url, decoration: InputDecoration(labelText: "Application Web Address", labelStyle: TextStyle(color: Colors.grey, fontSize: 12),
           fillColor: Colors.white, border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide())));
 
     var error = Text(errorText, style: TextStyle(fontSize: 12, color: Colors.red));
 
     var cancel = TextButton(child: Text(phrase.cancel),  onPressed: () => Navigator.of(context).pop());
 
-    var add =  TextButton(child: Text(phrase.connect), onPressed: onAdd);
+    var add =  TextButton(child: Text(phrase.connect), onPressed: tryAdd);
 
     var fields = <Widget>[Padding(padding: EdgeInsets.only(top: 10)),name,url,error,cancel,add];
 
-    var form = Form(key: _formKey, child: Column(children: fields,mainAxisSize: MainAxisSize.min, mainAxisAlignment: MainAxisAlignment.end, crossAxisAlignment: CrossAxisAlignment.start), validator: addApp);
+    var form = Form(key: _formKey, child: Column(children: fields,mainAxisSize: MainAxisSize.min, mainAxisAlignment: MainAxisAlignment.end, crossAxisAlignment: CrossAxisAlignment.start));
 
     return form;
   }

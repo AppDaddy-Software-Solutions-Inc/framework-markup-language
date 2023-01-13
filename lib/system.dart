@@ -251,9 +251,6 @@ class System extends SystemPlatform implements IEventManager
     // domain is defined?
     if (!S.isNullOrEmpty(this.domain))
     {
-      // check connection
-      System().checkInternetConnection(domain);
-
       // set credentials
       System().logon(await (Settings().get("jwt:$domain")));
 

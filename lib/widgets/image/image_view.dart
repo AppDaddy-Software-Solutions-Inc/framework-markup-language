@@ -78,12 +78,12 @@ class ImageView extends StatefulWidget
 
           /// blob image from camera or file picker
           case ImageType.blob:
-            image = kIsWeb ? Image.network(url) : Image.file(File(url));
+            image = kIsWeb ? Image.network(url, fit: getFit(fit)) : Image.file(File(url), fit: getFit(fit));
             break;
 
           /// file image from camera or file picker
           case ImageType.file:
-            image = Image.file(File(url.replaceFirst("file:", "")));
+            image = Image.file(File(url.replaceFirst("file:", "")), fit: getFit(fit));
             break;
 
           /// svg picture from web

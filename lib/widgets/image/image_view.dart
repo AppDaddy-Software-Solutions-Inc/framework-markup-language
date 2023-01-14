@@ -10,9 +10,10 @@ import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/image/image_model.dart';
 import 'package:image/image.dart' as IMAGE;
+import 'package:path/path.dart' as path;
 import 'package:fml/helper/helper_barrel.dart';
 
-enum ImageType {data, blob, file, svg, asset, web}
+enum ImageSource {data, blob, file, asset, web}
 
 /// [IMAGE] view
 class ImageView extends StatefulWidget
@@ -67,75 +68,71 @@ class ImageView extends StatefulWidget
           else return Icon(Icons.broken_image_outlined, size: 36, color: Colors.grey);
         }
 
-        ImageType? type;
+        ImageSource? source;
         switch (uri.scheme)
         {
           case "data":
-            type = ImageType.data;
+            source = ImageSource.data;
             break;
 
           case "blob":
-            type = ImageType.blob;
+            source = ImageSource.blob;
             break;
 
           case "file":
-            type = ImageType.web;
-            if (uri.page != null && uri.page!.toLowerCase().endsWith(".svg")) type = ImageType.svg;
-            if (uri.page != null && System().fileExists(uri.page!)) type = ImageType.file;
+            source = ImageSource.web;
+            if (uri.page != null && System().fileExists(uri.page!)) source = ImageSource.file;
             break;
 
           case "asset":
-            type = ImageType.web;
-            if (uri.page != null && uri.page!.toLowerCase().endsWith(".svg")) type = ImageType.svg;
-            if (uri.page != null && System().fileExists(uri.page!)) type = ImageType.asset;
+            source = ImageSource.web;
+            if (uri.page != null && System().fileExists(uri.page!)) source = ImageSource.asset;
             break;
 
           case "data":
-            type = ImageType.data;
+            source = ImageSource.data;
             break;
 
           case "blob":
-            type = ImageType.blob;
+            source = ImageSource.blob;
             break;
 
           case "asset":
-            type = ImageType.asset;
+            source = ImageSource.asset;
             break;
         }
 
-        switch (type)
+        switch (source)
         {
           /// data uri
-          case ImageType.data:
+          case ImageSource.data:
             image = getByteImage(S.toDataUri(url)!.contentAsBytes(), getFit(fit), width, height, fadeDuration, errorHandler);
             break;
 
           /// blob image from camera or file picker
-          case ImageType.blob:
+          case ImageSource.blob:
             image = kIsWeb ? Image.network(url) : Image.file(File(url));
             break;
 
           /// file image from camera or file picker
-          case ImageType.file:
-            image = Image.file(File(uri.filepath!));
-            break;
-
-          /// svg picture from web
-          case ImageType.svg:
-            if (uri.filepath != null && System().fileExists(uri.filepath!))
+          case ImageSource.file:
+            if (path.extension(uri.filepath!).toLowerCase().endsWith("svg"))
                  image = SvgPicture.file(File(uri.filepath!), fit: getFit(fit), width: width, height: height);
-            else image = SvgPicture.network(url, fit: getFit(fit), width: width, height: height);
+            else image = Image.file(File(uri.filepath!));
             break;
 
           /// asset image
-          case ImageType.asset:
-            String? filename = Url.path(url);
-            image = getAssetImage(filename, getFit(fit), width, height, fadeDuration, errorHandler);
+          case ImageSource.asset:
+            if (path.extension(uri.filepath!).toLowerCase().endsWith("svg"))
+                 image = SvgPicture.file(File(uri.filepath!), fit: getFit(fit), width: width, height: height);
+            else image = getAssetImage(uri.filepath!, getFit(fit), width, height, fadeDuration, errorHandler);
             break;
 
           /// web image
-          case ImageType.web:
-            image = getWebImage(Url.toAbsolute(url), getFit(fit), width, height, fadeDuration, errorHandler);
+          case ImageSource.web:
+            if (uri.filepath != null && System().fileExists(uri.filepath!))
+                 image = SvgPicture.network(url, fit: getFit(fit), width: width, height: height);
+            else image = getWebImage(Url.toAbsolute(url), getFit(fit), width, height, fadeDuration, errorHandler);
             break;
 
           /// default to:  web image

@@ -62,7 +62,7 @@ class App
     parameters = uri?.parameters;
 
     // load the config
-    _loadConfig(true);
+    _getConfig(true);
   }
 
   String? settings(String key)
@@ -73,23 +73,36 @@ class App
   }
 
   // refreshes the config file settings
-  Future<bool> refreshConfig() async => await _loadConfig(true);
+  Future<bool> refreshConfig() async
+  {
+    var model = await _getConfig(true);
+    if (model != null) _config = model;
+    return true;
+  }
 
   // loads the config
-  Future<bool> _loadConfig(bool refresh) async
+  Future<ConfigModel?> _getConfig(bool refresh) async
   {
     ConfigModel? model;
     if (xml != null)
     {
       var e = Xml.tryParse(xml);
-      if (e != null) model = ConfigModel.fromXml(null, e.rootElement);
+      if (e != null) model = await ConfigModel.fromXml(null, e.rootElement);
     }
     if (refresh || model == null)
     {
       if (fqdn != null) model = await ConfigModel.fromUrl(null, fqdn!);
     }
-    if (model != null) _config = model;
-    return (model != null);
+    if (model != null)
+    {
+      var icon = model.settings["APP_ICON"];
+      if (icon != null)
+      {
+        Url.toUrlData(icon);
+      }
+      _config = model;
+    }
+    return model;
   }
 
   Future<bool> insert() async => (await Database().insert(tableName, key, _map) == null);

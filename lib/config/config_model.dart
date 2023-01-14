@@ -12,7 +12,7 @@ class ConfigModel
   Map<String, String?> settings   = Map<String,String?>();
   Map<String, String?> parameters = Map<String,String?>();
 
-  static ConfigModel? fromXml(WidgetModel? parent, XmlElement xml)
+  static Future<ConfigModel?> fromXml(WidgetModel? parent, XmlElement xml) async
   {
     ConfigModel? model;
     try

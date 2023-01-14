@@ -33,7 +33,7 @@ class ConfigModel
     var uri = Url.toUrlData(url);
     if (uri != null)
     {
-      var template = await Template.fetchTemplate(url: "$uri/config.xml");
+      var template = await Template.fetchTemplate(url: "${uri.fqdn}/config.xml");
       if (template != null) return fromXml(parent, template.rootElement);
     }
     return null;

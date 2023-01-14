@@ -180,7 +180,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     await System().setDomain(fqdn);
 
     // default home page
-    if (uri.pathSegments.isEmpty) url = System().homePage;
+    if (uri.pathSegments.isEmpty) url = System().app?.homePage;
 
     return url;
   }

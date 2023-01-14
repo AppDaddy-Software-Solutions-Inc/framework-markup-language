@@ -171,7 +171,7 @@ class System extends SystemPlatform implements IEventManager
         else _domain!.set(uri.fqdn);
 
         // set start page
-        requestedPage = uri.page;
+        //requestedPage = uri.page;
       }
     }
   }

@@ -151,7 +151,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
     data.add(map);
 
     // add payload url parameters
-    Uri? uri = S.toURI('http://localhost' + '?' + payload.payload.toString());
+    Uri? uri = S.toUri('http://localhost' + '?' + payload.payload.toString());
     if (uri != null && uri.hasQuery)
     {
       Map<String, String> parameters = Map<String, String>();

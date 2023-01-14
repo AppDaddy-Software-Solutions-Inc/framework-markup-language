@@ -5,8 +5,6 @@ import 'package:fml/crypto/crypto.dart';
 import 'package:fml/hive/database.dart';
 import 'package:fml/helper/helper_barrel.dart';
 
-enum Fields {key, url, title, icon, order}
-
 class App
 {
   static String tableName = "APP";
@@ -15,17 +13,15 @@ class App
   bool get secure => scheme == "https" || scheme == "wss";
 
   // forces pages to repaint every visit
-  bool get refresh => S.toBool(settings("REFRESH")) ?? false;
-  bool get singlePage => S.toBool(settings('SINGLE_PAGE_APPLICATION')) ?? false;
+  bool get autoRefresh => S.toBool(settings("REFRESH")) ?? false;
+  bool get singlePage  => S.toBool(settings('SINGLE_PAGE_APPLICATION')) ?? false;
 
-  Map<String, dynamic> _map = Map<String, dynamic>();
-
-  String  get key    => _map["key"];
-  String  get url    => _map["url"];
-  String? get title  => _map["title"];
-  String? get icon   => _map["icon"];
-  int?    get order  => _map["order"];
-  String? get xml    => _map["xml"];
+  late final String  key;
+  late final String  url;
+  late final String? title;
+  String? icon;
+  int?    order;
+  String? config;
 
   late final String? scheme;
   late final String? host;
@@ -44,16 +40,12 @@ class App
 
   ConfigModel? _config;
 
-  App({required String url, required String title, String? icon, int? order, String? xml})
+  App({required this.url, required this.title, this.icon, this.order})
   {
     // key is url (lowercase) hashed
-    _map["key"]   = Cryptography.hash(text: url.toLowerCase());
-    _map["url"]   = url;
-    _map["title"] = title;
-    _map["icon"]  = icon;
-    _map["order"] = order;
-    _map["xml"]   = xml;
+    key = Cryptography.hash(text:                                      url.toLowerCase());
 
+    // parse to url into its parts
     var uri = Url.toUrlData(url);
     fqdn       = uri?.fqdn;
     scheme     = uri?.scheme;
@@ -65,6 +57,11 @@ class App
     _getConfig(true);
   }
 
+  Future<bool> insert() async => (await Database().insert(tableName, key, _toMap()) == null);
+  Future<bool> update() async => (await Database().update(tableName, key, _toMap()) == null);
+  Future<bool> delete() async => (await Database().delete(tableName, key) == null);
+  static Future<bool> deleteAll() async => (await Database().deleteAll(tableName) == null);
+
   String? settings(String key)
   {
     if (_config == null) return null;
@@ -73,7 +70,7 @@ class App
   }
 
   // refreshes the config file settings
-  Future<bool> refreshConfig() async
+  Future<bool> refresh() async
   {
     var model = await _getConfig(true);
     if (model != null) _config = model;
@@ -84,32 +81,37 @@ class App
   Future<ConfigModel?> _getConfig(bool refresh) async
   {
     ConfigModel? model;
-    if (xml != null)
+
+    /// parse the config
+    if (config != null)
     {
-      var e = Xml.tryParse(xml);
+      var e = Xml.tryParse(config);
       if (e != null) model = await ConfigModel.fromXml(null, e.rootElement);
     }
-    if (refresh || model == null)
-    {
-      if (fqdn != null) model = await ConfigModel.fromUrl(null, fqdn!);
-    }
+
+    // get config from url
+    if ((refresh || model == null) && fqdn != null) model = await ConfigModel.fromUrl(null, fqdn!);
+
+    // model created?
     if (model != null)
     {
+      // get the icon
       var icon = model.settings["APP_ICON"];
       if (icon != null)
       {
-        Url.toUrlData(icon);
+        var uri = await Url.toUriData(Url.toAbsolute(icon, domain: fqdn));
+        if (uri != null) this.icon = uri.toString();
       }
+
+      // set the config
       _config = model;
+
+      // save to hive
+      await update();
     }
     return model;
   }
 
-  Future<bool> insert() async => (await Database().insert(tableName, key, _map) == null);
-  Future<bool> update() async => (await Database().update(tableName, key, _map) == null);
-  Future<bool> delete() async => (await Database().delete(tableName, key) == null);
-
-  static Future<bool> deleteAll() async => (await Database().deleteAll(tableName) == null);
 
   static App? _fromMap(dynamic map)
   {
@@ -118,7 +120,19 @@ class App
     return app;
   }
 
-  static Future<List<App>> load() async
+  Map<String, dynamic> _toMap()
+  {
+    Map<String, dynamic> map = {};
+    map["key"]    = key;
+    map["url"]    = url;
+    map["title"]  = title;
+    map["icon"]   = icon;
+    map["order"]  = order;
+    map["config"] = _config?.xml;
+    return map;
+  }
+
+  static Future<List<App>> loadAll() async
   {
     List<App> apps = [];
     List<Map<String, dynamic>> entries = await Database().query(tableName);

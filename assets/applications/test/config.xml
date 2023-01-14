@@ -2,9 +2,10 @@
     <CONFIG>
 
         <!-- Settings -->
-        <APPLICATION_NAME 		value="FML_LOCAL_NAME" />
-        <APP_ICON	 			value="resources/images/appicon.png" />
-        <HOME_PAGE       		value="file://test/localtemplate.xml" />
+        <APP_NAME 		        value="Test Application" />
+        <APP_ICON	 			value="icon.png" />
+
+        <HOME_PAGE       		value="home.xml" />
         <LOGIN_PAGE             value=""/>
         <UNAUTHORIZED_PAGE      value=""/>
         <MIRROR_API 	        value="" />

@@ -251,8 +251,9 @@ flutter:
     - assets/
     - assets/audio/
     - assets/fonts/
-    - assets/templates/
     - assets/images/
+    - assets/applications/
+    - assets/applications/test/
 
   fonts:
     - family: icons

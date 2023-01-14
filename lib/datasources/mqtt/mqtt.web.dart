@@ -25,7 +25,7 @@ class MqttWeb implements IMqtt
 
   MqttWeb(this.url, this.listener, {this.username, this.password})
   {
-    Uri? uri = S.toURI(this.url);
+    Uri? uri = S.toUri(this.url);
     if (uri == null) return;
     var scheme = 'ws';
     var server = uri.host;

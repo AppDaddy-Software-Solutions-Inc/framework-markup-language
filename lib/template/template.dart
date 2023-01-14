@@ -205,7 +205,7 @@ class Template
       if (isUUID(url)) template = await _fromDatabase(url);
 
       // get template from server
-      if (template == null && (refresh == true || (System().app?.refresh ?? false)))
+      if (template == null && (refresh == true || (System().app?.autoRefresh ?? false)))
       {
         // get template
         template = await _fromServer(url);

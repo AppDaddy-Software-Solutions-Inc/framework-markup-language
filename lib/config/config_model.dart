@@ -9,6 +9,7 @@ class ConfigModel
 {
   ConfigModel();
 
+  String? xml;
   Map<String, String?> settings   = Map<String,String?>();
   Map<String, String?> parameters = Map<String,String?>();
 
@@ -19,6 +20,7 @@ class ConfigModel
     {
       model = ConfigModel();
       model.deserialize(xml);
+      model.xml = xml.toXmlString();
     }
     catch(e)
     {

@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:io';
-
+import 'package:flutter/foundation.dart';
+import 'package:fml/datasources/http/http.dart';
 import 'package:fml/system.dart';
 import 'package:fml/helper/helper_barrel.dart';
 import 'package:path/path.dart';
@@ -49,10 +50,6 @@ class Url
   static bool isUrl(String url)
   {
     Uri? uri = toUri(url);
-
-    //////////////////
-    /* Web Address? */
-    //////////////////
     return ((uri != null) && (uri.hasAuthority));
   }
 
@@ -63,15 +60,7 @@ class Url
   {
     Uri? uri = toUri(url);
     if (uri == null) return null;
-
-    /////////////////////////////
-    /* Encode Parameter Values */
-    /////////////////////////////
     if (uri.hasQuery)  uri.queryParameters.forEach((key, value) => Uri.encodeComponent(value));
-
-    ///////////////////////
-    /* Convert to String */
-    ///////////////////////
     return uri.toString();
   }
 
@@ -195,14 +184,8 @@ class Url
   /// Returns the parameter components of a valid String Url as a Map<String, String>
   static Map<String, String>? parameters(String url)
   {
-    Map<String, String> parameters = Map<String, String>();
-
-    Uri? uri = toUri(url);
-    if (uri == null) return null;
-    if (!uri.hasAuthority) uri = toUri('http://' + url);
-    if (uri!.hasQuery) uri.queryParameters.forEach((key, value) => parameters[key] = value);
-
-    return parameters;
+    UrlData? uri = toUrlData(url);
+    return uri?.parameters;
   }
 
   static UrlData? toUrlData(String url)
@@ -210,10 +193,10 @@ class Url
     UrlData? urldata;
 
     // parse the uri
-    Uri? uri = S.toURI(url);
+    Uri? uri = S.toUri(url);
 
     // Because flutter is a SWA we need to ignore the /#/ for uri query param detection
-    if (uri is Uri && uri.hasFragment) uri = S.toURI(url.replaceFirst("#", "/"));
+    if (uri is Uri && uri.hasFragment) uri = S.toUri(url.replaceFirst("#", "/"));
 
     // Deconstruct the uri
     if (uri is Uri)
@@ -244,15 +227,15 @@ class Url
       // fully qualified domain name
       urldata.fqdn = urldata.port != null ? "${urldata.scheme}::${urldata.port}://${urldata.host}" : "${urldata.scheme}://${urldata.host}";
 
-      // filepath
+      // file path
+      if (!kIsWeb)
       switch (urldata.scheme)
       {
         case "asset":
         case "file":
-          var file = urldata.host?.replaceAll("/", Platform.pathSeparator).replaceAll("\\", Platform.pathSeparator);
           var path = dirname(Platform.resolvedExecutable);
-          if (urldata.scheme == "asset") path = "$path${Platform.pathSeparator}assets";
-          urldata.filepath = "$path${Platform.pathSeparator}$file";
+          var file = urldata.host?.replaceAll("/", Platform.pathSeparator).replaceAll("\\", Platform.pathSeparator);
+          urldata.filepath = "$path${Platform.pathSeparator}assets${Platform.pathSeparator}$file";
           break;
         default: urldata.filepath = null;
         break;
@@ -260,6 +243,40 @@ class Url
     }
 
     return urldata;
+  }
+
+  static Future<UriData?> toUriData(String url) async
+  {
+    try
+    {
+      var uri = Url.toUrlData(url);
+
+      if (uri != null)
+      {
+        // file reference
+        if (uri.scheme == "file")
+        {
+          var file  = File(url);
+          var bytes = await file.readAsBytes();
+          var mime  = await S.mimetype(url);
+          return UriData.fromBytes(bytes,mimeType: mime);
+        }
+
+        // url
+        else
+        {
+          var response = await Http.get(url);
+          if (response.statusCode == HttpStatus.ok)
+          {
+            var bytes = response.bytes;
+            var mime  = await S.mimetype(url);
+            return UriData.fromBytes(bytes, mimeType: mime);
+          }
+        }
+      }
+    }
+    catch(e) {}
+    return null;
   }
 }
 

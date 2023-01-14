@@ -400,7 +400,7 @@ class S
   }
 
   /// Parse a String value with [Uri.parse] and
-  static Uri? toURI(String url)
+  static Uri? toUri(String url)
   {
     url = removeNonASCII(url);
     Uri uri = Uri.parse(url);

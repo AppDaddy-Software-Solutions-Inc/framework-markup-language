@@ -33,7 +33,7 @@ class Store extends WidgetModel
   {
     busy = true;
 
-    var apps = await App.load();
+    var apps = await App.loadAll();
 
     _apps.clear();
     for (App app in apps) _apps.add(app);
@@ -97,6 +97,9 @@ class Store extends WidgetModel
 
     // set the system app
     System().app = app;
+
+    // refresh the app
+    app.refresh();
 
     // launch the page
     NavigationManager().setNewRoutePath(PageConfiguration(url: page, title: "Store"), source: "store");

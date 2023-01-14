@@ -245,7 +245,7 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
     // process each view
     widget.model.views.forEach((url, view)
     {
-      Uri uri = S.toURI(url)!;
+      Uri uri = S.toUri(url)!;
 
       // Has delete button?
       bool closeable = S.toBool(uri.queryParameters['closeable']) ?? true;
@@ -304,7 +304,7 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
     int i = 0;
     widget.model.views.forEach((url, view)
     {
-      Uri? uri = S.toURI(url);
+      Uri? uri = S.toUri(url);
       String title = uri?.queryParameters['title'] ?? url;
 
       // Style

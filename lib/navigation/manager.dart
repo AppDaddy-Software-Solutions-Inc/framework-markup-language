@@ -21,6 +21,12 @@ import 'package:fml/page404/page404_view.dart';
 import 'package:fml/widgets/overlay/overlay_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 
+// platform
+import 'package:fml/platform/platform.stub.dart'
+if (dart.library.io)   'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
+
+
 class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNotifier, PopNavigatorRouterDelegateMixin<PageConfiguration>
 {
   // singleton
@@ -46,7 +52,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     // get start page
     String? home  = System().app?.homePage;
     if (((isMobile) || (isDesktop)) && (appType == ApplicationTypes.MultiApp)) home = "store";
-    String? start = System().app?.page ?? home;
+    String? start = System().app?.requestedPage ?? home;
     if (start == null || home == null) return;
 
     // start page is different than home page?
@@ -233,7 +239,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     if (pages == 0) return false;
 
     // web?
-    bool ok = await System().goBackPages(pages);
+    bool ok = await Platform.goBackPages(pages);
     if (ok) return true;
 
     for (int i = 0; i < pages; i++) _pages.removeLast();

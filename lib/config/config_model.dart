@@ -1,9 +1,11 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:fml/helper/string.dart';
+import 'package:fml/helper/xml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:xml/xml.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/url.dart';
 
 class ConfigModel
 {
@@ -32,10 +34,10 @@ class ConfigModel
 
   static Future<ConfigModel?> fromUrl(WidgetModel? parent, String url) async
   {
-    var uri = Url.toUrlData(url);
+    Uri? uri = Url.parse(url);
     if (uri != null)
     {
-      var template = await Template.fetchTemplate(url: "${uri.fqdn}/config.xml");
+      var template = await Template.fetchTemplate(url: "${uri.domain}/config.xml", refresh: false);
       if (template != null) return fromXml(parent, template.rootElement);
     }
     return null;

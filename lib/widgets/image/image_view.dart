@@ -6,12 +6,15 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/scope.dart';
-import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/image/image_model.dart';
 import 'package:image/image.dart' as IMAGE;
-import 'package:path/path.dart' as path;
 import 'package:fml/helper/helper_barrel.dart';
+
+// platform
+import 'package:fml/platform/platform.stub.dart'
+if (dart.library.io)   'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 enum ImageSource {data, blob, file, asset, web}
 
@@ -54,7 +57,7 @@ class ImageView extends StatefulWidget
 
     try
     {
-      var uri = Url.toUrlData(url);
+      Uri? uri = Url.parse(url);
       if (uri != null)
       {
         // error handler
@@ -72,7 +75,7 @@ class ImageView extends StatefulWidget
         switch (uri.scheme)
         {
           case "data":
-            source = ImageSource.data;
+            if (uri.data != null) source = ImageSource.data;
             break;
 
           case "blob":
@@ -81,16 +84,12 @@ class ImageView extends StatefulWidget
 
           case "file":
             source = ImageSource.web;
-            if (uri.page != null && System().fileExists(uri.page!)) source = ImageSource.file;
+            if (uri.page != null && Platform.fileExists(uri.page!)) source = ImageSource.file;
             break;
 
           case "asset":
             source = ImageSource.web;
-            if (uri.page != null && System().fileExists(uri.page!)) source = ImageSource.asset;
-            break;
-
-          case "data":
-            source = ImageSource.data;
+            if (uri.page != null && Platform.fileExists(uri.page!)) source = ImageSource.asset;
             break;
 
           case "blob":
@@ -106,7 +105,7 @@ class ImageView extends StatefulWidget
         {
           /// data uri
           case ImageSource.data:
-            image = getByteImage(S.toDataUri(url)!.contentAsBytes(), getFit(fit), width, height, fadeDuration, errorHandler);
+            image = getByteImage(uri.data!.contentAsBytes(), getFit(fit), width, height, fadeDuration, errorHandler);
             break;
 
           /// blob image from camera or file picker
@@ -116,21 +115,27 @@ class ImageView extends StatefulWidget
 
           /// file image from camera or file picker
           case ImageSource.file:
-            if (path.extension(uri.filepath!).toLowerCase().endsWith("svg"))
-                 image = SvgPicture.file(File(uri.filepath!), fit: getFit(fit), width: width, height: height);
-            else image = Image.file(File(uri.filepath!));
+            if (uri.pageExtension == "svg")
+            {
+              var file = Platform.getFile(uri.filePath);
+              if (file != null) image = SvgPicture.file(file!, fit: getFit(fit), width: width, height: height);
+            }
+            else image = Image.file(File(uri.filePath!));
             break;
 
           /// asset image
           case ImageSource.asset:
-            if (path.extension(uri.filepath!).toLowerCase().endsWith("svg"))
-                 image = SvgPicture.file(File(uri.filepath!), fit: getFit(fit), width: width, height: height);
-            else image = getAssetImage(uri.filepath!, getFit(fit), width, height, fadeDuration, errorHandler);
+            if (uri.pageExtension == "svg")
+            {
+              var file = Platform.getFile(uri.filePath);
+              if (file != null) image = SvgPicture.file(file!, fit: getFit(fit), width: width, height: height);
+            }
+            else image = getAssetImage(uri.filePath!, getFit(fit), width, height, fadeDuration, errorHandler);
             break;
 
           /// web image
           case ImageSource.web:
-            if (uri.filepath != null && System().fileExists(uri.filepath!))
+            if (uri.pageExtension == "svg")
                  image = SvgPicture.network(url, fit: getFit(fit), width: width, height: height);
             else image = getWebImage(Url.toAbsolute(url), getFit(fit), width, height, fadeDuration, errorHandler);
             break;
@@ -257,7 +262,7 @@ class ImageView extends StatefulWidget
   static dynamic getAssetImage(String? filename, BoxFit fit, double? width, double? height, int? fadeDuration, dynamic errorBuilder)
   {
     dynamic file;
-    if (filename != null) file = System().getFile(filename);
+    if (filename != null) file = Platform.getFile(filename);
     if (file == null) return MemoryImage(placeholderImage);
 
     return FadeInImage(

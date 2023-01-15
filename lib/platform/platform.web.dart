@@ -2,17 +2,13 @@
 import 'dart:async';
 import 'dart:html';
 import 'package:fml/helper/string.dart';
+import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'dart:js';
-import 'log/manager.dart';
-import 'package:fml/observable/observable_barrel.dart';
 
-class SystemPlatform extends WidgetModel
+class Platform
 {
-  static String platform = "web";
-
-  String? get useragent
+  static String? get useragent
   {
     const appleType   = "ios";
     const androidType = "android";
@@ -31,33 +27,12 @@ class SystemPlatform extends WidgetModel
     return desktopType;
   }
 
-  bool nfc    = true;
-  bool camera = false;
-
   static final dynamic iframe = window.document.getElementById('invisible');
 
-  ///////////////
-  /* connected */
-  ///////////////
-  BooleanObservable? _connected;
-  set connected (dynamic v)
-  {
-    if (_connected != null)
-    {
-      _connected!.set(v);
-    }
-    else if (v != null)
-    {
-      _connected = BooleanObservable(Binding.toKey("SYSTEM", 'connected'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get connected => _connected?.get() ?? false;
+  static bool connected = true;
 
-  SystemPlatform() : super(null, "SYSTEM", scope: Scope("SYSTEM"))
+  static init() async
   {
-    //////////////////////////////
-    /* Hide Splash Logo on Index */
-    //////////////////////////////
     try
     {
       window.document.getElementById("logo")!.style.visibility = "hidden";
@@ -65,34 +40,12 @@ class SystemPlatform extends WidgetModel
     catch(e){}
   }
 
-
-  init() async
-  {
-    /////////////////////////////////
-    /* Initialize Connection State */
-    /////////////////////////////////
-    await _initConnectivity();
-  }
-
-  _initConnectivity() async
-  {
-    try
-    {
-      connected = true;
-    }
-    catch(e)
-    {
-      connected = true;
-      Log().exception(e, caller: 'system.web.dart => _init_connectivity() async');
-    }
-  }
-
-  Future<bool> checkInternetConnection(String? domain) async
+  static Future<bool> checkInternetConnection(String? domain) async
   {
     return true;
   }
 
-  Future<dynamic> fileSaveAs(List<int> bytes, String filename) async
+  static Future<dynamic> fileSaveAs(List<int> bytes, String filename) async
   {
     try
     {
@@ -124,7 +77,7 @@ class SystemPlatform extends WidgetModel
     return null;
   }
 
-  dynamic fileSaveAsFromBlob(Blob blob, String? filename)
+  static dynamic fileSaveAsFromBlob(Blob blob, String? filename)
   {
     final url    = Url.createObjectUrlFromBlob(blob);
     final anchor = document.createElement('a') as AnchorElement;
@@ -140,57 +93,57 @@ class SystemPlatform extends WidgetModel
     Url.revokeObjectUrl(url);
   }
 
-  void openPrinterDialog()
+  static void openPrinterDialog()
   {
     window.print();
   }
 
-  dynamic getFile(String? filename)
+  static dynamic getFile(String? filename)
   {
     return null;
   }
 
-  String? folderPath(String folder)
+  static String? folderPath(String folder)
   {
     return null;
   }
 
-  String? filePath(String? filename)
+  static String? filePath(String? filename)
   {
     return null;
   }
 
-  bool folderExists(String folder)
+  static bool folderExists(String folder)
   {
     return false;
   }
 
-  bool fileExists(String filename)
+  static bool fileExists(String filename)
   {
     return false;
   }
 
-  Future<dynamic> readFile(String? filename, {bool asBytes = false}) async
+  static Future<dynamic> readFile(String? filename, {bool asBytes = false}) async
   {
     return null;
   }
 
-  Future<String?> createFolder(String? folder) async
+  static Future<String?> createFolder(String? folder) async
   {
     return null;
   }
 
-  Future<bool> writeFile(String? filename, dynamic content) async
+  static Future<bool> writeFile(String? filename, dynamic content) async
   {
     return true;
   }
 
-  Future<bool> deleteFile(String filename) async
+  static Future<bool> deleteFile(String filename) async
   {
     return true;
   }
 
-  Future<bool> goBackPages(int pages) async
+  static Future<bool> goBackPages(int pages) async
   {
     try
     {
@@ -211,7 +164,7 @@ class SystemPlatform extends WidgetModel
     }
   }
 
-  int getNavigationType()
+  static int getNavigationType()
   {
     try
     {

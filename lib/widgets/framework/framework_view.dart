@@ -27,6 +27,11 @@ import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/helper/helper_barrel.dart';
 import 'package:fml/phrase.dart';
 
+// platform
+import 'package:fml/platform/platform.stub.dart'
+if (dart.library.io)   'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
+
 typedef TitleChangeCallback = void Function (String title);
 
 class FrameworkView extends StatefulWidget
@@ -423,7 +428,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     {
       var bytes = utf8.encode(widget.model.element!.toXmlString());
       String filename = Url.toAbsolute(widget.model.templateName ?? "no-file-name");
-      System().fileSaveAs(bytes, filename);
+      Platform.fileSaveAs(bytes, filename);
     }
   }
 
@@ -444,7 +449,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     if (event.parameters!['format'] == 'print') {
       event.handled = true;
       final snackBar = SnackBar(content: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Text(phrase.exportingData)]), duration: Duration(milliseconds: 300), behavior: SnackBarBehavior.floating, elevation: 5);
-      ScaffoldMessenger.of(context).showSnackBar(snackBar).closed.then((_) => System().openPrinterDialog());
+      ScaffoldMessenger.of(context).showSnackBar(snackBar).closed.then((_) => Platform.openPrinterDialog());
     }
     else {
       Log().warning('Unhandled Event onExport(format: ${event.parameters!['format'].toString()}, raw: ${event.parameters!['raw'].toString()})');

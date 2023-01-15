@@ -1,10 +1,14 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/datasources/http/http.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/system.dart';
 import 'package:path/path.dart';
 import 'asset.dart';
 import 'package:fml/helper/helper_barrel.dart';
+
+// platform
+import 'package:fml/platform/platform.stub.dart'
+if (dart.library.io)   'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 class Mirror
 {
@@ -34,13 +38,13 @@ class Mirror
       if (filename != null && extension(filename).trim() != "")
       {
         // file exists?
-        bool exists = System().fileExists(filename);
+        bool exists = Platform.fileExists(filename);
 
         // check the age
         bool downloadRequired = true;
         if (exists)
         {
-          var file = System().getFile(filename);
+          var file = Platform.getFile(filename);
           if (file != null)
           {
             var modified = await file.lastModified();
@@ -79,7 +83,7 @@ class Mirror
       if (filename != null)
       {
         Log().debug('Writing file to disk $filename', caller: "Mirror");
-        await System().writeFile(filename, response.bytes);
+        await Platform.writeFile(filename, response.bytes);
         return true;
       }
       return false;

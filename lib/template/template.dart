@@ -13,6 +13,11 @@ import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/hive/form.dart' as DATABASE;
 import 'package:fml/helper/helper_barrel.dart';
 
+// platform
+import 'package:fml/platform/platform.stub.dart'
+if (dart.library.io)   'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
+
 class Template
 {
   final String? name;
@@ -78,11 +83,11 @@ class Template
       if (isMobile) throw('Local Files not supported in Mobile');
 
       // get template from file
-      var uri = Url.toUrlData(url);
-      if (uri?.filepath != null)
+      Uri? uri = Url.parse(url);
+      if (uri != null && uri.filePath != null)
       {
-        var file = System().getFile(uri!.filepath!);
-        if (file != null) template = await System().readFile(url);
+        var file = Platform.getFile(uri.filePath);
+        if (file != null) template = await Platform.readFile(url);
       }
     }
     catch (e)
@@ -98,7 +103,7 @@ class Template
     try
     {
       // get template from remote server
-      if (System().connected == true)
+      if (Platform.connected == true)
       {
         // get the template from the cloud
         HttpResponse response = await Http.get(url, refresh: true);
@@ -125,8 +130,8 @@ class Template
       String? filename = Url.path(Url.toAbsolute(url));
       if (filename != null)
       {
-        bool exists = System().fileExists(filename);
-        if (exists) template = await System().readFile(filename);
+        bool exists = Platform.fileExists(filename);
+        if (exists) template = await Platform.readFile(filename);
       }
     }
     catch (e)
@@ -143,7 +148,7 @@ class Template
     if (filename != null)
     {
       Log().debug('Writing $filename to disk", object: "TEMPLATE"');
-      return await System().writeFile(filename, xml);
+      return await Platform.writeFile(filename, xml);
     }
     return false;
   }
@@ -166,7 +171,7 @@ class Template
       if (parameters != null) xml = Binding.applyMap(xml, parameters, caseSensitive: false);
 
       // Replace query parameters
-      xml = Binding.applyMap(xml, System().app?.parameters, caseSensitive: false);
+      xml = Binding.applyMap(xml, System().app?.queryParameters, caseSensitive: false);
 
       // Replace config parameters
       xml = Binding.applyMap(xml, System().app?.configParameters, caseSensitive: false);
@@ -189,7 +194,7 @@ class Template
     return template;
   }
 
-  static Future<XmlDocument?> fetchTemplate({required String url, Map<String, String?>? parameters, bool? refresh = false}) async
+  static Future<XmlDocument?> fetchTemplate({required String url, Map<String, String?>? parameters, bool refresh = false}) async
   {
     Log().debug('Getting template ' + url);
 
@@ -302,7 +307,8 @@ class Template
     }
 
     // return the error template
-    return Template.fromDocument(name: url, xml: document, parameters: parameters);
+    return Template.
+    fromDocument(name: url, xml: document, parameters: parameters);
   }
 
   static Future<bool> _processIncludes(XmlDocument document, Map<String, String?>? parameters) async

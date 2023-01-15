@@ -2,69 +2,31 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:fml/dialog/service.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/phrase.dart';
-import 'package:fml/postmaster/postmaster.dart';
 import 'package:fml/system.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
-import 'dialog/service.dart';
-import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/helper_barrel.dart';
+import 'dart:io' as io;
 
-class SystemPlatform extends WidgetModel {
-  static String platform = "mobile";
+class Platform
+{
+  static bool connected = false;
 
-  String? get useragent
+  static String? get useragent
   {
-    const appleType = "ios";
-    const androidType = "android";
-    if (Platform.isAndroid) return androidType;
-    if (Platform.isIOS) return appleType;
+    if (io.Platform.isIOS)     return  "ios";
+    if (io.Platform.isAndroid) return  "android";
+    if (io.Platform.isMacOS)   return  "macos";
+    if (io.Platform.isWindows) return  "windows";
+    if (io.Platform.isLinux)   return  "linux";
+    if (io.Platform.isFuchsia) return  "fuchsia";
     return null;
   }
-
-  bool camera = true;
-
-  ///////////////
-  /* connected */
-  ///////////////
-  BooleanObservable? _connected;
-  set connected(dynamic v) {
-    if (_connected != null) {
-      bool wasconnected = _connected?.get() ?? false;
-      _connected!.set(v);
-      bool isconnected = _connected?.get() ?? false;
-
-      ///////////////////////////////////
-      /* Start PostMaster on Reconnect */
-      ///////////////////////////////////
-      if ((wasconnected == false) && (isconnected == true))
-        PostMaster().start();
-
-      ////////////
-      /* Notify */
-      ////////////
-      if ((wasconnected == false) && (isconnected == true))
-        System.toast(Phrases().reconnected, duration: 3);
-      if ((wasconnected == true) && (isconnected == false))
-        System.toast(Phrases().disconnected, duration: 3);
-    } else if (v != null) {
-      _connected = BooleanObservable(
-          Binding.toKey("SYSTEM", 'connected'), v,
-          scope: scope, listener: onPropertyChange);
-
-      ////////////
-      /* Notify */
-      ////////////
-      //if (v != true) System.toast(Phrases().disconnected);
-    }
-  }
-
-  bool get connected => _connected?.get() ?? false;
 
   // fully qualified file path
   static String rootFolder(String filename) => join(_rootFolder ?? "",  filename);
@@ -115,9 +77,7 @@ class SystemPlatform extends WidgetModel {
     return null;
   }
 
-  SystemPlatform() : super(null, "SYSTEM", scope: Scope("SYSTEM"));
-
-  init() async
+  static init() async
   {
     // initialize the app root folder
     await _initRootFolder();
@@ -126,8 +86,8 @@ class SystemPlatform extends WidgetModel {
     await _initConnectivity();
   }
 
-  Connectivity _connection = Connectivity();
-  _initConnectivity() async {
+  static Connectivity _connection = Connectivity();
+  static _initConnectivity() async {
     try
     {
       ConnectivityStatus initialConnection = await _connection.checkConnectivity();
@@ -146,7 +106,7 @@ class SystemPlatform extends WidgetModel {
       // For the initial connectivity test we want to give checkConnection some time
       // but it still needs to run synchronous so we give it a second
       await Future.delayed(Duration(seconds: 1));
-      Log().debug('initConnectivity status: ${System().connected}');
+      Log().debug('initConnectivity status: ${connected}');
     }
     catch (e)
     {
@@ -157,7 +117,7 @@ class SystemPlatform extends WidgetModel {
   }
 
   //Timer? _connectionTimer;
-  Future<bool> checkInternetConnection(String? domain) async
+  static Future<bool> checkInternetConnection(String? domain) async
   {
     return true; // now done with isConnected.listen(), leaving code for ease of revert
     // bool connected = this.connected;
@@ -165,7 +125,7 @@ class SystemPlatform extends WidgetModel {
     //   if (!S.isNullOrEmpty(domain)) {
     //     if ((_connectionTimer != null) && (_connectionTimer!.isActive))
     //       _connectionTimer!.cancel();
-    //     Uri? uri = Url.toUri(domain!);
+    //     Uri? uri = Url.parse(domain!);
     //     if (uri != null) {
     //       Socket socket =
     //           await Socket.connect(uri.host, 80, timeout: Duration(seconds: 5));
@@ -189,7 +149,7 @@ class SystemPlatform extends WidgetModel {
     // return connected;
   }
 
-  Future<dynamic> fileSaveAs(List<int> bytes, String filename) async
+  static Future<dynamic> fileSaveAs(List<int> bytes, String filename) async
   {
     // make the file name safe
     filename = S.toSafeFileName(filename);
@@ -236,18 +196,20 @@ class SystemPlatform extends WidgetModel {
     else System.toast("Unable to save file");
   }
 
-  dynamic fileSaveAsFromBlob(dynamic blob, String filename)
+  static dynamic fileSaveAsFromBlob(dynamic blob, String filename)
   {
     DialogService().show(type: DialogType.error, title: "File Save As Blob not supported on Mobile");
   }
 
-  void openPrinterDialog()
+  static void openPrinterDialog()
   {
     Log().warning('openPrinterDialog() Unimplemented for system.mobile.dart');
   }
 
-  File? getFile(String filename)
+  static File? getFile(String? filename)
   {
+    if (filename == null) return null;
+
     try
     {
       // qualify file name
@@ -262,7 +224,7 @@ class SystemPlatform extends WidgetModel {
     return null;
   }
 
-  bool _folderExists(String? folder)
+  static bool _folderExists(String? folder)
   {
     try
     {
@@ -276,8 +238,8 @@ class SystemPlatform extends WidgetModel {
     }
   }
 
-  bool fileExists(String filename) => _fileExists(rootFolder(filename));
-  bool _fileExists(String filename)
+  static bool fileExists(String filename) => _fileExists(rootFolder(filename));
+  static bool _fileExists(String filename)
   {
     try
     {
@@ -291,7 +253,7 @@ class SystemPlatform extends WidgetModel {
     }
   }
 
-  Future<dynamic> readFile(String filename, {bool asBytes = false}) async
+  static Future<dynamic> readFile(String filename, {bool asBytes = false}) async
   {
     try
     {
@@ -311,7 +273,7 @@ class SystemPlatform extends WidgetModel {
     }
   }
 
-  Future<String?> createFolder(String folder) async
+  static Future<String?> createFolder(String folder) async
   {
     try
     {
@@ -333,7 +295,7 @@ class SystemPlatform extends WidgetModel {
     }
   }
 
-  Future<bool> writeFile(String filename, dynamic content) async
+  static Future<bool> writeFile(String filename, dynamic content) async
   {
     bool ok = true;
     try
@@ -359,7 +321,7 @@ class SystemPlatform extends WidgetModel {
     return ok;
   }
 
-  Future<bool> deleteFile(String filename) async
+  static Future<bool> deleteFile(String filename) async
   {
     try
     {
@@ -377,12 +339,12 @@ class SystemPlatform extends WidgetModel {
     }
   }
 
-  Future<bool> goBackPages(int pages) async
+  static Future<bool> goBackPages(int pages) async
   {
     return false;
   }
 
-  int getNavigationType()
+  static int getNavigationType()
   {
     return 0;
   }

@@ -74,7 +74,7 @@ class _InlineFrameViewState extends State<InlineFrameView>
       controller
         ..setNavigationDelegate(NavigationDelegate())
         ..setJavaScriptMode(JavaScriptMode.unrestricted)
-        ..loadRequest(Uri.parse(url))
+        ..loadRequest(Url.parse(url)!)
         ..addJavaScriptChannel('TOFLUTTER', onMessageReceived: onMessageReceived);
       view = WebViewWidget(controller: controller);
     }

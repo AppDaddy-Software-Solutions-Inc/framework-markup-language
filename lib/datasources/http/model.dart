@@ -14,6 +14,11 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/helper_barrel.dart';
 
+// platform
+import 'package:fml/platform/platform.stub.dart'
+if (dart.library.io)   'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
+
 enum Methods {get, put, post, patch, delete}
 enum Types   {background, foreground, either}
 
@@ -155,7 +160,7 @@ class HttpModel extends DataSourceModel implements IDataSource
 
     // web is always in the foreground
     if (isWeb) type = Types.foreground;
-    if ((type == Types.either) && (System().connected == true)) type = Types.foreground;
+    if ((type == Types.either) && (Platform.connected == true)) type = Types.foreground;
 
     // process in the background
     if (type == Types.background)
@@ -171,7 +176,7 @@ class HttpModel extends DataSourceModel implements IDataSource
     }
 
     // post in the foreground
-    if ((type == Types.foreground) && (!System().connected))
+    if ((type == Types.foreground) && (!Platform.connected))
     {
         await System.toast(phrase.checkConnection);
         return false;

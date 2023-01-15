@@ -9,32 +9,32 @@ class App
 {
   static String tableName = "APP";
 
+  late Future<bool> initialized;
+
   // secure?
-  bool get secure => scheme == "https" || scheme == "wss";
+  bool get secure => _uri?.scheme == "https" || _uri?.scheme == "wss";
 
   // forces pages to repaint every visit
   bool get autoRefresh => S.toBool(settings("REFRESH")) ?? false;
   bool get singlePage  => S.toBool(settings('SINGLE_PAGE_APPLICATION')) ?? false;
 
-  late final String  key;
-  late final String  url;
-  late final String? title;
+  late final String key;
+  late final String url;
+  
+  String? title;
   String? icon;
   int?    order;
   String? config;
 
-  late final String? scheme;
-  late final String? host;
-  late final String? fqdn;
-  late final String? page;
-  late final int? port;
-  late final Map<String,String>? parameters;
-
+  late final Uri? _uri;
+  String? get domain => _uri?.domain;
+  Map<String, String>? get queryParameters => _uri?.queryParameters;
+  
   String  get homePage => settings("HOME_PAGE") ?? "main.xml";
   String? get loginPage => settings("LOGIN_PAGE");
   String? get debugPage => settings("DEBUG_PAGE");
   String? get unauthorizedPage => settings("UNAUTHORIZED_PAGE");
-  String? get requestedPage => page;
+  String? get requestedPage => _uri?.page?.toLowerCase().trim().endsWith(".xml") ?? false ? _uri!.page : null;
 
   Map<String,String?>? get configParameters => _config?.parameters;
 
@@ -43,19 +43,23 @@ class App
   App({required this.url, required this.title, this.icon, this.order})
   {
     // key is url (lowercase) hashed
-    key = Cryptography.hash(text:                                      url.toLowerCase());
+    key = Cryptography.hash(text: url.toLowerCase());
 
     // parse to url into its parts
-    var uri = Url.toUrlData(url);
-    fqdn       = uri?.fqdn;
-    scheme     = uri?.scheme;
-    port       = uri?.port;
-    host       = uri?.host;
-    parameters = uri?.parameters;
+    _uri = Url.parse(url);
 
     // load the config
-    _getConfig(true);
+    initialized = initialize();
   }
+
+  // initializes the app
+  Future<bool> initialize() async
+  {
+    var model = await _getConfig(true);
+    if (model != null) _config = model;
+    return true;
+  }
+
 
   Future<bool> insert() async => (await Database().insert(tableName, key, _toMap()) == null);
   Future<bool> update() async => (await Database().update(tableName, key, _toMap()) == null);
@@ -90,7 +94,7 @@ class App
     }
 
     // get config from url
-    if ((refresh || model == null) && fqdn != null) model = await ConfigModel.fromUrl(null, fqdn!);
+    if ((refresh || model == null) && _uri?.domain != null) model = await ConfigModel.fromUrl(null, _uri!.domain!);
 
     // model created?
     if (model != null)
@@ -99,7 +103,7 @@ class App
       var icon = model.settings["APP_ICON"];
       if (icon != null)
       {
-        var uri = await Url.toUriData(Url.toAbsolute(icon, domain: fqdn));
+        var uri = await Url.toUriData(Url.toAbsolute(icon, domain: _uri?.domain));
         if (uri != null) this.icon = uri.toString();
       }
 

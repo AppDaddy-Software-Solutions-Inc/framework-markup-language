@@ -268,7 +268,7 @@ class AppFormState extends State<AppForm>
       return errorText;
     }
 
-    var uri = Url.toUri(url);
+    var uri = Url.parse(url);
 
     // invalid url
     if (uri == null)

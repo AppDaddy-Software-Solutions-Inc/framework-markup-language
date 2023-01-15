@@ -176,7 +176,7 @@ class Http
     url = Url.toAbsolute(url);
     if (refresh == true) url = Url.addParameter(url, 'refresh', System().uuid());
     String? _url = Url.encode(url);
-    Uri? uri = Url.toUri(_url);
+    Uri? uri = Url.parse(_url);
     return uri;
   }
 

@@ -28,11 +28,18 @@ import 'package:fml/hive/app.dart';
 import 'package:fml/mirror/mirror.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/helper_barrel.dart';
+import 'dart:io' as io;
 
 // platform
-//import 'package:fml/system.mobile.dart';
-import 'package:fml/system.web.dart';
-//import 'package:fml/system.desktop.dart';
+import 'package:fml/platform/platform.web.dart'
+if (dart.library.io)   'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
+
+// platform
+String get platform => isWeb ? "web" : isMobile ? "mobile" : "desktop";
+bool get isWeb      => kIsWeb;
+bool get isMobile   => !isWeb && (io.Platform.isAndroid || io.Platform.isIOS);
+bool get isDesktop  => !isWeb && !isMobile;
 
 // application build version
 final String version = '1.0.0+10';
@@ -45,7 +52,6 @@ final ApplicationTypes appType  = ApplicationTypes.MultiApp;
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://config.xml to use the local assets
-
 final String defaultDomain = 'https://fml.appdaddy.co';
 
 typedef CommitCallback = Future<bool> Function();
@@ -58,12 +64,8 @@ enum Keys { F1, F2, F3, F4, F5, F6, F7, F8, F9, shift, alt, control, enter }
 // when log messages being written while System() is still be initialized.
 final bool kDebugMode = !kReleaseMode;
 
-// platform
-bool get isWeb     => SystemPlatform.platform == "web";
-bool get isMobile  => SystemPlatform.platform == "mobile";
-bool get isDesktop => SystemPlatform.platform == "desktop";
 
-class System extends SystemPlatform implements IEventManager
+class System extends WidgetModel implements IEventManager
 {
   factory System() => _singleton;
 
@@ -74,7 +76,7 @@ class System extends SystemPlatform implements IEventManager
     _app = app;
 
     // update bindables
-    domain  = app?.fqdn;
+    domain  = app?.domain;
   }
   App? get app => _app;
 
@@ -104,7 +106,7 @@ class System extends SystemPlatform implements IEventManager
   /// Global callback to close any stray overlays avoiding overlay overlap
   dynamic closeOpenOverlay; // always call this if != null before setting
   
-  System.initialize()
+  System.initialize() : super(null, "SYSTEM", scope: Scope("SYSTEM"))
   {
     initialized = _init();
   }
@@ -113,26 +115,11 @@ class System extends SystemPlatform implements IEventManager
   {
     Log().info('Initializing FML Engine V$version ...');
 
-    // set the domain
-    if (isWeb)
-    {
-      // parse base url
-      var uri = Url.toUrlData(Uri.base.toString());
-
-      // if localhost - use the default domain and route
-      // port 9000 is used by node.js by our installer
-      bool localhost = uri?.host?.startsWith(RegExp("localhost", caseSensitive: false)) ?? false;
-      if (localhost && uri?.port != 9000) uri = Url.toUrlData(defaultDomain);
-
-      // create an app
-      System().app = App(url: uri!.fqdn!, title: "web");
-    }
-
     // initialize platform
-    await super.init();
+    await Platform.init();
 
     // initialize Hive
-    String? hiveFolder = await createFolder("hive");
+    String? hiveFolder = await Platform.createFolder("hive");
     await Database().initialize(hiveFolder);
 
     // initialize System Globals
@@ -154,7 +141,7 @@ class System extends SystemPlatform implements IEventManager
     if (url != null)
     {
       Log().info("Setting domain to $url");
-      var uri = Url.toUrlData(url);
+      Uri? uri = Url.parse(url);
       if (uri != null)
       {
         // set scheme
@@ -162,13 +149,13 @@ class System extends SystemPlatform implements IEventManager
 
         // set host
         if (_host == null)
-              _host = StringObservable(Binding.toKey(id, 'host'), uri.host, scope: scope, listener: onPropertyChange);
-        else  _host!.set(uri.host);
+              _host = StringObservable(Binding.toKey(id, 'host'), uri.path, scope: scope, listener: onPropertyChange);
+        else  _host!.set(uri.path);
 
         // set domain
         if (_domain == null)
-             _domain = StringObservable(Binding.toKey(id, 'domain'), uri.fqdn, scope: scope, listener: onPropertyChange);
-        else _domain!.set(uri.fqdn);
+             _domain = StringObservable(Binding.toKey(id, 'domain'), uri.domain, scope: scope, listener: onPropertyChange);
+        else _domain!.set(uri.domain);
 
         // set start page
         //requestedPage = uri.page;
@@ -204,7 +191,7 @@ class System extends SystemPlatform implements IEventManager
     if (!S.isNullOrEmpty(this.domain))
     {
       // check connection
-      System().checkInternetConnection(domain);
+      Platform.checkInternetConnection(domain);
 
       // set credentials
       System().logon(await (Settings().get("jwt:$domain")));
@@ -560,7 +547,7 @@ class System extends SystemPlatform implements IEventManager
   String? get platform => _platform?.get();
 
   StringObservable? _useragent;
-  String? get useragent => _useragent?.get() ?? super.useragent;
+  String? get useragent => _useragent?.get() ?? Platform.useragent;
 
   StringObservable? _version;
   String get release => _version?.get() ?? "?";
@@ -606,8 +593,8 @@ class System extends SystemPlatform implements IEventManager
     // device settings
     _screenheight = IntegerObservable(Binding.toKey(id, 'screenheight'), null, scope: scope);
     _screenwidth  = IntegerObservable(Binding.toKey(id, 'screenwidth'), null, scope: scope);
-    _platform     = StringObservable(Binding.toKey(id, 'platform'), SystemPlatform.platform, scope: scope);
-    _useragent    = StringObservable(Binding.toKey(id, 'useragent'), useragent, scope: scope);
+    _platform     = StringObservable(Binding.toKey(id, 'platform'), platform, scope: scope);
+    _useragent    = StringObservable(Binding.toKey(id, 'useragent'), Platform.useragent, scope: scope);
     _version      = StringObservable(Binding.toKey(id, 'version'), version, scope: scope);
     _uuid         = _uuid == null ? StringObservable(Binding.toKey(id, 'uuid'), uuid(), scope: scope, getter: uuid) : null;
 

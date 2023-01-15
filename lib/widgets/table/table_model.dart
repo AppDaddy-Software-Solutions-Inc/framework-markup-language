@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/system.dart';
 import 'package:fml/widgets/form/form_model.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
@@ -22,6 +21,12 @@ import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/helper_barrel.dart';
+
+// platform
+import 'package:fml/platform/platform.stub.dart'
+if (dart.library.io)   'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
+
 
 enum PaddingType { none, first, last, evenly, proportionately }
 
@@ -610,7 +615,7 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
     var csvBytes = utf8.encode(csv);
 
     // save to file
-    System().fileSaveAs(csvBytes, "${Uuid().v4()}.csv");
+    Platform.fileSaveAs(csvBytes, "${Uuid().v4()}.csv");
 
     return true;
   }

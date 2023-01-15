@@ -10,6 +10,11 @@ import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
 import 'package:fml/helper/helper_barrel.dart';
 
+// platform
+import 'package:fml/platform/platform.stub.dart'
+if (dart.library.io)   'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
+
 class PostMaster
 {
   static PostMaster _singleton = PostMaster._init();
@@ -184,7 +189,7 @@ class PostMaster
 
   Future<bool> postable(DATABASE.Post post) async
   {
-    if (System().connected == false) return false;
+    if (!Platform.connected) return false;
     return await formPostable(post.formKey);
   }
 

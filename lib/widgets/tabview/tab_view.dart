@@ -120,7 +120,7 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
     if ((modal != true) && (event.model != null)) modal = (event.model!.findDescendantOfExactType(ModalModel, id: url) != null);
 
     // Allow Framework to Handle Open if Modal or Web Address
-    if ((modal == true) || (Url.isUrl(url!))) return;
+    if ((modal == true) || (Url.parse(url)?.hasAuthority ?? false)) return;
 
     // mark event as handled
     event.handled = true;
@@ -245,7 +245,7 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
     // process each view
     widget.model.views.forEach((url, view)
     {
-      Uri uri = S.toUri(url)!;
+      Uri uri = Url.parse(url)!;
 
       // Has delete button?
       bool closeable = S.toBool(uri.queryParameters['closeable']) ?? true;
@@ -304,7 +304,7 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
     int i = 0;
     widget.model.views.forEach((url, view)
     {
-      Uri? uri = S.toUri(url);
+      Uri? uri = Url.parse(url);
       String title = uri?.queryParameters['title'] ?? url;
 
       // Style

@@ -14,9 +14,16 @@ import 'package:fml/widgets/camera/camera_model.dart' as CAMERA;
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/camera/stream/stream.dart' as STREAM;
 import 'package:fml/helper/helper_barrel.dart';
+
 import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
 if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
 if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
+
+// platform
+import 'package:fml/platform/platform.stub.dart'
+if (dart.library.io)   'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
+
 
 View getView(model) => View(model);
 
@@ -183,8 +190,7 @@ class ViewState extends State<View> implements IModelListener
             canvas2.height = height;
             canvas2.context2D.putImageData(image, 0, 0);
             HTML.Blob blob = await canvas2.toBlob('image/png', 1.0);
-            await System()
-                .fileSaveAsFromBlob(blob, System().uuid() + '-' + '.png');
+            await Platform.fileSaveAsFromBlob(blob, System().uuid() + '-' + '.png');
           }
 
           // process stream image
@@ -360,8 +366,7 @@ class ViewState extends State<View> implements IModelListener
 
         if (widget.model.debug == true) {
           HTML.Blob blob = await canvas2.toBlob('image/png', 1.0);
-          await System()
-              .fileSaveAsFromBlob(blob, System().uuid() + '-' + '.png');
+          await Platform.fileSaveAsFromBlob(blob, System().uuid() + '-' + '.png');
         }
 
         HTML.ImageData image2 =

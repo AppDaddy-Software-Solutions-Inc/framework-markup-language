@@ -54,7 +54,10 @@ class _ApplicationManagerState extends State<ApplicationManager>
 
     // get url parameters
     if (parameters.containsKey('url'))
-      parameters.addAll(Url.parameters(parameters['url']!)!);
+    {
+      Uri? uri = Url.parse(parameters['url']);
+      if (uri?.queryParameters != null) parameters.addAll(uri!.queryParameters);
+    }
 
     // build parameters from a data source
     if ((parameters.containsKey('data')) &&

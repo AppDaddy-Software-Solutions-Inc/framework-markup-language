@@ -329,8 +329,8 @@ class MenuItemModel extends DecoratedWidgetModel
       String? bc;
       try 
       {
-        Uri uri = Uri.parse(url!);
-        bc = uri.queryParameters['breadcrumb'];
+        Uri? uri = Url.parse(url!);
+        bc = uri?.queryParameters['breadcrumb'];
       }
       catch(e) {}
       return EventManager.of(this)?.broadcastEvent(this, Event(EventTypes.open, bubbles: true, parameters: {'url': url, 'breadcrumb': bc ?? title}));

@@ -399,15 +399,6 @@ class S
     return str.replaceAll(RegExp(r'[^\x20-\x7E]'), '');
   }
 
-  /// Parse a String value with [Uri.parse] and
-  static Uri? toUri(String url)
-  {
-    url = removeNonASCII(url);
-    Uri uri = Uri.parse(url);
-    if (!uri.hasAuthority) uri = Uri.parse('http://' + url);
-    return uri;
-  }
-
   /// Takes a value typically a String and if its numeric parsed will output a num
   static num? toNum(dynamic s)
   {
@@ -547,26 +538,6 @@ class S
       return true;
     }
     return false;
-  }
-
-  /// Takes a uri/url String and returns a Map<String, String> of the parameters
-  static Map<String, String>? uriToMap({String? string})
-  {
-    try
-    {
-      if (string == null) return null;
-      if (!string.contains('?')) string = '?' + string;
-      Uri uri = Uri.parse(string);
-      if ((uri.queryParameters.isNotEmpty)) return uri.queryParameters;
-    }
-    catch(e) {}
-    return null;
-  }
-
-  /// Takes a uri/url String and returns a Map<String, String> of the parameters
-  static Map<String, String>? getParameters({String? url})
-  {
-    return uriToMap(string: url);
   }
 
   /// [compareTo] function with ascending/descending and ignore case

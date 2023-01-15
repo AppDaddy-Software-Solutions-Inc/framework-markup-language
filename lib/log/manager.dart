@@ -5,6 +5,11 @@ import 'package:fml/hive/log.dart' as DATABASE;
 import 'package:fml/helper/helper_barrel.dart';
 import 'package:fml/system.dart';
 
+// platform
+import 'package:fml/platform/platform.stub.dart'
+if (dart.library.io)   'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
+
 class Log
 {
   List<DATABASE.Log> queue = [];
@@ -198,7 +203,7 @@ class Log
     {
       String str = toHtml(logs);
       List<int> bytes = utf8.encode(str);
-      System().fileSaveAs(bytes, "$filename.html");
+      Platform.fileSaveAs(bytes, "$filename.html");
     }
 
     // export to csv
@@ -207,7 +212,7 @@ class Log
       Data data = DATABASE.Log.toData(logs);
       String csv = await data.toCsv();
       List<int> bytes = utf8.encode(csv);
-      System().fileSaveAs(bytes, "$filename.csv");
+      Platform.fileSaveAs(bytes, "$filename.csv");
     }
 
     return true;

@@ -7,8 +7,8 @@ import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:open_filex/open_filex.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'dialog/service.dart';
-import 'log/manager.dart';
+import '../dialog/service.dart';
+import '../log/manager.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/helper_barrel.dart';
 
@@ -91,7 +91,7 @@ class SystemPlatform extends WidgetModel
         if (!S.isNullOrEmpty(domain))
         {
           if ((_connectionTimer != null) && (_connectionTimer!.isActive)) _connectionTimer!.cancel();
-          Uri? uri = Url.toUri(domain!);
+          Uri? uri = Url.parse(domain!);
           if (uri != null)
           {
             Socket socket = await Socket.connect(uri.host, 80, timeout: Duration(seconds: 5));

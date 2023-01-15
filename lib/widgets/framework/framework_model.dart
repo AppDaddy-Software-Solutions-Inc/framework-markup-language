@@ -307,7 +307,8 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
     try
     {
       // parse the url
-      Uri uri = Uri.parse(url);
+      Uri? uri = Url.parse(url);
+      if (uri == null) throw('Error');
 
       // fetch the template
       Template template = await Template.fetch(url: url, parameters: uri.queryParameters, refresh: refresh);

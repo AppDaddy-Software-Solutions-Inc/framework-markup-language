@@ -126,7 +126,7 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
     event.handled = true;
 
     // String template = uri.host;
-    String? template = Url.path(url);
+    String? template = Url.path(url!);
     if (S.isNullOrEmpty(template))
     {
       await DialogService().show(type: DialogType.error, title: phrase.missingTemplate, description: url, buttons: [Text(phrase.ok)]);

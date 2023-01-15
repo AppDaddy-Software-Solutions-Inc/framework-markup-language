@@ -35,9 +35,22 @@ class Platform
   {
     try
     {
-      Directory directory = await getApplicationSupportDirectory();
-      _rootFolder = directory.path;
-      return _rootFolder;
+      // desktop platform
+      if (isDesktop)
+      {
+        _rootFolder = dirname(io.Platform.resolvedExecutable);
+        return _rootFolder;
+      }
+
+      // mobile platform
+      if (isMobile)
+      {
+        Directory directory = await getApplicationSupportDirectory();
+        _rootFolder = directory.path;
+        return _rootFolder;
+      }
+
+      return null;
     }
     catch (e)
     {

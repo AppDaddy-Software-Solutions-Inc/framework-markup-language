@@ -103,7 +103,8 @@ class App
       var icon = model.settings["APP_ICON"];
       if (icon != null)
       {
-        var uri = await Url.toUriData(Url.toAbsolute(icon, domain: _uri?.domain));
+        var url = Url.toAbsolute(icon, domain: _uri?.domain);
+        var uri = await Url.toUriData(url);
         if (uri != null) this.icon = uri.toString();
       }
 

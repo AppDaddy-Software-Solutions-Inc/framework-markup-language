@@ -26,7 +26,7 @@ class Url
   static String toAbsolute(String url, {String? domain})
   {
     Uri? uri = parse(url);
-    if (uri != null && !uri.hasAuthority)
+    if (uri?.authority.isEmpty ?? false)
     {
       if (domain == null) domain = System().domain;
       url = domain! + (url.startsWith('/') ? '' : '/') + url;
@@ -101,9 +101,10 @@ class Url
       if (uri.data != null) return uri.data;
 
       // file reference
-      if (uri.scheme == "file")
+      if (uri.scheme == "file" && uri.filePath != null)
       {
-        var file  = File(url);
+        var name = uri.filePath!;
+        var file  = File(name);
         var bytes = await file.readAsBytes();
         var mime  = await S.mimetype(url);
         return UriData.fromBytes(bytes,mimeType: mime);
@@ -118,7 +119,11 @@ class Url
         return UriData.fromBytes(bytes, mimeType: mime);
       }
     }
-    catch(e) {}
+    catch(e)
+    {
+      var x = e.toString();
+      int i = 0;
+    }
     return null;
   }
 
@@ -168,20 +173,21 @@ extension UriExtensions on Uri
 
   String? get filePath
   {
-    String? _path;
-    
     // file path
     if (!kIsWeb) 
     switch (scheme)
     {
       case "asset":
       case "file":
-        _path = dirname(Platform.resolvedExecutable) + Platform.pathSeparator + "assets" + Platform.pathSeparator + path;
-        _path = _path.replaceAll("\\", Platform.pathSeparator).replaceAll("/", Platform.pathSeparator);
-        break;
+        var root  = dirname(Platform.resolvedExecutable);
+        var _path = "$root/assets/$host/$path/$page";
+
+        var s = Platform.pathSeparator;
+        _path = _path.replaceAll("\\", "$s").replaceAll("/", "$s");
+        while (_path!.contains("$s$s")) _path = _path.replaceAll("$s$s", "$s");
+        return _path;
     }
-    
-    return _path;
+    return null;
   }
 }
 

@@ -19,14 +19,14 @@ class Url
   static bool isAbsolute(String url)
   {
     Uri? uri = parse(url);
-    return uri?.hasAbsolutePath ?? false;
+    return uri?.hasAuthority ?? false;
   }
 
   /// Takes a Url String and if it is a relative path, prepends it with the domain
   static String toAbsolute(String url, {String? domain})
   {
-    Uri? uri = toUri(url);
-    if (uri != null && uri.hasAbsolutePath)
+    Uri? uri = parse(url);
+    if (uri != null && !uri.hasAuthority)
     {
       if (domain == null) domain = System().domain;
       url = domain! + (url.startsWith('/') ? '' : '/') + url;
@@ -39,7 +39,7 @@ class Url
   /// For example if your String contains a `/` it will encode this to `%2F`
   static String? encode(String url)
   {
-    Uri? uri = toUri(url);
+    Uri? uri = parse(url);
     if (uri == null) return null;
     if (uri.hasQuery)  uri.queryParameters.forEach((key, value) => Uri.encodeComponent(value));
     return uri.toString();
@@ -50,7 +50,7 @@ class Url
   {
     if ((S.isNullOrEmpty(url)) || (S.isNullOrEmpty(key))) return url;
 
-    Uri? uri = toUri(url);
+    Uri? uri = parse(url);
     if (uri == null) return url;
 
     //////////////////////////////
@@ -78,12 +78,13 @@ class Url
   /// Returns the path component of a valid String Url
   static String? path(String url)
   {
-    Uri? uri = toUri(url);
+    Uri? uri = parse(url);
     if (uri == null) return null;
-    if (!uri.hasAuthority) uri = toUri('http://' + url);
-    String path = uri!.host;
-    uri.pathSegments.forEach((segment) => path = path + "/" + segment);
-    return path;
+
+    // default the scheme
+    if (!uri.hasScheme) uri = parse('http://' + url);
+
+    return uri?.domain;
   }
   
   static Future<UriData?> toUriData(String url) async

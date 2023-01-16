@@ -119,8 +119,15 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
     if ((event.parameters != null) && (event.parameters!.containsKey('modal'))) modal = S.toBool(event.parameters!['modal']);
     if ((modal != true) && (event.model != null)) modal = (event.model!.findDescendantOfExactType(ModalModel, id: url) != null);
 
-    // Allow Framework to Handle Open if Modal or Web Address
-    if ((modal == true) || (Url.parse(url)?.hasAuthority ?? false)) return;
+    // allow framework to handle open if fully qualified
+    if (url != null)
+    {
+      var uri = Uri.tryParse(url);
+      if (uri != null && uri.isAbsolute) return;
+    }
+
+    // allow framework to handle open if Modal
+    if (modal == true) return;
 
     // mark event as handled
     event.handled = true;

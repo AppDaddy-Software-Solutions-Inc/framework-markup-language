@@ -70,12 +70,9 @@ class _InlineFrameViewState extends State<InlineFrameView>
     Widget? view = iframe;
     if (view == null)
     {
-      String url = Url.toAbsolute(widget.model.url ?? "");
-      controller
-        ..setNavigationDelegate(NavigationDelegate())
-        ..setJavaScriptMode(JavaScriptMode.unrestricted)
-        ..loadRequest(Url.parse(url)!)
-        ..addJavaScriptChannel('TOFLUTTER', onMessageReceived: onMessageReceived);
+
+      var uri = Url.parse(widget.model.url);
+      if (uri != null) controller..setNavigationDelegate(NavigationDelegate())..setJavaScriptMode(JavaScriptMode.unrestricted)..loadRequest(uri)..addJavaScriptChannel('TOFLUTTER', onMessageReceived: onMessageReceived);
       view = WebViewWidget(controller: controller);
     }
 

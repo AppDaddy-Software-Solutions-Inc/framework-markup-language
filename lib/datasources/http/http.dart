@@ -173,11 +173,14 @@ class Http
 
   static Uri? encodeUri(String url, {bool refresh = false})
   {
-    url = Url.toAbsolute(url);
-    if (refresh == true) url = Url.addParameter(url, 'refresh', System().uuid());
-    String? _url = Url.encode(url);
-    Uri? uri = Url.parse(_url);
-    return uri;
+    Uri? uri = Url.parse(url);
+    if (uri == null) return null;
+
+    Map<String, dynamic> parameters = {};
+    parameters.addAll(uri.queryParameters);
+    if (refresh == true) parameters["refresh"] = System().uuid();
+    parameters.forEach((key, value) => Uri.encodeComponent(value));
+    return uri.replace(queryParameters: parameters);
   }
 
   static Map<String, String> encodeHeaders(Map<String, String>? headers)

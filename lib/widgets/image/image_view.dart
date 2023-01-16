@@ -53,107 +53,111 @@ class ImageView extends StatefulWidget
 
     // dummy image is default
     var dummy = getByteImage(placeholderImage, getFit(fit), width, height, fadeDuration, null);
-    if (url == null) return dummy;
+
+    // parse the url
+    Uri? uri = Url.parse(url);
+    if (uri == null) return dummy;
 
     try
     {
-      Uri? uri = Url.parse(url);
-      if (uri != null)
+      // error handler
+      Widget errorHandler(BuildContext content, Object object, StackTrace? stacktrace)
       {
-        // error handler
-        Widget errorHandler(BuildContext content, Object object, StackTrace? stacktrace)
+        if (defaultvalue != null)
         {
-          if (defaultvalue != null)
+          if (defaultvalue.toString().toLowerCase() == 'none' || defaultvalue.toString().toLowerCase() == '') return Container();
+          else return getImage(defaultvalue, defaultvalue: null, fit: fit, width: width, height: height, filter: filter, fade: fade, fadeDuration: fadeDuration);
+        }
+        else return Icon(Icons.broken_image_outlined, size: 36, color: Colors.grey);
+      }
+
+      // get image type
+      switch (imageSource(uri))
+      {
+        /// data uri
+        case ImageSource.data:
+          image = getByteImage(uri.data!.contentAsBytes(), getFit(fit), width, height, fadeDuration, errorHandler);
+          break;
+
+        /// blob image from camera or file picker
+        case ImageSource.blob:
+          image = kIsWeb ? Image.network(uri.url) : Image.file(File(uri.url));
+          break;
+
+        /// file image
+        case ImageSource.file:
+          if (uri.fileExtension == "svg")
           {
-            if (defaultvalue.toString().toLowerCase() == 'none' || defaultvalue.toString().toLowerCase() == '') return Container();
-            else return getImage(defaultvalue, defaultvalue: null, fit: fit, width: width, height: height, filter: filter, fade: fade, fadeDuration: fadeDuration);
+            var file = Platform.getFile(uri.filePath);
+            if (file != null) image = SvgPicture.file(file!, fit: getFit(fit), width: width, height: height);
           }
-          else return Icon(Icons.broken_image_outlined, size: 36, color: Colors.grey);
-        }
+          else image = Image.file(File(uri.filePath!));
+          break;
 
-        ImageSource? source;
-        switch (uri.scheme)
-        {
-          case "data":
-            if (uri.data != null) source = ImageSource.data;
-            break;
+        /// asset image
+        case ImageSource.asset:
+          if (uri.fileExtension == "svg")
+          {
+            var file = Platform.getFile(uri.filePath);
+            if (file != null) image = SvgPicture.file(file!, fit: getFit(fit), width: width, height: height);
+          }
+          else image = getAssetImage(uri.filePath!, getFit(fit), width, height, fadeDuration, errorHandler);
+          break;
 
-          case "blob":
-            source = ImageSource.blob;
-            break;
-
-          case "file":
-            source = ImageSource.web;
-            if (uri.page != null && Platform.fileExists(uri.page!)) source = ImageSource.file;
-            break;
-
-          case "asset":
-            source = ImageSource.web;
-            if (uri.page != null && Platform.fileExists(uri.page!)) source = ImageSource.asset;
-            break;
-
-          case "blob":
-            source = ImageSource.blob;
-            break;
-
-          case "asset":
-            source = ImageSource.asset;
-            break;
-        }
-
-        switch (source)
-        {
-          /// data uri
-          case ImageSource.data:
-            image = getByteImage(uri.data!.contentAsBytes(), getFit(fit), width, height, fadeDuration, errorHandler);
-            break;
-
-          /// blob image from camera or file picker
-          case ImageSource.blob:
-            image = kIsWeb ? Image.network(url) : Image.file(File(url));
-            break;
-
-          /// file image from camera or file picker
-          case ImageSource.file:
-            if (uri.pageExtension == "svg")
-            {
-              var file = Platform.getFile(uri.filePath);
-              if (file != null) image = SvgPicture.file(file!, fit: getFit(fit), width: width, height: height);
-            }
-            else image = Image.file(File(uri.filePath!));
-            break;
-
-          /// asset image
-          case ImageSource.asset:
-            if (uri.pageExtension == "svg")
-            {
-              var file = Platform.getFile(uri.filePath);
-              if (file != null) image = SvgPicture.file(file!, fit: getFit(fit), width: width, height: height);
-            }
-            else image = getAssetImage(uri.filePath!, getFit(fit), width, height, fadeDuration, errorHandler);
-            break;
-
-          /// web image
-          case ImageSource.web:
-            if (uri.pageExtension == "svg")
-                 image = SvgPicture.network(url, fit: getFit(fit), width: width, height: height);
-            else image = getWebImage(Url.toAbsolute(url), getFit(fit), width, height, fadeDuration, errorHandler);
-            break;
-
-          /// default to:  web image
-          default:
-            image = getWebImage(Url.toAbsolute(url), getFit(fit), width, height, fadeDuration, errorHandler);
-            break;
-        }
+        /// web image
+        case ImageSource.web:
+          if (uri.fileExtension == "svg")
+               image = SvgPicture.network(uri.url, fit: getFit(fit), width: width, height: height);
+          else image = getWebImage(uri.url, getFit(fit), width, height, fadeDuration, errorHandler);
+          break;
       }
     }
     catch(e)
     {
-      Log().error("Error decoding image from $url. Error is $e");
+      Log().error("Error decoding image from ${uri.url}. Error is $e");
     }
 
     // return widget
     return image ?? dummy;
+  }
+
+  static ImageSource imageSource(Uri uri)
+  {
+    ImageSource source = ImageSource.web;
+    switch (uri.scheme)
+    {
+      case "data":
+        if (uri.data != null) source = ImageSource.data;
+        break;
+
+      case "blob":
+        source = ImageSource.blob;
+        break;
+
+      case "file":
+        source = ImageSource.web;
+        if (uri.file != null && Platform.fileExists(uri.file!)) source = ImageSource.file;
+        break;
+
+      case "asset":
+        source = ImageSource.web;
+        if (uri.file != null && Platform.fileExists(uri.file!)) source = ImageSource.asset;
+        break;
+
+      case "blob":
+        source = ImageSource.blob;
+        break;
+
+      case "asset":
+        source = ImageSource.asset;
+        break;
+
+      case "https":
+      case "http":
+        source = ImageSource.web;
+        break;
+    }
+    return source;
   }
 
   /// how the image will fit within the space it is given

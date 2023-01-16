@@ -302,7 +302,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
     return model;
   }
 
-  Future<void> loadAsync(String url, {bool? refresh, String? dependency}) async
+  Future<void> loadAsync(String url, {required bool refresh, String? dependency}) async
   {
     try
     {
@@ -456,7 +456,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
     super.dispose();
   }
 
-  static Future<FrameworkModel> build(String templateName, {Map<String, String?>? parameters, IModelListener? listener, bool? refresh = false, String? dependency}) async
+  static Future<FrameworkModel> build(String templateName, {Map<String, String?>? parameters, IModelListener? listener, required bool refresh, String? dependency}) async
   {
     Template template = await Template.fetch(url: templateName, parameters: parameters, refresh: refresh);
 
@@ -508,7 +508,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
     return model;
   }
 
-  static Future<void> _injectDebugModal(FrameworkModel model, bool? refresh) async
+  static Future<void> _injectDebugModal(FrameworkModel model, bool refresh) async
   {
     {
       // get the debug template

@@ -30,32 +30,6 @@ class _SplashState extends State<Splash>
     // initialize the system
     await System().initialized;
 
-    // set default app
-    if (isWeb)
-    {
-      // parse base url
-      Uri? uri = Url.parse(Uri.base.toString());
-
-      // if localhost - use the default domain and route
-      // port 9000 is used by node.js by our installer
-      if (uri != null)
-      {
-        bool localhost = uri.host.startsWith(RegExp("localhost", caseSensitive: false));
-        if (localhost && uri.port != 9000) uri = Url.parse(defaultDomain);
-      }
-
-      // create an app
-      var app = ApplicationModel(url: uri!.domain!, title: "web");
-      await app.initialized;
-      System().app = app;
-    }
-
-    // get domain
-    String? domain = System().domain;
-
-    // set domain
-    await System().setDomain(domain);
-
     // return
     if (widget.onInitializationComplete != null) widget.onInitializationComplete!();
   }

@@ -37,7 +37,7 @@ class ConfigModel
     Uri? uri = Url.parse(url);
     if (uri != null)
     {
-      var template = await Template.fetchTemplate(url: "${uri.domain}/config.xml", refresh: false);
+      var template = await Template.fetchTemplate(url: "${uri.domain}/config.xml", refresh: true);
       if (template != null) return fromXml(parent, template.rootElement);
     }
     return null;

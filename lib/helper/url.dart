@@ -23,15 +23,19 @@ class Url
   }
 
   /// Takes a Url String and if it is a relative path, prepends it with the domain
-  static String toAbsolute(String url, {String? domain})
+  static String? toAbsolute(String url, String domain)
   {
-    Uri? uri = parse(url);
-    if (uri?.authority.isEmpty ?? false)
+    Uri? uri = Uri.tryParse(url);
+    if (uri == null) return null;
+    if (!uri.isAbsolute)
     {
-      if (domain == null) domain = System().domain;
-      url = domain! + (url.startsWith('/') ? '' : '/') + url;
+      url = domain + (url.startsWith('/') ? '' : '/') + url;
+      uri = Uri.tryParse(url);
+      if (uri == null) return null;
     }
-    return url;
+    if (!uri.isAbsolute) return null;
+
+    return uri.toString();
   }
 
   /// Url-safe encoding of a parameter values
@@ -73,18 +77,6 @@ class Url
     url = uri.toString();
 
     return url;
-  }
-
-  /// Returns the path component of a valid String Url
-  static String? path(String url)
-  {
-    Uri? uri = parse(url);
-    if (uri == null) return null;
-
-    // default the scheme
-    if (!uri.hasScheme) uri = parse('http://' + url);
-
-    return uri?.domain;
   }
   
   static Future<UriData?> toUriData(String url) async
@@ -138,36 +130,58 @@ class Url
     // url is a data uri?
     if (uri.data != null) return uri;
 
+    // absolute?
+    if (!uri.isAbsolute)
+    {
+      uri = Uri.tryParse("${System().domain}/${uri.url}");
+      if (uri == null) return null;
+    }
+
     // because flutter is a SWA we need to ignore the /#/ for uri query param detection
-    if (uri.hasFragment) uri = Uri.tryParse(url.replaceFirst("/#", "/"));
+    if (url.contains("/#")) uri = Uri.tryParse(url.replaceFirst("/#", "/"));
     if (uri == null) return null;
 
     // remove empty segments
-    List<String> segments = uri.pathSegments.toList();
-    segments.removeWhere((segment) => Uri.decodeComponent(segment).trim() == "");
+    List<String> pathSegments = uri.pathSegments.toList();
+    pathSegments.removeWhere((segment) => Uri.decodeComponent(segment).trim() == "");
 
-    // get start page && remove from segments
-    String? page;
-    if (segments.isNotEmpty && segments.last.contains("."))
+    // build query parameters
+    Map<String, dynamic>? queryParameters;
+    if (uri.queryParameters.isNotEmpty)
     {
-      page = uri.pathSegments.last.trim();
-      segments.removeLast();
+      queryParameters = {};
+      queryParameters.addAll(uri.queryParameters);
     }
 
     // build a new uri
-    return Uri(scheme: uri.scheme, host: uri.host,  port: uri.port, pathSegments: segments, fragment: page, queryParameters: uri.queryParameters.cast());
+    return Uri(scheme: uri.hasScheme ? uri.scheme : null,
+               host: uri.host,
+               port: uri.hasPort ? uri.port : null,
+               fragment: uri.hasFragment ? uri.fragment : null,
+               pathSegments: pathSegments.isNotEmpty ? pathSegments : null,
+               queryParameters: queryParameters);
   }
 }
 
 extension UriExtensions on Uri
 {
-  String? get domain => "$scheme://$authority$path";
-  String? get page   => fragment == "" ? null : this.fragment;
-  String? get pageExtension
+  String get url => this.toString();
+
+  String? get domain
   {
-    var _page = page;
-    if (_page != null && _page.contains(".")) return extension(_page).toLowerCase().replaceFirst(".", "").trim();
-    return null;
+    if (!this.isAbsolute) return null;
+    if (file != null) return url.replaceAll("/$file","");
+    return url;
+  }
+
+  String? get file => (pathSegments.isNotEmpty && pathSegments.last.contains(".")) ? pathSegments.last : null;
+
+  String? get fileExtension
+  {
+    var page = this.file;
+    if (page?.contains(".") ?? false)
+         return extension(page!).toLowerCase().replaceFirst(".", "").trim();
+    else return null;
   }
 
   String? get filePath
@@ -183,10 +197,10 @@ extension UriExtensions on Uri
     switch (scheme)
     {
       case "asset":
-        _path = "$folder/assets/$host/$path/$page";
+        _path = "$folder/assets/$host/$path";
         break;
       case "file":
-        _path = "$folder/$host/$path/$page";
+        _path = "$folder/$host/$path";
         break;
     }
 

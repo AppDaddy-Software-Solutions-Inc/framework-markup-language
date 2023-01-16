@@ -47,12 +47,12 @@ final String version = '1.0.0+10';
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
 enum ApplicationTypes{ SingleApp, MultiApp }
-final ApplicationTypes appType  = ApplicationTypes.MultiApp;
+final ApplicationTypes appType  = ApplicationTypes.SingleApp;
 
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://config.xml to use the local assets
-final String defaultDomain = 'https://fml.appdaddy.co';
+final String defaultDomain = 'https://test.appdaddy.co';
 
 typedef CommitCallback = Future<bool> Function();
 
@@ -86,7 +86,11 @@ class System extends WidgetModel implements IEventManager
     _domain?.set(app?.domain);
     _scheme?.set(app?.scheme);
     _host?.set(app?.host);
+
+    // initialize the theme
+    initTheme();
   }
+
   ApplicationModel? get app => _app;
 
   /// holds user observables bound to claims
@@ -625,32 +629,6 @@ class System extends WidgetModel implements IEventManager
   CommitCallback? commit;
   Future<bool> onCommit() async {
     if (commit != null) return await commit!();
-    return true;
-  }
-
-  Future<bool> setDomain(String? domain) async
-  {
-    // start the process
-    await initializeDomainConnection(domain);
-
-    // single page application?
-    //singlePageApplication = S.toBool(config?.get('SINGLE_PAGE_APPLICATION')) ?? false;
-
-    // set home page
-    //homePage = config?.get('HOME_PAGE');
-
-    // set login page
-    //loginPage = config?.get('LOGIN_PAGE');
-
-    // set login page
-    //debugPage = config?.get('DEBUG_PAGE');
-
-    // set unauthorized page
-    //unauthorizedPage = config?.get('UNAUTHORIZED_PAGE');
-
-    // initialize the theme
-    initTheme();
-
     return true;
   }
 

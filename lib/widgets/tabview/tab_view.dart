@@ -126,19 +126,20 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
     event.handled = true;
 
     // String template = uri.host;
-    String? template = Url.path(url!);
-    if (S.isNullOrEmpty(template))
+    var uri = Url.parse(url);
+    if (uri == null)
     {
       await DialogService().show(type: DialogType.error, title: phrase.missingTemplate, description: url, buttons: [Text(phrase.ok)]);
       return;
     }
-    else template = template!.toLowerCase();
 
+    String? template = uri.url.toLowerCase();
     if (template == 'previous') return _showPrevious();
     if (template == 'next')     return _showNext();
     if (template == 'first')    return _showFirst();
     if (template == 'last')     return _showLast();
-    return _showPage(url, event: event);
+
+    return _showPage(uri.url, event: event);
   }
 
   void _showPrevious()

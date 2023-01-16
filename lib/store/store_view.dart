@@ -155,7 +155,7 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
           content: Container(
             child: Column(mainAxisSize: MainAxisSize.min, children: [
               Padding(padding: EdgeInsets.only(top: 20), child: Text(app.title ?? "", style: TextStyle(fontSize: 18),),),
-              Padding(padding: EdgeInsets.only(bottom: 10), child: Text('($app.url)', style: TextStyle(fontSize: 14))),
+              Padding(padding: EdgeInsets.only(bottom: 10), child: Text('(${app.url})', style: TextStyle(fontSize: 14))),
               Row(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.end, children: [
                 TextButton(onPressed: () => Navigator.of(context).pop(), child: Text('Cancel')),
                 TextButton(

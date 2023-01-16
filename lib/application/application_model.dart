@@ -41,7 +41,7 @@ class ApplicationModel
   String? get loginPage => settings("LOGIN_PAGE");
   String? get debugPage => settings("DEBUG_PAGE");
   String? get unauthorizedPage => settings("UNAUTHORIZED_PAGE");
-  String? get requestedPage => _uri?.page?.toLowerCase().trim().endsWith(".xml") ?? false ? _uri!.page : null;
+  String? get requestedPage => _uri?.file?.toLowerCase().trim().endsWith(".xml") ?? false ? _uri!.file : null;
 
   Map<String,String?>? get configParameters => _config?.parameters;
 
@@ -107,11 +107,14 @@ class ApplicationModel
     {
       // get the icon
       var icon = model.settings["APP_ICON"];
-      if (icon != null)
+      if (icon != null && _uri?.domain != null)
       {
-        var url = Url.toAbsolute(icon, domain: _uri?.domain);
-        var uri = await Url.toUriData(url);
-        if (uri != null) this.icon = uri.toString();
+        var url = Url.toAbsolute(icon, _uri!.domain!);
+        if (url != null)
+        {
+          var uri = await Url.toUriData(url);
+          if (uri != null) this.icon = uri.toString();
+        }
       }
 
       // set the config

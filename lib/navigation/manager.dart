@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
+import 'package:fml/application/application_model.dart';
 import 'package:fml/helper/xml.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
@@ -49,9 +50,43 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     // clear all pages
     _pages.clear();
 
-    // get start page
+    // set default app
+    if (isWeb || appType == ApplicationTypes.SingleApp)
+    {
+      Uri? uri;
+
+      // web applications initialize from the browser url
+      if (isWeb)
+      {
+        // parse base url
+        uri = Url.parse(Uri.base.toString());
+
+        // if localhost - use the default domain and route
+        // port 9000 is used by node.js by our installer
+        if (uri != null)
+        {
+          bool localhost = uri.host.startsWith(RegExp("localhost", caseSensitive: false));
+          if (localhost && uri.port != 9000) uri = Url.parse(defaultDomain);
+        }
+      }
+
+      // single page applications use the defaultDomain
+      else uri = Url.parse(defaultDomain);
+
+      // create an app
+      if (uri != null && uri.domain != null)
+      {
+        var app = ApplicationModel(url: uri.domain!, title: uri.domain!);
+        await app.initialized;
+        System().app = app;
+      }
+    }
+
+    // get home page
     String? home  = System().app?.homePage;
-    if (((isMobile) || (isDesktop)) && (appType == ApplicationTypes.MultiApp)) home = "store";
+    if (!isWeb && appType == ApplicationTypes.MultiApp) home = "store";
+
+    // get start page
     String? start = System().app?.requestedPage ?? home;
     if (start == null || home == null) return;
 
@@ -183,10 +218,10 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     String fqdn = "${uri.scheme}://${uri.host}";
 
     // set default domain
-    await System().setDomain(fqdn);
+    //await System().setDomain(fqdn);
 
     // default home page
-    if (uri.pathSegments.isEmpty) url = System().app?.homePage;
+    //if (uri.pathSegments.isEmpty) url = System().app?.homePage;
 
     return url;
   }
@@ -289,10 +324,19 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     int?  index        = S.mapInt(parameters,'index');
     bool? replace      = S.mapBoo(parameters,'replace', defaultValue: false);
     bool? replaceAll   = S.mapBoo(parameters,'replaceall', defaultValue: false);
-    bool isLocalUrl   = (url.toLowerCase().trim().startsWith("file://") && url.toLowerCase().trim().endsWith(".xml"));
+
+    var uri = Url.parse(url);
+    if (uri == null) return false;
+
+    var d1 = uri.host?.toLowerCase();
+    var d2 = System().app?.host?.toLowerCase();
+
+    bool sameDomain = d1 == d2;
+    bool xmlFile    = uri.fileExtension == "xml";
+    bool local      = sameDomain && xmlFile;
 
     // We need to keep the file:// prefix as an indicator for fetch() that its a local file
-    String? template = isLocalUrl ? url.toLowerCase() : Url.path(url);
+    String? template = uri.domain?.toLowerCase();
 
     // missing template?
     if (S.isNullOrEmpty(template))
@@ -301,10 +345,8 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
       return ok;
     }
 
-    template = template!.toLowerCase();
-
     // open external url in browser?
-    if (!isLocalUrl && Url.isAbsolute(url)) return _openBrowser(url);
+    if (!local) return _openBrowser(url);
 
     // open new page in modal window?
     if (modal == true)

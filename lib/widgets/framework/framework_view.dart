@@ -427,8 +427,11 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     if (widget.model.element != null)
     {
       var bytes = utf8.encode(widget.model.element!.toXmlString());
-      String filename = Url.toAbsolute(widget.model.templateName ?? "no-file-name");
-      Platform.fileSaveAs(bytes, filename);
+
+      var uri = Url.parse(widget.model.templateName);
+      if (uri != null)
+           Platform.fileSaveAs(bytes, uri.url);
+      else Platform.fileSaveAs(bytes, "template");
     }
   }
 

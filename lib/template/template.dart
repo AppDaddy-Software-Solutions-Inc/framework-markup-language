@@ -27,15 +27,15 @@ class Template
 
   static XmlDocument? _fromMemory(String url)
   {
-    String? filename = Url.path(Url.toAbsolute(url));
-    if (System().templates.containsKey(filename)) return System().templates[filename];
+    var uri = Url.parse(url);
+    if (uri != null && System().templates.containsKey(uri.url)) return System().templates[uri.url];
     return null;
   }
 
   static toMemory(String url, XmlDocument? document)
   {
-    String? filename = Url.path(Url.toAbsolute(url));
-    if (filename != null) System().templates[filename] = document;
+    var uri = Url.parse(url);
+    if (uri != null) System().templates[uri.url] = document;
   }
 
   static Future<String?> _fromDatabase(String key) async
@@ -127,11 +127,11 @@ class Template
     String? template;
     try
     {
-      String? filename = Url.path(Url.toAbsolute(url));
-      if (filename != null)
+      var uri = Url.parse(url);
+      if (uri != null)
       {
-        bool exists = Platform.fileExists(filename);
-        if (exists) template = await Platform.readFile(filename);
+        bool exists = Platform.fileExists(uri.url);
+        if (exists) template = await Platform.readFile(uri.url);
       }
     }
     catch (e)
@@ -144,11 +144,11 @@ class Template
 
   static Future<bool> _toDisk(String url, String xml) async
   {
-    String? filename = Url.path(Url.toAbsolute(url));
-    if (filename != null)
+    var uri = Url.parse(url);
+    if (uri != null)
     {
-      Log().debug('Writing $filename to disk", object: "TEMPLATE"');
-      return await Platform.writeFile(filename, xml);
+      Log().debug('Writing ${uri.url} to disk", object: "TEMPLATE"');
+      return await Platform.writeFile("${uri.url}", xml);
     }
     return false;
   }
@@ -194,23 +194,30 @@ class Template
     return template;
   }
 
-  static Future<XmlDocument?> fetchTemplate({required String url, Map<String, String?>? parameters, bool refresh = false}) async
+  static Future<XmlDocument?> fetchTemplate({required String url, Map<String, String?>? parameters, required bool refresh}) async
   {
+    // saved document
+    if (isUUID(url)) return await fetchSaved(url: url);
+
     Log().debug('Getting template ' + url);
 
-    url = Url.toAbsolute(url);
+    // parse the url
+    var uri = Url.parse(url);
+    if (uri == null) return null;
+
+    // use qualified url
+    url = uri.url;
 
     String? template;
-    bool isFileUrl = url.toLowerCase().trim().startsWith("file://");
+
+    // auto refresh
+    refresh = refresh || (System().app?.autoRefresh ?? false);
 
     // get template from file
-    if (template == null && !isFileUrl)
+    if (uri.scheme != "file")
     {
-      // requested template is a form?
-      if (isUUID(url)) template = await _fromDatabase(url);
-
       // get template from server
-      if (template == null && (refresh == true || (System().app?.autoRefresh ?? false)))
+      if (refresh == true)
       {
         // get template
         template = await _fromServer(url);
@@ -263,20 +270,10 @@ class Template
       return null;
     }
 
-    // parse the document
-    XmlDocument? document;
-    try
-    {
-      document = XmlDocument.parse(template);
-    }
-    catch(e)
-    {
-      Log().error("Error fetching template. Error is $e");
-      document = null;
-    }
+    var document = Xml.tryParse(template);
 
     // process includes
-    if (document != null) await _processIncludes(document, parameters);
+    if (document != null) await _processIncludes(document, parameters, refresh);
 
     // cache in memory after processing include files
     if (document != null) await toMemory(url, document);
@@ -285,11 +282,27 @@ class Template
     return document;
   }
 
-  static Future<Template> fetch({required String url, Map<String, String?>? parameters, bool? refresh = false}) async
+  static Future<XmlDocument?> fetchSaved({required String url}) async
+  {
+    Log().debug('Getting saved template ' + url);
+
+    String? template;
+
+    // get template from database (web)
+    if (template == null) template = await _fromDatabase(url);
+
+    return Xml.tryParse(template);
+  }
+
+
+  static Future<Template> fetch({required String url, Map<String, String?>? parameters, required bool refresh}) async
   {
     Log().debug('Building template');
 
-    XmlDocument? document = await fetchTemplate(url: url);
+    // get the template
+    XmlDocument? document = await fetchTemplate(url: url, refresh: refresh);
+
+    // deserialize
     if (document != null) return Template.fromDocument(name: url, xml: document, parameters: parameters);
 
     // not found - build error template
@@ -311,7 +324,7 @@ class Template
     fromDocument(name: url, xml: document, parameters: parameters);
   }
 
-  static Future<bool> _processIncludes(XmlDocument document, Map<String, String?>? parameters) async
+  static Future<bool> _processIncludes(XmlDocument document, Map<String, String?>? parameters, bool refresh) async
   {
     Iterable<XmlElement> includes = document.findAllElements("INCLUDE", namespace: "*");
     for (XmlElement element in includes)
@@ -332,7 +345,7 @@ class Template
           parameters.addAll(uri.queryParameters);
 
           // fetch the template
-          var template = await Template.fetchTemplate(url: url, parameters: parameters);
+          var template = await Template.fetchTemplate(url: url, parameters: parameters, refresh: refresh);
 
           // inject include segment into document
           if (template != null)

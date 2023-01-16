@@ -121,8 +121,7 @@ class Url
     }
     catch(e)
     {
-      var x = e.toString();
-      int i = 0;
+      print("Error in toUriData. Error is $e");
     }
     return null;
   }
@@ -173,21 +172,32 @@ extension UriExtensions on Uri
 
   String? get filePath
   {
+    if (kIsWeb) return null;
+
+    String? _path;
+
+    // get root folder
+    var folder = dirname(Platform.resolvedExecutable);
+
     // file path
-    if (!kIsWeb) 
     switch (scheme)
     {
       case "asset":
+        _path = "$folder/assets/$host/$path/$page";
+        break;
       case "file":
-        var root  = dirname(Platform.resolvedExecutable);
-        var _path = "$root/assets/$host/$path/$page";
-
-        var s = Platform.pathSeparator;
-        _path = _path.replaceAll("\\", "$s").replaceAll("/", "$s");
-        while (_path!.contains("$s$s")) _path = _path.replaceAll("$s$s", "$s");
-        return _path;
+        _path = "$folder/$host/$path/$page";
+        break;
     }
-    return null;
+
+    // format the path
+    if (_path != null)
+    {
+      var ps = Platform.pathSeparator;
+      _path = _path.replaceAll("\\", "$ps").replaceAll("/", "$ps");
+      while (_path!.contains("$ps$ps")) _path = _path.replaceAll("$ps$ps", "$ps");
+    }
+    return _path;
   }
 }
 

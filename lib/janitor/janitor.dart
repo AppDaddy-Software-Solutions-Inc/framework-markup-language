@@ -70,7 +70,7 @@ class Janitor
     });
 
     // cleanup completed posts
-    LOG.Log().debug('Cleaning up completd posting documents', caller: "Janitor");
+    LOG.Log().debug('Cleaning up completed posting documents', caller: "Janitor");
     List<Post> posts = await Post.query(where: "{status} == " + Post.statusCOMPLETE.toString());
     posts.forEach((post) async
     {

@@ -2,7 +2,7 @@
 import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/hive/app.dart';
+import 'package:fml/application/application_model.dart';
 import 'package:fml/navigation/manager.dart';
 import 'package:fml/navigation/page.dart';
 import 'package:fml/system.dart';
@@ -12,8 +12,8 @@ import 'package:provider/provider.dart';
 
 class Store extends WidgetModel
 {
-  final List<App> _apps = [];
-  List<App> getApps() => _apps.toList();
+  final List<ApplicationModel> _apps = [];
+  List<ApplicationModel> getApps() => _apps.toList();
 
   bool initialized = false;
 
@@ -33,10 +33,10 @@ class Store extends WidgetModel
   {
     busy = true;
 
-    var apps = await App.loadAll();
+    var apps = await ApplicationModel.loadAll();
 
     _apps.clear();
-    for (App app in apps) _apps.add(app);
+    for (ApplicationModel app in apps) _apps.add(app);
 
     // sort by position
     //_apps.sort();
@@ -46,7 +46,7 @@ class Store extends WidgetModel
     return true;
   }
 
-  Future add(App app) async
+  Future add(ApplicationModel app) async
   {
     busy = true;
 
@@ -59,15 +59,15 @@ class Store extends WidgetModel
     busy = false;
   }
 
-  App? find({String? url})
+  ApplicationModel? find({String? url})
   {
     // query hive
-    App? app = _apps.firstWhereOrNull((app) => app.url == url);
+    ApplicationModel? app = _apps.firstWhereOrNull((app) => app.url == url);
 
     return app;
   }
 
-  delete(App? app) async
+  delete(ApplicationModel? app) async
   {
     if (app != null)
     {
@@ -86,11 +86,11 @@ class Store extends WidgetModel
   deleteAll() async
   {
     busy = true;
-    await App.deleteAll();
+    await ApplicationModel.deleteAll();
     busy = false;
   }
 
-  launch(App app, BuildContext context) async
+  launch(ApplicationModel app, BuildContext context) async
   {
     // get the home page
     var page = app.homePage;

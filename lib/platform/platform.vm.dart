@@ -322,6 +322,7 @@ class Platform
       // write the file
       if (folder != null)
       {
+        if (content is ByteData)  await File(filename).writeAsBytes(content.buffer.asUint8List());
         if (content is Uint8List) await File(filename).writeAsBytes(content);
         if (content is String)    await File(filename).writeAsString(content);
       }

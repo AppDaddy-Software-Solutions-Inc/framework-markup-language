@@ -1,15 +1,19 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:fml/config/config_model.dart';
 import 'package:fml/crypto/crypto.dart';
 import 'package:fml/hive/database.dart';
 import 'package:fml/helper/helper_barrel.dart';
 
-class App
+class ApplicationModel
 {
   static String tableName = "APP";
 
   late Future<bool> initialized;
+
+  // used for social media
+  FirebaseApp? firebase;
 
   // secure?
   bool get secure => _uri?.scheme == "https" || _uri?.scheme == "wss";
@@ -28,6 +32,9 @@ class App
 
   late final Uri? _uri;
   String? get domain => _uri?.domain;
+  String? get scheme => _uri?.scheme;
+  String? get host   => _uri?.host;
+
   Map<String, String>? get queryParameters => _uri?.queryParameters;
   
   String  get homePage => settings("HOME_PAGE") ?? "main.xml";
@@ -40,7 +47,7 @@ class App
 
   ConfigModel? _config;
 
-  App({required this.url, required this.title, this.icon, this.order})
+  ApplicationModel({required this.url, required this.title, this.icon, this.order})
   {
     // key is url (lowercase) hashed
     key = Cryptography.hash(text: url.toLowerCase());
@@ -59,7 +66,6 @@ class App
     if (model != null) _config = model;
     return true;
   }
-
 
   Future<bool> insert() async => (await Database().insert(tableName, key, _toMap()) == null);
   Future<bool> update() async => (await Database().update(tableName, key, _toMap()) == null);
@@ -118,10 +124,10 @@ class App
   }
 
 
-  static App? _fromMap(dynamic map)
+  static ApplicationModel? _fromMap(dynamic map)
   {
-    App? app;
-    if (map is Map<String, dynamic>) app = App(url: S.mapVal(map, "url"), title: S.mapVal(map, "title"), icon: S.mapVal(map, "icon"), order: S.mapInt(map, "order"));
+    ApplicationModel? app;
+    if (map is Map<String, dynamic>) app = ApplicationModel(url: S.mapVal(map, "url"), title: S.mapVal(map, "title"), icon: S.mapVal(map, "icon"), order: S.mapInt(map, "order"));
     return app;
   }
 
@@ -137,13 +143,13 @@ class App
     return map;
   }
 
-  static Future<List<App>> loadAll() async
+  static Future<List<ApplicationModel>> loadAll() async
   {
-    List<App> apps = [];
+    List<ApplicationModel> apps = [];
     List<Map<String, dynamic>> entries = await Database().query(tableName);
     entries.forEach((entry)
     {
-      App? app = _fromMap(entry);
+      ApplicationModel? app = _fromMap(entry);
       if (app != null) apps.add(app);
     });
     return apps;

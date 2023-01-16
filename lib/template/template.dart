@@ -202,7 +202,7 @@ class Template
 
     String? template;
     bool isFileUrl = url.toLowerCase().trim().startsWith("file://");
-n
+
     // get template from file
     if (template == null && !isFileUrl)
     {

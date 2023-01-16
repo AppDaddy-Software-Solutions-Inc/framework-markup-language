@@ -1,5 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/hive/app.dart';
+import 'package:fml/application/application_model.dart';
 import 'package:fml/theme/themenotifier.dart';
 import 'package:fml/navigation/observer.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
@@ -143,7 +143,7 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
     );
   }
 
-  Future<void> removeApp(App app) async
+  Future<void> removeApp(ApplicationModel app) async
   {
     return showDialog<void>(
       context: context,
@@ -214,7 +214,7 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
     );
   }
 
-  _launchApp(App app) async
+  _launchApp(ApplicationModel app) async
   {
     Store().launch(app, context);
   }
@@ -311,7 +311,7 @@ class AppFormState extends State<AppForm>
     if (ok)
     {
       System.toast('Attempting to Connect Application',duration: 2);
-      App app = App(url: url!, title: title!);
+      ApplicationModel app = ApplicationModel(url: url!, title: title!);
       Store().add(app);
       Navigator.of(context).pop();
     }

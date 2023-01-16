@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:collection';
+import 'dart:convert';
 import 'dart:core';
 import 'package:firebase_core/firebase_core.dart' show FirebaseApp;
 import 'package:flutter/foundation.dart';
@@ -23,7 +24,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/hive/database.dart';
 import 'package:fml/datasources/gps/gps.dart' as GPS;
 import 'package:fml/datasources/gps/payload.dart' as GPS;
-import 'package:fml/hive/app.dart';
+import 'package:fml/application/application_model.dart';
 import 'package:fml/mirror/mirror.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/helper_barrel.dart';
@@ -69,30 +70,51 @@ class System extends WidgetModel implements IEventManager
   factory System() => _singleton;
 
   // current application
-  App? _app;
-  set app(App? app)
+  ApplicationModel? _app;
+  set app(ApplicationModel? app)
   {
+    if (app != null)
+         Log().info("Activating Application (${app.title}) @ ${app.domain}");
+    else Log().info("Closing Application");
+
+    //_jwt?.set(null);
+
+    // set the current application
     _app = app;
 
-    // update bindables
-    domain  = app?.domain;
+    // update application level bindables
+    _domain?.set(app?.domain);
+    _scheme?.set(app?.scheme);
+    _host?.set(app?.host);
   }
-  App? get app => _app;
-
-  /// Event Manager Host
-  final EventManager manager = EventManager();
-  registerEventListener(EventTypes type, OnEventCallback callback, {int? priority}) => manager.register(type, callback, priority: priority);
-  removeEventListener(EventTypes type, OnEventCallback callback) => manager.remove(type, callback);
-  broadcastEvent(WidgetModel source, Event event) => manager.broadcast(this, event);
-  executeEvent(WidgetModel source, String event) => manager.execute(this, event);
-
-  // used for social media
-  FirebaseApp? firebase;
+  ApplicationModel? get app => _app;
 
   /// holds user observables bound to claims
   Map<String, StringObservable> _user = Map<String, StringObservable>();
 
-  /// json web token used to authenticate
+  // current domain
+  StringObservable? _domain;
+  String? get domain => _domain?.get();
+
+  // current scheme
+  StringObservable? _scheme;
+  String? get scheme => _scheme?.get();
+
+  // current host
+  StringObservable? _host;
+  String? get host => _host?.get();
+
+  /// Global System Observable
+  StringObservable? _platform;
+  String? get platform => _platform?.get();
+
+  StringObservable? _useragent;
+  String? get useragent => _useragent?.get() ?? Platform.useragent;
+
+  StringObservable? _version;
+  String get release => _version?.get() ?? "?";
+
+  /// current json web token used to authenticate
   StringObservable? _jwtObservable;
   Jwt? _jwt;
   set jwt(Jwt? value)
@@ -102,9 +124,20 @@ class System extends WidgetModel implements IEventManager
   }
   Jwt? get jwt => _jwt;
 
+  // firebase
+  FirebaseApp? get firebase => app?.firebase;
+  set firebase(FirebaseApp? v) => app?.firebase = v;
+
   /// Global callback to close any stray overlays avoiding overlay overlap
   dynamic closeOpenOverlay; // always call this if != null before setting
-  
+
+  /// Event Manager Host
+  final EventManager manager = EventManager();
+  registerEventListener(EventTypes type, OnEventCallback callback, {int? priority}) => manager.register(type, callback, priority: priority);
+  removeEventListener(EventTypes type, OnEventCallback callback) => manager.remove(type, callback);
+  broadcastEvent(WidgetModel source, Event event) => manager.broadcast(this, event);
+  executeEvent(WidgetModel source, String event) => manager.execute(this, event);
+
   System.initialize() : super(null, "SYSTEM", scope: Scope("SYSTEM"))
   {
     initialized = _init();
@@ -121,6 +154,9 @@ class System extends WidgetModel implements IEventManager
     String? hiveFolder = await Platform.createFolder("hive");
     await Database().initialize(hiveFolder);
 
+    // create empty applications folder
+    await _initApplicationsFolder();
+
     // initialize System Globals
     await _initializeGlobals();
 
@@ -133,44 +169,12 @@ class System extends WidgetModel implements IEventManager
     return true;
   }
 
-  // fully qualified domain name
-  StringObservable? _domain;
-  set domain(String? url)
-  {
-    if (url != null)
-    {
-      Log().info("Setting domain to $url");
-      Uri? uri = Url.parse(url);
-      if (uri != null)
-      {
-        // set scheme
-        scheme = uri.scheme;
-
-        // set host
-        if (_host == null)
-              _host = StringObservable(Binding.toKey(id, 'host'), uri.path, scope: scope, listener: onPropertyChange);
-        else  _host!.set(uri.path);
-
-        // set domain
-        if (_domain == null)
-             _domain = StringObservable(Binding.toKey(id, 'domain'), uri.domain, scope: scope, listener: onPropertyChange);
-        else _domain!.set(uri.domain);
-
-        // set start page
-        //requestedPage = uri.page;
-      }
-    }
-  }
-
-  String? get domain
-  {
-    if (isWeb) return _domain?.get();
-    if (appType == ApplicationTypes.SingleApp) return defaultDomain.split("/#").first.toString();
-    return _domain?.get();
-  }
-
-  // query parameters from startup url
-  Map<String, String> queryParameters = Map<String, String>();
+  //String? get domain
+  //{
+  //  if (isWeb) return _domain?.get();
+  //  if (appType == ApplicationTypes.SingleApp) return defaultDomain.split("/#").first.toString();
+  //  return _domain?.get();
+  //}
   
   // end point urls used to prefetch templates
   static final Map<String, Mirror> mirrors = Map<String, Mirror>();
@@ -179,9 +183,6 @@ class System extends WidgetModel implements IEventManager
   Future<void> initializeDomainConnection(String? domain) async
   {
     Log().info('Initializing Connection to Domain: $domain');
-
-    // set system domain
-    this.domain = domain;
 
     // clear firebase sign on
     firebase = null;
@@ -197,7 +198,6 @@ class System extends WidgetModel implements IEventManager
 
       // get configuration file from server
       //config = await getConfigModel(domain!, refresh: true);
-
 
       // set fml version support level
       //if (config?.get("FML_VERSION") != null) fmlVersion = S.toVersionNumber(config!.get("FML_VERSION")!) ?? currentVersion;
@@ -231,25 +231,6 @@ class System extends WidgetModel implements IEventManager
   Scope? scope = Scope("SYSTEM");
 
   static const Color colorDefault = Color(0xffb2dd4c);
-
-  // authentication scheme
-  StringObservable? _scheme;
-  set scheme(dynamic v)
-  {
-    if (_scheme != null)
-    {
-      _scheme!.set(v);
-    }
-    else if (v != null)
-    {
-      _scheme = StringObservable(Binding.toKey(id, 'scheme'), v, scope: scope);
-    }
-  }
-  String? get scheme => _scheme?.get();
-
-  // current host
-  StringObservable? _host;
-  String? get host => _host?.get();
 
   // screen height
   IntegerObservable? _screenheight;
@@ -541,16 +522,6 @@ class System extends WidgetModel implements IEventManager
   StringObservable? _uuid;
   String uuid() => Uuid().v1();
 
-  /// Global System Observable
-  StringObservable? _platform;
-  String? get platform => _platform?.get();
-
-  StringObservable? _useragent;
-  String? get useragent => _useragent?.get() ?? Platform.useragent;
-
-  StringObservable? _version;
-  String get release => _version?.get() ?? "?";
-
   // Dates
   Timer? clock;
 
@@ -579,15 +550,21 @@ class System extends WidgetModel implements IEventManager
   GPS.Gps gps = GPS.Gps();
   GPS.Payload? currentLocation;
 
-  ///////////////
-  /* Templates */
-  ///////////////
+  // holds in-memory deserialized templates
+  // primarily used for performance reasons
   HashMap<String?, XmlDocument?> templates = HashMap<String?, XmlDocument?>();
 
   _initializeGlobals() async
   {
+    // active application settings
+    _domain        = StringObservable(Binding.toKey(id, 'domain'), "", scope: scope, listener: onPropertyChange);
+    _scheme        = StringObservable(Binding.toKey(id, 'scheme'), "", scope: scope, listener: onPropertyChange);
+    _host          = StringObservable(Binding.toKey(id, 'host'),   "", scope: scope, listener: onPropertyChange);
+
     // json web token
     _jwtObservable = StringObservable(Binding.toKey(id, 'jwt'), "", scope: scope);
+
+    // theme data
 
     // device settings
     _screenheight = IntegerObservable(Binding.toKey(id, 'screenheight'), null, scope: scope);
@@ -609,6 +586,35 @@ class System extends WidgetModel implements IEventManager
     // add system level log model datasource
     if (datasources == null) datasources = [];
     datasources!.add(LogModel(this, "LOG"));
+  }
+
+  Future<bool> _initApplicationsFolder() async
+  {
+    bool ok = true;
+
+    if (isWeb) return ok;
+    try
+    {
+      // create folder
+      Platform.createFolder("applications");
+
+      // read asset manifest
+      Map<String, dynamic> manifest = json.decode(await rootBundle.loadString('AssetManifest.json'));
+
+      // copy assets
+      for (String key in manifest.keys)
+      if (key.startsWith("assets/applications"))
+      {
+        var folder = key.replaceFirst("assets/", "");
+        await Platform.writeFile(folder, await rootBundle.load(key));
+      }
+    }
+    catch(e)
+    {
+      print("Error building application assets. Error is $e");
+      ok = false;
+    }
+    return ok;
   }
 
   int getEpoch() => DateTime.now().millisecondsSinceEpoch;

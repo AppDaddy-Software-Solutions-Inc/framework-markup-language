@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:convert';
 import 'package:fml/helper/url.dart';
-import 'package:fml/hive/app.dart';
+import 'package:fml/application/application_model.dart';
 import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
 
@@ -45,7 +45,7 @@ class _SplashState extends State<Splash>
       }
 
       // create an app
-      var app = App(url: uri!.domain!, title: "web");
+      var app = ApplicationModel(url: uri!.domain!, title: "web");
       await app.initialized;
       System().app = app;
     }

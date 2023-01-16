@@ -91,6 +91,8 @@ class PostMaster
   
   Future<bool> start() async
   {
+    // not in web
+    if (isWeb) return true;
     bool ok = await _post();
     return ok;
   }

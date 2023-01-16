@@ -41,10 +41,11 @@ class MyTheme
         useMaterial3: true);
   }
 
-  getBrightness() {
-    String? brightness = /*await Settings().get('brightness') ??*/ System().brightness;
-
-    if (brightness != null) {
+  getBrightness()
+  {
+    String? brightness = /*await Settings().get('brightness') ??*/ System().theme.brightness;
+    if (brightness != null)
+    {
       if (brightness == 'system' || brightness == 'platform')
         brightnessPreference = MediaQueryData.fromWindow(WidgetsBinding.instance.window).platformBrightness;
       else if (brightness == 'dark')
@@ -52,8 +53,7 @@ class MyTheme
       else if (brightness == 'light')
         brightnessPreference = Brightness.light;
     }
-    else
-      brightnessPreference = Brightness.light;
+    else brightnessPreference = Brightness.light;
     return brightnessPreference;
   }
 

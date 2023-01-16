@@ -5,13 +5,14 @@ import 'package:fml/system.dart';
 import 'package:google_fonts/google_fonts.dart' deferred as gf;
 import 'package:fml/observable/observables/color.dart';
 
-class ThemeNotifier with ChangeNotifier {
+class ThemeNotifier with ChangeNotifier
+{
   ThemeData _themeData;
 
-  ThemeNotifier(this._themeData) {
+  ThemeNotifier(this._themeData)
+  {
    init();
   }
-
   getTheme() => _themeData;
 
   bool gfloaded = false;
@@ -22,71 +23,76 @@ class ThemeNotifier with ChangeNotifier {
     gf.loadLibrary().then((value)
     {
       gfloaded = true;
-      setTheme(System().brightness ?? 'light', System().colorscheme ?? 'lightblue');
+      setTheme(System().theme.brightness ?? 'light', System().theme.colorscheme ?? 'lightblue');
     });
 
     // await getBrightness();
     return true;
   }
 
-  void mapSystemThemeBindables() {
-
+  void mapSystemThemeBindables()
+  {
     // System().brightness           = _themeData.brightness == Brightness.dark ? 'dark' : 'light';
     // System().colorscheme          = 'lightblue';
 
-    System().background           = _themeData.colorScheme.background;
-    System().onbackground         = _themeData.colorScheme.onBackground;
-    System().shadow               = _themeData.colorScheme.shadow;
-    System().outline              = _themeData.colorScheme.outline;
+    System().theme.background           = _themeData.colorScheme.background;
+    System().theme.onbackground         = _themeData.colorScheme.onBackground;
+    System().theme.shadow               = _themeData.colorScheme.shadow;
+    System().theme.outline              = _themeData.colorScheme.outline;
 
-    System().surface              = _themeData.colorScheme.surface;
-    System().onsurface            = _themeData.colorScheme.onSurface;
-    System().surfacevariant       = _themeData.colorScheme.surfaceVariant;
-    System().onsurfacevariant     = _themeData.colorScheme.onSurfaceVariant;
-    System().inversesurface       = _themeData.colorScheme.inverseSurface;
-    System().oninversesurface     = _themeData.colorScheme.onInverseSurface;
+    System().theme.surface              = _themeData.colorScheme.surface;
+    System().theme.onsurface            = _themeData.colorScheme.onSurface;
+    System().theme.surfacevariant       = _themeData.colorScheme.surfaceVariant;
+    System().theme.onsurfacevariant     = _themeData.colorScheme.onSurfaceVariant;
+    System().theme.inversesurface       = _themeData.colorScheme.inverseSurface;
+    System().theme.oninversesurface     = _themeData.colorScheme.onInverseSurface;
 
-    System().primary              = _themeData.colorScheme.primary;
-    System().onprimary            = _themeData.colorScheme.onPrimary;
-    System().primarycontainer     = _themeData.colorScheme.primaryContainer;
-    System().onprimarycontainer   = _themeData.colorScheme.onPrimaryContainer;
-    System().inverseprimary       = _themeData.colorScheme.inversePrimary;
+    System().theme.primary              = _themeData.colorScheme.primary;
+    System().theme.onprimary            = _themeData.colorScheme.onPrimary;
+    System().theme.primarycontainer     = _themeData.colorScheme.primaryContainer;
+    System().theme.onprimarycontainer   = _themeData.colorScheme.onPrimaryContainer;
+    System().theme.inverseprimary       = _themeData.colorScheme.inversePrimary;
 
-    System().secondary            = _themeData.colorScheme.secondary;
-    System().onsecondary          = _themeData.colorScheme.onSecondary;
-    System().secondarycontainer   = _themeData.colorScheme.secondaryContainer;
-    System().onsecondarycontainer = _themeData.colorScheme.onSecondaryContainer;
+    System().theme.secondary            = _themeData.colorScheme.secondary;
+    System().theme.onsecondary          = _themeData.colorScheme.onSecondary;
+    System().theme.secondarycontainer   = _themeData.colorScheme.secondaryContainer;
+    System().theme.onsecondarycontainer = _themeData.colorScheme.onSecondaryContainer;
 
-    System().tertiarycontainer    = _themeData.colorScheme.tertiaryContainer;
-    System().ontertiarycontainer  = _themeData.colorScheme.onTertiaryContainer;
+    System().theme.tertiarycontainer    = _themeData.colorScheme.tertiaryContainer;
+    System().theme.ontertiarycontainer  = _themeData.colorScheme.onTertiaryContainer;
 
-    System().error                = _themeData.colorScheme.error;
-    System().onerror              = _themeData.colorScheme.onError;
-    System().errorcontainer       = _themeData.colorScheme.errorContainer;
-    System().onerrorcontainer     = _themeData.colorScheme.onErrorContainer;
-
+    System().theme.error                = _themeData.colorScheme.error;
+    System().theme.onerror              = _themeData.colorScheme.onError;
+    System().theme.errorcontainer       = _themeData.colorScheme.errorContainer;
+    System().theme.onerrorcontainer     = _themeData.colorScheme.onErrorContainer;
   }
 
-  setTheme(String sBrightness, [String? sColor, Map<String, String>? schemeColors]) async {
+  setTheme(String sBrightness, [String? sColor, Map<String, String>? schemeColors]) async
+  {
     Brightness brightness = await Settings().get('brightness') == 'dark' ? Brightness.dark : Brightness.light;
-    TextTheme? fontTheme = gfloaded ? gf.GoogleFonts.getTextTheme(System().font) : null;
-    if (sBrightness.toLowerCase() == 'light'){
+
+    TextTheme? fontTheme = gfloaded ? gf.GoogleFonts.getTextTheme(System().theme.font) : null;
+    if (sBrightness.toLowerCase() == 'light')
+    {
       brightness = Brightness.light;
-      System().brightness = sBrightness.toLowerCase();
+      System().theme.brightness = sBrightness.toLowerCase();
     }
-    else if (sBrightness.toLowerCase() == 'dark') {
+    else if (sBrightness.toLowerCase() == 'dark')
+    {
       brightness = Brightness.dark;
-      System().brightness = sBrightness.toLowerCase();
+      System().theme.brightness = sBrightness.toLowerCase();
     }
     Settings().set('brightness', sBrightness);
-    if (sColor != null) {
+    if (sColor != null)
+    {
       Color? colorScheme = ColorObservable.toColor(sColor);
-      System().colorscheme = sColor;
-      ThemeData themeData = ThemeData(colorSchemeSeed: colorScheme, brightness: brightness, fontFamily: System().font, textTheme: fontTheme, useMaterial3: true);
+      System().theme.colorscheme = sColor;
+      ThemeData themeData = ThemeData(colorSchemeSeed: colorScheme, brightness: brightness, fontFamily: System().theme.font, textTheme: fontTheme, useMaterial3: true);
       _themeData = themeData;
     }
-    else {
-      ThemeData themeData = ThemeData(brightness: brightness, fontFamily: System().font, textTheme: fontTheme, useMaterial3: true);
+    else
+    {
+      ThemeData themeData = ThemeData(brightness: brightness, fontFamily: System().theme.font, textTheme: fontTheme, useMaterial3: true);
       _themeData = themeData;
     }
     notifyListeners();

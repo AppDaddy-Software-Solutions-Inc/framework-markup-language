@@ -81,7 +81,7 @@ class ImageView extends StatefulWidget
 
         /// blob image from camera or file picker
         case ImageSource.blob:
-          image = kIsWeb ? Image.network(uri.url) : Image.file(File(uri.url));
+          image = kIsWeb ? Image.network(url!) : Image.file(File(url!));
           break;
 
         /// file image
@@ -97,11 +97,8 @@ class ImageView extends StatefulWidget
         /// asset image
         case ImageSource.asset:
           if (uri.fileExtension == "svg")
-          {
-            var file = Platform.getFile(uri.filePath);
-            if (file != null) image = SvgPicture.file(file!, fit: getFit(fit), width: width, height: height);
-          }
-          else image = getAssetImage(uri.filePath!, getFit(fit), width, height, fadeDuration, errorHandler);
+               image = SvgPicture.asset(uri.host, fit: getFit(fit), width: width, height: height);
+          else image = Image.asset(uri.host, fit: getFit(fit), width: width, height: height, errorBuilder: errorHandler);
           break;
 
         /// web image
@@ -140,16 +137,11 @@ class ImageView extends StatefulWidget
         break;
 
       case "asset":
-        source = ImageSource.web;
-        if (uri.file != null && Platform.fileExists(uri.file!)) source = ImageSource.asset;
+        source = ImageSource.asset;
         break;
 
       case "blob":
         source = ImageSource.blob;
-        break;
-
-      case "asset":
-        source = ImageSource.asset;
         break;
 
       case "https":
@@ -256,22 +248,6 @@ class ImageView extends StatefulWidget
     return FadeInImage(
         placeholder: MemoryImage(placeholderImage),
         image: MemoryImage(bytes),
-        fit: fit,
-        width: width,
-        height: height,
-        fadeInDuration: Duration(milliseconds: fadeDuration ?? 300),
-        imageErrorBuilder: errorBuilder);
-  }
-
-  static dynamic getAssetImage(String? filename, BoxFit fit, double? width, double? height, int? fadeDuration, dynamic errorBuilder)
-  {
-    dynamic file;
-    if (filename != null) file = Platform.getFile(filename);
-    if (file == null) return MemoryImage(placeholderImage);
-
-    return FadeInImage(
-        placeholder: MemoryImage(placeholderImage),
-        image: FileImage(file),
         fit: fit,
         width: width,
         height: height,

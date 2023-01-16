@@ -119,7 +119,7 @@ class Platform
       // For the initial connectivity test we want to give checkConnection some time
       // but it still needs to run synchronous so we give it a second
       await Future.delayed(Duration(seconds: 1));
-      Log().debug('initConnectivity status: ${connected}');
+      Log().debug('initConnectivity status: $connected');
     }
     catch (e)
     {

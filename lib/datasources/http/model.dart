@@ -58,7 +58,7 @@ class HttpModel extends DataSourceModel implements IDataSource
       _timeout = IntegerObservable(Binding.toKey(id, 'timetoidle'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  int get timeout => _timeout?.get() ?? System.timeout;
+  int get timeout => _timeout?.get() ?? defaultTimeout;
 
   // url
   StringObservable? _url;
@@ -171,7 +171,7 @@ class HttpModel extends DataSourceModel implements IDataSource
       // save transaction
       Post post = Post(key: Uuid().v4(), formKey: key, status: Post.statusINCOMPLETE, method: S.fromEnum(this.method), url: this.url, headers: headers, body: body, date: DateTime.now().millisecondsSinceEpoch, attempts: 0);
       bool ok = await post.insert();
-      if (ok) System.postmaster.start();
+      if (ok) System().postmaster.start();
       return true;
     }
 

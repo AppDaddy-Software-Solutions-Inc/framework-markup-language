@@ -2,7 +2,6 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:fml/datasources/http/http.dart';
-import 'package:fml/system.dart';
 import 'package:fml/helper/helper_barrel.dart';
 import 'package:path/path.dart';
 
@@ -15,6 +14,8 @@ import 'package:path/path.dart';
 /// ```
 class Url
 {
+  static String? defaultDomain;
+
   // TODO
   static bool isAbsolute(String url)
   {
@@ -118,7 +119,7 @@ class Url
     return null;
   }
 
-  static Uri? parse(String? url)
+  static Uri? parse(String? url, {bool qualifyName = true})
   {
     // null or missing url
     if (url == null) return null;
@@ -131,9 +132,9 @@ class Url
     if (uri.data != null) return uri;
 
     // absolute?
-    if (!uri.isAbsolute)
+    if (!uri.isAbsolute && qualifyName)
     {
-      uri = Uri.tryParse("${System().domain}/${uri.url}");
+      uri = Uri.tryParse("$defaultDomain/${uri.url}");
       if (uri == null) return null;
     }
 

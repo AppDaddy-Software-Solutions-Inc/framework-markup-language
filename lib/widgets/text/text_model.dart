@@ -189,7 +189,7 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
           scope: scope, listener: onPropertyChange);
     }
   }
-  String? get font => _font?.get() ?? System().font;
+  String? get font => _font?.get() ?? System().theme.font;
 
   ////////////
   /* Weight */

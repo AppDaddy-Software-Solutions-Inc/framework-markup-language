@@ -5,6 +5,7 @@ import 'package:fml/config/config_model.dart';
 import 'package:fml/crypto/crypto.dart';
 import 'package:fml/hive/database.dart';
 import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/token/token.dart';
 
 class ApplicationModel
 {
@@ -24,11 +25,14 @@ class ApplicationModel
 
   late final String key;
   late final String url;
-  
+
   String? title;
   String? icon;
   int?    order;
   String? config;
+
+  // jwt - json web token
+  Jwt? jwt;
 
   late final Uri? _uri;
   String? get domain => _uri?.domain;
@@ -47,13 +51,20 @@ class ApplicationModel
 
   ConfigModel? _config;
 
-  ApplicationModel({required this.url, required this.title, this.icon, this.order})
+  ApplicationModel({required this.url, required this.title, this.icon, this.order, String? jwt})
   {
     // key is url (lowercase) hashed
     key = Cryptography.hash(text: url.toLowerCase());
 
     // parse to url into its parts
     _uri = Url.parse(url);
+
+    // set token
+    if (jwt != null)
+    {
+      var token = Jwt(jwt);
+      if (token.valid) this.jwt = token;
+    }
 
     // load the config
     initialized = initialize();
@@ -130,7 +141,7 @@ class ApplicationModel
   static ApplicationModel? _fromMap(dynamic map)
   {
     ApplicationModel? app;
-    if (map is Map<String, dynamic>) app = ApplicationModel(url: S.mapVal(map, "url"), title: S.mapVal(map, "title"), icon: S.mapVal(map, "icon"), order: S.mapInt(map, "order"));
+    if (map is Map<String, dynamic>) app = ApplicationModel(url: S.mapVal(map, "url"), title: S.mapVal(map, "title"), icon: S.mapVal(map, "icon"), order: S.mapInt(map, "order"), jwt: S.mapVal(map, "jwt"));
     return app;
   }
 
@@ -143,6 +154,7 @@ class ApplicationModel
     map["icon"]   = icon;
     map["order"]  = order;
     map["config"] = _config?.xml;
+    map["jwt"]    = jwt;
     return map;
   }
 

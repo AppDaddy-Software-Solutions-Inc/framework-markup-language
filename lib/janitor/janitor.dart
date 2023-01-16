@@ -4,7 +4,6 @@ import 'package:fml/hive/log.dart';
 import 'package:fml/hive/form.dart';
 import 'package:fml/hive/post.dart';
 import 'package:fml/log/manager.dart' as LOG;
-import 'package:fml/system.dart';
 
 class Janitor
 {
@@ -47,7 +46,8 @@ class Janitor
 
   Future<bool> _doWork() async
   {
-    int now = System().getEpoch();
+    // unix time
+    int now = DateTime.now().millisecondsSinceEpoch;
     int millesecondsPerDay = 1000 * 60 * 60 * 24;
 
     // cleanup expired forms

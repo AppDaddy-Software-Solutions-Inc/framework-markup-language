@@ -328,7 +328,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     var uri = Url.parse(url);
     if (uri == null) return false;
 
-    var d1 = uri.host?.toLowerCase();
+    var d1 = uri.host.toLowerCase();
     var d2 = System().app?.host?.toLowerCase();
 
     bool sameDomain = d1 == d2;

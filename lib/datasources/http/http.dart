@@ -7,6 +7,8 @@ import 'package:http/http.dart';
 import 'package:http/http.dart' as HTTP;
 import 'package:fml/helper/helper_barrel.dart';
 
+int defaultTimeout = 60;
+
 class HttpResponse {
   final String url;
   final dynamic body;
@@ -50,7 +52,7 @@ class Http
       if (uri != null)
       {
         // execute request
-        Response response = await HTTP.get(uri, headers: encodeHeaders(headers)).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : System.timeout)));
+        Response response = await HTTP.get(uri, headers: encodeHeaders(headers)).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : defaultTimeout)));
 
         // decode headers
         decodeHeaders(response);
@@ -80,7 +82,7 @@ class Http
       if (uri != null)
       {
         // execute request
-        Response response = await HTTP.post(uri, headers: encodeHeaders(headers), body: body).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : System.timeout)));
+        Response response = await HTTP.post(uri, headers: encodeHeaders(headers), body: body).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : defaultTimeout)));
 
         // decode headers
         decodeHeaders(response);
@@ -105,7 +107,7 @@ class Http
       if (uri != null)
       {
         // execute request
-        Response response = await HTTP.put(uri, headers: encodeHeaders(headers), body: body).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : System.timeout)));
+        Response response = await HTTP.put(uri, headers: encodeHeaders(headers), body: body).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : defaultTimeout)));
 
         // decode headers
         decodeHeaders(response);
@@ -130,7 +132,7 @@ class Http
       if (uri != null)
       {
         // execute request
-        Response response = await HTTP.patch(uri, headers: encodeHeaders(headers), body: body).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : System.timeout)));
+        Response response = await HTTP.patch(uri, headers: encodeHeaders(headers), body: body).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : defaultTimeout)));
 
         // decode headers
         decodeHeaders(response);
@@ -155,7 +157,7 @@ class Http
       if (uri != null)
       {
         // execute request
-        Response response = await HTTP.delete(uri, headers: encodeHeaders(headers)).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : System.timeout)));
+        Response response = await HTTP.delete(uri, headers: encodeHeaders(headers)).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : defaultTimeout)));
 
         // decode headers
         decodeHeaders(response);

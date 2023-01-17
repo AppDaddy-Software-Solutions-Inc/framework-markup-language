@@ -14,7 +14,8 @@ import 'package:path/path.dart';
 /// ```
 class Url
 {
-  static String? defaultDomain;
+  // active domain
+  static String? activeDomain;
 
   // TODO
   static bool isAbsolute(String url)
@@ -134,7 +135,7 @@ class Url
     // absolute?
     if (!uri.isAbsolute && qualifyName)
     {
-      uri = Uri.tryParse("$defaultDomain/${uri.url}");
+      uri = Uri.tryParse("$activeDomain/${uri.url}");
       if (uri == null) return null;
     }
 

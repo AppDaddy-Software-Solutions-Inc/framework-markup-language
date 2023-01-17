@@ -51,8 +51,9 @@ final ApplicationTypes appType  = ApplicationTypes.SingleApp;
 
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
-// Set this to file://config.xml to use the local assets
+// Set this to file://applications/<app>/config.xml to use the asset applications
 final String defaultDomain = 'https://fml.dev';
+late final ApplicationModel? defaultApplication;
 
 typedef CommitCallback = Future<bool> Function();
 
@@ -86,7 +87,7 @@ class System extends WidgetModel implements IEventManager
       Log().info("Activating Application (${app.title}) @ ${app.domain}");
 
       // set the default domain on the Url utilities
-      Url.defaultDomain = app.domain;
+      Url.activeDomain = app.domain;
 
       // set the current application
       _app = app;
@@ -120,7 +121,7 @@ class System extends WidgetModel implements IEventManager
       Log().info("Closing Application");
 
       // set the default domain on the Url utilities
-      Url.defaultDomain = null;
+      Url.activeDomain = null;
 
       // logoff
       logoff();
@@ -242,7 +243,10 @@ class System extends WidgetModel implements IEventManager
     await Platform.init();
 
     // initialize Hive
-    await initDatabase();
+    await _initDatabase();
+
+    // set navigation
+    await _initDefaultApp();
 
     // initialize System Globals
     await _initBindables();
@@ -257,6 +261,45 @@ class System extends WidgetModel implements IEventManager
     await janitor.start();
 
     return true;
+  }
+
+  Future _initDefaultApp() async
+  {
+    Uri? uri;
+
+    // web
+    if (isWeb)
+    {
+      String url = Uri.base.toString();
+
+      // parse the requested url
+      uri = Url.parse(url);
+
+      // if localhost - use the default domain and route
+      // port 9000 is used by node.js by our installer
+      if (uri != null)
+      {
+        bool localhost = uri.host.startsWith(RegExp("localhost", caseSensitive: false));
+        if (localhost && uri.port != 9000) uri = Url.parse(defaultDomain);
+      }
+    }
+
+    // single page application
+    else if (appType == ApplicationTypes.SingleApp) uri = Url.parse(defaultDomain);
+
+    // set start Uri
+    if (uri != null)
+    {
+      var url = uri.url;
+
+      var app = ApplicationModel(url: uri.url, title: uri.url);
+
+      // wait for it to initialize
+      await app.initialized;
+
+      // assign default app to current
+      defaultApplication = app;
+    }
   }
 
   Future<bool> _initBindables() async
@@ -296,7 +339,7 @@ class System extends WidgetModel implements IEventManager
     return true;
   }
 
-  Future<bool> initDatabase() async
+  Future<bool> _initDatabase() async
   {
     // create the hive folder
     String? hiveFolder = await Platform.createFolder("hive");

@@ -1,11 +1,13 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
 import 'package:fml/config/config_model.dart';
 import 'package:fml/crypto/crypto.dart';
 import 'package:fml/hive/database.dart';
 import 'package:fml/helper/helper_barrel.dart';
 import 'package:fml/token/token.dart';
+import 'package:fml/widgets/theme/theme_model.dart';
 
 class ApplicationModel
 {
@@ -140,6 +142,27 @@ class ApplicationModel
     return model;
   }
 
+  void setTheme(ThemeModel theme)
+  {
+    /// Initial Theme Setting
+    String def = 'light';
+    String cBrightness = settings('BRIGHTNESS')?.toLowerCase() ?? def;
+    if (cBrightness == 'system' || cBrightness == 'platform')
+    try
+    {
+      cBrightness = MediaQueryData.fromWindow(WidgetsBinding.instance.window).platformBrightness.toString().toLowerCase().split('.')[1];
+    }
+    catch (e)
+    {
+      cBrightness = def;
+    }
+
+    // theme values from the app
+    theme.brightness  = cBrightness;
+    theme.colorscheme = settings('PRIMARY_COLOR')?.toLowerCase() ?? 'lightblue'; // backwards compatibility
+    theme.colorscheme = settings('COLOR_SCHEME')?.toLowerCase()  ?? theme.colorscheme;
+    theme.font        = settings('FONT');
+  }
 
   static ApplicationModel? _fromMap(dynamic map)
   {

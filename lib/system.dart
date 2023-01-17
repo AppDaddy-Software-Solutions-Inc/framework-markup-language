@@ -7,7 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:fml/datasources/log/log_model.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
-import 'package:fml/hive/settings.dart';
 import 'package:fml/hive/stash.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/manager.dart';
@@ -81,68 +80,68 @@ class System extends WidgetModel implements IEventManager
   ApplicationModel? _app;
   set app(ApplicationModel? app)
   {
+    // activate new application
     if (app != null)
-         Log().info("Activating Application (${app.title}) @ ${app.domain}");
-    else Log().info("Closing Application");
+    {
+      Log().info("Activating Application (${app.title}) @ ${app.domain}");
 
-    // set the default domain on the Url utilities
-    Url.defaultDomain = app?.domain;
+      // set the default domain on the Url utilities
+      Url.defaultDomain = app.domain;
 
-    // set the current application
-    _app = app;
+      // set the current application
+      _app = app;
 
-    // check connectivity
-    Platform.checkInternetConnection(domain);
+      // apply theme settings
+      app.setTheme(theme);
 
-    // set credentials
-    logoff();
-    if (app?.jwt != null)
-         logon(jwt);
-    else logoff();
+      // check connectivity
+      Platform.checkInternetConnection(app.domain);
 
-    // set fml version support level
-    //if (config?.get("FML_VERSION") != null) fmlVersion = S.toVersionNumber(config!.get("FML_VERSION")!) ?? currentVersion;
+      // set credentials
+      logoff();
+      if (app.jwt != null) logon(jwt);
 
-    // build the STASH
-    // List<StashEntry> entries = await Stash.findAll(System().host);
-    // entries.forEach((entry) => scope?.setObservable("STASH.${entry.key}", entry.value));
+      // set fml version support level
+      //if (config?.get("FML_VERSION") != null) fmlVersion = S.toVersionNumber(config!.get("FML_VERSION")!) ?? currentVersion;
 
-    // update application level bindables
-    _domain?.set(app?.domain);
-    _scheme?.set(app?.scheme);
-    _host?.set(app?.host);
+      // build the STASH
+      // List<StashEntry> entries = await Stash.findAll(System().host);
+      // entries.forEach((entry) => scope?.setObservable("STASH.${entry.key}", entry.value));
 
-    // update the theme
-    theme = app;
+      // update application level bindables
+      _domain.set(app.domain);
+      _scheme.set(app.scheme);
+      _host.set(app.host);
+    }
+
+    // closing application
+    else
+    {
+      Log().info("Closing Application");
+
+      // set the default domain on the Url utilities
+      Url.defaultDomain = null;
+
+      // logoff
+      logoff();
+
+      // set fml version support level
+      //if (config?.get("FML_VERSION") != null) fmlVersion = S.toVersionNumber(config!.get("FML_VERSION")!) ?? currentVersion;
+
+      // build the STASH
+      // List<StashEntry> entries = await Stash.findAll(System().host);
+      // entries.forEach((entry) => scope?.setObservable("STASH.${entry.key}", entry.value));
+
+      // update application level bindables
+      _domain.set(null);
+      _scheme.set(null);
+      _host.set(null);
+    }
   }
   ApplicationModel? get app => _app;
 
   // current theme
   late final ThemeModel _theme;
-  set theme (dynamic value)
-  {
-    if (value is ApplicationModel)
-    {
-      /// Initial Theme Setting
-      String def = 'light';
-      String cBrightness = System().app?.settings('BRIGHTNESS')?.toLowerCase() ?? def;
-      if (cBrightness == 'system' || cBrightness == 'platform')
-      try
-      {
-        cBrightness = MediaQueryData.fromWindow(WidgetsBinding.instance.window).platformBrightness.toString().toLowerCase().split('.')[1];
-      }
-      catch (e)
-      {
-        cBrightness = def;
-      }
-
-      // theme values from the app
-      _theme.brightness  = cBrightness;
-      _theme.colorscheme = app?.settings('PRIMARY_COLOR')?.toLowerCase() ?? 'lightblue'; // backwards compatibility
-      _theme.colorscheme = app?.settings('COLOR_SCHEME')?.toLowerCase()  ?? _theme.colorscheme;
-      _theme.font        = app?.settings('FONT');
-    }
-  }
   ThemeModel get theme => _theme;
 
   // post master service
@@ -158,16 +157,16 @@ class System extends WidgetModel implements IEventManager
   Map<String, StringObservable> _user = Map<String, StringObservable>();
 
   // current domain
-  StringObservable? _domain;
-  String? get domain => _domain?.get();
+  late StringObservable _domain;
+  String? get domain => _domain.get();
 
   // current scheme
-  StringObservable? _scheme;
-  String? get scheme => _scheme?.get();
+  late StringObservable _scheme;
+  String? get scheme => _scheme.get();
 
   // current host
-  StringObservable? _host;
-  String? get host => _host?.get();
+  late StringObservable _host;
+  String? get host => _host.get();
 
   /// Global System Observable
   StringObservable? _platform;
@@ -263,15 +262,15 @@ class System extends WidgetModel implements IEventManager
   Future<bool> _initBindables() async
   {
     // create the theme
-    theme = ThemeModel(this, "THEME");
+    _theme = ThemeModel(this, "THEME");
 
     // active application settings
-    _domain        = StringObservable(Binding.toKey(id, 'domain'), "", scope: scope, listener: onPropertyChange);
-    _scheme        = StringObservable(Binding.toKey(id, 'scheme'), "", scope: scope, listener: onPropertyChange);
-    _host          = StringObservable(Binding.toKey(id, 'host'),   "", scope: scope, listener: onPropertyChange);
+    _domain        = StringObservable(Binding.toKey(id, 'domain'), null, scope: scope, listener: onPropertyChange);
+    _scheme        = StringObservable(Binding.toKey(id, 'scheme'), null, scope: scope, listener: onPropertyChange);
+    _host          = StringObservable(Binding.toKey(id, 'host'),   null, scope: scope, listener: onPropertyChange);
 
     // json web token
-    _jwtObservable = StringObservable(Binding.toKey(id, 'jwt'), "", scope: scope);
+    _jwtObservable = StringObservable(Binding.toKey(id, 'jwt'), null, scope: scope);
 
     // device settings
     _screenheight = IntegerObservable(Binding.toKey(id, 'screenheight'), WidgetsBinding.instance.window.physicalSize.height, scope: scope);

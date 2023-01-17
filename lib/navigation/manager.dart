@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:collection/collection.dart' show IterableExtension;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/application/application_model.dart';
 import 'package:fml/helper/xml.dart';
@@ -50,6 +51,8 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     // clear all pages
     _pages.clear();
 
+    var x = PlatformDispatcher.instance.defaultRouteName;
+
     // set default app
     if (isWeb || appType == ApplicationTypes.SingleApp)
     {
@@ -66,12 +69,12 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
         if (uri != null)
         {
           bool localhost = uri.host.startsWith(RegExp("localhost", caseSensitive: false));
-          if (localhost && uri.port != 9000) uri = Url.parse(defaultDomain);
+          if (localhost && uri.port != 9000) uri = defaultDomain;
         }
       }
 
       // single page applications use the defaultDomain
-      else uri = Url.parse(defaultDomain);
+      else uri = defaultDomain;
 
       // create an app
       if (uri != null && uri.domain != null)

@@ -52,7 +52,8 @@ final ApplicationTypes appType  = ApplicationTypes.SingleApp;
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://applications/<app>/config.xml to use the asset applications
-final String defaultDomain = 'https://fml.dev';
+final Uri? defaultDomain = Uri.tryParse('https://fml.dev');
+
 late final ApplicationModel? defaultApplication;
 
 typedef CommitCallback = Future<bool> Function();
@@ -272,6 +273,8 @@ class System extends WidgetModel implements IEventManager
     {
       String url = Uri.base.toString();
 
+       var requested = PlatformDispatcher.instance.defaultRouteName;
+
       // parse the requested url
       uri = Url.parse(url);
 
@@ -280,12 +283,12 @@ class System extends WidgetModel implements IEventManager
       if (uri != null)
       {
         bool localhost = uri.host.startsWith(RegExp("localhost", caseSensitive: false));
-        if (localhost && uri.port != 9000) uri = Url.parse(defaultDomain);
+        if (localhost && uri.port != 9000) uri = defaultDomain;
       }
     }
 
     // single page application
-    else if (appType == ApplicationTypes.SingleApp) uri = Url.parse(defaultDomain);
+    else if (appType == ApplicationTypes.SingleApp) uri = defaultDomain;
 
     // set start Uri
     if (uri != null)

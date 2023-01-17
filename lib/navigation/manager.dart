@@ -104,7 +104,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
       if (!linkable) start = home;
 
       // clear requested page if the same as home page
-      //if (home.split("?")[0].toLowerCase() == start.split("?")[0].toLowerCase()) System().Application?.requestedPage = null;
+      if (home.split("?")[0].toLowerCase() == start.split("?")[0].toLowerCase()) System().app?.requestedPage = null;
 
       // single page applications always load the home page
       if (System().app?.singlePage ?? false) start = home;

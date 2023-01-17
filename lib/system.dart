@@ -81,66 +81,6 @@ class System extends WidgetModel implements IEventManager
 
   // current application
   ApplicationModel? _app;
-  set app(ApplicationModel? app)
-  {
-    // activate new application
-    if (app != null)
-    {
-      Log().info("Activating Application (${app.title}) @ ${app.domain}");
-
-      // set the default domain on the Url utilities
-      Url.activeDomain = app.domain;
-
-      // set the current application
-      _app = app;
-
-      // apply theme settings
-      app.setTheme(theme);
-
-      // check connectivity
-      Platform.checkInternetConnection(app.domain);
-
-      // set credentials
-      logoff();
-      if (app.jwt != null) logon(jwt);
-
-      // set fml version support level
-      //if (config?.get("FML_VERSION") != null) fmlVersion = S.toVersionNumber(config!.get("FML_VERSION")!) ?? currentVersion;
-
-      // build the STASH
-      // List<StashEntry> entries = await Stash.findAll(System().host);
-      // entries.forEach((entry) => scope?.setObservable("STASH.${entry.key}", entry.value));
-
-      // update application level bindables
-      _domain.set(app.domain);
-      _scheme.set(app.scheme);
-      _host.set(app.host);
-    }
-
-    // closing application
-    else
-    {
-      Log().info("Closing Application");
-
-      // set the default domain on the Url utilities
-      Url.activeDomain = null;
-
-      // logoff
-      logoff();
-
-      // set fml version support level
-      //if (config?.get("FML_VERSION") != null) fmlVersion = S.toVersionNumber(config!.get("FML_VERSION")!) ?? currentVersion;
-
-      // build the STASH
-      // List<StashEntry> entries = await Stash.findAll(System().host);
-      // entries.forEach((entry) => scope?.setObservable("STASH.${entry.key}", entry.value));
-
-      // update application level bindables
-      _domain.set(null);
-      _scheme.set(null);
-      _host.set(null);
-    }
-  }
 
   // current theme
   late final ThemeModel _theme;
@@ -159,16 +99,16 @@ class System extends WidgetModel implements IEventManager
   Map<String, StringObservable> _user = Map<String, StringObservable>();
 
   // current domain
-  late StringObservable _domain;
-  String? get domain => _domain.get();
+  StringObservable? _domain;
+  String? get domain => _domain?.get();
 
   // current scheme
-  late StringObservable _scheme;
-  String? get scheme => _scheme.get();
+  StringObservable? _scheme;
+  String? get scheme => _scheme?.get();
 
   // current host
-  late StringObservable _host;
-  String? get host => _host.get();
+  StringObservable? _host;
+  String? get host => _host?.get();
 
   /// Global System Observable
   StringObservable? _platform;
@@ -233,15 +173,12 @@ class System extends WidgetModel implements IEventManager
   Jwt? get jwt => _jwt;
 
   // firebase
-  FirebaseApp? get firebase => app?.firebase;
-  set firebase(FirebaseApp? v) => app?.firebase = v;
+  FirebaseApp? get firebase => _app?.firebase;
+  set firebase(FirebaseApp? v) => _app?.firebase = v;
 
   Future<bool> _init() async
   {
     Log().info('Initializing FML Engine V$version ...');
-
-    // set initial route
-    await _initRoute();
 
     // initialize platform
     await Platform.init();
@@ -254,6 +191,9 @@ class System extends WidgetModel implements IEventManager
 
     // create empty applications folder
     await _initFolders();
+
+    // set initial route
+    await _initRoute();
 
     // start the Post Master
     await postmaster.start();
@@ -282,13 +222,13 @@ class System extends WidgetModel implements IEventManager
 
   Future<bool> _initBindables() async
   {
-    // create the theme
-    _theme = ThemeModel(this, "THEME");
-
     // active application settings
     _domain        = StringObservable(Binding.toKey(id, 'domain'), null, scope: scope, listener: onPropertyChange);
     _scheme        = StringObservable(Binding.toKey(id, 'scheme'), null, scope: scope, listener: onPropertyChange);
     _host          = StringObservable(Binding.toKey(id, 'host'),   null, scope: scope, listener: onPropertyChange);
+
+    // create the theme
+    _theme = ThemeModel(this, "THEME");
 
     // json web token
     _jwtObservable = StringObservable(Binding.toKey(id, 'jwt'), null, scope: scope);
@@ -482,12 +422,72 @@ class System extends WidgetModel implements IEventManager
 
   void setApplicationTitle(String? title) async
   {
-    title = title ?? System().app?.settings("APPLICATION_NAME");
+    title = title ?? _app?.settings("APPLICATION_NAME");
     if (!S.isNullOrEmpty(title))
     {
       // print('setting title to $title');
       SystemChrome.setApplicationSwitcherDescription(ApplicationSwitcherDescription(label: title, primaryColor: Colors.blue.value));
     }
+  }
+
+  // launches the application
+  launch(ApplicationModel app)
+  {
+    // Close current application
+    if (this._app != null) close(_app!);
+
+    Log().info("Activating Application (${app.title}) @ ${app.domain}");
+
+    // set the default domain on the Url utilities
+    Url.activeDomain = app.domain;
+
+    // set the current application
+    _app = app;
+
+    // apply theme settings
+    app.setTheme(theme);
+
+    // check connectivity
+    Platform.checkInternetConnection(app.domain);
+
+    // set credentials
+    if (app.jwt != null) logon(jwt);
+
+    // set fml version support level
+    //if (config?.get("FML_VERSION") != null) fmlVersion = S.toVersionNumber(config!.get("FML_VERSION")!) ?? currentVersion;
+
+    // build the STASH
+    // List<StashEntry> entries = await Stash.findAll(System().host);
+    // entries.forEach((entry) => scope?.setObservable("STASH.${entry.key}", entry.value));
+
+    // update application level bindables
+    _domain?.set(app.domain);
+    _scheme?.set(app.scheme);
+    _host?.set(app.host);
+  }
+
+  // launches the application
+  close(ApplicationModel app)
+  {
+    Log().info("Closing Application ${app.url}");
+
+    // set the default domain on the Url utilities
+    Url.activeDomain = null;
+
+    // logoff
+    logoff();
+
+    // set fml version support level
+    //if (config?.get("FML_VERSION") != null) fmlVersion = S.toVersionNumber(config!.get("FML_VERSION")!) ?? currentVersion;
+
+    // build the STASH
+    // List<StashEntry> entries = await Stash.findAll(System().host);
+    // entries.forEach((entry) => scope?.setObservable("STASH.${entry.key}", entry.value));
+
+    // update application level bindables
+    _domain?.set(null);
+    _scheme?.set(null);
+    _host?.set(null);
   }
 
   /// Event Manager Host

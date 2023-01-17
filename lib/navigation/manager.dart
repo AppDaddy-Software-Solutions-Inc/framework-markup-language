@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:collection/collection.dart' show IterableExtension;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/application/application_model.dart';
 import 'package:fml/helper/xml.dart';
@@ -58,11 +57,12 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
       if (defaultDomain.hasFragment) defaultDomain = defaultDomain.removeFragment();
 
       // set default app
-      System().app = await ApplicationModel.fromUrl(defaultDomain.toString());
+      var app = await ApplicationModel.fromUrl(defaultDomain.toString());
+      System().launch(app);
     }
 
     // get home page
-    String homePage = System().app?.homePage ?? "main.xml";
+    String homePage = Application?.homePage ?? "main.xml";
     if (!isWeb && appType == ApplicationTypes.MultiApp) homePage = "store";
 
     // get start page
@@ -76,13 +76,13 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
 
       // document is linkable?
       // default - if singlePageApplication then false, otherwise true
-      bool linkable = S.toBool(Xml.attribute(node: template.document!.rootElement, tag: "linkable")) ?? (System().app?.singlePage ?? false);
+      bool linkable = S.toBool(Xml.attribute(node: template.document!.rootElement, tag: "linkable")) ?? (Application?.singlePage ?? false);
 
       // set start page = home page if not linkable
       if (!linkable) startPage = homePage;
 
       // single page applications always load the home page
-      if (System().app?.singlePage ?? false) startPage = homePage;
+      if (Application?.singlePage ?? false) startPage = homePage;
     }
 
     // clear requested page if the same as the start page
@@ -207,7 +207,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     //await System().setDomain(fqdn);
 
     // default home page
-    //if (uri.pathSegments.isEmpty) url = System().app?.homePage;
+    //if (uri.pathSegments.isEmpty) url = Application?.homePage;
 
     return url;
   }
@@ -315,10 +315,10 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     if (uri == null) return false;
 
     var d1 = uri.host.toLowerCase();
-    var d2 = System().app?.host?.toLowerCase();
+    var d2 = Application?.host?.toLowerCase();
 
     bool sameDomain = d1 == d2;
-    bool xmlFile    = uri.fileExtension == "xml";
+    bool xmlFile    = uri.pageExtension == "xml";
     bool local      = sameDomain && xmlFile;
 
     // We need to keep the file:// prefix as an indicator for fetch() that its a local file

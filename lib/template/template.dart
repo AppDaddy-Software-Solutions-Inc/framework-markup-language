@@ -171,10 +171,10 @@ class Template
       if (parameters != null) xml = Binding.applyMap(xml, parameters, caseSensitive: false);
 
       // Replace query parameters
-      xml = Binding.applyMap(xml, System().app?.queryParameters, caseSensitive: false);
+      xml = Binding.applyMap(xml, Application?.queryParameters, caseSensitive: false);
 
       // Replace config parameters
-      xml = Binding.applyMap(xml, System().app?.configParameters, caseSensitive: false);
+      xml = Binding.applyMap(xml, Application?.configParameters, caseSensitive: false);
 
       // Replace System Uuid
       String s = Binding.toKey("SYSTEM", 'uuid')!;
@@ -211,7 +211,7 @@ class Template
     String? template;
 
     // auto refresh
-    refresh = refresh || (System().app?.autoRefresh ?? false);
+    refresh = refresh || (Application?.autoRefresh ?? false);
 
     // get template from file
     if (uri.scheme != "file")

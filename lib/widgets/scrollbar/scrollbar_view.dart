@@ -116,7 +116,7 @@ class _ScrollbarViewState extends State<ScrollbarView> implements IModelListener
     //this.offset = toLocal(widget.controller.offset);
 
     Color? col = Theme.of(context).colorScheme.secondaryContainer.withOpacity(opacity);
-    if (System().app != null)
+    if (Application != null)
     {
       col = Theme.of(context).colorScheme.inversePrimary.withOpacity(0.60);
     }

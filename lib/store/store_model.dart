@@ -96,7 +96,7 @@ class Store extends WidgetModel
     var page = app.homePage;
 
     // set the system app
-    System().app = app;
+    System().launch(app);
 
     // refresh the app
     app.refresh();
@@ -106,8 +106,8 @@ class Store extends WidgetModel
 
     // change theme
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    String brightness   = System().app?.settings('BRIGHTNESS') ?? 'light';
-    String color        = System().app?.settings('COLOR_SCHEME') ?? 'lightblue';
+    String brightness   = Application?.settings('BRIGHTNESS') ?? 'light';
+    String color        = Application?.settings('COLOR_SCHEME') ?? 'lightblue';
     themeNotifier.setTheme(brightness, color);
     themeNotifier.mapSystemThemeBindables();
   }

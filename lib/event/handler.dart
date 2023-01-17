@@ -432,8 +432,8 @@ class EventHandler extends Eval
   {
     if (System().firebase == null)
     {
-      String  apiKey     = System().app?.settings("FIREBASE_API_KEY") ?? '0000000000';
-      String? authDomain = System().app?.settings("FIREBASE_AUTH_DOMAIN");
+      String  apiKey     = Application?.settings("FIREBASE_API_KEY") ?? '0000000000';
+      String? authDomain = Application?.settings("FIREBASE_AUTH_DOMAIN");
 
       await fbauth.loadLibrary();
       await fbcore.loadLibrary();

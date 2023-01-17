@@ -14,7 +14,7 @@ class Socket
   {
     if (url is String)
     {
-      url = Url.toAbsolute(url, (System().app?.secure ?? false) ? "wss://${System().host}" : "ws://${System().host}");
+      url = Url.toAbsolute(url, (Application?.secure ?? false) ? "wss://${System().host}" : "ws://${System().host}");
       Uri? uri = Uri.tryParse(url);
       _uri = uri;
     }

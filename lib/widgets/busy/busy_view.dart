@@ -104,7 +104,7 @@ class _BusyViewState extends State<BusyView> implements IModelListener
     var modal = widget.model.modal;
     var size  = widget.model.size ?? 100;
     var col;
-    if (System().app != null)
+    if (Application != null)
     {
       col = Theme.of(context).colorScheme.inversePrimary.withOpacity(0.90);
     }

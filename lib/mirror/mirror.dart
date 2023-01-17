@@ -35,7 +35,7 @@ class Mirror
     if (asset.type == "file" && !abort)
     {
       var uri = Url.parse(asset.uri);
-      String? filename = uri?.file;
+      String? filename = uri?.page;
       if (filename != null && extension(filename).trim() != "")
       {
         // file exists?
@@ -81,7 +81,7 @@ class Mirror
 
       // write asset to disk
       var uri = Url.parse(asset.uri);
-      String? filename = uri?.file;
+      String? filename = uri?.page;
       if (filename != null)
       {
         Log().debug('Writing file to disk $filename', caller: "Mirror");

@@ -172,15 +172,15 @@ extension UriExtensions on Uri
   String? get domain
   {
     if (!this.isAbsolute) return null;
-    if (file != null) return url.replaceAll("/$file","");
+    if (page != null) return url.replaceAll("/$page","");
     return url;
   }
 
-  String? get file => (pathSegments.isNotEmpty && pathSegments.last.contains(".")) ? pathSegments.last : null;
+  String? get page => (pathSegments.isNotEmpty && pathSegments.last.contains(".")) ? pathSegments.last : null;
 
-  String? get fileExtension
+  String? get pageExtension
   {
-    var page = this.file;
+    var page = this.page;
     if (page?.contains(".") ?? false)
          return extension(page!).toLowerCase().replaceFirst(".", "").trim();
     else return null;

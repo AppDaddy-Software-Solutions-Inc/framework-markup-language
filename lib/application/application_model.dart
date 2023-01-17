@@ -51,6 +51,7 @@ class ApplicationModel
   Map<String,String?>? get configParameters => _config?.parameters;
 
   ConfigModel? _config;
+  bool get hasConfig => _config != null;
 
   ApplicationModel({required this.url, this.title, this.icon, this.order, String? jwt})
   {
@@ -171,7 +172,7 @@ class ApplicationModel
     return app;
   }
 
-  static Future<ApplicationModel?> fromUrl(String url) async
+  static Future<ApplicationModel> fromUrl(String url) async
   {
     // build the model
     var app = ApplicationModel(url: url);

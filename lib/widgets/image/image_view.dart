@@ -86,7 +86,7 @@ class ImageView extends StatefulWidget
 
         /// file image
         case ImageSource.file:
-          if (uri.fileExtension == "svg")
+          if (uri.pageExtension == "svg")
           {
             var file = Platform.getFile(uri.filePath);
             if (file != null) image = SvgPicture.file(file!, fit: getFit(fit), width: width, height: height);
@@ -96,14 +96,14 @@ class ImageView extends StatefulWidget
 
         /// asset image
         case ImageSource.asset:
-          if (uri.fileExtension == "svg")
+          if (uri.pageExtension == "svg")
                image = SvgPicture.asset(uri.host, fit: getFit(fit), width: width, height: height);
           else image = Image.asset(uri.host, fit: getFit(fit), width: width, height: height, errorBuilder: errorHandler);
           break;
 
         /// web image
         case ImageSource.web:
-          if (uri.fileExtension == "svg")
+          if (uri.pageExtension == "svg")
                image = SvgPicture.network(uri.url, fit: getFit(fit), width: width, height: height);
           else image = getWebImage(uri.url, getFit(fit), width, height, fadeDuration, errorHandler);
           break;
@@ -133,7 +133,7 @@ class ImageView extends StatefulWidget
 
       case "file":
         source = ImageSource.web;
-        if (uri.file != null && Platform.fileExists(uri.file!)) source = ImageSource.file;
+        if (uri.page != null && Platform.fileExists(uri.page!)) source = ImageSource.file;
         break;
 
       case "asset":

@@ -45,7 +45,7 @@ class ApplicationModel
   String? get loginPage => settings("LOGIN_PAGE");
   String? get debugPage => settings("DEBUG_PAGE");
   String? get unauthorizedPage => settings("UNAUTHORIZED_PAGE");
-  String? get requestedPage => _uri?.file?.toLowerCase().trim().endsWith(".xml") ?? false ? _uri!.file : null;
+  String? requestedPage;
 
   Map<String,String?>? get configParameters => _config?.parameters;
 
@@ -58,6 +58,9 @@ class ApplicationModel
 
     // parse to url into its parts
     _uri = Url.parse(url);
+
+    // start page
+    if (_uri?.fileExtension == "xml") requestedPage = _uri?.file;
 
     // set token
     if (jwt != null)

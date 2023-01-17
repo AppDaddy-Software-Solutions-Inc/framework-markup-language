@@ -119,13 +119,16 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
 
   Future<void> onPageLoaded() async
   {
-    String? page = System().app?.requestedPage;
+    // open the requested page
+    if (System().app?.requestedPage != null)
+    {
+      // open the requested page
+      _open(System().app?.requestedPage);
 
-    // open the page
-    if (page != null) _open(page);
-
-    // clear requested page
-    //if (page != null) System().requestedPage = null;
+      // clear requested page so we don't continually
+      // open the same page on refresh or reload
+      System().app?.requestedPage = null;
+    }
   }
 
   @override

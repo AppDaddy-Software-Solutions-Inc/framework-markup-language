@@ -47,7 +47,7 @@ final String version = '1.0.0+10';
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
 enum ApplicationTypes{ SingleApp, MultiApp }
-final ApplicationTypes appType  = ApplicationTypes.SingleApp;
+final ApplicationTypes appType  = ApplicationTypes.MultiApp;
 
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost

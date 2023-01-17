@@ -427,15 +427,11 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     }
   }
 
-  void onClose(Event event)
-  {
-
+  void onClose(Event event) { // onBack(Event event)
     //OVERLAY.OverlayEntry? overlay = context.findAncestorWidgetOfExactType<OVERLAY.OverlayEntry>();
     TabView? tabview = context.findAncestorWidgetOfExactType<TabView>();
     if (tabview != null) return;
-
     event.handled = true;
-
     String? until = S.mapVal(event.parameters, 'until');
     NavigationManager().back(until ?? 1);
   }

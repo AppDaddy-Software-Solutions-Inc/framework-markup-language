@@ -368,16 +368,15 @@ class _BoxViewState extends State<BoxView> implements IModelListener {
               ),
             ]),
       ));
-    } else {
+    }
+    else {
       view = Container(decoration: borderDeco, child: Container(
           padding: insets,
-          // clipBehavior: Clip.antiAlias, // .antiAlias - Flex: removed because of canvaskit assertion errors while scrolling ???
+          clipBehavior: Clip.antiAlias, // .antiAlias - Flex: removed because of canvaskit assertion errors while scrolling ???
           decoration: decoration,
           //set alignment based on valign and halign.
           alignment: aligned,
-          child: containerRadius != null ? ClipRRect( // Added this to clip radius of children in containers replacing clip behaviour
-            borderRadius: containerRadius,
-            child: child) : child));
+          child: child));
     }
 
     /////////////
@@ -403,9 +402,6 @@ class _BoxViewState extends State<BoxView> implements IModelListener {
     //////////////////
     /* Constrained? */
     //////////////////
-
-    // TODO: allow expand == false to be overriden by width/height, only contract in the unconstrained direction
-
     bool expand = widget.model.expand;
 
     var constr = widget.model.getConstraints();

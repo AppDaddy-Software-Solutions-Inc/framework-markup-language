@@ -206,7 +206,7 @@ return LayoutBuilder(builder: builder);
         controller.selection = TextSelection.fromPosition(TextPosition(offset: controller.text.length));
 
         List<OptionModel>? suggestions;
-      view = SizedBox(
+        view = SizedBox(
           width: widget.model.maxwidth,
           // child: RawKeyboardListener(
           //     focusNode: focus,

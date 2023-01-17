@@ -52,9 +52,7 @@ final ApplicationTypes appType  = ApplicationTypes.SingleApp;
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://applications/<app>/config.xml to use the asset applications
-final Uri? defaultDomain = Uri.tryParse('https://fml.dev');
-
-late final ApplicationModel? defaultApplication;
+Uri defaultDomain = Uri.parse('https://fml.dev');
 
 typedef CommitCallback = Future<bool> Function();
 
@@ -65,6 +63,9 @@ enum Keys { F1, F2, F3, F4, F5, F6, F7, F8, F9, shift, alt, control, enter }
 // Putting this inside the System() class is problematic at startup
 // when log messages being written while System() is still be initialized.
 final bool kDebugMode = !kReleaseMode;
+
+// Active Application
+ApplicationModel? get Application => System()._app;
 
 class System extends WidgetModel implements IEventManager
 {
@@ -140,7 +141,6 @@ class System extends WidgetModel implements IEventManager
       _host.set(null);
     }
   }
-  ApplicationModel? get app => _app;
 
   // current theme
   late final ThemeModel _theme;
@@ -240,14 +240,14 @@ class System extends WidgetModel implements IEventManager
   {
     Log().info('Initializing FML Engine V$version ...');
 
+    // set initial route
+    await _initRoute();
+
     // initialize platform
     await Platform.init();
 
     // initialize Hive
     await _initDatabase();
-
-    // set navigation
-    await _initDefaultApp();
 
     // initialize System Globals
     await _initBindables();
@@ -264,44 +264,19 @@ class System extends WidgetModel implements IEventManager
     return true;
   }
 
-  Future _initDefaultApp() async
+  Future _initRoute() async
   {
-    Uri? uri;
-
-    // web
     if (isWeb)
     {
-      String url = Uri.base.toString();
+      // set initial route
+      String route = PlatformDispatcher.instance.defaultRouteName.trim();
+      while (route.startsWith("/")) route = route.replaceFirst("/", "").trim();
+      if (route.toLowerCase().endsWith(".xml")) defaultDomain = defaultDomain.replace(fragment: route);
 
-       var requested = PlatformDispatcher.instance.defaultRouteName;
-
-      // parse the requested url
-      uri = Url.parse(url);
-
-      // if localhost - use the default domain and route
-      // port 9000 is used by node.js by our installer
-      if (uri != null)
-      {
-        bool localhost = uri.host.startsWith(RegExp("localhost", caseSensitive: false));
-        if (localhost && uri.port != 9000) uri = defaultDomain;
-      }
-    }
-
-    // single page application
-    else if (appType == ApplicationTypes.SingleApp) uri = defaultDomain;
-
-    // set start Uri
-    if (uri != null)
-    {
-      var url = uri.url;
-
-      var app = ApplicationModel(url: uri.url, title: uri.url);
-
-      // wait for it to initialize
-      await app.initialized;
-
-      // assign default app to current
-      defaultApplication = app;
+      // replace default
+      print (Uri.base.toString());
+      var uri = Url.parse(Uri.base.toString());
+      if (uri != null && !uri.host.toLowerCase().startsWith("localhost")) defaultDomain = uri;
     }
   }
 

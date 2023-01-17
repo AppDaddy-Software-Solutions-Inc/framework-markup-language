@@ -47,22 +47,18 @@ class ApplicationModel
   String? get loginPage => settings("LOGIN_PAGE");
   String? get debugPage => settings("DEBUG_PAGE");
   String? get unauthorizedPage => settings("UNAUTHORIZED_PAGE");
-  String? requestedPage;
 
   Map<String,String?>? get configParameters => _config?.parameters;
 
   ConfigModel? _config;
 
-  ApplicationModel({required this.url, required this.title, this.icon, this.order, String? jwt})
+  ApplicationModel({required this.url, this.title, this.icon, this.order, String? jwt})
   {
     // key is url (lowercase) hashed
     key = Cryptography.hash(text: url.toLowerCase());
 
     // parse to url into its parts
     _uri = Url.parse(url);
-
-    // start page
-    if (_uri?.fileExtension == "xml") requestedPage = _uri?.file;
 
     // set token
     if (jwt != null)
@@ -164,10 +160,25 @@ class ApplicationModel
     theme.font        = settings('FONT');
   }
 
-  static ApplicationModel? _fromMap(dynamic map)
+  static Future<ApplicationModel?> _fromMap(dynamic map) async
   {
     ApplicationModel? app;
-    if (map is Map<String, dynamic>) app = ApplicationModel(url: S.mapVal(map, "url"), title: S.mapVal(map, "title"), icon: S.mapVal(map, "icon"), order: S.mapInt(map, "order"), jwt: S.mapVal(map, "jwt"));
+    if (map is Map<String, dynamic>)
+    {
+      app = ApplicationModel(url: S.mapVal(map, "url"), title: S.mapVal(map, "title"), icon: S.mapVal(map, "icon"), order: S.mapInt(map, "order"), jwt: S.mapVal(map, "jwt"));
+      await app.initialized;
+    }
+    return app;
+  }
+
+  static Future<ApplicationModel?> fromUrl(String url) async
+  {
+    // build the model
+    var app = ApplicationModel(url: url);
+
+    // load the config
+    await app.initialized;
+
     return app;
   }
 
@@ -188,9 +199,9 @@ class ApplicationModel
   {
     List<ApplicationModel> apps = [];
     List<Map<String, dynamic>> entries = await Database().query(tableName);
-    entries.forEach((entry)
+    entries.forEach((entry) async
     {
-      ApplicationModel? app = _fromMap(entry);
+      ApplicationModel? app = await _fromMap(entry);
       if (app != null) apps.add(app);
     });
     return apps;

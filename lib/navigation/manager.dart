@@ -51,86 +51,66 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     // clear all pages
     _pages.clear();
 
-    var x = PlatformDispatcher.instance.defaultRouteName;
-
     // set default app
     if (isWeb || appType == ApplicationTypes.SingleApp)
     {
-      Uri? uri;
+      // remove start page
+      if (defaultDomain.hasFragment) defaultDomain = defaultDomain.removeFragment();
 
-      // web applications initialize from the browser url
-      if (isWeb)
-      {
-        // parse base url
-        uri = Url.parse(Uri.base.toString());
-
-        // if localhost - use the default domain and route
-        // port 9000 is used by node.js by our installer
-        if (uri != null)
-        {
-          bool localhost = uri.host.startsWith(RegExp("localhost", caseSensitive: false));
-          if (localhost && uri.port != 9000) uri = defaultDomain;
-        }
-      }
-
-      // single page applications use the defaultDomain
-      else uri = defaultDomain;
-
-      // create an app
-      if (uri != null && uri.domain != null)
-      {
-        var app = ApplicationModel(url: uri.domain!, title: uri.domain!);
-        await app.initialized;
-        System().app = app;
-      }
+      // set default app
+      System().app = await ApplicationModel.fromUrl(defaultDomain.toString());
     }
 
     // get home page
-    String? home  = System().app?.homePage;
-    if (!isWeb && appType == ApplicationTypes.MultiApp) home = "store";
+    String homePage = System().app?.homePage ?? "main.xml";
+    if (!isWeb && appType == ApplicationTypes.MultiApp) homePage = "store";
 
     // get start page
-    String? start = System().app?.requestedPage ?? home;
-    if (start == null || home == null) return;
+    String startPage = defaultDomain.hasFragment ? defaultDomain.fragment : homePage;
 
     // start page is different than home page?
-    if (home.split("?")[0].toLowerCase() != start.split("?")[0].toLowerCase())
+    if (homePage.split("?")[0].toLowerCase() != startPage.split("?")[0].toLowerCase())
     {
       // fetch the template
-      Template? template = await Template.fetch(url: start, refresh: true);
+      Template? template = await Template.fetch(url: startPage, refresh: true);
 
       // document is linkable?
       // default - if singlePageApplication then false, otherwise true
       bool linkable = S.toBool(Xml.attribute(node: template.document!.rootElement, tag: "linkable")) ?? (System().app?.singlePage ?? false);
 
       // set start page = home page if not linkable
-      if (!linkable) start = home;
-
-      // clear requested page if the same as home page
-      if (home.split("?")[0].toLowerCase() == start.split("?")[0].toLowerCase()) System().app?.requestedPage = null;
+      if (!linkable) startPage = homePage;
 
       // single page applications always load the home page
-      if (System().app?.singlePage ?? false) start = home;
+      if (System().app?.singlePage ?? false) startPage = homePage;
+    }
+
+    // clear requested page if the same as the start page
+    if (defaultDomain.hasFragment)
+    {
+      var p1 = startPage.toLowerCase();
+      var p2 = defaultDomain.fragment.toLowerCase();
+      if (p1 == p2) defaultDomain = defaultDomain.removeFragment();
     }
 
     //  web browser - user hit refresh?
     //if ((System().getNavigationType() == 1) && (!System().singlePageApplication)) page = System().requestedPage;
 
     // open the page
-    setNewRoutePath(PageConfiguration(url: start), source: "splash");
+    setNewRoutePath(PageConfiguration(url: startPage), source: "splash");
   }
 
   Future<void> onPageLoaded() async
   {
     // open the requested page
-    if (System().app?.requestedPage != null)
+    if (defaultDomain.hasFragment)
     {
       // open the requested page
-      _open(System().app?.requestedPage);
+      _open(defaultDomain.fragment);
 
       // clear requested page so we don't continually
       // open the same page on refresh or reload
-      System().app?.requestedPage = null;
+      defaultDomain = defaultDomain.removeFragment();
     }
   }
 

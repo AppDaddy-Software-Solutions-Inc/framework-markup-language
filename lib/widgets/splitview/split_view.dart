@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/navigation/manager.dart';
+import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/splitview/split_model.dart';
 import 'package:fml/event/event.dart';

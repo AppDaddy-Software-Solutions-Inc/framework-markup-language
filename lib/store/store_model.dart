@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/application/application_model.dart';
-import 'package:fml/navigation/manager.dart';
+import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/navigation/page.dart';
 import 'package:fml/system.dart';
 import 'package:fml/theme/themenotifier.dart';

@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:fml/log/manager.dart';
-import 'package:fml/navigation/manager.dart';
+import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/system.dart';
 import 'package:fml/template/template_manager.dart';

@@ -193,7 +193,7 @@ class Http
       _headers[HttpHeaders.ageHeader] = '0';
       _headers[HttpHeaders.contentEncodingHeader] = 'utf8';
       _headers[HttpHeaders.contentTypeHeader] = "application/xml";
-      if (System().jwt != null) _headers[HttpHeaders.authorizationHeader] = "Bearer ${System().jwt!.token}";
+      if (System().token != null) _headers[HttpHeaders.authorizationHeader] = "Bearer ${System().token!.token}";
     }
     else headers.forEach((key, value) => _headers[key] = value);
     return _headers;

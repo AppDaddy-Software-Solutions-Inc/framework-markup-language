@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/navigation/manager.dart';
+import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';

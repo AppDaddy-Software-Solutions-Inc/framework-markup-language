@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/application/manager.dart';
+import 'package:fml/application/application_manager.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/navigation/manager.dart';
+import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/navigation/parser.dart';
 import 'package:fml/splash/splash.dart';
 import 'package:fml/system.dart';

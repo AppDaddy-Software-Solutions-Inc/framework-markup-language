@@ -4,7 +4,7 @@ import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
-import 'package:fml/navigation/manager.dart';
+import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/system.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

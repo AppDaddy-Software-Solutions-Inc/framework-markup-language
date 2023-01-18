@@ -12,7 +12,7 @@ import 'package:fml/helper/string.dart';
 import 'package:fml/helper/url.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/page.dart';
-import 'package:fml/navigation/observer.dart';
+import 'package:fml/navigation/navigation_observer.dart';
 import 'package:fml/navigation/transition.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';

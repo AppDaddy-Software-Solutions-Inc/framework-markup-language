@@ -9,7 +9,7 @@ import 'package:fml/dialog/service.dart';
 import 'package:fml/eval/evaluator.dart';
 import 'package:fml/eval/expressions.dart';
 import 'package:fml/event/manager.dart';
-import 'package:fml/navigation/manager.dart';
+import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
 import 'package:fml/template/template_manager.dart';
@@ -403,7 +403,7 @@ class EventHandler extends Eval
       System().logon(jwt);
 
       // set user values
-      System().logon(System().jwt);
+      System().logon(System().token);
 
       // refresh the framework
       if (S.toBool(refresh) != false) EventManager.of(model)?.broadcastEvent(model,Event(EventTypes.refresh, parameters: null, model: model));

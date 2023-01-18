@@ -59,23 +59,17 @@ class Url
     Uri? uri = parse(url);
     if (uri == null) return url;
 
-    //////////////////////////////
     /* Get the Query Parameters */
-    //////////////////////////////
     Map<String, List<String>> parameters = Map<String, List<String>>();
     parameters.addAll(uri.queryParametersAll);
 
     if (!parameters.containsKey(key)) parameters[key] = [];
     parameters[key]!.add(Uri.encodeComponent(value ?? ""));
 
-    //////////////////////////////
     /* Replace the Query String */
-    //////////////////////////////
     uri = uri.replace(queryParameters: parameters);
 
-    ///////////////////////
     /* Convert to String */
-    ///////////////////////
     url = uri.toString();
 
     return url;
@@ -186,7 +180,6 @@ extension UriExtensions on Uri
     if (scheme == "asset")
          return S.toAbsoluteFilePath("/assets/$host/$path", rootPath: System.rootPath);
     else return S.toAbsoluteFilePath("/applications/$host/$path", rootPath: System.rootPath);
-    return null;
   }
 }
 

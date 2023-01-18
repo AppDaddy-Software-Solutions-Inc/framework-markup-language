@@ -130,7 +130,9 @@ class ApplicationModel
         if (url != null)
         {
           var uri = await Url.toUriData(url);
-          if (uri != null) this.icon = uri.toString();
+          if (uri != null)
+               this.icon = uri.toString();
+          else this.icon = null;
         }
       }
 

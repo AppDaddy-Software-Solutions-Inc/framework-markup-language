@@ -9,7 +9,7 @@ import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/hive/stash.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/navigation/manager.dart';
+import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/postmaster/postmaster.dart';
 import 'package:fml/janitor/janitor.dart';
@@ -33,28 +33,27 @@ import 'package:fml/platform/platform.web.dart'
 if (dart.library.io)   'package:fml/platform/platform.vm.dart'
 if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
+// application build version
+final String version = '1.0.0+10';
+
+// Active Application
+ApplicationModel? get Application => System()._app;
+
+// This url is used to locate config.xml on startup
+// Used in SingleApp only and on Web when developing on localhost
+// Set this to file://applications/<app> to use the asset applications
+Uri defaultDomain = Uri.parse('https://fml.dev');
+
+// SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
+// MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
+enum ApplicationTypes{ SingleApp, MultiApp }
+final ApplicationTypes appType  = ApplicationTypes.MultiApp;
+
 // platform
 String get platform => isWeb ? "web" : isMobile ? "mobile" : "desktop";
 bool get isWeb      => kIsWeb;
 bool get isMobile   => !isWeb && (io.Platform.isAndroid || io.Platform.isIOS);
 bool get isDesktop  => !isWeb && !isMobile;
-
-// application build version
-final String version = '1.0.0+10';
-
-// SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
-// MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
-enum ApplicationTypes{ SingleApp, MultiApp }
-final ApplicationTypes appType  = ApplicationTypes.SingleApp;
-
-// This url is used to locate config.xml on startup
-// Used in SingleApp only and on Web when developing on localhost
-// Set this to file://applications/<app> to use the asset applications
-Uri defaultDomain = Uri.parse('https://test.appdaddy.co');
-
-typedef CommitCallback = Future<bool> Function();
-
-enum Keys { F1, F2, F3, F4, F5, F6, F7, F8, F9, shift, alt, control, enter }
 
 // This variable is used throughout the code to determine if debug messages
 // and their corresponding actions should be performed.
@@ -62,14 +61,13 @@ enum Keys { F1, F2, F3, F4, F5, F6, F7, F8, F9, shift, alt, control, enter }
 // when log messages being written while System() is still be initialized.
 final bool kDebugMode = !kReleaseMode;
 
-// Active Application
-ApplicationModel? get Application => System()._app;
+typedef CommitCallback = Future<bool> Function();
 
 class System extends WidgetModel implements IEventManager
 {
   static final System _singleton = System.initialize();
   factory System() => _singleton;
-  System.initialize() : super(null, "SYSTEM", scope: Scope("SYSTEM")) {initialized = _init();}
+  System.initialize() : super(null, "SYSTEM") {initialized = _init();}
 
   // system scope
   Scope? scope = Scope("SYSTEM");
@@ -165,14 +163,14 @@ class System extends WidgetModel implements IEventManager
   GPS.Payload? currentLocation;
 
   /// current json web token used to authenticate
-  StringObservable? _jwtObservable;
-  Jwt? _jwt;
-  set jwt(Jwt? value)
+  StringObservable? _jwt;
+  Jwt? _token;
+  set token(Jwt? value)
   {
-    _jwt = value;
-    if (_jwtObservable != null) _jwtObservable!.set(_jwt?.token);
+    _token = value;
+    if (_jwt != null) _jwt!.set(_token?.token);
   }
-  Jwt? get jwt => _jwt;
+  Jwt? get token => _token;
 
   // firebase
   FirebaseApp? get firebase => _app?.firebase;
@@ -267,7 +265,7 @@ class System extends WidgetModel implements IEventManager
     _theme = ThemeModel(this, "THEME");
 
     // json web token
-    _jwtObservable = StringObservable(Binding.toKey(id, 'jwt'), null, scope: scope);
+    _jwt = StringObservable(Binding.toKey(id, 'jwt'), null, scope: scope);
 
     // device settings
     _screenheight = IntegerObservable(Binding.toKey(id, 'screenheight'), WidgetsBinding.instance.window.physicalSize.height, scope: scope);
@@ -406,7 +404,7 @@ class System extends WidgetModel implements IEventManager
       else _user['connected']!.set(true);
 
       // set token
-      this.jwt = token;
+      this.token = token;
       return true;
     }
 
@@ -428,7 +426,7 @@ class System extends WidgetModel implements IEventManager
       else _user['connected']!.set(false);
 
       // clear token
-      this.jwt = null;
+      this.token = null;
       return false;
     }
   }
@@ -446,7 +444,7 @@ class System extends WidgetModel implements IEventManager
     else _user['connected']!.set(false);
 
     // remember token
-    this.jwt = null;
+    this.token = null;
     return true;
   }
 
@@ -485,7 +483,7 @@ class System extends WidgetModel implements IEventManager
     app.setTheme(theme);
 
     // set credentials
-    if (app.jwt != null) logon(jwt);
+    if (app.jwt != null) logon(token);
 
     // set fml version support level
     //if (config?.get("FML_VERSION") != null) fmlVersion = S.toVersionNumber(config!.get("FML_VERSION")!) ?? currentVersion;

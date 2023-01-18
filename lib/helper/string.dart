@@ -684,12 +684,12 @@ class S
     return lowercase ? returnString.toLowerCase() : returnString;
   }
 
-  static String toAbsoluteFilePath(String rootPath, String path)
+  static String toAbsoluteFilePath(String path, {String? rootPath})
   {
     var ps = io.Platform.pathSeparator;
 
     // append root path
-    if (!isNullOrEmpty(rootPath) && !path.toLowerCase().startsWith(rootPath.toLowerCase())) path = "$rootPath$ps$path";
+    if (!isNullOrEmpty(rootPath) && !path.toLowerCase().startsWith(rootPath!.toLowerCase())) path = "$rootPath$ps$path";
 
     // remove empty path seperators
     path = path.replaceAll("\\", ps).replaceAll("/", ps);

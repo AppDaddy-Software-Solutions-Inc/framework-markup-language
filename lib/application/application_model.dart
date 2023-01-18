@@ -136,12 +136,12 @@ class ApplicationModel
 
       // mirror?
       var mirrorApi = model.settings["MIRROR_API"];
-      if (mirrorApi != null)
+      if (mirrorApi != null && _uri?.domain != null)
       {
-        var uri = Url.parse(mirrorApi);
-        if (uri?.domain != null)
+        var url = Url.toAbsolute(mirrorApi, _uri!.domain!);
+        if (url != null)
         {
-          mirror = Mirror(domain,mirrorApi);
+          mirror = Mirror(url);
           mirror!.execute();
         }
       }

@@ -67,38 +67,22 @@ class Assets
       }
   }
 
-  loadAssetFromServer(String url) async
+  load(String url) async
   {
-    ////////////////////////
-    //** Clear the List **//
-    ////////////////////////
     list.clear();
 
-    ///////////////////////////
-    //** Perform Inventory **//
-    ///////////////////////////
+    // perform inventory
     final response = await Http.get(url);
 
-    ////////////////
-    //** Error? **//
-    ////////////////
+    // error?
     if (!response.ok)
     {
       Log().error('Error getting asset from $url. Error is $response', caller: "Mirror");
       return;
     }
 
-    ///////////
-    /* Parse */
-    ///////////
-    try
-    {
-      XmlDocument document = XmlDocument.parse(response.body);
-      deserialize(document.rootElement);
-    }
-    on Exception catch(e)
-    {
-      Log().exception(e,caller: "Mirror");
-    }
+    // parse
+    XmlDocument? document = Xml.tryParse(response.body);
+    if (document != null) deserialize(document.rootElement);
   }
 }

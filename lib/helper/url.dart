@@ -182,9 +182,10 @@ extension UriExtensions on Uri
   String? get filepath
   {
     // file path
-    if (isWeb) return null;
-    if (scheme == "asset") return S.toAbsoluteFilePath(System.rootPath,"assets/$host/$path");
-    if (scheme == "file")  return S.toAbsoluteFilePath(System.rootPath,"$host/$path");
+    if (isWeb || page == null) return null;
+    if (scheme == "asset")
+         return S.toAbsoluteFilePath("/assets/$host/$path", rootPath: System.rootPath);
+    else return S.toAbsoluteFilePath("/applications/$host/$path", rootPath: System.rootPath);
     return null;
   }
 }

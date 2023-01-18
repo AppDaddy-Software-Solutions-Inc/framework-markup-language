@@ -296,7 +296,7 @@ class System extends WidgetModel implements IEventManager
   Future<bool> _initDatabase() async
   {
     // create the hive folder
-    var folder = S.toAbsoluteFilePath(rootPath,"hive");
+    var folder = S.toAbsoluteFilePath("hive", rootPath: rootPath);
     String? hiveFolder = await Platform.createFolder(folder);
 
     // initialize hive
@@ -322,7 +322,7 @@ class System extends WidgetModel implements IEventManager
       for (String key in manifest.keys)
       if (key.startsWith("assets/applications"))
       {
-        var filepath = "${System.rootPath}/${key.replaceFirst("assets/", "")}";
+        var filepath = S.toAbsoluteFilePath(key.replaceFirst("assets/", ""), rootPath: rootPath);
         await Platform.writeFile(filepath, await rootBundle.load(key));
       }
     }

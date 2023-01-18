@@ -81,11 +81,10 @@ class Mirror
 
       // write asset to disk
       var uri = Url.parse(asset.uri);
-      String? filename = uri?.page;
-      if (filename != null)
+      if (uri != null && uri.filepath != null)
       {
-        Log().debug('Writing file to disk $filename', caller: "Mirror");
-        await Platform.writeFile(filename, response.bytes);
+        Log().debug('Writing file to disk ${uri.filepath}', caller: "Mirror");
+        await Platform.writeFile(uri.filepath, response.bytes);
         return true;
       }
       return false;

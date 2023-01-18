@@ -310,10 +310,14 @@ class AppFormState extends State<AppForm>
     bool ok = _formKey.currentState!.validate();
     if (ok)
     {
-      System.toast('Attempting to Connect Application',duration: 2);
       ApplicationModel app = ApplicationModel(url: url!, title: title!);
-      Store().add(app);
-      Navigator.of(context).pop();
+      await app.initialized;
+      if (app.hasConfig)
+      {
+        Store().add(app);
+        Navigator.of(context).pop();
+      }
+      else System.toast('Unable to get application!',duration: 2);
     }
   }
 

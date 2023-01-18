@@ -8,6 +8,9 @@ import 'dart:js';
 
 class Platform
 {
+  // application root path
+  static Future<String?> get path async => null;
+
   static String? get useragent
   {
     const appleType   = "ios";
@@ -29,8 +32,6 @@ class Platform
 
   static final dynamic iframe = window.document.getElementById('invisible');
 
-  static bool connected = true;
-
   static init() async
   {
     try
@@ -38,11 +39,6 @@ class Platform
       window.document.getElementById("logo")!.style.visibility = "hidden";
     }
     catch(e){}
-  }
-
-  static Future<bool> checkInternetConnection(String? domain) async
-  {
-    return true;
   }
 
   static Future<dynamic> fileSaveAs(List<int> bytes, String filename) async
@@ -98,50 +94,15 @@ class Platform
     window.print();
   }
 
-  static dynamic getFile(String? filename)
-  {
-    return null;
-  }
-
-  static String? folderPath(String folder)
-  {
-    return null;
-  }
-
-  static String? filePath(String? filename)
-  {
-    return null;
-  }
-
-  static bool folderExists(String folder)
-  {
-    return false;
-  }
-
-  static bool fileExists(String filename)
-  {
-    return false;
-  }
-
-  static Future<dynamic> readFile(String? filename, {bool asBytes = false}) async
-  {
-    return null;
-  }
-
-  static Future<String?> createFolder(String? folder) async
-  {
-    return null;
-  }
-
-  static Future<bool> writeFile(String? filename, dynamic content) async
-  {
-    return true;
-  }
-
-  static Future<bool> deleteFile(String filename) async
-  {
-    return true;
-  }
+  static dynamic getFile(String? filename) => null;
+  static String? folderPath(String folder) => null;
+  static String? filePath(String? filename) => null;
+  static bool folderExists(String folder) => false;
+  static bool fileExists(String filename) => false;
+  static Future<dynamic> readFile(String? filename, {bool asBytes = false}) async => null;
+  static Future<String?> createFolder(String? folder) async => null;
+  static Future<bool> writeFile(String? filename, dynamic content) async => true;
+  static Future<bool> deleteFile(String filename) async => true;
 
   static Future<bool> goBackPages(int pages) async
   {

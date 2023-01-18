@@ -191,7 +191,7 @@ class PostMaster
 
   Future<bool> postable(DATABASE.Post post) async
   {
-    if (!Platform.connected) return false;
+    if (!System().connected) return false;
     return await formPostable(post.formKey);
   }
 

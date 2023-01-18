@@ -6,6 +6,7 @@ import 'package:fml/config/config_model.dart';
 import 'package:fml/crypto/crypto.dart';
 import 'package:fml/hive/database.dart';
 import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/mirror/mirror.dart';
 import 'package:fml/token/token.dart';
 import 'package:fml/widgets/theme/theme_model.dart';
 
@@ -17,6 +18,9 @@ class ApplicationModel
 
   // used for social media
   FirebaseApp? firebase;
+
+  // mirrors
+  Mirror? mirror;
 
   // secure?
   bool get secure => _uri?.scheme == "https" || _uri?.scheme == "wss";
@@ -127,6 +131,18 @@ class ApplicationModel
         {
           var uri = await Url.toUriData(url);
           if (uri != null) this.icon = uri.toString();
+        }
+      }
+
+      // mirror?
+      var mirrorApi = model.settings["MIRROR_API"];
+      if (mirrorApi != null)
+      {
+        var uri = Url.parse(mirrorApi);
+        if (uri?.domain != null)
+        {
+          mirror = Mirror(domain,mirrorApi);
+          mirror!.execute();
         }
       }
 

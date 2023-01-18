@@ -88,10 +88,10 @@ class ImageView extends StatefulWidget
         case ImageSource.file:
           if (uri.pageExtension == "svg")
           {
-            var file = Platform.getFile(uri.filePath);
+            var file = Platform.getFile(uri.filepath);
             if (file != null) image = SvgPicture.file(file!, fit: getFit(fit), width: width, height: height);
           }
-          else image = Image.file(File(uri.filePath!));
+          else image = Image.file(File(uri.filepath!));
           break;
 
         /// asset image

@@ -4,13 +4,11 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/system.dart';
+import 'package:fml/template/template_manager.dart';
 import 'package:uuid/uuid.dart';
 import 'package:validators/validators.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/datasources/http/http.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:fml/hive/form.dart' as DATABASE;
 import 'package:fml/helper/helper_barrel.dart';
 
 // platform
@@ -24,134 +22,6 @@ class Template
   final XmlDocument? document;
 
   Template({this.name, this.document});
-
-  static XmlDocument? _fromMemory(String url)
-  {
-    var uri = Url.parse(url);
-    if (uri != null && System().templates.containsKey(uri.url)) return System().templates[uri.url];
-    return null;
-  }
-
-  static toMemory(String url, XmlDocument? document)
-  {
-    var uri = Url.parse(url);
-    if (uri != null) System().templates[uri.url] = document;
-  }
-
-  static Future<String?> _fromDatabase(String key) async
-  {
-    String? template;
-    try
-    {
-      // lookup from local hive
-      DATABASE.Form? form = await DATABASE.Form.find(key);
-      if (form != null) template = form.template;
-    }
-    catch (e)
-    {
-      Log().exception(e);
-      template = null;
-    }
-    return template;
-  }
-
-  static Future<String?> _fromAssetsBundle(String url) async
-  {
-    String? template;
-    try
-    {
-      // not supported on web
-      if (isWeb) throw('Local Files not supported in Browser');
-
-      // get template from asset bundle
-      template = await rootBundle.loadString(url.replaceFirst("file://", "assets/"), cache: false);
-    }
-    catch (e)
-    {
-      template = null;
-    }
-    return template;
-  }
-
-  static Future<String?> _fromFile(String url) async
-  {
-    String? template;
-    try
-    {
-      // not supported on web
-      if (isWeb)    throw('Local Files not supported in Browser');
-      if (isMobile) throw('Local Files not supported in Mobile');
-
-      // get template from file
-      Uri? uri = Url.parse(url);
-      if (uri != null && uri.filePath != null)
-      {
-        var file = Platform.getFile(uri.filePath);
-        if (file != null) template = await Platform.readFile(url);
-      }
-    }
-    catch (e)
-    {
-      template = null;
-    }
-    return template;
-  }
-
-  static Future<String?> _fromServer(String url) async
-  {
-    String? template;
-    try
-    {
-      // get template from remote server
-      if (Platform.connected == true)
-      {
-        // get the template from the cloud
-        HttpResponse response = await Http.get(url, refresh: true);
-        if (!response.ok) throw '[${response.statusCode}] ${response.statusMessage}';
-        template = response.body;
-      }
-      else
-      {
-        Log().debug("Unable to fetch template from server. No internet connection");
-      }
-    }
-    catch (e)
-    {
-      Log().error("Can't find valid template $url on server. Error is $e");
-    }
-    return template;
-  }
-
-  static Future<String?> _fromDisk(String url) async
-  {
-    String? template;
-    try
-    {
-      var uri = Url.parse(url);
-      if (uri != null)
-      {
-        bool exists = Platform.fileExists(uri.url);
-        if (exists) template = await Platform.readFile(uri.url);
-      }
-    }
-    catch (e)
-    {
-      Log().exception(e);
-      template = null;
-    }
-    return template;
-  }
-
-  static Future<bool> _toDisk(String url, String xml) async
-  {
-    var uri = Url.parse(url);
-    if (uri != null)
-    {
-      Log().debug('Writing ${uri.url} to disk", object: "TEMPLATE"');
-      return await Platform.writeFile("${uri.url}", xml);
-    }
-    return false;
-  }
 
   factory Template.fromDocument({String? name, XmlDocument? xml, Map<String, String?>? parameters})
   {
@@ -220,33 +90,33 @@ class Template
       if (refresh == true)
       {
         // get template
-        template = await _fromServer(url);
+        template = await TemplateManager().fromServer(url);
 
         // save to local storage
-        if (template != null) _toDisk(url, template);
+        if (template != null) TemplateManager().toDisk(url, template);
       }
 
       // get template from memory
       if (template == null)
       {
-        XmlDocument? document = _fromMemory(url);
+        XmlDocument? document = TemplateManager().fromMemory(url);
         if (document != null) return document;
       }
 
       // get template from disk
-      if (template == null) template = await _fromDisk(url);
+      if (template == null) template = await TemplateManager().fromDisk(url);
 
       // get template from database (web)
-      if (template == null) template = await _fromDatabase(url);
+      if (template == null) template = await TemplateManager().fromDatabase(url);
 
       // get template from server
       if (template == null)
       {
         // get template
-        template = await _fromServer(url);
+        template = await TemplateManager().fromServer(url);
 
         // save to local storage
-        if (template != null) _toDisk(url, template);
+        if (template != null) TemplateManager().toDisk(url, template);
       }
     }
 
@@ -254,13 +124,13 @@ class Template
     else
     {
       // from assets archive
-      if (template == null) template = await _fromAssetsBundle(url);
+      if (template == null) template = await TemplateManager().fromAssetsBundle(url);
 
       // from assets archive
-      if (template == null) template = await _fromFile(url);
+      if (template == null) template = await TemplateManager().fromFile(url);
 
       // from file
-      if (template == null) template = await _fromDisk(url);
+      if (template == null) template = await TemplateManager().fromDisk(url);
     }
 
     // nothing to process
@@ -276,7 +146,7 @@ class Template
     if (document != null) await _processIncludes(document, parameters, refresh);
 
     // cache in memory after processing include files
-    if (document != null) await toMemory(url, document);
+    if (document != null) await TemplateManager().toMemory(url, document);
 
     // return the template
     return document;
@@ -289,7 +159,7 @@ class Template
     String? template;
 
     // get template from database (web)
-    if (template == null) template = await _fromDatabase(url);
+    if (template == null) template = await TemplateManager().fromDatabase(url);
 
     return Xml.tryParse(template);
   }

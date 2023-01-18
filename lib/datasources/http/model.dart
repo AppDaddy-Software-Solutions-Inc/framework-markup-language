@@ -160,7 +160,7 @@ class HttpModel extends DataSourceModel implements IDataSource
 
     // web is always in the foreground
     if (isWeb) type = Types.foreground;
-    if ((type == Types.either) && (Platform.connected == true)) type = Types.foreground;
+    if ((type == Types.either) && (System().connected)) type = Types.foreground;
 
     // process in the background
     if (type == Types.background)
@@ -176,7 +176,7 @@ class HttpModel extends DataSourceModel implements IDataSource
     }
 
     // post in the foreground
-    if ((type == Types.foreground) && (!Platform.connected))
+    if ((type == Types.foreground) && (!System().connected))
     {
         await System.toast(phrase.checkConnection);
         return false;

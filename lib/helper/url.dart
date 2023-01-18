@@ -1,9 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:fml/datasources/http/http.dart';
 import 'package:fml/helper/helper_barrel.dart';
 import 'package:path/path.dart';
+import 'package:fml/system.dart';
 
 /// URL Helpers
 ///
@@ -95,9 +95,9 @@ class Url
       if (uri.data != null) return uri.data;
 
       // file reference
-      if (uri.scheme == "file" && uri.filePath != null)
+      if (uri.scheme == "file" && uri.filepath != null)
       {
-        var name = uri.filePath!;
+        var name = uri.filepath!;
         var file  = File(name);
         var bytes = await file.readAsBytes();
         var mime  = await S.mimetype(url);
@@ -177,43 +177,15 @@ extension UriExtensions on Uri
   }
 
   String? get page => (pathSegments.isNotEmpty && pathSegments.last.contains(".")) ? pathSegments.last : null;
+  String? get pageExtension => page?.contains(".") ?? false ? extension(page!).toLowerCase().replaceFirst(".", "").trim() : null;
 
-  String? get pageExtension
+  String? get filepath
   {
-    var page = this.page;
-    if (page?.contains(".") ?? false)
-         return extension(page!).toLowerCase().replaceFirst(".", "").trim();
-    else return null;
-  }
-
-  String? get filePath
-  {
-    if (kIsWeb) return null;
-
-    String? _path;
-
-    // get root folder
-    var folder = dirname(Platform.resolvedExecutable);
-
     // file path
-    switch (scheme)
-    {
-      case "asset":
-        _path = "$folder/assets/$host/$path";
-        break;
-      case "file":
-        _path = "$folder/$host/$path";
-        break;
-    }
-
-    // format the path
-    if (_path != null)
-    {
-      var ps = Platform.pathSeparator;
-      _path = _path.replaceAll("\\", "$ps").replaceAll("/", "$ps");
-      while (_path!.contains("$ps$ps")) _path = _path.replaceAll("$ps$ps", "$ps");
-    }
-    return _path;
+    if (isWeb) return null;
+    if (scheme == "asset") return S.toAbsoluteFilePath(System.rootPath,"assets/$host/$path");
+    if (scheme == "file")  return S.toAbsoluteFilePath(System.rootPath,"$host/$path");
+    return null;
   }
 }
 

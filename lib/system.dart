@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'dart:collection';
 import 'dart:convert';
 import 'dart:core';
+import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:firebase_core/firebase_core.dart' show FirebaseApp;
 import 'package:flutter/foundation.dart';
 import 'package:fml/datasources/log/log_model.dart';
@@ -20,12 +20,10 @@ import 'package:fml/widgets/theme/theme_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:async';
-import 'package:xml/xml.dart';
 import 'package:fml/hive/database.dart';
 import 'package:fml/datasources/gps/gps.dart' as GPS;
 import 'package:fml/datasources/gps/payload.dart' as GPS;
 import 'package:fml/application/application_model.dart';
-import 'package:fml/mirror/mirror.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/helper_barrel.dart';
 import 'dart:io' as io;
@@ -47,12 +45,12 @@ final String version = '1.0.0+10';
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
 enum ApplicationTypes{ SingleApp, MultiApp }
-final ApplicationTypes appType  = ApplicationTypes.MultiApp;
+final ApplicationTypes appType  = ApplicationTypes.SingleApp;
 
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
-// Set this to file://applications/<app>/config.xml to use the asset applications
-Uri defaultDomain = Uri.parse('https://fml.dev');
+// Set this to file://applications/<app> to use the asset applications
+Uri defaultDomain = Uri.parse('https://test.appdaddy.co');
 
 typedef CommitCallback = Future<bool> Function();
 
@@ -86,17 +84,25 @@ class System extends WidgetModel implements IEventManager
   late final ThemeModel _theme;
   ThemeModel get theme => _theme;
 
+  late final Connectivity connection;
+
   // post master service
   final PostMaster postmaster = PostMaster();
 
   // janitorial service
   final Janitor janitor = Janitor();
 
-  // mirrors
-  static final Map<String, Mirror> mirrors = Map<String, Mirror>();
-
   /// holds user observables bound to claims
   Map<String, StringObservable> _user = Map<String, StringObservable>();
+
+  // current domain
+  BooleanObservable? _connected;
+  bool get connected => _connected?.get() ?? false;
+
+  // root folder path
+  static late String rootPath;
+  StringObservable? _rootpath;
+  String? get rootpath => _rootpath?.get();
 
   // current domain
   StringObservable? _domain;
@@ -158,10 +164,6 @@ class System extends WidgetModel implements IEventManager
   GPS.Gps gps = GPS.Gps();
   GPS.Payload? currentLocation;
 
-  // holds in-memory deserialized templates
-  // primarily used for performance reasons
-  HashMap<String?, XmlDocument?> templates = HashMap<String?, XmlDocument?>();
-
   /// current json web token used to authenticate
   StringObservable? _jwtObservable;
   Jwt? _jwt;
@@ -183,11 +185,14 @@ class System extends WidgetModel implements IEventManager
     // initialize platform
     await Platform.init();
 
+    // initialize System Globals
+    await _initBindables();
+
     // initialize Hive
     await _initDatabase();
 
-    // initialize System Globals
-    await _initBindables();
+    // initialize connectivity
+    await _initConnectivity();
 
     // create empty applications folder
     await _initFolders();
@@ -202,6 +207,30 @@ class System extends WidgetModel implements IEventManager
     await janitor.start();
 
     return true;
+  }
+
+  Future _initConnectivity() async
+  {
+    try
+    {
+      connection = Connectivity();
+
+      ConnectivityStatus initialConnection = await connection.checkConnectivity();
+      if (initialConnection == ConnectivityStatus.none) System.toast(Phrases().checkConnection, duration: 3);
+
+      // Add connection listener
+      connection.isConnected.listen((isconnected) => _connected?.set(isconnected));
+
+      // For the initial connectivity test we want to give checkConnection some time
+      // but it still needs to run synchronous so we give it a second
+      await Future.delayed(Duration(seconds: 1));
+      Log().debug('initConnectivity status: $connected');
+    }
+    catch (e)
+    {
+      _connected?.set(false);
+      Log().debug('Error initializing connectivity');
+    }
   }
 
   Future _initRoute() async
@@ -222,10 +251,17 @@ class System extends WidgetModel implements IEventManager
 
   Future<bool> _initBindables() async
   {
+    // platform root path
+    System.rootPath  = await Platform.path ?? "";
+    _rootpath = StringObservable(Binding.toKey(id, 'rootpath'), System.rootPath, scope: scope);
+
+    // connected
+    _connected = BooleanObservable(Binding.toKey(id, 'connected'), null, scope: scope);
+
     // active application settings
-    _domain        = StringObservable(Binding.toKey(id, 'domain'), null, scope: scope, listener: onPropertyChange);
-    _scheme        = StringObservable(Binding.toKey(id, 'scheme'), null, scope: scope, listener: onPropertyChange);
-    _host          = StringObservable(Binding.toKey(id, 'host'),   null, scope: scope, listener: onPropertyChange);
+    _domain = StringObservable(Binding.toKey(id, 'domain'), null, scope: scope);
+    _scheme = StringObservable(Binding.toKey(id, 'scheme'), null, scope: scope);
+    _host   = StringObservable(Binding.toKey(id, 'host'),   null, scope: scope);
 
     // create the theme
     _theme = ThemeModel(this, "THEME");
@@ -260,7 +296,8 @@ class System extends WidgetModel implements IEventManager
   Future<bool> _initDatabase() async
   {
     // create the hive folder
-    String? hiveFolder = await Platform.createFolder("hive");
+    var folder = S.toAbsoluteFilePath(rootPath,"hive");
+    String? hiveFolder = await Platform.createFolder(folder);
 
     // initialize hive
     await Database().initialize(hiveFolder);
@@ -285,8 +322,8 @@ class System extends WidgetModel implements IEventManager
       for (String key in manifest.keys)
       if (key.startsWith("assets/applications"))
       {
-        var folder = key.replaceFirst("assets/", "");
-        await Platform.writeFile(folder, await rootBundle.load(key));
+        var filepath = "${System.rootPath}/${key.replaceFirst("assets/", "")}";
+        await Platform.writeFile(filepath, await rootBundle.load(key));
       }
     }
     catch(e)
@@ -446,9 +483,6 @@ class System extends WidgetModel implements IEventManager
 
     // apply theme settings
     app.setTheme(theme);
-
-    // check connectivity
-    Platform.checkInternetConnection(app.domain);
 
     // set credentials
     if (app.jwt != null) logon(jwt);

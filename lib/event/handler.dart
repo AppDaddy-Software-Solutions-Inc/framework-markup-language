@@ -12,6 +12,7 @@ import 'package:fml/event/manager.dart';
 import 'package:fml/navigation/manager.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
+import 'package:fml/template/template_manager.dart';
 import 'package:fml/token/token.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/framework/framework_view.dart';
@@ -20,7 +21,6 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/eval/eval.dart';
 import 'package:fml/widgets/trigger/trigger_model.dart';
 import 'package:fml/sound/sound.dart';
-import 'package:fml/template/template.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/event/event.dart';
@@ -576,7 +576,7 @@ class EventHandler extends Eval
   {
     var document = XmlDocument.parse(xml);
     String uuid = "${Uuid().v1()}.xml";
-    Template.toMemory(uuid, document);
+    TemplateManager().toMemory(uuid, document);
     return _handleEventOpen(uuid, isModal, transition);
   }
 

@@ -1,5 +1,10 @@
 import 'package:path/path.dart';
 
+// platform
+import 'package:fml/platform/platform.stub.dart'
+if (dart.library.io)   'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
+
 extension URI on Uri
 {
   // active domain
@@ -7,52 +12,45 @@ extension URI on Uri
   static String rootPath = "";
 
   String  get url    => this.toString();
-  String  get domain => replace(queryParameters: null).replace(fragment: null).replace(userInfo: null).replacePage().url;
+  String  get domain => replace(queryParameters: null).replace(fragment: null).removePage().url;
   String? get page   => (pathSegments.isNotEmpty && pathSegments.last.contains(".")) ? pathSegments.last : null;
   String? get pageExtension => page?.contains(".") ?? false ? extension(page!).toLowerCase().replaceFirst(".", "").trim() : null;
 
-  String? asFilePath()
+  String? asFilePath({String? domain})
   {
-    var domain = replace(queryParameters: null).replace(fragment: null).replace(userInfo: null).url;
-    if (!domain.startsWith(rootPath.toLowerCase()))
-         return join(rootPath,domain);
-    else return rootPath;
+    var root = domain ?? rootPath;
+    if (page == null) return null;
+    var uri = this;
+    var url = "${uri.host}/${uri.path}";
+    if (uri.scheme == "file"  && uri.host != "applications") url = "applications/$url";
+    if (uri.scheme == "asset" && uri.host != "assets")       url = "assets/$url";
+    url = normalize("$root/$url");
+    return url;
   }
 
-  String asFolderPath(String rootPath)
+  String asFolderPath({String? domain})
   {
-    var domain = replace(queryParameters: null).replace(fragment: null).replace(userInfo: null).replacePage().url;
-    if (!domain.startsWith(rootPath.toLowerCase()))
-         return join(rootPath,domain);
-    else return rootPath;
+    var root = domain ?? rootPath;
+    var uri = this.removePage();
+    var url = "${uri.host}/${uri.path}";
+    if (uri.scheme == "file"  && uri.host != "applications") url = "applications/$url";
+    if (uri.scheme == "asset" && uri.host != "assets")       url = "assets/$url";
+    url = normalize("$root/$url");
+    return url;
   }
 
-  Uri toAbsolute()
+  Uri toAbsolute({String? domain})
   {
-    var before = this.toString();
-
-    String host = URI.rootHost;
-
-    // url is a data uri?
-    if (data != null) return this;
-
-    // file uri?
-    if (scheme == "file")
+    var root = domain ?? rootHost;
+    if (!this.isAbsolute)
     {
-      host = rootPath;
-      if (this.host == "applications") host = "$host/applications";
+      var url = "$root/${this.host}/${this.path}";
+      if (hasFragment) url = "$url#$fragment";
+      if (hasQuery)    url = "$url?$query";
+      var uri = Uri.parse(url).removeEmptySegments();
+      return uri;
     }
-
-    // asset uri?
-    if (scheme == "asset")
-    {
-      host = rootPath;
-      if (this.host == "assets") host = "$host/assets";
-    }
-
-    var uri = resolve(host).normalizePath();
-    var after = uri.toString();
-    return uri;
+    else return this;
   }
 
   Uri removeEmptySegments()
@@ -83,7 +81,7 @@ extension URI on Uri
     return replace(pathSegments: pathSegments);
   }
 
-  Uri replacePage()
+  Uri removePage()
   {
     // url is a data uri?
     if (data != null) return this;
@@ -116,8 +114,7 @@ extension URI on Uri
     return replace(queryParameters: queryParameters);
   }
 
-
-  static Uri? parse(String? url)
+  static Uri? parse(String? url, {String? domain})
   {
     // null or missing url
     if (url == null) return null;
@@ -137,9 +134,22 @@ extension URI on Uri
     uri = uri.removeEmptySegments();
 
     // resolve uri
-    uri = uri.toAbsolute();
+    uri = uri.toAbsolute(domain: domain);
 
     // build query parameters
     return uri;
+  }
+
+  Uri resolve(String domain)
+  {
+    if (!this.isAbsolute)
+    {
+      var url = "$domain/${this.host}/${this.path}";
+      if (hasFragment) url = "$url#$fragment";
+      if (hasQuery)    url = "$url?$query";
+      var uri = Uri.parse(url).removeEmptySegments();
+      return uri;
+    }
+    else return this;
   }
 }

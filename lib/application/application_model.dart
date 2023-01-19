@@ -8,6 +8,7 @@ import 'package:fml/helper/uri.dart';
 import 'package:fml/hive/database.dart';
 import 'package:fml/helper/helper_barrel.dart';
 import 'package:fml/mirror/mirror.dart';
+import 'package:fml/system.dart';
 import 'package:fml/token/token.dart';
 import 'package:fml/widgets/theme/theme_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
@@ -124,21 +125,21 @@ class ApplicationModel extends WidgetModel
       var icon = model.settings["APP_ICON"];
       if (icon != null && _uri?.domain != null)
       {
-        Uri? uri = URI.parse(icon);
+        Uri? uri = URI.parse(icon, domain: _uri!.domain);
         if (uri != null)
         {
-          var urii = await Url.toUriData(uri.url);
-          if (urii != null)
-               this.icon = urii.toString();
+          var data = await Url.toUriData(uri.url);
+          if (data != null)
+               this.icon = data.toString();
           else this.icon = null;
         }
       }
 
       // mirror?
       var mirrorApi = model.settings["MIRROR_API"];
-      if (mirrorApi != null && _uri?.domain != null)
+      if (!isWeb && mirrorApi != null && _uri?.domain != null)
       {
-        Uri? uri = URI.parse(mirrorApi);
+        Uri? uri = URI.parse(mirrorApi, domain: _uri!.domain);
         if (uri != null)
         {
           mirror = Mirror(uri.url);

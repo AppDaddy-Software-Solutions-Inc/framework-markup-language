@@ -100,7 +100,6 @@ class System extends WidgetModel implements IEventManager
   bool get connected => _connected?.get() ?? false;
 
   // root folder path
-  static late String rootPath;
   StringObservable? _rootpath;
   String? get rootpath => _rootpath?.get();
 
@@ -195,7 +194,7 @@ class System extends WidgetModel implements IEventManager
     await _initConnectivity();
 
     // create empty applications folder
-    await _initFolders();
+    if (!isWeb) await _initFolders();
 
     // set initial route
     await _initRoute();
@@ -252,8 +251,8 @@ class System extends WidgetModel implements IEventManager
   Future<bool> _initBindables() async
   {
     // platform root path
-    System.rootPath  = await Platform.path ?? "";
-    _rootpath = StringObservable(Binding.toKey(id, 'rootpath'), System.rootPath, scope: scope);
+    URI.rootPath  = await Platform.path ?? "";
+    _rootpath = StringObservable(Binding.toKey(id, 'rootpath'), URI.rootPath, scope: scope);
 
     // connected
     _connected = BooleanObservable(Binding.toKey(id, 'connected'), null, scope: scope);
@@ -296,7 +295,7 @@ class System extends WidgetModel implements IEventManager
   Future<bool> _initDatabase() async
   {
     // create the hive folder
-    var folder = join(rootPath,"hive");
+    var folder = normalize(join(URI.rootPath,"hive"));
     String? hiveFolder = await Platform.createFolder(folder);
 
     // initialize hive
@@ -323,7 +322,7 @@ class System extends WidgetModel implements IEventManager
       if (key.startsWith("assets/applications"))
       {
         var folder   = key.replaceFirst("assets/", "");
-        var filepath = join(rootPath,"applications",folder);
+        var filepath = normalize(join(URI.rootPath,"applications",folder));
         await Platform.writeFile(filepath, await rootBundle.load(key));
       }
     }

@@ -275,24 +275,24 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
     // instantiate busy observable
     busy = false;
 
-    if (mandatory    != null)  this.mandatory   = mandatory;
-    if (bordercolor  != null)  this.bordercolor = bordercolor;
-    if (color        != null)  this.color       = color;
-    if (radius       != null)  this.radius      = radius;
-    if (borderwidth  != null)  this.borderwidth = borderwidth;
-    if (border       != null)  this.border      = border;
-    if (hint         != null)  this.hint        = hint;
-    if (editable     != null)  this.editable    = editable;
-    if (enabled      != null)  this.enabled     = enabled;
-    if (inputenabled != null) this.inputenabled = inputenabled;
-    if (value        != null) this.value        = value;
-    if (defaultValue != null) this.defaultValue = defaultValue;
-    if (width        != null) this.width        = width;
-    if (onchange     != null) this.onchange     = onchange;
-    if (post         != null) this.post         = post;
-    if (typeahead    != null) this.typeahead    = typeahead;
-    if (matchtype    != null) this.matchtype    = matchtype;
-    if (label    != null) this.label    = label;
+    if (mandatory     != null)  this.mandatory    = mandatory;
+    if (bordercolor   != null)  this.bordercolor  = bordercolor;
+    if (color         != null)  this.color        = color;
+    if (radius        != null)  this.radius       = radius;
+    if (borderwidth   != null)  this.borderwidth  = borderwidth;
+    if (border        != null)  this.border       = border;
+    if (hint          != null)  this.hint         = hint;
+    if (editable      != null)  this.editable     = editable;
+    if (enabled       != null)  this.enabled      = enabled;
+    if (inputenabled  != null) this.inputenabled  = inputenabled;
+    if (value         != null) this.value         = value;
+    if (defaultValue  != null) this.defaultValue  = defaultValue;
+    if (width         != null) this.width         = width;
+    if (onchange      != null) this.onchange      = onchange;
+    if (post          != null) this.post          = post;
+    if (typeahead     != null) this.typeahead     = typeahead;
+    if (matchtype     != null) this.matchtype     = matchtype;
+    if (label         != null) this.label         = label;
 
     this.alarming = false;
     this.dirty    = false;
@@ -338,15 +338,14 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
     this.options.clear();
     List<OptionModel> options = findChildrenOfExactType(OptionModel).cast<OptionModel>();
 
-      // set prototype
-      if ((!S.isNullOrEmpty(datasource)) && (options.isNotEmpty))
-      {
-        prototype = S.toPrototype(options[0].element.toString());
-        options.removeAt(0);
-      }
-      // build options
-      options.forEach((option) => this.options.add(option));
-
+    // set prototype
+    if ((!S.isNullOrEmpty(datasource)) && (options.isNotEmpty))
+    {
+      prototype = S.toPrototype(options[0].element.toString());
+      options.removeAt(0);
+    }
+    // build options
+    options.forEach((option) => this.options.add(option));
 
     // Set selected option
     setData();
@@ -401,10 +400,9 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
   }
 
   @override
-  onDataSourceException(IDataSource source, Exception exception)
-  {
+  onDataSourceException(IDataSource source, Exception exception) {
     // Clear the List - Olajos 2021-09-04
-    onDataSourceSuccess(null,null);
+    onDataSourceSuccess(null, null);
   }
 
   void setData()

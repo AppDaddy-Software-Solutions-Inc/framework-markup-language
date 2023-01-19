@@ -11,7 +11,7 @@ import 'payload.dart';
 import 'iNfcListener.dart';
 import 'nfc.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class NcfModel extends DataSourceModel implements IDataSource, INfcListener
 {

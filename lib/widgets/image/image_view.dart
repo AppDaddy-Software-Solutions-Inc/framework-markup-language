@@ -89,22 +89,25 @@ class ImageView extends StatefulWidget {
 
         /// blob image from camera or file picker
         case ImageSource.blob:
-          image = kIsWeb
-              ? Image.network(url!, fit: getFit(fit))
-              : Image.file(File(url!), fit: getFit(fit));
+          image = kIsWeb ? Image.network(url!, fit: getFit(fit)) : Image.file(File(url!), fit: getFit(fit));
           break;
 
         /// file image
         case ImageSource.file:
-          var filepath = uri.asFilePath();
-          if (filepath == null) break;
-          if (uri.pageExtension == "svg") {
-            var file = Platform.getFile(filepath);
-            if (file != null)
-              image = SvgPicture.file(file!,
-                  fit: getFit(fit), width: width, height: height);
-          } else
-            image = Image.file(File(filepath));
+
+          dynamic file = null;
+
+          // file picker references file:C:/...?
+          file = Platform.getFile(url!.replaceFirst("file:", ""));
+
+          // user defined local files
+          if (file == null) file = Platform.getFile(uri.asFilePath());
+
+          if (file == null) break;
+
+          if (uri.pageExtension == "svg")
+               image = SvgPicture.file(file!, fit: getFit(fit), width: width, height: height);
+          else image = Image.file(file);
           break;
 
         /// asset image

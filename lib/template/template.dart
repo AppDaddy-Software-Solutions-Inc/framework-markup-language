@@ -88,7 +88,7 @@ class Template
         template = await TemplateManager().fromServer(url);
 
         // save to local storage
-        if (template != null) TemplateManager().toDisk(url, template);
+        if (template != null && (Application?.cacheContent ?? false)) TemplateManager().toDisk(url, template);
       }
 
       // get template from memory
@@ -111,7 +111,7 @@ class Template
         template = await TemplateManager().fromServer(url);
 
         // save to local storage
-        if (template != null) TemplateManager().toDisk(url, template);
+        if (template != null && (Application?.cacheContent ?? false)) TemplateManager().toDisk(url, template);
       }
     }
 

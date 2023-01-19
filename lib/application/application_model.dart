@@ -24,6 +24,7 @@ class ApplicationModel extends WidgetModel
 
   // mirrors
   Mirror? mirror;
+  bool get cacheContent => (mirror != null);
 
   // secure?
   bool get secure => _uri?.scheme == "https" || _uri?.scheme == "wss";

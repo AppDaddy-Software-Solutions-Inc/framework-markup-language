@@ -97,7 +97,11 @@ class Socket
         lastMessage = null;
 
         // close the old socket
-        if (_socket != null) await _socket!.sink.close();
+        if (_socket != null)
+        {
+          final subscription = _socket!.stream.listen((_) => null, onDone: () => null, onError: () => null);
+          await _socket!.sink.close();
+        }
 
         // connect
         connected = false;

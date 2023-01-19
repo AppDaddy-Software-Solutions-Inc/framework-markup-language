@@ -156,9 +156,9 @@ class ApplicationModel extends WidgetModel
 
       // mirror?
       var mirrorApi = model.settings["MIRROR_API"];
-      if (!isWeb && mirrorApi != null && _uri?.domain != null)
+      if (mirrorApi != null && !isWeb && _uri?.scheme != "file")
       {
-        Uri? uri = URI.parse(mirrorApi, domain: _uri!.domain);
+        Uri? uri = URI.parse(mirrorApi, domain: _uri?.domain);
         if (uri != null)
         {
           mirror = Mirror(uri.url);

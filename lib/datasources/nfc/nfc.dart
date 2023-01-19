@@ -20,7 +20,7 @@ class Reader
   Reader._initialize();
 
   bool polling = false;
-int a = 0;
+  int a = 0;
 
   read() async
   {
@@ -36,7 +36,8 @@ int a = 0;
         // read the tag
         String? result = await readNFCTag(tag);
 
-        if (result != null) {
+        if (result != null)
+        {
           // ??
           await FlutterNfcKit.finish(iosAlertMessage: "Finished!");
 
@@ -61,9 +62,11 @@ int a = 0;
               '\nNDEF Capacity: ${tag.ndefCapacity}'
               '\nTransceive Result:\n$result');
 
+          // format result
+          if (result.indexOf("text=") >= 0) result = result.substring(result.indexOf('text=')+5);
+
           // notify
-         notifyListeners(
-              Payload(serial: tag.id, payload: result));
+          notifyListeners(Payload(id: tag.id, message: result));
         }
         else
           Log().debug('NFC: result is null');
@@ -104,7 +107,7 @@ int a = 0;
     if (_listeners != null)
     {
       var listeners = _listeners!.where((element) => true);
-      listeners.forEach((listener) => listener.onNfcData(payload: data));
+      listeners.forEach((listener) => listener.onMessage(data));
     }
   }
 
@@ -147,36 +150,37 @@ int a = 0;
 
 }
 
-class Writer {
+class Writer
+{
   bool stop = false;
 
   Function? callback;
   String value;
   Writer(this.value, {this.callback});
 
-  write() async
+  Future<bool> write() async
   {
     stop = false;
     Log().debug("Attempting Write to NDEF NFC Tag");
-
-    ndef.NDEFRecord record = ndef.TextRecord(
-        encoding: ndef.TextEncoding.values[0],
-        language: 'en',
-        text: value);
+    ndef.NDEFRecord record = ndef.TextRecord(encoding: ndef.TextEncoding.values[0], language: 'en', text: value);
     NFCTag tag = await FlutterNfcKit.poll(timeout: Duration(seconds: 60));
-    if (tag.type == NFCTagType.mifare_ultralight ||
-        tag.type == NFCTagType.mifare_classic ||
-        tag.type == NFCTagType.iso15693) {
-
+    if (tag.type == NFCTagType.mifare_ultralight || tag.type == NFCTagType.mifare_classic || tag.type == NFCTagType.iso15693)
+    {
       Log().debug('Writing $value to NFC Tag...');
-      try {
+      try
+      {
         await FlutterNfcKit.writeNDEFRecords([record]);
         await FlutterNfcKit.finish();
         Log().debug('NFC Write Successful');
-      } catch(e) {
+        return true;
+      }
+      catch(e)
+      {
         Log().error('NFC Write Unsuccessful');
         Log().exception(e, caller: 'nfc.dart: Writer.write() - write fail');
+        return false;
       }
     }
+    return false;
   }
 }

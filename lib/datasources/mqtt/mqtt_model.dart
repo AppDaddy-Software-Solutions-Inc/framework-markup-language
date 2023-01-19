@@ -276,12 +276,6 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
         if (mqtt != null && topic != null && message != null) mqtt!.publish(topic,message);
         return true;
 
-      case "post":
-        String? topic   = S.toStr(S.item(arguments, 0));
-        String? message = await scope?.replaceFileReferences(this.body);
-        if (mqtt != null && topic != null && message != null) mqtt!.publish(topic,message);
-        return true;
-
       case "read":
       case "subscribe":
         String? topic = S.toStr(S.item(arguments, 0));

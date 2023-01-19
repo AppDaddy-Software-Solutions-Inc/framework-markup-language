@@ -6,21 +6,20 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/scope.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/image/image_model.dart';
 import 'package:image/image.dart' as IMAGE;
 import 'package:fml/helper/common_helpers.dart';
 
 // platform
 import 'package:fml/platform/platform.stub.dart'
-if (dart.library.io)   'package:fml/platform/platform.vm.dart'
-if (dart.library.html) 'package:fml/platform/platform.web.dart';
+    if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+    if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
-enum ImageSource {data, blob, file, asset, web}
+enum ImageSource { data, blob, file, asset, web }
 
 /// [IMAGE] view
-class ImageView extends StatefulWidget
-{
+class ImageView extends StatefulWidget {
   final ImageModel model;
 
   ImageView(this.model) : super(key: ObjectKey(model));
@@ -30,89 +29,108 @@ class ImageView extends StatefulWidget
 
   /// Fade in Image Placeholder for network images
   static Uint8List? _placeholderImage;
-  static Uint8List get placeholderImage
-  {
-    if (_placeholderImage == null) _placeholderImage = Base64Codec().decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGP6LwkAAiABG+faPgsAAAAASUVORK5CYII=");
+  static Uint8List get placeholderImage {
+    if (_placeholderImage == null)
+      _placeholderImage = Base64Codec().decode(
+          "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGP6LwkAAiABG+faPgsAAAAASUVORK5CYII=");
     return _placeholderImage!;
   }
 
   /// Get an image widget from any image type
   static dynamic getImage(String? url,
-      {
-        Scope?  scope,
-        String? defaultvalue,
-        double? width,
-        double? height,
-        String? fit,
-        String? filter,
-        bool   fade: true,
-        int?    fadeDuration
-      })
-  {
+      {Scope? scope,
+      String? defaultvalue,
+      double? width,
+      double? height,
+      String? fit,
+      String? filter,
+      bool fade: true,
+      int? fadeDuration}) {
     Widget? image;
 
     // dummy image is default
-    var dummy = getByteImage(placeholderImage, getFit(fit), width, height, fadeDuration, null);
+    var dummy = getByteImage(
+        placeholderImage, getFit(fit), width, height, fadeDuration, null);
 
     // parse the url
     Uri? uri = URI.parse(url);
     if (uri == null) return dummy;
 
-    try
-    {
+    try {
       // error handler
-      Widget errorHandler(BuildContext content, Object object, StackTrace? stacktrace)
-      {
-        if (defaultvalue != null)
-        {
-          if (defaultvalue.toString().toLowerCase() == 'none' || defaultvalue.toString().toLowerCase() == '') return Container();
-          else return getImage(defaultvalue, defaultvalue: null, fit: fit, width: width, height: height, filter: filter, fade: fade, fadeDuration: fadeDuration);
-        }
-        else return Icon(Icons.broken_image_outlined, size: 36, color: Colors.grey);
+      Widget errorHandler(
+          BuildContext content, Object object, StackTrace? stacktrace) {
+        if (defaultvalue != null) {
+          if (defaultvalue.toString().toLowerCase() == 'none' ||
+              defaultvalue.toString().toLowerCase() == '')
+            return Container();
+          else
+            return getImage(defaultvalue,
+                defaultvalue: null,
+                fit: fit,
+                width: width,
+                height: height,
+                filter: filter,
+                fade: fade,
+                fadeDuration: fadeDuration);
+        } else
+          return Icon(Icons.broken_image_outlined,
+              size: 36, color: Colors.grey);
       }
 
       // get image type
-      switch (imageSource(uri))
-      {
+      switch (imageSource(uri)) {
+
         /// data uri
         case ImageSource.data:
-          image = getByteImage(uri.data!.contentAsBytes(), getFit(fit), width, height, fadeDuration, errorHandler);
+          image = getByteImage(uri.data!.contentAsBytes(), getFit(fit), width,
+              height, fadeDuration, errorHandler);
           break;
 
         /// blob image from camera or file picker
         case ImageSource.blob:
-          image = kIsWeb ? Image.network(url!) : Image.file(File(url!));
+          image = kIsWeb
+              ? Image.network(url!, fit: getFit(fit))
+              : Image.file(File(url!), fit: getFit(fit));
           break;
 
         /// file image
         case ImageSource.file:
           var filepath = uri.asFilePath();
           if (filepath == null) break;
-          if (uri.pageExtension == "svg")
-          {
+          if (uri.pageExtension == "svg") {
             var file = Platform.getFile(filepath);
-            if (file != null) image = SvgPicture.file(file!, fit: getFit(fit), width: width, height: height);
-          }
-          else image = Image.file(File(filepath));
+            if (file != null)
+              image = SvgPicture.file(file!,
+                  fit: getFit(fit), width: width, height: height);
+          } else
+            image = Image.file(File(filepath));
           break;
 
         /// asset image
         case ImageSource.asset:
           if (uri.pageExtension == "svg")
-               image = SvgPicture.asset(uri.host, fit: getFit(fit), width: width, height: height);
-          else image = Image.asset(uri.host, fit: getFit(fit), width: width, height: height, errorBuilder: errorHandler);
+            image = SvgPicture.asset(uri.host,
+                fit: getFit(fit), width: width, height: height);
+          else
+            image = Image.asset(uri.host,
+                fit: getFit(fit),
+                width: width,
+                height: height,
+                errorBuilder: errorHandler);
           break;
 
         /// web image
         case ImageSource.web:
           if (uri.pageExtension == "svg")
-               image = SvgPicture.network(uri.url, fit: getFit(fit), width: width, height: height);
-          else image = getWebImage(uri.url, getFit(fit), width, height, fadeDuration, errorHandler);
+            image = SvgPicture.network(uri.url,
+                fit: getFit(fit), width: width, height: height);
+          else
+            image = getWebImage(uri.url, getFit(fit), width, height,
+                fadeDuration, errorHandler);
           break;
       }
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().error("Error decoding image from ${uri.url}. Error is $e");
     }
 
@@ -120,11 +138,9 @@ class ImageView extends StatefulWidget
     return image ?? dummy;
   }
 
-  static ImageSource imageSource(Uri uri)
-  {
+  static ImageSource imageSource(Uri uri) {
     ImageSource source = ImageSource.web;
-    switch (uri.scheme)
-    {
+    switch (uri.scheme) {
       case "data":
         if (uri.data != null) source = ImageSource.data;
         break;
@@ -135,7 +151,8 @@ class ImageView extends StatefulWidget
 
       case "file":
         source = ImageSource.web;
-        if (uri.page != null && Platform.fileExists(uri.page!)) source = ImageSource.file;
+        if (uri.page != null && Platform.fileExists(uri.page!))
+          source = ImageSource.file;
         break;
 
       case "asset":
@@ -155,15 +172,13 @@ class ImageView extends StatefulWidget
   }
 
   /// how the image will fit within the space it is given
-  static BoxFit getFit(String? fit)
-  {
+  static BoxFit getFit(String? fit) {
     var boxFit = BoxFit.cover;
 
     if (S.isNullOrEmpty(fit)) return boxFit;
     fit = fit!.toLowerCase();
 
-    switch (fit)
-    {
+    switch (fit) {
       case 'cover':
         boxFit = BoxFit.cover;
         break;
@@ -195,11 +210,9 @@ class ImageView extends StatefulWidget
   }
 
   /// Apply a filter to the image
-  static void applyFilter(Uint8List img, String filter)
-  {
+  static void applyFilter(Uint8List img, String filter) {
     IMAGE.Image? filtered = IMAGE.decodePng(img);
-    switch(filter)
-    {
+    switch (filter) {
       case 'sobel':
         IMAGE.sobel(filtered!, amount: 1.0);
         break;
@@ -245,8 +258,8 @@ class ImageView extends StatefulWidget
     }
   }
 
-  static dynamic getByteImage(Uint8List bytes, BoxFit fit, double? width, double? height, int? fadeDuration, dynamic errorBuilder)
-  {
+  static dynamic getByteImage(Uint8List bytes, BoxFit fit, double? width,
+      double? height, int? fadeDuration, dynamic errorBuilder) {
     return FadeInImage(
         placeholder: MemoryImage(placeholderImage),
         image: MemoryImage(bytes),
@@ -257,9 +270,9 @@ class ImageView extends StatefulWidget
         imageErrorBuilder: errorBuilder);
   }
 
-  static dynamic getWebImage(String url, BoxFit fit, double? width, double? height, fadeDuration, dynamic errorBuilder)
-  {
-    return  FadeInImage.memoryNetwork(
+  static dynamic getWebImage(String url, BoxFit fit, double? width,
+      double? height, fadeDuration, dynamic errorBuilder) {
+    return FadeInImage.memoryNetwork(
         placeholder: placeholderImage,
         image: url,
         fit: fit,
@@ -270,12 +283,9 @@ class ImageView extends StatefulWidget
   }
 }
 
-class _ImageViewState extends State<ImageView> implements IModelListener
-{
-  
+class _ImageViewState extends State<ImageView> implements IModelListener {
   @override
-  void initState()
-  {
+  void initState() {
     super.initState();
 
     widget.model.registerListener(this);
@@ -285,68 +295,67 @@ class _ImageViewState extends State<ImageView> implements IModelListener
   }
 
   @override
-  didChangeDependencies()
-  {
+  didChangeDependencies() {
     super.didChangeDependencies();
   }
 
-  
   @override
-  void didUpdateWidget(ImageView oldWidget)
-  {
+  void didUpdateWidget(ImageView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if ((oldWidget.model != widget.model))
-    {
+    if ((oldWidget.model != widget.model)) {
       oldWidget.model.removeListener(this);
       widget.model.registerListener(this);
     }
-
   }
 
   @override
-  void dispose()
-  {
+  void dispose() {
     widget.model.removeListener(this);
 
     super.dispose();
   }
+
   /// Callback function for when the model changes, used to force a rebuild with setState()
-  onModelChange(WidgetModel model,{String? property, dynamic value})
-  {
-    if (this.mounted) setState((){});
+  onModelChange(WidgetModel model, {String? property, dynamic value}) {
+    if (this.mounted) setState(() {});
   }
 
   @override
-  Widget build(BuildContext context)
-  {
-return LayoutBuilder(builder: builder);
+  Widget build(BuildContext context) {
+    return LayoutBuilder(builder: builder);
   }
 
-  Widget builder(BuildContext context, BoxConstraints constraints)
-  {
+  Widget builder(BuildContext context, BoxConstraints constraints) {
     // Set Build Constraints in the [WidgetModel]
-      widget.model.minwidth  = constraints.minWidth;
-      widget.model.maxwidth  = constraints.maxWidth;
-      widget.model.minheight = constraints.minHeight;
-      widget.model.maxheight = constraints.maxHeight;
+    widget.model.minwidth = constraints.minWidth;
+    widget.model.maxwidth = constraints.maxWidth;
+    widget.model.minheight = constraints.minHeight;
+    widget.model.maxheight = constraints.maxHeight;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    String? url      = widget.model.url;
-    double? opacity  = widget.model.opacity;
-    double? width    = widget.model.width;
-    double? height   = widget.model.height;
-    String? fit      = widget.model.fit;
-    String? filter   = widget.model.filter;
-    Scope?  scope    = Scope.of(widget.model);
+    String? url = widget.model.url;
+    double? opacity = widget.model.opacity;
+    double? width = widget.model.width;
+    double? height = widget.model.height;
+    String? fit = widget.model.fit;
+    String? filter = widget.model.filter;
+    Scope? scope = Scope.of(widget.model);
     // scoped file reference
     // if ((url != null) && (scope != null) && (scope.files.containsKey(url)))
     // {
     //   url = scope.files[url].uri;
     // }
 
-    Widget view = ImageView.getImage(url, scope: scope, defaultvalue: widget.model.defaultvalue, width: width, height: height, fit: fit, filter: filter) ?? Container();
+    Widget view = ImageView.getImage(url,
+            scope: scope,
+            defaultvalue: widget.model.defaultvalue,
+            width: width,
+            height: height,
+            fit: fit,
+            filter: filter) ??
+        Container();
 
     // Flip
     if (widget.model.flip != null) {
@@ -363,23 +372,27 @@ return LayoutBuilder(builder: builder);
 
     // Rotation
     if (widget.model.rotation != null)
-      view = RotationTransition(turns: AlwaysStoppedAnimation(widget.model.rotation! / 360), child: view);
+      view = RotationTransition(
+          turns: AlwaysStoppedAnimation(widget.model.rotation! / 360),
+          child: view);
 
     // Stack Children
-      if (widget.model.children != null && widget.model.children!.length > 0)
-    view = Stack(children: [view]);
+    if (widget.model.children != null && widget.model.children!.length > 0)
+      view = Stack(children: [view]);
 
     // Interactive
-    if (widget.model.interactive == true)
-      view = InteractiveViewer(child: view);
+    if (widget.model.interactive == true) view = InteractiveViewer(child: view);
 
     // constrained?
-    if (widget.model.constrained)
-    {
+    if (widget.model.constrained) {
       var constraints = widget.model.getConstraints();
-      view = ConstrainedBox(child: view, constraints: BoxConstraints(
-          minHeight: constraints.minHeight!, maxHeight: constraints.maxHeight!,
-          minWidth: constraints.minWidth!, maxWidth: constraints.maxWidth!));
+      view = ConstrainedBox(
+          child: view,
+          constraints: BoxConstraints(
+              minHeight: constraints.minHeight!,
+              maxHeight: constraints.maxHeight!,
+              minWidth: constraints.minWidth!,
+              maxWidth: constraints.maxWidth!));
     }
 
     return view;

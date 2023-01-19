@@ -34,7 +34,7 @@ if (dart.library.io)   'package:fml/platform/platform.vm.dart'
 if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 // application build version
-final String version = '1.0.0+10';
+final String version = '1.0.1';
 
 // Active Application
 ApplicationModel? get Application => System()._app;
@@ -105,7 +105,6 @@ class System extends WidgetModel implements IEventManager
   StringObservable? _domain;
   String? get domain => _domain?.get();
 
-  // current scheme
   StringObservable? _scheme;
   String? get scheme => _scheme?.get();
 

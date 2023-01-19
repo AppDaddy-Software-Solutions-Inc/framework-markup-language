@@ -410,7 +410,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     {
       case "send":
       case "write":
-        String? message     = S.toStr(S.item(arguments, 0));
+        String? message     = S.toStr(S.item(arguments, 0)) ?? this.body;
         bool?   asBinary    = S.toBool(S.item(arguments, 1));
         int?    maxPartSize = S.toInt(S.item(arguments, 2));
         if (!S.isNullOrEmpty(message)) send(message!, asBinary: asBinary, maxPartSize: maxPartSize);

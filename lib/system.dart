@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:fml/datasources/log/log_model.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
+import 'package:fml/helper/uri.dart';
 import 'package:fml/hive/stash.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/navigation_manager.dart';
@@ -18,6 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/widgets/theme/theme_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:path/path.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:async';
 import 'package:fml/hive/database.dart';
@@ -29,7 +31,7 @@ import 'package:fml/helper/helper_barrel.dart';
 import 'dart:io' as io;
 
 // platform
-import 'package:fml/platform/platform.web.dart'
+import 'package:fml/platform/platform.stub.dart'
 if (dart.library.io)   'package:fml/platform/platform.vm.dart'
 if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
@@ -242,7 +244,7 @@ class System extends WidgetModel implements IEventManager
 
       // replace default
       print (Uri.base.toString());
-      var uri = Url.parse(Uri.base.toString());
+      var uri = URI.parse(Uri.base.toString());
       if (uri != null && !uri.host.toLowerCase().startsWith("localhost")) defaultDomain = uri;
     }
   }
@@ -294,7 +296,7 @@ class System extends WidgetModel implements IEventManager
   Future<bool> _initDatabase() async
   {
     // create the hive folder
-    var folder = S.toAbsoluteFilePath("hive", rootPath: rootPath);
+    var folder = join(rootPath,"hive");
     String? hiveFolder = await Platform.createFolder(folder);
 
     // initialize hive
@@ -320,7 +322,8 @@ class System extends WidgetModel implements IEventManager
       for (String key in manifest.keys)
       if (key.startsWith("assets/applications"))
       {
-        var filepath = S.toAbsoluteFilePath(key.replaceFirst("assets/", ""), rootPath: rootPath);
+        var folder   = key.replaceFirst("assets/", "");
+        var filepath = join(rootPath,"applications",folder);
         await Platform.writeFile(filepath, await rootBundle.load(key));
       }
     }
@@ -474,7 +477,7 @@ class System extends WidgetModel implements IEventManager
     Log().info("Activating Application (${app.title}) @ ${app.domain}");
 
     // set the default domain on the Url utilities
-    Url.activeDomain = app.domain;
+    URI.rootHost = app.domain ?? "";
 
     // set the current application
     _app = app;
@@ -504,7 +507,7 @@ class System extends WidgetModel implements IEventManager
     Log().info("Closing Application ${app.url}");
 
     // set the default domain on the Url utilities
-    Url.activeDomain = null;
+    URI.rootHost = "";
 
     // logoff
     logoff();

@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/application/application_model.dart';
+import 'package:fml/helper/uri.dart';
 import 'package:fml/theme/themenotifier.dart';
 import 'package:fml/navigation/navigation_observer.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
@@ -94,7 +95,7 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
     var apps = Store().getApps();
     for (var app in apps)
     {
-      var item = MenuItemModel(menuModel, app.key, url: app.url, title: app.title, subtitle: '', icon: app.icon == null ? 'appdaddy' : null, image: app.icon, onTap: () => _launchApp(app), onLongPress: () => removeApp(app));
+      var item = MenuItemModel(menuModel, app.id, url: app.url, title: app.title, subtitle: '', icon: app.icon == null ? 'appdaddy' : null, image: app.icon, onTap: () => _launchApp(app), onLongPress: () => removeApp(app));
       menuModel.items.add(item);
     }
 
@@ -268,7 +269,7 @@ class AppFormState extends State<AppForm>
       return errorText;
     }
 
-    var uri = Url.parse(url);
+    var uri = URI.parse(url);
 
     // invalid url
     if (uri == null)

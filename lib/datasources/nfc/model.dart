@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/helper/uri.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -151,7 +152,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
     data.add(map);
 
     // add payload url parameters
-    Uri? uri = Url.parse('http://localhost' + '?' + payload.payload.toString());
+    Uri? uri = URI.parse('http://localhost' + '?' + payload.payload.toString());
     if (uri != null && uri.hasQuery)
     {
       Map<String, String> parameters = Map<String, String>();

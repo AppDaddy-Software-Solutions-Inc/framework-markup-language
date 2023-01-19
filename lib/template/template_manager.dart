@@ -1,13 +1,13 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'dart:collection';
+import 'package:fml/helper/uri.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/datasources/http/http.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:fml/hive/form.dart' as DATABASE;
-import 'package:fml/helper/helper_barrel.dart';
 
 // platform
 import 'package:fml/platform/platform.stub.dart'
@@ -29,14 +29,14 @@ class TemplateManager
 
   XmlDocument? fromMemory(String url)
   {
-    var uri = Url.parse(url);
+    var uri = URI.parse(url);
     if (uri != null && templates.containsKey(uri.url)) return templates[uri.url];
     return null;
   }
 
   toMemory(String url, XmlDocument? document)
   {
-    var uri = Url.parse(url);
+    var uri = URI.parse(url);
     if (uri != null && document != null) templates[uri.url] = document;
   }
 
@@ -85,10 +85,11 @@ class TemplateManager
       if (isMobile) throw('Local Files not supported in Mobile');
 
       // get template from file
-      Uri? uri = Url.parse(url);
-      if (uri != null && uri.filepath != null)
+      Uri? uri = URI.parse(url);
+      if (uri != null)
       {
-        var file = Platform.getFile(uri.filepath);
+        var filepath = uri.asFilePath();
+        var file = Platform.getFile(filepath);
         if (file != null) template = await Platform.readFile(url);
       }
     }
@@ -129,7 +130,7 @@ class TemplateManager
     String? template;
     try
     {
-      var uri = Url.parse(url);
+      var uri = URI.parse(url);
       if (uri != null)
       {
         bool exists = Platform.fileExists(uri.url);
@@ -146,11 +147,12 @@ class TemplateManager
 
   Future<bool> toDisk(String url, String xml) async
   {
-    var uri = Url.parse(url);
-    if (uri != null && uri.filepath != null)
+    var uri = URI.parse(url);
+    if (uri != null)
     {
-      Log().debug('Writing ${uri.filepath} to disk", object: "TEMPLATE"');
-      return await Platform.writeFile(uri.filepath, xml);
+      var filepath = uri.asFilePath();
+      Log().debug('Writing $url to $filepath", object: "TEMPLATE"');
+      return await Platform.writeFile(filepath, xml);
     }
     return false;
   }

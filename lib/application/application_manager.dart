@@ -2,6 +2,7 @@
 import 'package:flutter/services.dart';
 import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/event/manager.dart';
+import 'package:fml/helper/uri.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/navigation/navigation_manager.dart';
@@ -13,7 +14,6 @@ import 'package:fml/widgets/framework/framework_view.dart';
 import 'package:provider/provider.dart';
 import 'package:fml/event/event.dart' ;
 import 'package:fml/widgets/framework/framework_model.dart' ;
-import 'package:fml/helper/helper_barrel.dart';
 
 class ApplicationManager extends StatefulWidget
 {
@@ -55,7 +55,7 @@ class _ApplicationManagerState extends State<ApplicationManager>
     // get url parameters
     if (parameters.containsKey('url'))
     {
-      Uri? uri = Url.parse(parameters['url']);
+      Uri? uri = URI.parse(parameters['url']);
       if (uri?.queryParameters != null) parameters.addAll(uri!.queryParameters);
     }
 

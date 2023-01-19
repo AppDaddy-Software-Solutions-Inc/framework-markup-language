@@ -4,13 +4,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/config/config_model.dart';
 import 'package:fml/crypto/crypto.dart';
+import 'package:fml/helper/uri.dart';
 import 'package:fml/hive/database.dart';
 import 'package:fml/helper/helper_barrel.dart';
 import 'package:fml/mirror/mirror.dart';
 import 'package:fml/token/token.dart';
 import 'package:fml/widgets/theme/theme_model.dart';
+import 'package:fml/widgets/widget/widget_model.dart';
 
-class ApplicationModel
+class ApplicationModel extends WidgetModel
 {
   static String tableName = "APP";
 
@@ -29,7 +31,6 @@ class ApplicationModel
   bool get autoRefresh => S.toBool(settings("REFRESH")) ?? false;
   bool get singlePage  => S.toBool(settings('SINGLE_PAGE_APPLICATION')) ?? false;
 
-  late final String key;
   late final String url;
 
   String? title;
@@ -57,13 +58,10 @@ class ApplicationModel
   ConfigModel? _config;
   bool get hasConfig => _config != null;
 
-  ApplicationModel({required this.url, this.title, this.icon, this.order, String? jwt})
+  ApplicationModel({required this.url, this.title, this.icon, this.order, String? jwt}) : super(null, Cryptography.hash(text: url.toLowerCase()))
   {
-    // key is url (lowercase) hashed
-    key = Cryptography.hash(text: url.toLowerCase());
-
     // parse to url into its parts
-    _uri = Url.parse(url);
+    _uri = URI.parse(url);
 
     // set token
     if (jwt != null)
@@ -84,9 +82,9 @@ class ApplicationModel
     return true;
   }
 
-  Future<bool> insert() async => (await Database().insert(tableName, key, _toMap()) == null);
-  Future<bool> update() async => (await Database().update(tableName, key, _toMap()) == null);
-  Future<bool> delete() async => (await Database().delete(tableName, key) == null);
+  Future<bool> insert() async => (await Database().insert(tableName, id, _toMap()) == null);
+  Future<bool> update() async => (await Database().update(tableName, id, _toMap()) == null);
+  Future<bool> delete() async => (await Database().delete(tableName, id) == null);
   static Future<bool> deleteAll() async => (await Database().deleteAll(tableName) == null);
 
   String? settings(String key)
@@ -117,7 +115,7 @@ class ApplicationModel
     }
 
     // get config from url
-    if ((refresh || model == null) && _uri?.domain != null) model = await ConfigModel.fromUrl(null, _uri!.domain!);
+    if ((refresh || model == null) && _uri?.domain != null) model = await ConfigModel.fromUrl(null, _uri!.domain);
 
     // model created?
     if (model != null)
@@ -126,12 +124,12 @@ class ApplicationModel
       var icon = model.settings["APP_ICON"];
       if (icon != null && _uri?.domain != null)
       {
-        var url = Url.toAbsolute(icon, _uri!.domain!);
-        if (url != null)
+        Uri? uri = URI.parse(icon);
+        if (uri != null)
         {
-          var uri = await Url.toUriData(url);
-          if (uri != null)
-               this.icon = uri.toString();
+          var urii = await Url.toUriData(uri.url);
+          if (urii != null)
+               this.icon = urii.toString();
           else this.icon = null;
         }
       }
@@ -140,10 +138,10 @@ class ApplicationModel
       var mirrorApi = model.settings["MIRROR_API"];
       if (mirrorApi != null && _uri?.domain != null)
       {
-        var url = Url.toAbsolute(mirrorApi, _uri!.domain!);
-        if (url != null)
+        Uri? uri = URI.parse(mirrorApi);
+        if (uri != null)
         {
-          mirror = Mirror(url);
+          mirror = Mirror(uri.url);
           mirror!.execute();
         }
       }
@@ -153,6 +151,8 @@ class ApplicationModel
 
       // save to hive
       await update();
+
+      notifyListeners("config", null);
     }
     return model;
   }
@@ -204,7 +204,7 @@ class ApplicationModel
   Map<String, dynamic> _toMap()
   {
     Map<String, dynamic> map = {};
-    map["key"]    = key;
+    map["key"]    = id;
     map["url"]    = url;
     map["title"]  = title;
     map["icon"]   = icon;
@@ -218,11 +218,11 @@ class ApplicationModel
   {
     List<ApplicationModel> apps = [];
     List<Map<String, dynamic>> entries = await Database().query(tableName);
-    entries.forEach((entry) async
+    for (var entry in entries)
     {
       ApplicationModel? app = await _fromMap(entry);
       if (app != null) apps.add(app);
-    });
+    }
     return apps;
   }
 }

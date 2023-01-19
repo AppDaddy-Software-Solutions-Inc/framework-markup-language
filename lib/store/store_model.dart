@@ -10,9 +10,10 @@ import 'package:fml/theme/themenotifier.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:provider/provider.dart';
 
-class Store extends WidgetModel
+class Store extends WidgetModel implements IModelListener
 {
   final List<ApplicationModel> _apps = [];
+
   List<ApplicationModel> getApps() => _apps.toList();
 
   bool initialized = false;
@@ -36,7 +37,11 @@ class Store extends WidgetModel
     var apps = await ApplicationModel.loadAll();
 
     _apps.clear();
-    for (ApplicationModel app in apps) _apps.add(app);
+    for (ApplicationModel app in apps)
+    {
+      app.registerListener(this);
+      _apps.add(app);
+    }
 
     // sort by position
     //_apps.sort();
@@ -110,5 +115,11 @@ class Store extends WidgetModel
     String color        = Application?.settings('COLOR_SCHEME') ?? 'lightblue';
     themeNotifier.setTheme(brightness, color);
     themeNotifier.mapSystemThemeBindables();
+  }
+
+  @override
+  onModelChange(WidgetModel model, {String? property, value})
+  {
+    notifyListeners(property, value);
   }
 }

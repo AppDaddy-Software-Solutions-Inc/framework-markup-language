@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
+import 'package:fml/helper/uri.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
@@ -307,7 +308,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
     try
     {
       // parse the url
-      Uri? uri = Url.parse(url);
+      Uri? uri = URI.parse(url);
       if (uri == null) throw('Error');
 
       // fetch the template

@@ -2,6 +2,7 @@
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:fml/application/application_model.dart';
+import 'package:fml/helper/uri.dart';
 import 'package:fml/helper/xml.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
@@ -311,7 +312,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     bool? replace      = S.mapBoo(parameters,'replace', defaultValue: false);
     bool? replaceAll   = S.mapBoo(parameters,'replaceall', defaultValue: false);
 
-    var uri = Url.parse(url);
+    var uri = URI.parse(url);
     if (uri == null) return false;
 
     var d1 = uri.host.toLowerCase();
@@ -322,7 +323,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     bool local      = sameDomain && xmlFile;
 
     // We need to keep the file:// prefix as an indicator for fetch() that its a local file
-    String? template = uri.domain?.toLowerCase();
+    String? template = uri.domain.toLowerCase();
 
     // missing template?
     if (S.isNullOrEmpty(template))

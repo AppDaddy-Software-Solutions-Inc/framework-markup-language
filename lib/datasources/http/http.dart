@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'dart:io';
+import 'package:fml/helper/uri.dart';
 import 'package:fml/system.dart';
 import 'package:fml/token/token.dart';
 import 'package:http/http.dart';
@@ -175,7 +176,7 @@ class Http
 
   static Uri? encodeUri(String url, {bool refresh = false})
   {
-    Uri? uri = Url.parse(url);
+    Uri? uri = URI.parse(url);
     if (uri == null) return null;
 
     Map<String, dynamic> parameters = {};

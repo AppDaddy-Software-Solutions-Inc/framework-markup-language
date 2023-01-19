@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:convert';
-import 'dart:io' as io;
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:collection/collection.dart' show IterableExtension;
@@ -682,19 +681,5 @@ class S
     onlyAlphanumeric ? returnString = returnString.replaceAll(onlyAlphanumericRegex, '') : reservedCharacters.forEach((c) => returnString = returnString.replaceAll(c, separator));
     if (!withSpaces) returnString = returnString.replaceAll(' ', separator);
     return lowercase ? returnString.toLowerCase() : returnString;
-  }
-
-  static String toAbsoluteFilePath(String path, {String? rootPath})
-  {
-    var ps = io.Platform.pathSeparator;
-
-    // append root path
-    if (!isNullOrEmpty(rootPath) && !path.toLowerCase().startsWith(rootPath!.toLowerCase())) path = "$rootPath$ps$path";
-
-    // remove empty path seperators
-    path = path.replaceAll("\\", ps).replaceAll("/", ps);
-    while (path.contains("$ps$ps")) path = path.replaceAll("$ps$ps", "$ps");
-
-    return path;
   }
 }

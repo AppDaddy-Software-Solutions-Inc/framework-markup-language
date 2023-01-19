@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'package:fml/helper/uri.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/observable/binding.dart';
@@ -10,11 +11,6 @@ import 'package:validators/validators.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/helper/helper_barrel.dart';
-
-// platform
-import 'package:fml/platform/platform.stub.dart'
-if (dart.library.io)   'package:fml/platform/platform.vm.dart'
-if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 class Template
 {
@@ -72,7 +68,7 @@ class Template
     Log().debug('Getting template ' + url);
 
     // parse the url
-    var uri = Url.parse(url);
+    var uri = URI.parse(url);
     if (uri == null) return null;
 
     // use qualified url

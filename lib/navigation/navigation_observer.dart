@@ -95,20 +95,14 @@ class NavigationObserver extends NavigatorObserver
     INavigatorObserver? _popped = listenerOf(oldRoute);
     INavigatorObserver? _pushed = listenerOf(newRoute);
 
-    ////////////////////
     /* Get Parameters */
-    ////////////////////
     Map<String?, String>? parameters;
     if (_popped != null) parameters = _popped.onNavigatorPop();
 
-    /////////////////////////
     /* Notify Pushed Route */
-    /////////////////////////
     if (_pushed != null) _pushed.onNavigatorPush(parameters: parameters);
 
-    ///////////////////
     /* Signal Change */
-    ///////////////////
     for (INavigatorObserver listener in _listeners) listener.onNavigatorChange();
   }
 

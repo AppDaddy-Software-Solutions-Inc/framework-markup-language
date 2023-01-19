@@ -1,8 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:fml/helper/uri.dart';
 import 'package:photo_view/photo_view.dart';
-import 'package:fml/helper/helper_barrel.dart';
 
 class GalleryScreen extends StatefulWidget
 {
@@ -49,7 +49,7 @@ class GalleryWidgetState extends State<GalleryWidget>
     bool networkImage = false;
     String file = widget.file;
 
-    var uri = Url.parse(widget.file);
+    var uri = URI.parse(widget.file);
     if (uri == null) return Container();
 
     // data uri?

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/helper/uri.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/scope.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -55,7 +56,7 @@ class ImageView extends StatefulWidget
     var dummy = getByteImage(placeholderImage, getFit(fit), width, height, fadeDuration, null);
 
     // parse the url
-    Uri? uri = Url.parse(url);
+    Uri? uri = URI.parse(url);
     if (uri == null) return dummy;
 
     try
@@ -86,12 +87,14 @@ class ImageView extends StatefulWidget
 
         /// file image
         case ImageSource.file:
+          var filepath = uri.asFilePath();
+          if (filepath == null) break;
           if (uri.pageExtension == "svg")
           {
-            var file = Platform.getFile(uri.filepath);
+            var file = Platform.getFile(filepath);
             if (file != null) image = SvgPicture.file(file!, fit: getFit(fit), width: width, height: height);
           }
-          else image = Image.file(File(uri.filepath!));
+          else image = Image.file(File(filepath));
           break;
 
         /// asset image

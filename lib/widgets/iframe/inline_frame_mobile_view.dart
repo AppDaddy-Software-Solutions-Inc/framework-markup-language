@@ -1,12 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:convert';
+import 'package:fml/helper/uri.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/iframe/inline_frame_model.dart' as IFRAME;
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'inline_frame_view.dart' as IFRAME;
-import 'package:fml/helper/helper_barrel.dart';
 
 InlineFrameView getView(model) => InlineFrameView(model);
 
@@ -71,7 +71,7 @@ class _InlineFrameViewState extends State<InlineFrameView>
     if (view == null)
     {
 
-      var uri = Url.parse(widget.model.url);
+      var uri = URI.parse(widget.model.url);
       if (uri != null) controller..setNavigationDelegate(NavigationDelegate())..setJavaScriptMode(JavaScriptMode.unrestricted)..loadRequest(uri)..addJavaScriptChannel('TOFLUTTER', onMessageReceived: onMessageReceived);
       view = WebViewWidget(controller: controller);
     }

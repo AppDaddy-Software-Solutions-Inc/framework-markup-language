@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:fml/dialog/manager.dart';
 import 'package:fml/event/handler.dart';
+import 'package:fml/helper/uri.dart';
 import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:flutter/services.dart';
@@ -428,7 +429,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     {
       var bytes = utf8.encode(widget.model.element!.toXmlString());
 
-      var uri = Url.parse(widget.model.templateName);
+      var uri = URI.parse(widget.model.templateName);
       if (uri != null)
            Platform.fileSaveAs(bytes, uri.url);
       else Platform.fileSaveAs(bytes, "template");

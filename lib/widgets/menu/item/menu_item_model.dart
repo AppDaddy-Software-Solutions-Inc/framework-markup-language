@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/event/manager.dart';
+import 'package:fml/helper/uri.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
@@ -329,7 +330,7 @@ class MenuItemModel extends DecoratedWidgetModel
       String? bc;
       try 
       {
-        Uri? uri = Url.parse(url!);
+        Uri? uri = URI.parse(url!);
         bc = uri?.queryParameters['breadcrumb'];
       }
       catch(e) {}

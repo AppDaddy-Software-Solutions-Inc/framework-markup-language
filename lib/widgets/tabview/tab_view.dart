@@ -3,6 +3,7 @@ import 'package:fml/dialog/service.dart';
 import 'package:fml/event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
+import 'package:fml/helper/uri.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
@@ -133,7 +134,7 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
     event.handled = true;
 
     // String template = uri.host;
-    var uri = Url.parse(url);
+    var uri = URI.parse(url);
     if (uri == null)
     {
       await DialogService().show(type: DialogType.error, title: phrase.missingTemplate, description: url, buttons: [Text(phrase.ok)]);
@@ -253,7 +254,7 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
     // process each view
     widget.model.views.forEach((url, view)
     {
-      Uri uri = Url.parse(url)!;
+      Uri uri = URI.parse(url)!;
 
       // Has delete button?
       bool closeable = S.toBool(uri.queryParameters['closeable']) ?? true;
@@ -312,7 +313,7 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
     int i = 0;
     widget.model.views.forEach((url, view)
     {
-      Uri? uri = Url.parse(url);
+      Uri? uri = URI.parse(url);
       String title = uri?.queryParameters['title'] ?? url;
 
       // Style

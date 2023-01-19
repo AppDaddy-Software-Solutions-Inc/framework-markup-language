@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/datasources/http/http.dart';
+import 'package:fml/helper/uri.dart';
 import 'package:fml/log/manager.dart';
 import 'asset.dart';
 import 'package:fml/helper/helper_barrel.dart';
@@ -33,17 +34,18 @@ class Mirror
     for (Asset asset in assets.list)
     if (asset.type == "file" && !abort)
     {
-      var uri = Url.parse(asset.uri);
+      var uri = URI.parse(asset.uri);
       if (uri != null && uri.pageExtension != null)
       {
         // file exists?
-        bool exists = Platform.fileExists(uri.filepath!);
+        var filepath = uri.asFilePath();
+        bool exists = (filepath != null && Platform.fileExists(filepath));
 
         // check the age
         bool downloadRequired = true;
         if (exists)
         {
-          var file = Platform.getFile(uri.filepath!);
+          var file = Platform.getFile(filepath);
           if (file != null)
           {
             var modified = await file.lastModified();
@@ -54,7 +56,7 @@ class Mirror
         }
 
         // get the asset from the server
-        if (downloadRequired && !abort) await _copyAssetFromServer(asset, uri.filepath!);
+        if (downloadRequired && filepath != null && !abort) await _copyAssetFromServer(asset, filepath);
       }
     }
 

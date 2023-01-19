@@ -145,7 +145,7 @@ class Template
     if (document != null) await TemplateManager().toMemory(url, document);
 
     // return the template
-    return document;
+    return Template.fromDocument(name: url, xml: document, parameters: parameters).document;
   }
 
   static Future<XmlDocument?> fetchSaved({required String url}) async
@@ -186,8 +186,7 @@ class Template
     }
 
     // return the error template
-    return Template.
-    fromDocument(name: url, xml: document, parameters: parameters);
+    return Template.fromDocument(name: url, xml: document, parameters: parameters);
   }
 
   static Future<bool> _processIncludes(XmlDocument document, Map<String, String?>? parameters, bool refresh) async

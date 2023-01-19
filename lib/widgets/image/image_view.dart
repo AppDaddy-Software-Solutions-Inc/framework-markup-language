@@ -95,7 +95,7 @@ class ImageView extends StatefulWidget {
         /// file image
         case ImageSource.file:
 
-          dynamic file = null;
+          dynamic file;
 
           // file picker references file:C:/...?
           file = Platform.getFile(url!.replaceFirst("file:", ""));

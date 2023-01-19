@@ -136,15 +136,36 @@ class Platform
     }
   }
 
-  static Future<dynamic> readFile(String filepath, {bool asBytes = false}) async
+  static Future<String?> readFile(String? filepath) async
   {
+    if (filepath == null) return null;
     try
     {
       // qualify file name
       if (_fileExists(filepath))
       {
         File file = File(filepath);
-        return (asBytes == true) ? await file.readAsBytes() : await file.readAsString();
+        return await file.readAsString();
+      }
+      return null;
+    }
+    catch (e)
+    {
+      Log().exception(e, caller: 'platform.vm.dart => bool readFile($filepath)');
+      return null;
+    }
+  }
+
+  static Future<Uint8List?> readFileBytes(String? filepath) async
+  {
+    if (filepath == null) return null;
+    try
+    {
+      // qualify file name
+      if (_fileExists(filepath))
+      {
+        File file = File(filepath);
+        return await file.readAsBytes();
       }
       return null;
     }

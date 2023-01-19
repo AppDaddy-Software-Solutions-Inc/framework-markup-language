@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'dart:typed_data';
 class Platform
 {
   static Future<String?> get path async => null;
@@ -13,7 +14,8 @@ class Platform
   static String? filePath(String? filepath) => throw UnimplementedError();
   static bool folderExists(String folder) => throw UnimplementedError();
   static bool fileExists(String filepath) => throw UnimplementedError();
-  static Future<dynamic> readFile(String? filepath, {bool asBytes = false}) async => throw UnimplementedError();
+  static Future<String?> readFile(String? filepath) async => throw UnimplementedError();
+  static Future<Uint8List> readFileBytes(String? filepath) async => throw UnimplementedError();
   static Future<String?> createFolder(String? folder) async => throw UnimplementedError();
   static Future<bool> writeFile(String? filepath, dynamic content) async => throw UnimplementedError();
   static Future<bool> deleteFile(String filepath) async => throw UnimplementedError();

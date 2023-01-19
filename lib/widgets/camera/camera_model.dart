@@ -2,9 +2,8 @@
 import 'package:camera/camera.dart' show CameraLensDirection;
 import 'package:camera/camera.dart' show XFile;
 import 'package:fml/datasources/camera/model.dart' as CAMERA;
-import 'package:fml/widgets/camera/camera_view.dart' as CAMERA;
+import 'package:fml/widgets/camera/camera_view.dart';
 import 'package:fml/log/manager.dart';
-
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/event/handler.dart' ;
@@ -27,7 +26,7 @@ class CameraModel extends CAMERA.CameraImageModel implements IViewableWidget
   bool fullscreen = true;
   bool stream = false;
 
-  CAMERA.CameraViewState? camera;
+  CameraViewState? camera;
 
   // camera name
   StringObservable? _name;
@@ -403,5 +402,5 @@ class CameraModel extends CAMERA.CameraImageModel implements IViewableWidget
     }
   }
 
-  Widget getView({Key? key}) => CAMERA.CameraView(this);
+  Widget getView({Key? key}) => CameraView(this);
 }

@@ -75,7 +75,7 @@ class TemplateManager
     return template;
   }
 
-  Future<String?> fromFile(String url) async
+  Future<String?> fromDisk(String url) async
   {
     String? template;
     try
@@ -86,12 +86,8 @@ class TemplateManager
 
       // get template from file
       Uri? uri = URI.parse(url);
-      if (uri != null)
-      {
-        var filepath = uri.asFilePath();
-        var file = Platform.getFile(filepath);
-        if (file != null) template = await Platform.readFile(url);
-      }
+      String? filepath = uri?.asFilePath();
+      template = await Platform.readFile(filepath);
     }
     catch (e)
     {
@@ -121,26 +117,6 @@ class TemplateManager
     catch (e)
     {
       Log().error("Can't find valid template $url on server. Error is $e");
-    }
-    return template;
-  }
-
-  Future<String?> fromDisk(String url) async
-  {
-    String? template;
-    try
-    {
-      var uri = URI.parse(url);
-      if (uri != null)
-      {
-        bool exists = Platform.fileExists(uri.url);
-        if (exists) template = await Platform.readFile(uri.url);
-      }
-    }
-    catch (e)
-    {
-      Log().exception(e);
-      template = null;
     }
     return template;
   }

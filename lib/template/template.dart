@@ -121,10 +121,7 @@ class Template
       // from assets archive
       if (template == null) template = await TemplateManager().fromAssetsBundle(url);
 
-      // from assets archive
-      if (template == null) template = await TemplateManager().fromFile(url);
-
-      // from file
+      // from disk
       if (template == null) template = await TemplateManager().fromDisk(url);
     }
 

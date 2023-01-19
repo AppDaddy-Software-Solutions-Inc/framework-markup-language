@@ -3,11 +3,6 @@ import 'package:fml/datasources/http/http.dart';
 import 'package:path/path.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-// platform
-import 'package:fml/platform/platform.stub.dart'
-if (dart.library.io)   'package:fml/platform/platform.vm.dart'
-if (dart.library.html) 'package:fml/platform/platform.web.dart';
-
 extension URI on Uri
 {
   // active domain

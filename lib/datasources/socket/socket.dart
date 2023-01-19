@@ -96,7 +96,11 @@ class Socket
         lastMessage = null;
 
         // close the old socket
-        if (_socket != null) await _socket!.sink.close();
+        if (_socket != null)
+        {
+          _socket!.stream.listen((_) => {}, onDone: () => {}, onError: (_) => {});
+          await _socket!.sink.close();
+        }
 
         // connect
         connected = false;
@@ -143,6 +147,7 @@ class Socket
   void _onData(data)
   {
     Log().debug('SOCKET:: Received message >> $data');
+    connected = true;
     if (data is String)
     {
       lastMessage = data;

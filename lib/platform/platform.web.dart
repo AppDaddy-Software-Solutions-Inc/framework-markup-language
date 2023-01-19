@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'dart:html';
+import 'package:flutter/foundation.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'dart:js';
@@ -99,7 +100,8 @@ class Platform
   static String? filePath(String? filename) => null;
   static bool folderExists(String folder) => false;
   static bool fileExists(String filename) => false;
-  static Future<dynamic> readFile(String? filename, {bool asBytes = false}) async => null;
+  static Future<String?> readFile(String? filepath) async => null;
+  static Future<Uint8List?> readFileBytes(String? filepath) async => null;
   static Future<String?> createFolder(String? folder) async => null;
   static Future<bool> writeFile(String? filename, dynamic content) async => true;
   static Future<bool> deleteFile(String filename) async => true;

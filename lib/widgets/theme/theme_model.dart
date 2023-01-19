@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/theme/theme_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class ThemeModel extends DecoratedWidgetModel implements IViewableWidget
 {

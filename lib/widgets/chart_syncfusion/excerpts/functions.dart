@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:fml/widgets/chart_syncfusion/chart_view.dart' as VIEW;
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 /// Cartesian Chart
 ///

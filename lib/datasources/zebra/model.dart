@@ -8,7 +8,7 @@ import 'package:fml/datasources/zebra/wedge.dart' as ZEBRA;
 import 'package:fml/datasources/detectors/barcode/barcode_detector.dart';
 import 'package:fml/datasources/zebra/wedge.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener
 {

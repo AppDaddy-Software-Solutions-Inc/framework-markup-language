@@ -2,15 +2,11 @@
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:fml/application/application_model.dart';
-import 'package:fml/helper/uri.dart';
-import 'package:fml/helper/xml.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/overlay/overlay_manager.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:fml/dialog/service.dart';
-import 'package:fml/helper/string.dart';
-import 'package:fml/helper/url.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/page.dart';
 import 'package:fml/navigation/navigation_observer.dart';
@@ -22,6 +18,7 @@ import 'package:fml/store/store_view.dart';
 import 'package:fml/page404/page404_view.dart';
 import 'package:fml/widgets/overlay/overlay_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/helper/common_helpers.dart';
 
 // platform
 import 'package:fml/platform/platform.stub.dart'
@@ -59,7 +56,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
 
       // set default app
       var app = await ApplicationModel.fromUrl(defaultDomain.toString());
-      System().launch(app);
+      System().launchApplication(app);
     }
 
     // get home page
@@ -495,9 +492,6 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
       bool ok = true;
       try
       {
-        // Encode Parameters
-        url = Url.encode(url)!;
-
         // parse url
         Uri? uri = Uri.tryParse(url);
 

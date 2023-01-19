@@ -4,13 +4,12 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/helper/uri.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/scope.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/image/image_model.dart';
 import 'package:image/image.dart' as IMAGE;
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 // platform
 import 'package:fml/platform/platform.stub.dart'

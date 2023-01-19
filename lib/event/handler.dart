@@ -25,7 +25,7 @@ import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 /// EventHandler performs the executions of events and contains the functions for each event [Type]
 ///

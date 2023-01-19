@@ -16,7 +16,7 @@ import 'package:fml/datasources/detectors/detector_model.dart' ;
 import 'package:image/image.dart' as IMAGE;
 import 'package:fml/datasources/file/file.dart' as FILE;
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
 if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'

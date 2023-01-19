@@ -12,7 +12,7 @@ import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 enum Methods {get, put, post, patch, delete}
 enum Types   {background, foreground, either}

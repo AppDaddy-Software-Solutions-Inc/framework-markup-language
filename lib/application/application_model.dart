@@ -4,9 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/config/config_model.dart';
 import 'package:fml/crypto/crypto.dart';
-import 'package:fml/helper/uri.dart';
 import 'package:fml/hive/database.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/mirror/mirror.dart';
 import 'package:fml/system.dart';
 import 'package:fml/token/token.dart';
@@ -16,6 +15,7 @@ import 'package:fml/widgets/widget/widget_model.dart';
 class ApplicationModel extends WidgetModel
 {
   static String tableName = "APP";
+  late final String key;
 
   late Future<bool> initialized;
 
@@ -34,10 +34,21 @@ class ApplicationModel extends WidgetModel
 
   late final String url;
 
+  // application title
   String? title;
+
+  // application icon
   String? icon;
-  int?    order;
+
+  // application icons position
+  // on the store display (future use for multi-page and ordering)
+  String? page;
+  int? order;
+
   String? config;
+
+  // application stash
+  Map<String, String> stash = {};
 
   // jwt - json web token
   Jwt? jwt;
@@ -47,11 +58,14 @@ class ApplicationModel extends WidgetModel
   String? get scheme => _uri?.scheme;
   String? get host   => _uri?.host;
 
+  // fml version support
+  int? fmlVersion;
+
   Map<String, String>? get queryParameters => _uri?.queryParameters;
   
-  String  get homePage => settings("HOME_PAGE") ?? "main.xml";
-  String? get loginPage => settings("LOGIN_PAGE");
-  String? get debugPage => settings("DEBUG_PAGE");
+  String  get homePage         => settings("HOME_PAGE") ?? "main.xml";
+  String? get loginPage        => settings("LOGIN_PAGE");
+  String? get debugPage        => settings("DEBUG_PAGE");
   String? get unauthorizedPage => settings("UNAUTHORIZED_PAGE");
 
   Map<String,String?>? get configParameters => _config?.parameters;
@@ -59,8 +73,11 @@ class ApplicationModel extends WidgetModel
   ConfigModel? _config;
   bool get hasConfig => _config != null;
 
-  ApplicationModel({required this.url, this.title, this.icon, this.order, String? jwt}) : super(null, Cryptography.hash(text: url.toLowerCase()))
+  ApplicationModel({String? key, required this.url, this.title, this.icon, this.page, this.order, String? jwt, dynamic stash}) : super(null, Cryptography.hash(text: url.toLowerCase()))
   {
+    // sett application key
+    this.key = key ?? id;
+
     // parse to url into its parts
     _uri = URI.parse(url);
 
@@ -70,6 +87,9 @@ class ApplicationModel extends WidgetModel
       var token = Jwt(jwt);
       if (token.valid) this.jwt = token;
     }
+
+    if (stash is Map)
+    stash.forEach((key, value) => this.stash[key.toString()] = value.toString());
 
     // load the config
     initialized = initialize();
@@ -82,11 +102,6 @@ class ApplicationModel extends WidgetModel
     if (model != null) _config = model;
     return true;
   }
-
-  Future<bool> insert() async => (await Database().insert(tableName, id, _toMap()) == null);
-  Future<bool> update() async => (await Database().update(tableName, id, _toMap()) == null);
-  Future<bool> delete() async => (await Database().delete(tableName, id) == null);
-  static Future<bool> deleteAll() async => (await Database().deleteAll(tableName) == null);
 
   String? settings(String key)
   {
@@ -121,6 +136,9 @@ class ApplicationModel extends WidgetModel
     // model created?
     if (model != null)
     {
+      // set fml version support level
+      fmlVersion = S.toVersionNumber(model.settings["FML_VERSION"]);
+
       // get the icon
       var icon = model.settings["APP_ICON"];
       if (icon != null && _uri?.domain != null)
@@ -128,7 +146,7 @@ class ApplicationModel extends WidgetModel
         Uri? uri = URI.parse(icon, domain: _uri!.domain);
         if (uri != null)
         {
-          var data = await Url.toUriData(uri.url);
+          var data = await URI.toUriData(uri.url);
           if (data != null)
                this.icon = data.toString();
           else this.icon = null;
@@ -180,17 +198,6 @@ class ApplicationModel extends WidgetModel
     theme.font        = settings('FONT');
   }
 
-  static Future<ApplicationModel?> _fromMap(dynamic map) async
-  {
-    ApplicationModel? app;
-    if (map is Map<String, dynamic>)
-    {
-      app = ApplicationModel(url: S.mapVal(map, "url"), title: S.mapVal(map, "title"), icon: S.mapVal(map, "icon"), order: S.mapInt(map, "order"), jwt: S.mapVal(map, "jwt"));
-      await app.initialized;
-    }
-    return app;
-  }
-
   static Future<ApplicationModel> fromUrl(String url) async
   {
     // build the model
@@ -202,17 +209,51 @@ class ApplicationModel extends WidgetModel
     return app;
   }
 
+  static Future<ApplicationModel?> _fromMap(dynamic map) async
+  {
+    ApplicationModel? app;
+    if (map is Map<String, dynamic>)
+    {
+      app = ApplicationModel(key: S.mapVal(map, "key"), url: S.mapVal(map, "url"), title: S.mapVal(map, "title"), icon: S.mapVal(map, "icon"), page: S.mapVal(map, "page"), order: S.mapInt(map, "order"), jwt: S.mapVal(map, "jwt"), stash: S.mapVal(map, "stash"));
+      await app.initialized;
+    }
+    return app;
+  }
+
   Map<String, dynamic> _toMap()
   {
     Map<String, dynamic> map = {};
-    map["key"]    = id;
+    map["key"]    = key;
     map["url"]    = url;
     map["title"]  = title;
     map["icon"]   = icon;
+    map["page"]   = page;
     map["order"]  = order;
     map["config"] = _config?.xml;
+    map["stash"]  = stash;
     map["jwt"]    = jwt;
     return map;
+  }
+
+  // inserts a new app into the local hive
+  Future<bool> insert() async
+  {
+    var exception = await Database().insert(tableName, key, _toMap());
+    return (exception == null);
+  }
+
+  // updates the app in the local hive
+  Future<bool> update() async
+  {
+    var exception = await Database().update(tableName, key, _toMap());
+    return (exception == null);
+  }
+
+  // delete an app from the local hive
+  Future<bool> delete() async
+  {
+    var exception = await Database().delete(tableName, key);
+    return (exception == null);
   }
 
   static Future<List<ApplicationModel>> loadAll() async

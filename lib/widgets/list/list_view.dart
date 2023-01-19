@@ -11,7 +11,7 @@ import 'package:fml/widgets/list/list_model.dart';
 import 'package:fml/widgets/list/item/list_item_view.dart';
 import 'package:fml/widgets/list/item/list_item_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class ListLayoutView extends StatefulWidget
 {

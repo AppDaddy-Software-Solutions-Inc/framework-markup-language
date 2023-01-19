@@ -1,8 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:fml/helper/uri.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class GalleryScreen extends StatefulWidget
 {

@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
-import 'package:fml/helper/uri.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/observable/binding.dart';
@@ -10,7 +9,7 @@ import 'package:uuid/uuid.dart';
 import 'package:validators/validators.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class Template
 {

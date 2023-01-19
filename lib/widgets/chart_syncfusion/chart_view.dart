@@ -18,7 +18,7 @@ import 'package:fml/widgets/chart_syncfusion/series/chart_series_model.dart' as 
 import 'package:fml/widgets/chart_syncfusion/axis/chart_axis_model.dart' as AXIS;
 import 'package:fml/widgets/chart_syncfusion/excerpts/functions.dart' as EXCERPT;
 import 'package:uuid/uuid.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 import 'axis/chart_axis_model.dart';
 

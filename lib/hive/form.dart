@@ -4,7 +4,7 @@ import 'package:fml/hive/post.dart';
 import 'package:fml/log/manager.dart';
 import 'package:uuid/uuid.dart';
 import 'package:fml/hive/database.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class Form implements Comparable
 {

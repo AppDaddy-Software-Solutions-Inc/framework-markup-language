@@ -2,7 +2,7 @@
 import 'package:fml/dialog/service.dart';
 import 'package:fml/log/manager.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 /// XML Helpers
 ///

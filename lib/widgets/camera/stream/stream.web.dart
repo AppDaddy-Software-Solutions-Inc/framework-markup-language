@@ -13,7 +13,7 @@ import 'package:fml/datasources/file/file.dart' as FILE;
 import 'package:fml/widgets/camera/camera_model.dart' as CAMERA;
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/camera/stream/stream.dart' as STREAM;
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
 if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'

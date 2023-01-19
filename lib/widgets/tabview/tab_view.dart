@@ -3,7 +3,6 @@ import 'package:fml/dialog/service.dart';
 import 'package:fml/event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
-import 'package:fml/helper/uri.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
@@ -11,7 +10,7 @@ import 'package:fml/widgets/modal/modal_model.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/tabview/tab_model.dart';
 import 'package:fml/widgets/framework/framework_view.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class TabView extends StatefulWidget
 {

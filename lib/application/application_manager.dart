@@ -2,7 +2,6 @@
 import 'package:flutter/services.dart';
 import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/event/manager.dart';
-import 'package:fml/helper/uri.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/navigation/navigation_manager.dart';
@@ -14,6 +13,7 @@ import 'package:fml/widgets/framework/framework_view.dart';
 import 'package:provider/provider.dart';
 import 'package:fml/event/event.dart' ;
 import 'package:fml/widgets/framework/framework_model.dart' ;
+import 'package:fml/helper/common_helpers.dart';
 
 class ApplicationManager extends StatefulWidget
 {

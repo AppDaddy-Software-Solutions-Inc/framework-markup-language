@@ -2,7 +2,7 @@
 import 'package:fml/log/manager.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/datasources/http/http.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class Asset
 {

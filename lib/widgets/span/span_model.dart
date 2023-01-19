@@ -9,7 +9,7 @@ import 'package:fml/widgets/span/span_view.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/system.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class SpanModel extends DecoratedWidgetModel implements IViewableWidget
 {

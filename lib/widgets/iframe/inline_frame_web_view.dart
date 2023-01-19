@@ -9,7 +9,7 @@ import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:uuid/uuid.dart';
 import 'inline_frame_model.dart';
 import 'inline_frame_view.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 InlineFrameView getView(model) => InlineFrameView(model);
 

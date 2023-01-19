@@ -617,8 +617,9 @@ class S
   static String byteListToHexString(List<int> bytes) => bytes.map((i) => i.toRadixString(16).padLeft(2, '0')).reduce((a, b) => (a + b));
 
   // converts versions of 0.0.0 to a number
-  static int? toVersionNumber(String version)
+  static int? toVersionNumber(String? version)
   {
+    if (version == null) return null;
     try
     {
       version = version.replaceAll("+", "");

@@ -1,9 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/datasources/http/http.dart';
-import 'package:fml/helper/uri.dart';
 import 'package:fml/log/manager.dart';
 import 'asset.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 // platform
 import 'package:fml/platform/platform.stub.dart'

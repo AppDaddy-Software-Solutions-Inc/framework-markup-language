@@ -1,10 +1,10 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:fml/data/data.dart';
-import 'package:fml/helper/string.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import 'package:fml/hive/database.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class Log
 {

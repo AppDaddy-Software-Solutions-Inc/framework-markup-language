@@ -9,7 +9,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/draggable/draggable_model.dart';
 import 'package:fml/widgets/droppable/droppable_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class DroppableModel extends DecoratedWidgetModel implements IViewableWidget
 {

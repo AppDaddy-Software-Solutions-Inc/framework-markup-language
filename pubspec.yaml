@@ -254,6 +254,7 @@ flutter:
     - assets/images/
     - assets/applications/
     - assets/applications/test/
+    - assets/applications/test/assets/
 
   fonts:
     - family: icons

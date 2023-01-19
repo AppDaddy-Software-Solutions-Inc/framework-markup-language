@@ -7,8 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:fml/datasources/log/log_model.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
-import 'package:fml/helper/uri.dart';
-import 'package:fml/hive/stash.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/phrase.dart';
@@ -27,7 +25,7 @@ import 'package:fml/datasources/gps/gps.dart' as GPS;
 import 'package:fml/datasources/gps/payload.dart' as GPS;
 import 'package:fml/application/application_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 import 'dart:io' as io;
 
 // platform
@@ -322,7 +320,7 @@ class System extends WidgetModel implements IEventManager
       if (key.startsWith("assets/applications"))
       {
         var folder   = key.replaceFirst("assets/", "");
-        var filepath = normalize(join(URI.rootPath,"applications",folder));
+        var filepath = normalize(join(URI.rootPath,folder));
         await Platform.writeFile(filepath, await rootBundle.load(key));
       }
     }
@@ -357,14 +355,16 @@ class System extends WidgetModel implements IEventManager
     }
   }
 
-  Future<bool> stashValue(String key, dynamic value) async {
+  Future<bool> stashValue(String key, dynamic value) async
+  {
     bool ok = true;
     try
     {
       if (S.isNullOrEmpty(key)) return ok;
 
-      // write to the hive
-      await Stash().set(System().host, key, value);
+      // write application stash entry
+      Application?.stash[key] = value.toString();
+      Application?.update();
 
       // set observable
       scope!.setObservable("STASH.$key", value);
@@ -468,7 +468,7 @@ class System extends WidgetModel implements IEventManager
   }
 
   // launches the application
-  launch(ApplicationModel app)
+  launchApplication(ApplicationModel app)
   {
     // Close current application
     if (this._app != null) close(_app!);
@@ -478,6 +478,12 @@ class System extends WidgetModel implements IEventManager
     // set the default domain on the Url utilities
     URI.rootHost = app.domain ?? "";
 
+    // negate stash values
+    _app?.stash.forEach((key, _) => stashValue(key, null));
+
+    // set new stash values
+    app.stash.forEach((key, value) => stashValue(key, value));
+
     // set the current application
     _app = app;
 
@@ -485,14 +491,7 @@ class System extends WidgetModel implements IEventManager
     app.setTheme(theme);
 
     // set credentials
-    if (app.jwt != null) logon(token);
-
-    // set fml version support level
-    //if (config?.get("FML_VERSION") != null) fmlVersion = S.toVersionNumber(config!.get("FML_VERSION")!) ?? currentVersion;
-
-    // build the STASH
-    // List<StashEntry> entries = await Stash.findAll(System().host);
-    // entries.forEach((entry) => scope?.setObservable("STASH.${entry.key}", entry.value));
+    if (app.jwt != null) logon(app.jwt);
 
     // update application level bindables
     _domain?.set(app.domain);

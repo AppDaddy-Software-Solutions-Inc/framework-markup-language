@@ -3,7 +3,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:fml/dialog/manager.dart';
 import 'package:fml/event/handler.dart';
-import 'package:fml/helper/uri.dart';
 import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:flutter/services.dart';
@@ -25,7 +24,7 @@ import 'package:fml/widgets/footer/footer_view.dart';
 import 'package:fml/widgets/drawer/drawer_view.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/box_view.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/phrase.dart';
 
 // platform

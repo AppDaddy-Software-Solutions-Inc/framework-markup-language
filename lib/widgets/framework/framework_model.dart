@@ -2,7 +2,6 @@
 import 'dart:async';
 import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
-import 'package:fml/helper/uri.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
@@ -20,7 +19,7 @@ import 'package:fml/event/handler.dart';
 import 'package:fml/widgets/variable/variable_model.dart';
 import 'package:fml/widgets/framework/framework_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 import 'package:uuid/uuid.dart';
 

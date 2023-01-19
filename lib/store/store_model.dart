@@ -88,20 +88,13 @@ class Store extends WidgetModel implements IModelListener
     }
   }
 
-  deleteAll() async
-  {
-    busy = true;
-    await ApplicationModel.deleteAll();
-    busy = false;
-  }
-
   launch(ApplicationModel app, BuildContext context) async
   {
     // get the home page
     var page = app.homePage;
 
     // set the system app
-    System().launch(app);
+    System().launchApplication(app);
 
     // refresh the app
     app.refresh();

@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/application/application_model.dart';
-import 'package:fml/helper/uri.dart';
 import 'package:fml/theme/themenotifier.dart';
 import 'package:fml/navigation/navigation_observer.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
@@ -17,7 +16,7 @@ import 'package:fml/widgets/menu/menu_view.dart';
 import 'package:fml/widgets/menu/menu_model.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
 import 'package:provider/provider.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 final bool enableTestPlayground = false;
 
@@ -311,7 +310,7 @@ class AppFormState extends State<AppForm>
     bool ok = _formKey.currentState!.validate();
     if (ok)
     {
-      ApplicationModel app = ApplicationModel(url: url!, title: title!);
+      ApplicationModel app = ApplicationModel(url: url!, title: title);
       await app.initialized;
       if (app.hasConfig)
       {

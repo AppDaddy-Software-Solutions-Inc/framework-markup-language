@@ -1,4 +1,7 @@
+import 'dart:io';
+import 'package:fml/datasources/http/http.dart';
 import 'package:path/path.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 // platform
 import 'package:fml/platform/platform.stub.dart'
@@ -18,25 +21,20 @@ extension URI on Uri
 
   String? asFilePath({String? domain})
   {
-    var root = domain ?? rootPath;
     if (page == null) return null;
-    var uri = this;
-    var url = "${uri.host}/${uri.path}";
-    if (uri.scheme == "file"  && uri.host != "applications") url = "applications/$url";
-    if (uri.scheme == "asset" && uri.host != "assets")       url = "assets/$url";
-    url = normalize("$root/$url");
-    return url;
+    var folder = asFolderPath(domain: domain);
+    var path   = normalize("$folder/$page");
+    return path;
   }
 
   String asFolderPath({String? domain})
   {
-    var root = domain ?? rootPath;
-    var uri = this.removePage();
-    var url = "${uri.host}/${uri.path}";
-    if (uri.scheme == "file"  && uri.host != "applications") url = "applications/$url";
-    if (uri.scheme == "asset" && uri.host != "assets")       url = "assets/$url";
-    url = normalize("$root/$url");
-    return url;
+    var root  = domain ?? rootPath;
+    var uri  = this.removePage();
+    var path = "${uri.host}/${uri.path}";
+    if (uri.host != "applications") path = "applications/$path";
+    path = normalize("$root/$path");
+    return path;
   }
 
   Uri toAbsolute({String? domain})
@@ -138,6 +136,46 @@ extension URI on Uri
 
     // build query parameters
     return uri;
+  }
+
+  static Future<UriData?> toUriData(String url) async
+  {
+    try
+    {
+      // parse the url
+      Uri? uri = parse(url);
+
+      // failed parse
+      if (uri == null) return null;
+
+      // already a data uri
+      if (uri.data != null) return uri.data;
+
+      // file reference
+      if (uri.scheme == "file")
+      {
+        var filepath = uri.asFilePath();
+        if (filepath == null) return null;
+        var file  = File(filepath);
+        var bytes = await file.readAsBytes();
+        var mime  = await S.mimetype(url);
+        return UriData.fromBytes(bytes,mimeType: mime);
+      }
+
+      // remote image file
+      var response = await Http.get(url);
+      if (response.statusCode == HttpStatus.ok)
+      {
+        var bytes = response.bytes;
+        var mime  = await S.mimetype(url);
+        return UriData.fromBytes(bytes, mimeType: mime);
+      }
+    }
+    catch(e)
+    {
+      print("Error in toUriData. Error is $e");
+    }
+    return null;
   }
 
   Uri resolve(String domain)

@@ -113,7 +113,7 @@ import 'package:fml/widgets/video/video_model.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 abstract class IModelListener {
   onModelChange(WidgetModel model, {String? property, dynamic value});

@@ -17,7 +17,7 @@ import 'package:fml/hive/form.dart' as HIVE;
 import 'package:fml/widgets/form/form_view.dart';
 import 'package:fml/widgets/input/input_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 abstract class IForm
 {

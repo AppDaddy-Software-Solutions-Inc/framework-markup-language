@@ -1121,14 +1121,17 @@ class WidgetModel implements IDataSourceListener
 
       case "removechild":
 
+        //negative index should take off the end?
+
         //if index is null, remove all children before replacement.
         int? index = S.toInt(S.item(arguments, 0));
         //check for children then remove them
         if (this.children != null && index == null) {
-          this.children!.forEach((child) {
-            child.dispose();
-          });
-          this.children = [];
+          //dispose of the last item
+          this.children!.last.dispose();
+          //check if the list is greater than 0, remove at the final index.
+          if(this.children!.length > 0) this.children!.removeAt(children!.length - 1);
+          print(index.toString());
         }
         else if (this.children != null && index != null) {
           //check if index is in range, then dispose of the child at that index.
@@ -1144,9 +1147,29 @@ class WidgetModel implements IDataSourceListener
 
         return true;
 
+      case "removechildren":
+
+      //negative index should take off the end?
+
+      //if index is null, remove all children before replacement.
+        //check for children then remove them
+        if (this.children != null) {
+          this.children!.forEach((child) {
+            child.dispose();
+          });
+          this.children = [];
+        }
+
+        // force parent rebuild
+        parent?.notifyListeners("rebuild", "true");
+
+        return true;
+
       case "replacechild":
 
-        //if index is null, remove all children before replacement.
+        //negative index navigate backwards in the list?
+
+        //if index is null, remove last child before replacement.
         int? index = S.toInt(S.item(arguments, 1));
         var xml = S.item(arguments, 0);
 
@@ -1154,10 +1177,11 @@ class WidgetModel implements IDataSourceListener
 
         //check for children then remove them
         if (this.children != null && index == null) {
-          this.children!.forEach((child) {
-            child.dispose();
-          });
-          this.children = [];
+          //dispose of the last item
+          this.children!.last.dispose();
+          //check if the list is greater than 0, remove at the final index.
+          if(this.children!.length > 0) this.children!.removeAt(children!.length - 1);
+          print(index.toString());
         }
         else if (this.children != null && index != null) {
           //check if index is in range, then dispose of the child at that index.
@@ -1170,6 +1194,29 @@ class WidgetModel implements IDataSourceListener
         // add elements
 
         await _appendXml(xml, index);
+
+        // force parent rebuild
+        parent?.notifyListeners("rebuild", "true");
+
+        return true;
+
+      case "replacechildren":
+
+        var xml = S.item(arguments, 0);
+
+        if (xml == null || !(xml is String)) return true;
+
+        //check for children then remove them
+        if (this.children != null) {
+          this.children!.forEach((child) {
+            child.dispose();
+          });
+          this.children = [];
+        }
+
+        // add elements
+
+        await _appendXml(xml, null);
 
         // force parent rebuild
         parent?.notifyListeners("rebuild", "true");

@@ -113,8 +113,8 @@ class System extends WidgetModel implements IEventManager
   String? get host => _host?.get();
 
   /// Global System Observable
-  StringObservable? _platform;
-  String? get platform => _platform?.get();
+  StringObservable? _userplatform;
+  String? get userplatform => _userplatform?.get();
 
   StringObservable? _useragent;
   String? get useragent => _useragent?.get() ?? Platform.useragent;
@@ -215,7 +215,11 @@ class System extends WidgetModel implements IEventManager
       if (initialConnection == ConnectivityStatus.none) System.toast(Phrases().checkConnection, duration: 3);
 
       // Add connection listener
-      connection.isConnected.listen((isconnected) => _connected?.set(isconnected));
+      connection.isConnected.listen((isconnected)
+      {
+        Log().info("Connection status changed to $isconnected");
+        _connected?.set(isconnected);
+      });
 
       // For the initial connectivity test we want to give checkConnection some time
       // but it still needs to run synchronous so we give it a second
@@ -268,10 +272,10 @@ class System extends WidgetModel implements IEventManager
     // device settings
     _screenheight = IntegerObservable(Binding.toKey(id, 'screenheight'), WidgetsBinding.instance.window.physicalSize.height, scope: scope);
     _screenwidth  = IntegerObservable(Binding.toKey(id, 'screenwidth'),  WidgetsBinding.instance.window.physicalSize.width, scope: scope);
-    _platform     = StringObservable(Binding.toKey(id, 'platform'), platform, scope: scope);
+    _userplatform = StringObservable(Binding.toKey(id, 'platform'), platform, scope: scope);
     _useragent    = StringObservable(Binding.toKey(id, 'useragent'), Platform.useragent, scope: scope);
     _version      = StringObservable(Binding.toKey(id, 'version'), version, scope: scope);
-    _uuid         = _uuid == null ? StringObservable(Binding.toKey(id, 'uuid'), uuid(), scope: scope, getter: uuid) : null;
+    _uuid         = StringObservable(Binding.toKey(id, 'uuid'), uuid(), scope: scope, getter: uuid);
 
     // system dates
     _epoch  = IntegerObservable(Binding.toKey(id, 'epoch'), epoch(), scope: scope, getter: epoch);

@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/application/application_model.dart';
+import 'package:fml/observable/observables/boolean.dart';
 import 'package:fml/theme/themenotifier.dart';
 import 'package:fml/navigation/navigation_observer.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
@@ -237,6 +238,9 @@ class AppFormState extends State<AppForm>
   String  errorText = '';
   String? title;
   String? url;
+  bool unreachable = false;
+  // busy
+  BooleanObservable busy = BooleanObservable(null, false);
 
   String? _validateTitle(title)
   {
@@ -262,6 +266,13 @@ class AppFormState extends State<AppForm>
     errorText = '';
 
     // missing url
+    if (unreachable)
+    {
+      errorText = "Site unreachable or is missing config.xml";
+      return errorText;
+    }
+
+    // missing url
     if (S.isNullOrEmpty(url))
     {
       errorText = phrase.missingURL;
@@ -280,14 +291,14 @@ class AppFormState extends State<AppForm>
     // missing scheme
     if (!uri.hasScheme)
     {
-      errorText = 'Missing scheme in address (ex. https://, http://, file://))';
+      errorText = 'Missing scheme in address';
       return errorText;
     }
 
     // missing host
     if (S.isNullOrEmpty(uri.authority))
     {
-      errorText = 'Missing host in address (ex. https://host.com))';
+      errorText = 'Missing host in address';
       return errorText;
     }
 
@@ -307,6 +318,8 @@ class AppFormState extends State<AppForm>
   Future _addApp() async
   {
     // validate the form
+    unreachable = false;
+    busy.set(true);
     bool ok = _formKey.currentState!.validate();
     if (ok)
     {
@@ -317,8 +330,13 @@ class AppFormState extends State<AppForm>
         Store().add(app);
         Navigator.of(context).pop();
       }
-      else System.toast('Unable to get application!',duration: 2);
+      else
+      {
+        unreachable = true;
+        _formKey.currentState!.validate();
+      }
     }
+    busy.set(false);
   }
 
   @override
@@ -343,9 +361,12 @@ class AppFormState extends State<AppForm>
     layout.add(url);
 
     // buttons
-    var buttons = Padding(padding: const EdgeInsets.only(top: 0.0),child: Align(alignment: Alignment.bottomCenter, child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [cancel,connect])));
+    var buttons = Padding(padding: const EdgeInsets.only(top: 10.0, bottom: 10),child: Align(alignment: Alignment.bottomCenter, child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [cancel,connect])));
     layout.add(buttons);
 
-    return Form(key: _formKey, child: Column(children: layout, mainAxisSize: MainAxisSize.min, mainAxisAlignment: MainAxisAlignment.end, crossAxisAlignment: CrossAxisAlignment.start));
+    var b = BusyView(BusyModel(Store(), visible: (busy.get() ?? false), observable: busy, modal: false, color: Colors.amberAccent));
+    var form = Form(key: _formKey, child: Column(children: layout, mainAxisSize: MainAxisSize.min, mainAxisAlignment: MainAxisAlignment.end, crossAxisAlignment: CrossAxisAlignment.start));
+
+    return Stack(fit: StackFit.passthrough, children: [form,b]);
   }
 }

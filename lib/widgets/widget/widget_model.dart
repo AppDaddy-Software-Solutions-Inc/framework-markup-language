@@ -1079,9 +1079,10 @@ class WidgetModel implements IDataSourceListener
   {
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
+
     switch (function)
     {
-      case "set":
+      case 'set':
 
       // value
         var value = S.item(arguments, 0);
@@ -1101,112 +1102,90 @@ class WidgetModel implements IDataSourceListener
 
         // set the variable
         scope.setObservable("$id.$property", value != null ? value.toString() : null);
-
         return true;
 
-      case "addchild":
+      case 'addchild':
         // if index is null, add to end of list.
         int? index = S.toInt(S.item(arguments, 1));
         // add elements
         var xml = S.item(arguments, 0);
 
-        if (xml == null || !(xml is String)) return true;
-
+        if (xml == null || !(xml is String))
+          return true;
         await _appendXml(xml, index);
-
         // force parent rebuild
         parent?.notifyListeners("rebuild", "true");
-
         return true;
 
-      case "removechild":
-
-        //negative index should take off the end?
-
-        //if index is null, remove all children before replacement.
+      case 'removechild':
+        // if index is null, remove all children before replacement.
         int? index = S.toInt(S.item(arguments, 0));
-        //check for children then remove them
+        // check for children then remove them
         if (this.children != null && index == null) {
-          //dispose of the last item
+          // dispose of the last item
           this.children!.last.dispose();
-          //check if the list is greater than 0, remove at the final index.
-          if(this.children!.length > 0) this.children!.removeAt(children!.length - 1);
-          print(index.toString());
+          // check if the list is greater than 0, remove at the final index.
+          if (this.children!.length > 0) this.children!.removeLast();
         }
         else if (this.children != null && index != null) {
-          //check if index is in range, then dispose of the child at that index.
-          if (this.children!.asMap().containsKey(index)) {
+          // check if index is in range, then dispose of the child at that index.
+          if (index >= 0 && this.children!.length > index) {
             this.children![index].dispose();
             this.children!.removeAt(index);
-            print(index.toString());
           }
+          // Could add handling for negative index removing from the end?
         }
-
         // force parent rebuild
         parent?.notifyListeners("rebuild", "true");
-
         return true;
 
-      case "removechildren":
-
-      //negative index should take off the end?
-
-      //if index is null, remove all children before replacement.
-        //check for children then remove them
+      case 'removechildren':
+        // check for children then remove them
         if (this.children != null) {
           this.children!.forEach((child) {
             child.dispose();
           });
           this.children = [];
         }
-
         // force parent rebuild
         parent?.notifyListeners("rebuild", "true");
-
         return true;
 
-      case "replacechild":
-
-        //negative index navigate backwards in the list?
-
-        //if index is null, remove last child before replacement.
+      case 'replacechild':
+        // if index is null, remove last child before replacement.
         int? index = S.toInt(S.item(arguments, 1));
         var xml = S.item(arguments, 0);
 
-        if (xml == null || !(xml is String)) return true;
-
-        //check for children then remove them
+        if (xml == null || !(xml is String))
+          return true;
+        // check for children then remove them
         if (this.children != null && index == null) {
-          //dispose of the last item
+          // dispose of the last item
           this.children!.last.dispose();
-          //check if the list is greater than 0, remove at the final index.
+          // check if the list is greater than 0, remove at the final index.
           if(this.children!.length > 0) this.children!.removeAt(children!.length - 1);
           print(index.toString());
         }
         else if (this.children != null && index != null) {
-          //check if index is in range, then dispose of the child at that index.
-          if (this.children!.asMap().containsKey(index)) {
+          // check if index is in range, then dispose of the child at that index.
+          if (index >= 0 && this.children!.length > index) {
             this.children![index].dispose();
             this.children!.removeAt(index);
           }
+          // Could add handling for negative index removing from the end?
         }
-
         // add elements
-
         await _appendXml(xml, index);
-
         // force parent rebuild
         parent?.notifyListeners("rebuild", "true");
-
         return true;
 
-      case "replacechildren":
-
+      case 'replacechildren':
         var xml = S.item(arguments, 0);
 
-        if (xml == null || !(xml is String)) return true;
-
-        //check for children then remove them
+        if (xml == null || !(xml is String))
+          return true;
+        // check for children then remove them
         if (this.children != null) {
           this.children!.forEach((child) {
             child.dispose();
@@ -1215,59 +1194,47 @@ class WidgetModel implements IDataSourceListener
         }
 
         // add elements
-
         await _appendXml(xml, null);
-
         // force parent rebuild
         parent?.notifyListeners("rebuild", "true");
-
         return true;
 
-      case "removewidget":
-
-
+      case 'removewidget':
         int? index = (parent?.children?.contains(this) ?? false) ? parent?.children?.indexOf(this) : null;
-        // dispose of this model
 
         // index should never be null
-        if(index != null) {
+        if (index != null) {
+          // dispose of this model
           this.dispose();
           parent?.children?.removeAt(index);
         }
+        // force parent rebuild
+        parent?.notifyListeners("rebuild", "true");
+        return true;
 
-          // force parent rebuild
-          parent?.notifyListeners("rebuild", "true");
-
-          return true;
-
-      case "replacewidget":
+      case 'replacewidget':
 
         // get my position in my parents child list
         int? index = (parent?.children?.contains(this) ?? false) ? parent?.children?.indexOf(this) : null;
         var xml = S.item(arguments, 0);
 
-        if (xml == null || !(xml is String)) return true;
-
+        if (xml == null || !(xml is String))
+          return true;
         // index should never be null
-        if(index != null) {
+        if (index != null) {
           // dispose of myself
           this.dispose();
           // remove myself from the list
           parent?.children?.removeAt(index);
-
           // add new fml
           await _appendXml(xml, index);
-
         }
-
-            // force parent rebuild
-            parent?.notifyListeners("rebuild", "true");
-
-            return true;
+        // force parent rebuild
+        parent?.notifyListeners("rebuild", "true");
+        return true;
     }
 
     return false;
-
   }
 
   static bool excludeFromTemplate(XmlElement node, Scope? scope) {

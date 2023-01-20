@@ -514,12 +514,18 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     {
       if (value!.endsWith("%"))
       {
-        var percentage = value.substring(0, value.length - 1);
-        if(navigatorKey.currentContext != null) value = (MediaQuery.of(navigatorKey.currentContext!).size.width * (int.parse(percentage) / 100)).toString();
+        width = S.toDouble(value.substring(0, value.length - 1));
+        if (navigatorKey.currentContext != null && width != null)
+        {
+          var size = MediaQuery.of(navigatorKey.currentContext!).size.width;
+          width = size * (width / 100);
+        }
       }
-      width = S.toDouble(value);
     }
-    catch(e) {}
+    catch(e)
+    {
+      Log().error("Error getting width. Error is $e");
+    }
     return width;
   }
 
@@ -531,12 +537,18 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     {
       if (value!.endsWith("%"))
       {
-        var percentage = value.substring(0, value.length - 1);
-        if (navigatorKey.currentContext != null) value = (MediaQuery.of(navigatorKey.currentContext!).size.height * (int.parse(percentage) / 100)).toString();
+        height = S.toDouble(value.substring(0, value.length - 1));
+        if (navigatorKey.currentContext != null && height != null)
+        {
+          var size = MediaQuery.of(navigatorKey.currentContext!).size.height;
+          height   = size * (height / 100);
+        }
       }
-      height = S.toDouble(value);
     }
-    catch(e) {}
+    catch(e)
+    {
+      Log().error("Error getting height. Error is $e");
+    }
     return height;
   }
 

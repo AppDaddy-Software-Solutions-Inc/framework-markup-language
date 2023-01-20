@@ -404,13 +404,15 @@ class System extends WidgetModel implements IEventManager
       });
 
       // set user language
-      if (!_user.containsKey('language')) _user['language'] = StringObservable(Binding.toKey("USER", 'language'), Phrases.english, scope: scope);
+      if (!_user.containsKey('language'))
+           _user['language'] = StringObservable(Binding.toKey("USER", 'language'), Phrases.english, scope: scope);
+      else _user['language']!.set(Phrases.english);
 
       // set rights
       if (!_user.containsKey('rights')) _user['rights'] = StringObservable(Binding.toKey("USER", 'rights'), 0, scope: scope);
 
       // set connected = true
-      if (!_user.containsKey('connected')) 
+      if (!_user.containsKey('connected'))
            _user['connected'] = StringObservable(Binding.toKey("USER", 'connected'), true, scope: scope);
       else _user['connected']!.set(true);
 

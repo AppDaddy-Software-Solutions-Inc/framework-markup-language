@@ -10,6 +10,7 @@ class ViewableWidgetModel extends WidgetModel
 {
   // Width
   double? _widthPercentage;
+  double? get widthPercentage => _widthPercentage;
   DoubleObservable? _width;
   set width(dynamic v)
   {
@@ -35,6 +36,7 @@ class ViewableWidgetModel extends WidgetModel
 
   // Height
   double? _heightPercentage;
+  double? get heightPercentage => _heightPercentage;
   DoubleObservable? _height;
   set height(dynamic v)
   {

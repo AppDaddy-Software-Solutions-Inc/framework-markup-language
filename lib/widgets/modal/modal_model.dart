@@ -67,13 +67,13 @@ class ModalModel extends DecoratedWidgetModel
     switch (function)
     {
       case "open" :
-        double? width = arguments.length > 0 ? S.toDouble(arguments[0]) : null;
-        if (width == null) width = this.width;
+        String? width = arguments.length > 0 ? S.toStr(arguments[0]) : null;
+        if (width == null) width = (widthPercentage != null) ? "${this.widthPercentage}%" : "${this.width}";
 
-        double? height = arguments.length > 1 ? S.toDouble(arguments[1]) : null;
-        if (height == null) height = this.height;
+        String? height = arguments.length > 1 ? S.toStr(arguments[1]) : null;
+        if (height == null) height = (heightPercentage != null) ? "${this.heightPercentage}%" : "${this.height}";
 
-        overlay = NavigationManager().openModal(ModalView(this), context, width: S.toStr(width), height: S.toStr(height));
+        overlay = NavigationManager().openModal(ModalView(this), context, width: width, height: height);
         return true;
 
       case "close" :

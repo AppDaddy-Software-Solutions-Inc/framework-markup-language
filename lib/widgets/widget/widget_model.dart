@@ -1140,7 +1140,7 @@ class WidgetModel implements IDataSourceListener
             this.children!.removeAt(index);
             print(index.toString());
           }
-          }
+        }
 
         // force parent rebuild
         parent?.notifyListeners("rebuild", "true");
@@ -1189,7 +1189,7 @@ class WidgetModel implements IDataSourceListener
             this.children![index].dispose();
             this.children!.removeAt(index);
           }
-          }
+        }
 
         // add elements
 

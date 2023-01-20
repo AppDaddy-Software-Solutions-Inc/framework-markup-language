@@ -312,8 +312,9 @@ class System extends WidgetModel implements IEventManager
     if (isWeb) return ok;
     try
     {
-      // create folder
-      Platform.createFolder("applications");
+      // create applications folder
+      String? folderpath = normalize(join(URI.rootPath,"applications"));
+      folderpath = await Platform.createFolder(folderpath);
 
       // read asset manifest
       Map<String, dynamic> manifest = json.decode(await rootBundle.loadString('AssetManifest.json'));

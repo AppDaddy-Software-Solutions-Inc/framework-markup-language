@@ -396,6 +396,9 @@ class EventHandler extends Eval
 
   Future<bool> _logon(String token, bool? validateAge, bool? validateSignature, bool? refresh) async
   {
+    // remove bearer header
+    token = token.replaceFirst(RegExp("bearer", caseSensitive: false),"").trim();
+
     // decode token
     Jwt jwt = Jwt.decode(token, validateAge: validateAge ?? false, validateSignature: validateSignature ?? false);
     if (jwt.valid)

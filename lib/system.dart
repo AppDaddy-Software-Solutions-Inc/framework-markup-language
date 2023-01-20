@@ -400,6 +400,9 @@ class System extends WidgetModel implements IEventManager
         if (clear) observable.set(null);
       });
 
+      // set phrase language
+      phrase.language = _user.containsKey('language') ? _user['language'] as String? : Phrases.english;
+
       // set rights
       if (!_user.containsKey('rights')) _user['rights'] = StringObservable(Binding.toKey("USER", 'rights'), 0, scope: scope);
 
@@ -414,43 +417,28 @@ class System extends WidgetModel implements IEventManager
     }
 
     // clear all claims
-    else
-    {
-      // clear user values
-      _user.forEach((key, observable) => observable.set(null));
-
-      // set phrase language
-      phrase.language = _user.containsKey('language') ? _user['language'] as String? : Phrases.english;
-
-      // clear rights
-      if (!_user.containsKey('rights')) _user['rights'] = StringObservable(Binding.toKey("USER", 'rights'), 0, scope: scope);
-
-      // set connected = false
-      if (!_user.containsKey('connected'))
-           _user['connected'] = StringObservable(Binding.toKey("USER", 'connected'), false, scope: scope);
-      else _user['connected']!.set(false);
-
-      // clear token
-      this.token = null;
-      return false;
-    }
+    else return await logoff();
   }
 
   Future<bool> logoff() async
   {
-    // set rights
-    if (!_user.containsKey('rights'))
-         _user['rights'] = StringObservable(Binding.toKey("USER", 'rights'), 0, scope: scope);
-    else _user['rights']!.set(0);
+    // clear user values
+    _user.forEach((key, observable) => observable.set(null));
 
-    // set connected
+    // set phrase language
+    phrase.language = _user.containsKey('language') ? _user['language'] as String? : Phrases.english;
+
+    // clear rights
+    if (!_user.containsKey('rights')) _user['rights'] = StringObservable(Binding.toKey("USER", 'rights'), 0, scope: scope);
+
+    // set connected = false
     if (!_user.containsKey('connected'))
-         _user['connected'] = StringObservable(Binding.toKey("USER", 'connected'), false, scope: scope);
+      _user['connected'] = StringObservable(Binding.toKey("USER", 'connected'), false, scope: scope);
     else _user['connected']!.set(false);
 
-    // remember token
+    // clear token
     this.token = null;
-    return true;
+    return false;
   }
 
   // return specific user claim

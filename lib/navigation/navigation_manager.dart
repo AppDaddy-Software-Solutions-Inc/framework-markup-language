@@ -465,13 +465,13 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     return result;
   }
 
-  OverlayView? openModal(Widget view, BuildContext? context, {bool modal = true, String? width, String? height})
+  OverlayView? openModal(Widget view, BuildContext? context, {bool modal = true, bool resizeable = true, bool closeable = true, bool draggable = true, String? width, String? height})
   {
     OverlayView? overlay;
     OverlayManager? manager = context != null ? context.findAncestorWidgetOfExactType<OverlayManager>() : null;
     if (manager != null)
     {
-      overlay = OverlayView(child: view, modal: (modal == true), width: _toWidth(width), height: _toHeight(height));
+      overlay = OverlayView(child: view, modal: modal, resizeable: resizeable, closeable: closeable, draggable: draggable, width: _toWidth(width), height: _toHeight(height));
       manager.overlays.add(overlay);
       manager.refresh();
     }
@@ -521,6 +521,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
           width = size * (width / 100);
         }
       }
+      else width = S.toDouble(value);
     }
     catch(e)
     {
@@ -544,6 +545,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
           height   = size * (height / 100);
         }
       }
+      else height = S.toDouble(value);
     }
     catch(e)
     {

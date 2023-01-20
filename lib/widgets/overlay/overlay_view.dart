@@ -26,11 +26,12 @@ class OverlayView extends StatefulWidget
   final double? dx;
   final double? dy;
 
+  final Color? color;
   final Color? modalBarrierColor;
 
   late final _OverlayViewState? state;
 
-  OverlayView({required this.child, this.id, this.width, this.height, this.dx, this.dy, this.resizeable = true, this.draggable = true, this.modal = false, this.closeable = true, this.dismissable = true, this.modalBarrierColor, this.pad, this.decorate}) : super();
+  OverlayView({required this.child, this.id, this.width, this.height, this.dx, this.color, this.dy, this.resizeable = true, this.draggable = true, this.modal = false, this.closeable = true, this.dismissable = true, this.modalBarrierColor, this.pad, this.decorate}) : super();
 
   @override
   _OverlayViewState createState()
@@ -124,7 +125,6 @@ class _OverlayViewState extends State<OverlayView>
   Widget build(BuildContext context)
   {
     if (widget.pad == false) padding = 0;
-
 
     ColorScheme t = Theme.of(context).colorScheme;
 

@@ -403,10 +403,8 @@ class EventHandler extends Eval
     Jwt jwt = Jwt.decode(token, validateAge: validateAge ?? false, validateSignature: validateSignature ?? false);
     if (jwt.valid)
     {
+      // logon
       System().logon(jwt);
-
-      // set user values
-      System().logon(System().token);
 
       // refresh the framework
       if (S.toBool(refresh) != false) EventManager.of(model)?.broadcastEvent(model,Event(EventTypes.refresh, parameters: null, model: model));

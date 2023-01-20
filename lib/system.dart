@@ -385,6 +385,9 @@ class System extends WidgetModel implements IEventManager
     // valid token?
     if ((token != null) && (token.valid))
     {
+      // set system token
+      this.token = token;
+
       // set user claims
       token.claims.forEach((key, value)
       {
@@ -400,16 +403,19 @@ class System extends WidgetModel implements IEventManager
         if (clear) observable.set(null);
       });
 
-      // set phrase language
-      phrase.language = _user.containsKey('language') ? _user['language'] as String? : Phrases.english;
+      // set user language
+      if (!_user.containsKey('language')) _user['language'] = StringObservable(Binding.toKey("USER", 'language'), Phrases.english, scope: scope);
 
       // set rights
       if (!_user.containsKey('rights')) _user['rights'] = StringObservable(Binding.toKey("USER", 'rights'), 0, scope: scope);
 
       // set connected = true
-      if (!_user.containsKey('connected'))
+      if (!_user.containsKey('connected')) 
            _user['connected'] = StringObservable(Binding.toKey("USER", 'connected'), true, scope: scope);
       else _user['connected']!.set(true);
+
+      // set phrase language
+      phrase.language = _user['language']?.get();
 
       // set token
       this.token = token;
@@ -425,19 +431,27 @@ class System extends WidgetModel implements IEventManager
     // clear user values
     _user.forEach((key, observable) => observable.set(null));
 
-    // set phrase language
-    phrase.language = _user.containsKey('language') ? _user['language'] as String? : Phrases.english;
+    // clear language
+    if (!_user.containsKey('language'))
+         _user['language'] = StringObservable(Binding.toKey("USER", 'language'), Phrases.english, scope: scope);
+    else _user['language']!.set(Phrases.english);
 
     // clear rights
-    if (!_user.containsKey('rights')) _user['rights'] = StringObservable(Binding.toKey("USER", 'rights'), 0, scope: scope);
+    if (!_user.containsKey('rights'))
+         _user['rights'] = StringObservable(Binding.toKey("USER", 'rights'), 0, scope: scope);
+    else _user['rights']!.set(0);
 
     // set connected = false
     if (!_user.containsKey('connected'))
-      _user['connected'] = StringObservable(Binding.toKey("USER", 'connected'), false, scope: scope);
+         _user['connected'] = StringObservable(Binding.toKey("USER", 'connected'), false, scope: scope);
     else _user['connected']!.set(false);
 
-    // clear token
+    // set phrase language
+    phrase.language = Phrases.english;
+
+    // clear system token
     this.token = null;
+
     return false;
   }
 

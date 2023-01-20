@@ -763,8 +763,10 @@ class WidgetModel implements IDataSourceListener
       case "zebra":
         model = ZebraModel.fromXml(parent, node);
         break;
+
       default:
-        Log().warning('$elementLocalName is not a model, check the spelling of the element name.');
+        if (elementLocalName != 'body')
+          Log().warning('$elementLocalName is not a model, check the spelling of the element name.');
         break;
     }
 

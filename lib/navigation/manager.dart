@@ -365,7 +365,11 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
       else
       {
         if (!until.startsWith("/")) until = "/$until";
-        Page? page = _pages.lastWhereOrNull((page) => page.name == until);
+        Page? page = _pages.lastWhereOrNull((page) {
+          // make sure we leave args off for the comparison
+          String name = page.name ?? '';
+          return name.split('?')[0] == until;
+        });
         if ((page != null) && (_pages.last != page)) pages = _pages.length - _pages.indexOf(page) - 1;
       }
     }

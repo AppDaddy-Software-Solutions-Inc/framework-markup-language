@@ -1104,46 +1104,123 @@ class WidgetModel implements IDataSourceListener
 
         return true;
 
-      case "removewidget":
-
-        // dispose of this model
-        this.dispose();
-
-        // force parent rebuild
-        parent?.notifyListeners("rebuild", "true");
-
-        return true;
-
-      case "addchildwidget":
-
+      case "addchild":
+        // if index is null, add to end of list.
+        int? index = S.toInt(S.item(arguments, 1));
         // add elements
         var xml = S.item(arguments, 0);
-        if (xml is String) await _appendXml(xml, S.toInt(S.item(arguments, 1)));
+
+        if (xml == null || !(xml is String)) return true;
+
+        await _appendXml(xml, index);
 
         // force parent rebuild
         parent?.notifyListeners("rebuild", "true");
 
         return true;
+
+      case "removechild":
+
+        //if index is null, remove all children before replacement.
+        int? index = S.toInt(S.item(arguments, 0));
+        //check for children then remove them
+        if (this.children != null && index == null) {
+          this.children!.forEach((child) {
+            child.dispose();
+          });
+          this.children = [];
+        }
+        else if (this.children != null && index != null) {
+          //check if index is in range, then dispose of the child at that index.
+          if (this.children!.asMap().containsKey(index)) {
+            this.children![index].dispose();
+            this.children!.removeAt(index);
+            print(index.toString());
+          }
+          }
+
+        // force parent rebuild
+        parent?.notifyListeners("rebuild", "true");
+
+        return true;
+
+      case "replacechild":
+
+        //if index is null, remove all children before replacement.
+        int? index = S.toInt(S.item(arguments, 1));
+        var xml = S.item(arguments, 0);
+
+        if (xml == null || !(xml is String)) return true;
+
+        //check for children then remove them
+        if (this.children != null && index == null) {
+          this.children!.forEach((child) {
+            child.dispose();
+          });
+          this.children = [];
+        }
+        else if (this.children != null && index != null) {
+          //check if index is in range, then dispose of the child at that index.
+          if (this.children!.asMap().containsKey(index)) {
+            this.children![index].dispose();
+            this.children!.removeAt(index);
+          }
+          }
+
+        // add elements
+
+        await _appendXml(xml, index);
+
+        // force parent rebuild
+        parent?.notifyListeners("rebuild", "true");
+
+        return true;
+
+      case "removewidget":
+
+
+        int? index = (parent?.children?.contains(this) ?? false) ? parent?.children?.indexOf(this) : null;
+        // dispose of this model
+
+        // index should never be null
+        if(index != null) {
+          this.dispose();
+          parent?.children?.removeAt(index);
+        }
+
+          // force parent rebuild
+          parent?.notifyListeners("rebuild", "true");
+
+          return true;
 
       case "replacewidget":
 
         // get my position in my parents child list
         int? index = (parent?.children?.contains(this) ?? false) ? parent?.children?.indexOf(this) : null;
-
-        // add new fml
         var xml = S.item(arguments, 0);
-        if (xml is String) await _appendXml(xml, index);
 
-        // dispose of myself
-        dispose();
+        if (xml == null || !(xml is String)) return true;
 
-        // force parent rebuild
-        parent?.notifyListeners("rebuild", "true");
+        // index should never be null
+        if(index != null) {
+          // dispose of myself
+          this.dispose();
+          // remove myself from the list
+          parent?.children?.removeAt(index);
 
-        return true;
+          // add new fml
+          await _appendXml(xml, index);
+
+        }
+
+            // force parent rebuild
+            parent?.notifyListeners("rebuild", "true");
+
+            return true;
     }
 
     return false;
+
   }
 
   static bool excludeFromTemplate(XmlElement node, Scope? scope) {

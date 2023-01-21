@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:fml/helper/color.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
@@ -129,7 +130,13 @@ class _MenuItemViewState extends State<MenuItemView>
       //  Static Item
       String? backgroundImage = widget.model.backgroundimage;
       Widget? image;
-      if (widget.model.image != null) image = Image.memory(widget.model.image!.contentAsBytes(), width: 48, height: 48, fit: null);
+      if (widget.model.image != null)
+      {
+        // svg image?
+        if (widget.model.image!.mimeType == "image/svg+xml")
+             image = SvgPicture.memory(widget.model.image!.contentAsBytes(), width: 48, height: 48);
+        else image = Image.memory(widget.model.image!.contentAsBytes(), width: 48, height: 48, fit: null);
+      }
 
       Widget? icon;
       if (widget.model.icon != null)

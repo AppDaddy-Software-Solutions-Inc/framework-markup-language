@@ -22,6 +22,7 @@ import 'package:path/path.dart';
 class ImageView extends StatefulWidget {
   final ImageModel model;
 
+  // this is just an empty pixel
   static Uint8List placeholder = Base64Codec().decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGP6LwkAAiABG+faPgsAAAAASUVORK5CYII=");
 
   ImageView(this.model) : super(key: ObjectKey(model));
@@ -34,12 +35,23 @@ class ImageView extends StatefulWidget {
   {
     Widget? image;
 
-    // parse the url
-    Uri? uri = URI.parse(url);
-    if (uri == null) return Icon(Icons.broken_image_outlined, size: 36, color: Colors.grey);
-
     try
     {
+      // parse the url
+      Uri? uri = URI.parse(url);
+
+      // bad url?
+      if (uri == null)
+      {
+        if (defaultImage != null)
+        {
+          if (defaultImage.toLowerCase().trim() == 'none')
+               return Container();
+          else return getImage(defaultImage, defaultImage: null, fit: fit, width: width, height: height, filter: filter, fade: fade, fadeDuration: fadeDuration);
+        }
+        return Icon(Icons.broken_image_outlined, size: 36, color: Colors.grey);
+      }
+
       // error handler
       Widget errorHandler(BuildContext content, Object object, StackTrace? stacktrace)
       {
@@ -74,17 +86,20 @@ class ImageView extends StatefulWidget {
           // no file found
           if (file == null) break;
 
+          // svg image?
           if (uri.pageExtension == "svg")
                image = SvgPicture.file(file!, fit: getFit(fit), width: width, height: height);
           else image = Image.file(file);
           break;
 
         /// asset image
-        case "asset":
-          var filepath = normalize("${uri.host}/${uri.path}/${uri.page}");
+        case "assets":
+          var assetpath = "${uri.scheme}/${uri.host}${uri.path}";
+
+          // svg image?
           if (uri.pageExtension == "svg")
-               image = SvgPicture.asset(filepath, fit: getFit(fit), width: width, height: height);
-          else image = Image.asset(filepath, fit: getFit(fit), width: width, height: height, errorBuilder: errorHandler);
+               image = SvgPicture.asset(assetpath, fit: getFit(fit), width: width, height: height);
+          else image = Image.asset(assetpath, fit: getFit(fit), width: width, height: height, errorBuilder: errorHandler);
           break;
 
         /// web image
@@ -97,7 +112,7 @@ class ImageView extends StatefulWidget {
     }
     catch (e)
     {
-      Log().error("Error decoding image from ${uri.url}. Error is $e");
+      Log().error("Error decoding image from ${url}. Error is $e");
     }
 
     // return widget

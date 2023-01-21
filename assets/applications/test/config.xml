@@ -3,7 +3,7 @@
 
         <!-- Settings -->
         <APP_NAME 		        value="Test Application" />
-        <APP_ICON	 			value="assets/icon.png" />
+        <APP_ICON	 			value="assets://images/loading.gif" />
 
         <HOME_PAGE       		value="home.xml" />
         <LOGIN_PAGE             value=""/>

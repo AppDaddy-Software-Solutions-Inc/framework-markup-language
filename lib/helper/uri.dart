@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:fml/datasources/http/http.dart';
 import 'package:path/path.dart';
 import 'package:fml/helper/common_helpers.dart';
@@ -157,6 +158,15 @@ extension URI on Uri
         return UriData.fromBytes(bytes,mimeType: mime);
       }
 
+      // file reference
+      if (uri.scheme == "assets")
+      {
+        var assetpath = "${uri.scheme}/${uri.host}${uri.path}";
+        ByteData bytes = await rootBundle.load(assetpath);
+        var mime  = await S.mimetype(url);
+        return UriData.fromBytes(bytes.buffer.asUint8List(),mimeType: mime);
+      }
+
       // remote image file
       var response = await Http.get(url);
       if (response.statusCode == HttpStatus.ok)
@@ -168,21 +178,8 @@ extension URI on Uri
     }
     catch(e)
     {
-      print("Error in toUriData. Error is $e");
+      print("Error in toUriData using $url. Error is $e");
     }
     return null;
-  }
-
-  Uri resolve(String domain)
-  {
-    if (!this.isAbsolute)
-    {
-      var url = "$domain/${this.host}/${this.path}";
-      if (hasFragment) url = "$url#$fragment";
-      if (hasQuery)    url = "$url?$query";
-      var uri = Uri.parse(url).removeEmptySegments();
-      return uri;
-    }
-    else return this;
   }
 }

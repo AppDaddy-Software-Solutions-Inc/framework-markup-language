@@ -48,8 +48,11 @@ class _SplashState extends State<Splash>
   {
     // this set the initial splash image
     // on web, it uses the loading.gif image
-    var width = constraints.maxWidth * .33;
+    var portrait = (constraints.maxWidth < constraints.maxHeight);
+
+    var width = constraints.maxWidth - (constraints.maxWidth/(portrait ? 3 : 1.5));
     if (width > 500) width = 500;
+
     var logo = SvgPicture.asset("assets/images/splash.svg",width: width);
     return Container(color: Colors.white, child: Center(child: logo));
   }

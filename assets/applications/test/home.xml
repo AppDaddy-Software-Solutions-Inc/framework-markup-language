@@ -1,7 +1,0 @@
-<FML>
-    <CENTER>
-        <TEXT style="h1" value="FML Offline Application" />
-        <TEXT style="h3" value="Local Template" />
-        <IMAGE url="assets://images/loading.gif" />
-    </CENTER>
-</FML>

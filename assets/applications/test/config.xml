@@ -3,9 +3,9 @@
 
         <!-- Settings -->
         <APP_NAME 		        value="Test Application" />
-        <APP_ICON	 			value="assets://images/loading.gif" />
+        <APP_ICON	 			value="images/logo.png" />
 
-        <HOME_PAGE       		value="home.xml" />
+        <HOME_PAGE       		value="templates/home.xml" />
         <LOGIN_PAGE             value=""/>
         <UNAUTHORIZED_PAGE      value=""/>
         <MIRROR_API 	        value="" />

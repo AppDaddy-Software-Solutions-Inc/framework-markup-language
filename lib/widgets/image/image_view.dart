@@ -15,26 +15,18 @@ import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/platform/platform.stub.dart'
     if (dart.library.io) 'package:fml/platform/platform.vm.dart'
     if (dart.library.html) 'package:fml/platform/platform.web.dart';
-
-enum ImageSource { data, blob, file, asset, web }
+import 'package:path/path.dart';
 
 /// [IMAGE] view
 class ImageView extends StatefulWidget {
   final ImageModel model;
 
+  static Uint8List placeholder = Base64Codec().decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGP6LwkAAiABG+faPgsAAAAASUVORK5CYII=");
+
   ImageView(this.model) : super(key: ObjectKey(model));
 
   @override
   _ImageViewState createState() => _ImageViewState();
-
-  /// Fade in Image Placeholder for network images
-  static Uint8List? _placeholderImage;
-  static Uint8List get placeholderImage {
-    if (_placeholderImage == null)
-      _placeholderImage = Base64Codec().decode(
-          "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGP6LwkAAiABG+faPgsAAAAASUVORK5CYII=");
-    return _placeholderImage!;
-  }
 
   /// Get an image widget from any image type
   static dynamic getImage(String? url,
@@ -48,13 +40,9 @@ class ImageView extends StatefulWidget {
       int? fadeDuration}) {
     Widget? image;
 
-    // dummy image is default
-    var dummy = getByteImage(
-        placeholderImage, getFit(fit), width, height, fadeDuration, null);
-
     // parse the url
     Uri? uri = URI.parse(url);
-    if (uri == null) return dummy;
+    if (uri == null) return Image.memory(placeholder, fit: getFit(fit), width: width, height: height);
 
     try {
       // error handler
@@ -79,25 +67,24 @@ class ImageView extends StatefulWidget {
       }
 
       // get image type
-      switch (imageSource(uri)) {
-
+      switch (uri.scheme)
+      {
         /// data uri
-        case ImageSource.data:
-          image = getByteImage(uri.data!.contentAsBytes(), getFit(fit), width,
-              height, fadeDuration, errorHandler);
-          break;
+        case "data":
+            if (uri.data != null) image = FadeInImage(placeholder: MemoryImage(placeholder), image: MemoryImage(uri.data!.contentAsBytes()), fit: getFit(fit), width: width, height: height, fadeInDuration: Duration(milliseconds: fadeDuration ?? 300), imageErrorBuilder: errorHandler);
+            break;
 
         /// blob image from camera or file picker
-        case ImageSource.blob:
+        case "blob":
           image = kIsWeb ? Image.network(url!, fit: getFit(fit)) : Image.file(File(url!), fit: getFit(fit));
           break;
 
         /// file image
-        case ImageSource.file:
+        case "file":
 
           dynamic file;
 
-          // file picker references file:C:/...?
+          // file picker and camera return uri references as file:C:/...?
           file = Platform.getFile(url!.replaceFirst("file:", ""));
 
           // user defined local files
@@ -111,67 +98,30 @@ class ImageView extends StatefulWidget {
           break;
 
         /// asset image
-        case ImageSource.asset:
+        case "asset":
+          var filepath = normalize("${uri.host}/${uri.path}/${uri.page}");
           if (uri.pageExtension == "svg")
-            image = SvgPicture.asset(uri.host,
-                fit: getFit(fit), width: width, height: height);
-          else
-            image = Image.asset(uri.host,
-                fit: getFit(fit),
-                width: width,
-                height: height,
-                errorBuilder: errorHandler);
+               image = SvgPicture.asset(filepath, fit: getFit(fit), width: width, height: height);
+          else image = Image.asset(filepath, fit: getFit(fit), width: width, height: height, errorBuilder: errorHandler);
           break;
 
         /// web image
-        case ImageSource.web:
+        default:
           if (uri.pageExtension == "svg")
-            image = SvgPicture.network(uri.url,
-                fit: getFit(fit), width: width, height: height);
-          else
-            image = getWebImage(uri.url, getFit(fit), width, height,
-                fadeDuration, errorHandler);
+               image = SvgPicture.network(uri.url, fit: getFit(fit), width: width, height: height);
+          else image = FadeInImage.memoryNetwork(placeholder: placeholder, image: uri.url, fit: getFit(fit), width: width, height: height, fadeInDuration: Duration(milliseconds: fadeDuration ?? 300), imageErrorBuilder: errorHandler);
           break;
       }
-    } catch (e) {
+    }
+    catch (e)
+    {
       Log().error("Error decoding image from ${uri.url}. Error is $e");
     }
 
     // return widget
-    return image ?? dummy;
-  }
-
-  static ImageSource imageSource(Uri uri) {
-    ImageSource source = ImageSource.web;
-    switch (uri.scheme) {
-      case "data":
-        if (uri.data != null) source = ImageSource.data;
-        break;
-
-      case "blob":
-        source = ImageSource.blob;
-        break;
-
-      case "file":
-        source = ImageSource.web;
-        if (uri.page != null && Platform.fileExists(uri.page!))
-          source = ImageSource.file;
-        break;
-
-      case "asset":
-        source = ImageSource.asset;
-        break;
-
-      case "blob":
-        source = ImageSource.blob;
-        break;
-
-      case "https":
-      case "http":
-        source = ImageSource.web;
-        break;
-    }
-    return source;
+    if (image != null)
+         return image;
+    else return Image.memory(placeholder, fit: getFit(fit), width: width, height: height);
   }
 
   /// how the image will fit within the space it is given
@@ -259,30 +209,6 @@ class ImageView extends StatefulWidget {
       default:
         break;
     }
-  }
-
-  static dynamic getByteImage(Uint8List bytes, BoxFit fit, double? width,
-      double? height, int? fadeDuration, dynamic errorBuilder) {
-    return FadeInImage(
-        placeholder: MemoryImage(placeholderImage),
-        image: MemoryImage(bytes),
-        fit: fit,
-        width: width,
-        height: height,
-        fadeInDuration: Duration(milliseconds: fadeDuration ?? 300),
-        imageErrorBuilder: errorBuilder);
-  }
-
-  static dynamic getWebImage(String url, BoxFit fit, double? width,
-      double? height, fadeDuration, dynamic errorBuilder) {
-    return FadeInImage.memoryNetwork(
-        placeholder: placeholderImage,
-        image: url,
-        fit: fit,
-        width: width,
-        height: height,
-        fadeInDuration: Duration(milliseconds: fadeDuration ?? 300),
-        imageErrorBuilder: errorBuilder);
   }
 }
 

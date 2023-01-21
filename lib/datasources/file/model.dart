@@ -52,7 +52,8 @@ class FileModel extends DataSourceModel implements IDataSource
 
   Future<bool> onFile(FILE.File file) async
   {
-    busy = true;
+      busy = true;
+
       // save file reference
       if ((scope?.files != null) && (file.url != null))  scope!.files[file.url!] = file;
 

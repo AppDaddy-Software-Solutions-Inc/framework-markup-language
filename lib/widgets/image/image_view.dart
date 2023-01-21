@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
@@ -29,41 +30,23 @@ class ImageView extends StatefulWidget {
   _ImageViewState createState() => _ImageViewState();
 
   /// Get an image widget from any image type
-  static dynamic getImage(String? url,
-      {Scope? scope,
-      String? defaultvalue,
-      double? width,
-      double? height,
-      String? fit,
-      String? filter,
-      bool fade: true,
-      int? fadeDuration}) {
+  static dynamic getImage(String? url, {Scope? scope, String? defaultImage, double? width, double? height, String? fit, String? filter, bool fade: true, int? fadeDuration})
+  {
     Widget? image;
 
     // parse the url
     Uri? uri = URI.parse(url);
-    if (uri == null) return Image.memory(placeholder, fit: getFit(fit), width: width, height: height);
+    if (uri == null) return Icon(Icons.broken_image_outlined, size: 36, color: Colors.grey);
 
-    try {
+    try
+    {
       // error handler
-      Widget errorHandler(
-          BuildContext content, Object object, StackTrace? stacktrace) {
-        if (defaultvalue != null) {
-          if (defaultvalue.toString().toLowerCase() == 'none' ||
-              defaultvalue.toString().toLowerCase() == '')
-            return Container();
-          else
-            return getImage(defaultvalue,
-                defaultvalue: null,
-                fit: fit,
-                width: width,
-                height: height,
-                filter: filter,
-                fade: fade,
-                fadeDuration: fadeDuration);
-        } else
-          return Icon(Icons.broken_image_outlined,
-              size: 36, color: Colors.grey);
+      Widget errorHandler(BuildContext content, Object object, StackTrace? stacktrace)
+      {
+        Log().debug("Bad image url (${url?.substring(0,min(100,url.length - 1))}. Error is ${object}", caller: "errorHandler");
+        if (defaultImage == null) return Icon(Icons.broken_image_outlined, size: 36, color: Colors.grey);
+        if (defaultImage.toLowerCase().trim() == 'none') return Container();
+        return getImage(defaultImage, defaultImage: null, fit: fit, width: width, height: height, filter: filter, fade: fade, fadeDuration: fadeDuration);
       }
 
       // get image type
@@ -82,14 +65,13 @@ class ImageView extends StatefulWidget {
         /// file image
         case "file":
 
-          dynamic file;
-
           // file picker and camera return uri references as file:C:/...?
-          file = Platform.getFile(url!.replaceFirst("file:", ""));
+          dynamic file = Platform.getFile(url!.replaceFirst("file:", ""));
 
-          // user defined local files
+          // user defined local files?
           if (file == null) file = Platform.getFile(uri.asFilePath());
 
+          // no file found
           if (file == null) break;
 
           if (uri.pageExtension == "svg")
@@ -119,9 +101,7 @@ class ImageView extends StatefulWidget {
     }
 
     // return widget
-    if (image != null)
-         return image;
-    else return Image.memory(placeholder, fit: getFit(fit), width: width, height: height);
+    return image ?? Image.memory(placeholder, fit: getFit(fit), width: width, height: height);
   }
 
   /// how the image will fit within the space it is given
@@ -271,20 +251,9 @@ class _ImageViewState extends State<ImageView> implements IModelListener {
     String? fit = widget.model.fit;
     String? filter = widget.model.filter;
     Scope? scope = Scope.of(widget.model);
-    // scoped file reference
-    // if ((url != null) && (scope != null) && (scope.files.containsKey(url)))
-    // {
-    //   url = scope.files[url].uri;
-    // }
 
-    Widget view = ImageView.getImage(url,
-            scope: scope,
-            defaultvalue: widget.model.defaultvalue,
-            width: width,
-            height: height,
-            fit: fit,
-            filter: filter) ??
-        Container();
+    // get the image
+    Widget view = ImageView.getImage(url, scope: scope, defaultImage: widget.model.defaultvalue, width: width, height: height, fit: fit, filter: filter) ?? Container();
 
     // Flip
     if (widget.model.flip != null) {

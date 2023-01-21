@@ -110,7 +110,7 @@ extension URI on Uri
   static Uri? parse(String? url, {String? domain})
   {
     // null or missing url
-    if (url == null) return null;
+    if (url == null || url.trim() == "") return null;
 
     // invalid url?
     Uri? uri = Uri.tryParse(url);

@@ -42,7 +42,7 @@ class Template
       xml = Binding.applyMap(xml, Application?.configParameters, caseSensitive: false);
 
       // Replace System Uuid
-      String s = Binding.toKey("SYSTEM", 'uuid')!;
+      String s = Binding.toKey(System.Id, 'uuid')!;
       while (xml!.contains(s)) xml = xml.replaceFirst(s, Uuid().v4());
 
       // Convert Xml String to Xml Document

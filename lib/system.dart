@@ -65,12 +65,15 @@ typedef CommitCallback = Future<bool> Function();
 
 class System extends WidgetModel implements IEventManager
 {
+  static final String Id = "SYSTEM";
+
   static final System _singleton = System.initialize();
   factory System() => _singleton;
-  System.initialize() : super(null, "SYSTEM") {initialized = _init();}
+  System.initialize() : super(null, Id) {initialized = _init();}
 
   // system scope
-  Scope? scope = Scope("SYSTEM");
+  @override
+  Scope? scope = Scope(Id);
 
   // set to true once done
   Future<bool>? initialized;
@@ -359,28 +362,6 @@ class System extends WidgetModel implements IEventManager
     }
   }
 
-  Future<bool> stashValue(String key, dynamic value) async
-  {
-    bool ok = true;
-    try
-    {
-      if (S.isNullOrEmpty(key)) return ok;
-
-      // write application stash entry
-      Application?.stash[key] = value.toString();
-      Application?.update();
-
-      // set observable
-      scope!.setObservable("STASH.$key", value);
-    }
-    catch (e)
-    {
-      // stash failure always returns true
-      ok = true;
-    }
-    return ok;
-  }
-
   Future<bool> logon(Jwt? token) async
   {
     // valid token?
@@ -478,25 +459,37 @@ class System extends WidgetModel implements IEventManager
   // launches the application
   launchApplication(ApplicationModel app)
   {
-    // Close current application
-    if (this._app != null) close(_app!);
+    // Close the old application if one
+    // is running
+    if (this._app != null)
+    {
+      Log().info("Closing Application ${_app!.url}");
+
+      // set the default domain on the Url utilities
+      URI.rootHost = "";
+
+      // logoff
+      logoff();
+
+      // update application level bindables
+      _domain?.set(null);
+      _scheme?.set(null);
+      _host?.set(null);
+
+      // close application
+      _app?.close();
+    }
 
     Log().info("Activating Application (${app.title}) @ ${app.domain}");
 
     // set the default domain on the Url utilities
     URI.rootHost = app.domain ?? "";
 
-    // negate stash values
-    _app?.stash.forEach((key, _) => stashValue(key, null));
-
-    // set new stash values
-    app.stash.forEach((key, value) => stashValue(key, value));
-
     // set the current application
     _app = app;
 
-    // apply theme settings
-    app.setTheme(theme);
+    // launch the application
+    _app?.launch(theme: theme);
 
     // set credentials
     if (app.jwt != null) logon(app.jwt);
@@ -505,30 +498,6 @@ class System extends WidgetModel implements IEventManager
     _domain?.set(app.domain);
     _scheme?.set(app.scheme);
     _host?.set(app.host);
-  }
-
-  // launches the application
-  close(ApplicationModel app)
-  {
-    Log().info("Closing Application ${app.url}");
-
-    // set the default domain on the Url utilities
-    URI.rootHost = "";
-
-    // logoff
-    logoff();
-
-    // set fml version support level
-    //if (config?.get("FML_VERSION") != null) fmlVersion = S.toVersionNumber(config!.get("FML_VERSION")!) ?? currentVersion;
-
-    // build the STASH
-    // List<StashEntry> entries = await Stash.findAll(System().host);
-    // entries.forEach((entry) => scope?.setObservable("STASH.${entry.key}", entry.value));
-
-    // update application level bindables
-    _domain?.set(null);
-    _scheme?.set(null);
-    _host?.set(null);
   }
 
   /// Event Manager Host

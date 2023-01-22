@@ -7,6 +7,7 @@ import 'package:fml/crypto/crypto.dart';
 import 'package:fml/hive/database.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/mirror/mirror.dart';
+import 'package:fml/observable/scope.dart';
 import 'package:fml/system.dart';
 import 'package:fml/token/token.dart';
 import 'package:fml/widgets/theme/theme_model.dart';
@@ -14,6 +15,8 @@ import 'package:fml/widgets/widget/widget_model.dart';
 
 class ApplicationModel extends WidgetModel
 {
+  static final String Id = "APPLICATION";
+
   static String tableName = "APP";
   late final String key;
 
@@ -49,7 +52,7 @@ class ApplicationModel extends WidgetModel
   String? config;
 
   // application stash
-  Map<String, String> stash = {};
+  Map<String, String> _stash = {};
 
   // jwt - json web token
   Jwt? jwt;
@@ -74,7 +77,7 @@ class ApplicationModel extends WidgetModel
   ConfigModel? _config;
   bool get hasConfig => _config != null;
 
-  ApplicationModel({String? key, required this.url, this.title, this.icon, this.page, this.order, String? jwt, dynamic stash}) : super(null, Cryptography.hash(text: url.toLowerCase()))
+  ApplicationModel({String? key, required this.url, this.title, this.icon, this.page, this.order, String? jwt, dynamic stash}) : super(System(), Id, scope: Scope(Id))
   {
     // sett application key
     this.key = key ?? id;
@@ -89,11 +92,33 @@ class ApplicationModel extends WidgetModel
       if (token.valid) this.jwt = token;
     }
 
-    if (stash is Map)
-    stash.forEach((key, value) => this.stash[key.toString()] = value.toString());
+    // build stash
+    if (stash is Map) stash.forEach((key, value) => _stash[key.toString()] = value.toString());
 
     // load the config
     initialized = initialize();
+  }
+
+  static Future<ApplicationModel> fromUrl(String url) async
+  {
+    // build the model
+    var app = ApplicationModel(url: url);
+
+    // load the config
+    await app.initialized;
+
+    return app;
+  }
+
+  static Future<ApplicationModel?> _fromMap(dynamic map) async
+  {
+    ApplicationModel? app;
+    if (map is Map<String, dynamic>)
+    {
+      app = ApplicationModel(key: S.mapVal(map, "key"), url: S.mapVal(map, "url"), title: S.mapVal(map, "title"), icon: S.mapVal(map, "icon"), page: S.mapVal(map, "page"), order: S.mapInt(map, "order"), jwt: S.mapVal(map, "jwt"), stash: S.mapVal(map, "stash"));
+      await app.initialized;
+    }
+    return app;
   }
 
   // initializes the app
@@ -199,26 +224,53 @@ class ApplicationModel extends WidgetModel
     theme.font        = settings('FONT');
   }
 
-  static Future<ApplicationModel> fromUrl(String url) async
+  Future<bool> stash(String key, dynamic value) async
   {
-    // build the model
-    var app = ApplicationModel(url: url);
+    bool ok = true;
+    try
+    {
+      // key must be supplied
+      if (S.isNullOrEmpty(key)) return ok;
 
-    // load the config
-    await app.initialized;
+      // write application stash entry
+      _stash[key] = value.toString();
 
-    return app;
+      // save to the hive
+      await update();
+
+      // set observable
+      scope?.setObservable("STASH.$key", value);
+    }
+    catch (e)
+    {
+      // stash failure always returns true
+      ok = true;
+    }
+    return ok;
   }
 
-  static Future<ApplicationModel?> _fromMap(dynamic map) async
+  void launch({ThemeModel? theme})
   {
-    ApplicationModel? app;
-    if (map is Map<String, dynamic>)
-    {
-      app = ApplicationModel(key: S.mapVal(map, "key"), url: S.mapVal(map, "url"), title: S.mapVal(map, "title"), icon: S.mapVal(map, "icon"), page: S.mapVal(map, "page"), order: S.mapInt(map, "order"), jwt: S.mapVal(map, "jwt"), stash: S.mapVal(map, "stash"));
-      await app.initialized;
-    }
-    return app;
+    // set stash values
+    for (var entry in _stash.entries) scope?.setObservable("STASH.${entry.key}", entry.value);
+
+    // set the theme if supplied
+    if (theme != null) setTheme(theme);
+  }
+
+  void close()
+  {
+    // clear stash values
+    for (var entry in _stash.entries) scope?.setObservable("STASH.${entry.key}", null);
+  }
+
+
+  void dispose()
+  {
+    // close the app
+    close();
+
+    super.dispose();
   }
 
   Map<String, dynamic> _toMap()
@@ -231,7 +283,7 @@ class ApplicationModel extends WidgetModel
     map["page"]   = page;
     map["order"]  = order;
     map["config"] = _config?.xml;
-    map["stash"]  = stash;
+    map["stash"]  = _stash;
     map["jwt"]    = jwt;
     return map;
   }
@@ -257,7 +309,7 @@ class ApplicationModel extends WidgetModel
     return (exception == null);
   }
 
-  static Future<List<ApplicationModel>> loadAll() async
+  static Future<List<ApplicationModel>> loadAll(WidgetModel parent) async
   {
     List<ApplicationModel> apps = [];
     List<Map<String, dynamic>> entries = await Database().query(tableName);

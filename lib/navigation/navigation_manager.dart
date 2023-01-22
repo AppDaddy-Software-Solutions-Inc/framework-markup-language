@@ -335,7 +335,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     // open new page in modal window?
     if (modal == true)
     {
-      FrameworkModel model = FrameworkModel.fromUrl(System(), url, refresh: refresh, dependency: dependency);
+      FrameworkModel model = FrameworkModel.fromUrl(Application!, url, refresh: refresh, dependency: dependency);
       FrameworkView  view  = FrameworkView(model);
       return openModal(view, NavigationManager().navigatorKey.currentContext, modal: false, width: width, height: height) != null;
     }
@@ -368,7 +368,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
         break;
 
       default:
-        view =  OverlayManager(child: FrameworkView(FrameworkModel.fromUrl(System(), url, refresh: refresh, dependency: dependency)));
+        view =  OverlayManager(child: FrameworkView(FrameworkModel.fromUrl(Application!, url, refresh: refresh, dependency: dependency)));
         break;
     }
 

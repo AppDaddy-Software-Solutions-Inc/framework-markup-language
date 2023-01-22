@@ -487,7 +487,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
       }
     }
 
-    FrameworkModel? model = FrameworkModel.fromXml(System(), xml);
+    FrameworkModel? model = FrameworkModel.fromXml(Application!, xml);
     if (model != null)
     {
       // inject debug window

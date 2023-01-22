@@ -291,7 +291,8 @@ class EventHandler extends Eval
   /// Sets a Hive Value and Creates and [Observable] by the same name
   Future<bool> _handleEventStash(dynamic key, dynamic value) async
   {
-    return await System().stashValue(key,value);
+    if (Application == null) return true;
+    return await Application!.stash(key,value);
   }
 
   /// Creates an alert dialog

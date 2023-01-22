@@ -16,7 +16,6 @@ import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/platform/platform.stub.dart'
     if (dart.library.io) 'package:fml/platform/platform.vm.dart'
     if (dart.library.html) 'package:fml/platform/platform.web.dart';
-import 'package:path/path.dart';
 
 /// [IMAGE] view
 class ImageView extends StatefulWidget {
@@ -55,7 +54,7 @@ class ImageView extends StatefulWidget {
       // error handler
       Widget errorHandler(BuildContext content, Object object, StackTrace? stacktrace)
       {
-        Log().debug("Bad image url (${url?.substring(0,min(100,url.length - 1))}. Error is ${object}", caller: "errorHandler");
+        Log().debug("Bad image url (${url?.substring(0,min(100,url.length - 1))}. Error is $object", caller: "errorHandler");
         if (defaultImage == null) return Icon(Icons.broken_image_outlined, size: 36, color: Colors.grey);
         if (defaultImage.toLowerCase().trim() == 'none') return Container();
         return getImage(defaultImage, defaultImage: null, fit: fit, width: width, height: height, filter: filter, fade: fade, fadeDuration: fadeDuration);
@@ -112,7 +111,7 @@ class ImageView extends StatefulWidget {
     }
     catch (e)
     {
-      Log().error("Error decoding image from ${url}. Error is $e");
+      Log().error("Error decoding image from $url. Error is $e");
     }
 
     // return widget

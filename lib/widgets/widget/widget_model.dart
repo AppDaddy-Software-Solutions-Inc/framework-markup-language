@@ -771,7 +771,8 @@ class WidgetModel implements IDataSourceListener
     return model;
   }
 
-  void deserialize(XmlElement xml) {
+  void deserialize(XmlElement xml)
+  {
     // Busy
     busy = true;
 
@@ -804,18 +805,24 @@ class WidgetModel implements IDataSourceListener
     busy = false;
   }
 
-  void _deserializeDataSources(XmlElement xml) {
+  void _deserializeDataSources(XmlElement xml)
+  {
     // find and deserialize all datasources
     for (XmlNode node in xml.children)
-      if (node is XmlElement) {
-        String element = node.localName;
+      if (node is XmlElement)
+      {
+        // data source?
+        if (isDataSource(node.localName))
+        {
+          // global data source?
+          var parent  = this;
+          bool isGlobal = (Xml.attribute(node: node, tag: 'global') != null);
+          if (isGlobal && Application != null) parent = Application!;
 
-        if (isDataSource(element)) {
-          // element is global?
-          bool global = (Xml.attribute(node: node, tag: 'global') != null);
-          if (global == true) {}
-          dynamic model = WidgetModel.fromXml(global ? System() : this, node);
-          if (model is IDataSource) {
+          // build the data source model
+          dynamic model = WidgetModel.fromXml(parent, node);
+          if (model is IDataSource)
+          {
             if (this.datasources == null) this.datasources = [];
             this.datasources!.add(model);
           }
@@ -823,41 +830,47 @@ class WidgetModel implements IDataSourceListener
       }
   }
 
-  void _deserialize(XmlElement xml) {
+  void _deserialize(XmlElement xml)
+  {
     // deserialize all non-datasource children
     for (XmlNode node in xml.children)
-      if (node is XmlElement) {
-        String element = node.localName;
-        if (!isDataSource(element)) {
-          // element is global?
-          // bool global = (Xml.attribute(node: node, tag: 'global) != null);
-          var model = WidgetModel.fromXml(this, node);
-          if (model is WidgetModel) {
-            if (this.children == null) this.children = [];
-            this.children!.add(model);
-          }
+      if (node is XmlElement && !isDataSource(node.localName))
+      {
+        // global element?
+        var parent  = this;
+        bool isGlobal = (Xml.attribute(node: node, tag: 'global') != null);
+        if (isGlobal && Application != null && canBeGlobal(node.localName)) parent = Application!;
+
+        // build the model
+        var model = WidgetModel.fromXml(parent, node);
+        if (model is WidgetModel && parent == this)
+        {
+          if (this.children == null) this.children = [];
+          this.children!.add(model);
         }
       }
   }
 
-  void dispose() {
+  void dispose()
+  {
     // remove listeners
     removeAllListeners();
 
     // dispose of datasources
-    if (datasources != null) {
-      datasources!.forEach((datasource) => datasource.dispose());
-      datasources!.clear();
-    }
+    if (datasources != null)
+    for (var datasource in datasources!) if (datasource.parent == this) datasource.dispose();
+    datasources?.clear();
 
     // dispose of children
-    if (children != null) {
+    if (children != null)
+    {
       children!.forEach((child) => child.dispose());
       children!.clear();
     }
   }
 
-  registerListener(IModelListener listener) {
+  registerListener(IModelListener listener)
+  {
     if (_listeners == null) _listeners = [];
     if (!_listeners!.contains(listener)) _listeners!.add(listener);
   }
@@ -1159,8 +1172,10 @@ class WidgetModel implements IDataSourceListener
     return exclude;
   }
 
-  static bool isDataSource(String element) {
-    switch (element.toLowerCase()) {
+  static bool isDataSource(String element)
+  {
+    switch (element.toLowerCase())
+    {
       case "barcode":
         return true;
       case "beacon":
@@ -1179,8 +1194,6 @@ class WidgetModel implements IDataSourceListener
         return true;
       case "gps":
         return true;
-      case "get":
-        return true;
       case "http":
         return true;
       case "mqtt":
@@ -1198,6 +1211,19 @@ class WidgetModel implements IDataSourceListener
       case "sse":
         return true;
       case "zebra":
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  static bool canBeGlobal(String element)
+  {
+    switch (element.toLowerCase())
+    {
+      case "variable":
+        return true;
+      case "var":
         return true;
       default:
         return false;

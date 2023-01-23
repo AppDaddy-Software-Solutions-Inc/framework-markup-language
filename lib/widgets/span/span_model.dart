@@ -9,7 +9,7 @@ import 'package:fml/widgets/span/span_view.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/system.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class SpanModel extends DecoratedWidgetModel implements IViewableWidget
 {
@@ -65,7 +65,6 @@ class SpanModel extends DecoratedWidgetModel implements IViewableWidget
 
   /// The x offset of the box FROM the shadow. 0,0 is center. This is combined with `elevation` when determining the size.
   DoubleObservable? _shadowy;
-
   set shadowy(dynamic v) {
     if (_shadowy != null) {
       _shadowy!.set(v);
@@ -76,20 +75,20 @@ class SpanModel extends DecoratedWidgetModel implements IViewableWidget
   }
   double get shadowy => _shadowy?.get() ?? 2;
 
-  ////////////////
-  /*    font    */
-  ////////////////
+  // font
   StringObservable? _font;
-
-  set font(dynamic v) {
-    if (_font != null) {
+  set font(dynamic v)
+  {
+    if (_font != null)
+    {
       _font!.set(v);
-    } else if (v != null) {
-      _font = StringObservable(Binding.toKey(id, 'font'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else if (v != null)
+    {
+      _font = StringObservable(Binding.toKey(id, 'font'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  String? get font => _font?.get() ?? System().font;
+  String? get font => _font?.get() ?? System().theme.font;
 
   ////////////
   /* Weight */

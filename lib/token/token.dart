@@ -2,7 +2,7 @@
 import 'dart:convert';
 import 'package:fml/log/manager.dart';
 import 'package:jaguar_jwt/jaguar_jwt.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 // Json web token - oauth2
 class Jwt

@@ -1,134 +1,131 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/log/manager.dart';
 import 'package:fml/observable/scope.dart';
-import 'package:fml/system.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/image/image_model.dart';
 import 'package:image/image.dart' as IMAGE;
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
-enum ImageType {data, blob, file, svg, asset, web}
+// platform
+import 'package:fml/platform/platform.stub.dart'
+    if (dart.library.io) 'package:fml/platform/platform.vm.dart'
+    if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 /// [IMAGE] view
-class ImageView extends StatefulWidget
-{
+class ImageView extends StatefulWidget {
   final ImageModel model;
+
+  // this is just an empty pixel
+  static Uint8List placeholder = Base64Codec().decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGP6LwkAAiABG+faPgsAAAAASUVORK5CYII=");
 
   ImageView(this.model) : super(key: ObjectKey(model));
 
   @override
   _ImageViewState createState() => _ImageViewState();
 
-  /// Fade in Image Placeholder for network images
-  static Uint8List? _placeholderImage;
-  static Uint8List get placeholderImage
-  {
-    if (_placeholderImage == null) _placeholderImage = Base64Codec().decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGP6LwkAAiABG+faPgsAAAAASUVORK5CYII=");
-    return _placeholderImage!;
-  }
-
   /// Get an image widget from any image type
-  static dynamic getImage(String? url,
-      {
-        Scope?  scope,
-        String? defaultvalue,
-        double? width,
-        double? height,
-        String? fit,
-        String? filter,
-        bool   fade: true,
-        int?    fadeDuration
-      })
+  static dynamic getImage(String? url, {Scope? scope, String? defaultImage, double? width, double? height, String? fit, String? filter, bool fade: true, int? fadeDuration})
   {
-    Widget image;
+    Widget? image;
+
     try
     {
-      if (!S.isNullOrEmpty(url))
+      // parse the url
+      Uri? uri = URI.parse(url);
+
+      // bad url?
+      if (uri == null)
       {
-        // error handler
-        Widget errorHandler(BuildContext content, Object object, StackTrace? stacktrace)
+        if (defaultImage != null)
         {
-          if (defaultvalue != null)
-          {
-            if (defaultvalue.toString().toLowerCase() == 'none' || defaultvalue.toString().toLowerCase() == '') return Container();
-            else return getImage(defaultvalue, defaultvalue: null, fit: fit, width: width, height: height, filter: filter, fade: fade, fadeDuration: fadeDuration);
-          }
-          else return Icon(Icons.broken_image_outlined, size: 36, color: Colors.grey);
+          if (defaultImage.toLowerCase().trim() == 'none')
+               return Container();
+          else return getImage(defaultImage, defaultImage: null, fit: fit, width: width, height: height, filter: filter, fade: fade, fadeDuration: fadeDuration);
         }
-
-        ImageType type;
-              if (url!.startsWith("data:"))  type = ImageType.data;
-        else if (url.startsWith("blob:"))  type = ImageType.blob;
-        else if (url.startsWith("file:"))  type = ImageType.file;
-        else if (url.startsWith("asset:")) type = ImageType.asset;
-        else if (url.split('?')[0].endsWith('.svg')) type = ImageType.svg;
-        else if (!isWeb && Url.path(url) != null && System().fileExists(Url.path(url)!)) type = ImageType.asset;
-        else type = ImageType.web;
-
-        switch (type)
-        {
-          /// data uri
-          case ImageType.data:
-            image = getByteImage(S.toDataUri(url)!.contentAsBytes(), getFit(fit), width, height, fadeDuration, errorHandler);
-            break;
-
-          /// blob image from camera or file picker
-          case ImageType.blob:
-            image = kIsWeb ? Image.network(url, fit: getFit(fit)) : Image.file(File(url), fit: getFit(fit));
-            break;
-
-          /// file image from camera or file picker
-          case ImageType.file:
-            image = Image.file(File(url.replaceFirst("file:", "")), fit: getFit(fit));
-            break;
-
-          /// svg picture from web
-          case ImageType.svg:
-            image = getSvgImage(Url.toAbsolute(url), getFit(fit), width, height, errorHandler);
-            break;
-
-          /// asset image
-          case ImageType.asset:
-            String? filename = Url.path(url);
-            image = getAssetImage(filename, getFit(fit), width, height, fadeDuration, errorHandler);
-            break;
-
-          /// web image
-          case ImageType.web:
-            image = getWebImage(Url.toAbsolute(url), getFit(fit), width, height, fadeDuration, errorHandler);
-            break;
-
-          /// default to:  web image
-          default:
-            image = getWebImage(Url.toAbsolute(url), getFit(fit), width, height, fadeDuration, errorHandler);
-            break;
-        }
+        return Icon(Icons.broken_image_outlined, size: 36, color: Colors.grey);
       }
-      else image = getByteImage(placeholderImage, getFit(fit), width, height, fadeDuration, null);
+
+      // error handler
+      Widget errorHandler(BuildContext content, Object object, StackTrace? stacktrace)
+      {
+        Log().debug("Bad image url (${url?.substring(0,min(100,url.length - 1))}. Error is $object", caller: "errorHandler");
+        if (defaultImage == null) return Icon(Icons.broken_image_outlined, size: 36, color: Colors.grey);
+        if (defaultImage.toLowerCase().trim() == 'none') return Container();
+        return getImage(defaultImage, defaultImage: null, fit: fit, width: width, height: height, filter: filter, fade: fade, fadeDuration: fadeDuration);
+      }
+
+      // get image type
+      switch (uri.scheme)
+      {
+        /// data uri
+        case "data":
+            if (uri.data != null) image = FadeInImage(placeholder: MemoryImage(placeholder), image: MemoryImage(uri.data!.contentAsBytes()), fit: getFit(fit), width: width, height: height, fadeInDuration: Duration(milliseconds: fadeDuration ?? 300), imageErrorBuilder: errorHandler);
+            break;
+
+        /// blob image from camera or file picker
+        case "blob":
+          image = kIsWeb ? Image.network(url!, fit: getFit(fit)) : Image.file(File(url!), fit: getFit(fit));
+          break;
+
+        /// file image
+        case "file":
+
+          // file picker and camera return uri references as file:C:/...?
+          dynamic file = Platform.getFile(url!.replaceFirst("file:", ""));
+
+          // user defined local files?
+          if (file == null) file = Platform.getFile(uri.asFilePath());
+
+          // no file found
+          if (file == null) break;
+
+          // svg image?
+          if (uri.pageExtension == "svg")
+               image = SvgPicture.file(file!, fit: getFit(fit), width: width, height: height);
+          else image = Image.file(file);
+          break;
+
+        /// asset image
+        case "assets":
+          var assetpath = "${uri.scheme}/${uri.host}${uri.path}";
+
+          // svg image?
+          if (uri.pageExtension == "svg")
+               image = SvgPicture.asset(assetpath, fit: getFit(fit), width: width, height: height);
+          else image = Image.asset(assetpath, fit: getFit(fit), width: width, height: height, errorBuilder: errorHandler);
+          break;
+
+        /// web image
+        default:
+          if (uri.pageExtension == "svg")
+               image = SvgPicture.network(uri.url, fit: getFit(fit), width: width, height: height);
+          else image = FadeInImage.memoryNetwork(placeholder: placeholder, image: uri.url, fit: getFit(fit), width: width, height: height, fadeInDuration: Duration(milliseconds: fadeDuration ?? 300), imageErrorBuilder: errorHandler);
+          break;
+      }
     }
-    catch(e)
+    catch (e)
     {
-      image = getByteImage(placeholderImage, getFit(fit), width, height, fadeDuration, null);
+      Log().error("Error decoding image from $url. Error is $e");
     }
 
     // return widget
-    return image;
+    return image ?? Image.memory(placeholder, fit: getFit(fit), width: width, height: height);
   }
 
   /// how the image will fit within the space it is given
-  static BoxFit getFit(String? fit)
-  {
+  static BoxFit getFit(String? fit) {
     var boxFit = BoxFit.cover;
 
     if (S.isNullOrEmpty(fit)) return boxFit;
     fit = fit!.toLowerCase();
 
-    switch (fit)
-    {
+    switch (fit) {
       case 'cover':
         boxFit = BoxFit.cover;
         break;
@@ -160,11 +157,9 @@ class ImageView extends StatefulWidget
   }
 
   /// Apply a filter to the image
-  static void applyFilter(Uint8List img, String filter)
-  {
+  static void applyFilter(Uint8List img, String filter) {
     IMAGE.Image? filtered = IMAGE.decodePng(img);
-    switch(filter)
-    {
+    switch (filter) {
       case 'sobel':
         IMAGE.sobel(filtered!, amount: 1.0);
         break;
@@ -209,59 +204,11 @@ class ImageView extends StatefulWidget
         break;
     }
   }
-
-  static dynamic getSvgImage(String url, BoxFit fit, double? width, double? height, dynamic errorBuilder)
-  {
-    return SvgPicture.network(url, fit: fit, width: width, height: height);
-  }
-
-  static dynamic getByteImage(Uint8List bytes, BoxFit fit, double? width, double? height, int? fadeDuration, dynamic errorBuilder)
-  {
-    return FadeInImage(
-        placeholder: MemoryImage(placeholderImage),
-        image: MemoryImage(bytes),
-        fit: fit,
-        width: width,
-        height: height,
-        fadeInDuration: Duration(milliseconds: fadeDuration ?? 300),
-        imageErrorBuilder: errorBuilder);
-  }
-
-  static dynamic getAssetImage(String? filename, BoxFit fit, double? width, double? height, int? fadeDuration, dynamic errorBuilder)
-  {
-    dynamic file;
-    if (filename != null) file = System().getFile(filename);
-    if (file == null) return MemoryImage(placeholderImage);
-
-    return FadeInImage(
-        placeholder: MemoryImage(placeholderImage),
-        image: FileImage(file),
-        fit: fit,
-        width: width,
-        height: height,
-        fadeInDuration: Duration(milliseconds: fadeDuration ?? 300),
-        imageErrorBuilder: errorBuilder);
-  }
-
-  static dynamic getWebImage(String url, BoxFit fit, double? width, double? height, fadeDuration, dynamic errorBuilder)
-  {
-    return  FadeInImage.memoryNetwork(
-        placeholder: placeholderImage,
-        image: url,
-        fit: fit,
-        width: width,
-        height: height,
-        fadeInDuration: Duration(milliseconds: fadeDuration ?? 300),
-        imageErrorBuilder: errorBuilder);
-  }
 }
 
-class _ImageViewState extends State<ImageView> implements IModelListener
-{
-  
+class _ImageViewState extends State<ImageView> implements IModelListener {
   @override
-  void initState()
-  {
+  void initState() {
     super.initState();
 
     widget.model.registerListener(this);
@@ -271,68 +218,56 @@ class _ImageViewState extends State<ImageView> implements IModelListener
   }
 
   @override
-  didChangeDependencies()
-  {
+  didChangeDependencies() {
     super.didChangeDependencies();
   }
 
-  
   @override
-  void didUpdateWidget(ImageView oldWidget)
-  {
+  void didUpdateWidget(ImageView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if ((oldWidget.model != widget.model))
-    {
+    if ((oldWidget.model != widget.model)) {
       oldWidget.model.removeListener(this);
       widget.model.registerListener(this);
     }
-
   }
 
   @override
-  void dispose()
-  {
+  void dispose() {
     widget.model.removeListener(this);
 
     super.dispose();
   }
+
   /// Callback function for when the model changes, used to force a rebuild with setState()
-  onModelChange(WidgetModel model,{String? property, dynamic value})
-  {
-    if (this.mounted) setState((){});
+  onModelChange(WidgetModel model, {String? property, dynamic value}) {
+    if (this.mounted) setState(() {});
   }
 
   @override
-  Widget build(BuildContext context)
-  {
-return LayoutBuilder(builder: builder);
+  Widget build(BuildContext context) {
+    return LayoutBuilder(builder: builder);
   }
 
-  Widget builder(BuildContext context, BoxConstraints constraints)
-  {
+  Widget builder(BuildContext context, BoxConstraints constraints) {
     // Set Build Constraints in the [WidgetModel]
-      widget.model.minwidth  = constraints.minWidth;
-      widget.model.maxwidth  = constraints.maxWidth;
-      widget.model.minheight = constraints.minHeight;
-      widget.model.maxheight = constraints.maxHeight;
+    widget.model.minwidth = constraints.minWidth;
+    widget.model.maxwidth = constraints.maxWidth;
+    widget.model.minheight = constraints.minHeight;
+    widget.model.maxheight = constraints.maxHeight;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    String? url      = widget.model.url;
-    double? opacity  = widget.model.opacity;
-    double? width    = widget.model.width;
-    double? height   = widget.model.height;
-    String? fit      = widget.model.fit;
-    String? filter   = widget.model.filter;
-    Scope?  scope    = Scope.of(widget.model);
-    // scoped file reference
-    // if ((url != null) && (scope != null) && (scope.files.containsKey(url)))
-    // {
-    //   url = scope.files[url].uri;
-    // }
+    String? url = widget.model.url;
+    double? opacity = widget.model.opacity;
+    double? width = widget.model.width;
+    double? height = widget.model.height;
+    String? fit = widget.model.fit;
+    String? filter = widget.model.filter;
+    Scope? scope = Scope.of(widget.model);
 
-    Widget view = ImageView.getImage(url, scope: scope, defaultvalue: widget.model.defaultvalue, width: width, height: height, fit: fit, filter: filter) ?? Container();
+    // get the image
+    Widget view = ImageView.getImage(url, scope: scope, defaultImage: widget.model.defaultvalue, width: width, height: height, fit: fit, filter: filter) ?? Container();
 
     // Flip
     if (widget.model.flip != null) {
@@ -349,23 +284,27 @@ return LayoutBuilder(builder: builder);
 
     // Rotation
     if (widget.model.rotation != null)
-      view = RotationTransition(turns: AlwaysStoppedAnimation(widget.model.rotation! / 360), child: view);
+      view = RotationTransition(
+          turns: AlwaysStoppedAnimation(widget.model.rotation! / 360),
+          child: view);
 
     // Stack Children
-      if (widget.model.children != null && widget.model.children!.length > 0)
-    view = Stack(children: [view]);
+    if (widget.model.children != null && widget.model.children!.length > 0)
+      view = Stack(children: [view]);
 
     // Interactive
-    if (widget.model.interactive == true)
-      view = InteractiveViewer(child: view);
+    if (widget.model.interactive == true) view = InteractiveViewer(child: view);
 
     // constrained?
-    if (widget.model.constrained)
-    {
+    if (widget.model.constrained) {
       var constraints = widget.model.getConstraints();
-      view = ConstrainedBox(child: view, constraints: BoxConstraints(
-          minHeight: constraints.minHeight!, maxHeight: constraints.maxHeight!,
-          minWidth: constraints.minWidth!, maxWidth: constraints.maxWidth!));
+      view = ConstrainedBox(
+          child: view,
+          constraints: BoxConstraints(
+              minHeight: constraints.minHeight!,
+              maxHeight: constraints.maxHeight!,
+              minWidth: constraints.minWidth!,
+              maxWidth: constraints.maxWidth!));
     }
 
     return view;

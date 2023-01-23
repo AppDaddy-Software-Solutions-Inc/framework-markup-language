@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/stack/stack_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class StackModel extends DecoratedWidgetModel implements IViewableWidget
 {

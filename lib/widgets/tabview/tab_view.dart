@@ -10,7 +10,7 @@ import 'package:fml/widgets/modal/modal_model.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/tabview/tab_model.dart';
 import 'package:fml/widgets/framework/framework_view.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class TabView extends StatefulWidget
 {
@@ -119,26 +119,34 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
     if ((event.parameters != null) && (event.parameters!.containsKey('modal'))) modal = S.toBool(event.parameters!['modal']);
     if ((modal != true) && (event.model != null)) modal = (event.model!.findDescendantOfExactType(ModalModel, id: url) != null);
 
-    // Allow Framework to Handle Open if Modal or Web Address
-    if ((modal == true) || (Url.isUrl(url!))) return;
+    // allow framework to handle open if fully qualified
+    if (url != null)
+    {
+      var uri = Uri.tryParse(url);
+      if (uri != null && uri.isAbsolute) return;
+    }
+
+    // allow framework to handle open if Modal
+    if (modal == true) return;
 
     // mark event as handled
     event.handled = true;
 
     // String template = uri.host;
-    String? template = Url.path(url);
-    if (S.isNullOrEmpty(template))
+    var uri = URI.parse(url);
+    if (uri == null)
     {
       await DialogService().show(type: DialogType.error, title: phrase.missingTemplate, description: url, buttons: [Text(phrase.ok)]);
       return;
     }
-    else template = template!.toLowerCase();
 
+    String? template = uri.url.toLowerCase();
     if (template == 'previous') return _showPrevious();
     if (template == 'next')     return _showNext();
     if (template == 'first')    return _showFirst();
     if (template == 'last')     return _showLast();
-    return _showPage(url, event: event);
+
+    return _showPage(uri.url, event: event);
   }
 
   void _showPrevious()
@@ -245,7 +253,7 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
     // process each view
     widget.model.views.forEach((url, view)
     {
-      Uri uri = S.toURI(url)!;
+      Uri uri = URI.parse(url)!;
 
       // Has delete button?
       bool closeable = S.toBool(uri.queryParameters['closeable']) ?? true;
@@ -304,7 +312,7 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
     int i = 0;
     widget.model.views.forEach((url, view)
     {
-      Uri? uri = S.toURI(url);
+      Uri? uri = URI.parse(url);
       String title = uri?.queryParameters['title'] ?? url;
 
       // Style

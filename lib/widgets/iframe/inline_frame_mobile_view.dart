@@ -6,7 +6,7 @@ import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'inline_frame_view.dart' as IFRAME;
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 InlineFrameView getView(model) => InlineFrameView(model);
 
@@ -70,12 +70,9 @@ class _InlineFrameViewState extends State<InlineFrameView>
     Widget? view = iframe;
     if (view == null)
     {
-      String url = Url.toAbsolute(widget.model.url ?? "");
-      controller
-        ..setNavigationDelegate(NavigationDelegate())
-        ..setJavaScriptMode(JavaScriptMode.unrestricted)
-        ..loadRequest(Uri.parse(url))
-        ..addJavaScriptChannel('TOFLUTTER', onMessageReceived: onMessageReceived);
+
+      var uri = URI.parse(widget.model.url);
+      if (uri != null) controller..setNavigationDelegate(NavigationDelegate())..setJavaScriptMode(JavaScriptMode.unrestricted)..loadRequest(uri)..addJavaScriptChannel('TOFLUTTER', onMessageReceived: onMessageReceived);
       view = WebViewWidget(controller: controller);
     }
 

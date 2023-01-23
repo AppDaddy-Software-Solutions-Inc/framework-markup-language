@@ -12,7 +12,7 @@ import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 enum Methods {get, put, post, patch, delete}
 enum Types   {background, foreground, either}
@@ -53,7 +53,7 @@ class HttpModel extends DataSourceModel implements IDataSource
       _timeout = IntegerObservable(Binding.toKey(id, 'timetoidle'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  int get timeout => _timeout?.get() ?? System.timeout;
+  int get timeout => _timeout?.get() ?? defaultTimeout;
 
   // url
   StringObservable? _url;
@@ -155,7 +155,7 @@ class HttpModel extends DataSourceModel implements IDataSource
 
     // web is always in the foreground
     if (isWeb) type = Types.foreground;
-    if ((type == Types.either) && (System().connected == true)) type = Types.foreground;
+    if ((type == Types.either) && (System().connected)) type = Types.foreground;
 
     // process in the background
     if (type == Types.background)
@@ -166,7 +166,7 @@ class HttpModel extends DataSourceModel implements IDataSource
       // save transaction
       Post post = Post(key: Uuid().v4(), formKey: key, status: Post.statusINCOMPLETE, method: S.fromEnum(this.method), url: this.url, headers: headers, body: body, date: DateTime.now().millisecondsSinceEpoch, attempts: 0);
       bool ok = await post.insert();
-      if (ok) System.postmaster.start();
+      if (ok) System().postmaster.start();
       return true;
     }
 

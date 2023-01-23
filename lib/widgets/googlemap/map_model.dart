@@ -14,7 +14,7 @@ import 'package:fml/dialog/service.dart';
 import 'package:fml/widgets/googlemap/map_view.dart';
 import 'package:fml/widgets/googlemap/location/map_location_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 enum MapTypes { satellite, hybrid, terrain, roadmap }
 

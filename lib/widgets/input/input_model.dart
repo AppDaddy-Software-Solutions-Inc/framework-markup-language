@@ -10,7 +10,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/input/input_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 enum InputFormats {numeric, integer, text, boolean, xml}
 enum CapitalizationTypes {mixed, camel, upper, lower, sentences, words}

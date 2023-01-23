@@ -7,7 +7,7 @@ import 'package:uuid/uuid.dart';
 import 'iMqttListener.dart';
 import 'payload.dart';
 import 'iMqtt.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 IMqtt? getMqtt(String url, IMqttListener listener, {String? username, String? password}) => MqttWeb(url, listener, username: username, password: password);
 
@@ -25,9 +25,9 @@ class MqttWeb implements IMqtt
 
   MqttWeb(this.url, this.listener, {this.username, this.password})
   {
-    Uri? uri = S.toURI(this.url);
+    Uri? uri = URI.parse(this.url);
     if (uri == null) return;
-    var scheme = System().secure ? "wss" : "ws";
+    var scheme = 'ws';
     var server = uri.host;
     var port   = (uri.port == 443 || uri.port == 80) ? 61614 : uri.port;
     var url    = scheme + '://' + server;

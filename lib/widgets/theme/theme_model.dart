@@ -7,25 +7,45 @@ import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/theme/theme_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class ThemeModel extends DecoratedWidgetModel implements IViewableWidget
 {
+  static const Color colorDefault = Color(0xffb2dd4c);
+
   StringObservable? _brightness;
   set brightness(dynamic v) {
     if (_brightness != null)
       _brightness!.set(v);
     else if (v != null)
-      _brightness = StringObservable(Binding.toKey(id, 'brightness'), v, scope: scope, listener: onPropertyChange);
+      _brightness = StringObservable(Binding.toKey('THEME', 'brightness'), v, scope: scope, listener: onPropertyChange);
   }
   String? get brightness => _brightness?.get();
+
+  StringObservable? _colorscheme;
+  set colorscheme(dynamic v) {
+    if (_colorscheme != null)
+      _colorscheme!.set(v);
+    else if (v != null)
+      _colorscheme = StringObservable(Binding.toKey('THEME', 'colorscheme'), v, scope: scope, listener: onPropertyChange);
+  }
+  String? get colorscheme => _colorscheme?.get();
+
+  StringObservable? _font;
+  set font(dynamic v) {
+    if (_font != null)
+      _font!.set(v);
+    else if (v != null)
+      _font = StringObservable(Binding.toKey('THEME', 'font'), v, scope: scope, listener: onPropertyChange);
+  }
+  String get font => _font?.get() ?? 'Roboto';
 
   StringObservable? _background;
   set background(dynamic v) {
     if (_background != null)
       _background!.set(v);
     else if (v != null)
-      _background = StringObservable(Binding.toKey(id, 'background'), v, scope: scope, listener: onPropertyChange);
+      _background = StringObservable(Binding.toKey('THEME', 'background'), v, scope: scope, listener: onPropertyChange);
   }
   String? get background => _background?.get();
 
@@ -34,7 +54,7 @@ class ThemeModel extends DecoratedWidgetModel implements IViewableWidget
     if (_onbackground != null)
       _onbackground!.set(v);
     else if (v != null)
-      _onbackground = StringObservable(Binding.toKey(id, 'onbackground'), v, scope: scope, listener: onPropertyChange);
+      _onbackground = StringObservable(Binding.toKey('THEME', 'onbackground'), v, scope: scope, listener: onPropertyChange);
   }
   String? get onbackground => _onbackground?.get();
 
@@ -43,7 +63,7 @@ class ThemeModel extends DecoratedWidgetModel implements IViewableWidget
     if (_shadow != null)
       _shadow!.set(v);
     else if (v != null)
-      _shadow = StringObservable(Binding.toKey(id, 'shadow'), v, scope: scope, listener: onPropertyChange);
+      _shadow = StringObservable(Binding.toKey('THEME', 'shadow'), v, scope: scope, listener: onPropertyChange);
   }
   String? get shadow => _shadow?.get();
 
@@ -52,7 +72,7 @@ class ThemeModel extends DecoratedWidgetModel implements IViewableWidget
     if (_outline != null)
       _outline!.set(v);
     else if (v != null)
-      _outline = StringObservable(Binding.toKey(id, 'outline'), v, scope: scope, listener: onPropertyChange);
+      _outline = StringObservable(Binding.toKey('THEME', 'outline'), v, scope: scope, listener: onPropertyChange);
   }
   String? get outline => _outline?.get();
 
@@ -61,7 +81,7 @@ class ThemeModel extends DecoratedWidgetModel implements IViewableWidget
     if (_surface != null)
       _surface!.set(v);
     else if (v != null)
-      _surface = StringObservable(Binding.toKey(id, 'surface'), v, scope: scope, listener: onPropertyChange);
+      _surface = StringObservable(Binding.toKey('THEME', 'surface'), v, scope: scope, listener: onPropertyChange);
   }
   String? get surface => _surface?.get();
 
@@ -70,7 +90,7 @@ class ThemeModel extends DecoratedWidgetModel implements IViewableWidget
     if (_onsurface != null)
       _onsurface!.set(v);
     else if (v != null)
-      _onsurface = StringObservable(Binding.toKey(id, 'onsurface'), v, scope: scope, listener: onPropertyChange);
+      _onsurface = StringObservable(Binding.toKey('THEME', 'onsurface'), v, scope: scope, listener: onPropertyChange);
   }
   String? get onsurface => _onsurface?.get();
 
@@ -79,7 +99,7 @@ class ThemeModel extends DecoratedWidgetModel implements IViewableWidget
     if (_surfacevariant != null)
       _surfacevariant!.set(v);
     else if (v != null)
-      _surfacevariant = StringObservable(Binding.toKey(id, 'surfacevariant'), v, scope: scope, listener: onPropertyChange);
+      _surfacevariant = StringObservable(Binding.toKey('THEME', 'surfacevariant'), v, scope: scope, listener: onPropertyChange);
   }
   String? get surfacevariant => _surfacevariant?.get();
 
@@ -88,7 +108,7 @@ class ThemeModel extends DecoratedWidgetModel implements IViewableWidget
     if (_onsurfacevariant != null)
       _onsurfacevariant!.set(v);
     else if (v != null)
-      _onsurfacevariant = StringObservable(Binding.toKey(id, 'onsurfacevariant'), v, scope: scope, listener: onPropertyChange);
+      _onsurfacevariant = StringObservable(Binding.toKey('THEME', 'onsurfacevariant'), v, scope: scope, listener: onPropertyChange);
   }
   String? get onsurfacevariant => _onsurfacevariant?.get();
 
@@ -97,7 +117,7 @@ class ThemeModel extends DecoratedWidgetModel implements IViewableWidget
     if (_inversesurface != null)
       _inversesurface!.set(v);
     else if (v != null)
-      _inversesurface = StringObservable(Binding.toKey(id, 'inversesurface'), v, scope: scope, listener: onPropertyChange);
+      _inversesurface = StringObservable(Binding.toKey('THEME', 'inversesurface'), v, scope: scope, listener: onPropertyChange);
   }
   String? get inversesurface => _inversesurface?.get();
 
@@ -106,7 +126,7 @@ class ThemeModel extends DecoratedWidgetModel implements IViewableWidget
     if (_oninversesurface != null)
       _oninversesurface!.set(v);
     else if (v != null)
-      _oninversesurface = StringObservable(Binding.toKey(id, 'oninversesurface'), v, scope: scope, listener: onPropertyChange);
+      _oninversesurface = StringObservable(Binding.toKey('THEME', 'oninversesurface'), v, scope: scope, listener: onPropertyChange);
   }
   String? get oninversesurface => _oninversesurface?.get();
 
@@ -115,7 +135,7 @@ class ThemeModel extends DecoratedWidgetModel implements IViewableWidget
     if (_primary != null)
       _primary!.set(v);
     else if (v != null)
-      _primary = StringObservable(Binding.toKey(id, 'primary'), v, scope: scope, listener: onPropertyChange);
+      _primary = StringObservable(Binding.toKey('THEME', 'primary'), v, scope: scope, listener: onPropertyChange);
   }
   String? get primary => _primary?.get();
 
@@ -124,7 +144,7 @@ class ThemeModel extends DecoratedWidgetModel implements IViewableWidget
     if (_onprimary != null)
       _onprimary!.set(v);
     else if (v != null)
-      _onprimary = StringObservable(Binding.toKey(id, 'onprimary'), v, scope: scope, listener: onPropertyChange);
+      _onprimary = StringObservable(Binding.toKey('THEME', 'onprimary'), v, scope: scope, listener: onPropertyChange);
   }
   String? get onprimary => _onprimary?.get();
 
@@ -133,7 +153,7 @@ class ThemeModel extends DecoratedWidgetModel implements IViewableWidget
     if (_primarycontainer != null)
       _primarycontainer!.set(v);
     else if (v != null)
-      _primarycontainer = StringObservable(Binding.toKey(id, 'primarycontainer'), v, scope: scope, listener: onPropertyChange);
+      _primarycontainer = StringObservable(Binding.toKey('THEME', 'primarycontainer'), v, scope: scope, listener: onPropertyChange);
   }
   String? get primarycontainer => _primarycontainer?.get();
 
@@ -142,7 +162,7 @@ class ThemeModel extends DecoratedWidgetModel implements IViewableWidget
     if (_onprimarycontainer != null)
       _onprimarycontainer!.set(v);
     else if (v != null)
-      _onprimarycontainer = StringObservable(Binding.toKey(id, 'onprimarycontainer'), v, scope: scope, listener: onPropertyChange);
+      _onprimarycontainer = StringObservable(Binding.toKey('THEME', 'onprimarycontainer'), v, scope: scope, listener: onPropertyChange);
   }
   String? get onprimarycontainer => _onprimarycontainer?.get();
 
@@ -151,7 +171,7 @@ class ThemeModel extends DecoratedWidgetModel implements IViewableWidget
     if (_inverseprimary != null)
       _inverseprimary!.set(v);
     else if (v != null)
-      _inverseprimary = StringObservable(Binding.toKey(id, 'inverseprimary'), v, scope: scope, listener: onPropertyChange);
+      _inverseprimary = StringObservable(Binding.toKey('THEME', 'inverseprimary'), v, scope: scope, listener: onPropertyChange);
   }
   String? get inverseprimary => _inverseprimary?.get();
 
@@ -160,7 +180,7 @@ class ThemeModel extends DecoratedWidgetModel implements IViewableWidget
     if (_secondary != null)
       _secondary!.set(v);
     else if (v != null)
-      _secondary = StringObservable(Binding.toKey(id, 'secondary'), v, scope: scope, listener: onPropertyChange);
+      _secondary = StringObservable(Binding.toKey('THEME', 'secondary'), v, scope: scope, listener: onPropertyChange);
   }
   String? get secondary => _secondary?.get();
 
@@ -169,7 +189,7 @@ class ThemeModel extends DecoratedWidgetModel implements IViewableWidget
     if (_onsecondary != null)
       _onsecondary!.set(v);
     else if (v != null)
-      _onsecondary = StringObservable(Binding.toKey(id, 'onsecondary'), v, scope: scope, listener: onPropertyChange);
+      _onsecondary = StringObservable(Binding.toKey('THEME', 'onsecondary'), v, scope: scope, listener: onPropertyChange);
   }
   String? get onsecondary => _onsecondary?.get();
 
@@ -178,7 +198,7 @@ class ThemeModel extends DecoratedWidgetModel implements IViewableWidget
     if (_secondarycontainer != null)
       _secondarycontainer!.set(v);
     else if (v != null)
-      _secondarycontainer = StringObservable(Binding.toKey(id, 'secondarycontainer'), v, scope: scope, listener: onPropertyChange);
+      _secondarycontainer = StringObservable(Binding.toKey('THEME', 'secondarycontainer'), v, scope: scope, listener: onPropertyChange);
   }
   String? get secondarycontainer => _secondarycontainer?.get();
 
@@ -187,7 +207,7 @@ class ThemeModel extends DecoratedWidgetModel implements IViewableWidget
     if (_onsecondarycontainer != null)
       _onsecondarycontainer!.set(v);
     else if (v != null)
-      _onsecondarycontainer = StringObservable(Binding.toKey(id, 'onsecondarycontainer'), v, scope: scope, listener: onPropertyChange);
+      _onsecondarycontainer = StringObservable(Binding.toKey('THEME', 'onsecondarycontainer'), v, scope: scope, listener: onPropertyChange);
   }
   String? get onsecondarycontainer => _onsecondarycontainer?.get();
 
@@ -196,7 +216,7 @@ class ThemeModel extends DecoratedWidgetModel implements IViewableWidget
     if (_tertiarycontainer != null)
       _tertiarycontainer!.set(v);
     else if (v != null)
-      _tertiarycontainer = StringObservable(Binding.toKey(id, 'tertiarycontainer'), v, scope: scope, listener: onPropertyChange);
+      _tertiarycontainer = StringObservable(Binding.toKey('THEME', 'tertiarycontainer'), v, scope: scope, listener: onPropertyChange);
   }
   String? get tertiarycontainer => _tertiarycontainer?.get();
 
@@ -205,7 +225,7 @@ class ThemeModel extends DecoratedWidgetModel implements IViewableWidget
     if (_ontertiarycontainer != null)
       _ontertiarycontainer!.set(v);
     else if (v != null)
-      _ontertiarycontainer = StringObservable(Binding.toKey(id, 'ontertiarycontainer'), v, scope: scope, listener: onPropertyChange);
+      _ontertiarycontainer = StringObservable(Binding.toKey('THEME', 'ontertiarycontainer'), v, scope: scope, listener: onPropertyChange);
   }
   String? get ontertiarycontainer => _ontertiarycontainer?.get();
 
@@ -214,7 +234,7 @@ class ThemeModel extends DecoratedWidgetModel implements IViewableWidget
     if (_error != null)
       _error!.set(v);
     else if (v != null)
-      _error = StringObservable(Binding.toKey(id, 'error'), v, scope: scope, listener: onPropertyChange);
+      _error = StringObservable(Binding.toKey('THEME', 'error'), v, scope: scope, listener: onPropertyChange);
   }
   String? get error => _error?.get();
 
@@ -223,7 +243,7 @@ class ThemeModel extends DecoratedWidgetModel implements IViewableWidget
     if (_onerror != null)
       _onerror!.set(v);
     else if (v != null)
-      _onerror = StringObservable(Binding.toKey(id, 'onerror'), v, scope: scope, listener: onPropertyChange);
+      _onerror = StringObservable(Binding.toKey('THEME', 'onerror'), v, scope: scope, listener: onPropertyChange);
   }
   String? get onerror => _onerror?.get();
 
@@ -232,7 +252,7 @@ class ThemeModel extends DecoratedWidgetModel implements IViewableWidget
     if (_errorcontainer != null)
       _errorcontainer!.set(v);
     else if (v != null)
-      _errorcontainer = StringObservable(Binding.toKey(id, 'errorcontainer'), v, scope: scope, listener: onPropertyChange);
+      _errorcontainer = StringObservable(Binding.toKey('THEME', 'errorcontainer'), v, scope: scope, listener: onPropertyChange);
   }
   String? get errorcontainer => _errorcontainer?.get();
 
@@ -241,11 +261,12 @@ class ThemeModel extends DecoratedWidgetModel implements IViewableWidget
     if (_onerrorcontainer != null)
       _onerrorcontainer!.set(v);
     else if (v != null)
-      _onerrorcontainer = StringObservable(Binding.toKey(id, 'onerrorcontainer'), v, scope: scope, listener: onPropertyChange);
+      _onerrorcontainer = StringObservable(Binding.toKey('THEME', 'onerrorcontainer'), v, scope: scope, listener: onPropertyChange);
   }
   String? get onerrorcontainer => _onerrorcontainer?.get();
 
-  ThemeModel(WidgetModel parent, String?  id, {
+  ThemeModel(WidgetModel parent, String?  id,
+  {
     dynamic brightness,
     dynamic background,
     dynamic onbackground,

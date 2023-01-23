@@ -4,7 +4,7 @@ import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
-import 'package:fml/navigation/manager.dart';
+import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/system.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +13,7 @@ import 'package:fml/widgets/framework/framework_view.dart';
 import 'package:provider/provider.dart';
 import 'package:fml/event/event.dart' ;
 import 'package:fml/widgets/framework/framework_model.dart' ;
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class ApplicationManager extends StatefulWidget
 {
@@ -54,7 +54,10 @@ class _ApplicationManagerState extends State<ApplicationManager>
 
     // get url parameters
     if (parameters.containsKey('url'))
-      parameters.addAll(Url.parameters(parameters['url']!)!);
+    {
+      Uri? uri = URI.parse(parameters['url']);
+      if (uri?.queryParameters != null) parameters.addAll(uri!.queryParameters);
+    }
 
     // build parameters from a data source
     if ((parameters.containsKey('data')) &&
@@ -82,25 +85,20 @@ class _ApplicationManagerState extends State<ApplicationManager>
     await NavigationManager().refresh();
   }
 
-  void onTheme(Event event) async {
+  void onTheme(Event event) async
+  {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     String? eventColor = event.parameters?['color'];
-    String? eventBrightness =
-        event.parameters?['brightness'] ?? System().brightness;
-    if (eventColor != null) {
-      themeNotifier.setTheme(eventBrightness!, eventColor);
-    } else
-      themeNotifier.setTheme(eventBrightness!);
+    String? eventBrightness = event.parameters?['brightness'] ?? System().theme.brightness;
+    if (eventColor != null)
+         themeNotifier.setTheme(eventBrightness!, eventColor);
+    else themeNotifier.setTheme(eventBrightness!);
   }
 
   @override
   Widget build(BuildContext context)
   {
     Widget view = Stack(children: [widget.child!]);
-
-    // set system width/height bindables
-    System().screenheight = MediaQuery.of(context).size.height;
-    System().screenwidth  = MediaQuery.of(context).size.width;
 
     // system shortcuts
     if (kDebugMode)

@@ -10,7 +10,7 @@ import 'package:fml/widgets/menu/menu_view.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class MenuModel extends DecoratedWidgetModel implements IViewableWidget
 {

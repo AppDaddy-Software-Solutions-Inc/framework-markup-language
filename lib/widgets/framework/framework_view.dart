@@ -3,13 +3,13 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:fml/dialog/manager.dart';
 import 'package:fml/event/handler.dart';
-import 'package:fml/navigation/manager.dart';
+import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
-import 'package:fml/navigation/observer.dart';
+import 'package:fml/navigation/navigation_observer.dart';
 import 'package:fml/event/event.dart'             ;
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
@@ -24,8 +24,13 @@ import 'package:fml/widgets/footer/footer_view.dart';
 import 'package:fml/widgets/drawer/drawer_view.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/box_view.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/phrase.dart';
+
+// platform
+import 'package:fml/platform/platform.stub.dart'
+if (dart.library.io)   'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 typedef TitleChangeCallback = void Function (String title);
 
@@ -384,7 +389,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   void onDragStart(DragStartDetails details)
   {
     // IOS back button functionality
-    if ((System().useragent == "ios") && (details.globalPosition.dx < 50))
+    if ((System().useragent == "ios" || isDesktop) && (details.globalPosition.dx < 50))
     {
       swiping = true;
       start = details.globalPosition.dx;
@@ -422,8 +427,11 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     if (widget.model.element != null)
     {
       var bytes = utf8.encode(widget.model.element!.toXmlString());
-      String filename = Url.toAbsolute(widget.model.templateName ?? "no-file-name");
-      System().fileSaveAs(bytes, filename);
+
+      var uri = URI.parse(widget.model.templateName);
+      if (uri != null)
+           Platform.fileSaveAs(bytes, uri.url);
+      else Platform.fileSaveAs(bytes, "template");
     }
   }
 
@@ -440,7 +448,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     if (event.parameters!['format'] == 'print') {
       event.handled = true;
       final snackBar = SnackBar(content: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Text(phrase.exportingData)]), duration: Duration(milliseconds: 300), behavior: SnackBarBehavior.floating, elevation: 5);
-      ScaffoldMessenger.of(context).showSnackBar(snackBar).closed.then((_) => System().openPrinterDialog());
+      ScaffoldMessenger.of(context).showSnackBar(snackBar).closed.then((_) => Platform.openPrinterDialog());
     }
     else {
       Log().warning('Unhandled Event onExport(format: ${event.parameters!['format'].toString()}, raw: ${event.parameters!['raw'].toString()})');

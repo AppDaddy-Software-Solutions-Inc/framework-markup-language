@@ -20,7 +20,7 @@ import 'package:fml/widgets/table/row/cell/table_row_cell_view.dart';
 import 'package:fml/helper/measured.dart';
 import 'package:fml/widgets/scrollbar/scrollbar_view.dart';
 import 'package:fml/system.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class MyCustomScrollBehavior extends MaterialScrollBehavior
 {

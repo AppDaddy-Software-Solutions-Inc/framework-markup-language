@@ -8,7 +8,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/event/event.dart' ;
 import 'package:fml/event/handler.dart' ;
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class MenuItemModel extends DecoratedWidgetModel
 {
@@ -235,8 +235,7 @@ class MenuItemModel extends DecoratedWidgetModel
 
   VoidCallback ? onLongPress;
   VoidCallback ? onTap;
-  String? iconImage;
-  String? iconBase64;
+  UriData? image;
 
   MenuItemModel(WidgetModel? parent, String? id, {
     dynamic data,
@@ -254,12 +253,11 @@ class MenuItemModel extends DecoratedWidgetModel
     dynamic iconposition,
     dynamic backgroundimage,
     dynamic backgroundcolor,
-    dynamic iconImage,
-    dynamic iconBase64,
     dynamic onLongPress,
     dynamic onTap,
     dynamic radius,
     dynamic enabled,
+    String? image
   }) : super(parent, id)
   {
     this.data             = data;
@@ -275,12 +273,11 @@ class MenuItemModel extends DecoratedWidgetModel
     this.fontsize         = fontsize;
     this.backgroundimage  = backgroundimage;
     this.backgroundcolor  = backgroundcolor;
-    this.iconImage        = iconImage;
-    this.iconBase64       = iconBase64;
     this.onLongPress      = onLongPress;
     this.onTap            = onTap;
     this.radius           = radius;
     this.enabled          = enabled;
+    if (image != null) this.image = S.toDataUri(image);
   }
 
   static MenuItemModel? fromXml(WidgetModel? parent, XmlElement? xml, {dynamic data, dynamic onTap, dynamic onLongPress})
@@ -332,8 +329,8 @@ class MenuItemModel extends DecoratedWidgetModel
       String? bc;
       try 
       {
-        Uri uri = Uri.parse(url!);
-        bc = uri.queryParameters['breadcrumb'];
+        Uri? uri = URI.parse(url!);
+        bc = uri?.queryParameters['breadcrumb'];
       }
       catch(e) {}
       return EventManager.of(this)?.broadcastEvent(this, Event(EventTypes.open, bubbles: true, parameters: {'url': url, 'breadcrumb': bc ?? title}));
@@ -349,7 +346,4 @@ class MenuItemModel extends DecoratedWidgetModel
     Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
   }
-
-
-
 }

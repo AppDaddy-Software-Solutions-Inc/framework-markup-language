@@ -14,7 +14,7 @@ import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/event/handler.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 enum ListTypes { replace, lifo, fifo, append, prepend }
 
@@ -528,16 +528,17 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
     return false;
   }
 
-  Future<String?> fromHive(String? key, bool refresh) async {
+  Future<String?> fromHive(String? key, bool refresh) async
+  {
     // get data from cache
-    if ((timetolive > 0) && (!refresh)) {
+    if ((timetolive > 0) && (!refresh))
+    {
       // found cached data?
       HIVE.Data? row = await HIVE.Data.find(key!);
 
       // expired?
       bool expired = true;
-      if ((row?.expires ?? 0) >= DateTime.now().millisecondsSinceEpoch)
-        expired = false;
+      if ((row?.expires ?? 0) >= DateTime.now().millisecondsSinceEpoch) expired = false;
 
       // Return Cached Data
       if (!expired) return row!.value;
@@ -545,26 +546,20 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
     return null;
   }
 
-  Future toHive(String? key, String? data) async {
+  Future toHive(String? key, String? data) async
+  {
     if (timetolive > 0)
     {
-      HIVE.Data table = HIVE.Data(
-          key: key,
-          value: data,
-          expires: DateTime.now().millisecondsSinceEpoch + timetolive);
-      await table.insert();
+      HIVE.Data d = HIVE.Data(key: key, value: data, expires: DateTime.now().millisecondsSinceEpoch + timetolive);
+      await d.insert();
     }
   }
 
   // override this function
-  Future<bool> start({bool refresh: false, String? key}) async {
-    return true;
-  }
+  Future<bool> start({bool refresh: false, String? key}) async => true;
 
   // override this function
-  Future<bool> stop() async {
-    return true;
-  }
+  Future<bool> stop() async => true;
 
   @override
   Future<bool?> execute(String propertyOrFunction, List<dynamic> arguments) async

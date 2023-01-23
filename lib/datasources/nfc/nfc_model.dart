@@ -11,7 +11,7 @@ import 'payload.dart';
 import 'iNfcListener.dart';
 import 'nfc.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class NcfModel extends DataSourceModel implements IDataSource, INfcListener
 {
@@ -29,7 +29,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
   // message
   late StringObservable _message;
   String? get message => _message.get();
-  
+
   // method
   StringObservable? _method;
   set method(dynamic v)
@@ -151,7 +151,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
     // fail
     if (!b && onfail != null) EventHandler(this).execute(onFailObservable);
   }
-  
+
   @override
   Future<bool?> execute(String propertyOrFunction, List<dynamic> arguments) async
   {
@@ -213,8 +213,8 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
     {
       // is a valid url query string?
       String msg = payload.message!.trim();
-      Uri? uri = S.toURI(msg);
-      if (uri == null) uri = S.toURI("http://localhost" + (msg.startsWith("?") ? "" : "?") + msg);
+      Uri? uri = URI.parse(msg);
+      if (uri == null) uri = URI.parse("http://localhost" + (msg.startsWith("?") ? "" : "?") + msg);
       if (uri != null && uri.hasQuery)
       {
         // add payload url parameters

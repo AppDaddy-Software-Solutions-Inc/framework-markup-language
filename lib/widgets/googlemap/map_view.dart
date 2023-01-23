@@ -12,7 +12,7 @@ import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class MapView extends StatefulWidget
 {

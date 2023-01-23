@@ -2,7 +2,7 @@
 import 'package:fml/log/manager.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart' as ML;
 import 'barcode_detector.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 BarcodeDetector getDetector() => BarcodeDetector();
 

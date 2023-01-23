@@ -8,7 +8,7 @@ import 'package:fml/widgets/drawer/item/drawer_item_model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class DrawerModel extends DecoratedWidgetModel implements IViewableWidget
 {

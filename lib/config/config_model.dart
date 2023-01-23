@@ -1,23 +1,26 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
+import 'package:fml/template/template.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:xml/xml.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class ConfigModel
 {
   ConfigModel();
 
+  String? xml;
   Map<String, String?> settings   = Map<String,String?>();
-  Map<String?, String> parameters = Map<String?,String>();
+  Map<String, String?> parameters = Map<String,String?>();
 
-  static ConfigModel? fromXml(WidgetModel? parent, XmlElement xml)
+  static Future<ConfigModel?> fromXml(WidgetModel? parent, XmlElement xml) async
   {
     ConfigModel? model;
     try
     {
       model = ConfigModel();
       model.deserialize(xml);
+      model.xml = xml.toXmlString();
     }
     catch(e)
     {
@@ -27,12 +30,25 @@ class ConfigModel
     return model;
   }
 
+  static Future<ConfigModel?> fromUrl(WidgetModel? parent, String url) async
+  {
+    Uri? uri = URI.parse(url);
+    if (uri != null)
+    {
+      uri = uri.setPage("config.xml");
+      var template = await Template.fetchTemplate(url: uri.url, refresh: true);
+      if (template != null) return fromXml(parent, template.rootElement);
+    }
+    return null;
+  }
+
   void deserialize(XmlElement xml) async
   {
-    //////////////
-    /* Settings */
-    //////////////
-    for (dynamic node in xml.children)
+    XmlElement? e = Xml.getChildElement(node: xml, tag: "CONFIG");
+    if (e == null) return;
+
+    // settings
+    for (dynamic node in e.children)
     if (node is XmlElement)
     {
       String key   = node.localName;
@@ -42,9 +58,7 @@ class ConfigModel
       if (!S.isNullOrEmpty(key) && (key.toLowerCase() != 'parameter')) settings[key] = value;
     }
 
-    ////////////////
-    /* Parameters */
-    ////////////////
+    // parameters
     List<XmlElement>? nodes = Xml.getChildElements(node: xml, tag: 'parameter');
     if (nodes != null)
     nodes.forEach((element)
@@ -52,7 +66,7 @@ class ConfigModel
       String? key   = Xml.get(node: element, tag: 'key');
       String? value = Xml.get(node: element, tag: 'value');
       if (S.isNullOrEmpty(value)) value = Xml.getText(element);
-      if (!S.isNullOrEmpty(key)) parameters[key] = value ?? "";
+      if (!S.isNullOrEmpty(key)) parameters[key!] = value ?? "";
     });
   }
 

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 import 'iSocketListener.dart';
 
@@ -14,9 +14,8 @@ class Socket
   {
     if (url is String)
     {
-      url = Url.toAbsolute(url, domain : System().secure ? "wss://${System().host}" : "ws://${System().host}");
-      Uri? uri = Uri.tryParse(url);
-      _uri = uri;
+      var scheme = (Application?.secure ?? false) ? "wss" : "ws";
+      _uri = Uri.parse(url).replace(scheme: scheme);
     }
     else if (url is Uri) _uri = url;
   }
@@ -148,6 +147,7 @@ class Socket
   void _onData(data)
   {
     Log().debug('SOCKET:: Received message >> $data');
+    connected = true;
     if (data is String)
     {
       lastMessage = data;

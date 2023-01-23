@@ -8,7 +8,7 @@ import 'package:fml/observable/observables/boolean.dart';
 import 'package:fml/observable/observables/integer.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class PostMaster
 {
@@ -86,6 +86,8 @@ class PostMaster
   
   Future<bool> start() async
   {
+    // not in web
+    if (isWeb) return true;
     bool ok = await _post();
     return ok;
   }
@@ -184,7 +186,7 @@ class PostMaster
 
   Future<bool> postable(DATABASE.Post post) async
   {
-    if (System().connected == false) return false;
+    if (!System().connected) return false;
     return await formPostable(post.formKey);
   }
 

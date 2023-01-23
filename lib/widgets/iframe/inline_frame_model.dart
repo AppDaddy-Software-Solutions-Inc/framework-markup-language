@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/iframe/inline_frame_view.dart' as IFRAME;
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class InlineFrameModel extends DecoratedWidgetModel implements IViewableWidget
 {

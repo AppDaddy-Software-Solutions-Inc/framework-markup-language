@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart'    ;
-import 'package:fml/widgets/center/center_model.dart' as CENTER;
+import 'package:fml/widgets/center/center_model.dart';
 
 /// Center View
 ///
@@ -10,7 +10,7 @@ import 'package:fml/widgets/center/center_model.dart' as CENTER;
 /// Builds a centered Center View from [Model] properties
 class CenterView extends StatefulWidget
 {
-  final CENTER.CenterModel model;
+  final CenterModel model;
   final List<Widget> children = [];
 
   CenterView(this.model) : super(key: ObjectKey(model));
@@ -32,7 +32,6 @@ class _CenterViewState extends State<CenterView> implements IModelListener
   void dispose()
   {
     widget.model.removeListener(this);
-
     super.dispose();
   }
 

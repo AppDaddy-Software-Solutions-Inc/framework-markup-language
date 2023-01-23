@@ -2,7 +2,7 @@
 import 'dart:async';
 import 'package:uuid/uuid.dart';
 import 'package:fml/hive/database.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 enum Fields {key, username, password, rights, language}
 

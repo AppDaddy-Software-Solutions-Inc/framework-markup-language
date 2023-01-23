@@ -2,7 +2,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class GalleryScreen extends StatefulWidget
 {
@@ -49,28 +49,18 @@ class GalleryWidgetState extends State<GalleryWidget>
     bool networkImage = false;
     String file = widget.file;
 
-    //////////
-    /* Uri? */
-    //////////
-    if (file.trim().startsWith("data:"))
-    {
-      UriData uri = UriData.parse(file);
-      file = uri.contentText;
-    }
+    var uri = URI.parse(widget.file);
+    if (uri == null) return Container();
 
-    if (file.trim().startsWith('/')) {
-      file = Url.toAbsolute(file.trim());
-      networkImage = true;
-    }
-    else if (file.trim().startsWith('http://') || file.trim().startsWith('https://'))
-      networkImage = true;
+    // data uri?
+    if (uri.data != null) file = uri.data!.contentText;
 
-    ImageProvider imageProvider = (networkImage == true
-      ? NetworkImage(file)
-      : MemoryImage(Base64Codec().decode(file))) as ImageProvider<Object>;
+    // web image?
+    if (uri.scheme == "http" || uri.scheme == "https") networkImage = true;
 
-    Widget view = PhotoView(
-        imageProvider: imageProvider,
+    ImageProvider imageProvider = (networkImage == true ? NetworkImage(file) : MemoryImage(Base64Codec().decode(file))) as ImageProvider<Object>;
+
+    Widget view = PhotoView(imageProvider: imageProvider,
         // loadingBuilder: (context, progress) => Center(
         //   child: Container(
         //     width: 20.0,

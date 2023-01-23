@@ -9,7 +9,7 @@ import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/text/text_view.dart';
 import 'package:fml/eval/textParser.dart' as PARSE;
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class TextModel extends DecoratedWidgetModel implements IViewableWidget
 {
@@ -189,7 +189,7 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
           scope: scope, listener: onPropertyChange);
     }
   }
-  String? get font => _font?.get() ?? System().font;
+  String? get font => _font?.get() ?? System().theme.font;
 
   ////////////
   /* Weight */

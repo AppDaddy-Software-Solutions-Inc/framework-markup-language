@@ -7,7 +7,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/datasources/file/file.dart' as FILE;
 import 'package:xml/xml.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class FileModel extends DataSourceModel implements IDataSource
 {
@@ -52,7 +52,8 @@ class FileModel extends DataSourceModel implements IDataSource
 
   Future<bool> onFile(FILE.File file) async
   {
-    busy = true;
+      busy = true;
+
       // save file reference
       if ((scope?.files != null) && (file.url != null))  scope!.files[file.url!] = file;
 

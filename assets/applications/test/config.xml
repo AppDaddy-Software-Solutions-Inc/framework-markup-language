@@ -1,10 +1,11 @@
-<FML>
+<TEMPLATE>
     <CONFIG>
 
         <!-- Settings -->
-        <APPLICATION_NAME 		value="YOUR_APP_NAME" />
-        <APP_ICON	 			value="resources/images/appicon.png" />
-        <HOME_PAGE       		value="file://templates/localtemplate.xml" />
+        <APP_NAME 		        value="Test Application" />
+        <APP_ICON	 			value="images/logo.png" />
+
+        <HOME_PAGE       		value="templates/home.xml" />
         <LOGIN_PAGE             value=""/>
         <UNAUTHORIZED_PAGE      value=""/>
         <MIRROR_API 	        value="" />
@@ -20,4 +21,4 @@
         <FIREBASE_AUTH_DOMAIN	value=""/>
 
     </CONFIG>
-</FML>
+</TEMPLATE>

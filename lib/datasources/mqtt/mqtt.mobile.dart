@@ -1,15 +1,13 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-
 import 'package:fml/system.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:uuid/uuid.dart';
-
 import 'iMqttListener.dart';
 import 'payload.dart';
 import 'iMqtt.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 IMqtt? getMqtt(String url, IMqttListener listener, {String? username, String? password}) => MqttMobile(url, listener, username: username, password: password);
 
@@ -27,7 +25,7 @@ class MqttMobile implements IMqtt
 
   MqttMobile(this.url, this.listener, {this.username, this.password})
   {
-    Uri? uri = S.toURI(this.url);
+    Uri? uri = URI.parse(this.url);
     if (uri == null) return;
     var scheme = uri.scheme;
     var server = uri.host;

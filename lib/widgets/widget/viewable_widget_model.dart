@@ -3,13 +3,14 @@ import 'package:fml/widgets/widget/constraint.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 
 class ViewableWidgetModel extends WidgetModel
 {
   // Width
   double? _widthPercentage;
+  double? get widthPercentage => _widthPercentage;
   DoubleObservable? _width;
   set width(dynamic v)
   {
@@ -35,6 +36,7 @@ class ViewableWidgetModel extends WidgetModel
 
   // Height
   double? _heightPercentage;
+  double? get heightPercentage => _heightPercentage;
   DoubleObservable? _height;
   set height(dynamic v)
   {

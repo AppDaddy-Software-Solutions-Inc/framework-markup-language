@@ -1,12 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/navigation/manager.dart';
+import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/overlay/overlay_view.dart';
 import 'modal_view.dart';
 
@@ -23,9 +23,7 @@ class ModalModel extends DecoratedWidgetModel
     this.title = title;
   }
 
-  ////////////////
-  /* font title */
-  ////////////////
+  // title 
   StringObservable? _title;
   set title (dynamic v)
   {
@@ -40,14 +38,71 @@ class ModalModel extends DecoratedWidgetModel
   }
   String? get title => _title?.get();
 
+  // modal
+  BooleanObservable? _modal;
+  set modal (dynamic v)
+  {
+    if (_modal != null)
+    {
+      _modal!.set(v);
+    }
+    else if (v != null)
+    {
+      _modal = BooleanObservable(Binding.toKey(id, 'modal'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get modal => _modal?.get() ?? true;
+
+  // resizeable 
+  BooleanObservable? _resizeable;
+  set resizeable (dynamic v)
+  {
+    if (_resizeable != null)
+    {
+      _resizeable!.set(v);
+    }
+    else if (v != null)
+    {
+      _resizeable = BooleanObservable(Binding.toKey(id, 'resizeable'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get resizeable => _resizeable?.get() ?? true;
+
+  // closeable 
+  BooleanObservable? _closeable;
+  set closeable (dynamic v)
+  {
+    if (_closeable != null)
+    {
+      _closeable!.set(v);
+    }
+    else if (v != null)
+    {
+      _closeable = BooleanObservable(Binding.toKey(id, 'closeable'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get closeable => _closeable?.get() ?? true;
+
+  // draggable 
+  BooleanObservable? _draggable;
+  set draggable (dynamic v)
+  {
+    if (_draggable != null)
+    {
+      _draggable!.set(v);
+    }
+    else if (v != null)
+    {
+      _draggable = BooleanObservable(Binding.toKey(id, 'draggable'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get draggable => _draggable?.get() ?? true;
+  
   static ModalModel? fromXml(WidgetModel parent, XmlElement xml)
   {
     ModalModel? model;
     try
     {
-      /////////////////
-      /* Build Model */
-      /////////////////
       model = ModalModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
@@ -59,30 +114,6 @@ class ModalModel extends DecoratedWidgetModel
     return model;
   }
 
-  @override
-  Future<bool?> execute(String propertyOrFunction, List<dynamic> arguments) async
-  {
-    if (scope == null) return null;
-    var function = propertyOrFunction.toLowerCase().trim();
-    switch (function)
-    {
-      case "open" :
-        double? width = arguments.length > 0 ? S.toDouble(arguments[0]) : null;
-        if (width == null) width = this.width;
-
-        double? height = arguments.length > 1 ? S.toDouble(arguments[1]) : null;
-        if (height == null) height = this.height;
-
-        overlay = NavigationManager().openModal(ModalView(this), context, width: S.toStr(width), height: S.toStr(height));
-        return true;
-
-      case "close" :
-        NavigationManager().closeModal(overlay, context);
-        return true;
-    }
-    return super.execute(propertyOrFunction, arguments);
-  }
-
   /// Deserializes the FML template elements, attributes and children
   @override
   void deserialize(XmlElement xml)
@@ -92,7 +123,54 @@ class ModalModel extends DecoratedWidgetModel
     super.deserialize(xml);
 
     // properties
-    title  = Xml.get(node: xml, tag: 'title');
+    title       = Xml.get(node: xml, tag: 'title');
+    resizeable  = Xml.get(node: xml, tag: 'resizeable');
+    closeable   = Xml.get(node: xml, tag: 'closable');
+    draggable   = Xml.get(node: xml, tag: 'draggable');
+    modal       = Xml.get(node: xml, tag: 'modal');
+  }
+  
+  @override
+  Future<bool?> execute(String propertyOrFunction, List<dynamic> arguments) async
+  {
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+    switch (function)
+    {
+      case "open" :
+        
+        // modal width
+        String? width = arguments.length > 0 ? S.toStr(arguments[0]) : null;
+        if (width == null) width = (widthPercentage != null) ? "${this.widthPercentage}%" : "${this.width}";
+
+        // modal height
+        String? height = arguments.length > 1 ? S.toStr(arguments[1]) : null;
+        if (height == null) height = (heightPercentage != null) ? "${this.heightPercentage}%" : "${this.height}";
+
+        // resizeable
+        bool resizeable = this.resizeable;
+        if (arguments.length > 2) resizeable = S.toBool(arguments[2]) ?? true;
+
+        // closeable
+        bool closeable = this.closeable;
+        if (arguments.length > 3) closeable = S.toBool(arguments[3]) ?? true;
+
+        // draggable
+        bool draggable = this.draggable;
+        if (arguments.length > 4) draggable = S.toBool(arguments[4]) ?? true;
+
+        // modal
+        bool modal = this.modal;
+        if (arguments.length > 5) modal = S.toBool(arguments[5]) ?? true;
+
+        overlay = NavigationManager().openModal(ModalView(this), context, modal: modal, resizeable: resizeable, closeable: closeable, draggable: draggable, width: width, height: height);
+        return true;
+
+      case "close" :
+        NavigationManager().closeModal(overlay, context);
+        return true;
+    }
+    return super.execute(propertyOrFunction, arguments);
   }
 
   /// Returns the [MODAL] View

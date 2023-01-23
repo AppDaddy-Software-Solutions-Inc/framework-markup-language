@@ -9,7 +9,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/event/handler.dart' ;
 import 'package:fml/widgets/link/link_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class LinkModel extends DecoratedWidgetModel implements IViewableWidget
 {

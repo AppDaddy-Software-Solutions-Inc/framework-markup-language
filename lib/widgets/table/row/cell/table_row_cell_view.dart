@@ -6,7 +6,7 @@ import 'package:fml/widgets/table/row/table_row_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/overlay/overlay_view.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class TableRowCellView extends StatefulWidget {
   final TableRowCellModel model;

@@ -10,7 +10,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/popover/popover_view.dart';
 import 'package:fml/widgets/popover/item/popover_item_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class PopoverModel extends DecoratedWidgetModel implements IViewableWidget, IModelListener
 {

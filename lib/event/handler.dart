@@ -9,9 +9,10 @@ import 'package:fml/dialog/service.dart';
 import 'package:fml/eval/evaluator.dart';
 import 'package:fml/eval/expressions.dart';
 import 'package:fml/event/manager.dart';
-import 'package:fml/navigation/manager.dart';
+import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
+import 'package:fml/template/template_manager.dart';
 import 'package:fml/token/token.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/framework/framework_view.dart';
@@ -20,12 +21,11 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/eval/eval.dart';
 import 'package:fml/widgets/trigger/trigger_model.dart';
 import 'package:fml/sound/sound.dart';
-import 'package:fml/template/template.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 /// EventHandler performs the executions of events and contains the functions for each event [Type]
 ///
@@ -291,7 +291,8 @@ class EventHandler extends Eval
   /// Sets a Hive Value and Creates and [Observable] by the same name
   Future<bool> _handleEventStash(dynamic key, dynamic value) async
   {
-    return await System().stashValue(key,value);
+    if (Application == null) return true;
+    return await Application!.stash(key,value);
   }
 
   /// Creates an alert dialog
@@ -396,14 +397,15 @@ class EventHandler extends Eval
 
   Future<bool> _logon(String token, bool? validateAge, bool? validateSignature, bool? refresh) async
   {
+    // remove bearer header
+    token = token.replaceFirst(RegExp("bearer", caseSensitive: false),"").trim();
+
     // decode token
     Jwt jwt = Jwt.decode(token, validateAge: validateAge ?? false, validateSignature: validateSignature ?? false);
     if (jwt.valid)
     {
+      // logon
       System().logon(jwt);
-
-      // set user values
-      System().logon(System().jwt);
 
       // refresh the framework
       if (S.toBool(refresh) != false) EventManager.of(model)?.broadcastEvent(model,Event(EventTypes.refresh, parameters: null, model: model));
@@ -432,8 +434,8 @@ class EventHandler extends Eval
   {
     if (System().firebase == null)
     {
-      String  apiKey     = System().config?.get("FIREBASE_API_KEY") ?? '0000000000';
-      String? authDomain = System().config?.get("FIREBASE_AUTH_DOMAIN");
+      String  apiKey     = Application?.settings("FIREBASE_API_KEY") ?? '0000000000';
+      String? authDomain = Application?.settings("FIREBASE_AUTH_DOMAIN");
 
       await fbauth.loadLibrary();
       await fbcore.loadLibrary();
@@ -576,7 +578,7 @@ class EventHandler extends Eval
   {
     var document = XmlDocument.parse(xml);
     String uuid = "${Uuid().v1()}.xml";
-    Template.toMemory(uuid, document);
+    TemplateManager().toMemory(uuid, document);
     return _handleEventOpen(uuid, isModal, transition);
   }
 

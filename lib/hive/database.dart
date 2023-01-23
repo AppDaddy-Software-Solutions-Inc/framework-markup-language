@@ -3,7 +3,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:hive/hive.dart';
 import 'package:fml/eval/eval.dart' as EVALUATE;
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class Database
 {
@@ -70,7 +70,10 @@ class Database
     {
       if (!_initialized) return null;
       var box = await Hive.openBox(table);
-      await box.put(table, map);
+      if (box.containsKey(key))
+      {
+        await box.put(key, map);
+      }
     }
     on Exception catch(e)
     {
@@ -88,7 +91,10 @@ class Database
     {
       if (!_initialized) return null;
       var box = await Hive.openBox(table);
-      if (box.containsKey(key)) await box.delete(key);
+      if (box.containsKey(key))
+      {
+        await box.delete(key);
+      }
     }
     on Exception catch(e)
     {

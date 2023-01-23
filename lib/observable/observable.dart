@@ -6,7 +6,7 @@ import 'binding.dart';
 import 'scope.dart';
 import 'package:fml/eval/eval.dart'       as EVALUATE;
 import 'package:fml/observable/blob.dart' as BLOB;
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 typedef Getter = dynamic Function();
 typedef Setter = dynamic Function(dynamic value);

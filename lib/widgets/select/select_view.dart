@@ -346,29 +346,42 @@ return LayoutBuilder(builder: builder);
     if (position != null) widget.model.offset = position;
   }
 
-  bool suggestion(OptionModel m, String pat) {
-    String? s = (m.label is TextModel) ? (m.label as TextModel).value ?? null : null ?? '' + _extractText(m)!;
-    if (s == null) return false;
-
-    else if (S.isNullOrEmpty(widget.model.matchtype) || widget.model.matchtype!.toLowerCase() == 'contains') {
-      return s.toLowerCase().contains(pat.toLowerCase());
-    }
-    else if (widget.model.matchtype!.toLowerCase() == 'startswith') {
-      return s.toLowerCase().startsWith(pat.toLowerCase());
-    }
-    else if (widget.model.matchtype!.toLowerCase() == 'endswith') {
-      return s.toLowerCase().endsWith(pat.toLowerCase());
-    }
-    return true;
-  }
-
   Future<List<OptionModel>> getSuggestions(String pattern) async
   {
-    var suggestions = widget.model.options.where((model) => suggestion(model, pattern));
-    var others = widget.model.options.where((model) => !suggestion(model, pattern));
-    var results = suggestions.toList();
+    Iterable<OptionModel> suggestions = widget.model.options.where((model) => suggestion(model, pattern));
+    Iterable<OptionModel> others = widget.model.options.where((model) => !suggestion(model, pattern));
+    List<OptionModel> results = suggestions.toList();
     if (others.isNotEmpty) results.addAll(others);
     return results;
+  }
+
+
+  bool suggestion(OptionModel m, String pat) {
+    pat = pat.toLowerCase();
+    if (m.tags != null && m.tags!.length > 0) {
+      List<String?> s = m.tags!.split(',');
+      return s.any((tag) => match(tag!.trim().toLowerCase(), pat));
+    }
+    else {
+      String? str = (m.label is TextModel) ? (m.label as TextModel).value ?? null : null ?? '' + _extractText(m)!;
+      return str == null ? false : match(str, pat);
+    }
+
+  }
+
+  bool match(String tag, String pat) {
+    if (tag == '' || tag == 'null')
+      return false;
+    else if (S.isNullOrEmpty(widget.model.matchtype) || widget.model.matchtype!.toLowerCase() == 'contains') {
+      return tag.contains(pat.toLowerCase());
+    }
+    else if (widget.model.matchtype!.toLowerCase() == 'startswith') {
+      return tag.startsWith(pat.toLowerCase());
+    }
+    else if (widget.model.matchtype!.toLowerCase() == 'endswith') {
+      return tag.endsWith(pat.toLowerCase());
+    }
+    return false;
   }
 
   static String? _extractText(OptionModel? model)
@@ -431,8 +444,8 @@ return LayoutBuilder(builder: builder);
   Future<bool> _commit() async
   {
     controller.text = controller.text.trim();
-    //if the value does not match the option value, clear only when input is disabled.
-    if(controller.text != widget.model.value && !widget.model.inputenabled && widget.model.typeahead) controller.text = widget.model.value;
+    // if the value does not match the option value, clear only when input is disabled.
+    if (controller.text != widget.model.value && !widget.model.inputenabled && widget.model.typeahead) controller.text = widget.model.value;
 
   return true;
   }

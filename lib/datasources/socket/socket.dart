@@ -98,7 +98,7 @@ class Socket
         // close the old socket
         if (_socket != null)
         {
-          _socket!.stream.listen((_) => {}, onDone: () => {}, onError: (_) => {});
+          _socket!.stream.listen((_) => null, onDone: () => null, onError: () => null);
           await _socket!.sink.close();
         }
 

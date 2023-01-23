@@ -37,12 +37,29 @@ class OptionModel extends WidgetModel
     return null;
   }
 
-  OptionModel(WidgetModel? parent, String? id, {dynamic data, dynamic labelValue, IViewableWidget? label, dynamic value}) : super(parent, id, scope: Scope(id))
+  //////////
+  /* tags */
+  //////////
+  StringObservable? _tags;
+  set tags(dynamic v) {
+    if (_tags != null) {
+      _tags!.set(v);
+    } else if (v != null) {
+      _tags = StringObservable(Binding.toKey(id, 'tags'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  String? get tags {
+    return _tags?.get();
+  }
+
+  OptionModel(WidgetModel? parent, String? id, {dynamic data, dynamic labelValue, IViewableWidget? label, dynamic value, dynamic tags}) : super(parent, id, scope: Scope(id))
   {
     this.data = data;
     if (label != null) this.label = label;
     if (labelValue != null) this.labelValue = labelValue;
     if (value != null) this.value = value;
+    if (tags != null) this.tags = tags;
   }
 
   static OptionModel? fromXml(WidgetModel? parent, XmlElement? xml, {dynamic data})
@@ -106,5 +123,7 @@ class OptionModel extends WidgetModel
     }
     else this.value = value;
     labelValue = label;
+
+    tags = Xml.get(node: xml, tag: 'tags');
   }
 }

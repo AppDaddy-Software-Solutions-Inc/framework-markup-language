@@ -42,7 +42,7 @@ ApplicationModel? get Application => System()._app;
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://applications/<app> to use the asset applications
-Uri defaultDomain = Uri.parse('https://fml.dev');
+Uri defaultDomain = Uri.parse('https://myrocketfundsv2.appdaddy.co');
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
@@ -125,11 +125,13 @@ class System extends WidgetModel implements IEventManager
   StringObservable? _version;
   String get release => _version?.get() ?? "?";
 
-  IntegerObservable? _screenheight;
-  int get screenheight => _screenheight?.get() ?? 0;
+  late IntegerObservable _screenheight;
+  int get screenheight => _screenheight.get() ?? 0;
+  set screenheight (dynamic v) => _screenheight.set(v);
 
-  IntegerObservable? _screenwidth;
+  late IntegerObservable _screenwidth;
   int get screenwidth => _screenwidth?.get() ?? 0;
+  set screenwidth (dynamic v) => _screenwidth.set(v);
 
   // UUID
   StringObservable? _uuid;

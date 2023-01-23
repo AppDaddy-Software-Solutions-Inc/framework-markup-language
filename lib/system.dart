@@ -42,7 +42,7 @@ ApplicationModel? get Application => System()._app;
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://applications/<app> to use the asset applications
-Uri defaultDomain = Uri.parse('https://myrocketfundsv2.appdaddy.co');
+Uri defaultDomain = Uri.parse('https://fml.dev');
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup

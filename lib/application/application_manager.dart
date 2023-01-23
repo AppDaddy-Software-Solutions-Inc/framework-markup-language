@@ -100,6 +100,12 @@ class _ApplicationManagerState extends State<ApplicationManager>
   {
     Widget view = Stack(children: [widget.child!]);
 
+    // set system width/height bindables
+    // necessary to keep setting this for
+    // web and desktop as screen sizes can change
+    System().screenheight = MediaQuery.of(context).size.height;
+    System().screenwidth  = MediaQuery.of(context).size.width;
+
     // system shortcuts
     if (kDebugMode)
     view = Shortcuts(shortcuts: <LogicalKeySet, Intent>

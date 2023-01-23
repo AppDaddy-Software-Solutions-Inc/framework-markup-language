@@ -88,7 +88,7 @@ class ImageView extends StatefulWidget {
           // svg image?
           if (uri.pageExtension == "svg")
                image = SvgPicture.file(file!, fit: getFit(fit), width: width, height: height);
-          else image = Image.file(file);
+          else image = Image.file(file, fit: getFit(fit));
           break;
 
         /// asset image

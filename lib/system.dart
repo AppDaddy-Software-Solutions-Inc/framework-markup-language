@@ -125,11 +125,13 @@ class System extends WidgetModel implements IEventManager
   StringObservable? _version;
   String get release => _version?.get() ?? "?";
 
-  IntegerObservable? _screenheight;
-  int get screenheight => _screenheight?.get() ?? 0;
+  late IntegerObservable _screenheight;
+  int get screenheight => _screenheight.get() ?? 0;
+  set screenheight (dynamic v) => _screenheight.set(v);
 
-  IntegerObservable? _screenwidth;
+  late IntegerObservable _screenwidth;
   int get screenwidth => _screenwidth?.get() ?? 0;
+  set screenwidth (dynamic v) => _screenwidth.set(v);
 
   // UUID
   StringObservable? _uuid;

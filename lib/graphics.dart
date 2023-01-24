@@ -2068,7 +2068,6 @@ class Graphics
     'wechat': Icons.wechat, 'wechat_outlined': Icons.wechat_outlined, 'wechat_rounded': Icons.wechat_rounded, 'wechat_sharp': Icons.wechat_sharp,
     'weekend': Icons.weekend, 'weekend_outlined': Icons.weekend_outlined, 'weekend_rounded': Icons.weekend_rounded, 'weekend_sharp': Icons.weekend_sharp,
     'west': Icons.west, 'west_outlined': Icons.west_outlined, 'west_rounded': Icons.west_rounded, 'west_sharp': Icons.west_sharp,
-    'whatsapp': Icons.whatsapp, 'whatsapp_outlined': Icons.whatsapp_outlined, 'whatsapp_rounded': Icons.whatsapp_rounded, 'whatsapp_sharp': Icons.whatsapp_sharp,
     'whatshot': Icons.whatshot, 'whatshot_outlined': Icons.whatshot_outlined, 'whatshot_rounded': Icons.whatshot_rounded, 'whatshot_sharp': Icons.whatshot_sharp,
     'wheelchair_pickup': Icons.wheelchair_pickup, 'wheelchair_pickup_outlined': Icons.wheelchair_pickup_outlined, 'wheelchair_pickup_rounded': Icons.wheelchair_pickup_rounded, 'wheelchair_pickup_sharp': Icons.wheelchair_pickup_sharp,
     'where_to_vote': Icons.where_to_vote, 'where_to_vote_outlined': Icons.where_to_vote_outlined, 'where_to_vote_rounded': Icons.where_to_vote_rounded, 'where_to_vote_sharp': Icons.where_to_vote_sharp,

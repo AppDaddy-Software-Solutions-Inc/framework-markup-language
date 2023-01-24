@@ -5,12 +5,6 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-abstract class IDataTransform
-{
-  bool? get enabled;
-  Future<void> apply(List? list);
-}
-
 class TransformModel extends WidgetModel
 {
   /// source

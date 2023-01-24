@@ -609,7 +609,7 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
     var data = Data.from(this.data);
 
     // convert to data
-    String csv = await data.toCsv();
+    String csv = await Data.toCsv(data);
 
     // encode
     var csvBytes = utf8.encode(csv);

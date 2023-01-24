@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:fml/data/data.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/data/dotnotation.dart';
 import 'package:fml/observable/scope.dart';
@@ -140,7 +141,7 @@ class Binding
       if (v is List)
       {
         if ((offset != null) && (offset! >= 0) && (v.length > offset!)) v = v[offset!];
-        if (dotnotation != null) v = Json.find(v,dotnotation!.signature);
+        if (dotnotation != null) v = Data.findValue(v,dotnotation?.signature);
       }
 
       // nothing

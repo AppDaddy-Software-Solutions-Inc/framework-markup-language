@@ -1,7 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:collection';
 import 'package:fml/data/dotnotation.dart';
+import 'package:fml/helper/xml.dart';
 import 'package:fml/log/manager.dart';
+import 'package:fml/observable/binding.dart';
 import 'package:xml2json/xml2json.dart';
 import 'dart:convert';
 
@@ -98,7 +100,7 @@ class Data with ListMixin<dynamic>
       DotNotation? dotnotation = DotNotation.fromString(root);
 
       // get sublist
-      if (dotnotation != null) data = data.fromDotNotation(dotnotation);
+      if (dotnotation != null) data = fromDotNotation(data, dotnotation);
     }
 
     return data!;
@@ -149,48 +151,48 @@ class Data with ListMixin<dynamic>
     }
   }
 
-  Data? fromDotNotation(DotNotation dotnotation)
+  static Data? fromDotNotation(Data data, DotNotation dotnotation)
   {
     try
     {
-      if (this.isEmpty) return null;
+      if (data.isEmpty) return null;
 
-      dynamic data = _list;
-      if (dotnotation.isEmpty) return data;
+      dynamic _data = data;
+      if (dotnotation.isEmpty) return _data;
 
       // parse list
       for (NotationSegment? property in dotnotation)
       if (property != null)
       {
-        if (data is Map)
+        if (_data is Map)
         {
-          if (!data.containsKey(property.name))
+          if (!_data.containsKey(property.name))
           {
-            data = null;
+            _data = null;
             break;
           }
-          data = data[property.name];
+          _data = _data[property.name];
         }
 
-        else if (data is List)
+        else if (_data is List)
         {
-          if (data.length < property.offset)
+          if (_data.length < property.offset)
           {
-            data = null;
+            _data = null;
             break;
           }
-          data = data[property.offset];
-          if ((data is Map) && (data.containsKey(property.name))) data = data[property.name];
+          _data = _data[property.offset];
+          if ((_data is Map) && (_data.containsKey(property.name))) _data = _data[property.name];
         }
 
         else
         {
-          data = null;
+          _data = null;
           break;
         }
       }
 
-      return Data(data: data);
+      return Data(data: _data);
     }
     catch(e)
     {
@@ -250,7 +252,7 @@ class Data with ListMixin<dynamic>
     return null;
   }
 
-  Future<String> toCsv() async
+  static Future<String> toCsv(Data data) async
   {
       final buffer = StringBuffer();
       String string = "";
@@ -261,9 +263,9 @@ class Data with ListMixin<dynamic>
         // Build Header
         List<String> header = [];
         List<String> columns = [];
-        if (isNotEmpty)
-        if (first is Map)
-        (first as Map).forEach((key, value)
+        if (data.isNotEmpty)
+        if (data.first is Map)
+        (data.first as Map).forEach((key, value)
         {
           columns.add(key);
           String h = key.toString();
@@ -277,7 +279,7 @@ class Data with ListMixin<dynamic>
 
         // Output Data
         if (columns.isNotEmpty)
-        forEach((map)
+        data.forEach((map)
         {
           i++;
           List<String> row = [];
@@ -300,5 +302,99 @@ class Data with ListMixin<dynamic>
         Log().exception(e);
       }
       return string;
+  }
+
+  static dynamic findValue(dynamic data, String? tag)
+  {
+    if (data == null || (data is List && data.isEmpty) || tag == null) return null;
+
+    // Get Dot Notation
+    DotNotation? dotNotation = DotNotation.fromString(tag);
+
+    if (data is List<dynamic>) data = data.isNotEmpty ? data[0] : null;
+
+    if (dotNotation != null)
+      for (NotationSegment? property in dotNotation)
+        if (property != null)
+        {
+          if (data is Map)
+          {
+            if (!data.containsKey(property.name))
+            {
+              data = null;
+              break;
+            }
+            data = data[property.name];
+
+            if ((data is Map)  && (property.offset > 0)) data = null;
+            if ((data is List) && (property.offset > data.length)) data = null;
+            if ((data is List) && (property.offset < data.length) && (property.offset >= 0))  data = data[property.offset];
+
+          }
+
+          else if (data is List)
+          {
+            if (data.length < property.offset)
+            {
+              data = null;
+              break;
+            }
+            data = data[property.offset];
+            if ((data is Map) && (data.containsKey(property.name))) data = data[property.name];
+          }
+
+          else
+          {
+            data = null;
+            break;
+          }
+        }
+
+    // this is a very odd case. if the element contains attributes, the element value will be put into a
+    // map field called "value" and its attributes will be mapped to underscore (_) names _attributename
+    if ((data is Map) && (data.containsKey('value'))) data = data['value'];
+
+    // return result;
+    return data;
+  }
+
+  static Map<String?, dynamic> findValues(List<Binding>? bindings, dynamic data)
+  {
+    Map<String?, dynamic> values = Map<String?, dynamic>();
+    List<String?> processed = [];
+    if (bindings != null)
+    for (Binding binding in bindings)
+    {
+      // fully qualified data binding name (datasource.data.field1.field2.field3...fieldn)
+      if ((binding.source == 'data'))
+      {
+        String? signature = binding.property + (binding.dotnotation?.signature != null ? ".${binding.dotnotation!.signature}" : "");
+        if (!processed.contains(binding.signature))
+        {
+          processed.add(binding.signature);
+          var value = findValue(data,signature) ?? "";
+          values[binding.signature] = value;
+        }
+      }
+    }
+    return values;
+  }
+
+  static String? replaceValue(String? string, dynamic data)
+  {
+    // replace bindings
+    List<Binding>? bindings = Binding.getBindings(string);
+    if (bindings != null)
+      for (Binding binding in bindings)
+      {
+        // fully qualified data binding name (data.value.x.y.)
+        if ((binding.source.toLowerCase() == 'data'))
+        {
+          String signature = binding.property + (binding.dotnotation?.signature != null ? ".${binding.dotnotation!.signature}" : "");
+          String value = Xml.encodeIllegalCharacters(findValue(data,signature)) ?? "";
+          string = string!.replaceAll(binding.signature, value);
+        }
+      }
+    return string;
   }
 }

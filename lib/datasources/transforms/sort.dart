@@ -1,10 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:fml/data/data.dart';
+import 'package:fml/datasources/transforms/iTransform.dart';
 import 'package:fml/datasources/transforms/transform_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/helper/common_helpers.dart';
 
-class Sort extends TransformModel implements IDataTransform
+class Sort extends TransformModel implements ITransform
 {
   ///////////
   /* Field */
@@ -94,11 +96,8 @@ class Sort extends TransformModel implements IDataTransform
 
     list.sort((a, b)
     {
-      dynamic v1;
-      if ((a != null) && (a.containsKey(field))) v1 = a[field];
-
-      dynamic v2;
-      if ((b != null) && (b.containsKey(field))) v2 = b[field];
+      dynamic v1 = Data.findValue(a, field);
+      dynamic v2 = Data.findValue(b, field);
 
       int? result = 0;
       if (type == String)
@@ -152,9 +151,9 @@ class Sort extends TransformModel implements IDataTransform
     });
   }
 
-  Future<void> apply(List? list) async
+  Future<void> apply(Data? data) async
   {
     if (enabled == false) return;
-    _sort(list);
+    _sort(data);
   }
 }

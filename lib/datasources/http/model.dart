@@ -205,7 +205,7 @@ class HttpModel extends DataSourceModel implements IDataSource
     }
 
     // convert body to data
-    Data data = Data.from(response.body);
+    Data data = Data.from(response.body, root: root);
 
     // format status message
     String? msg = response.statusMessage;

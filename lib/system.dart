@@ -130,7 +130,7 @@ class System extends WidgetModel implements IEventManager
   set screenheight (dynamic v) => _screenheight.set(v);
 
   late IntegerObservable _screenwidth;
-  int get screenwidth => _screenwidth?.get() ?? 0;
+  int get screenwidth => _screenwidth.get() ?? 0;
   set screenwidth (dynamic v) => _screenwidth.set(v);
 
   // UUID

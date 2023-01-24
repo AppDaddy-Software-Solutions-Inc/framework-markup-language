@@ -1,14 +1,14 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
+import 'package:fml/datasources/transforms/iTransform.dart';
 import 'package:fml/datasources/transforms/image_transform_model.dart';
-import 'package:fml/datasources/transforms/transform_model.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/string.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/helper/common_helpers.dart';
 
-class Flip extends ImageTransformModel implements IDataTransform
+class Flip extends ImageTransformModel implements ITransform
 {
   /// axis
   StringObservable? _axis;
@@ -48,9 +48,9 @@ class Flip extends ImageTransformModel implements IDataTransform
     axis = Xml.get(node: xml, tag: 'axis');
   }
 
-  apply(List? data) async
+  apply(Data? data) async
   {
     if (enabled == false) return;
-    if (data is Data) await flipImage(data, axis);
+    if (data != null) await flipImage(data, axis);
   }
 }

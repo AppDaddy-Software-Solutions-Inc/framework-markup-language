@@ -209,8 +209,8 @@ class Log
     // export to csv
     else
     {
-      Data data = DATABASE.Log.toData(logs);
-      String csv = await data.toCsv();
+      Data data  = DATABASE.Log.toData(logs);
+      String csv = await Data.toCsv(data);
       List<int> bytes = utf8.encode(csv);
       Platform.fileSaveAs(bytes, "$filename.csv");
     }

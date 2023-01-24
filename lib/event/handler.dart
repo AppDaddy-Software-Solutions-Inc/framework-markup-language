@@ -289,7 +289,7 @@ class EventHandler extends Eval
   }
 
   /// Sets a Hive Value and Creates and [Observable] by the same name
-  Future<bool> _handleEventStash(dynamic key, dynamic value) async => await Application.stash(key,value);
+  Future<bool> _handleEventStash(dynamic key, dynamic value) async => await System.application.stash(key,value);
 
   /// Creates an alert dialog
   Future<bool> _handleEventAlert([dynamic type, dynamic title, dynamic message]) async
@@ -430,8 +430,8 @@ class EventHandler extends Eval
   {
     if (System().firebase == null)
     {
-      String  apiKey     = Application.settings("FIREBASE_API_KEY") ?? '0000000000';
-      String? authDomain = Application.settings("FIREBASE_AUTH_DOMAIN");
+      String  apiKey     = System.application.settings("FIREBASE_API_KEY") ?? '0000000000';
+      String? authDomain = System.application.settings("FIREBASE_AUTH_DOMAIN");
 
       await fbauth.loadLibrary();
       await fbcore.loadLibrary();

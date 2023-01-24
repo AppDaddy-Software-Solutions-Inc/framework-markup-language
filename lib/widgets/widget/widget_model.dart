@@ -15,7 +15,6 @@ import 'package:fml/datasources/mqtt/mqtt_model.dart';
 import 'package:fml/datasources/nfc/nfc_model.dart';
 import 'package:fml/datasources/socket/socket_model.dart';
 import 'package:fml/datasources/zebra/model.dart';
-import 'package:fml/system.dart';
 import 'package:fml/widgets/alarm/alarm_model.dart';
 import 'package:fml/widgets/animation/animation_model.dart';
 import 'package:fml/widgets/breadcrumb/breadcrumb_model.dart';
@@ -201,20 +200,7 @@ class WidgetModel implements IDataSourceListener
   List<WidgetModel>? children;
 
   // scope
-  Scope? _scope;
-  set scope(Scope? s) {
-    if ((_scope == null) && (s != null)) {
-      _scope = s;
-      // set the parent and child scope relationship. system scope parent can never be set.
-      if ((_scope!.parent == null) && (_scope != Scope.of(System()))) {
-        _scope!.parent = Scope.of(this.parent);
-        if ((scope!.parent != null) && (scope!.parent != Scope.of(this)))
-          scope!.parent!.add(child: scope);
-      }
-    }
-  }
-
-  Scope? get scope => _scope;
+  Scope? scope;
 
   // context
   BuildContext? get context

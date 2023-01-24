@@ -12,7 +12,7 @@ import 'package:fml/helper/common_helpers.dart';
 
 class ScopeModel extends DecoratedWidgetModel implements IViewableWidget
 {
-  ScopeModel(WidgetModel parent, String? id) : super(parent, id, scope: Scope(id));
+  ScopeModel(WidgetModel parent, String? id) : super(parent, id, scope: Scope(id, parent: parent.scope));
 
   static ScopeModel? fromXml(WidgetModel parent, XmlElement xml)
   {

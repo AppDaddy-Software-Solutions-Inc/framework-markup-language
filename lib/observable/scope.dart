@@ -38,12 +38,17 @@ class Scope
   // unresolved observables
   HashMap<String?,List<Observable>> unresolved = HashMap<String?,List<Observable>>();
 
-  Scope(String? id)
+  Scope(String? id, {required Scope? parent})
   {
     this.id = id ?? Uuid().v4();
+    this.parent = parent;
+    initialize();
+  }
 
-    var app = Application;
-    app.scopeManager.add(this);
+  initialize() async
+  {
+    await System.initialized;
+    System.application.scopeManager.add(this);
   }
 
   static Scope? of(WidgetModel? model)
@@ -62,7 +67,7 @@ class Scope
     bind(observable);
 
     // Register
-    Application.scopeManager.register(observable);
+    System.application.scopeManager.register(observable);
 
     return true;
   }
@@ -97,7 +102,7 @@ class Scope
   WidgetModel? getModel(String id)
   {
     if (models.containsKey(id)) return models[id];
-    if (this.parent != null) return this.parent!.getModel(id);
+    if (parent != null) return parent!.getModel(id);
     return null;
   }
 
@@ -116,8 +121,8 @@ class Scope
         // Find Bind Source
         Observable? source;
         if (binding.scope != null)
-             source = Application.scopeManager.named(target, binding.scope, binding.key);
-        else source = Application.scopeManager.scoped(this, binding.key);
+             source = System.application.scopeManager.named(target, binding.scope, binding.key);
+        else source = System.application.scopeManager.scoped(this, binding.key);
 
         // resolved
         if (source != null)
@@ -194,7 +199,7 @@ class Scope
     if (parent != null) parent!.remove(child: this);
 
     // Unregister with Scope Manager
-    Application.scopeManager.remove(this);
+    System.application.scopeManager.remove(this);
   }
 
   void add({Scope? child})
@@ -237,7 +242,7 @@ class Scope
     if (observable == null)
     {
       Scope? scope = this;
-      if (binding.scope != null) scope = Application.scopeManager.of(binding.scope);
+      if (binding.scope != null) scope = System.application.scopeManager.of(binding.scope);
       if (scope != null)
       {
         var observable = StringObservable(binding.key, value, scope: this);
@@ -252,8 +257,8 @@ class Scope
   Observable? getObservable(Binding binding, {Observable? requestor})
   {
     if (binding.scope == null)
-         return Application.scopeManager.scoped(this, binding.key);
-    else return Application.scopeManager.named(requestor, binding.scope, binding.key);
+         return System.application.scopeManager.scoped(this, binding.key);
+    else return System.application.scopeManager.named(requestor, binding.scope, binding.key);
   }
 
   Future<String?> replaceFileReferences(String? body) async
@@ -289,7 +294,7 @@ class Scope
     if (datasources.containsKey(id)) return datasources[id];
 
     // walk up the scope tree
-    if (this.parent != null) return parent!.getDataSource(id);
+    if (parent != null) return parent!.getDataSource(id);
 
     // not found
     return null;

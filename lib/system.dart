@@ -39,13 +39,6 @@ final String version = '1.0.1';
 // Default Application
 final defaultApplication = ApplicationModel(url:defaultDomain.toString());
 
-// Active Application
-ApplicationModel get Application
-{
-  if (System()._app != null) System()._app;
-  return defaultApplication;
-}
-
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://applications/<app> to use the asset applications
@@ -74,23 +67,21 @@ class System extends WidgetModel implements IEventManager
 {
   static final String myId = "SYSTEM";
 
-  static final System _singleton = System.initialize();
-  factory System() => _singleton;
-  System.initialize() : super(null, myId) {initialized = _init();}
-
-  // system scope
-  @override
-  Scope? scope;
-
   // set to true once done
-  Future<bool>? initialized;
+  static var _completer = Completer();
+  static get initialized => _completer.future;
+
+  static final System _singleton = System._initialize();
+  factory System() => _singleton;
+  System._initialize() : super(null, myId, scope: Scope(myId, parent: null)) {_init();}
 
   // current application
-  ApplicationModel? _app;
+  static ApplicationModel? _application;
+  static ApplicationModel get application => _application ?? defaultApplication;
 
   // current theme
-  late final ThemeModel _theme;
-  ThemeModel get theme => _theme;
+  static late ThemeModel _theme;
+  static ThemeModel get theme => _theme;
 
   late final Connectivity connection;
 
@@ -183,15 +174,12 @@ class System extends WidgetModel implements IEventManager
   Jwt? get token => _token;
 
   // firebase
-  FirebaseApp? get firebase => _app?.firebase;
-  set firebase(FirebaseApp? v) => _app?.firebase = v;
+  FirebaseApp? get firebase => _application?.firebase;
+  set firebase(FirebaseApp? v) => _application?.firebase = v;
 
-  Future<bool> _init() async
+  _init() async
   {
     Log().info('Initializing FML Engine V$version ...');
-
-    // initialize the system scope
-    scope = Scope(myId);
 
     // initialize platform
     await Platform.init();
@@ -217,7 +205,8 @@ class System extends WidgetModel implements IEventManager
     // start the Janitor
     await janitor.start();
 
-    return true;
+    // signal complete
+    _completer.complete(true);
   }
 
   Future _initConnectivity() async
@@ -460,7 +449,7 @@ class System extends WidgetModel implements IEventManager
 
   void setApplicationTitle(String? title) async
   {
-    title = title ?? _app?.settings("APPLICATION_NAME");
+    title = title ?? application.settings("APPLICATION_NAME");
     if (!S.isNullOrEmpty(title))
     {
       // print('setting title to $title');
@@ -473,9 +462,9 @@ class System extends WidgetModel implements IEventManager
   {
     // Close the old application if one
     // is running
-    if (this._app != null)
+    if (_application != null)
     {
-      Log().info("Closing Application ${_app!.url}");
+      Log().info("Closing Application ${_application!.url}");
 
       // set the default domain on the Url utilities
       URI.rootHost = "";
@@ -489,7 +478,7 @@ class System extends WidgetModel implements IEventManager
       _host?.set(null);
 
       // close application
-      _app?.close();
+      _application!.close();
     }
 
     Log().info("Activating Application (${app.title}) @ ${app.domain}");
@@ -498,10 +487,10 @@ class System extends WidgetModel implements IEventManager
     URI.rootHost = app.domain ?? "";
 
     // set the current application
-    _app = app;
+    _application = app;
 
     // launch the application
-    _app?.launch(theme: theme);
+    app.launch(theme: theme);
 
     // set credentials
     if (app.jwt != null) logon(app.jwt);

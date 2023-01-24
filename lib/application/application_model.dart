@@ -6,7 +6,6 @@ import 'package:fml/config/config_model.dart';
 import 'package:fml/hive/database.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/mirror/mirror.dart';
-import 'package:fml/observable/scope.dart';
 import 'package:fml/observable/scope_manager.dart';
 import 'package:fml/system.dart';
 import 'package:fml/template/template.dart';
@@ -27,6 +26,8 @@ class ApplicationModel extends WidgetModel
 
   // used for social media
   FirebaseApp? firebase;
+
+  ScopeManager scopeManager = ScopeManager();
 
   // mirrors
   Mirror? mirror;
@@ -80,17 +81,8 @@ class ApplicationModel extends WidgetModel
 
   Map<String,String?>? get configParameters => _config?.parameters;
 
-  ApplicationModel({String? key, required this.url, this.title, this.icon, this.page, this.order, String? jwt, dynamic stash}) : super(System(), myId, scope: Scope(myId))
+  ApplicationModel({String? key, required this.url, this.title, this.icon, this.page, this.order, String? jwt, dynamic stash}) : super(System(), myId)
   {
-    // add system scope
-    scopeManager.add(System().scope!);
-
-    // add system scope
-    if (this.scope != null) scopeManager.add(scope!);
-
-    // alias as GLOBAL
-    if (this.scope != null) scopeManager.add(scope!,alias: "GLOBAL");
-
     // sett application key
     this.key = key ?? id;
 
@@ -125,6 +117,15 @@ class ApplicationModel extends WidgetModel
   // initializes the app
   Future<bool> initialize() async
   {
+    // wait for the system to initialize
+    await System.initialized;
+
+    // add system scope
+    this.scopeManager.add(System().scope!);
+
+    // add GLOBAL alias to this scope
+    this.scopeManager.add(scope!, alias: "GLOBAL");
+
     var config = await _getConfig(true);
     if (config != null) _config = config;
 

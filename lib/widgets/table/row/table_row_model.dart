@@ -311,7 +311,7 @@ class TableRowModel extends DecoratedWidgetModel
     dynamic wrap,
     dynamic color,
     dynamic onclick,
-  }) : super(parent, id, scope: Scope(id))
+  }) : super(parent, id, scope: Scope(id, parent: parent.scope))
   {
     this.data = data;
     this.height = height;

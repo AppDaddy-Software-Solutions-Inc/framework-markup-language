@@ -32,13 +32,13 @@ class GridItemModel extends DecoratedWidgetModel
   }
   bool get dirty => _dirty?.get() ?? false;
 
-  GridItemModel(WidgetModel? parent, String?  id, {dynamic data, String?  type, dynamic backgroundcolor}) : super(parent, id, scope: Scope(id))
+  GridItemModel(WidgetModel parent, String?  id, {dynamic data, String?  type, dynamic backgroundcolor}) : super(parent, id, scope: Scope(id, parent: parent.scope))
   {
     this.data = data;
     this.type = type;
   }
 
-  static GridItemModel? fromXml(WidgetModel? parent, XmlElement? xml, {dynamic data})
+  static GridItemModel? fromXml(WidgetModel parent, XmlElement? xml, {dynamic data})
   {
     GridItemModel? model;
     try

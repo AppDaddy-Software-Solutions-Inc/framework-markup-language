@@ -74,7 +74,7 @@ class Binding
       List<String> parts = binding.split('.');
 
       // scoped?
-      if (parts.length > 1 && Application.scopeManager.directory.containsKey(parts[0].trim()))
+      if (parts.length > 1 && System.application.scopeManager.directory.containsKey(parts[0].trim()))
       {
         scope = parts[0].trim();
         parts.removeAt(0);

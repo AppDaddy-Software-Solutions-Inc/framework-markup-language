@@ -74,14 +74,16 @@ class _SelectViewState extends State<SelectView> implements IModelListener {
 
   }
 
-  _inputSelection(res) {
-    if (widget.model.typeahead == true && res != null) {
-      if (widget.model.inputenabled == true) {
+  _inputSelection(res)
+  {
+    if (widget.model.typeahead == true && res != null)
+    {
+      if (widget.model.inputenabled == true)
+      {
         // create a new item in dropdown
         TextModel itemLabel = TextModel(null, null, value: res);
         OptionModel newOption = OptionModel(null, null, label: itemLabel, value: res);
-        _input =
-            DropdownMenuItem(value: newOption, child: newOption.label!.getView());
+        _input = DropdownMenuItem(value: newOption, child: newOption.label!.getView());
         changedDropDownItem(_input.value);
         _inputInitialized = true;
       } else {

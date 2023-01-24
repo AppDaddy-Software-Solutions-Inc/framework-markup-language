@@ -14,7 +14,7 @@ class Socket
   {
     if (url is String)
     {
-      var scheme = Application.secure ? "wss" : "ws";
+      var scheme = System.application.secure ? "wss" : "ws";
       _uri = Uri.parse(url).replace(scheme: scheme);
     }
     else if (url is Uri) _uri = url;

@@ -120,7 +120,7 @@ class ListItemModel extends DecoratedWidgetModel
 
   bool selected = false;
 
-  ListItemModel(WidgetModel parent, String?  id, {dynamic data, String?  type, dynamic backgroundcolor, dynamic margin}) : super(parent, id, scope: Scope(id))
+  ListItemModel(WidgetModel parent, String?  id, {dynamic data, String?  type, dynamic backgroundcolor, dynamic margin}) : super(parent, id, scope: Scope(id, parent: parent.scope))
   {
     this.data             = data;
     this.type             = type;

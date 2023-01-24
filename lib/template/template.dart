@@ -36,10 +36,10 @@ class Template
       if (parameters != null) xml = Binding.applyMap(xml, parameters, caseSensitive: false);
 
       // Replace query parameters
-      xml = Binding.applyMap(xml, Application.queryParameters, caseSensitive: false);
+      xml = Binding.applyMap(xml, System.application.queryParameters, caseSensitive: false);
 
       // Replace config parameters
-      xml = Binding.applyMap(xml, Application.configParameters, caseSensitive: false);
+      xml = Binding.applyMap(xml, System.application.configParameters, caseSensitive: false);
 
       // Replace System Uuid
       String s = Binding.toKey(System.myId, 'uuid')!;
@@ -76,7 +76,7 @@ class Template
     String? template;
 
     // auto refresh
-    refresh = refresh || Application.autoRefresh;
+    refresh = refresh || System.application.autoRefresh;
 
     // get template from file
     if (uri.scheme != "file")
@@ -88,7 +88,7 @@ class Template
         template = await TemplateManager().fromServer(url);
 
         // save to local storage
-        if (template != null && Application.cacheContent) TemplateManager().toDisk(url, template);
+        if (template != null && System.application.cacheContent) TemplateManager().toDisk(url, template);
       }
 
       // get template from memory
@@ -111,7 +111,7 @@ class Template
         template = await TemplateManager().fromServer(url);
 
         // save to local storage
-        if (template != null && Application.cacheContent) TemplateManager().toDisk(url, template);
+        if (template != null && System.application.cacheContent) TemplateManager().toDisk(url, template);
       }
     }
 

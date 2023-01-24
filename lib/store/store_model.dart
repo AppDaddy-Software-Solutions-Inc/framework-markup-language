@@ -104,8 +104,8 @@ class Store extends WidgetModel implements IModelListener
 
     // change theme
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    String brightness   = Application.settings('BRIGHTNESS') ?? 'light';
-    String color        = Application.settings('COLOR_SCHEME') ?? 'lightblue';
+    String brightness   = System.application.settings('BRIGHTNESS') ?? 'light';
+    String color        = System.application.settings('COLOR_SCHEME') ?? 'lightblue';
     themeNotifier.setTheme(brightness, color);
     themeNotifier.mapSystemThemeBindables();
   }

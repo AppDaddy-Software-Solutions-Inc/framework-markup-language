@@ -25,8 +25,11 @@ class _SplashState extends State<Splash>
 
   Future<void> initialize() async
   {
+    // instantiate the system singleton,
+    System();
+
     // initialize the system
-    await System().initialized;
+    await System.initialized;
 
     // return
     if (widget.onInitializationComplete != null) widget.onInitializationComplete!();

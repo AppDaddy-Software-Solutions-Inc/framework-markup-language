@@ -171,7 +171,7 @@ class Platform
     }
     catch (e)
     {
-      Log().exception(e, caller: 'platform.vm.dart => bool readFile($filepath)');
+      Log().exception(e, caller: 'platform.vm.dart => bool readFileBytes($filepath)');
       return null;
     }
   }
@@ -192,7 +192,7 @@ class Platform
     }
     catch (e)
     {
-      Log().exception(e, caller: 'platform.vm.dart => bool fileWriteBytes($folder)');
+      Log().exception(e, caller: 'platform.vm.dart => bool createFolder($folder)');
       return null;
     }
   }

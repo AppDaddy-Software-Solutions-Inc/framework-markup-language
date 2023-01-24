@@ -2,6 +2,7 @@
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/data/dotnotation.dart';
 import 'package:fml/observable/scope.dart';
+import 'package:fml/system.dart';
 
 class Binding
 {
@@ -43,9 +44,10 @@ class Binding
 
   String? get key => toKey(source, property);
 
-  static String? toKey(String? source, String? property)
+  static String? toKey(String? source, [String? property])
   {
-    if ((source == null) || (property == null)) return null;
+    if (source == null) return null;
+    if (property == null) property = 'value';
     return (source + '.' + property).toLowerCase();
   }
 
@@ -68,16 +70,15 @@ class Binding
       String? property;
       int? offset;
 
-      // scope
-      List<String> parts = binding.split('@');
-      if (parts.length > 1)
+      // split binding signature int source.property
+      List<String> parts = binding.split('.');
+
+      // scoped?
+      if (parts.length > 1 && Application.scopeManager.directory.containsKey(parts[0].trim()))
       {
         scope = parts[0].trim();
-        binding = parts[1];
+        parts.removeAt(0);
       }
-
-      // split binding signature int source.property
-      parts = binding.split('.');
 
       // source id
       if (parts.isNotEmpty)

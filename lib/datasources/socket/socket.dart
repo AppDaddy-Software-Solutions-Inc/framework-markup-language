@@ -14,7 +14,7 @@ class Socket
   {
     if (url is String)
     {
-      var scheme = (Application?.secure ?? false) ? "wss" : "ws";
+      var scheme = Application.secure ? "wss" : "ws";
       _uri = Uri.parse(url).replace(scheme: scheme);
     }
     else if (url is Uri) _uri = url;
@@ -98,7 +98,7 @@ class Socket
         // close the old socket
         if (_socket != null)
         {
-          _socket!.stream.listen((_) => null, onDone: () => null, onError: () => null);
+          _socket!.stream.listen((_) => null, onDone: () => null, onError: (_) => null);
           await _socket!.sink.close();
         }
 

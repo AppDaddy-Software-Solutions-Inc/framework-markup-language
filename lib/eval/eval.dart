@@ -449,7 +449,7 @@ class Eval
   /// Hash a String
   static String? _hash(dynamic s, [dynamic key])
   {
-    if (key == null) key = Application?.settings("HASHKEY");
+    if (key == null) key = Application.settings("HASHKEY");
     if (key == null) return null;
     key = S.toStr(key);
     try

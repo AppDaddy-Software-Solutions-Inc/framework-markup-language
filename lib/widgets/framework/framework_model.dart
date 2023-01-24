@@ -327,7 +327,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
         if (!connected)
         {
           // fetch logon template
-          var login = Application?.loginPage;
+          var login = Application.loginPage;
           if (!S.isNullOrEmpty(login)) template = await Template.fetch(url:login!, refresh: refresh);
           xml = template.document!.rootElement;
         }
@@ -336,7 +336,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
         else if (myrights! < requiredRights)
         {
           // fetch not authorized template
-          var unauthorized = Application?.unauthorizedPage;
+          var unauthorized = Application.unauthorizedPage;
           if (!S.isNullOrEmpty(unauthorized)) template = await Template.fetch(url: unauthorized!, refresh: refresh);
           xml = template.document!.rootElement;
         }
@@ -346,7 +346,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
       deserialize(xml);
 
       // inject debug window
-      if (!S.isNullOrEmpty(Application?.debugPage)) await _injectDebugModal(this, refresh);
+      if (!S.isNullOrEmpty(Application.debugPage)) await _injectDebugModal(this, refresh);
 
       // set template name
       templateName = url.split("?")[0];
@@ -473,7 +473,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
       // logged on?
       if (!connected)
       {
-        var login = Application?.loginPage;
+        var login = Application.loginPage;
         if (!S.isNullOrEmpty(login)) template = await Template.fetch(url: login!, refresh: refresh);
         xml = template.document!.rootElement;
       }
@@ -481,17 +481,17 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
       // authorized?
       else if (myrights! < requiredRights)
       {
-        var unauthorized = Application?.unauthorizedPage;
+        var unauthorized = Application.unauthorizedPage;
         if (!S.isNullOrEmpty(unauthorized)) template = await Template.fetch(url: unauthorized!, refresh: refresh);
         xml = template.document!.rootElement;
       }
     }
 
-    FrameworkModel? model = FrameworkModel.fromXml(Application!, xml);
+    FrameworkModel? model = FrameworkModel.fromXml(Application, xml);
     if (model != null)
     {
       // inject debug window
-      if (!S.isNullOrEmpty(Application?.debugPage)) await _injectDebugModal(model, refresh);
+      if (!S.isNullOrEmpty(Application.debugPage)) await _injectDebugModal(model, refresh);
 
       model.templateName = templateName.split("?")[0];
       if (model.dependency != null) model.dependency = dependency;
@@ -512,7 +512,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
   {
     {
       // get the debug template
-      var debug = Application?.debugPage;
+      var debug = Application.debugPage;
       if (!S.isNullOrEmpty(debug))
       {
         // get the debug template

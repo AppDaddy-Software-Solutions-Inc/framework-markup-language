@@ -3,21 +3,24 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/config/config_model.dart';
-import 'package:fml/crypto/crypto.dart';
 import 'package:fml/hive/database.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/mirror/mirror.dart';
 import 'package:fml/observable/scope.dart';
+import 'package:fml/observable/scope_manager.dart';
 import 'package:fml/system.dart';
+import 'package:fml/template/template.dart';
 import 'package:fml/token/token.dart';
 import 'package:fml/widgets/theme/theme_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:xml/xml.dart';
 
 class ApplicationModel extends WidgetModel
 {
-  static final String Id = "APPLICATION";
+  static final String myId = "APPLICATION";
 
   static String tableName = "APP";
+
   late final String key;
 
   late Future<bool> initialized;
@@ -49,7 +52,10 @@ class ApplicationModel extends WidgetModel
   String? page;
   int? order;
 
+  // config
   String? config;
+  ConfigModel? _config;
+  bool get hasConfig => _config != null;
 
   // application stash
   Map<String, String> _stash = {};
@@ -74,11 +80,17 @@ class ApplicationModel extends WidgetModel
 
   Map<String,String?>? get configParameters => _config?.parameters;
 
-  ConfigModel? _config;
-  bool get hasConfig => _config != null;
-
-  ApplicationModel({String? key, required this.url, this.title, this.icon, this.page, this.order, String? jwt, dynamic stash}) : super(System(), Id, scope: Scope(Id))
+  ApplicationModel({String? key, required this.url, this.title, this.icon, this.page, this.order, String? jwt, dynamic stash}) : super(System(), myId, scope: Scope(myId))
   {
+    // add system scope
+    scopeManager.add(System().scope!);
+
+    // add system scope
+    if (this.scope != null) scopeManager.add(scope!);
+
+    // alias as GLOBAL
+    if (this.scope != null) scopeManager.add(scope!,alias: "GLOBAL");
+
     // sett application key
     this.key = key ?? id;
 
@@ -99,17 +111,6 @@ class ApplicationModel extends WidgetModel
     initialized = initialize();
   }
 
-  static Future<ApplicationModel> fromUrl(String url) async
-  {
-    // build the model
-    var app = ApplicationModel(url: url);
-
-    // load the config
-    await app.initialized;
-
-    return app;
-  }
-
   static Future<ApplicationModel?> _fromMap(dynamic map) async
   {
     ApplicationModel? app;
@@ -124,8 +125,12 @@ class ApplicationModel extends WidgetModel
   // initializes the app
   Future<bool> initialize() async
   {
-    var model = await _getConfig(true);
-    if (model != null) _config = model;
+    var config = await _getConfig(true);
+    if (config != null) _config = config;
+
+    // get global template
+    await _buildGlobals();
+
     return true;
   }
 
@@ -202,6 +207,21 @@ class ApplicationModel extends WidgetModel
     return model;
   }
 
+  // loads the globals
+  Future _buildGlobals() async
+  {
+    Uri? uri = URI.parse(url);
+    if (uri != null)
+    {
+      // get global.xml
+      uri = uri.setPage("global.xml");
+      XmlDocument? template = await Template.fetchTemplate(url: uri.url, refresh: true);
+
+      // deserialize the returned template
+      if (template != null) this.deserialize(template.rootElement);
+    }
+  }
+
   void setTheme(ThemeModel theme)
   {
     /// Initial Theme Setting
@@ -254,6 +274,14 @@ class ApplicationModel extends WidgetModel
     // set stash values
     for (var entry in _stash.entries) scope?.setObservable("STASH.${entry.key}", entry.value);
 
+    // start all datasources
+    if (datasources != null)
+    for (var datasource in datasources!)
+    {
+      if (datasource.autoexecute != false) datasource.start();
+      datasource.initialized = true;
+    }
+
     // set the theme if supplied
     if (theme != null) setTheme(theme);
   }
@@ -262,6 +290,10 @@ class ApplicationModel extends WidgetModel
   {
     // clear stash values
     for (var entry in _stash.entries) scope?.setObservable("STASH.${entry.key}", null);
+
+    // start all datasources
+    if (datasources != null)
+      for (var datasource in datasources!) datasource.stop();
   }
 
 
@@ -270,6 +302,7 @@ class ApplicationModel extends WidgetModel
     // close the app
     close();
 
+    // dispose of all children
     super.dispose();
   }
 

@@ -36,8 +36,15 @@ if (dart.library.html) 'package:fml/platform/platform.web.dart';
 // application build version
 final String version = '1.0.1';
 
+// Default Application
+final defaultApplication = ApplicationModel(url:defaultDomain.toString());
+
 // Active Application
-ApplicationModel? get Application => System()._app;
+ApplicationModel get Application
+{
+  if (System()._app != null) System()._app;
+  return defaultApplication;
+}
 
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
@@ -65,15 +72,15 @@ typedef CommitCallback = Future<bool> Function();
 
 class System extends WidgetModel implements IEventManager
 {
-  static final String Id = "SYSTEM";
+  static final String myId = "SYSTEM";
 
   static final System _singleton = System.initialize();
   factory System() => _singleton;
-  System.initialize() : super(null, Id) {initialized = _init();}
+  System.initialize() : super(null, myId) {initialized = _init();}
 
   // system scope
   @override
-  Scope? scope = Scope(Id);
+  Scope? scope;
 
   // set to true once done
   Future<bool>? initialized;
@@ -130,7 +137,7 @@ class System extends WidgetModel implements IEventManager
   set screenheight (dynamic v) => _screenheight.set(v);
 
   late IntegerObservable _screenwidth;
-  int get screenwidth => _screenwidth?.get() ?? 0;
+  int get screenwidth => _screenwidth.get() ?? 0;
   set screenwidth (dynamic v) => _screenwidth.set(v);
 
   // UUID
@@ -182,6 +189,9 @@ class System extends WidgetModel implements IEventManager
   Future<bool> _init() async
   {
     Log().info('Initializing FML Engine V$version ...');
+
+    // initialize the system scope
+    scope = Scope(myId);
 
     // initialize platform
     await Platform.init();
@@ -258,15 +268,15 @@ class System extends WidgetModel implements IEventManager
   {
     // platform root path
     URI.rootPath  = await Platform.path ?? "";
-    _rootpath = StringObservable(Binding.toKey(id, 'rootpath'), URI.rootPath, scope: scope);
+    _rootpath = StringObservable(Binding.toKey('rootpath'), URI.rootPath, scope: scope);
 
     // connected
-    _connected = BooleanObservable(Binding.toKey(id, 'connected'), null, scope: scope);
+    _connected = BooleanObservable(Binding.toKey('connected'), null, scope: scope);
 
     // active application settings
-    _domain = StringObservable(Binding.toKey(id, 'domain'), null, scope: scope);
-    _scheme = StringObservable(Binding.toKey(id, 'scheme'), null, scope: scope);
-    _host   = StringObservable(Binding.toKey(id, 'host'),   null, scope: scope);
+    _domain = StringObservable(Binding.toKey('domain'), null, scope: scope);
+    _scheme = StringObservable(Binding.toKey('scheme'), null, scope: scope);
+    _host   = StringObservable(Binding.toKey('host'),   null, scope: scope);
 
     // create the theme
     _theme = ThemeModel(this, "THEME");
@@ -275,21 +285,21 @@ class System extends WidgetModel implements IEventManager
     _jwt = StringObservable(Binding.toKey(id, 'jwt'), null, scope: scope);
 
     // device settings
-    _screenheight = IntegerObservable(Binding.toKey(id, 'screenheight'), WidgetsBinding.instance.window.physicalSize.height, scope: scope);
-    _screenwidth  = IntegerObservable(Binding.toKey(id, 'screenwidth'),  WidgetsBinding.instance.window.physicalSize.width, scope: scope);
-    _userplatform = StringObservable(Binding.toKey(id, 'platform'), platform, scope: scope);
-    _useragent    = StringObservable(Binding.toKey(id, 'useragent'), Platform.useragent, scope: scope);
-    _version      = StringObservable(Binding.toKey(id, 'version'), version, scope: scope);
-    _uuid         = StringObservable(Binding.toKey(id, 'uuid'), uuid(), scope: scope, getter: uuid);
+    _screenheight = IntegerObservable(Binding.toKey('screenheight'), WidgetsBinding.instance.window.physicalSize.height, scope: scope);
+    _screenwidth  = IntegerObservable(Binding.toKey('screenwidth'),  WidgetsBinding.instance.window.physicalSize.width, scope: scope);
+    _userplatform = StringObservable(Binding.toKey('platform'), platform, scope: scope);
+    _useragent    = StringObservable(Binding.toKey('useragent'), Platform.useragent, scope: scope);
+    _version      = StringObservable(Binding.toKey('version'), version, scope: scope);
+    _uuid         = StringObservable(Binding.toKey('uuid'), uuid(), scope: scope, getter: uuid);
 
     // system dates
-    _epoch  = IntegerObservable(Binding.toKey(id, 'epoch'), epoch(), scope: scope, getter: epoch);
-    _year   = IntegerObservable(Binding.toKey(id, 'year'), year(), scope: scope, getter: year);
-    _month  = IntegerObservable(Binding.toKey(id, 'month'), month(), scope: scope, getter: month);
-    _day    = IntegerObservable(Binding.toKey(id, 'day'), day(), scope: scope, getter: day);
-    _hour   = IntegerObservable(Binding.toKey(id, 'hour'), hour(), scope: scope, getter: hour);
-    _minute = IntegerObservable(Binding.toKey(id, 'minute'), minute(), scope: scope, getter: minute);
-    _second = IntegerObservable(Binding.toKey(id, 'second'), second(), scope: scope, getter: second);
+    _epoch  = IntegerObservable(Binding.toKey('epoch'), epoch(), scope: scope, getter: epoch);
+    _year   = IntegerObservable(Binding.toKey('year'), year(), scope: scope, getter: year);
+    _month  = IntegerObservable(Binding.toKey('month'), month(), scope: scope, getter: month);
+    _day    = IntegerObservable(Binding.toKey('day'), day(), scope: scope, getter: day);
+    _hour   = IntegerObservable(Binding.toKey('hour'), hour(), scope: scope, getter: hour);
+    _minute = IntegerObservable(Binding.toKey('minute'), minute(), scope: scope, getter: minute);
+    _second = IntegerObservable(Binding.toKey('second'), second(), scope: scope, getter: second);
 
     // add system level log model datasource
     if (datasources == null) datasources = [];

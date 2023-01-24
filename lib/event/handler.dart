@@ -271,29 +271,25 @@ class EventHandler extends Eval
     bool ok = true;
     if (S.isNullOrEmpty(variable)) return ok;
 
-    WidgetModel model = this.model;
-    if ((!S.isNullOrEmpty(global)) && (S.toBool(global) == true))
-    {
-      model = System();
-    }
+    // removed global references
+    // this is all done in the global.xml file now
+    //WidgetModel model = this.model;
+    //if ((!S.isNullOrEmpty(global)) && (S.toBool(global) == true))
+    //{
+    //  model = System();
+    //}
 
     Scope? scope = Scope.of(model);
     if (scope == null) return ok;
 
-    //////////////////////
-    /* Set the Variable */
-    //////////////////////
+    // set the variable
     scope.setObservable(variable.toString(), value != null ? value.toString() : null);
 
     return ok;
   }
 
   /// Sets a Hive Value and Creates and [Observable] by the same name
-  Future<bool> _handleEventStash(dynamic key, dynamic value) async
-  {
-    if (Application == null) return true;
-    return await Application!.stash(key,value);
-  }
+  Future<bool> _handleEventStash(dynamic key, dynamic value) async => await Application.stash(key,value);
 
   /// Creates an alert dialog
   Future<bool> _handleEventAlert([dynamic type, dynamic title, dynamic message]) async
@@ -434,8 +430,8 @@ class EventHandler extends Eval
   {
     if (System().firebase == null)
     {
-      String  apiKey     = Application?.settings("FIREBASE_API_KEY") ?? '0000000000';
-      String? authDomain = Application?.settings("FIREBASE_AUTH_DOMAIN");
+      String  apiKey     = Application.settings("FIREBASE_API_KEY") ?? '0000000000';
+      String? authDomain = Application.settings("FIREBASE_AUTH_DOMAIN");
 
       await fbauth.loadLibrary();
       await fbcore.loadLibrary();

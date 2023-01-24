@@ -57,7 +57,6 @@ class VariableModel extends WidgetModel
       String? id,
       {String? type, dynamic value, dynamic onchange, }) : super(parent, id)
   {
-
     if (value    != null) this.value    = value;
     if (onchange != null) this.onchange = onchange;
   }

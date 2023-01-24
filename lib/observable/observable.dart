@@ -181,18 +181,14 @@ class Observable
 
   dispose()
   {
-    /////////////////////
-    /* Clear Listeners */
-    /////////////////////
+    // Clear Listeners
     if (listeners != null)
     {
       listeners!.clear();
       listeners = null;
     }
 
-    ///////////////////
-    /* Clear Sources */
-    ///////////////////
+    // Clear Sources
     if (sources != null)
     {
       sources!.forEach((source) => source.removeListener(this.onObservableChange));

@@ -427,9 +427,15 @@ class _BoxViewState extends State<BoxView> implements IModelListener {
             maxHeight: constr.maxHeight!,
           ),
         );
-      } else {
+      }
+      else {
         view = UnconstrainedBox(
-          child: view,
+          child:
+            ConstrainedBox(
+              child: view,
+              constraints: BoxConstraints(
+                  minHeight: constr.minHeight!,
+                  minWidth: constr.minWidth!,))
         );
       }
     } else {

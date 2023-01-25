@@ -88,7 +88,7 @@ class _RowViewState extends State<RowView> implements IModelListener {
     WrapCrossAlignment? crossWrapAlignment = align['crossWrapAlignment'];
 
     // set main axis size
-    var mainAxisSize = widget.model.shrinkwrap == true || widget.model.expand == false ? MainAxisSize.min : MainAxisSize.max;
+    var mainAxisSize = widget.model.expand == false ? MainAxisSize.min : MainAxisSize.max;
 
     /// safeguard - don't allow infinite size
     if (mainAxisSize == MainAxisSize.max && constraints.maxWidth == double.infinity) mainAxisSize = MainAxisSize.min;

@@ -98,7 +98,7 @@ return LayoutBuilder(builder: builder);
     //Alignment aligned = align['aligned'];
 
     // set main axis size
-    var mainAxisSize = widget.model.shrinkwrap == true || widget.model.expand == false ? MainAxisSize.min : MainAxisSize.max;
+    var mainAxisSize = widget.model.expand == false ? MainAxisSize.min : MainAxisSize.max;
 
     /// safeguard - don't allow infinite size
     if (mainAxisSize == MainAxisSize.max && constraints.maxHeight == double.infinity) mainAxisSize = MainAxisSize.min;

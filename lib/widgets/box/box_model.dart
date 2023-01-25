@@ -202,7 +202,6 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
   bool get wrap => _wrap?.get() ?? false;
 
   /// Expand, which is true by default, tells the widget if it should shrink to its children, or grow to its parents constraints. Width/Height attributes will override expand.
-  //replaced shrinkwrap with expand.
   BooleanObservable? _expand;
   set expand(dynamic v) {
     if (_expand != null) {
@@ -317,7 +316,12 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
     /// Layout Attributes
     layout = Xml.get(node: xml, tag: 'layout');
     center = Xml.get(node: xml, tag: 'center');
-    expand = Xml.get(node: xml, tag: 'expand');
+
+    // expand="false" is same as adding attribute shrink
+    var expand = Xml.get(node: xml, tag: 'expand');
+    if (expand == null && Xml.hasAttribute(node: xml, tag: 'shrink')) expand = 'false';
+    this.expand = expand;
+
     wrap = Xml.get(node: xml, tag: 'wrap');
   }
 

@@ -24,7 +24,6 @@ class StackModel extends DecoratedWidgetModel implements IViewableWidget
   bool get center => _center?.get() ?? false;
 
   /// Expand, which is true by default, tells the widget if it should shrink to its children, or grow to its parents constraints. Width/Height attributes will override expand.
-  //replaced shrinkwrap with expand.
   BooleanObservable? _expand;
   set expand(dynamic v) {
     if (_expand != null) {
@@ -90,7 +89,11 @@ class StackModel extends DecoratedWidgetModel implements IViewableWidget
     /// Constraint Attributes
     /// Layout Attributes
     center = Xml.get(node: xml, tag: 'center');
-    expand = Xml.get(node: xml, tag: 'expand');
+
+    // expand="false" is same as adding attribute shrink
+    var expand = Xml.get(node: xml, tag: 'expand');
+    if (expand == null && Xml.hasAttribute(node: xml, tag: 'shrink')) expand = 'false';
+    this.expand = expand;
 
     ////////////////////////////
     /* Sort Children by Depth */

@@ -213,15 +213,17 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
     {
       // is a valid url query string?
       String msg = payload.message!.trim();
+
+      // parse the string
       Uri? uri = URI.parse(msg);
-      if (uri == null) uri = URI.parse("http://localhost" + (msg.startsWith("?") ? "" : "?") + msg);
+      if (uri != null && !uri.hasQuery) uri = URI.parse("?$msg");
       if (uri != null && uri.hasQuery)
       {
         // add payload url parameters
         Map<String, dynamic> map = Map<String, dynamic>();
         uri.queryParameters.forEach((k, v) => map[k] = v);
         if(!map.containsKey('payload')) map['payload'] = payload.message;
-        if(!map.containsKey('payload')) map['serial'] = payload.id;
+        if(!map.containsKey('serial'))  map['serial'] = payload.id;
         data.add(map);
       }
     }

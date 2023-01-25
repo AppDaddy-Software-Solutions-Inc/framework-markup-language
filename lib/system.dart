@@ -34,7 +34,12 @@ if (dart.library.io)   'package:fml/platform/platform.vm.dart'
 if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 // application build version
-final String version = '1.0.1';
+final String version = '1.0.2';
+
+// application title
+// only used in Android (when viewing "open" applications)
+// not used in IOS, Desktop or Web
+final String applicationTitle = "Flutter Markup Language " + version;
 
 // Default Application
 final defaultApplication = ApplicationModel(System(),url:defaultDomain.toString());

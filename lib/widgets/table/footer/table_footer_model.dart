@@ -60,7 +60,7 @@ class TableFooterModel extends DecoratedWidgetModel
     return _borderwidth?.get();
   }
 
-  TableFooterModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic color}) : super(parent, id, scope: Scope(id, parent: parent.scope))
+  TableFooterModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic color}) : super(parent, id, scope: Scope(parent: parent.scope))
   {
     this.width  = width;
     this.height = height;

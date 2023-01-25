@@ -49,7 +49,7 @@ Uri defaultDomain = Uri.parse(defaultUrl);
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
-final ApplicationTypes appType  = ApplicationTypes.MultiApp;
+final ApplicationTypes appType  = ApplicationTypes.SingleApp;
 
 enum ApplicationTypes{ SingleApp, MultiApp }
 
@@ -83,7 +83,7 @@ class System extends WidgetModel implements IEventManager
 
   static final System _singleton = System._initialize();
   factory System() => _singleton;
-  System._initialize() : super(null, myId, scope: Scope(myId, parent: null)) {_initialize();}
+  System._initialize() : super(null, myId, scope: Scope(id: myId, parent: null)) {_initialize();}
 
   // current application
   static ApplicationModel? _application;

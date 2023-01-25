@@ -42,17 +42,16 @@ class Eval extends TransformModel implements ITransform
     if ((list== null) || (source == null)) return null;
 
     List<Binding>? bindings = Binding.getBindings(source);
-    list.forEach((data)
+    list.forEach((row)
     {
-      try
-      {
-        // get variables
-        Map<String?, dynamic> variables = Data.findValues(bindings, data);
+      // get variables
+      Map<String?, dynamic> variables = Data.readValues(bindings, row);
 
-        // evaluate
-        data[target] = EVALUATE.Eval.evaluate(source, variables: variables);
-      }
-      catch(e) {}
+      // evaluate
+      var value = EVALUATE.Eval.evaluate(source, variables: variables);
+
+      // save to the data set
+      Data.writeValue(row, target, value);
     });
   }
 

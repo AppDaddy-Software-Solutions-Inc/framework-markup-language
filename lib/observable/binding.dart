@@ -75,9 +75,10 @@ class Binding
       List<String> parts = binding.split('.');
 
       // scoped?
-      if (parts.length > 1 && System.application.scopeManager.directory.containsKey(parts[0].trim()))
+      var _scope = parts[0].trim();
+      if (parts.length > 1 && System.application.scopeManager.directory.containsKey(_scope))
       {
-        scope = parts[0].trim();
+        scope = _scope;
         parts.removeAt(0);
       }
 
@@ -142,7 +143,7 @@ class Binding
       if (v is List)
       {
         if ((offset != null) && (offset! >= 0) && (v.length > offset!)) v = v[offset!];
-        if (dotnotation != null) v = Data.findValue(v,dotnotation?.signature);
+        if (dotnotation != null) v = Data.readValue(v,dotnotation?.signature);
       }
 
       // nothing

@@ -96,8 +96,8 @@ class Sort extends TransformModel implements ITransform
 
     list.sort((a, b)
     {
-      dynamic v1 = Data.findValue(a, field);
-      dynamic v2 = Data.findValue(b, field);
+      dynamic v1 = Data.readValue(a, field);
+      dynamic v2 = Data.readValue(b, field);
 
       int? result = 0;
       if (type == String)

@@ -25,7 +25,7 @@ class PagerPageModel extends DecoratedWidgetModel
   }
   String? get url => _url?.get();
 
-  PagerPageModel(WidgetModel? parent, String? id, {dynamic data, dynamic url}) : super(parent, id, scope: Scope(id, parent: parent?.scope))
+  PagerPageModel(WidgetModel? parent, String? id, {dynamic data, dynamic url}) : super(parent, id, scope: Scope(parent: parent?.scope))
   {
     this.data = data;
     this.url = url;

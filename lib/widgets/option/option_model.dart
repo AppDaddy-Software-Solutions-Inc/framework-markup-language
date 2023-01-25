@@ -52,7 +52,7 @@ class OptionModel extends WidgetModel
     return _tags?.get();
   }
 
-  OptionModel(WidgetModel? parent, String? id, {dynamic data, dynamic labelValue, IViewableWidget? label, dynamic value, dynamic tags}) : super(parent, id, scope: Scope(id, parent: parent?.scope))
+  OptionModel(WidgetModel? parent, String? id, {dynamic data, dynamic labelValue, IViewableWidget? label, dynamic value, dynamic tags}) : super(parent, id, scope: Scope(parent: parent?.scope))
   {
     this.data = data;
     if (label != null) this.label = label;

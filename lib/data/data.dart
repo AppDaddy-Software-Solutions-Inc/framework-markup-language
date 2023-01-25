@@ -103,7 +103,7 @@ class Data with ListMixin<dynamic>
       if (dotnotation != null) data = fromDotNotation(data, dotnotation);
     }
 
-    return data!;
+    return (data != null) ? data : Data(data: data);
   }
 
   static Data? fromXml(String xml)
@@ -304,7 +304,7 @@ class Data with ListMixin<dynamic>
       return string;
   }
 
-  static dynamic findValue(dynamic data, String? tag)
+  static dynamic readValue(dynamic data, String? tag)
   {
     if (data == null || (data is List && data.isEmpty) || tag == null) return null;
 
@@ -358,7 +358,44 @@ class Data with ListMixin<dynamic>
     return data;
   }
 
-  static Map<String?, dynamic> findValues(List<Binding>? bindings, dynamic data)
+  static dynamic writeValue(dynamic data, String? tag, dynamic value)
+  {
+    // get segments
+    DotNotation? segments = DotNotation.fromString(tag);
+    if (segments == null || segments.isEmpty) return data;
+
+    // build map segments
+    for (int i = 0; i < segments.length - 1; i++)
+    {
+      var property = segments[i];
+      if (data is Map)
+      {
+        if (property.offset > 0)
+        {
+          data = null;
+          break;
+        }
+        if (!data.containsKey(property.name)) data[property.name] = "";
+        data = data[property.name];
+      }
+      if (data is List)
+      {
+        if (property.offset > data.length)
+        {
+          data = null;
+          break;
+        }
+        if (property.offset < data.length && property.offset >= 0) data = data[property.offset];
+      }
+    }
+
+    // write the value
+    var name = segments.last.name;
+    if (data is Map) data[name] = value;
+  }
+
+
+  static Map<String?, dynamic> readValues(List<Binding>? bindings, dynamic data)
   {
     Map<String?, dynamic> values = Map<String?, dynamic>();
     List<String?> processed = [];
@@ -372,7 +409,7 @@ class Data with ListMixin<dynamic>
         if (!processed.contains(binding.signature))
         {
           processed.add(binding.signature);
-          var value = findValue(data,signature) ?? "";
+          var value = readValue(data,signature) ?? "";
           values[binding.signature] = value;
         }
       }
@@ -391,7 +428,7 @@ class Data with ListMixin<dynamic>
         if ((binding.source.toLowerCase() == 'data'))
         {
           String signature = binding.property + (binding.dotnotation?.signature != null ? ".${binding.dotnotation!.signature}" : "");
-          String value = Xml.encodeIllegalCharacters(findValue(data,signature)) ?? "";
+          String value = Xml.encodeIllegalCharacters(readValue(data,signature)) ?? "";
           string = string!.replaceAll(binding.signature, value);
         }
       }

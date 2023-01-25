@@ -87,7 +87,7 @@ class MapMarkerModel extends DecoratedWidgetModel
      String? label,
      String? marker,
      dynamic visible
-  }) : super(parent, id, scope: Scope(id, parent: parent.scope))
+  }) : super(parent, id, scope: Scope(parent: parent.scope))
   {
     this.data         = data;
     this.latitude     = latitude;

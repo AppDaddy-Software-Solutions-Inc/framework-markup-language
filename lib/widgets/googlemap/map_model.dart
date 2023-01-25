@@ -188,7 +188,7 @@ class MapModel extends DecoratedWidgetModel implements IViewableWidget
             XmlElement? node = S.fromPrototype(prototype, Uuid().v1());
             i = i + 1;
 
-            var location = MapLocationModel.fromXml(parent, node, data: data);
+            var location = MapLocationModel.fromXml(parent!, node, data: data);
             if (location != null) locations.add(location);
           });
         }

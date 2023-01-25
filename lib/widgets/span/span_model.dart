@@ -88,7 +88,7 @@ class SpanModel extends DecoratedWidgetModel implements IViewableWidget
       _font = StringObservable(Binding.toKey(id, 'font'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  String? get font => _font?.get() ?? System().theme.font;
+  String? get font => _font?.get() ?? System.theme.font;
 
   ////////////
   /* Weight */

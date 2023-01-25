@@ -89,7 +89,7 @@ class _ApplicationManagerState extends State<ApplicationManager>
   {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     String? eventColor = event.parameters?['color'];
-    String? eventBrightness = event.parameters?['brightness'] ?? System().theme.brightness;
+    String? eventBrightness = event.parameters?['brightness'] ?? System.theme.brightness;
     if (eventColor != null)
          themeNotifier.setTheme(eventBrightness!, eventColor);
     else themeNotifier.setTheme(eventBrightness!);

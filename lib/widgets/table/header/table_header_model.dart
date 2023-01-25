@@ -149,7 +149,8 @@ class TableHeaderModel extends DecoratedWidgetModel
     return _wrap?.get();
   }
 
-  TableHeaderModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic color}) : super(parent, id, scope: Scope(id)) {
+  TableHeaderModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic color}) : super(parent, id, scope: Scope(id, parent: parent.scope))
+  {
     this.width = width;
     this.height = height;
     this.color = color;

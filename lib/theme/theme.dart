@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/transition.dart';
 import 'package:fml/system.dart';
-import 'package:fml/widgets/theme/theme_model.dart' as THEME;
+import 'package:fml/widgets/theme/theme_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
@@ -43,7 +43,7 @@ class MyTheme
 
   getBrightness()
   {
-    String? brightness = /*await Settings().get('brightness') ??*/ System().theme.brightness;
+    String? brightness = /*await Settings().get('brightness') ??*/ System.theme.brightness;
     if (brightness != null)
     {
       if (brightness == 'system' || brightness == 'platform')
@@ -80,7 +80,7 @@ class MyTheme
   // };
 }
 
-ThemeData applyCustomizations(ColorScheme base, THEME.ThemeModel m) {
+ThemeData applyCustomizations(ColorScheme base, ThemeModel m) {
   var customizedTheme;
   try {
     customizedTheme = ThemeData.from(

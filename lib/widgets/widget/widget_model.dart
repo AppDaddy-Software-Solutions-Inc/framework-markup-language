@@ -15,7 +15,6 @@ import 'package:fml/datasources/mqtt/mqtt_model.dart';
 import 'package:fml/datasources/nfc/nfc_model.dart';
 import 'package:fml/datasources/socket/socket_model.dart';
 import 'package:fml/datasources/zebra/model.dart';
-import 'package:fml/system.dart';
 import 'package:fml/widgets/alarm/alarm_model.dart';
 import 'package:fml/widgets/animation/animation_model.dart';
 import 'package:fml/widgets/breadcrumb/breadcrumb_model.dart';
@@ -201,20 +200,7 @@ class WidgetModel implements IDataSourceListener
   List<WidgetModel>? children;
 
   // scope
-  Scope? _scope;
-  set scope(Scope? s) {
-    if ((_scope == null) && (s != null)) {
-      _scope = s;
-      // set the parent and child scope relationship. system scope parent can never be set.
-      if ((_scope!.parent == null) && (_scope != Scope.of(System()))) {
-        _scope!.parent = Scope.of(this.parent);
-        if ((scope!.parent != null) && (scope!.parent != Scope.of(this)))
-          scope!.parent!.add(child: scope);
-      }
-    }
-  }
-
-  Scope? get scope => _scope;
+  Scope? scope;
 
   // context
   BuildContext? get context
@@ -284,10 +270,18 @@ class WidgetModel implements IDataSourceListener
     // default id
     if (S.isNullOrEmpty(id)) id = Uuid().v1();
     this.id = id!;
+
+    // set the parent
     this.parent = parent;
+
+    // set the scope
     this.scope = scope ?? Scope.of(this);
+
+    // set the framework
     this.framework = findAncestorOfExactType(FrameworkModel);
-    if ((!S.isNullOrEmpty(id)) && (this.scope != null)) this.scope!.registerModel(this);
+
+    // register the model with the scope
+    if (!S.isNullOrEmpty(id) && this.scope != null) this.scope!.registerModel(this);
   }
 
   static WidgetModel? fromXml(WidgetModel parent, XmlElement node)
@@ -811,46 +805,32 @@ class WidgetModel implements IDataSourceListener
   {
     // find and deserialize all datasources
     for (XmlNode node in xml.children)
-      if (node is XmlElement)
+    if (node is XmlElement && isDataSource(node.localName))
+    {
+      // build the data source model
+      dynamic model = WidgetModel.fromXml(this, node);
+      if (model is IDataSource)
       {
-        // data source?
-        if (isDataSource(node.localName))
-        {
-          // global data source?
-          var parent  = this;
-          bool isGlobal = (Xml.attribute(node: node, tag: 'global') != null);
-          if (isGlobal && Application != null) parent = Application!;
-
-          // build the data source model
-          dynamic model = WidgetModel.fromXml(parent, node);
-          if (model is IDataSource)
-          {
-            if (this.datasources == null) this.datasources = [];
-            this.datasources!.add(model);
-          }
-        }
+        if (this.datasources == null) this.datasources = [];
+        this.datasources!.add(model);
       }
+    }
   }
 
   void _deserialize(XmlElement xml)
   {
     // deserialize all non-datasource children
     for (XmlNode node in xml.children)
-      if (node is XmlElement && !isDataSource(node.localName))
+    if (node is XmlElement && !isDataSource(node.localName))
+    {
+      // build the model
+      dynamic model = WidgetModel.fromXml(this, node);
+      if (model is WidgetModel)
       {
-        // global element?
-        var parent  = this;
-        bool isGlobal = (Xml.attribute(node: node, tag: 'global') != null);
-        if (isGlobal && Application != null && canBeGlobal(node.localName)) parent = Application!;
-
-        // build the model
-        var model = WidgetModel.fromXml(parent, node);
-        if (model is WidgetModel && parent == this)
-        {
-          if (this.children == null) this.children = [];
-          this.children!.add(model);
-        }
+        if (this.children == null) this.children = [];
+        this.children!.add(model);
       }
+    }
   }
 
   void dispose()
@@ -1105,14 +1085,14 @@ class WidgetModel implements IDataSourceListener
         // property - default is value
         var property = S.item(arguments, 1) ?? 'value';
 
-        // global
-        var global = S.item(arguments, 2);
+        // removed global references
+        // this is all done in the global.xml file now
+        // var global = S.item(arguments, 2);
+        //WidgetModel model = this;
+        //if ((!S.isNullOrEmpty(global)) && (S.toBool(global) == true))
+        //model = System();
 
-        WidgetModel model = this;
-        if ((!S.isNullOrEmpty(global)) && (S.toBool(global) == true))
-          model = System();
-
-        Scope? scope = Scope.of(model);
+        Scope? scope = Scope.of(this);
         if (scope == null) return false;
 
         // set the variable
@@ -1304,19 +1284,6 @@ class WidgetModel implements IDataSourceListener
       case "sse":
         return true;
       case "zebra":
-        return true;
-      default:
-        return false;
-    }
-  }
-
-  static bool canBeGlobal(String element)
-  {
-    switch (element.toLowerCase())
-    {
-      case "variable":
-        return true;
-      case "var":
         return true;
       default:
         return false;

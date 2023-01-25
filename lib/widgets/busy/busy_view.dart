@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'busy_model.dart';
-import 'package:fml/system.dart';
 
 /// Busy View
 ///
@@ -103,12 +102,8 @@ class _BusyViewState extends State<BusyView> implements IModelListener
     //////////
     var modal = widget.model.modal;
     var size  = widget.model.size ?? 100;
-    var col;
-    if (Application != null)
-    {
-      col = Theme.of(context).colorScheme.inversePrimary.withOpacity(0.90);
-    }
-    var color = widget.model.color ?? col ?? Theme.of(context).colorScheme.inversePrimary ?? Color(0xFF11CDEF).withOpacity(.95);
+    var col   = Theme.of(context).colorScheme.inversePrimary.withOpacity(0.90);
+    var color = widget.model.color ?? col;// ?? Theme.of(context).colorScheme.inversePrimary ?? Color(0xFF11CDEF).withOpacity(.95);
 
     if (size < 10) size = 10;
     double stroke = size / 10.0;

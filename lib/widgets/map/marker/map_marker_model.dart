@@ -77,7 +77,7 @@ class MapMarkerModel extends DecoratedWidgetModel
   }
   double? get longitude => _longitude?.get();
 
-  MapMarkerModel(WidgetModel? parent, String?  id,
+  MapMarkerModel(WidgetModel parent, String?  id,
    {
      dynamic data,
      dynamic latitude,
@@ -87,7 +87,7 @@ class MapMarkerModel extends DecoratedWidgetModel
      String? label,
      String? marker,
      dynamic visible
-  }) : super(parent, id, scope: Scope(id))
+  }) : super(parent, id, scope: Scope(id, parent: parent.scope))
   {
     this.data         = data;
     this.latitude     = latitude;
@@ -99,7 +99,7 @@ class MapMarkerModel extends DecoratedWidgetModel
     this.visible      = visible;
   }
 
-  static MapMarkerModel? fromXml(WidgetModel? parent, XmlElement? xml, {dynamic data})
+  static MapMarkerModel? fromXml(WidgetModel parent, XmlElement? xml, {dynamic data})
   {
     MapMarkerModel? model;
     try

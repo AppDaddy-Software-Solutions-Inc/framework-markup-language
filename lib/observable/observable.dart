@@ -88,13 +88,15 @@ class Observable
         if (value.contains("this") && key != null)
         {
           String id = key!.split(".").first;
+
+          // replace "this" with the id in the signature
           for(Binding binding in bindings!)
           if (binding.source == "this")
           {
-            String newsignature = "{$id.${binding.property}}";
-            if (binding.offset != null) newsignature = "$newsignature:${binding.offset}";
-            value = value.replaceFirst(binding.signature, newsignature);
+            var signature = binding.signature.replaceFirst("this",id);
+            value = (value as String).replaceAll(binding.signature, signature);
           }
+
           // requery the bindings
           bindings = Binding.getBindings(value, scope: scope);
         }

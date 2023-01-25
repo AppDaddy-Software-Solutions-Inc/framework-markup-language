@@ -266,7 +266,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
     return _parameters;
   }
 
-  FrameworkModel(WidgetModel parent, String? id, {dynamic key, dynamic dependency, dynamic version, dynamic onstart, dynamic onreturn, dynamic orientation}) : super(parent, id, scope: Scope(id, parent: parent.scope))
+  FrameworkModel(WidgetModel parent, String? id, {dynamic key, dynamic dependency, dynamic version, dynamic onstart, dynamic onreturn, dynamic orientation}) : super(parent, id, scope: Scope(parent: parent.scope))
   {
     // model is initializing
     initialized = false;

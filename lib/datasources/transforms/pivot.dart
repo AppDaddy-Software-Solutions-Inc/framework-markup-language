@@ -100,7 +100,7 @@ class Pivot extends TransformModel implements ITransform
       String? _field;
 
       // lookup column
-      var value = Data.findValue(row,this.column);
+      var value = Data.readValue(row,this.column);
       if (value != null)
       {
         _column = value.toString();
@@ -108,7 +108,7 @@ class Pivot extends TransformModel implements ITransform
       }
 
       // lookup row
-      value = Data.findValue(row,this.row);
+      value = Data.readValue(row,this.row);
       if (value != null)
       {
         _row = value.toString();
@@ -116,7 +116,7 @@ class Pivot extends TransformModel implements ITransform
       }
 
       // lookup field
-      value = Data.findValue(row,this.field);
+      value = Data.readValue(row,this.field);
       if (value != null)
       {
         _field = value.toString();

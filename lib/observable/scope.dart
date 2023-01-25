@@ -38,7 +38,7 @@ class Scope
   // unresolved observables
   HashMap<String?,List<Observable>> unresolved = HashMap<String?,List<Observable>>();
 
-  Scope(String? id, {required Scope? parent})
+  Scope({required Scope? parent, String? id})
   {
     this.id = id ?? Uuid().v4();
     this.parent = parent;

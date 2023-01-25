@@ -76,7 +76,7 @@ class Filter extends TransformModel implements ITransform
     List remove = [];
     data.forEach((row)
     {
-      var variables = Data.findValues(bindings, row);
+      var variables = Data.readValues(bindings, row);
       var result = Eval.evaluate(filter, variables: variables);
 
       bool? ok = S.toBool(result);

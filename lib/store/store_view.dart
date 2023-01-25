@@ -104,22 +104,22 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
     storeButton = ButtonModel(null, null, enabled: !S.isNullOrEmpty(appURLInput.value), label: phrase.loadApp, buttontype: "raised", color: Theme.of(context).colorScheme.secondary);
 
     Widget noAppDisplay = Center(
-      child: AnimatedOpacity(
-        opacity: _visible ? 1.0 : 0.0,
-        duration: Duration(milliseconds: 200),
-        child: Text(phrase.clickToConnect, style: TextStyle(color: Theme.of(context).colorScheme.outline)))
+        child: AnimatedOpacity(
+            opacity: _visible ? 1.0 : 0.0,
+            duration: Duration(milliseconds: 200),
+            child: Text(phrase.clickToConnect, style: TextStyle(color: Theme.of(context).colorScheme.outline)))
     );
 
     return WillPopScope(onWillPop: () => quitDialog().then((value) => value as bool),
         child: Scaffold(
-          floatingActionButton: !busy
-              ? FloatingActionButton.extended(label: Text('Add App'), icon: Icon(Icons.add), onPressed: () => addAppDialog(), foregroundColor: Theme.of(context).colorScheme.onSurface, backgroundColor: Theme.of(context).colorScheme.onInverseSurface, splashColor: Theme.of(context).colorScheme.inversePrimary, hoverColor: Theme.of(context).colorScheme.surface, focusColor: Theme.of(context).colorScheme.inversePrimary)
-              : FloatingActionButton.extended(onPressed: null, foregroundColor: Theme.of(context).colorScheme.onSurface, backgroundColor: Theme.of(context).colorScheme.onInverseSurface, splashColor: Theme.of(context).colorScheme.inversePrimary, hoverColor: Theme.of(context).colorScheme.surface, focusColor: Theme.of(context).colorScheme.inversePrimary, label: Text('Loading Apps'),),
-          body: SafeArea(child: Stack(children: [Container(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.bottomRight, end: Alignment.topLeft, stops: [0.4, 1.0], colors: [/*Theme.of(context).colorScheme.inversePrimary*/Theme.of(context).colorScheme.surfaceVariant, Theme.of(context).colorScheme.surface])),),
-          Center(child: Opacity(opacity: 0.03, child: Image(image: AssetImage('assets/images/fml-logo.png')))),
-          Center(child: apps.isEmpty ? noAppDisplay : storeDisplay),
-          Align(alignment: Alignment.bottomLeft, child: Padding(padding: EdgeInsets.only(left: 5), child: Text(phrase.version + ' ' + version, style: TextStyle(color: Colors.black26))),),
-          Center(child: BusyView(BusyModel(Store(), visible: Store().busy, observable: Store().busyObservable, modal: true)))]))
+            floatingActionButton: !busy
+                ? FloatingActionButton.extended(label: Text('Add App'), icon: Icon(Icons.add), onPressed: () => addAppDialog(), foregroundColor: Theme.of(context).colorScheme.onSurface, backgroundColor: Theme.of(context).colorScheme.onInverseSurface, splashColor: Theme.of(context).colorScheme.inversePrimary, hoverColor: Theme.of(context).colorScheme.surface, focusColor: Theme.of(context).colorScheme.inversePrimary)
+                : FloatingActionButton.extended(onPressed: null, foregroundColor: Theme.of(context).colorScheme.onSurface, backgroundColor: Theme.of(context).colorScheme.onInverseSurface, splashColor: Theme.of(context).colorScheme.inversePrimary, hoverColor: Theme.of(context).colorScheme.surface, focusColor: Theme.of(context).colorScheme.inversePrimary, label: Text('Loading Apps'),),
+            body: SafeArea(child: Stack(children: [Container(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.bottomRight, end: Alignment.topLeft, stops: [0.4, 1.0], colors: [/*Theme.of(context).colorScheme.inversePrimary*/Theme.of(context).colorScheme.surfaceVariant, Theme.of(context).colorScheme.surface])),),
+              Center(child: Opacity(opacity: 0.03, child: Image(image: AssetImage('assets/images/fml-logo.png')))),
+              Center(child: apps.isEmpty ? noAppDisplay : storeDisplay),
+              Align(alignment: Alignment.bottomLeft, child: Padding(padding: EdgeInsets.only(left: 5), child: Text(phrase.version + ' ' + version, style: TextStyle(color: Colors.black26))),),
+              Center(child: BusyView(BusyModel(Store(), visible: Store().busy, observable: Store().busyObservable, modal: true)))]))
         )
     );
   }
@@ -160,13 +160,13 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
               Row(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.end, children: [
                 TextButton(onPressed: () => Navigator.of(context).pop(), child: Text('Cancel')),
                 TextButton(
-                  onPressed: () async
-                  {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Removing ${app.title}'), duration: Duration(milliseconds: 1000)));
-                    await Store().delete(app);
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('Remove')
+                    onPressed: () async
+                    {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Removing ${app.title}'), duration: Duration(milliseconds: 1000)));
+                      await Store().delete(app);
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('Remove')
                 ),
                 Padding(padding: EdgeInsets.only(right: 10),),
               ],),
@@ -239,6 +239,7 @@ class AppFormState extends State<AppForm>
   String? title;
   String? url;
   bool unreachable = false;
+
   // busy
   BooleanObservable busy = BooleanObservable(null, false);
 
@@ -291,7 +292,7 @@ class AppFormState extends State<AppForm>
     // missing scheme
     if (!uri.hasScheme)
     {
-      errorText = 'Missing scheme in address';
+      errorText = 'Missing scheme (http://, https://, file://, asset://)';
       return errorText;
     }
 
@@ -343,10 +344,10 @@ class AppFormState extends State<AppForm>
   Widget build(BuildContext context)
   {
     var name =  TextFormField(validator: _validateTitle, decoration: InputDecoration(labelText: "Application Name", labelStyle: TextStyle(color: Colors.grey, fontSize: 12), fillColor: Colors.white,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide())));
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide())));
 
-    var url = TextFormField(validator: _validateUrl, keyboardType: TextInputType.url, decoration: InputDecoration(labelText: "Application Web Address", labelStyle: TextStyle(color: Colors.grey, fontSize: 12),
-          fillColor: Colors.white, border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide())));
+    var url = TextFormField(initialValue: "https://", validator: _validateUrl, keyboardType: TextInputType.url, decoration: InputDecoration(labelText: "Application Address (https://mysite.com)", labelStyle: TextStyle(color: Colors.grey, fontSize: 12),
+        fillColor: Colors.white, border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide())));
 
     var cancel = TextButton(child: Text(phrase.cancel),  onPressed: () => Navigator.of(context).pop());
 
@@ -356,9 +357,9 @@ class AppFormState extends State<AppForm>
 
     // form fields
     layout.add(Padding(padding: EdgeInsets.only(top: 10)));
-    layout.add(name);
-    layout.add(Padding(padding: EdgeInsets.only(top: 10)));
     layout.add(url);
+    layout.add(Padding(padding: EdgeInsets.only(top: 10)));
+    layout.add(name);
 
     // buttons
     var buttons = Padding(padding: const EdgeInsets.only(top: 10.0, bottom: 10),child: Align(alignment: Alignment.bottomCenter, child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [cancel,connect])));

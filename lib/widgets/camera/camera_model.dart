@@ -242,6 +242,20 @@ class CameraModel extends CAMERA.CameraImageModel implements IViewableWidget
   }
   bool get controls => _controls?.get() ?? true;
 
+  BooleanObservable? _togglevisible;
+  set togglevisible(dynamic v)
+  {
+    if (_togglevisible != null)
+    {
+      _togglevisible!.set(v);
+    }
+    else if (v != null)
+    {
+      _togglevisible = BooleanObservable(Binding.toKey(id, 'togglevisible'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get togglevisible => _togglevisible?.get() ?? false;
+
   // on initialized event
   StringObservable? _oninitialized;
   set oninitialized(dynamic v)
@@ -295,6 +309,7 @@ class CameraModel extends CAMERA.CameraImageModel implements IViewableWidget
     enabled       = Xml.get(node: xml, tag: 'enabled');
     controls      = Xml.get(node: xml, tag: 'controls');
     scale         = Xml.get(node: xml, tag: 'scale');
+    togglevisible = Xml.get(node: xml, tag: 'togglevisible');
 
     // enable streaming
     if (detectors != null) detectors!.forEach((detector) => ((detector.source == DetectorSources.stream) || (detector.source == DetectorSources.any)) ? stream = true : null);

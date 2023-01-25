@@ -240,6 +240,8 @@ class AppFormState extends State<AppForm>
   String? url;
   bool unreachable = false;
 
+  var urlController = TextEditingController();
+
   // busy
   BooleanObservable busy = BooleanObservable(null, false);
 
@@ -292,8 +294,8 @@ class AppFormState extends State<AppForm>
     // missing scheme
     if (!uri.hasScheme)
     {
-      errorText = 'Missing url prefix (http, https, file, asset)';
-      return errorText;
+      uri = uri.replace(scheme: "https");
+      urlController.text = uri.toString();
     }
 
     // missing host
@@ -304,14 +306,14 @@ class AppFormState extends State<AppForm>
     }
 
     // already defined
-    if (Store().find(url: url) != null)
+    if (Store().find(url: uri.toString()) != null)
     {
       errorText = 'You are already connected to this application';
       return errorText;
     }
 
     // assign url
-    this.url = url;
+    this.url = uri.toString();
 
     return null;
   }
@@ -346,7 +348,7 @@ class AppFormState extends State<AppForm>
     var name =  TextFormField(validator: _validateTitle, decoration: InputDecoration(labelText: "Application Name", labelStyle: TextStyle(color: Colors.grey, fontSize: 12), fillColor: Colors.white,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide())));
 
-    var url = TextFormField(initialValue: "https://", validator: _validateUrl, keyboardType: TextInputType.url, decoration: InputDecoration(labelText: "Application Address (https://mysite.com)", labelStyle: TextStyle(color: Colors.grey, fontSize: 12),
+    var url = TextFormField(controller: urlController, validator: _validateUrl, keyboardType: TextInputType.url, decoration: InputDecoration(labelText: "Application Address (https://mysite.com)", labelStyle: TextStyle(color: Colors.grey, fontSize: 12),
         fillColor: Colors.white, border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide())));
 
     var cancel = TextButton(child: Text(phrase.cancel),  onPressed: () => Navigator.of(context).pop());

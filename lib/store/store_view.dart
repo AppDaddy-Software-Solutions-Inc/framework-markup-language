@@ -292,7 +292,7 @@ class AppFormState extends State<AppForm>
     // missing scheme
     if (!uri.hasScheme)
     {
-      errorText = 'Missing scheme (http://, https://, file://, asset://)';
+      errorText = 'Missing url prefix (http, https, file, asset)';
       return errorText;
     }
 

@@ -42,7 +42,7 @@ final defaultApplication = ApplicationModel(System(),url:defaultDomain.toString(
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://applications/<app> to use the asset applications
-String defaultUrl = 'https://test.appdaddy.co';
+String defaultUrl = 'https://fml.appdaddy.co';
 
 Uri defaultDomain = Uri.parse(defaultUrl);
 

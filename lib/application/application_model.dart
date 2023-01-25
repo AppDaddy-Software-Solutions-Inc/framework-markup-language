@@ -6,6 +6,7 @@ import 'package:fml/config/config_model.dart';
 import 'package:fml/hive/database.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/mirror/mirror.dart';
+import 'package:fml/observable/scope.dart';
 import 'package:fml/observable/scope_manager.dart';
 import 'package:fml/system.dart';
 import 'package:fml/template/template.dart';
@@ -81,7 +82,7 @@ class ApplicationModel extends WidgetModel
 
   Map<String,String?>? get configParameters => _config?.parameters;
 
-  ApplicationModel({String? key, required this.url, this.title, this.icon, this.page, this.order, String? jwt, dynamic stash}) : super(System(), myId)
+  ApplicationModel(WidgetModel parent, {String? key, required this.url, this.title, this.icon, this.page, this.order, String? jwt, dynamic stash}) : super(parent, myId, scope: Scope(myId, parent: parent.scope))
   {
     // sett application key
     this.key = key ?? id;
@@ -108,7 +109,7 @@ class ApplicationModel extends WidgetModel
     ApplicationModel? app;
     if (map is Map<String, dynamic>)
     {
-      app = ApplicationModel(key: S.mapVal(map, "key"), url: S.mapVal(map, "url"), title: S.mapVal(map, "title"), icon: S.mapVal(map, "icon"), page: S.mapVal(map, "page"), order: S.mapInt(map, "order"), jwt: S.mapVal(map, "jwt"), stash: S.mapVal(map, "stash"));
+      app = ApplicationModel(System(), key: S.mapVal(map, "key"), url: S.mapVal(map, "url"), title: S.mapVal(map, "title"), icon: S.mapVal(map, "icon"), page: S.mapVal(map, "page"), order: S.mapInt(map, "order"), jwt: S.mapVal(map, "jwt"), stash: S.mapVal(map, "stash"));
       await app.initialized;
     }
     return app;

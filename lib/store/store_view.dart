@@ -323,7 +323,7 @@ class AppFormState extends State<AppForm>
     bool ok = _formKey.currentState!.validate();
     if (ok)
     {
-      ApplicationModel app = ApplicationModel(url: url!, title: title);
+      ApplicationModel app = ApplicationModel(System(),url: url!, title: title);
       await app.initialized;
       if (app.hasConfig)
       {

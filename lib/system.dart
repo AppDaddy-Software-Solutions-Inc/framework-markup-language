@@ -37,7 +37,7 @@ if (dart.library.html) 'package:fml/platform/platform.web.dart';
 final String version = '1.0.1';
 
 // Default Application
-final defaultApplication = ApplicationModel(url:defaultDomain.toString());
+final defaultApplication = ApplicationModel(System(),url:defaultDomain.toString());
 
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
@@ -71,9 +71,12 @@ class System extends WidgetModel implements IEventManager
   static var _completer = Completer();
   static get initialized => _completer.future;
 
+  // this get called once by Splash
+  Future get create => _completer.future;
+
   static final System _singleton = System._initialize();
   factory System() => _singleton;
-  System._initialize() : super(null, myId, scope: Scope(myId, parent: null)) {_init();}
+  System._initialize() : super(null, myId, scope: Scope(myId, parent: null)) {_initialize();}
 
   // current application
   static ApplicationModel? _application;
@@ -177,7 +180,7 @@ class System extends WidgetModel implements IEventManager
   FirebaseApp? get firebase => _application?.firebase;
   set firebase(FirebaseApp? v) => _application?.firebase = v;
 
-  _init() async
+  _initialize() async
   {
     Log().info('Initializing FML Engine V$version ...');
 

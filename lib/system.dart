@@ -49,8 +49,9 @@ Uri defaultDomain = Uri.parse(defaultUrl);
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
-enum ApplicationTypes{ SingleApp, MultiApp }
 final ApplicationTypes appType  = ApplicationTypes.MultiApp;
+
+enum ApplicationTypes{ SingleApp, MultiApp }
 
 // Default Application
 final defaultApplication = ApplicationModel(System(),url:defaultDomain.toString());

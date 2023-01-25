@@ -218,6 +218,7 @@ class CameraViewState extends State<CameraView>
     if ((controller != null) &&
         (controller!.value.isInitialized) &&
         (controller!.value.isPreviewPaused)) controller!.resumePreview();
+    if (widget.model.togglevisible) widget.model.visible = true;
     return true;
   }
 
@@ -225,6 +226,7 @@ class CameraViewState extends State<CameraView>
     if ((controller != null) &&
         (controller!.value.isInitialized) &&
         (!controller!.value.isPreviewPaused)) controller!.pausePreview();
+        if (widget.model.togglevisible) widget.model.visible = false;
     return true;
   }
 

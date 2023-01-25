@@ -4,8 +4,8 @@ import 'package:collection/collection.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/datasources/iDataSourceListener.dart';
+import 'package:fml/datasources/transforms/iTransform.dart';
 import 'package:fml/hive/data.dart' as HIVE;
-import 'package:fml/datasources/transforms/transform_model.dart' as TRANSFORM;
 import 'package:fml/datasources/data/model.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
@@ -400,7 +400,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
     // apply data transforms
     if (children != null)
       for (WidgetModel model in this.children!)
-        if (model is TRANSFORM.IDataTransform) await (model as TRANSFORM.IDataTransform).apply(data);
+        if (model is ITransform) await (model as ITransform).apply(data);
 
     // type - default is replace
     ListTypes? type = S.toEnum(this.queuetype, ListTypes.values);

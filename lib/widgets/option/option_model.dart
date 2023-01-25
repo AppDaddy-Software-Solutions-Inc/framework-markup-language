@@ -16,9 +16,8 @@ class OptionModel extends WidgetModel
   IViewableWidget? label;
 
   dynamic labelValue;
-  ///////////
-  /* Value */
-  ///////////
+
+  // value
   dynamic _value;
   set value (dynamic v)
   {

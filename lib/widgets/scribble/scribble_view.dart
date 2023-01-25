@@ -408,7 +408,7 @@ class _ScribbleViewState extends State<ScribbleView> implements IModelListener
       Icon(Icons.gesture, size: 64, color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5)),
       Icon(Icons.mode_edit_outlined, size: 64, color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5))],);
 
-    BorderSide borderSide = BorderSide(width: 2, strokeAlign: StrokeAlign.inside, color: Theme.of(context).colorScheme.surfaceVariant);
+    BorderSide borderSide = BorderSide(width: 2, color: Theme.of(context).colorScheme.surfaceVariant);
     
     Widget view = Container(decoration: BoxDecoration(
       color: Theme.of(context).colorScheme.surface,

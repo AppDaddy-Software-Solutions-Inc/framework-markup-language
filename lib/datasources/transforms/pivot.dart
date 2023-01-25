@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
+import 'package:fml/datasources/transforms/iTransform.dart';
 import 'package:fml/datasources/transforms/transform_model.dart';
 import 'package:fml/log/manager.dart';
 import 'package:xml/xml.dart';
@@ -7,11 +8,9 @@ import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class Pivot extends TransformModel implements IDataTransform
+class Pivot extends TransformModel implements ITransform
 {
-  ////////////
-  /* column */
-  ////////////
+  // column
   StringObservable? _column;
   set column (dynamic v)
   {
@@ -27,9 +26,7 @@ class Pivot extends TransformModel implements IDataTransform
   }
   String? get column => _column?.get();
 
-  /////////
-  /* row */
-  /////////
+  // row
   StringObservable? _row;
   set row (dynamic v)
   {
@@ -45,9 +42,7 @@ class Pivot extends TransformModel implements IDataTransform
   }
   String? get row => _row?.get();
 
-  ///////////
-  /* Field */
-  ///////////
+  // Field
   StringObservable? _field;
   set field (dynamic v)
   {
@@ -104,19 +99,27 @@ class Pivot extends TransformModel implements IDataTransform
       String? _row;
       String? _field;
 
-      if (row.containsKey(this.column))
+      // lookup column
+      var value = Data.findValue(row,this.column);
+      if (value != null)
       {
-        _column = row[this.column];
+        _column = value.toString();
         columnFound = true;
       }
-      if (row.containsKey(this.row))
+
+      // lookup row
+      value = Data.findValue(row,this.row);
+      if (value != null)
       {
-        _row = row[this.row];
+        _row = value.toString();
         rowFound = true;
       }
-      if (row.containsKey(this.field))
+
+      // lookup field
+      value = Data.findValue(row,this.field);
+      if (value != null)
       {
-        _field = row[this.field];
+        _field = value.toString();
         fieldFound = true;
       }
 
@@ -156,9 +159,7 @@ class Pivot extends TransformModel implements IDataTransform
       Map<String?, dynamic> row = Map<String?, dynamic>();
       row["TIME"] = key;
 
-      /////////
-      /* Sum */
-      /////////
+      // Sum
       double sum = 0;
       double count = 0;
       value.forEach((key, value)
@@ -173,9 +174,7 @@ class Pivot extends TransformModel implements IDataTransform
       result.add(row);
     });
 
-    ///////////////////
-    /* Column Totals */
-    ///////////////////
+    // Column Totals
     Map<String, dynamic> totals   = Map<String, dynamic>();
     Map<String, dynamic> averages = Map<String, dynamic>();
     result.forEach((row)
@@ -198,9 +197,7 @@ class Pivot extends TransformModel implements IDataTransform
       if (totals[key] != null) totals[key] = totals[key].toString();
     });
 
-    ////////////
     /* Totals */
-    ////////////
     totals["TIME"]   = "TOTAL";
     averages["TIME"] = "AVG";
 
@@ -212,13 +209,13 @@ class Pivot extends TransformModel implements IDataTransform
     return result; //16 19 14 19 18 21
   }
 
-  apply(List? list) async
+  apply(Data? data) async
   {
     if (enabled == false) return;
     Data? result;
     try
     {
-      result = _pivot(list as Data);
+      if (data != null) result = _pivot(data);
     }
     catch(e)
     {
@@ -227,8 +224,8 @@ class Pivot extends TransformModel implements IDataTransform
 
     if (result != null)
     {
-      list!.clear();
-      list.addAll(result);
+      data!.clear();
+      data.addAll(result);
     }
   }
 }

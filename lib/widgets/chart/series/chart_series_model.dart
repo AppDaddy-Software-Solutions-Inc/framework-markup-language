@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:fml/data/data.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:xml/xml.dart';
@@ -444,7 +445,7 @@ class ChartSeriesModel extends WidgetModel
     else if (observable.signature == null) return observable.value;
 
     // apply data to Json data
-    dynamic value = Json.replace(observable.signature, data);
+    dynamic value = Data.replaceValue(observable.signature, data);
 
     // evaluate
     if (observable.isEval == true) value = Observable.doEvaluation(value);

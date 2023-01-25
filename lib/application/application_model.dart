@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/config/config_model.dart';
+import 'package:fml/crypto/crypto.dart';
 import 'package:fml/hive/database.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/mirror/mirror.dart';
@@ -21,7 +22,9 @@ class ApplicationModel extends WidgetModel
 
   static String tableName = "APP";
 
-  late final String key;
+  // key of this application record in
+  // the HIVE database.
+  late final String _dbKey;
 
   late Future<bool> initialized;
 
@@ -84,8 +87,8 @@ class ApplicationModel extends WidgetModel
 
   ApplicationModel(WidgetModel parent, {String? key, required this.url, this.title, this.icon, this.page, this.order, String? jwt, dynamic stash}) : super(parent, myId, scope: Scope(myId, parent: parent.scope))
   {
-    // sett application key
-    this.key = key ?? id;
+    // set database key
+    _dbKey = key ?? url;
 
     // parse to url into its parts
     _uri = URI.parse(url);
@@ -311,7 +314,7 @@ class ApplicationModel extends WidgetModel
   Map<String, dynamic> _toMap()
   {
     Map<String, dynamic> map = {};
-    map["key"]    = key;
+    map["key"]    = _dbKey;
     map["url"]    = url;
     map["title"]  = title;
     map["icon"]   = icon;
@@ -326,21 +329,21 @@ class ApplicationModel extends WidgetModel
   // inserts a new app into the local hive
   Future<bool> insert() async
   {
-    var exception = await Database().insert(tableName, key, _toMap());
+    var exception = await Database().insert(tableName, _dbKey, _toMap());
     return (exception == null);
   }
 
   // updates the app in the local hive
   Future<bool> update() async
   {
-    var exception = await Database().update(tableName, key, _toMap());
+    var exception = await Database().update(tableName, _dbKey, _toMap());
     return (exception == null);
   }
 
   // delete an app from the local hive
   Future<bool> delete() async
   {
-    var exception = await Database().delete(tableName, key);
+    var exception = await Database().delete(tableName, _dbKey);
     return (exception == null);
   }
 

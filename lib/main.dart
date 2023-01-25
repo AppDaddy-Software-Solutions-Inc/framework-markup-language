@@ -67,15 +67,12 @@ class Application extends StatelessWidget
   @override
   Widget build(BuildContext context)
   {
-    // set title
-    String title = "Flutter Markup Language " + version;
-
     // initializes the theme bindables and updates on theme change
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     themeNotifier.mapSystemThemeBindables();
 
     return MaterialApp.router(
-        title: title,
+        title: applicationTitle,
         debugShowCheckedModeBanner: false,
         routerDelegate: NavigationManager(),
         routeInformationParser: const RouteParser(),

@@ -36,8 +36,9 @@ if (dart.library.html) 'package:fml/platform/platform.web.dart';
 // application build version
 final String version = '1.0.1';
 
-// Default Application
-final defaultApplication = ApplicationModel(System(),url:defaultDomain.toString());
+// application title
+// only used in Android when viewing open applications
+final String applicationTitle = "Flutter Markup Language " + version;
 
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
@@ -48,8 +49,12 @@ Uri defaultDomain = Uri.parse(defaultUrl);
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
-enum ApplicationTypes{ SingleApp, MultiApp }
 final ApplicationTypes appType  = ApplicationTypes.MultiApp;
+
+enum ApplicationTypes{ SingleApp, MultiApp }
+
+// Default Application
+final defaultApplication = ApplicationModel(System(),url:defaultDomain.toString());
 
 // platform
 String get platform => isWeb ? "web" : isMobile ? "mobile" : "desktop";

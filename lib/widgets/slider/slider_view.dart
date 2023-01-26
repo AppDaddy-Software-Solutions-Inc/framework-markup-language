@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/slider/slider_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class SliderView extends StatefulWidget {
   final SliderModel model;
@@ -123,10 +123,9 @@ class _SliderViewState extends State<SliderView>
             : null,
         label: label,
         onChanged: onChange,
-        activeColor:
-            widget.model.color ?? Theme.of(context).colorScheme.primary,
+        activeColor: ColorHelper.lighten(widget.model.color ?? Theme.of(context).colorScheme.primary, 0.05),
         inactiveColor: Theme.of(context).colorScheme.secondaryContainer,
-        thumbColor: Theme.of(context).colorScheme.primary,
+        thumbColor: widget.model.color ?? Theme.of(context).colorScheme.primary,
       );
     else if (widget.model.range == true) {
       view = RangeSlider(
@@ -141,8 +140,7 @@ class _SliderViewState extends State<SliderView>
         labels: RangeLabels(value1.toString(),
             value2.toString()),
         onChanged: (RangeValues values) => onRangeChange(values),
-        activeColor:
-            widget.model.color ?? Theme.of(context).colorScheme.primary,
+        activeColor: ColorHelper.lighten(widget.model.color ?? Theme.of(context).colorScheme.primary, 0.05),
         inactiveColor: Theme.of(context).colorScheme.secondaryContainer,
       );
     }

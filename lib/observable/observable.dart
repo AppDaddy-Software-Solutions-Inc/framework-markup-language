@@ -6,7 +6,7 @@ import 'binding.dart';
 import 'scope.dart';
 import 'package:fml/eval/eval.dart'       as EVALUATE;
 import 'package:fml/observable/blob.dart' as BLOB;
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 typedef Getter = dynamic Function();
 typedef Setter = dynamic Function(dynamic value);
@@ -88,13 +88,15 @@ class Observable
         if (value.contains("this") && key != null)
         {
           String id = key!.split(".").first;
+
+          // replace "this" with the id in the signature
           for(Binding binding in bindings!)
           if (binding.source == "this")
           {
-            String newsignature = "{$id.${binding.property}}";
-            if (binding.offset != null) newsignature = "$newsignature:${binding.offset}";
-            value = value.replaceFirst(binding.signature, newsignature);
+            var signature = binding.signature.replaceFirst("this",id);
+            value = (value as String).replaceAll(binding.signature, signature);
           }
+
           // requery the bindings
           bindings = Binding.getBindings(value, scope: scope);
         }
@@ -181,18 +183,14 @@ class Observable
 
   dispose()
   {
-    /////////////////////
-    /* Clear Listeners */
-    /////////////////////
+    // Clear Listeners
     if (listeners != null)
     {
       listeners!.clear();
       listeners = null;
     }
 
-    ///////////////////
-    /* Clear Sources */
-    ///////////////////
+    // Clear Sources
     if (sources != null)
     {
       sources!.forEach((source) => source.removeListener(this.onObservableChange));

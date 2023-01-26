@@ -17,7 +17,7 @@ import 'package:fml/widgets/chart_syncfusion/chart_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart'       ;
 import 'package:fml/widgets/column/column_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 /// Chart [ChartModel]
 ///

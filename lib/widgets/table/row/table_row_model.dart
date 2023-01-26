@@ -12,7 +12,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class TableRowModel extends DecoratedWidgetModel
 {
@@ -311,7 +311,7 @@ class TableRowModel extends DecoratedWidgetModel
     dynamic wrap,
     dynamic color,
     dynamic onclick,
-  }) : super(parent, id, scope: Scope(id))
+  }) : super(parent, id, scope: Scope(parent: parent.scope))
   {
     this.data = data;
     this.height = height;

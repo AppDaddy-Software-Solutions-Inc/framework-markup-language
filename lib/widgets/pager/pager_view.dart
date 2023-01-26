@@ -8,7 +8,7 @@ import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/pager/pager_model.dart';
 import 'package:fml/widgets/pager/page/pager_page_view.dart';
 import 'package:fml/widgets/pager/page/pager_page_model.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class PagerView extends StatefulWidget
 {

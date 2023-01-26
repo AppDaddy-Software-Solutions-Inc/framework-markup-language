@@ -6,7 +6,7 @@ import 'package:fml/widgets/table/table_model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class TableFooterModel extends DecoratedWidgetModel
 {
@@ -60,7 +60,7 @@ class TableFooterModel extends DecoratedWidgetModel
     return _borderwidth?.get();
   }
 
-  TableFooterModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic color}) : super(parent, id, scope: Scope(id))
+  TableFooterModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic color}) : super(parent, id, scope: Scope(parent: parent.scope))
   {
     this.width  = width;
     this.height = height;

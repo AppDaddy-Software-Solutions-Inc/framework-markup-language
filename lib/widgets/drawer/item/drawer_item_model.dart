@@ -1,12 +1,10 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/helper/string.dart';
-import 'package:fml/helper/xml.dart';
 import 'package:fml/log/manager.dart';
-
 import 'package:fml/widgets/drawer/drawer_view.dart' as DRAWER;
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/widgets/box/box_model.dart' as BOX;
 import 'package:xml/xml.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 enum DrawerPositions {top, bottom, left, right}
 

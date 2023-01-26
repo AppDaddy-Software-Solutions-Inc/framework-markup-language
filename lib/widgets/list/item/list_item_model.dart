@@ -8,7 +8,7 @@ import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/form/form_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class ListItemModel extends DecoratedWidgetModel
 {
@@ -120,7 +120,7 @@ class ListItemModel extends DecoratedWidgetModel
 
   bool selected = false;
 
-  ListItemModel(WidgetModel parent, String?  id, {dynamic data, String?  type, dynamic backgroundcolor, dynamic margin}) : super(parent, id, scope: Scope(id))
+  ListItemModel(WidgetModel parent, String?  id, {dynamic data, String?  type, dynamic backgroundcolor, dynamic margin}) : super(parent, id, scope: Scope(parent: parent.scope))
   {
     this.data             = data;
     this.type             = type;

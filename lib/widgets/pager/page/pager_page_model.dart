@@ -4,7 +4,7 @@ import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class PagerPageModel extends DecoratedWidgetModel
 {
@@ -25,7 +25,7 @@ class PagerPageModel extends DecoratedWidgetModel
   }
   String? get url => _url?.get();
 
-  PagerPageModel(WidgetModel? parent, String? id, {dynamic data, dynamic url}) : super(parent, id, scope: Scope(id))
+  PagerPageModel(WidgetModel? parent, String? id, {dynamic data, dynamic url}) : super(parent, id, scope: Scope(parent: parent?.scope))
   {
     this.data = data;
     this.url = url;

@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:collection';
-import 'package:fml/helper/string.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class NotationSegment
 {
@@ -8,24 +8,24 @@ class NotationSegment
   int  offset = 0;
 }
 
-class DotNotation with ListMixin<NotationSegment?>
+class DotNotation with ListMixin<NotationSegment>
 {
-  final List<NotationSegment?> _list = [];
+  final List<NotationSegment> _list = [];
   final String signature;
 
   DotNotation(this.signature);
 
   @override
-  void add(NotationSegment? property) => _list.add(property);
+  void add(NotationSegment property) => _list.add(property);
 
   @override
-  void addAll(Iterable<NotationSegment?> properties) => _list.addAll(properties);
+  void addAll(Iterable<NotationSegment> properties) => _list.addAll(properties);
 
   @override
-  void operator []=(int index, NotationSegment? property) => _list[index] = property;
+  void operator []=(int index, NotationSegment property) => _list[index] = property;
 
   @override
-  NotationSegment? operator [](int index) => _list[index];
+  NotationSegment operator [](int index) => _list[index];
 
   @override
   set length(int newLength) => _list.length = newLength;

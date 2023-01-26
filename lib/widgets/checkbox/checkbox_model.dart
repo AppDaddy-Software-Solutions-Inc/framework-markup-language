@@ -14,7 +14,7 @@ import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/checkbox/checkbox_view.dart';
 import 'package:fml/datasources/gps/payload.dart' as GPS;
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 /// Button [CheckboxModel]
 ///

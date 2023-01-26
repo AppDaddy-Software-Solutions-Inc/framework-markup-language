@@ -1,17 +1,14 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
-import 'package:fml/helper/xml.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/overlay/overlay_manager.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:fml/dialog/service.dart';
-import 'package:fml/helper/string.dart';
-import 'package:fml/helper/url.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/page.dart';
-import 'package:fml/navigation/observer.dart';
+import 'package:fml/navigation/navigation_observer.dart';
 import 'package:fml/navigation/transition.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
@@ -20,6 +17,13 @@ import 'package:fml/store/store_view.dart';
 import 'package:fml/page404/page404_view.dart';
 import 'package:fml/widgets/overlay/overlay_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/helper/common_helpers.dart';
+
+// platform
+import 'package:fml/platform/platform.stub.dart'
+if (dart.library.io)   'package:fml/platform/platform.vm.dart'
+if (dart.library.html) 'package:fml/platform/platform.web.dart';
+
 
 class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNotifier, PopNavigatorRouterDelegateMixin<PageConfiguration>
 {
@@ -43,47 +47,72 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     // clear all pages
     _pages.clear();
 
+    // set default app
+    if (isWeb || appType == ApplicationTypes.SingleApp)
+    {
+      // remove start page
+      if (defaultDomain.hasFragment) defaultDomain = defaultDomain.removeFragment();
+
+      // set default app
+      var app = defaultApplication;
+
+      // wait for it to initialize
+      await app.initialized;
+
+      System().launchApplication(app);
+    }
+
+    // get home page
+    String homePage = System.application.homePage;
+    if (!isWeb && appType == ApplicationTypes.MultiApp) homePage = "store";
+
     // get start page
-    String home  = System().homePage ?? "main.xml";
-    if (((isMobile) || (isDesktop)) && (appType == ApplicationTypes.MultiApp)) home = "store";
-    String start = System().requestedPage ?? home;
+    String startPage = defaultDomain.hasFragment ? defaultDomain.fragment : homePage;
 
     // start page is different than home page?
-    if (home.split("?")[0].toLowerCase() != start.split("?")[0].toLowerCase())
+    if (homePage.split("?")[0].toLowerCase() != startPage.split("?")[0].toLowerCase())
     {
       // fetch the template
-      Template template = await Template.fetch(url: start, refresh: true);
+      Template? template = await Template.fetch(url: startPage, refresh: true);
 
       // document is linkable?
       // default - if singlePageApplication then false, otherwise true
-      bool linkable = S.toBool(Xml.attribute(node: template.document!.rootElement, tag: "linkable")) ?? !System().singlePageApplication;
+      bool linkable = S.toBool(Xml.attribute(node: template.document!.rootElement, tag: "linkable")) ?? System.application.singlePage;
 
       // set start page = home page if not linkable
-      if (!linkable) start = home;
-
-      // clear requested page if the same as home page
-      if (home.split("?")[0].toLowerCase() == start.split("?")[0].toLowerCase()) System().requestedPage = null;
+      if (!linkable) startPage = homePage;
 
       // single page applications always load the home page
-      if (System().singlePageApplication) start = home;
+      if (System.application.singlePage) startPage = homePage;
+    }
+
+    // clear requested page if the same as the start page
+    if (defaultDomain.hasFragment)
+    {
+      var p1 = startPage.toLowerCase();
+      var p2 = defaultDomain.fragment.toLowerCase();
+      if (p1 == p2) defaultDomain = defaultDomain.removeFragment();
     }
 
     //  web browser - user hit refresh?
     //if ((System().getNavigationType() == 1) && (!System().singlePageApplication)) page = System().requestedPage;
 
     // open the page
-    setNewRoutePath(PageConfiguration(url: start), source: "splash");
+    setNewRoutePath(PageConfiguration(url: startPage), source: "splash");
   }
 
   Future<void> onPageLoaded() async
   {
-    String? page = System().requestedPage;
+    // open the requested page
+    if (defaultDomain.hasFragment)
+    {
+      // open the requested page
+      _open(defaultDomain.fragment);
 
-    // open the page
-    if (page != null) _open(page);
-
-    // clear requested page
-    if (page != null) System().requestedPage = null;
+      // clear requested page so we don't continually
+      // open the same page on refresh or reload
+      defaultDomain = defaultDomain.removeFragment();
+    }
   }
 
   @override
@@ -176,10 +205,10 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     String fqdn = "${uri.scheme}://${uri.host}";
 
     // set default domain
-    await System().setDomain(fqdn);
+    //await System().setDomain(fqdn);
 
     // default home page
-    if (uri.pathSegments.isEmpty) url = System().homePage;
+    //if (uri.pathSegments.isEmpty) url = Application?.homePage;
 
     return url;
   }
@@ -232,7 +261,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     if (pages == 0) return false;
 
     // web?
-    bool ok = await System().goBackPages(pages);
+    bool ok = await Platform.goBackPages(pages);
     if (ok) return true;
 
     for (int i = 0; i < pages; i++) _pages.removeLast();
@@ -282,10 +311,19 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     int?  index        = S.mapInt(parameters,'index');
     bool? replace      = S.mapBoo(parameters,'replace', defaultValue: false);
     bool? replaceAll   = S.mapBoo(parameters,'replaceall', defaultValue: false);
-    bool isLocalUrl   = (url.toLowerCase().trim().startsWith("file://") && url.toLowerCase().trim().endsWith(".xml"));
+
+    var uri = URI.parse(url);
+    if (uri == null) return false;
+
+    var d1 = uri.host.toLowerCase();
+    var d2 = System.application.host?.toLowerCase();
+
+    bool sameDomain = d1 == d2;
+    bool xmlFile    = uri.pageExtension == "xml";
+    bool local      = sameDomain && xmlFile;
 
     // We need to keep the file:// prefix as an indicator for fetch() that its a local file
-    String? template = isLocalUrl ? url.toLowerCase() : Url.path(url);
+    String? template = uri.domain.toLowerCase();
 
     // missing template?
     if (S.isNullOrEmpty(template))
@@ -294,15 +332,13 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
       return ok;
     }
 
-    template = template!.toLowerCase();
-
     // open external url in browser?
-    if (!isLocalUrl && Url.isAbsolute(url)) return _openBrowser(url);
+    if (!local) return _openBrowser(url);
 
     // open new page in modal window?
     if (modal == true)
     {
-      FrameworkModel model = FrameworkModel.fromUrl(System(), url, refresh: refresh, dependency: dependency);
+      FrameworkModel model = FrameworkModel.fromUrl(System.application, url, refresh: refresh, dependency: dependency);
       FrameworkView  view  = FrameworkView(model);
       return openModal(view, NavigationManager().navigatorKey.currentContext, modal: false, width: width, height: height) != null;
     }
@@ -335,7 +371,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
         break;
 
       default:
-        view =  OverlayManager(child: FrameworkView(FrameworkModel.fromUrl(System(), url, refresh: refresh, dependency: dependency)));
+        view =  OverlayManager(child: FrameworkView(FrameworkModel.fromUrl(System.application, url, refresh: refresh, dependency: dependency)));
         break;
     }
 
@@ -365,7 +401,11 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
       else
       {
         if (!until.startsWith("/")) until = "/$until";
-        Page? page = _pages.lastWhereOrNull((page) => page.name == until);
+        Page? page = _pages.lastWhereOrNull((page) {
+          // make sure we leave args off for the comparison
+          String name = page.name ?? '';
+          return name.split('?')[0] == until;
+        });
         if ((page != null) && (_pages.last != page)) pages = _pages.length - _pages.indexOf(page) - 1;
       }
     }
@@ -432,13 +472,13 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     return result;
   }
 
-  OverlayView? openModal(Widget view, BuildContext? context, {bool modal = true, String? width, String? height})
+  OverlayView? openModal(Widget view, BuildContext? context, {bool modal = true, bool resizeable = true, bool closeable = true, bool draggable = true, String? width, String? height})
   {
     OverlayView? overlay;
     OverlayManager? manager = context != null ? context.findAncestorWidgetOfExactType<OverlayManager>() : null;
     if (manager != null)
     {
-      overlay = OverlayView(child: view, modal: (modal == true), width: _toWidth(width), height: _toHeight(height));
+      overlay = OverlayView(child: view, modal: modal, resizeable: resizeable, closeable: closeable, draggable: draggable, width: _toWidth(width), height: _toHeight(height));
       manager.overlays.add(overlay);
       manager.refresh();
     }
@@ -459,9 +499,6 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
       bool ok = true;
       try
       {
-        // Encode Parameters
-        url = Url.encode(url)!;
-
         // parse url
         Uri? uri = Uri.tryParse(url);
 
@@ -484,12 +521,19 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     {
       if (value!.endsWith("%"))
       {
-        var percentage = value.substring(0, value.length - 1);
-        if(navigatorKey.currentContext != null) value = (MediaQuery.of(navigatorKey.currentContext!).size.width * (int.parse(percentage) / 100)).toString();
+        width = S.toDouble(value.substring(0, value.length - 1));
+        if (navigatorKey.currentContext != null && width != null)
+        {
+          var size = MediaQuery.of(navigatorKey.currentContext!).size.width;
+          width = size * (width / 100);
+        }
       }
-      width = S.toDouble(value);
+      else width = S.toDouble(value);
     }
-    catch(e) {}
+    catch(e)
+    {
+      Log().error("Error getting width. Error is $e");
+    }
     return width;
   }
 
@@ -501,12 +545,19 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     {
       if (value!.endsWith("%"))
       {
-        var percentage = value.substring(0, value.length - 1);
-        if (navigatorKey.currentContext != null) value = (MediaQuery.of(navigatorKey.currentContext!).size.height * (int.parse(percentage) / 100)).toString();
+        height = S.toDouble(value.substring(0, value.length - 1));
+        if (navigatorKey.currentContext != null && height != null)
+        {
+          var size = MediaQuery.of(navigatorKey.currentContext!).size.height;
+          height   = size * (height / 100);
+        }
       }
-      height = S.toDouble(value);
+      else height = S.toDouble(value);
     }
-    catch(e) {}
+    catch(e)
+    {
+      Log().error("Error getting height. Error is $e");
+    }
     return height;
   }
 

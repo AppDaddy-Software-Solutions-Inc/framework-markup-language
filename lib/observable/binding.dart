@@ -1,7 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/data/data.dart';
+import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/data/dotnotation.dart';
 import 'package:fml/observable/scope.dart';
+import 'package:fml/system.dart';
 
 class Binding
 {
@@ -43,9 +45,10 @@ class Binding
 
   String? get key => toKey(source, property);
 
-  static String? toKey(String? source, String? property)
+  static String? toKey(String? source, [String? property])
   {
-    if ((source == null) || (property == null)) return null;
+    if (source == null) return null;
+    if (property == null) property = 'value';
     return (source + '.' + property).toLowerCase();
   }
 
@@ -68,16 +71,16 @@ class Binding
       String? property;
       int? offset;
 
-      // scope
-      List<String> parts = binding.split('@');
-      if (parts.length > 1)
-      {
-        scope = parts[0].trim();
-        binding = parts[1];
-      }
-
       // split binding signature int source.property
-      parts = binding.split('.');
+      List<String> parts = binding.split('.');
+
+      // scoped?
+      var _scope = parts[0].trim();
+      if (parts.length > 1 && System.application.scopeManager.directory.containsKey(_scope))
+      {
+        scope = _scope;
+        parts.removeAt(0);
+      }
 
       // source id
       if (parts.isNotEmpty)
@@ -140,7 +143,7 @@ class Binding
       if (v is List)
       {
         if ((offset != null) && (offset! >= 0) && (v.length > offset!)) v = v[offset!];
-        if (dotnotation != null) v = Json.find(v,dotnotation!.signature);
+        if (dotnotation != null) v = Data.readValue(v,dotnotation?.signature);
       }
 
       // nothing

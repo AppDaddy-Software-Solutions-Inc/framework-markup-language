@@ -6,7 +6,7 @@ import 'package:fml/log/manager.dart';
 import 'package:path/path.dart';
 import 'filepicker_view.dart' as ABSTRACT;
 import 'package:fml/datasources/file/file.dart' as FILE;
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
 if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'

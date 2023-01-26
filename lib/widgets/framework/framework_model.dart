@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/navigation/manager.dart';
+import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
@@ -19,7 +19,7 @@ import 'package:fml/event/handler.dart';
 import 'package:fml/widgets/variable/variable_model.dart';
 import 'package:fml/widgets/framework/framework_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 import 'package:uuid/uuid.dart';
 
@@ -266,7 +266,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
     return _parameters;
   }
 
-  FrameworkModel(WidgetModel parent, String? id, {dynamic key, dynamic dependency, dynamic version, dynamic onstart, dynamic onreturn, dynamic orientation}) : super(parent, id, scope: Scope(id))
+  FrameworkModel(WidgetModel parent, String? id, {dynamic key, dynamic dependency, dynamic version, dynamic onstart, dynamic onreturn, dynamic orientation}) : super(parent, id, scope: Scope(parent: parent.scope))
   {
     // model is initializing
     initialized = false;
@@ -302,12 +302,13 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
     return model;
   }
 
-  Future<void> loadAsync(String url, {bool? refresh, String? dependency}) async
+  Future<void> loadAsync(String url, {required bool refresh, String? dependency}) async
   {
     try
     {
       // parse the url
-      Uri uri = Uri.parse(url);
+      Uri? uri = URI.parse(url);
+      if (uri == null) throw('Error');
 
       // fetch the template
       Template template = await Template.fetch(url: url, parameters: uri.queryParameters, refresh: refresh);
@@ -326,8 +327,8 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
         if (!connected)
         {
           // fetch logon template
-          if (!S.isNullOrEmpty(System().loginPage)) template =
-          await Template.fetch(url: System().loginPage!, refresh: refresh);
+          var login = System.application.loginPage;
+          if (!S.isNullOrEmpty(login)) template = await Template.fetch(url:login!, refresh: refresh);
           xml = template.document!.rootElement;
         }
 
@@ -335,8 +336,8 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
         else if (myrights! < requiredRights)
         {
           // fetch not authorized template
-          if (!S.isNullOrEmpty(System().unauthorizedPage)) template =
-          await Template.fetch(url: System().unauthorizedPage!, refresh: refresh);
+          var unauthorized = System.application.unauthorizedPage;
+          if (!S.isNullOrEmpty(unauthorized)) template = await Template.fetch(url: unauthorized!, refresh: refresh);
           xml = template.document!.rootElement;
         }
       }
@@ -345,7 +346,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
       deserialize(xml);
 
       // inject debug window
-      if (!S.isNullOrEmpty(System().debugPage)) await _injectDebugModal(this, refresh);
+      if (!S.isNullOrEmpty(System.application.debugPage)) await _injectDebugModal(this, refresh);
 
       // set template name
       templateName = url.split("?")[0];
@@ -455,7 +456,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
     super.dispose();
   }
 
-  static Future<FrameworkModel> build(String templateName, {Map<String, String?>? parameters, IModelListener? listener, bool? refresh = false, String? dependency}) async
+  static Future<FrameworkModel> build(String templateName, {Map<String, String?>? parameters, IModelListener? listener, required bool refresh, String? dependency}) async
   {
     Template template = await Template.fetch(url: templateName, parameters: parameters, refresh: refresh);
 
@@ -472,23 +473,25 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
       // logged on?
       if (!connected)
       {
-        if (!S.isNullOrEmpty(System().loginPage)) template = await Template.fetch(url: System().loginPage!, refresh: refresh);
+        var login = System.application.loginPage;
+        if (!S.isNullOrEmpty(login)) template = await Template.fetch(url: login!, refresh: refresh);
         xml = template.document!.rootElement;
       }
 
       // authorized?
       else if (myrights! < requiredRights)
       {
-        if (!S.isNullOrEmpty(System().unauthorizedPage)) template = await Template.fetch(url: System().unauthorizedPage!, refresh: refresh);
+        var unauthorized = System.application.unauthorizedPage;
+        if (!S.isNullOrEmpty(unauthorized)) template = await Template.fetch(url: unauthorized!, refresh: refresh);
         xml = template.document!.rootElement;
       }
     }
 
-    FrameworkModel? model = FrameworkModel.fromXml(System(), xml);
+    FrameworkModel? model = FrameworkModel.fromXml(System.application, xml);
     if (model != null)
     {
       // inject debug window
-      if (!S.isNullOrEmpty(System().debugPage)) await _injectDebugModal(model, refresh);
+      if (!S.isNullOrEmpty(System.application.debugPage)) await _injectDebugModal(model, refresh);
 
       model.templateName = templateName.split("?")[0];
       if (model.dependency != null) model.dependency = dependency;
@@ -505,23 +508,28 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
     return model;
   }
 
-  static Future<void> _injectDebugModal(FrameworkModel model, bool? refresh) async
+  static Future<void> _injectDebugModal(FrameworkModel model, bool refresh) async
   {
     {
       // get the debug template
-      var debug = await Template.fetch(url: System().debugPage!, refresh: refresh);
-
-      // build modal node
-      XmlElement node = XmlElement(XmlName("MODAL"));
-      node.attributes.add(XmlAttribute(XmlName("id"), "DEBUG"));
-      debug.document!.rootElement.children.forEach((child) => node.children.insert(0, child.copy()));
-
-      // build modal model
-      ModalModel? modal = ModalModel.fromXml(model,node);
-      if (modal != null)
+      var debug = System.application.debugPage;
+      if (!S.isNullOrEmpty(debug))
       {
-        if (model.children == null) model.children = [];
-        model.children!.insert(0, modal);
+        // get the debug template
+        var doc = await Template.fetch(url: debug!, refresh: refresh);
+
+        // build modal node
+        XmlElement node = XmlElement(XmlName("MODAL"));
+        node.attributes.add(XmlAttribute(XmlName("id"), "DEBUG"));
+        doc.document!.rootElement.children.forEach((child) => node.children.insert(0, child.copy()));
+
+        // build modal model
+        ModalModel? modal = ModalModel.fromXml(model,node);
+        if (modal != null)
+        {
+          if (model.children == null) model.children = [];
+          model.children!.insert(0, modal);
+        }
       }
     }
   }

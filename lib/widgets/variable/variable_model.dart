@@ -4,7 +4,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/event/handler.dart' ;
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class VariableModel extends WidgetModel
 {
@@ -57,7 +57,6 @@ class VariableModel extends WidgetModel
       String? id,
       {String? type, dynamic value, dynamic onchange, }) : super(parent, id)
   {
-
     if (value    != null) this.value    = value;
     if (onchange != null) this.onchange = onchange;
   }

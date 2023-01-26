@@ -1,13 +1,15 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:fml/data/data.dart';
+import 'package:fml/datasources/transforms/iTransform.dart';
 import 'package:fml/datasources/transforms/transform_model.dart';
-import 'package:fml/eval/eval.dart' as EVALUATE;
+import 'package:fml/eval/eval.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
-class Filter extends TransformModel implements IDataTransform
+class Filter extends TransformModel implements ITransform
 {
   ////////////
   /* filter */
@@ -65,25 +67,22 @@ class Filter extends TransformModel implements IDataTransform
     super.deserialize(xml);
   }
 
-  _fromList(List? list)
+  _fromList(Data? data)
   {
-    if (list == null) return null;
+    if (data == null) return null;
+
+    var bindings = Binding.getBindings(filter);
+
     List remove = [];
-    list.forEach((element)
+    data.forEach((row)
     {
-      String? expression = filter;
-      expression = Binding.applyMap(expression, element, caseSensitive: false);
-      expression = Binding.applyMap(expression, element, caseSensitive: false, prefix: '#');
-      bool? ok = S.toBool(EVALUATE.Eval.evaluate(expression));
+      var variables = Data.readValues(bindings, row);
+      var result = Eval.evaluate(filter, variables: variables);
+
+      bool? ok = S.toBool(result);
       if (ok != true) remove.add(element);
     });
-    list.removeWhere((element) => remove.contains(element));
-  }
-
-  apply(List? list) async
-  {
-    if (enabled == false) return;
-    _fromList(list);
+    data.removeWhere((element) => remove.contains(element));
   }
 
   String encode(String v)
@@ -102,5 +101,11 @@ class Filter extends TransformModel implements IDataTransform
     v = v.replaceAll("[[[[", "{");
     v = v.replaceAll("]]]]", "}");
     return v;
+  }
+
+  apply(Data? data) async
+  {
+    if (enabled == false) return;
+    _fromList(data);
   }
 }

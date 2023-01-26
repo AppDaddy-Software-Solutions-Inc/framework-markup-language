@@ -15,7 +15,7 @@ import 'package:fml/widgets/icon/icon_view.dart';
 import 'package:fml/datasources/file/file.dart' as FILE;
 import 'package:flutter/material.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
 if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
@@ -218,6 +218,7 @@ class CameraViewState extends State<CameraView>
     if ((controller != null) &&
         (controller!.value.isInitialized) &&
         (controller!.value.isPreviewPaused)) controller!.resumePreview();
+    if (widget.model.togglevisible) widget.model.visible = true;
     return true;
   }
 
@@ -225,6 +226,7 @@ class CameraViewState extends State<CameraView>
     if ((controller != null) &&
         (controller!.value.isInitialized) &&
         (!controller!.value.isPreviewPaused)) controller!.pausePreview();
+        if (widget.model.togglevisible) widget.model.visible = false;
     return true;
   }
 

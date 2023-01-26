@@ -2,9 +2,8 @@
 import 'package:camera/camera.dart' show CameraLensDirection;
 import 'package:camera/camera.dart' show XFile;
 import 'package:fml/datasources/camera/model.dart' as CAMERA;
-import 'package:fml/widgets/camera/camera_view.dart' as CAMERA;
+import 'package:fml/widgets/camera/camera_view.dart';
 import 'package:fml/log/manager.dart';
-
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/event/handler.dart' ;
@@ -16,7 +15,7 @@ import 'package:fml/datasources/detectors/detector_model.dart' ;
 import 'package:image/image.dart' as IMAGE;
 import 'package:fml/datasources/file/file.dart' as FILE;
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
 if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
@@ -27,7 +26,7 @@ class CameraModel extends CAMERA.CameraImageModel implements IViewableWidget
   bool fullscreen = true;
   bool stream = false;
 
-  CAMERA.CameraViewState? camera;
+  CameraViewState? camera;
 
   // camera name
   StringObservable? _name;
@@ -243,6 +242,20 @@ class CameraModel extends CAMERA.CameraImageModel implements IViewableWidget
   }
   bool get controls => _controls?.get() ?? true;
 
+  BooleanObservable? _togglevisible;
+  set togglevisible(dynamic v)
+  {
+    if (_togglevisible != null)
+    {
+      _togglevisible!.set(v);
+    }
+    else if (v != null)
+    {
+      _togglevisible = BooleanObservable(Binding.toKey(id, 'togglevisible'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get togglevisible => _togglevisible?.get() ?? false;
+
   // on initialized event
   StringObservable? _oninitialized;
   set oninitialized(dynamic v)
@@ -296,6 +309,7 @@ class CameraModel extends CAMERA.CameraImageModel implements IViewableWidget
     enabled       = Xml.get(node: xml, tag: 'enabled');
     controls      = Xml.get(node: xml, tag: 'controls');
     scale         = Xml.get(node: xml, tag: 'scale');
+    togglevisible = Xml.get(node: xml, tag: 'togglevisible');
 
     // enable streaming
     if (detectors != null) detectors!.forEach((detector) => ((detector.source == DetectorSources.stream) || (detector.source == DetectorSources.any)) ? stream = true : null);
@@ -403,5 +417,5 @@ class CameraModel extends CAMERA.CameraImageModel implements IViewableWidget
     }
   }
 
-  Widget getView({Key? key}) => CAMERA.CameraView(this);
+  Widget getView({Key? key}) => CameraView(this);
 }

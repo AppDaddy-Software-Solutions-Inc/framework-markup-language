@@ -1,5 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/navigation/manager.dart';
+import 'package:fml/navigation/navigation_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/navigation/page.dart';
 import 'package:fml/widgets/breadcrumb/breadcrumb_model.dart' ;

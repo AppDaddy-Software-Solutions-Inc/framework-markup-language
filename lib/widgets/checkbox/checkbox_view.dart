@@ -2,11 +2,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/checkbox/checkbox_model.dart' as CHECKBOX;
 import 'package:fml/widgets/option/option_model.dart' as OPTION;
-import 'package:fml/helper/helper_barrel.dart';
-
+import 'package:fml/helper/common_helpers.dart';
 
 /// Checkbox View
 ///
@@ -24,17 +23,14 @@ class _CheckboxViewState extends State<CheckboxView> implements IModelListener {
   RenderBox? box;
   Offset? position;
 
-  
   @override
-  void initState()
-  {
+  void initState() {
     super.initState();
 
     widget.model.registerListener(this);
 
     // If the model contains any databrokers we fire them before building so we can bind to the data
     widget.model.initialize();
-
   }
 
   @override
@@ -42,16 +38,13 @@ class _CheckboxViewState extends State<CheckboxView> implements IModelListener {
     super.didChangeDependencies();
   }
 
-  
   @override
   void didUpdateWidget(CheckboxView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (
-        (oldWidget.model != widget.model)) {
+    if ((oldWidget.model != widget.model)) {
       oldWidget.model.removeListener(this);
       widget.model.registerListener(this);
     }
-
   }
 
   @override
@@ -68,34 +61,35 @@ class _CheckboxViewState extends State<CheckboxView> implements IModelListener {
   }
 
   /// Builder for each checkbox [OPTION.OptionModel]
-  _buildOptions()
-  {
+  _buildOptions() {
     var model = widget.model;
     _list = [];
 
-    if ((model.options.isNotEmpty))
-    {
-      for (OPTION.OptionModel option in model.options)
-      {
+    if ((model.options.isNotEmpty)) {
+      for (OPTION.OptionModel option in model.options) {
         String? value = option.value;
         bool checked = ((model.value != null) && (model.value.contains(value)));
-        var o = CheckBox(model: model, option: option, checked: checked, onChecked: onChecked, context: context);
+        var o = CheckBox(
+            model: model,
+            option: option,
+            checked: checked,
+            onChecked: onChecked,
+            context: context);
         _list.add(o);
       }
     }
   }
 
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     return LayoutBuilder(builder: builder);
   }
 
   Widget builder(BuildContext context, BoxConstraints constraints) {
     // Set Build Constraints in the [WidgetModel]
- widget.model.minwidth = constraints.minWidth;
-      widget.model.maxwidth = constraints.maxWidth;
-      widget.model.minheight = constraints.minHeight;
-      widget.model.maxheight = constraints.maxHeight;
+    widget.model.minwidth = constraints.minWidth;
+    widget.model.maxwidth = constraints.maxWidth;
+    widget.model.minheight = constraints.minHeight;
+    widget.model.maxheight = constraints.maxHeight;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _afterBuild(context);
@@ -164,8 +158,7 @@ class _CheckboxViewState extends State<CheckboxView> implements IModelListener {
   }
 
   /// Function called when clicking a checkbox
-  Future<void> onChecked(OPTION.OptionModel option, bool checked) async
-  {
+  Future<void> onChecked(OPTION.OptionModel option, bool checked) async {
     await widget.model.onCheck(option, checked);
   }
 }
@@ -180,12 +173,11 @@ class CheckBox extends StatelessWidget {
   final BuildContext context;
 
   CheckBox(
-      {
-        required this.model,
-        required this.option,
-        required this.checked,
-        required this.onChecked,
-        required this.context})
+      {required this.model,
+      required this.option,
+      required this.checked,
+      required this.onChecked,
+      required this.context})
       : super(key: UniqueKey());
 
   /// Callback function called when clicking a [Check]
@@ -195,19 +187,31 @@ class CheckBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    var checkbox = GestureDetector(
-        onTap: () {
-          if (model.enabled != false && model.editable != false)
-            _onCheck();
-        },
-        child: Transform.scale(scale: 1.25, child: Checkbox(value: checked, onChanged: (value) => _onCheck(),
+    var checkbox = Transform.scale(
+        scale: 1.25,
+        child: Checkbox(
+          value: checked,
+          onChanged: (value) =>
+              model.enabled != false && model.editable != false
+                  ? callOnChecked()
+                  : null,
           checkColor: Theme.of(context).colorScheme.onPrimary,
-          fillColor: MaterialStateColor.resolveWith((states) => Theme.of(context).colorScheme.primary),
+          fillColor: MaterialStateColor.resolveWith(
+              (states) => Theme.of(context).colorScheme.primary),
           focusColor: Theme.of(context).colorScheme.onInverseSurface,
-          side: BorderSide(width: 2, color: model.enabled != false && model.editable != false ? Theme.of(context).colorScheme.surfaceVariant : Theme.of(context).colorScheme.onInverseSurface),
+          hoverColor: model.enabled != false && model.editable != false
+              ? Theme.of(context).colorScheme.onInverseSurface
+              : Colors.transparent,
+          side: BorderSide(
+              width: 2,
+              color: model.enabled != false && model.editable != false
+                  ? Theme.of(context).colorScheme.surfaceVariant
+                  : Theme.of(context).colorScheme.onInverseSurface),
           visualDensity: VisualDensity(horizontal: -2.5, vertical: -2.5),
-        )));
+          mouseCursor: model.enabled != false && model.editable != false
+              ? SystemMouseCursors.click
+              : SystemMouseCursors.basic,
+        ));
     // child: (widget.checked == true ? checkedIcon : uncheckedIcon));
 
     ///////////
@@ -219,13 +223,17 @@ class CheckBox extends StatelessWidget {
     //////////
     /* View */
     //////////
-    return Row(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.center, children: <Widget>[
-      Padding(padding: EdgeInsets.only(top: 8, bottom: 8, right: 8, left: 4), child: checkbox),
-      label
-    ]);
-  }
+    var chk = Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                  padding:
+                      EdgeInsets.only(top: 8, bottom: 8, right: 8, left: 4),
+                  child: checkbox),
+              label
+            ]);
 
-  _onCheck() {
-    callOnChecked();
+    return model.editable != false && model.enabled != false ? chk : Opacity(opacity: 0.7, child: chk);
   }
 }

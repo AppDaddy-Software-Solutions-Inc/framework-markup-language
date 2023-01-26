@@ -6,7 +6,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/row/row_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class OptionModel extends WidgetModel
 {
@@ -16,9 +16,8 @@ class OptionModel extends WidgetModel
   IViewableWidget? label;
 
   dynamic labelValue;
-  ///////////
-  /* Value */
-  ///////////
+
+  // value
   dynamic _value;
   set value (dynamic v)
   {
@@ -53,7 +52,7 @@ class OptionModel extends WidgetModel
     return _tags?.get();
   }
 
-  OptionModel(WidgetModel? parent, String? id, {dynamic data, dynamic labelValue, IViewableWidget? label, dynamic value, dynamic tags}) : super(parent, id, scope: Scope(id))
+  OptionModel(WidgetModel? parent, String? id, {dynamic data, dynamic labelValue, IViewableWidget? label, dynamic value, dynamic tags}) : super(parent, id, scope: Scope(parent: parent?.scope))
   {
     this.data = data;
     if (label != null) this.label = label;

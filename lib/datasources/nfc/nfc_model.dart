@@ -11,7 +11,7 @@ import 'payload.dart';
 import 'iNfcListener.dart';
 import 'nfc.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class NcfModel extends DataSourceModel implements IDataSource, INfcListener
 {
@@ -29,7 +29,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
   // message
   late StringObservable _message;
   String? get message => _message.get();
-  
+
   // method
   StringObservable? _method;
   set method(dynamic v)
@@ -62,7 +62,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
     }
     catch(e)
     {
-      Log().exception(e,  caller: 'iframe.Model');
+      Log().exception(e,  caller: 'nfc.Model');
       model = null;
     }
     return model;
@@ -151,7 +151,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
     // fail
     if (!b && onfail != null) EventHandler(this).execute(onFailObservable);
   }
-  
+
   @override
   Future<bool?> execute(String propertyOrFunction, List<dynamic> arguments) async
   {
@@ -199,7 +199,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
     _received.set(received + 1);
 
     // set last serial received
-    _serial.set(payload.id);
+      _serial.set(payload.id);
 
     // set last message bindable
     _message.set(payload.message);
@@ -213,13 +213,17 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
     {
       // is a valid url query string?
       String msg = payload.message!.trim();
-      Uri? uri = S.toURI(msg);
-      if (uri == null) uri = S.toURI("http://localhost" + (msg.startsWith("?") ? "" : "?") + msg);
+
+      // parse the string
+      Uri? uri = URI.parse(msg);
+      if (uri != null && !uri.hasQuery) uri = URI.parse("?$msg");
       if (uri != null && uri.hasQuery)
       {
         // add payload url parameters
         Map<String, dynamic> map = Map<String, dynamic>();
         uri.queryParameters.forEach((k, v) => map[k] = v);
+        if(!map.containsKey('payload')) map['payload'] = payload.message;
+        if(!map.containsKey('serial'))  map['serial'] = payload.id;
         data.add(map);
       }
     }

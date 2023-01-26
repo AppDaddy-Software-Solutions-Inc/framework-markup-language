@@ -3,13 +3,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
-
-abstract class IDataTransform
-{
-  bool? get enabled;
-  Future<void> apply(List? list);
-}
+import 'package:fml/helper/common_helpers.dart';
 
 class TransformModel extends WidgetModel
 {

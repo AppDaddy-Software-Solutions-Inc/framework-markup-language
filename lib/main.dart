@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/application/manager.dart';
+import 'package:fml/application/application_manager.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/navigation/manager.dart';
+import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/navigation/parser.dart';
 import 'package:fml/splash/splash.dart';
 import 'package:fml/system.dart';
@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:fml/theme/theme.dart' as THEMER;
 import 'package:fml/theme/themenotifier.dart';
-import 'helper/string.dart';
 import 'package:fml/phrase.dart';
 
 main()
@@ -35,18 +34,27 @@ main()
 
 void runMainApp()
 {
+  // hides all render flex exceptions
+  FlutterError.onError = (details)
+  {
+    bool show = false;
+    if (details.exception.toString().startsWith("A Render")) show = false;
+    if (show) FlutterError.presentError(details);
+  };
+
+  // run the application
   runApp(ChangeNotifierProvider<ThemeNotifier>(
       create: (_)
       {
         try
         {
-          var font = System().font;
-          return ThemeNotifier(THEMER.MyTheme().deriveTheme(System().colorscheme, googleFont: font));
+          var font = System.theme.font;
+          return ThemeNotifier(THEMER.MyTheme().deriveTheme(System.theme.colorscheme, googleFont: font));
         }
         catch (e)
         {
           Log().debug('Init Theme Error: $e \n(Configured fonts from https://fonts.google.com/ are case sensitive)');
-          return ThemeNotifier(THEMER.MyTheme().deriveTheme(System().colorscheme));
+          return ThemeNotifier(THEMER.MyTheme().deriveTheme(System.theme.colorscheme));
         }
       },
       child: Application()));
@@ -59,16 +67,12 @@ class Application extends StatelessWidget
   @override
   Widget build(BuildContext context)
   {
-    // set title
-    String title = "Flutter Markup Language " + version;
-    if (!S.isNullOrEmpty(System().config?.settings["APPLICATION_NAME"])) title = System().config!.settings["APPLICATION_NAME"]!;
-
     // initializes the theme bindables and updates on theme change
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     themeNotifier.mapSystemThemeBindables();
 
     return MaterialApp.router(
-        title: title,
+        title: applicationTitle,
         debugShowCheckedModeBanner: false,
         routerDelegate: NavigationManager(),
         routeInformationParser: const RouteParser(),

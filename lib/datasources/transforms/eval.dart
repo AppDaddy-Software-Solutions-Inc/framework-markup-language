@@ -1,14 +1,15 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
+import 'package:fml/datasources/transforms/iTransform.dart';
 import 'package:fml/datasources/transforms/transform_model.dart';
 import 'package:fml/eval/eval.dart' as EVALUATE;
 import 'package:fml/observable/binding.dart';
 
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
-class Eval extends TransformModel implements IDataTransform
+class Eval extends TransformModel implements ITransform
 {
   final String? source;
   final String? target;
@@ -41,23 +42,22 @@ class Eval extends TransformModel implements IDataTransform
     if ((list== null) || (source == null)) return null;
 
     List<Binding>? bindings = Binding.getBindings(source);
-    list.forEach((data)
+    list.forEach((row)
     {
-      try
-      {
-        // get variables
-        Map<String?, dynamic> variables = Json.getVariables(bindings, data);
+      // get variables
+      Map<String?, dynamic> variables = Data.readValues(bindings, row);
 
-        // evaluate
-        data[target] = EVALUATE.Eval.evaluate(source, variables: variables);
-      }
-      catch(e) {}
+      // evaluate
+      var value = EVALUATE.Eval.evaluate(source, variables: variables);
+
+      // save to the data set
+      Data.writeValue(row, target, value);
     });
   }
 
-  apply(List? list) async
+  apply(Data? data) async
   {
     if (enabled == false) return;
-    _eval(list as Data?);
+    _eval(data);
   }
 }

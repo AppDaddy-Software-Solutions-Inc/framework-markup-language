@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:fml/eval/evaluator.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/eval/expressions.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 /// Eval parses evaluation strings from FML templates
 ///
@@ -449,10 +449,8 @@ class Eval
   /// Hash a String
   static String? _hash(dynamic s, [dynamic key])
   {
-    if (key == null)
-      key = System().config!.settings["HASHKEY"];
-    if (key == null)
-      return null;
+    if (key == null) key = System.application.settings("HASHKEY");
+    if (key == null) return null;
     key = S.toStr(key);
     try
     {

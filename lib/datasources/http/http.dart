@@ -5,7 +5,9 @@ import 'package:fml/system.dart';
 import 'package:fml/token/token.dart';
 import 'package:http/http.dart';
 import 'package:http/http.dart' as HTTP;
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
+
+int defaultTimeout = 60;
 
 class HttpResponse {
   final String url;
@@ -50,7 +52,7 @@ class Http
       if (uri != null)
       {
         // execute request
-        Response response = await HTTP.get(uri, headers: encodeHeaders(headers)).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : System.timeout)));
+        Response response = await HTTP.get(uri, headers: encodeHeaders(headers)).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : defaultTimeout)));
 
         // decode headers
         decodeHeaders(response);
@@ -80,7 +82,7 @@ class Http
       if (uri != null)
       {
         // execute request
-        Response response = await HTTP.post(uri, headers: encodeHeaders(headers), body: body).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : System.timeout)));
+        Response response = await HTTP.post(uri, headers: encodeHeaders(headers), body: body).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : defaultTimeout)));
 
         // decode headers
         decodeHeaders(response);
@@ -105,7 +107,7 @@ class Http
       if (uri != null)
       {
         // execute request
-        Response response = await HTTP.put(uri, headers: encodeHeaders(headers), body: body).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : System.timeout)));
+        Response response = await HTTP.put(uri, headers: encodeHeaders(headers), body: body).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : defaultTimeout)));
 
         // decode headers
         decodeHeaders(response);
@@ -130,7 +132,7 @@ class Http
       if (uri != null)
       {
         // execute request
-        Response response = await HTTP.patch(uri, headers: encodeHeaders(headers), body: body).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : System.timeout)));
+        Response response = await HTTP.patch(uri, headers: encodeHeaders(headers), body: body).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : defaultTimeout)));
 
         // decode headers
         decodeHeaders(response);
@@ -155,7 +157,7 @@ class Http
       if (uri != null)
       {
         // execute request
-        Response response = await HTTP.delete(uri, headers: encodeHeaders(headers)).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : System.timeout)));
+        Response response = await HTTP.delete(uri, headers: encodeHeaders(headers)).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : defaultTimeout)));
 
         // decode headers
         decodeHeaders(response);
@@ -173,11 +175,14 @@ class Http
 
   static Uri? encodeUri(String url, {bool refresh = false})
   {
-    url = Url.toAbsolute(url);
-    if (refresh == true) url = Url.addParameter(url, 'refresh', System().uuid());
-    String? _url = Url.encode(url);
-    Uri? uri = Url.toUri(_url);
-    return uri;
+    Uri? uri = URI.parse(url);
+    if (uri == null) return null;
+
+    Map<String, dynamic> parameters = {};
+    parameters.addAll(uri.queryParameters);
+    if (refresh == true) parameters["refresh"] = System().uuid();
+    parameters.forEach((key, value) => Uri.encodeComponent(value));
+    return uri.replace(queryParameters: parameters);
   }
 
   static Map<String, String> encodeHeaders(Map<String, String>? headers)
@@ -188,7 +193,7 @@ class Http
       _headers[HttpHeaders.ageHeader] = '0';
       _headers[HttpHeaders.contentEncodingHeader] = 'utf8';
       _headers[HttpHeaders.contentTypeHeader] = "application/xml";
-      if (System().jwt != null) _headers[HttpHeaders.authorizationHeader] = "Bearer ${System().jwt!.token}";
+      if (System().token != null) _headers[HttpHeaders.authorizationHeader] = "Bearer ${System().token!.token}";
     }
     else headers.forEach((key, value) => _headers[key] = value);
     return _headers;

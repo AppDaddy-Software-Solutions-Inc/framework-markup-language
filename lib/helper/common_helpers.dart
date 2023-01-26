@@ -2,7 +2,7 @@
 export 'alignment.dart';
 export 'canny.dart';
 export 'image.dart';
-export 'json.dart';
 export 'string.dart';
-export 'url.dart';
+export 'uri.dart';
 export 'xml.dart';
+export 'color.dart';

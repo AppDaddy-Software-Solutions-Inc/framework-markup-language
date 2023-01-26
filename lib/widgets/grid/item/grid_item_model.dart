@@ -4,7 +4,7 @@ import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class GridItemModel extends DecoratedWidgetModel
 {
@@ -32,13 +32,13 @@ class GridItemModel extends DecoratedWidgetModel
   }
   bool get dirty => _dirty?.get() ?? false;
 
-  GridItemModel(WidgetModel? parent, String?  id, {dynamic data, String?  type, dynamic backgroundcolor}) : super(parent, id, scope: Scope(id))
+  GridItemModel(WidgetModel parent, String?  id, {dynamic data, String?  type, dynamic backgroundcolor}) : super(parent, id, scope: Scope(parent: parent.scope))
   {
     this.data = data;
     this.type = type;
   }
 
-  static GridItemModel? fromXml(WidgetModel? parent, XmlElement? xml, {dynamic data})
+  static GridItemModel? fromXml(WidgetModel parent, XmlElement? xml, {dynamic data})
   {
     GridItemModel? model;
     try

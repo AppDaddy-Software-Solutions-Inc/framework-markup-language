@@ -1,151 +1,118 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
-import 'dart:collection';
-import 'dart:convert';
-import 'package:fml/hive/settings.dart';
-import 'package:fml/log/manager.dart';
-import 'package:fml/observable/scope.dart';
+import 'package:collection/collection.dart';
+import 'package:flutter/material.dart';
+import 'package:fml/application/application_model.dart';
+import 'package:fml/navigation/navigation_manager.dart';
+import 'package:fml/navigation/page.dart';
 import 'package:fml/system.dart';
+import 'package:fml/theme/themenotifier.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:fml/datasources/http/http.dart';
-import 'package:fml/helper/helper_barrel.dart';
-import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
-class StoreModel extends WidgetModel
+class Store extends WidgetModel implements IModelListener
 {
-  StoreModel() : super(null, "STORE", scope: Scope("STORE"))
+  final List<ApplicationModel> _apps = [];
+
+  List<ApplicationModel> getApps() => _apps.toList();
+
+  bool initialized = false;
+
+  static Store _singleton = Store._initialize();
+  factory Store() => _singleton;
+  Store._initialize() : super(null, "STORE")
   {
-    // instantiate busy observable
-    busy = false;
+   init();
   }
 
-  Future<String?> link(String url) async
+  init() async
   {
-    bool found = false;
-    String domain = url;
-
-    ///////////////////
-    /* Verify Domain */
-    ///////////////////
-    Uri? uri = Uri.tryParse(domain);
-    HttpResponse response;
-
-    //////////////
-    /* Try Http */
-    //////////////
-    if ((!found) && (uri!.hasScheme))
-    {
-      domain = url;
-      response = await Http.get(domain + '/' + 'config.xml', timeout: 5, refresh: true);
-      if (response.ok) found = true;
-    }
-
-    ///////////////
-    /* Try Https */
-    ///////////////
-    if ((!found) && (!uri.hasScheme))
-    {
-      domain = 'https://' + url;
-      response = await Http.get(domain + '/' + 'config.xml', timeout: 5, refresh: true);
-      if (response.ok) found = true;
-    }
-    
-    //////////////
-    /* Try Http */
-    //////////////
-    if ((!found) && (!uri.hasScheme))
-    {
-      domain = 'http://' + url;
-      response = await Http.get(domain + '/' + 'config.xml', timeout: 5, refresh: true);
-      if (response.ok) found = true;
-    }
-
-    if (found)
-    {
-      await System().initializeDomainConnection(domain);
-    }
-
-    return found == true ? domain : null;
+    initialized = await _load();
   }
 
-  Future<Map<String, String?>> store() async
+  Future<bool> _load() async
   {
-    LinkedHashMap? apps = await Settings().get('appstore');
-    Map<String, String?> appstore = {};
-    if (apps != null && apps != {})
-    {
-      appstore = apps.map((key, value) => MapEntry(key, value));
-      Log().info('appstore: $appstore');
-    }
-    return appstore;
-  }
-
-  addApp(String link, {String? friendlyName}) async {
     busy = true;
-    LinkedHashMap? apps = await Settings().get('appstore');
-    Map<String, String> appstore = {};
-    if (apps != null && apps != {}) {
-      appstore = apps.map((key, value) => MapEntry(key, value));
-    }
-    if (!appstore.containsValue(link)) appstore.addAll({link: friendlyName ?? link});
-    await Settings().set('appstore', appstore);
-    busy = false;
-  }
 
-  deleteApps() async {
-    Settings().set('appstore', {});
-  }
+    var apps = await ApplicationModel.loadAll(System());
 
-  removeApp(String keyValue) async {
-    busy = true;
-    LinkedHashMap? apps = await Settings().get('appstore');
-    Map<String, String> appstore = {};
-    if (apps != null && apps != {}) {
-      appstore = apps.map((key, value) => MapEntry(key, value));
-    }
-    // if (appstore.containsValue(keyValue))
-      appstore.remove(keyValue);
-    await Settings().set('appstore', appstore);
-    busy = false;
-  }
-
-  Future<String?> getBase64IconImage(String url) async {
-    String? base64;
-    try {
-      base64 = await Settings().get('ASSETS:$url', defaultValue: null);
-    }
-    catch(e)
+    _apps.clear();
+    for (ApplicationModel app in apps)
     {
-      Log().debug('Unable to getBase64IconImage from cache APP_ICON');
+      app.registerListener(this);
+      _apps.add(app);
     }
-    return base64;
+
+    // sort by position
+    //_apps.sort();
+
+    busy = false;
+
+    return true;
   }
 
-  setBase64IconImage(String url) async
+  Future add(ApplicationModel app) async
   {
-    String? base64;
-    try
+    busy = true;
+
+    // insert into the hive
+    bool ok = await app.insert();
+
+    // add to the list
+    if (ok) _apps.add(app);
+
+    busy = false;
+  }
+
+  ApplicationModel? find({String? url})
+  {
+    // query hive
+    ApplicationModel? app = _apps.firstWhereOrNull((app) => app.url == url);
+
+    return app;
+  }
+
+  delete(ApplicationModel? app) async
+  {
+    if (app != null)
     {
-      if (!S.isNullOrEmpty(url)) base64 = await networkImageToBase64(url);
-      if (!S.isNullOrEmpty(base64)) await Settings().set('ASSETS:$url', base64);
-    }
-    catch(e)
-    {
-      Log().error('Unable to setBase64IconImage to cache APP_ICON');
-      Log().exception(e);
+      busy = true;
+
+      // delete from the hive
+      bool ok = await app.delete();
+
+      // remove from the list
+      if (ok && _apps.contains(app)) _apps.remove(app);
+
+      busy = false;
     }
   }
 
-  Future<String?> networkImageToBase64(String imageUrl) async {
-    Uri? uri = S.toURI(imageUrl);
-    if (uri == null) return null;
-    try {
-      http.Response response = await http.get(uri);
-      final bytes = response.bodyBytes;
-      return base64Encode(bytes);
-    } catch(e) {
-      return null;
-    }
+  launch(ApplicationModel app, BuildContext context) async
+  {
+    // get the home page
+    var page = app.homePage;
+
+    // set the system app
+    System().launchApplication(app);
+
+    // refresh the app
+    app.refresh();
+
+    // launch the page
+    NavigationManager().setNewRoutePath(PageConfiguration(url: page, title: "Store"), source: "store");
+
+    // change theme
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    String brightness   = System.application.settings('BRIGHTNESS') ?? 'light';
+    String color        = System.application.settings('COLOR_SCHEME') ?? 'lightblue';
+    themeNotifier.setTheme(brightness, color);
+    themeNotifier.mapSystemThemeBindables();
   }
 
+  @override
+  onModelChange(WidgetModel model, {String? property, value})
+  {
+    notifyListeners(property, value);
+  }
 }

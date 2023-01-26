@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/transition.dart';
 import 'package:fml/system.dart';
-import 'package:fml/widgets/theme/theme_model.dart' as THEME;
+import 'package:fml/widgets/theme/theme_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 MyTheme theme = MyTheme();
 
@@ -41,10 +41,11 @@ class MyTheme
         useMaterial3: true);
   }
 
-  getBrightness() {
-    String? brightness = /*await Settings().get('brightness') ??*/ System().brightness;
-
-    if (brightness != null) {
+  getBrightness()
+  {
+    String? brightness = /*await Settings().get('brightness') ??*/ System.theme.brightness;
+    if (brightness != null)
+    {
       if (brightness == 'system' || brightness == 'platform')
         brightnessPreference = MediaQueryData.fromWindow(WidgetsBinding.instance.window).platformBrightness;
       else if (brightness == 'dark')
@@ -52,8 +53,7 @@ class MyTheme
       else if (brightness == 'light')
         brightnessPreference = Brightness.light;
     }
-    else
-      brightnessPreference = Brightness.light;
+    else brightnessPreference = Brightness.light;
     return brightnessPreference;
   }
 
@@ -80,7 +80,7 @@ class MyTheme
   // };
 }
 
-ThemeData applyCustomizations(ColorScheme base, THEME.ThemeModel m) {
+ThemeData applyCustomizations(ColorScheme base, ThemeModel m) {
   var customizedTheme;
   try {
     customizedTheme = ThemeData.from(

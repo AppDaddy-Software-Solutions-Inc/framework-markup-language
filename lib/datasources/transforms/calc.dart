@@ -1,15 +1,15 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:collection';
 import 'package:fml/data/data.dart';
+import 'package:fml/datasources/transforms/iTransform.dart';
 import 'package:fml/datasources/transforms/transform_model.dart';
 import 'package:fml/eval/eval.dart' as EVALUATE;
-import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
-class Calc extends TransformModel implements IDataTransform
+class Calc extends TransformModel implements ITransform
 {
   static const String sum       = "sum";
   static const String min       = "min";
@@ -23,39 +23,13 @@ class Calc extends TransformModel implements IDataTransform
   final String? source;
   final String? target;
   final String? precision;
-
-  ///////////////
-  /* operation */
-  ///////////////
-  String? _operation;
-  set operation (String? v)
-  {
-    if (_operation != v)
-    {
-      if (v != null) v = v.toLowerCase();
-      _operation = v;
-    }
-  }
-
-  String? get operation
-  {
-    return _operation;
-  }
-
-  ///////////
-  /* group */
-  ///////////
-  List<String>? _group;
-  set group (String? v)
-  {
-    _group = null;
-    if (v != null) _group = v.split(",");
-  }
+  late final String? operation;
+  late final List<String>? groups;
 
   Calc(WidgetModel? parent, {String? id, String? operation, this.source, this.target, this.precision, String? group}) : super(parent, id)
   {
-    this.operation = operation;
-    this.group = group;
+    this.operation = operation?.toLowerCase();
+    this.groups    = group?.split(",");
   }
 
   static Calc? fromXml(WidgetModel? parent, XmlElement xml)
@@ -77,114 +51,96 @@ class Calc extends TransformModel implements IDataTransform
   @override
   void deserialize(XmlElement xml)
   {
-
     // Deserialize
     super.deserialize(xml);
   }
 
-  String? _getGroup(Map<dynamic,dynamic> point)
+  String? _getGroup(dynamic data)
   {
-    if (_group == null) return '*';
+    if (groups == null) return '*';
 
     String? group;
-    _group!.forEach((f)
+    groups!.forEach((f)
     {
-      if (point.containsKey(f)) group = (group ?? "") + "[" + point[f].toString() + "]";
+      var value = Data.readValue(data, f);
+      if (value != null) group = (group ?? "") + "[" + value.toString() + "]";
     });
     return group;
   }
 
-  bool _inGroup(Map<dynamic,dynamic> point, String? group)
+  bool _inGroup(dynamic data, String? group)
   {
     if (group == null) return false;
-    if (_getGroup(point) == group) return true;
+    if (_getGroup(data) == group) return true;
     return false;
   }
 
   HashMap<String,double?>? _calcMin(Data list)
   {
     if (source == null) return null;
-
-    HashMap<String,double?> result = HashMap<String,double?>();
-    list.forEach((point)
+    var results = HashMap<String,double>();
+    list.forEach((row)
     {
-      if ((point != null) && (point.containsKey(source)) && (point[source] != null) && (S.isNumber(point[source])))
+      var group = _getGroup(row);
+      var value = S.toDouble(Data.readValue(row, source));
+      if (group != null && value != null)
       {
-        double? value = S.toDouble(point[source]);
-        String? group = _getGroup(point);
-        if (group != null)
-        {
-          if (!result.containsKey(group)) result[group] = value;
-          if (value! < result[group]!) result[group] = value;
-        }
+        if (!results.containsKey(group)) results[group] = value;
+        if (value < results[group]!) results[group] = value;
       }
     });
-    return result;
+    return results;
   }
 
   HashMap<String,double?>? _calcMax(Data list)
   {
     if (source == null) return null;
-
-    HashMap<String,double?> result = HashMap<String,double?>();
-
-    list.forEach((point)
+    var results = HashMap<String,double>();
+    list.forEach((row)
     {
-      if ((point != null) && (point.containsKey(source)) && (point[source] != null) && (S.isNumber(point[source])))
+      var group = _getGroup(row);
+      var value = S.toDouble(Data.readValue(row, source));
+      if (group != null && value != null)
       {
-        double? value = S.toDouble(point[source]);
-        String? group = _getGroup(point);
-        if (group != null)
-        {
-          if (!result.containsKey(group)) result[group] = value;
-          if (value! > result[group]!) result[group] = value;
-        }
+        if (!results.containsKey(group)) results[group] = value;
+        if (value > results[group]!) results[group] = value;
       }
     });
-    return result;
+    return results;
   }
 
   HashMap<String,double>? _calcCnt(Data list)
   {
     if (source == null) return null;
-
-    HashMap<String,double> result = HashMap<String,double>();
-
-    list.forEach((point)
+    HashMap<String,double> results = HashMap<String,double>();
+    list.forEach((row)
     {
-      if ((point != null) && (point.containsKey(source)) && (point[source] != null))
+      var group = _getGroup(row);
+      var value = Data.readValue(row, source);
+      if (group != null && value != null)
       {
-        String? group = _getGroup(point);
-        if (group != null)
-        {
-          if (!result.containsKey(group)) result[group] = 0;
-          result[group] = result[group]! + 1;
-        }
+        if (!results.containsKey(group)) results[group] = 0;
+        results[group] = results[group]! + 1;
       }
     });
-    return result;
+    return results;
   }
 
   HashMap<String,double>? _calcSum(Data list)
   {
     if (source == null) return null;
-
-    HashMap<String,double> result = HashMap<String,double>();
-
-    list.forEach((point)
+    HashMap<String,double> results = HashMap<String,double>();
+    list.forEach((row)
     {
-      if ((point != null) && (point.containsKey(source)) && (point[source] != null) && (S.isNumber(point[source])))
+      var group = _getGroup(row);
+      var value = S.toDouble(Data.readValue(row, source));
+      if (group != null && value != null)
       {
-        double? value = S.toDouble(point[source]);
-        String? group = _getGroup(point);
-        if (group != null)
-        {
-          if (!result.containsKey(group)) result[group] = 0;
-          result[group] = result[group]! + value!;
-        }
+        if (!results.containsKey(group)) results[group] = 0;
+        results[group] = results[group]! + value;
       }
     });
-    return result;
+    return results;
   }
 
   HashMap<String,double?>? _calcAvg(Data list)
@@ -194,21 +150,21 @@ class Calc extends TransformModel implements IDataTransform
     HashMap<String,double>? sum = _calcSum(list);
     HashMap<String,double>? cnt = _calcCnt(list);
 
-    HashMap<String,double?> result = HashMap<String,double?>();
+    var results = HashMap<String,double?>();
     if ((sum != null) && (cnt != null))
-      list.forEach((point)
+    list.forEach((point)
+    {
+      if ((point != null) && (point.containsKey(source)) && (point[source] != null) && (S.isNumber(point[source])))
       {
-        if ((point != null) && (point.containsKey(source)) && (point[source] != null) && (S.isNumber(point[source])))
+        String? group = _getGroup(point);
+        if ((group != null) && (sum.containsKey(group)) && (cnt.containsKey(group)) && (cnt[group] != 0))
         {
-          String? group = _getGroup(point);
-          if ((group != null) && (sum.containsKey(group)) && (cnt.containsKey(group)) && (cnt[group] != 0))
-          {
-            result[group] = sum[group]! / cnt[group]!;
-            if (precision != null && S.toInt(precision) != null) result[group] = EVALUATE.Eval.evaluate("round(" + result[group].toString() + ", " + precision! + ")");
-          }
+          results[group] = sum[group]! / cnt[group]!;
+          if (precision != null && S.toInt(precision) != null) results[group] = EVALUATE.Eval.evaluate("round(" + results[group].toString() + ", " + precision! + ")");
         }
-      });
-    return result;
+      }
+    });
+    return results;
   }
 
   _avg(Data? list)
@@ -217,19 +173,10 @@ class Calc extends TransformModel implements IDataTransform
     HashMap<String,double?>? map = _calcAvg(list);
 
     if (map != null)
-      list.forEach((point)
+      list.forEach((row)
       {
-        String? group = _getGroup(point);
-        if ((_inGroup(point, group)) && (map.containsKey(group)))
-        {
-          try
-          {
-            point[target] = map[group!].toString();
-          }
-          catch(e) {
-            Log().exception(e, caller: 'calc.dart => _avg(Data list)');
-          }
-        }
+        String? group = _getGroup(row);
+        if ((_inGroup(row, group)) && (map.containsKey(group))) Data.writeValue(row, target, map[group!]);
       });
   }
 
@@ -239,17 +186,10 @@ class Calc extends TransformModel implements IDataTransform
     HashMap<String,double>? map = _calcSum(list);
 
     if (map != null)
-      list.forEach((point)
+      list.forEach((row)
       {
-        String? group = _getGroup(point);
-        if ((_inGroup(point, group)) && (map.containsKey(group)))
-        {
-          try
-          {
-            point[target] = map[group!].toString();
-          }
-          catch(e){}
-        }
+        String? group = _getGroup(row);
+        if ((_inGroup(row, group)) && (map.containsKey(group))) Data.writeValue(row, target, map[group!]);
       });
   }
 
@@ -259,17 +199,10 @@ class Calc extends TransformModel implements IDataTransform
     HashMap<String,double>? map = _calcCnt(list);
 
     if (map != null)
-      list.forEach((point)
+      list.forEach((row)
       {
-        String? group = _getGroup(point);
-        if ((_inGroup(point, group)) && (map.containsKey(group)))
-        {
-          try
-          {
-            point[target] = S.toInt(map[group!]).toString();
-          }
-          catch(e){}
-        }
+        String? group = _getGroup(row);
+        if ((_inGroup(row, group)) && (map.containsKey(group))) Data.writeValue(row, target, S.toInt(map[group!]));
       });
   }
 
@@ -279,17 +212,10 @@ class Calc extends TransformModel implements IDataTransform
     HashMap<String,double?>? map = _calcMin(list);
 
     if (map != null)
-      list.forEach((point)
+      list.forEach((row)
       {
-        String? group = _getGroup(point);
-        if ((_inGroup(point, group)) && (map.containsKey(group)))
-        {
-          try
-          {
-            point[target] = map[group!].toString();
-          }
-          catch(e){}
-        }
+        String? group = _getGroup(row);
+        if ((_inGroup(row, group)) && (map.containsKey(group))) Data.writeValue(row, target, map[group!]);
       });
   }
 
@@ -298,17 +224,20 @@ class Calc extends TransformModel implements IDataTransform
     if ((list== null) || (source == null)) return null;
 
     List<Binding>? bindings  = Binding.getBindings(source);
-    list.forEach((data)
+    list.forEach((row)
     {
       try
       {
         // get variables
-        Map<String?, dynamic> variables = Json.getVariables(bindings, data);
+        Map<String?, dynamic> variables = Data.readValues(bindings, row);
 
         // evaluate
+        dynamic value;
         if (precision != null && S.toInt(precision) != null)
-             data[target] = EVALUATE.Eval.evaluate("round(" + source! + ", " + precision! + ")", variables: variables);
-        else data[target] = EVALUATE.Eval.evaluate(source, variables: variables);
+             value = EVALUATE.Eval.evaluate("round(" + source! + ", " + precision! + ")", variables: variables);
+        else value = EVALUATE.Eval.evaluate(source, variables: variables);
+
+        Data.writeValue(row, target, value);
       }
       catch(e) {}
     });
@@ -320,46 +249,39 @@ class Calc extends TransformModel implements IDataTransform
     HashMap<String,double?>? map = _calcMax(list);
 
     if (map != null)
-      list.forEach((point)
+      list.forEach((row)
       {
-        String? group = _getGroup(point);
-        if ((_inGroup(point, group)) && (map.containsKey(group)))
-        {
-          try
-          {
-            point[target] = map[group!].toString();
-          }
-          catch(e){}
-        }
+        String? group = _getGroup(row);
+        if ((_inGroup(row, group)) && (map.containsKey(group))) Data.writeValue(row, target, map[group!]);
       });
   }
 
-  apply(List? list) async
+  apply(Data? data) async
   {
     if (enabled == false) return;
 
     switch (operation)
     {
       case sum:
-        _sum(list as Data?);
+        _sum(data);
         break;
       case min:
-        _min(list as Data?);
+        _min(data);
         break;
       case max:
-        _max(list as Data?);
+        _max(data);
         break;
       case avg:
-        _avg(list as Data?);
+        _avg(data);
         break;
       case count:
-        _cnt(list as Data?);
+        _cnt(data);
         break;
       case countlong:
-        _cnt(list as Data?);
+        _cnt(data);
         break;
       case evaluate:
-        _eval(list as Data?);
+        _eval(data);
         break;
     }
   }

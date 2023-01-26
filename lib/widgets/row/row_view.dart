@@ -3,7 +3,7 @@ import 'package:fml/widgets/row/row_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class RowView extends StatefulWidget
 {
@@ -88,7 +88,7 @@ class _RowViewState extends State<RowView> implements IModelListener {
     WrapCrossAlignment? crossWrapAlignment = align['crossWrapAlignment'];
 
     // set main axis size
-    var mainAxisSize = widget.model.shrinkwrap == true || widget.model.expand == false ? MainAxisSize.min : MainAxisSize.max;
+    var mainAxisSize = widget.model.expand == false ? MainAxisSize.min : MainAxisSize.max;
 
     /// safeguard - don't allow infinite size
     if (mainAxisSize == MainAxisSize.max && constraints.maxWidth == double.infinity) mainAxisSize = MainAxisSize.min;

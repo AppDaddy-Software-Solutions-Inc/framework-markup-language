@@ -8,7 +8,7 @@ import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 /// Busy Model
 ///
@@ -160,7 +160,11 @@ class BusyModel extends DecoratedWidgetModel implements IViewableWidget
     // properties
     size  = Xml.get(node: xml, tag: 'size');
     modal = Xml.get(node: xml, tag: 'modal');
-    expand = Xml.get(node: xml, tag: 'expand');
+
+    // expand="false" is same as adding attribute shrink
+    var expand = Xml.get(node: xml, tag: 'expand');
+    if (expand == null && Xml.hasAttribute(node: xml, tag: 'shrink')) expand = 'false';
+    this.expand = expand;
   }
 
   Widget getView({Key? key}) => BusyView(this);

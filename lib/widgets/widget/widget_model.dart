@@ -15,7 +15,6 @@ import 'package:fml/datasources/mqtt/mqtt_model.dart';
 import 'package:fml/datasources/nfc/nfc_model.dart';
 import 'package:fml/datasources/socket/socket_model.dart';
 import 'package:fml/datasources/zebra/model.dart';
-import 'package:fml/system.dart';
 import 'package:fml/widgets/alarm/alarm_model.dart';
 import 'package:fml/widgets/animation/animation_model.dart';
 import 'package:fml/widgets/breadcrumb/breadcrumb_model.dart';
@@ -113,7 +112,7 @@ import 'package:fml/widgets/video/video_model.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 abstract class IModelListener {
   onModelChange(WidgetModel model, {String? property, dynamic value});
@@ -201,20 +200,7 @@ class WidgetModel implements IDataSourceListener
   List<WidgetModel>? children;
 
   // scope
-  Scope? _scope;
-  set scope(Scope? s) {
-    if ((_scope == null) && (s != null)) {
-      _scope = s;
-      // set the parent and child scope relationship. system scope parent can never be set.
-      if ((_scope!.parent == null) && (_scope != Scope.of(System()))) {
-        _scope!.parent = Scope.of(this.parent);
-        if ((scope!.parent != null) && (scope!.parent != Scope.of(this)))
-          scope!.parent!.add(child: scope);
-      }
-    }
-  }
-
-  Scope? get scope => _scope;
+  Scope? scope;
 
   // context
   BuildContext? get context
@@ -284,10 +270,18 @@ class WidgetModel implements IDataSourceListener
     // default id
     if (S.isNullOrEmpty(id)) id = Uuid().v1();
     this.id = id!;
+
+    // set the parent
     this.parent = parent;
+
+    // set the scope
     this.scope = scope ?? Scope.of(this);
+
+    // set the framework
     this.framework = findAncestorOfExactType(FrameworkModel);
-    if ((!S.isNullOrEmpty(id)) && (this.scope != null)) this.scope!.registerModel(this);
+
+    // register the model with the scope
+    if (!S.isNullOrEmpty(id) && this.scope != null) this.scope!.registerModel(this);
   }
 
   static WidgetModel? fromXml(WidgetModel parent, XmlElement node)
@@ -763,15 +757,18 @@ class WidgetModel implements IDataSourceListener
       case "zebra":
         model = ZebraModel.fromXml(parent, node);
         break;
+
       default:
-        Log().warning('$elementLocalName is not a model, check the spelling of the element name.');
+        if (elementLocalName != 'body')
+          Log().warning('$elementLocalName is not a model, check the spelling of the element name.');
         break;
     }
 
     return model;
   }
 
-  void deserialize(XmlElement xml) {
+  void deserialize(XmlElement xml)
+  {
     // Busy
     busy = true;
 
@@ -804,60 +801,58 @@ class WidgetModel implements IDataSourceListener
     busy = false;
   }
 
-  void _deserializeDataSources(XmlElement xml) {
+  void _deserializeDataSources(XmlElement xml)
+  {
     // find and deserialize all datasources
     for (XmlNode node in xml.children)
-      if (node is XmlElement) {
-        String element = node.localName;
-
-        if (isDataSource(element)) {
-          // element is global?
-          bool global = (Xml.attribute(node: node, tag: 'global') != null);
-          if (global == true) {}
-          dynamic model = WidgetModel.fromXml(global ? System() : this, node);
-          if (model is IDataSource) {
-            if (this.datasources == null) this.datasources = [];
-            this.datasources!.add(model);
-          }
-        }
+    if (node is XmlElement && isDataSource(node.localName))
+    {
+      // build the data source model
+      dynamic model = WidgetModel.fromXml(this, node);
+      if (model is IDataSource)
+      {
+        if (this.datasources == null) this.datasources = [];
+        this.datasources!.add(model);
       }
+    }
   }
 
-  void _deserialize(XmlElement xml) {
+  void _deserialize(XmlElement xml)
+  {
     // deserialize all non-datasource children
     for (XmlNode node in xml.children)
-      if (node is XmlElement) {
-        String element = node.localName;
-        if (!isDataSource(element)) {
-          // element is global?
-          // bool global = (Xml.attribute(node: node, tag: 'global) != null);
-          var model = WidgetModel.fromXml(this, node);
-          if (model is WidgetModel) {
-            if (this.children == null) this.children = [];
-            this.children!.add(model);
-          }
-        }
+    if (node is XmlElement && !isDataSource(node.localName))
+    {
+      // build the model
+      dynamic model = WidgetModel.fromXml(this, node);
+      if (model is WidgetModel)
+      {
+        if (this.children == null) this.children = [];
+        this.children!.add(model);
       }
+    }
   }
 
-  void dispose() {
+  void dispose()
+  {
     // remove listeners
     removeAllListeners();
 
     // dispose of datasources
-    if (datasources != null) {
-      datasources!.forEach((datasource) => datasource.dispose());
-      datasources!.clear();
-    }
+    if (datasources != null)
+    for (var datasource in datasources!) if (datasource.parent == this) datasource.dispose();
+    datasources?.clear();
 
     // dispose of children
-    if (children != null) {
+    if (children != null)
+    {
       children!.forEach((child) => child.dispose());
       children!.clear();
     }
   }
 
-  registerListener(IModelListener listener) {
+  registerListener(IModelListener listener)
+  {
     if (_listeners == null) _listeners = [];
     if (!_listeners!.contains(listener)) _listeners!.add(listener);
   }
@@ -1079,9 +1074,10 @@ class WidgetModel implements IDataSourceListener
   {
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
+
     switch (function)
     {
-      case "set":
+      case 'set':
 
       // value
         var value = S.item(arguments, 0);
@@ -1089,57 +1085,147 @@ class WidgetModel implements IDataSourceListener
         // property - default is value
         var property = S.item(arguments, 1) ?? 'value';
 
-        // global
-        var global = S.item(arguments, 2);
+        // removed global references
+        // this is all done in the global.xml file now
+        // var global = S.item(arguments, 2);
+        //WidgetModel model = this;
+        //if ((!S.isNullOrEmpty(global)) && (S.toBool(global) == true))
+        //model = System();
 
-        WidgetModel model = this;
-        if ((!S.isNullOrEmpty(global)) && (S.toBool(global) == true))
-          model = System();
-
-        Scope? scope = Scope.of(model);
+        Scope? scope = Scope.of(this);
         if (scope == null) return false;
 
         // set the variable
         scope.setObservable("$id.$property", value != null ? value.toString() : null);
-
         return true;
 
-      case "removewidget":
-
-        // dispose of this model
-        this.dispose();
-
-        // force parent rebuild
-        parent?.notifyListeners("rebuild", "true");
-
-        return true;
-
-      case "addchildwidget":
-
+      case 'addchild':
+        // if index is null, add to end of list.
+        int? index = S.toInt(S.item(arguments, 1));
         // add elements
         var xml = S.item(arguments, 0);
-        if (xml is String) await _appendXml(xml, S.toInt(S.item(arguments, 1)));
 
+        if (xml == null || !(xml is String))
+          return true;
+        await _appendXml(xml, index);
         // force parent rebuild
         parent?.notifyListeners("rebuild", "true");
-
         return true;
 
-      case "replacewidget":
+      case 'removechild':
+        // if index is null, remove all children before replacement.
+        int? index = S.toInt(S.item(arguments, 0));
+        // check for children then remove them
+        if (this.children != null && index == null) {
+          // dispose of the last item
+          this.children!.last.dispose();
+          // check if the list is greater than 0, remove at the final index.
+          if (this.children!.length > 0) this.children!.removeLast();
+        }
+        else if (this.children != null && index != null) {
+          // check if index is in range, then dispose of the child at that index.
+          if (index >= 0 && this.children!.length > index) {
+            this.children![index].dispose();
+            this.children!.removeAt(index);
+          }
+          // Could add handling for negative index removing from the end?
+        }
+        // force parent rebuild
+        parent?.notifyListeners("rebuild", "true");
+        return true;
+
+      case 'removechildren':
+        // check for children then remove them
+        if (this.children != null) {
+          this.children!.forEach((child) {
+            child.dispose();
+          });
+          this.children = [];
+        }
+        // force parent rebuild
+        parent?.notifyListeners("rebuild", "true");
+        return true;
+
+      case 'replacechild':
+        // if index is null, remove last child before replacement.
+        int? index = S.toInt(S.item(arguments, 1));
+        var xml = S.item(arguments, 0);
+
+        if (xml == null || !(xml is String))
+          return true;
+        // check for children then remove them
+        if (this.children != null && index == null) {
+          // dispose of the last item
+          this.children!.last.dispose();
+          // check if the list is greater than 0, remove at the final index.
+          if(this.children!.length > 0) this.children!.removeAt(children!.length - 1);
+          print(index.toString());
+        }
+        else if (this.children != null && index != null) {
+          // check if index is in range, then dispose of the child at that index.
+          if (index >= 0 && this.children!.length > index) {
+            this.children![index].dispose();
+            this.children!.removeAt(index);
+          }
+          // Could add handling for negative index removing from the end?
+        }
+        // add elements
+        await _appendXml(xml, index);
+        // force parent rebuild
+        parent?.notifyListeners("rebuild", "true");
+        return true;
+
+      case 'replacechildren':
+        var xml = S.item(arguments, 0);
+
+        if (xml == null || !(xml is String))
+          return true;
+        // check for children then remove them
+        if (this.children != null) {
+          this.children!.forEach((child) {
+            child.dispose();
+          });
+          this.children = [];
+        }
+
+        // add elements
+        await _appendXml(xml, null);
+        // force parent rebuild
+        parent?.notifyListeners("rebuild", "true");
+        return true;
+
+      case 'removewidget':
+        int? index = (parent?.children?.contains(this) ?? false) ? parent?.children?.indexOf(this) : null;
+
+        // index should never be null
+        if (index != null) {
+          // dispose of this model
+          this.dispose();
+          parent?.children?.removeAt(index);
+        }
+        // force parent rebuild
+        parent?.notifyListeners("rebuild", "true");
+        return true;
+
+      case 'replacewidget':
 
         // get my position in my parents child list
         int? index = (parent?.children?.contains(this) ?? false) ? parent?.children?.indexOf(this) : null;
-
-        // add new fml
         var xml = S.item(arguments, 0);
-        if (xml is String) await _appendXml(xml, index);
 
-        // dispose of myself
-        dispose();
-
+        if (xml == null || !(xml is String))
+          return true;
+        // index should never be null
+        if (index != null) {
+          // dispose of myself
+          this.dispose();
+          // remove myself from the list
+          parent?.children?.removeAt(index);
+          // add new fml
+          await _appendXml(xml, index);
+        }
         // force parent rebuild
         parent?.notifyListeners("rebuild", "true");
-
         return true;
     }
 
@@ -1159,8 +1245,10 @@ class WidgetModel implements IDataSourceListener
     return exclude;
   }
 
-  static bool isDataSource(String element) {
-    switch (element.toLowerCase()) {
+  static bool isDataSource(String element)
+  {
+    switch (element.toLowerCase())
+    {
       case "barcode":
         return true;
       case "beacon":
@@ -1178,8 +1266,6 @@ class WidgetModel implements IDataSourceListener
       case "get":
         return true;
       case "gps":
-        return true;
-      case "get":
         return true;
       case "http":
         return true;

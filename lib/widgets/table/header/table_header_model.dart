@@ -7,7 +7,7 @@ import 'package:fml/widgets/table/header/cell/table_header_cell_model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class TableHeaderModel extends DecoratedWidgetModel
 {
@@ -149,7 +149,8 @@ class TableHeaderModel extends DecoratedWidgetModel
     return _wrap?.get();
   }
 
-  TableHeaderModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic color}) : super(parent, id, scope: Scope(id)) {
+  TableHeaderModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic color}) : super(parent, id, scope: Scope(parent: parent.scope))
+  {
     this.width = width;
     this.height = height;
     this.color = color;

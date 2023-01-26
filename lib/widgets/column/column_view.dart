@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/column/column_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 class ColumnView extends StatefulWidget {
   final ColumnModel model;
@@ -98,7 +98,7 @@ return LayoutBuilder(builder: builder);
     //Alignment aligned = align['aligned'];
 
     // set main axis size
-    var mainAxisSize = widget.model.shrinkwrap == true || widget.model.expand == false ? MainAxisSize.min : MainAxisSize.max;
+    var mainAxisSize = widget.model.expand == false ? MainAxisSize.min : MainAxisSize.max;
 
     /// safeguard - don't allow infinite size
     if (mainAxisSize == MainAxisSize.max && constraints.maxHeight == double.infinity) mainAxisSize = MainAxisSize.min;

@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:ui';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -416,20 +416,34 @@ class _BoxViewState extends State<BoxView> implements IModelListener {
       if (widget.model.width != null) {
         view = UnconstrainedBox(
           child: LimitedBox(
-            child: view,
             maxWidth: constr.maxWidth!,
+            child: ConstrainedBox(
+                      child: view,
+                      constraints: BoxConstraints(
+                      minHeight: constr.minHeight!,
+                      minWidth: constr.minWidth!,)),
           ),
         );
       } else if (widget.model.height != null) {
         view = UnconstrainedBox(
           child: LimitedBox(
-            child: view,
             maxHeight: constr.maxHeight!,
+            child: ConstrainedBox(
+                      child: view,
+                      constraints: BoxConstraints(
+                      minHeight: constr.minHeight!,
+                      minWidth: constr.minWidth!,)),
           ),
         );
-      } else {
+      }
+      else {
         view = UnconstrainedBox(
-          child: view,
+          child:
+            ConstrainedBox(
+              child: view,
+              constraints: BoxConstraints(
+                  minHeight: constr.minHeight!,
+                  minWidth: constr.minWidth!,))
         );
       }
     } else {

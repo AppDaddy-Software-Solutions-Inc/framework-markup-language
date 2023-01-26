@@ -14,7 +14,7 @@ import 'package:fml/dialog/service.dart';
 import 'package:fml/widgets/map/map_view.dart';
 import 'package:fml/widgets/map/marker/map_marker_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/helper_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
 
 enum MapTypes { satellite, hybrid, terrain, roadmap }
 
@@ -189,7 +189,7 @@ class MapModel extends DecoratedWidgetModel implements IViewableWidget
             XmlElement? node = S.fromPrototype(prototype, "${this.id}-${Uuid().v4()}");
             i = i + 1;
 
-            var location = MapMarkerModel.fromXml(parent, node, data: data);
+            var location = MapMarkerModel.fromXml(parent!, node, data: data);
             if (location != null) markers.add(location);
           });
         }

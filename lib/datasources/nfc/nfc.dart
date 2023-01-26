@@ -1,5 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:flutter/services.dart';
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
+import 'package:fml/models/custom_exception.dart';
 import 'package:ndef/ndef.dart' as ndef;
 import 'package:fml/log/manager.dart';
 import 'iNfcListener.dart';
@@ -163,24 +165,32 @@ class Writer
     stop = false;
     Log().debug("Attempting Write to NDEF NFC Tag");
     ndef.NDEFRecord record = ndef.TextRecord(encoding: ndef.TextEncoding.values[0], language: 'en', text: value);
-    NFCTag tag = await FlutterNfcKit.poll(timeout: Duration(seconds: 60));
-    if (tag.type == NFCTagType.mifare_ultralight || tag.type == NFCTagType.mifare_classic || tag.type == NFCTagType.iso15693)
-    {
-      Log().debug('Writing $value to NFC Tag...');
-      try
+    try {
+      NFCTag tag = await FlutterNfcKit.poll(timeout: Duration(seconds: 60));
+      if (tag.type == NFCTagType.mifare_ultralight || tag.type == NFCTagType.mifare_classic || tag.type == NFCTagType.iso15693)
       {
-        await FlutterNfcKit.writeNDEFRecords([record]);
-        await FlutterNfcKit.finish();
-        Log().debug('NFC Write Successful');
-        return true;
+        Log().debug('Writing $value to NFC Tag...');
+        try
+        {
+          await FlutterNfcKit.writeNDEFRecords([record]);
+          await FlutterNfcKit.finish();
+          Log().debug('NFC Write Successful');
+          return true;
+        }
+        catch(e)
+        {
+          Log().error('NFC Write Unsuccessful');
+          Log().exception(e, caller: 'nfc.dart: Writer.write() - write fail');
+          return false;
+        }
       }
-      catch(e)
-      {
-        Log().error('NFC Write Unsuccessful');
-        Log().exception(e, caller: 'nfc.dart: Writer.write() - write fail');
-        return false;
-      }
+      return false;
+    } on PlatformException catch(e){
+      // throw a custom exception on timeout with a message.
+      if (e.code == "408") throw CustomException(code: 408, message: 'Poll Timed Out');
+      else return false;
     }
     return false;
+
   }
 }

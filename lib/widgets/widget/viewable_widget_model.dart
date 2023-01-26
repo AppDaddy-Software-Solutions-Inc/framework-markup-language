@@ -351,8 +351,8 @@ class ViewableWidgetModel extends WidgetModel
     halign  = Xml.get(node: xml, tag: 'halign');
     valign  = Xml.get(node: xml, tag: 'valign');
 
-    // pad and padd are always defined as attibutes. PAD as an element nam,e is the PADDING widget
-    _paddings = Xml.attribute(node: xml, tag: 'pad') ?? Xml.attribute(node: xml, tag: 'padd');
+    // pad is always defined as an attribute. PAD as an element name is the PADDING widget
+    _paddings = Xml.attribute(node: xml, tag: 'pad');
   }
 
   static double getParentVPadding(int paddings, double? padding, double padding2, double padding3, double padding4)

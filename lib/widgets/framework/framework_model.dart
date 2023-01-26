@@ -542,14 +542,10 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
 
   Future<bool> onPush(Map<String?, String> parameters) async
   {
-    //////////////////////////////////////////
-    /* Set Variables from Return Parameters */
-    //////////////////////////////////////////
+    // set variables from return parameters
     if ((scope != null)) parameters.forEach((key, value) => scope!.setObservable(key, value));
 
-    /////////////////////////
-    /* Fire OnReturn Event */
-    /////////////////////////
+    // fire OnReturn event
     if (!S.isNullOrEmpty(onreturn)) EventHandler(this).execute(_onreturn);
 
     return true;

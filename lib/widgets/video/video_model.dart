@@ -112,7 +112,7 @@ class VideoModel extends DecoratedWidgetModel implements IViewableWidget
   }
 
   @override
-  Future<bool?> execute(String propertyOrFunction, List<dynamic> arguments) async
+  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
   {
     /// setter
     if (scope == null) return null;
@@ -128,7 +128,7 @@ class VideoModel extends DecoratedWidgetModel implements IViewableWidget
       case "rewind"   : return await player!.seek(0);
       case "seek"     : return await player!.seek(S.toInt(S.item(arguments, 0)) ?? 0);
     }
-    return super.execute(propertyOrFunction, arguments);
+    return super.execute(caller, propertyOrFunction, arguments);
   }
 
   Future<bool> onInitialized(BuildContext context) async

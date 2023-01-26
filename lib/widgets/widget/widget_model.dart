@@ -1075,7 +1075,7 @@ class WidgetModel implements IDataSourceListener
     else return false;
   }
 
-  Future<bool?> execute(String propertyOrFunction, List<dynamic> arguments) async
+  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
   {
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
@@ -1084,11 +1084,15 @@ class WidgetModel implements IDataSourceListener
     {
       case 'set':
 
-      // value
+        // value
         var value = S.item(arguments, 0);
 
         // property - default is value
-        var property = S.item(arguments, 1) ?? 'value';
+        // we can now use dot notation to specify the property
+        // rather than pass it as an attribute
+        var property = S.item(arguments, 1);
+        if (property == null && caller.contains(".")) property = caller.split(".").last.trim();
+        if (property == null) property = 'value';
 
         // removed global references
         // this is all done in the global.xml file now

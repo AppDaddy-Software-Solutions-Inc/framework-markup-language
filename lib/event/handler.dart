@@ -761,16 +761,15 @@ class EventHandler extends Eval
   /// This is a catch all and is used to manage all of the <id>.func() calls
   Future<bool?> _handleEventExecute(String id, String function, dynamic arguments) async
   {
-    bool ok = true;
-
     // get widget model
     WidgetModel? model = Scope.findWidgetModel(id, this.model.scope);
 
     // execute the function
-    if (model != null) return await model.execute(function, arguments);
+    if (model != null) return await model.execute(id, function, arguments);
 
     // model not found
     Log().debug("Widget Model $id not found", caller: "_handleEventExecute");
+
     return false;
   }
 }

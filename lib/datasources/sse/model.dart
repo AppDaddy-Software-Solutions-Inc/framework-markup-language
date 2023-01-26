@@ -131,7 +131,7 @@ class SseModel extends HttpModel implements IDataSource
   }
 
   @override
-  Future<bool?> execute(String propertyOrFunction, List<dynamic> arguments) async
+  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
   {
     /// setter
     if (scope == null) return null;
@@ -143,6 +143,6 @@ class SseModel extends HttpModel implements IDataSource
       case "start" : return await start(refresh: refresh);
       case "stop"  : return await stop();
     }
-    return super.execute(propertyOrFunction, arguments);
+    return super.execute(caller, propertyOrFunction, arguments);
   }
 }

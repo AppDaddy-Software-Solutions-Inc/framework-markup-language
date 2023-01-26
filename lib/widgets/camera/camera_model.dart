@@ -334,7 +334,7 @@ class CameraModel extends CAMERA.CameraImageModel implements IViewableWidget
   }
 
   @override
-  Future<bool?> execute(String propertyOrFunction, List<dynamic> arguments) async
+  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
   {
     /// setter
     if (scope == null) return null;
@@ -347,7 +347,7 @@ class CameraModel extends CAMERA.CameraImageModel implements IViewableWidget
       case "stop"  : return await camera!.stop();
       case "snapshot" : return await camera!.snapshot();
     }
-    return super.execute(propertyOrFunction, arguments);
+    return super.execute(caller, propertyOrFunction, arguments);
   }
 
   Future<bool> onInitialized(BuildContext context) async

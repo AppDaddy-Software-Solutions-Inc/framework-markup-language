@@ -562,7 +562,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
   Future<bool> stop() async => true;
 
   @override
-  Future<bool?> execute(String propertyOrFunction, List<dynamic> arguments) async
+  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
   {
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
@@ -615,7 +615,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
         }
         return true;
     }
-    return super.execute(propertyOrFunction, arguments);
+    return super.execute(caller, propertyOrFunction, arguments);
   }
 
   @override

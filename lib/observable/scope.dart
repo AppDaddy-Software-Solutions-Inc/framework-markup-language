@@ -119,8 +119,8 @@ class Scope
       {
         scope = _scope;
         parts.removeAt(0);
-        id = parts.join(".");
       }
+      id = parts.first;
     }
 
     // get the model
@@ -245,14 +245,11 @@ class Scope
     Binding? binding = Binding.fromString(key);
 
     if(binding == null) return;
-    /////////////////////
-    // Find Observable 
-    /////////////////////
+
+    // Find Observable
     Observable? observable = getObservable(binding);
 
-    ///////////////
-    // Set Value 
-    ///////////////
+    // Set Value
     if (value is String && Observable.isEvalSignature(value))
     {
       value = Observable.getEvalSignature(value);

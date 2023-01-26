@@ -226,7 +226,7 @@ class HttpModel extends DataSourceModel implements IDataSource
   }
 
   @override
-  Future<bool?> execute(String propertyOrFunction, List<dynamic> arguments) async
+  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
   {
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
@@ -238,6 +238,6 @@ class HttpModel extends DataSourceModel implements IDataSource
       case "fire" : return await start(refresh: refresh);
       // case "stop" : return await stop(); // missing implementation
     }
-    return super.execute(propertyOrFunction, arguments);
+    return super.execute(caller, propertyOrFunction, arguments);
   }
 }

@@ -364,7 +364,12 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
     autoexecute = Xml.get(node: xml, tag: 'autoexecute');
     autoquery = Xml.get(node: xml, tag: 'autoquery');
     onsuccess = Xml.get(node: xml, tag: 'onsuccess');
+    onreadsuccess = Xml.get(node: xml, tag: 'onreadsuccess');
+    onwritesuccess = Xml.get(node: xml, tag: 'onwritesuccess');
+    ontimeout = Xml.get(node: xml, tag: 'ontimeout');
     onfail = Xml.get(node: xml, tag: 'onfail');
+    onreadfail = Xml.get(node: xml, tag: 'onwritefail');
+    onwritefail = Xml.get(node: xml, tag: 'onreadfail');
     statuscode = Xml.get(node: xml, tag: 'statuscode');
     statusmessage = Xml.get(node: xml, tag: 'statusmessage');
     maxrecords = Xml.get(node: xml, tag: 'maxrecords');

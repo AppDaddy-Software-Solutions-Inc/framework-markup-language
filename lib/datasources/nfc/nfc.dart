@@ -166,7 +166,7 @@ class Writer
     Log().debug("Attempting Write to NDEF NFC Tag");
     ndef.NDEFRecord record = ndef.TextRecord(encoding: ndef.TextEncoding.values[0], language: 'en', text: value);
     try {
-      NFCTag tag = await FlutterNfcKit.poll(timeout: Duration(seconds: 60));
+      NFCTag tag = await FlutterNfcKit.poll(timeout: Duration(seconds: 10));
       if (tag.type == NFCTagType.mifare_ultralight || tag.type == NFCTagType.mifare_classic || tag.type == NFCTagType.iso15693)
       {
         Log().debug('Writing $value to NFC Tag...');
@@ -188,6 +188,7 @@ class Writer
     } on PlatformException catch(e){
       // throw a custom exception on timeout with a message.
       if (e.code == "408") throw CustomException(code: 408, message: 'Poll Timed Out');
+      if (e.code == "405") throw CustomException(code: 405, message: 'NFC Tag Not Writeable');
       else return false;
     }
     return false;

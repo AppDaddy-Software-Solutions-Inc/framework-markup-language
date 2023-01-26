@@ -103,9 +103,11 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
     {
       case "read":
         Reader().registerListener(this);
+        statusmessage = "Approach an NFC tag to Read";
         break;
 
       case "write":
+        statusmessage = "Approach an NFC tag to Write";
         return await _write(body);
     }
 
@@ -130,33 +132,48 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
         bool ok = await writer.write();
 
         // write succeeded
-        if (ok && !S.isNullOrEmpty(onsuccess)) {
-          EventHandler handler = EventHandler(this);
-          await handler.execute(onSuccessObservable);
-          await handler.execute(onWriteSuccessObservable);
-          start();
+        if (ok) {
+          if(!S.isNullOrEmpty(onsuccess) || !S.isNullOrEmpty(onwritesuccess)) {
+            EventHandler handler = EventHandler(this);
+            await handler.execute(onSuccessObservable);
+            await handler.execute(onWriteSuccessObservable);
+          }
+          statusmessage = "Write Successful";
+          if(restart) start();
         }
 
         // write failed
-        else if (!ok && !S.isNullOrEmpty(onfail)) {
-          EventHandler handler = EventHandler(this);
-          await handler.execute(onFailObservable);
-          await handler.execute(onWriteFailObservable);
+        else if (!ok) {
+          if(!S.isNullOrEmpty(onfail) || !S.isNullOrEmpty(onwritefail)) {
+            EventHandler handler = EventHandler(this);
+            await handler.execute(onFailObservable);
+            await handler.execute(onWriteFailObservable);
+          }
+          statusmessage = "Write Failed";
           if(restart) start();
         }
       } on CustomException catch(e){
         if (e.code == 408){
+          if(!S.isNullOrEmpty(ontimeout)) {
           EventHandler handler = EventHandler(this);
           await handler.execute(onTimeoutObservable);
+          }
+          statusmessage = e.message;
           if(restart) start();
-        } else {
+        }
+        if (e.code == 405){
+          if(!S.isNullOrEmpty(ontimeout)) {
+          EventHandler handler = EventHandler(this);
+          await handler.execute(onFailObservable);
+          await handler.execute(onWriteFailObservable);
+          statusmessage = e.message;
           if(restart) start();
-          return true;
         }
       }
     }
     return true;
   }
+    
 
   onResult(bool b)
   {
@@ -164,12 +181,14 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
     if (b && onsuccess != null) {
       EventHandler(this).execute(onSuccessObservable);
       EventHandler(this).execute(onReadSuccessObservable);
+      statusmessage = "Read Successul";
     }
 
       // fail
       if (!b && onfail != null) {
         EventHandler(this).execute(onFailObservable);
         EventHandler(this).execute(onWriteSuccessObservable);
+        statusmessage = "Read Failed";
       }
   }
 
@@ -182,11 +201,13 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
     if (!isMobile)
     {
       System.toast("NFC is only available on mobile devices");
+      statusmessage = "NFC is only available on mobile devices";
       return false;
     }
 
     String function = propertyOrFunction.toLowerCase().trim();
     if (function == "write"){
+      statusmessage = "Approach an NFC tag to Write";
       String? message = S.toStr(S.item(arguments, 0));
       return await _write(message, restart: true);
     } else if (method.toLowerCase().trim() == "read")
@@ -195,9 +216,12 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
       {
         case "read"  :
         case "start" :
+          statusmessage = "Approach an NFC tag to read";
           Reader().registerListener(this);
           return true;
-        case "stop"  : return await stop();
+        case "stop"  :
+          statusmessage = "Please Start NFC Reader";
+          return await stop();
       }
     }
     else if (method.toLowerCase().trim() == "write")
@@ -206,9 +230,12 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
       {
         case "start" :
         case "write" :
+          statusmessage = "Approach an NFC tag to write";
           String? message = body;
           return await _write(message);
-        case "stop"  : return await stop();
+        case "stop"  :
+          statusmessage = "Please Start NFC Reader";
+          return await stop();
       }
     }
     return super.execute(propertyOrFunction, arguments);

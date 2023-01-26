@@ -123,10 +123,9 @@ class _SliderViewState extends State<SliderView>
             : null,
         label: label,
         onChanged: onChange,
-        activeColor:
-            widget.model.color ?? Theme.of(context).colorScheme.primary,
+        activeColor: ColorHelper.lighten(widget.model.color ?? Theme.of(context).colorScheme.primary, 0.05),
         inactiveColor: Theme.of(context).colorScheme.secondaryContainer,
-        thumbColor: Theme.of(context).colorScheme.primary,
+        thumbColor: widget.model.color ?? Theme.of(context).colorScheme.primary,
       );
     else if (widget.model.range == true) {
       view = RangeSlider(
@@ -141,8 +140,7 @@ class _SliderViewState extends State<SliderView>
         labels: RangeLabels(value1.toString(),
             value2.toString()),
         onChanged: (RangeValues values) => onRangeChange(values),
-        activeColor:
-            widget.model.color ?? Theme.of(context).colorScheme.primary,
+        activeColor: ColorHelper.lighten(widget.model.color ?? Theme.of(context).colorScheme.primary, 0.05),
         inactiveColor: Theme.of(context).colorScheme.secondaryContainer,
       );
     }

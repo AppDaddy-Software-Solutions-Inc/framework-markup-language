@@ -161,11 +161,12 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
           statusmessage = e.message;
           if(restart) start();
         }
-        if (e.code == 405){
-          if(!S.isNullOrEmpty(ontimeout)) {
+        if (e.code == 405) {
+          if(!S.isNullOrEmpty(onfail) || !S.isNullOrEmpty(onwritefail)){
           EventHandler handler = EventHandler(this);
           await handler.execute(onFailObservable);
           await handler.execute(onWriteFailObservable);
+        }
           statusmessage = e.message;
           if(restart) start();
         }
@@ -173,7 +174,6 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
     }
     return true;
   }
-    
 
   onResult(bool b)
   {

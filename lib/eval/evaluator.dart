@@ -69,13 +69,26 @@ class ExpressionEvaluator {
     return eval(expression.object, context)[eval(expression.index, context)];
   }
 
-  dynamic evalCallExpression(
-      CallExpression expression, Map<String?, dynamic> context)
+  bool isAVariable(dynamic object)
+  {
+    if (object == null) return false;
+
+    // this captures instances like a.set()
+    if (object is Variable) return true;
+
+    // this captures instances like GLOBAL.a.set()
+    String exp = object.toString();
+    if (object is MemberExpression && exp.contains(".") && !exp.contains("(") && !exp.contains("[")) return true;
+
+    return false;
+  }
+
+  dynamic evalCallExpression(CallExpression expression, Map<String?, dynamic> context)
   {
     // olajos - March 14, 2022 - Added Functionality to Convert a.b() to _call call with parameters id, function, list<arguments>
-    if  ((expression.callee is MemberExpression) &&
-        ((expression.callee as MemberExpression).object is Variable) &&
-        ((expression.arguments is List)))
+    // olajos - Modified January 26, 2023 - Added IsAVariable to capture dot notated executes like GLOBAL.x.set('value') or <id>.<subproperty>.set('red');
+    MemberExpression? exp = (expression.callee is MemberExpression) ? (expression.callee as MemberExpression) : null;
+    if  (exp != null && isAVariable(exp.object) && expression.arguments is List)
     {
       // evaluate id. id may be a bindable
       String id = (expression.callee as MemberExpression).object.toString();

@@ -376,6 +376,11 @@ class WidgetModel implements IDataSourceListener
         model = CheckboxModel.fromXml(parent, node);
         break;
 
+      case "const":
+      case "constant":
+        model = VariableModel.fromXml(parent, node, constant: true);
+        break;
+
       case "crop":
         if (parent is IDataSource) model = Crop.fromXml(parent, node);
         break;

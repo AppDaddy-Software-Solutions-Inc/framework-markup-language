@@ -99,11 +99,32 @@ class Scope
     models[model.id] = model;
   }
 
-  WidgetModel? getModel(String id)
+  WidgetModel? _findWidgetModel(String id)
   {
     if (models.containsKey(id)) return models[id];
-    if (parent != null) return parent!.getModel(id);
+    if (parent != null) return parent!._findWidgetModel(id);
     return null;
+  }
+
+  static WidgetModel? findWidgetModel(String? id, Scope? scope)
+  {
+    if (id == null) return null;
+
+    // named scope reference?
+    if (id.contains("."))
+    {
+      var parts = id.split(".");
+      var _scope = System.application.scopeManager.of(parts.first.trim());
+      if (_scope != null)
+      {
+        scope = _scope;
+        parts.removeAt(0);
+        id = parts.join(".");
+      }
+    }
+
+    // get the model
+    return scope?._findWidgetModel(id);
   }
 
   bool bind(Observable target)

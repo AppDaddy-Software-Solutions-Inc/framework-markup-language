@@ -762,12 +762,15 @@ class EventHandler extends Eval
   Future<bool?> _handleEventExecute(String id, String function, dynamic arguments) async
   {
     bool ok = true;
-    if (this.model.scope == null) return ok;
 
-    // call function
-    WidgetModel? model = this.model.scope!.getModel(id);
+    // get widget model
+    WidgetModel? model = Scope.findWidgetModel(id, this.model.scope);
+
+    // execute the function
     if (model != null) return await model.execute(function, arguments);
-    Log().debug("Parent element $id not found");
+
+    // model not found
+    Log().debug("Widget Model $id not found", caller: "_handleEventExecute");
     return false;
   }
 }

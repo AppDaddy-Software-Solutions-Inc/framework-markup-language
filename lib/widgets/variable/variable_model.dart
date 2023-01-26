@@ -8,9 +8,9 @@ import 'package:fml/helper/common_helpers.dart';
 
 class VariableModel extends WidgetModel
 {
-  ///////////
-  /* Value */
-  ///////////
+  late final bool constant;
+
+  // value
   StringObservable? _value;
   set value (dynamic v)
   {
@@ -20,14 +20,17 @@ class VariableModel extends WidgetModel
     }
     else
     {
-      if ((v != null) || (WidgetModel.isBound(this, Binding.toKey(id, 'value')))) _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange);
+      if ((v != null) || (WidgetModel.isBound(this, Binding.toKey(id, 'value'))))
+      {
+        dynamic setter = null;
+        if (constant) setter = (_) => v;
+        _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange, setter: setter);
+      }
     }
   }
   dynamic get value => _value?.get();
 
-  //////////////
-  /* onchange */
-  //////////////
+  // onchange
   StringObservable? _onchange;
   set onchange (dynamic v)
   {
@@ -42,9 +45,7 @@ class VariableModel extends WidgetModel
   }
   String? get onchange => _onchange?.get();
 
-  //////////////////////
-  /* Return Parameter */
-  //////////////////////
+  // return parameter
   String? _returnas;
   set returnas (dynamic v)
   {
@@ -55,18 +56,19 @@ class VariableModel extends WidgetModel
   VariableModel(
       WidgetModel parent,
       String? id,
-      {String? type, dynamic value, dynamic onchange, }) : super(parent, id)
+      {String? type, dynamic value, dynamic onchange, bool? constant}) : super(parent, id)
   {
+    this.constant = constant ?? false;
     if (value    != null) this.value    = value;
     if (onchange != null) this.onchange = onchange;
   }
 
-  static VariableModel? fromXml(WidgetModel parent, XmlElement xml, {String? type})
+  static VariableModel? fromXml(WidgetModel parent, XmlElement xml, {String? type, bool? constant})
   {
     VariableModel? model;
     try
     {
-      model = VariableModel(parent, Xml.get(node: xml, tag: 'id'), type: type);
+      model = VariableModel(parent, Xml.get(node: xml, tag: 'id'), type: type, constant: constant);
       model.deserialize(xml);
     }
     catch(e)

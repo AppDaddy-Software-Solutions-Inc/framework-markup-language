@@ -31,21 +31,17 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
   late StringObservable _message;
   String? get message => _message.get();
 
-  // method
   StringObservable? _method;
-  set method(dynamic v)
-  {
-    if (_method != null)
-    if (_method != null)
-    {
+  set method(dynamic v) {
+    if (_method != null) {
       _method!.set(v);
-    }
-    else if (v != null)
-    {
-      _method = StringObservable(Binding.toKey(id, 'method'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _method = StringObservable(Binding.toKey(id, 'method'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
-  String get method => _method?.get() ?? "read";
+  String? get method => _method?.get() ?? "read";
+
 
   NcfModel(WidgetModel parent, String? id) : super(parent, id)
   {
@@ -84,9 +80,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
 
     // deserialize
     super.deserialize(xml);
-
-    // properties
-    method = Xml.get(node: xml, tag: 'method');
+    method = Xml.attribute(node: xml, tag: 'method');
   }
 
   Future<bool> start({bool refresh: false, String? key}) async
@@ -99,7 +93,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
       return ok;
     }
 
-    switch (method.toLowerCase().trim())
+    switch (method?.toLowerCase().trim())
     {
       case "read":
         Reader().registerListener(this);
@@ -210,7 +204,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
       statusmessage = "Approach an NFC tag to Write";
       String? message = S.toStr(S.item(arguments, 0));
       return await _write(message, restart: true);
-    } else if (method.toLowerCase().trim() == "read")
+    } else if (method?.toLowerCase().trim() == "read")
     {
       switch (function)
       {
@@ -224,7 +218,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
           return await stop();
       }
     }
-    else if (method.toLowerCase().trim() == "write")
+    else if (method?.toLowerCase().trim() == "write")
     {
       switch (function)
       {

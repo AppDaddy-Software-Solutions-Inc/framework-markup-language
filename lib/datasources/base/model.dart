@@ -93,6 +93,30 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
   }
   String? get onsuccess => _onsuccess?.get();
 
+  StringObservable? get onWriteSuccessObservable => _onwritesuccess;
+  StringObservable? _onwritesuccess;
+  set onwritesuccess(dynamic v) {
+    if (_onwritesuccess != null) {
+      _onwritesuccess!.set(v);
+    } else if (v != null) {
+      _onwritesuccess = StringObservable(Binding.toKey(id, 'onwritesuccess'), v,
+          scope: scope, lazyEval: true);
+    }
+  }
+  String? get onwritesuccess => _onwritesuccess?.get();
+
+  StringObservable? get onReadSuccessObservable => _onreadsuccess;
+  StringObservable? _onreadsuccess;
+  set onreadsuccess(dynamic v) {
+    if (_onreadsuccess != null) {
+      _onreadsuccess!.set(v);
+    } else if (v != null) {
+      _onreadsuccess = StringObservable(Binding.toKey(id, 'onreadsuccess'), v,
+          scope: scope, lazyEval: true);
+    }
+  }
+  String? get onreadsuccess => _onreadsuccess?.get();
+
   // on fail event
   StringObservable? get onFailObservable => _onfail;
   StringObservable? _onfail;
@@ -106,6 +130,51 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
   }
 
   String? get onfail => _onfail?.get();
+
+  // on fail event
+  StringObservable? get onWriteFailObservable => _onwritefail;
+  StringObservable? _onwritefail;
+  set onwritefail(dynamic v) {
+    if (_onwritefail != null) {
+      _onwritefail!.set(v);
+    } else if (v != null) {
+      _onwritefail = StringObservable(Binding.toKey(id, 'onwritefail'), v,
+          scope: scope, lazyEval: true);
+    }
+  }
+
+  String? get onwritefail => _onwritefail?.get();
+
+
+  // on fail event
+  StringObservable? get onReadFailObservable => _onreadfail;
+  StringObservable? _onreadfail;
+  set onreadfail(dynamic v) {
+    if (_onreadfail != null) {
+      _onreadfail!.set(v);
+    } else if (v != null) {
+      _onreadfail = StringObservable(Binding.toKey(id, 'onreadfail'), v,
+          scope: scope, lazyEval: true);
+    }
+  }
+
+  String? get onreadfail => _onreadfail?.get();
+
+
+  // on fail event
+  StringObservable? get onTimeoutObservable => _ontimeout;
+  StringObservable? _ontimeout;
+  set ontimeout(dynamic v) {
+    if (_ontimeout != null) {
+      _ontimeout!.set(v);
+    } else if (v != null) {
+      _ontimeout = StringObservable(Binding.toKey(id, 'ontimeout'), v,
+          scope: scope, lazyEval: true);
+    }
+  }
+
+  String? get ontimeout => _ontimeout?.get();
+
 
   // time to idle - clears status message field
   IntegerObservable? _timetoidle;
@@ -295,7 +364,12 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
     autoexecute = Xml.get(node: xml, tag: 'autoexecute');
     autoquery = Xml.get(node: xml, tag: 'autoquery');
     onsuccess = Xml.get(node: xml, tag: 'onsuccess');
+    onreadsuccess = Xml.get(node: xml, tag: 'onreadsuccess');
+    onwritesuccess = Xml.get(node: xml, tag: 'onwritesuccess');
+    ontimeout = Xml.get(node: xml, tag: 'ontimeout');
     onfail = Xml.get(node: xml, tag: 'onfail');
+    onreadfail = Xml.get(node: xml, tag: 'onwritefail');
+    onwritefail = Xml.get(node: xml, tag: 'onreadfail');
     statuscode = Xml.get(node: xml, tag: 'statuscode');
     statusmessage = Xml.get(node: xml, tag: 'statusmessage');
     maxrecords = Xml.get(node: xml, tag: 'maxrecords');

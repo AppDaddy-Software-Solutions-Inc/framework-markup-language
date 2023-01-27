@@ -247,16 +247,16 @@ class _MenuItemViewState extends State<MenuItemView>
       menuItem = isMobile
           ? staticButton
           : MouseRegion(
-          cursor: SystemMouseCursors.click,
-          onHover: (event)
-          {
-            if (!isHovered) setState(() => isHovered = true);
-          },
-          onExit: (event)
-          {
-            if (isHovered) setState(() => isHovered = false);
-          },
-          child: staticButton);
+              cursor: SystemMouseCursors.click,
+              onHover: (event)
+              {
+                if (!isHovered) setState(() => isHovered = true);
+              },
+              onExit: (event)
+              {
+                if (isHovered) setState(() => isHovered = false);
+              },
+              child: staticButton);
     }
     return menuItem;
   }

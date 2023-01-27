@@ -77,7 +77,7 @@ class HeaderModel extends DecoratedWidgetModel implements IViewableWidget
     dynamic animation,
      dynamic height,
     dynamic minheight = 0.0,
-    dynamic maxheight = 50.0,
+    dynamic maxheight,
   }) : super(parent, id)
   {
     this.color = color;

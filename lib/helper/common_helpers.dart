@@ -5,3 +5,4 @@ export 'image.dart';
 export 'string.dart';
 export 'uri.dart';
 export 'xml.dart';
+export 'color.dart';

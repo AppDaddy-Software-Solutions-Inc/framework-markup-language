@@ -124,7 +124,10 @@ class ApplicationModel extends WidgetModel
     await System.initialized;
 
     // add system scope
-    this.scopeManager.add(System().scope!);
+    if (System().scope != null) this.scopeManager.add(System().scope!);
+
+    // add theme scope
+    if (System.theme.scope != null) this.scopeManager.add(System.theme.scope!);
 
     // add GLOBAL alias to this scope
     this.scopeManager.add(scope!, alias: "GLOBAL");

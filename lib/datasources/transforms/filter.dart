@@ -80,9 +80,9 @@ class Filter extends TransformModel implements ITransform
       var result = Eval.evaluate(filter, variables: variables);
 
       bool? ok = S.toBool(result);
-      if (ok != true) remove.add(element);
+      if (ok != true) remove.add(row);
     });
-    data.removeWhere((element) => remove.contains(element));
+    data.removeWhere((row) => remove.contains(row));
   }
 
   String encode(String v)

@@ -113,9 +113,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
     return _index?.get();
   }
 
-  ////////////////////
-  /* dependency key */
-  ////////////////////
+  // dependency key
   StringObservable? _dependency;
   set dependency (dynamic v)
   {
@@ -132,9 +130,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
   }
   String? get dependency => _dependency?.get();
 
-  /////////////
-  /* title */
-  /////////////
+  // title
   StringObservable? _title;
   set title (dynamic v)
   {
@@ -149,9 +145,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
   }
   String? get title => _title?.get();
 
-  /////////////
-  /* version */
-  /////////////
+  // version
   StringObservable? _version;
   set version (dynamic v)
   {
@@ -169,9 +163,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
     return _version?.get();
   }
 
-  //////////////
-  /* onstart */
-  //////////////
+  // onstart
   StringObservable? _onstart;
   set onstart (dynamic v)
   {
@@ -189,9 +181,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
     return _onstart?.get();
   }
 
-  //////////////
-  /* onstart */
-  //////////////
+  // orientation
   StringObservable? _orientation;
   set orientation (dynamic v)
   {
@@ -210,9 +200,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
     return _orientation?.get();
   }
 
-  //////////////
-  /* onreturn */
-  //////////////
+  // onreturn
   StringObservable? _onreturn;
   set onreturn (dynamic v)
   {
@@ -230,9 +218,9 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
     return _onreturn?.get();
   }
 
-  /////////
-  /* url */
-  /////////
+  String? templateName;
+
+  // url
   StringObservable? _url;
   set url (dynamic v)
   {
@@ -266,7 +254,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
     return _parameters;
   }
 
-  FrameworkModel(WidgetModel parent, String? id, {dynamic key, dynamic dependency, dynamic version, dynamic onstart, dynamic onreturn, dynamic orientation}) : super(parent, id, scope: Scope(parent: parent.scope))
+  FrameworkModel(WidgetModel parent, String? id, {dynamic key, dynamic dependency, dynamic version, dynamic onstart, dynamic onreturn, dynamic orientation}) : super(parent, id, scope: Scope(id: id))
   {
     // model is initializing
     initialized = false;
@@ -298,11 +286,11 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
   static FrameworkModel fromUrl(WidgetModel parent, String url, {String? id, bool? refresh, String? dependency})
   {
     FrameworkModel model = FrameworkModel(parent, id, dependency: dependency);
-    model.loadAsync(url, refresh: refresh ?? false);
+    model._load(url, refresh: refresh ?? false);
     return model;
   }
 
-  Future<void> loadAsync(String url, {required bool refresh, String? dependency}) async
+  Future _load(String url, {required bool refresh, String? dependency}) async
   {
     try
     {
@@ -327,7 +315,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
         if (!connected)
         {
           // fetch logon template
-          var login = System.application.loginPage;
+          var login = System.app?.loginPage;
           if (!S.isNullOrEmpty(login)) template = await Template.fetch(url:login!, refresh: refresh);
           xml = template.document!.rootElement;
         }
@@ -336,21 +324,25 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
         else if (myrights! < requiredRights)
         {
           // fetch not authorized template
-          var unauthorized = System.application.unauthorizedPage;
+          var unauthorized = System.app?.unauthorizedPage;
           if (!S.isNullOrEmpty(unauthorized)) template = await Template.fetch(url: unauthorized!, refresh: refresh);
           xml = template.document!.rootElement;
         }
       }
 
-      // deserialize from xml
-      deserialize(xml);
+      // register late scope
+      var alias = Xml.attribute(node: xml, tag: "id");
+      if (scope != null && alias != null) System.app?.scopeManager.add(scope!, alias: alias);
 
       // inject debug window
-      if (!S.isNullOrEmpty(System.application.debugPage)) await _injectDebugModal(this, refresh);
+      if (!S.isNullOrEmpty(System.app?.debugPage)) await _injectDebugModal(this, refresh);
 
       // set template name
-      templateName = url.split("?")[0];
+      templateName = uri.replace(queryParameters: null).toString();
       if (dependency != null) this.dependency = dependency;
+
+      // deserialize from xml
+      deserialize(xml);
 
       // initialize
       model.initialize();
@@ -456,63 +448,11 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
     super.dispose();
   }
 
-  static Future<FrameworkModel> build(String templateName, {Map<String, String?>? parameters, IModelListener? listener, required bool refresh, String? dependency}) async
-  {
-    Template template = await Template.fetch(url: templateName, parameters: parameters, refresh: refresh);
-
-    // get xml
-    var xml = template.document!.rootElement;
-
-    // template requires rights?
-    int? requiredRights = S.toInt(Xml.attribute(node: xml, tag: 'rights'));
-    if (requiredRights != null)
-    {
-      int?  myrights  = S.toInt(System().userProperty('rights') ?? 0);
-      bool connected = S.toBool(System().userProperty('connected') ?? false)!;
-
-      // logged on?
-      if (!connected)
-      {
-        var login = System.application.loginPage;
-        if (!S.isNullOrEmpty(login)) template = await Template.fetch(url: login!, refresh: refresh);
-        xml = template.document!.rootElement;
-      }
-
-      // authorized?
-      else if (myrights! < requiredRights)
-      {
-        var unauthorized = System.application.unauthorizedPage;
-        if (!S.isNullOrEmpty(unauthorized)) template = await Template.fetch(url: unauthorized!, refresh: refresh);
-        xml = template.document!.rootElement;
-      }
-    }
-
-    FrameworkModel? model = FrameworkModel.fromXml(System.application, xml);
-    if (model != null)
-    {
-      // inject debug window
-      if (!S.isNullOrEmpty(System.application.debugPage)) await _injectDebugModal(model, refresh);
-
-      model.templateName = templateName.split("?")[0];
-      if (model.dependency != null) model.dependency = dependency;
-
-      if (listener != null) model.registerListener(listener);
-      model.initialize();
-    }
-    else
-    {
-      String msg = "Error model from template  " + templateName + "";
-      Log().error(msg);
-      return Future.error(msg);
-    }
-    return model;
-  }
-
   static Future<void> _injectDebugModal(FrameworkModel model, bool refresh) async
   {
     {
       // get the debug template
-      var debug = System.application.debugPage;
+      var debug = System.app?.debugPage;
       if (!S.isNullOrEmpty(debug))
       {
         // get the debug template

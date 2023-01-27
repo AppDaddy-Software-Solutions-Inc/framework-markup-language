@@ -76,7 +76,8 @@ class Binding
 
       // scoped?
       var _scope = parts[0].trim();
-      if (parts.length > 1 && System.application.scopeManager.directory.containsKey(_scope))
+      if (System.app != null)
+      if (parts.length > 1 && System.app!.scopeManager.hasScope(_scope))
       {
         scope = _scope;
         parts.removeAt(0);

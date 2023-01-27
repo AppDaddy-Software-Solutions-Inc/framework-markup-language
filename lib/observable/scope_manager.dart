@@ -6,7 +6,7 @@ import 'package:fml/helper/common_helpers.dart';
 
 class ScopeManager
 {
-  HashMap<String?, List<Scope>>  directory  = HashMap<String?,List<Scope>>();
+  HashMap<String?, List<Scope>>  _directory  = HashMap<String?,List<Scope>>();
   HashMap<String?, List<Observable>>? unresolved;
 
   ScopeManager();
@@ -16,13 +16,13 @@ class ScopeManager
     var id = scope.id;
     if (alias != null) id = alias;
     
-    if (!directory.containsKey(id)) directory[id] = [];
-    if (!directory[id]!.contains(scope)) directory[id]!.add(scope);
+    if (!_directory.containsKey(id)) _directory[id] = [];
+    if (!_directory[id]!.contains(scope)) _directory[id]!.add(scope);
   }
 
   remove(Scope scope)
   {
-    if ((directory.containsKey(scope.id)) && (directory[scope.id]!.contains(scope))) directory[scope.id]!.remove(scope);
+    if ((_directory.containsKey(scope.id)) && (_directory[scope.id]!.contains(scope))) _directory[scope.id]!.remove(scope);
     if (unresolved != null)
     {
       unresolved!.removeWhere((scopeId, observable) => scopeId == scope.id);
@@ -33,7 +33,7 @@ class ScopeManager
   Scope? of(String? id)
   {
     if (id == null) return null;
-    if (directory.containsKey(id)) return directory[id]!.last;
+    if (_directory.containsKey(id)) return _directory[id]!.last;
     return null;
   }
 
@@ -76,7 +76,7 @@ class ScopeManager
   Observable? named(Observable? target, String? scopeId, String? observableKey)
   {
     // Find Scope 
-    Scope? scope = directory.containsKey(scopeId) ? directory[scopeId]!.last : null;
+    Scope? scope = _directory.containsKey(scopeId) ? _directory[scopeId]!.last : null;
 
     // Find Observable in Scope 
     Observable? observable;
@@ -103,5 +103,11 @@ class ScopeManager
     if ((scope == null) || (S.isNullOrEmpty(key))) return null;
     if (scope.observables.containsKey(key)) return scope.observables[key];
     return scoped(scope.parent, key);
+  }
+
+  bool hasScope(String? id)
+  {
+    if (id == null) return false;
+    return _directory.containsKey(id);
   }
 }

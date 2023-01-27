@@ -38,17 +38,18 @@ class Scope
   // unresolved observables
   HashMap<String?,List<Observable>> unresolved = HashMap<String?,List<Observable>>();
 
-  Scope({required Scope? parent, String? id})
+  Scope({Scope? parent, String? id})
   {
     this.id = id ?? Uuid().v4();
-    this.parent = parent;
-    initialize();
-  }
 
-  initialize() async
-  {
-    await System.initialized;
-    System.application.scopeManager.add(this);
+    // set parent
+    this.parent = parent;
+
+    // add me as a child of my parent
+    this.parent?.addChild(this);
+
+    // add me to my applications scope manager
+    System.app?.scopeManager.add(this);
   }
 
   static Scope? of(WidgetModel? model)
@@ -67,7 +68,7 @@ class Scope
     bind(observable);
 
     // Register
-    System.application.scopeManager.register(observable);
+    System.app?.scopeManager.register(observable);
 
     return true;
   }
@@ -114,7 +115,7 @@ class Scope
     if (id.contains("."))
     {
       var parts = id.split(".");
-      var _scope = System.application.scopeManager.of(parts.first.trim());
+      var _scope = System.app?.scopeManager.of(parts.first.trim());
       if (_scope != null)
       {
         scope = _scope;
@@ -142,8 +143,8 @@ class Scope
         // Find Bind Source
         Observable? source;
         if (binding.scope != null)
-             source = System.application.scopeManager.named(target, binding.scope, binding.key);
-        else source = System.application.scopeManager.scoped(this, binding.key);
+             source = System.app?.scopeManager.named(target, binding.scope, binding.key);
+        else source = System.app?.scopeManager.scoped(this, binding.key);
 
         // resolved
         if (source != null)
@@ -214,25 +215,23 @@ class Scope
     unresolved.clear();
 
     // Clear Children
-    if (children != null) children!.clear();
+    children?.clear();
 
     // Clear Parent
-    if (parent != null) parent!.remove(child: this);
+    parent?.removeChild(this);
 
     // Unregister with Scope Manager
-    System.application.scopeManager.remove(this);
+    System.app?.scopeManager.remove(this);
   }
 
-  void add({Scope? child})
+  void addChild(Scope child)
   {
-    if (child == null) return;
     if (children == null) children = [];
     if (!children!.contains(child)) children!.add(child);
   }
 
-  void remove({Scope? child})
+  void removeChild(Scope child)
   {
-    if (child == null) return;
     if ((children != null) && (children!.contains(child)))
     {
       children!.remove(child);
@@ -260,7 +259,7 @@ class Scope
     if (observable == null)
     {
       Scope? scope = this;
-      if (binding.scope != null) scope = System.application.scopeManager.of(binding.scope);
+      if (binding.scope != null) scope = System.app?.scopeManager.of(binding.scope);
       if (scope != null)
       {
         var observable = StringObservable(binding.key, value, scope: this);
@@ -275,8 +274,8 @@ class Scope
   Observable? getObservable(Binding binding, {Observable? requestor})
   {
     if (binding.scope == null)
-         return System.application.scopeManager.scoped(this, binding.key);
-    else return System.application.scopeManager.named(requestor, binding.scope, binding.key);
+         return System.app?.scopeManager.scoped(this, binding.key);
+    else return System.app?.scopeManager.named(requestor, binding.scope, binding.key);
   }
 
   Future<String?> replaceFileReferences(String? body) async

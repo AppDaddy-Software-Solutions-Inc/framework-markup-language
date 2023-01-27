@@ -179,20 +179,6 @@ class WidgetModel implements IDataSourceListener
   }
   bool get debug => _debug?.get() ?? false;
 
-  // template name
-  String? _templateName;
-  set templateName(String? s)
-  {
-    if (s != null) _templateName = s;
-  }
-
-  String? get templateName
-  {
-    if (_templateName != null) return _templateName;
-    if (parent != null) return parent!.templateName;
-    return null;
-  }
-
   // parent model
   WidgetModel? parent;
 

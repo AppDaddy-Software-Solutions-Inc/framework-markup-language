@@ -63,7 +63,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     }
 
     // get home page
-    String homePage = System.application.homePage;
+    String? homePage = System.app?.homePage ?? "store";
     if (!isWeb && appType == ApplicationTypes.MultiApp) homePage = "store";
 
     // get start page
@@ -77,13 +77,13 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
 
       // document is linkable?
       // default - if singlePageApplication then false, otherwise true
-      bool linkable = S.toBool(Xml.attribute(node: template.document!.rootElement, tag: "linkable")) ?? System.application.singlePage;
+      bool linkable = S.toBool(Xml.attribute(node: template.document!.rootElement, tag: "linkable")) ?? System.app?.singlePage ?? false;
 
       // set start page = home page if not linkable
       if (!linkable) startPage = homePage;
 
       // single page applications always load the home page
-      if (System.application.singlePage) startPage = homePage;
+      if (System.app?.singlePage ?? true) startPage = homePage;
     }
 
     // clear requested page if the same as the start page
@@ -316,7 +316,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     if (uri == null) return false;
 
     var d1 = uri.host.toLowerCase();
-    var d2 = System.application.host?.toLowerCase();
+    var d2 = System.app?.host?.toLowerCase();
 
     bool sameDomain = d1 == d2;
     bool xmlFile    = uri.pageExtension == "xml";
@@ -338,7 +338,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     // open new page in modal window?
     if (modal == true)
     {
-      FrameworkModel model = FrameworkModel.fromUrl(System.application, url, refresh: refresh, dependency: dependency);
+      FrameworkModel model = await FrameworkModel.fromUrl(System.app!, url, refresh: refresh ?? false, dependency: dependency);
       FrameworkView  view  = FrameworkView(model);
       return openModal(view, NavigationManager().navigatorKey.currentContext, modal: false, width: width, height: height) != null;
     }
@@ -371,7 +371,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
         break;
 
       default:
-        view =  OverlayManager(child: FrameworkView(FrameworkModel.fromUrl(System.application, url, refresh: refresh, dependency: dependency)));
+        view =  OverlayManager(child: FrameworkView(FrameworkModel.fromUrl(System.app!, url, refresh: refresh, dependency: dependency)));
         break;
     }
 

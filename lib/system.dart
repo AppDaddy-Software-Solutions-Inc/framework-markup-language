@@ -43,7 +43,7 @@ final String applicationTitle = "Flutter Markup Language " + version;
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://applications/<app> to use the asset applications
-String defaultUrl = 'https://test.appdaddy.co';
+String defaultUrl = 'file://applications/test';
 
 Uri defaultDomain = Uri.parse(defaultUrl);
 
@@ -79,15 +79,15 @@ class System extends WidgetModel implements IEventManager
   static get initialized => _completer.future;
 
   // this get called once by Splash
-  Future get create => _completer.future;
+  Future get installed => _completer.future;
 
   static final System _singleton = System._initialize();
   factory System() => _singleton;
-  System._initialize() : super(null, myId, scope: Scope(id: myId, parent: null)) {_initialize();}
+  System._initialize() : super(null, myId, scope: Scope(id: myId)) {_initialize();}
 
   // current application
-  static ApplicationModel? _application;
-  static ApplicationModel get application => _application ?? defaultApplication;
+  static ApplicationModel? _app;
+  static ApplicationModel? get app => _app;
 
   // current theme
   static late ThemeModel _theme;
@@ -184,8 +184,8 @@ class System extends WidgetModel implements IEventManager
   Jwt? get token => _token;
 
   // firebase
-  FirebaseApp? get firebase => _application?.firebase;
-  set firebase(FirebaseApp? v) => _application?.firebase = v;
+  FirebaseApp? get firebase => _app?.firebase;
+  set firebase(FirebaseApp? v) => _app?.firebase = v;
 
   _initialize() async
   {
@@ -459,7 +459,7 @@ class System extends WidgetModel implements IEventManager
 
   void setApplicationTitle(String? title) async
   {
-    title = title ?? application.settings("APPLICATION_NAME");
+    title = title ?? app?.settings("APPLICATION_NAME");
     if (!S.isNullOrEmpty(title))
     {
       // print('setting title to $title');
@@ -472,9 +472,9 @@ class System extends WidgetModel implements IEventManager
   {
     // Close the old application if one
     // is running
-    if (_application != null)
+    if (_app != null)
     {
-      Log().info("Closing Application ${_application!.url}");
+      Log().info("Closing Application ${_app!.url}");
 
       // set the default domain on the Url utilities
       URI.rootHost = "";
@@ -488,7 +488,7 @@ class System extends WidgetModel implements IEventManager
       _host?.set(null);
 
       // close application
-      _application!.close();
+      _app!.close();
     }
 
     Log().info("Activating Application (${app.title}) @ ${app.domain}");
@@ -497,7 +497,7 @@ class System extends WidgetModel implements IEventManager
     URI.rootHost = app.domain ?? "";
 
     // set the current application
-    _application = app;
+    _app = app;
 
     // launch the application
     app.launch(theme: theme);

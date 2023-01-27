@@ -36,10 +36,10 @@ class Template
       if (parameters != null) xml = Binding.applyMap(xml, parameters, caseSensitive: false);
 
       // Replace query parameters
-      xml = Binding.applyMap(xml, System.application.queryParameters, caseSensitive: false);
+      xml = Binding.applyMap(xml, System.app?.queryParameters, caseSensitive: false);
 
       // Replace config parameters
-      xml = Binding.applyMap(xml, System.application.configParameters, caseSensitive: false);
+      xml = Binding.applyMap(xml, System.app?.configParameters, caseSensitive: false);
 
       // Replace System Uuid
       String s = Binding.toKey(System.myId, 'uuid')!;
@@ -76,7 +76,7 @@ class Template
     String? template;
 
     // auto refresh
-    refresh = refresh || System.application.autoRefresh;
+    refresh = refresh || (System.app?.autoRefresh ?? false);
 
     // get template from file
     if (uri.scheme != "file")
@@ -88,7 +88,7 @@ class Template
         template = await TemplateManager().fromServer(url);
 
         // save to local storage
-        if (template != null && System.application.cacheContent) TemplateManager().toDisk(url, template);
+        if (template != null && (System.app?.cacheContent ?? false)) TemplateManager().toDisk(url, template);
       }
 
       // get template from memory
@@ -111,7 +111,7 @@ class Template
         template = await TemplateManager().fromServer(url);
 
         // save to local storage
-        if (template != null && System.application.cacheContent) TemplateManager().toDisk(url, template);
+        if (template != null && (System.app?.cacheContent ?? false)) TemplateManager().toDisk(url, template);
       }
     }
 
@@ -168,16 +168,16 @@ class Template
     if (document != null) return Template.fromDocument(name: url, xml: document, parameters: parameters);
 
     // not found - build error template
-    String? xml404 = _buildErrorTemplate('Page Not Found', null, "$url");
+    String xml404 = errorTemplate('Page Not Found', null, "$url");
 
     // parse the error template created
     try
     {
-      document = XmlDocument.parse(xml404!);
+      document = XmlDocument.parse(xml404);
     }
     on  Exception catch(e)
     {
-      xml404 = _buildErrorTemplate('Error on Page', '$url', e.toString());
+      xml404 = errorTemplate('Error on Page', '$url', e.toString());
       document = Xml.tryParse(xml404);
     }
 
@@ -229,15 +229,13 @@ class Template
         }
       }
 
-      ///////////////////////////////
-      /* Remove Node from Document */
-      ///////////////////////////////
+      // remove the node from the document
       element.parent!.children.remove(element);
     }
     return true;
   }
 
-  static String? _buildErrorTemplate(String err1, [String? err2, String? err3])
+  static String errorTemplate(String err1, [String? err2, String? err3])
   {
     String backbutton = NavigationManager().pages.length > 1 ? '<BUTTON onclick="back()" value="go back" type="text" color="#35363A" />' : '';
 

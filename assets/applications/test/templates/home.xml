@@ -1,8 +1,7 @@
 <FML>
     <BOX valign="top" halign="center">
         <TEXT style="h1" value="Test Application"/>
-        <TEXT style="h3" value="{GLOBAL.name}" />
-        <BUTTON label="set" onclick="GLOBAL.name.set('hello')"/>
+        <TEXT style="h3" value="{GLOBAL.companyName}" />
         <IMAGE url="assets://images/appdaddy-color.svg" width="50%"/>
     </BOX>
 </FML>

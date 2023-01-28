@@ -209,12 +209,8 @@ class HttpModel extends DataSourceModel implements IDataSource
 
     // format status message
     String? msg = response.statusMessage;
-    if (S.isNullOrEmpty(msg))
-    {
-      if (data.isEmpty && response.body is String)
-           msg = response.body;
-      else msg = (response.statusCode == HttpStatus.ok) ? "ok" : "error #${response.statusCode ?? 0}";
-    }
+    if (data.isEmpty && response.body is String) msg = response.body;
+    if (S.isNullOrEmpty(msg)) msg = (response.statusCode == HttpStatus.ok) ? "ok" : "error #${response.statusCode ?? 0}";
 
     // save response data to the hive cache
     if (response.statusCode == HttpStatus.ok) toHive(url, response.body);

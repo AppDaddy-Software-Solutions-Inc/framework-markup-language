@@ -1077,21 +1077,13 @@ class WidgetModel implements IDataSourceListener
         // we can now use dot notation to specify the property
         // rather than pass it as an attribute
         var property = S.item(arguments, 1);
-        if (property == null && caller.contains(".")) property = caller.split(".").last.trim();
-        if (property == null) property = 'value';
-
-        // removed global references
-        // this is all done in the global.xml file now
-        // var global = S.item(arguments, 2);
-        //WidgetModel model = this;
-        //if ((!S.isNullOrEmpty(global)) && (S.toBool(global) == true))
-        //model = System();
+        if (property == null) property = Binding.fromString(caller)?.key ?? property;
 
         Scope? scope = Scope.of(this);
         if (scope == null) return false;
 
         // set the variable
-        scope.setObservable("$id.$property", value != null ? value.toString() : null);
+        scope.setObservable(property, value != null ? value.toString() : null);
         return true;
 
       case 'addchild':

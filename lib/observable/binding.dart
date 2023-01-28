@@ -43,7 +43,7 @@ class Binding
   final bool? isEval;
   final int? offset;
 
-  String? get key => toKey(source, property);
+  String get key => toKey(source, property)!;
 
   static String? toKey(String? source, [String? property])
   {

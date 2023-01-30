@@ -289,7 +289,7 @@ class EventHandler extends Eval
   }
 
   /// Sets a Hive Value and Creates and [Observable] by the same name
-  Future<bool> _handleEventStash(dynamic key, dynamic value) async => await System.application.stash(key,value);
+  Future<bool> _handleEventStash(dynamic key, dynamic value) async => await System.app?.stash(key,value) ?? true;
 
   /// Creates an alert dialog
   Future<bool> _handleEventAlert([dynamic type, dynamic title, dynamic message]) async
@@ -430,8 +430,8 @@ class EventHandler extends Eval
   {
     if (System().firebase == null)
     {
-      String  apiKey     = System.application.settings("FIREBASE_API_KEY") ?? '0000000000';
-      String? authDomain = System.application.settings("FIREBASE_AUTH_DOMAIN");
+      String  apiKey     = System.app?.settings("FIREBASE_API_KEY") ?? '0000000000';
+      String? authDomain = System.app?.settings("FIREBASE_AUTH_DOMAIN");
 
       await fbauth.loadLibrary();
       await fbcore.loadLibrary();
@@ -761,13 +761,15 @@ class EventHandler extends Eval
   /// This is a catch all and is used to manage all of the <id>.func() calls
   Future<bool?> _handleEventExecute(String id, String function, dynamic arguments) async
   {
-    bool ok = true;
-    if (this.model.scope == null) return ok;
+    // get widget model
+    WidgetModel? model = Scope.findWidgetModel(id, this.model.scope);
 
-    // call function
-    WidgetModel? model = this.model.scope!.getModel(id);
-    if (model != null) return await model.execute(function, arguments);
-    Log().debug("Parent element $id not found");
+    // execute the function
+    if (model != null) return await model.execute(id, function, arguments);
+
+    // model not found
+    Log().debug("Widget Model $id not found", caller: "_handleEventExecute");
+
     return false;
   }
 }

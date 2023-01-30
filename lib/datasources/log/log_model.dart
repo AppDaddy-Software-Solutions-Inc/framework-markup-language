@@ -31,7 +31,7 @@ class LogModel extends DataSourceModel implements IDataSource
   }
 
   @override
-  Future<bool?> execute(String propertyOrFunction, List<dynamic> arguments) async
+  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
   {
     var function = propertyOrFunction.toLowerCase().trim();
     switch (function)
@@ -51,7 +51,7 @@ class LogModel extends DataSourceModel implements IDataSource
         Log().clear();
         return true;
     }
-    return super.execute(propertyOrFunction, arguments);
+    return super.execute(caller, propertyOrFunction, arguments);
   }
 
   /// Deserializes the FML template elements, attributes and children

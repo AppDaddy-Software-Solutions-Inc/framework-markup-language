@@ -179,20 +179,6 @@ class WidgetModel implements IDataSourceListener
   }
   bool get debug => _debug?.get() ?? false;
 
-  // template name
-  String? _templateName;
-  set templateName(String? s)
-  {
-    if (s != null) _templateName = s;
-  }
-
-  String? get templateName
-  {
-    if (_templateName != null) return _templateName;
-    if (parent != null) return parent!.templateName;
-    return null;
-  }
-
   // parent model
   WidgetModel? parent;
 
@@ -374,6 +360,11 @@ class WidgetModel implements IDataSourceListener
       case "checkbox":
       case "check":
         model = CheckboxModel.fromXml(parent, node);
+        break;
+
+      case "const":
+      case "constant":
+        model = VariableModel.fromXml(parent, node, constant: true);
         break;
 
       case "crop":
@@ -1070,7 +1061,7 @@ class WidgetModel implements IDataSourceListener
     else return false;
   }
 
-  Future<bool?> execute(String propertyOrFunction, List<dynamic> arguments) async
+  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
   {
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
@@ -1079,24 +1070,20 @@ class WidgetModel implements IDataSourceListener
     {
       case 'set':
 
-      // value
+        // value
         var value = S.item(arguments, 0);
 
         // property - default is value
-        var property = S.item(arguments, 1) ?? 'value';
-
-        // removed global references
-        // this is all done in the global.xml file now
-        // var global = S.item(arguments, 2);
-        //WidgetModel model = this;
-        //if ((!S.isNullOrEmpty(global)) && (S.toBool(global) == true))
-        //model = System();
+        // we can now use dot notation to specify the property
+        // rather than pass it as an attribute
+        var property = S.item(arguments, 1);
+        if (property == null) property = Binding.fromString(caller)?.key ?? property;
 
         Scope? scope = Scope.of(this);
         if (scope == null) return false;
 
         // set the variable
-        scope.setObservable("$id.$property", value != null ? value.toString() : null);
+        scope.setObservable(property, value != null ? value.toString() : null);
         return true;
 
       case 'addchild':

@@ -84,7 +84,7 @@ class ApplicationModel extends WidgetModel
 
   Map<String,String?>? get configParameters => _config?.parameters;
 
-  ApplicationModel(WidgetModel parent, {String? key, required this.url, this.title, this.icon, this.page, this.order, String? jwt, dynamic stash}) : super(parent, myId, scope: Scope(id: myId, parent: parent.scope))
+  ApplicationModel(WidgetModel parent, {String? key, required this.url, this.title, this.icon, this.page, this.order, String? jwt, dynamic stash}) : super(parent, myId, scope: Scope(id: myId))
   {
     // set database key
     _dbKey = key ?? url;
@@ -124,7 +124,10 @@ class ApplicationModel extends WidgetModel
     await System.initialized;
 
     // add system scope
-    this.scopeManager.add(System().scope!);
+    if (System().scope != null) this.scopeManager.add(System().scope!);
+
+    // add theme scope
+    if (System.theme.scope != null) this.scopeManager.add(System.theme.scope!);
 
     // add GLOBAL alias to this scope
     this.scopeManager.add(scope!, alias: "GLOBAL");

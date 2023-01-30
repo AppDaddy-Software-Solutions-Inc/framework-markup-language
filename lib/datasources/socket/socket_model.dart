@@ -400,7 +400,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
   }
 
   @override
-  Future<bool?> execute(String propertyOrFunction, List<dynamic> arguments) async
+  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
   {
     /// setter
     if (scope == null) return null;
@@ -423,7 +423,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
       case "disconnect":
         return await stop();
     }
-    return super.execute(propertyOrFunction, arguments);
+    return super.execute(caller, propertyOrFunction, arguments);
   }
 
   onUrlChange(Observable observable) async

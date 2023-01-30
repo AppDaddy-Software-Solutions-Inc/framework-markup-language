@@ -175,7 +175,7 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
     widget.model.index = i;
   }
 
-  void _showPage(String url, {bool refresh = false, Event? event})
+  void _showPage(String url, {bool refresh = false, Event? event}) async
   {
     FrameworkView  view;
     FrameworkModel model;
@@ -184,7 +184,7 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
     if ((!widget.model.views.containsKey(url)) || (refresh == true))
     {
       // build the model
-      model = FrameworkModel.fromUrl(widget.model, url, dependency: event?.model?.id);
+      model = await FrameworkModel.fromUrl(widget.model, url, dependency: event?.model?.id);
 
       // build the view
       view = FrameworkView(model);

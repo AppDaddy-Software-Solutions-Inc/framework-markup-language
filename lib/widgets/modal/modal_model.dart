@@ -131,7 +131,7 @@ class ModalModel extends DecoratedWidgetModel
   }
   
   @override
-  Future<bool?> execute(String propertyOrFunction, List<dynamic> arguments) async
+  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
   {
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
@@ -170,7 +170,7 @@ class ModalModel extends DecoratedWidgetModel
         NavigationManager().closeModal(overlay, context);
         return true;
     }
-    return super.execute(propertyOrFunction, arguments);
+    return super.execute(caller, propertyOrFunction, arguments);
   }
 
   /// Returns the [MODAL] View

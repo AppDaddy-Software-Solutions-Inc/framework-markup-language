@@ -97,6 +97,20 @@ class S
     }
   }
 
+  /// returns true if v is all upper case characters
+  static bool isUpperCase(dynamic v)
+  {
+    if (v is String && v == v.toUpperCase()) return true;
+    else return false;
+  }
+
+  /// returns true if v is all lower case characters
+  static bool isLowerCase(dynamic v)
+  {
+    if (v is String && v == v.toLowerCase()) return true;
+    else return false;
+  }
+
   static UriData? toDataUri(dynamic uri)
   {
     try

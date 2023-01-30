@@ -84,6 +84,24 @@ class Database
     return exception;
   }
 
+  Future<Exception?> upsert(String table, String key, Map<String, dynamic> map) async
+  {
+    Exception? exception;
+    try
+    {
+      if (!_initialized) return null;
+      var box = await Hive.openBox(table);
+      await box.put(key, map);
+    }
+    on Exception catch(e)
+    {
+      Log().error('Error Inserting/Updating Record Key [$key] in Table [$table]');
+      Log().exception(e, caller: 'Future<Exception?> update($table, $key, $map) async');
+      exception = e;
+    }
+    return exception;
+  }
+
   Future<Exception?> delete(String table, String key) async
   {
     Exception? exception;

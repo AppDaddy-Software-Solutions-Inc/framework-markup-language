@@ -347,6 +347,8 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
     // build options
     options.forEach((option) => this.options.add(option));
 
+    if (!containsOption()) value = options.isNotEmpty ? options[0].value : null;
+
     // Set selected option
     setData();
   }

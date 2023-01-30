@@ -7,6 +7,21 @@ import 'package:fml/helper/common_helpers.dart';
 
 class TransformModel extends WidgetModel
 {
+  /// enabled
+  BooleanObservable? _enabled;
+  set enabled(dynamic v)
+  {
+    if (_enabled != null)
+    {
+      _enabled!.set(v);
+    }
+    else if (v != null)
+    {
+      _enabled = BooleanObservable(Binding.toKey(id, 'enabled'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get enabled => _enabled?.get() ?? true;
+
   /// source
   StringObservable? _source;
   set source (dynamic v)
@@ -21,21 +36,6 @@ class TransformModel extends WidgetModel
     }
   }
   String? get source => _source?.get();
-
-  // enabled
-  BooleanObservable? _enabled;
-  set enabled(dynamic v)
-  {
-    if (_enabled != null)
-    {
-      _enabled!.set(v);
-    }
-    else if (v != null)
-    {
-      _enabled = BooleanObservable(Binding.toKey(id, 'enabled'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get enabled => _enabled?.get() ?? true;
 
   TransformModel(WidgetModel? parent, String? id) : super(parent, id);
 

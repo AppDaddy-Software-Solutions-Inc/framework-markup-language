@@ -44,7 +44,7 @@ final String applicationTitle = "Flutter Markup Language " + version;
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://applications/<app> to use the asset applications
 //String defaultUrl = 'file://applications/test';
-String defaultUrl = 'https://fml.dev';
+String defaultUrl = 'https://myrocketfundsv2.appdaddy.co';
 
 Uri defaultDomain = Uri.parse(defaultUrl);
 

@@ -208,6 +208,7 @@ class HttpModel extends DataSourceModel implements IDataSource
     Data data = Data.from(response.body, root: root);
 
     // format status message
+    // changed by olajos - January 28, 2023
     String? msg = response.statusMessage;
     if (data.isEmpty && response.body is String) msg = response.body;
     if (S.isNullOrEmpty(msg)) msg = (response.statusCode == HttpStatus.ok) ? "ok" : "error #${response.statusCode ?? 0}";

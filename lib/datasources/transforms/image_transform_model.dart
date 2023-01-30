@@ -14,21 +14,20 @@ class ImageTransformModel extends TransformModel
 {
   final isolate = ImageTransformIsolate();
 
-  /// source
-  StringObservable? _source;
-  set source (dynamic v)
+  /// target
+  StringObservable? _target;
+  set target (dynamic v)
   {
-    if (_source != null)
+    if (_target != null)
     {
-      _source!.set(v);
+      _target!.set(v);
     }
     else if (v != null)
     {
-      _source = StringObservable(Binding.toKey(id, 'source'), v, scope: scope, listener: onPropertyChange);
+      _target = StringObservable(Binding.toKey(id, 'target'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  String? get source => _source?.get();
-
+  String? get target => _target?.get();
 
   ImageTransformModel(WidgetModel? parent, String? id) : super(parent, id);
 
@@ -56,30 +55,28 @@ class ImageTransformModel extends TransformModel
     super.deserialize(xml);
 
     // properties
-    source  = Xml.get(node: xml, tag: 'source');
+    target  = Xml.get(node: xml, tag: 'target');
   }
 
   // reads the image and applies the transform
-  Future<Uint8List?> _toBytes(Map row) async
+  Future<Uint8List?> _toBytes(dynamic row) async
   {
-    if (source == null) return null;
+    var v = Data.readValue(row, source);
+    if (v == null) v = source;
 
-    String url = source!;
+    v = v.toString();
 
-    // source is a map field?
-    if (row.containsKey(source) && row[source] is String) url = row[source];
-
-    // get bytes from file
-    if (scope != null && scope!.files.containsKey(url))
+    // get bytes from a file
+    if (scope != null && scope!.files.containsKey(v))
     {
-      var file = scope!.files[url];
+      var file = scope!.files[v];
       if (file != null) return await file.read();
     }
 
-    // get bytes from datauri
-    if (url.toLowerCase().startsWith("data:"))
+    // get bytes from data uri
+    else if (v.toLowerCase().startsWith("data:"))
     {
-      var uri = Uri.tryParse(url);
+      var uri = Uri.tryParse(v);
       if (uri != null && uri.data != null) return uri.data!.contentAsBytes();
     }
 
@@ -88,23 +85,16 @@ class ImageTransformModel extends TransformModel
 
   void _saveData(Map row, String uri)
   {
-      var type = "jpg";
-      var size = uri.length;
-      var name = row.containsKey("name") ? row["name"] : "${Uuid().v4()}.$type";
-
-      // modify the data
-      row['file'] = uri;
-      row['name'] = name;
-      row['size'] = size;
-      row['extension'] = type;
+    // legacy
+    var target = this.target ?? 'file';
+    Data.writeValue(row, target, uri);
   }
 
   // grayscale transform
   Future<void> grayImage(Data data) async
   {
-    if (data.isNotEmpty || data.first is Map)
+    for (var row in data)
     {
-      Map row = data.first;
       var bytes = await _toBytes(row);
       if (bytes != null)
       {

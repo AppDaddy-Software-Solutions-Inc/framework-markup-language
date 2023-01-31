@@ -87,7 +87,7 @@ class _TextViewState extends State<TextView> implements IModelListener {
     TextTheme textTheme = Theme
         .of(context)
         .textTheme;
-    TextStyle? textStyle = textTheme.bodyText2;
+    TextStyle? textStyle = textTheme.bodyMedium;
     TextOverflow textOverflow = TextOverflow.ellipsis;
     TextAlign textAlign = TextAlign.left;
     TextDecoration textDecoration = TextDecoration.none;
@@ -169,59 +169,72 @@ class _TextViewState extends State<TextView> implements IModelListener {
     switch (style?.toLowerCase()) {
       case "h1":
       case "headline1":
-        textStyle = textTheme.headline1;
+      case "displaylarge":
+        textStyle = textTheme.displayLarge;
         break;
       case "h2":
       case "headline2":
-        textStyle = textTheme.headline2;
+      case "displaymedium":
+        textStyle = textTheme.displayMedium;
         break;
       case "h3":
       case "headline3":
-        textStyle = textTheme.headline3;
+      case "displaysmall":
+        textStyle = textTheme.displaySmall;
         break;
       case "h4":
       case "headline4":
-        textStyle = textTheme.headline4;
+      case "headlinemedium":
+        textStyle = textTheme.headlineMedium;
         break;
       case "h5":
       case "headline5":
-        textStyle = textTheme.headline5;
+      case"headlinesmall":
+        textStyle = textTheme.headlineSmall;
         break;
       case "h6":
       case "headline6":
-        textStyle = textTheme.headline6;
+      case "titlelarge":
+        textStyle = textTheme.titleLarge;
         break;
       case "s1":
       case "sub1":
       case "subtitle1":
-        textStyle = textTheme.subtitle1;
+      case "titlemedium":
+        textStyle = textTheme.titleMedium;
         break;
       case "s2":
       case "sub2":
       case "subtitle2":
-        textStyle = textTheme.subtitle2;
+      case "titlesmall":
+        textStyle = textTheme.titleSmall;
         break;
       case "b1":
       case "body1":
       case "bodytext1":
-        textStyle = textTheme.bodyText1;
+      case "bodylarge":
+        textStyle = textTheme.bodyLarge;
         break;
       case "b2":
       case "body2":
       case "bodytext2":
-        textStyle = textTheme.bodyText2;
+      case "bodymedium":
+        textStyle = textTheme.bodyMedium;
         break;
       case "caption":
-        textStyle = textTheme.caption;
+      case "bodysmall":
+        textStyle = textTheme.bodySmall;
         break;
       case "button":
-        textStyle = textTheme.button;
+      case "labellarge":
+        textStyle = textTheme.labelLarge;
         break;
       case "overline":
-        textStyle = textTheme.overline;
+      case "labelsmall":
+        textStyle = textTheme.labelSmall;
         break;
       default:
-        textStyle = textTheme.bodyText2;
+        textStyle = textTheme.bodyMedium;
         break;
     }
     var textShadow = widget.model.elevation != 0

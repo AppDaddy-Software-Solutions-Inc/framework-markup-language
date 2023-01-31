@@ -316,7 +316,7 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
       String title = uri?.queryParameters['title'] ?? url;
 
       // Style
-      var style = widget.model.index == i ? TextStyle(color: Theme.of(context).colorScheme.secondary, fontWeight: Theme.of(context).primaryTextTheme.headline6!.fontWeight) : TextStyle(color: Theme.of(context).textTheme.button!.color, fontWeight: Theme.of(context).textTheme.headline6!.fontWeight);
+      var style = widget.model.index == i ? TextStyle(color: Theme.of(context).colorScheme.secondary, fontWeight: Theme.of(context).primaryTextTheme.titleLarge!.fontWeight) : TextStyle(color: Theme.of(context).textTheme.labelLarge!.color, fontWeight: Theme.of(context).textTheme.titleLarge!.fontWeight);
 
       // Button
       PopupMenuItem button = PopupMenuItem(child: Text(title), value: i/*view*/, textStyle: style);

@@ -86,7 +86,7 @@ class _TooltipViewState extends State<TooltipView> implements IModelListener
     else
       activator = MouseRegion(cursor: SystemMouseCursors.click, child: child);
     Widget tooltip;
-    tooltip = Tooltip(message: widget.model.label ?? '', textStyle: Theme.of(context).primaryTextTheme.caption, child: activator);
+    tooltip = Tooltip(message: widget.model.label ?? '', textStyle: Theme.of(context).primaryTextTheme.bodySmall, child: activator);
     // tooltip = WidgetTooltip(widgetOverlay: Icon(Icons.import_contacts_sharp, color: Colors.pinkAccent), message: widget.model.label ?? '', textStyle: Theme.of(context).accentTextTheme.overline, child: activator);
     return tooltip;
   }

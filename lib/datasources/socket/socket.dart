@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
-import 'dart:io';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';

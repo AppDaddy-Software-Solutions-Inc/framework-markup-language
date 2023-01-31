@@ -210,10 +210,12 @@ return LayoutBuilder(builder: builder);
         List<OptionModel>? suggestions;
         view = SizedBox(
           width: widget.model.maxwidth,
-          // child: RawKeyboardListener(
-          //     focusNode: focus,
-          //     autofocus: true,
               child: TypeAheadField(
+                // This was required to avoid a bug in flutter 3.7/flutter_typeahead 4.3.2 -Flex
+                // Issue detailed here: (https://github.com/AbdulRahmanAlHamali/flutter_typeahead/issues/446)
+                hideSuggestionsOnKeyboardHide: false, // added 1/31/2023
+                // Unfortunately we lose keyboard navigation of the options but otherwise the onSuggestionSelected never fired.
+                // This is caused by an odd timing situation in their library with animations and Text focus changes in flutter 3.7.
                 textFieldConfiguration: TextFieldConfiguration(
                     focusNode: focus,
                     controller: controller,
@@ -234,12 +236,10 @@ return LayoutBuilder(builder: builder);
                 itemBuilder: (context, dynamic suggestion) {
                   Widget? item;
                   if (suggestion is OptionModel) {
-
                       var option = _list.firstWhere(
                           (option) => (option.value == suggestion),
                           orElse: null);
                           item = option.child;
-
                   }
                   if (item == null) item = Container(height: 12);
                   return Padding(
@@ -255,15 +255,13 @@ return LayoutBuilder(builder: builder);
                   if (suggestion is OptionModel)
                     changedDropDownItem(suggestion);
                 },
-                transitionBuilder:
-                    (context, suggestionsBox, animationController) =>
-                        FadeTransition(
+                transitionBuilder: (context, suggestionsBox, animationController) =>
+                FadeTransition(
                   child: suggestionsBox,
                   opacity: CurvedAnimation(
                       parent: animationController!, curve: Curves.fastOutSlowIn),
                 ),
               )
-          // )
       );
       focus.addListener(onFocusChange);
     } else {

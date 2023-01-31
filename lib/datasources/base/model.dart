@@ -630,7 +630,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
   }
 
   // override this function
-  Future<bool> start({bool refresh: false, String? key}) async => true;
+  Future<bool> start({bool refresh = false, String? key}) async => true;
 
   // override this function
   Future<bool> stop() async => true;

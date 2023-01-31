@@ -156,7 +156,7 @@ class _MenuItemViewState extends State<MenuItemView>
                     ? (widget.model.fontcolor ?? Colors.black)
                     : widget.model.fontcolor ?? t.primary,
                 fontWeight:
-                    Theme.of(context).primaryTextTheme.headline6!.fontWeight));
+                    Theme.of(context).primaryTextTheme.titleLarge!.fontWeight));
       }
 
       var subtitle;

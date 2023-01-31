@@ -72,7 +72,7 @@ class SseModel extends HttpModel implements IDataSource
   }
 
   @override
-  Future<bool> start({bool refresh: false, String? key}) async
+  Future<bool> start({bool refresh = false, String? key}) async
   {
     bool ok = true;
     busy = true;

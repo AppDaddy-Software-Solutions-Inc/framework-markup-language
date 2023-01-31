@@ -339,7 +339,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     // open new page in modal window?
     if (modal == true)
     {
-      FrameworkModel model = await FrameworkModel.fromUrl(System.app!, url, refresh: refresh ?? false, dependency: dependency);
+      FrameworkModel model = FrameworkModel.fromUrl(System.app!, url, refresh: refresh ?? false, dependency: dependency);
       FrameworkView  view  = FrameworkView(model);
       return openModal(view, NavigationManager().navigatorKey.currentContext, modal: false, width: width, height: height) != null;
     }

@@ -83,7 +83,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
     method = Xml.attribute(node: xml, tag: 'method');
   }
 
-  Future<bool> start({bool refresh: false, String? key}) async
+  Future<bool> start({bool refresh = false, String? key}) async
   {
     bool ok = true;
 

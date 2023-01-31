@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'dart:io';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -96,11 +97,7 @@ class Socket
         lastMessage = null;
 
         // close the old socket
-        if (_socket != null)
-        {
-          _socket!.stream.listen((_) => null, onDone: () => null, onError: (_) => null);
-          await _socket!.sink.close();
-        }
+        if (_socket != null) await _socket!.sink.close();
 
         // connect
         connected = false;
@@ -131,7 +128,8 @@ class Socket
     try
     {
       // Close the channel
-      if (_socket != null) await _socket!.sink.close();
+      if (_socket != null)
+      {await _socket!.sink.close();}
       connected = false;
     }
     on Exception catch(e)
@@ -165,7 +163,7 @@ class Socket
   _onDone()
   {
     Log().debug('SOCKET:: Done. Close code is ${_socket?.closeCode} and reason is ${_socket?.closeReason}');
-    if (connected)
+    if (connected && _socket?.closeCode != null)
     {
       connected = false;
       int? code = _socket?.closeCode;
@@ -195,9 +193,5 @@ class Socket
     return ok;
   }
 
-  dispose()
-  {
-    disconnect();
-    _socket = null;
-  }
+  dispose() => disconnect();
 }

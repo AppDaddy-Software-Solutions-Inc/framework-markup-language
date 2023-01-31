@@ -207,7 +207,7 @@ class Binding
     return keys;
   }
 
-  static String? applyMap(String? xml, Map? map, {String? source, bool caseSensitive: true, String? prefix, bool encode = false})
+  static String? applyMap(String? xml, Map? map, {String? source, bool caseSensitive = true, String? prefix, bool encode = false})
   {
     if ((map != null) && (xml != null))
       map.forEach((key, value)

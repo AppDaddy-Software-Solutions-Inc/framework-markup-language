@@ -327,7 +327,7 @@ class CameraModel extends CAMERA.CameraImageModel implements IViewableWidget
   }
 
   @override
-  Future<bool> start({bool force = false, bool refresh: false, String? key}) async
+  Future<bool> start({bool force = false, bool refresh = false, String? key}) async
   {
     if (camera != null) camera!.start();
     return true;

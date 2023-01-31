@@ -193,7 +193,7 @@ class Log
     info("Logs cleared");
   }
 
-  export({String format = "html", bool withHistory : false}) async
+  export({String format = "html", bool withHistory = false}) async
   {
     var logs = (withHistory) ? await DATABASE.Log.query(orderby: "epoch") : queue;
     var filename = "log-${S.toChar(DateTime.now(),format: 'yyyy-MM-dd HHmmss')}";

@@ -83,7 +83,7 @@ class FilepickerModel extends FILE.FileModel implements IDataSource
     ondismissed = Xml.get(node: xml, tag: 'ondismissed');
   }
   
-  Future<bool> start({bool refresh: false, String? key}) async
+  Future<bool> start({bool refresh = false, String? key}) async
   {
     bool ok = true;
 

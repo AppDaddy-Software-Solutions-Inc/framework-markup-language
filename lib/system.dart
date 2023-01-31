@@ -2,7 +2,6 @@
 import 'dart:convert';
 import 'dart:core';
 import 'package:cross_connectivity/cross_connectivity.dart';
-import 'package:firebase_core/firebase_core.dart' show FirebaseApp;
 import 'package:flutter/foundation.dart';
 import 'package:fml/datasources/log/log_model.dart';
 import 'package:fml/event/event.dart';
@@ -12,7 +11,6 @@ import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/postmaster/postmaster.dart';
 import 'package:fml/janitor/janitor.dart';
-import 'package:fml/token/token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/widgets/theme/theme_model.dart';

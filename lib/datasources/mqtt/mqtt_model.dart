@@ -238,7 +238,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
   }
 
   @override
-  Future<bool> start({bool refresh: false, String? key}) async
+  Future<bool> start({bool refresh = false, String? key}) async
   {
     bool ok = true;
     if (mqtt == null && url != null) mqtt = IMqtt.create(url!, this, username: username, password: password);

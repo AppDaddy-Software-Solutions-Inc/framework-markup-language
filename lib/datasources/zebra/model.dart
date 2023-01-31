@@ -51,7 +51,7 @@ class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener
     // properties
   }
 
-  Future<bool> start({bool refresh: false, String? key}) async
+  Future<bool> start({bool refresh = false, String? key}) async
   {
     ZEBRA.Reader().registerListener(this);
     ZEBRA.Reader.startScan();

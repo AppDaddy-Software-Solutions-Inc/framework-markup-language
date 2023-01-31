@@ -149,7 +149,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
   }
 
   @override
-  Future<bool> start({bool refresh: false, String? key}) async
+  Future<bool> start({bool refresh = false, String? key}) async
   {
     bool ok = true;
     if (socket == null && url != null) socket = Socket(url!, this);

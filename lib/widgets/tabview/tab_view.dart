@@ -184,7 +184,7 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
     if ((!widget.model.views.containsKey(url)) || (refresh == true))
     {
       // build the model
-      model = await FrameworkModel.fromUrl(widget.model, url, dependency: event?.model?.id);
+      model = FrameworkModel.fromUrl(widget.model, url, dependency: event?.model?.id);
 
       // build the view
       view = FrameworkView(model);

@@ -525,7 +525,6 @@ class _WidgetTooltipState extends State<WidgetTooltip> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
-    assert(Overlay.of(context, debugRequiredFor: widget) != null);
     final ThemeData theme = Theme.of(context);
     final TooltipThemeData tooltipTheme = TooltipTheme.of(context);
     TextStyle defaultTextStyle;

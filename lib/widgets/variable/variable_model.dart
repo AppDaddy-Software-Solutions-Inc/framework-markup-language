@@ -22,7 +22,7 @@ class VariableModel extends WidgetModel
     {
       if ((v != null) || (WidgetModel.isBound(this, Binding.toKey(id, 'value'))))
       {
-        dynamic setter = null;
+        dynamic setter;
         if (constant) setter = (_) => v;
         _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange, setter: setter);
       }

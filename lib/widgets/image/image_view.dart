@@ -30,7 +30,7 @@ class ImageView extends StatefulWidget {
   _ImageViewState createState() => _ImageViewState();
 
   /// Get an image widget from any image type
-  static dynamic getImage(String? url, {Scope? scope, String? defaultImage, double? width, double? height, String? fit, String? filter, bool fade: true, int? fadeDuration})
+  static dynamic getImage(String? url, {Scope? scope, String? defaultImage, double? width, double? height, String? fit, String? filter, bool fade = true, int? fadeDuration})
   {
     Widget? image;
 

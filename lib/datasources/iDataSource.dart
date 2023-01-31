@@ -19,7 +19,7 @@ abstract class IDataSource
 
   WidgetModel? get parent;
 
-  Future<bool> start({bool refresh: false, String? key});
+  Future<bool> start({bool refresh = false, String? key});
   Future<bool> stop();
   Future<bool> clear({int? start, int? end});
   register(IDataSourceListener listener);

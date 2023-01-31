@@ -215,8 +215,7 @@ class _InputViewState extends State<InputView> with WidgetsBindingObserver imple
     }
 
     // Get the Scrollable state (in order to retrieve its offset)
-    ScrollableState? scrollableState = Scrollable.of(context);
-    if (scrollableState == null) return;
+    ScrollableState scrollableState = Scrollable.of(context);
 
     // Get its offset
     ScrollPosition position = scrollableState.position;
@@ -770,7 +769,7 @@ class _InputViewState extends State<InputView> with WidgetsBindingObserver imple
     if (!focused) await _commit();
   }
 
-  Future<bool> _commit({bool passDebounce: true}) async {
+  Future<bool> _commit({bool passDebounce = true}) async {
 
       if(widget.model.editable == false) {
         oldValue = widget.model.value;

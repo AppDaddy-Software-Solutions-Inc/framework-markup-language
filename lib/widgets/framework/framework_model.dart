@@ -308,8 +308,8 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
       int? requiredRights = S.toInt(Xml.attribute(node: xml, tag: 'rights'));
       if (requiredRights != null)
       {
-        int? myrights = S.toInt(System().userProperty('rights') ?? 0);
-        bool connected = S.toBool(System().userProperty('connected') ?? false)!;
+        int? myrights = S.toInt(System.app?.claim('rights') ?? 0);
+        bool connected = S.toBool(System.app?.claim('connected') ?? false)!;
 
         // logged on?
         if (!connected)

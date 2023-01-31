@@ -52,8 +52,8 @@ class Receiver implements Gps
                         epoch: DateTime
                             .now()
                             .millisecondsSinceEpoch,
-                        user: System().userProperty('key'),
-                        username: System().userProperty('name'));
+                        user: System.app?.claim('key'),
+                        username: System.app?.claim('name'));
                     await notifyListeners(last);
                   }
                   catch (e) {

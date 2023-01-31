@@ -99,9 +99,6 @@ class System extends WidgetModel implements IEventManager
   // janitorial service
   final Janitor janitor = Janitor();
 
-  /// holds user observables bound to claims
-  Map<String, StringObservable> _user = Map<String, StringObservable>();
-
   // current domain
   BooleanObservable? _connected;
   bool get connected => _connected?.get() ?? false;
@@ -170,20 +167,6 @@ class System extends WidgetModel implements IEventManager
   // GPS
   GPS.Gps gps = GPS.Gps();
   GPS.Payload? currentLocation;
-
-  /// current json web token used to authenticate
-  StringObservable? _jwt;
-  Jwt? _token;
-  set token(Jwt? value)
-  {
-    _token = value;
-    if (_jwt != null) _jwt!.set(_token?.token);
-  }
-  Jwt? get token => _token;
-
-  // firebase
-  FirebaseApp? get firebase => _app?.firebase;
-  set firebase(FirebaseApp? v) => _app?.firebase = v;
 
   _initialize() async
   {
@@ -278,9 +261,6 @@ class System extends WidgetModel implements IEventManager
     // create the theme
     _theme = ThemeModel(this, "THEME");
 
-    // json web token
-    _jwt = StringObservable(Binding.toKey(id, 'jwt'), null, scope: scope);
-
     // device settings
     _screenheight = IntegerObservable(Binding.toKey('screenheight'), WidgetsBinding.instance.window.physicalSize.height, scope: scope);
     _screenwidth  = IntegerObservable(Binding.toKey('screenwidth'),  WidgetsBinding.instance.window.physicalSize.width, scope: scope);
@@ -371,90 +351,6 @@ class System extends WidgetModel implements IEventManager
     }
   }
 
-  Future<bool> logon(Jwt? token) async
-  {
-    // valid token?
-    if ((token != null) && (token.valid))
-    {
-      // set system token
-      this.token = token;
-
-      // set user claims
-      token.claims.forEach((key, value)
-      {
-        if (_user.containsKey(key))
-             _user[key]!.set(value);
-        else _user[key] = StringObservable(Binding.toKey("USER", key), value, scope: scope);
-      });
-
-      // clear missing claims
-      _user.forEach((key, observable)
-      {
-        bool clear = !token.claims.containsKey(key);
-        if (clear) observable.set(null);
-      });
-
-      // set user language
-      if (!_user.containsKey('language'))
-           _user['language'] = StringObservable(Binding.toKey("USER", 'language'), Phrases.english, scope: scope);
-      else _user['language']!.set(Phrases.english);
-
-      // set rights
-      if (!_user.containsKey('rights')) _user['rights'] = StringObservable(Binding.toKey("USER", 'rights'), 0, scope: scope);
-
-      // set connected = true
-      if (!_user.containsKey('connected'))
-           _user['connected'] = StringObservable(Binding.toKey("USER", 'connected'), true, scope: scope);
-      else _user['connected']!.set(true);
-
-      // set phrase language
-      phrase.language = _user['language']?.get();
-
-      // set token
-      this.token = token;
-      return true;
-    }
-
-    // clear all claims
-    else return await logoff();
-  }
-
-  Future<bool> logoff() async
-  {
-    // clear user values
-    _user.forEach((key, observable) => observable.set(null));
-
-    // clear language
-    if (!_user.containsKey('language'))
-         _user['language'] = StringObservable(Binding.toKey("USER", 'language'), Phrases.english, scope: scope);
-    else _user['language']!.set(Phrases.english);
-
-    // clear rights
-    if (!_user.containsKey('rights'))
-         _user['rights'] = StringObservable(Binding.toKey("USER", 'rights'), 0, scope: scope);
-    else _user['rights']!.set(0);
-
-    // set connected = false
-    if (!_user.containsKey('connected'))
-         _user['connected'] = StringObservable(Binding.toKey("USER", 'connected'), false, scope: scope);
-    else _user['connected']!.set(false);
-
-    // set phrase language
-    phrase.language = Phrases.english;
-
-    // clear system token
-    this.token = null;
-
-    return false;
-  }
-
-  // return specific user claim
-  String? userProperty(String property)
-  {
-    if ((_user.containsKey(property)) && (_user[property] is Observable)) return _user[property]?.get();
-    return null;
-  }
-
   void setApplicationTitle(String? title) async
   {
     title = title ?? app?.settings("APPLICATION_NAME");
@@ -478,7 +374,7 @@ class System extends WidgetModel implements IEventManager
       URI.rootHost = "";
 
       // logoff
-      logoff();
+      _app?.logoff();
 
       // update application level bindables
       _domain?.set(null);
@@ -501,7 +397,7 @@ class System extends WidgetModel implements IEventManager
     app.launch(theme: theme);
 
     // set credentials
-    if (app.jwt != null) logon(app.jwt);
+    if (app.jwt != null) _app?.logon(app.jwt);
 
     // update application level bindables
     _domain?.set(app.domain);

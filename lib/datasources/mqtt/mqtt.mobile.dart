@@ -17,7 +17,7 @@ class MqttMobile implements IMqtt
   final String url;
   final String? username;
   final String? password;
-  final String identifier = (System().userProperty('name') ?? 'unknown') + " : " + Uuid().v1();
+  final String identifier = (System.app?.claim('name') ?? 'unknown') + " : " + Uuid().v1();
   final int    keepalive = 60;
 
   bool connected = false;

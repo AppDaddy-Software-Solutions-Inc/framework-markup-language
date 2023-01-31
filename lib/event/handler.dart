@@ -401,7 +401,7 @@ class EventHandler extends Eval
     if (jwt.valid)
     {
       // logon
-      System().logon(jwt);
+      System.app?.logon(jwt);
 
       // refresh the framework
       if (S.toBool(refresh) != false) EventManager.of(model)?.broadcastEvent(model,Event(EventTypes.refresh, parameters: null, model: model));
@@ -410,7 +410,7 @@ class EventHandler extends Eval
     }
     else
     {
-      System().logoff();
+      System.app?.logoff();
       return false;
     }
   }
@@ -418,7 +418,7 @@ class EventHandler extends Eval
   /// Logs a user off
   Future<bool> _handleEventLogoff([dynamic refresh]) async
   {
-    bool ok = await System().logoff();
+    bool ok = await System.app?.logoff() ?? true;
 
     // Refresh the Framework
     if ((ok) && (S.toBool(refresh) != false)) EventManager.of(model)?.broadcastEvent(model,Event(EventTypes.refresh, parameters: null, model: model));
@@ -428,7 +428,7 @@ class EventHandler extends Eval
 
   Future<bool> _firebaseInit() async
   {
-    if (System().firebase == null)
+    if (System.app?.firebase == null)
     {
       String  apiKey     = System.app?.settings("FIREBASE_API_KEY") ?? '0000000000';
       String? authDomain = System.app?.settings("FIREBASE_AUTH_DOMAIN");
@@ -437,7 +437,7 @@ class EventHandler extends Eval
       await fbcore.loadLibrary();
 
       var options = fbcore.FirebaseOptions(appId: "FML", messagingSenderId: "FML", projectId: "FML", apiKey: apiKey, authDomain: authDomain);
-      System().firebase = await fbcore.Firebase.initializeApp(options: options);
+      System.app?.firebase = await fbcore.Firebase.initializeApp(options: options);
     }
     return true;
   }

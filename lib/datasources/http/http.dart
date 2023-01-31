@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:fml/system.dart';
 import 'package:fml/token/token.dart';
@@ -32,12 +33,14 @@ class HttpResponse {
     String? contentType;
     if (response.headers.containsKey(HttpHeaders.contentTypeHeader)) contentType = response.headers[HttpHeaders.contentTypeHeader];
 
-    // This was commented out on December 16, 2022 and response.body used in its place. If the response body screws up this is the likely culprit
-    // body
-    //dynamic body;
-    //try {body = utf8.decode(response.bodyBytes);} catch (e) {body = null;}
+    dynamic body;
+    try {
+      body = utf8.decode(response.bodyBytes);
+    } catch (e) {
+      body = response.body;
+    }
 
-    return HttpResponse(url, body: response.body, bytes: response.bodyBytes, contentType: contentType, statusCode: response.statusCode, statusMessage: response.reasonPhrase);
+    return HttpResponse(url, body: body, bytes: response.bodyBytes, contentType: contentType, statusCode: response.statusCode, statusMessage: response.reasonPhrase);
   }
 }
 

@@ -12,6 +12,7 @@ import 'package:fml/observable/scope_manager.dart';
 import 'package:fml/system.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/token/token.dart';
+import 'package:fml/user/user_model.dart';
 import 'package:fml/widgets/theme/theme_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
@@ -27,6 +28,9 @@ class ApplicationModel extends WidgetModel
   late final String _dbKey;
 
   late Future<bool> initialized;
+
+  // Active user
+  late final UserModel _user;
 
   // used for social media
   FirebaseApp? firebase;
@@ -67,7 +71,7 @@ class ApplicationModel extends WidgetModel
   late final Scope stash;
 
   // jwt - json web token
-  Jwt? jwt;
+  Jwt? get jwt => _user.jwt;
 
   late final Uri _uri;
   String? get scheme => _uri.scheme;
@@ -94,12 +98,8 @@ class ApplicationModel extends WidgetModel
     // parse to url into its parts
     _uri = URI.parse(url)!;
 
-    // set token
-    if (jwt != null)
-    {
-      var token = Jwt(jwt);
-      if (token.valid) this.jwt = token;
-    }
+    // active user
+    _user = UserModel(this, jwt: jwt);
 
     // load the config
     initialized = initialize();
@@ -116,14 +116,17 @@ class ApplicationModel extends WidgetModel
     _stash = await Stash.get(_uri.domain);
     _stash.map.entries.forEach((entry) => stash.setObservable(entry.key, entry.value));
 
-    // add system scope
-    if (System().scope != null) this.scopeManager.add(System().scope!);
+    // add SYSTEM scope
+    this.scopeManager.add(System().scope!);
 
-    // add theme scope
-    if (System.theme.scope != null) this.scopeManager.add(System.theme.scope!);
+    // add THEME scope
+    this.scopeManager.add(System.theme.scope!);
 
-    // add stash scope
+    // add STASH scope
     this.scopeManager.add(stash);
+
+    // add USER scope
+    this.scopeManager.add(_user.scope!);
 
     // add GLOBAL alias to this scope
     this.scopeManager.add(scope!, alias: "GLOBAL");
@@ -359,4 +362,18 @@ class ApplicationModel extends WidgetModel
     }
     return apps;
   }
+
+  Future<bool> logon(Jwt? jwt) async
+  {
+    if (jwt != null) _user.logon(jwt);
+    return true;
+  }
+
+  Future<bool> logoff() async
+  {
+    _user.logoff();
+    return true;
+  }
+
+  String? claim(String property) => _user.claim(property);
 }

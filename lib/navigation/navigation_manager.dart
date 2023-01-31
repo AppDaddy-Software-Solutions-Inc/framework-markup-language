@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
+import 'package:fml/application/application_model.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/overlay/overlay_manager.dart';
@@ -54,7 +55,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
       if (defaultDomain.hasFragment) defaultDomain = defaultDomain.removeFragment();
 
       // set default app
-      var app = defaultApplication;
+      ApplicationModel app = await ApplicationModel.load(defaultDomain.replace(query: null).url) ?? ApplicationModel(System(),url:defaultDomain.toString());
 
       // wait for it to initialize
       await app.initialized;

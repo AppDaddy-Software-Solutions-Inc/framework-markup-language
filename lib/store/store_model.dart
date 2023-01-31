@@ -34,7 +34,7 @@ class Store extends WidgetModel implements IModelListener
   {
     busy = true;
 
-    var apps = await ApplicationModel.loadAll(System());
+    var apps = await ApplicationModel.loadAll();
 
     _apps.clear();
     for (ApplicationModel app in apps)

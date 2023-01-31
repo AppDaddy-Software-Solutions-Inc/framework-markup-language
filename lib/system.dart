@@ -43,19 +43,16 @@ final String applicationTitle = "Flutter Markup Language " + version;
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://applications/<app> to use the asset applications
+var defaultDomain = Uri.parse('https://fml.appdaddy.co');
 
-String defaultUrl = 'https://fml.appdaddy.co';
-
-Uri defaultDomain = Uri.parse(defaultUrl);
+// Default Application
+final defaultApplication = ApplicationModel(System(),url:defaultDomain.toString());
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
 final ApplicationTypes appType  = ApplicationTypes.SingleApp;
 
 enum ApplicationTypes{ SingleApp, MultiApp }
-
-// Default Application
-final defaultApplication = ApplicationModel(System(),url:defaultDomain.toString());
 
 // platform
 String get platform => isWeb ? "web" : isMobile ? "mobile" : "desktop";

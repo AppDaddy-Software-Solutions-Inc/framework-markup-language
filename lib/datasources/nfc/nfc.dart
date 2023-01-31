@@ -191,7 +191,5 @@ class Writer
       if (e.code == "405") throw CustomException(code: 405, message: 'NFC Tag Not Writeable');
       else return false;
     }
-    return false;
-
   }
 }

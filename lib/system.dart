@@ -32,7 +32,7 @@ if (dart.library.io)   'package:fml/platform/platform.vm.dart'
 if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 // application build version
-final String version = '1.1.0';
+final String version = '1.1.1';
 
 // application title
 // only used in Android when viewing open applications
@@ -48,7 +48,7 @@ final defaultApplication = ApplicationModel(System(),url:defaultDomain.toString(
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
-final ApplicationTypes appType  = ApplicationTypes.SingleApp;
+final ApplicationTypes appType  = ApplicationTypes.MultiApp;
 
 enum ApplicationTypes{ SingleApp, MultiApp }
 

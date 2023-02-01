@@ -32,7 +32,7 @@ if (dart.library.io)   'package:fml/platform/platform.vm.dart'
 if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 // application build version
-final String version = '1.1.0';
+final String version = '1.1.1';
 
 // application title
 // only used in Android when viewing open applications
@@ -41,14 +41,14 @@ final String applicationTitle = "Flutter Markup Language " + version;
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://applications/<app> to use the asset applications
-var defaultDomain = Uri.parse('https://fml.appdaddy.co');
+var defaultDomain = Uri.parse('https://fml.dev');
 
 // Default Application
 final defaultApplication = ApplicationModel(System(),url:defaultDomain.toString());
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
-final ApplicationTypes appType  = ApplicationTypes.SingleApp;
+final ApplicationTypes appType  = ApplicationTypes.MultiApp;
 
 enum ApplicationTypes{ SingleApp, MultiApp }
 

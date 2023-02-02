@@ -1,11 +1,15 @@
 <FML title="FMLPAD" linkable="true">
 
+    <VAR id="XML" value="{CODEFIELD}" onchange="contains({r1},'1') ? null : FMLPAD.replaceChildren({XML},false)"/>
+
     <HEADER height="50">
         <BOX color="#1E2835" valign="center" halign="left" layout="row">
             <PAD left="10"/>
             <IMAGE url="assets://images/fml-logo.png" height="30"/>
             <PAD left="10"/>
             <TEXT value="FMLPAD" size="20" color="white"/>
+            <PAD left="50"/>
+            <CHECKBOX id="r1"><OPTION label="parse" value="1"/></CHECKBOX>
         </BOX>
     </HEADER>
 
@@ -17,16 +21,17 @@
 
         <VIEW>
             <BOX color="#0F161F" width="100%" height="100%" layout="stack">
+
                 <SCROLLER>
-                    <TEXT id="XML" codefield="true">
+                    <TEXT id="CODEFIELD" codefield="true" onchange="FMLPAD.replaceChildren({XML},false)">
                         <VALUE>
-                            <![CDATA[<TEXT id="t1" value="welcome to fml pad"/>]]>
+                            <![CDATA[<TEXT value="Welcome to FMLPAD!!" color="white" size="24"/>]]>
                         </VALUE>
                     </TEXT>
                 </SCROLLER>
 
                 <POSITIONED right="10" top="5">
-                    <BUTTON onclick="FMLPAD.replaceChildren({XML})">
+                    <BUTTON onclick="FMLPAD.replaceChildren({XML},false)" visible="=contains({r1},'1')">
                         <BOX width="80" height="35" color="#348CFF" layout="row" radius="5" valign="center" halign="left">
                             <PAD left="10"/>
                             <ICON icon="play_arrow" size="20" color="black"/>

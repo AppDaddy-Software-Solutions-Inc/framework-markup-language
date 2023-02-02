@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/view/view_model.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
 
 import 'package:fml/widgets/widget/iViewableWidget.dart';
@@ -12,11 +13,7 @@ import 'package:fml/helper/common_helpers.dart';
 
 class SplitModel extends DecoratedWidgetModel implements IViewableWidget
 {
-  List<List<IViewableWidget>> views = [];
-
-  ////////////
-  /* ratio */
-  ////////////
+  /// split ratio
   DoubleObservable? _ratio;
   set ratio (dynamic v)
   {
@@ -72,24 +69,8 @@ class SplitModel extends DecoratedWidgetModel implements IViewableWidget
     // properties
     ratio = Xml.get(node: xml, tag: 'ratio');
 
-    ///////////
-    /* Views */
-    ///////////
-    views.clear();
-    Iterable<XmlElement> oView = xml.findElements("VIEW", namespace: "*");
-      oView.forEach((oView)
-    {
-      List<IViewableWidget> children = [];
-      oView.children.forEach((node)
-      {
-        if (node.nodeType == XmlNodeType.ELEMENT)
-        {
-          dynamic child = WidgetModel.fromXml(this, node as XmlElement);
-          if (child != null) children.add(child);
-        }
-      });
-      views.add(children);
-    });
+    // remove non view children
+    children?.removeWhere((element) => !(element is ViewModel));
   }
 
   Widget getView({Key? key}) => SplitView(this);

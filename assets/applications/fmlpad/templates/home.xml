@@ -1,0 +1,48 @@
+<FML title="FMLPAD" linkable="true">
+
+    <HEADER height="50">
+        <BOX color="#1E2835" valign="center" halign="left" layout="row">
+            <PAD left="10"/>
+            <IMAGE url="assets://images/fml-logo.png" height="30"/>
+            <PAD left="10"/>
+            <TEXT value="FMLPAD" size="20" color="white"/>
+        </BOX>
+    </HEADER>
+
+    <FOOTER height="50">
+        <BOX color="#1E2835"/>
+    </FOOTER>
+
+    <SPLITVIEW ratio=".50">
+
+        <VIEW>
+            <BOX color="#0F161F" width="100%" height="100%" layout="stack">
+                <SCROLLER>
+                    <TEXT id="XML" codefield="true">
+                        <VALUE>
+                            <![CDATA[<TEXT id="t1" value="welcome to fml pad"/>]]>
+                        </VALUE>
+                    </TEXT>
+                </SCROLLER>
+
+                <POSITIONED right="10" top="5">
+                    <BUTTON onclick="FMLPAD.replaceChildren({XML})">
+                        <BOX width="80" height="35" color="#348CFF" layout="row" radius="5" valign="center" halign="left">
+                            <PAD left="10"/>
+                            <ICON icon="play_arrow" size="20" color="black"/>
+                            <PAD left="7"/>
+                            <TEXT color="black" value="Run"/>
+                        </BOX>
+                    </BUTTON>
+                </POSITIONED>
+
+            </BOX>
+        </VIEW>
+
+        <VIEW>
+            <BOX id="FMLPAD" color="#0F161F" width="100%" height="100%" layout="column"/>
+        </VIEW>
+
+    </SPLITVIEW>
+
+</FML>

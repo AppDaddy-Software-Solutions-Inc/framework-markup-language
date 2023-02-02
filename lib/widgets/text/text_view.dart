@@ -1,10 +1,14 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:flutter_code_editor/flutter_code_editor.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:google_fonts/google_fonts.dart' deferred as gf;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/phrase.dart';
+import 'package:highlight/languages/dart.dart';
+import 'package:flutter_highlight/themes/monokai-sublime.dart';
+import 'package:highlight/languages/xml.dart';
 
 class TextView extends StatefulWidget
 {
@@ -18,6 +22,9 @@ class TextView extends StatefulWidget
 class _TextViewState extends State<TextView> implements IModelListener {
 
   bool gfloaded = false;
+
+  CodeController? _codeController;
+
 
   @override
   void initState()
@@ -69,6 +76,17 @@ class _TextViewState extends State<TextView> implements IModelListener {
   {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible || !gfloaded) return Offstage();
+
+    if (widget.model.codefield)
+    {
+      if (_codeController == null) _codeController = CodeController(
+        text: widget.model.value,
+        language: xml,
+      );
+
+      return CodeTheme(data: CodeThemeData(styles: monokaiSublimeTheme),
+          child: SingleChildScrollView(child: CodeField(controller: _codeController!, onChanged: (_) {widget.model.value = _codeController?.fullText;}, background: Colors.transparent, maxLines: null)));
+    }
 
     String? label = widget.model.value;
     String? style = widget.model.style;

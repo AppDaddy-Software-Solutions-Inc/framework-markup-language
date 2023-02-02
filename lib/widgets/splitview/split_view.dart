@@ -5,6 +5,7 @@ import 'package:fml/system.dart';
 import 'package:fml/widgets/splitview/split_model.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/widgets/view/view_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 
 class SplitView extends StatefulWidget
@@ -93,59 +94,41 @@ class _SplitViewState extends State<SplitView> implements IModelListener
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // Set Build Constraints in the [WidgetModel]
-
-      widget.model.minwidth  = constraints.minWidth;
-      widget.model.maxwidth  = constraints.maxWidth;
-      widget.model.minheight = constraints.minHeight;
-      widget.model.maxheight = constraints.maxHeight;
+    widget.model.minwidth  = constraints.minWidth;
+    widget.model.maxwidth  = constraints.maxWidth;
+    widget.model.minheight = constraints.minHeight;
+    widget.model.maxheight = constraints.maxHeight;
 
     if (_maxWidth == null)                  _maxWidth = widget.model.maxwidth! - _dividerWidth;
     if (_maxWidth != widget.model.maxwidth) _maxWidth = widget.model.maxwidth! - _dividerWidth;
     if (_maxWidth != null && _maxWidth! < 0) _maxWidth = 0;
 
-    ///////////
-    /* Views */
-    ///////////
+    // views
     if (widget.views.isEmpty)
     {
-      widget.model.views.forEach((models)
+      widget.model.children?.forEach((child)
       {
-        List<Widget> children = [];
-        if (models.isNotEmpty)
-        models.forEach((model)
-        {
-          var child = model.getView();
-         children.add(child);
-        });
-        if (children.isEmpty) children.add(Container());
-        widget.views.add(children.length == 1 ? children[0] : SizedBox(height: widget.model.maxheight, child: Column(children: children, mainAxisAlignment: MainAxisAlignment.start, mainAxisSize: MainAxisSize.min)));
+        if (child is ViewModel) widget.views.add(child.getView());
       });
     }
 
-    ///////////////
-    /* Left Pane */
-    ///////////////
-    var left = SizedBox(width: _width1,
-        child: Container(color: Theme.of(context).colorScheme.surface,
-            child: (widget.views.isNotEmpty ? widget.views[0] : Text ('Missing <View />'))));
+    // left pane
+    var left = SizedBox(width: _width1, child: Container(color: Theme.of(context).colorScheme.surface, child: (widget.views.isNotEmpty ? widget.views[0] : Text ('Missing <View />'))));
 
-    ////////////
-    /* Handle */
-    ////////////
-    var handle = GestureDetector(behavior: HitTestBehavior.opaque, onHorizontalDragUpdate: (DragUpdateDetails details) { /*print('hor drag' + details.delta.dx.toString() + ' | ' + _ratio.toString() + ' w1: ' + _width1.toString() + ' w2: ' + _width2.toString());*/ setState(() { _ratio += details.delta.dx / _maxWidth!; if (_ratio > 1) _ratio = 1; else if (_ratio < 0.0) _ratio = 0.0; }); },
+    // handle
+    var handle = GestureDetector(behavior: HitTestBehavior.opaque, onHorizontalDragUpdate: _onDrag,
         child: Container(color: Theme.of(context).colorScheme.onInverseSurface, child: SizedBox(width: _dividerWidth, height: constraints.maxHeight, child: MouseRegion(cursor: SystemMouseCursors.resizeLeftRight, child: RotationTransition(child: Icon(Icons.drag_handle, color: Theme.of(context).colorScheme.inverseSurface,), turns: AlwaysStoppedAnimation(0.25))))));
 
-    ////////////////
-    /* Right Pane */
-    ////////////////
-    var right = SizedBox(width: _width2, child:
-    Container(color: Theme.of(context).colorScheme.surface,
-        child: (widget.views.length > 1 ? widget.views[1] : Text ('Missing <View />'))));
+    // right pane
+    var right = SizedBox(width: _width2, child: Container(color: Theme.of(context).colorScheme.surface, child: (widget.views.length > 1 ? widget.views[1] : Text ('Missing <View />'))));
 
-    //////////
-    /* View */
-    //////////
+    // view
     return SizedBox(width: constraints.maxWidth, child: Row(children: <Widget>[left, handle, right]));
   }
 
+  void _onDrag(DragUpdateDetails details)
+  {
+    /// print('hor drag' + details.delta.dx.toString() + ' | ' + _ratio.toString() + ' w1: ' + _width1.toString() + ' w2: ' + _width2.toString());
+    setState(() { _ratio += details.delta.dx / _maxWidth!; if (_ratio > 1) _ratio = 1; else if (_ratio < 0.0) _ratio = 0.0; });
+  }
 }

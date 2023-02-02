@@ -14,7 +14,9 @@ import 'package:fml/helper/common_helpers.dart';
 class TextModel extends DecoratedWidgetModel implements IViewableWidget
 {
   String? markup;
-  
+
+  bool codefield = false;
+
   ///////////
   /* Value */
   ///////////
@@ -487,6 +489,7 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
     if (textvalue == null) textvalue = Xml.getText(xml);
 
     // properties
+    codefield = Xml.hasAttribute(node: xml, tag: "codefield");
     value = textvalue;
     size = Xml.get(node: xml, tag: 'size');
     outlinecolor = Xml.get(node: xml, tag: 'outlinecolor');

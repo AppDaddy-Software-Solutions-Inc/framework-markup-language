@@ -257,20 +257,23 @@ class ListModel extends DecoratedWidgetModel implements IViewableWidget, IForm, 
     scrollButtons = Xml.get(node: xml, tag: 'scrollbuttons');
     collapsed = Xml.get(node: xml, tag: 'collapsed');
 
-    // Process Items
+    // clear items
+    this.items.forEach((_,item) => item.dispose());
     this.items.clear();
+
+    // Process Items
     int i = 0;
     List<ListItemModel> items = findChildrenOfExactType(ListItemModel).cast<ListItemModel>();
 
-      // set prototype
-      if ((!S.isNullOrEmpty(datasource)) && (items.isNotEmpty))
-      {
-        prototype = S.toPrototype(items[0].element.toString());
-        items.removeAt(0);
-      }
-      // build items
-      items.forEach((item) => this.items[i++] = item);
+    // set prototype
+    if ((!S.isNullOrEmpty(datasource)) && (items.isNotEmpty))
+    {
+      prototype = S.toPrototype(items[0].element.toString());
+      items.removeAt(0);
+    }
 
+    // build items
+    items.forEach((item) => this.items[i++] = item);
   }
 
   ListItemModel? getItemModel(int index)
@@ -308,7 +311,11 @@ class ListModel extends DecoratedWidgetModel implements IViewableWidget, IForm, 
     if (list != null)
     {
       clean = true;
-      items.clear();
+
+      // clear items
+      this.items.forEach((_,item) => item.dispose());
+      this.items.clear();
+
       data = list;
       notifyListeners('list', items);
     }
@@ -320,6 +327,11 @@ class ListModel extends DecoratedWidgetModel implements IViewableWidget, IForm, 
   dispose()
   {
     Log().debug('dispose called on => <$elementName id="$id">');
+
+    // clear items
+    this.items.forEach((_,item) => item.dispose());
+    this.items.clear();
+
     super.dispose();
   }
 

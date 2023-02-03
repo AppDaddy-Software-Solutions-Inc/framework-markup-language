@@ -221,4 +221,12 @@ class ListItemModel extends DecoratedWidgetModel
     else ok = false;
     return ok;
   }
+
+  @override
+  dispose()
+  {
+    Log().debug('dispose called on => <$elementName id="$id">');
+    super.dispose();
+    scope?.dispose();
+  }
 }

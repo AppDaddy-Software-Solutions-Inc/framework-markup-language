@@ -21,7 +21,8 @@ class SplitView extends StatefulWidget
 
 class _SplitViewState extends State<SplitView> implements IModelListener
 {
-  final _dividerWidth = System().useragent == 'desktop' || S.isNullOrEmpty(System().useragent) ? 6.0 : 12.0; // looks best synced to barpadding in tabview
+  double _dividerWidth = 6.0;
+  Color? _dividerColor;
 
   double _ratio = 0.5;
   set ratio (double v)
@@ -36,7 +37,8 @@ class _SplitViewState extends State<SplitView> implements IModelListener
   get _width2 => (1 - _ratio) * _maxWidth!;
 
   @override
-  void initState() {
+  void initState()
+  {
     super.initState();
     widget.model.registerListener(this);
 
@@ -46,7 +48,8 @@ class _SplitViewState extends State<SplitView> implements IModelListener
   }
 
   @override
-  didChangeDependencies() {
+  didChangeDependencies()
+  {
     super.didChangeDependencies();
   }
 
@@ -99,6 +102,9 @@ class _SplitViewState extends State<SplitView> implements IModelListener
     widget.model.minheight = constraints.minHeight;
     widget.model.maxheight = constraints.maxHeight;
 
+    _dividerWidth = widget.model.dividerWidth ?? (System().useragent == 'desktop' || S.isNullOrEmpty(System().useragent) ? 6.0 : 12.0);
+    _dividerColor = widget.model.dividerColor ?? Theme.of(context).colorScheme.onInverseSurface;
+
     if (_maxWidth == null)                  _maxWidth = widget.model.maxwidth! - _dividerWidth;
     if (_maxWidth != widget.model.maxwidth) _maxWidth = widget.model.maxwidth! - _dividerWidth;
     if (_maxWidth != null && _maxWidth! < 0) _maxWidth = 0;
@@ -117,7 +123,7 @@ class _SplitViewState extends State<SplitView> implements IModelListener
 
     // handle
     var handle = GestureDetector(behavior: HitTestBehavior.opaque, onHorizontalDragUpdate: _onDrag,
-        child: Container(color: Theme.of(context).colorScheme.onInverseSurface, child: SizedBox(width: _dividerWidth, height: constraints.maxHeight, child: MouseRegion(cursor: SystemMouseCursors.resizeLeftRight, child: RotationTransition(child: Icon(Icons.drag_handle, color: Theme.of(context).colorScheme.inverseSurface,), turns: AlwaysStoppedAnimation(0.25))))));
+        child: Container(color: _dividerColor, child: SizedBox(width: _dividerWidth, height: constraints.maxHeight, child: MouseRegion(cursor: SystemMouseCursors.resizeLeftRight, child: RotationTransition(child: Icon(Icons.drag_handle, color: widget.model.dividerHandleColor), turns: AlwaysStoppedAnimation(.25))))));
 
     // right pane
     var right = SizedBox(width: _width2, child: Container(color: Theme.of(context).colorScheme.surface, child: (widget.views.length > 1 ? widget.views[1] : Text ('Missing <View />'))));

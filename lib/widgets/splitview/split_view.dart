@@ -5,7 +5,7 @@ import 'package:fml/system.dart';
 import 'package:fml/widgets/splitview/split_model.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/helper/common_helpers.dart';
-import 'package:fml/widgets/view/view_model.dart';
+import 'package:fml/widgets/splitview/view_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 
 class SplitView extends StatefulWidget

@@ -9,7 +9,11 @@ import 'package:fml/helper/common_helpers.dart';
 
 class ViewModel extends ColumnModel
 {
-  ViewModel(WidgetModel parent, String? id) : super(parent, id);
+  ViewModel(WidgetModel parent, String? id) : super(parent, id)
+  {
+    valign = "start";
+    expand = false;
+  }
 
   static ViewModel? fromXml(WidgetModel parent, XmlElement xml)
   {

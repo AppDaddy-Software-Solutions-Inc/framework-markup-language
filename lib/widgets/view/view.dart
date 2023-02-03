@@ -87,7 +87,7 @@ class _ViewState extends State<View> implements IModelListener
     if (children.isEmpty) children.add(Container());
 
     // view
-    var view = SizedBox(height: widget.model.maxheight, child: Column(children: children, mainAxisAlignment: MainAxisAlignment.start, mainAxisSize: MainAxisSize.min));
+    var view = children.length == 1 ? children[0] : SizedBox(height: widget.model.maxheight, child: Column(children: children, mainAxisAlignment: MainAxisAlignment.start, mainAxisSize: MainAxisSize.min));
     return view;
   }
 }

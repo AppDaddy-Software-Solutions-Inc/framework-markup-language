@@ -158,18 +158,17 @@ class TreeNodeModel extends DecoratedWidgetModel implements IViewableWidget
     selected     = Xml.get(node: xml, tag: 'selected') ?? false;
   }
 
-  @override
-  dispose()
-  {
-    Log().debug ('dispose called on' + elementName.toString());
-    scope?.dispose();
-    super.dispose();
-  }
-
   Future<bool> onClick(BuildContext context) async
   {
     if (onclick == null) return true;
     return await EventHandler(this).execute(_onclick);
+  }
+
+  @override
+  dispose()
+  {
+    Log().debug ('dispose called on' + elementName.toString());
+    super.dispose();
   }
 
   @override

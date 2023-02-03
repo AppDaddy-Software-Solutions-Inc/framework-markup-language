@@ -10,9 +10,7 @@ import 'package:fml/helper/common_helpers.dart';
 
 class OptionModel extends WidgetModel
 {
-  ///////////
-  /* label */
-  ///////////
+  // label
   IViewableWidget? label;
 
   dynamic labelValue;
@@ -37,7 +35,7 @@ class OptionModel extends WidgetModel
   }
 
   //////////
-  /* tags */
+  // tags 
   //////////
   StringObservable? _tags;
   set tags(dynamic v) {
@@ -87,9 +85,7 @@ class OptionModel extends WidgetModel
     // deserialize 
     super.deserialize(xml);
 
-    ///////////
-    /* Label */
-    ///////////
+    // Label
     String? label = Xml.attribute(node: xml, tag: 'label');
     if (S.isNullOrEmpty(label))
     {
@@ -98,23 +94,19 @@ class OptionModel extends WidgetModel
       {
         if (Xml.hasChildElements(node))
              this.label = RowModel.fromXml(this, node);
-        else this.label = TextModel(this, this.id, value: Xml.getText(node));
+        else this.label = TextModel(this, null, value: Xml.getText(node));
       }
     }
-    else this.label = TextModel(this, this.id, value: label);
+    else this.label = TextModel(this, null, value: label);
 
-    ////////////
-    /* Empty? */
-    ////////////
+    // Empty?
     if (this.label == null)
     {
       label = Xml.getText(xml);
-      this.label = TextModel(this, this.id, value: label);
+      this.label = TextModel(this, null, value: label);
     }
 
-    ///////////
-    /* Value */
-    ///////////
+    // Value
     String? value = Xml.get(node: xml, tag: 'value');
     if (value == null) {
       this.value = label;

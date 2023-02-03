@@ -374,19 +374,22 @@ class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidge
     /// styling attributes
     size  = Xml.get(node: xml, tag: 'size');
 
-    // Build options
+    // clear options
+    this.options.forEach((option) => option.dispose());
     this.options.clear();
+
+    // Build options
     List<OptionModel> options = findChildrenOfExactType(OptionModel).cast<OptionModel>();
 
-      // set prototype
-      if ((!S.isNullOrEmpty(datasource)) && (options.isNotEmpty))
-      {
-        prototype = S.toPrototype(options[0].element.toString());
-        options.removeAt(0);
-      }
-      // build options
-      options.forEach((option) => this.options.add(option));
+    // set prototype
+    if ((!S.isNullOrEmpty(datasource)) && (options.isNotEmpty))
+    {
+      prototype = S.toPrototype(options[0].element.toString());
+      options.removeAt(0);
+    }
 
+    // build options
+    options.forEach((option) => this.options.add(option));
   }
 
 
@@ -397,7 +400,9 @@ class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidge
     {
       if (prototype == null) return true;
 
-      options.clear();
+      // clear options
+      this.options.forEach((option) => option.dispose());
+      this.options.clear();
 
       // build options
       int i = 0;

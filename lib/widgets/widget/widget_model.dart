@@ -548,12 +548,7 @@ class WidgetModel implements IDataSourceListener
         break;
 
       case "option":
-        if (parent is SelectModel)
-          model = OptionModel.fromXml(parent, node);
-        if (parent is CheckboxModel)
-          model = OptionModel.fromXml(parent, node);
-        if (parent is RadioModel)
-          model = OptionModel.fromXml(parent, node);
+        if (parent is SelectModel || parent is CheckboxModel || parent is RadioModel) model = OptionModel.fromXml(parent, node);
         break;
 
       case "pad": // Preferred Case.
@@ -761,8 +756,6 @@ class WidgetModel implements IDataSourceListener
         break;
 
       default:
-        if (elementLocalName != 'body')
-          Log().warning('$elementLocalName is not a model, check the spelling of the element name.');
         break;
     }
 
@@ -844,6 +837,9 @@ class WidgetModel implements IDataSourceListener
     if (datasources != null)
     for (var datasource in datasources!) if (datasource.parent == this) datasource.dispose();
     datasources?.clear();
+
+    // remove model and all of its bindables from the scope
+    scope?.unregisterModel(this);
 
     // dispose of children
     if (children != null)
@@ -1149,6 +1145,7 @@ class WidgetModel implements IDataSourceListener
         {
           // dispose of the last item
           this.children!.last.dispose();
+
           // check if the list is greater than 0, remove at the final index.
           if (this.children!.length > 0) this.children!.removeLast();
         }

@@ -334,8 +334,11 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
     String? empty = Xml.get(node: xml, tag: 'addempty');
     if (S.isBool(empty)) addempty = S.toBool(empty);
 
-    // Build options
+    // clear options
+    this.options.forEach((option) => option.dispose());
     this.options.clear();
+
+    // Build options
     List<OptionModel> options = findChildrenOfExactType(OptionModel).cast<OptionModel>();
 
     // set prototype
@@ -344,6 +347,7 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
       prototype = S.toPrototype(options[0].element.toString());
       options.removeAt(0);
     }
+
     // build options
     options.forEach((option) => this.options.add(option));
 
@@ -360,7 +364,9 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
     {
       if (prototype == null) return true;
 
-      options.clear();
+      // clear options
+      this.options.forEach((option) => option.dispose());
+      this.options.clear();
 
       int i = 0;
       if (addempty == true)
@@ -410,30 +416,31 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
   void setData()
   {
     dynamic data;
-      options.forEach((option)
-      {
-        if (option.value == value)
-          {
-            data = option.data;
-            this.label = option.labelValue;
-          }
-      });
+    options.forEach((option)
+    {
+      if (option.value == value)
+        {
+          data = option.data;
+          this.label = option.labelValue;
+        }
+    });
     this.data = data;
   }
 
   bool containsOption()
   {
     bool contains = false;
-      options.forEach((option)
-      {
-        if (option.value == value) contains = true;
-      });
+    options.forEach((option)
+    {
+      if (option.value == value) contains = true;
+    });
     return contains;
   }
 
   @override
-  dispose() {
-Log().debug('dispose called on => <$elementName id="$id">');
+  dispose()
+  {
+    Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
   }
 

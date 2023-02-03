@@ -440,6 +440,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
     footer?.dispose();
     drawer?.dispose();
 
+    // dispose of scope
     scope?.dispose();
 
     // clear event listeners

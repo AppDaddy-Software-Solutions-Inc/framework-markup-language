@@ -37,6 +37,7 @@ import 'package:fml/widgets/datepicker/datepicker_model.dart';
 import 'package:fml/datasources/http/delete/model.dart';
 import 'package:fml/widgets/draggable/draggable_model.dart';
 import 'package:fml/widgets/droppable/droppable_model.dart';
+import 'package:fml/widgets/editor/editor_model.dart';
 import 'package:fml/widgets/expanded/expanded_model.dart';
 import 'package:fml/widgets/filepicker/filepicker_model.dart';
 import 'package:fml/widgets/footer/footer_model.dart';
@@ -407,6 +408,10 @@ class WidgetModel implements IDataSourceListener
       case "drop": // Preferred case.
       case "droppable": // droppable may be deprecated.
         model = DroppableModel.fromXml(parent, node);
+        break;
+
+      case "editor":
+        model = EditorModel.fromXml(parent, node);
         break;
 
       case "expand": // Preferred CaFooterModel

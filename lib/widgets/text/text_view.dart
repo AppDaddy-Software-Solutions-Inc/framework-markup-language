@@ -23,9 +23,6 @@ class _TextViewState extends State<TextView> implements IModelListener {
 
   bool gfloaded = false;
 
-  CodeController? _codeController;
-
-
   @override
   void initState()
   {
@@ -76,17 +73,6 @@ class _TextViewState extends State<TextView> implements IModelListener {
   {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible || !gfloaded) return Offstage();
-
-    if (widget.model.codefield)
-    {
-      if (_codeController == null) _codeController = CodeController(
-        text: widget.model.value,
-        language: xml,
-      );
-
-      return CodeTheme(data: CodeThemeData(styles: monokaiSublimeTheme),
-          child: SingleChildScrollView(child: CodeField(controller: _codeController!, onChanged: (_) {widget.model.value = _codeController?.fullText;}, background: Colors.transparent, maxLines: null)));
-    }
 
     String? label = widget.model.value;
     String? style = widget.model.style;

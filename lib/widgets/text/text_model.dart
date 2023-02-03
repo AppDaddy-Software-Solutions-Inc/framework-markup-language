@@ -15,11 +15,7 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
 {
   String? markup;
 
-  bool codefield = false;
-
-  ///////////
-  /* Value */
-  ///////////
+  // value
   StringObservable? _value;
 
   set value(dynamic v) {
@@ -32,24 +28,19 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
             scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get value {
     if (_value == null)
          return null;
     else return parseValue(_value?.get());
   }
 
-  ///////////
-  /* Value */
-  ///////////
+  // value
   List<PARSE.TextValue> markupTextValues = [];
 
   bool spanRequestBuild = false;
   bool addWhitespace = false;
 
-  //////////
-  /* size */
-  //////////
+  // size
   bool _sizeIsPercent = false;
   DoubleObservable? _size;
   set size(dynamic v) {
@@ -93,9 +84,7 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
     return s;
   }
 
-  ////////////////
-  /* outline color */
-  ////////////////
+  // outline color
   ColorObservable? _outlinecolor;
 
   set outlinecolor(dynamic v) {
@@ -109,9 +98,7 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
   }
   Color? get outlinecolor => _outlinecolor?.get();
 
-  ////////////////
-  /* outline size */
-  ////////////////
+  // outline size
   DoubleObservable? _outline;
 
   set outline(dynamic v) {
@@ -178,9 +165,7 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
   }
   double? get shadowy => _shadowy?.get() ?? 2;
 
-  ////////////////
-  /*font */
-  ////////////////
+  // font
   StringObservable? _font;
 
   set font(dynamic v) {
@@ -193,9 +178,7 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
   }
   String? get font => _font?.get() ?? System.theme.font;
 
-  ////////////
-  /* Weight */
-  ////////////
+  // weight
   DoubleObservable? _weight;
   set weight(dynamic v) {
     if (_weight != null) {
@@ -207,9 +190,7 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
   }
   double? get weight => _weight?.get();
 
-  ///////////////
-  /* bold font */
-  ///////////////
+  // bold font
   BooleanObservable? _bold;
   set bold(dynamic v) {
     if (_bold != null) {
@@ -489,7 +470,6 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
     if (textvalue == null) textvalue = Xml.getText(xml);
 
     // properties
-    codefield = Xml.hasAttribute(node: xml, tag: "codefield");
     value = textvalue;
     size = Xml.get(node: xml, tag: 'size');
     outlinecolor = Xml.get(node: xml, tag: 'outlinecolor');

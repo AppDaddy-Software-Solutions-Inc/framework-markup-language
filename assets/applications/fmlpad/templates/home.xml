@@ -1,6 +1,17 @@
 <FML title="FmlPad" linkable="true">
 
-    <VAR id="XML" value="{CODEFIELD}" onchange="contains({r1},'1') ? null : FMLPAD.replaceChildren({XML},false)"/>
+    <VAR id="xml" value="{editor}" onchange="{r1} ? fmlpad.replaceChildren({xml},false) : null"/>
+
+    <CONST id="default">
+    <value>
+<![CDATA[<!--Welcome to fmlpad! The <FML/> tags are included automatically for you!-->
+<BOX layout="column" color="#0F161F" center="true">
+<!--Remember, the template is a STACK by default and non scrollable!-->
+<!--For scrolling, try out the SCROLL widget!-->
+    <TEXT value="Welcome to FMLPAD!!" color="white" size="24"/>
+</BOX>]]>
+   </value>
+   </CONST>
 
     <HEADER height="50">
         <BOX color="#1E2835" valign="center" halign="left" layout="row">
@@ -9,19 +20,38 @@
             <PAD left="10"/>
             <TEXT value="FmlPad" size="20" color="white"/>
             <PAD left="50"/>
-            <CHECKBOX id="r1"><OPTION label="parse" value="1"/></CHECKBOX>
             <PAD left="20"/>
-            <SELECT bordercolor="#1E2835">
+
+            <SELECT bordercolor="#1E2835" onchange="copy({this})">
                 <OPTION label="">
                     <VALUE></VALUE>
                 </OPTION>
                 <OPTION label="BOX">
-                    <VALUE><![CDATA[<BOX width="20" color="red"/>]]></VALUE>
+                    <VALUE><![CDATA[<BOX width="20" height="20" color="red"/>]]></VALUE>
                 </OPTION>
                 <OPTION label="TEXT">
-                    <VALUE><![CDATA[<TEXT width="20" color="red"/>]]></VALUE>
+                    <VALUE><![CDATA[<TEXT color="white" size="16" value="text here"/>]]></VALUE>
                 </OPTION>
             </SELECT>
+
+            <EXPAND>
+            <ROW halign="end" valign="center">
+
+               <!-- Reset button -->
+                <BUTTON onclick="editor.set({default})" visible="={default} != {editor}">
+                    <ICON icon="refresh" color="white"/>
+                </BUTTON>
+
+                <PAD left="40"/>
+
+                <!-- Realtime Parsing button -->
+                <TEXT value="Realtime"/>
+                <PAD left="20"/>
+                <SWITCH id="r1" value="true"/>
+                <PAD left="20"/>
+
+            </ROW>
+            </EXPAND>
         </BOX>
     </HEADER>
 
@@ -35,25 +65,16 @@
             <BOX color="#0F161F" width="100%" height="100%" layout="stack">
 
                 <SCROLLER>
-                    <TEXT id="CODEFIELD" codefield="true" onchange="FMLPAD.replaceChildren({XML},false)">
-                        <VALUE>
-<![CDATA[<!--Welcome to fmlpad! The <FML/> tags are included automatically for you!-->
-<BOX layout="column" color="#0F161F" center="true">
-<!--Remember, the template is a STACK by default and non scrollable!-->
-<!--For scrolling, try out the SCROLL widget!-->
-    <TEXT value="Welcome to FMLPAD!!" color="white" size="24"/>
-</BOX>]]>
-                        </VALUE>
-                    </TEXT>
+                    <EDITOR id="editor" language="xml" value="{default}"/>
                 </SCROLLER>
 
                 <POSITIONED right="10" top="5">
-                    <BUTTON onclick="FMLPAD.replaceChildren({XML},false)" visible="=contains({r1},'1')">
-                        <BOX width="80" height="35" color="#348CFF" layout="row" radius="5" valign="center" halign="left">
+                    <BUTTON onclick="fmlpad.replaceChildren({xml},false)" visible="=!{r1}">
+                        <BOX width="100" height="35" color="#348CFF" layout="row" radius="5" valign="center" halign="left">
                             <PAD left="10"/>
                             <ICON icon="play_arrow" size="20" color="black"/>
                             <PAD left="7"/>
-                            <TEXT color="black" value="Run"/>
+                            <TEXT color="black" value="Parse"/>
                         </BOX>
                     </BUTTON>
                 </POSITIONED>
@@ -62,7 +83,7 @@
         </VIEW>
 
         <VIEW>
-            <BOX id="FMLPAD" color="#0F161F" width="100%" height="100%" layout="stack"/>
+            <BOX id="fmlpad" color="#0F161F" width="100%" height="100%" layout="stack"/>
         </VIEW>
 
     </SPLITVIEW>

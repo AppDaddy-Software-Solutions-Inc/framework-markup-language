@@ -1082,7 +1082,13 @@ class WidgetModel implements IDataSourceListener
     else if (document is XmlDocument) nodes = document.childElements.toList();
 
     // build error node
-    if (exception != null && !silent) nodes.add(XmlElement(XmlName("TEXT"),[XmlAttribute(XmlName("size"), '18'), XmlAttribute(XmlName("color"), 'red'), XmlAttribute(XmlName("value"), exception.toString())]));
+    if (exception != null && !silent)
+    {
+      var text   = XmlElement(XmlName("TEXT"),[XmlAttribute(XmlName("size"), '18'), XmlAttribute(XmlName("color"), '#EF5858'), XmlAttribute(XmlName("value"), exception.toString())]);
+      var center = XmlElement(XmlName("CENTER"));
+      center.children.add(text);
+      nodes.add(center);
+    }
 
     // valid fml?
     nodes.forEach((element) => _appendChild(element, index));

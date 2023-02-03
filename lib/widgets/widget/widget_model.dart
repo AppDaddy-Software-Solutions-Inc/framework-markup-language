@@ -110,7 +110,7 @@ import 'package:fml/widgets/html/html_model.dart';
 import 'package:fml/widgets/span/span_model.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/video/video_model.dart';
-import 'package:fml/widgets/splitview/view_model.dart';
+import 'package:fml/widgets/view/view_model.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';

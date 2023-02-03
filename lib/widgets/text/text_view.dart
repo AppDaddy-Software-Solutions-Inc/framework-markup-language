@@ -1,10 +1,14 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:flutter_code_editor/flutter_code_editor.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:google_fonts/google_fonts.dart' deferred as gf;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/phrase.dart';
+import 'package:highlight/languages/dart.dart';
+import 'package:flutter_highlight/themes/monokai-sublime.dart';
+import 'package:highlight/languages/xml.dart';
 
 class TextView extends StatefulWidget
 {

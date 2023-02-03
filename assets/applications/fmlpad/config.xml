@@ -1,0 +1,20 @@
+<TEMPLATE>
+    <CONFIG>
+
+        <!-- Settings -->
+        <APP_NAME 		        value="FML Pad" />
+        <APP_ICON	 			value="images/logo.png" />
+
+        <HOME_PAGE       		value="templates/home.xml" />
+        <LOGIN_PAGE             value=""/>
+        <UNAUTHORIZED_PAGE      value=""/>
+        <MIRROR_API 	        value="" />
+        <REFRESH                value="true"/>
+
+        <!-- Theme -->
+        <COLOR_SCHEME 			value="lightblue" />
+        <BRIGHTNESS 			value="dark" /> <!-- dark/light/system/platform -->
+        <FONT                   value="Roboto"/> <!-- Case Sensitive https://fonts.google.com/ Fonts -->
+
+    </CONFIG>
+</TEMPLATE>

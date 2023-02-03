@@ -37,6 +37,7 @@ import 'package:fml/widgets/datepicker/datepicker_model.dart';
 import 'package:fml/datasources/http/delete/model.dart';
 import 'package:fml/widgets/draggable/draggable_model.dart';
 import 'package:fml/widgets/droppable/droppable_model.dart';
+import 'package:fml/widgets/editor/editor_model.dart';
 import 'package:fml/widgets/expanded/expanded_model.dart';
 import 'package:fml/widgets/filepicker/filepicker_model.dart';
 import 'package:fml/widgets/footer/footer_model.dart';
@@ -109,6 +110,7 @@ import 'package:fml/widgets/html/html_model.dart';
 import 'package:fml/widgets/span/span_model.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/video/video_model.dart';
+import 'package:fml/widgets/view/view_model.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -406,6 +408,10 @@ class WidgetModel implements IDataSourceListener
       case "drop": // Preferred case.
       case "droppable": // droppable may be deprecated.
         model = DroppableModel.fromXml(parent, node);
+        break;
+
+      case "editor":
+        model = EditorModel.fromXml(parent, node);
         break;
 
       case "expand": // Preferred CaFooterModel
@@ -729,6 +735,11 @@ class WidgetModel implements IDataSourceListener
         model = VideoModel.fromXml(parent, node);
         break;
 
+      case "view":
+        if (parent is SplitModel)
+        model = ViewModel.fromXml(parent, node);
+        break;
+
       case "window":
         model = FrameworkModel.fromXml(parent, node);
         break;
@@ -1046,19 +1057,41 @@ class WidgetModel implements IDataSourceListener
       return (model != null);
   }
 
-  Future<bool> _appendXml(String xml, int? index) async
+  Future<bool> _appendXml(String xml, int? index, [bool silent = true]) async
   {
+    List<XmlElement> nodes = [];
+
+    Exception? exception;
+
     // parse the xml
-    XmlDocument? document = Xml.tryParse(xml, silent: true);
+    var document = Xml.tryParseException(xml);
+
+    // failed parse
+    if (document is Exception)
+    {
+      exception = document;
+
+      // try parsing xml wrapped in a root tag
+      // this allows the user to send a list of elements
+      // and not have top wrap in a root tag
+      document = Xml.tryParseException("<ROOT>$xml</ROOT>");
+      if (document is XmlDocument)
+      {
+        nodes = document.rootElement.childElements.toList();
+        exception = null;
+      }
+    }
+
+    // successfully parsed the xml
+    else if (document is XmlDocument) nodes = document.childElements.toList();
+
+    // build error node
+    if (exception != null && !silent) nodes.add(XmlElement(XmlName("TEXT"),[XmlAttribute(XmlName("size"), '18'), XmlAttribute(XmlName("color"), 'red'), XmlAttribute(XmlName("value"), exception.toString())]));
 
     // valid fml?
-    if (document != null)
-    {
-      // add elements
-      document.childElements.forEach((element) => _appendChild(element, index));
-      return true;
-    }
-    else return false;
+    nodes.forEach((element) => _appendChild(element, index));
+
+    return exception != null && nodes.length > 0;
   }
 
   Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
@@ -1087,29 +1120,41 @@ class WidgetModel implements IDataSourceListener
         return true;
 
       case 'addchild':
-        // if index is null, add to end of list.
-        int? index = S.toInt(S.item(arguments, 1));
-        // add elements
+
+        // fml
         var xml = S.item(arguments, 0);
 
-        if (xml == null || !(xml is String))
-          return true;
-        await _appendXml(xml, index);
+        // if index is null, add to end of list.
+        int? index = S.toInt(S.item(arguments, 1));
+
+        // silent
+        bool silent = S.toBool(S.item(arguments, 2)) ?? true;
+
+        if (xml == null || !(xml is String)) return true;
+
+        // append
+        await _appendXml(xml, index, silent);
+
         // force parent rebuild
         parent?.notifyListeners("rebuild", "true");
         return true;
 
       case 'removechild':
+
         // if index is null, remove all children before replacement.
         int? index = S.toInt(S.item(arguments, 0));
+
         // check for children then remove them
-        if (this.children != null && index == null) {
+        if (this.children != null && index == null)
+        {
           // dispose of the last item
           this.children!.last.dispose();
           // check if the list is greater than 0, remove at the final index.
           if (this.children!.length > 0) this.children!.removeLast();
         }
-        else if (this.children != null && index != null) {
+
+        else if (this.children != null && index != null)
+        {
           // check if index is in range, then dispose of the child at that index.
           if (index >= 0 && this.children!.length > index) {
             this.children![index].dispose();
@@ -1117,100 +1162,139 @@ class WidgetModel implements IDataSourceListener
           }
           // Could add handling for negative index removing from the end?
         }
+
         // force parent rebuild
         parent?.notifyListeners("rebuild", "true");
         return true;
 
       case 'removechildren':
+
         // check for children then remove them
-        if (this.children != null) {
-          this.children!.forEach((child) {
+        if (this.children != null)
+        {
+          this.children!.forEach((child)
+          {
             child.dispose();
           });
           this.children = [];
         }
+
         // force parent rebuild
         parent?.notifyListeners("rebuild", "true");
         return true;
 
       case 'replacechild':
-        // if index is null, remove last child before replacement.
-        int? index = S.toInt(S.item(arguments, 1));
+
+        // fml
         var xml = S.item(arguments, 0);
 
-        if (xml == null || !(xml is String))
-          return true;
+        // if index is null, remove last child before replacement.
+        int? index = S.toInt(S.item(arguments, 1));
+
+        // silent
+        bool silent = S.toBool(S.item(arguments, 2)) ?? true;
+
+        if (xml == null || !(xml is String)) return true;
+
         // check for children then remove them
-        if (this.children != null && index == null) {
+        if (this.children != null && index == null)
+        {
           // dispose of the last item
           this.children!.last.dispose();
+
           // check if the list is greater than 0, remove at the final index.
           if(this.children!.length > 0) this.children!.removeAt(children!.length - 1);
           print(index.toString());
         }
-        else if (this.children != null && index != null) {
+
+        else if (this.children != null && index != null)
+        {
           // check if index is in range, then dispose of the child at that index.
-          if (index >= 0 && this.children!.length > index) {
+          if (index >= 0 && this.children!.length > index)
+          {
             this.children![index].dispose();
             this.children!.removeAt(index);
           }
           // Could add handling for negative index removing from the end?
         }
+
         // add elements
-        await _appendXml(xml, index);
+        await _appendXml(xml, index, silent);
+
         // force parent rebuild
         parent?.notifyListeners("rebuild", "true");
         return true;
 
       case 'replacechildren':
+
+        // fml
         var xml = S.item(arguments, 0);
 
-        if (xml == null || !(xml is String))
-          return true;
+        // silent
+        bool silent = S.toBool(S.item(arguments, 1)) ?? true;
+
+        if (xml == null || !(xml is String)) return true;
+
         // check for children then remove them
-        if (this.children != null) {
-          this.children!.forEach((child) {
+        if (this.children != null)
+        {
+          this.children!.forEach((child)
+          {
             child.dispose();
           });
           this.children = [];
         }
 
         // add elements
-        await _appendXml(xml, null);
+        await _appendXml(xml, null, silent);
+
         // force parent rebuild
         parent?.notifyListeners("rebuild", "true");
         return true;
 
       case 'removewidget':
+
+        // ineex
         int? index = (parent?.children?.contains(this) ?? false) ? parent?.children?.indexOf(this) : null;
 
         // index should never be null
-        if (index != null) {
+        if (index != null)
+        {
           // dispose of this model
           this.dispose();
           parent?.children?.removeAt(index);
         }
+
         // force parent rebuild
         parent?.notifyListeners("rebuild", "true");
         return true;
 
       case 'replacewidget':
 
-        // get my position in my parents child list
-        int? index = (parent?.children?.contains(this) ?? false) ? parent?.children?.indexOf(this) : null;
+        // fml
         var xml = S.item(arguments, 0);
 
-        if (xml == null || !(xml is String))
-          return true;
+        // get my position in my parents child list
+        int? index = (parent?.children?.contains(this) ?? false) ? parent?.children?.indexOf(this) : null;
+
+        // silent
+        bool silent = S.toBool(S.item(arguments, 1)) ?? true;
+
+        if (xml == null || !(xml is String)) return true;
+
         // index should never be null
-        if (index != null) {
+        if (index != null)
+        {
           // dispose of myself
           this.dispose();
+
           // remove myself from the list
           parent?.children?.removeAt(index);
+
           // add new fml
-          await _appendXml(xml, index);
+          await _appendXml(xml, index, silent);
         }
+
         // force parent rebuild
         parent?.notifyListeners("rebuild", "true");
         return true;

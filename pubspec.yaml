@@ -62,6 +62,10 @@ dependencies:
   firebase_core: 1.22.0
   # BSD-3-Clause
 
+  # Updated 2023/02/02
+  flutter_code_editor: 0.2.9
+  # Apache-2.0, MIT
+
   # Updated 2021/09/23
   # flutter_blue: 0.8.0
   # BSD-3-Clause
@@ -260,6 +264,12 @@ flutter:
     - assets/applications/test/images/
     - assets/applications/test/templates/
 
+    # fmlpad
+    - assets/applications/
+    - assets/applications/fmlpad/
+    - assets/applications/fmlpad/images/
+    - assets/applications/fmlpad/templates/
+    -
   fonts:
     - family: icons
       fonts:

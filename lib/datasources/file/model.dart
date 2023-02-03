@@ -72,8 +72,6 @@ class FileModel extends DataSourceModel implements IDataSource
       // notify listeners
       onResponse(data);
 
-    busy = false;
-
     return true;
   }
 }

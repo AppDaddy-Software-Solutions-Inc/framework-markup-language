@@ -508,4 +508,18 @@ class Xml {
     }
     return document;
   }
+
+  static dynamic tryParseException(String? xml)
+  {
+    XmlDocument? document;
+    try
+    {
+      if (xml != null) document = XmlDocument.parse(xml);
+    }
+    catch(e)
+    {
+      return Exception(e.toString());
+    }
+    return document;
+  }
 }

@@ -11,6 +11,21 @@ import 'package:fml/helper/common_helpers.dart';
 
 class EditorModel extends DecoratedWidgetModel implements IViewableWidget
 {
+  // theme
+  StringObservable? _theme;
+  set theme(dynamic v)
+  {
+    if (_theme != null)
+    {
+      _theme!.set(v);
+    }
+    else
+    {
+      if (v != null) _theme = StringObservable(Binding.toKey(id, 'theme'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get theme => _theme?.get();
+  
   // value
   StringObservable? _value;
   set value(dynamic v)
@@ -72,6 +87,7 @@ class EditorModel extends DecoratedWidgetModel implements IViewableWidget
 
     value    = Xml.get(node: xml, tag: 'value');
     language = Xml.get(node: xml, tag: 'language')?.toLowerCase().trim();
+    theme    = Xml.get(node: xml, tag: 'theme');
   }
 
   @override

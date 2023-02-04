@@ -436,6 +436,10 @@ class WidgetModel implements IDataSourceListener
         if (parent is IDataSource) model = Flip.fromXml(parent, node);
         break;
 
+      case "fml":
+          model = FrameworkModel.fromXml(parent, node);
+        break;
+
       case "footer":
         if (parent is FrameworkModel)
           model = FooterModel.fromXml(parent, node);
@@ -1137,8 +1141,9 @@ class WidgetModel implements IDataSourceListener
         // append
         await _appendXml(xml, index, silent);
 
-        // force parent rebuild
-        parent?.notifyListeners("rebuild", "true");
+        // force rebuild
+        notifyListeners("rebuild", "true");
+
         return true;
 
       case 'removechild':
@@ -1166,21 +1171,15 @@ class WidgetModel implements IDataSourceListener
           // Could add handling for negative index removing from the end?
         }
 
-        // force parent rebuild
-        parent?.notifyListeners("rebuild", "true");
+        // force rebuild
+        notifyListeners("rebuild", "true");
         return true;
 
       case 'removechildren':
 
-        // check for children then remove them
-        if (this.children != null)
-        {
-          this.children!.forEach((child)
-          {
-            child.dispose();
-          });
-          this.children = [];
-        }
+        // dispose of existing children
+        this.children?.forEach((child) => child.dispose());
+        this.children = [];
 
         // force parent rebuild
         parent?.notifyListeners("rebuild", "true");
@@ -1224,8 +1223,9 @@ class WidgetModel implements IDataSourceListener
         // add elements
         await _appendXml(xml, index, silent);
 
-        // force parent rebuild
-        parent?.notifyListeners("rebuild", "true");
+        // force rebuild
+        notifyListeners("rebuild", "true");
+
         return true;
 
       case 'replacechildren':
@@ -1251,8 +1251,9 @@ class WidgetModel implements IDataSourceListener
         // add elements
         await _appendXml(xml, null, silent);
 
-        // force parent rebuild
-        parent?.notifyListeners("rebuild", "true");
+        // force rebuild
+        notifyListeners("rebuild", "true");
+
         return true;
 
       case 'removewidget':

@@ -30,7 +30,7 @@
 
             <!-- widgets -->
             <SELECT bordercolor="#1E2835" onchange="copy({this})">
-                <OPTION label="common widgets">
+                <OPTION label="sample widgets">
                     <VALUE></VALUE>
                 </OPTION>
                 <OPTION label="BOX">
@@ -48,11 +48,17 @@
                 <OPTION label="ROW">
                     <VALUE><![CDATA[<ROW expand="false"></ROW>]]></VALUE>
                 </OPTION>
+                <OPTION label="SCRIBBLE">
+                    <VALUE><![CDATA[<SCRIBBLE width="200" height="200"/>]]></VALUE>
+                </OPTION>
                 <OPTION label="SCROLLER">
                     <VALUE><![CDATA[<SCROLLER  direction= "vertical"></SCROLLER>]]></VALUE>
                 </OPTION>
                 <OPTION label="STACK">
                     <VALUE><![CDATA[<STACK></STACK>]]></VALUE>
+                </OPTION>
+                <OPTION label="VAR">
+                    <VALUE><![CDATA[<VAR id="myid" value="value goes here"/>]]></VALUE>
                 </OPTION>
                 <OPTION label="TEXT">
                     <VALUE><![CDATA[<TEXT color="white" size="16" value="text here"/>]]></VALUE>

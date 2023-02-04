@@ -71,6 +71,22 @@ class HttpModel extends DataSourceModel implements IDataSource
   }
   String? get url => _url?.get();
 
+  // response
+  StringObservable? _response;
+  set response(dynamic v)
+  {
+    if (_response != null)
+    {
+      _response!.set(v);
+    }
+    else if (v != null)
+    {
+      _response = StringObservable(Binding.toKey(id, 'response'), v, scope: scope, listener: onPropertyChange);
+      _response!.registerListener(onUrlChange);
+    }
+  }
+  String? get response => _response?.get();
+  
   HttpModel(WidgetModel parent, String? id) : super(parent, id);
 
   static HttpModel? fromXml(WidgetModel parent, XmlElement xml)
@@ -203,6 +219,9 @@ class HttpModel extends DataSourceModel implements IDataSource
         response = await Http.delete(url!, headers: headers, timeout: timeout);
         break;
     }
+
+    // set response body
+    this.response = (response.body is String ? response.body : null);
 
     // convert body to data
     Data data = Data.from(response.body, root: root);

@@ -30,7 +30,7 @@
 
             <!-- widgets -->
             <SELECT bordercolor="#1E2835" onchange="copy({this})">
-                <OPTION label="sample widgets">
+                <OPTION label="widgets">
                     <VALUE></VALUE>
                 </OPTION>
                 <OPTION label="BOX">
@@ -159,6 +159,63 @@
                 <OPTION label='xcode'/>
                 <OPTION label='xt256'/>
                 <OPTION label='zenburn'/>
+            </SELECT>
+
+            <PAD left="20"/>
+
+            <!-- examples -->
+            <GET id="db1" url="{examples}" onsuccess="editor.set({this.response})"/>
+            <SELECT id="examples" bordercolor="#1E2835" value="1">
+
+                <OPTION label='templates' value="1"/>
+
+                <!-- charts -->
+                <OPTION>
+                    <label><ROW expand="false" valign="center"><ICON icon="pie_chart" size="16" color="yellow"/><PAD left="10"/><TEXT value="Pie Chart"/></ROW></label>
+                    <value>https://fml.dev/assets/templates/examples/chart-example1.xml</value>
+                </OPTION>
+
+                <OPTION>
+                    <label><ROW expand="false" valign="center"><ICON icon="multiline_chart" size="16" color="yellow"/><PAD left="10"/><TEXT value="Line Chart"/></ROW></label>
+                    <value>https://fml.dev/assets/templates/examples/chart-example2.xml</value>
+                </OPTION>
+
+                <OPTION>
+                    <label><ROW expand="false" valign="center"><ICON icon="bar_chart" size="16" color="yellow"/><PAD left="10"/><TEXT value="Bar Chart"/></ROW></label>
+                    <value>https://fml.dev/assets/templates/examples/chart-example3.xml</value>
+                </OPTION>
+
+                <OPTION>
+                    <label><ROW expand="false" valign="center"><ICON icon="add_chart" size="16" color="yellow"/><PAD left="10"/><TEXT value="Combo Chart"/></ROW></label>
+                    <value>https://fml.dev/assets/templates/examples/chart-example4.xml</value>
+                </OPTION>
+
+                <OPTION>
+                    <label><ROW expand="false" valign="center"><ICON icon="stacked_bar_chart" size="16" color="yellow"/><PAD left="10"/><TEXT value="Grouped Bar Chart"/></ROW></label>
+                    <value>https://fml.dev/assets/templates/examples/chart-example5.xml</value>
+                </OPTION>
+
+                <OPTION>
+                    <label><ROW expand="false" valign="center"><ICON icon="stacked_bar_chart" size="16" color="yellow"/><PAD left="10"/><TEXT value="Stacked Bar Chart"/></ROW></label>
+                    <value>https://fml.dev/assets/templates/examples/chart-example6.xml</value>
+                </OPTION>
+
+                <OPTION>
+                    <label><ROW expand="false" valign="center"><ICON icon="stacked_line_chart" size="16" color="yellow"/><PAD left="10"/><TEXT value="Grouped/Stacked Bar Chart"/></ROW></label>
+                    <value>https://fml.dev/assets/templates/examples/chart-example7.xml</value>
+                </OPTION>
+
+                <!-- maps -->
+                <OPTION>
+                    <label><ROW expand="false" valign="center"><ICON icon="place_outlined" size="16" color="white"/><PAD left="10"/><TEXT value="Satellite Map"/></ROW></label>
+                    <value>https://fml.dev/assets/templates/examples/map-example1.xml</value>
+                </OPTION>
+
+                <OPTION>
+                    <label><ROW expand="false" valign="center"><ICON icon="place_outlined" size="16" color="white"/><PAD left="10"/><TEXT value="Vector Map"/></ROW></label>
+                    <value>https://fml.dev/assets/templates/examples/map-example2.xml</value>
+                </OPTION>
+
             </SELECT>
 
             <!-- realtime slider -->

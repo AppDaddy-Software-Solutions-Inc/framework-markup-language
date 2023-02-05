@@ -169,6 +169,12 @@
 
                 <OPTION label='templates' value="1"/>
 
+                <!-- widgets -->
+                <OPTION>
+                    <label><ROW expand="false" valign="center"><ICON icon="speed" size="16" color="green"/><PAD left="10"/><TEXT value="<SLIDER/>"/></ROW></label>
+                    <value>https://fml.dev/assets/templates/examples/slider-example1.xml</value>
+                </OPTION>
+
                 <!-- charts -->
                 <OPTION>
                     <label><ROW expand="false" valign="center"><ICON icon="pie_chart" size="16" color="yellow"/><PAD left="10"/><TEXT value="Pie Chart"/></ROW></label>
@@ -216,6 +222,28 @@
                     <value>https://fml.dev/assets/templates/examples/map-example2.xml</value>
                 </OPTION>
 
+                <!-- image transforms -->
+                <OPTION>
+                    <label><ROW expand="false" valign="center"><ICON icon="image_outlined" size="16" color="green"/><PAD left="10"/><TEXT value="Image Crop"/></ROW></label>
+                    <value>https://fml.dev/assets/templates/examples/image-transforms-example1.xml</value>
+                </OPTION>
+
+                <OPTION>
+                    <label><ROW expand="false" valign="center"><ICON icon="image_outlined" size="16" color="green"/><PAD left="10"/><TEXT value="Image Flip"/></ROW></label>
+                    <value>https://fml.dev/assets/templates/examples/image-transforms-example2.xml</value>
+                </OPTION>
+
+                <OPTION>
+                    <label><ROW expand="false" valign="center"><ICON icon="image_outlined" size="16" color="green"/><PAD left="10"/><TEXT value="Image to Gray Scale"/></ROW></label>
+                    <value>https://fml.dev/assets/templates/examples/image-transforms-example3.xml</value>
+                </OPTION>
+
+                <OPTION>
+                    <label><ROW expand="false" valign="center"><ICON icon="image_outlined" size="16" color="green"/><PAD left="10"/><TEXT value="Image Resizing"/></ROW></label>
+                    <value>https://fml.dev/assets/templates/examples/image-transforms-example4.xml</value>
+                </OPTION>
+
+
             </SELECT>
 
             <!-- realtime slider -->
@@ -224,7 +252,14 @@
 
                <!-- Reset button -->
                 <BUTTON onclick="editor.set({default})" visible="={default} != {editor}">
-                    <ICON icon="refresh" color="white"/>
+                    <ICON icon="refresh" color="white" size="24"/>
+                </BUTTON>
+
+                <PAD left="20"/>
+
+                <!-- Reset button -->
+                <BUTTON onclick="saveas({editor},'fmlpad.xml')">
+                    <ICON icon="save" color="white" size="24"/>
                 </BUTTON>
 
                 <PAD left="40"/>

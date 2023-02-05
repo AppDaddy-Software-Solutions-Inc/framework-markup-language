@@ -36,7 +36,7 @@ class EditorModel extends DecoratedWidgetModel implements IViewableWidget
     }
     else
     {
-      if ((v != null) || (WidgetModel.isBound(this, Binding.toKey(id, 'value')))) _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange);
+      if (v != null) _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange);
     }
   }
   String? get value => _value?.get();

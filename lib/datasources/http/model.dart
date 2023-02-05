@@ -81,7 +81,11 @@ class HttpModel extends DataSourceModel implements IDataSource
     }
     else if (v != null)
     {
-      _response = StringObservable(Binding.toKey(id, 'response'), v, scope: scope, listener: onPropertyChange);
+      // we dont want response to be bindable
+      // so set the initial value to null
+      // then assign a value
+      _response = StringObservable(Binding.toKey(id, 'response'), null, scope: scope, listener: onPropertyChange);
+      _response!.set(v);
       _response!.registerListener(onUrlChange);
     }
   }

@@ -57,17 +57,9 @@ class TriggerConditionModel extends WidgetModel
 
   static TriggerConditionModel? fromXml(WidgetModel parent, XmlElement e, {String? when})
   {
-    String? id = Xml.get(node: e, tag: 'id');
-
-    if (S.isNullOrEmpty(id))
-    {
-      Log().warning('<TRIGGER> missing required id');
-      id = Uuid().v4().toString();
-    }
 
     TriggerConditionModel condition = TriggerConditionModel(
       parent,
-      id : id,
       when : Xml.get(node: e, tag: 'when'),
       call : Xml.get(node: e, tag: 'call'),
     );

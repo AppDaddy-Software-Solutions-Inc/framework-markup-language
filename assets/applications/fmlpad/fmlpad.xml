@@ -55,39 +55,10 @@
             <PAD left="50"/>
 
             <!-- widgets -->
-            <SELECT bordercolor="#1E2835" onchange="copy({this})">
-                <OPTION label="widgets">
-                    <VALUE></VALUE>
-                </OPTION>
-                <OPTION label="BOX">
-                    <VALUE><![CDATA[<BOX width="20" height="20" color="red"/>]]></VALUE>
-                </OPTION>
-                <OPTION label="COLUMN">
-                    <VALUE><![CDATA[<COLUMN expand="false"></COLUMN>]]></VALUE>
-                </OPTION>
-                <OPTION label="ICON">
-                    <VALUE><![CDATA[<ICON icon="face" color="yellow" size="48"/>]]></VALUE>
-                </OPTION>
-                <OPTION label="POSITION" >
-                    <VALUE><![CDATA[<POSITION top="0" left="0"></POSITION>]]></VALUE>
-                </OPTION>
-                <OPTION label="ROW">
-                    <VALUE><![CDATA[<ROW expand="false"></ROW>]]></VALUE>
-                </OPTION>
-                <OPTION label="SCRIBBLE">
-                    <VALUE><![CDATA[<SCRIBBLE width="200" height="200"/>]]></VALUE>
-                </OPTION>
-                <OPTION label="SCROLLER">
-                    <VALUE><![CDATA[<SCROLLER  direction= "vertical"></SCROLLER>]]></VALUE>
-                </OPTION>
-                <OPTION label="STACK">
-                    <VALUE><![CDATA[<STACK></STACK>]]></VALUE>
-                </OPTION>
-                <OPTION label="VAR">
-                    <VALUE><![CDATA[<VAR id="myid" value="value goes here"/>]]></VALUE>
-                </OPTION>
-                <OPTION label="TEXT">
-                    <VALUE><![CDATA[<TEXT color="white" size="16" value="text here"/>]]></VALUE>
+            <GET id="db3" url="https://fml.dev/fmlpad/widgets.xml" root="WIDGETS.WIDGET"/>
+            <SELECT bordercolor="#1E2835" onchange="copy({this})" hint="widgets" data="db3">
+                <OPTION value="{data.value}">
+                    <label><ROW expand="false" valign="center"><ICON icon="{data.icon}" size="16" color="{data.color}"/><PAD left="10"/><TEXT value="{data.title}"/></ROW></label>
                 </OPTION>
             </SELECT>
 
@@ -192,7 +163,7 @@
             <!-- examples -->
             <GET id="db1" url="{examples}" onsuccess="editor.set({this.response})"/>
             <GET id="db2" url="https://fml.dev/fmlpad/examples.xml" root="EXAMPLES.EXAMPLE"/>
-            <SELECT id="examples" bordercolor="#1E2835" value="1" data="db2">
+            <SELECT id="examples" bordercolor="#1E2835" value="1" data="db2" hint="examples">
                 <OPTION value="{data.url}">
                     <label><ROW expand="false" valign="center"><ICON icon="{data.icon}" size="16" color="{data.color}"/><PAD left="10"/><TEXT value="{data.title}"/></ROW></label>
                 </OPTION>

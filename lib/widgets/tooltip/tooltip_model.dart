@@ -11,27 +11,38 @@ import 'package:fml/helper/common_helpers.dart';
 
 class TooltipModel extends DecoratedWidgetModel implements IViewableWidget
 {
-  ///////////
-  /* label */
-  ///////////
-  StringObservable? _label;
+  // background color
+  ColorObservable? _backgroundcolor;
+  set backgroundcolor (dynamic v)
+  {
+    if (_backgroundcolor != null)
+    {
+      _backgroundcolor!.set(v);
+    }
+    else if (v != null)
+    {
+      _backgroundcolor = ColorObservable(Binding.toKey(id, 'backgroundcolor'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  Color? get backgroundcolor =>  _backgroundcolor?.get();
 
-  set label(String? v) {
-    if (_label != null) {
+  // label
+  StringObservable? _label;
+  set label(String? v)
+  {
+    if (_label != null)
+    {
       _label!.set(v);
-    } else if (v != null) {
-      _label = StringObservable(Binding.toKey(id, 'label'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else if (v != null)
+    {
+      _label = StringObservable(Binding.toKey(id, 'label'), v, scope: scope, listener: onPropertyChange);
     }
   }
   String? get label => _label?.get();
 
-  TooltipModel(
-    WidgetModel parent,
-    String? id, {
-    dynamic label,
-    dynamic color,
-  }) : super(parent, id) {
+  TooltipModel(WidgetModel parent, String? id, {dynamic label, dynamic color}) : super(parent, id)
+  {
     this.label = label;
     this.color = color;
   }
@@ -64,6 +75,7 @@ class TooltipModel extends DecoratedWidgetModel implements IViewableWidget
     label = Xml.get(node: xml, tag: 'label');
     if (label == null) label = Xml.get(node: xml, tag: 'text'); // backwards compatibility
     if (label == null) label = Xml.get(node: xml, tag: 'value'); // backwards compatibility
+    backgroundcolor = Xml.get(node: xml, tag: 'backgroundcolor');
   }
 
   @override

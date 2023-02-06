@@ -326,7 +326,7 @@ class ListModel extends DecoratedWidgetModel implements IViewableWidget, IForm, 
   @override
   dispose()
   {
-    Log().debug('dispose called on => <$elementName id="$id">');
+    // Log().debug('dispose called on => <$elementName id="$id">');
 
     // clear items
     this.items.forEach((_,item) => item.dispose());

@@ -62,7 +62,7 @@ class Cryptography
       Uint8List clearText = cipher.process(encryptedText);
       decrypted = new String.fromCharCodes(clearText);
     }
-    catch (e)
+    catch(e)
     {
       Log().exception(e);
     }

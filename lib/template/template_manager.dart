@@ -44,7 +44,7 @@ class TemplateManager
       DATABASE.Form? form = await DATABASE.Form.find(key);
       if (form != null) template = form.template;
     }
-    catch (e)
+    catch(e)
     {
       Log().exception(e);
       template = null;
@@ -63,7 +63,7 @@ class TemplateManager
       // get template from asset bundle
       template = await rootBundle.loadString(url.replaceFirst("file://", "assets/"), cache: false);
     }
-    catch (e)
+    catch(e)
     {
       template = null;
     }
@@ -84,7 +84,7 @@ class TemplateManager
       String? filepath = uri?.asFilePath();
       template = await Platform.readFile(filepath);
     }
-    catch (e)
+    catch(e)
     {
       template = null;
     }
@@ -109,7 +109,7 @@ class TemplateManager
         Log().debug("Unable to fetch template from server. No internet connection");
       }
     }
-    catch (e)
+    catch(e)
     {
       Log().error("Can't find valid template $url on server. Error is $e");
     }

@@ -37,7 +37,7 @@ class S
         return m[0] ?? m.toString();
       });
     }
-    catch (e) {
+    catch(e) {
       return val;
     }
     return value;
@@ -257,7 +257,7 @@ class S
       DateFormat formattedDate = DateFormat(format);
       if (format is String) result = formattedDate.parse(datetime!);
     }
-    on FormatException catch (e)
+    on FormatException catch(e)
     {
       Log().debug(e.toString(), caller:  'static DateTime? toDate(String? datetime, {String? format})');
     }
@@ -275,7 +275,7 @@ class S
         result = DateTime.parse(datetime!);
       }
     }
-    on FormatException catch (e)
+    on FormatException catch(e)
     {
       Log().debug(e.toString(), caller: 'Invalid Format $e');
     }

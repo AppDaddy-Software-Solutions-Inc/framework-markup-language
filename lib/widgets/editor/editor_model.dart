@@ -70,7 +70,7 @@ class EditorModel extends DecoratedWidgetModel implements IViewableWidget
       model = EditorModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
-    catch (e)
+    catch(e)
     {
       Log().exception(e, caller: 'EditorModel');
       model = null;
@@ -93,7 +93,7 @@ class EditorModel extends DecoratedWidgetModel implements IViewableWidget
   @override
   dispose()
   {
-    Log().debug('dispose called on => <$elementName id="$id">');
+    // Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
   }
 

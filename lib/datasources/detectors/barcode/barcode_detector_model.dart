@@ -95,7 +95,7 @@ class BarcodeDetectorModel extends DetectorModel implements IDetectable
   @override
   void dispose()
   {
-    Log().debug('dispose called on => <$elementName id="$id">');
+    // Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
   }
 

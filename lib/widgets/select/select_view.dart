@@ -102,7 +102,7 @@ class _SelectViewState extends State<SelectView> implements IModelListener {
             }
             listCounter++;
           }
-        } catch (e) {}
+        } catch(e) {}
         if (hasMatch == false) {
           changedDropDownItem(_list[1].value ?? _list[0].value);
         }
@@ -433,7 +433,7 @@ return LayoutBuilder(builder: builder);
         System().commit = null;
 
       if (!focused) await _commit();
-    } catch (e) {}
+    } catch(e) {}
   }
 
   Future<bool> _commit() async

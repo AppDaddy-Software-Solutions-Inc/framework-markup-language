@@ -169,7 +169,7 @@ class IFrameWidget extends StatelessWidget {
       this.model.data = map;
 
     }
-    catch (e)
+    catch(e)
     {
       Log().exception(e);
     }

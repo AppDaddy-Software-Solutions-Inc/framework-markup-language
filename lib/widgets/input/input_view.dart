@@ -254,13 +254,13 @@ class _InputViewState extends State<InputView> with WidgetsBindingObserver imple
       } else if (widget.model.keyboardinput!.toLowerCase() == 'next') {
         try {
           FocusScope.of(context).nextFocus();
-        } catch (e) {
+        } catch(e) {
           focus.unfocus();
         }
         return;
       } else
         return;
-    } catch (e) {
+    } catch(e) {
       return;
     }
   }

@@ -229,7 +229,7 @@ class ApplicationModel extends WidgetModel
     {
       cBrightness = MediaQueryData.fromWindow(WidgetsBinding.instance.window).platformBrightness.toString().toLowerCase().split('.')[1];
     }
-    catch (e)
+    catch(e)
     {
       cBrightness = def;
     }
@@ -258,7 +258,7 @@ class ApplicationModel extends WidgetModel
       // set observable
       stash.setObservable(key, value);
     }
-    catch (e)
+    catch(e)
     {
       // stash failure always returns true
       ok = true;

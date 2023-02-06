@@ -105,7 +105,7 @@ class _MenuViewState extends State<MenuView>
               duration: Duration(milliseconds: 300), curve: Curves.easeOut);
         }
       }
-    } catch (e) {
+    } catch(e) {
       Log().error('onScroll Error: ' + e.toString());
     }
   }

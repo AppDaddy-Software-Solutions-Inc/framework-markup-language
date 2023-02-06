@@ -140,7 +140,7 @@ class Reader
         return await FlutterNfcKit.transceive("00A4040006D27600012401");
       }
     }
-    catch (e)
+    catch(e)
     {
       Log().exception(e, caller: 'nfc.dart: Reader.readNFCTag()');
       return null;

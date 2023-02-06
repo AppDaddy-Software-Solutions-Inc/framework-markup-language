@@ -273,7 +273,7 @@ class _BoxViewState extends State<BoxView> implements IModelListener {
             List<double?>.filled(4, S.toDouble(cornersFromTopRightClockwise[0]));
       else // round corners [NE, SE, SW, NW] based on csv
         radii = cornersFromTopRightClockwise.map((r) => S.toDouble(r)).toList();
-    } catch (e) {
+    } catch(e) {
       // TODO LOG
       radii = List<double>.filled(4, 0);
     }

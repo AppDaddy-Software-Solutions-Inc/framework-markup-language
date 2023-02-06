@@ -390,7 +390,7 @@ class _ChartViewState extends State<ChartView>
       String? l;
       try {
         l = formatter.format(v);
-      } catch (e) {}
+      } catch(e) {}
       ticks.add(CF.TickSpec<DateTime>(v, label: l));
     });
 
@@ -484,7 +484,7 @@ class _ChartViewState extends State<ChartView>
           var yParsed;
           try {
             xParsed = parsePlotPoint(point.x, widget.model.xaxis!.type);
-          } catch (e) {
+          } catch(e) {
             Log().error(
                 'Unable to parse X axis plot point, chart id: ${widget.model.id.toString()} - series name: ${series.name.toString()} - ' +
                     e.toString());
@@ -494,7 +494,7 @@ class _ChartViewState extends State<ChartView>
             yParsed = S.isNullOrEmpty(point.y)
                 ? null
                 : parsePlotPoint(point.y, widget.model.yaxis!.type);
-          } catch (e) {
+          } catch(e) {
             Log().error(
                 'Unable to parse Y axis plot point, chart id: ${widget.model.id.toString()} - series name: ${series.name.toString()} - ' +
                     e.toString());
@@ -786,7 +786,7 @@ class _ChartViewState extends State<ChartView>
               break;
             }
           }
-      } catch (e) {
+      } catch(e) {
         Log().warning(
             'Unable to set Chart Series Point selection' + e.toString());
       }

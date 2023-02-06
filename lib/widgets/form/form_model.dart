@@ -752,7 +752,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
       return document.toXmlString(pretty: true);
     }
 
-    catch (e)
+    catch(e)
     {
       Log().error("Error serializing posting document. Error is ${e.toString()}");
       return null;

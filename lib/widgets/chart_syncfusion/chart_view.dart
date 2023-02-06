@@ -474,7 +474,7 @@ class _ChartViewState extends State<ChartView> implements IModelListener
           : EXCERPT.circleChart(chartProps, circularSeriesBuilder, chartSFSeriesPropertiesList, tooltipBuilder)); // var chart
 
       return chart;
-    } catch (e) {
+    } catch(e) {
       Log().exception(e, caller: 'chart -> buildSFChart()');
       return Container();
     }

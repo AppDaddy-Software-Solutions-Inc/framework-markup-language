@@ -787,7 +787,7 @@ class EventHandler extends Eval
     // model not found
     Log().debug("Widget Model $id not found", caller: "_handleEventExecute");
 
-    return false;
+    return true;
   }
 }
 

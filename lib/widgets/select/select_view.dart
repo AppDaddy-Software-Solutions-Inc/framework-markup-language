@@ -211,11 +211,6 @@ return LayoutBuilder(builder: builder);
         view = SizedBox(
           width: widget.model.maxwidth,
               child: TypeAheadField(
-                // This was required to avoid a bug in flutter 3.7/flutter_typeahead 4.3.2 -Flex
-                // Issue detailed here: (https://github.com/AbdulRahmanAlHamali/flutter_typeahead/issues/446)
-                hideSuggestionsOnKeyboardHide: false, // added 1/31/2023
-                // Unfortunately we lose keyboard navigation of the options but otherwise the onSuggestionSelected never fired.
-                // This is caused by an odd timing situation in their library with animations and Text focus changes in flutter 3.7.
                 textFieldConfiguration: TextFieldConfiguration(
                     focusNode: focus,
                     controller: controller,

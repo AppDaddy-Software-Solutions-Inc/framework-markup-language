@@ -319,17 +319,21 @@ class Data with ListMixin<dynamic>
         {
           if (data is Map)
           {
-            if (!data.containsKey(property.name))
+            // attributes are named with an underscore
+            // to make it easier for the user, we first look for the
+            // property by name, then if not found, look for it by _name
+            var name  = property.name;
+            var _name = "_$name";
+            if (!data.containsKey(name) && (!data.containsKey(_name)))
             {
               data = null;
               break;
             }
-            data = data[property.name];
+            data = data.containsKey(name) ? data[name] : data[_name];
 
             if ((data is Map)  && (property.offset > 0)) data = null;
             if ((data is List) && (property.offset > data.length)) data = null;
             if ((data is List) && (property.offset < data.length) && (property.offset >= 0))  data = data[property.offset];
-
           }
 
           else if (data is List)

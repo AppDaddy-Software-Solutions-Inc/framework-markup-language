@@ -429,6 +429,6 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
   onUrlChange(Observable observable) async
   {
     // reconnect if the url changes
-    await socket?.reconnect(url);
+    if ((initialized == true) && (autoexecute == true) && (enabled != false)) await socket?.reconnect(url);
   }
 }

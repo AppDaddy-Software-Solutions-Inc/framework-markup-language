@@ -12,11 +12,6 @@ import 'package:fml/widgets/image/image_model.dart';
 import 'package:image/image.dart' as IMAGE;
 import 'package:fml/helper/common_helpers.dart';
 
-// platform
-import 'package:fml/platform/platform.stub.dart'
-    if (dart.library.io) 'package:fml/platform/platform.vm.dart'
-    if (dart.library.html) 'package:fml/platform/platform.web.dart';
-
 /// [IMAGE] view
 class ImageView extends StatefulWidget {
   final ImageModel model;

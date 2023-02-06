@@ -64,7 +64,7 @@ class TreeModel extends DecoratedWidgetModel implements IViewableWidget
     }
     catch(e)
     {
-      Log().exception(e, caller: 'menu.Model');
+      Log().exception(e, caller: 'TreeModel');
       model = null;
     }
     return model;

@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
-import 'dart:convert';
 import 'package:fml/dialog/manager.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/navigation/navigation_manager.dart';
@@ -26,11 +25,6 @@ import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/phrase.dart';
-
-// platform
-import 'package:fml/platform/platform.stub.dart'
-if (dart.library.io)   'package:fml/platform/platform.vm.dart'
-if (dart.library.html) 'package:fml/platform/platform.web.dart';
 
 typedef TitleChangeCallback = void Function (String title);
 
@@ -73,6 +67,9 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   {
     // register model listener
     widget.model.registerListener(this);
+
+    // If the model contains any databrokers we fire them before building so we can bind to the data
+    widget.model.initialize();
 
     super.initState();
   }
@@ -422,16 +419,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   void onShowTemplate(Event event)
   {
     event.handled = true;
-
-    // save bytes to file
-    if (widget.model.element != null)
-    {
-      var bytes = utf8.encode(widget.model.element!.toXmlString());
-      var uri = URI.parse(widget.model.templateName);
-      if (uri != null)
-           Platform.fileSaveAs(bytes, uri.url);
-      else Platform.fileSaveAs(bytes, "template");
-    }
+    widget.model.showTemplate();
   }
 
   void onClose(Event event) { // onBack(Event event)

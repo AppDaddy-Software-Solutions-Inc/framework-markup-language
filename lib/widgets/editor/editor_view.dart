@@ -4,7 +4,7 @@ import 'package:fml/observable/binding.dart';
 import 'package:fml/widgets/editor/editor_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
-import 'package:flutter_highlight/themes/monokai-sublime.dart';
+import 'package:flutter_highlight/theme_map.dart';
 import 'package:highlight/languages/http.dart';
 import 'package:highlight/languages/dart.dart';
 import 'package:highlight/languages/xml.dart';
@@ -91,13 +91,14 @@ class _EditorViewState extends State<EditorView> implements IModelListener
     {
       if (_controller != null) _controller!.dispose();
       _controller = CodeController(text: widget.model.value, language: language);
+      _controller!.readOnlySectionNames = {'readonly'};
     }
 
     // reload the controller text
     if (_controller?.fullText != widget.model.value) _controller!.fullText = widget.model.value ?? "";
 
     // set the editor text theme
-    var theme = CodeThemeData(styles: monokaiSublimeTheme);
+    var theme = CodeThemeData(styles: themeMap.containsKey(widget.model.theme) ? themeMap[widget.model.theme] : themeMap.values.first);
 
     return CodeTheme(data: theme, child: SingleChildScrollView(child: CodeField(controller: _controller!, onChanged: (_) {widget.model.value = _controller?.fullText;}, background: Colors.transparent, maxLines: null)));
     }

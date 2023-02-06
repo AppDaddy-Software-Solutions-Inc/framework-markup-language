@@ -26,11 +26,6 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'dart:io' as io;
 
-// platform
-import 'package:fml/platform/platform.stub.dart'
-if (dart.library.io)   'package:fml/platform/platform.vm.dart'
-if (dart.library.html) 'package:fml/platform/platform.web.dart';
-
 // application build version
 final String version = '1.1.1';
 
@@ -41,7 +36,7 @@ final String applicationTitle = "Flutter Markup Language " + version;
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://applications/<app> to use the asset applications
-var defaultDomain = Uri.parse('https://test.appdaddy.co');
+var defaultDomain = Uri.parse('https://fml.appdaddy.co');
 
 // Default Application
 final defaultApplication = ApplicationModel(System(),url:defaultDomain.toString());

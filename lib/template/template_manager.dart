@@ -9,11 +9,6 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:fml/hive/form.dart' as DATABASE;
 import 'package:fml/helper/common_helpers.dart';
 
-// platform
-import 'package:fml/platform/platform.stub.dart'
-if (dart.library.io)   'package:fml/platform/platform.vm.dart'
-if (dart.library.html) 'package:fml/platform/platform.web.dart';
-
 class TemplateManager
 {
   // holds in-memory deserialized templates

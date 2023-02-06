@@ -191,85 +191,11 @@
 
             <!-- examples -->
             <GET id="db1" url="{examples}" onsuccess="editor.set({this.response})"/>
-            <SELECT id="examples" bordercolor="#1E2835" value="1">
-
-                <OPTION label='templates' value="1"/>
-
-                <!-- widgets -->
-                <OPTION>
-                    <label><ROW expand="false" valign="center"><ICON icon="speed" size="16" color="green"/><PAD left="10"/><TEXT value="<SLIDER/>"/></ROW></label>
-                    <value>https://fml.dev/assets/templates/examples/slider-example1.xml</value>
+            <GET id="db2" url="https://fml.dev/fmlpad/examples.xml" root="EXAMPLES.EXAMPLE"/>
+            <SELECT id="examples" bordercolor="#1E2835" value="1" data="db2">
+                <OPTION value="{data.url}">
+                    <label><ROW expand="false" valign="center"><ICON icon="{data.icon}" size="16" color="{data.color}"/><PAD left="10"/><TEXT value="{data.title}"/></ROW></label>
                 </OPTION>
-
-                <!-- charts -->
-                <OPTION>
-                    <label><ROW expand="false" valign="center"><ICON icon="pie_chart" size="16" color="yellow"/><PAD left="10"/><TEXT value="Pie Chart"/></ROW></label>
-                    <value>https://fml.dev/assets/templates/examples/chart-example1.xml</value>
-                </OPTION>
-
-                <OPTION>
-                    <label><ROW expand="false" valign="center"><ICON icon="multiline_chart" size="16" color="yellow"/><PAD left="10"/><TEXT value="Line Chart"/></ROW></label>
-                    <value>https://fml.dev/assets/templates/examples/chart-example2.xml</value>
-                </OPTION>
-
-                <OPTION>
-                    <label><ROW expand="false" valign="center"><ICON icon="bar_chart" size="16" color="yellow"/><PAD left="10"/><TEXT value="Bar Chart"/></ROW></label>
-                    <value>https://fml.dev/assets/templates/examples/chart-example3.xml</value>
-                </OPTION>
-
-                <OPTION>
-                    <label><ROW expand="false" valign="center"><ICON icon="add_chart" size="16" color="yellow"/><PAD left="10"/><TEXT value="Combo Chart"/></ROW></label>
-                    <value>https://fml.dev/assets/templates/examples/chart-example4.xml</value>
-                </OPTION>
-
-                <OPTION>
-                    <label><ROW expand="false" valign="center"><ICON icon="stacked_bar_chart" size="16" color="yellow"/><PAD left="10"/><TEXT value="Grouped Bar Chart"/></ROW></label>
-                    <value>https://fml.dev/assets/templates/examples/chart-example5.xml</value>
-                </OPTION>
-
-                <OPTION>
-                    <label><ROW expand="false" valign="center"><ICON icon="stacked_bar_chart" size="16" color="yellow"/><PAD left="10"/><TEXT value="Stacked Bar Chart"/></ROW></label>
-                    <value>https://fml.dev/assets/templates/examples/chart-example6.xml</value>
-                </OPTION>
-
-                <OPTION>
-                    <label><ROW expand="false" valign="center"><ICON icon="stacked_line_chart" size="16" color="yellow"/><PAD left="10"/><TEXT value="Grouped/Stacked Bar Chart"/></ROW></label>
-                    <value>https://fml.dev/assets/templates/examples/chart-example7.xml</value>
-                </OPTION>
-
-                <!-- maps -->
-                <OPTION>
-                    <label><ROW expand="false" valign="center"><ICON icon="place_outlined" size="16" color="white"/><PAD left="10"/><TEXT value="Satellite Map"/></ROW></label>
-                    <value>https://fml.dev/assets/templates/examples/map-example1.xml</value>
-                </OPTION>
-
-                <OPTION>
-                    <label><ROW expand="false" valign="center"><ICON icon="place_outlined" size="16" color="white"/><PAD left="10"/><TEXT value="Vector Map"/></ROW></label>
-                    <value>https://fml.dev/assets/templates/examples/map-example2.xml</value>
-                </OPTION>
-
-                <!-- image transforms -->
-                <OPTION>
-                    <label><ROW expand="false" valign="center"><ICON icon="image_outlined" size="16" color="green"/><PAD left="10"/><TEXT value="Image Crop"/></ROW></label>
-                    <value>https://fml.dev/assets/templates/examples/image-transforms-example1.xml</value>
-                </OPTION>
-
-                <OPTION>
-                    <label><ROW expand="false" valign="center"><ICON icon="image_outlined" size="16" color="green"/><PAD left="10"/><TEXT value="Image Flip"/></ROW></label>
-                    <value>https://fml.dev/assets/templates/examples/image-transforms-example2.xml</value>
-                </OPTION>
-
-                <OPTION>
-                    <label><ROW expand="false" valign="center"><ICON icon="image_outlined" size="16" color="green"/><PAD left="10"/><TEXT value="Image to Gray Scale"/></ROW></label>
-                    <value>https://fml.dev/assets/templates/examples/image-transforms-example3.xml</value>
-                </OPTION>
-
-                <OPTION>
-                    <label><ROW expand="false" valign="center"><ICON icon="image_outlined" size="16" color="green"/><PAD left="10"/><TEXT value="Image Resizing"/></ROW></label>
-                    <value>https://fml.dev/assets/templates/examples/image-transforms-example4.xml</value>
-                </OPTION>
-
-
             </SELECT>
 
             <!-- realtime slider -->

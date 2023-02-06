@@ -177,12 +177,12 @@ class CameraViewState extends State<CameraView>
           // min zoom
           _zoom = await controller!.getMinZoomLevel();
           _minAvailableZoom = _zoom;
-        } catch (e) {}
+        } catch(e) {}
 
         try {
           // max zoom
           _maxAvailableZoom = await controller!.getMaxZoomLevel();
-        } catch (e) {}
+        } catch(e) {}
 
         // set aspect ratio
         widget.model.scale = controller!.value.aspectRatio;
@@ -208,7 +208,7 @@ class CameraViewState extends State<CameraView>
         // refresh
         setState(() {});
       }
-    } catch (e) {
+    } catch(e) {
       Log().debug(e.toString());
       //DialogService().show(type: DialogType.error, description: e.toString());
     }
@@ -271,7 +271,7 @@ class CameraViewState extends State<CameraView>
         ok = false;
         widget.model.onException(Data(), message: "Failed to take picture");
       }
-    } catch (e) {
+    } catch(e) {
       ok = false;
       Log().exception(e);
       widget.model.busy = false;

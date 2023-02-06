@@ -174,7 +174,7 @@ class _MapViewState extends State<MapView> implements IModelListener
         // map
         return FlutterMap(mapController: mapController, children: layers, options: options);
       }
-      catch (e)
+      catch(e)
       {
         Log().exception("There was a problem building the map. Error is $e", caller: 'widget.map.View');
       }

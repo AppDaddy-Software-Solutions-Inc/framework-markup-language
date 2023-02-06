@@ -450,7 +450,7 @@ class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidge
   @override
   dispose()
   {
-    Log().debug('dispose called on => <$elementName id="$id">');
+    // Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
   }
 

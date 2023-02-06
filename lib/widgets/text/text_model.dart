@@ -449,7 +449,7 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
     try {
       model = TextModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
-    } catch (e) {
+    } catch(e) {
       Log().exception(e,
            caller: 'text.Model');
       model = null;
@@ -503,7 +503,7 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
   @override
   dispose()
   {
-    Log().debug('dispose called on => <$elementName id="$id">');
+    // Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
   }
 
@@ -523,7 +523,7 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
       markupTextValues.forEach((element) {
         finalVal = finalVal! + element.text;
       });
-    } catch (e) {
+    } catch(e) {
       finalVal = value;
     }
 

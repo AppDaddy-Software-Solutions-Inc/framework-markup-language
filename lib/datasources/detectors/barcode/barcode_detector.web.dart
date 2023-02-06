@@ -46,7 +46,7 @@ class BarcodeDetector implements IBarcodeDetector
       }
       return result;
     }
-    catch (e)
+    catch(e)
     {
       Log().info("No barcode found");
       return null;

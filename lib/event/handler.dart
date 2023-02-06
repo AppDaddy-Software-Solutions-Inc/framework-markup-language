@@ -358,7 +358,7 @@ class EventHandler extends Eval
 
       if (_wait > 0)  await Future.delayed(Duration(milliseconds : _wait));
     }
-    catch (e) {
+    catch(e) {
       Log().error('wait(${time.toString()}) event failed');
     }
     return true;

@@ -135,7 +135,9 @@ class Binding
       // create the bindable
       if (source!.isNotEmpty) return Binding(scope: scope, signature: signature, source: source, property: property!, dotnotation: subproperties, offset: offset);
     }
-    catch(e) {}
+    catch(e) {
+      return null;
+    }
     return null;
   }
 

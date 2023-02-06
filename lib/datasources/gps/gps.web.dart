@@ -58,7 +58,7 @@ class Receiver implements Gps
                     username: System.app?.claim('name'));
                 await notifyListeners(last!);
               }
-              catch (e) {
+              catch(e) {
                 Log().debug('GPD Data Point');
                 Log().exception(e);
               }

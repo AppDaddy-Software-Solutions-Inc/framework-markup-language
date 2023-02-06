@@ -434,7 +434,7 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
       model = TableModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
-    catch (e)
+    catch(e)
     {
       Log().exception(e,  caller: 'form.Model');
       model = null;
@@ -622,7 +622,7 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
   @override
   dispose()
   {
-    Log().debug('dispose called on => <$elementName id="$id">');
+    // Log().debug('dispose called on => <$elementName id="$id">');
 
     // cleanup
     tableheader?.dispose();

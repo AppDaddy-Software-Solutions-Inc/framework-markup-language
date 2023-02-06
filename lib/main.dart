@@ -51,7 +51,7 @@ void runMainApp()
           var font = System.theme.font;
           return ThemeNotifier(THEMER.MyTheme().deriveTheme(System.theme.colorscheme, googleFont: font));
         }
-        catch (e)
+        catch(e)
         {
           Log().debug('Init Theme Error: $e \n(Configured fonts from https://fonts.google.com/ are case sensitive)');
           return ThemeNotifier(THEMER.MyTheme().deriveTheme(System.theme.colorscheme));

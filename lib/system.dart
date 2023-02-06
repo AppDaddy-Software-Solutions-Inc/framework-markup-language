@@ -36,7 +36,7 @@ final String applicationTitle = "Flutter Markup Language " + version;
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://applications/<app> to use the asset applications
-var defaultDomain = Uri.parse('https://fml.appdaddy.co');
+var defaultDomain = Uri.parse('https://myrocketfundsv2.appdaddy.co');
 
 // Default Application
 final defaultApplication = ApplicationModel(System(),url:defaultDomain.toString());
@@ -214,7 +214,7 @@ class System extends WidgetModel implements IEventManager
       await Future.delayed(Duration(seconds: 1));
       Log().debug('initConnectivity status: $connected');
     }
-    catch (e)
+    catch(e)
     {
       _connected?.set(false);
       Log().debug('Error initializing connectivity');

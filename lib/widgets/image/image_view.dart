@@ -104,7 +104,7 @@ class ImageView extends StatefulWidget {
           break;
       }
     }
-    catch (e)
+    catch(e)
     {
       Log().error("Error decoding image from $url. Error is $e");
     }

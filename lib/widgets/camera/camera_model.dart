@@ -322,7 +322,7 @@ class CameraModel extends CAMERA.CameraImageModel implements IViewableWidget
   @override
   void dispose()
   {
-    Log().debug('dispose called on => <$elementName id="$id">');
+    // Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
   }
 

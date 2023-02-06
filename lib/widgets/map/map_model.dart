@@ -194,7 +194,7 @@ class MapModel extends DecoratedWidgetModel implements IViewableWidget
           });
         }
     }
-    catch (e)
+    catch(e)
     {
       await DialogService().show(type: DialogType.error, title: phrase.error, description: e.toString());
       return false;
@@ -206,7 +206,7 @@ class MapModel extends DecoratedWidgetModel implements IViewableWidget
   @override
   dispose()
   {
-    Log().debug('dispose called on => <$elementName id="$id">');
+    // Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
   }
 

@@ -63,7 +63,7 @@
 //       Reader().registerListener(this);
 //       await Reader().read();
 //     }
-//     catch (e)
+//     catch(e)
 //     {
 //       ok = await onException(null, code: 500, message: e.toString());
 //     }
@@ -79,7 +79,7 @@
 //       Reader().removeListener(this);
 //       super.stop();
 //     }
-//     catch (e)
+//     catch(e)
 //     {
 //       await onException(null, code: 500, message: e.toString());
 //     }

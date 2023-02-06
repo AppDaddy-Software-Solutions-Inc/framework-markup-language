@@ -36,7 +36,7 @@ class HttpResponse {
     dynamic body;
     try {
       body = utf8.decode(response.bodyBytes);
-    } catch (e) {
+    } catch(e) {
       body = response.body;
     }
 
@@ -65,7 +65,7 @@ class Http
       }
       else return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: "Url $url is invalid");
     }
-    catch (e)
+    catch(e)
     {
       var msg = e.toString();
 
@@ -95,7 +95,7 @@ class Http
       }
       else return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: "Url $url is invalid");
     }
-    catch (e)
+    catch(e)
     {
       return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: e.toString());
     }
@@ -120,7 +120,7 @@ class Http
       }
       else return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: "Url $url is invalid");
     }
-    catch (e)
+    catch(e)
     {
       return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: e.toString());
     }
@@ -145,7 +145,7 @@ class Http
       }
       else return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: "Url $url is invalid");
     }
-    catch (e)
+    catch(e)
     {
       return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: e.toString());
     }
@@ -170,7 +170,7 @@ class Http
       }
       else return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: "Url $url is null or invalid");
     }
-    catch (e)
+    catch(e)
     {
       return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: e.toString());
     }

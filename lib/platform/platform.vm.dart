@@ -100,7 +100,7 @@ class Platform
     {
       if (_fileExists(filepath)) return File(filepath);
     }
-    catch (e)
+    catch(e)
     {
       Log().exception(e, caller: 'platform.vm.dart => bool file($filepath)');
     }
@@ -114,7 +114,7 @@ class Platform
       if (folder == null) return false;
       return (FileSystemEntity.typeSync(folder) != FileSystemEntityType.notFound);
     }
-    catch (e)
+    catch(e)
     {
       Log().exception(e, caller: 'platform.vm.dart => bool folderExists($folder)');
       return false;
@@ -129,7 +129,7 @@ class Platform
       if (extension(filepath).trim() == "") return false;
       return (FileSystemEntity.typeSync(filepath) != FileSystemEntityType.notFound);
     }
-    catch (e)
+    catch(e)
     {
       Log().exception(e, caller: 'platform.vm.dart => bool fileExists($filepath)');
       return false;
@@ -149,7 +149,7 @@ class Platform
       }
       return null;
     }
-    catch (e)
+    catch(e)
     {
       Log().exception(e, caller: 'platform.vm.dart => bool readFile($filepath)');
       return null;
@@ -169,7 +169,7 @@ class Platform
       }
       return null;
     }
-    catch (e)
+    catch(e)
     {
       Log().exception(e, caller: 'platform.vm.dart => bool readFileBytes($filepath)');
       return null;
@@ -190,7 +190,7 @@ class Platform
       }
       return folder;
     }
-    catch (e)
+    catch(e)
     {
       Log().exception(e, caller: 'platform.vm.dart => bool createFolder($folder)');
       return null;
@@ -214,7 +214,7 @@ class Platform
         if (content is String)    await File(filepath).writeAsString(content);
       }
     }
-    catch (e)
+    catch(e)
     {
       Log().exception(e, caller: 'platform.vm.dart => bool fileWriteBytes($filepath)');
       ok = false;
@@ -233,7 +233,7 @@ class Platform
       if (_fileExists(filepath)) File(filepath).delete();
       return true;
     }
-    catch (e)
+    catch(e)
     {
       Log().exception(e, caller: 'platform.vm.dart => bool deleteFile(' + filepath + ')');
       return false;

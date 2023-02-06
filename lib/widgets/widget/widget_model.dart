@@ -905,7 +905,7 @@ class WidgetModel implements IDataSourceListener
   static void unfocus() {
     try {
       WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
-    } catch (e) {
+    } catch(e) {
       Log().exception(e);
     }
   }

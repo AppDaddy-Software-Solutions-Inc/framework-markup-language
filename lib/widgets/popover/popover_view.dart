@@ -105,7 +105,7 @@ class _PopoverViewState extends State<PopoverView>
       if (this.mounted) {
         setState(() {});
       }
-    } catch (e) {
+    } catch(e) {
       Log().exception(e);
     }
   }

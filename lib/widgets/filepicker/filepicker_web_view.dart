@@ -105,7 +105,7 @@ class FilePickerView implements ABSTRACT.FilePicker {
       /////////////////////
       return await completer.future;
     }
-    catch (e)
+    catch(e)
     {
       Log().debug('Error Launching File Picker');
       return null;

@@ -10,26 +10,21 @@
     <!-- For scrolling, try out the SCROLL widget! -->
     <CENTER>
       <BOX expand="false" center="true" width="300">
-
           <!-- title bar -->
           <ROW expand="false" valign="center">
              <IMAGE height="50" url="assets://applications/fmlpad/fmlpad.png"/>
              <PAD right="10"/>
              <TEXT value="**Welcome to FmlPad!**" size="24" color="#47C4FB"/>
           </ROW>
-
           <!-- text block -->
           <PAD top="20"/>
           <TEXT italic="true" wrap="true" value="**FmlPad** allows you to test and develop FML templates **realtime** _without the need to compile_ any code." color="white" size="14"/>
-
           <!-- text block -->
           <PAD top="10"/>
-          <TEXT italic="true" wrap="true" value="Try changing any of the values you see on the left editor pane and watch them change here as you type." color="white" size="14"/>
-
+          <TEXT italic="true" wrap="true" value="Try changing any of the markup text you see in the left pane editor and watch them change here as you type." color="white" size="14"/>
           <!-- text block -->
           <PAD top="10"/>
           <TEXT italic="true" wrap="true" value="**FmlPad** itself it written entirely in **FML** with less than a few dozen simple lines of markup text!" color="white" size="14"/>
-
           <!-- text block -->
           <PAD top="20"/>
           <ICON icon="face" color="#47C4FB"/>
@@ -55,8 +50,8 @@
             <PAD left="50"/>
 
             <!-- widgets -->
-            <GET id="db3" url="https://fml.dev/fmlpad/widgets.xml" root="WIDGETS.WIDGET"/>
-            <SELECT bordercolor="#1E2835" onchange="copy({this})" hint="widgets" data="db3">
+            <GET id="dbWidgets" url="https://fml.dev/fmlpad/widgets.xml" root="WIDGETS.WIDGET"/>
+            <SELECT bordercolor="#1E2835" onchange="copy({this})" data="dbWidgets" hint="widgets ..." >
                 <OPTION value="{data.value}">
                     <label><ROW expand="false" valign="center"><ICON icon="{data.icon}" size="16" color="{data.color}"/><PAD left="10"/><TEXT value="{data.title}"/></ROW></label>
                 </OPTION>
@@ -65,105 +60,17 @@
             <PAD left="20"/>
 
             <!-- themes -->
-            <SELECT id="theme" bordercolor="#1E2835" value='a11y-dark'>
-                <OPTION label='a11y-dark'/>
-                <OPTION label='a11y-light'/>
-                <OPTION label='agate'/>
-                <OPTION label='an-old-hope'/>
-                <OPTION label='androidstudio'/>
-                <OPTION label='arduino-light'/>
-                <OPTION label='arta'/>
-                <OPTION label='ascetic'/>
-                <OPTION label='atelier-cave-dark'/>
-                <OPTION label='atelier-cave-light'/>
-                <OPTION label='atelier-dune-dark'/>
-                <OPTION label='atelier-dune-light'/>
-                <OPTION label='atelier-estuary-dark'/>
-                <OPTION label='atelier-estuary-light'/>
-                <OPTION label='atelier-forest-dark'/>
-                <OPTION label='atelier-forest-light'/>
-                <OPTION label='atelier-heath-dark'/>
-                <OPTION label='atelier-heath-light'/>
-                <OPTION label='atelier-lakeside-dark'/>
-                <OPTION label='atelier-lakeside-light'/>
-                <OPTION label='atelier-plateau-dark'/>
-                <OPTION label='atelier-plateau-light'/>
-                <OPTION label='atelier-savanna-dark'/>
-                <OPTION label='atelier-savanna-light'/>
-                <OPTION label='atelier-seaside-dark'/>
-                <OPTION label='atelier-seaside-light'/>
-                <OPTION label='atelier-sulphurpool-dark'/>
-                <OPTION label='atelier-sulphurpool-light'/>
-                <OPTION label='atom-one-dark-reasonable'/>
-                <OPTION label='atom-one-dark'/>
-                <OPTION label='atom-one-light'/>
-                <OPTION label='brown-paper'/>
-                <OPTION label='codepen-embed'/>
-                <OPTION label='color-brewer'/>
-                <OPTION label='darcula'/>
-                <OPTION label='dark'/>
-                <OPTION label='default'/>
-                <OPTION label='docco'/>
-                <OPTION label='dracula'/>
-                <OPTION label='far'/>
-                <OPTION label='foundation'/>
-                <OPTION label='github-gist'/>
-                <OPTION label='github'/>
-                <OPTION label='gml'/>
-                <OPTION label='googlecode'/>
-                <OPTION label='gradient-dark'/>
-                <OPTION label='grayscale'/>
-                <OPTION label='gruvbox-dark'/>
-                <OPTION label='gruvbox-light'/>
-                <OPTION label='hopscotch'/>
-                <OPTION label='hybrid'/>
-                <OPTION label='idea'/>
-                <OPTION label='ir-black'/>
-                <OPTION label='isbl-editor-dark'/>
-                <OPTION label='isbl-editor-light'/>
-                <OPTION label='kimbie.dark'/>
-                <OPTION label='kimbie.light'/>
-                <OPTION label='lightfair'/>
-                <OPTION label='magula'/>
-                <OPTION label='mono-blue'/>
-                <OPTION label='monokai-sublime'/>
-                <OPTION label='monokai'/>
-                <OPTION label='night-owl'/>
-                <OPTION label='nord'/>
-                <OPTION label='obsidian'/>
-                <OPTION label='ocean'/>
-                <OPTION label='paraiso-dark'/>
-                <OPTION label='paraiso-light'/>
-                <OPTION label='pojoaque'/>
-                <OPTION label='purebasic'/>
-                <OPTION label='qtcreator_dark'/>
-                <OPTION label='qtcreator_light'/>
-                <OPTION label='railscasts'/>
-                <OPTION label='rainbow'/>
-                <OPTION label='routeros'/>
-                <OPTION label='school-book'/>
-                <OPTION label='shades-of-purple'/>
-                <OPTION label='solarized-dark'/>
-                <OPTION label='solarized-light'/>
-                <OPTION label='sunburst'/>
-                <OPTION label='tomorrow-night-blue'/>
-                <OPTION label='tomorrow-night-bright'/>
-                <OPTION label='tomorrow-night-eighties'/>
-                <OPTION label='tomorrow-night'/>
-                <OPTION label='tomorrow'/>
-                <OPTION label='vs'/>
-                <OPTION label='vs2015'/>
-                <OPTION label='xcode'/>
-                <OPTION label='xt256'/>
-                <OPTION label='zenburn'/>
+            <GET id="dbStyles" url="https://fml.dev/fmlpad/styles.xml" root="STYLES.STYLE"/>
+            <SELECT id="theme" bordercolor="#1E2835" value='a11y-dark' data="dbStyles" hint="styles ...">
+                <OPTION label='{data.label}'/>
             </SELECT>
 
             <PAD left="20"/>
 
             <!-- examples -->
             <GET id="db1" url="{examples}" onsuccess="editor.set({this.response})"/>
-            <GET id="db2" url="https://fml.dev/fmlpad/examples.xml" root="EXAMPLES.EXAMPLE"/>
-            <SELECT id="examples" bordercolor="#1E2835" value="1" data="db2" hint="examples">
+            <GET id="dbExamples" url="https://fml.dev/fmlpad/examples.xml" root="EXAMPLES.EXAMPLE"/>
+            <SELECT id="examples" bordercolor="#1E2835" value="1" data="dbExamples" hint="examples ...">
                 <OPTION value="{data.url}">
                     <label><ROW expand="false" valign="center"><ICON icon="{data.icon}" size="16" color="{data.color}"/><PAD left="10"/><TEXT value="{data.title}"/></ROW></label>
                 </OPTION>

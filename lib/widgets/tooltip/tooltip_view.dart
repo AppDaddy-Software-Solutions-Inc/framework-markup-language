@@ -80,16 +80,14 @@ class _TooltipViewState extends State<TooltipView> implements IModelListener
     if (S.isNullOrEmpty(widget.model.label))
       return child;
 
-    var textColor = widget.model.color ?? (Theme.of(context).colorScheme.onBackground);
-
     dynamic activator;
     if (isMobile)
       activator = child;
     else activator = MouseRegion(cursor: SystemMouseCursors.click, child: child);
     Widget tooltip = Tooltip(
         message: widget.model.label ?? '',
-        decoration: BoxDecoration(color: widget.model.backgroundcolor ?? Theme.of(context).colorScheme.background, borderRadius: BorderRadius.circular(22)),
-        textStyle: TextStyle(fontSize: Theme.of(context).primaryTextTheme.bodySmall?.fontSize ?? 14, color: textColor),
+        decoration: BoxDecoration(color: widget.model.backgroundcolor ?? Theme.of(context).colorScheme.surfaceVariant, borderRadius: BorderRadius.circular(22)),
+        textStyle: TextStyle(fontSize: Theme.of(context).primaryTextTheme.bodySmall?.fontSize ?? 14, color:  widget.model.color ?? Theme.of(context).colorScheme.onBackground),
         child: activator);
 
     // tooltip = WidgetTooltip(widgetOverlay: Icon(Icons.import_contacts_sharp, color: Colors.pinkAccent), message: widget.model.label ?? '', textStyle: Theme.of(context).accentTextTheme.overline, child: activator);

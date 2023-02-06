@@ -9,7 +9,35 @@
     <!-- Remember, the template is a STACK by default and non scrollable! -->
     <!-- For scrolling, try out the SCROLL widget! -->
     <CENTER>
-      <TEXT value="Welcome to FMLPAD!!" color="white" size="24"/>
+      <BOX expand="false" center="true" width="300">
+
+          <!-- title bar -->
+          <ROW expand="false" valign="center">
+             <IMAGE height="50" url="assets://applications/fmlpad/fmlpad.png"/>
+             <PAD right="10"/>
+             <TEXT value="**Welcome to FmlPad!**" size="24" color="#47C4FB"/>
+          </ROW>
+
+          <!-- text block -->
+          <PAD top="20"/>
+          <TEXT italic="true" wrap="true" value="**FmlPad** allows you to test and develop FML templates **realtime** _without the need to compile_ any code." color="white" size="14"/>
+
+          <!-- text block -->
+          <PAD top="10"/>
+          <TEXT italic="true" wrap="true" value="Try changing any of the values you see on the left editor pane and watch them change here as you type." color="white" size="14"/>
+
+          <!-- text block -->
+          <PAD top="10"/>
+          <TEXT italic="true" wrap="true" value="**FmlPad** itself it written entirely in **FML** with less than a few dozen simple lines of markup text!" color="white" size="14"/>
+
+          <!-- text block -->
+          <PAD top="20"/>
+          <ICON icon="face" color="#47C4FB"/>
+          <PAD top="5"/>
+          <TEXT italic="true" value="Happy Coding ..." color="white" size="14"/>
+          <PAD top="5"/>
+          <TEXT italic="true" value="**The FML Development Team**" color="white" size="14"/>
+      </BOX>
     </CENTER>
 </FML>]]>
    </value>

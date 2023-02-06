@@ -267,9 +267,6 @@ flutter:
     # fmlpad
     - assets/applications/
     - assets/applications/fmlpad/
-    - assets/applications/fmlpad/images/
-    - assets/applications/fmlpad/templates/
-    - assets/applications/fmlpad/examples/
 
   fonts:
     - family: icons

@@ -37,7 +37,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
   DrawerModel?  drawer;
   WidgetModel?  body;
 
-  List<String?>? bindables;
+  List<String>? bindables;
 
   // disposed
   bool disposed = false;

@@ -2,10 +2,10 @@
     <CONFIG>
 
         <!-- Settings -->
-        <APP_NAME 		        value="FML Pad" />
-        <APP_ICON	 			value="images/logo.png" />
+        <APP_NAME 		        value="FmlPad" />
+        <APP_ICON	 			value="fmlpad.png" />
 
-        <HOME_PAGE       		value="templates/home.xml" />
+        <HOME_PAGE       		value="fmlpad.xml" />
         <LOGIN_PAGE             value=""/>
         <UNAUTHORIZED_PAGE      value=""/>
         <MIRROR_API 	        value="" />

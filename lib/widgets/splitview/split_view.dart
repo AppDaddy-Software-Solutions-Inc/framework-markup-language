@@ -111,12 +111,10 @@ class _SplitViewState extends State<SplitView> implements IModelListener
 
     // views
     if (widget.views.isEmpty)
+    widget.model.children?.forEach((child)
     {
-      widget.model.children?.forEach((child)
-      {
-        if (child is ViewModel) widget.views.add(child.getView());
-      });
-    }
+      if (child is ViewModel) widget.views.add(child.getView());
+    });
 
     // left pane
     var left = SizedBox(width: _width1, child: Container(color: Theme.of(context).colorScheme.surface, child: (widget.views.isNotEmpty ? widget.views[0] : Text ('Missing <View />'))));

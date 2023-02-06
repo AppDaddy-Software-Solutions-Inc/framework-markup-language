@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:convert';
 import 'dart:core';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:firebase_auth/firebase_auth.dart' deferred as fbauth;
@@ -109,6 +110,7 @@ class EventHandler extends Eval
       functions[S.fromEnum(EventTypes.replaceroute)]  = _handleEventReplace;
       functions[S.fromEnum(EventTypes.page)]          = _handleEventPage;
       functions[S.fromEnum(EventTypes.refresh)]       = _handleEventRefresh;
+      functions[S.fromEnum(EventTypes.saveas)]        = _handleEventSaveAs;
       functions[S.fromEnum(EventTypes.save)]          = _handleEventSave;
       functions[S.fromEnum(EventTypes.scroll)]        = _handleEventScroll;
       functions[S.fromEnum(EventTypes.scrollto)]      = _handleEventScrollTo;
@@ -619,6 +621,21 @@ class EventHandler extends Eval
     parameters['id']       = S.toStr(id);
     parameters['complete'] = S.toStr(complete);
     EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.save, parameters: parameters));
+    return true;
+  }
+
+  /// Saves the text to file
+  Future<bool> _handleEventSaveAs([dynamic text, dynamic title]) async
+  {
+    try
+    {
+      var bytes = utf8.encode(text);
+      Platform.fileSaveAs(bytes, title ?? 'file.text');
+    }
+    catch(e)
+    {
+      Log().error("Error in saveAs(). Error is $e");
+    }
     return true;
   }
 

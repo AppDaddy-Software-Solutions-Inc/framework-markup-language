@@ -5,11 +5,11 @@ import 'file.dart';
 
 class FileBase implements File
 {
-  final dynamic file;
-  final String  url;
-  final String  name;
+  final dynamic  file;
+  final String   url;
+  final String   name;
   final String?  mimeType;
-  final int     size;
+  final int      size;
 
   UriData? _uri;
   Uint8List? get bytes

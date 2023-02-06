@@ -4,42 +4,268 @@
 
     <CONST id="default">
     <value>
-<![CDATA[<!--Welcome to fmlpad! The <FML/> tags are included automatically for you!-->
-<BOX layout="column" color="#0F161F" center="true">
-<!--Remember, the template is a STACK by default and non scrollable!-->
-<!--For scrolling, try out the SCROLL widget!-->
-    <TEXT value="Welcome to FMLPAD!!" color="white" size="24"/>
-</BOX>]]>
+<![CDATA[<!-- Welcome to FmlPad! -->
+<FML>
+    <!-- Remember, the template is a STACK by default and non scrollable! -->
+    <!-- For scrolling, try out the SCROLL widget! -->
+    <CENTER>
+      <TEXT value="Welcome to FMLPAD!!" color="white" size="24"/>
+    </CENTER>
+</FML>]]>
    </value>
    </CONST>
 
     <HEADER height="50">
         <BOX color="#1E2835" valign="center" halign="left" layout="row">
+
             <PAD left="10"/>
+
+            <!-- logo -->
             <IMAGE url="assets://images/fml-logo.png" height="30"/>
             <PAD left="10"/>
             <TEXT value="FmlPad" size="20" color="white"/>
             <PAD left="50"/>
-            <PAD left="20"/>
 
+            <!-- widgets -->
             <SELECT bordercolor="#1E2835" onchange="copy({this})">
-                <OPTION label="">
+                <OPTION label="widgets">
                     <VALUE></VALUE>
                 </OPTION>
                 <OPTION label="BOX">
                     <VALUE><![CDATA[<BOX width="20" height="20" color="red"/>]]></VALUE>
+                </OPTION>
+                <OPTION label="COLUMN">
+                    <VALUE><![CDATA[<COLUMN expand="false"></COLUMN>]]></VALUE>
+                </OPTION>
+                <OPTION label="ICON">
+                    <VALUE><![CDATA[<ICON icon="face" color="yellow" size="48"/>]]></VALUE>
+                </OPTION>
+                <OPTION label="POSITION" >
+                    <VALUE><![CDATA[<POSITION top="0" left="0"></POSITION>]]></VALUE>
+                </OPTION>
+                <OPTION label="ROW">
+                    <VALUE><![CDATA[<ROW expand="false"></ROW>]]></VALUE>
+                </OPTION>
+                <OPTION label="SCRIBBLE">
+                    <VALUE><![CDATA[<SCRIBBLE width="200" height="200"/>]]></VALUE>
+                </OPTION>
+                <OPTION label="SCROLLER">
+                    <VALUE><![CDATA[<SCROLLER  direction= "vertical"></SCROLLER>]]></VALUE>
+                </OPTION>
+                <OPTION label="STACK">
+                    <VALUE><![CDATA[<STACK></STACK>]]></VALUE>
+                </OPTION>
+                <OPTION label="VAR">
+                    <VALUE><![CDATA[<VAR id="myid" value="value goes here"/>]]></VALUE>
                 </OPTION>
                 <OPTION label="TEXT">
                     <VALUE><![CDATA[<TEXT color="white" size="16" value="text here"/>]]></VALUE>
                 </OPTION>
             </SELECT>
 
+            <PAD left="20"/>
+
+            <!-- themes -->
+            <SELECT id="theme" bordercolor="#1E2835" value='a11y-dark'>
+                <OPTION label='a11y-dark'/>
+                <OPTION label='a11y-light'/>
+                <OPTION label='agate'/>
+                <OPTION label='an-old-hope'/>
+                <OPTION label='androidstudio'/>
+                <OPTION label='arduino-light'/>
+                <OPTION label='arta'/>
+                <OPTION label='ascetic'/>
+                <OPTION label='atelier-cave-dark'/>
+                <OPTION label='atelier-cave-light'/>
+                <OPTION label='atelier-dune-dark'/>
+                <OPTION label='atelier-dune-light'/>
+                <OPTION label='atelier-estuary-dark'/>
+                <OPTION label='atelier-estuary-light'/>
+                <OPTION label='atelier-forest-dark'/>
+                <OPTION label='atelier-forest-light'/>
+                <OPTION label='atelier-heath-dark'/>
+                <OPTION label='atelier-heath-light'/>
+                <OPTION label='atelier-lakeside-dark'/>
+                <OPTION label='atelier-lakeside-light'/>
+                <OPTION label='atelier-plateau-dark'/>
+                <OPTION label='atelier-plateau-light'/>
+                <OPTION label='atelier-savanna-dark'/>
+                <OPTION label='atelier-savanna-light'/>
+                <OPTION label='atelier-seaside-dark'/>
+                <OPTION label='atelier-seaside-light'/>
+                <OPTION label='atelier-sulphurpool-dark'/>
+                <OPTION label='atelier-sulphurpool-light'/>
+                <OPTION label='atom-one-dark-reasonable'/>
+                <OPTION label='atom-one-dark'/>
+                <OPTION label='atom-one-light'/>
+                <OPTION label='brown-paper'/>
+                <OPTION label='codepen-embed'/>
+                <OPTION label='color-brewer'/>
+                <OPTION label='darcula'/>
+                <OPTION label='dark'/>
+                <OPTION label='default'/>
+                <OPTION label='docco'/>
+                <OPTION label='dracula'/>
+                <OPTION label='far'/>
+                <OPTION label='foundation'/>
+                <OPTION label='github-gist'/>
+                <OPTION label='github'/>
+                <OPTION label='gml'/>
+                <OPTION label='googlecode'/>
+                <OPTION label='gradient-dark'/>
+                <OPTION label='grayscale'/>
+                <OPTION label='gruvbox-dark'/>
+                <OPTION label='gruvbox-light'/>
+                <OPTION label='hopscotch'/>
+                <OPTION label='hybrid'/>
+                <OPTION label='idea'/>
+                <OPTION label='ir-black'/>
+                <OPTION label='isbl-editor-dark'/>
+                <OPTION label='isbl-editor-light'/>
+                <OPTION label='kimbie.dark'/>
+                <OPTION label='kimbie.light'/>
+                <OPTION label='lightfair'/>
+                <OPTION label='magula'/>
+                <OPTION label='mono-blue'/>
+                <OPTION label='monokai-sublime'/>
+                <OPTION label='monokai'/>
+                <OPTION label='night-owl'/>
+                <OPTION label='nord'/>
+                <OPTION label='obsidian'/>
+                <OPTION label='ocean'/>
+                <OPTION label='paraiso-dark'/>
+                <OPTION label='paraiso-light'/>
+                <OPTION label='pojoaque'/>
+                <OPTION label='purebasic'/>
+                <OPTION label='qtcreator_dark'/>
+                <OPTION label='qtcreator_light'/>
+                <OPTION label='railscasts'/>
+                <OPTION label='rainbow'/>
+                <OPTION label='routeros'/>
+                <OPTION label='school-book'/>
+                <OPTION label='shades-of-purple'/>
+                <OPTION label='solarized-dark'/>
+                <OPTION label='solarized-light'/>
+                <OPTION label='sunburst'/>
+                <OPTION label='tomorrow-night-blue'/>
+                <OPTION label='tomorrow-night-bright'/>
+                <OPTION label='tomorrow-night-eighties'/>
+                <OPTION label='tomorrow-night'/>
+                <OPTION label='tomorrow'/>
+                <OPTION label='vs'/>
+                <OPTION label='vs2015'/>
+                <OPTION label='xcode'/>
+                <OPTION label='xt256'/>
+                <OPTION label='zenburn'/>
+            </SELECT>
+
+            <PAD left="20"/>
+
+            <!-- examples -->
+            <GET id="db1" url="{examples}" onsuccess="editor.set({this.response})"/>
+            <SELECT id="examples" bordercolor="#1E2835" value="1">
+
+                <OPTION label='templates' value="1"/>
+
+                <!-- widgets -->
+                <OPTION>
+                    <label><ROW expand="false" valign="center"><ICON icon="speed" size="16" color="green"/><PAD left="10"/><TEXT value="<SLIDER/>"/></ROW></label>
+                    <value>https://fml.dev/assets/templates/examples/slider-example1.xml</value>
+                </OPTION>
+
+                <!-- charts -->
+                <OPTION>
+                    <label><ROW expand="false" valign="center"><ICON icon="pie_chart" size="16" color="yellow"/><PAD left="10"/><TEXT value="Pie Chart"/></ROW></label>
+                    <value>https://fml.dev/assets/templates/examples/chart-example1.xml</value>
+                </OPTION>
+
+                <OPTION>
+                    <label><ROW expand="false" valign="center"><ICON icon="multiline_chart" size="16" color="yellow"/><PAD left="10"/><TEXT value="Line Chart"/></ROW></label>
+                    <value>https://fml.dev/assets/templates/examples/chart-example2.xml</value>
+                </OPTION>
+
+                <OPTION>
+                    <label><ROW expand="false" valign="center"><ICON icon="bar_chart" size="16" color="yellow"/><PAD left="10"/><TEXT value="Bar Chart"/></ROW></label>
+                    <value>https://fml.dev/assets/templates/examples/chart-example3.xml</value>
+                </OPTION>
+
+                <OPTION>
+                    <label><ROW expand="false" valign="center"><ICON icon="add_chart" size="16" color="yellow"/><PAD left="10"/><TEXT value="Combo Chart"/></ROW></label>
+                    <value>https://fml.dev/assets/templates/examples/chart-example4.xml</value>
+                </OPTION>
+
+                <OPTION>
+                    <label><ROW expand="false" valign="center"><ICON icon="stacked_bar_chart" size="16" color="yellow"/><PAD left="10"/><TEXT value="Grouped Bar Chart"/></ROW></label>
+                    <value>https://fml.dev/assets/templates/examples/chart-example5.xml</value>
+                </OPTION>
+
+                <OPTION>
+                    <label><ROW expand="false" valign="center"><ICON icon="stacked_bar_chart" size="16" color="yellow"/><PAD left="10"/><TEXT value="Stacked Bar Chart"/></ROW></label>
+                    <value>https://fml.dev/assets/templates/examples/chart-example6.xml</value>
+                </OPTION>
+
+                <OPTION>
+                    <label><ROW expand="false" valign="center"><ICON icon="stacked_line_chart" size="16" color="yellow"/><PAD left="10"/><TEXT value="Grouped/Stacked Bar Chart"/></ROW></label>
+                    <value>https://fml.dev/assets/templates/examples/chart-example7.xml</value>
+                </OPTION>
+
+                <!-- maps -->
+                <OPTION>
+                    <label><ROW expand="false" valign="center"><ICON icon="place_outlined" size="16" color="white"/><PAD left="10"/><TEXT value="Satellite Map"/></ROW></label>
+                    <value>https://fml.dev/assets/templates/examples/map-example1.xml</value>
+                </OPTION>
+
+                <OPTION>
+                    <label><ROW expand="false" valign="center"><ICON icon="place_outlined" size="16" color="white"/><PAD left="10"/><TEXT value="Vector Map"/></ROW></label>
+                    <value>https://fml.dev/assets/templates/examples/map-example2.xml</value>
+                </OPTION>
+
+                <!-- image transforms -->
+                <OPTION>
+                    <label><ROW expand="false" valign="center"><ICON icon="image_outlined" size="16" color="green"/><PAD left="10"/><TEXT value="Image Crop"/></ROW></label>
+                    <value>https://fml.dev/assets/templates/examples/image-transforms-example1.xml</value>
+                </OPTION>
+
+                <OPTION>
+                    <label><ROW expand="false" valign="center"><ICON icon="image_outlined" size="16" color="green"/><PAD left="10"/><TEXT value="Image Flip"/></ROW></label>
+                    <value>https://fml.dev/assets/templates/examples/image-transforms-example2.xml</value>
+                </OPTION>
+
+                <OPTION>
+                    <label><ROW expand="false" valign="center"><ICON icon="image_outlined" size="16" color="green"/><PAD left="10"/><TEXT value="Image to Gray Scale"/></ROW></label>
+                    <value>https://fml.dev/assets/templates/examples/image-transforms-example3.xml</value>
+                </OPTION>
+
+                <OPTION>
+                    <label><ROW expand="false" valign="center"><ICON icon="image_outlined" size="16" color="green"/><PAD left="10"/><TEXT value="Image Resizing"/></ROW></label>
+                    <value>https://fml.dev/assets/templates/examples/image-transforms-example4.xml</value>
+                </OPTION>
+
+
+            </SELECT>
+
+            <!-- realtime slider -->
             <EXPAND>
             <ROW halign="end" valign="center">
 
                <!-- Reset button -->
                 <BUTTON onclick="editor.set({default})" visible="={default} != {editor}">
-                    <ICON icon="refresh" color="white"/>
+                    <ICON icon="refresh" color="white" size="24"/>
+                </BUTTON>
+
+                <PAD left="20"/>
+
+                <!-- Save button -->
+                <BUTTON onclick="saveas({editor},'fmlpad.xml')">
+                    <ICON icon="save" color="white" size="24"/>
+                </BUTTON>
+
+                <PAD left="20"/>
+
+                <!-- Open button -->
+                <FILEPICKER id="fp1" onsuccess="editor.set({fp1.data.text})" allow=".xml"/>
+                <BUTTON onclick="fp1.start()">
+                    <ICON icon="folder" color="white" size="24"/>
                 </BUTTON>
 
                 <PAD left="40"/>
@@ -65,7 +291,7 @@
             <BOX color="#0F161F" width="100%" height="100%" layout="stack">
 
                 <SCROLLER>
-                    <EDITOR id="editor" language="xml" value="{default}"/>
+                    <EDITOR id="editor" language="xml" value="{default}" theme="{theme}"/>
                 </SCROLLER>
 
                 <POSITIONED right="10" top="5">
@@ -82,9 +308,7 @@
             </BOX>
         </VIEW>
 
-        <VIEW>
-            <BOX id="fmlpad" color="#0F161F" width="100%" height="100%" layout="stack"/>
-        </VIEW>
+        <VIEW id="fmlpad"/>
 
     </SPLITVIEW>
 </FML>

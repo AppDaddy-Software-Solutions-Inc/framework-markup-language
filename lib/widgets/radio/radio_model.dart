@@ -205,8 +205,11 @@ class RadioModel extends FormFieldModel implements IFormField, IViewableWidget
     wrap = Xml.get(node: xml, tag: 'wrap');
     size = Xml.get(node: xml, tag: 'size');
 
-    // Build options
+    // clear options
+    this.options.forEach((option) => option.dispose());
     this.options.clear();
+
+    // Build options
     List<OptionModel> options = findChildrenOfExactType(OptionModel).cast<OptionModel>();
 
       // set prototype
@@ -226,7 +229,9 @@ class RadioModel extends FormFieldModel implements IFormField, IViewableWidget
     {
       if (prototype == null) return true;
 
-      options.clear();
+      // clear options
+      this.options.forEach((option) => option.dispose());
+      this.options.clear();
 
       // build options
       int i = 0;

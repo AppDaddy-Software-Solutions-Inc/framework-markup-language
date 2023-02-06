@@ -165,7 +165,9 @@ class PagerModel extends DecoratedWidgetModel implements IViewableWidget
     int i = 0;
     if ((list != null))
     {
-      pages.clear();
+      // clear pages
+      this.pages.forEach((model) => model.dispose());
+      this.pages.clear();
 
       list.forEach((row)
       {
@@ -189,9 +191,10 @@ class PagerModel extends DecoratedWidgetModel implements IViewableWidget
   {
     Log().debug ('dispose called on' + elementName);
 
-      pages.forEach((model) => model.dispose());
-      pages.clear();
-    scope?.dispose();
+    // clear pages
+    this.pages.forEach((model) => model.dispose());
+    this.pages.clear();
+
     super.dispose();
   }
   

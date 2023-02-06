@@ -436,6 +436,10 @@ class WidgetModel implements IDataSourceListener
         if (parent is IDataSource) model = Flip.fromXml(parent, node);
         break;
 
+      case "fml":
+          model = FrameworkModel.fromXml(parent, node);
+        break;
+
       case "footer":
         if (parent is FrameworkModel)
           model = FooterModel.fromXml(parent, node);
@@ -548,12 +552,7 @@ class WidgetModel implements IDataSourceListener
         break;
 
       case "option":
-        if (parent is SelectModel)
-          model = OptionModel.fromXml(parent, node);
-        if (parent is CheckboxModel)
-          model = OptionModel.fromXml(parent, node);
-        if (parent is RadioModel)
-          model = OptionModel.fromXml(parent, node);
+        if (parent is SelectModel || parent is CheckboxModel || parent is RadioModel) model = OptionModel.fromXml(parent, node);
         break;
 
       case "pad": // Preferred Case.
@@ -761,8 +760,6 @@ class WidgetModel implements IDataSourceListener
         break;
 
       default:
-        if (elementLocalName != 'body')
-          Log().warning('$elementLocalName is not a model, check the spelling of the element name.');
         break;
     }
 
@@ -844,6 +841,9 @@ class WidgetModel implements IDataSourceListener
     if (datasources != null)
     for (var datasource in datasources!) if (datasource.parent == this) datasource.dispose();
     datasources?.clear();
+
+    // remove model and all of its bindables from the scope
+    scope?.unregisterModel(this);
 
     // dispose of children
     if (children != null)
@@ -1086,7 +1086,13 @@ class WidgetModel implements IDataSourceListener
     else if (document is XmlDocument) nodes = document.childElements.toList();
 
     // build error node
-    if (exception != null && !silent) nodes.add(XmlElement(XmlName("TEXT"),[XmlAttribute(XmlName("size"), '18'), XmlAttribute(XmlName("color"), 'red'), XmlAttribute(XmlName("value"), exception.toString())]));
+    if (exception != null && !silent)
+    {
+      var text   = XmlElement(XmlName("TEXT"),[XmlAttribute(XmlName("size"), '18'), XmlAttribute(XmlName("color"), '#EF5858'), XmlAttribute(XmlName("value"), exception.toString())]);
+      var center = XmlElement(XmlName("CENTER"));
+      center.children.add(text);
+      nodes.add(center);
+    }
 
     // valid fml?
     nodes.forEach((element) => _appendChild(element, index));
@@ -1135,8 +1141,9 @@ class WidgetModel implements IDataSourceListener
         // append
         await _appendXml(xml, index, silent);
 
-        // force parent rebuild
-        parent?.notifyListeners("rebuild", "true");
+        // force rebuild
+        notifyListeners("rebuild", "true");
+
         return true;
 
       case 'removechild':
@@ -1149,6 +1156,7 @@ class WidgetModel implements IDataSourceListener
         {
           // dispose of the last item
           this.children!.last.dispose();
+
           // check if the list is greater than 0, remove at the final index.
           if (this.children!.length > 0) this.children!.removeLast();
         }
@@ -1163,21 +1171,15 @@ class WidgetModel implements IDataSourceListener
           // Could add handling for negative index removing from the end?
         }
 
-        // force parent rebuild
-        parent?.notifyListeners("rebuild", "true");
+        // force rebuild
+        notifyListeners("rebuild", "true");
         return true;
 
       case 'removechildren':
 
-        // check for children then remove them
-        if (this.children != null)
-        {
-          this.children!.forEach((child)
-          {
-            child.dispose();
-          });
-          this.children = [];
-        }
+        // dispose of existing children
+        this.children?.forEach((child) => child.dispose());
+        this.children = [];
 
         // force parent rebuild
         parent?.notifyListeners("rebuild", "true");
@@ -1221,8 +1223,9 @@ class WidgetModel implements IDataSourceListener
         // add elements
         await _appendXml(xml, index, silent);
 
-        // force parent rebuild
-        parent?.notifyListeners("rebuild", "true");
+        // force rebuild
+        notifyListeners("rebuild", "true");
+
         return true;
 
       case 'replacechildren':
@@ -1248,8 +1251,9 @@ class WidgetModel implements IDataSourceListener
         // add elements
         await _appendXml(xml, null, silent);
 
-        // force parent rebuild
-        parent?.notifyListeners("rebuild", "true");
+        // force rebuild
+        notifyListeners("rebuild", "true");
+
         return true;
 
       case 'removewidget':

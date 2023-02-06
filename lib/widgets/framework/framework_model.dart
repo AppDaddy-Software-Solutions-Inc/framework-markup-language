@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'dart:convert';
 import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
@@ -20,7 +21,6 @@ import 'package:fml/widgets/variable/variable_model.dart';
 import 'package:fml/widgets/framework/framework_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
-
 import 'package:uuid/uuid.dart';
 
 class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IModelListener, IEventManager
@@ -37,7 +37,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
   DrawerModel?  drawer;
   WidgetModel?  body;
 
-  List<String?>? bindables;
+  List<String>? bindables;
 
   // disposed
   bool disposed = false;
@@ -50,8 +50,14 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
 
     String? xml;
     if (element != null) xml = element.toXmlString(pretty: true);
-    if ( _template == null)
-         _template = StringObservable(Binding.toKey(id, 'template'), xml, scope: scope);
+    if (_template == null)
+    {
+      // we dont want the template to bindable
+      // so set it to null then to its value
+      // this defeats binding
+      _template = StringObservable(Binding.toKey(id, 'template'), null, scope: scope);
+      _template!.set(xml);
+    }
     else _template!.set(xml);
   }
 
@@ -344,7 +350,9 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
       // deserialize from xml
       deserialize(xml);
 
-      // initialize
+      // If the model contains any databrokers we fire them before building so we can bind to the data
+      // This normally happens in the view initState(), however, since the view builds before the
+      // template has been loaded, initState() has already run and we need to do it here.
       model.initialize();
     }
     catch(e)
@@ -440,6 +448,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
     footer?.dispose();
     drawer?.dispose();
 
+    // dispose of scope
     scope?.dispose();
 
     // clear event listeners
@@ -515,6 +524,34 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
 
     // update page title
     if (context != null) NavigationManager().setPageTitle(context, title);
+  }
+
+  void showTemplate()
+  {
+    // save bytes to file
+    if (element != null)
+    {
+      var bytes = utf8.encode(element!.toXmlString());
+      var uri = URI.parse(templateName);
+      if (uri != null)
+           Platform.fileSaveAs(bytes, uri.url);
+      else Platform.fileSaveAs(bytes, "template");
+    }
+  }
+
+  @override
+  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
+  {
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+    switch (function)
+    {
+      // show template
+      case "showtemplate":
+        showTemplate();
+        return true;
+    }
+    return super.execute(caller, propertyOrFunction, arguments);
   }
 
   Widget getView({Key? key}) => FrameworkView(this);

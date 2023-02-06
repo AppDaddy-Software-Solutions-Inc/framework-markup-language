@@ -203,9 +203,9 @@ class MapModel extends DecoratedWidgetModel implements IViewableWidget
   }
 
   @override
-  dispose() {
-Log().debug('dispose called on => <$elementName id="$id">');
-    scope?.dispose();
+  dispose()
+  {
+    Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
   }
 

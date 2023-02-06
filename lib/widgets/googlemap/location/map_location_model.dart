@@ -136,4 +136,12 @@ class MapLocationModel extends DecoratedWidgetModel
     // remove datasource listener. The parent chart will take care of this.
     if ((datasource != null) && (scope != null) && (scope!.datasources.containsKey(datasource))) scope!.datasources[datasource!]!.remove(this);
   }
+
+  @override
+  dispose()
+  {
+    Log().debug('dispose called on => <$elementName id="$id">');
+    super.dispose();
+    scope?.dispose();
+  }
 }

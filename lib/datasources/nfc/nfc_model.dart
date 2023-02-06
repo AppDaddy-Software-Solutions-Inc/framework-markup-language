@@ -42,6 +42,46 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
   }
   String? get method => _method?.get() ?? "read";
 
+  // on write fail event
+  StringObservable? get onWriteFailObservable => _onwritefail;
+  StringObservable? _onwritefail;
+  set onwritefail(dynamic v) {
+    if (_onwritefail != null) {
+      _onwritefail!.set(v);
+    } else if (v != null) {
+      _onwritefail = StringObservable(Binding.toKey(id, 'onwritefail'), v,
+          scope: scope, lazyEval: true);
+    }
+  }
+  String? get onwritefail => _onwritefail?.get();
+
+
+  // on read fail event
+  StringObservable? get onReadFailObservable => _onreadfail;
+  StringObservable? _onreadfail;
+  set onreadfail(dynamic v) {
+    if (_onreadfail != null) {
+      _onreadfail!.set(v);
+    } else if (v != null) {
+      _onreadfail = StringObservable(Binding.toKey(id, 'onreadfail'), v,
+          scope: scope, lazyEval: true);
+    }
+  }
+  String? get onreadfail => _onreadfail?.get();
+
+
+  // on timeout event
+  StringObservable? get onTimeoutObservable => _ontimeout;
+  StringObservable? _ontimeout;
+  set ontimeout(dynamic v) {
+    if (_ontimeout != null) {
+      _ontimeout!.set(v);
+    } else if (v != null) {
+      _ontimeout = StringObservable(Binding.toKey(id, 'ontimeout'), v,
+          scope: scope, lazyEval: true);
+    }
+  }
+  String? get ontimeout => _ontimeout?.get();
 
   NcfModel(WidgetModel parent, String? id) : super(parent, id)
   {
@@ -80,7 +120,11 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
 
     // deserialize
     super.deserialize(xml);
-    method = Xml.attribute(node: xml, tag: 'method');
+    method      = Xml.attribute(node: xml, tag: 'method');
+    ontimeout   = Xml.get(node: xml, tag: 'ontimeout');
+    onreadfail  = Xml.get(node: xml, tag: 'onwritefail');
+    onwritefail = Xml.get(node: xml, tag: 'onreadfail');
+
   }
 
   Future<bool> start({bool refresh = false, String? key}) async

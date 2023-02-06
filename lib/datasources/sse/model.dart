@@ -79,10 +79,17 @@ class SseModel extends HttpModel implements IDataSource
 
     try
     {
+      var uri = URI.parse(url!);
       connected = false;
-      channel = SseChannel.connect(Uri.parse(url!), headers: headers, body: body, method: method, events: events?.split(","));
-      channel.stream.listen(_onData, onError: _onError, onDone: _onDone);
-      connected = true;
+      if (uri != null) {
+        channel = SseChannel.connect(uri,
+            headers: headers,
+            body: body,
+            method: method,
+            events: events?.split(","));
+        channel.stream.listen(_onData, onError: _onError, onDone: _onDone);
+        connected = true;
+      }
     }
     catch(e)
     {

@@ -358,8 +358,8 @@ return LayoutBuilder(builder: builder);
       return s.any((tag) => match(tag!.trim().toLowerCase(), pat));
     }
     else {
-      String? str = (m.label is TextModel) ? (m.label as TextModel).value ?? null : null ?? '' + _extractText(m)!;
-      return str == null ? false : match(str, pat);
+      String? str = (m.label is TextModel) ? (m.label as TextModel).value ?? null : '' + _extractText(m)!;
+      return str == null ? false : match(str.trim().toLowerCase(), pat);
     }
 
   }

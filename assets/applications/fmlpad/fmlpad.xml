@@ -66,6 +66,7 @@
             <PAD left="20"/>
 
             <!-- examples -->
+            <GET id="db1" url="{examples}" onsuccess="editor.set({this.response})"/>
             <GET id="dbExamples" url="https://fml.dev/fmlpad/examples.xml" root="EXAMPLES.EXAMPLE"/>
             <SELECT id="examples" bordercolor="#1E2835" value="1" data="dbExamples" hint="examples" width="200">
                 <OPTION value="{data.url}">

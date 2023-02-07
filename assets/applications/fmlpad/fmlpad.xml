@@ -65,7 +65,7 @@
             <PAD left="20"/>
 
             <!-- themes -->
-            <SELECT id="theme" bordercolor="#1E2835" value='a11y-dark'>
+            <SELECT id="theme" bordercolor="#1E2835" value='{STASH.FmlPadTheme}' hint="themes" onchange="stash('FmlPadTheme',{this.value})">
                 <OPTION label='a11y-dark'/>
                 <OPTION label='a11y-light'/>
                 <OPTION label='agate'/>
@@ -163,7 +163,7 @@
             <!-- examples -->
             <GET id="db1" url="{examples}" onsuccess="editor.set({this.response})"/>
             <GET id="db2" url="https://fml.dev/fmlpad/examples.xml" root="EXAMPLES.EXAMPLE"/>
-            <SELECT id="examples" bordercolor="#1E2835" value="1" data="db2" hint="examples">
+            <SELECT id="examples" bordercolor="#1E2835" value="1" data="db2" hint="examples" width="200">
                 <OPTION value="{data.url}">
                     <label><ROW expand="false" valign="center"><ICON icon="{data.icon}" size="16" color="{data.color}"/><PAD left="10"/><TEXT value="{data.title}"/></ROW></label>
                 </OPTION>

@@ -61,7 +61,7 @@
 
             <!-- themes -->
             <GET id="dbStyles" url="https://fml.dev/fmlpad/styles.xml" root="STYLES.STYLE"/>
-            <SELECT id="theme" bordercolor="#1E2835" dtata="dbStyles" value='{STASH.FmlPadTheme}' hint="themes" onchange="stash('FmlPadTheme',{this.value})">
+            <SELECT id="theme" bordercolor="#1E2835" data="dbStyles" value='{STASH.FmlPadTheme}' hint="themes" onchange="stash('FmlPadTheme',{this.value})">
                 <OPTION label='{data.label}'/>
             </SELECT>
             

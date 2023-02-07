@@ -102,11 +102,13 @@ class Scope
 
   void unregisterModel(WidgetModel model)
   {
-    models.removeWhere((key, value) => value == model);
-
-    var observables = this.observables.values.where((observable) => observable.key != null && observable.key!.startsWith("${model.id}."));
-    observables.forEach((observable) => observable.listeners?.clear());
-    this.observables.removeWhere((_, observable) => observables.contains(observable));
+    models.remove(model.id);
+    var observables = this.observables.values.where((observable) => observable.key != null && observable.key!.startsWith("${model.id}.")).toList();
+    for (Observable observable in observables)
+    {
+      observable.listeners?.clear();
+      this.observables.remove(observable.key);
+    }
   }
 
   WidgetModel? _findWidgetModel(String id)

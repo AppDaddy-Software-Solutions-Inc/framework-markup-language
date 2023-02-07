@@ -61,6 +61,9 @@ final bool kDebugMode = !kReleaseMode;
 
 typedef CommitCallback = Future<bool> Function();
 
+// used in context lookup
+var applicationKey = GlobalKey();
+
 class System extends WidgetModel implements IEventManager
 {
   static final String myId = "SYSTEM";

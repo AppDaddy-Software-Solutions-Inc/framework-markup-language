@@ -15,7 +15,10 @@ import 'package:fml/token/token.dart';
 import 'package:fml/user/user_model.dart';
 import 'package:fml/widgets/theme/theme_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:provider/provider.dart';
 import 'package:xml/xml.dart';
+
+import '../theme/themenotifier.dart';
 
 class ApplicationModel extends WidgetModel
 {
@@ -281,6 +284,17 @@ class ApplicationModel extends WidgetModel
 
     // set the theme if supplied
     if (theme != null) setTheme(theme);
+
+    // set the theme
+    var context = this.context;
+    if (context != null)
+    {
+      final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+      String brightness   = settings('BRIGHTNESS')   ?? ThemeModel.defaultBrightness;
+      String color        = settings('COLOR_SCHEME') ?? ThemeModel.defaultColor;
+      themeNotifier.setTheme(brightness, color);
+      themeNotifier.mapSystemThemeBindables();
+    }
   }
 
   void close()

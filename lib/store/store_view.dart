@@ -3,6 +3,7 @@ import 'package:fml/application/application_model.dart';
 import 'package:fml/observable/observables/boolean.dart';
 import 'package:fml/theme/themenotifier.dart';
 import 'package:fml/navigation/navigation_observer.dart';
+import 'package:fml/widgets/theme/theme_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -75,8 +76,10 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
 
   void onNavigatorPush({Map<String?, String>? parameters})
   {
+    // reset the theme
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    themeNotifier.setTheme('light', 'lightblue');
+    themeNotifier.setTheme(ThemeModel.defaultBrightness, ThemeModel.defaultColor);
+
   }
 
   /// Callback to fire the [_ViewState.build] when the [StoreModel] changes

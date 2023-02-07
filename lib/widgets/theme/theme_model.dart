@@ -11,6 +11,9 @@ import 'package:fml/helper/common_helpers.dart';
 
 class ThemeModel extends DecoratedWidgetModel implements IViewableWidget
 {
+  static String defaultBrightness = "light";
+  static String defaultColor = "lightblue";
+
   static String myId = 'THEME';
 
   static const Color colorDefault = Color(0xffb2dd4c);

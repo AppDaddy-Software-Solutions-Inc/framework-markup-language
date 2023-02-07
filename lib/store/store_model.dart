@@ -6,9 +6,7 @@ import 'package:fml/application/application_model.dart';
 import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/navigation/page.dart';
 import 'package:fml/system.dart';
-import 'package:fml/theme/themenotifier.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:provider/provider.dart';
 
 class Store extends WidgetModel implements IModelListener
 {
@@ -101,13 +99,6 @@ class Store extends WidgetModel implements IModelListener
 
     // launch the page
     NavigationManager().setNewRoutePath(PageConfiguration(url: page, title: "Store"), source: "store");
-
-    // change theme
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    String brightness   = System.app?.settings('BRIGHTNESS') ?? 'light';
-    String color        = System.app?.settings('COLOR_SCHEME') ?? 'lightblue';
-    themeNotifier.setTheme(brightness, color);
-    themeNotifier.mapSystemThemeBindables();
   }
 
   @override

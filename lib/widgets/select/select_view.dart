@@ -440,7 +440,7 @@ return LayoutBuilder(builder: builder);
   {
     controller.text = controller.text.trim();
     // if the value does not match the option value, clear only when input is disabled.
-    if (controller.text != widget.model.value && !widget.model.inputenabled && widget.model.typeahead) controller.text = widget.model.value;
+    if (controller.text != widget.model.value && !widget.model.inputenabled && widget.model.typeahead) controller.text = _extractText(_selected)!;
 
   return true;
   }

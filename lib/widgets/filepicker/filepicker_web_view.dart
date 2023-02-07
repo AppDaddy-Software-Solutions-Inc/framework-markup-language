@@ -85,7 +85,7 @@ class FilePickerView implements ABSTRACT.FilePicker {
                 DetectableImage detectable = DetectableImage.fromRgba(data.buffer.asUint8List(), frame.image.width, frame.image.height);
 
                 // detect in image
-                detectors.forEach((detector) => detector.detect(detectable));
+                detectors.forEach((detector) => detector.detect(detectable, false));
               }
             }
           }

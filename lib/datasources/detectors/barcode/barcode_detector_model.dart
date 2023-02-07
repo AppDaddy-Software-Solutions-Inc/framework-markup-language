@@ -99,7 +99,7 @@ class BarcodeDetectorModel extends DetectorModel implements IDetectable
     super.dispose();
   }
 
-  void detect(DetectableImage image) async
+  void detect(DetectableImage image, bool streamed) async
   {
     if (!busy)
     {
@@ -112,8 +112,7 @@ class BarcodeDetectorModel extends DetectorModel implements IDetectable
         Data data = Payload.toData(payload);
         await onDetected(data);
       }
-      else await onDetectionFailed(Data(data: [{"message" : "Barcode detector $id failed to detect any barcodes in the supplied image"}]));
-
+      else if (!streamed) await onDetectionFailed(Data(data: [{"message" : "Barcode detector $id failed to detect any barcodes in the supplied image"}]));
       busy = false;
     }
   }

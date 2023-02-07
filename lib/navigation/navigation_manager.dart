@@ -6,7 +6,6 @@ import 'package:fml/template/template.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/overlay/overlay_manager.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:fml/dialog/service.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/page.dart';
 import 'package:fml/navigation/navigation_observer.dart';
@@ -323,7 +322,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     // missing template?
     if (S.isNullOrEmpty(template))
     {
-      await DialogService().show(type: DialogType.error, title: phrase.missingTemplate, description: url, buttons: [Text(phrase.ok)]);
+      //await DialogService().show(type: DialogType.error, title: phrase.missingTemplate, description: url, buttons: [Text(phrase.ok)]);
       return ok;
     }
 
@@ -502,7 +501,8 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
       }
       catch(e)
       {
-        await DialogService().show(type: DialogType.error, title: phrase.cannotLaunchURL, description: url, buttons: [Text(phrase.ok, style: TextStyle(color: Colors.white),)]);
+        await System.toast("${phrase.cannotLaunchURL} $url");
+        Log().error("${phrase.cannotLaunchURL} $url");
         ok = false;
       }
       return ok;

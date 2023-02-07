@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
-import 'package:fml/dialog/manager.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/observable/binding.dart';
@@ -347,9 +346,6 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
     // primary view
     Widget? view = drawerView != null ? drawer : Container(child: SingleChildScrollView( controller: _scrollController, child: Column(mainAxisSize: MainAxisSize.min, children: [...stackChildren])));
-
-    // wrap in dialog manager to allow alerts
-    view = DialogManager(child: view);
 
     // scaffold with safe area
     view = SafeArea(child: Scaffold(resizeToAvoidBottomInset: true, body: view));

@@ -426,6 +426,9 @@ return LayoutBuilder(builder: builder);
     /* Commit Changes on Loss of Focus */
     /////////////////////////////////////
     bool focused = focus.hasFocus;
+    if (focused && widget.model.typeahead == true) {
+      controller.selection = TextSelection(baseOffset: 0, extentOffset: controller.text.length);
+    }
     try {
       if (focused)
         System().commit = _commit;
@@ -440,7 +443,7 @@ return LayoutBuilder(builder: builder);
   {
     controller.text = controller.text.trim();
     // if the value does not match the option value, clear only when input is disabled.
-    if (controller.text != widget.model.value && !widget.model.inputenabled && widget.model.typeahead) controller.text = _extractText(_selected)!;
+    if (!widget.model.inputenabled && widget.model.typeahead) controller.text = _extractText(_selected)!;
 
   return true;
   }

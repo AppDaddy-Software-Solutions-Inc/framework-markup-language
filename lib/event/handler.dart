@@ -6,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart' deferred as fbauth;
 import 'package:firebase_core/firebase_core.dart' deferred as fbcore;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fml/dialog/service.dart';
+import 'package:fml/dialog/manager.dart';
 import 'package:fml/eval/evaluator.dart';
 import 'package:fml/eval/expressions.dart';
 import 'package:fml/event/manager.dart';
@@ -296,7 +296,7 @@ class EventHandler extends Eval
   /// Creates an alert dialog
   Future<bool> _handleEventAlert([dynamic type, dynamic title, dynamic message]) async
   {
-    await DialogService().show(type: S.toEnum(S.toStr(type), DialogType.values), title: S.toStr(title), description: S.toStr(message));
+    await model.framework?.show(type: S.toEnum(S.toStr(type), DialogType.values), title: S.toStr(title), description: S.toStr(message));
     return true;
   }
 
@@ -313,14 +313,14 @@ class EventHandler extends Eval
   Future<bool> _handleEventContinue([dynamic type,  dynamic title, dynamic message, dynamic phrase1, dynamic phrase2]) async
   {
     bool ok = true;
-    int? response = await DialogService().show(
+    int? response = await model.framework?.show(
         type: S.toEnum(S.toStr(type), DialogType.values),
         title: S.toStr(title), description: S.toStr(message),
         buttons: [
           Text(S.toStr(phrase1) ?? phrase.no, style: TextStyle(fontSize: 18, color: Colors.white)),
           Text(S.toStr(phrase2) ?? phrase.yes, style: TextStyle(fontSize: 18, color: Colors.white))]);
-    if (response == 0) ok = false;
-    if (response == 1) ok = true;
+    if (response == 0)  ok = false;
+    if (response == 1)  ok = true;
     if (response == -1) ok = false;
     return ok;
   }

@@ -1,5 +1,4 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/dialog/service.dart';
 import 'package:fml/log/manager.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helper/common_helpers.dart';
@@ -503,7 +502,7 @@ class Xml {
     catch(e)
     {
       document = null;
-      if (silent != true) DialogService().show(title: 'Error Parsing Xml in TryParse', description: e.toString());
+      //if (silent != true) System().toast(title: 'Error Parsing Xml in TryParse', description: e.toString());
       Log().exception(e, caller: 'xml.dart => XmlDocument tryParse(String xml)');
     }
     return document;

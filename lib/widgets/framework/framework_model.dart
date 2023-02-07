@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'dart:convert';
+import 'package:fml/dialog/manager.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
@@ -537,6 +538,12 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
            Platform.fileSaveAs(bytes, uri.url);
       else Platform.fileSaveAs(bytes, "template");
     }
+  }
+
+  Future<int?> show({DialogType? type, Image? image, String? title, String? description, Widget? content, List<Widget>? buttons}) async
+  {
+    if (context == null) return null;
+    return DialogManager.show(context!, type: type, image: image, title: title, description: description, content: content, buttons: buttons);
   }
 
   @override

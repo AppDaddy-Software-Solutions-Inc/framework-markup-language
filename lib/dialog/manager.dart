@@ -1,41 +1,16 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:fml/dialog/request.dart';
-import 'package:fml/dialog/response.dart';
-import 'package:fml/dialog/service.dart';
 import 'package:fml/system.dart';
 import 'alert.dart';
 
-class DialogManager extends StatefulWidget
+enum DialogType{ error, success, info, modal, warning, none }
+
+class DialogManager
 {
-  final Widget? child;
-  DialogManager({Key? key, this.child}) : super(key: key);
-
-  _DialogManagerState createState() => _DialogManagerState();
-}
-
-class _DialogManagerState extends State<DialogManager>
-{
-  DialogService _service = DialogService();
-
-  @override
-  void initState()
+  static void _showDialog(BuildContext context, Completer<AlertResponse> completer, DialogRequest request)
   {
-    super.initState();
-    _service.registerDialogListener(_showDialog);
-  }
-
-  @override
-  Widget build(BuildContext context)
-  {
-    return widget.child!;
-  }
-
-  void _showDialog(DialogRequest request)
-  {
-    /////////////////////
-    //* Build Buttons *//
-    /////////////////////
+    // build buttons
     List<DialogButton> buttons = [];
 
     int i = 0;
@@ -44,7 +19,11 @@ class _DialogManagerState extends State<DialogManager>
     for (final button in request.buttons!)
     {
       final idx = i;
-      DialogButton b = DialogButton(child: button, onPressed: () {_service.dialogComplete(AlertResponse(pressed: idx)); Navigator.of(context).pop();});
+      DialogButton b = DialogButton(child: button, onPressed: ()
+      {
+        completer.complete(AlertResponse(pressed: idx));
+        Navigator.of(context).pop();
+      });
       buttons.add(b);
       i++;
     }
@@ -75,10 +54,7 @@ class _DialogManagerState extends State<DialogManager>
 
     else
     {
-
-      ///////////////
-      //** Style **//
-      ///////////////
+      // style
       AlertStyle style = AlertStyle(
         animationType: Animations.grow,
         isCloseButton: true,
@@ -89,9 +65,7 @@ class _DialogManagerState extends State<DialogManager>
         alertElevation: 25,
       );
 
-      ////////////////////
-      //* Build Dialog *//
-      ////////////////////
+      // build dialog
       Types type = Types.none;
       if (request.type == DialogType.none)    type = Types.none;
       if (request.type == DialogType.info)    type = Types.info;
@@ -99,12 +73,41 @@ class _DialogManagerState extends State<DialogManager>
       if (request.type == DialogType.error)   type = Types.error;
       if (request.type == DialogType.success) type = Types.success;
       if (request.type == DialogType.modal)   type = Types.none;
-      Alert dialog = Alert(context: context, type: type, style: style, image: request.image, title: request.title ?? '', desc: request.description, content: request.content, buttons: buttons, closeFunction: () {_service.dialogComplete(AlertResponse(pressed: -1)); Navigator.of(context).pop();});
+      Alert dialog = Alert(context: context, type: type, style: style, image: request.image, title: request.title ?? '', desc: request.description, content: request.content, buttons: buttons, closeFunction: () {completer.complete(AlertResponse(pressed: -1)); Navigator.of(context).pop();});
 
-      //////////////////////
-      //* Display Dialog *//
-      //////////////////////
+      // display dialog
       dialog.show();
     }
   }
+
+  static Future<AlertResponse> _show(BuildContext context, DialogType? type, Image? image, String? title, String? description, Widget? content, List<Widget>? buttons) async
+  {
+    Completer<AlertResponse> completer = Completer<AlertResponse>();
+    _showDialog(context, completer, DialogRequest(type: type, image: image, title: title, description: description, content: content, buttons: buttons));
+    return completer.future;
+  }
+
+  static Future<int?> show(BuildContext context, {DialogType? type, Image? image, String? title, String? description, Widget? content, List<Widget>? buttons}) async
+  {
+    AlertResponse result = await _show(context, type, image, title, description, content, buttons);
+    return result.pressed;
+  }
+}
+
+class DialogRequest
+{
+  DialogType?          type;
+  final Image?         image;
+  final String?        title;
+  final String?        description;
+  final Widget?        content;
+  final List<Widget>?  buttons;
+
+  DialogRequest({this.type, this.image, this.title, this.description, this.content, this.buttons});
+}
+
+class AlertResponse
+{
+  final int? pressed;
+  AlertResponse({this.pressed});
 }

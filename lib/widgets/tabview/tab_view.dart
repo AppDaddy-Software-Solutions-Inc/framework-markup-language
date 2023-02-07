@@ -1,9 +1,10 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/dialog/service.dart';
 import 'package:fml/event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
+import 'package:fml/log/manager.dart';
 import 'package:fml/phrase.dart';
+import 'package:fml/system.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
@@ -136,7 +137,8 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
     var uri = URI.parse(url);
     if (uri == null)
     {
-      await DialogService().show(type: DialogType.error, title: phrase.missingTemplate, description: url, buttons: [Text(phrase.ok)]);
+      Log().error('Missing template $url');
+      System.toast('${phrase.missingTemplate} $url');
       return;
     }
 

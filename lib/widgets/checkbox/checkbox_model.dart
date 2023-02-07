@@ -1,8 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/datasources/iDataSource.dart';
-import 'package:fml/dialog/service.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:fml/widgets/form/iFormField.dart';
@@ -424,10 +422,7 @@ class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidge
     }
     catch(e)
     {
-      DialogService().show(
-          type: DialogType.error,
-          title: phrase.error,
-          description: e.toString());
+      Log().error('Error building list. Error is $e', caller: 'CHECKBOX');
     }
     return true;
   }

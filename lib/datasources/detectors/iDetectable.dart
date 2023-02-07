@@ -10,6 +10,6 @@ abstract class IDetectable
   DetectorSources? get source;
   bool? get enabled;
   bool get busy;
-  void detect(DetectableImage image);
+  void detect(DetectableImage image, bool streamed);
 }
 

@@ -56,7 +56,7 @@ class FilePickerView implements ABSTRACT.FilePicker
           DetectableImage detectable = DetectableImage.fromFilePath(result.files.single.path!);
 
           // detect
-          detectors.forEach((detector) => detector.detect(detectable));
+          detectors.forEach((detector) => detector.detect(detectable, false));
         }
 
         // return the file

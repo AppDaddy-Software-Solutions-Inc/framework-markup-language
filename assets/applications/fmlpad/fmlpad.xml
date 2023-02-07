@@ -8,32 +8,30 @@
 <FML>
     <!-- Remember, the template is a STACK by default and non scrollable! -->
     <!-- For scrolling, try out the SCROLL widget! -->
-    <CENTER>
-      <BOX expand="false" center="true" width="300">
-          <!-- title bar -->
-          <ROW expand="false" valign="center">
-             <IMAGE height="50" url="assets://applications/fmlpad/fmlpad.png"/>
-             <PAD right="10"/>
-             <TEXT value="**Welcome to FmlPad!**" size="24" color="#47C4FB"/>
-          </ROW>
-          <!-- text block -->
-          <PAD top="20"/>
-          <TEXT italic="true" wrap="true" value="**FmlPad** allows you to test and develop FML templates **realtime** _without the need to compile_ any code." color="white" size="14"/>
-          <!-- text block -->
-          <PAD top="10"/>
-          <TEXT italic="true" wrap="true" value="Try changing any of the markup text you see in the left pane editor and watch them change here as you type." color="white" size="14"/>
-          <!-- text block -->
-          <PAD top="10"/>
-          <TEXT italic="true" wrap="true" value="**FmlPad** itself it written entirely in **FML** with less than a few dozen simple lines of markup text!" color="white" size="14"/>
-          <!-- text block -->
-          <PAD top="20"/>
-          <ICON icon="face" color="#47C4FB"/>
-          <PAD top="5"/>
-          <TEXT italic="true" value="Happy Coding ..." color="white" size="14"/>
-          <PAD top="5"/>
-          <TEXT italic="true" value="**The FML Development Team**" color="white" size="14"/>
-      </BOX>
-    </CENTER>
+    <BOX center="true" pad="40">
+        <!-- title bar -->
+        <ROW center="true">
+            <IMAGE height="50" url="assets://applications/fmlpad/fmlpad.png"/>
+            <PAD right="10"/>
+            <TEXT value="**Welcome to FMLPad!**" style="h4" color="#47C4FB"/>
+        </ROW>
+        <!-- text block -->
+        <PAD top="20"/>
+        <TEXT  value="***FmlPad** allows you to test and develop FML templates **realtime** _without the need to compile_ any code.*" color="white" size="14"/>
+        <!-- text block -->
+        <PAD top="10"/>
+        <TEXT value="*Try changing any of the markup text you see in the left pane editor and watch them change here as you type.*" color="white" size="14"/>
+        <!-- text block -->
+        <PAD top="10"/>
+        <TEXT value="***FmlPad** itself it written entirely in **FML** with less than a few dozen simple lines of markup text!*" color="white" size="14"/>
+        <!-- text block -->
+        <PAD top="20"/>
+        <ICON icon="face" color="#47C4FB"/>
+        <PAD top="5"/>
+        <TEXT value="*Happy Templating ...*" color="white" size="14"/>
+        <PAD top="5"/>
+        <TEXT italic="true" value="**The FML Development Team**" color="white" size="14"/>
+    </BOX>
 </FML>]]>
    </value>
    </CONST>
@@ -68,6 +66,7 @@
             <PAD left="20"/>
 
             <!-- examples -->
+            <GET id="db1" url="{examples}" onsuccess="editor.set({this.response})"/>
             <GET id="dbExamples" url="https://fml.dev/fmlpad/examples.xml" root="EXAMPLES.EXAMPLE"/>
             <SELECT id="examples" bordercolor="#1E2835" value="1" data="dbExamples" hint="examples" width="200">
                 <OPTION value="{data.url}">

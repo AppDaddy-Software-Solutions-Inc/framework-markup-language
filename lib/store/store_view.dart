@@ -76,8 +76,6 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
 
   void onNavigatorPush({Map<String?, String>? parameters})
   {
-    print('push on store');
-
     // reset the theme
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     themeNotifier.setTheme(ThemeModel.defaultBrightness, ThemeModel.defaultColor);

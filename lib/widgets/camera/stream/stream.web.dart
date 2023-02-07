@@ -21,7 +21,7 @@ if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image
 
 View getView(model) => View(model);
 
-class View extends StatefulWidget implements STREAM.View {
+class View extends StatefulWidget implements STREAM.StreamView {
   final CAMERA.CameraModel model;
 
   View(this.model) : super(key: ObjectKey(model));

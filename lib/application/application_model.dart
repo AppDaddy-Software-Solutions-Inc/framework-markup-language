@@ -17,8 +17,7 @@ import 'package:fml/widgets/theme/theme_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:provider/provider.dart';
 import 'package:xml/xml.dart';
-
-import '../theme/themenotifier.dart';
+import 'package:fml/theme/themenotifier.dart';
 
 class ApplicationModel extends WidgetModel
 {

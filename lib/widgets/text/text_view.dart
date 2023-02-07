@@ -28,7 +28,7 @@ class _TextViewState extends State<TextView> implements IModelListener {
     gf.loadLibrary().then((value)
     {
       // rebuild the view
-      setState(()
+      if (mounted) setState(()
       {
         gfloaded = true;
       });

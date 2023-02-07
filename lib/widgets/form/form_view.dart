@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
-import 'package:fml/dialog/service.dart';
+import 'package:fml/dialog/manager.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/phrase.dart';
@@ -122,7 +122,7 @@ class _FormViewState extends State<FormView> implements IModelListener,  GPS.IGp
 
     if (dirty)
     {
-      int? response = await DialogService().show(type: DialogType.info, title: phrase.saveBeforeExit, buttons: [Text(phrase.yes, style: TextStyle(fontSize: 18, color: Theme.of(context).colorScheme.outline)),Text(phrase.no, style: TextStyle(fontSize: 18, color: Theme.of(context).colorScheme.outline))]);
+      int? response = await widget.model.framework?.show(type: DialogType.info, title: phrase.saveBeforeExit, buttons: [Text(phrase.yes, style: TextStyle(fontSize: 18, color: Theme.of(context).colorScheme.outline)),Text(phrase.no, style: TextStyle(fontSize: 18, color: Theme.of(context).colorScheme.outline))]);
       exit = (response == 1);
     }
     return exit;
@@ -222,7 +222,7 @@ class _FormViewState extends State<FormView> implements IModelListener,  GPS.IGp
       } catch(e) {
         Log().debug('Unable to scrollTo mandatory field');
       }
-      await DialogService().show(type: DialogType.warning, title: phrase.warning, description: msg);
+      await System.toast("${phrase.warning} $msg");
       return false;
     }
 
@@ -248,7 +248,7 @@ class _FormViewState extends State<FormView> implements IModelListener,  GPS.IGp
       } catch(e) {
         Log().debug('Unable to scrollTo mandatory field');
       }
-      await DialogService().show(type: DialogType.warning, title: phrase.warning, description: msg);
+      await System.toast("${phrase.warning}: $msg");
       return false;
     }
 

@@ -1,8 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/datasources/iDataSource.dart';
-import 'package:fml/dialog/service.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:fml/widgets/form/iFormField.dart';
@@ -257,7 +255,7 @@ class SliderModel extends FormFieldModel implements IFormField, IViewableWidget
 
   bool onException(IDataSource source, Exception e)
   {
-    DialogService().show(type: DialogType.error, title: phrase.error, description: e.toString());
+    Log().error('Error building slider. Error is $e');
     return super.onDataSourceException(source, e);
   }
 

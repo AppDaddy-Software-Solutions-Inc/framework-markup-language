@@ -2,7 +2,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:fml/dialog/service.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:open_filex/open_filex.dart';
@@ -85,7 +84,7 @@ class Platform
 
   static dynamic fileSaveAsFromBlob(dynamic blob, String filepath)
   {
-    DialogService().show(type: DialogType.error, title: "File Save As Blob not supported on Mobile");
+    System.toast("File Save As Blob not supported on Mobile");
   }
 
   static void openPrinterDialog()

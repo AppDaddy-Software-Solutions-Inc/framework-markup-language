@@ -71,4 +71,16 @@ class TriggerModel extends WidgetModel {
     }
     return true;
   }
+
+  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
+  {
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+    switch (function)
+    {
+      case 'trigger':
+        return await trigger();
+    }
+    return super.execute(caller, propertyOrFunction, arguments);
+  }
 }

@@ -28,7 +28,12 @@ class Platform
   {
     // initialize the app root folder
     if (isWeb)     return null;
-    if (isDesktop) return dirname(io.Platform.resolvedExecutable);
+    if (isDesktop)
+    {
+      if (useragent == "macos")
+           return (await getApplicationDocumentsDirectory()).path;
+      else return dirname(io.Platform.resolvedExecutable);
+    }
     if (isMobile)  return (await getApplicationDocumentsDirectory()).path;
     return null;
   }

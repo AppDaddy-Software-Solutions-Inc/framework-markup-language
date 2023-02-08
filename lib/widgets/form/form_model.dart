@@ -21,21 +21,21 @@ import 'package:fml/helper/common_helpers.dart';
 
 abstract class IForm
 {
-  ///////////
-  /* Dirty */
-  ///////////
+  ///
+  // Dirty 
+  ///
   bool? get dirty;
   set dirty (bool? b);
   BooleanObservable? get dirtyObservable;
 
-  ///////////
-  /* Clean */
-  ///////////
+  ///
+  // Clean 
+  ///
   set clean (bool b);
 
-  //////////////
-  /* Routines */
-  //////////////
+  //
+  // Routines 
+  //
   Future<bool> save();
   Future<bool> complete();
   Future<bool> onComplete(BuildContext context);
@@ -65,9 +65,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
   }
   List<String>? get postbrokers => _postbrokers;
 
-  ////////////
-  /* status */
-  ////////////
+  // status
   StringObservable? _status;
   set status (dynamic v)
   {
@@ -89,9 +87,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
   BooleanObservable? _completed;
   bool get completed => (S.toEnum(status, StatusCodes.values) == StatusCodes.complete);
 
-  ///////////////
-  /* editable */
-  ///////////////
+  // editable 
   BooleanObservable? _editable;
   set editable (dynamic v)
   {
@@ -106,9 +102,8 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
   }
   bool? get editable => _editable?.get();
 
-  ///////////////
-  /* autosave */
-  ///////////////
+
+  // autosave 
   BooleanObservable? _autosave;
   set autosave (dynamic v)
   {
@@ -127,9 +122,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     return _autosave?.get();
   }
 
-  ///////////////
-  /* mandatory */
-  ///////////////
+  // mandatory
   BooleanObservable? _mandatory;
   set mandatory (dynamic v)
   {
@@ -144,9 +137,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
   }
   bool? get mandatory => _mandatory?.get();
 
-  ///////////
-  /* dirty */
-  ///////////
+  // dirty 
   BooleanObservable? _dirty;
   set dirty (dynamic v)
   {
@@ -184,9 +175,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     forms.forEach((form)   => form.clean  = false);
   }
 
-  /////////
-  /* gps */
-  /////////
+  // gps 
   BooleanObservable? _geocode;
   set geocode (dynamic v)
   {
@@ -220,9 +209,8 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
   }
   String? get oncomplete => _oncomplete?.get();
 
-  ////////////////////
-  /* Show Exception */
-  ////////////////////
+  
+  // Show Exception
   BooleanObservable? _showexception;
   set showexception (dynamic v)
   {
@@ -247,29 +235,28 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
         {
           String? value;
 
-          ////////////////////
-          /* List of Values */
-          ////////////////////
+          
+          // List of Values 
+          
           if (field.value is List) field.value.forEach((v)
           {
             value = (value == null) ? v.toString() : value! + "," + v.toString();
           });
 
-          //////////////////
-          /* Single Value */
-          //////////////////
+          //
+          // Single Value 
+          //
           else value = field.value.toString();
 
-          ///////////////////
-          /* Set the Value */
-          ///////////////////
+          ///
+          // Set the Value 
+          ///
           if(field.id != null) _map[field.id!] = value;
         }
       });
 
     return _map;
   }
-
 
   FormModel(WidgetModel parent, String? id, {String? type, String? title, dynamic status, dynamic visible, dynamic autosave, dynamic mandatory, dynamic geocode, dynamic oncomplete, dynamic showexception}) : super(parent, id)
   {
@@ -349,9 +336,9 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     // apply answers
       for (XmlElement node in nodes)
       {
-        ///////////
-        /* Value */
-        ///////////
+        ///
+        // Value 
+        ///
         String? answer = Xml.getText(node);
         String? id = Xml.get(node: node, tag: 'id');
         IFormField field = getField(id)!;
@@ -465,33 +452,33 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
 
     bool ok = true;
 
-    //////////////////
-    /* Set Complete */
-    //////////////////
+    //
+    // Set Complete 
+    //
     status = StatusCodes.complete;
 
-    ////////////////////
-    /* Post Sub-Forms */
-    ////////////////////
+    
+    // Post Sub-Forms 
+    
     for (IForm form in forms)
     {
       ok = await form.complete();
       if (!ok) break;
     }
 
-    ///////////////////
-    /* Save the Form */
-    ///////////////////
+    ///
+    // Save the Form 
+    ///
     HIVE.Form? form = await _save();
 
-    ///////////////////
-    /* Post the Form */
-    ///////////////////
+    ///
+    // Post the Form 
+    ///
     if (ok) ok = await _post(form);
 
-    ///////////////
-    /* Set Clean */
-    ///////////////
+    ///
+    // Set Clean 
+    ///
     if (ok == true) clean = true;
 
     busy = false;
@@ -517,9 +504,9 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
   {
     bool ok = true;
 
-    ////////////////////////
-    /* Remove Old Answers */
-    ////////////////////////
+    
+    // Remove Old Answers 
+    
     node.children.removeWhere((child)
     {
       if ((child is XmlElement) && (child.name.local== "ANSWER"))
@@ -527,9 +514,9 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
       else return false;
     });
 
-    ////////////////////////
-    /* Insert New Answers */
-    ////////////////////////
+    
+    // Insert New Answers 
+    
     fields.forEach((field) => _insertAnswers(node, field));
 
     return ok;
@@ -601,14 +588,14 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
   {
     if (node == null) return null;
 
-    ///////////////////////
-    /* Serialize Answers */
-    ///////////////////////
+    ///
+    // Serialize Answers 
+    ///
     _serializeAnswers(node, fields);
 
-    //////////////////////////
-    /* Return Formatted Xml */
-    //////////////////////////
+    //
+    // Return Formatted Xml 
+    //
     return node.toXmlString(pretty: true);
   }
 
@@ -665,9 +652,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
                 // value
                 try
                 {
-                  //////////////
-                  /* Xml Data */
-                  //////////////
+                  // Xml Data
                   if ((field is InputModel) && (field.format == InputFormats.xml))
                   {
                     var document = XmlDocument.parse(value);
@@ -676,14 +661,11 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
                     node.children.add(e);
                   }
 
-                  ////////////////////////////
-                  /* Non-XML? Wrap in CDATA */
-                  ////////////////////////////
+                  
+                  // Non-XML? Wrap in CDATA
                   else if (Xml.hasIllegalCharacters(value)) node.children.add(XmlCDATA(value));
 
-                  /////////////////
-                  /* Normal Text */
-                  /////////////////
+                  // Normal Text
                   else node.children.add(XmlText(value));
                 }
                 on XmlException catch(e)
@@ -691,33 +673,27 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
                   node.children.add(XmlCDATA(e.message));
                 }
 
-                //////////////
-                /* Add Node */
-                //////////////
+                //
+                // Add Node 
+                //
                 root.children.add(node);
               });
             }
 
             else
             {
-              ///////////////////
-              /* Build Element */
-              ///////////////////
+              // Build Element 
               XmlElement node;
               String name = field.field ?? field.id ?? "";
               try
               {
-                ////////////////////////
-                /* Valid Element Name */
-                ////////////////////////
+                // Valid Element Name
                 if (!S.isNumber(name.substring(0,1)))
                 {
                   node = XmlElement(XmlName(name));
                 }
 
-                ///////////////////////////
-                /* In-Valid Element Name */
-                ///////////////////////////
+                // In-Valid Element Name 
                 else
                 {
                   node = XmlElement(XmlName("FIELD"));
@@ -726,29 +702,22 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
               }
               catch(e)
               {
-                ///////////////////////////
-                /* In-Valid Element Name */
-                ///////////////////////////
+                // In-Valid Element Name
                 node = XmlElement(XmlName("FIELD"));
                 node.attributes.add(XmlAttribute(XmlName('id'), name));
               }
 
-              ////////////////////
-              /* Add Field Type */
-              ////////////////////
+              
+              // Add Field Type
               if (!S.isNullOrEmpty(field.elementName)) node.attributes.add(XmlAttribute(XmlName('type'), field.elementName));
 
-              //////////////
-              /* Add Node */
-              //////////////
+              // Add Node
               root.children.add(node);
             }
           }
         });
 
-      //////////////
-      /* Set Body */
-      //////////////
+      // Set Body
       return document.toXmlString(pretty: true);
     }
 
@@ -759,26 +728,27 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     }
   }
 
+  Future<bool> _validate() async
+  {
+    // Force Close
+    WidgetModel.unfocus();
+
+    // Commit the Form
+    return await commit();
+  }
+
   Future<HIVE.Form?> _save() async
   {
-    ////////////////////////
-    /* Serialize the Form */
-    ////////////////////////
+    // Serialize the Form
     await serialize(this.element, fields);
 
-    /////////////////////////
-    /* Serialize Outer Xml */
-    /////////////////////////
+    // Serialize Outer Xml
     String xml = framework!.element!.toXmlString(pretty: true);
 
-    /////////////////
-    /* Lookup Form */
-    /////////////////
+    // Lookup Form
     HIVE.Form? form = await HIVE.Form.find(framework!.key);
 
-    /////////////////////////
-    //** Update the Form **//
-    /////////////////////////
+    // Update the Form
     if (form != null)
     {
       Log().info('Updating Form');
@@ -790,9 +760,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
       await form.update();
     }
 
-    /////////////////////////
-    //** Insert the Form **//
-    /////////////////////////
+    // Insert the Form
     else
     {
       Log().info('Inserting New form');
@@ -800,9 +768,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
       await form.insert();
     }
 
-    ////////////////
-    /* Mark Clean */
-    ////////////////
+    // Mark Clean
     clean = true;
 
     return form;
@@ -860,6 +826,9 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
 
       case 'commit':
         return await _post(null, commit: false);
+
+      case 'validate':
+        return await _validate();
 
       case 'clear':
         return clear();

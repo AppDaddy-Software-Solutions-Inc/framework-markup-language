@@ -34,9 +34,7 @@ class _FormViewState extends State<FormView> implements IModelListener,  GPS.IGp
 
   onGpsData({GPS.Payload? payload})
   {
-    ///////////////////////////
-    /* Save Current Location */
-    ///////////////////////////
+    // Save Current Location
     if (payload != null) System().currentLocation = payload;
   }
 
@@ -200,9 +198,7 @@ class _FormViewState extends State<FormView> implements IModelListener,  GPS.IGp
 
   Future<bool> validate() async
   {
-    ///////////////////
-    /* Check Missing */
-    ///////////////////
+    // Check Missing
     List<IFormField>? missing = await widget.model.missing();
     if (missing != null)
     {
@@ -226,9 +222,7 @@ class _FormViewState extends State<FormView> implements IModelListener,  GPS.IGp
       return false;
     }
 
-    //////////////////
-    /* Check Alarms */
-    //////////////////
+    // Check Alarms
     List<IFormField>? alarming;// = await widget.model.alarming();
     if (alarming != null)
     {
@@ -259,29 +253,19 @@ class _FormViewState extends State<FormView> implements IModelListener,  GPS.IGp
   {
     bool ok = true;
 
-    ///////////////////////////
-    /* Mark Event as Handled */
-    ///////////////////////////
+    // Mark Event as Handled
     event.handled = true;
 
-    /////////////////
-    /* Force Close */
-    /////////////////
+    // Force Close
     WidgetModel.unfocus();
 
-    ///////////////////////
-    /* Validate the Data */
-    ///////////////////////
+    // Validate the Data
     if (ok) ok = await validate();
 
-    ///////////////////
-    /* Save the Data */
-    ///////////////////
+    // Save the Data
     if (ok) ok = await widget.model.save();
 
-    //////////////////
-    /* Show Success */
-    //////////////////
+    // Show Success
     if (ok)
     {
        final snackbar = SnackBar(content: Text(phrase.formSaved), duration: Duration(seconds: 1), behavior: SnackBarBehavior.floating, elevation: 5);
@@ -295,24 +279,16 @@ class _FormViewState extends State<FormView> implements IModelListener,  GPS.IGp
   {
     bool ok = true;
 
-    ////////////////////////
-    /* Specific Complete? */
-    ////////////////////////
+    // Specific Complete?
     if ((event.parameters != null) && (!S.isNullOrEmpty(event.parameters!['id'])) && (event.parameters!['id'] != widget.model.id)) return ok;
 
-    ///////////////////////////
-    /* Mark Event as Handled */
-    ///////////////////////////
+    // Mark Event as Handled
     event.handled = true;
 
-    /////////////////
-    /* Force Close */
-    /////////////////
+    // Force Close
     WidgetModel.unfocus();
 
-    /////////////////////
-    /* Commit the Form */
-    /////////////////////
+    // Commit the Form
     if (ok) ok = await widget.model.commit();
 
     return ok;
@@ -322,40 +298,26 @@ class _FormViewState extends State<FormView> implements IModelListener,  GPS.IGp
   {
     bool ok = true;
 
-    ////////////////////////
-    /* Specific Complete? */
-    ////////////////////////
+    // Specific Complete?
     if ((event.parameters != null) && (!S.isNullOrEmpty(event.parameters!['id'])) && (event.parameters!['id'] != widget.model.id)) return ok;
 
-    ///////////////////////////
-    /* Mark Event as Handled */
-    ///////////////////////////
+    // Mark Event as Handled
     event.handled = true;
 
-    /////////////////
-    /* Force Close */
-    /////////////////
+    // Force Close
     WidgetModel.unfocus();
 
-    /////////////
-    /* Confirm */
-    /////////////
+    // Confirm
     int response = 0;//await DialogService().show(type: DialogType.info, title: phrase.confirmFormComplete, buttons: [Text(phrase.yes, style: TextStyle(fontSize: 18, color: Colors.white)),Text(phrase.no, style: TextStyle(fontSize: 18, color: Colors.white))]);
     ok = (response == 0);
 
-    ///////////////////////
-    /* Validate the Data */
-    ///////////////////////
+    // Validate the Data
     if (ok) ok = await validate();
 
-    ///////////////////////
-    /* Complete the Form */
-    ///////////////////////
+    // Complete the Form
     if (ok) ok = await widget.model.complete();
 
-    /////////////////////
-    /* Fire OnComplete */
-    /////////////////////
+    // Fire OnComplete
     if (ok) widget.model.onComplete(context);
 
     return ok;
@@ -365,14 +327,10 @@ class _FormViewState extends State<FormView> implements IModelListener,  GPS.IGp
   {
     bool ok = true;
 
-    ///////////////////////////
-    /* Mark Event as Handled */
-    ///////////////////////////
+    // Mark Event as Handled
     event.handled = true;
-
-    ////////////////////
-    /* Clear the Form */
-    ////////////////////
+    
+    // Clear the Form
     if (ok) ok = await widget.model.clear();
 
     return ok;
@@ -387,10 +345,10 @@ class _FormViewState extends State<FormView> implements IModelListener,  GPS.IGp
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // Set Build Constraints in the [WidgetModel]
-      widget.model.minwidth  = constraints.minWidth;
-      widget.model.maxwidth  = constraints.maxWidth;
-      widget.model.minheight = constraints.minHeight;
-      widget.model.maxheight = constraints.maxHeight;
+    widget.model.minwidth  = constraints.minWidth;
+    widget.model.maxwidth  = constraints.maxWidth;
+    widget.model.minheight = constraints.minHeight;
+    widget.model.maxheight = constraints.maxHeight;
 
     // Check if widget is visible before wasting resources on building it
     if ((widget.model.children == null) || ((!widget.model.visible))) return Offstage();
@@ -404,19 +362,13 @@ class _FormViewState extends State<FormView> implements IModelListener,  GPS.IGp
     });
     if (children.isEmpty) children.add(Container());
 
-    ////////////
-    /* Center */
-    ////////////
+    // Center
     dynamic view = children.length == 1 ? children[0] : Column(children: children, crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.max);
 
-    ////////////////////
-    /* Close Keyboard */
-    ////////////////////
+    // Close Keyboard
     //final gesture = GestureDetector(onTap: () => WidgetModel.unfocus(), child: view);
 
-    /////////////////
-    /* Detect Exit */
-    /////////////////
+    // Detect Exit
     final willpop = WillPopScope(onWillPop: quit, child: view);
 
     /// Busy / Loading Indicator
@@ -424,9 +376,7 @@ class _FormViewState extends State<FormView> implements IModelListener,  GPS.IGp
 
     view = Stack(children: [willpop, Center(child: busy)]);
 
-    /////////////////
-    /* Constrained */
-    /////////////////
+    // Constrained
     if (widget.model.constrained)
     {
       var constraints = widget.model.getConstraints();

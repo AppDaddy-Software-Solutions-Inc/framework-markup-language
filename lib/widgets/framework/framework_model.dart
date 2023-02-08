@@ -439,14 +439,20 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
   }
 
   @override
-  dispose()
+  // framework level dispose can happen asynchronously
+  void dispose() async
   {
     disposed = true;
 
-    Log().debug('dispose called on => <TEMPLATE url="$url">');
+    Log().debug('dispose called on => <FML name="$templateName" url="$url"/>');
 
+    // dispose header model
     header?.dispose();
+
+    // dispose footer model
     footer?.dispose();
+
+    // dispose drawer model
     drawer?.dispose();
 
     // dispose of scope
@@ -455,6 +461,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
     // clear event listeners
     manager.listeners.clear();
 
+    // cleanup children
     super.dispose();
   }
 

@@ -31,7 +31,45 @@ class Platform
     if (isDesktop)
     {
       if (useragent == "macos")
-           return (await getApplicationDocumentsDirectory()).path;
+      {
+        try
+        {
+          var path = (await getApplicationDocumentsDirectory()).path;
+          Log().info("Found path on getApplicationDocumentsDirectory -> $path");
+          return path;
+        }
+        catch(e)
+        {
+          Log().error("Error getting getApplicationDocumentsDirectory(). Error is $e");
+        }
+
+        try
+        {
+          var path = (await getExternalStorageDirectory())?.path;
+          if (path != null)
+          {
+            Log().info("Found path on getExternalStorageDirectory -> $path");
+            return path;
+          }
+        }
+        catch(e)
+        {
+          Log().error("Error getting getExternalStorageDirectory(). Error is $e");
+        }
+
+        try
+        {
+          var path = (await getApplicationSupportDirectory()).path;
+          Log().info("Found path on getApplicationSupportDirectory -> $path");
+          return path;
+        }
+        catch(e)
+        {
+          Log().error("Error getting getApplicationSupportDirectory(). Error is $e");
+        }
+
+        return null;
+      }
       else return dirname(io.Platform.resolvedExecutable);
     }
     if (isMobile)  return (await getApplicationDocumentsDirectory()).path;

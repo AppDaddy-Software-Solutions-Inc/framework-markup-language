@@ -39,11 +39,15 @@
     <HEADER height="50">
         <BOX color="#1E2835" valign="center" halign="left" layout="row">
 
-            <PAD left="10"/>
+            <!-- back button -->
+            <PAD left="5"/>
+            <BTN onclick="back()">
+                <ICON icon="chevron_left" color="white" size="20"/>
+            </BTN>
 
             <!-- logo -->
+            <PAD left="5"/>
             <IMAGE url="assets://images/fml-logo.png" height="30"/>
-            <PAD left="10"/>
             <TEXT value="FmlPad" size="20" color="white"/>
             <PAD left="50"/>
 

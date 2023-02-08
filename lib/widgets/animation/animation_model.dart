@@ -292,15 +292,16 @@ class AnimationModel extends DecoratedWidgetModel implements IViewableWidget
 
     switch (function)
     {
-      case "animate" :
-
+      case "start" :
         var view = findListenerOfExactType(AnimationViewState);
-        if (view is AnimationViewState)
-        {
-          bool start = S.toBool(S.item(arguments, 0)) ?? true;
-          start ? view.start() : view.stop();
-        }
+        if (view is AnimationViewState) view.start();
         return true;
+
+      case "stop" :
+        var view = findListenerOfExactType(AnimationViewState);
+        if (view is AnimationViewState) view.stop();
+        return true;
+
     }
     return super.execute(caller, propertyOrFunction, arguments);
   }

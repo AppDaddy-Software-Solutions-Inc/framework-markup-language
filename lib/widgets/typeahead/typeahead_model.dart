@@ -138,6 +138,24 @@ class TypeaheadModel extends FormFieldModel implements IFormField, IViewableWidg
     return _bordercolor?.get();
   }
 
+  //////////////////
+  /* Border Color */
+  //////////////////
+  ColorObservable? _textcolor;
+  set textcolor(dynamic v) {
+    if (_textcolor != null) {
+      _textcolor!.set(v);
+    } else if (v != null) {
+      _textcolor = ColorObservable(
+          Binding.toKey(id, 'textcolor'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  Color? get textcolor {
+    return _textcolor?.get();
+  }
+
   // prototype
   String? prototype;
 
@@ -239,6 +257,7 @@ class TypeaheadModel extends FormFieldModel implements IFormField, IViewableWidg
         dynamic inputenabled,
         dynamic value,
         dynamic defaultValue,
+        dynamic textColor,
         dynamic width,
         dynamic onchange,
         dynamic post,
@@ -251,7 +270,7 @@ class TypeaheadModel extends FormFieldModel implements IFormField, IViewableWidg
         dynamic radius,
         dynamic matchtype,
         dynamic label,
-        })
+      })
       : super(parent, id)
   {
     // instantiate busy observable
@@ -262,6 +281,7 @@ class TypeaheadModel extends FormFieldModel implements IFormField, IViewableWidg
     if (color         != null)  this.color        = color;
     if (radius        != null)  this.radius       = radius;
     if (borderwidth   != null)  this.borderwidth  = borderwidth;
+    if (textcolor   != null)    this.textcolor    = textcolor;
     if (border        != null)  this.border       = border;
     if (hint          != null)  this.hint         = hint;
     if (editable      != null)  this.editable     = editable;
@@ -382,6 +402,7 @@ class TypeaheadModel extends FormFieldModel implements IFormField, IViewableWidg
     return true;
   }
 
+
   @override
   onDataSourceException(IDataSource source, Exception exception) {
     // Clear the List - Olajos 2021-09-04
@@ -404,10 +425,10 @@ class TypeaheadModel extends FormFieldModel implements IFormField, IViewableWidg
     options.forEach((option)
     {
       if (option.value == value)
-        {
-          data = option.data;
-          this.label = option.labelValue;
-        }
+      {
+        data = option.data;
+        this.label = option.labelValue;
+      }
     });
     this.data = data;
   }

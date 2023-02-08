@@ -106,6 +106,7 @@ import 'package:fml/widgets/treeview/tree_model.dart';
 import 'package:fml/widgets/treeview/node/tree_node_model.dart';
 import 'package:fml/widgets/trigger/condition/trigger_condition_model.dart';
 import 'package:fml/widgets/trigger/trigger_model.dart';
+import 'package:fml/widgets/typeahead/typeahead_model.dart';
 import 'package:fml/widgets/variable/variable_model.dart';
 import 'package:fml/widgets/html/html_model.dart';
 import 'package:fml/widgets/span/span_model.dart';
@@ -553,7 +554,7 @@ class WidgetModel implements IDataSourceListener
         break;
 
       case "option":
-        if (parent is SelectModel || parent is CheckboxModel || parent is RadioModel) model = OptionModel.fromXml(parent, node);
+        if (parent is SelectModel || parent is CheckboxModel || parent is RadioModel || parent is TypeaheadModel) model = OptionModel.fromXml(parent, node);
         break;
 
       case "pad": // Preferred Case.
@@ -725,6 +726,11 @@ class WidgetModel implements IDataSourceListener
       case "trigger":
         model = TriggerModel.fromXml(parent, node);
         break;
+
+      case "typeahead":
+        model = TypeaheadModel.fromXml(parent, node);
+        break;
+
 
       case "variable":
       case "var":

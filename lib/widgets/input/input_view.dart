@@ -336,6 +336,8 @@ class _InputViewState extends State<InputView> with WidgetsBindingObserver imple
     String? hint = widget.model.hint;
     int? length = widget.model.length;
     int? lines = widget.model.lines;
+    int? maxlines = widget.model.maxlines;
+
 
     if(!S.isNullOrEmpty(widget.model.obscure)) obscure = widget.model.obscure;
     if (obscure == true) lines = 1;
@@ -467,6 +469,8 @@ class _InputViewState extends State<InputView> with WidgetsBindingObserver imple
         controller: widget.model.controller,
         focusNode: focus,
         autofocus: false,
+        autocorrect: false,
+        expands: widget.model.expand == true,
         obscureText: obscure!,
         keyboardType: (keyboardtype != null)
             ? (keyboardTypes[keyboardtype.toLowerCase()] ??
@@ -492,9 +496,10 @@ class _InputViewState extends State<InputView> with WidgetsBindingObserver imple
         }
 
         ,
-        textAlignVertical: TextAlignVertical.center,
+        textAlignVertical: widget.model.expand == true ? TextAlignVertical.top : TextAlignVertical.center,
         maxLength: length,
-        maxLines: obscure! ? 1 : lines ?? 1,
+        maxLines: widget.model.expand == true ? null : obscure! ? 1 : widget.model.maxlines != null ?  widget.model.maxlines : widget.model.wrap == true ? null : lines != null ? lines : 1,
+        minLines: widget.model.expand == true ? null : lines ?? 1,
         maxLengthEnforcement: length != null
             ? MaxLengthEnforcement.enforced
             : MaxLengthEnforcement.none,
@@ -723,7 +728,7 @@ class _InputViewState extends State<InputView> with WidgetsBindingObserver imple
     ///////////
     /* Width */
     ///////////
-    var width = widget.model.width ?? 200;
+    var width = widget.model.expand == true ? double.infinity : widget.model.width ?? 200;
 
     ////////////////////
     /* Constrain Size */

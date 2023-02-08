@@ -1,10 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:fml/dialog/manager.dart';
-import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/phrase.dart';
-import 'package:fml/event/event.dart' ;
 import 'package:fml/widgets/form/iFormField.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -17,7 +15,6 @@ import 'package:fml/datasources/gps/iGpsListener.dart'  as GPS;
 import 'package:fml/widgets/form/form_model.dart' as FORM;
 import 'package:fml/widgets/pager/page/pager_page_model.dart' as PAGE;
 import 'package:fml/widgets/pager/pager_model.dart' as PAGER;
-import 'package:fml/helper/common_helpers.dart';
 
 class FormView extends StatefulWidget
 {
@@ -25,18 +22,16 @@ class FormView extends StatefulWidget
   FormView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _FormViewState createState() => _FormViewState();
+  FormViewState createState() => FormViewState();
 }
 
-class _FormViewState extends State<FormView> implements IModelListener,  GPS.IGpsListener
+class FormViewState extends State<FormView> implements IModelListener,  GPS.IGpsListener
 {
   BUSY.BusyView? busy;
 
   onGpsData({GPS.Payload? payload})
   {
-    ///////////////////////////
-    /* Save Current Location */
-    ///////////////////////////
+    // Save Current Location
     if (payload != null) System().currentLocation = payload;
   }
 
@@ -57,12 +52,6 @@ class _FormViewState extends State<FormView> implements IModelListener,  GPS.IGp
   @override
   didChangeDependencies()
   {
-    // register event listeners
-    EventManager.of(widget.model)?.registerEventListener(EventTypes.save,     onSave);
-    EventManager.of(widget.model)?.registerEventListener(EventTypes.complete, onComplete);
-    EventManager.of(widget.model)?.registerEventListener(EventTypes.validate, onValidate);
-    EventManager.of(widget.model)?.registerEventListener(EventTypes.clear,    onClear);
-
     super.didChangeDependencies();
   }
 
@@ -72,18 +61,6 @@ class _FormViewState extends State<FormView> implements IModelListener,  GPS.IGp
     super.didUpdateWidget(oldWidget);
     if ((oldWidget.model != widget.model))
     {
-      // remove old event listeners
-      EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.save,     onSave);
-      EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.complete, onComplete);
-      EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.validate, onValidate);
-      EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.clear,    onClear);
-
-      // register new event listeners
-      EventManager.of(widget.model)?.registerEventListener(EventTypes.save,     onSave);
-      EventManager.of(widget.model)?.registerEventListener(EventTypes.complete, onComplete);
-      EventManager.of(widget.model)?.registerEventListener(EventTypes.validate, onValidate);
-      EventManager.of(widget.model)?.registerEventListener(EventTypes.clear,    onClear);
-
       // remove old model listener
       oldWidget.model.removeListener(this);
 
@@ -96,12 +73,6 @@ class _FormViewState extends State<FormView> implements IModelListener,  GPS.IGp
   void dispose()
   {
     widget.model.removeListener(this);
-
-    // remove event listeners
-    EventManager.of(widget.model)?.removeEventListener(EventTypes.save,     onSave);
-    EventManager.of(widget.model)?.removeEventListener(EventTypes.complete, onComplete);
-    EventManager.of(widget.model)?.removeEventListener(EventTypes.validate, onValidate);
-    EventManager.of(widget.model)?.removeEventListener(EventTypes.clear,    onClear);
 
     // Stop Listening to GPS
     System().gps.removeListener(this);
@@ -128,269 +99,58 @@ class _FormViewState extends State<FormView> implements IModelListener,  GPS.IGp
     return exit;
   }
 
-  void flipToPage(IFormField model)
+  void show(IFormField model)
   {
-    bool found = false;
-
-    for (IFormField field in widget.model.fields)
+    try
     {
-      if (field == model)
+      bool found = false;
+
+      for (IFormField field in widget.model.fields)
       {
-        found = true;
-        try {
-          List<dynamic>? pagers = (field as WidgetModel).findAncestorsOfExactType(PAGE.PagerPageModel);
-          if (pagers != null) {
-            Log().debug('found ${pagers.length} page(s)');
-            for (PAGE.PagerPageModel page in pagers as Iterable<PAGE.PagerPageModel>) { // ensure we can handle pagers within pagers, probably a bit extreme
-              PAGER.PagerModel pageParent = page.parent as PAGER.PagerModel; // (parent as PAGER.PagerModel).View();
-              int? index;
-              for (int i = 0; i < pageParent.pages.length; i++) {
-                if (pageParent.pages[i] == page) {
-                  index = i;
-                  i = pageParent.pages.length;
+        if (field == model)
+        {
+          found = true;
+          try {
+            List<dynamic>? pagers = (field as WidgetModel).findAncestorsOfExactType(PAGE.PagerPageModel);
+            if (pagers != null) {
+              Log().debug('found ${pagers.length} page(s)');
+              for (PAGE.PagerPageModel page in pagers as Iterable<PAGE.PagerPageModel>) { // ensure we can handle pagers within pagers, probably a bit extreme
+                PAGER.PagerModel pageParent = page.parent as PAGER.PagerModel; // (parent as PAGER.PagerModel).View();
+                int? index;
+                for (int i = 0; i < pageParent.pages.length; i++) {
+                  if (pageParent.pages[i] == page) {
+                    index = i;
+                    i = pageParent.pages.length;
+                  }
+                }
+                if (index != null && pageParent.controller != null) { // found page with field to go to within pager
+                  pageParent.controller!.jumpToPage(index);
                 }
               }
-              if (index != null && pageParent.controller != null) { // found page with field to go to within pager
-                pageParent.controller!.jumpToPage(index);
-              }
             }
-          }
-        } catch(e) {}
-        break;
+          } catch(e) {}
+          break;
+        }
       }
+      if (found == false)
+        Log().debug('Unable to find field');
     }
-    if (found == false)
-      Log().debug('Unable to find field');
-  }
-
-  void uncollapseList(IFormField model)
-  {
-    bool found = false;
-
-    for (IFormField field in widget.model.fields)
+    catch(e)
     {
-      if (field == model)
-      {
-        found = true;
-        try {
-          List<dynamic>? pagers = (field as WidgetModel).findAncestorsOfExactType(PAGE.PagerPageModel);
-          if (pagers != null) {
-            Log().debug('found ${pagers.length} page(s)');
-            for (PAGE.PagerPageModel page in pagers as Iterable<PAGE.PagerPageModel>) { // ensure we can handle pagers within pagers, probably a bit extreme
-              PAGER.PagerModel pageParent = page.parent as PAGER.PagerModel; // (parent as PAGER.PagerModel).View();
-              int? index;
-              for (int i = 0; i < pageParent.pages.length; i++) {
-                if (pageParent.pages[i] == page) {
-                  index = i;
-                  i = pageParent.pages.length;
-                }
-              }
-              if (index != null && pageParent.controller != null) { // found page with field to go to within pager
-                pageParent.controller!.jumpToPage(index);
-              }
-            }
-          }
-        } catch(e) {}
-        break;
-      }
+      Log().error('Error scrolling to form field. eror is $e');
     }
-    if (found == false)
-      Log().debug('Unable to find field');
-  }
-
-  Future<bool> validate() async
-  {
-    ///////////////////
-    /* Check Missing */
-    ///////////////////
-    List<IFormField>? missing = await widget.model.missing();
-    if (missing != null)
-    {
-      String msg = phrase.warningMandatory.replaceAll('{#}', missing.length.toString());
-      try {
-        flipToPage(missing[0]);
-      } catch(e) {
-        Log().debug('Unable to flipToPage to mandatory field');
-      }
-      try {
-        // uncollapseList(missing[0]);
-      } catch(e) {
-        Log().debug('Unable to uncollapseList to mandatory field');
-      }
-      try {
-        // scrollTo(missing[0]);
-      } catch(e) {
-        Log().debug('Unable to scrollTo mandatory field');
-      }
-      await System.toast("${phrase.warning} $msg");
-      return false;
-    }
-
-    //////////////////
-    /* Check Alarms */
-    //////////////////
-    List<IFormField>? alarming;// = await widget.model.alarming();
-    if (alarming != null)
-    {
-      String msg = phrase.warningAlarms.replaceAll('{#}', alarming.length.toString());
-      try {
-        flipToPage(missing![0]);
-      } catch(e) {
-        Log().debug('Unable to flipToPage to mandatory field');
-      }
-      try {
-        // uncollapseList(missing[0]);
-      } catch(e) {
-        Log().debug('Unable to uncollapseList to mandatory field');
-      }
-      try {
-        // scrollTo(missing[0]);
-      } catch(e) {
-        Log().debug('Unable to scrollTo mandatory field');
-      }
-      await System.toast("${phrase.warning}: $msg");
-      return false;
-    }
-
-    return true;
-  }
-
-  Future<bool> onSave(Event event) async
-  {
-    bool ok = true;
-
-    ///////////////////////////
-    /* Mark Event as Handled */
-    ///////////////////////////
-    event.handled = true;
-
-    /////////////////
-    /* Force Close */
-    /////////////////
-    WidgetModel.unfocus();
-
-    ///////////////////////
-    /* Validate the Data */
-    ///////////////////////
-    if (ok) ok = await validate();
-
-    ///////////////////
-    /* Save the Data */
-    ///////////////////
-    if (ok) ok = await widget.model.save();
-
-    //////////////////
-    /* Show Success */
-    //////////////////
-    if (ok)
-    {
-       final snackbar = SnackBar(content: Text(phrase.formSaved), duration: Duration(seconds: 1), behavior: SnackBarBehavior.floating, elevation: 5);
-       ScaffoldMessenger.of(context).showSnackBar(snackbar);
-    }
-
-    return ok;
-  }
-
-  Future<bool> onValidate(Event event) async
-  {
-    bool ok = true;
-
-    ////////////////////////
-    /* Specific Complete? */
-    ////////////////////////
-    if ((event.parameters != null) && (!S.isNullOrEmpty(event.parameters!['id'])) && (event.parameters!['id'] != widget.model.id)) return ok;
-
-    ///////////////////////////
-    /* Mark Event as Handled */
-    ///////////////////////////
-    event.handled = true;
-
-    /////////////////
-    /* Force Close */
-    /////////////////
-    WidgetModel.unfocus();
-
-    /////////////////////
-    /* Commit the Form */
-    /////////////////////
-    if (ok) ok = await widget.model.commit();
-
-    return ok;
-  }
-
-  Future<bool> onComplete(Event event) async
-  {
-    bool ok = true;
-
-    ////////////////////////
-    /* Specific Complete? */
-    ////////////////////////
-    if ((event.parameters != null) && (!S.isNullOrEmpty(event.parameters!['id'])) && (event.parameters!['id'] != widget.model.id)) return ok;
-
-    ///////////////////////////
-    /* Mark Event as Handled */
-    ///////////////////////////
-    event.handled = true;
-
-    /////////////////
-    /* Force Close */
-    /////////////////
-    WidgetModel.unfocus();
-
-    /////////////
-    /* Confirm */
-    /////////////
-    int response = 0;//await DialogService().show(type: DialogType.info, title: phrase.confirmFormComplete, buttons: [Text(phrase.yes, style: TextStyle(fontSize: 18, color: Colors.white)),Text(phrase.no, style: TextStyle(fontSize: 18, color: Colors.white))]);
-    ok = (response == 0);
-
-    ///////////////////////
-    /* Validate the Data */
-    ///////////////////////
-    if (ok) ok = await validate();
-
-    ///////////////////////
-    /* Complete the Form */
-    ///////////////////////
-    if (ok) ok = await widget.model.complete();
-
-    /////////////////////
-    /* Fire OnComplete */
-    /////////////////////
-    if (ok) widget.model.onComplete(context);
-
-    return ok;
-  }
-
-  Future<bool> onClear(Event event) async
-  {
-    bool ok = true;
-
-    ///////////////////////////
-    /* Mark Event as Handled */
-    ///////////////////////////
-    event.handled = true;
-
-    ////////////////////
-    /* Clear the Form */
-    ////////////////////
-    if (ok) ok = await widget.model.clear();
-
-    return ok;
   }
 
   @override
-  Widget build(BuildContext context)
-  {
-    return LayoutBuilder(builder: builder);
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // Set Build Constraints in the [WidgetModel]
-      widget.model.minwidth  = constraints.minWidth;
-      widget.model.maxwidth  = constraints.maxWidth;
-      widget.model.minheight = constraints.minHeight;
-      widget.model.maxheight = constraints.maxHeight;
+    widget.model.minwidth  = constraints.minWidth;
+    widget.model.maxwidth  = constraints.maxWidth;
+    widget.model.minheight = constraints.minHeight;
+    widget.model.maxheight = constraints.maxHeight;
 
     // Check if widget is visible before wasting resources on building it
     if ((widget.model.children == null) || ((!widget.model.visible))) return Offstage();
@@ -404,19 +164,13 @@ class _FormViewState extends State<FormView> implements IModelListener,  GPS.IGp
     });
     if (children.isEmpty) children.add(Container());
 
-    ////////////
-    /* Center */
-    ////////////
+    // Center
     dynamic view = children.length == 1 ? children[0] : Column(children: children, crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.max);
 
-    ////////////////////
-    /* Close Keyboard */
-    ////////////////////
+    // Close Keyboard
     //final gesture = GestureDetector(onTap: () => WidgetModel.unfocus(), child: view);
 
-    /////////////////
-    /* Detect Exit */
-    /////////////////
+    // Detect Exit
     final willpop = WillPopScope(onWillPop: quit, child: view);
 
     /// Busy / Loading Indicator
@@ -424,9 +178,7 @@ class _FormViewState extends State<FormView> implements IModelListener,  GPS.IGp
 
     view = Stack(children: [willpop, Center(child: busy)]);
 
-    /////////////////
-    /* Constrained */
-    /////////////////
+    // Constrained
     if (widget.model.constrained)
     {
       var constraints = widget.model.getConstraints();

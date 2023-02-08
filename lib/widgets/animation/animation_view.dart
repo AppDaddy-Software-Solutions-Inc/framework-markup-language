@@ -20,10 +20,10 @@ class AnimationView extends StatefulWidget
   AnimationView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _AnimationViewState createState() => _AnimationViewState();
+  AnimationViewState createState() => AnimationViewState();
 }
 
-class _AnimationViewState extends State<AnimationView> with TickerProviderStateMixin implements IModelListener
+class AnimationViewState extends State<AnimationView> with TickerProviderStateMixin implements IModelListener
 {
   AnimationController? _controller;
   late Animation<double>   _animation;

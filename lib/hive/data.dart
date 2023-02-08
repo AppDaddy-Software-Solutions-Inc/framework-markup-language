@@ -33,7 +33,7 @@ class Data
   static Data? _fromMap(dynamic map)
   {
     Data? data;
-    if (map is Map<String, dynamic>) data = Data(key: S.mapVal(map, "key"), value: S.mapVal(map, "value"), expires: S.mapInt(map, "rights"));
+    if (map is Map<String, dynamic>) data = Data(key: S.mapVal(map, "key"), value: S.mapVal(map, "value"), expires: S.mapInt(map, "expires"));
     return data;
   }
 

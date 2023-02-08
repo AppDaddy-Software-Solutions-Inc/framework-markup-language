@@ -55,12 +55,6 @@ class _FormViewState extends State<FormView> implements IModelListener,  GPS.IGp
   @override
   didChangeDependencies()
   {
-    // register event listeners
-    EventManager.of(widget.model)?.registerEventListener(EventTypes.save,     onSave);
-    EventManager.of(widget.model)?.registerEventListener(EventTypes.complete, onComplete);
-    EventManager.of(widget.model)?.registerEventListener(EventTypes.validate, onValidate);
-    EventManager.of(widget.model)?.registerEventListener(EventTypes.clear,    onClear);
-
     super.didChangeDependencies();
   }
 
@@ -70,18 +64,6 @@ class _FormViewState extends State<FormView> implements IModelListener,  GPS.IGp
     super.didUpdateWidget(oldWidget);
     if ((oldWidget.model != widget.model))
     {
-      // remove old event listeners
-      EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.save,     onSave);
-      EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.complete, onComplete);
-      EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.validate, onValidate);
-      EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.clear,    onClear);
-
-      // register new event listeners
-      EventManager.of(widget.model)?.registerEventListener(EventTypes.save,     onSave);
-      EventManager.of(widget.model)?.registerEventListener(EventTypes.complete, onComplete);
-      EventManager.of(widget.model)?.registerEventListener(EventTypes.validate, onValidate);
-      EventManager.of(widget.model)?.registerEventListener(EventTypes.clear,    onClear);
-
       // remove old model listener
       oldWidget.model.removeListener(this);
 
@@ -94,12 +76,6 @@ class _FormViewState extends State<FormView> implements IModelListener,  GPS.IGp
   void dispose()
   {
     widget.model.removeListener(this);
-
-    // remove event listeners
-    EventManager.of(widget.model)?.removeEventListener(EventTypes.save,     onSave);
-    EventManager.of(widget.model)?.removeEventListener(EventTypes.complete, onComplete);
-    EventManager.of(widget.model)?.removeEventListener(EventTypes.validate, onValidate);
-    EventManager.of(widget.model)?.removeEventListener(EventTypes.clear,    onClear);
 
     // Stop Listening to GPS
     System().gps.removeListener(this);
@@ -247,93 +223,6 @@ class _FormViewState extends State<FormView> implements IModelListener,  GPS.IGp
     }
 
     return true;
-  }
-
-  Future<bool> onSave(Event event) async
-  {
-    bool ok = true;
-
-    // Mark Event as Handled
-    event.handled = true;
-
-    // Force Close
-    WidgetModel.unfocus();
-
-    // Validate the Data
-    if (ok) ok = await validate();
-
-    // Save the Data
-    if (ok) ok = await widget.model.save();
-
-    // Show Success
-    if (ok)
-    {
-       final snackbar = SnackBar(content: Text(phrase.formSaved), duration: Duration(seconds: 1), behavior: SnackBarBehavior.floating, elevation: 5);
-       ScaffoldMessenger.of(context).showSnackBar(snackbar);
-    }
-
-    return ok;
-  }
-
-  Future<bool> onValidate(Event event) async
-  {
-    bool ok = true;
-
-    // Specific Complete?
-    if ((event.parameters != null) && (!S.isNullOrEmpty(event.parameters!['id'])) && (event.parameters!['id'] != widget.model.id)) return ok;
-
-    // Mark Event as Handled
-    event.handled = true;
-
-    // Force Close
-    WidgetModel.unfocus();
-
-    // Commit the Form
-    if (ok) ok = await widget.model.commit();
-
-    return ok;
-  }
-
-  Future<bool> onComplete(Event event) async
-  {
-    bool ok = true;
-
-    // Specific Complete?
-    if ((event.parameters != null) && (!S.isNullOrEmpty(event.parameters!['id'])) && (event.parameters!['id'] != widget.model.id)) return ok;
-
-    // Mark Event as Handled
-    event.handled = true;
-
-    // Force Close
-    WidgetModel.unfocus();
-
-    // Confirm
-    int response = 0;//await DialogService().show(type: DialogType.info, title: phrase.confirmFormComplete, buttons: [Text(phrase.yes, style: TextStyle(fontSize: 18, color: Colors.white)),Text(phrase.no, style: TextStyle(fontSize: 18, color: Colors.white))]);
-    ok = (response == 0);
-
-    // Validate the Data
-    if (ok) ok = await validate();
-
-    // Complete the Form
-    if (ok) ok = await widget.model.complete();
-
-    // Fire OnComplete
-    if (ok) widget.model.onComplete(context);
-
-    return ok;
-  }
-
-  Future<bool> onClear(Event event) async
-  {
-    bool ok = true;
-
-    // Mark Event as Handled
-    event.handled = true;
-    
-    // Clear the Form
-    if (ok) ok = await widget.model.clear();
-
-    return ok;
   }
 
   @override

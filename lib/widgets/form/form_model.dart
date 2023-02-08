@@ -415,18 +415,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     return ok;
   }
 
-  Future<bool> save() async
-  {
-    HIVE.Form? form = await _save();
-    return form != null;
-  }
-
-  Future<bool> commit() async
-  {
-    return await _post(null, commit: false);
-  }
-
-  Future<bool> clear() async
+  Future<bool> _clear() async
   {
     busy = true;
 
@@ -446,40 +435,33 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     return ok;
   }
 
-  Future<bool> complete() async
+  Future<bool> _complete() async
   {
     busy = true;
 
     bool ok = true;
 
-    //
-    // Set Complete 
-    //
+    // Set Complete
     status = StatusCodes.complete;
 
-    
-    // Post Sub-Forms 
-    
+    // Post Sub-Forms
     for (IForm form in forms)
     {
       ok = await form.complete();
       if (!ok) break;
     }
 
-    ///
-    // Save the Form 
-    ///
+    // Save the Form
     HIVE.Form? form = await _save();
 
-    ///
-    // Post the Form 
-    ///
+    // Post the Form
     if (ok) ok = await _post(form);
 
-    ///
-    // Set Clean 
-    ///
+    // Set Clean
     if (ok == true) clean = true;
+
+    // fire on complete events
+    if (ok && _oncomplete != null) ok = await EventHandler(this).execute(_oncomplete);
 
     busy = false;
 
@@ -514,9 +496,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
       else return false;
     });
 
-    
-    // Insert New Answers 
-    
+    // Insert New Answers
     fields.forEach((field) => _insertAnswers(node, field));
 
     return ok;
@@ -588,14 +568,10 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
   {
     if (node == null) return null;
 
-    ///
-    // Serialize Answers 
-    ///
+    // Serialize Answers
     _serializeAnswers(node, fields);
 
-    //
-    // Return Formatted Xml 
-    //
+    // Return Formatted Xml
     return node.toXmlString(pretty: true);
   }
 
@@ -661,7 +637,6 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
                     node.children.add(e);
                   }
 
-                  
                   // Non-XML? Wrap in CDATA
                   else if (Xml.hasIllegalCharacters(value)) node.children.add(XmlCDATA(value));
 
@@ -673,9 +648,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
                   node.children.add(XmlCDATA(e.message));
                 }
 
-                //
-                // Add Node 
-                //
+                // Add Node
                 root.children.add(node);
               });
             }
@@ -707,7 +680,6 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
                 node.attributes.add(XmlAttribute(XmlName('id'), name));
               }
 
-              
               // Add Field Type
               if (!S.isNullOrEmpty(field.elementName)) node.attributes.add(XmlAttribute(XmlName('type'), field.elementName));
 
@@ -739,37 +711,48 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
 
   Future<HIVE.Form?> _save() async
   {
-    // Serialize the Form
-    await serialize(this.element, fields);
+    HIVE.Form? form;
 
-    // Serialize Outer Xml
-    String xml = framework!.element!.toXmlString(pretty: true);
+    bool ok = true;
 
-    // Lookup Form
-    HIVE.Form? form = await HIVE.Form.find(framework!.key);
+    // Validate the Data
+    if (ok) ok = await _validate();
 
-    // Update the Form
-    if (form != null)
+    // Show Success
+    if (ok)
     {
-      Log().info('Updating Form');
+      // Serialize the Form
+      await serialize(this.element, fields);
 
-      form.complete = completed;
-      form.updated  = DateTime.now().millisecondsSinceEpoch;
-      form.template = xml;
-      form.data     = map;
-      await form.update();
+      // Serialize Outer Xml
+      String xml = framework!.element!.toXmlString(pretty: true);
+
+      // Lookup Form
+      HIVE.Form? form = await HIVE.Form.find(framework!.key);
+
+      // Update the Form
+      if (form != null)
+      {
+        Log().info('Updating Form');
+
+        form.complete = completed;
+        form.updated  = DateTime.now().millisecondsSinceEpoch;
+        form.template = xml;
+        form.data     = map;
+        await form.update();
+      }
+
+      // Insert the Form
+      else
+      {
+        Log().info('Inserting New form');
+        form = HIVE.Form(key: framework?.key, parent: framework?.dependency, complete: completed, template: xml, data: map);
+        await form.insert();
+      }
+
+      // Mark Clean
+      clean = true;
     }
-
-    // Insert the Form
-    else
-    {
-      Log().info('Inserting New form');
-      form = HIVE.Form(key: framework?.key, parent: framework?.dependency, complete: completed, template: xml, data: map);
-      await form.insert();
-    }
-
-    // Mark Clean
-    clean = true;
 
     return form;
   }
@@ -806,11 +789,6 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     return alarming;
   }
 
-  Future<bool> onComplete(BuildContext context) async
-  {
-    return await EventHandler(this).execute(_oncomplete);
-  }
-
   Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
   {
     if (scope == null) return null;
@@ -818,7 +796,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     switch (function)
     {
       case 'complete':
-        return await EventHandler(this).execute(_oncomplete);
+        return _complete();
 
       case 'save':
         var form = await _save();
@@ -831,7 +809,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
         return await _validate();
 
       case 'clear':
-        return clear();
+        return _clear();
     }
     return super.execute(caller, propertyOrFunction, arguments);
   }

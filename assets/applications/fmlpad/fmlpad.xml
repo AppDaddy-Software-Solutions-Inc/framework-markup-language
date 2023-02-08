@@ -60,7 +60,7 @@
             <GET id="dbExamples" url="https://fml.dev/fmlpad/examples.xml" root="EXAMPLES.EXAMPLE"/>
             <TYPEAHEAD id="examples" bordercolor="#1E2835" value="" data="dbExamples" hint="Examples" width="250">
                 <OPTION value="{data.url}">
-                    <label><ROW height="100%" valign="center"><ICON icon="{data.icon}" size="16" color="{data.color}"/><PAD left="10"/><TEXT value="{data.title}"/></ROW></label>
+                    <label><ROW height="100%" valign="center" expand="false"><ICON icon="{data.icon}" size="16" color="{data.color}"/><PAD left="10"/><TEXT value="{data.title}"/></ROW></label>
                 </OPTION>
             </TYPEAHEAD>
 

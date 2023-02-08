@@ -2,9 +2,6 @@
 import 'dart:async';
 import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/busy/busy_model.dart';
-import 'package:fml/widgets/busy/busy_view.dart';
-
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/typeahead/typeahead_model.dart';
@@ -205,11 +202,12 @@ class _TypeaheadViewState extends State<TypeaheadView> implements IModelListener
           width: widget.model.maxwidth,
           child: TypeAheadField(
             textFieldConfiguration: TextFieldConfiguration(
+                enabled: widget.model.enabled != false,
                 focusNode: focus,
                 controller: controller,
                 textAlignVertical: TextAlignVertical.center,
                 onSubmitted: _inputSelection,
-                onChanged: widget.model.inputenabled ? _inputSelection : null,
+                onChanged: widget.model.enabled ? _inputSelection : null,
                 style: TextStyle(
                     color: widget.model.enabled != false ? widget.model.textcolor ?? Theme
                         .of(context)
@@ -245,7 +243,9 @@ class _TypeaheadViewState extends State<TypeaheadView> implements IModelListener
             },
             autoFlipDirection: true,
             suggestionsBoxDecoration:
-            SuggestionsBoxDecoration(elevation: 20),
+            SuggestionsBoxDecoration(
+                elevation: 20,
+            ),
             suggestionsBoxVerticalOffset: 0,
             onSuggestionSelected: (dynamic suggestion) {
               if (suggestion is OptionModel)
@@ -395,7 +395,7 @@ class _TypeaheadViewState extends State<TypeaheadView> implements IModelListener
   {
     controller.text = controller.text.trim();
     // if the value does not match the option value, clear only when input is disabled.
-    if (!widget.model.inputenabled) controller.text = _extractText(_selected)!;
+    if (!widget.model.enabled) controller.text = _extractText(_selected)!;
 
     return true;
   }

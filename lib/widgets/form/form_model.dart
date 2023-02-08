@@ -6,6 +6,7 @@ import 'package:fml/datasources/gps/payload.dart' as GPS;
 import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/event/handler.dart' ;
+import 'package:fml/phrase.dart';
 import 'package:fml/widgets/form/iFormField.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
@@ -163,7 +164,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     dirty = isDirty;
 
     // auto save?
-    if ((isDirty == true) && (autosave == true)) _save();
+    if ((isDirty == true) && (autosave == true)) save();
   }
 
   set clean (bool b)
@@ -415,7 +416,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     return ok;
   }
 
-  Future<bool> _clear() async
+  Future<bool> clear() async
   {
     busy = true;
 
@@ -435,7 +436,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     return ok;
   }
 
-  Future<bool> _complete() async
+  Future<bool> complete() async
   {
     busy = true;
 
@@ -452,7 +453,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     }
 
     // Save the Form
-    HIVE.Form? form = await _save();
+    HIVE.Form? form = await save();
 
     // Post the Form
     if (ok) ok = await _post(form);
@@ -700,23 +701,49 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     }
   }
 
-  Future<bool> _validate() async
+  Future<List<IFormField>?> validate() async
   {
     // Force Close
     WidgetModel.unfocus();
 
     // Commit the Form
-    return await commit();
+    var missing = await _getMissing();
+    if (missing?.isNotEmpty == true)
+    {
+      // display toast message
+      String msg = phrase.warningMandatory.replaceAll('{#}', missing!.length.toString());
+      System.toast("${phrase.warning} $msg");
+
+      // scroll to the field
+      var view = findListenerOfExactType(FormViewState);
+      if (view is FormViewState) view.show(missing.first);
+
+      return missing;
+    }
+
+    var alarms = await _getAlarms();
+    if (alarms?.isNotEmpty == true)
+    {
+      // display toast message
+      String msg = phrase.warningAlarms.replaceAll('{#}', alarms!.length.toString());
+      System.toast("${phrase.warning} $msg");
+
+      // scroll to the field
+      var view = findListenerOfExactType(FormViewState);
+      if (view is FormViewState) view.show(alarms.first);
+
+      return alarms;
+    }
+
+    return null;
   }
 
-  Future<HIVE.Form?> _save() async
+  Future<HIVE.Form?> save() async
   {
     HIVE.Form? form;
 
-    bool ok = true;
-
     // Validate the Data
-    if (ok) ok = await _validate();
+    bool ok = (await validate() == null);
 
     // Show Success
     if (ok)
@@ -757,7 +784,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     return form;
   }
 
-  Future<List<IFormField>?> missing() async
+  Future<List<IFormField>?> _getMissing() async
   {
     List<IFormField>? missing;
     fields.forEach((field)
@@ -775,7 +802,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     return missing;
   }
 
-  Future<List<IFormField>?> getAlarms() async
+  Future<List<IFormField>?> _getAlarms() async
   {
     List<IFormField>? alarming;
     fields.forEach((field)
@@ -796,20 +823,16 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     switch (function)
     {
       case 'complete':
-        return _complete();
+        return complete();
 
       case 'save':
-        var form = await _save();
-        return (form != null);
-
-      case 'commit':
-        return await _post(null, commit: false);
+        return (await save() != null);
 
       case 'validate':
-        return await _validate();
+        return (await validate() == null);
 
       case 'clear':
-        return _clear();
+        return clear();
     }
     return super.execute(caller, propertyOrFunction, arguments);
   }

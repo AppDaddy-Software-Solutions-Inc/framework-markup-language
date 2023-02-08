@@ -1,10 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:fml/dialog/manager.dart';
-import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/phrase.dart';
-import 'package:fml/event/event.dart' ;
 import 'package:fml/widgets/form/iFormField.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -17,7 +15,6 @@ import 'package:fml/datasources/gps/iGpsListener.dart'  as GPS;
 import 'package:fml/widgets/form/form_model.dart' as FORM;
 import 'package:fml/widgets/pager/page/pager_page_model.dart' as PAGE;
 import 'package:fml/widgets/pager/pager_model.dart' as PAGER;
-import 'package:fml/helper/common_helpers.dart';
 
 class FormView extends StatefulWidget
 {
@@ -25,10 +22,10 @@ class FormView extends StatefulWidget
   FormView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _FormViewState createState() => _FormViewState();
+  FormViewState createState() => FormViewState();
 }
 
-class _FormViewState extends State<FormView> implements IModelListener,  GPS.IGpsListener
+class FormViewState extends State<FormView> implements IModelListener,  GPS.IGpsListener
 {
   BUSY.BusyView? busy;
 
@@ -102,134 +99,50 @@ class _FormViewState extends State<FormView> implements IModelListener,  GPS.IGp
     return exit;
   }
 
-  void flipToPage(IFormField model)
+  void show(IFormField model)
   {
-    bool found = false;
-
-    for (IFormField field in widget.model.fields)
+    try
     {
-      if (field == model)
+      bool found = false;
+
+      for (IFormField field in widget.model.fields)
       {
-        found = true;
-        try {
-          List<dynamic>? pagers = (field as WidgetModel).findAncestorsOfExactType(PAGE.PagerPageModel);
-          if (pagers != null) {
-            Log().debug('found ${pagers.length} page(s)');
-            for (PAGE.PagerPageModel page in pagers as Iterable<PAGE.PagerPageModel>) { // ensure we can handle pagers within pagers, probably a bit extreme
-              PAGER.PagerModel pageParent = page.parent as PAGER.PagerModel; // (parent as PAGER.PagerModel).View();
-              int? index;
-              for (int i = 0; i < pageParent.pages.length; i++) {
-                if (pageParent.pages[i] == page) {
-                  index = i;
-                  i = pageParent.pages.length;
+        if (field == model)
+        {
+          found = true;
+          try {
+            List<dynamic>? pagers = (field as WidgetModel).findAncestorsOfExactType(PAGE.PagerPageModel);
+            if (pagers != null) {
+              Log().debug('found ${pagers.length} page(s)');
+              for (PAGE.PagerPageModel page in pagers as Iterable<PAGE.PagerPageModel>) { // ensure we can handle pagers within pagers, probably a bit extreme
+                PAGER.PagerModel pageParent = page.parent as PAGER.PagerModel; // (parent as PAGER.PagerModel).View();
+                int? index;
+                for (int i = 0; i < pageParent.pages.length; i++) {
+                  if (pageParent.pages[i] == page) {
+                    index = i;
+                    i = pageParent.pages.length;
+                  }
+                }
+                if (index != null && pageParent.controller != null) { // found page with field to go to within pager
+                  pageParent.controller!.jumpToPage(index);
                 }
               }
-              if (index != null && pageParent.controller != null) { // found page with field to go to within pager
-                pageParent.controller!.jumpToPage(index);
-              }
             }
-          }
-        } catch(e) {}
-        break;
+          } catch(e) {}
+          break;
+        }
       }
+      if (found == false)
+        Log().debug('Unable to find field');
     }
-    if (found == false)
-      Log().debug('Unable to find field');
-  }
-
-  void uncollapseList(IFormField model)
-  {
-    bool found = false;
-
-    for (IFormField field in widget.model.fields)
+    catch(e)
     {
-      if (field == model)
-      {
-        found = true;
-        try {
-          List<dynamic>? pagers = (field as WidgetModel).findAncestorsOfExactType(PAGE.PagerPageModel);
-          if (pagers != null) {
-            Log().debug('found ${pagers.length} page(s)');
-            for (PAGE.PagerPageModel page in pagers as Iterable<PAGE.PagerPageModel>) { // ensure we can handle pagers within pagers, probably a bit extreme
-              PAGER.PagerModel pageParent = page.parent as PAGER.PagerModel; // (parent as PAGER.PagerModel).View();
-              int? index;
-              for (int i = 0; i < pageParent.pages.length; i++) {
-                if (pageParent.pages[i] == page) {
-                  index = i;
-                  i = pageParent.pages.length;
-                }
-              }
-              if (index != null && pageParent.controller != null) { // found page with field to go to within pager
-                pageParent.controller!.jumpToPage(index);
-              }
-            }
-          }
-        } catch(e) {}
-        break;
-      }
+      Log().error('Error scrolling to form field. eror is $e');
     }
-    if (found == false)
-      Log().debug('Unable to find field');
-  }
-
-  Future<bool> validate() async
-  {
-    // Check Missing
-    List<IFormField>? missing = await widget.model.missing();
-    if (missing != null)
-    {
-      String msg = phrase.warningMandatory.replaceAll('{#}', missing.length.toString());
-      try {
-        flipToPage(missing[0]);
-      } catch(e) {
-        Log().debug('Unable to flipToPage to mandatory field');
-      }
-      try {
-        // uncollapseList(missing[0]);
-      } catch(e) {
-        Log().debug('Unable to uncollapseList to mandatory field');
-      }
-      try {
-        // scrollTo(missing[0]);
-      } catch(e) {
-        Log().debug('Unable to scrollTo mandatory field');
-      }
-      await System.toast("${phrase.warning} $msg");
-      return false;
-    }
-
-    // Check Alarms
-    List<IFormField>? alarming;// = await widget.model.alarming();
-    if (alarming != null)
-    {
-      String msg = phrase.warningAlarms.replaceAll('{#}', alarming.length.toString());
-      try {
-        flipToPage(missing![0]);
-      } catch(e) {
-        Log().debug('Unable to flipToPage to mandatory field');
-      }
-      try {
-        // uncollapseList(missing[0]);
-      } catch(e) {
-        Log().debug('Unable to uncollapseList to mandatory field');
-      }
-      try {
-        // scrollTo(missing[0]);
-      } catch(e) {
-        Log().debug('Unable to scrollTo mandatory field');
-      }
-      await System.toast("${phrase.warning}: $msg");
-      return false;
-    }
-
-    return true;
   }
 
   @override
-  Widget build(BuildContext context)
-  {
-    return LayoutBuilder(builder: builder);
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {

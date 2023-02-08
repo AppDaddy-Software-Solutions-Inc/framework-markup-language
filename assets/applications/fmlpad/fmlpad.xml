@@ -20,7 +20,7 @@
         <TEXT  value="***FmlPad** allows you to test and develop FML templates **realtime** _without the need to compile_ any code.*" color="white" size="14"/>
         <!-- text block -->
         <PAD top="10"/>
-        <TEXT value="*Try changing any of the markup text you see in the left pane editor and watch them change here as you type.*" color="white" size="14"/>
+        <TEXT value="*Try changing any of the markup text you see in the left editor window and this window will update instantly.*" color="white" size="14"/>
         <!-- text block -->
         <PAD top="10"/>
         <TEXT value="***FmlPad** itself it written entirely in **FML** with less than a few dozen simple lines of markup text!*" color="white" size="14"/>
@@ -39,16 +39,20 @@
     <HEADER height="50">
         <BOX color="#1E2835" valign="center" halign="left" layout="row">
 
-            <PAD left="10"/>
+            <!-- back button -->
+            <PAD left="5"/>
+            <BTN onclick="back()">
+                <ICON icon="chevron_left" color="white" size="20"/>
+            </BTN>
 
             <!-- logo -->
+            <PAD left="5"/>
             <IMAGE url="assets://images/fml-logo.png" height="30"/>
-            <PAD left="10"/>
             <TEXT value="FmlPad" size="20" color="white"/>
             <PAD left="50"/>
 
             <!-- widgets -->
-            <GET id="dbWidgets" url="https://fml.dev/fmlpad/widgets.xml" root="WIDGETS.WIDGET"/>
+            <GET id="dbWidgets" url="https://fml.dev/fmlpad/widgets.xml" root="WIDGETS.WIDGET" ttl="1m"/>
             <SELECT bordercolor="#1E2835" onchange="copy({this})" data="dbWidgets" hint="widgets" >
                 <OPTION value="{data.value}">
                     <label><ROW expand="false" valign="center"><ICON icon="{data.icon}" size="16" color="{data.color}"/><PAD left="10"/><TEXT value="{data.title}"/></ROW></label>
@@ -58,7 +62,7 @@
             <PAD left="20"/>
 
             <!-- themes -->
-            <GET id="dbStyles" url="https://fml.dev/fmlpad/styles.xml" root="STYLES.STYLE"/>
+            <GET id="dbStyles" url="https://fml.dev/fmlpad/styles.xml" root="STYLES.STYLE" ttl="1d"/>
             <SELECT id="theme" bordercolor="#1E2835" data="dbStyles" value='{STASH.FmlPadTheme}' hint="themes" onchange="stash('FmlPadTheme',{this.value})">
                 <OPTION label='{data.label}'/>
             </SELECT>
@@ -67,7 +71,7 @@
 
             <!-- examples -->
             <GET id="db1" url="{examples}" onsuccess="editor.set({this.response})"/>
-            <GET id="dbExamples" url="https://fml.dev/fmlpad/examples.xml" root="EXAMPLES.EXAMPLE"/>
+            <GET id="dbExamples" url="https://fml.dev/fmlpad/examples.xml" root="EXAMPLES.EXAMPLE" ttl="1m"/>
             <SELECT id="examples" bordercolor="#1E2835" value="1" data="dbExamples" hint="examples" width="200">
                 <OPTION value="{data.url}">
                     <label><ROW expand="false" valign="center"><ICON icon="{data.icon}" size="16" color="{data.color}"/><PAD left="10"/><TEXT value="{data.title}"/></ROW></label>

@@ -87,8 +87,8 @@ class _ApplicationManagerState extends State<ApplicationManager>
 
   void onTheme(Event event) async
   {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    String? eventColor = event.parameters?['color'];
+    final themeNotifier     = Provider.of<ThemeNotifier>(context, listen: false);
+    String? eventColor      = event.parameters?['color'];
     String? eventBrightness = event.parameters?['brightness'] ?? System.theme.brightness;
     if (eventColor != null)
          themeNotifier.setTheme(eventBrightness!, eventColor);

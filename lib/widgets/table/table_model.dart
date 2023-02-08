@@ -22,11 +22,6 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-// platform
-import 'package:fml/platform/platform.stub.dart'
-if (dart.library.io)   'package:fml/platform/platform.vm.dart'
-if (dart.library.html) 'package:fml/platform/platform.web.dart';
-
 
 enum PaddingType { none, first, last, evenly, proportionately }
 
@@ -439,7 +434,7 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
       model = TableModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
-    catch (e)
+    catch(e)
     {
       Log().exception(e,  caller: 'form.Model');
       model = null;
@@ -543,7 +538,11 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
       if (this.tableheader!.prototype != null) await _buildDynamic(map);
 
       this.clean = true;
+
+      // clear rows
+      this.rows.forEach((_,row) => row.dispose());
       this.rows.clear();
+
       this.page = 1;
       this.data = map;
     }
@@ -580,11 +579,11 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
       i = i + 1;
     }
 
-    rows.clear();
+    // clear rows
+    this.rows.forEach((_,row) => row.dispose());
+    this.rows.clear();
 
-    ////////////////////////////////
-    /* Notify Listeners of Change */
-    ////////////////////////////////
+    // Notify Listeners of Change
     notifyListeners('list', null);
 
     busy = false;
@@ -621,17 +620,18 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
   }
 
   @override
-  dispose() {
-Log().debug('dispose called on => <$elementName id="$id">');
+  dispose()
+  {
+    // Log().debug('dispose called on => <$elementName id="$id">');
 
-    /////////////
-    /* Cleanup */
-    /////////////
+    // cleanup
     tableheader?.dispose();
     prototypeModel?.dispose();
-    rows.forEach((key, model) => model.dispose());
 
-    scope?.dispose();
+    // clear rows
+    this.rows.forEach((_,row) => row.dispose());
+    this.rows.clear();
+
     super.dispose();
   }
 

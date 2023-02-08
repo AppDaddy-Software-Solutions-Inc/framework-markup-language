@@ -101,7 +101,7 @@ class VideoModel extends DecoratedWidgetModel implements IViewableWidget
   @override
   void dispose()
   {
-    Log().debug('dispose called on => <$elementName id="$id">');
+    // Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
   }
 

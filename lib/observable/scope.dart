@@ -100,6 +100,17 @@ class Scope
     models[model.id] = model;
   }
 
+  void unregisterModel(WidgetModel model)
+  {
+    models.remove(model.id);
+    var observables = this.observables.values.where((observable) => observable.key != null && observable.key!.startsWith("${model.id}.")).toList();
+    for (Observable observable in observables)
+    {
+      observable.listeners?.clear();
+      this.observables.remove(observable.key);
+    }
+  }
+
   WidgetModel? _findWidgetModel(String id)
   {
     if (models.containsKey(id)) return models[id];

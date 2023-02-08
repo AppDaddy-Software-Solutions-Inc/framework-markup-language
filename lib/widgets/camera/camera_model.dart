@@ -322,8 +322,11 @@ class CameraModel extends CAMERA.CameraImageModel implements IViewableWidget
   @override
   void dispose()
   {
-    Log().debug('dispose called on => <$elementName id="$id">');
+    // Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
+
+    // dispose of the camera controller
+    camera?.controller?.dispose();
   }
 
   @override
@@ -361,7 +364,7 @@ class CameraModel extends CAMERA.CameraImageModel implements IViewableWidget
     if (detectors == null) return true;
     detectors!.forEach((detector)
     {
-      if ((detector.source == DetectorSources.stream) || (detector.source == DetectorSources.any)) detector.detect(image);
+      if ((detector.source == DetectorSources.stream) || (detector.source == DetectorSources.any)) detector.detect(image, true);
     });
     return true;
   }
@@ -371,7 +374,7 @@ class CameraModel extends CAMERA.CameraImageModel implements IViewableWidget
     if (detectors == null) return true;
     detectors!.forEach((detector)
     {
-      if ((detector.source == DetectorSources.image) || (detector.source == DetectorSources.any)) detector.detect(image);
+      if ((detector.source == DetectorSources.image) || (detector.source == DetectorSources.any)) detector.detect(image, false);
     });
     return true;
   }

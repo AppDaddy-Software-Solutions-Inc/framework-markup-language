@@ -102,7 +102,7 @@ class _SelectViewState extends State<SelectView> implements IModelListener {
             }
             listCounter++;
           }
-        } catch (e) {}
+        } catch(e) {}
         if (hasMatch == false) {
           changedDropDownItem(_list[1].value ?? _list[0].value);
         }
@@ -211,11 +211,6 @@ return LayoutBuilder(builder: builder);
         view = SizedBox(
           width: widget.model.maxwidth,
               child: TypeAheadField(
-                // This was required to avoid a bug in flutter 3.7/flutter_typeahead 4.3.2 -Flex
-                // Issue detailed here: (https://github.com/AbdulRahmanAlHamali/flutter_typeahead/issues/446)
-                hideSuggestionsOnKeyboardHide: false, // added 1/31/2023
-                // Unfortunately we lose keyboard navigation of the options but otherwise the onSuggestionSelected never fired.
-                // This is caused by an odd timing situation in their library with animations and Text focus changes in flutter 3.7.
                 textFieldConfiguration: TextFieldConfiguration(
                     focusNode: focus,
                     controller: controller,
@@ -363,8 +358,8 @@ return LayoutBuilder(builder: builder);
       return s.any((tag) => match(tag!.trim().toLowerCase(), pat));
     }
     else {
-      String? str = (m.label is TextModel) ? (m.label as TextModel).value ?? null : null ?? '' + _extractText(m)!;
-      return str == null ? false : match(str, pat);
+      String? str = (m.label is TextModel) ? (m.label as TextModel).value ?? null : '' + _extractText(m)!;
+      return str == null ? false : match(str.trim().toLowerCase(), pat);
     }
 
   }
@@ -431,6 +426,9 @@ return LayoutBuilder(builder: builder);
     /* Commit Changes on Loss of Focus */
     /////////////////////////////////////
     bool focused = focus.hasFocus;
+    if (focused && widget.model.typeahead == true) {
+      controller.selection = TextSelection(baseOffset: 0, extentOffset: controller.text.length);
+    }
     try {
       if (focused)
         System().commit = _commit;
@@ -438,14 +436,14 @@ return LayoutBuilder(builder: builder);
         System().commit = null;
 
       if (!focused) await _commit();
-    } catch (e) {}
+    } catch(e) {}
   }
 
   Future<bool> _commit() async
   {
     controller.text = controller.text.trim();
     // if the value does not match the option value, clear only when input is disabled.
-    if (controller.text != widget.model.value && !widget.model.inputenabled && widget.model.typeahead) controller.text = widget.model.value;
+    if (!widget.model.inputenabled && widget.model.typeahead) controller.text = _extractText(_selected)!;
 
   return true;
   }

@@ -83,20 +83,22 @@ class MenuModel extends DecoratedWidgetModel implements IViewableWidget
     // deserialize 
     super.deserialize(xml);
 
-    // build items
+    // clear items
+    this.items.forEach((item) => item.dispose());
     this.items.clear();
+
+    // build items
     List<MenuItemModel> items = findChildrenOfExactType(MenuItemModel).cast<MenuItemModel>();
 
-      // set prototype
-      if ((!S.isNullOrEmpty(datasource)) && (items.isNotEmpty))
-      {
-        prototype = S.toPrototype(items[0].element.toString());
-        items.removeAt(0);
-      }
+    // set prototype
+    if ((!S.isNullOrEmpty(datasource)) && (items.isNotEmpty))
+    {
+      prototype = S.toPrototype(items[0].element.toString());
+      items.removeAt(0);
+    }
 
-      // build items
-      items.forEach((item) => this.items.add(item));
-
+    // build items
+    items.forEach((item) => this.items.add(item));
   }
 
   @override
@@ -108,7 +110,9 @@ class MenuModel extends DecoratedWidgetModel implements IViewableWidget
     int i = 0;
     if ((list != null))
     {
-      items.clear();
+      // clear items
+      this.items.forEach((item) => item.dispose());
+      this.items.clear();
 
       list.forEach((row)
       {
@@ -130,19 +134,14 @@ class MenuModel extends DecoratedWidgetModel implements IViewableWidget
   @override
   dispose()
   {
-    Log().debug ('dispose called on' + elementName);
+    // Log().debug('dispose called on => <$elementName id="$id">');
 
-    items.forEach((model)
-    {
-      model.dispose();
-    });
-    items.clear();
-
-    scope?.dispose();
+    // clear items
+    this.items.forEach((item) => item.dispose());
+    this.items.clear();
 
     super.dispose();
   }
-
 
   @override
   Widget getView({Key? key}) => MenuView(this);

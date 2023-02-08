@@ -82,7 +82,7 @@ class Bridge
 
       if (_connector != null) _connector!.callMethod(functionName, _parameters);
     }
-    catch (e)
+    catch(e)
     {
       Log().error('Error calling $functionName()');
       Log().exception(e);

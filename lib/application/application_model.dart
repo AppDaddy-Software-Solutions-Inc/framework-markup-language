@@ -15,7 +15,9 @@ import 'package:fml/token/token.dart';
 import 'package:fml/user/user_model.dart';
 import 'package:fml/widgets/theme/theme_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:provider/provider.dart';
 import 'package:xml/xml.dart';
+import 'package:fml/theme/themenotifier.dart';
 
 class ApplicationModel extends WidgetModel
 {
@@ -229,7 +231,7 @@ class ApplicationModel extends WidgetModel
     {
       cBrightness = MediaQueryData.fromWindow(WidgetsBinding.instance.window).platformBrightness.toString().toLowerCase().split('.')[1];
     }
-    catch (e)
+    catch(e)
     {
       cBrightness = def;
     }
@@ -258,7 +260,26 @@ class ApplicationModel extends WidgetModel
       // set observable
       stash.setObservable(key, value);
     }
-    catch (e)
+    catch(e)
+    {
+      // stash failure always returns true
+      ok = true;
+    }
+    return ok;
+  }
+
+  Future<bool> clearStash() async
+  {
+    bool ok = true;
+    try
+    {
+      // clear rthe stash map
+      _stash.map.clear();
+
+      // save to the hive
+      await _stash.upsert();
+    }
+    catch(e)
     {
       // stash failure always returns true
       ok = true;
@@ -281,6 +302,17 @@ class ApplicationModel extends WidgetModel
 
     // set the theme if supplied
     if (theme != null) setTheme(theme);
+
+    // set the theme
+    var context = this.context;
+    if (context != null)
+    {
+      final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+      String brightness   = settings('BRIGHTNESS')   ?? ThemeModel.defaultBrightness;
+      String color        = settings('COLOR_SCHEME') ?? ThemeModel.defaultColor;
+      themeNotifier.setTheme(brightness, color);
+      themeNotifier.mapSystemThemeBindables();
+    }
   }
 
   void close()

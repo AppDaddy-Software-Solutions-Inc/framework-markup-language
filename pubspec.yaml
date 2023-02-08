@@ -22,6 +22,10 @@ dependencies:
   camera: 0.10.1
   # BSD-3-Clause
 
+  # Updated 2023/02/07
+  camera_windows: 0.2.1+4
+  # BSD-3-Clause
+
   # Updated 2022/11/17
   # charts_flutter: ^0.12.0
   community_charts_flutter: ^1.0.0
@@ -62,6 +66,10 @@ dependencies:
   firebase_core: 1.22.0
   # BSD-3-Clause
 
+  # Updated 2023/02/02
+  flutter_code_editor: 0.2.9
+  # Apache-2.0, MIT
+
   # Updated 2021/09/23
   # flutter_blue: 0.8.0
   # BSD-3-Clause
@@ -95,7 +103,7 @@ dependencies:
   # MIT
 
   # Updated 2023/01/30
-  flutter_typeahead: 4.3.2
+  flutter_typeahead: 4.3.3
   # BSD-2-Clause
 
   # Updated 2022/12/30
@@ -220,8 +228,8 @@ dependencies:
   xml: 6.1.0
   # MIT
 
-  # Updated 2022/06/17
-  xml2json: 5.3.3
+  # Updated 2023/02/06
+  xml2json: 5.3.6
   # MIT
 
   # Updated 2021/09/23
@@ -259,6 +267,10 @@ flutter:
     - assets/applications/test/
     - assets/applications/test/images/
     - assets/applications/test/templates/
+
+    # fmlpad
+    - assets/applications/
+    - assets/applications/fmlpad/
 
   fonts:
     - family: icons

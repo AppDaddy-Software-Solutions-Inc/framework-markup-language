@@ -72,7 +72,7 @@ class PopoverItemModel extends WidgetModel {
     try {
       model = PopoverItemModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
-    } catch (e) {
+    } catch(e) {
       Log().debug(e.toString());
       model = null;
     }
@@ -92,7 +92,7 @@ class PopoverItemModel extends WidgetModel {
 
   @override
   dispose() {
-Log().debug('dispose called on => <$elementName id="$id">');
+// Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
   }
 }

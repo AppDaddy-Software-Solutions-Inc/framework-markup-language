@@ -26,11 +26,6 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'dart:io' as io;
 
-// platform
-import 'package:fml/platform/platform.stub.dart'
-if (dart.library.io)   'package:fml/platform/platform.vm.dart'
-if (dart.library.html) 'package:fml/platform/platform.web.dart';
-
 // application build version
 final String version = '1.1.1';
 
@@ -41,7 +36,7 @@ final String applicationTitle = "Flutter Markup Language " + version;
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://applications/<app> to use the asset applications
-var defaultDomain = Uri.parse('https://fml.dev');
+var defaultDomain = Uri.parse('file://applications/test');
 
 // Default Application
 final defaultApplication = ApplicationModel(System(),url:defaultDomain.toString());
@@ -65,6 +60,9 @@ bool get isDesktop  => !isWeb && !isMobile;
 final bool kDebugMode = !kReleaseMode;
 
 typedef CommitCallback = Future<bool> Function();
+
+// used in context lookup
+var applicationKey = GlobalKey();
 
 class System extends WidgetModel implements IEventManager
 {
@@ -219,7 +217,7 @@ class System extends WidgetModel implements IEventManager
       await Future.delayed(Duration(seconds: 1));
       Log().debug('initConnectivity status: $connected');
     }
-    catch (e)
+    catch(e)
     {
       _connected?.set(false);
       Log().debug('Error initializing connectivity');

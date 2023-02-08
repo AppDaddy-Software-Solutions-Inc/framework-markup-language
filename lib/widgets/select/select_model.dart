@@ -1,9 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/iDataSource.dart';
-import 'package:fml/dialog/service.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/phrase.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:fml/widgets/form/iFormField.dart';
 import 'package:flutter/material.dart';
@@ -334,8 +332,11 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
     String? empty = Xml.get(node: xml, tag: 'addempty');
     if (S.isBool(empty)) addempty = S.toBool(empty);
 
-    // Build options
+    // clear options
+    this.options.forEach((option) => option.dispose());
     this.options.clear();
+
+    // Build options
     List<OptionModel> options = findChildrenOfExactType(OptionModel).cast<OptionModel>();
 
     // set prototype
@@ -344,10 +345,9 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
       prototype = S.toPrototype(options[0].element.toString());
       options.removeAt(0);
     }
+
     // build options
     options.forEach((option) => this.options.add(option));
-
-    if (!containsOption()) value = options.isNotEmpty ? options[0].value : null;
 
     // Set selected option
     setData();
@@ -360,7 +360,9 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
     {
       if (prototype == null) return true;
 
-      options.clear();
+      // clear options
+      this.options.forEach((option) => option.dispose());
+      this.options.clear();
 
       int i = 0;
       if (addempty == true)
@@ -393,10 +395,7 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
     }
     catch(e)
     {
-      DialogService().show(
-          type: DialogType.error,
-          title: phrase.error,
-          description: e.toString());
+      Log().error('Error building list. Error is $e');
     }
     return true;
   }
@@ -409,31 +408,42 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
 
   void setData()
   {
+    // value is not in data?
+    if (!containsOption())
+    {
+      // set to first entry id no datasource defined
+      if (datasource == null) value = options.isNotEmpty ? options[0].value : null;
+
+      // set to first entry if data has been returned
+      else if (options.isNotEmpty) value = options[0].value;
+    }
+
     dynamic data;
-      options.forEach((option)
-      {
-        if (option.value == value)
-          {
-            data = option.data;
-            this.label = option.labelValue;
-          }
-      });
+    options.forEach((option)
+    {
+      if (option.value == value)
+        {
+          data = option.data;
+          this.label = option.labelValue;
+        }
+    });
     this.data = data;
   }
 
   bool containsOption()
   {
     bool contains = false;
-      options.forEach((option)
-      {
-        if (option.value == value) contains = true;
-      });
+    options.forEach((option)
+    {
+      if (option.value == value) contains = true;
+    });
     return contains;
   }
 
   @override
-  dispose() {
-Log().debug('dispose called on => <$elementName id="$id">');
+  dispose()
+  {
+    // Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
   }
 

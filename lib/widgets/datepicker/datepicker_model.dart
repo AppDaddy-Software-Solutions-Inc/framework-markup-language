@@ -384,7 +384,7 @@ class DatepickerModel extends FormFieldModel implements IFormField, IViewableWid
       model = DatepickerModel(parent, Xml.get(node: xml, tag: 'id'), type: type);
       model.deserialize(xml);
     } 
-    catch (e) 
+    catch(e) 
     {
       Log().exception(e,  caller: 'datepicker.Model');
       model = null;
@@ -430,7 +430,7 @@ class DatepickerModel extends FormFieldModel implements IFormField, IViewableWid
 
   @override
   dispose() {
-Log().debug('dispose called on => <$elementName id="$id">');
+// Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
   }
 
@@ -528,7 +528,7 @@ Log().debug('dispose called on => <$elementName id="$id">');
       TimeOfDay time = TimeOfDay.now();
       try {
         time = (TimeOfDay.fromDateTime(S.toDate(value, format: format)!));
-      } catch (e) {
+      } catch(e) {
         Log().exception(e, caller: 'Datepicker');
         value = '';
       }
@@ -557,7 +557,7 @@ Log().debug('dispose called on => <$elementName id="$id">');
         else {
           value = DateFormat(format, 'en_US').format(result!);
         }
-      } on FormatException catch (e) {
+      } on FormatException catch(e) {
         Log().debug(e.toString() + 'FORMATTING ERROR!!!!!');
       }
     } else if (type == "time") {
@@ -565,7 +565,7 @@ Log().debug('dispose called on => <$elementName id="$id">');
       try {
         value = DateFormat(format).format(DateTime(now.year, now.month,
                 now.day, timeResult!.hour, timeResult.minute));
-      } on FormatException catch (e) {
+      } on FormatException catch(e) {
         Log().debug(e.toString() + 'FORMATTING ERROR!!!!!');
         value = '';
       }
@@ -574,7 +574,7 @@ Log().debug('dispose called on => <$elementName id="$id">');
       try {
         value = DateFormat(format).format(DateTime(result!.year, result.month,
                 result.day, timeResult!.hour, timeResult.minute));
-      } on FormatException catch (e) {
+      } on FormatException catch(e) {
         Log().debug(e.toString() + 'FORMATTING ERROR!!!!!');
         value = '';
       }

@@ -273,16 +273,37 @@ class AnimationModel extends DecoratedWidgetModel implements IViewableWidget
   @override
   dispose()
   {
-    Log().debug('dispose called on => <$elementName id="$id">');
+    // Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
   }
 
-  //////////////////
-  /* Constrained? */
-  //////////////////
+  // constrained?
   bool isConstrained(String dimension)
   {
     return true;
+  }
+
+  @override
+  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
+  {
+    /// setter
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+
+    switch (function)
+    {
+      case "start" :
+        var view = findListenerOfExactType(AnimationViewState);
+        if (view is AnimationViewState) view.start();
+        return true;
+
+      case "stop" :
+        var view = findListenerOfExactType(AnimationViewState);
+        if (view is AnimationViewState) view.stop();
+        return true;
+
+    }
+    return super.execute(caller, propertyOrFunction, arguments);
   }
 
   /// Returns the [ANIMATION] View

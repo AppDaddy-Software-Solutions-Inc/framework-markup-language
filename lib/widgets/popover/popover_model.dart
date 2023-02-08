@@ -108,7 +108,7 @@ class PopoverModel extends DecoratedWidgetModel implements IViewableWidget, IMod
 
   @override
   dispose() {
-    Log().debug('dispose called on => <$elementName id="$id">');
+    // Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
   }
 

@@ -1,0 +1,149 @@
+<FML title="FmlPad" linkable="true">
+
+    <VAR id="xml" value="{editor}" onchange="{r1} ? fmlpad.replaceChildren({xml},false) : null"/>
+
+    <CONST id="default">
+    <value>
+<![CDATA[<!-- Welcome to FmlPad! -->
+<FML>
+    <!-- Remember, the template is a STACK by default and non scrollable! -->
+    <!-- For scrolling, try out the SCROLL widget! -->
+    <BOX center="true" pad="40">
+        <!-- title bar -->
+        <ROW center="true">
+            <IMAGE height="50" url="assets://applications/fmlpad/fmlpad.png"/>
+            <PAD right="10"/>
+            <TEXT value="**Welcome to FMLPad!**" style="h4" color="#47C4FB"/>
+        </ROW>
+        <!-- text block -->
+        <PAD top="20"/>
+        <TEXT  value="***FmlPad** allows you to test and develop FML templates **realtime** _without the need to compile_ any code.*" color="white" size="14"/>
+        <!-- text block -->
+        <PAD top="10"/>
+        <TEXT value="*Try adding, removing or changing any of the markup text in the left editor window and see your changes reflected here instantly.*" color="white" size="14"/>
+        <!-- text block -->
+        <PAD top="10"/>
+        <TEXT value="***FmlPad** itself it written entirely in **FML** with less than a few dozen simple lines of markup text!*" color="white" size="14"/>
+        <!-- text block -->
+        <PAD top="20"/>
+        <ICON icon="face" color="#47C4FB"/>
+        <PAD top="5"/>
+        <TEXT value="*Happy Templating ...*" color="white" size="14"/>
+        <PAD top="5"/>
+        <TEXT italic="true" value="**The FML Development Team**" color="white" size="14"/>
+    </BOX>
+</FML>]]>
+   </value>
+   </CONST>
+
+    <HEADER height="50">
+        <BOX color="#1E2835" valign="center" halign="left" layout="row">
+
+            <!-- back button -->
+            <TOOLTIP text="Go Back">
+            <LINK onclick="back()">
+                <ICON icon="chevron_left" color="white" size="20"/>
+            </LINK>
+            </TOOLTIP>
+
+            <!-- logo -->
+            <IMAGE url="assets://images/fml-logo.png" height="30"/>
+            <PAD left="10"/>
+            <TEXT value="FmlPad" size="20" color="white"/>
+            <PAD left="50"/>
+
+            <!-- widgets -->
+            <GET id="dbWidgets" url="https://fml.dev/fmlpad/widgets.xml" root="WIDGETS.WIDGET" ttl="1m"/>
+            <SELECT bordercolor="#1E2835" onchange="copy({this})" data="dbWidgets" hint="widgets" >
+                <OPTION value="{data.value}">
+                    <label><ROW expand="false" valign="center"><ICON icon="{data.icon}" size="16" color="{data.color}"/><PAD left="10"/><TEXT value="{data.title}"/></ROW></label>
+                </OPTION>
+            </SELECT>
+
+            <PAD left="20"/>
+
+            <!-- themes -->
+            <GET id="dbStyles" url="https://fml.dev/fmlpad/styles.xml" root="STYLES.STYLE" ttl="1d"/>
+            <SELECT id="theme" bordercolor="#1E2835" data="dbStyles" value='{STASH.FmlPadTheme}' hint="themes" onchange="stash('FmlPadTheme',{this.value})">
+                <OPTION label='{data.label}'/>
+            </SELECT>
+            
+            <PAD left="20"/>
+
+            <!-- examples -->
+            <GET id="db1" url="{examples}" onsuccess="editor.set({this.response})"/>
+            <GET id="dbExamples" url="https://fml.dev/fmlpad/examples.xml" root="EXAMPLES.EXAMPLE" ttl="1m"/>
+            <SELECT id="examples" bordercolor="#1E2835" value="1" data="dbExamples" hint="examples" width="200">
+                <OPTION value="{data.url}">
+                    <label><ROW expand="false" valign="center"><ICON icon="{data.icon}" size="16" color="{data.color}"/><PAD left="10"/><TEXT value="{data.title}"/></ROW></label>
+                </OPTION>
+            </SELECT>
+
+            <!-- realtime slider -->
+            <EXPAND>
+            <ROW halign="end" valign="center">
+
+               <!-- Reset button -->
+                <BUTTON onclick="editor.set({default})" visible="={default} != {editor}">
+                    <ICON icon="refresh" color="white" size="24"/>
+                </BUTTON>
+
+                <PAD left="20"/>
+
+                <!-- Save button -->
+                <BUTTON onclick="saveas({editor},'fmlpad.xml')">
+                    <ICON icon="save" color="white" size="24"/>
+                </BUTTON>
+
+                <PAD left="20"/>
+
+                <!-- Open button -->
+                <FILEPICKER id="fp1" onsuccess="editor.set({fp1.data.text})" allow=".xml"/>
+                <BUTTON onclick="fp1.start()">
+                    <ICON icon="folder" color="white" size="24"/>
+                </BUTTON>
+
+                <PAD left="40"/>
+
+                <!-- Realtime Parsing button -->
+                <TEXT value="Realtime"/>
+                <PAD left="20"/>
+                <SWITCH id="r1" value="true"/>
+                <PAD left="20"/>
+
+            </ROW>
+            </EXPAND>
+        </BOX>
+    </HEADER>
+
+    <FOOTER height="50">
+        <BOX color="#1E2835"/>
+    </FOOTER>
+
+    <SPLITVIEW ratio=".50" dividerwidth="6.0" dividercolor="#1E2835" dividerhandlecolor="#47C4FB">
+
+        <VIEW>
+            <BOX color="#0F161F" width="100%" height="100%" layout="stack">
+
+                <SCROLLER>
+                    <EDITOR id="editor" language="xml" value="{default}" theme="{theme}"/>
+                </SCROLLER>
+
+                <POSITIONED right="10" top="5">
+                    <BUTTON onclick="fmlpad.replaceChildren({xml},false)" visible="=!{r1}">
+                        <BOX width="100" height="35" color="#348CFF" layout="row" radius="5" valign="center" halign="left">
+                            <PAD left="10"/>
+                            <ICON icon="play_arrow" size="20" color="black"/>
+                            <PAD left="7"/>
+                            <TEXT color="black" value="Parse"/>
+                        </BOX>
+                    </BUTTON>
+                </POSITIONED>
+
+            </BOX>
+        </VIEW>
+
+        <VIEW id="fmlpad"/>
+
+    </SPLITVIEW>
+</FML>

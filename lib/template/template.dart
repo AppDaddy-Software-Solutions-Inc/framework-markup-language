@@ -51,7 +51,7 @@ class Template
       // return the new template
       template = Template(name: template.name, document: document);
     }
-    catch (e)
+    catch(e)
     {
       Log().debug(e.toString());
     }
@@ -221,7 +221,7 @@ class Template
                 if (node is XmlElement) nodes.add(node.copy());
               element.parent!.children.insertAll(position, nodes);
             }
-            catch (e)
+            catch(e)
             {
               Log().debug("Error parsing include file $url. Error is $e");
             }

@@ -461,8 +461,9 @@ class TableRowModel extends DecoratedWidgetModel
   }
 
   @override
-  dispose() {
-Log().debug('dispose called on => <$elementName id="$id">');
+  dispose()
+  {
+    // Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
     scope?.dispose();
   }

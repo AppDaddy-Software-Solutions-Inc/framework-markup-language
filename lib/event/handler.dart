@@ -1,11 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:convert';
 import 'dart:core';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:firebase_auth/firebase_auth.dart' deferred as fbauth;
 import 'package:firebase_core/firebase_core.dart' deferred as fbcore;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fml/dialog/service.dart';
+import 'package:fml/dialog/manager.dart';
 import 'package:fml/eval/evaluator.dart';
 import 'package:fml/eval/expressions.dart';
 import 'package:fml/event/manager.dart';
@@ -109,6 +110,7 @@ class EventHandler extends Eval
       functions[S.fromEnum(EventTypes.replaceroute)]  = _handleEventReplace;
       functions[S.fromEnum(EventTypes.page)]          = _handleEventPage;
       functions[S.fromEnum(EventTypes.refresh)]       = _handleEventRefresh;
+      functions[S.fromEnum(EventTypes.saveas)]        = _handleEventSaveAs;
       functions[S.fromEnum(EventTypes.save)]          = _handleEventSave;
       functions[S.fromEnum(EventTypes.scroll)]        = _handleEventScroll;
       functions[S.fromEnum(EventTypes.scrollto)]      = _handleEventScrollTo;
@@ -294,7 +296,7 @@ class EventHandler extends Eval
   /// Creates an alert dialog
   Future<bool> _handleEventAlert([dynamic type, dynamic title, dynamic message]) async
   {
-    await DialogService().show(type: S.toEnum(S.toStr(type), DialogType.values), title: S.toStr(title), description: S.toStr(message));
+    await model.framework?.show(type: S.toEnum(S.toStr(type), DialogType.values), title: S.toStr(title), description: S.toStr(message));
     return true;
   }
 
@@ -311,14 +313,14 @@ class EventHandler extends Eval
   Future<bool> _handleEventContinue([dynamic type,  dynamic title, dynamic message, dynamic phrase1, dynamic phrase2]) async
   {
     bool ok = true;
-    int? response = await DialogService().show(
+    int? response = await model.framework?.show(
         type: S.toEnum(S.toStr(type), DialogType.values),
         title: S.toStr(title), description: S.toStr(message),
         buttons: [
           Text(S.toStr(phrase1) ?? phrase.no, style: TextStyle(fontSize: 18, color: Colors.white)),
           Text(S.toStr(phrase2) ?? phrase.yes, style: TextStyle(fontSize: 18, color: Colors.white))]);
-    if (response == 0) ok = false;
-    if (response == 1) ok = true;
+    if (response == 0)  ok = false;
+    if (response == 1)  ok = true;
     if (response == -1) ok = false;
     return ok;
   }
@@ -356,7 +358,7 @@ class EventHandler extends Eval
 
       if (_wait > 0)  await Future.delayed(Duration(milliseconds : _wait));
     }
-    catch (e) {
+    catch(e) {
       Log().error('wait(${time.toString()}) event failed');
     }
     return true;
@@ -622,6 +624,21 @@ class EventHandler extends Eval
     return true;
   }
 
+  /// Saves the text to file
+  Future<bool> _handleEventSaveAs([dynamic text, dynamic title]) async
+  {
+    try
+    {
+      var bytes = utf8.encode(text);
+      Platform.fileSaveAs(bytes, title ?? 'file.text');
+    }
+    catch(e)
+    {
+      Log().error("Error in saveAs(). Error is $e");
+    }
+    return true;
+  }
+
   /// Broadcasts the keypress event to be handled by individual widgets
   Future<bool> _handleEventKeyPress([dynamic key]) async
   {
@@ -767,10 +784,15 @@ class EventHandler extends Eval
     // execute the function
     if (model != null) return await model.execute(id, function, arguments);
 
+    // stash clear?
+    // this hack is necessary since stash isn't a model
+    // and adding another function seems overkill
+    if (id == "STASH" && function.toLowerCase() == "clear") return await System.app?.clearStash() ?? true;
+
     // model not found
     Log().debug("Widget Model $id not found", caller: "_handleEventExecute");
 
-    return false;
+    return true;
   }
 }
 

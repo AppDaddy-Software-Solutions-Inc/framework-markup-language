@@ -67,4 +67,12 @@ class GridItemModel extends DecoratedWidgetModel
     // properties
     type       = Xml.get(node: xml, tag: 'type');
   }
+
+  @override
+  dispose()
+  {
+    // Log().debug('dispose called on => <$elementName id="$id">');
+    super.dispose();
+    scope?.dispose();
+  }
 }

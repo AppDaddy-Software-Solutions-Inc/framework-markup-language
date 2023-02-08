@@ -19,11 +19,6 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-// platform
-import 'package:fml/platform/platform.stub.dart'
-if (dart.library.io)   'package:fml/platform/platform.vm.dart'
-if (dart.library.html) 'package:fml/platform/platform.web.dart';
-
 class GridModel extends DecoratedWidgetModel implements IViewableWidget, IScrolling
 {
   // prototype
@@ -221,9 +216,12 @@ class GridModel extends DecoratedWidgetModel implements IViewableWidget, IScroll
     direction      = Xml.get(node: xml, tag: 'direction');
     scrollShadows  = Xml.get(node: xml, tag: 'scrollshadows');
 
+    // clear items
+    this.items.forEach((_,item) => item.dispose());
+    this.items.clear();
+
     // Build items
     int i = 0;
-    this.items.clear();
     List<GridItemModel> items = findChildrenOfExactType(GridItemModel).cast<GridItemModel>();
 
     // set prototype
@@ -245,9 +243,13 @@ class GridModel extends DecoratedWidgetModel implements IViewableWidget, IScroll
     busy = true;
     int i = 0;
 
-    if (list != null) {
+    if (list != null)
+    {
       clean = true;
-      items.clear();
+
+      // clear items
+      this.items.forEach((_,item) => item.dispose());
+      this.items.clear();
 
       // Populate grid items from datasource
       list.forEach((row) {
@@ -392,10 +394,12 @@ class GridModel extends DecoratedWidgetModel implements IViewableWidget, IScroll
   @override
   dispose()
   {
-    Log().debug('dispose called on => <$elementName id="$id">');
-    items.forEach((key, model) => model.dispose());
-    items.clear();
-    scope?.dispose();
+    // Log().debug('dispose called on => <$elementName id="$id">');
+
+    // clear items
+    this.items.forEach((_,item) => item.dispose());
+    this.items.clear();
+
     super.dispose();
   }
 

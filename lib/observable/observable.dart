@@ -1,7 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/dialog/service.dart';
-import 'package:fml/phrase.dart';
-import 'package:fml/system.dart';
+import 'package:fml/log/manager.dart';
 import 'binding.dart';
 import 'scope.dart';
 import 'package:fml/eval/eval.dart'       as EVALUATE;
@@ -287,7 +285,7 @@ class Observable
     }
     catch(e)
     {
-      if (kDebugMode) DialogService().show(title: phrase.error + ' - ' + (value ?? 'NULL'), description: e.toString());
+      Log().error('Error in Eval() -> $value. Error is $e');
       result = null;
     }
     return result;

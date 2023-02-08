@@ -64,7 +64,7 @@ class TreeModel extends DecoratedWidgetModel implements IViewableWidget
     }
     catch(e)
     {
-      Log().exception(e, caller: 'menu.Model');
+      Log().exception(e, caller: 'TreeModel');
       model = null;
     }
     return model;
@@ -82,8 +82,14 @@ class TreeModel extends DecoratedWidgetModel implements IViewableWidget
     expandedicon = Xml.get(node: xml, tag: 'expandedicon');
 
     // Build Nodes and find the youngestGeneration
+
+    // clear nodes
+    this.nodes.forEach((model) => model.dispose());
     this.nodes.clear();
+
+    this.youngestGeneration.forEach((model) => model?.dispose());
     this.youngestGeneration.clear();
+
     List<TreeNodeModel> nodes = findChildrenOfExactType(TreeNodeModel).cast<TreeNodeModel>();
     nodes.forEach((dynamic node)
     {
@@ -101,12 +107,14 @@ class TreeModel extends DecoratedWidgetModel implements IViewableWidget
   @override
   dispose()
   {
-    Log().debug('dispose called on => <$elementName id="$id">');
+    // Log().debug('dispose called on => <$elementName id="$id">');
 
+    // clear nodes
     nodes.forEach((model) => model.dispose());
     nodes.clear();
 
-    scope?.dispose();
+    this.youngestGeneration.forEach((model) => model?.dispose());
+    this.youngestGeneration.clear();
 
     super.dispose();
   }

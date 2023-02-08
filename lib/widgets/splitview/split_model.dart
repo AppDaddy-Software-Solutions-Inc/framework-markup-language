@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/view/view_model.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
 
 import 'package:fml/widgets/widget/iViewableWidget.dart';
@@ -12,11 +13,52 @@ import 'package:fml/helper/common_helpers.dart';
 
 class SplitModel extends DecoratedWidgetModel implements IViewableWidget
 {
-  List<List<IViewableWidget>> views = [];
+  /// The splitter bar divider color
+  ColorObservable? _dividerColor;
+  set dividerColor (dynamic v)
+  {
+    if (_dividerColor != null)
+    {
+      _dividerColor!.set(v);
+    }
+    else if (v != null)
+    {
+      _dividerColor = ColorObservable(Binding.toKey(id, 'dividercolor'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  Color? get dividerColor => _dividerColor?.get();
 
-  ////////////
-  /* ratio */
-  ////////////
+  /// The splitter bar divider width
+  DoubleObservable? _dividerWidth;
+  set dividerWidth (dynamic v)
+  {
+    if (_dividerWidth != null)
+    {
+      _dividerWidth!.set(v);
+    }
+    else if (v != null)
+    {
+      _dividerWidth = DoubleObservable(Binding.toKey(id, 'dividerwidth'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  double? get dividerWidth => _dividerWidth?.get();
+
+  /// The splitter bar divider handle color
+  ColorObservable? _dividerHandleColor;
+  set dividerHandleColor (dynamic v)
+  {
+    if (_dividerHandleColor != null)
+    {
+      _dividerHandleColor!.set(v);
+    }
+    else if (v != null)
+    {
+      _dividerHandleColor = ColorObservable(Binding.toKey(id, 'dividerhandlecolor'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  Color? get dividerHandleColor => _dividerHandleColor?.get();
+
+  /// split ratio
   DoubleObservable? _ratio;
   set ratio (dynamic v)
   {
@@ -70,26 +112,13 @@ class SplitModel extends DecoratedWidgetModel implements IViewableWidget
     super.deserialize(xml);
 
     // properties
-    ratio = Xml.get(node: xml, tag: 'ratio');
+    ratio         = Xml.get(node: xml, tag: 'ratio');
+    dividerColor  = Xml.get(node: xml, tag: 'dividercolor');
+    dividerWidth  = Xml.get(node: xml, tag: 'dividerwidth');
+    dividerHandleColor  = Xml.get(node: xml, tag: 'dividerhandlecolor');
 
-    ///////////
-    /* Views */
-    ///////////
-    views.clear();
-    Iterable<XmlElement> oView = xml.findElements("VIEW", namespace: "*");
-      oView.forEach((oView)
-    {
-      List<IViewableWidget> children = [];
-      oView.children.forEach((node)
-      {
-        if (node.nodeType == XmlNodeType.ELEMENT)
-        {
-          dynamic child = WidgetModel.fromXml(this, node as XmlElement);
-          if (child != null) children.add(child);
-        }
-      });
-      views.add(children);
-    });
+    // remove non view children
+    children?.removeWhere((element) => !(element is ViewModel));
   }
 
   Widget getView({Key? key}) => SplitView(this);

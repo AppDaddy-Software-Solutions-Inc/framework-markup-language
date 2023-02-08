@@ -354,17 +354,32 @@ class _ScribbleViewState extends State<ScribbleView> implements IModelListener
         )
         : Column(mainAxisAlignment: MainAxisAlignment.end, crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Row(mainAxisSize: MainAxisSize.max, crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.center,
+              Center(child: Container(decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.onInverseSurface,
+                borderRadius: new BorderRadius.only(
+                  topLeft: const Radius.circular(10.0),
+                  topRight: const Radius.circular(10.0),
+                )),
+                child: Row(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   buildClearButton(),
                   saveVisible == true ? buildSaveButton() : Container(),
                 ])
+              ))
             ]
     );
   }
 
   Widget buildClearButton() {
     return TextButton(
+      style: ButtonStyle(
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            RoundedRectangleBorder(
+                borderRadius: new BorderRadius.only(
+                  topLeft: const Radius.circular(10.0),
+                  topRight: saveVisible == true ? Radius.zero : Radius.circular(10.0),
+                )),
+          )),
       onPressed: clear,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
@@ -375,6 +390,13 @@ class _ScribbleViewState extends State<ScribbleView> implements IModelListener
 
   Widget buildSaveButton() {
     return TextButton(
+      style: ButtonStyle(
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            RoundedRectangleBorder(
+                borderRadius: new BorderRadius.only(
+                  topRight: const Radius.circular(10.0),
+                )),
+          )),
       onPressed: save,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),

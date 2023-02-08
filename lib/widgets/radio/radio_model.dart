@@ -1,9 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/iDataSource.dart';
-import 'package:fml/dialog/service.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/phrase.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:fml/widgets/form/iFormField.dart';
 import 'package:flutter/material.dart';
@@ -205,8 +203,11 @@ class RadioModel extends FormFieldModel implements IFormField, IViewableWidget
     wrap = Xml.get(node: xml, tag: 'wrap');
     size = Xml.get(node: xml, tag: 'size');
 
-    // Build options
+    // clear options
+    this.options.forEach((option) => option.dispose());
     this.options.clear();
+
+    // Build options
     List<OptionModel> options = findChildrenOfExactType(OptionModel).cast<OptionModel>();
 
       // set prototype
@@ -226,7 +227,9 @@ class RadioModel extends FormFieldModel implements IFormField, IViewableWidget
     {
       if (prototype == null) return true;
 
-      options.clear();
+      // clear options
+      this.options.forEach((option) => option.dispose());
+      this.options.clear();
 
       // build options
       int i = 0;
@@ -253,17 +256,14 @@ class RadioModel extends FormFieldModel implements IFormField, IViewableWidget
     }
     catch(e)
     {
-      DialogService().show(
-          type: DialogType.error,
-          title: phrase.error,
-          description: e.toString());
+      Log().error('Error building list. Error is $e', caller: 'RADIO');
     }
     return true;
   }
 
   @override
   dispose() {
-Log().debug('dispose called on => <$elementName id="$id">');
+// Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
   }
 

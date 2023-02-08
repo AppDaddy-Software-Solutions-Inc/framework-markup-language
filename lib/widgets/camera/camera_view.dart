@@ -2,17 +2,18 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:camera/camera.dart';
-import 'package:collection/collection.dart' show IterableExtension;
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/log/manager.dart';
+import 'package:fml/system.dart';
 import 'package:fml/widgets/camera/camera_model.dart';
-import 'package:fml/widgets/camera/stream/stream.dart' as STREAM;
+import 'package:fml/widgets/camera/stream/stream.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/icon/icon_model.dart';
 import 'package:fml/widgets/icon/icon_view.dart';
-import 'package:fml/datasources/file/file.dart' as FILE;
+import 'package:fml/datasources/file/file.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
@@ -38,7 +39,7 @@ class CameraViewState extends State<CameraView>
   List<CameraDescription>? cameras;
   CameraPreview? camera;
 
-  STREAM.View? backgroundStream;
+  StreamView? backgroundStream;
 
   int _pointers = 0;
 
@@ -69,34 +70,63 @@ class CameraViewState extends State<CameraView>
   }
 
   /// Callback to fire the [CameraViewState.build] when the [CameraModel] changes
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    var b = Binding.fromString(property);
-    if (this.mounted) {
-      if (b?.property == 'index') {
-        initialize();
-      } else if (b?.property == 'enabled') {
-        if (widget.model.enabled)
-          start();
-        else
-          stop();
-      } else if (b?.property == 'visible') {
-        if (!widget.model.visible) {
-          stop();
-          setState(() {});
-        } else
+  onModelChange(WidgetModel model, {String? property, dynamic value})
+  {
+    if (this.mounted)
+    {
+      var b = Binding.fromString(property);
+      switch (b?.property)
+      {
+        // changed camera
+        case 'index':
           initialize();
+          break;
+
+        // enable/disable
+        case 'enabled':
+          widget.model.enabled ? start() : stop();
+          break;
+
+        // visible/hidden
+        case 'visible':
+
+          // stop the camera
+          if (!widget.model.visible)
+          {
+            stop();
+            setState(() {});
+            break;
+          }
+
+          // start the camera
+          if (controller != null)
+          {
+            start();
+            setState(() {});
+            break;
+          }
+
+          // initialize the camera
+          else initialize();
+          break;
+
+        default:
+          initialize();
+          break;
       }
     }
   }
 
   @override
-  void dispose() {
+  void dispose()
+  {
     controller?.dispose();
     backgroundStream = null;
     super.dispose();
   }
 
-  toggleCamera() async {
+  toggleCamera() async
+  {
     int index = widget.model.index ?? 0;
     index++;
     if (index >= cameras!.length) index = 0;
@@ -105,29 +135,37 @@ class CameraViewState extends State<CameraView>
     widget.model.index = index;
   }
 
-  initialize() async {
-    try {
+  initialize() async
+  {
+    try
+    {
       // camera is busy
       widget.model.busy = true;
 
       if (!widget.model.visible) return;
 
+      // a bug in the desktop controller causes the
+      // program to crash if re-initialized;
+      if (isDesktop && controller != null)
+      {
+        setState(() {});
+        return;
+      }
+
       // get cameras
       if (cameras == null) cameras = await availableCameras();
-      if ((cameras != null) && (cameras!.length > 0)) {
+      if ((cameras != null) && (cameras!.length > 0))
+      {
         // set specified camera
         int index = widget.model.index ?? -1;
-        if (index < 0) {
+        if (index < 0)
+        {
           // get the camera
-          CameraLensDirection direction =
-              S.toEnum(widget.model.direction, CameraLensDirection.values) ??
-                  CameraLensDirection.back;
-          var camera = cameras!
-              .firstWhereOrNull((camera) => camera.lensDirection == direction);
+          CameraLensDirection direction = S.toEnum(widget.model.direction, CameraLensDirection.values) ?? CameraLensDirection.back;
+          var camera = cameras!.firstWhereOrNull((camera) => camera.lensDirection == direction);
           if (camera != null)
-            index = cameras!.indexOf(camera);
-          else
-            index = 0;
+               index = cameras!.indexOf(camera);
+          else index = 0;
 
           // this will fire onModelChange
           widget.model.index = index;
@@ -135,7 +173,8 @@ class CameraViewState extends State<CameraView>
         }
 
         // index exceeds camera length
-        if (widget.model.index! >= cameras!.length) {
+        if (widget.model.index! >= cameras!.length)
+        {
           // this will fire onModelChange
           widget.model.index = cameras!.length - 1;
           return;
@@ -172,17 +211,18 @@ class CameraViewState extends State<CameraView>
 
         // initialize the controller
         await controller!.initialize();
+
         if (!mounted) return;
         try {
           // min zoom
           _zoom = await controller!.getMinZoomLevel();
           _minAvailableZoom = _zoom;
-        } catch (e) {}
+        } catch(e) {}
 
         try {
           // max zoom
           _maxAvailableZoom = await controller!.getMaxZoomLevel();
-        } catch (e) {}
+        } catch(e) {}
 
         // set aspect ratio
         widget.model.scale = controller!.value.aspectRatio;
@@ -192,12 +232,14 @@ class CameraViewState extends State<CameraView>
         widget.model.renderheight = controller!.value.previewSize!.height;
 
         // set orientation
-        widget.model.orientation =
-            S.fromEnum(controller!.value.deviceOrientation);
+        widget.model.orientation = S.fromEnum(controller!.value.deviceOrientation);
 
         // start stream
         if (widget.model.stream)
-          controller!.startImageStream((stream) => onStream(stream, camera));
+        {
+          if (!isDesktop) controller!.startImageStream((stream) => onStream(stream, camera));
+          else Log().error('Streaming is not yet supported on desktop');
+        }
 
         // notify initilizied
         widget.model.onInitialized(this.context);
@@ -208,7 +250,7 @@ class CameraViewState extends State<CameraView>
         // refresh
         setState(() {});
       }
-    } catch (e) {
+    } catch(e) {
       Log().debug(e.toString());
       //DialogService().show(type: DialogType.error, description: e.toString());
     }
@@ -271,7 +313,7 @@ class CameraViewState extends State<CameraView>
         ok = false;
         widget.model.onException(Data(), message: "Failed to take picture");
       }
-    } catch (e) {
+    } catch(e) {
       ok = false;
       Log().exception(e);
       widget.model.busy = false;
@@ -384,7 +426,7 @@ class CameraViewState extends State<CameraView>
 
     // hack to initialize background camera stream. current camera widget doesn't support streaming in web
     if ((kIsWeb) && (widget.model.stream) && (backgroundStream == null)) {
-      backgroundStream = STREAM.View(widget.model);
+      backgroundStream = StreamView(widget.model);
       if (backgroundStream != null)
         children.add(Offstage(child: backgroundStream as Widget?));
     }
@@ -488,7 +530,7 @@ class CameraViewState extends State<CameraView>
     }
 
     // apply transforms
-    FILE.File file = await widget.model.applyTransforms(image);
+    File file = await widget.model.applyTransforms(image);
 
     // return file
     widget.model.onFile(file);

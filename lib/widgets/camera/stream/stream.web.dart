@@ -19,15 +19,9 @@ import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
 if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
 if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
 
-// platform
-import 'package:fml/platform/platform.stub.dart'
-if (dart.library.io)   'package:fml/platform/platform.vm.dart'
-if (dart.library.html) 'package:fml/platform/platform.web.dart';
-
-
 View getView(model) => View(model);
 
-class View extends StatefulWidget implements STREAM.View {
+class View extends StatefulWidget implements STREAM.StreamView {
   final CAMERA.CameraModel model;
 
   View(this.model) : super(key: ObjectKey(model));
@@ -196,7 +190,7 @@ class ViewState extends State<View> implements IModelListener
           // process stream image
           onStream(rgba, width, height);
         }
-      } catch (e) {
+      } catch(e) {
         //DialogService().show(type: DialogType.error, title: 'detecting error2');
       }
     }
@@ -253,7 +247,7 @@ class ViewState extends State<View> implements IModelListener
 
         lastFrame = epoch;
       }
-    } catch (e) {
+    } catch(e) {
       // System.toast("Error in video");
     }
 
@@ -302,7 +296,7 @@ class ViewState extends State<View> implements IModelListener
         HTML.window.requestAnimationFrame(renderFrame);
       }).catchError(onError);
       Log().debug("Camera Started");
-    } catch (e) {}
+    } catch(e) {}
   }
 
   Future stop() async {
@@ -314,7 +308,7 @@ class ViewState extends State<View> implements IModelListener
         this.stream!.getTracks().forEach((track) => track.stop());
       this.stream = null;
       Log().debug("Camera Stopped");
-    } catch (e) {}
+    } catch(e) {}
   }
 
   Future pause() async {
@@ -323,7 +317,7 @@ class ViewState extends State<View> implements IModelListener
       Log().debug("Pausing Camera");
       video.pause();
       Log().debug("Camera Paused");
-    } catch (e) {}
+    } catch(e) {}
   }
 
   Future play() async {
@@ -333,8 +327,8 @@ class ViewState extends State<View> implements IModelListener
         Log().debug("Playing Camera");
         video.play();
         Log().debug("Camera Playing");
-      } catch (e) {}
-    } catch (e) {}
+      } catch(e) {}
+    } catch(e) {}
   }
 
   Future snapshot() async {
@@ -376,8 +370,8 @@ class ViewState extends State<View> implements IModelListener
         // save snapshot
         String uri = canvas2.toDataUrl('image/png', 1.0);
         await onSnapshot(rgba2, width, height, UriData.fromString(uri));
-      } catch (e) {}
-    } catch (e) {}
+      } catch(e) {}
+    } catch(e) {}
   }
 
   onError(error) {

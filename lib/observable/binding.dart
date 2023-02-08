@@ -43,7 +43,18 @@ class Binding
   final bool? isEval;
   final int? offset;
 
-  String get key => toKey(source, property)!;
+  String? get key  => toKey(source, property);
+  String? get name
+  {
+    var k = toKey(source, property);
+    if (dotnotation != null && dotnotation!.length > 0)
+    {
+       String dn = "";
+       dotnotation!.forEach((segment) => dn = "$dn.${segment.name}");
+       k = "$k$dn";
+    }
+    return k;
+  }
 
   static String? toKey(String? source, [String? property])
   {
@@ -124,7 +135,9 @@ class Binding
       // create the bindable
       if (source!.isNotEmpty) return Binding(scope: scope, signature: signature, source: source, property: property!, dotnotation: subproperties, offset: offset);
     }
-    catch(e) {}
+    catch(e) {
+      return null;
+    }
     return null;
   }
 
@@ -195,14 +208,20 @@ class Binding
     return bindings;
   }
 
-  static List<String?>? getBindingKeys(String s)
+  static List<String>? getBindingKeys(String s)
   {
-    List<String?>? keys;
+    List<String>? keys;
     List<Binding>? bindings = getBindings(s);
     if (bindings != null)
     {
       keys = [];
-      bindings.forEach((binding) => keys!.contains(binding.key) ? null : keys.add(binding.key));
+      bindings.forEach((binding)
+      {
+        var key  = binding.key;
+        var name = binding.name;
+        if (key  != null && !keys!.contains(key))  keys.add(key);
+        if (name != null && !keys!.contains(name)) keys.add(name);
+      });
     }
     return keys;
   }

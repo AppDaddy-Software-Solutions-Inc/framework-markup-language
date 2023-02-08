@@ -9,11 +9,6 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:fml/hive/form.dart' as DATABASE;
 import 'package:fml/helper/common_helpers.dart';
 
-// platform
-import 'package:fml/platform/platform.stub.dart'
-if (dart.library.io)   'package:fml/platform/platform.vm.dart'
-if (dart.library.html) 'package:fml/platform/platform.web.dart';
-
 class TemplateManager
 {
   // holds in-memory deserialized templates
@@ -49,7 +44,7 @@ class TemplateManager
       DATABASE.Form? form = await DATABASE.Form.find(key);
       if (form != null) template = form.template;
     }
-    catch (e)
+    catch(e)
     {
       Log().exception(e);
       template = null;
@@ -68,7 +63,7 @@ class TemplateManager
       // get template from asset bundle
       template = await rootBundle.loadString(url.replaceFirst("file://", "assets/"), cache: false);
     }
-    catch (e)
+    catch(e)
     {
       template = null;
     }
@@ -89,7 +84,7 @@ class TemplateManager
       String? filepath = uri?.asFilePath();
       template = await Platform.readFile(filepath);
     }
-    catch (e)
+    catch(e)
     {
       template = null;
     }
@@ -114,7 +109,7 @@ class TemplateManager
         Log().debug("Unable to fetch template from server. No internet connection");
       }
     }
-    catch (e)
+    catch(e)
     {
       Log().error("Can't find valid template $url on server. Error is $e");
     }

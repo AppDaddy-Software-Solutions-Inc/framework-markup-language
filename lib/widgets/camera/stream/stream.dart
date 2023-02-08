@@ -3,7 +3,7 @@ import 'stream.mobile.dart'
 if (dart.library.io)   'stream.mobile.dart'
 if (dart.library.html) 'stream.web.dart';
 
-abstract class View
+abstract class StreamView
 {
-  factory View(model) => getView(model)!;
+  factory StreamView(model) => getView(model)!;
 }

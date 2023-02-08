@@ -1,4 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:convert';
+
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/base/model.dart';
 import 'package:fml/datasources/detectors/iDetectable.dart';
@@ -66,13 +68,18 @@ class FileModel extends DataSourceModel implements IDataSource
       map['extension'] = ".${file.name}".split('.').last;
       map['size'] = file.size;
 
+      if (WidgetModel.isBound(this, "$id.data.text"))
+      {
+        await file.read();
+        map['text'] = "";
+        if (file.bytes != null) map["text"] = utf8.decode(file.bytes!);
+      }
+
       // add map
       data.add(map);
 
       // notify listeners
       onResponse(data);
-
-    busy = false;
 
     return true;
   }

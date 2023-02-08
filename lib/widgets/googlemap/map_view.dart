@@ -229,7 +229,7 @@ return LayoutBuilder(builder: builder);
 
         return map;
       }
-      catch (e)
+      catch(e)
       {
         Log().exception(e, caller: 'widget.map.View');
       }

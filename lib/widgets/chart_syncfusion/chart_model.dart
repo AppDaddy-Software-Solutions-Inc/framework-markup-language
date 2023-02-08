@@ -327,8 +327,7 @@ class ChartModel extends DecoratedWidgetModel implements IViewableWidget
   @override
   dispose()
   {
-    Log().debug('dispose called on => <$elementName id="$id">');
-    scope?.dispose();
+    // Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
   }
 

@@ -81,8 +81,8 @@ class ListItemModel extends DecoratedWidgetModel
       _backgroundcolor = ColorObservable(Binding.toKey(id, 'backgroundcolor'), v, scope: scope, listener: onPropertyChange);
     }
   }
-
   Color? get backgroundcolor =>  _backgroundcolor?.get();
+
 
   ////////////
   /* margin */
@@ -220,5 +220,13 @@ class ListItemModel extends DecoratedWidgetModel
       }
     else ok = false;
     return ok;
+  }
+
+  @override
+  dispose()
+  {
+    // Log().debug('dispose called on => <$elementName id="$id">');
+    super.dispose();
+    scope?.dispose();
   }
 }

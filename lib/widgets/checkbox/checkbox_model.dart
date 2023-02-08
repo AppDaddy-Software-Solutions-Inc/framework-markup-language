@@ -1,8 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/datasources/iDataSource.dart';
-import 'package:fml/dialog/service.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:fml/widgets/form/iFormField.dart';
@@ -374,19 +372,22 @@ class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidge
     /// styling attributes
     size  = Xml.get(node: xml, tag: 'size');
 
-    // Build options
+    // clear options
+    this.options.forEach((option) => option.dispose());
     this.options.clear();
+
+    // Build options
     List<OptionModel> options = findChildrenOfExactType(OptionModel).cast<OptionModel>();
 
-      // set prototype
-      if ((!S.isNullOrEmpty(datasource)) && (options.isNotEmpty))
-      {
-        prototype = S.toPrototype(options[0].element.toString());
-        options.removeAt(0);
-      }
-      // build options
-      options.forEach((option) => this.options.add(option));
+    // set prototype
+    if ((!S.isNullOrEmpty(datasource)) && (options.isNotEmpty))
+    {
+      prototype = S.toPrototype(options[0].element.toString());
+      options.removeAt(0);
+    }
 
+    // build options
+    options.forEach((option) => this.options.add(option));
   }
 
 
@@ -397,7 +398,9 @@ class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidge
     {
       if (prototype == null) return true;
 
-      options.clear();
+      // clear options
+      this.options.forEach((option) => option.dispose());
+      this.options.clear();
 
       // build options
       int i = 0;
@@ -419,10 +422,7 @@ class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidge
     }
     catch(e)
     {
-      DialogService().show(
-          type: DialogType.error,
-          title: phrase.error,
-          description: e.toString());
+      Log().error('Error building list. Error is $e', caller: 'CHECKBOX');
     }
     return true;
   }
@@ -445,7 +445,7 @@ class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidge
   @override
   dispose()
   {
-    Log().debug('dispose called on => <$elementName id="$id">');
+    // Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
   }
 

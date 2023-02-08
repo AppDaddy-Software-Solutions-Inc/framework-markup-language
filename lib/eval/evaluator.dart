@@ -187,7 +187,7 @@ class ExpressionEvaluator {
 
     try {
       test = eval(expression.test, context);
-    } catch(e){
+    } catch(e) {
       Log().debug("Expression is invalid ${expression.test}", caller: "eval");
     }
     return (test ?? false) ? eval(expression.consequent, context) : eval(expression.alternate, context);

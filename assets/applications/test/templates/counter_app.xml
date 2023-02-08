@@ -1,0 +1,26 @@
+<FML version="1.0" title="Counter-Page">
+
+	<HEADER height="46" color="blue">
+		<ROW halign="between" valign="center">
+			<BTN onclick="back()" width="40">
+				<ICON icon="chevron_left" color="white"/>
+			</BTN>
+			<TEXT value="Counter App" size="20" color="white"/>
+			<PAD right="40"/>
+		</ROW>
+	</HEADER>
+
+	<CENTER>
+		<COL center="true">
+			<TEXT value="You have pushed the button this many times:" color="#7c7c7c"/>
+			<TEXT id="clicknumber" value="0" style="h3" color="#7c7c7c"/>
+		</COL>
+	</CENTER>
+
+	<POS bottom="10" right="10">
+		<BTN onclick="clicknumber.set({clicknumber} + 1);" width="40" height="40" radius="50" color="blue" type="elevated">
+			<ICON icon="add" color="white"/>
+		</BTN>
+	</POS>
+
+</FML>

@@ -39,14 +39,8 @@
     <HEADER height="50">
         <BOX color="#1E2835" valign="center" halign="left" layout="row">
 
-            <!-- back button -->
-            <TOOLTIP text="Go Back">
-            <LINK onclick="back()">
-                <ICON icon="chevron_left" color="white" size="20"/>
-            </LINK>
-            </TOOLTIP>
-
             <!-- logo -->
+            <PAD left="20"/>
             <IMAGE url="assets://images/fml-logo.png" height="30"/>
             <PAD left="10"/>
             <TEXT value="FmlPad" size="20" color="white"/>
@@ -54,28 +48,19 @@
 
             <!-- widgets -->
             <GET id="dbWidgets" url="https://fml.dev/fmlpad/widgets.xml" root="WIDGETS.WIDGET" ttl="1m"/>
-            <SELECT bordercolor="#1E2835" onchange="copy({this})" data="dbWidgets" hint="widgets" >
-                <OPTION value="{data.value}">
-                    <label><ROW expand="false" valign="center"><ICON icon="{data.icon}" size="16" color="{data.color}"/><PAD left="10"/><TEXT value="{data.title}"/></ROW></label>
-                </OPTION>
+            <SELECT bordercolor="#1E2835" onchange="copy({this})" data="dbWidgets" hint="Widgets" width="150">
+                <OPTION value="{data.value}" label="&lt;{data.title}/&gt;"/>
             </SELECT>
 
-            <PAD left="20"/>
-
-            <!-- themes -->
-            <GET id="dbStyles" url="https://fml.dev/fmlpad/styles.xml" root="STYLES.STYLE" ttl="1d"/>
-            <SELECT id="theme" bordercolor="#1E2835" data="dbStyles" value='{STASH.FmlPadTheme}' hint="themes" onchange="stash('FmlPadTheme',{this.value})">
-                <OPTION label='{data.label}'/>
-            </SELECT>
             
             <PAD left="20"/>
 
             <!-- examples -->
             <GET id="db1" url="{examples}" onsuccess="editor.set({this.response})"/>
             <GET id="dbExamples" url="https://fml.dev/fmlpad/examples.xml" root="EXAMPLES.EXAMPLE" ttl="1m"/>
-            <SELECT id="examples" bordercolor="#1E2835" value="1" data="dbExamples" hint="examples" width="200">
+            <SELECT id="examples" bordercolor="#1E2835" typeahead="true" value="1" data="dbExamples" hint="Examples" width="250">
                 <OPTION value="{data.url}">
-                    <label><ROW expand="false" valign="center"><ICON icon="{data.icon}" size="16" color="{data.color}"/><PAD left="10"/><TEXT value="{data.title}"/></ROW></label>
+                    <label><ROW height="100%" valign="center"><ICON icon="{data.icon}" size="16" color="{data.color}"/><PAD left="10"/><TEXT value="{data.title}"/></ROW></label>
                 </OPTION>
             </SELECT>
 
@@ -117,7 +102,22 @@
     </HEADER>
 
     <FOOTER height="50">
-        <BOX color="#1E2835"/>
+        <BOX color="#1E2835" layout="row" halign="end" valign="center">
+            <!-- themes -->
+            <TEXT value="FML Theme:" color="lightgray"/>
+            <PAD right="10"/>
+            <GET id="dbStyles" url="https://fml.dev/fmlpad/styles.xml" root="STYLES.STYLE" ttl="1d"/>
+            <SELECT id="theme" border="none" data="dbStyles" value='{STASH.FmlPadTheme}' hint="Select an Editor Theme" onchange="stash('FmlPadTheme',{this.value})">
+                <OPTION label='{data.label}'/>
+            </SELECT>
+            <PAD right="40"/>
+            <ICON icon="light_mode" color="=!{mode} ? 'yellow' : 'grey'"/>
+            <PAD right="6"/>
+            <SWITCH id="mode"  value="={STASH.FmlPadMode} ?? true" onchange="stash('FmlPadMode',{this.value})"/>
+            <PAD right="6"/>
+            <ICON icon="dark_mode" color="={mode} ? 'purple' : 'grey'"/>
+            <PAD right="20"/>
+        </BOX>
     </FOOTER>
 
     <SPLITVIEW ratio=".50" dividerwidth="6.0" dividercolor="#1E2835" dividerhandlecolor="#47C4FB">

@@ -277,12 +277,32 @@ class AnimationModel extends DecoratedWidgetModel implements IViewableWidget
     super.dispose();
   }
 
-  //////////////////
-  /* Constrained? */
-  //////////////////
+  // constrained?
   bool isConstrained(String dimension)
   {
     return true;
+  }
+
+  @override
+  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
+  {
+    /// setter
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+
+    switch (function)
+    {
+      case "animate" :
+
+        var view = findListenerOfExactType(AnimationViewState);
+        if (view is AnimationViewState)
+        {
+          bool start = S.toBool(S.item(arguments, 0)) ?? true;
+          start ? view.start() : view.stop();
+        }
+        return true;
+    }
+    return super.execute(caller, propertyOrFunction, arguments);
   }
 
   /// Returns the [ANIMATION] View

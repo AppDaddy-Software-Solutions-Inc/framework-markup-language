@@ -368,10 +368,12 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
   Future<void> notify() async
   {
     // notify listeners
-    for (IDataSourceListener listener in listeners) await listener.onDataSourceSuccess(this, data);
+    var list = listeners.toList();
+    for (IDataSourceListener listener in list) await listener.onDataSourceSuccess(this, data);
   }
 
-  remove(IDataSourceListener listener) {
+  remove(IDataSourceListener listener)
+  {
     if (listeners.contains(listener)) listeners.remove(listener);
   }
 

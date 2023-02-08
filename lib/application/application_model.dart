@@ -268,6 +268,25 @@ class ApplicationModel extends WidgetModel
     return ok;
   }
 
+  Future<bool> clearStash() async
+  {
+    bool ok = true;
+    try
+    {
+      // clear rthe stash map
+      _stash.map.clear();
+
+      // save to the hive
+      await _stash.upsert();
+    }
+    catch(e)
+    {
+      // stash failure always returns true
+      ok = true;
+    }
+    return ok;
+  }
+
   void launch({ThemeModel? theme})
   {
     // set stash values

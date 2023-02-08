@@ -784,6 +784,11 @@ class EventHandler extends Eval
     // execute the function
     if (model != null) return await model.execute(id, function, arguments);
 
+    // stash clear?
+    // this hack is necessary since stash isn't a model
+    // and adding another function seems overkill
+    if (id == "STASH" && function.toLowerCase() == "clear") return await System.app?.clearStash() ?? true;
+
     // model not found
     Log().debug("Widget Model $id not found", caller: "_handleEventExecute");
 

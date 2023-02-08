@@ -93,7 +93,6 @@ class EventHandler extends Eval
       functions[S.fromEnum(EventTypes.back)]          = _handleEventBack;
       functions[S.fromEnum(EventTypes.build)]         = _handleEventBuild;
       functions[S.fromEnum(EventTypes.close)]         = _handleEventClose;
-      functions[S.fromEnum(EventTypes.complete)]      = _handleEventComplete;
       functions[S.fromEnum(EventTypes.cont)]          = _handleEventContinue;
       functions['continue']                           = _handleEventContinue;
       functions[S.fromEnum(EventTypes.copy)]          = _handleEventCopy;
@@ -111,7 +110,6 @@ class EventHandler extends Eval
       functions[S.fromEnum(EventTypes.page)]          = _handleEventPage;
       functions[S.fromEnum(EventTypes.refresh)]       = _handleEventRefresh;
       functions[S.fromEnum(EventTypes.saveas)]        = _handleEventSaveAs;
-      functions[S.fromEnum(EventTypes.save)]          = _handleEventSave;
       functions[S.fromEnum(EventTypes.scroll)]        = _handleEventScroll;
       functions[S.fromEnum(EventTypes.scrollto)]      = _handleEventScrollTo;
       functions[S.fromEnum(EventTypes.set)]           = _handleEventSet;
@@ -123,7 +121,6 @@ class EventHandler extends Eval
       functions[S.fromEnum(EventTypes.theme)]         = _handleEventTheme;
       functions[S.fromEnum(EventTypes.toast)]         = _handleEventToast;
       functions[S.fromEnum(EventTypes.trigger)]       = _handleEventTrigger;
-      functions[S.fromEnum(EventTypes.validate)]      = _handleEventValidate;
       functions[S.fromEnum(EventTypes.wait)]          = _handleEventWait;
 
       // broadcast events
@@ -364,15 +361,6 @@ class EventHandler extends Eval
     return true;
   }
 
-  /// Broadcasts the complete event to be handled by individual widgets
-  Future<bool> _handleEventComplete([dynamic id]) async
-  {
-    Map<String,String?> parameters = Map<String,String?>();
-    parameters['id']          = S.toStr(id);
-    EventManager.of(model)?.broadcastEvent(model,Event(EventTypes.complete, parameters: parameters, model: model));
-    return true;
-  }
-
   /// Login attempt
   ///
   /// Sets the user credentials on the client side to generate a secure token and attempts a login to the server side via databroker
@@ -484,15 +472,6 @@ class EventHandler extends Eval
       Log().error("Error logging out the firebase user. Error is $e");
     }
     return ok;
-  }
-
-  /// Broadcasts the commit event to be handled by individual widgets
-  Future<bool> _handleEventValidate([dynamic id]) async
-  {
-    Map<String,String?> parameters      = Map<String,String?>();
-    parameters['id']          = S.toStr(id);
-    EventManager.of(model)?.broadcastEvent(model,Event(EventTypes.validate, parameters: parameters, model: model));
-    return true;
   }
 
   /// Plays a sound
@@ -611,16 +590,6 @@ class EventHandler extends Eval
   {
     Map<String,String?> parameters = Map<String,String?>();
     EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.refresh, parameters: parameters));
-    return true;
-  }
-
-  /// Broadcasts the save event to be handled by individual widgets
-  Future<bool> _handleEventSave([dynamic id, dynamic complete]) async
-  {
-    Map<String,String?> parameters   = Map<String,String?>();
-    parameters['id']       = S.toStr(id);
-    parameters['complete'] = S.toStr(complete);
-    EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.save, parameters: parameters));
     return true;
   }
 

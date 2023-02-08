@@ -48,7 +48,7 @@
             <PAD left="50"/>
 
             <!-- widgets -->
-            <GET id="dbWidgets" url="https://fml.dev/fmlpad/widgets.xml" root="WIDGETS.WIDGET"/>
+            <GET id="dbWidgets" url="https://fml.dev/fmlpad/widgets.xml" root="WIDGETS.WIDGET" ttl="1m"/>
             <SELECT bordercolor="#1E2835" onchange="copy({this})" data="dbWidgets" hint="widgets" >
                 <OPTION value="{data.value}">
                     <label><ROW expand="false" valign="center"><ICON icon="{data.icon}" size="16" color="{data.color}"/><PAD left="10"/><TEXT value="{data.title}"/></ROW></label>
@@ -67,7 +67,7 @@
 
             <!-- examples -->
             <GET id="db1" url="{examples}" onsuccess="editor.set({this.response})"/>
-            <GET id="dbExamples" url="https://fml.dev/fmlpad/examples.xml" root="EXAMPLES.EXAMPLE"/>
+            <GET id="dbExamples" url="https://fml.dev/fmlpad/examples.xml" root="EXAMPLES.EXAMPLE" ttl="1m"/>
             <SELECT id="examples" bordercolor="#1E2835" value="1" data="dbExamples" hint="examples" width="200">
                 <OPTION value="{data.url}">
                     <label><ROW expand="false" valign="center"><ICON icon="{data.icon}" size="16" color="{data.color}"/><PAD left="10"/><TEXT value="{data.title}"/></ROW></label>

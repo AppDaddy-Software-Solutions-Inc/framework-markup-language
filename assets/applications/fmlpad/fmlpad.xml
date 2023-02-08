@@ -20,7 +20,7 @@
         <TEXT  value="***FmlPad** allows you to test and develop FML templates **realtime** _without the need to compile_ any code.*" color="white" size="14"/>
         <!-- text block -->
         <PAD top="10"/>
-        <TEXT value="*Try changing any of the markup text you see in the left editor window and this window will update instantly.*" color="white" size="14"/>
+        <TEXT value="*Try changing any of the markup text in the left editor window and see your changes reflected here instantly.*" color="white" size="14"/>
         <!-- text block -->
         <PAD top="10"/>
         <TEXT value="***FmlPad** itself it written entirely in **FML** with less than a few dozen simple lines of markup text!*" color="white" size="14"/>
@@ -40,14 +40,15 @@
         <BOX color="#1E2835" valign="center" halign="left" layout="row">
 
             <!-- back button -->
-            <PAD left="5"/>
-            <BTN onclick="back()">
+            <TOOLTIP text="Go Back">
+            <LINK onclick="back()">
                 <ICON icon="chevron_left" color="white" size="20"/>
-            </BTN>
+            </LINK>
+            </TOOLTIP>
 
             <!-- logo -->
-            <PAD left="5"/>
             <IMAGE url="assets://images/fml-logo.png" height="30"/>
+            <PAD left="10"/>
             <TEXT value="FmlPad" size="20" color="white"/>
             <PAD left="50"/>
 

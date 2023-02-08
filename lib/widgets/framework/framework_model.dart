@@ -444,7 +444,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
   {
     disposed = true;
 
-    Log().debug('dispose called on => <FML url="$url"/>');
+    Log().debug('dispose called on => <FML name="$templateName" url="$url"/>');
 
     // dispose header model
     header?.dispose();

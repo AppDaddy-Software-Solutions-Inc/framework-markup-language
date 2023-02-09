@@ -27,10 +27,9 @@ class Platform
   static Future<String?> get path async
   {
     // initialize the app root folder
-    if (isWeb)     return null;
-    if (isDesktop) return dirname(io.Platform.resolvedExecutable);
-    if (isMobile)  return (await getApplicationDocumentsDirectory()).path;
-    return null;
+    if (isWeb) return null;
+    if (isMobile || (isDesktop && useragent == "macos")) return (await getApplicationDocumentsDirectory()).path;
+    return dirname(io.Platform.resolvedExecutable);
   }
 
   static init() async {}

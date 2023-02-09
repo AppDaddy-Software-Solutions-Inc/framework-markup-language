@@ -349,6 +349,10 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
     // build options
     options.forEach((option) => this.options.add(option));
 
+    // if the select has no datasource and the current value is not in options list,
+    // set the value to the first option or to null if the current value is not in options list
+    if (S.isNullOrEmpty(datasource) && !valueInOptionsList()) value = options.isNotEmpty ? options[0].value : null;
+
     // Set selected option
     setData();
   }
@@ -384,8 +388,8 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
         });
       }
 
-      // Set value to first option or null if the current value is not in option list
-      if (!containsOption()) value = options.isNotEmpty ? options[0].value : null;
+      // Set the value to first option or null if the current value is not in option list
+      if (!valueInOptionsList()) value = options.isNotEmpty ? options[0].value : null;
 
       // sets the data
       setData();
@@ -408,16 +412,6 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
 
   void setData()
   {
-    // value is not in data?
-    if (!containsOption())
-    {
-      // set to first entry id no datasource defined
-      if (datasource == null) value = options.isNotEmpty ? options[0].value : null;
-
-      // set to first entry if data has been returned
-      else if (options.isNotEmpty) value = options[0].value;
-    }
-
     dynamic data;
     options.forEach((option)
     {
@@ -430,7 +424,7 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
     this.data = data;
   }
 
-  bool containsOption()
+  bool valueInOptionsList()
   {
     bool contains = false;
     options.forEach((option)

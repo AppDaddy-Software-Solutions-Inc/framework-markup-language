@@ -1,4 +1,4 @@
-<FML title="FmlPad" linkable="true" onstart="theme({STASH.FmlPadMode} ?? true ?'dark':'light');">
+<FML title="FmlPad" linkable="true" onstart="theme({STASH.FmlPadMode} ?? {THEME.brightness} == 'dark' ?'dark':'light');">
 
     <VAR id="xml" value="{editor}" onchange="{r1} ? fmlpad.replaceChildren({xml},false) : null"/>
 
@@ -69,7 +69,7 @@
             <ROW halign="end" valign="center">
 
                <!-- Reset button -->
-                <BUTTON onclick="editor.set({default})" visible="={default} != {editor}">
+                <BUTTON onclick="editor.set({default});examples.set(null);" visible="={default} != {editor}">
                     <ICON icon="refresh" size="24"/>
                 </BUTTON>
 
@@ -93,7 +93,7 @@
                 <!-- Realtime Parsing button -->
                 <TEXT value="Realtime:" color="={r1} ? '{THEME.primary}' : '{THEME.outline}'"/>
                 <PAD left="20"/>
-                <SWITCH id="r1" value="true"/>
+                <SWITCH id="r1" value="true" onchange="{this} ? fmlpad.replaceChildren({xml},false) : null"/>
                 <PAD left="20"/>
 
             </ROW>
@@ -113,7 +113,7 @@
             <PAD right="40"/>
             <ICON icon="light_mode" color="=!{mode} ? '#e6cc00' : 'grey'"/>
             <PAD right="6"/>
-            <SWITCH id="mode"  value="={STASH.FmlPadMode} ?? true" onchange="stash('FmlPadMode',{this.value});theme({this}?'dark':'light');"/>
+            <SWITCH id="mode"  value="={STASH.FmlPadMode} ?? {THEME.brightness} == 'dark'" onchange="stash('FmlPadMode',{this.value});theme({this}?'dark':'light');"/>
             <PAD right="6"/>
             <ICON icon="dark_mode" color="={mode} ? '{THEME.primary}' : 'grey'"/>
             <PAD right="20"/>
@@ -131,7 +131,7 @@
 
                 <POSITIONED right="10" top="5">
                     <BUTTON onclick="fmlpad.replaceChildren({xml},false)" visible="=!{r1}">
-                        <BOX width="100" height="35" color="{THEME.primarycontainer}" layout="row" radius="5" valign="center" halign="left">
+                        <BOX width="100" height="35" color="{THEME.inverseprimary}" bordercolor="{THEME.shadow}" layout="row" radius="5" valign="center" halign="left">
                             <PAD left="10"/>
                             <ICON icon="play_arrow" size="20"/>
                             <PAD left="7"/>

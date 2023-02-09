@@ -99,7 +99,7 @@ class _EditorViewState extends State<EditorView> implements IModelListener
 
     // set the editor text theme
     var theme = CodeThemeData(styles: themeMap.containsKey(widget.model.theme) ? themeMap[widget.model.theme] : themeMap.values.first);
-
-    return CodeTheme(data: theme, child: SingleChildScrollView(child: CodeField(controller: _controller!, onChanged: (_) {widget.model.value = _controller?.fullText;}, background: Colors.transparent, maxLines: null)));
+    return CodeTheme(data: theme, child: CodeField(controller: _controller!, onChanged: (_) {widget.model.value = _controller?.fullText;}, background: Colors.transparent, maxLines: null));
+    return CodeTheme(data: theme, child: SingleChildScrollView( physics: NeverScrollableScrollPhysics(), child: CodeField(controller: _controller!, onChanged: (_) {widget.model.value = _controller?.fullText;}, background: Colors.transparent, maxLines: null)));
     }
   }

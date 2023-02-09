@@ -115,7 +115,7 @@
             <PAD right="6"/>
             <SWITCH id="mode"  value="={STASH.FmlPadMode} ?? true" onchange="stash('FmlPadMode',{this.value});theme({this}?'dark':'light');"/>
             <PAD right="6"/>
-            <ICON icon="dark_mode" color="={mode} ? 'purple' : 'grey'"/>
+            <ICON icon="dark_mode" color="={mode} ? '{THEME.primary}' : 'grey'"/>
             <PAD right="20"/>
         </BOX>
     </FOOTER>

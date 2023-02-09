@@ -92,7 +92,7 @@ class ThemeNotifier with ChangeNotifier
     }
     else
     {
-      ThemeData themeData = ThemeData(brightness: brightness, fontFamily: System.theme.font, textTheme: fontTheme, useMaterial3: true);
+      ThemeData themeData = ThemeData(brightness: brightness, colorSchemeSeed: ColorObservable.toColor(System.theme.colorscheme), fontFamily: System.theme.font, textTheme: fontTheme, useMaterial3: true);
       _themeData = themeData;
     }
     notifyListeners();

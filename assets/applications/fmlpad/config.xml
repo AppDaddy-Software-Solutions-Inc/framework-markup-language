@@ -12,8 +12,8 @@
         <REFRESH                value="true"/>
 
         <!-- Theme -->
-        <COLOR_SCHEME 			value="lightblue" />
-        <BRIGHTNESS 			value="dark" /> <!-- dark/light/system/platform -->
+        <COLOR_SCHEME 			value="#47c4fb" />
+        <BRIGHTNESS 			value="platform" /><!-- dark/light/system/platform -->
         <FONT                   value="Roboto"/> <!-- Case Sensitive https://fonts.google.com/ Fonts -->
 
     </CONFIG>

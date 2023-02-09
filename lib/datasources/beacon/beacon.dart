@@ -1,356 +1,318 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-// import 'dart:math';
+import 'dart:math';
+import 'package:flutter_blue/flutter_blue.dart';
+import 'package:convert/convert.dart';
+export 'package:flutter_blue/flutter_blue.dart' show ScanResult;
+import 'package:fml/helper/common_helpers.dart';
 
-// import 'package:fml/helperrr/string.dart';
-// import 'package:flutter_blue/flutter_blue.dart';
+const EddystoneServiceId = "0000feaa-0000-1000-8000-00805f9b34fb";
+const IBeaconManufacturerId = 0x004C;
 
-// import 'package:convert/convert.dart';
-// import 'package:flutter/foundation.dart';
-// export 'package:flutter_blue/flutter_blue.dart' show ScanResult;
+enum BeaconTypes {eddystone, ibeacon}
 
-// const EddystoneServiceId = "0000feaa-0000-1000-8000-00805f9b34fb";
-// const IBeaconManufacturerId = 0x004C;
+abstract class Beacon
+{
+  final  BeaconTypes?   type;
+  final  int?     epoch;
+  final  String?  id;
+  final  String?  name;
+  final  int?     power;
+  final  int?     rssi;
+  final  int?     minor;
+  final  int?     major;
 
-// enum types {eddystone, ibeacon}
+  int? get txAt1Meter => power;
 
-// abstract class Beacon
-// {
-//   final  types   type;
-//   final  int     epoch;
-//   final  String  id;
-//   final  String  name;
-//   final  int     power;
-//   final  int     rssi;
-//   final  int     minor;
-//   final  int     major;
+  double? get distanceInMeters
+  {
+    double ratio = (rssi ?? 0) * 1.0 / (txAt1Meter ?? 1);
+    if (ratio < 1.0)
+         return S.toDouble(pow(ratio, 10));
+    else return (0.89976) * pow(ratio, 7.7095) + 0.111;
+  }
 
-//   int    get txAt1Meter => power;
+  int? get ageInMilliseconds
+  {
+     if (epoch == null) return null;
+     return  (DateTime.now().millisecondsSinceEpoch - (epoch ?? 0));
+  }
 
-//   double get distanceInMeters
-//   {
-//     double ratio = rssi * 1.0 / (txAt1Meter);
-//     if (ratio < 1.0)
-//          return pow(ratio, 10);
-//     else return (0.89976) * pow(ratio, 7.7095) + 0.111;
-//   }
+  DateTime? get dateLastSeen
+  {
+    if (epoch == null) return null;
+    return  DateTime.fromMillisecondsSinceEpoch(epoch ?? 0);
+  }
 
-//   int get ageInMilliseconds
-//   {
-//      if (epoch == null) return null;
-//      return  (DateTime.now().millisecondsSinceEpoch - epoch);
-//   }
+  Beacon({this.type, this.epoch, this.id, this.name, this.power, this.rssi, this.major, this.minor});
 
-//   DateTime get dateLastSeen
-//   {
-//     if (epoch == null) return null;
-//     return  DateTime.fromMillisecondsSinceEpoch(epoch);
-//   }
+  static Beacon? fromScanResult(ScanResult scanResult)
+  {
+    dynamic beacon;
 
-//   Beacon({this.type, this.epoch, this.id, this.name, this.power, this.rssi, this.major, this.minor});
+    beacon = EddystoneUID.fromScanResult(scanResult);
+    if (beacon != null) return beacon;
 
-//   static List<Beacon> fromScanResult(ScanResult scanResult)
-//   {
-//     return <Beacon>[EddystoneUID.fromScanResult(scanResult), EddystoneEID.fromScanResult(scanResult), IBeacon.fromScanResult(scanResult)].where((b) => b != null).toList();
-//   }
-// }
+    beacon = EddystoneEID.fromScanResult(scanResult);
+    if (beacon != null) return beacon;
 
-// abstract class Eddystone extends Beacon
-// {
-//   Eddystone({@required this.frameType, @required String id, @required int tx, @required ScanResult scanResult}) : super(type: types.eddystone, epoch: DateTime.now().millisecondsSinceEpoch, id: id, name: scanResult.device.name, power: tx, rssi: scanResult.rssi);
+    beacon = IBeacon.fromScanResult(scanResult);
+    if (beacon != null) return beacon;
 
-//   final int frameType;
+    return null;
+  }
+}
 
-//   @override
-//   int get txAt1Meter => power - 41;
-// }
+abstract class Eddystone extends Beacon
+{
+  final int? frameType;
+  Eddystone({required this.frameType, required String? id, required int? tx, required ScanResult? scanResult}) : super(type: BeaconTypes.eddystone, epoch: DateTime.now().millisecondsSinceEpoch, id: id, name: scanResult?.device.name, power: tx, rssi: scanResult?.rssi);
 
-// class EddystoneUID extends Eddystone
-// {
-//   final String namespaceId;
-//   final String beaconId;
+  @override
+  int get txAt1Meter => power != null ? power! - 41 : 0;
+}
 
-//   EddystoneUID({@required int frameType, @required this.namespaceId, @required this.beaconId, @required int tx, @required ScanResult scanResult}) : super(id: beaconId, tx: tx, scanResult: scanResult, frameType: frameType);
+class EddystoneUID extends Eddystone
+{
+  final String? namespaceId;
+  final String? beaconId;
 
-//   static EddystoneUID.fromScanResult(ScanResult scanResult)
-//   {
-//     if (!scanResult.advertisementData.serviceData.containsKey(EddystoneServiceId))
-//     {
-//       return null;
-//     }
-//     if (scanResult.advertisementData.serviceData[EddystoneServiceId].length < 18)
-//     {
-//       return null;
-//     }
-//     if (scanResult.advertisementData.serviceData[EddystoneServiceId][0] != 0x00)
-//     {
-//       return null;
-//     }
+  EddystoneUID({required int? frameType, required this.namespaceId, required this.beaconId, required int? tx, required ScanResult? scanResult}) : super(id: beaconId, tx: tx, scanResult: scanResult, frameType: frameType);
 
-//     List<int> rawBytes = scanResult.advertisementData.serviceData[EddystoneServiceId];
-//     var frameType = rawBytes[0];
-//     var tx = S.byteToInt8(rawBytes[1]);
-//     var namespaceId = S.byteListToHexString(rawBytes.sublist(2, 12));
-//     var beaconId = S.byteListToHexString(rawBytes.sublist(12, 18));
-//     return EddystoneUID(frameType: frameType, namespaceId: namespaceId, beaconId: beaconId, tx: tx, scanResult: scanResult);
-//   }
-// }
+  static EddystoneUID? fromScanResult(ScanResult scanResult)
+  {
+    List<int>? rawBytes = scanResult.advertisementData.serviceData.containsKey(EddystoneServiceId) ? scanResult.advertisementData.serviceData[EddystoneServiceId] : null;
+    if (rawBytes != null)
+    {
+      if (rawBytes.isEmpty || rawBytes.length < 18 || rawBytes[0] != 0x00) return null;
 
-// class EddystoneEID extends Eddystone
-// {
-//   final String ephemeralId;
+      var frameType = rawBytes.first;
+      var tx = S.byteToInt8(rawBytes[1]);
+      var namespaceId = S.byteListToHexString(rawBytes.sublist(2, 12));
+      var beaconId = S.byteListToHexString(rawBytes.sublist(12, 18));
+      return EddystoneUID(frameType: frameType, namespaceId: namespaceId, beaconId: beaconId, tx: tx, scanResult: scanResult);
+    }
+    return null;
+  }
+}
 
-//   EddystoneEID({@required int frameType, @required this.ephemeralId, @required int tx, @required ScanResult scanResult}) : super(id: ephemeralId, tx: tx, scanResult: scanResult, frameType: frameType);
+class EddystoneEID extends Eddystone
+{
+  final String? ephemeralId;
 
-//   static EddystoneEID.fromScanResult(ScanResult scanResult)
-//   {
-//     if (!scanResult.advertisementData.serviceData.containsKey(EddystoneServiceId))
-//     {
-//       return null;
-//     }
-//     if (scanResult.advertisementData.serviceData[EddystoneServiceId].length < 10)
-//     {
-//       return null;
-//     }
-//     if (scanResult.advertisementData.serviceData[EddystoneServiceId][0] != 0x30)
-//     {
-//       return null;
-//     }
-//     List<int> rawBytes = scanResult.advertisementData.serviceData[EddystoneServiceId];
-//     var frameType = rawBytes[0];
-//     var tx = S.byteToInt8(rawBytes[1]);
+  EddystoneEID({required int frameType, required this.ephemeralId, required int tx, required ScanResult scanResult}) : super(id: ephemeralId, tx: tx, scanResult: scanResult, frameType: frameType);
 
-//     var ephemeralId = hex.encode(rawBytes).toString().substring(4);
-//     return EddystoneEID(frameType: frameType, ephemeralId: ephemeralId, tx: tx, scanResult: scanResult);
-//   }
-// }
+  static EddystoneEID? fromScanResult(ScanResult scanResult)
+  {
+    List<int>? rawBytes = scanResult.advertisementData.serviceData.containsKey(EddystoneServiceId) ? scanResult.advertisementData.serviceData[EddystoneServiceId] : null;
+    if (rawBytes != null)
+    {
+      if (rawBytes.isEmpty || rawBytes.length < 10 || rawBytes[0] != 0x30) return null;
+      var frameType = rawBytes[0];
+      var tx = S.byteToInt8(rawBytes[1]);
+      var ephemeralId = hex.encode(rawBytes).toString().substring(4);
+      return EddystoneEID(frameType: frameType, ephemeralId: ephemeralId, tx: tx, scanResult: scanResult);
+    }
+    return null;
+  }
+}
 
-// class IBeacon extends Beacon
-// {
-//   final String uuid;
-//   final int major;
-//   final int minor;
+class IBeacon extends Beacon
+{
+  final String? uuid;
+  final int? major;
+  final int? minor;
 
-//   IBeacon({@required this.uuid, @required this.major, @required this.minor, @required int tx, @required ScanResult scanResult}) : super(type: types.ibeacon, epoch: DateTime.now().millisecondsSinceEpoch, id: uuid, name: scanResult.device.name, power: tx, rssi: scanResult.rssi, major: major, minor: minor);
+  IBeacon({required this.uuid, required this.major, required this.minor, required int tx, required ScanResult scanResult}) : super(type: BeaconTypes.ibeacon, epoch: DateTime.now().millisecondsSinceEpoch, id: uuid, name: scanResult.device.name, power: tx, rssi: scanResult.rssi, major: major, minor: minor);
 
-//   static IBeacon.fromScanResult(ScanResult scanResult)
-//   {
-//     if (!scanResult.advertisementData.manufacturerData.containsKey(IBeaconManufacturerId))
-//     {
-//       return null;
-//     }
+  static IBeacon? fromScanResult(ScanResult scanResult)
+  {
+    List<int>? rawBytes = scanResult.advertisementData.serviceData.containsKey(IBeaconManufacturerId) ? scanResult.advertisementData.serviceData[IBeaconManufacturerId] : null;
+    if (rawBytes != null)
+    {
+      if (rawBytes.isEmpty || rawBytes.length < 23 || rawBytes[0] != 0x02 || rawBytes[1] != 0x15) return null;
 
-//     if (scanResult.advertisementData.manufacturerData[IBeaconManufacturerId].length < 23)
-//     {
-//       return null;
-//     }
+      var uuid  = S.byteListToHexString(rawBytes.sublist(2, 18));
+      var major = S.twoByteToInt16(rawBytes[18], rawBytes[19]);
+      var minor = S.twoByteToInt16(rawBytes[20], rawBytes[21]);
+      var tx    = S.byteToInt8(rawBytes[22]);
+      return IBeacon(uuid: uuid, major: major, minor: minor, tx: tx, scanResult: scanResult);
+    }
+    return null;
+  }
+}
 
-//     if (scanResult.advertisementData.manufacturerData[IBeaconManufacturerId][0] != 0x02 || scanResult.advertisementData.manufacturerData[IBeaconManufacturerId][1] != 0x15)
-//     {
-//       return null;
-//     }
+class Payload
+{
+  List<Beacon>? beacons;
+  Payload([this.beacons]);
+}
 
-//     List<int> rawBytes = scanResult.advertisementData.manufacturerData[IBeaconManufacturerId];
-//     var uuid  = S.byteListToHexString(rawBytes.sublist(2, 18));
-//     var major = S.twoByteToInt16(rawBytes[18], rawBytes[19]);
-//     var minor = S.twoByteToInt16(rawBytes[20], rawBytes[21]);
-//     var tx    = S.byteToInt8(rawBytes[22]);
+abstract class IBeaconListener
+{
+  onBeaconData({Payload payload});
+  onBeaconError(String error);
+}
 
-//     return IBeacon(uuid: uuid, major: major, minor: minor, tx: tx, scanResult: scanResult);
-//   }
-// }
+class Reader
+{
+  static final Reader _singleton = Reader._initialize();
+  static final _detector = FlutterBlue.instance;
 
-// class Payload
-// {
-//   List<Beacon> beacons = [];
-//   Payload({this.beacons});
-// }
+  bool available = false;
+  bool enabled = true;
 
-// abstract class iBeaconListener
-// {
-//   onBeaconData({Payload payload});
-//   onBeaconError(String error);
-// }
+  List<IBeaconListener>? _listeners;
 
-// class Reader
-// {
-//   static final Reader _singleton = Reader._initialize();
-//   static final _detector = FlutterBlue.instance;
+  factory Reader()
+  {
+    return _singleton;
+  }
 
-//   bool available;
-//   bool enabled;
+  Reader._initialize()
+  {
+    _initializeScanner();
+  }
 
-//   List<iBeaconListener> _listeners;
+  Map<String,Beacon> _beacons = Map<String,Beacon>();
+  Payload payload = Payload();
+  bool reset = false;
 
-//   factory Reader()
-//   {
-//     return _singleton;
-//   }
+  // Read
+  read()
+  {
+    // Clear List
+    reset = true;
 
-//   Reader._initialize()
-//   {
-//     _initializeScanner();
-//   }
+    // Notify Listeners
+    notifyListeners(payload);
+  }
 
-//   Map<String,Beacon> _beacons = Map<String,Beacon>();
-//   Payload payload = Payload();
-//   bool reset = false;
+  _initializeScanner() async
+  {
+    try
+    {
+      available = await _detector.isAvailable;
+      enabled   = await _detector.isOn;
+      if (available)
+      {
+        _detector.isScanning.listen(onScanListener);
+        _detector.scanResults.listen(onResult);
+        if (_listeners != null) _startScan();
+      }
+    }
+    catch(e) {}
+  }
 
-//   //////////
-//   /* Read */
-//   //////////
-//   read()
-//   {
-//     ////////////////
-//     /* Clear List */
-//     ////////////////
-//     reset = true;
+  void _startScan() async
+  {
+    try
+    {
+      if (available == true) _detector.startScan(timeout: Duration(seconds: 2),allowDuplicates: true);
+    }
+    catch(e) {}
+  }
 
-//     //////////////////////
-//     /* Notify Listeners */
-//     //////////////////////
-//     notifyListeners(payload);
-//   }
+  void _stopScan() async
+  {
+    try
+    {
+      if (available == true) _detector.stopScan();
+    }
+    catch(e){}
+  }
 
-//   _initializeScanner() async
-//   {
-//     try
-//     {
-//       available = await _detector.isAvailable;
-//       enabled   = await _detector.isOn;
-//       if (available)
-//       {
-//         _detector.isScanning.listen(onScanListener);
-//         _detector.scanResults.listen(onResult);
-//         if (_listeners != null) _startScan();
-//       }
-//     }
-//     catch(e) {}
-//   }
+  void onScanListener(bool scanning)
+  {
+    if (!scanning)
+    {
+      // Build Result
+      List<Beacon> list = _beacons.values.toList();
 
-//   void _startScan() async
-//   {
-//     try
-//     {
-//       if (available == true) _detector.startScan(timeout: Duration(seconds: 2),allowDuplicates: true);
-//     }
-//     catch(e) {}
-//   }
+      // Clear Original List
+      if (reset)
+      {
+        _beacons.clear();
+        reset = false;
+      }
 
-//   void _stopScan() async
-//   {
-//     try
-//     {
-//       if (available == true) _detector.stopScan();
-//     }
-//     catch(e){}
-//   }
+      // Sort List by Distance
+      list.sort((a, b) => a.distanceInMeters!.compareTo(b.distanceInMeters!));
 
-//   void onScanListener(bool scanning)
-//   {
-//     if (!scanning)
-//     {
-//       //////////////////
-//       /* Build Result */
-//       //////////////////
-//       List<Beacon> list = _beacons.values.toList();
+      // Build Payload
+      payload = Payload(list);
 
-//       /////////////////////////
-//       /* Clear Original List */
-//       /////////////////////////
-//       if (reset)
-//       {
-//         _beacons.clear();
-//         reset = false;
-//       }
+      // Notify Listeners
+      notifyListeners(payload);
 
-//       ///////////////////////////
-//       /* Sort List by Distance */
-//       ///////////////////////////
-//       list.sort((a, b) => a.distanceInMeters.compareTo(b.distanceInMeters));
+      // Rescan
+      if (_listeners != null) _startScan();
+    }
+  }
 
-//       ///////////////////
-//       /* Build Payload */
-//       ///////////////////
-//       payload = Payload(beacons: list);
+  onResult(results)
+  {
+    if (results != null)
+    for (ScanResult result in results)
+    {
+      Beacon? beacon = Beacon.fromScanResult(result);
+      if (beacon != null)
+      {
+        String? id;
+        if (beacon is IBeacon)   id = beacon.uuid;
+        if (beacon is Eddystone) id = beacon.id;
+        if (!S.isNullOrEmpty(id)) _beacons[id!] = beacon;
+      }
+    }
+  }
 
-//       //////////////////////
-//       /* Notify Listeners */
-//       //////////////////////
-//       notifyListeners(payload);
+  registerListener(IBeaconListener listener) async
+  {
+    if (_listeners == null) _listeners = [];
+    if (!_listeners!.contains(listener))
+    {
+      if (available == true)
+      {
+        if (enabled != true)
+        {
+          enabled = await _detector.isOn;
+          if (enabled == false) return notifyListenersOfError("Please enable bluetooth on your device");
+        }
+        _listeners!.add(listener);
+        _startScan();
+      }
+      else return notifyListenersOfError("Bluetooth unavailable on this device");
+    }
+  }
 
-//       ////////////
-//       /* Rescan */
-//       ////////////
-//       if (_listeners != null) _startScan();
-//     }
-//   }
+  removeListener(IBeaconListener listener) async
+  {
+    if (_listeners != null && _listeners!.contains(listener))
+    {
+      _listeners!.remove(listener);
+      if (_listeners!.isEmpty)
+      {
+        _listeners = null;
+        _stopScan();
+      }
+    }
+  }
 
-//   onResult(results)
-//   {
-//     if (results != null)
-//     for (ScanResult result in results)
-//     {
-//       List<Beacon> beacons = Beacon.fromScanResult(result);
-//       if (beacons != null)
-//       for (Beacon beacon in beacons)
-//       {
-//         String id = null;
-//         if (beacon is IBeacon)   id = beacon.uuid;
-//         if (beacon is Eddystone) id = beacon.id;
-//         if (!S.isNullOrEmpty(id)) _beacons[id] = beacon;
-//       }
-//     }
-//   }
+  notifyListeners(Payload data)
+  {
+    if (_listeners != null)
+    {
+      var listeners = _listeners!.where((element) => true);
+      listeners.forEach((listener) => listener.onBeaconData(payload: data));
+    }
+  }
 
-//   registerListener(iBeaconListener listener) async
-//   {
-//     if (listener == null) return;
-//     if (_listeners == null) _listeners = [];
-//     if (!_listeners.contains(listener))
-//     {
-//       if (available == true)
-//       {
-//         if (enabled != true)
-//         {
-//           enabled = await _detector.isOn;
-//           if (enabled == false) return notifyListenersOfError("Please enable bluetooth on your device");
-//         }
-//         _listeners.add(listener);
-//         _startScan();
-//       }
-//       else return notifyListenersOfError("Bluetooth unavailable on this device");
-//     }
-//   }
-
-//   removeListener(iBeaconListener listener) async
-//   {
-//     if ((_listeners != null) && (_listeners.contains(listener)))
-//     {
-//       _listeners.remove(listener);
-//       if (_listeners.isEmpty)
-//       {
-//         _listeners = null;
-//         _stopScan();
-//       }
-//     }
-//   }
-
-//   notifyListeners(Payload data)
-//   {
-//     if ((_listeners != null) && (data != null))
-//     {
-//       var listeners = _listeners.where((element) => true);
-//       listeners.forEach((listener) => listener.onBeaconData(payload: data));
-//     }
-//   }
-
-//   notifyListenersOfError(String error)
-//   {
-//     if (_listeners != null)
-//     {
-//       var listeners = _listeners.where((element) => true);
-//       listeners.forEach((listener) => listener.onBeaconError(error));
-//     }
-//     return false;
-//   }
-// }
+  notifyListenersOfError(String error)
+  {
+    if (_listeners != null)
+    {
+      var listeners = _listeners!.where((element) => true);
+      listeners.forEach((listener) => listener.onBeaconError(error));
+    }
+    return false;
+  }
+}

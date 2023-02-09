@@ -187,9 +187,7 @@ class CheckBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var checkbox = Transform.scale(
-        scale: 1.25,
-        child: Checkbox(
+    var checkbox = Checkbox(
           value: checked,
           onChanged: (value) =>
               model.enabled != false && model.editable != false
@@ -207,11 +205,12 @@ class CheckBox extends StatelessWidget {
               color: model.enabled != false && model.editable != false
                   ? Theme.of(context).colorScheme.surfaceVariant
                   : Theme.of(context).colorScheme.onInverseSurface),
-          visualDensity: VisualDensity(horizontal: -2.5, vertical: -2.5),
+          visualDensity: VisualDensity(horizontal: -2, vertical: -4),
+          splashRadius: 20,
           mouseCursor: model.enabled != false && model.editable != false
               ? SystemMouseCursors.click
               : SystemMouseCursors.basic,
-        ));
+        );
     // child: (widget.checked == true ? checkedIcon : uncheckedIcon));
 
     ///////////

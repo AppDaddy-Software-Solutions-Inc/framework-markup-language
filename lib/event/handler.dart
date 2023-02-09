@@ -682,8 +682,11 @@ class EventHandler extends Eval
   {
     try
     {
-      Clipboard.setData(ClipboardData(text: S.toStr(value)));
-      System.toast(phrase.copiedToClipboard);
+      String? label = S.toStr(value);
+      if (label != null && label.length > 0) {
+        Clipboard.setData(ClipboardData(text: label));
+        System.toast('"' + S.toStr(value)! + '" ' + phrase.copiedToClipboard);
+      }
     }
     catch(e) {}
     return true;

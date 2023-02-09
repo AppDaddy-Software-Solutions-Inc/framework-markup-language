@@ -121,6 +121,19 @@ class TabModel extends DecoratedWidgetModel implements IViewableWidget
     if (view is FrameworkView) view.model.dispose();
   }
 
+  deleteAllIndexesExcept(int index) {
+    LinkedHashMap<String, FrameworkView> except = LinkedHashMap<String, FrameworkView>();
+    List viewKeys = views.keys.toList();
+    List viewList = views.values.toList();
+    for (int i = 0; i < viewList.length; i++) {
+      if (i == index)
+        except[viewKeys[i]] = viewList[i];
+      else
+        views[viewKeys[i]]?.model.dispose();
+    }
+    views = except;
+  }
+
   static TabModel? fromXml(WidgetModel parent, XmlElement xml)
   {
     TabModel? model;

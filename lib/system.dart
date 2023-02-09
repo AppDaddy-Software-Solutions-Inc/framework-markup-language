@@ -36,6 +36,7 @@ final String applicationTitle = "Flutter Markup Language " + version;
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://applications/<app> to use the asset applications
+
 var defaultDomain = Uri.parse('https://fml.dev');
 
 // Default Application

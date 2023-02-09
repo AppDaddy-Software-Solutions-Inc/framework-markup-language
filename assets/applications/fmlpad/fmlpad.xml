@@ -32,7 +32,9 @@
         <PAD top="5"/>
         <TEXT italic="true" value="**The FML Development Team**" size="14"/>
     </BOX>
-</FML>]]>
+</FML>
+
+]]>
    </value>
    </CONST>
 
@@ -103,6 +105,11 @@
 
     <FOOTER height="50">
         <BOX color="{THEME.oninversesurface}" layout="row" halign="end" valign="center">
+            <LOG id="log1"/>
+            <EXPAND>
+                <!--Error text display here-->
+                <TEXT color="{THEME.error}" value="{log1.xml}"/>
+            </EXPAND>
             <!-- themes -->
             <TEXT value="FML Theme:" color="{THEME.outline}}"/>
             <PAD right="10"/>

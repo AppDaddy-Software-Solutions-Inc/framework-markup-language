@@ -1,7 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:math';
 import 'dart:ui';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/box/box_model.dart' as BOX;
@@ -75,6 +77,7 @@ class _BoxViewState extends State<BoxView> implements IModelListener {
 
     // If the model contains any databrokers we fire them before building so we can bind to the data
     widget.model.initialize();
+
   }
 
   @override
@@ -403,60 +406,76 @@ class _BoxViewState extends State<BoxView> implements IModelListener {
     /* Constrained? */
     //////////////////
     bool expand = widget.model.expand;
+    double? height = widget.model.height;
+    double? width = widget.model.width;
 
     var constr = widget.model.getConstraints();
 
-    if (expand == false) {
-      if (widget.model.height != null && widget.model.width != null)
-        expand = true;
+
+
+      if (expand == false) {
+        if (height != null && width != null)
+          expand = true;
+      }
+
+    ScrollerModel? scrollerModel = widget.model.findParentOfExactType(ScrollerModel);
+    if (scrollerModel != null && expand == true) {
+      expand = false;
+      if(scrollerModel.layout == "col" || scrollerModel.layout == "column")
+        width ??= constr.maxWidth;
+      if(scrollerModel.layout == "row")
+        height ??= constr.maxHeight;
     }
 
-    if (expand == false) {
-      //unsure how to make this work with maxwidth/maxheight, as it should yet constraints always come in. What should it do? same with minwidth/minheight...
-      if (widget.model.width != null) {
-        view = UnconstrainedBox(
-          child: LimitedBox(
-            maxWidth: constr.maxWidth!,
-            child: ConstrainedBox(
-                      child: view,
-                      constraints: BoxConstraints(
-                      minHeight: constr.minHeight!,
-                      minWidth: constr.minWidth!,)),
-          ),
-        );
-      } else if (widget.model.height != null) {
-        view = UnconstrainedBox(
-          child: LimitedBox(
-            maxHeight: constr.maxHeight!,
-            child: ConstrainedBox(
-                      child: view,
-                      constraints: BoxConstraints(
-                      minHeight: constr.minHeight!,
-                      minWidth: constr.minWidth!,)),
-          ),
-        );
-      }
-      else {
-        view = UnconstrainedBox(
-          child:
-            ConstrainedBox(
-              child: view,
-              constraints: BoxConstraints(
-                  minHeight: constr.minHeight!,
-                  minWidth: constr.minWidth!,))
-        );
-      }
-    } else {
-      view = ConstrainedBox(
-          child: view,
-          constraints: BoxConstraints(
-              minHeight: constr.minHeight!,
+
+      if (expand == false) {
+
+        //unsure how to make this work with maxwidth/maxheight, as it should yet constraints always come in. What should it do? same with minwidth/minheight...
+        if (width != null) {
+          view = UnconstrainedBox(
+            child: LimitedBox(
+              maxWidth: constr.maxWidth!,
+              child: ConstrainedBox(
+                  child: view,
+                  constraints: BoxConstraints(
+                    minHeight: constr.minHeight!,
+                    minWidth: constr.minWidth!,)),
+            ),
+          );
+        } else if (height != null) {
+          view = UnconstrainedBox(
+            child: LimitedBox(
               maxHeight: constr.maxHeight!,
-              minWidth: constr.minWidth!,
-              maxWidth: constr.maxWidth!));
+              child: ConstrainedBox(
+                  child: view,
+                  constraints: BoxConstraints(
+                    minHeight: constr.minHeight!,
+                    minWidth: constr.minWidth!,)),
+            ),
+          );
+        }
+        else {
+          view = UnconstrainedBox(
+              child:
+              ConstrainedBox(
+                  child: view,
+                  constraints: BoxConstraints(
+                    minHeight: constr.minHeight!,
+                    minWidth: constr.minWidth!,))
+          );
+        }
+
+      } else {
+        view = ConstrainedBox(
+            child: view,
+            constraints: BoxConstraints(
+                minHeight: constr.minHeight!,
+                maxHeight: constr.maxHeight!,
+                minWidth: constr.minWidth!,
+                maxWidth: constr.maxWidth!));
+      }
+
+      return view;
     }
 
-    return view;
-
-  }
 }

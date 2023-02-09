@@ -9,11 +9,11 @@ import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:fml/widgets/select/select_view.dart';
+import 'package:fml/widgets/typeahead/typeahead_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
+class TypeaheadModel extends FormFieldModel implements IFormField, IViewableWidget
 {
   bool? addempty = true;
 
@@ -138,26 +138,29 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
     return _bordercolor?.get();
   }
 
+  //////////////////
+  /* Border Color */
+  //////////////////
+  ColorObservable? _textcolor;
+  set textcolor(dynamic v) {
+    if (_textcolor != null) {
+      _textcolor!.set(v);
+    } else if (v != null) {
+      _textcolor = ColorObservable(
+          Binding.toKey(id, 'textcolor'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  Color? get textcolor {
+    return _textcolor?.get();
+  }
+
   // prototype
   String? prototype;
 
   // options
   final List<OptionModel> options = [];
-
-  ///////////////
-  /* typeahead */
-  ///////////////
-  BooleanObservable? _typeahead;
-  set typeahead(dynamic v) {
-    if (_typeahead != null) {
-      _typeahead!.set(v);
-    } else if (v != null) {
-      _typeahead = BooleanObservable(
-          Binding.toKey(id, 'typeahead'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get typeahead => _typeahead?.get() ??  false;
 
   //////////////////
   /* inputenabled */
@@ -244,7 +247,7 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
   String? get matchtype => _matchtype?.get();
 
 
-  SelectModel(WidgetModel parent, String? id,
+  TypeaheadModel(WidgetModel parent, String? id,
       {dynamic visible,
         dynamic hint,
         dynamic border,
@@ -254,10 +257,10 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
         dynamic inputenabled,
         dynamic value,
         dynamic defaultValue,
+        dynamic textColor,
         dynamic width,
         dynamic onchange,
         dynamic post,
-        dynamic typeahead,
         dynamic bold,
         dynamic italic,
         String? postbroker,
@@ -267,7 +270,7 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
         dynamic radius,
         dynamic matchtype,
         dynamic label,
-        })
+      })
       : super(parent, id)
   {
     // instantiate busy observable
@@ -278,6 +281,7 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
     if (color         != null)  this.color        = color;
     if (radius        != null)  this.radius       = radius;
     if (borderwidth   != null)  this.borderwidth  = borderwidth;
+    if (textcolor   != null)    this.textcolor    = textcolor;
     if (border        != null)  this.border       = border;
     if (hint          != null)  this.hint         = hint;
     if (editable      != null)  this.editable     = editable;
@@ -288,7 +292,6 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
     if (width         != null) this.width         = width;
     if (onchange      != null) this.onchange      = onchange;
     if (post          != null) this.post          = post;
-    if (typeahead     != null) this.typeahead     = typeahead;
     if (matchtype     != null) this.matchtype     = matchtype;
     if (label         != null) this.label         = label;
 
@@ -296,11 +299,11 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
     this.dirty    = false;
   }
 
-  static SelectModel? fromXml(WidgetModel parent, XmlElement xml) {
-    SelectModel? model;
+  static TypeaheadModel? fromXml(WidgetModel parent, XmlElement xml) {
+    TypeaheadModel? model;
     try
     {
-      model = SelectModel(parent, Xml.get(node: xml, tag: 'id'));
+      model = TypeaheadModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
     catch(e)
@@ -326,7 +329,6 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
     borderwidth = Xml.get(node: xml, tag: 'borderwidth');
     radius = Xml.get(node: xml, tag: 'radius');
     inputenabled = Xml.get(node: xml, tag: 'inputenabled');
-    typeahead = Xml.get(node: xml, tag: 'typeahead');
     matchtype = Xml.get(node: xml, tag: 'matchtype') ?? Xml.get(node: xml, tag: 'searchtype');
 
     String? empty = Xml.get(node: xml, tag: 'addempty');
@@ -348,10 +350,6 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
 
     // build options
     options.forEach((option) => this.options.add(option));
-
-    // if the select has no datasource and the current value is not in options list,
-    // set the value to the first option or to null if the current value is not in options list
-    if (S.isNullOrEmpty(datasource) && !valueInOptionsList()) value = options.isNotEmpty ? options[0].value : null;
 
     // Set selected option
     setData();
@@ -388,8 +386,8 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
         });
       }
 
-      // Set the value to first option or null if the current value is not in option list
-      if (!valueInOptionsList()) value = options.isNotEmpty ? options[0].value : null;
+      // Set value to first option or null if the current value is not in option list
+      if (!containsOption()) value = options.isNotEmpty ? options[0].value : null;
 
       // sets the data
       setData();
@@ -404,6 +402,7 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
     return true;
   }
 
+
   @override
   onDataSourceException(IDataSource source, Exception exception) {
     // Clear the List - Olajos 2021-09-04
@@ -412,19 +411,29 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
 
   void setData()
   {
+    // value is not in data?
+    if (!containsOption())
+    {
+      // set to first entry id no datasource defined
+      if (datasource == null) value = options.isNotEmpty ? options[0].value : null;
+
+      // set to first entry if data has been returned
+      else if (options.isNotEmpty) value = options[0].value;
+    }
+
     dynamic data;
     options.forEach((option)
     {
       if (option.value == value)
-        {
-          data = option.data;
-          this.label = option.labelValue;
-        }
+      {
+        data = option.data;
+        this.label = option.labelValue;
+      }
     });
     this.data = data;
   }
 
-  bool valueInOptionsList()
+  bool containsOption()
   {
     bool contains = false;
     options.forEach((option)
@@ -441,5 +450,5 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
     super.dispose();
   }
 
-  Widget getView({Key? key}) => SelectView(this);
+  Widget getView({Key? key}) => TypeaheadView(this);
 }

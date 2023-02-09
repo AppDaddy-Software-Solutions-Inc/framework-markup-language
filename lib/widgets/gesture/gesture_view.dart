@@ -79,12 +79,20 @@ class _GestureViewState extends State<GestureView> implements IModelListener
       });
 
     Widget child = children.length == 1 ? children[0] : Column(children: children, mainAxisSize: MainAxisSize.min);
+
+    Offset? dragStart;
+    Offset? dragEnd;
+
     return (widget.model.enabled == false) ? child : GestureDetector(
         onTap: onTap,
         onLongPress: onLongPress,
         onDoubleTap: onDoubleTap,
-        onHorizontalDragEnd: (DragEndDetails d) => d.primaryVelocity! < 0 ? onSwipeLeft() : onSwipeRight(),
-        onVerticalDragEnd: (DragEndDetails d) => d.primaryVelocity! < 0 ? onSwipeUp() : onSwipeDown(),
+        onHorizontalDragStart: (DragStartDetails d)   => dragStart  = d.globalPosition,
+        onHorizontalDragUpdate: (DragUpdateDetails d) => dragEnd = d.globalPosition,
+        onHorizontalDragEnd: (DragEndDetails d) => (dragStart?.dx ?? 0) - (dragEnd?.dx ?? 0) > 0 ? onSwipeLeft() : onSwipeRight(),
+        onVerticalDragStart: (DragStartDetails d) => dragStart = d.globalPosition,
+        onVerticalDragUpdate: (DragUpdateDetails d) => dragEnd = d.globalPosition,
+        onVerticalDragEnd: (DragEndDetails d) => (dragStart?.dy ?? 0) - (dragEnd?.dy ?? 0) > 0 ? onSwipeUp() : onSwipeDown(),
         onSecondaryTap: onRightClick,
         child: MouseRegion(cursor: SystemMouseCursors.click, child: child));
   }

@@ -485,8 +485,6 @@ class _TextViewState extends State<TextView> implements IModelListener {
       view = ConstrainedBox(
           child: view,
           constraints: BoxConstraints(
-              minHeight: constraints.minHeight!,
-              maxHeight: constraints.maxHeight!,
               minWidth: constraints.minWidth!,
               maxWidth: constraints.maxWidth!));
 

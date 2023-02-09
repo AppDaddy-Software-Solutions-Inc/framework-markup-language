@@ -207,7 +207,7 @@ class _TypeaheadViewState extends State<TypeaheadView> implements IModelListener
                 controller: controller,
                 textAlignVertical: TextAlignVertical.center,
                 onSubmitted: _inputSelection,
-                onChanged: widget.model.enabled ? _inputSelection : null,
+                onChanged: widget.model.inputenabled ? _inputSelection : null,
                 style: TextStyle(
                     color: widget.model.enabled != false ? widget.model.textcolor ?? Theme
                         .of(context)
@@ -395,7 +395,7 @@ class _TypeaheadViewState extends State<TypeaheadView> implements IModelListener
   {
     controller.text = controller.text.trim();
     // if the value does not match the option value, clear only when input is disabled.
-    if (!widget.model.enabled) controller.text = _extractText(_selected)!;
+    if (!widget.model.inputenabled) controller.text = _extractText(_selected)!;
 
     return true;
   }

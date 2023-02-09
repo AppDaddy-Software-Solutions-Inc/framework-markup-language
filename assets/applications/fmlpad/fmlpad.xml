@@ -1,4 +1,4 @@
-<FML title="FmlPad" linkable="true">
+<FML title="FmlPad" linkable="true" onstart="theme({STASH.FmlPadMode} ?? {THEME.brightness} == 'dark' ?'dark':'light');">
 
     <VAR id="xml" value="{editor}" onchange="{r1} ? fmlpad.replaceChildren({xml},false) : null"/>
 
@@ -13,42 +13,42 @@
         <ROW center="true">
             <IMAGE height="50" url="assets://applications/fmlpad/fmlpad.png"/>
             <PAD right="10"/>
-            <TEXT value="**Welcome to FMLPad!**" style="h4" color="#47C4FB"/>
+            <TEXT value="**Welcome to FMLPad!**" style="h4" color="{THEME.primary}"/>
         </ROW>
         <!-- text block -->
         <PAD top="20"/>
-        <TEXT  value="***FmlPad** allows you to test and develop FML templates **realtime** _without the need to compile_ any code.*" color="white" size="14"/>
+        <TEXT  value="***FmlPad** allows you to test and develop FML templates **realtime** _without the need to compile_ any code.*" size="14"/>
         <!-- text block -->
         <PAD top="10"/>
-        <TEXT value="*Try adding, removing or changing any of the markup text in the left editor window and see your changes reflected here instantly.*" color="white" size="14"/>
+        <TEXT value="*Try adding, removing or changing any of the markup text in the left editor window and see your changes reflected here instantly.*" size="14"/>
         <!-- text block -->
         <PAD top="10"/>
-        <TEXT value="***FmlPad** itself it written entirely in **FML** with less than a few dozen simple lines of markup text!*" color="white" size="14"/>
+        <TEXT value="***FmlPad** itself it written entirely in **FML** with less than a few dozen simple lines of markup text!*" size="14"/>
         <!-- text block -->
         <PAD top="20"/>
-        <ICON icon="face" color="#47C4FB"/>
+        <ICON icon="face" color="{THEME.primary}"/>
         <PAD top="5"/>
-        <TEXT value="*Happy Templating ...*" color="white" size="14"/>
+        <TEXT value="*Happy Templating ...*" size="14"/>
         <PAD top="5"/>
-        <TEXT italic="true" value="**The FML Development Team**" color="white" size="14"/>
+        <TEXT italic="true" value="**The FML Development Team**" size="14"/>
     </BOX>
 </FML>]]>
    </value>
    </CONST>
 
     <HEADER height="50">
-        <BOX color="#1E2835" valign="center" halign="left" layout="row">
+        <BOX color="{THEME.oninversesurface}" valign="center" halign="left" layout="row">
 
             <!-- logo -->
             <PAD left="20"/>
             <IMAGE url="assets://images/fml-logo.png" height="30"/>
             <PAD left="10"/>
-            <TEXT value="FmlPad" size="20" color="white"/>
+            <TEXT value="FmlPad" size="20"/>
             <PAD left="50"/>
 
             <!-- widgets -->
             <GET id="dbWidgets" url="https://fml.dev/fmlpad/widgets.xml" root="WIDGETS.WIDGET" ttl="1m"/>
-            <SELECT bordercolor="#1E2835" onchange="copy({this})" data="dbWidgets" hint="Widgets" width="150">
+            <SELECT bordercolor="transparent" onchange="copy({this})" data="dbWidgets" hint="Widgets" width="150">
                 <OPTION value="{data.value}" label="&lt;{data.title}/&gt;"/>
             </SELECT>
 
@@ -58,7 +58,7 @@
             <!-- examples -->
             <GET id="db1" url="{examples}" onsuccess="editor.set({this.response})"/>
             <GET id="dbExamples" url="https://fml.dev/fmlpad/examples.xml" root="EXAMPLES.EXAMPLE"/>
-            <TYPEAHEAD id="examples" bordercolor="#1E2835" value="" data="dbExamples" hint="Examples" width="250">
+            <TYPEAHEAD id="examples" bordercolor="transparent" value="" data="dbExamples" hint="Examples" width="250">
                 <OPTION value="{data.url}">
                     <label><ROW height="100%" valign="center" expand="false"><ICON icon="{data.icon}" size="16" color="{data.color}"/><PAD left="10"/><TEXT value="{data.title}"/></ROW></label>
                 </OPTION>
@@ -69,15 +69,15 @@
             <ROW halign="end" valign="center">
 
                <!-- Reset button -->
-                <BUTTON onclick="editor.set({default})" visible="={default} != {editor}">
-                    <ICON icon="refresh" color="white" size="24"/>
+                <BUTTON onclick="editor.set({default});examples.set(null);" visible="={default} != {editor}">
+                    <ICON icon="refresh" size="24"/>
                 </BUTTON>
 
                 <PAD left="20"/>
 
                 <!-- Save button -->
                 <BUTTON onclick="saveas({editor},'fmlpad.xml')">
-                    <ICON icon="save" color="white" size="24"/>
+                    <ICON icon="save" size="24"/>
                 </BUTTON>
 
                 <PAD left="20"/>
@@ -85,15 +85,15 @@
                 <!-- Open button -->
                 <FILEPICKER id="fp1" onsuccess="editor.set({fp1.data.text})" allow=".xml"/>
                 <BUTTON onclick="fp1.start()">
-                    <ICON icon="folder" color="white" size="24"/>
+                    <ICON icon="folder" size="24"/>
                 </BUTTON>
 
                 <PAD left="40"/>
 
                 <!-- Realtime Parsing button -->
-                <TEXT value="Realtime"/>
+                <TEXT value="Realtime:" color="={r1} ? '{THEME.primary}' : '{THEME.outline}'"/>
                 <PAD left="20"/>
-                <SWITCH id="r1" value="true"/>
+                <SWITCH id="r1" value="true" onchange="{this} ? fmlpad.replaceChildren({xml},false) : null"/>
                 <PAD left="20"/>
 
             </ROW>
@@ -102,28 +102,28 @@
     </HEADER>
 
     <FOOTER height="50">
-        <BOX color="#1E2835" layout="row" halign="end" valign="center">
+        <BOX color="{THEME.oninversesurface}" layout="row" halign="end" valign="center">
             <!-- themes -->
-            <TEXT value="FML Theme:" color="lightgray"/>
+            <TEXT value="FML Theme:" color="{THEME.outline}}"/>
             <PAD right="10"/>
             <GET id="dbStyles" url="https://fml.dev/fmlpad/styles.xml" root="STYLES.STYLE" ttl="1d"/>
             <SELECT id="theme" border="none" data="dbStyles" value='{STASH.FmlPadTheme}' hint="Select an Editor Theme" onchange="stash('FmlPadTheme',{this.value})">
                 <OPTION label='{data.label}'/>
             </SELECT>
             <PAD right="40"/>
-            <ICON icon="light_mode" color="=!{mode} ? 'yellow' : 'grey'"/>
+            <ICON icon="light_mode" color="=!{mode} ? '#e6cc00' : 'grey'"/>
             <PAD right="6"/>
-            <SWITCH id="mode"  value="={STASH.FmlPadMode} ?? true" onchange="stash('FmlPadMode',{this.value})"/>
+            <SWITCH id="mode"  value="={STASH.FmlPadMode} ?? {THEME.brightness} == 'dark'" onchange="stash('FmlPadMode',{this.value});theme({this}?'dark':'light');"/>
             <PAD right="6"/>
-            <ICON icon="dark_mode" color="={mode} ? 'purple' : 'grey'"/>
+            <ICON icon="dark_mode" color="={mode} ? '{THEME.primary}' : 'grey'"/>
             <PAD right="20"/>
         </BOX>
     </FOOTER>
 
-    <SPLITVIEW ratio=".50" dividerwidth="6.0" dividercolor="#1E2835" dividerhandlecolor="#47C4FB">
+    <SPLITVIEW ratio=".50" dividerwidth="6.0" dividercolor="" dividerhandlecolor="{THEME.primary}">
 
         <VIEW>
-            <BOX color="#0F161F" width="100%" height="100%" layout="stack">
+            <BOX color="{THEME.background}" width="100%" height="100%" layout="stack">
 
                 <SCROLLER>
                     <EDITOR id="editor" language="xml" value="{default}" theme="{theme}"/>
@@ -131,11 +131,11 @@
 
                 <POSITIONED right="10" top="5">
                     <BUTTON onclick="fmlpad.replaceChildren({xml},false)" visible="=!{r1}">
-                        <BOX width="100" height="35" color="#348CFF" layout="row" radius="5" valign="center" halign="left">
+                        <BOX width="100" height="35" color="{THEME.inverseprimary}" bordercolor="{THEME.shadow}" layout="row" radius="5" valign="center" halign="left">
                             <PAD left="10"/>
-                            <ICON icon="play_arrow" size="20" color="black"/>
+                            <ICON icon="play_arrow" size="20"/>
                             <PAD left="7"/>
-                            <TEXT color="black" value="Parse"/>
+                            <TEXT value="Parse"/>
                         </BOX>
                     </BUTTON>
                 </POSITIONED>

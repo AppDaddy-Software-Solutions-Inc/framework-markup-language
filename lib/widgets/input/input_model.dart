@@ -336,6 +336,21 @@ class InputModel extends FormFieldModel implements IFormField, IViewableWidget
     return _lines!.get();
   }
 
+  IntegerObservable? _maxlines;
+  set maxlines(dynamic v) {
+    if (_maxlines != null) {
+      _maxlines!.set(v);
+    } else if (v != null) {
+      _maxlines = IntegerObservable(Binding.toKey(id, 'maxlines'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  int? get maxlines {
+    if (_maxlines == null) return null;
+    return _maxlines!.get();
+  }
+
   /// The maximum allowable length of the input in number of characters.
   IntegerObservable? _length;
   set length(dynamic v) {
@@ -502,12 +517,43 @@ class InputModel extends FormFieldModel implements IFormField, IViewableWidget
     return _touched!.get();
   }
 
+  BooleanObservable? _wrap;
+  set wrap(dynamic v) {
+    if (_wrap != null) {
+      _wrap!.set(v);
+    } else if (v != null) {
+      _wrap = BooleanObservable(Binding.toKey(id, 'wrap'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  bool? get wrap {
+    if (_wrap == null) return false;
+    return _wrap!.get();
+  }
+
+  BooleanObservable? _expand;
+  set expand(dynamic v) {
+    if (_expand != null) {
+      _expand!.set(v);
+    } else if (v != null) {
+      _expand = BooleanObservable(Binding.toKey(id, 'expand'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  bool? get expand {
+    if (_expand == null) return false;
+    return _expand!.get();
+  }
+
   InputModel(
     WidgetModel? parent,
     String? id, {
     String? type,
     dynamic visible,
     dynamic mandatory,
+    dynamic wrap,
     dynamic editable,
     dynamic enabled,
     dynamic value,
@@ -517,6 +563,7 @@ class InputModel extends FormFieldModel implements IFormField, IViewableWidget
     dynamic size,
     dynamic color,
     dynamic weight,
+    dynamic expand,
     dynamic style,
     dynamic lines,
     dynamic length,
@@ -538,6 +585,7 @@ class InputModel extends FormFieldModel implements IFormField, IViewableWidget
     dynamic keyboardinput,
     dynamic format,
     dynamic border,
+    dynamic maxlines,
     dynamic radius,
     dynamic bordercolor,
     dynamic borderwidth,
@@ -546,6 +594,9 @@ class InputModel extends FormFieldModel implements IFormField, IViewableWidget
   }) : super(parent, id)
   {
     if (mandatory     != null) this.mandatory = mandatory;
+    if (maxlines      != null) this.maxlines = maxlines;
+    if (wrap          != null) this.wrap = wrap;
+    if (expand        != null) this.expand = expand;
     if (editable      != null) this.editable = editable;
     if (enabled       != null) this.enabled = enabled;
     if (value         != null) this.value = value;
@@ -643,6 +694,8 @@ class InputModel extends FormFieldModel implements IFormField, IViewableWidget
     length = Xml.get(node: xml, tag: 'length');
     obscure = Xml.get(node: xml, tag: 'obscure');
     clear = Xml.get(node: xml, tag: 'clear');
+    maxlines = Xml.get(node: xml, tag: 'maxlines');
+    expand = Xml.get(node: xml, tag: 'expand');
     error = Xml.get(node: xml, tag: 'error');
     errortext = Xml.get(node: xml, tag: 'errortext');
     onfocuslost = Xml.get(node: xml, tag: 'onfocuslost');

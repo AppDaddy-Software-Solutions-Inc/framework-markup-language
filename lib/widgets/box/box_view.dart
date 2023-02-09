@@ -412,12 +412,6 @@ class _BoxViewState extends State<BoxView> implements IModelListener {
     var constr = widget.model.getConstraints();
 
 
-
-      if (expand == false) {
-        if (height != null && width != null)
-          expand = true;
-      }
-
     ScrollerModel? scrollerModel = widget.model.findParentOfExactType(ScrollerModel);
     if (scrollerModel != null && expand == true) {
       expand = false;
@@ -426,6 +420,14 @@ class _BoxViewState extends State<BoxView> implements IModelListener {
       if(scrollerModel.layout == "row")
         height ??= constr.maxHeight;
     }
+
+
+      if (expand == false) {
+        if (height != null && width != null)
+          expand = true;
+      }
+
+
 
 
       if (expand == false) {

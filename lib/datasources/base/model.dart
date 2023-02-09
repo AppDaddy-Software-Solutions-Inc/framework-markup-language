@@ -212,7 +212,6 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
           BooleanObservable(Binding.toKey(id, 'autoexecute'), v, scope: scope);
     }
   }
-
   bool? get autoexecute => _autoexecute?.get();
 
   // autoquery

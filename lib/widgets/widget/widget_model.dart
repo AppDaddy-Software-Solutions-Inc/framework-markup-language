@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
+import 'package:fml/datasources/beacon/beacon_model.dart';
 import 'package:fml/datasources/detectors/biometrics/biometrics_detector_model.dart';
 import 'package:fml/datasources/sse/model.dart';
 import 'package:fml/datasources/iDataSource.dart';
@@ -303,9 +304,9 @@ class WidgetModel implements IDataSourceListener
         model = BarcodeDetectorModel.fromXml(parent, node);
         break;
 
-      // case "beacon:
-      //   model = BEACON.Model.fromXml(parent, node);
-      //   break;
+      case "beacon":
+        model = BeaconModel.fromXml(parent, node);
+        break;
 
       case "biometic":
         model = BiometricsDetectorModel.fromXml(parent, node);

@@ -205,8 +205,8 @@ class CheckBox extends StatelessWidget {
               color: model.enabled != false && model.editable != false
                   ? Theme.of(context).colorScheme.surfaceVariant
                   : Theme.of(context).colorScheme.onInverseSurface),
-          visualDensity: VisualDensity(horizontal: -4, vertical: -4),
-          splashRadius: 18,
+          visualDensity: VisualDensity(horizontal: -2, vertical: -4),
+          splashRadius: 20,
           mouseCursor: model.enabled != false && model.editable != false
               ? SystemMouseCursors.click
               : SystemMouseCursors.basic,

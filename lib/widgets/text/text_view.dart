@@ -467,21 +467,6 @@ class _TextViewState extends State<TextView> implements IModelListener {
               textAlign: textAlign));
     }
 
-    //////////////////
-    /* Constrained? */
-    //////////////////
-    if (widget.model.constrained) {
-      var constraints = widget.model.getConstraints();
-      view = ConstrainedBox(
-          child: view,
-          constraints: BoxConstraints(
-              minHeight: constraints.minHeight!,
-              maxHeight: constraints.maxHeight!,
-              minWidth: constraints.minWidth!,
-              maxWidth: constraints.maxWidth!));
-    }
-
-
     view = GestureDetector(
       onLongPress: () {
         Clipboard.setData(ClipboardData(text: label));
@@ -491,6 +476,22 @@ class _TextViewState extends State<TextView> implements IModelListener {
                 behavior: SnackBarBehavior.floating,
                 elevation: 5));
       }, child: view,);
+
+    //////////////////
+    /* Constrained? */
+    //////////////////
+
+      var constraints = widget.model.getConstraints();
+      view = ConstrainedBox(
+          child: view,
+          constraints: BoxConstraints(
+              minHeight: constraints.minHeight!,
+              maxHeight: constraints.maxHeight!,
+              minWidth: constraints.minWidth!,
+              maxWidth: constraints.maxWidth!));
+
+
+
 
     return view;
   }

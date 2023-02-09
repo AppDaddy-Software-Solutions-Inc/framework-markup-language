@@ -206,11 +206,16 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
 
   onButtonTap(dynamic v)
   {
-    widget.model.index = v;
-    if (widget.model.views.containsValue(v))
-    {
-      int i = widget.model.views.values.toList().indexOf(v);
-      widget.model.index = i;
+    if (v == -1 && widget.model.index != null) {
+      widget.model.deleteAllIndexesExcept(widget.model.index!);
+      _showFirst();
+    }
+    else {
+      widget.model.index = v;
+      if (widget.model.views.containsValue(v)) {
+        int i = widget.model.views.values.toList().indexOf(v);
+        widget.model.index = i;
+      }
     }
   }
 
@@ -259,7 +264,9 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
 
       // Has delete button?
       bool closeable = S.toBool(uri.queryParameters['closeable']) ?? true;
-      Widget delete = (closeable == false) ? Container() : GestureDetector(child: Icon(Icons.cancel), onTap: () => _onDelete(view));
+      Widget delete = (closeable == false) ? Container()
+      : Padding(padding: EdgeInsets.only(right: 5), child: Container(width: 26, height: 26,
+          child: IconButton(onPressed: () => _onDelete(view), padding: EdgeInsets.all(1.5), icon: Icon(Icons.close, size: 22, color: Theme.of(context).colorScheme.onSurfaceVariant))));
 
       // tab bar
       String title   = uri.queryParameters['title'] ?? url;
@@ -292,13 +299,19 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
     List<Tab> tabs = _buildTabs(height);
 
     // Initialize Controller
-    _tabController = TabController(length: tabs.length, vsync: this, initialIndex: widget.model.index ?? 0);
+    _tabController = TabController(length: tabs.length, vsync: this, initialIndex: widget.model.index ?? 0, animationDuration: Duration(milliseconds: 100));
 
     // Add Listener
     _tabController!.addListener(onTap);
 
     // Tab Bar
-    var bar = TabBar(controller: _tabController, indicator: BoxDecoration(borderRadius: BorderRadius.only(topLeft: Radius.circular(14.0), topRight: Radius.circular(14.0)), color: Theme.of(context).colorScheme.surface), labelColor: Theme.of(context).colorScheme.onBackground, unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant, tabs: tabs);
+    var bar = TabBar(controller: _tabController,
+        padding: EdgeInsets.zero,
+        labelPadding: EdgeInsets.zero,
+        indicator: BoxDecoration(borderRadius: BorderRadius.only(topLeft: Radius.circular(14.0), topRight: Radius.circular(14.0)), color: Theme.of(context).colorScheme.surface),
+        labelColor: Theme.of(context).colorScheme.onBackground,
+        unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
+        tabs: tabs);
 
     // Formatted bar
     var view = Container(child: bar, height: height, decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceVariant, borderRadius: BorderRadius.only(topLeft: Radius.circular(14.0), topRight: Radius.circular(14.0))));
@@ -311,6 +324,10 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
     // Build List of Tabs
     List<PopupMenuItem> popoverItems = [];
 
+    // Build close all but open tab
+    PopupMenuItem closeOtherTabs = PopupMenuItem(child: Text('Close other tabs', style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant)), value: -1);
+    popoverItems.add(closeOtherTabs);
+
     int i = 0;
     widget.model.views.forEach((url, view)
     {
@@ -318,21 +335,21 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
       String title = uri?.queryParameters['title'] ?? url;
 
       // Style
-      var style = widget.model.index == i ? TextStyle(color: Theme.of(context).colorScheme.secondary, fontWeight: Theme.of(context).primaryTextTheme.titleLarge!.fontWeight) : TextStyle(color: Theme.of(context).textTheme.labelLarge!.color, fontWeight: Theme.of(context).textTheme.titleLarge!.fontWeight);
+      var style = widget.model.index == i ? TextStyle(color: Theme.of(context).colorScheme.primary) : TextStyle(color: Theme.of(context).colorScheme.secondary);
 
       // Button
-      PopupMenuItem button = PopupMenuItem(child: Text(title), value: i/*view*/, textStyle: style);
+      PopupMenuItem button = PopupMenuItem(child: Text(title, style: style), value: i);
 
       popoverItems.add(button);
       i++;
     });
 
     var popover = PopupMenuButton(
-      tooltip: "Show all tabs",
+      tooltip: 'Show tab list',
       color: Theme.of(context).colorScheme.surface,
       onSelected: (val) => onButtonTap(val),
       itemBuilder: (BuildContext context) => <PopupMenuEntry>[...popoverItems],
-      child: Container(decoration: BoxDecoration(color: Theme.of(context).colorScheme.onInverseSurface, borderRadius: BorderRadius.all(Radius.circular(100))), child: Padding(padding: EdgeInsets.all(5), child: Icon(Icons.more_horiz, color: Theme.of(context).colorScheme.inverseSurface))),
+      child: Container(decoration: BoxDecoration(color: Theme.of(context).colorScheme.onInverseSurface, borderRadius: BorderRadius.all(Radius.circular(100))), child: Padding(padding: EdgeInsets.all(5), child: Icon(Icons.clear_all, size: 22, color: Theme.of(context).colorScheme.inverseSurface))),
     );
 
     return popover;

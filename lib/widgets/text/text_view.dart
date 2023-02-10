@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/widgets/expanded/expanded_model.dart';
 import 'package:fml/widgets/row/row_model.dart';
+import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:google_fonts/google_fonts.dart' deferred as gf;
@@ -466,20 +467,40 @@ class _TextViewState extends State<TextView> implements IModelListener {
           overflow: textOverflow,
           textAlign: textAlign));
     }
+
+    view = GestureDetector(
+      onLongPress: () {
+        if (label != null) {
+          Clipboard.setData(ClipboardData(text: label));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text('"' + label + '" ' + phrase.copiedToClipboard),
+              duration: Duration(seconds: 1),
+              behavior: SnackBarBehavior.floating,
+              elevation: 5));
+        }
+      }, child: view,);
+
     //////////////////
     /* Constrained? */
     //////////////////
+    bool isNotExpandedChild = false;
+          if(!widget.model.constrained) {
+            ScrollerModel? parentScroll = widget.model.findAncestorOfExactType(
+                ScrollerModel);
+            if (parentScroll != null &&
+                parentScroll.layout.toLowerCase() == "row") return view;
+            isNotExpandedChild = widget.model.findAncestorOfExactType(ExpandedModel) == null;
+          }
 
-          if(widget.model.findAncestorOfExactType(ExpandedModel) == null || widget.model.constrained) {
+          if( isNotExpandedChild || widget.model.constrained) {
             var constr = widget.model.getConstraints();
             view = ConstrainedBox(
                 child: view,
                 constraints: BoxConstraints(
                     minWidth: constr.minWidth!,
                     maxWidth: constr.maxWidth!,
-                    minHeight: constr.minHeight!,
-                    maxHeight: constr.maxHeight!
-                ));
+                )
+            );
           }
 
 

@@ -121,9 +121,9 @@ class _BoxViewState extends State<BoxView> implements IModelListener {
     if (widget.model.visible == false) return Offstage();
 
     // Set Build Constraints in the [WidgetModel]
-    widget.model.minwidth  = constraints.minWidth;
-    widget.model.maxwidth  = constraints.maxWidth  - ((S.toDouble(widget.model.borderwidth) ?? 0) * 2);
-    widget.model.minheight = constraints.minHeight - ((S.toDouble(widget.model.borderwidth) ?? 0) * 2);
+    widget.model.minWidth  = constraints.minWidth;
+    widget.model.maxWidth  = constraints.maxWidth  - ((S.toDouble(widget.model.borderwidth) ?? 0) * 2);
+    widget.model.minHeight = constraints.minHeight - ((S.toDouble(widget.model.borderwidth) ?? 0) * 2);
     widget.model.maxheight = constraints.maxHeight;
 
     // get colors

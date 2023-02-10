@@ -366,9 +366,9 @@ class CameraViewState extends State<CameraView>
   Widget builder(BuildContext context, BoxConstraints constraints) {
     // Set Build Constraints in the [WidgetModel]
 
-    widget.model.minwidth = constraints.minWidth;
-    widget.model.maxwidth = constraints.maxWidth;
-    widget.model.minheight = constraints.minHeight;
+    widget.model.minWidth = constraints.minWidth;
+    widget.model.maxWidth = constraints.maxWidth;
+    widget.model.minHeight = constraints.minHeight;
     widget.model.maxheight = constraints.maxHeight;
 
     // Check if widget is visible before wasting resources on building it
@@ -408,7 +408,7 @@ class CameraViewState extends State<CameraView>
     //////////////////
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    if (widget.model.constrained) {
+    if (widget.model.hasSizing) {
       var constraints = widget.model.getConstraints();
       view = ConstrainedBox(
           child: view,

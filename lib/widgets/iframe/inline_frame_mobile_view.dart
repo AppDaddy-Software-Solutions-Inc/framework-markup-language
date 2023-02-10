@@ -43,9 +43,9 @@ class _InlineFrameViewState extends State<InlineFrameView>
 
     // Set Build Constraints in the [WidgetModel]
 
-      model.minwidth  = constraints.minWidth;
-      model.maxwidth  = constraints.maxWidth;
-      model.minheight = constraints.minHeight;
+      model.minWidth  = constraints.minWidth;
+      model.maxWidth  = constraints.maxWidth;
+      model.minHeight = constraints.minHeight;
       model.maxheight = constraints.maxHeight;
 
 
@@ -79,7 +79,7 @@ class _InlineFrameViewState extends State<InlineFrameView>
     //////////////////
     /* Constrained? */
     //////////////////
-    if (model.constrained)
+    if (model.hasSizing)
     {
       var constraints = model.getConstraints();
       view = ConstrainedBox(child: view, constraints: BoxConstraints(

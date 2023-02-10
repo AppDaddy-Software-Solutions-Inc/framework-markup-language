@@ -157,9 +157,9 @@ class _TypeaheadViewState extends State<TypeaheadView> implements IModelListener
     if (!widget.model.visible) return Offstage();
 
     // Set Build Constraints in the [WidgetModel]
-    widget.model.minwidth = constraints.minWidth;
-    widget.model.maxwidth = constraints.maxWidth;
-    widget.model.minheight = constraints.minHeight;
+    widget.model.minWidth = constraints.minWidth;
+    widget.model.maxWidth = constraints.maxWidth;
+    widget.model.minHeight = constraints.minHeight;
     widget.model.maxheight = constraints.maxHeight;
 
     ///////////
@@ -199,7 +199,7 @@ class _TypeaheadViewState extends State<TypeaheadView> implements IModelListener
 
       List<OptionModel>? suggestions;
       view = SizedBox(
-          width: widget.model.maxwidth,
+          width: widget.model.maxWidth,
           child: TypeAheadField(
             textFieldConfiguration: TextFieldConfiguration(
                 enabled: widget.model.enabled != false,

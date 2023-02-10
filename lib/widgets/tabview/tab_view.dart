@@ -358,9 +358,9 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // Set Build Constraints in the [WidgetModel]
-      widget.model.minwidth  = constraints.minWidth;
-      widget.model.maxwidth  = constraints.maxWidth;
-      widget.model.minheight = constraints.minHeight;
+      widget.model.minWidth  = constraints.minWidth;
+      widget.model.maxWidth  = constraints.maxWidth;
+      widget.model.minHeight = constraints.minHeight;
       widget.model.maxheight = constraints.maxHeight;
 
     // Check if widget is visible before wasting resources on building it
@@ -395,9 +395,9 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
       if (widget.model.tabbar == true && widget.model.tabbutton == true) {
         view = Column(children: [
           Container(color: Theme.of(context).colorScheme.onInverseSurface, child:
-            Padding(padding: EdgeInsets.only(top: barpadding), child: SizedBox(width: widget.model.maxwidth, height: barheight,
+            Padding(padding: EdgeInsets.only(top: barpadding), child: SizedBox(width: widget.model.maxWidth, height: barheight,
                 child: Row(children: [
-                  SizedBox(width: (widget.model.maxwidth! - buttonWidth < 0 ? 0 : widget.model.maxwidth! - buttonWidth),
+                  SizedBox(width: (widget.model.maxWidth! - buttonWidth < 0 ? 0 : widget.model.maxWidth! - buttonWidth),
                       height: barheight,
                       child: bar),
                   SizedBox(width: buttonWidth, height: barheight, child: button),
@@ -417,7 +417,7 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
         var con = widget.model.getConstraints();
 
         view = Column(children: [
-          SizedBox(width: widget.model.maxwidth, height: barheight,
+          SizedBox(width: widget.model.maxWidth, height: barheight,
             child: bar
           ),
           SizedBox(
@@ -450,7 +450,7 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
       //////////////////
       /* Constrained? */
       //////////////////
-      if (widget.model.constrained)
+      if (widget.model.hasSizing)
       {
         var constraints = widget.model.getConstraints();
         view = ConstrainedBox(child: view, constraints: BoxConstraints(minHeight: constraints.minHeight!, maxHeight: constraints.maxHeight!, minWidth: constraints.minWidth!, maxWidth: constraints.maxWidth!));

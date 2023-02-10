@@ -70,7 +70,7 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
       else
         s1 = null;
 
-      double? mw = maxwidth;
+      double? mw = maxWidth;
       if (mw != null)
         s2 = mw * (s / 100.0);
       else

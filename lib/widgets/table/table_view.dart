@@ -326,9 +326,9 @@ class _TableViewState extends State<TableView> implements IModelListener, IEvent
     widget.model.cellpadding.clear();
 
     // Set Build Constraints in the [WidgetModel]
-    widget.model.minwidth  = constraints.minWidth;
-    widget.model.maxwidth  = constraints.maxWidth;
-    widget.model.minheight = constraints.minHeight;
+    widget.model.minWidth  = constraints.minWidth;
+    widget.model.maxWidth  = constraints.maxWidth;
+    widget.model.minHeight = constraints.minHeight;
     widget.model.maxheight = constraints.maxHeight;
 
     double? viewportHeight = widget.model.height ?? widget.model.maxheight;

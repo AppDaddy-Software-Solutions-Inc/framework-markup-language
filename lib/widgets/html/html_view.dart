@@ -87,7 +87,7 @@ class _HtmlViewState extends State<HtmlView> implements IModelListener {
     //////////////////
     /* Constrained? */
     //////////////////
-    if (widget.model.constrained) {
+    if (widget.model.hasSizing) {
       var constraints = widget.model.getConstraints();
       view = ConstrainedBox(
           child: view,

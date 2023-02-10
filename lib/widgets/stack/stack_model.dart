@@ -51,9 +51,9 @@ class StackModel extends DecoratedWidgetModel implements IViewableWidget
   }) : super(parent, id) {
     this.width = width;
     this.height = height;
-    this.minwidth = minwidth;
-    this.minheight = minheight;
-    this.maxwidth = maxwidth;
+    this.minWidth = minwidth;
+    this.minHeight = minheight;
+    this.maxWidth = maxwidth;
     this.maxheight = maxheight;
     this.halign = halign;
     this.valign = valign;

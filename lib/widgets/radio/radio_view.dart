@@ -67,9 +67,9 @@ class _RadioViewState extends State<RadioView> implements IModelListener {
     });
 
     // Set Build Constraints in the [WidgetModel]
-    widget.model.minwidth = constraints.minWidth;
-    widget.model.maxwidth = constraints.maxWidth;
-    widget.model.minheight = constraints.minHeight;
+    widget.model.minWidth = constraints.minWidth;
+    widget.model.maxWidth = constraints.maxWidth;
+    widget.model.minHeight = constraints.minHeight;
     widget.model.maxheight = constraints.maxHeight;
 
     // Check if widget is visible before wasting resources on building it

@@ -242,7 +242,7 @@ class _SpanViewState extends State<SpanView> implements IModelListener {
     //////////////////
     /* Constrained? */
     //////////////////
-    if (widget.model.constrained) {
+    if (widget.model.hasSizing) {
       var constraints = widget.model.getConstraints();
       view = ConstrainedBox(
           child: view,

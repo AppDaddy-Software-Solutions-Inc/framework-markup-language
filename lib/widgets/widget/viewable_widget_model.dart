@@ -61,113 +61,74 @@ class ViewableWidgetModel extends WidgetModel
   double? get height => _height?.get();
 
   // Constraints
-  final Constraint _constraints = Constraint();
+  final Constraint _modelConstraints = Constraint();
+  final Constraint _viewConstraints  = Constraint();
 
-  Constraint getConstraints()
-  {
-    Constraint constraint = Constraint();
-    constraint.minHeight = height ?? _constraints.minHeight ?? minheight ?? 0.0;
-    constraint.maxHeight = height ?? _constraints.maxHeight ?? maxheight ?? double.infinity;
-    constraint.minWidth  = width  ?? _constraints.minWidth  ?? minwidth  ?? 0.0;
-    constraint.maxWidth  = width  ?? _constraints.maxWidth  ?? maxwidth  ?? double.infinity;
-
-    // ensure not negative
-    if(constraint.minHeight! < 0) constraint.minHeight = 0;
-    if(constraint.maxHeight! < 0) constraint.maxHeight = double.infinity;
-
-    // ensure max > min
-    if (constraint.minHeight! > constraint.maxHeight!)
-    {
-      if (_constraints.maxHeight != null)
-           constraint.minHeight = constraint.maxHeight;
-      else constraint.maxHeight = constraint.minHeight;
-    }
-
-    // ensure not negative
-    if(constraint.minWidth! < 0) constraint.minWidth = 0;
-    if(constraint.maxWidth! < 0) constraint.maxWidth = double.infinity;
-
-    // ensure max > min
-    if (constraint.minWidth! > constraint.maxWidth!)
-    {
-      if (_constraints.maxWidth != null)
-           constraint.minWidth = constraint.maxWidth;
-      else constraint.maxWidth = constraint.minWidth;
-    }
-    return constraint;
-  }
-
-  bool get constrainedVertically   => ((height != null) && (height! >= 0)) || (_constraints.minHeight!= null)  || (_constraints.maxHeight!= null);
-  bool get constrainedHorizontally => ((width  != null) && (width!  >= 0)) || (_constraints.minWidth  != null) || (_constraints.maxWidth  != null);
-  bool get constrained => constrainedVertically || constrainedHorizontally;
+  bool get hasVerticalSizing    => ((height != null) && (height! >= 0)) || (_modelConstraints.minHeight != null) || (_modelConstraints.maxHeight != null);
+  bool get haslHorizontalSizing => ((width  != null) && (width!  >= 0)) || (_modelConstraints.minWidth  != null) || (_modelConstraints.maxWidth  != null);
+  bool get hasSizing => hasVerticalSizing || haslHorizontalSizing;
 
   // Min Width
-  double? _minwidth;
-  set minwidth(double? v) => _minwidth = v;
-  double? get minwidth
+  set minWidth(double? v) => _viewConstraints.minWidth = v;
+  double? get minWidth
   {
     double? v;
-    if ((v == null) && (_minwidth != null) && (_minwidth != double.infinity)) v = _minwidth;
-    if ((v == null) && (parent is ViewableWidgetModel)) v = (parent as ViewableWidgetModel).minwidth;
+    if ((v == null) && (_viewConstraints.minWidth != null) && (_viewConstraints.minWidth != double.infinity)) v = _viewConstraints.minWidth;
+    if ((v == null) && (parent is ViewableWidgetModel)) v = (parent as ViewableWidgetModel).minWidth;
     return v;
   }
 
   // Min Height
-  double? _minheight;
-  set minheight(double? v) => _minheight = v;
-  double? get minheight
+  set minHeight(double? v) => _viewConstraints.minHeight = v;
+  double? get minHeight
   {
     double? v;
-    if ((v == null) && (_minheight != null) && (_minheight != double.infinity)) v = _minheight;
-    if ((v == null) && (parent is ViewableWidgetModel)) v = (parent as ViewableWidgetModel).minheight;
+    if ((v == null) && (_viewConstraints.minHeight  != null) && (_viewConstraints.minHeight  != double.infinity)) v = _viewConstraints.minHeight;
+    if ((v == null) && (parent is ViewableWidgetModel)) v = (parent as ViewableWidgetModel).minHeight;
     return v;
   }
 
   // Max Width
-  double? _maxwidth;
-  set maxwidth(double? v)
+  set maxWidth(double? v)
   {
-    _maxwidth = v;
-    if (_width?.value != null && _width!.value >= 100000)
-      _widthPercentage = (_width!.value / 1000000)!;
+    _viewConstraints.maxWidth = v;
+    if (_width?.value != null && _width!.value >= 100000) _widthPercentage = (_width!.value / 1000000)!;
     if (_widthPercentage != null)
     {
       double? width;
-      var maxwidth = this.maxwidth;
+      var maxwidth = this.maxWidth;
       if (maxwidth != null)
       {
         width = maxwidth * (_widthPercentage! / 100.0);
-        if ((_constraints.minWidth != null) && (_constraints.minWidth! > width))  width = _constraints.minWidth;
-        if ((_constraints.maxWidth != null) && (_constraints.maxWidth! < width!)) width = _constraints.maxWidth;
+        if ((_modelConstraints.minWidth != null) && (_modelConstraints.minWidth! > width))  width = _modelConstraints.minWidth;
+        if ((_modelConstraints.maxWidth != null) && (_modelConstraints.maxWidth! < width!)) width = _modelConstraints.maxWidth;
       }
       _width?.set(width, notify: false);
     }
   }
-  double? get maxwidth
+  double? get maxWidth
   {
     double? v;
-    if ((v == null) && (_maxwidth != null) && (_maxwidth != double.infinity)) v = _maxwidth;
+    if ((v == null) && (_viewConstraints.maxWidth != null) && (_viewConstraints.maxWidth != double.infinity)) v = _viewConstraints.maxWidth;
     if ((v == null) && (parent != null))
     {
       ViewableWidgetModel? parent = (this.parent is ViewableWidgetModel) ? (this.parent as ViewableWidgetModel) : null;
       if (parent?.padding != null)
       {
         var vpad = getParentHPadding(parent!.paddings, parent.padding, parent.padding2, parent.padding3, parent.padding4);
-        v = (parent.width != null) ? (parent.width! - vpad) : (parent.maxwidth! - vpad);
+        v = (parent.width != null) ? (parent.width! - vpad) : (parent.maxWidth! - vpad);
       }
-      else if (parent != null) v = (parent.width ?? parent.maxwidth);
+      else if (parent != null) v = (parent.width ?? parent.maxWidth);
     }
     return v;
   }
 
   // Max Height
-  double? _maxheight;
   set maxheight(double? v)
   {
-    _maxheight = v;
+    _viewConstraints.maxHeight = v;
 
-    if (_height?.value != null && _height!.value >= 100000)
-      _heightPercentage = (_height!.value / 1000000)!;
+    if (_height?.value != null && _height!.value >= 100000) _heightPercentage = (_height!.value / 1000000)!;
     if (_heightPercentage != null)
     {
       double? height;
@@ -181,8 +142,8 @@ class ViewableWidgetModel extends WidgetModel
           if (parent != null) vpadding = getParentVPadding(parent.paddings, parent.padding, parent.padding2, parent.padding3, parent.padding4);
 
           height = ((maxheight - vpadding) * (_heightPercentage! / 100.0));
-          if ((_constraints.minHeight!= null) && (_constraints.minHeight! > height)) height = _constraints.minHeight?? 0;
-          if ((_constraints.maxHeight!= null) && (_constraints.maxHeight! < height)) height = _constraints.maxHeight;
+          if ((_modelConstraints.minHeight!= null) && (_modelConstraints.minHeight! > height)) height = _modelConstraints.minHeight?? 0;
+          if ((_modelConstraints.maxHeight!= null) && (_modelConstraints.maxHeight! < height)) height = _modelConstraints.maxHeight;
         }
       }
       _height?.set(height, notify: false);
@@ -191,7 +152,7 @@ class ViewableWidgetModel extends WidgetModel
   double? get maxheight
   {
     double? v;
-    if ((v == null) && (_maxheight != null) && (_maxheight != double.infinity)) v = _maxheight;
+    if ((v == null) && (_viewConstraints.maxHeight != null) && (_viewConstraints.maxHeight != double.infinity)) v = _viewConstraints.maxHeight;
     if ((v == null) && (parent != null))
     {
       ViewableWidgetModel? parent = (this.parent is ViewableWidgetModel) ? (this.parent as ViewableWidgetModel) : null;
@@ -338,10 +299,10 @@ class ViewableWidgetModel extends WidgetModel
     super.deserialize(xml);
 
     // set constraints
-    _constraints.minWidth  = S.toDouble(Xml.get(node: xml, tag: 'minwidth'));
-    _constraints.maxWidth  = S.toDouble(Xml.get(node: xml, tag: 'maxwidth'));
-    _constraints.minHeight= S.toDouble(Xml.get(node: xml, tag: 'minheight'));
-    _constraints.maxHeight= S.toDouble(Xml.get(node: xml, tag: 'maxheight'));
+    _modelConstraints.minWidth  = S.toDouble(Xml.get(node: xml, tag: 'minwidth'));
+    _modelConstraints.maxWidth  = S.toDouble(Xml.get(node: xml, tag: 'maxwidth'));
+    _modelConstraints.minHeight = S.toDouble(Xml.get(node: xml, tag: 'minheight'));
+    _modelConstraints.maxHeight = S.toDouble(Xml.get(node: xml, tag: 'maxheight'));
 
     // properties
     visible = Xml.get(node: xml, tag: 'visible');
@@ -390,5 +351,39 @@ class ViewableWidgetModel extends WidgetModel
 
     //should add up all of the padded siblings to do this.
     return insets;
+  }
+
+  Constraint getConstraints()
+  {
+    Constraint constraint = Constraint();
+    constraint.minHeight = height ?? _modelConstraints.minHeight ?? minHeight ?? 0.0;
+    constraint.maxHeight = height ?? _modelConstraints.maxHeight ?? maxheight ?? double.infinity;
+    constraint.minWidth  = width  ?? _modelConstraints.minWidth  ?? minWidth  ?? 0.0;
+    constraint.maxWidth  = width  ?? _modelConstraints.maxWidth  ?? maxWidth  ?? double.infinity;
+
+    // ensure not negative
+    if(constraint.minHeight! < 0) constraint.minHeight = 0;
+    if(constraint.maxHeight! < 0) constraint.maxHeight = double.infinity;
+
+    // ensure max > min
+    if (constraint.minHeight! > constraint.maxHeight!)
+    {
+      if (_modelConstraints.maxHeight != null)
+        constraint.minHeight = constraint.maxHeight;
+      else constraint.maxHeight = constraint.minHeight;
+    }
+
+    // ensure not negative
+    if(constraint.minWidth! < 0) constraint.minWidth = 0;
+    if(constraint.maxWidth! < 0) constraint.maxWidth = double.infinity;
+
+    // ensure max > min
+    if (constraint.minWidth! > constraint.maxWidth!)
+    {
+      if (_modelConstraints.maxWidth != null)
+        constraint.minWidth = constraint.maxWidth;
+      else constraint.maxWidth = constraint.minWidth;
+    }
+    return constraint;
   }
 }

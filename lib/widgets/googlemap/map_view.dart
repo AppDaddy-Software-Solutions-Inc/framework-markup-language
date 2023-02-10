@@ -128,9 +128,9 @@ return LayoutBuilder(builder: builder);
 
     // Set Build Constraints in the [WidgetModel]
 
-      widget.model.minwidth  = constraint.minWidth;
-      widget.model.maxwidth  = constraint.maxWidth;
-      widget.model.minheight = constraint.minHeight;
+      widget.model.minWidth  = constraint.minWidth;
+      widget.model.maxWidth  = constraint.maxWidth;
+      widget.model.minHeight = constraint.minHeight;
       widget.model.maxheight = constraint.maxHeight;
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -153,7 +153,7 @@ return LayoutBuilder(builder: builder);
     /* Width */
     ///////////
     var width = widget.model.width;
-    if (width == null) width = widget.model.maxwidth;
+    if (width == null) width = widget.model.maxWidth;
     if ((width == null) || (width <= 0)) width = MediaQuery.of(context).size.width;
 
     ////////////

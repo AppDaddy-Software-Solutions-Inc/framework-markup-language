@@ -70,7 +70,7 @@ class BusyModel extends DecoratedWidgetModel implements IViewableWidget
         s1 = mh * (s/100.0);
       else s1 = null;
 
-      var mw = maxwidth;
+      var mw = maxWidth;
       if (mw != null)
         s2 = mw * (s/100.0);
       else s2 = null;

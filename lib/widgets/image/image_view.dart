@@ -245,9 +245,9 @@ class _ImageViewState extends State<ImageView> implements IModelListener {
 
   Widget builder(BuildContext context, BoxConstraints constraints) {
     // Set Build Constraints in the [WidgetModel]
-    widget.model.minwidth = constraints.minWidth;
-    widget.model.maxwidth = constraints.maxWidth;
-    widget.model.minheight = constraints.minHeight;
+    widget.model.minWidth = constraints.minWidth;
+    widget.model.maxWidth = constraints.maxWidth;
+    widget.model.minHeight = constraints.minHeight;
     widget.model.maxheight = constraints.maxHeight;
 
     // Check if widget is visible before wasting resources on building it
@@ -291,7 +291,7 @@ class _ImageViewState extends State<ImageView> implements IModelListener {
     if (widget.model.interactive == true) view = InteractiveViewer(child: view);
 
     // constrained?
-    if (widget.model.constrained) {
+    if (widget.model.hasSizing) {
       var constraints = widget.model.getConstraints();
       view = ConstrainedBox(
           child: view,

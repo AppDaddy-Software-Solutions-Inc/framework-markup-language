@@ -16,6 +16,22 @@ class PagerPageView extends StatefulWidget
 class _PagerPageViewState extends State<PagerPageView> implements IModelListener {
 
   Widget build(BuildContext context) {
+    return LayoutBuilder(builder: builder);
+  }
+
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
+    //String? _id = widget.model.id;
+
+    // Check if widget is visible before wasting resources on building it
+    if (widget.model.visible == false) return Offstage();
+
+    // Set Build Constraints in the [WidgetModel]
+    widget.model.minwidth  = constraints.minWidth;
+    widget.model.maxwidth  = constraints.maxWidth;
+    widget.model.minheight = constraints.minHeight;
+    widget.model.maxheight = constraints.maxHeight;
+
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -32,13 +48,24 @@ class _PagerPageViewState extends State<PagerPageView> implements IModelListener
         }
       });
     if (children.isEmpty) children.add(Container());
-    var child = children.length == 1 ? children[0] : Column(children: children, mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start);
+    var child = Column(children: children, mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start);
 
-    final bottom = MediaQuery.of(context).viewInsets.bottom;
 
-    SingleChildScrollView scsv =  SingleChildScrollView(child: child, padding: EdgeInsets.only(bottom: bottom));
+    Widget view;
 
-    return scsv;
+    if(widget.model.constrained) {
+      var constr = widget.model.getConstraints();
+      view = ConstrainedBox(
+          child: child,
+          constraints: BoxConstraints(
+              minWidth: constr.minWidth!,
+              maxWidth: constr.maxWidth!,
+              minHeight: constr.minHeight!,
+              maxHeight: constr.maxHeight!
+          ));
+    } else view = child;
+
+    return view;
 
   }
 

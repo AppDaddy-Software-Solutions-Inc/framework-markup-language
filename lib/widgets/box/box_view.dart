@@ -1,5 +1,4 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'dart:math';
 import 'dart:ui';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:flutter/material.dart';
@@ -124,7 +123,7 @@ class _BoxViewState extends State<BoxView> implements IModelListener {
     widget.model.minWidth  = constraints.minWidth;
     widget.model.maxWidth  = constraints.maxWidth  - ((S.toDouble(widget.model.borderwidth) ?? 0) * 2);
     widget.model.minHeight = constraints.minHeight - ((S.toDouble(widget.model.borderwidth) ?? 0) * 2);
-    widget.model.maxheight = constraints.maxHeight;
+    widget.model.maxHeight = constraints.maxHeight;
 
     // get colors
     Color?  color  = widget.model.color;

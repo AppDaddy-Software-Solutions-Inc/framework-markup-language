@@ -46,7 +46,7 @@ class _InlineFrameViewState extends State<InlineFrameView>
       model.minWidth  = constraints.minWidth;
       model.maxWidth  = constraints.maxWidth;
       model.minHeight = constraints.minHeight;
-      model.maxheight = constraints.maxHeight;
+      model.maxHeight = constraints.maxHeight;
 
 
     // Check if widget is visible before wasting resources on building it

@@ -129,7 +129,7 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
     this.minWidth = minwidth;
     this.minHeight = minheight;
     this.maxWidth = maxwidth;
-    this.maxheight = maxheight;
+    this.maxHeight = maxheight;
     this.layout = layout;
     this.scrollbar = scrollbar;
     this.onscrolledtoend = onscrolledtoend;

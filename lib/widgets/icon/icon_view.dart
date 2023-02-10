@@ -72,7 +72,7 @@ class _IconViewState extends State<IconView> implements IModelListener
       widget.model.minWidth  = constraints.minWidth;
       widget.model.maxWidth  = constraints.maxWidth;
       widget.model.minHeight = constraints.minHeight;
-      widget.model.maxheight = constraints.maxHeight;
+      widget.model.maxHeight = constraints.maxHeight;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();

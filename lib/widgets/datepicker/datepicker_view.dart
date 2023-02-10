@@ -112,7 +112,7 @@ class _DatepickerViewState extends State<DatepickerView> implements IModelListen
     widget.model.minWidth = constraints.minWidth;
     widget.model.maxWidth = constraints.maxWidth;
     widget.model.minHeight = constraints.minHeight;
-    widget.model.maxheight = constraints.maxHeight;
+    widget.model.maxHeight = constraints.maxHeight;
 
     // set the border color arrays
     Color? enabledBorderColor;

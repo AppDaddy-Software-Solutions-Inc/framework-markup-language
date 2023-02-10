@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/widgets/expanded/expanded_model.dart';
-import 'package:fml/widgets/row/row_model.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/text/text_model.dart';
@@ -484,7 +483,7 @@ class _TextViewState extends State<TextView> implements IModelListener {
     /* Constrained? */
     //////////////////
     bool isNotExpandedChild = false;
-          if(!widget.model.constrained) {
+          if(!widget.model.hasSizing) {
             ScrollerModel? parentScroll = widget.model.findAncestorOfExactType(
                 ScrollerModel);
             if (parentScroll != null &&
@@ -492,7 +491,7 @@ class _TextViewState extends State<TextView> implements IModelListener {
             isNotExpandedChild = widget.model.findAncestorOfExactType(ExpandedModel) == null;
           }
 
-          if( isNotExpandedChild || widget.model.constrained) {
+          if( isNotExpandedChild || widget.model.hasSizing) {
             var constr = widget.model.getConstraints();
             view = ConstrainedBox(
                 child: view,

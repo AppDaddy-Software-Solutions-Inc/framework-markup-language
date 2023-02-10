@@ -192,7 +192,7 @@ class DrawerViewState extends State<DrawerView> implements IModelListener, IDrag
     widget.model.minWidth  = constraints.minWidth;
     widget.model.maxWidth  = constraints.maxWidth;
     widget.model.minHeight = constraints.minHeight;
-    widget.model.maxheight = constraints.maxHeight;
+    widget.model.maxHeight = constraints.maxHeight;
 
     var con = widget.model.getConstraints();
     double h = con.maxHeight ?? MediaQuery.of(context).size.height;

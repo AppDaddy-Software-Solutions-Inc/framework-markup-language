@@ -191,7 +191,7 @@ class BeaconModel extends DataSourceModel implements IDataSource, IBeaconListene
         if (!firstSeen.keys.contains(beacon.macAddress!)) firstSeen[beacon.macAddress!] = dt;
         lastSeen[beacon.macAddress!] = dt;
         age = lastSeen[beacon.macAddress!]! - firstSeen[beacon.macAddress!]!;
-      };
+      }
 
       Map<dynamic, dynamic> map = Map<dynamic, dynamic>();
       map["id"]         = beacon.proximityUUID;

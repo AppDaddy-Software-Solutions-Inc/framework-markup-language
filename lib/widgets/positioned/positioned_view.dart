@@ -63,7 +63,7 @@ class _PositionedViewState extends State<PositionedView>
     widget.model.minWidth = constraints?.minWidth;
     widget.model.maxWidth = constraints?.maxWidth;
     widget.model.minHeight = constraints?.minHeight;
-    widget.model.maxheight = constraints?.maxHeight;
+    widget.model.maxHeight = constraints?.maxHeight;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -85,7 +85,7 @@ class _PositionedViewState extends State<PositionedView>
     /* Parent Must be a Stack */
     ////////////////////////////
     if (widget.model.xoffset != null && widget.model.yoffset != null) {
-      double fromTop = (widget.model.maxheight! / 2) + widget.model.yoffset!;
+      double fromTop = (widget.model.maxHeight! / 2) + widget.model.yoffset!;
       double fromLeft = (widget.model.maxWidth! / 2) + widget.model.xoffset!;
       return Positioned(top: fromTop, left: fromLeft, child: child);
     } else

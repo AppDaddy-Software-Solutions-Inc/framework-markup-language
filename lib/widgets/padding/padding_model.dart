@@ -14,108 +14,108 @@ class PaddingModel extends ViewableWidgetModel implements IViewableWidget
   //////////
   /* all */
   //////////
-  IntegerObservable? _all;
+  DoubleObservable? _all;
   set all(dynamic v) {
     if (_all != null) {
       _all!.set(v);
     } else if (v != null) {
-      _all = IntegerObservable(Binding.toKey(id, 'all'), v,
+      _all = DoubleObservable(Binding.toKey(id, 'all'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
 
-  int? get all => _all?.get();
+  double? get all => _all?.get();
 
   //////////
   /* left */
   //////////
-  IntegerObservable? _left;
+  DoubleObservable? _left;
   set left(dynamic v) {
     if (_left != null) {
       _left!.set(v);
     } else if (v != null) {
-      _left = IntegerObservable(Binding.toKey(id, 'left'), v,
+      _left = DoubleObservable(Binding.toKey(id, 'left'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
 
-  int? get left => _left?.get();
+  double? get left => _left?.get();
 
   ///////////
   /* right */
   ///////////
-  IntegerObservable? _right;
+  DoubleObservable? _right;
   set right(dynamic v) {
     if (_right != null) {
       _right!.set(v);
     } else if (v != null) {
-      _right = IntegerObservable(Binding.toKey(id, 'right'), v,
+      _right = DoubleObservable(Binding.toKey(id, 'right'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
 
-  int? get right => _right?.get();
+  double? get right => _right?.get();
 
   /////////
   /* top */
   /////////
-  IntegerObservable? _top;
+  DoubleObservable? _top;
   set top(dynamic v) {
     if (_top != null) {
       _top!.set(v);
     } else if (v != null) {
-      _top = IntegerObservable(Binding.toKey(id, 'top'), v,
+      _top = DoubleObservable(Binding.toKey(id, 'top'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
 
-  int? get top => _top?.get();
+  double? get top => _top?.get();
 
   ////////////
   /* bottom */
   ////////////
-  IntegerObservable? _bottom;
+  DoubleObservable? _bottom;
   set bottom(dynamic v) {
     if (_bottom != null) {
       _bottom!.set(v);
     } else if (v != null) {
-      _bottom = IntegerObservable(Binding.toKey(id, 'bottom'), v,
+      _bottom = DoubleObservable(Binding.toKey(id, 'bottom'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
 
-  int? get bottom => _bottom?.get();
+  double? get bottom => _bottom?.get();
 
   ///////////
   /* vertical */
   ///////////
-  IntegerObservable? _vertical;
+  DoubleObservable? _vertical;
   set vertical(dynamic v) {
     if (_vertical != null) {
       _vertical!.set(v);
     } else if (v != null) {
-      _vertical = IntegerObservable(Binding.toKey(id, 'vertical'), v,
+      _vertical = DoubleObservable(Binding.toKey(id, 'vertical'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
 
-  int? get vertical => _vertical?.get();
+  double? get vertical => _vertical?.get();
 
   ///////////
   /* horizontal */
   ///////////
-  IntegerObservable? _horizontal;
+  DoubleObservable? _horizontal;
   set horizontal(dynamic v) {
     if (_horizontal != null) {
       _horizontal!.set(v);
     } else if (v != null) {
-      _horizontal = IntegerObservable(
+      _horizontal = DoubleObservable(
           Binding.toKey(id, 'horizontal'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
 
-  int? get horizontal => _horizontal?.get();
+  double? get horizontal => _horizontal?.get();
 
   PaddingModel(WidgetModel parent, String? id,
       {dynamic all,

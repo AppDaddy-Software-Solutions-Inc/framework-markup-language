@@ -57,16 +57,11 @@ return LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints) 
   {
-    int defaultVal = 2;
-    int pTop = defaultVal;
-    int pBottom = defaultVal;
-    int pLeft = defaultVal;
-    int pRight = defaultVal;
 
-    pTop = widget.model.top ?? widget.model.vertical ?? widget.model.all ?? defaultVal;
-    pBottom = widget.model.bottom ?? widget.model.vertical ?? widget.model.all ?? defaultVal;
-    pLeft = widget.model.left ?? widget.model.horizontal ?? widget.model.all ?? defaultVal;
-    pRight = widget.model.right ?? widget.model.horizontal ?? widget.model.all ?? defaultVal;
+    double pTop = widget.model.top ?? widget.model.vertical ?? widget.model.all ?? 0.0;
+    double pBottom = widget.model.bottom ?? widget.model.vertical ?? widget.model.all ?? 0.0;
+    double pLeft = widget.model.left ?? widget.model.horizontal ?? widget.model.all ?? 0.0;
+    double pRight = widget.model.right ?? widget.model.horizontal ?? widget.model.all ?? 0.0;
 
     if(pTop.isNegative) pTop = 0;
     if(pBottom.isNegative) pBottom = 0;
@@ -93,7 +88,7 @@ return LayoutBuilder(builder: builder);
         }
       });
 
-    if (children.isEmpty) return SizedBox(width: pLeft.toDouble() + pRight.toDouble(), height: pTop.toDouble() + pBottom.toDouble(),);
+    if (children.isEmpty) return SizedBox(width: pLeft + pRight, height: pTop + pBottom,);
 
     //////////
     /* View */
@@ -106,10 +101,10 @@ return LayoutBuilder(builder: builder);
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start);
         view = Padding( padding: EdgeInsets.only(
-                  top: pTop.toDouble(),
-                  bottom: pBottom.toDouble(),
-                  left: pLeft.toDouble(),
-                  right: pRight.toDouble()), child: view);
+                  top: pTop,
+                  bottom: pBottom,
+                  left: pLeft,
+                  right: pRight), child: view);
     return view;
   }
 }

@@ -88,7 +88,7 @@ return LayoutBuilder(builder: builder);
         }
       });
 
-    if (children.isEmpty) return Container(width: pLeft.toDouble() + pRight.toDouble()-2, height: pTop.toDouble() + pBottom.toDouble()-2,);
+    if (children.isEmpty) return Container(width: pLeft.toDouble() + pRight.toDouble(), height: pTop.toDouble() + pBottom.toDouble(),);
 
     //////////
     /* View */

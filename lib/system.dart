@@ -37,7 +37,7 @@ final String applicationTitle = "Flutter Markup Language " + version;
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://applications/<app> to use the asset applications
 
-var defaultDomain = Uri.parse('https://fml.dev');
+var defaultDomain = Uri.parse('file://applications/fmlpad');
 
 // Default Application
 final defaultApplication = ApplicationModel(System(),url:defaultDomain.toString());

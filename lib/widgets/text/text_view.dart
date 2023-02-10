@@ -1,4 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:fml/widgets/expanded/expanded_model.dart';
+import 'package:fml/widgets/row/row_model.dart';
+import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:google_fonts/google_fonts.dart' deferred as gf;
@@ -449,22 +452,20 @@ class _TextViewState extends State<TextView> implements IModelListener {
     }
     else
     {
-      view = SizedBox(
-          width: widget.model.width,
-          child: RichText(
-              text: TextSpan(children: textSpans, style: TextStyle(
-                  fontSize: size ?? textStyle!.fontSize,
-                  color: fontColor ?? Theme
-                      .of(context)
-                      .colorScheme
-                      .onBackground,
-                  fontWeight: bold == true ? FontWeight.bold : textStyle!
-                      .fontWeight,
-                  fontStyle: italic == true ? FontStyle.italic : textStyle!
-                      .fontStyle,
-                  decoration: textDecoration)),
-              overflow: textOverflow,
-              textAlign: textAlign));
+      view = SizedBox( child: RichText(
+          text: TextSpan(children: textSpans, style: TextStyle(
+              fontSize: size ?? textStyle!.fontSize,
+              color: fontColor ?? Theme
+                  .of(context)
+                  .colorScheme
+                  .onBackground,
+              fontWeight: bold == true ? FontWeight.bold : textStyle!
+                  .fontWeight,
+              fontStyle: italic == true ? FontStyle.italic : textStyle!
+                  .fontStyle,
+              decoration: textDecoration)),
+          overflow: textOverflow,
+          textAlign: textAlign));
     }
 
     view = GestureDetector(
@@ -482,13 +483,25 @@ class _TextViewState extends State<TextView> implements IModelListener {
     //////////////////
     /* Constrained? */
     //////////////////
+    bool isNotExpandedChild = false;
+          if(!widget.model.constrained) {
+            ScrollerModel? parentScroll = widget.model.findAncestorOfExactType(
+                ScrollerModel);
+            if (parentScroll != null &&
+                parentScroll.layout.toLowerCase() == "row") return view;
+            isNotExpandedChild = widget.model.findAncestorOfExactType(ExpandedModel) == null;
+          }
 
-      var constraints = widget.model.getConstraints();
-      view = ConstrainedBox(
-          child: view,
-          constraints: BoxConstraints(
-              minWidth: constraints.minWidth!,
-              maxWidth: constraints.maxWidth!));
+          if( isNotExpandedChild || widget.model.constrained) {
+            var constr = widget.model.getConstraints();
+            view = ConstrainedBox(
+                child: view,
+                constraints: BoxConstraints(
+                    minWidth: constr.minWidth!,
+                    maxWidth: constr.maxWidth!,
+                )
+            );
+          }
 
 
 

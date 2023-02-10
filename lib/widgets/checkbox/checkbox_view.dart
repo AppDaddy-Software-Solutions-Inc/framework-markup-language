@@ -89,7 +89,7 @@ class _CheckboxViewState extends State<CheckboxView> implements IModelListener {
     widget.model.minWidth = constraints.minWidth;
     widget.model.maxWidth = constraints.maxWidth;
     widget.model.minHeight = constraints.minHeight;
-    widget.model.maxheight = constraints.maxHeight;
+    widget.model.maxHeight = constraints.maxHeight;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _afterBuild(context);

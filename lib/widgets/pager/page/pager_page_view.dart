@@ -27,10 +27,10 @@ class _PagerPageViewState extends State<PagerPageView> implements IModelListener
     if (widget.model.visible == false) return Offstage();
 
     // Set Build Constraints in the [WidgetModel]
-    widget.model.minwidth  = constraints.minWidth;
-    widget.model.maxwidth  = constraints.maxWidth;
-    widget.model.minheight = constraints.minHeight;
-    widget.model.maxheight = constraints.maxHeight;
+    widget.model.minWidth  = constraints.minWidth;
+    widget.model.maxWidth  = constraints.maxWidth;
+    widget.model.minHeight = constraints.minHeight;
+    widget.model.maxHeight = constraints.maxHeight;
 
 
     // Check if widget is visible before wasting resources on building it
@@ -53,7 +53,8 @@ class _PagerPageViewState extends State<PagerPageView> implements IModelListener
 
     Widget view;
 
-    if(widget.model.constrained) {
+    if(widget.model.hasSizing)
+    {
       var constr = widget.model.getConstraints();
       view = ConstrainedBox(
           child: child,

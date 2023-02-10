@@ -163,7 +163,7 @@ return LayoutBuilder(builder: builder);
     widget.model.minWidth = constraints.minWidth;
     widget.model.maxWidth = constraints.maxWidth;
     widget.model.minHeight = constraints.minHeight;
-    widget.model.maxheight = constraints.maxHeight;
+    widget.model.maxHeight = constraints.maxHeight;
 
     ///////////
     /* Busy? */

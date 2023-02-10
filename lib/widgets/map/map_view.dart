@@ -99,7 +99,7 @@ class _MapViewState extends State<MapView> implements IModelListener
     widget.model.minWidth  = constraint.minWidth;
     widget.model.maxWidth  = constraint.maxWidth;
     widget.model.minHeight = constraint.minHeight;
-    widget.model.maxheight = constraint.maxHeight;
+    widget.model.maxHeight = constraint.maxHeight;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -120,7 +120,7 @@ class _MapViewState extends State<MapView> implements IModelListener
 
     // map height
     var height = widget.model.height;
-    if (height == null) height = widget.model.maxheight;
+    if (height == null) height = widget.model.maxHeight;
     if ((height == null) || (height <= 0)) height = MediaQuery.of(context).size.height;
 
     // view

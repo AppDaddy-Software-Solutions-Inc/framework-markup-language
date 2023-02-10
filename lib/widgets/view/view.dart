@@ -71,7 +71,7 @@ class _ViewState extends State<View> implements IModelListener
     widget.model.minWidth  = constraints.minWidth;
     widget.model.maxWidth  = constraints.maxWidth;
     widget.model.minHeight = constraints.minHeight;
-    widget.model.maxheight = constraints.maxHeight;
+    widget.model.maxHeight = constraints.maxHeight;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -87,7 +87,7 @@ class _ViewState extends State<View> implements IModelListener
     if (children.isEmpty) children.add(Container());
 
     // view
-    var view = children.length == 1 ? children[0] : SizedBox(height: widget.model.maxheight, child: Column(children: children, mainAxisAlignment: MainAxisAlignment.start, mainAxisSize: MainAxisSize.min));
+    var view = children.length == 1 ? children[0] : SizedBox(height: widget.model.maxHeight, child: Column(children: children, mainAxisAlignment: MainAxisAlignment.start, mainAxisSize: MainAxisSize.min));
     return view;
   }
 }

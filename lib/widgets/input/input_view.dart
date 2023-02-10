@@ -281,7 +281,7 @@ class _InputViewState extends State<InputView> with WidgetsBindingObserver imple
     widget.model.minWidth = constraints.minWidth;
     widget.model.maxWidth = constraints.maxWidth;
     widget.model.minHeight = constraints.minHeight;
-    widget.model.maxheight = constraints.maxHeight;
+    widget.model.maxHeight = constraints.maxHeight;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -336,7 +336,6 @@ class _InputViewState extends State<InputView> with WidgetsBindingObserver imple
     String? hint = widget.model.hint;
     int? length = widget.model.length;
     int? lines = widget.model.lines;
-    int? maxlines = widget.model.maxlines;
 
 
     if(!S.isNullOrEmpty(widget.model.obscure)) obscure = widget.model.obscure;

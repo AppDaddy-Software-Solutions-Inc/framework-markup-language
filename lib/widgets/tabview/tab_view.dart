@@ -361,7 +361,7 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
       widget.model.minWidth  = constraints.minWidth;
       widget.model.maxWidth  = constraints.maxWidth;
       widget.model.minHeight = constraints.minHeight;
-      widget.model.maxheight = constraints.maxHeight;
+      widget.model.maxHeight = constraints.maxHeight;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -385,7 +385,7 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
       ////////////////
       /* Max Height */
       ////////////////
-      double? height = widget.model.maxheight;
+      double? height = widget.model.maxHeight;
 
       ////////////////
       /* Split View */

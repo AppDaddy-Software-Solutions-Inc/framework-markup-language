@@ -72,7 +72,7 @@ return LayoutBuilder(builder: builder);
     widget.model.minWidth = constraints.minWidth + pLeft + pRight;
     widget.model.maxWidth = constraints.maxWidth - pLeft - pRight;
     widget.model.minHeight = constraints.minHeight + pTop + pBottom;
-    widget.model.maxheight = constraints.maxHeight - pTop - pBottom;
+    widget.model.maxHeight = constraints.maxHeight - pTop - pBottom;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();

@@ -189,7 +189,7 @@ class ButtonModel extends DecoratedWidgetModel implements IViewableWidget
     this.width      = width;
     this.height     = height;
     this.maxWidth   = maxwidth;
-    this.maxheight  = maxheight;
+    this.maxHeight  = maxheight;
     this.minWidth   = minwidth;
     this.minHeight  = minheight;
     if (children != null) {

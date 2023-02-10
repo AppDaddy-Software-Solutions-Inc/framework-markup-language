@@ -100,7 +100,7 @@ class _SplitViewState extends State<SplitView> implements IModelListener
     widget.model.minWidth  = constraints.minWidth;
     widget.model.maxWidth  = constraints.maxWidth;
     widget.model.minHeight = constraints.minHeight;
-    widget.model.maxheight = constraints.maxHeight;
+    widget.model.maxHeight = constraints.maxHeight;
 
     _dividerWidth = widget.model.dividerWidth ?? (System().useragent == 'desktop' || S.isNullOrEmpty(System().useragent) ? 6.0 : 12.0);
     _dividerColor = widget.model.dividerColor ?? Theme.of(context).colorScheme.onInverseSurface;

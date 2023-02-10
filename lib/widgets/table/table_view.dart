@@ -329,9 +329,9 @@ class _TableViewState extends State<TableView> implements IModelListener, IEvent
     widget.model.minWidth  = constraints.minWidth;
     widget.model.maxWidth  = constraints.maxWidth;
     widget.model.minHeight = constraints.minHeight;
-    widget.model.maxheight = constraints.maxHeight;
+    widget.model.maxHeight = constraints.maxHeight;
 
-    double? viewportHeight = widget.model.height ?? widget.model.maxheight;
+    double? viewportHeight = widget.model.height ?? widget.model.maxHeight;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();

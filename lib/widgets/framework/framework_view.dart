@@ -286,7 +286,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     widget.model.minWidth  = constraints.minWidth;
     widget.model.maxWidth  = constraints.maxWidth;
     widget.model.minHeight = constraints.minHeight;
-    widget.model.maxheight = constraints.maxHeight;
+    widget.model.maxHeight = constraints.maxHeight;
 
     // build body
     List<Widget> children = [];

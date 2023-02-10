@@ -322,9 +322,9 @@ class _DatepickerViewState extends State<DatepickerView> implements IModelListen
                         Theme.of(context).colorScheme.surfaceVariant,
               ),
               prefixIcon: Padding(
-                      padding: EdgeInsets.only(right: 10, left: widget.model.border == "all" ? 10 : 0, bottom: widget.model.border == "all" ? 7 : 0),
-                      child: Icon(widget.model.icon)),
-              prefixIconConstraints: BoxConstraints(maxHeight: 20),
+                      padding: EdgeInsets.only(right: 10, left: widget.model.border == "all" ? 10 : 0, bottom: widget.model.border == "all" ? 9 : 0),
+                      child: Icon(widget.model.icon ?? (widget.model.type.toLowerCase() == "time" ? Icons.access_time : Icons.calendar_today))),
+              prefixIconConstraints: BoxConstraints(maxHeight: 24),
               suffixIcon: null,
               suffixIconConstraints: null,
               border: (widget.model.border == "outline" ||

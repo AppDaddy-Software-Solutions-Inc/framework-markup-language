@@ -68,6 +68,11 @@ return LayoutBuilder(builder: builder);
     pLeft = widget.model.left ?? widget.model.horizontal ?? widget.model.all ?? defaultVal;
     pRight = widget.model.right ?? widget.model.horizontal ?? widget.model.all ?? defaultVal;
 
+    if(pTop.isNegative) pTop = 0;
+    if(pBottom.isNegative) pBottom = 0;
+    if(pLeft.isNegative) pLeft = 0;
+    if(pRight.isNegative) pRight = 0;
+
     // Set Build Constraints in the [WidgetModel]
     widget.model.minWidth = constraints.minWidth + pLeft + pRight;
     widget.model.maxWidth = constraints.maxWidth - pLeft - pRight;

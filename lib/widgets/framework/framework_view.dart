@@ -283,9 +283,9 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     SystemChrome.setPreferredOrientations(orientation);
 
     // set constraints
-    widget.model.minwidth  = constraints.minWidth;
-    widget.model.maxwidth  = constraints.maxWidth;
-    widget.model.minheight = constraints.minHeight;
+    widget.model.minWidth  = constraints.minWidth;
+    widget.model.maxWidth  = constraints.maxWidth;
+    widget.model.minHeight = constraints.minHeight;
     widget.model.maxheight = constraints.maxHeight;
 
     // build body

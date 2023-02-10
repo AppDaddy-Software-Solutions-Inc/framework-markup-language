@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_beacon/flutter_beacon.dart';
 import 'package:fml/log/manager.dart';
+import 'package:fml/system.dart';
 
 abstract class IBeaconListener
 {
@@ -48,9 +49,11 @@ class Reader
         _regions.add(Region(identifier: 'com.beacon'));
       }
     }
-    on PlatformException catch(e)
+    catch(e)
     {
       ok = false;
+
+      System.toast("Beacons detection is not supported on this platform");
 
       // library failed to initialize, check code and message
       Log().error("Error initializing beacon scanner. Error is $e");

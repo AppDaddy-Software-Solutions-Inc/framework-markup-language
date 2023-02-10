@@ -246,9 +246,9 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
     this.width = width;
     this.height = height;
     this.padding = padding;
-    this.minwidth = minwidth;
-    this.minheight = minheight;
-    this.maxwidth = maxwidth;
+    this.minWidth = minwidth;
+    this.minHeight = minheight;
+    this.maxWidth = maxwidth;
     this.maxheight = maxheight;
     this.opacity = opacity;
     this.color = color;

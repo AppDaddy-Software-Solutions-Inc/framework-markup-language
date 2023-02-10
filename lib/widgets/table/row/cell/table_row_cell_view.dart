@@ -75,9 +75,9 @@ class _TableRowCellViewState extends State<TableRowCellView>
 
   Widget builder(BuildContext context, BoxConstraints constraints) {
     // Set Build Constraints in the [WidgetModel]
-    widget.model.minwidth = constraints.minWidth;
-    widget.model.maxwidth = constraints.maxWidth;
-    widget.model.minheight = constraints.minHeight;
+    widget.model.minWidth = constraints.minWidth;
+    widget.model.maxWidth = constraints.maxWidth;
+    widget.model.minHeight = constraints.minHeight;
     widget.model.maxheight = constraints.maxHeight;
 
     //////////////

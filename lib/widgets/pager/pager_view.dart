@@ -92,9 +92,9 @@ class _PagerViewState extends State<PagerView> implements IModelListener {
 
   Widget builder(BuildContext context, BoxConstraints constraints) {
     // Set Build Constraints in the [WidgetModel]
- widget.model.minwidth = constraints.minWidth;
-      widget.model.maxwidth = constraints.maxWidth;
-      widget.model.minheight = constraints.minHeight;
+ widget.model.minWidth = constraints.minWidth;
+      widget.model.maxWidth = constraints.maxWidth;
+      widget.model.minHeight = constraints.minHeight;
       widget.model.maxheight = constraints.maxHeight;
 
     // Check if widget is visible before wasting resources on building it
@@ -123,8 +123,8 @@ class _PagerViewState extends State<PagerView> implements IModelListener {
       },
     ))) : Container();
 
-    if (!widget.model.constrained && constraints.maxWidth == double.infinity)
-      pageView = UnconstrainedBox(child: SizedBox(height: widget.model.height ?? widget.model.maxheight, width: widget.model.width ?? widget.model.maxwidth, child: pageView));
+    if (!widget.model.hasSizing && constraints.maxWidth == double.infinity)
+      pageView = UnconstrainedBox(child: SizedBox(height: widget.model.height ?? widget.model.maxheight, width: widget.model.width ?? widget.model.maxWidth, child: pageView));
 
     var view = Stack(alignment: Alignment.bottomCenter, children: [pageView, pager, Center(child: busy)]);
 

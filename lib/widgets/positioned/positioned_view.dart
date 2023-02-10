@@ -60,9 +60,9 @@ class _PositionedViewState extends State<PositionedView>
 
   Widget builder(BuildContext context, BoxConstraints? constraints) {
     // Set Build Constraints in the [WidgetModel]
-    widget.model.minwidth = constraints?.minWidth;
-    widget.model.maxwidth = constraints?.maxWidth;
-    widget.model.minheight = constraints?.minHeight;
+    widget.model.minWidth = constraints?.minWidth;
+    widget.model.maxWidth = constraints?.maxWidth;
+    widget.model.minHeight = constraints?.minHeight;
     widget.model.maxheight = constraints?.maxHeight;
 
     // Check if widget is visible before wasting resources on building it
@@ -86,7 +86,7 @@ class _PositionedViewState extends State<PositionedView>
     ////////////////////////////
     if (widget.model.xoffset != null && widget.model.yoffset != null) {
       double fromTop = (widget.model.maxheight! / 2) + widget.model.yoffset!;
-      double fromLeft = (widget.model.maxwidth! / 2) + widget.model.xoffset!;
+      double fromLeft = (widget.model.maxWidth! / 2) + widget.model.xoffset!;
       return Positioned(top: fromTop, left: fromLeft, child: child);
     } else
       return Positioned(

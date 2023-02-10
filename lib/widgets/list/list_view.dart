@@ -149,9 +149,9 @@ return LayoutBuilder(builder: builder);
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // Set Build Constraints in the [WidgetModel]
-      widget.model.minwidth  = constraints.minWidth;
-      widget.model.maxwidth  = constraints.maxWidth;
-      widget.model.minheight = constraints.minHeight;
+      widget.model.minWidth  = constraints.minWidth;
+      widget.model.maxWidth  = constraints.maxWidth;
+      widget.model.minHeight = constraints.minHeight;
       widget.model.maxheight = constraints.maxHeight;
 
     // Check if widget is visible before wasting resources on building it
@@ -186,7 +186,7 @@ return LayoutBuilder(builder: builder);
     double? width  = widget.model.width;
     double? height = widget.model.height;
     if (constraints.maxHeight == double.infinity || constraints.maxHeight == double.negativeInfinity || height == null) height = widget.model.maxheight ?? constraints.maxHeight;
-    if (constraints.maxWidth  == double.infinity || constraints.maxWidth  == double.negativeInfinity || width  == null) width  = widget.model.maxwidth  ?? constraints.maxWidth;
+    if (constraints.maxWidth  == double.infinity || constraints.maxWidth  == double.negativeInfinity || width  == null) width  = widget.model.maxWidth  ?? constraints.maxWidth;
     view = UnconstrainedBox(child: SizedBox(height: height, width: width, child: view));
 
     children.addAll([view, Center(child: busy)]);

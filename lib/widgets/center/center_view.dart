@@ -50,9 +50,9 @@ class _CenterViewState extends State<CenterView> implements IModelListener
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // Set Build Constraints in the [WidgetModel]
-      widget.model.minwidth  = constraints.minWidth;
-      widget.model.maxwidth  = constraints.maxWidth;
-      widget.model.minheight = constraints.minHeight;
+      widget.model.minWidth  = constraints.minWidth;
+      widget.model.maxWidth  = constraints.maxWidth;
+      widget.model.minHeight = constraints.minHeight;
       widget.model.maxheight = constraints.maxHeight;
 
     // Check if widget is visible before wasting resources on building it
@@ -78,7 +78,7 @@ class _CenterViewState extends State<CenterView> implements IModelListener
     /////////////////
     /* Constrained */
     /////////////////
-    if (widget.model.constrained)
+    if (widget.model.hasSizing)
     {
       var constraints = widget.model.getConstraints();
       view = ConstrainedBox(child: view, constraints: BoxConstraints(

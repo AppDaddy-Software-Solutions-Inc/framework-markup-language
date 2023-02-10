@@ -44,7 +44,7 @@ class _SplitViewState extends State<SplitView> implements IModelListener
 
     // If the model contains any databrokers we fire them before building so we can bind to the data
     widget.model.initialize();
-    ratio = widget.model.width != null ? widget.model.width! / (widget.model.maxwidth! - _dividerWidth) : widget.model.ratio;
+    ratio = widget.model.width != null ? widget.model.width! / (widget.model.maxWidth! - _dividerWidth) : widget.model.ratio;
   }
 
   @override
@@ -71,7 +71,7 @@ class _SplitViewState extends State<SplitView> implements IModelListener
 
   /// Callback to fire the [_BoxViewState.build] when the [BoxModel] changes
   onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    ratio = widget.model.width != null ? widget.model.width! / (widget.model.maxwidth! - _dividerWidth) : widget.model.ratio;
+    ratio = widget.model.width != null ? widget.model.width! / (widget.model.maxWidth! - _dividerWidth) : widget.model.ratio;
     if (this.mounted) setState(() {});
   }
 
@@ -97,16 +97,16 @@ class _SplitViewState extends State<SplitView> implements IModelListener
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // Set Build Constraints in the [WidgetModel]
-    widget.model.minwidth  = constraints.minWidth;
-    widget.model.maxwidth  = constraints.maxWidth;
-    widget.model.minheight = constraints.minHeight;
+    widget.model.minWidth  = constraints.minWidth;
+    widget.model.maxWidth  = constraints.maxWidth;
+    widget.model.minHeight = constraints.minHeight;
     widget.model.maxheight = constraints.maxHeight;
 
     _dividerWidth = widget.model.dividerWidth ?? (System().useragent == 'desktop' || S.isNullOrEmpty(System().useragent) ? 6.0 : 12.0);
     _dividerColor = widget.model.dividerColor ?? Theme.of(context).colorScheme.onInverseSurface;
 
-    if (_maxWidth == null)                  _maxWidth = widget.model.maxwidth! - _dividerWidth;
-    if (_maxWidth != widget.model.maxwidth) _maxWidth = widget.model.maxwidth! - _dividerWidth;
+    if (_maxWidth == null)                  _maxWidth = widget.model.maxWidth! - _dividerWidth;
+    if (_maxWidth != widget.model.maxWidth) _maxWidth = widget.model.maxWidth! - _dividerWidth;
     if (_maxWidth != null && _maxWidth! < 0) _maxWidth = 0;
 
     // views

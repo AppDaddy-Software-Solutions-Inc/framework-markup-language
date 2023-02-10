@@ -311,7 +311,7 @@ class DatepickerModel extends FormFieldModel implements IFormField, IViewableWid
           scope: scope, listener: onPropertyChange);
     }
   }
-  IconData get icon => _icon?.get() ?? Icons.calendar_today;
+  IconData? get icon => _icon?.get();
 
   DatepickerModel(
     WidgetModel parent,
@@ -542,6 +542,9 @@ class DatepickerModel extends FormFieldModel implements IFormField, IViewableWid
     return;
   }
 
+
+
+
   void setValue(DateTime? result, TimeOfDay? timeResult, String? format,
       {DateTime? secondResult}) {
     DateTime now = DateTime.now();
@@ -570,7 +573,7 @@ class DatepickerModel extends FormFieldModel implements IFormField, IViewableWid
         value = '';
       }
     } else {
-      if (format == 'yMd') format= 'y/M/d H:m';
+      if (format == 'yMd') {format= 'y/M/d H:mm'; this.format = "y/M/d H:mm";}
       try {
         value = DateFormat(format).format(DateTime(result!.year, result.month,
                 result.day, timeResult!.hour, timeResult.minute));

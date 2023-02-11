@@ -13,18 +13,6 @@ import 'package:fml/helper/common_helpers.dart';
 
 class BoxModel extends DecoratedWidgetModel implements IViewableWidget
 {
-  /// The opacity of the box and its children.
-  DoubleObservable? _opacity;
-  set opacity(dynamic v) {
-    if (_opacity != null) {
-      _opacity!.set(v);
-    } else if (v != null) {
-      _opacity = DoubleObservable(Binding.toKey(id, 'opacity'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  double? get opacity => _opacity?.get();
-
   BooleanObservable? _blur;
   set blur(dynamic v) {
     if (_blur != null) {
@@ -298,7 +286,6 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
     /// Contstraint Attributes
 
     /// Style Attributes
-    opacity = Xml.get(node: xml, tag: 'opacity');
     start = Xml.get(node: xml, tag: 'start');
     end = Xml.get(node: xml, tag: 'end');
     blur = Xml.get(node: xml, tag: 'blur');

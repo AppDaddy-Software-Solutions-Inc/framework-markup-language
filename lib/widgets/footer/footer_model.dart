@@ -11,27 +11,16 @@ import 'package:fml/helper/common_helpers.dart';
 class FooterModel extends DecoratedWidgetModel implements IViewableWidget
 {
   // override
-  double? get height => super.height ?? 50;
+  double get height => super.height ?? 50;
 
-  FooterModel(
-    WidgetModel parent,
-    String? id,
-   {dynamic color,
-    dynamic height,
-  }) : super(parent, id)
-  {
-    this.color = color;
-    this.height = height;
-  }
-  
+  FooterModel(WidgetModel parent, String? id) : super(parent, id);
+
   static FooterModel? fromXml(WidgetModel parent, XmlElement xml)
   {
     FooterModel? model;
     try
     {
-      /////////////////
-      /* Build Model */
-      /////////////////
+      // Build Model
       model = FooterModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }

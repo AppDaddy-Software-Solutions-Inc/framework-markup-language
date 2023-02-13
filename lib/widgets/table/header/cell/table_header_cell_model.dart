@@ -189,11 +189,7 @@ class TableHeaderCellModel extends DecoratedWidgetModel
           scope: scope);
     }
   }
-
-  bool? get sortAscending {
-    if (_sortAscending == null) return false;
-    return _sortAscending?.get();
-  }
+  bool get sortAscending => _sortAscending?.get() ?? false;
 
   bool sorted = false;
 
@@ -256,7 +252,6 @@ class TableHeaderCellModel extends DecoratedWidgetModel
   bool onSort() {
     if ((this.parent != null) && (this.parent is TableHeaderModel))
       (this.parent as TableHeaderModel).onSort(this);
-      sortAscending = !sortAscending!;
     return true;
   }
 

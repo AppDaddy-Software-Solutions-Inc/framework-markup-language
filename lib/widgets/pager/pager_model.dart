@@ -189,7 +189,7 @@ class PagerModel extends DecoratedWidgetModel implements IViewableWidget
   @override
   dispose()
   {
-    Log().debug ('dispose called on' + elementName);
+    // Log().debug ('dispose called on' + elementName);
 
     // clear pages
     this.pages.forEach((model) => model.dispose());

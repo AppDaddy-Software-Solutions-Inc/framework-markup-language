@@ -324,11 +324,12 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
       // set width && height
       headerModel.width  = viewportWidth;
-      headerModel.height = widget.model.header!.height;
+      headerModel.height = widget.model.header!.height ?? widget.model.header!.maxheight;
 
       // build the header
       header = BoxView(headerModel, child: HeaderView(widget.model.header!));
     }
+    else headerModel.height = 0;
 
     // build footer model
     Widget footer = Container();
@@ -343,6 +344,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
       footer = BoxView(footerModel, child: FooterView(widget.model.footer!));
     }
+    else footerModel.height = 0;
 
     bodyModel.height = viewportHeight - (headerModel.height ?? 0) - (footerModel.height ?? 0) - viewportSafeArea.ceil();
     bodyModel.width  = viewportWidth;

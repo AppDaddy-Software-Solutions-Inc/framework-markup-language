@@ -585,8 +585,12 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
     while ((model = getHeaderCell(i)) != null) {
       if (i == index) {
         model = getHeaderCell(index);
-        model?.sorted = true;
-        model?.isSorting = true;
+        if (model != null) {
+          model.sorted = true;
+          model.sortAscending = !model.sortAscending!;
+          model.isSorting = true;
+        }
+
 
         TRANSFORM.Sort sort = TRANSFORM.Sort(null,
             field: model?.sort,

@@ -51,6 +51,28 @@ class TableRowCellModel extends DecoratedWidgetModel
   }
 
   ////////////////////
+  /* alter color */
+  ////////////////////
+  ColorObservable? _altcolor;
+  set altcolor(dynamic v) {
+    if (_altcolor != null) {
+      _altcolor!.set(v);
+    } else if (v != null) {
+      _altcolor = ColorObservable(
+          Binding.toKey(id, 'altcolor'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  Color? get altcolor
+  {
+    if (_altcolor == null)
+    {
+      if ((this.parent != null) && (this.parent is TableRowModel)) return (this.parent as TableRowModel).altcolor;
+      return null;
+    }
+    return _altcolor?.get();
+  }
+  ////////////////////
   /* selected color */
   ////////////////////
   ColorObservable? _selectedcolor;
@@ -259,9 +281,10 @@ class TableRowCellModel extends DecoratedWidgetModel
   }
   double? get expandedheight => _expandedheight?.get();
 
-  TableRowCellModel(WidgetModel parent, String? id, {dynamic width, dynamic height})
+  TableRowCellModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic altcolor})
       : super(parent, id) {
     this.width = width;
+    this.altcolor = altcolor;
     this.height = height;
   }
 
@@ -295,6 +318,7 @@ class TableRowCellModel extends DecoratedWidgetModel
     // properties
     center        = Xml.get(node: xml, tag: 'center');
     wrap          = Xml.get(node: xml, tag: 'wrap');
+    altcolor          = Xml.get(node: xml, tag: 'altcolor');
     selectedcolor = Xml.get(node: xml, tag: 'selectedcolor');
     selectedbordercolor = Xml.get(node: xml, tag: 'selectedbordercolor');
     bordercolor    = Xml.get(node: xml, tag: 'bordercolor');

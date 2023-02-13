@@ -209,7 +209,9 @@ class _ScrollerViewState extends State<ScrollerView> implements IModelListener {
 
     // always or never show scrollbar
     else
-      scsv = ScrollConfiguration(
+      scsv = RefreshIndicator(
+          onRefresh: ,
+          child: ScrollConfiguration(
           behavior: ScrollConfiguration.of(context).copyWith(
             dragDevices: {
               PointerDeviceKind.touch,
@@ -223,7 +225,7 @@ class _ScrollerViewState extends State<ScrollerView> implements IModelListener {
                   child: SingleChildScrollView(
                       child: child,
                       scrollDirection: direction,
-                      controller: _scrollController))));
+                      controller: _scrollController)))));
     Widget view;
     if (widget.model.scrollbar != true && direction == Axis.vertical) {
       view = Listener(

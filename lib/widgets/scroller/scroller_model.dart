@@ -185,3 +185,8 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
 
   Widget getView({Key? key}) => ScrollerView(this);
 }
+
+Future<bool> onPullRefresh(BuildContext context) async
+{
+  return await EventHandler(this).execute();
+}

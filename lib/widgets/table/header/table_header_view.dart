@@ -106,7 +106,7 @@ return LayoutBuilder(builder: builder);
       //////////
       /* Size */
       //////////
-      double? height = widget.height;
+      double? height = widget.model?.height ?? widget.height;
       double? width  = (widget.width != null) && (widget.width!.containsKey(i)) ? widget.width![i] : 0;
       if ((width != null) && (widget.padding != null) && (widget.padding!.containsKey(i))) width += (widget.padding![i] ?? 0);
 

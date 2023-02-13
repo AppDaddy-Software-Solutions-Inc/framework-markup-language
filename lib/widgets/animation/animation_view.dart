@@ -1,8 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flip_card/flip_card.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
-
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart'     ;
 import 'package:fml/widgets/animation/animation_model.dart' as ANIMATION;
@@ -25,7 +26,7 @@ class AnimationView extends StatefulWidget
 
 class AnimationViewState extends State<AnimationView> with TickerProviderStateMixin implements IModelListener
 {
-  AnimationController? _controller;
+  dynamic? _controller;
   late Animation<double>   _animation;
 
   int  _loop    = 0;
@@ -76,7 +77,7 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
     widget.model.removeListener(this);
 
     // remove controller
-    _controller?.dispose();
+    if (_controller is AnimationController) (_controller as AnimationController).dispose();
 
     // de-register event listeners
     EventManager.of(widget.model)?.removeEventListener(EventTypes.animate, onAnimate);
@@ -94,7 +95,8 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
     return LayoutBuilder(builder: builder);
   }
 
-  Widget builder(BuildContext context, BoxConstraints constraints) {
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
     // Set Build Constraints in the [WidgetModel]
       widget.model.minWidth  = constraints.minWidth;
       widget.model.maxWidth  = constraints.maxWidth;
@@ -104,28 +106,33 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    ////////////////////
-    /* Build Children */
-    ////////////////////
+    // Animation Type
+    ANIMATION.Transitions? type = S.toEnum(widget.model.animation, ANIMATION.Transitions.values);
+    if (type == null) type = ANIMATION.Transitions.fade;
+
+    // Build Children
+    Widget? front;
+    Widget? back;
     widget.children.clear();
     if (widget.model.children != null)
       widget.model.children!.forEach((model)
       {
-        if (model is IViewableWidget) {
-          widget.children.add((model as IViewableWidget).getView());
+        if (model is IViewableWidget)
+        {
+          var view = (model as IViewableWidget).getView();
+          widget.children.add(view);
+          if (front == null) front = view;
+          else if (back == null) back = view;
         }
       });
     if (widget.children.isEmpty) widget.children.add(Container());
     var child = widget.children.length == 1 ? widget.children[0] : Column(children: widget.children, crossAxisAlignment: CrossAxisAlignment.start);
 
-    ////////////////
-    /* Build View */
-    ////////////////
+    
+    // Build View
     Widget? view;
 
-    /////////////////////
-    /* Animation Curve */
-    /////////////////////
+    // Animation Curve
     Curve curve;
     ANIMATION.Curve? transitionCurve = S.toEnum(widget.model.transition, ANIMATION.Curve.values);
     switch (transitionCurve)
@@ -173,26 +180,35 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
       case ANIMATION.Curve.elasticInOut           : curve = Curves.elasticInOut; break;
       default                                     : curve = Curves.linear; break;
     }
-
-    ////////////////////
-    /* Animation Type */
-    ////////////////////
-    ANIMATION.Transitions? type = S.toEnum(widget.model.animation, ANIMATION.Transitions.values);
-    if (type == null) type = ANIMATION.Transitions.fade;
-
-    //////////////
-    /* Duration */
-    //////////////
+    
+    // Duration
     int duration = widget.model.duration;
 
-    ///////////
-    /* Tween */
-    ///////////
+    // Tween
     double from = widget.model.from;
     double to   = widget.model.to;
 
     switch (type)
     {
+      case ANIMATION.Transitions.flip :
+
+        // side
+        //RotateSide? side = S.toEnum(widget.model.side, RotateSide.values);
+        //if (side == null) side = RotateSide.left;
+
+        // axis
+        FlipDirection? axis = S.toEnum(widget.model.axis.toUpperCase(), FlipDirection.values);
+        if (axis == null) axis = FlipDirection.HORIZONTAL;
+
+        _controller = FlipCardController();
+        view = FlipCard(
+            speed: duration,
+            direction: axis,
+            controller: _controller,
+            front: front ?? Container(),
+            back: back ?? Container());
+        break;
+
       case ANIMATION.Transitions.fade :
         _controller = AnimationController(duration: Duration(milliseconds: duration), vsync: this);
         _animation  = Tween(begin: from, end: to).animate(CurvedAnimation(parent: _controller!, curve: curve));
@@ -200,7 +216,7 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
           _controller!.removeStatusListener(_animationListener);
         }
         _controller!.addStatusListener(_animationListener);
-        view = FadeTransition(opacity: _animation, child: child);
+        view = ScaleTransition(scale: _animation, child: child);
         break;
 
       case ANIMATION.Transitions.scale :
@@ -261,14 +277,10 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
         break;
     }
 
-    //////////////////////////
-    /* Start the Controller */
-    //////////////////////////
+    // Start the Controller
     if ((widget.model.autoplay == true) && (!_stopped)) start();
 
-    /////////////////
-    /* Return View */
-    /////////////////
+    // Return View
     return view;
   }
 
@@ -294,10 +306,14 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
       if (_controller != null)
       {
         Log().debug('starting animation');
-        _loop    = 0;
+        _loop = 0;
         _stopped = false;
-        _controller!.reset();
-        _controller!.forward();
+        if (_controller is AnimationController)
+        {
+          (_controller as AnimationController).reset();
+          (_controller as AnimationController).forward();
+        }
+        else if (_controller is FlipCardController) (_controller as FlipCardController).toggleCard();
       }
     }
     catch(e){}
@@ -307,11 +323,11 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
   {
     try
     {
-      if (_controller != null)
+      _stopped = true;
+      if (_controller is AnimationController)
       {
-        _stopped = true;
-        _controller!.reset();
-        _controller!.stop();
+        (_controller as AnimationController).reset();
+        (_controller as AnimationController).stop();
       }
     }
     catch(e){}
@@ -319,22 +335,18 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
 
   void _animationListener(AnimationStatus status)
   {
-    /////////////////////////
-    /* Animation Complete? */
-    /////////////////////////
+    if (_controller is FlipCardController) return;
+
+    // Animation Complete?
     if (status == AnimationStatus.completed)
     {
       _loop++;
       if (_loop < widget.model.repeat || widget.model.repeat == 0)
       {
-        ////////////
-        /* Rewind */
-        ////////////
+        // Rewind
         if (widget.model.reverse == true)
         {
-          /////////////
-          /* Reverse */
-          /////////////
+          // Reverse
           if (_loop.isOdd)
           {
             _controller!.reverse().whenComplete(()
@@ -344,15 +356,11 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
             });
           }
 
-          /////////////
-          /* Forward */
-          /////////////
+          // Forward
           else _controller!.forward();
         }
 
-        ///////////
-        /* Reset */
-        ///////////
+        // Reset
         else
         {
           if (_loop < widget.model.repeat || widget.model.repeat == 0)
@@ -364,9 +372,7 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
         }
       }
 
-      //////////
-      /* Stop */
-      //////////
+      // Stop
       else _controller!.stop();
     }
   }

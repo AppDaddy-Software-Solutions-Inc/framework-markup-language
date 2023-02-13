@@ -222,7 +222,7 @@ class _TypeaheadViewState extends State<TypeaheadView> implements IModelListener
                     hintStyle: ts,
                     border: InputBorder.none,
                     focusedBorder: InputBorder.none,
-                    suffixIcon: Icon(Icons.arrow_drop_down))),
+                    suffixIcon: Icon(Icons.arrow_drop_down, size: 25,))),
             suggestionsCallback: (pattern) async {
               suggestions = await getSuggestions(pattern);
               return suggestions!;

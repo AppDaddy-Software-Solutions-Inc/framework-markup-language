@@ -238,6 +238,7 @@ class TableHeaderCellModel extends DecoratedWidgetModel
   bool onSort() {
     if ((this.parent != null) && (this.parent is TableHeaderModel))
       (this.parent as TableHeaderModel).onSort(this);
+      sortAscending = !sortAscending! ?? false;
     return true;
   }
 

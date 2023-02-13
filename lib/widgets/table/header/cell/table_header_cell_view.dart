@@ -122,29 +122,27 @@ class _TableHeaderCellViewState extends State<TableHeaderCellView>
     //////////
     /* Sort */
     //////////
-    double rpad = 1;
+    double rpad = 2;
     Widget view = contents;
     if (!S.isNullOrEmpty(widget.model.sort)) {
       //////////
       /* Icon */
       //////////
       double size = 16;
-      Widget icon = RotatedBox(
-          quarterTurns: 1,
-          child: Icon(
-            Icons.compare_arrows,
+      Widget icon = Icon(
+            Icons.sort,
             color: t.onSecondaryContainer.withOpacity(0.50),
-            size: size + 4,
-          ));
+            size: size,
+          );
       if (widget.model.sorted == true)
         icon = (widget.model.sortAscending == true)
             ? Padding(
                 padding: EdgeInsets.all(2),
-                child: Icon(Icons.south,
+                child: Icon(Icons.arrow_downward,
                     color: t.onSecondaryContainer, size: size))
             : Padding(
                 padding: EdgeInsets.all(2),
-                child: Icon(Icons.north,
+                child: Icon(Icons.arrow_upward,
                     color: t.onSecondaryContainer, size: size));
 
       ////////////
@@ -171,7 +169,7 @@ class _TableHeaderCellViewState extends State<TableHeaderCellView>
     Widget cell = Container(
         child: view,
         //alignment: aligned, //this causes a problem
-        padding: EdgeInsets.only(left: 1, right: rpad, top: 1, bottom: 1),
+        padding: EdgeInsets.only(left: 1, right: 4, top: 1, bottom: 1),
         decoration: BoxDecoration(
             color: color,
             border: Border(

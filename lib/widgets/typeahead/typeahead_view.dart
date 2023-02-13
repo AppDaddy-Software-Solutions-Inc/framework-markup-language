@@ -215,7 +215,7 @@ class _TypeaheadViewState extends State<TypeaheadView> implements IModelListener
                         .onBackground : Theme.of(context).colorScheme.surfaceVariant,
                     fontSize: widget.model.size ?? 14),
                 decoration: InputDecoration(
-                  contentPadding: EdgeInsets.only(bottom:3),
+                  contentPadding: EdgeInsets.only(bottom:2),
                   isDense: true,
 
                     hintText: widget.model.hint ?? '',

@@ -196,7 +196,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     _pages.clear();
 
     // set fqdn
-    String fqdn = "${uri.scheme}://${uri.host}";
+    // String fqdn = "${uri.scheme}://${uri.host}";
 
     // set default domain
     //await System().setDomain(fqdn);

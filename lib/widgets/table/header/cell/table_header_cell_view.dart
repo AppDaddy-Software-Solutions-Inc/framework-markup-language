@@ -62,7 +62,7 @@ class _TableHeaderCellViewState extends State<TableHeaderCellView>
 
   Widget builder(BuildContext context, BoxConstraints constraints) {
 
-    if (widget.model.sortbydefault && !widget.model.isSorting) {
+    if (widget.model.sortbydefault && !widget.model.isSorting && !widget.model.sorted) {
       widget.model.onSort();
     }
       // Set Build Constraints in the [WidgetModel]

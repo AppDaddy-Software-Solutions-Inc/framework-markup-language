@@ -101,21 +101,28 @@ class TableRowModel extends DecoratedWidgetModel
     return _color?.get();
   }
 
-  //////////////////
-  /* slternating color */
-  //////////////////
+  ////////////////////
+  /* alter color */
+  ////////////////////
   ColorObservable? _altcolor;
   set altcolor(dynamic v) {
     if (_altcolor != null) {
       _altcolor!.set(v);
     } else if (v != null) {
-      _altcolor = ColorObservable(Binding.toKey(id, 'altcolor'), v,
+      _altcolor = ColorObservable(
+          Binding.toKey(id, 'altcolor'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
-  Color? get altcolor => _altcolor?.get();
-
-
+  Color? get altcolor
+  {
+    if (_altcolor == null)
+    {
+      if ((this.parent != null) && (this.parent is TableModel)) return (this.parent as TableModel).altcolor;
+      return null;
+    }
+    return _altcolor?.get();
+  }
 
   ////////////////////
   /* selected color */

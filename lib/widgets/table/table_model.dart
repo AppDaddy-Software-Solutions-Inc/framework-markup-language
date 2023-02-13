@@ -59,9 +59,9 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
 
 
 
-  //////////////////
-  /* slternating color */
-  //////////////////
+  ////////////////////
+  /* slt color */
+  ////////////////////
   ColorObservable? _altcolor;
   set altcolor(dynamic v) {
     if (_altcolor != null) {

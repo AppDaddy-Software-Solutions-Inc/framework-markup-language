@@ -120,17 +120,28 @@ class _TableRowCellViewState extends State<TableRowCellView>
           crossAxisAlignment: crossAlignment!,
           mainAxisSize: MainAxisSize.min);
 
+
+    Color color;
+    if(widget.model.color != null){
+      color = ((((widget.row ?? 0) % 2) == 0)
+          ? widget.model.color ?? Theme.of(context).colorScheme.onInverseSurface
+          : widget.model.altcolor ?? Theme.of(context)
+          .colorScheme
+          .surfaceVariant);
+    } else {
+      color = ((((widget.row ?? 0) % 2) == 0)
+          ? Theme.of(context).colorScheme.onInverseSurface
+          : Theme.of(context)
+          .colorScheme
+          .surfaceVariant);
+    }
+
     ///////////////
     /* Container */
     ///////////////
     int index = widget.model.index ?? 0;
     int lastIndex = (widget.model.parent as TableRowModel).cells.length - 1;
-    Color color = widget.model.color ??
-        ((((widget.row ?? 0) % 2) == 0)
-            ? Theme.of(context).colorScheme.onInverseSurface
-            : Theme.of(context)
-                .colorScheme
-                .surfaceVariant); // Colors.transparent;
+        // Colors.transparent;
     double borderwidth = widget.model.borderwidth ?? 1;
     Color bordercolor = Colors.transparent;
     Color? outerbordercolor = widget.model.outerbordercolor;

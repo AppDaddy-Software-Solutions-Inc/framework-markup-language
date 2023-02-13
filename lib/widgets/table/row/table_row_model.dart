@@ -101,6 +101,22 @@ class TableRowModel extends DecoratedWidgetModel
     return _color?.get();
   }
 
+  //////////////////
+  /* slternating color */
+  //////////////////
+  ColorObservable? _altcolor;
+  set altcolor(dynamic v) {
+    if (_altcolor != null) {
+      _altcolor!.set(v);
+    } else if (v != null) {
+      _altcolor = ColorObservable(Binding.toKey(id, 'altcolor'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  Color? get altcolor => _altcolor?.get();
+
+
+
   ////////////////////
   /* selected color */
   ////////////////////
@@ -308,12 +324,14 @@ class TableRowModel extends DecoratedWidgetModel
     dynamic halign,
     dynamic valign,
     dynamic center,
+    dynamic altcolor,
     dynamic wrap,
     dynamic color,
     dynamic onclick,
   }) : super(parent, id, scope: Scope(parent: parent.scope))
   {
     this.data = data;
+    this.altcolor = altcolor;
     this.height = height;
     this.oncomplete = oncomplete;
     this.dirty = false;
@@ -352,6 +370,7 @@ class TableRowModel extends DecoratedWidgetModel
     // properties
     oncomplete    = Xml.get(node: xml, tag: 'oncomplete');
     selectedcolor = Xml.get(node: xml, tag: 'selectedcolor');
+    altcolor = Xml.get(node: xml, tag: 'altcolor');
     bordercolor   = Xml.get(node: xml, tag: 'bordercolor');
     selectedbordercolor = Xml.get(node: xml, tag: 'selectedbordercolor');
     borderwidth  = Xml.get(node: xml, tag: 'borderwidth');

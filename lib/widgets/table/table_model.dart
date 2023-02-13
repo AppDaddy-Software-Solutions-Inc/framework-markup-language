@@ -57,6 +57,23 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
 
   String? datasource;
 
+
+
+  //////////////////
+  /* slternating color */
+  //////////////////
+  ColorObservable? _altcolor;
+  set altcolor(dynamic v) {
+    if (_altcolor != null) {
+      _altcolor!.set(v);
+    } else if (v != null) {
+      _altcolor = ColorObservable(Binding.toKey(id, 'altcolor'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  Color? get altcolor => _altcolor?.get();
+
+
   ////////////////////
   /* selected color */
   ////////////////////
@@ -402,6 +419,7 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
       dynamic center,
       dynamic wrap,
       dynamic margin,
+      dynamic altcolor,
       dynamic spacing,
       dynamic sortButtons,
       dynamic scrollButtons,
@@ -416,6 +434,7 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
     this.dirty = false;
     this.margin = margin;
     this.spacing = spacing;
+    this.altcolor = altcolor;
     this.center = center;
     this.wrap = wrap;
     this.sortButtons = sortButtons;
@@ -457,6 +476,7 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
     width = Xml.get(node: xml, tag: 'width');
     height = Xml.get(node: xml, tag: 'height');
     center = Xml.get(node: xml, tag: 'center');
+    altcolor = Xml.get(node: xml, tag: 'altcolor');
     wrap = Xml.get(node: xml, tag: 'wrap');
     selectedcolor = Xml.get(node: xml, tag: 'selectedcolor');
     bordercolor = Xml.get(node: xml, tag: 'bordercolor');

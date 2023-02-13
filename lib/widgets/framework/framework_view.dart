@@ -123,6 +123,8 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   @override
   void dispose()
   {
+    Log().debug('Dispose called on framework view => <FML name="${widget.model.templateName}" url="${widget.model.url}"/>');
+
     // Stop Listening to Route Changes 
     NavigationObserver().removeListener(this);
 
@@ -192,13 +194,6 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     }
   }
 
-  @override
-  Widget build(BuildContext context)
-  {
-    super.build(context);
-    return LayoutBuilder(builder: builder);
-  }
-
   double viewportWidth  = 0;
   double viewportHeight = 0;
   double viewportSafeArea = 0;
@@ -254,8 +249,17 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     }
   }
 
+  @override
+  Widget build(BuildContext context)
+  {
+    super.build(context);
+    return LayoutBuilder(builder: builder);
+  }
+
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
+    Log().debug('Build called on framework view => <FML name=${widget.model.templateName} url="${widget.model.url}"/>');
+
     // model is initializing
     if (!widget.model.initialized) return Scaffold(body: Center(child: BusyView(BusyModel(null, visible: true))));
 

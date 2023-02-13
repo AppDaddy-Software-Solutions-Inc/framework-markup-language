@@ -368,6 +368,8 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
   @override
   void deserialize(XmlElement xml)
   {
+    Log().debug('Deserialize called on framework model => <FML name="${templateName}" url="${url}"/>');
+
     // remember xml node
     this.element = xml;
 
@@ -442,9 +444,9 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
   // framework level dispose can happen asynchronously
   void dispose() async
   {
-    disposed = true;
+    Log().debug('Dispose called on framework model => <FML name="${templateName}" url="${url}"/>');
 
-    Log().debug('dispose called on => <FML name="$templateName" url="$url"/>');
+    disposed = true;
 
     // dispose header model
     header?.dispose();

@@ -13,9 +13,7 @@ enum Animations {fade, none}
 
 class HeaderModel extends DecoratedWidgetModel implements IViewableWidget
 {
-  ///////////////
-  /* animation */
-  ///////////////
+  // animation
   Animations? _animation;
   Animations get animation => _animation ?? Animations.none;
   set animation (dynamic v)
@@ -28,64 +26,25 @@ class HeaderModel extends DecoratedWidgetModel implements IViewableWidget
     }
   }
 
-  /////////////
-  /* height */
-  /////////////
-  double? _height;
-  set height (dynamic v)
+  // min height
+  double? _minheight;
+  set minheight (dynamic v)
   {
     if (v is String) v = S.toDouble(v);
-    _height = v;
+    _minheight = v;
   }
-  double? get height
-  {
-    return _height;
-  }
-  
-  ////////////////
-  /* Min Extent */
-  ////////////////
-  double? _minextent;
-  set minextent (dynamic v)
-  {
-    if (v is String) v = S.toDouble(v);
-    _minextent = v;
-  }
-  double get minextent
-  {
-    return _minextent ?? 0;
-  }
+  double get minheight => _minheight ?? 0;
 
-  ///////////////
-  /* Max extent */
-  ///////////////
-  double? _maxextent;
-  set maxextent (dynamic v)
+  // max height
+  double? _maxheight;
+  set maxheight (dynamic v)
   {
     if (v is String) v = S.toDouble(v);
-    _maxextent = v;
+    _maxheight = v;
   }
-  double get maxextent
-  {
-    return _maxextent ?? 200;
-  }
+  double get maxheight => _maxheight ?? 200;
 
-  HeaderModel(
-    WidgetModel parent,
-    String? id,
-   {dynamic color,
-    dynamic animation,
-     dynamic height,
-    dynamic minheight = 0.0,
-    dynamic maxheight,
-  }) : super(parent, id)
-  {
-    this.color = color;
-    this.animation = animation;
-    this.height = height;
-    this.maxextent = maxheight;
-    this.minextent = minheight;
-  }
+  HeaderModel(WidgetModel parent, String? id) : super(parent, id);
 
   static HeaderModel? fromXml(WidgetModel parent, XmlElement xml)
   {
@@ -112,9 +71,9 @@ class HeaderModel extends DecoratedWidgetModel implements IViewableWidget
     super.deserialize(xml);
 
     // properties
-    this.minextent  = Xml.get(node: xml, tag: 'minheight');
-    this.maxextent  = Xml.get(node: xml, tag: 'maxheight');
     this.animation  = Xml.get(node: xml, tag: 'animation');
+    this.minheight  = Xml.get(node: xml, tag: 'minheight');
+    this.maxheight  = Xml.get(node: xml, tag: 'maxheight');
   }
 
   @override

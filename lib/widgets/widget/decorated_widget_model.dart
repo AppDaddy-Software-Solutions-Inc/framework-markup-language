@@ -57,7 +57,18 @@ class DecoratedWidgetModel extends ViewableWidgetModel
   }
   Color? get color4 => _color4?.get();
 
-  
+  /// The opacity of the box and its children.
+  DoubleObservable? _opacity;
+  set opacity(dynamic v) {
+    if (_opacity != null) {
+      _opacity!.set(v);
+    } else if (v != null) {
+      _opacity = DoubleObservable(Binding.toKey(id, 'opacity'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  double? get opacity => _opacity?.get();
+
   DecoratedWidgetModel(WidgetModel? parent, String? id, {Scope?  scope}) : super(parent, id, scope: scope);
 
   /// Deserializes the FML template elements, attributes and children
@@ -69,5 +80,6 @@ class DecoratedWidgetModel extends ViewableWidgetModel
 
     // properties
     _colors = Xml.get(node: xml, tag: 'color');
+    opacity = Xml.get(node: xml, tag: 'opacity');
   }
 }

@@ -7,12 +7,6 @@ import 'package:fml/widgets/footer/footer_model.dart';
 
 class FooterView extends StatefulWidget
 {
-  double? get height
-  {
-    if (model.height! > 0) return model.height;
-    return null;
-  }
-
   final List<Widget> children = [];
   final FooterModel model;
 
@@ -67,10 +61,7 @@ class _FooterViewState extends State<FooterView> implements IModelListener
   }
 
   @override
-  Widget build(BuildContext context)
-  {
-    return LayoutBuilder(builder: builder);
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {

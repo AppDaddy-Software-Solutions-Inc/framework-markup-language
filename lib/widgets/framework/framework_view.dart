@@ -11,7 +11,6 @@ import 'package:fml/navigation/navigation_observer.dart';
 import 'package:fml/event/event.dart'             ;
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
-import 'package:fml/widgets/footer/footer_model.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/tabview/tab_view.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
@@ -124,6 +123,8 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   @override
   void dispose()
   {
+    Log().debug('Dispose called on framework view => <FML name="${widget.model.templateName}" url="${widget.model.url}"/>');
+
     // Stop Listening to Route Changes 
     NavigationObserver().removeListener(this);
 
@@ -193,13 +194,6 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     }
   }
 
-  @override
-  Widget build(BuildContext context)
-  {
-    super.build(context);
-    return LayoutBuilder(builder: builder);
-  }
-
   double viewportWidth  = 0;
   double viewportHeight = 0;
   double viewportSafeArea = 0;
@@ -208,10 +202,10 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   {
     if ((notification.metrics.axisDirection == AxisDirection.left) || (notification.metrics.axisDirection == AxisDirection.right)) return false;
 
-    double maxHeight = widget.model.header?.height ?? widget.model.header?.maxextent ?? 0;
+    double maxHeight = widget.model.header?.height ?? widget.model.header?.maxheight ?? 0;
     if (maxHeight < 0) maxHeight = 0;
 
-    double minHeight = widget.model.header?.height ?? widget.model.header?.minextent ?? 0;
+    double minHeight = widget.model.header?.height ?? widget.model.header?.minheight ?? 0;
     if (minHeight < 0) minHeight = 0;
 
     // Non-Resizeable Header
@@ -255,8 +249,17 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     }
   }
 
+  @override
+  Widget build(BuildContext context)
+  {
+    super.build(context);
+    return LayoutBuilder(builder: builder);
+  }
+
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
+    Log().debug('Build called on framework view => <FML name=${widget.model.templateName} url="${widget.model.url}"/>');
+
     // model is initializing
     if (!widget.model.initialized) return Scaffold(body: Center(child: BusyView(BusyModel(null, visible: true))));
 
@@ -314,21 +317,34 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     Widget header = Container();
     if (widget.model.header != null && widget.model.header!.visible != false)
     {
-      HeaderModel model  = widget.model.header!;
+      // setting the min and max heights from the constraint
+      // sets the height if height is a percentage
+      widget.model.header!.minHeight = constraints.minHeight;
+      widget.model.header!.maxHeight = constraints.maxHeight;
+
+      // set width && height
       headerModel.width  = viewportWidth;
-      headerModel.height = model.height ?? model.maxextent;
-      header = BoxView(headerModel, child: HeaderView(model));
+      headerModel.height = widget.model.header!.height ?? widget.model.header!.maxheight;
+
+      // build the header
+      header = BoxView(headerModel, child: HeaderView(widget.model.header!));
     }
+    else headerModel.height = 0;
 
     // build footer model
     Widget footer = Container();
     if (widget.model.footer != null && widget.model.footer!.visible != false)
     {
-      FooterModel model  = widget.model.footer!;
+      widget.model.footer!.minHeight = constraints.minHeight;
+      widget.model.footer!.maxHeight = constraints.maxHeight;
+
+      // set width && height
       footerModel.width  = viewportWidth;
-      footerModel.height = model.height ?? 0;
-      footer = BoxView(footerModel, child: FooterView(model));
+      footerModel.height = widget.model.footer!.height;
+
+      footer = BoxView(footerModel, child: FooterView(widget.model.footer!));
     }
+    else footerModel.height = 0;
 
     bodyModel.height = viewportHeight - (headerModel.height ?? 0) - (footerModel.height ?? 0) - viewportSafeArea.ceil();
     bodyModel.width  = viewportWidth;

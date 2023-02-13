@@ -29,6 +29,7 @@ class TableHeaderCellModel extends DecoratedWidgetModel
   //////////
   String? sort;
   String? sortType;
+  bool isSorting = false;
 
   ///////////
   /* field */
@@ -163,6 +164,21 @@ class TableHeaderCellModel extends DecoratedWidgetModel
     return _wrap?.get();
   }
 
+  /// wrap is a boolean that dictates if the widget will wrap or not.
+  BooleanObservable? _sortbydefault;
+  set sortbydefault(dynamic v) {
+    if (_sortbydefault != null) {
+      _sortbydefault!.set(v);
+    } else if (v != null) {
+      _sortbydefault = BooleanObservable(Binding.toKey(id, 'sortbydefault'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  bool get sortbydefault {
+    return _sortbydefault?.get() ?? false;
+  }
+
   BooleanObservable? _sortAscending;
   set sortAscending(dynamic v) {
     if (_sortAscending != null) {
@@ -182,9 +198,10 @@ class TableHeaderCellModel extends DecoratedWidgetModel
   bool sorted = false;
 
   TableHeaderCellModel(WidgetModel parent, String? id,
-      {String? field, dynamic width, dynamic height})
+      {String? field, dynamic width, dynamic height, dynamic sortbydefault})
       : super(parent, id) {
     this.width = width;
+    this.sortbydefault = sortbydefault;
     this.height = height;
     this.sortAscending = false;
   }
@@ -216,6 +233,7 @@ class TableHeaderCellModel extends DecoratedWidgetModel
 
     // properties
     field       = Xml.get(node: xml, tag: 'field');
+    sortbydefault       = Xml.get(node: xml, tag: 'sortbydefault');
     width       = Xml.get(node: xml, tag: 'width');
     height      = Xml.get(node: xml, tag: 'height');
     bordercolor = Xml.get(node: xml, tag: 'bordercolor');
@@ -238,7 +256,8 @@ class TableHeaderCellModel extends DecoratedWidgetModel
   bool onSort() {
     if ((this.parent != null) && (this.parent is TableHeaderModel))
       (this.parent as TableHeaderModel).onSort(this);
-      sortAscending = !sortAscending! ?? false;
+      sortAscending = !sortAscending!;
+      isSorting = true;
     return true;
   }
 

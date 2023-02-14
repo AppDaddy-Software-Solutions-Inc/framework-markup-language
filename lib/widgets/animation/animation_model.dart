@@ -125,6 +125,22 @@ class AnimationModel extends DecoratedWidgetModel implements IViewableWidget
   }
   String get axis => _axis?.get() ?? "horizontal";
 
+  StringObservable? _side;
+  set side (dynamic v)
+  {
+    if (_side != null)
+    {
+      _side!.set(v);
+    }
+    else if (v != null)
+    {
+      // no listener since this is only set by the view
+      // and we don't want to trigger a rebuild
+      _side = StringObservable(Binding.toKey(id, 'side'), v, scope: scope);
+    }
+  }
+  String get side => _side?.get() ?? "front";
+
   
   /// Δ x value for transitions such as slide, defaults to 1.5
   DoubleObservable? _dx;

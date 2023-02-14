@@ -229,19 +229,9 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
         FlipDirection? axis = S.toEnum(widget.model.axis.toUpperCase(), FlipDirection.values);
         if (axis == null) axis = FlipDirection.HORIZONTAL;
 
-        //_controller.hint(
-        //  duration: Duration(milliseconds: 50),
-        //  total: 1,
-        //);
-
+        // build the animation
         _controller = FlipCardController();
-        view = FlipCard(
-            speed: duration,
-            direction: axis,
-            alignment: anchor,
-            controller: _controller,
-            front: front ?? Container(),
-            back: back ?? Container());
+        view = FlipCard(speed: duration, direction: axis, alignment: anchor, controller: _controller, front: front ?? Container(), back: back ?? Container());
         break;
 
       case ANIMATION.Transitions.fade :
@@ -348,7 +338,12 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
           (_controller as AnimationController).reset();
           (_controller as AnimationController).forward();
         }
-        else if (_controller is FlipCardController) (_controller as FlipCardController).toggleCard();
+        else if (_controller is FlipCardController)
+        {
+          (_controller as FlipCardController).toggleCard();
+          bool front = (_controller as FlipCardController).state?.isFront ?? true;
+          widget.model.side = front ? "front" : "back";
+        }
       }
     }
     catch(e){}
@@ -363,6 +358,7 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
       {
         (_controller as AnimationController).reset();
         (_controller as AnimationController).stop();
+        widget.model.side = (_controller as FlipCardController).state?.isFront ?? true ? "front" : "back";
       }
     }
     catch(e){}

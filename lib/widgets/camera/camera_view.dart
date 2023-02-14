@@ -110,9 +110,6 @@ class CameraViewState extends State<CameraView>
           else initialize();
           break;
 
-        default:
-          initialize();
-          break;
       }
     }
   }

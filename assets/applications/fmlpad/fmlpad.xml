@@ -3,8 +3,8 @@
     <VAR id="xml" value="{editor}" onchange="{r1} ? fmlpad.replaceChildren({xml},false) : null"/>
 
     <CONST id="default">
-    <value>
-<![CDATA[<!-- Welcome to FmlPad! -->
+        <value>
+            <![CDATA[<!-- Welcome to FmlPad! -->
 <FML>
     <!-- Remember, the template is a STACK by default and non scrollable! -->
     <!-- For scrolling, try out the SCROLL widget! -->
@@ -35,26 +35,27 @@
 </FML>
 
 ]]>
-   </value>
-   </CONST>
+        </value>
+    </CONST>
 
     <HEADER height="50">
+        <VAR id="isSmall" value="={SYSTEM.screenwidth}&lt;800"/>
         <BOX color="{THEME.oninversesurface}" valign="center" halign="left" layout="row">
 
             <!-- logo -->
             <PAD left="20"/>
             <IMAGE url="assets://images/fml-logo.png" height="30"/>
             <PAD left="10"/>
-            <TEXT value="FmlPad" size="20"/>
+            <TEXT value="FmlPad" visible="=!{isSmall}" size="20"/>
             <PAD left="50"/>
 
             <!-- widgets -->
             <GET id="dbWidgets" url="https://fml.dev/fmlpad/widgets.xml" root="WIDGETS.WIDGET" ttl="1m"/>
-            <SELECT bordercolor="transparent" onchange="copy({this})" data="dbWidgets" hint="Widgets" width="150">
+            <SELECT bordercolor="transparent" onchange="copy({this})" data="dbWidgets" hint="Widgets" width="150"  visible="=!{isSmall}">
                 <OPTION value="{data.value}" label="&lt;{data.title}/&gt;"/>
             </SELECT>
 
-            
+
             <PAD left="20"/>
 
             <!-- examples -->
@@ -68,37 +69,37 @@
 
             <!-- realtime slider -->
             <EXPAND>
-            <ROW halign="end" valign="center">
+                <ROW halign="end" valign="center">
 
-               <!-- Reset button -->
-                <BUTTON onclick="editor.set({default});examples.set(null);" visible="={default} != {editor}">
-                    <ICON icon="refresh" size="24"/>
-                </BUTTON>
+                    <!-- Reset button -->
+                    <BUTTON onclick="editor.set({default});examples.set(null);" visible="={default} != {editor}">
+                        <ICON icon="refresh" size="24"/>
+                    </BUTTON>
 
-                <PAD left="20"/>
+                    <PAD left="20"/>
 
-                <!-- Save button -->
-                <BUTTON onclick="saveas({editor},'fmlpad.xml')">
-                    <ICON icon="save" size="24"/>
-                </BUTTON>
+                    <!-- Save button -->
+                    <BUTTON onclick="saveas({editor},'fmlpad.xml')" visible="=!{isSmall}">
+                        <ICON icon="save" size="24"/>
+                    </BUTTON>
 
-                <PAD left="20"/>
+                    <PAD left="20"/>
 
-                <!-- Open button -->
-                <FILEPICKER id="fp1" onsuccess="editor.set({fp1.data.text})" allow=".xml"/>
-                <BUTTON onclick="fp1.start()">
-                    <ICON icon="folder" size="24"/>
-                </BUTTON>
+                    <!-- Open button -->
+                    <FILEPICKER id="fp1" onsuccess="editor.set({fp1.data.text})" allow=".xml"/>
+                    <BUTTON onclick="fp1.start()" visible="=!{isSmall}">
+                        <ICON icon="folder" size="24"/>
+                    </BUTTON>
 
-                <PAD left="40"/>
+                    <PAD left="40"/>
 
-                <!-- Realtime Parsing button -->
-                <TEXT value="Realtime:" color="={r1} ? '{THEME.primary}' : '{THEME.outline}'"/>
-                <PAD left="20"/>
-                <SWITCH id="r1" value="true" onchange="{this} ? fmlpad.replaceChildren({xml},false) : null"/>
-                <PAD left="20"/>
+                    <!-- Realtime Parsing button -->
+                    <TEXT value="Realtime:" color="={r1} ? '{THEME.primary}' : '{THEME.outline}'" visible="=!{isSmall}"/>
+                    <PAD left="20"/>
+                    <SWITCH id="r1" value="true" onchange="{this} ? fmlpad.replaceChildren({xml},false) : null" visible="=!{isSmall}"/>
+                    <PAD left="20"/>
 
-            </ROW>
+                </ROW>
             </EXPAND>
         </BOX>
     </HEADER>
@@ -111,7 +112,6 @@
                 <TEXT color="{THEME.error}" value="{log1.xml}"/>
             </EXPAND>
             <!-- themes -->
-            <TEXT value="FML Theme:" color="{THEME.outline}}"/>
             <PAD right="10"/>
             <GET id="dbStyles" url="https://fml.dev/fmlpad/styles.xml" root="STYLES.STYLE" ttl="1d"/>
             <SELECT id="theme" border="none" data="dbStyles" value='{STASH.FmlPadTheme}' hint="Select an Editor Theme" onchange="stash('FmlPadTheme',{this.value})">

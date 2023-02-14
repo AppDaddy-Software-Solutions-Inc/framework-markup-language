@@ -132,7 +132,7 @@
         <VIEW>
             <BOX color="{THEME.background}" width="100%" height="100%" layout="stack">
 
-                <ANIMATION type="flip" id="flippy" duration="500" axis="vertical">
+                <ANIMATION id="flippy" type="flip" duration="500" axis="vertical">
                     <SCROLLER>
                         <EDITOR id="editor" language="xml" value="{default}" theme="{theme}"/>
                     </SCROLLER>
@@ -357,7 +357,9 @@
 
                 <POSITIONED right="5" top="5">
                     <LINK onclick="flippy.start()">
+                            <TOOLTIP value="={flippy.side} == 'back' ? 'Examples' : 'Editor'">
                             <ICON icon="rotate_right" size="20"/>
+                            </TOOLTIP>
                     </LINK>
                 </POSITIONED>
 

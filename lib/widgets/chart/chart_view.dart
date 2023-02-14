@@ -804,10 +804,17 @@ class _ChartViewState extends State<ChartView>
     if (chartType != ChartType.PieChart) behaviors.add(CF.PanAndZoomBehavior());
     if (widget.model.showlegend != 'false' && chartType != ChartType.PieChart)
       behaviors.add(
-          CF.SeriesLegend(position: legendPosition(widget.model.showlegend)));
+          CF.SeriesLegend(position: legendPosition(widget.model.showlegend,),
+              entryTextStyle: CF.TextStyleSpec(
+              color: CF.Color.fromHex(code: '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
+    ),
+          ));
     if (widget.model.showlegend != 'false' && chartType == ChartType.PieChart)
       behaviors.add(CF.DatumLegend(
         position: legendPosition(widget.model.showlegend),
+        entryTextStyle: CF.TextStyleSpec(
+          color: CF.Color.fromHex(code: '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
+        ),
         outsideJustification: CF.OutsideJustification.middleDrawArea,
         horizontalFirst: true,
         desiredMaxColumns: 4,
@@ -815,12 +822,18 @@ class _ChartViewState extends State<ChartView>
       ));
     if (widget.model.xaxis!.title != null)
       behaviors.add(CF.ChartTitle(widget.model.xaxis!.title!,
+          titleStyleSpec: CF.TextStyleSpec(
+            color: CF.Color.fromHex(code: '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
+          ),
           behaviorPosition: widget.model.horizontal == true
               ? CF.BehaviorPosition.start
               : CF.BehaviorPosition.bottom,
           titleOutsideJustification: CF.OutsideJustification.middleDrawArea));
     if (widget.model.yaxis!.title != null)
       behaviors.add(CF.ChartTitle(widget.model.yaxis!.title!,
+          titleStyleSpec: CF.TextStyleSpec(
+            color: CF.Color.fromHex(code: '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
+          ),
           behaviorPosition: widget.model.horizontal == true
               ? CF.BehaviorPosition.bottom
               : CF.BehaviorPosition.start,

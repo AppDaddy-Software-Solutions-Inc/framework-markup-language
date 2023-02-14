@@ -229,6 +229,11 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
         FlipDirection? axis = S.toEnum(widget.model.axis.toUpperCase(), FlipDirection.values);
         if (axis == null) axis = FlipDirection.HORIZONTAL;
 
+        //_controller.hint(
+        //  duration: Duration(milliseconds: 50),
+        //  total: 1,
+        //);
+
         _controller = FlipCardController();
         view = FlipCard(
             speed: duration,

@@ -1,0 +1,373 @@
+<FML title="FmlPad" linkable="true" onstart="theme({STASH.FmlPadMode} ?? {THEME.brightness} == 'dark' ?'dark':'light');">
+
+    <GET id="dbExamples" url="https://fml.dev/fmlpad/examples.xml" root="EXAMPLES.EXAMPLE"/>
+    <VAR id="xml" value="{editor}" onchange="{r1} ? fmlpad.replaceChildren({xml},false) : null"/>
+
+    <CONST id="default">
+    <value>
+<![CDATA[<!-- Welcome to FmlPad! -->
+<FML>
+    <!-- Remember, the template is a STACK by default and non scrollable! -->
+    <!-- For scrolling, try out the SCROLL widget! -->
+    <BOX center="true" pad="40">
+        <!-- title bar -->
+        <ROW center="true">
+            <IMAGE height="50" url="assets://applications/fmlpad/fmlpad.png"/>
+            <PAD right="10"/>
+            <TEXT value="**Welcome to FMLPad!**" style="h4" color="{THEME.primary}"/>
+        </ROW>
+        <!-- text block -->
+        <PAD top="20"/>
+        <TEXT  value="***FmlPad** allows you to test and develop FML templates **realtime** _without the need to compile_ any code.*" size="14"/>
+        <!-- text block -->
+        <PAD top="10"/>
+        <TEXT value="*Try adding, removing or changing any of the markup text in the left editor window and see your changes reflected here instantly.*" size="14"/>
+        <!-- text block -->
+        <PAD top="10"/>
+        <TEXT value="***FmlPad** itself it written entirely in **FML** with less than a few dozen simple lines of markup text!*" size="14"/>
+        <!-- text block -->
+        <PAD top="20"/>
+        <ICON icon="face" color="{THEME.primary}"/>
+        <PAD top="5"/>
+        <TEXT value="*Happy Templating ...*" size="14"/>
+        <PAD top="5"/>
+        <TEXT italic="true" value="**The FML Development Team**" size="14"/>
+    </BOX>
+</FML>
+
+]]>
+   </value>
+   </CONST>
+
+    <HEADER height="50">
+        <BOX color="{THEME.oninversesurface}" valign="center" halign="left" layout="row">
+
+            <!-- logo -->
+            <PAD left="20"/>
+            <IMAGE url="assets://images/fml-logo.png" height="30"/>
+            <PAD left="10"/>
+            <TEXT value="FmlPad" size="20"/>
+            <PAD left="50"/>
+
+            <!-- widgets -->
+            <GET id="dbWidgets" url="https://fml.dev/fmlpad/widgets.xml" root="WIDGETS.WIDGET" ttl="1m"/>
+            <SELECT bordercolor="transparent" onchange="copy({this})" data="dbWidgets" hint="Widgets" width="150">
+                <OPTION value="{data.value}" label="&lt;{data.title}/&gt;"/>
+            </SELECT>
+
+            
+            <PAD left="20"/>
+
+            <!-- examples -->
+            <GET id="db1" url="{examples}" onsuccess="editor.set({this.response})"/>
+            <TYPEAHEAD id="examples" bordercolor="transparent" value="" data="dbExamples" hint="Examples" width="250">
+                <OPTION value="{data.url}">
+                    <label><ROW valign="center" expand="false"><ICON icon="{data.icon}" size="16" color="{data.color}"/><PAD left="10"/><TEXT value="{data.title}"/></ROW></label>
+                </OPTION>
+            </TYPEAHEAD>
+
+            <!-- realtime slider -->
+            <EXPAND>
+            <ROW halign="end" valign="center">
+
+               <!-- Reset button -->
+                <BUTTON onclick="editor.set({default});examples.set(null);" visible="={default} != {editor}">
+                    <ICON icon="refresh" size="24"/>
+                </BUTTON>
+
+                <PAD left="20"/>
+
+                <!-- Save button -->
+                <BUTTON onclick="saveas({editor},'fmlpad.xml')">
+                    <ICON icon="save" size="24"/>
+                </BUTTON>
+
+                <PAD left="20"/>
+
+                <!-- Open button -->
+                <FILEPICKER id="fp1" onsuccess="editor.set({fp1.data.text})" allow=".xml"/>
+                <BUTTON onclick="fp1.start()">
+                    <ICON icon="folder" size="24"/>
+                </BUTTON>
+
+                <PAD left="40"/>
+
+                <!-- Realtime Parsing button -->
+                <TEXT value="Realtime:" color="={r1} ? '{THEME.primary}' : '{THEME.outline}'"/>
+                <PAD left="20"/>
+                <SWITCH id="r1" value="true" onchange="{this} ? fmlpad.replaceChildren({xml},false) : null"/>
+                <PAD left="20"/>
+
+            </ROW>
+            </EXPAND>
+        </BOX>
+    </HEADER>
+
+    <FOOTER height="50">
+        <BOX color="{THEME.oninversesurface}" layout="row" halign="end" valign="center">
+            <LOG id="log1"/>
+            <EXPAND>
+                <!--Error text display here-->
+                <TEXT color="{THEME.error}" value="{log1.xml}"/>
+            </EXPAND>
+            <!-- themes -->
+            <TEXT value="FML Theme:" color="{THEME.outline}}"/>
+            <PAD right="10"/>
+            <GET id="dbStyles" url="https://fml.dev/fmlpad/styles.xml" root="STYLES.STYLE" ttl="1d"/>
+            <SELECT id="theme" border="none" data="dbStyles" value='{STASH.FmlPadTheme}' hint="Select an Editor Theme" onchange="stash('FmlPadTheme',{this.value})">
+                <OPTION label='{data.label}'/>
+            </SELECT>
+            <PAD right="40"/>
+            <ICON icon="light_mode" color="=!{mode} ? '#e6cc00' : 'grey'"/>
+            <PAD right="6"/>
+            <SWITCH id="mode"  value="={STASH.FmlPadMode} ?? {THEME.brightness} == 'dark'" onchange="stash('FmlPadMode',{this.value});theme({this}?'dark':'light');"/>
+            <PAD right="6"/>
+            <ICON icon="dark_mode" color="={mode} ? '{THEME.primary}' : 'grey'"/>
+            <PAD right="20"/>
+        </BOX>
+    </FOOTER>
+
+    <SPLITVIEW ratio=".50" dividerwidth="6.0" dividercolor="" dividerhandlecolor="{THEME.primary}">
+
+        <VIEW>
+            <BOX color="{THEME.background}" width="100%" height="100%" layout="stack">
+
+                <ANIMATION type="flip" id="flippy" duration="500" axis="vertical">
+                    <SCROLLER>
+                        <EDITOR id="editor" language="xml" value="{default}" theme="{theme}"/>
+                    </SCROLLER>
+                    <BOX color="green" layout="row">
+                        <SELECT hint="hello world" width="200"/>
+                        <TREEVIEW icon="keyboard_arrow_right" expandedicon="keyboard_arrow_down" expand="false">
+                            <NODE label="Data Binding">
+                                <NODE label="SYSTEM" onclick="open('/{prefix}/bindables-example1.xml?title=SYSTEM Bindings')" />
+                                <NODE label="USER" onclick="open('/{prefix}/event/signinwithjwt-example1.xml?title=USER Bindings')" />
+                                <NODE label="Clock Example" onclick="open('/{prefix}/timer-example1.xml?title=Time Bindings')" />
+                            </NODE>
+
+                            <NODE label="Datasources">
+                                <NODE label="DATA" onclick="open('/{prefix}/data-example1.xml?title=DATA')" />
+                                <NODE label="DELETE" onclick="open('/{prefix}/delete-example1.xml?title=DELETE')" />
+                                <NODE label="GET" onclick="open('/{prefix}/get-example1.xml?title=GET')" />
+                                <NODE label="POST" onclick="open('/{prefix}/post-example1.xml?title=POST')" />
+                                <NODE label="PUT" onclick="open('/{prefix}/put-example1.xml?title=PUT')" />
+                                <NODE label="MQTT" onclick="open('/{prefix}/mqtt-example1.xml?title=MQTT')" />
+                                <NODE label="SOCKET" expanded="false">
+                                    <NODE label="Send Text" onclick="open('/{prefix}/socket-example1.xml?title=SOCKET')" />
+                                    <NODE label="Upload a File" onclick="open('/{prefix}/socket-example2.xml?title=SOCKET')" />
+                                </NODE>
+                                <NODE label="CAMERA" onclick="open('/{prefix}/camera-example1.xml?title=CAMERA')" />
+                                <NODE label="FILEPICKER" onclick="open('/{prefix}/filepicker-example1.xml?title=FILEPICKER')" />
+                                <NODE label="GPS" onclick="open('/{prefix}/gps-example1.xml?title=GPS')" />
+                                <NODE label="NFC" onclick="open('/{prefix}/nfc-example1.xml?title=NFC')" />
+                                <NODE label="BEACON" onclick="" />
+                                <NODE label="ZEBRA" onclick="" />
+                                <NODE label="SSE" onclick="open('/{prefix}/sse-example1.xml?title=SERVER SIDE EVENTS (SSE)')" />
+                                <NODE label="Detectors" expanded="false">
+                                    <NODE label="BARCODE" onclick="open('/{prefix}/barcode-detector-example1.xml?title=BARCODE DETECTION')"/>
+                                    <NODE label="BIOMETRIC" onclick="" />
+                                    <NODE label="OCR" onclick="" />
+                                </NODE>
+                                <NODE label="Transforms" expanded="false">
+                                    <NODE label="Image Transforms" expanded="true">
+                                        <NODE label="CROP" onclick="open('/{prefix}/image-transforms-example1.xml?title=IMAGE TRANSFORMS (Crop)')" />
+                                        <NODE label="FLIP" onclick="open('/{prefix}/image-transforms-example2.xml?title=IMAGE TRANSFORMS (Flip)')" />
+                                        <NODE label="GRAYSCALE" onclick="open('/{prefix}/image-transforms-example3.xml?title=IMAGE TRANSFORMS (Gray Scale)')" />
+                                        <NODE label="RESIZE" onclick="open('/{prefix}/image-transforms-example4.xml?title=IMAGE TRANSFORMS (Resize)')" />
+                                    </NODE>
+                                    <NODE label="Data Transforms" expanded="true">
+                                        <NODE label="CALC" onclick="" />
+                                        <NODE label="DISTINCT" onclick="" />
+                                        <NODE label="EVAL" onclick="" />
+                                        <NODE label="FILTER" onclick="" />
+                                        <NODE label="FORMAT" onclick="" />
+                                        <NODE label="PIVOT" onclick="" />
+                                        <NODE label="SORT" onclick="" />
+                                    </NODE>
+                                </NODE>
+                            </NODE>
+                            <NODE label="Events">
+
+                                <NODE label="alert()" onclick="open('/{prefix}/event/alert-example1.xml?title=alert()')" />
+                                <NODE label="animate()" onclick="open('/{prefix}/animation-example1.xml?title=animate()')" />
+                                <NODE label="back()" onclick="open('/{prefix}/event/back-example1.xml?title=back()')" />
+                                <NODE label="clear()" onclick="open('/{prefix}/event/clear-example1.xml?title=clear()')" />
+                                <NODE label="close()" onclick="open('/{prefix}/modal-example1.xml?title=close()')" />
+                                <NODE label="complete()" onclick="open('/{prefix}/form-example1.xml?title=complete()')" />
+                                <NODE label="cont()/continue()" onclick="open('/{prefix}/event/continue-example1.xml?title=continue()')" />
+                                <NODE label="copy()" onclick="open('/{prefix}/event/copy-example1.xml?title=copy()')" />
+                                <NODE label="export()" ZZZonclick="open('/{prefix}/event/export-example1.xml?title=export()')" />
+                                <NODE label="focusnode()" ZZZonclick="open('/{prefix}/event/focusnode-example1.xml?title=focusnode()')" />
+                                <NODE label="home()" ZZZonclick="open('/{prefix}/event/home-example1.xml?title=home()')" />
+                                <NODE label="logoff()" ZZZonclick="open('/{prefix}/event/logoff-example1.xml?title=logoff()')" />
+                                <!-- <NODE label="maximize()" ZZZonclick="open('/{prefix}/event/minimize-example1.xml?title=minimize()')" /> -->
+                                <!-- <NODE label="minimize()" ZZZonclick="open('/{prefix}/event/minimize-example1.xml?title=minimize()')" /> -->
+                                <NODE label="open()" onclick="open('/{prefix}/event/open-example1.xml?title=open()')" />
+                                <NODE label="page()" onclick="open('/{prefix}/pager-example1.xml?title=page()')" />
+                                <NODE label="post()" ZZZonclick="open('/{prefix}/event/post-example1.xml?title=post()')" />
+                                <NODE label="refresh()" onclick="open('/{prefix}/event/refresh-example1.xml?title=refresh()')" />
+                                <NODE label="removewidget()" onclick="" />
+                                <NODE label="replaceroute()" onclick="open('/{prefix}/event/replaceroute-example1.xml?title=replace()')" />
+                                <NODE label="replacewidget()" onclick="" />
+                                <NODE label="save()" ZZZonclick="open('/{prefix}/event/save-example1.xml?title=save()')" />
+                                <NODE label="scrollto()" onclick="open('/{prefix}/event/scrollto-example1.xml?title=scrollto()')" />
+                                <NODE label="set()" onclick="open('/{prefix}/event/set-example1.xml?title=set()')" />
+                                <NODE label="showdebug()" onclick="open('/{prefix}/event/show-example1.xml?title=showdebug()')" />
+                                <NODE label="showlog()" onclick="open('/{prefix}/event/show-example1.xml?title=showlog()')" />
+                                <NODE label="showtemplate()" onclick="open('/{prefix}/event/show-example1.xml?title=showtemplate()')" />
+                                <NODE label="signInWithFirebase()" ZZZonclick="open('/{prefix}/event/signinwithfirebase-example1.xml?title=signinwithfirebase()')" />
+                                <NODE label="signInWithJwt()" onclick="open('/{prefix}/event/signinwithjwt-example1.xml?title=SignInWithJwt()')" />
+                                <NODE label="sound()" onclick="open('/{prefix}/event/sound-example1.xml?title=sound()')" />
+                                <NODE label="start()" onclick="open('/{prefix}/event/start-stop-example1.xml?title=start()')" />
+                                <NODE label="stash()" onclick="open('/{prefix}/event/stash-example1.xml?title=stash()')" />
+                                <NODE label="stop()" onclick="open('/{prefix}/event/start-stop-example1.xml?title=stop()')" />
+                                <NODE label="theme()" onclick="open('/{prefix}/event/theme-example1.xml?title=theme()')" />
+                                <NODE label="toast()" onclick="open('/{prefix}/event/toast-example1.xml?title=toast()')" />
+                                <NODE label="trigger()" onclick="open('/{prefix}/trigger-example1.xml?title=trigger()')" />
+                                <NODE label="wait()" onclick="open('/{prefix}/event/wait-example1.xml?title=wait()')" />
+                            </NODE>
+                            <NODE label="Evaluations" expanded="false">
+                                <NODE label="Arithmetic" onclick="open('/{prefix}/eval/arithmetic-example1.xml?title=Arithmetic')" />
+                                <NODE label="Logic" onclick="open('/{prefix}/eval/logic-example1.xml?title=Logic')" />
+                                <NODE label="Ternary" onclick="open('/{prefix}/eval/ternary-example1.xml?title=Ternary Operator')" />
+                                <NODE label="bit()" onclick="open('/{prefix}/eval/bit-example1.xml?title=bit()')" />
+                                <NODE label="case()" onclick="open('/{prefix}/eval/case-example1.xml?title=case()')" />
+                                <NODE label="ceil()" onclick="open('/{prefix}/eval/rounding-example1.xml?title=ceil()')" />
+                                <NODE label="contains()" onclick="open('/{prefix}/eval/contains-example1.xml?title=contains()')" />
+                                <!-- <NODE label="decrypt()" onclick="" /> -->
+                                <!-- <NODE label="encrypt()" onclick="" /> -->
+                                <NODE label="endswith()" onclick="open('/{prefix}/eval/endswith-example1.xml?title=endswith()')" />
+                                <NODE label="floor()" onclick="open('/{prefix}/eval/rounding-example1.xml?title=floor()')" />
+                                <!-- <NODE label="hash()" onclick="" /> -->
+                                <NODE label="if()" onclick="open('/{prefix}/eval/if-example1.xml?title=if()')" />
+                                <NODE label="isbool()" onclick="open('/{prefix}/eval/is-example1.xml?title=isBool()')" />
+                                <NODE label="isnull()" onclick="open('/{prefix}/eval/is-example1.xml?title=isNull()')" />
+                                <NODE label="isnullorempty()/noe()" onclick="open('/{prefix}/eval/is-example1.xml?title=noe()')" />
+                                <NODE label="isnum()" onclick="open('/{prefix}/eval/is-example1.xml?title=isNum()')" />
+                                <NODE label="length()" onclick="open('/{prefix}/eval/length-example1.xml?title=length()')" />
+                                <xNODE label="mod()" onclick="" />
+                                <NODE label="number()" onclick="open('/{prefix}/eval/number-example1.xml?title=number()')" />
+                                <NODE label="nvl()" onclick="open('/{prefix}/eval/nvl-example1.xml?title=nvl()')" />
+                                <xNODE label="pi()/sin()/cos()/tan()" onclick="open('/{prefix}/eval/pi-example1.xml?title=pi()/sin()/cos()/tan()')" />
+                                <xNODE label="regex()" onclick="open('/{prefix}/eval/regex-example1.xml?title=regex()')" />
+                                <NODE label="replace()" onclick="open('/{prefix}/eval/replace-example1.xml?title=replace()')" />
+                                <NODE label="round()" onclick="open('/{prefix}/eval/rounding-example1.xml?title=round()')" />
+                                <NODE label="startswith()" onclick="open('/{prefix}/eval/startswith-example1.xml?title=startswith()')" />
+                                <NODE label="substring()" onclick="open('/{prefix}/eval/substring-example1.xml?title=substring()')" />
+                                <NODE label="tobool()" onclick="open('/{prefix}/eval/to-example1.xml?title=tobool()')" />
+                                <NODE label="todate()" onclick="open('/{prefix}/eval/todate-example1.xml?title=todate()')" />
+                                <NODE label="tolower()" onclick="open('/{prefix}/eval/to-example1.xml?title=tolower()')" />
+                                <xNODE label="tonum()" onclick="open('/{prefix}/eval/to-example1.xml?title=tonum()')" />
+                                <NODE label="tostring()" onclick="open('/{prefix}/eval/to-example1.xml?title=tostring()')" />
+                                <NODE label="toupper()" onclick="open('/{prefix}/eval/to-example1.xml?title=toupper()')" />
+                                <NODE label="truncate()" onclick="open('/{prefix}/eval/rounding-example1.xml?title=truncate()')" />
+                            </NODE>
+                            <NODE label="Widgets" expanded="true">
+                                <NODE label="Interactive Widgets" expanded="false">
+                                    <NODE label="Breadcrumb" onclick="open('/{prefix}/breadcrumb-example1.xml?title=&lt;BREADCRUMB&gt;')" />
+                                    <NODE label="Button" onclick="open('/{prefix}/button-example1.xml?title=&lt;BUTTON&gt;')" />
+                                    <NODE label="Checkbox" onclick="open('/{prefix}/checkbox-example1.xml?title=&lt;CHECKBOX&gt;')" />
+                                    <NODE label="Datepicker" onclick="open('/{prefix}/datepicker-example1.xml?title=&lt;DATEPICKER&gt;')" />
+                                    <NODE label="Gesture" onclick="open('/{prefix}/gesture-example1.xml?title=&lt;GESTURE&gt;')" />
+                                    <NODE label="Input" onclick="open('/{prefix}/input-example1.xml?title=&lt;INPUT&gt;')" />
+                                    <NODE label="Link" onclick="open('/{prefix}/link-example1.xml?title=&lt;LINK&gt;')" />
+                                    <NODE label="Popover" onclick="open('/{prefix}/popover-example1.xml?title=&lt;POPOVER&gt;')" />
+                                    <NODE label="Radio" onclick="open('/{prefix}/radio-example1.xml?title=&lt;RADIO&gt;')" />
+                                    <NODE label="Scribble" onclick="open('/{prefix}/scribble-example1.xml?title=&lt;SCRIBBLE&gt;')" />
+                                    <NODE label="Select" onclick="open('/{prefix}/select-example1.xml?title=&lt;SELECT&gt;')" />
+                                    <NODE label="Switch" onclick="open('/{prefix}/switch-example1.xml?title=&lt;SWITCH&gt;')" />
+                                    <NODE label="Slider" onclick="open('/{prefix}/slider-example1.xml?title=&lt;SLIDER&gt;')" />
+                                    <NODE label="Tooltip" onclick="open('/{prefix}/tooltip-example1.xml?title=&lt;TOOLTIP&gt;')" />
+                                </NODE>
+                                <NODE label="Display Widgets" expanded="false">
+                                    <NODE label="Animation" onclick="open('/{prefix}/animation-example1.xml?title=&lt;ANIMATION&gt;')" />
+                                    <NODE label="Busy" onclick="open('/{prefix}/busy-example1.xml?title=&lt;BUSY&gt;')" />
+                                    <NODE label="Html" onclick="open('/{prefix}/html-example1.xml?title=&lt;HTML&gt;')" />
+                                    <NODE label="Icon" onclick="open('/{prefix}/icon-example1.xml?title=&lt;ICON&gt;')" />
+                                    <NODE label="Image" onclick="open('/{prefix}/image-example2.xml?title=&lt;IMAGE&gt;')" />
+                                    <NODE label="Modal" onclick="open('/{prefix}/modal-example1.xml?title=&lt;MODAL&gt;')" />
+                                    <NODE label="Text" onclick="open('/{prefix}/text-example1.xml?title=&lt;TEXT&gt;')" />
+                                    <NODE label="Video" onclick="open('/{prefix}/video-example1.xml?title=&lt;VIDEO&gt;')" />
+                                </NODE>
+                                <NODE label="Layout Widgets" expanded="false">
+                                    <NODE label="Box" expanded="false">
+                                        <NODE label="Decorated Box" onclick="open('/{prefix}/box-example1.xml?title=Decorated &lt;BOX&gt;')" />
+                                        <NODE label="Layout Box" onclick="open('/{prefix}/box-example2.xml?title=Layout &lt;BOX&gt;')" />
+                                    </NODE>
+                                    <NODE label="Center" onclick="open('/{prefix}/center-example1.xml?title=&lt;CENTER&gt;')" />
+                                    <NODE label="Column" onclick="open('/{prefix}/column-example1.xml?title=&lt;COLUMN&gt;')" />
+                                    <NODE label="Drawer" onclick="open('/{prefix}/drawer-example1.xml?title=&lt;DRAWER&gt;')" />
+                                    <NODE label="Expanded" onclick="open('/{prefix}/expanded-example1.xml?title=&lt;EXPANDED&gt;')" />
+                                    <xNODE label="Footer" onclick="" />
+                                    <xNODE label="Header" onclick="" />
+                                    <NODE label="Padding" onclick="open('/{prefix}/padding-example1.xml?title=&lt;PADDING&gt;')" />
+                                    <NODE label="Pager" onclick="open('/{prefix}/pager-example1.xml?title=&lt;PAGER&gt;')" />
+                                    <NODE label="Row" onclick="open('/{prefix}/row-example1.xml?title=&lt;ROW&gt;')" />
+                                    <NODE label="Scroller" onclick="open('/{prefix}/scroller-example1.xml?title=&lt;SCROLLER&gt;')" />
+                                    <NODE label="Splitview" onclick="open('/{prefix}/splitview-example1.xml?title=&lt;SPLITVIEW&gt;')" />
+                                    <NODE label="Stack" onclick="open('/{prefix}/stack-example1.xml?title=&lt;STACK&gt;')" />
+                                    <NODE label="Tabview" onclick="open('/{prefix}/tabview-example1.xml?title=&lt;TABVIEW&gt;')" />
+                                    <NODE label="Treeview" onclick="open('/{prefix}/treeview-example1.xml?title=&lt;TREEVIEW&gt;')" />
+                                </NODE>
+                                <NODE label="Data UI Widgets" expanded="false">
+                                    <NODE label="Charts" expanded="false">
+                                        <NODE label="Pie" onclick="open('/{prefix}/chart-example1.xml?title=Pie &lt;CHART&gt;')" />
+                                        <NODE label="Line" onclick="open('/{prefix}/chart-example2.xml?title=Line &lt;CHART&gt;')" />
+                                        <NODE label="Bar" onclick="open('/{prefix}/chart-example3.xml?title=Bar &lt;CHART&gt;')" />
+                                        <NODE label="Combination" onclick="open('/{prefix}/chart-example4.xml?title=Combination &lt;CHART&gt;')" />
+                                        <NODE label="Grouped Bar" onclick="open('/{prefix}/chart-example5.xml?title=Grouped Bar &lt;CHART&gt;')" />
+                                        <NODE label="Stacked Bar" onclick="open('/{prefix}/chart-example6.xml?title=Stacked Bar &lt;CHART&gt;')" />
+                                        <NODE label="Grouped &amp; Stacked" onclick="open('/{prefix}/chart-example7.xml?title=Grouped %26 Stacked Bar &lt;CHART&gt;')" />
+                                    </NODE>
+                                    <NODE label="List" expanded="false">
+                                        <NODE label="Collapsed List" onclick="open('/{prefix}/list-example2.xml?title=&lt;LIST&gt;')" />
+                                        <NODE label="Dynamic List" onclick="open('/{prefix}/list-example1.xml?title=&lt;LIST&gt;')" />
+                                    </NODE>
+                                    <NODE label="Grid" expanded="false">
+                                        <NODE label="Static Grid" onclick="open('/{prefix}/grid-example1.xml?title=&lt;GRID&gt;')" />
+                                        <NODE label="Dynamic Grid" onclick="open('/{prefix}/grid-example2.xml?title=&lt;GRID&gt;')" />
+                                    </NODE>
+                                    <NODE label="Maps" expanded="false">
+                                        <NODE label="Satellite Map" onclick="open('/{prefix}/map-example1.xml?title=&lt;MAP&gt;')" />
+                                        <NODE label="Vector Map" onclick="open('/{prefix}/map-example2.xml?title=&lt;MAP&gt;')" />
+                                    </NODE>
+                                    <NODE label="Menu" onclick="open('/{prefix}/menu-example1.xml?title=&lt;MENU&gt;')" />
+                                    <NODE label="Table" onclick="open('/{prefix}/table-example1.xml?title=&lt;TABLE&gt;')" />
+                                </NODE>
+                                <NODE label="Utility Widgets" expanded="false">
+                                    <NODE label="Form" onclick="" />
+                                    <NODE label="Include" onclick="open('/{prefix}/include-example1.xml?title=&lt;INCLUDE&gt;')" />
+                                    <NODE label="Template" onclick="open('/{prefix}/template-example1.xml?title=&lt;TEMPLATE&gt;')" />
+                                    <NODE label="Timer" onclick="open('/{prefix}/timer-example1.xml?title=&lt;TIMER&gt;')" />
+                                    <NODE label="Trigger" onclick="open('/{prefix}/trigger-example1.xml?title=&lt;TRIGGER&gt;')" />
+                                    <NODE label="Variable" onclick="open('/{prefix}/variable-example1.xml?title=&lt;VARIABLE&gt;')" />
+                                </NODE>
+                            </NODE>
+                        </TREEVIEW> 
+                    </BOX>
+                </ANIMATION>
+
+                <POSITIONED right="15" top="5">
+                    <BUTTON onclick="fmlpad.replaceChildren({xml},false)" visible="=!{r1}">
+                        <BOX width="100" height="35" color="{THEME.inverseprimary}" bordercolor="{THEME.shadow}" layout="row" radius="5" valign="center" halign="left">
+                            <PAD left="10"/>
+                            <ICON icon="play_arrow" size="20"/>
+                            <PAD left="7"/>
+                            <TEXT value="Parse"/>
+                        </BOX>
+                    </BUTTON>
+                </POSITIONED>
+
+                <POSITIONED right="5" top="5">
+                    <BUTTON onclick="flippy.start()">
+                            <ICON icon="info" size="20"/>
+                    </BUTTON>
+                </POSITIONED>
+
+            </BOX>
+        </VIEW>
+
+        <VIEW id="fmlpad"/>
+
+    </SPLITVIEW>
+</FML>

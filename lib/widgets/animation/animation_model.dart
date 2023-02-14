@@ -95,20 +95,20 @@ class AnimationModel extends DecoratedWidgetModel implements IViewableWidget
   }
   String? get transition => _transition?.get();
 
-  /// side - used on on flip transition
-  StringObservable? _side;
-  set side (dynamic v)
+  /// anchor - used on on flip transition
+  StringObservable? _anchor;
+  set anchor (dynamic v)
   {
-    if (_side != null)
+    if (_anchor != null)
     {
-      _side!.set(v);
+      _anchor!.set(v);
     }
     else if (v != null)
     {
-      _side = StringObservable(Binding.toKey(id, 'side'), v, scope: scope, listener: onPropertyChange);
+      _anchor = StringObservable(Binding.toKey(id, 'anchor'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  String get side => _side?.get() ?? "left";
+  String get anchor => _anchor?.get() ?? "center";
 
   /// axis - used on on flip transition
   StringObservable? _axis;
@@ -296,7 +296,7 @@ class AnimationModel extends DecoratedWidgetModel implements IViewableWidget
     to          = Xml.get(node: xml, tag: 'to');
     dx          = Xml.get(node: xml, tag: 'x');
     dy          = Xml.get(node: xml, tag: 'y');
-    side        = Xml.get(node: xml, tag: 'side');
+    anchor      = Xml.get(node: xml, tag: 'anchor');
     axis        = Xml.get(node: xml, tag: 'axis');
   }
 

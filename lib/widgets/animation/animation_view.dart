@@ -192,9 +192,38 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
     {
       case ANIMATION.Transitions.flip :
 
-        // side
-        //RotateSide? side = S.toEnum(widget.model.side, RotateSide.values);
-        //if (side == null) side = RotateSide.left;
+        // anchor
+        Alignment anchor = Alignment.center;
+        switch (widget.model.anchor.toLowerCase())
+        {
+          case "topleft" :
+            anchor = Alignment.topLeft;
+            break;
+          case "centerleft" :
+            anchor = Alignment.centerLeft;
+            break;
+          case "bottomleft" :
+            anchor = Alignment.bottomLeft;
+            break;
+          case "topcenter" :
+            anchor = Alignment.topCenter;
+            break;
+          case "center" :
+            anchor = Alignment.center;
+            break;
+          case "bottomcenter" :
+            anchor = Alignment.bottomCenter;
+            break;
+          case "topright" :
+            anchor = Alignment.topRight;
+            break;
+          case "centerright" :
+            anchor = Alignment.centerRight;
+            break;
+          case "bottomright" :
+            anchor = Alignment.bottomRight;
+            break;
+        }
 
         // axis
         FlipDirection? axis = S.toEnum(widget.model.axis.toUpperCase(), FlipDirection.values);
@@ -204,6 +233,7 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
         view = FlipCard(
             speed: duration,
             direction: axis,
+            alignment: anchor,
             controller: _controller,
             front: front ?? Container(),
             back: back ?? Container());

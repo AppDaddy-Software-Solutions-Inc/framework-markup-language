@@ -114,7 +114,7 @@
             <!-- themes -->
             <PAD right="10"/>
             <GET id="dbStyles" url="https://fml.dev/fmlpad/styles.xml" root="STYLES.STYLE" ttl="1d"/>
-            <SELECT id="theme" width="180" border="none" data="dbStyles" value='{STASH.FmlPadTheme}' hint="Select an Editor Theme" onchange="stash('FmlPadTheme',{this.value})">
+            <SELECT id="theme" width="180" border="none" data="dbStyles" value="{STASH.FmlPadTheme}" hint="Select an Editor Theme" onchange="stash('FmlPadTheme',{this.value})">
                 <OPTION label='{data.label}'/>
             </SELECT>
             <PAD right="40"/>
@@ -133,7 +133,7 @@
             <BOX color="{THEME.background}" width="100%" height="100%" layout="stack">
 
                 <SCROLLER>
-                    <EDITOR id="editor" language="xml" value="{default}" theme="{theme}"/>
+                    <EDITOR id="editor" language="xml" value="{default}" theme="={theme} ?? solarized-light"/>
                 </SCROLLER>
 
                 <POSITIONED right="10" top="5">

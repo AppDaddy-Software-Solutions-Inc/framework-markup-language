@@ -14,9 +14,7 @@ import 'package:fml/helper/common_helpers.dart';
 
 class TreeModel extends DecoratedWidgetModel implements IViewableWidget
 {
-  //////////
-  /* Icon */
-  //////////
+  // Icon
   IconObservable? _icon;
   set icon (dynamic v)
   {
@@ -31,9 +29,7 @@ class TreeModel extends DecoratedWidgetModel implements IViewableWidget
   }
   IconData? get icon => _icon?.get();
 
-  ///////////////////
-  /* expanded icon */
-  ///////////////////
+  // expanded icon
   IconObservable? _expandedicon;
   set expandedicon (dynamic v)
   {
@@ -70,7 +66,7 @@ class TreeModel extends DecoratedWidgetModel implements IViewableWidget
     return model;
   }
 
-  /// Deserializes the FML template elements, attributes and children
+   /// Deserializes the FML template elements, attributes and children
   @override
   void deserialize(XmlElement xml)
   {

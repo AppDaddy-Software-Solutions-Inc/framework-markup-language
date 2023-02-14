@@ -3,6 +3,9 @@
     <GET id="dbExamples" url="https://fml.dev/fmlpad/examples.xml" root="EXAMPLES.EXAMPLE"/>
     <VAR id="xml" value="{editor}" onchange="{r1} ? fmlpad.replaceChildren({xml},false) : null"/>
 
+    <!-- primary datasource for fetching example text -->
+    <GET id="db1" url="{examples}" onsuccess="editor.set({this.response})" refresh="true"/>
+
     <CONST id="default">
         <value>
             <![CDATA[<!-- Welcome to FmlPad! -->
@@ -60,7 +63,6 @@
             <PAD left="20"/>
 
             <!-- examples -->
-            <GET id="db1" url="{examples}" onsuccess="editor.set({this.response})"/>
             <TYPEAHEAD id="examples" bordercolor="transparent" value="" data="dbExamples" hint="Examples" width="250">
                 <OPTION value="{data.url}">
                     <label><ROW valign="center" expand="false"><ICON icon="{data.icon}" size="16" color="{data.color}"/><PAD left="10"/><TEXT value="{data.title}"/></ROW></label>
@@ -131,7 +133,6 @@
 
         <VIEW>
             <BOX color="{THEME.background}" width="100%" height="100%" layout="stack">
-
 
                 <ANIMATION id="flippy" type="flip" duration="500" axis="vertical">
                     <SCROLLER>

@@ -47,7 +47,7 @@
             <IMAGE url="assets://images/fml-logo.png" height="30"/>
             <PAD left="10"/>
             <TEXT value="FmlPad" visible="=!{isSmall}" size="20"/>
-            <PAD left="50"/>
+            <PAD left="50" visible="=!{isSmall}"/>
 
             <!-- widgets -->
             <GET id="dbWidgets" url="https://fml.dev/fmlpad/widgets.xml" root="WIDGETS.WIDGET" ttl="1m"/>
@@ -114,7 +114,7 @@
             <!-- themes -->
             <PAD right="10"/>
             <GET id="dbStyles" url="https://fml.dev/fmlpad/styles.xml" root="STYLES.STYLE" ttl="1d"/>
-            <SELECT id="theme" border="none" data="dbStyles" value='{STASH.FmlPadTheme}' hint="Select an Editor Theme" onchange="stash('FmlPadTheme',{this.value})">
+            <SELECT id="theme" width="180" border="none" data="dbStyles" value='{STASH.FmlPadTheme}' hint="Select an Editor Theme" onchange="stash('FmlPadTheme',{this.value})">
                 <OPTION label='{data.label}'/>
             </SELECT>
             <PAD right="40"/>

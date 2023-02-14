@@ -133,21 +133,29 @@ class _TableHeaderCellViewState extends State<TableHeaderCellView>
         /* Icon */
         //////////
         double size = 16;
-        Widget icon = Icon(
-          Icons.sort,
-          color: t.onSecondaryContainer.withOpacity(0.50),
-          size: size,
-        );
+        Widget icon = UnconstrainedBox(child: Container(width: 16, height: 24, alignment: Alignment.center, constraints: BoxConstraints(maxHeight: 24),
+          child: Stack(
+            children: [
+              Positioned(top: 0, child: Icon(Icons.keyboard_arrow_up, color: t.onSecondaryContainer.withOpacity(0.35), size: size)),
+              Positioned(bottom: 0, child: Icon(Icons.keyboard_arrow_down, color: t.onSecondaryContainer.withOpacity(0.35), size: size)),
+          ])
+        ));
         if (widget.model.sorted == true)
           icon = (widget.model.sortAscending == true)
-              ? Padding(
-              padding: EdgeInsets.all(2),
-              child: Icon(Icons.arrow_downward,
-                  color: t.onSecondaryContainer, size: size))
-              : Padding(
-              padding: EdgeInsets.all(2),
-              child: Icon(Icons.arrow_upward,
-                  color: t.onSecondaryContainer, size: size));
+              ? UnconstrainedBox(child: Container(width: 16, height: 24, alignment: Alignment.center, constraints: BoxConstraints(maxHeight: 24),
+                  child: Stack(
+                      children: [
+                        Positioned(top: 0, child: Icon(Icons.keyboard_arrow_up, color: t.onSecondaryContainer, size: size)),
+                        Positioned(bottom: 0, child: Icon(Icons.keyboard_arrow_down, color: t.onSecondaryContainer.withOpacity(0.15), size: size)),
+                      ])
+              ))
+              : UnconstrainedBox(child: Container(width: 16, height: 24, alignment: Alignment.center, constraints: BoxConstraints(maxHeight: 24),
+                  child: Stack(
+                      children: [
+                        Positioned(top: 0, child: Icon(Icons.keyboard_arrow_up, color: t.onSecondaryContainer.withOpacity(0.15), size: size)),
+                        Positioned(bottom: 0, child: Icon(Icons.keyboard_arrow_down, color: t.onSecondaryContainer, size: size)),
+                      ])
+              ));
 
         ////////////
         /* Button */

@@ -36,15 +36,11 @@ final String applicationTitle = "Flutter Markup Language " + version;
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://applications/<app> to use the asset applications
-
-var defaultDomain = Uri.parse('https://fml.dev');
-
-// Default Application
-final defaultApplication = ApplicationModel(System(),url:defaultDomain.toString());
+String get defaultDomain => 'https://fml.dev/#/assets/templates/examples/checkbox-example1.xml?title=Checkbox-Example1';
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
-final ApplicationTypes appType  = ApplicationTypes.MultiApp;
+final ApplicationTypes appType = ApplicationTypes.SingleApp;
 
 enum ApplicationTypes{ SingleApp, MultiApp }
 
@@ -225,22 +221,6 @@ class System extends WidgetModel implements IEventManager
     }
   }
 
-  Future _initRoute() async
-  {
-    if (isWeb)
-    {
-      // set initial route
-      String route = PlatformDispatcher.instance.defaultRouteName.trim();
-      while (route.startsWith("/")) route = route.replaceFirst("/", "").trim();
-      if (route.toLowerCase().endsWith(".xml")) defaultDomain = defaultDomain.replace(fragment: route);
-
-      // replace default
-      print (Uri.base.toString());
-      var uri = URI.parse(Uri.base.toString());
-      if (uri != null && !uri.host.toLowerCase().startsWith("localhost")) defaultDomain = uri;
-    }
-  }
-
   Future<bool> _initBindables() async
   {
     // platform root path
@@ -345,6 +325,22 @@ class System extends WidgetModel implements IEventManager
           elevation: 5);
       var messenger = ScaffoldMessenger.of(context);
       messenger.showSnackBar(snackbar);
+    }
+  }
+
+  Future _initRoute() async
+  {
+    if (isWeb)
+    {
+      // set initial route
+      String route = PlatformDispatcher.instance.defaultRouteName.trim();
+      while (route.startsWith("/")) route = route.replaceFirst("/", "").trim();
+      //if (route.toLowerCase().endsWith(".xml")) defaultDomain = defaultDomain.replace(fragment: route);
+
+      // replace default
+      print (Uri.base.toString());
+      var uri = URI.parse(Uri.base.toString());
+      //if (uri != null && !uri.host.toLowerCase().startsWith("localhost")) defaultDomain = uri;
     }
   }
 

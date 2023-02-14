@@ -44,15 +44,22 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     // set default app
     if (isWeb || appType == ApplicationTypes.SingleApp)
     {
-      // remove start page
-      if (defaultDomain.hasFragment) defaultDomain = defaultDomain.removeFragment();
+      var domain = defaultDomain;
+
+      // replace default for testing
+      if (isWeb && kDebugMode)
+      {
+        var uri = Uri.tryParse(Uri.base.toString());
+        if (uri != null && !uri.host.toLowerCase().startsWith("localhost")) domain = uri.url;
+      }
 
       // set default app
-      ApplicationModel app = await ApplicationModel.load(defaultDomain.replace(query: null).url) ?? ApplicationModel(System(),url:defaultDomain.toString());
+      ApplicationModel app = await ApplicationModel.load(url: domain) ?? ApplicationModel(System(), url: domain);
 
       // wait for it to initialize
       await app.initialized;
 
+      // start the app
       System().launchApplication(app);
     }
 
@@ -61,7 +68,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     if (!isWeb && appType == ApplicationTypes.MultiApp) homePage = "store";
 
     // get start page
-    String startPage = defaultDomain.hasFragment ? defaultDomain.fragment : homePage;
+    String startPage = System.app?.startPage ?? homePage;
 
     // start page is different than home page?
     if (homePage.split("?")[0].toLowerCase() != startPage.split("?")[0].toLowerCase())
@@ -80,14 +87,6 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
       if (System.app?.singlePage ?? true) startPage = homePage;
     }
 
-    // clear requested page if the same as the start page
-    if (defaultDomain.hasFragment)
-    {
-      var p1 = startPage.toLowerCase();
-      var p2 = defaultDomain.fragment.toLowerCase();
-      if (p1 == p2) defaultDomain = defaultDomain.removeFragment();
-    }
-
     //  web browser - user hit refresh?
     //if ((System().getNavigationType() == 1) && (!System().singlePageApplication)) page = System().requestedPage;
 
@@ -98,19 +97,19 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
   Future<void> onPageLoaded() async
   {
     // open the requested page
-    if (defaultDomain.hasFragment)
+    if (System.app?.startPage != null && System.app?.started == false)
     {
       // open the requested page
-      _open(defaultDomain.fragment);
+      _open(System.app?.startPage);
 
       // clear requested page so we don't continually
       // open the same page on refresh or reload
-      defaultDomain = defaultDomain.removeFragment();
+      System.app?.started = true;
     }
   }
 
   @override
-  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   PageConfiguration? get currentConfiguration
@@ -136,7 +135,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
   Future<void> setNewRoutePath(PageConfiguration configuration, {String source = "system"}) async
   {
     // initialize
-    if ((pages.isNotEmpty) && (pages.first == dummyPage)) return _initialize();
+    if (pages.isNotEmpty && pages.first == dummyPage) return _initialize();
 
     // deeplink specified
     String? url = configuration.url;

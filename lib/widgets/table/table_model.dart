@@ -398,6 +398,20 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
   }
   bool get sortButtons => _sortButtons?.get() ?? true;
 
+  StringObservable? _ondrag;
+  set ondrag (dynamic v)
+  {
+    if (_ondrag != null)
+    {
+      _ondrag!.set(v);
+    }
+    else if (v != null)
+    {
+      _ondrag = StringObservable(Binding.toKey(id, 'ondrag'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
+    }
+  }
+  dynamic get ondrag => _ondrag?.get();
+
   /// Contains the data map from the row that is selected
   ListObservable? _selected;
   set selected(dynamic v) {
@@ -418,6 +432,7 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
       dynamic oncomplete,
       dynamic center,
       dynamic wrap,
+      dynamic ondrag,
       dynamic margin,
       dynamic altcolor,
       dynamic spacing,
@@ -428,6 +443,7 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
     // instantiate busy observable
     busy = false;
     this.selected = selected;
+    this.ondrag = ondrag;
     this.width = width;
     this.height = height;
     this.oncomplete = oncomplete;
@@ -471,6 +487,7 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
 
     // properties
     selected = Xml.get(node: xml, tag: 'selected');
+    ondrag = Xml.get(node: xml, tag: 'ondrag');
     pagesize = Xml.get(node: xml, tag: 'pagesize');
     paged = Xml.get(node: xml, tag: 'paged');
     width = Xml.get(node: xml, tag: 'width');
@@ -878,6 +895,12 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
     // not implemented
     return true;
   }
+
+  Future<void> onPull(BuildContext context) async
+  {
+    await EventHandler(this).execute(_ondrag);
+  }
+
 
   Widget getView({Key? key}) => TableView(this);
 }

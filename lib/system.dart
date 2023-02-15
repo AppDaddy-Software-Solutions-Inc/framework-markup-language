@@ -161,9 +161,15 @@ class System extends WidgetModel implements IEventManager
   GPS.Gps gps = GPS.Gps();
   GPS.Payload? currentLocation;
 
+  late final String baseUrl;
+
   _initialize() async
   {
-    Log().info('Initializing FML Engine V$version ...');
+    print('Initializing FML Engine V$version on ${Uri.base}...');
+
+    // base URL changes (fragment is dropped) if
+    // used past this point
+    baseUrl = Uri.base.toString();
 
     // initialize platform
     await Platform.init();
@@ -338,7 +344,7 @@ class System extends WidgetModel implements IEventManager
       // replace default for testing
       if (isWeb)
       {
-        var uri = Uri.tryParse(Uri.base.toString());
+        var uri = Uri.tryParse(baseUrl);
         if (uri != null && !uri.host.toLowerCase().startsWith("localhost")) domain = uri.url;
       }
 

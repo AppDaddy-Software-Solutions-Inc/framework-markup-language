@@ -115,9 +115,6 @@ class ApplicationModel extends WidgetModel
   // initializes the app
   Future<bool> initialize() async
   {
-    // wait for the system to initialize
-    await System.initialized;
-
     // build stash
     stash = Scope(id: 'STASH');
     if (domain != null) _stash = await Stash.get(domain!);
@@ -230,7 +227,7 @@ class ApplicationModel extends WidgetModel
     return model;
   }
 
-  void setTheme(ThemeModel theme)
+  void setTheme(ThemeModel theme, bool notify)
   {
     /// Initial Theme Setting
     String def = 'light';
@@ -245,11 +242,27 @@ class ApplicationModel extends WidgetModel
       cBrightness = def;
     }
 
+    var brightness  = theme.brightness;
+    var colorscheme = theme.colorscheme;
+    var font        = theme.font;
+
     // theme values from the app
     theme.brightness  = cBrightness;
     theme.colorscheme = settings('PRIMARY_COLOR')?.toLowerCase() ?? 'lightblue'; // backwards compatibility
     theme.colorscheme = settings('COLOR_SCHEME')?.toLowerCase()  ?? theme.colorscheme;
     theme.font        = settings('FONT');
+
+    // has the theme changed?
+    bool modified = (theme.brightness != brightness || theme.colorscheme != colorscheme || theme.font != font);
+    if (modified && notify && context != null)
+    {
+      // call the theme notifier
+      final themeNotifier = Provider.of<ThemeNotifier>(context!, listen: false);
+      String brightness   = settings('BRIGHTNESS')   ?? ThemeModel.defaultBrightness;
+      String color        = settings('COLOR_SCHEME') ?? ThemeModel.defaultColor;
+      themeNotifier.setTheme(brightness, color);
+      themeNotifier.mapSystemThemeBindables();
+    }
   }
 
   Future<bool> stashValue(String key, dynamic value) async
@@ -296,7 +309,7 @@ class ApplicationModel extends WidgetModel
     return ok;
   }
 
-  void launch({ThemeModel? theme})
+  void launch(ThemeModel theme, bool notifyOnThemeChange)
   {
     // set stash values
     _stash.map.entries.forEach((entry) => stash.setObservable(entry.key, entry.value));
@@ -310,18 +323,7 @@ class ApplicationModel extends WidgetModel
     }
 
     // set the theme if supplied
-    if (theme != null) setTheme(theme);
-
-    // set the theme
-    var context = this.context;
-    if (context != null)
-    {
-      final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-      String brightness   = settings('BRIGHTNESS')   ?? ThemeModel.defaultBrightness;
-      String color        = settings('COLOR_SCHEME') ?? ThemeModel.defaultColor;
-      themeNotifier.setTheme(brightness, color);
-      themeNotifier.mapSystemThemeBindables();
-    }
+    if (theme != null) setTheme(theme, notifyOnThemeChange);
   }
 
   void close()

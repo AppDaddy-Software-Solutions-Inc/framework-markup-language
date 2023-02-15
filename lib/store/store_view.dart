@@ -79,7 +79,6 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
     // reset the theme
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     themeNotifier.setTheme(ThemeModel.defaultBrightness, ThemeModel.defaultColor);
-
   }
 
   /// Callback to fire the [_ViewState.build] when the [StoreModel] changes
@@ -316,7 +315,7 @@ class AppFormState extends State<AppForm>
     }
 
     // assign url
-    this.url = uri.toString();
+    this.url = url;
 
     return null;
   }

@@ -92,7 +92,8 @@ class Store extends WidgetModel implements IModelListener
     var page = app.homePage;
 
     // set the system app
-    System().launchApplication(app);
+    app.started = false;
+    System().launchApplication(app, true);
 
     // refresh the app
     app.refresh();

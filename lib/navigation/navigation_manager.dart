@@ -41,28 +41,6 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     // clear all pages
     _pages.clear();
 
-    // set default app
-    if (isWeb || appType == ApplicationTypes.SingleApp)
-    {
-      var domain = defaultDomain;
-
-      // replace default for testing
-      if (isWeb && kDebugMode)
-      {
-        var uri = Uri.tryParse(Uri.base.toString());
-        if (uri != null && !uri.host.toLowerCase().startsWith("localhost")) domain = uri.url;
-      }
-
-      // set default app
-      ApplicationModel app = await ApplicationModel.load(url: domain) ?? ApplicationModel(System(), url: domain);
-
-      // wait for it to initialize
-      await app.initialized;
-
-      // start the app
-      System().launchApplication(app);
-    }
-
     // get home page
     String? homePage = System.app?.homePage ?? "store";
     if (!isWeb && appType == ApplicationTypes.MultiApp) homePage = "store";

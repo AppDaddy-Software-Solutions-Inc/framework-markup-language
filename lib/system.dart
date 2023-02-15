@@ -40,7 +40,7 @@ String get defaultDomain => 'https://fml.dev/#/assets/templates/examples/checkbo
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
-final ApplicationTypes appType = ApplicationTypes.SingleApp;
+final ApplicationTypes appType = ApplicationTypes.MultiApp;
 
 enum ApplicationTypes{ SingleApp, MultiApp }
 
@@ -330,17 +330,26 @@ class System extends WidgetModel implements IEventManager
 
   Future _initRoute() async
   {
-    if (isWeb)
+    // set default app
+    if (isWeb || appType == ApplicationTypes.SingleApp)
     {
-      // set initial route
-      String route = PlatformDispatcher.instance.defaultRouteName.trim();
-      while (route.startsWith("/")) route = route.replaceFirst("/", "").trim();
-      //if (route.toLowerCase().endsWith(".xml")) defaultDomain = defaultDomain.replace(fragment: route);
+      var domain = defaultDomain;
 
-      // replace default
-      print (Uri.base.toString());
-      var uri = URI.parse(Uri.base.toString());
-      //if (uri != null && !uri.host.toLowerCase().startsWith("localhost")) defaultDomain = uri;
+      // replace default for testing
+      if (isWeb && kDebugMode)
+      {
+        var uri = Uri.tryParse(Uri.base.toString());
+        if (uri != null && !uri.host.toLowerCase().startsWith("localhost")) domain = uri.url;
+      }
+
+      // set default app
+      ApplicationModel app = await ApplicationModel.load(url: domain) ?? ApplicationModel(System(), url: domain);
+
+      // wait for it to initialize
+      await app.initialized;
+
+      // start the app
+      System().launchApplication(app, false);
     }
   }
 
@@ -355,7 +364,7 @@ class System extends WidgetModel implements IEventManager
   }
 
   // launches the application
-  launchApplication(ApplicationModel app)
+  launchApplication(ApplicationModel app, bool notifyOnThemeChange)
   {
     // Close the old application if one
     // is running
@@ -387,7 +396,7 @@ class System extends WidgetModel implements IEventManager
     _app = app;
 
     // launch the application
-    app.launch(theme: theme);
+    app.launch(theme, notifyOnThemeChange);
 
     // set credentials
     if (app.jwt != null) _app?.logon(app.jwt);

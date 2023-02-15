@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:fml/event/manager.dart';
 import 'package:fml/helper/scroll_behavior.dart';
@@ -281,13 +282,28 @@ class _GridViewState extends State<GridView> implements IModelListener
     //////////
 
     // Build the Grid Rows
-    Widget view = ListView.custom(scrollDirection: direction, controller: scroller,
+    Widget view = ListView.custom(scrollDirection: direction,
+        physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null,
+        controller: scroller,
         childrenDelegate: SliverChildBuilderDelegate(
             (BuildContext context, int rowIndex) => rowBuilder(context, rowIndex),
             childCount: (widget.model.items.length / count).ceil()
         ));
 
-    view = ScrollConfiguration(behavior: ProperScrollBehavior(), child: view);
+      if(widget.model.onpulldown != null) view = RefreshIndicator(
+          onRefresh: () => widget.model.onPull(context),
+          child: view);
+
+      if(widget.model.onpulldown != null || widget.model.draggable) view = ScrollConfiguration(
+        behavior: ProperScrollBehavior().copyWith(
+          dragDevices: {
+            PointerDeviceKind.touch,
+            PointerDeviceKind.mouse,
+          },
+        ),
+        child: view,
+      ); else view = ScrollConfiguration(behavior: ProperScrollBehavior(), child: view);
+
 
     // Constrain the View
     var w  = widget.model.width;

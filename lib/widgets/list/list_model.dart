@@ -211,12 +211,39 @@ class ListModel extends DecoratedWidgetModel implements IViewableWidget, IForm, 
   }
   bool get collapsed => _collapsed?.get() ?? false;
 
-  ListModel(WidgetModel? parent, String? id, {dynamic direction, dynamic scrollShadows}) : super(parent, id)
+  /// Calls an [Event] String when the scroll overscrolls
+  StringObservable? _onpulldown;
+  set onpulldown (dynamic v)
+  {
+    if (_onpulldown != null)
+    {
+      _onpulldown!.set(v);
+    }
+    else if (v != null)
+    {
+      _onpulldown = StringObservable(Binding.toKey(id, 'onpulldown'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
+    }
+  }
+  dynamic get onpulldown => _onpulldown?.get();
+
+  BooleanObservable? _draggable;
+  set draggable(dynamic v) {
+    if (_draggable != null) {
+      _draggable!.set(v);
+    } else if (v != null) {
+      _draggable = BooleanObservable(Binding.toKey(id, 'draggable'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get draggable => _draggable?.get() ?? false;
+
+  ListModel(WidgetModel? parent, String? id, {dynamic direction, dynamic draggable, dynamic scrollShadows, dynamic onpulldown}) : super(parent, id)
   {
     // instantiate busy observable
     busy = false;
 
     this.direction = direction;
+    this.draggable = draggable;
+    this.onpulldown = onpulldown;
     this.scrollShadows = scrollShadows;
     this.scrollButtons = scrollButtons;
     this.collapsed = collapsed;
@@ -253,9 +280,11 @@ class ListModel extends DecoratedWidgetModel implements IViewableWidget, IForm, 
 
     // properties
     direction  = Xml.get(node: xml, tag: 'direction');
+    draggable = Xml.get(node: xml, tag: 'draggable');
     scrollShadows = Xml.get(node: xml, tag: 'scrollshadows');
     scrollButtons = Xml.get(node: xml, tag: 'scrollbuttons');
     collapsed = Xml.get(node: xml, tag: 'collapsed');
+    onpulldown  = Xml.get(node: xml, tag: 'onpulldown');
 
     // clear items
     this.items.forEach((_,item) => item.dispose());
@@ -360,6 +389,12 @@ class ListModel extends DecoratedWidgetModel implements IViewableWidget, IForm, 
     // not implemented
     return true;
   }
+
+  Future<void> onPull(BuildContext context) async
+  {
+    await EventHandler(this).execute(_onpulldown);
+  }
+
 
   Widget getView({Key? key}) => ListLayoutView(this);
 }

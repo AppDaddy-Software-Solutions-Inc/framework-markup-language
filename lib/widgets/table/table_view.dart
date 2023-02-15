@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'dart:ui';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
@@ -407,8 +408,23 @@ class _TableViewState extends State<TableView> implements IModelListener, IEvent
     ////////////////
     /* Build Body */
     ////////////////
-    Widget list = ListView.custom(scrollDirection: Axis.vertical, controller: vScroller, itemExtent: widget.model.heights['row'], childrenDelegate: SliverChildBuilderDelegate((BuildContext context, int index) {return rowBuilder(context, index);},));
-    Widget body = UnconstrainedBox(child: SizedBox(width: bodyWidth, height: bodyHeight, child: ScrollConfiguration(behavior: MyCustomScrollBehavior(), child: list)));
+
+    Widget list;
+
+    list = ListView.custom(physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null, scrollDirection: Axis.vertical, controller: vScroller, itemExtent: widget.model.heights['row'], childrenDelegate: SliverChildBuilderDelegate((BuildContext context, int index) {return rowBuilder(context, index);},));
+
+    if(widget.model.onpulldown != null) list = RefreshIndicator(
+        onRefresh: () => widget.model.onPull(context),
+        child: list);
+
+    ScrollBehavior behavior = (widget.model.onpulldown != null || widget.model.draggable) ? MyCustomScrollBehavior().copyWith(
+        dragDevices: {
+          PointerDeviceKind.touch,
+          PointerDeviceKind.mouse,
+        }) : MyCustomScrollBehavior();
+
+    Widget body = UnconstrainedBox(child: SizedBox(width: bodyWidth, height: bodyHeight, child: ScrollConfiguration(behavior:
+    behavior, child: list)));
 
     ///////////////////////////////////
     /* Build Horizontal Scroll Track */
@@ -439,7 +455,19 @@ class _TableViewState extends State<TableView> implements IModelListener, IEvent
     ////////////////////
     /* Scrolled Table */
     ////////////////////
-    var scrolledTable = SingleChildScrollView(scrollDirection: Axis.horizontal, child: table, controller: hScroller);
+    Widget scrolledTable;
+
+    scrolledTable = SingleChildScrollView(scrollDirection: Axis.horizontal, child: table, controller: hScroller);
+
+    if(widget.model.onpulldown != null || widget.model.draggable) scrolledTable = ScrollConfiguration(
+      behavior: ScrollConfiguration.of(context).copyWith(
+        dragDevices: {
+          PointerDeviceKind.touch,
+          PointerDeviceKind.mouse,
+        },
+      ),
+      child: scrolledTable,
+    );
 
     //////////
     /* View */

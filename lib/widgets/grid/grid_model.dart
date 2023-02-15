@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
 
@@ -172,14 +173,40 @@ class GridModel extends DecoratedWidgetModel implements IViewableWidget, IScroll
   }
   dynamic get direction => _direction?.get();
 
+  StringObservable? _onpulldown;
+  set onpulldown (dynamic v)
+  {
+    if (_onpulldown != null)
+    {
+      _onpulldown!.set(v);
+    }
+    else if (v != null)
+    {
+      _onpulldown = StringObservable(Binding.toKey(id, 'onpulldown'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
+    }
+  }
+  dynamic get onpulldown => _onpulldown?.get();
+
+  BooleanObservable? _draggable;
+  set draggable(dynamic v) {
+    if (_draggable != null) {
+      _draggable!.set(v);
+    } else if (v != null) {
+      _draggable = BooleanObservable(Binding.toKey(id, 'draggable'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get draggable => _draggable?.get() ?? false;
+
   Size? itemSize;
 
-  GridModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic direction, dynamic scrollShadows, dynamic scrollButtons}) : super(parent, id)
+  GridModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic direction, dynamic scrollShadows, dynamic scrollButtons, dynamic onpulldown, dynamic draggable}) : super(parent, id)
   {
     // instantiate busy observable
     busy = false;
 
     this.width     = width;
+    this.draggable = draggable;
+    this.onpulldown    = onpulldown;
     this.height    = height;
     this.direction = direction;
     this.scrollShadows = scrollShadows;
@@ -215,6 +242,8 @@ class GridModel extends DecoratedWidgetModel implements IViewableWidget, IScroll
     // properties
     direction      = Xml.get(node: xml, tag: 'direction');
     scrollShadows  = Xml.get(node: xml, tag: 'scrollshadows');
+    onpulldown  = Xml.get(node: xml, tag: 'onpulldown');
+    draggable = Xml.get(node: xml, tag: 'draggable');
 
     // clear items
     this.items.forEach((_,item) => item.dispose());
@@ -401,6 +430,11 @@ class GridModel extends DecoratedWidgetModel implements IViewableWidget, IScroll
     this.items.clear();
 
     super.dispose();
+  }
+
+  Future<void> onPull(BuildContext context) async
+  {
+    await EventHandler(this).execute(_onpulldown);
   }
 
   Widget getView({Key? key}) => GRID.GridView(this);

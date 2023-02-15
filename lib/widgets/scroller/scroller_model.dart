@@ -94,6 +94,32 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
   }
   dynamic get onscrolledtoend => _onscrolledtoend?.get();
 
+
+  /// Calls an [Event] String when the scroll overscrolls
+  StringObservable? _onpulldown;
+  set onpulldown (dynamic v)
+  {
+    if (_onpulldown != null)
+    {
+      _onpulldown!.set(v);
+    }
+    else if (v != null)
+    {
+      _onpulldown = StringObservable(Binding.toKey(id, 'onpulldown'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
+    }
+  }
+  dynamic get onpulldown => _onpulldown?.get();
+
+  BooleanObservable? _draggable;
+  set draggable(dynamic v) {
+    if (_draggable != null) {
+      _draggable!.set(v);
+    } else if (v != null) {
+      _draggable = BooleanObservable(Binding.toKey(id, 'draggable'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get draggable => _draggable?.get() ?? false;
+
   ColorObservable? _shadowcolor;
   set shadowcolor(dynamic v) {
     if (_shadowcolor != null) {
@@ -110,6 +136,7 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
   ScrollerModel(WidgetModel parent, String? id,
       { dynamic direction,
         dynamic scrollbar,
+        dynamic draggable,
         dynamic align,
         dynamic layout,
         dynamic shadowcolor,
@@ -118,10 +145,13 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
         dynamic minwidth,
         dynamic minheight,
         dynamic maxwidth,
+        dynamic onpulldown,
         dynamic maxheight,})
       : super(parent, id)
   {
     this.direction = direction;
+    this.draggable = draggable;
+    this.onpulldown = onpulldown;
     this.align = align;
     this.width = width;
     this.shadowcolor = shadowcolor;
@@ -169,6 +199,8 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
     layout = Xml.get(node: xml, tag: 'layout');
     onscrolledtoend = Xml.get(node: xml, tag: 'onscrolledtoend');
     shadowcolor = Xml.get(node: xml, tag: 'shadowcolor');
+    onpulldown = Xml.get(node: xml, tag: 'onpulldown');
+    draggable = Xml.get(node: xml, tag: 'draggable');
   }
 
   Future<bool> scrolledToEnd(BuildContext context) async {
@@ -183,5 +215,13 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
     super.dispose();
   }
 
+  Future<void> onPull(BuildContext context) async
+  {
+    await EventHandler(this).execute(_onpulldown);
+  }
+
+
   Widget getView({Key? key}) => ScrollerView(this);
 }
+
+

@@ -226,12 +226,23 @@ class ListModel extends DecoratedWidgetModel implements IViewableWidget, IForm, 
   }
   dynamic get ondrag => _ondrag?.get();
 
-  ListModel(WidgetModel? parent, String? id, {dynamic direction, dynamic scrollShadows, dynamic ondrag}) : super(parent, id)
+  BooleanObservable? _draggable;
+  set draggable(dynamic v) {
+    if (_draggable != null) {
+      _draggable!.set(v);
+    } else if (v != null) {
+      _draggable = BooleanObservable(Binding.toKey(id, 'draggable'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get draggable => _draggable?.get() ?? false;
+
+  ListModel(WidgetModel? parent, String? id, {dynamic direction, dynamic draggable, dynamic scrollShadows, dynamic ondrag}) : super(parent, id)
   {
     // instantiate busy observable
     busy = false;
 
     this.direction = direction;
+    this.draggable = draggable;
     this.ondrag = ondrag;
     this.scrollShadows = scrollShadows;
     this.scrollButtons = scrollButtons;
@@ -269,6 +280,7 @@ class ListModel extends DecoratedWidgetModel implements IViewableWidget, IForm, 
 
     // properties
     direction  = Xml.get(node: xml, tag: 'direction');
+    draggable = Xml.get(node: xml, tag: 'draggable');
     scrollShadows = Xml.get(node: xml, tag: 'scrollshadows');
     scrollButtons = Xml.get(node: xml, tag: 'scrollbuttons');
     collapsed = Xml.get(node: xml, tag: 'collapsed');

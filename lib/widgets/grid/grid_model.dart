@@ -187,14 +187,25 @@ class GridModel extends DecoratedWidgetModel implements IViewableWidget, IScroll
   }
   dynamic get ondrag => _ondrag?.get();
 
+  BooleanObservable? _draggable;
+  set draggable(dynamic v) {
+    if (_draggable != null) {
+      _draggable!.set(v);
+    } else if (v != null) {
+      _draggable = BooleanObservable(Binding.toKey(id, 'draggable'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get draggable => _draggable?.get() ?? false;
+
   Size? itemSize;
 
-  GridModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic direction, dynamic scrollShadows, dynamic scrollButtons, dynamic ondrag}) : super(parent, id)
+  GridModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic direction, dynamic scrollShadows, dynamic scrollButtons, dynamic ondrag, dynamic draggable}) : super(parent, id)
   {
     // instantiate busy observable
     busy = false;
 
     this.width     = width;
+    this.draggable = draggable;
     this.ondrag    = ondrag;
     this.height    = height;
     this.direction = direction;
@@ -232,6 +243,7 @@ class GridModel extends DecoratedWidgetModel implements IViewableWidget, IScroll
     direction      = Xml.get(node: xml, tag: 'direction');
     scrollShadows  = Xml.get(node: xml, tag: 'scrollshadows');
     ondrag  = Xml.get(node: xml, tag: 'ondrag');
+    draggable = Xml.get(node: xml, tag: 'draggable');
 
     // clear items
     this.items.forEach((_,item) => item.dispose());

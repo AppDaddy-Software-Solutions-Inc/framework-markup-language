@@ -412,6 +412,16 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
   }
   dynamic get ondrag => _ondrag?.get();
 
+  BooleanObservable? _draggable;
+  set draggable(dynamic v) {
+    if (_draggable != null) {
+      _draggable!.set(v);
+    } else if (v != null) {
+      _draggable = BooleanObservable(Binding.toKey(id, 'draggable'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get draggable => _draggable?.get() ?? false;
+
   /// Contains the data map from the row that is selected
   ListObservable? _selected;
   set selected(dynamic v) {
@@ -427,6 +437,7 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
 
   TableModel(WidgetModel parent, String? id,
       {dynamic selected,
+      dynamic draggable,
       dynamic width,
       dynamic height,
       dynamic oncomplete,
@@ -443,6 +454,7 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
     // instantiate busy observable
     busy = false;
     this.selected = selected;
+    this.draggable = draggable;
     this.ondrag = ondrag;
     this.width = width;
     this.height = height;
@@ -487,6 +499,7 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
 
     // properties
     selected = Xml.get(node: xml, tag: 'selected');
+    draggable = Xml.get(node:xml, tag: 'draggable');
     ondrag = Xml.get(node: xml, tag: 'ondrag');
     pagesize = Xml.get(node: xml, tag: 'pagesize');
     paged = Xml.get(node: xml, tag: 'paged');

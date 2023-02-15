@@ -192,13 +192,20 @@ class _ScrollerViewState extends State<ScrollerView> implements IModelListener {
     Widget scsv;
    Widget scroller;
    if(widget.model.ondrag != null) {
-     scroller = RefreshIndicator(
+     scroller = ScrollConfiguration(
+         behavior: ScrollConfiguration.of(context).copyWith(
+           dragDevices: {
+             PointerDeviceKind.touch,
+             PointerDeviceKind.mouse,
+           },
+         ),
+         child: RefreshIndicator(
          onRefresh: () => widget.model.onPull(context),
          child: SingleChildScrollView(
              physics: const AlwaysScrollableScrollPhysics(),
              child: child,
              scrollDirection: direction,
-             controller: _scrollController));
+             controller: _scrollController)));
    } else scroller = SingleChildScrollView(
     child: child,
     scrollDirection: direction,
@@ -217,8 +224,7 @@ class _ScrollerViewState extends State<ScrollerView> implements IModelListener {
           child: scroller);
 
     // always or never show scrollbar
-    else
-      scsv = ScrollConfiguration(
+    else if (widget.model.draggable) scsv = ScrollConfiguration(
           behavior: ScrollConfiguration.of(context).copyWith(
             dragDevices: {
               PointerDeviceKind.touch,
@@ -230,6 +236,12 @@ class _ScrollerViewState extends State<ScrollerView> implements IModelListener {
                   controller: _scrollController,
                   thumbVisibility: widget.model.scrollbar ?? false,
                   child:  scroller)));
+
+    else scsv = Container(
+              child: Scrollbar(
+                  controller: _scrollController,
+                  thumbVisibility: widget.model.scrollbar ?? false,
+                  child:  scroller));
     Widget view;
     if (widget.model.scrollbar != true && direction == Axis.vertical) {
       view = Listener(

@@ -417,14 +417,14 @@ class _TableViewState extends State<TableView> implements IModelListener, IEvent
         onRefresh: () => widget.model.onPull(context),
         child: list);
 
-
-
-    Widget body = UnconstrainedBox(child: SizedBox(width: bodyWidth, height: bodyHeight, child: ScrollConfiguration(behavior: MyCustomScrollBehavior().copyWith(
+    ScrollBehavior behavior = (widget.model.ondrag != null || widget.model.draggable) ? MyCustomScrollBehavior().copyWith(
         dragDevices: {
           PointerDeviceKind.touch,
           PointerDeviceKind.mouse,
-        }
-    ), child: list)));
+        }) : MyCustomScrollBehavior();
+
+    Widget body = UnconstrainedBox(child: SizedBox(width: bodyWidth, height: bodyHeight, child: ScrollConfiguration(behavior:
+    behavior, child: list)));
 
     ///////////////////////////////////
     /* Build Horizontal Scroll Track */
@@ -459,10 +459,15 @@ class _TableViewState extends State<TableView> implements IModelListener, IEvent
 
     scrolledTable = SingleChildScrollView(scrollDirection: Axis.horizontal, child: table, controller: hScroller);
 
-    scrolledTable = ScrollConfiguration(behavior: ScrollConfiguration.of(context).copyWith(dragDevices: {
-      PointerDeviceKind.touch,
-      PointerDeviceKind.mouse,
-    },), child: scrolledTable);
+    if(widget.model.ondrag != null || widget.model.draggable) scrolledTable = ScrollConfiguration(
+      behavior: ScrollConfiguration.of(context).copyWith(
+        dragDevices: {
+          PointerDeviceKind.touch,
+          PointerDeviceKind.mouse,
+        },
+      ),
+      child: scrolledTable,
+    );
 
     //////////
     /* View */

@@ -190,7 +190,7 @@ return LayoutBuilder(builder: builder);
         child: view);
 
 
-      view = ScrollConfiguration(
+    if(widget.model.ondrag != null || widget.model.draggable) view = ScrollConfiguration(
           behavior: ScrollConfiguration.of(context).copyWith(
             dragDevices: {
               PointerDeviceKind.touch,

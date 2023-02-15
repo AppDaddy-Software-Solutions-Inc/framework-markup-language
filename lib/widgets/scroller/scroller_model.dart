@@ -110,6 +110,16 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
   }
   dynamic get ondrag => _ondrag?.get();
 
+  BooleanObservable? _draggable;
+  set draggable(dynamic v) {
+    if (_draggable != null) {
+      _draggable!.set(v);
+    } else if (v != null) {
+      _draggable = BooleanObservable(Binding.toKey(id, 'draggable'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get draggable => _draggable?.get() ?? false;
+
   ColorObservable? _shadowcolor;
   set shadowcolor(dynamic v) {
     if (_shadowcolor != null) {
@@ -126,6 +136,7 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
   ScrollerModel(WidgetModel parent, String? id,
       { dynamic direction,
         dynamic scrollbar,
+        dynamic draggable,
         dynamic align,
         dynamic layout,
         dynamic shadowcolor,
@@ -139,6 +150,7 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
       : super(parent, id)
   {
     this.direction = direction;
+    this.draggable = draggable;
     this.ondrag = ondrag;
     this.align = align;
     this.width = width;
@@ -187,7 +199,8 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
     layout = Xml.get(node: xml, tag: 'layout');
     onscrolledtoend = Xml.get(node: xml, tag: 'onscrolledtoend');
     shadowcolor = Xml.get(node: xml, tag: 'shadowcolor');
-    ondrag = Xml.get(node: xml, tag: 'onDrag');
+    ondrag = Xml.get(node: xml, tag: 'ondrag');
+    draggable = Xml.get(node: xml, tag: 'draggable');
   }
 
   Future<bool> scrolledToEnd(BuildContext context) async {

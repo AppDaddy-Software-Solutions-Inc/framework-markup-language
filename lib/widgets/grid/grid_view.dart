@@ -294,7 +294,15 @@ class _GridViewState extends State<GridView> implements IModelListener
           onRefresh: () => widget.model.onPull(context),
           child: view);
 
-      view = ScrollConfiguration(behavior: ProperScrollBehavior().copyWith(dragDevices: {
+      if(widget.model.ondrag != null || widget.model.draggable) view = ScrollConfiguration(
+        behavior: ProperScrollBehavior().copyWith(
+          dragDevices: {
+            PointerDeviceKind.touch,
+            PointerDeviceKind.mouse,
+          },
+        ),
+        child: view,
+      ); else view = ScrollConfiguration(behavior: ProperScrollBehavior().copyWith(dragDevices: {
       PointerDeviceKind.touch,
       PointerDeviceKind.mouse,
     },), child: view);

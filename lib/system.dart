@@ -336,7 +336,7 @@ class System extends WidgetModel implements IEventManager
       var domain = defaultDomain;
 
       // replace default for testing
-      if (isWeb && kDebugMode)
+      if (isWeb)
       {
         var uri = Uri.tryParse(Uri.base.toString());
         if (uri != null && !uri.host.toLowerCase().startsWith("localhost")) domain = uri.url;

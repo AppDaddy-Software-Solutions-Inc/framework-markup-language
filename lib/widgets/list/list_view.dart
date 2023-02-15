@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'dart:ui';
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
@@ -181,12 +182,23 @@ return LayoutBuilder(builder: builder);
           elevation: 2,
           expandedHeaderPadding: EdgeInsets.all(4),
           children: expansionItems(context)));
-      else view = ListView.custom(physics: widget.model.ondrag != null ? const AlwaysScrollableScrollPhysics() : null, scrollDirection: direction, controller: scroller, childrenDelegate: SliverChildBuilderDelegate((BuildContext context, int index) {return itemBuilder(context, index);}, childCount: widget.model.data?.length ?? widget.model.children?.length ?? 0));
+      else view = ListView.custom(  physics: widget.model.ondrag != null ? const AlwaysScrollableScrollPhysics() : null, scrollDirection: direction, controller: scroller, childrenDelegate: SliverChildBuilderDelegate((BuildContext context, int index) {return itemBuilder(context, index);}, childCount: widget.model.data?.length ?? widget.model.children?.length ?? 0));
 
 
     if(widget.model.ondrag != null) view = RefreshIndicator(
         onRefresh: () => widget.model.onPull(context),
         child: view);
+
+
+      view = ScrollConfiguration(
+          behavior: ScrollConfiguration.of(context).copyWith(
+            dragDevices: {
+              PointerDeviceKind.touch,
+              PointerDeviceKind.mouse,
+            },
+          ),
+          child: view,
+      );
         ////////////////////////
     /* Constrain the View */
     ////////////////////////

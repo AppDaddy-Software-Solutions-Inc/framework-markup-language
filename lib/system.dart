@@ -342,8 +342,10 @@ class System extends WidgetModel implements IEventManager
         if (uri != null && !uri.host.toLowerCase().startsWith("localhost")) domain = uri.url;
       }
 
+      print('Startup Domain is $domain');
+
       // set default app
-      ApplicationModel app = await ApplicationModel.load(url: domain) ?? ApplicationModel(System(), url: domain);
+      ApplicationModel app = ApplicationModel(System(), url: domain);
 
       // wait for it to initialize
       await app.initialized;

@@ -393,17 +393,6 @@ class ApplicationModel extends WidgetModel
     return (exception == null);
   }
 
-  static Future<ApplicationModel?> load({required String url}) async
-  {
-    var uri = URI.parse(url);
-    if (uri == null) return null;
-
-    // key is full url less query and fragment
-    var key = uri.replace(query: null, userInfo: null).removeFragment().url;
-    var entry = await Database().find(tableName,key);
-    return await _fromMap(entry);
-  }
-
   static Future<List<ApplicationModel>> loadAll() async
   {
     List<ApplicationModel> apps = [];

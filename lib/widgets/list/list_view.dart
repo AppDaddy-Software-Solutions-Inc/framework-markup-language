@@ -217,7 +217,10 @@ return LayoutBuilder(builder: builder);
           if (descendants != null && descendants.isNotEmpty) {
             int i = 0;
             while (i < descendants.length && descendants[i].value == null) i++;
-            title = Text(descendants[i].value);
+            title = Text(descendants[i].value, style: TextStyle(color: Theme
+                .of(context)
+                .colorScheme
+                .onBackground),);
           }
         }
         else if (S.isNullOrEmpty(itemModel.title)) {

@@ -95,7 +95,7 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
   dynamic get onscrolledtoend => _onscrolledtoend?.get();
 
 
-  /// Calls an [Event] String when the scroll reaches max extent
+  /// Calls an [Event] String when the scroll overscrolls
   StringObservable? _ondrag;
   set ondrag (dynamic v)
   {
@@ -207,10 +207,6 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
     await EventHandler(this).execute(_ondrag);
   }
 
-  Future<bool> onPullRefresh(BuildContext context) async
-  {
-    return await EventHandler(this).execute(_ondrag);
-  }
 
   Widget getView({Key? key}) => ScrollerView(this);
 }

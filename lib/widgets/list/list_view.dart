@@ -171,16 +171,23 @@ return LayoutBuilder(builder: builder);
     //////////
     /* View */
     //////////
-    Widget view = widget.model.collapsed == true
-        ? SingleChildScrollView(child: ExpansionPanelList.radio(
+    Widget view;
+
+    if(widget.model.collapsed) view = SingleChildScrollView(
+        physics: widget.model.ondrag != null ? const AlwaysScrollableScrollPhysics() : null,
+        child: ExpansionPanelList.radio(
           dividerColor: Theme.of(context).colorScheme.onInverseSurface,
           initialOpenPanelValue: 0,
           elevation: 2,
           expandedHeaderPadding: EdgeInsets.all(4),
-          children: expansionItems(context)))
-        : ListView.custom(scrollDirection: direction, controller: scroller, childrenDelegate: SliverChildBuilderDelegate((BuildContext context, int index) {return itemBuilder(context, index);}, childCount: widget.model.data?.length ?? widget.model.children?.length ?? 0));
+          children: expansionItems(context)));
+      else view = ListView.custom(physics: widget.model.ondrag != null ? const AlwaysScrollableScrollPhysics() : null, scrollDirection: direction, controller: scroller, childrenDelegate: SliverChildBuilderDelegate((BuildContext context, int index) {return itemBuilder(context, index);}, childCount: widget.model.data?.length ?? widget.model.children?.length ?? 0));
 
-    ////////////////////////
+
+    if(widget.model.ondrag != null) view = RefreshIndicator(
+        onRefresh: () => widget.model.onPull(context),
+        child: view);
+        ////////////////////////
     /* Constrain the View */
     ////////////////////////
     double? width  = widget.model.width;

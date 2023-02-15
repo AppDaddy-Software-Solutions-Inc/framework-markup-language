@@ -211,12 +211,28 @@ class ListModel extends DecoratedWidgetModel implements IViewableWidget, IForm, 
   }
   bool get collapsed => _collapsed?.get() ?? false;
 
-  ListModel(WidgetModel? parent, String? id, {dynamic direction, dynamic scrollShadows}) : super(parent, id)
+  /// Calls an [Event] String when the scroll overscrolls
+  StringObservable? _ondrag;
+  set ondrag (dynamic v)
+  {
+    if (_ondrag != null)
+    {
+      _ondrag!.set(v);
+    }
+    else if (v != null)
+    {
+      _ondrag = StringObservable(Binding.toKey(id, 'ondrag'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
+    }
+  }
+  dynamic get ondrag => _ondrag?.get();
+
+  ListModel(WidgetModel? parent, String? id, {dynamic direction, dynamic scrollShadows, dynamic ondrag}) : super(parent, id)
   {
     // instantiate busy observable
     busy = false;
 
     this.direction = direction;
+    this.ondrag = ondrag;
     this.scrollShadows = scrollShadows;
     this.scrollButtons = scrollButtons;
     this.collapsed = collapsed;
@@ -256,6 +272,7 @@ class ListModel extends DecoratedWidgetModel implements IViewableWidget, IForm, 
     scrollShadows = Xml.get(node: xml, tag: 'scrollshadows');
     scrollButtons = Xml.get(node: xml, tag: 'scrollbuttons');
     collapsed = Xml.get(node: xml, tag: 'collapsed');
+    ondrag  = Xml.get(node: xml, tag: 'ondrag');
 
     // clear items
     this.items.forEach((_,item) => item.dispose());
@@ -360,6 +377,12 @@ class ListModel extends DecoratedWidgetModel implements IViewableWidget, IForm, 
     // not implemented
     return true;
   }
+
+  Future<void> onPull(BuildContext context) async
+  {
+    await EventHandler(this).execute(_ondrag);
+  }
+
 
   Widget getView({Key? key}) => ListLayoutView(this);
 }

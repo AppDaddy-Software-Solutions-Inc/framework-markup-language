@@ -302,10 +302,7 @@ class _GridViewState extends State<GridView> implements IModelListener
           },
         ),
         child: view,
-      ); else view = ScrollConfiguration(behavior: ProperScrollBehavior().copyWith(dragDevices: {
-      PointerDeviceKind.touch,
-      PointerDeviceKind.mouse,
-    },), child: view);
+      ); else view = ScrollConfiguration(behavior: ProperScrollBehavior(), child: view);
 
 
     // Constrain the View

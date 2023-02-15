@@ -190,7 +190,19 @@ class _ScrollerViewState extends State<ScrollerView> implements IModelListener {
     }
 
     Widget scsv;
-
+   Widget scroller;
+   if(widget.model.ondrag != null) {
+     scroller = RefreshIndicator(
+         onRefresh: () => widget.model.onPull(context),
+         child: SingleChildScrollView(
+             physics: const AlwaysScrollableScrollPhysics(),
+             child: child,
+             scrollDirection: direction,
+             controller: _scrollController));
+   } else scroller = SingleChildScrollView(
+    child: child,
+    scrollDirection: direction,
+    controller: _scrollController);
     // show no scroll bar
     // POINTERDEVICE MOUSE is not reccomended on web due to text selection difficulty, but i have added it in since we do not have text selection.
     if (widget.model.scrollbar == false)
@@ -202,16 +214,11 @@ class _ScrollerViewState extends State<ScrollerView> implements IModelListener {
               PointerDeviceKind.mouse,
             },
           ),
-          child: SingleChildScrollView(
-              child: child,
-              scrollDirection: direction,
-              controller: _scrollController));
+          child: scroller);
 
     // always or never show scrollbar
     else
-      scsv = RefreshIndicator(
-          onRefresh: ,
-          child: ScrollConfiguration(
+      scsv = ScrollConfiguration(
           behavior: ScrollConfiguration.of(context).copyWith(
             dragDevices: {
               PointerDeviceKind.touch,
@@ -222,10 +229,7 @@ class _ScrollerViewState extends State<ScrollerView> implements IModelListener {
               child: Scrollbar(
                   controller: _scrollController,
                   thumbVisibility: widget.model.scrollbar ?? false,
-                  child: SingleChildScrollView(
-                      child: child,
-                      scrollDirection: direction,
-                      controller: _scrollController)))));
+                  child:  scroller)));
     Widget view;
     if (widget.model.scrollbar != true && direction == Axis.vertical) {
       view = Listener(

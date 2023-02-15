@@ -94,6 +94,22 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
   }
   dynamic get onscrolledtoend => _onscrolledtoend?.get();
 
+
+  /// Calls an [Event] String when the scroll reaches max extent
+  StringObservable? _ondrag;
+  set ondrag (dynamic v)
+  {
+    if (_ondrag != null)
+    {
+      _ondrag!.set(v);
+    }
+    else if (v != null)
+    {
+      _ondrag = StringObservable(Binding.toKey(id, 'ondrag'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
+    }
+  }
+  dynamic get ondrag => _ondrag?.get();
+
   ColorObservable? _shadowcolor;
   set shadowcolor(dynamic v) {
     if (_shadowcolor != null) {
@@ -118,10 +134,12 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
         dynamic minwidth,
         dynamic minheight,
         dynamic maxwidth,
+        dynamic ondrag,
         dynamic maxheight,})
       : super(parent, id)
   {
     this.direction = direction;
+    this.ondrag = ondrag;
     this.align = align;
     this.width = width;
     this.shadowcolor = shadowcolor;
@@ -169,6 +187,7 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
     layout = Xml.get(node: xml, tag: 'layout');
     onscrolledtoend = Xml.get(node: xml, tag: 'onscrolledtoend');
     shadowcolor = Xml.get(node: xml, tag: 'shadowcolor');
+    ondrag = Xml.get(node: xml, tag: 'onDrag');
   }
 
   Future<bool> scrolledToEnd(BuildContext context) async {
@@ -183,10 +202,17 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
     super.dispose();
   }
 
+  Future<void> onPull(BuildContext context) async
+  {
+    await EventHandler(this).execute(_ondrag);
+  }
+
+  Future<bool> onPullRefresh(BuildContext context) async
+  {
+    return await EventHandler(this).execute(_ondrag);
+  }
+
   Widget getView({Key? key}) => ScrollerView(this);
 }
 
-Future<bool> onPullRefresh(BuildContext context) async
-{
-  return await EventHandler(this).execute();
-}
+

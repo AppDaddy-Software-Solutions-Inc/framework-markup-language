@@ -26,7 +26,7 @@ class AnimationView extends StatefulWidget
 
 class AnimationViewState extends State<AnimationView> with TickerProviderStateMixin implements IModelListener
 {
-  dynamic? _controller;
+  dynamic _controller;
   late Animation<double>   _animation;
 
   int  _loop    = 0;

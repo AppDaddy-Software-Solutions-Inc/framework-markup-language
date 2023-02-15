@@ -88,7 +88,7 @@ class OptionModel extends ViewableWidgetModel
 
     // Label
     String? label = Xml.attribute(node: xml, tag: 'label');
-    if (S.isNullOrEmpty(label))
+    if (label == null)
     {
       XmlElement? node = Xml.getElement(node: xml, tag: 'label');
       if (node != null)

@@ -13,7 +13,6 @@ class Splash extends StatefulWidget
   _SplashState createState() => _SplashState();
 }
 
-
 class _SplashState extends State<Splash>
 {
   @override

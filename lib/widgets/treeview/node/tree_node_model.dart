@@ -167,7 +167,7 @@ class TreeNodeModel extends DecoratedWidgetModel implements IViewableWidget
   @override
   dispose()
   {
-    Log().debug ('dispose called on' + elementName.toString());
+    // Log().debug ('dispose called on' + elementName.toString());
     super.dispose();
   }
 

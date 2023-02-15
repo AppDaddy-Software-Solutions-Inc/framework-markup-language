@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
-
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:flutter/material.dart';
@@ -11,7 +10,7 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
 /// Transition types
-enum Transitions {fade, position, scale, rotate, size, slide}
+enum Transitions {fade, position, scale, rotate, flip, size, slide}
 
 /// Progression Curve of an Animation or Transition types
 enum Curve {
@@ -59,15 +58,13 @@ enum Curve {
 }
 
 /// Animation Model
-///
 /// Defines the properties of an [ANIMATION.AnimationView]
 class AnimationModel extends DecoratedWidgetModel implements IViewableWidget
 {
   bool runonce = false;
 
-  ////////////////
-  /* animation */
-  ////////////////
+  
+  // animation
   /// Name of Animation to use
   StringObservable? _animation;
   set animation (dynamic v)
@@ -98,6 +95,53 @@ class AnimationModel extends DecoratedWidgetModel implements IViewableWidget
   }
   String? get transition => _transition?.get();
 
+  /// anchor - used on on flip transition
+  StringObservable? _anchor;
+  set anchor (dynamic v)
+  {
+    if (_anchor != null)
+    {
+      _anchor!.set(v);
+    }
+    else if (v != null)
+    {
+      _anchor = StringObservable(Binding.toKey(id, 'anchor'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  String get anchor => _anchor?.get() ?? "center";
+
+  /// axis - used on on flip transition
+  StringObservable? _axis;
+  set axis (dynamic v)
+  {
+    if (_axis != null)
+    {
+      _axis!.set(v);
+    }
+    else if (v != null)
+    {
+      _axis = StringObservable(Binding.toKey(id, 'axis'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  String get axis => _axis?.get() ?? "horizontal";
+
+  StringObservable? _side;
+  set side (dynamic v)
+  {
+    if (_side != null)
+    {
+      _side!.set(v);
+    }
+    else if (v != null)
+    {
+      // no listener since this is only set by the view
+      // and we don't want to trigger a rebuild
+      _side = StringObservable(Binding.toKey(id, 'side'), v, scope: scope);
+    }
+  }
+  String get side => _side?.get() ?? "front";
+
+  
   /// Δ x value for transitions such as slide, defaults to 1.5
   DoubleObservable? _dx;
   set dx (dynamic v)
@@ -268,6 +312,8 @@ class AnimationModel extends DecoratedWidgetModel implements IViewableWidget
     to          = Xml.get(node: xml, tag: 'to');
     dx          = Xml.get(node: xml, tag: 'x');
     dy          = Xml.get(node: xml, tag: 'y');
+    anchor      = Xml.get(node: xml, tag: 'anchor');
+    axis        = Xml.get(node: xml, tag: 'axis');
   }
 
   @override
@@ -292,6 +338,7 @@ class AnimationModel extends DecoratedWidgetModel implements IViewableWidget
 
     switch (function)
     {
+      case "animate" :
       case "start" :
         var view = findListenerOfExactType(AnimationViewState);
         if (view is AnimationViewState) view.start();

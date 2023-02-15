@@ -27,7 +27,7 @@ import 'package:fml/helper/common_helpers.dart';
 import 'dart:io' as io;
 
 // application build version
-final String version = '1.1.1';
+final String version = '1.2.1';
 
 // application title
 // only used in Android when viewing open applications
@@ -36,15 +36,11 @@ final String applicationTitle = "Flutter Markup Language " + version;
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://applications/<app> to use the asset applications
-
-var defaultDomain = Uri.parse('https://test.appdaddy.co');
-
-// Default Application
-final defaultApplication = ApplicationModel(System(),url:defaultDomain.toString());
+String get defaultDomain => 'https://fml.dev/#/assets/templates/examples/checkbox-example1.xml?title=Checkbox-Example1';
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
-final ApplicationTypes appType  = ApplicationTypes.MultiApp;
+final ApplicationTypes appType = ApplicationTypes.MultiApp;
 
 enum ApplicationTypes{ SingleApp, MultiApp }
 
@@ -225,22 +221,6 @@ class System extends WidgetModel implements IEventManager
     }
   }
 
-  Future _initRoute() async
-  {
-    if (isWeb)
-    {
-      // set initial route
-      String route = PlatformDispatcher.instance.defaultRouteName.trim();
-      while (route.startsWith("/")) route = route.replaceFirst("/", "").trim();
-      if (route.toLowerCase().endsWith(".xml")) defaultDomain = defaultDomain.replace(fragment: route);
-
-      // replace default
-      print (Uri.base.toString());
-      var uri = URI.parse(Uri.base.toString());
-      if (uri != null && !uri.host.toLowerCase().startsWith("localhost")) defaultDomain = uri;
-    }
-  }
-
   Future<bool> _initBindables() async
   {
     // platform root path
@@ -348,6 +328,31 @@ class System extends WidgetModel implements IEventManager
     }
   }
 
+  Future _initRoute() async
+  {
+    // set default app
+    if (isWeb || appType == ApplicationTypes.SingleApp)
+    {
+      var domain = defaultDomain;
+
+      // replace default for testing
+      if (isWeb && kDebugMode)
+      {
+        var uri = Uri.tryParse(Uri.base.toString());
+        if (uri != null && !uri.host.toLowerCase().startsWith("localhost")) domain = uri.url;
+      }
+
+      // set default app
+      ApplicationModel app = await ApplicationModel.load(url: domain) ?? ApplicationModel(System(), url: domain);
+
+      // wait for it to initialize
+      await app.initialized;
+
+      // start the app
+      System().launchApplication(app, false);
+    }
+  }
+
   void setApplicationTitle(String? title) async
   {
     title = title ?? app?.settings("APPLICATION_NAME");
@@ -359,7 +364,7 @@ class System extends WidgetModel implements IEventManager
   }
 
   // launches the application
-  launchApplication(ApplicationModel app)
+  launchApplication(ApplicationModel app, bool notifyOnThemeChange)
   {
     // Close the old application if one
     // is running
@@ -391,7 +396,7 @@ class System extends WidgetModel implements IEventManager
     _app = app;
 
     // launch the application
-    app.launch(theme: theme);
+    app.launch(theme, notifyOnThemeChange);
 
     // set credentials
     if (app.jwt != null) _app?.logon(app.jwt);

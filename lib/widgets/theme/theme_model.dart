@@ -16,8 +16,6 @@ class ThemeModel extends DecoratedWidgetModel implements IViewableWidget
 
   static String myId = 'THEME';
 
-  static const Color colorDefault = Color(0xffb2dd4c);
-
   StringObservable? _brightness;
   set brightness(dynamic v) {
     if (_brightness != null)

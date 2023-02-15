@@ -123,7 +123,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   @override
   void dispose()
   {
-    Log().debug('Dispose called on framework view => <FML name="${widget.model.templateName}" url="${widget.model.url}"/>');
+    // Log().debug('Dispose called on framework view => <FML name="${widget.model.templateName}" url="${widget.model.url}"/>');
 
     // Stop Listening to Route Changes 
     NavigationObserver().removeListener(this);

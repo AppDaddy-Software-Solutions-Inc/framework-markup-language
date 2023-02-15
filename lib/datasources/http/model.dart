@@ -25,6 +25,21 @@ class HttpModel extends DataSourceModel implements IDataSource
   bool? foreground = false;
   bool? background = false;
 
+  // refresh
+  BooleanObservable? _refresh;
+  set refresh(dynamic v)
+  {
+    if (_refresh != null)
+    {
+      _refresh!.set(v);
+    }
+    else if (v != null)
+    {
+      _refresh = BooleanObservable(Binding.toKey(id, 'refresh'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get refresh => _refresh?.get() ?? false;
+  
   // method
   StringObservable? _method;
   set method(dynamic v)
@@ -113,11 +128,11 @@ class HttpModel extends DataSourceModel implements IDataSource
   @override
   void deserialize(XmlElement xml)
   {
-
     // deserialize
     super.deserialize(xml);
 
     // properties
+    refresh    = Xml.get(node: xml, tag: 'refresh');
     method     = Xml.attribute(node: xml, tag: 'method');
     timeout    = Xml.get(node: xml, tag: 'timeout');
     url        = Xml.get(node: xml, tag: 'url');
@@ -139,7 +154,7 @@ class HttpModel extends DataSourceModel implements IDataSource
 
   onUrlChange(Observable observable)
   {
-    if ((initialized == true) && (autoexecute == true) && (enabled != false)) start();
+    if ((initialized == true) && (autoexecute == true) && (enabled != false)) start(refresh: this.refresh);
   }
 
   Future<bool> start({bool refresh = false, String? key}) async
@@ -204,7 +219,7 @@ class HttpModel extends DataSourceModel implements IDataSource
     switch (method)
     {
       case Methods.get:
-        response = await Http.get(url!, headers: headers, timeout: timeout);
+        response = await Http.get(url!, headers: headers, timeout: timeout, refresh: refresh);
         break;
 
       case Methods.post:

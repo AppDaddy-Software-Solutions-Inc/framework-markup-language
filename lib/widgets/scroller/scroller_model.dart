@@ -199,7 +199,7 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
     layout = Xml.get(node: xml, tag: 'layout');
     onscrolledtoend = Xml.get(node: xml, tag: 'onscrolledtoend');
     shadowcolor = Xml.get(node: xml, tag: 'shadowcolor');
-    ondrag = Xml.get(node: xml, tag: 'ondragrefresh');
+    ondrag = Xml.get(node: xml, tag: 'ondrag');
     draggable = Xml.get(node: xml, tag: 'draggable');
   }
 

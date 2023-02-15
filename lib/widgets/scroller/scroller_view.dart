@@ -194,13 +194,14 @@ class _ScrollerViewState extends State<ScrollerView> implements IModelListener {
 
 
 
-    if(widget.model.ondrag != null || widget.model.draggable) behavior = ScrollConfiguration.of(context).copyWith(
-        overscroll: true,
+    if(widget.model.ondrag != null || widget.model.draggable == true) behavior = ScrollConfiguration.of(context).copyWith(
         scrollbars: widget.model.scrollbar == false ? false : true,
         dragDevices: {
           PointerDeviceKind.touch,
           PointerDeviceKind.mouse,
-        },); else behavior = ScrollConfiguration.of(context);
+        },); else behavior = ScrollConfiguration.of(context).copyWith(
+      scrollbars: widget.model.scrollbar == false ? false : true,
+    );
 
 
 

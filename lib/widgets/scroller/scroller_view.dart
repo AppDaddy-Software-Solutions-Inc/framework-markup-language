@@ -190,58 +190,52 @@ class _ScrollerViewState extends State<ScrollerView> implements IModelListener {
     }
 
     Widget scsv;
-   Widget scroller;
+   ScrollBehavior behavior;
+
+
+
+    if(widget.model.ondrag != null || widget.model.draggable) behavior = ScrollConfiguration.of(context).copyWith(
+        overscroll: true,
+        scrollbars: widget.model.scrollbar == false ? false : true,
+        dragDevices: {
+          PointerDeviceKind.touch,
+          PointerDeviceKind.mouse,
+        },); else behavior = ScrollConfiguration.of(context);
+
+
+
+
+
    if(widget.model.ondrag != null) {
-     scroller = ScrollConfiguration(
-         behavior: ScrollConfiguration.of(context).copyWith(
-           dragDevices: {
-             PointerDeviceKind.touch,
-             PointerDeviceKind.mouse,
-           },
-         ),
-         child: RefreshIndicator(
+     scsv = RefreshIndicator(
          onRefresh: () => widget.model.onPull(context),
          child: SingleChildScrollView(
-             physics: const AlwaysScrollableScrollPhysics(),
-             child: child,
-             scrollDirection: direction,
-             controller: _scrollController)));
-   } else scroller = SingleChildScrollView(
+         physics: const AlwaysScrollableScrollPhysics(),
+         child: child,
+         scrollDirection: direction,
+         controller: _scrollController));
+   } else scsv = SingleChildScrollView(
     child: child,
     scrollDirection: direction,
     controller: _scrollController);
     // show no scroll bar
     // POINTERDEVICE MOUSE is not reccomended on web due to text selection difficulty, but i have added it in since we do not have text selection.
-    if (widget.model.scrollbar == false)
-      scsv = ScrollConfiguration(
-          behavior: ScrollConfiguration.of(context).copyWith(
-            scrollbars: false,
-            dragDevices: {
-              PointerDeviceKind.touch,
-              PointerDeviceKind.mouse,
-            },
-          ),
-          child: scroller);
 
-    // always or never show scrollbar
-    else if (widget.model.draggable) scsv = ScrollConfiguration(
-          behavior: ScrollConfiguration.of(context).copyWith(
-            dragDevices: {
-              PointerDeviceKind.touch,
-              PointerDeviceKind.mouse,
-            },
-          ),
-          child: Container(
-              child: Scrollbar(
-                  controller: _scrollController,
-                  thumbVisibility: widget.model.scrollbar ?? false,
-                  child:  scroller)));
 
-    else scsv = Container(
-              child: Scrollbar(
-                  controller: _scrollController,
-                  thumbVisibility: widget.model.scrollbar ?? false,
-                  child:  scroller));
+    if (widget.model.scrollbar !=  false){
+      scsv = Container(
+          child: Scrollbar(
+              controller: _scrollController,
+              thumbVisibility: widget.model.scrollbar ?? false,
+              child: scsv,));
+ }
+
+    scsv = ScrollConfiguration(
+    behavior: behavior,
+    child: scsv);
+
+
+
     Widget view;
     if (widget.model.scrollbar != true && direction == Axis.vertical) {
       view = Listener(

@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:fml/event/manager.dart';
 import 'package:fml/helper/scroll_behavior.dart';
@@ -293,7 +294,11 @@ class _GridViewState extends State<GridView> implements IModelListener
           onRefresh: () => widget.model.onPull(context),
           child: view);
 
-    view = ScrollConfiguration(behavior: ProperScrollBehavior(), child: view);
+      view = ScrollConfiguration(behavior: ProperScrollBehavior().copyWith(dragDevices: {
+      PointerDeviceKind.touch,
+      PointerDeviceKind.mouse,
+    },), child: view);
+
 
     // Constrain the View
     var w  = widget.model.width;

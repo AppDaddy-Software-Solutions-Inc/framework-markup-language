@@ -103,7 +103,12 @@ class ApplicationModel extends WidgetModel
     host      = uri?.host   ?? "";
     domain    = Uri.tryParse(url.split("#")[0])?.replace(userInfo: null, queryParameters: null).removeFragment().removeEmptySegments().url;
     queryParameters = uri?.queryParameters;
-    startPage = uri?.hasFragment ?? false ? uri!.fragment : null;
+
+    // set the start page
+    String fragment = uri?.hasFragment ?? false ? uri!.fragment : "";
+    if (fragment.toLowerCase().contains(".xml"))
+         startPage = fragment;
+    else startPage = null;
 
     // active user
     _user = UserModel(this, jwt: jwt);

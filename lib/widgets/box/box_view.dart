@@ -67,10 +67,10 @@ class BoxView extends StatefulWidget {
 
 List<Color> getGradientColors(c1, c2, c3, c4) {
   List<Color> gradientColors = [];
-  if (c1   != null) gradientColors.add(c1);
-  if (c2  != null) gradientColors.add(c2);
-  if (c3  != null) gradientColors.add(c3);
-  if (c4  != null) gradientColors.add(c4);
+  if (c1 != null) gradientColors.add(c1);
+  if (c2 != null) gradientColors.add(c2);
+  if (c3 != null) gradientColors.add(c3);
+  if (c4 != null) gradientColors.add(c4);
   return gradientColors;
 }
 

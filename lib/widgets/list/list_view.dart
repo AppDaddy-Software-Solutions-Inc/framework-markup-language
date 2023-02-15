@@ -175,22 +175,22 @@ return LayoutBuilder(builder: builder);
     Widget view;
 
     if(widget.model.collapsed) view = SingleChildScrollView(
-        physics: widget.model.ondrag != null ? const AlwaysScrollableScrollPhysics() : null,
+        physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null,
         child: ExpansionPanelList.radio(
           dividerColor: Theme.of(context).colorScheme.onInverseSurface,
           initialOpenPanelValue: 0,
           elevation: 2,
           expandedHeaderPadding: EdgeInsets.all(4),
           children: expansionItems(context)));
-      else view = ListView.custom(  physics: widget.model.ondrag != null ? const AlwaysScrollableScrollPhysics() : null, scrollDirection: direction, controller: scroller, childrenDelegate: SliverChildBuilderDelegate((BuildContext context, int index) {return itemBuilder(context, index);}, childCount: widget.model.data?.length ?? widget.model.children?.length ?? 0));
+      else view = ListView.custom(  physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null, scrollDirection: direction, controller: scroller, childrenDelegate: SliverChildBuilderDelegate((BuildContext context, int index) {return itemBuilder(context, index);}, childCount: widget.model.data?.length ?? widget.model.children?.length ?? 0));
 
 
-    if(widget.model.ondrag != null) view = RefreshIndicator(
+    if(widget.model.onpulldown != null) view = RefreshIndicator(
         onRefresh: () => widget.model.onPull(context),
         child: view);
 
 
-    if(widget.model.ondrag != null || widget.model.draggable) view = ScrollConfiguration(
+    if(widget.model.onpulldown != null || widget.model.draggable) view = ScrollConfiguration(
           behavior: ScrollConfiguration.of(context).copyWith(
             dragDevices: {
               PointerDeviceKind.touch,

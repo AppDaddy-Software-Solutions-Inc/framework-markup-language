@@ -283,18 +283,18 @@ class _GridViewState extends State<GridView> implements IModelListener
 
     // Build the Grid Rows
     Widget view = ListView.custom(scrollDirection: direction,
-        physics: widget.model.ondrag != null ? const AlwaysScrollableScrollPhysics() : null,
+        physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null,
         controller: scroller,
         childrenDelegate: SliverChildBuilderDelegate(
             (BuildContext context, int rowIndex) => rowBuilder(context, rowIndex),
             childCount: (widget.model.items.length / count).ceil()
         ));
 
-      if(widget.model.ondrag != null) view = RefreshIndicator(
+      if(widget.model.onpulldown != null) view = RefreshIndicator(
           onRefresh: () => widget.model.onPull(context),
           child: view);
 
-      if(widget.model.ondrag != null || widget.model.draggable) view = ScrollConfiguration(
+      if(widget.model.onpulldown != null || widget.model.draggable) view = ScrollConfiguration(
         behavior: ProperScrollBehavior().copyWith(
           dragDevices: {
             PointerDeviceKind.touch,

@@ -411,13 +411,13 @@ class _TableViewState extends State<TableView> implements IModelListener, IEvent
 
     Widget list;
 
-    list = ListView.custom(physics: widget.model.ondrag != null ? const AlwaysScrollableScrollPhysics() : null, scrollDirection: Axis.vertical, controller: vScroller, itemExtent: widget.model.heights['row'], childrenDelegate: SliverChildBuilderDelegate((BuildContext context, int index) {return rowBuilder(context, index);},));
+    list = ListView.custom(physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null, scrollDirection: Axis.vertical, controller: vScroller, itemExtent: widget.model.heights['row'], childrenDelegate: SliverChildBuilderDelegate((BuildContext context, int index) {return rowBuilder(context, index);},));
 
-    if(widget.model.ondrag != null) list = RefreshIndicator(
+    if(widget.model.onpulldown != null) list = RefreshIndicator(
         onRefresh: () => widget.model.onPull(context),
         child: list);
 
-    ScrollBehavior behavior = (widget.model.ondrag != null || widget.model.draggable) ? MyCustomScrollBehavior().copyWith(
+    ScrollBehavior behavior = (widget.model.onpulldown != null || widget.model.draggable) ? MyCustomScrollBehavior().copyWith(
         dragDevices: {
           PointerDeviceKind.touch,
           PointerDeviceKind.mouse,
@@ -459,7 +459,7 @@ class _TableViewState extends State<TableView> implements IModelListener, IEvent
 
     scrolledTable = SingleChildScrollView(scrollDirection: Axis.horizontal, child: table, controller: hScroller);
 
-    if(widget.model.ondrag != null || widget.model.draggable) scrolledTable = ScrollConfiguration(
+    if(widget.model.onpulldown != null || widget.model.draggable) scrolledTable = ScrollConfiguration(
       behavior: ScrollConfiguration.of(context).copyWith(
         dragDevices: {
           PointerDeviceKind.touch,

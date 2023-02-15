@@ -173,19 +173,19 @@ class GridModel extends DecoratedWidgetModel implements IViewableWidget, IScroll
   }
   dynamic get direction => _direction?.get();
 
-  StringObservable? _ondrag;
-  set ondrag (dynamic v)
+  StringObservable? _onpulldown;
+  set onpulldown (dynamic v)
   {
-    if (_ondrag != null)
+    if (_onpulldown != null)
     {
-      _ondrag!.set(v);
+      _onpulldown!.set(v);
     }
     else if (v != null)
     {
-      _ondrag = StringObservable(Binding.toKey(id, 'ondrag'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
+      _onpulldown = StringObservable(Binding.toKey(id, 'onpulldown'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
     }
   }
-  dynamic get ondrag => _ondrag?.get();
+  dynamic get onpulldown => _onpulldown?.get();
 
   BooleanObservable? _draggable;
   set draggable(dynamic v) {
@@ -199,14 +199,14 @@ class GridModel extends DecoratedWidgetModel implements IViewableWidget, IScroll
 
   Size? itemSize;
 
-  GridModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic direction, dynamic scrollShadows, dynamic scrollButtons, dynamic ondrag, dynamic draggable}) : super(parent, id)
+  GridModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic direction, dynamic scrollShadows, dynamic scrollButtons, dynamic onpulldown, dynamic draggable}) : super(parent, id)
   {
     // instantiate busy observable
     busy = false;
 
     this.width     = width;
     this.draggable = draggable;
-    this.ondrag    = ondrag;
+    this.onpulldown    = onpulldown;
     this.height    = height;
     this.direction = direction;
     this.scrollShadows = scrollShadows;
@@ -242,7 +242,7 @@ class GridModel extends DecoratedWidgetModel implements IViewableWidget, IScroll
     // properties
     direction      = Xml.get(node: xml, tag: 'direction');
     scrollShadows  = Xml.get(node: xml, tag: 'scrollshadows');
-    ondrag  = Xml.get(node: xml, tag: 'ondrag');
+    onpulldown  = Xml.get(node: xml, tag: 'onpulldown');
     draggable = Xml.get(node: xml, tag: 'draggable');
 
     // clear items
@@ -434,7 +434,7 @@ class GridModel extends DecoratedWidgetModel implements IViewableWidget, IScroll
 
   Future<void> onPull(BuildContext context) async
   {
-    await EventHandler(this).execute(_ondrag);
+    await EventHandler(this).execute(_onpulldown);
   }
 
   Widget getView({Key? key}) => GRID.GridView(this);

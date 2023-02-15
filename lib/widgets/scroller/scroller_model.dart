@@ -96,19 +96,19 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
 
 
   /// Calls an [Event] String when the scroll overscrolls
-  StringObservable? _ondrag;
-  set ondrag (dynamic v)
+  StringObservable? _onpulldown;
+  set onpulldown (dynamic v)
   {
-    if (_ondrag != null)
+    if (_onpulldown != null)
     {
-      _ondrag!.set(v);
+      _onpulldown!.set(v);
     }
     else if (v != null)
     {
-      _ondrag = StringObservable(Binding.toKey(id, 'ondrag'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
+      _onpulldown = StringObservable(Binding.toKey(id, 'onpulldown'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
     }
   }
-  dynamic get ondrag => _ondrag?.get();
+  dynamic get onpulldown => _onpulldown?.get();
 
   BooleanObservable? _draggable;
   set draggable(dynamic v) {
@@ -145,13 +145,13 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
         dynamic minwidth,
         dynamic minheight,
         dynamic maxwidth,
-        dynamic ondrag,
+        dynamic onpulldown,
         dynamic maxheight,})
       : super(parent, id)
   {
     this.direction = direction;
     this.draggable = draggable;
-    this.ondrag = ondrag;
+    this.onpulldown = onpulldown;
     this.align = align;
     this.width = width;
     this.shadowcolor = shadowcolor;
@@ -199,7 +199,7 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
     layout = Xml.get(node: xml, tag: 'layout');
     onscrolledtoend = Xml.get(node: xml, tag: 'onscrolledtoend');
     shadowcolor = Xml.get(node: xml, tag: 'shadowcolor');
-    ondrag = Xml.get(node: xml, tag: 'ondrag');
+    onpulldown = Xml.get(node: xml, tag: 'onpulldown');
     draggable = Xml.get(node: xml, tag: 'draggable');
   }
 
@@ -217,7 +217,7 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
 
   Future<void> onPull(BuildContext context) async
   {
-    await EventHandler(this).execute(_ondrag);
+    await EventHandler(this).execute(_onpulldown);
   }
 
 

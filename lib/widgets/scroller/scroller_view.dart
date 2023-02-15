@@ -194,7 +194,7 @@ class _ScrollerViewState extends State<ScrollerView> implements IModelListener {
 
 
 
-    if(widget.model.ondrag != null || widget.model.draggable == true) behavior = ScrollConfiguration.of(context).copyWith(
+    if(widget.model.onpulldown != null || widget.model.draggable == true) behavior = ScrollConfiguration.of(context).copyWith(
         scrollbars: widget.model.scrollbar == false ? false : true,
         dragDevices: {
           PointerDeviceKind.touch,
@@ -207,7 +207,7 @@ class _ScrollerViewState extends State<ScrollerView> implements IModelListener {
 
 
 
-   if(widget.model.ondrag != null) {
+   if(widget.model.onpulldown != null) {
      scsv = RefreshIndicator(
          onRefresh: () => widget.model.onPull(context),
          child: SingleChildScrollView(

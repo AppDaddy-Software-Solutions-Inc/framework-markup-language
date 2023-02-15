@@ -212,19 +212,19 @@ class ListModel extends DecoratedWidgetModel implements IViewableWidget, IForm, 
   bool get collapsed => _collapsed?.get() ?? false;
 
   /// Calls an [Event] String when the scroll overscrolls
-  StringObservable? _ondrag;
-  set ondrag (dynamic v)
+  StringObservable? _onpulldown;
+  set onpulldown (dynamic v)
   {
-    if (_ondrag != null)
+    if (_onpulldown != null)
     {
-      _ondrag!.set(v);
+      _onpulldown!.set(v);
     }
     else if (v != null)
     {
-      _ondrag = StringObservable(Binding.toKey(id, 'ondrag'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
+      _onpulldown = StringObservable(Binding.toKey(id, 'onpulldown'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
     }
   }
-  dynamic get ondrag => _ondrag?.get();
+  dynamic get onpulldown => _onpulldown?.get();
 
   BooleanObservable? _draggable;
   set draggable(dynamic v) {
@@ -236,14 +236,14 @@ class ListModel extends DecoratedWidgetModel implements IViewableWidget, IForm, 
   }
   bool get draggable => _draggable?.get() ?? false;
 
-  ListModel(WidgetModel? parent, String? id, {dynamic direction, dynamic draggable, dynamic scrollShadows, dynamic ondrag}) : super(parent, id)
+  ListModel(WidgetModel? parent, String? id, {dynamic direction, dynamic draggable, dynamic scrollShadows, dynamic onpulldown}) : super(parent, id)
   {
     // instantiate busy observable
     busy = false;
 
     this.direction = direction;
     this.draggable = draggable;
-    this.ondrag = ondrag;
+    this.onpulldown = onpulldown;
     this.scrollShadows = scrollShadows;
     this.scrollButtons = scrollButtons;
     this.collapsed = collapsed;
@@ -284,7 +284,7 @@ class ListModel extends DecoratedWidgetModel implements IViewableWidget, IForm, 
     scrollShadows = Xml.get(node: xml, tag: 'scrollshadows');
     scrollButtons = Xml.get(node: xml, tag: 'scrollbuttons');
     collapsed = Xml.get(node: xml, tag: 'collapsed');
-    ondrag  = Xml.get(node: xml, tag: 'ondrag');
+    onpulldown  = Xml.get(node: xml, tag: 'onpulldown');
 
     // clear items
     this.items.forEach((_,item) => item.dispose());
@@ -392,7 +392,7 @@ class ListModel extends DecoratedWidgetModel implements IViewableWidget, IForm, 
 
   Future<void> onPull(BuildContext context) async
   {
-    await EventHandler(this).execute(_ondrag);
+    await EventHandler(this).execute(_onpulldown);
   }
 
 

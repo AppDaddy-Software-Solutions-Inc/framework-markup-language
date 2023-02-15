@@ -398,19 +398,19 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
   }
   bool get sortButtons => _sortButtons?.get() ?? true;
 
-  StringObservable? _ondrag;
-  set ondrag (dynamic v)
+  StringObservable? _onpulldown;
+  set onpulldown (dynamic v)
   {
-    if (_ondrag != null)
+    if (_onpulldown != null)
     {
-      _ondrag!.set(v);
+      _onpulldown!.set(v);
     }
     else if (v != null)
     {
-      _ondrag = StringObservable(Binding.toKey(id, 'ondrag'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
+      _onpulldown = StringObservable(Binding.toKey(id, 'onpulldown'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
     }
   }
-  dynamic get ondrag => _ondrag?.get();
+  dynamic get onpulldown => _onpulldown?.get();
 
   BooleanObservable? _draggable;
   set draggable(dynamic v) {
@@ -443,7 +443,7 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
       dynamic oncomplete,
       dynamic center,
       dynamic wrap,
-      dynamic ondrag,
+      dynamic onpulldown,
       dynamic margin,
       dynamic altcolor,
       dynamic spacing,
@@ -455,7 +455,7 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
     busy = false;
     this.selected = selected;
     this.draggable = draggable;
-    this.ondrag = ondrag;
+    this.onpulldown = onpulldown;
     this.width = width;
     this.height = height;
     this.oncomplete = oncomplete;
@@ -500,7 +500,7 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
     // properties
     selected = Xml.get(node: xml, tag: 'selected');
     draggable = Xml.get(node:xml, tag: 'draggable');
-    ondrag = Xml.get(node: xml, tag: 'ondrag');
+    onpulldown = Xml.get(node: xml, tag: 'onpulldown');
     pagesize = Xml.get(node: xml, tag: 'pagesize');
     paged = Xml.get(node: xml, tag: 'paged');
     width = Xml.get(node: xml, tag: 'width');
@@ -915,7 +915,7 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
 
   Future<void> onPull(BuildContext context) async
   {
-    await EventHandler(this).execute(_ondrag);
+    await EventHandler(this).execute(_onpulldown);
   }
 
 

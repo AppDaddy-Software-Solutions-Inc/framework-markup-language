@@ -65,6 +65,15 @@ class BoxView extends StatefulWidget {
   }
 }
 
+List<Color> getGradientColors(c1, c2, c3, c4) {
+  List<Color> gradientColors = [];
+  if (c1 != null) gradientColors.add(c1);
+  if (c2 != null) gradientColors.add(c2);
+  if (c3 != null) gradientColors.add(c3);
+  if (c4 != null) gradientColors.add(c4);
+  return gradientColors;
+}
+
 class _BoxViewState extends State<BoxView> implements IModelListener {
   bool isGradient = false;
 
@@ -128,6 +137,8 @@ class _BoxViewState extends State<BoxView> implements IModelListener {
     // get colors
     Color?  color  = widget.model.color;
     Color?  color2 = widget.model.color2;
+    Color?  color3 = widget.model.color3;
+    Color?  color4 = widget.model.color4;
 
     //var mainAxisSize = widget.model.expand == true ? MainAxisSize.min : MainAxisSize.max;
 
@@ -313,7 +324,7 @@ class _BoxViewState extends State<BoxView> implements IModelListener {
             ? LinearGradient(
                 begin: BoxView.toGradientAlignment(widget.model.start)!,
                 end: BoxView.toGradientAlignment(widget.model.end)!,
-                colors: <Color>[color!, color2!],
+                colors: getGradientColors(color, color2, color3, color4),
                 tileMode: TileMode.clamp) // Flutter doesn't display other TileModes correctly in skia web
             : null);
 

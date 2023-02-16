@@ -57,7 +57,7 @@ void runMainApp()
           return ThemeNotifier(THEMER.MyTheme().deriveTheme(System.theme.colorscheme));
         }
       },
-      child: Application(key: applicationKey)));
+      child: Application(key: applicationKey = GlobalKey())));
 }
 
 class Application extends StatelessWidget

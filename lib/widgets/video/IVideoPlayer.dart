@@ -4,5 +4,5 @@ abstract class IVideoPlayer
   Future<bool> stop();
   Future<bool> pause();
   Future<bool> seek(int seconds);
-  void play(String url);
+  Future<bool> play(String url);
 }

@@ -203,8 +203,7 @@ class CameraViewState extends State<CameraView>
               (kIsWeb) ? ResolutionPreset.medium : ResolutionPreset.low;
 
         // build the controller
-        controller = CameraController(camera, resolution,
-            imageFormatGroup: format, enableAudio: false);
+        controller = CameraController(camera, resolution, imageFormatGroup: format, enableAudio: false);
 
         // initialize the controller
         await controller!.initialize();
@@ -308,7 +307,7 @@ class CameraViewState extends State<CameraView>
         widget.model.busy = false;
       } else {
         ok = false;
-        widget.model.onException(Data(), message: "Failed to take picture");
+        widget.model.onFail(Data(), message: "Failed to take picture");
       }
     } catch(e) {
       ok = false;

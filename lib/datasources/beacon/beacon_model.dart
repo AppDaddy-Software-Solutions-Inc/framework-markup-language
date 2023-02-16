@@ -113,7 +113,7 @@ class BeaconModel extends DataSourceModel implements IDataSource, IBeaconListene
     }
     catch(e)
     {
-      ok = await onException(Data(), code: 500, message: e.toString());
+      ok = await onFail(Data(), code: 500, message: e.toString());
     }
     return ok;
   }
@@ -128,7 +128,7 @@ class BeaconModel extends DataSourceModel implements IDataSource, IBeaconListene
     }
     catch(e)
     {
-      await onException(Data(), code: 500, message: e.toString());
+      await onFail(Data(), code: 500, message: e.toString());
     }
     return true;
   }
@@ -211,6 +211,6 @@ class BeaconModel extends DataSourceModel implements IDataSource, IBeaconListene
     _removeExpired();
 
     // Notify
-    onResponse(data);
+    onSuccess(data);
   }
 }

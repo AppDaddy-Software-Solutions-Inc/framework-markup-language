@@ -77,7 +77,7 @@ class GpsModel extends DataSourceModel implements IDataSource, IGpsListener
       Data data = Data();
       data.add(payload.map);
 
-      onResponse(data, code: 200);
+      onSuccess(data, code: 200);
     }
   }
 }

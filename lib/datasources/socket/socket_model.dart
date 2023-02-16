@@ -103,6 +103,24 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     }
   }
   String? get onerror => _onerror?.get();
+
+  // on message event
+  StringObservable? _onmessage;
+  set onmessage(dynamic v)
+  {
+    if (_onmessage != null)
+    {
+      _onmessage!.set(v);
+    }
+    // its important that we instantiate the onmessage observable
+    // on every call since it overrides the onsuccess
+    // else if (v != null)
+    else
+    {
+      _onmessage = StringObservable(Binding.toKey(id, 'onmessage'), v, scope: scope);
+    }
+  }
+  String? get onmessage => _onmessage?.get();
   
   SocketModel(WidgetModel parent, String? id) : super(parent, id)
   {
@@ -138,6 +156,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     onconnected = Xml.get(node: xml, tag: 'onconnected');
     ondisconnected = Xml.get(node: xml, tag: 'ondisconnected');
     onerror = Xml.get(node: xml, tag: 'onerror');
+    onmessage = Xml.get(node: xml, tag: 'onmessage');
   }
 
   @override
@@ -364,7 +383,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     if (data.length == 0) data.insert(0, {'message' : message});
 
     // fire the onresponse
-    onResponse(data, code: HttpStatus.ok);
+    onSuccess(data, code: HttpStatus.ok, onSuccessOverride: _onmessage);
   }
 
   @override
@@ -386,6 +405,15 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
       EventHandler handler = EventHandler(this);
       await handler.execute(_ondisconnected);
     }
+
+    // deserialize the data
+    Data data = Data.from(message, root: root);
+
+    //success or fail
+    if (code == 1000)
+         onData(data, code: code, message: message);
+    else onFail(data, code: code, message: message);
+
     connected = false;
   }
 

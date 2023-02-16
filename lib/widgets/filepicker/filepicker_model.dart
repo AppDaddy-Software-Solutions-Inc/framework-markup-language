@@ -117,7 +117,7 @@ class FilepickerModel extends FILE.FileModel implements IDataSource
     }
     catch(e)
     {
-      ok = await onException(Data(), code: 500, message: e.toString());
+      ok = await onFail(Data(), code: 500, message: e.toString());
     }
 
     return ok;

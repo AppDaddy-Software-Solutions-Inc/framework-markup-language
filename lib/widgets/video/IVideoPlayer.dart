@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'package:fml/widgets/video/video_model.dart';
+
 abstract class IVideoPlayer
 {
   Future<bool> start();

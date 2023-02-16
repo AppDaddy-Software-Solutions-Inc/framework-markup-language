@@ -10,6 +10,8 @@ import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
 import 'package:dart_vlc/dart_vlc.dart';
 
+StatefulWidget getVideoPlayerView(VideoModel model) => VideoViewVlc(model);
+
 class VideoViewVlc extends StatefulWidget
 {
   final VideoModel model;
@@ -22,6 +24,8 @@ class VideoViewVlc extends StatefulWidget
 
 class VideoViewState extends State<VideoViewVlc> implements IModelListener, IVideoPlayer
 {
+  static Widget getVideoPlayer() => Container();
+
   late final Player _controller;
   IconView? shutterbutton;
   IconModel shutterbuttonmodel = IconModel(null, null, icon: Icons.pause, size: 65, color: Colors.white);

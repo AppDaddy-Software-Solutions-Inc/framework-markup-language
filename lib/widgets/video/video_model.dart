@@ -1,8 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/system.dart';
 import 'package:fml/widgets/video/IVideoPlayer.dart';
-import 'package:fml/widgets/video/video_view.dart';
-import 'package:fml/widgets/video/video_view_vlc.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
@@ -12,6 +9,10 @@ import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
+
+import 'package:fml/widgets/video/video_view_selector_web.dart'
+if (dart.library.io)   'package:fml/widgets/video/video_view_selector_vm.dart'
+if (dart.library.html) 'package:fml/widgets/video/video_view_selector_web.dart';
 
 class VideoModel extends DecoratedWidgetModel implements IViewableWidget
 {
@@ -145,10 +146,5 @@ class VideoModel extends DecoratedWidgetModel implements IViewableWidget
     if (player != null && url != null) player!.play(url!);
   }
 
-  Widget getView({Key? key})
-  {
-    if (System().useragent == "windows" || System().useragent == "linux")
-         return VideoViewVlc(this);
-    else return VideoView(this);
-  }
+  Widget getView({Key? key}) => VideoPlayerSelector.getView(this);
 }

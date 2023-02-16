@@ -308,7 +308,7 @@ class CameraViewState extends State<CameraView>
         widget.model.busy = false;
       } else {
         ok = false;
-        widget.model.onException(Data(), message: "Failed to take picture");
+        widget.model.onFail(Data(), message: "Failed to take picture");
       }
     } catch(e) {
       ok = false;

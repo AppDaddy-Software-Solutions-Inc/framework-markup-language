@@ -1,4 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:io';
+
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/event/handler.dart';
@@ -117,7 +119,22 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
     }
   }
   String? get onerror => _onerror?.get();
-  
+
+  // on message event
+  StringObservable? _onmessage;
+  set onmessage(dynamic v)
+  {
+    if (_onmessage != null)
+    {
+      _onmessage!.set(v);
+    }
+    else if (v != null)
+    {
+      _onmessage = StringObservable(Binding.toKey(id, 'onmessage'), v, scope: scope);
+    }
+  }
+  String? get onmessage => _onmessage?.get();
+
   // connected
   BooleanObservable? _connected;
   set connected (dynamic v)
@@ -226,6 +243,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
     onunsubscribed = Xml.get(node: xml, tag: 'onunsubscribed');
     onpublished = Xml.get(node: xml, tag: 'onpublished');
     onerror = Xml.get(node: xml, tag: 'onerror');
+    onmessage = Xml.get(node: xml, tag: 'onmessage');
     username = Xml.get(node: xml, tag: 'username');
     password = Xml.get(node: xml, tag: 'password');
     
@@ -319,7 +337,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
     if (data.length == 0) data.insert(0, {'topic': payload.topic , 'message' : payload.message});
 
     // fire the onresponse
-    onResponse(data, code: 200);
+    onSuccess(data, code: HttpStatus.ok, onSuccessOverride: _onmessage);
   }
 
   @override
@@ -341,6 +359,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
       EventHandler handler = EventHandler(this);
       await handler.execute(_ondisconnected);
     }
+    onData(this.data ?? Data(), code: HttpStatus.ok, message: "Disconnected by $origin");
   }
 
   @override

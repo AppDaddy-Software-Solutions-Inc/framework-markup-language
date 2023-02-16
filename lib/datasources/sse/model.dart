@@ -121,14 +121,14 @@ class SseModel extends HttpModel implements IDataSource
   {
     Log().debug('Received message >> $msg', caller: 'SseModel');
     Data data = Data.from(msg, root: root);
-    onResponse(data);
+    onSuccess(data);
   }
 
   _onError(var msg)
   {
     Log().debug('Error is $msg', caller: 'SseModel');
     Data data = Data.from(msg);
-    onException(data);
+    onFail(data);
   }
 
   _onDone()

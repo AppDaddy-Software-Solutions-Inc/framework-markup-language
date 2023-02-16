@@ -180,7 +180,7 @@ class HttpModel extends DataSourceModel implements IDataSource
 
     // lookup data in hive cache
     var cached = await super.fromHive(url, refresh);
-    if (cached != null) return await super.onResponse(Data.from(cached, root: root), code: HttpStatus.ok);
+    if (cached != null) return await super.onSuccess(Data.from(cached, root: root), code: HttpStatus.ok);
 
     // determine posting type
     Types type = Types.foreground;
@@ -256,8 +256,8 @@ class HttpModel extends DataSourceModel implements IDataSource
 
     // process response
     if (response.statusCode != HttpStatus.ok)
-         return await super.onException(data, code: response.statusCode, message: msg);
-    else return await super.onResponse(data,  code: response.statusCode, message: msg);
+         return await super.onFail(data, code: response.statusCode, message: msg);
+    else return await super.onSuccess(data,  code: response.statusCode, message: msg);
   }
 
   @override

@@ -86,13 +86,13 @@ class DetectorModel extends DataSourceModel implements IDataSource
     // notify listeners
 
       detected = detected + 1;
-      return await onResponse(data, code: 200);
+      return await onSuccess(data, code: 200);
   }
 
   Future<bool> onDetectionFailed(Data data) async
   {
     // notify listeners
-    return await onException(data);
+    return await onFail(data);
   }
 }
 

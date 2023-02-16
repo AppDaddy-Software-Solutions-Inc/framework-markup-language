@@ -328,7 +328,7 @@ class ApplicationModel extends WidgetModel
     }
 
     // set the theme if supplied
-    if (theme != null) setTheme(theme, notifyOnThemeChange);
+    setTheme(theme, notifyOnThemeChange);
   }
 
   void close()

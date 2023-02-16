@@ -84,6 +84,6 @@ class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener
       data.add(map);
     });
 
-    onResponse(data, code: 200);
+    onSuccess(data, code: 200);
   }
 }

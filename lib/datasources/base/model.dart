@@ -326,7 +326,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
     root = Xml.attribute(node: xml, tag: 'root');
 
     String? value = Xml.get(node: xml, tag: 'value');
-    if (!S.isNullOrEmpty(value)) onResponse(Data.from(value, root: root));
+    if (!S.isNullOrEmpty(value)) onSuccess(Data.from(value, root: root));
 
     // custom body defined?
     XmlElement? body = Xml.getChildElement(node: xml, tag: 'body');
@@ -414,7 +414,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
     return true;
   }
 
-  Future<bool> onResponse(Data data, {int? code, String? message}) async
+  Future<bool> onSuccess(Data data, {int? code, String? message, Observable? onSuccessOverride}) async
   {
     // set busy
     busy = true;
@@ -471,10 +471,47 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
     if (data.length > maxrecords) data.removeRange(maxrecords, data.length);
 
     // Return Success
-    return await onSuccess(data, code, message);
+    return await onData(data, code: code, message: message, onSuccessOverride: onSuccessOverride);
   }
 
-  Future<bool> onSuccess(Data data, int? code, String? message) async
+  Future<bool> onFail(Data data, {int? code, String? message, Observable? onFailOverride}) async
+  {
+    // set data
+    this.data = data;
+
+    // set rowcount
+    rowcount = this.data?.length ?? 0;
+
+    // set status
+    status = "error";
+
+    // set status code
+    this.statuscode = code;
+
+    // set status message
+    //statusmessage = (data == null) ? (message ?? '') : '';
+    statusmessage = message ?? 'Error: $code';
+
+    // log exception
+    Log().exception("$statusmessage [$statuscode] id: $id, object: 'DataBroker'");
+
+    // fire on fail event
+    if (onFailOverride != null || !S.isNullOrEmpty(this.onfail))
+    {
+      EventHandler handler = EventHandler(this);
+      await handler.execute(onFailOverride ?? _onfail);
+    }
+
+    // notify listeners
+    for (IDataSourceListener listener in listeners) listener.onDataSourceException(this, Exception(statusmessage));
+
+    // busy
+    busy = false;
+
+    return false;
+  }
+
+  Future<bool> onData(Data data, {int? code, String? message, Observable? onSuccessOverride}) async
   {
     bool ok = true;
 
@@ -497,16 +534,16 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
     notify();
 
     // fire on success event
-    if (onsuccess != null)
+    if (onSuccessOverride != null || !S.isNullOrEmpty(this.onsuccess))
     {
       EventHandler handler = EventHandler(this);
-      await handler.execute(_onsuccess);
+      await handler.execute(onSuccessOverride ?? _onsuccess);
     }
 
     // notify nested data sources
     if (datasources != null)
       for (IDataSource model in this.datasources!)
-        if (model is DataModel) model.onResponse(data.clone());
+        if (model is DataModel) model.onSuccess(data.clone());
 
     // requery?
     if (((autoquery ?? 0) > 0) && (timer == null) && (!disposed)) timer = Timer.periodic(Duration(seconds: autoquery!), onTimer);
@@ -515,43 +552,6 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
     busy = false;
 
     return ok;
-  }
-
-  Future<bool> onException(Data data, {int? code, String? message}) async
-  {
-    // set data
-    this.data = data;
-
-    // set rowcount
-    rowcount = this.data?.length ?? 0;
-
-    // set status
-    status = "error";
-
-    // set status code
-    this.statuscode = code;
-
-    // set status message
-    //statusmessage = (data == null) ? (message ?? '') : '';
-    statusmessage = message ?? 'Error: $code';
-
-    // log exception
-    Log().exception("$statusmessage [$statuscode] id: $id, object: 'DataBroker'");
-
-    // on fail event
-    if (!S.isNullOrEmpty(onfail))
-    {
-      EventHandler handler = EventHandler(this);
-      await handler.execute(_onfail);
-    }
-
-    // notify listeners
-    for (IDataSourceListener listener in listeners) listener.onDataSourceException(this, Exception(statusmessage));
-
-    // busy
-    busy = false;
-
-    return false;
   }
 
   Future<String?> fromHive(String? key, bool refresh) async

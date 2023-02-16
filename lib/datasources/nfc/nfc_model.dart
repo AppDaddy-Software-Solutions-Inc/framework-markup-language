@@ -323,6 +323,6 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
     if (data.length == 0) data.insert(0, {'id' : payload.id, 'serial': payload.id , 'payload' : payload.message});
 
     // fire the onresponse
-    onResponse(data, code: 200);
+    onSuccess(data, code: 200);
   }
 }

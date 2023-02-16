@@ -376,7 +376,7 @@ class ViewState extends State<View> implements IModelListener
 
   onError(error) {
     // Camera Launch Failed
-    widget.model.onException(Data(), message: error);
+    widget.model.onFail(Data(), message: error);
   }
 
   @override

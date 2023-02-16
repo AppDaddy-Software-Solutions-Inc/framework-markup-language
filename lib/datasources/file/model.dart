@@ -79,7 +79,7 @@ class FileModel extends DataSourceModel implements IDataSource
       data.add(map);
 
       // notify listeners
-      onResponse(data);
+      onSuccess(data);
 
     return true;
   }

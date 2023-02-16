@@ -7,21 +7,21 @@ import 'package:fml/widgets/video/video_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
+import 'package:dart_vlc/dart_vlc.dart';
 
-class VideoView extends StatefulWidget
+class VideoViewVlc extends StatefulWidget
 {
   final VideoModel model;
 
-  VideoView(this.model) : super(key: ObjectKey(model));
+  VideoViewVlc(this.model) : super(key: ObjectKey(model));
 
   @override
   VideoViewState createState() => VideoViewState();
 }
 
-class VideoViewState extends State<VideoView> implements IModelListener, IVideoPlayer
+class VideoViewState extends State<VideoViewVlc> implements IModelListener, IVideoPlayer
 {
-  VideoPlayerController? _controller;
+  late final Player _player;
   IconView? shutterbutton;
   IconModel shutterbuttonmodel = IconModel(null, null, icon: Icons.pause, size: 65, color: Colors.white);
 
@@ -33,11 +33,17 @@ class VideoViewState extends State<VideoView> implements IModelListener, IVideoP
     // register listener to the model
     widget.model.registerListener(this);
 
+    // initialize DartVLC
+    DartVLC.initialize();
+
+    // create the player
+    _player = Player(id: 69420);
+
     // set player
     widget.model.player = this;
 
     // initialize the controller
-    play(widget.model.url);
+    load(widget.model.url);
   }
 
   /// Callback to fire the [CameraViewState.build] when the [CameraModel] changes
@@ -150,7 +156,7 @@ class VideoViewState extends State<VideoView> implements IModelListener, IVideoP
     return await resume();
   }
 
-  Future<bool> play(String? url) async
+  Future<bool> load(String? url) async
   {
     if (_controller != null) _controller!.dispose();
     Uri? uri = Uri.tryParse(url ?? "");

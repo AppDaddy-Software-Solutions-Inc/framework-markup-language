@@ -1,5 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:fml/system.dart';
+import 'package:fml/widgets/video/IVideoPlayer.dart';
 import 'package:fml/widgets/video/video_view.dart';
+import 'package:fml/widgets/video/video_view_vlc.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
@@ -12,7 +15,7 @@ import 'package:fml/helper/common_helpers.dart';
 
 class VideoModel extends DecoratedWidgetModel implements IViewableWidget
 {
-  VideoViewState? player;
+  IVideoPlayer? player;
 
   // url
   StringObservable? _url;
@@ -139,8 +142,13 @@ class VideoModel extends DecoratedWidgetModel implements IViewableWidget
 
   onUrlChange(Observable observable)
   {
-    if (player != null) player!.load(url);
+    if (player != null && url != null) player!.play(url!);
   }
 
-  Widget getView({Key? key}) => VideoView(this);
+  Widget getView({Key? key})
+  {
+    if (System().useragent == "windows" || System().useragent == "linux")
+         return VideoViewVlc(this);
+    else return VideoView(this);
+  }
 }

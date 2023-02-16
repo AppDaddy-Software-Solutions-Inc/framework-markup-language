@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'package:fml/widgets/icon/icon_model.dart';
 import 'package:fml/widgets/icon/icon_view.dart';
+import 'package:fml/widgets/video/IVideoPlayer.dart';
 import 'package:fml/widgets/video/video_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -18,7 +19,7 @@ class VideoView extends StatefulWidget
   VideoViewState createState() => VideoViewState();
 }
 
-class VideoViewState extends State<VideoView> implements IModelListener
+class VideoViewState extends State<VideoView> implements IModelListener, IVideoPlayer
 {
   VideoPlayerController? _controller;
   IconView? shutterbutton;
@@ -36,7 +37,7 @@ class VideoViewState extends State<VideoView> implements IModelListener
     widget.model.player = this;
 
     // initialize the controller
-    load(widget.model.url);
+    play(widget.model.url);
   }
 
   /// Callback to fire the [CameraViewState.build] when the [CameraModel] changes
@@ -149,7 +150,7 @@ class VideoViewState extends State<VideoView> implements IModelListener
     return await resume();
   }
 
-  Future<bool> load(String? url) async
+  Future<bool> play(String? url) async
   {
     if (_controller != null) _controller!.dispose();
     Uri? uri = Uri.tryParse(url ?? "");

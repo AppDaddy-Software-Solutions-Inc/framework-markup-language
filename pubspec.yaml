@@ -43,6 +43,10 @@ dependencies:
   crypto: 3.0.2
   # BSD-3-Clause
 
+  # Updated 2023/02/16
+  dart_vlc: 0.4.0
+  # LGPL-2.1
+
   # Updated 2021/09/23
   datetime_picker_formfield: 2.0.0
   # MIT

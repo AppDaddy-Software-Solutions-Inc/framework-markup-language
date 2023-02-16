@@ -5,6 +5,7 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   camera_windows
   connectivity_plus_windows
+  dart_vlc
   geolocator_windows
   url_launcher_windows
 )

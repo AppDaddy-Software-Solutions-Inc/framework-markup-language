@@ -112,7 +112,10 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     {
       _onmessage!.set(v);
     }
-    else if (v != null)
+    // its important that we instantiate the onmessage observable
+    // on every call since it overrides the onsuccess
+    // else if (v != null)
+    else
     {
       _onmessage = StringObservable(Binding.toKey(id, 'onmessage'), v, scope: scope);
     }

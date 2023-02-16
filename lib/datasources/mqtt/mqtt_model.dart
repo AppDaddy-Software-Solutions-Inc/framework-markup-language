@@ -128,7 +128,9 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
     {
       _onmessage!.set(v);
     }
-    else if (v != null)
+    // its important that we instantiate the onmessage observable
+    // on every call since it overrides the onsuccess
+    // else if (v != null)
     {
       _onmessage = StringObservable(Binding.toKey(id, 'onmessage'), v, scope: scope);
     }

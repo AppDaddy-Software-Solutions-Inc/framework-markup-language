@@ -203,8 +203,7 @@ class CameraViewState extends State<CameraView>
               (kIsWeb) ? ResolutionPreset.medium : ResolutionPreset.low;
 
         // build the controller
-        controller = CameraController(camera, resolution,
-            imageFormatGroup: format, enableAudio: false);
+        controller = CameraController(camera, resolution, imageFormatGroup: format, enableAudio: false);
 
         // initialize the controller
         await controller!.initialize();

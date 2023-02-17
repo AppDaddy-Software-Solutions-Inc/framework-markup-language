@@ -76,11 +76,20 @@ class ApplicationModel extends WidgetModel
   // jwt - json web token
   Jwt? get jwt => _user.jwt;
 
-  late String? scheme;
-  late String? host;
-  late String? domain;
-  late Map<String,String>? queryParameters;
-  late String? startPage;
+  String? _scheme;
+  String? get scheme => _scheme;
+
+  String? _host;
+  String? get host => _host;
+
+  String? _domain;
+  String? get domain => _domain;
+
+  String? _startPage;
+  String? get startPage => _startPage;
+
+  Map<String,String>? _queryParameters;
+  Map<String,String>? get queryParameters => _queryParameters;
 
   // fml version support
   int? fmlVersion;
@@ -105,8 +114,8 @@ class ApplicationModel extends WidgetModel
     if (!uri.hasScheme) uri = Uri.tryParse("https://${uri.url}");
     if (uri == null) return;
 
-    scheme = uri.scheme;
-    host   = uri.host;
+    _scheme = uri.scheme;
+    _host   = uri.host;
 
     // set the start page
     String? fragment = uri.hasFragment ? uri.fragment : null;
@@ -115,14 +124,14 @@ class ApplicationModel extends WidgetModel
         var _uri = Uri.tryParse(fragment);
         if (_uri != null)
         {
-          queryParameters = _uri.hasQuery ? _uri.queryParameters : null;
-          startPage = _uri.removeQuery().url;
+          _queryParameters = _uri.hasQuery ? _uri.queryParameters : null;
+          _startPage = _uri.removeQuery().url;
         }
     }
-    else queryParameters = uri.queryParameters;
+    else _queryParameters = uri.queryParameters;
 
     // base domain
-    domain = uri.removeFragment().removeQuery().replace(userInfo: null).removeEmptySegments().url;
+    _domain = uri.removeFragment().removeQuery().replace(userInfo: null).removeEmptySegments().url;
 
     // active user
     _user = UserModel(this, jwt: jwt);

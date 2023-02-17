@@ -11,7 +11,7 @@ extension URI on Uri
   static String rootPath = "";
 
   String  get url    => this.toString();
-  String  get domain => replace(queryParameters: null,userInfo: null).removeFragment().removePage().url;
+  String  get domain => replace(userInfo: null).removeFragment().removePage().removeQuery().url;
   String? get page   => (pathSegments.isNotEmpty && pathSegments.last.contains(".")) ? pathSegments.last : null;
   String? get pageExtension => page?.contains(".") ?? false ? extension(page!).toLowerCase().replaceFirst(".", "").trim() : null;
 
@@ -58,6 +58,13 @@ extension URI on Uri
 
     // build a new uri
     return replace(pathSegments: pathSegments);
+  }
+
+  Uri removeQuery()
+  {
+    if (hasQuery)
+         return Uri.parse(url.split("?")[0]);
+    else return this;
   }
 
   Uri setPage(String page)

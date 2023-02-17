@@ -84,7 +84,7 @@ class System extends WidgetModel implements IEventManager
   static late ThemeModel _theme;
   static ThemeModel get theme => _theme;
 
-  late final Connectivity connection;
+  late Connectivity connection;
 
   // post master service
   final PostMaster postmaster = PostMaster();
@@ -161,7 +161,7 @@ class System extends WidgetModel implements IEventManager
   GPS.Gps gps = GPS.Gps();
   GPS.Payload? currentLocation;
 
-  late final String baseUrl;
+  late String baseUrl;
 
   _initialize() async
   {

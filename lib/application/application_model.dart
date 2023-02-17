@@ -27,13 +27,13 @@ class ApplicationModel extends WidgetModel
 
   // key of this application record in
   // the HIVE database.
-  late final String _dbKey;
+  late String _dbKey;
 
   late Future<bool> initialized;
   bool started = false;
 
   // Active user
-  late final UserModel _user;
+  late UserModel _user;
 
   // used for social media
   FirebaseApp? firebase;
@@ -51,7 +51,7 @@ class ApplicationModel extends WidgetModel
   bool get autoRefresh => S.toBool(settings("REFRESH")) ?? false;
   bool get singlePage  => S.toBool(settings('SINGLE_PAGE_APPLICATION')) ?? false;
 
-  late final String url;
+  late String url;
 
   // application title
   String? title;
@@ -70,17 +70,17 @@ class ApplicationModel extends WidgetModel
   bool get hasConfig => _config != null;
 
   // application stash
-  late final Stash _stash;
-  late final Scope stash;
+  late Stash _stash;
+  late Scope stash;
 
   // jwt - json web token
   Jwt? get jwt => _user.jwt;
 
-  late final String? scheme;
-  late final String? host;
-  late final String? domain;
-  late final Map<String,String>? queryParameters;
-  late final String? startPage;
+  late String? scheme;
+  late String? host;
+  late String? domain;
+  late Map<String,String>? queryParameters;
+  late String? startPage;
 
   // fml version support
   int? fmlVersion;

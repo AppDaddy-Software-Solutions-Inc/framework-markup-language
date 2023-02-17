@@ -94,21 +94,35 @@ class ApplicationModel extends WidgetModel
 
   ApplicationModel(WidgetModel parent, {String? key, required this.url, this.title, this.icon, this.page, this.order, String? jwt}) : super(parent, myId, scope: Scope(id: myId))
   {
+    // parse to url into its parts
+    Uri? uri = Uri.tryParse(url);
+    if (uri == null) return;
+
     // set database key
     _dbKey = key ?? url;
 
-    // parse to url into its parts
-    Uri? uri = Uri.tryParse(url);
-    scheme    = uri?.scheme ?? "https";
-    host      = uri?.host   ?? "";
-    domain    = Uri.tryParse(url.split("#")[0])?.replace(userInfo: null, queryParameters: null).removeFragment().removeEmptySegments().url;
-    queryParameters = uri?.queryParameters;
+    // no scheme provided
+    if (!uri.hasScheme) uri = Uri.tryParse("https://${uri.url}");
+    if (uri == null) return;
+
+    scheme = uri.scheme;
+    host   = uri.host;
 
     // set the start page
-    String fragment = uri?.hasFragment ?? false ? uri!.fragment : "";
-    if (fragment.toLowerCase().contains(".xml"))
-         startPage = fragment;
-    else startPage = null;
+    String? fragment = uri.hasFragment ? uri.fragment : null;
+    if (fragment != null && fragment.toLowerCase().contains(".xml"))
+    {
+        var _uri = Uri.tryParse(fragment);
+        if (_uri != null)
+        {
+          queryParameters = _uri.hasQuery ? _uri.queryParameters : null;
+          startPage = _uri.removeQuery().url;
+        }
+    }
+    else queryParameters = uri.queryParameters;
+
+    // base domain
+    domain = uri.removeFragment().removeQuery().replace(userInfo: null).removeEmptySegments().url;
 
     // active user
     _user = UserModel(this, jwt: jwt);

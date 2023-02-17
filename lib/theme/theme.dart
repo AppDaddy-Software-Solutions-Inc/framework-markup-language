@@ -31,13 +31,13 @@ class MyTheme
         colorSchemeSeed: col ?? Colors.blueGrey,
         brightness: b,
         fontFamily: font,
-        pageTransitionsTheme: PageTransitionsTheme(builders: {
-          TargetPlatform.android: CustomTransitionBuilder('android'),
-          TargetPlatform.iOS: CustomTransitionBuilder('ios'),
-          TargetPlatform.macOS: CustomTransitionBuilder('macos'),
-          TargetPlatform.windows: CustomTransitionBuilder('windows'),
-          TargetPlatform.linux: CustomTransitionBuilder('linux'),
-        }),
+        // pageTransitionsTheme: PageTransitionsTheme(builders: {
+        //   TargetPlatform.android: CustomTransitionBuilder('android'),
+        //   TargetPlatform.iOS: CustomTransitionBuilder('ios'),
+        //   TargetPlatform.macOS: CustomTransitionBuilder('macos'),
+        //   TargetPlatform.windows: CustomTransitionBuilder('windows'),
+        //   TargetPlatform.linux: CustomTransitionBuilder('linux'),
+        // }),
         useMaterial3: true);
   }
 

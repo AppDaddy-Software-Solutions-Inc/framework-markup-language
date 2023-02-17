@@ -366,6 +366,10 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     // scaffold with safe area
     view = SafeArea(child: Scaffold(resizeToAvoidBottomInset: true, body: view));
 
+    // simulate a swipe to move back on all desktop applications
+    // and mobile IOS applications
+    bool enableSwipeBack = isDesktop || (isMobile && System().useragent == "ios");
+
     final detector = (drawerView != null) ?
       GestureDetector(
       behavior: HitTestBehavior.translucent,
@@ -380,6 +384,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       onLongPressEnd:   kDebugMode ? (_) => onLongPressEnd()   : null,
       child: view)
      :
+     enableSwipeBack ?
      GestureDetector(behavior: HitTestBehavior.translucent,
       onHorizontalDragStart: onDragStart,
       onHorizontalDragEnd: onDragEnd,
@@ -387,7 +392,12 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       onTap: () =>  WidgetModel.unfocus(),
       onLongPressStart: kDebugMode ? (_) => onLongPressStart() : null,
       onLongPressEnd:   kDebugMode ? (_) => onLongPressEnd()   : null,
-      child: view);
+      child: view) :
+     GestureDetector(behavior: HitTestBehavior.translucent,
+         onTap: () =>  WidgetModel.unfocus(),
+         onLongPressStart: kDebugMode ? (_) => onLongPressStart() : null,
+         onLongPressEnd:   kDebugMode ? (_) => onLongPressEnd()   : null,
+         child: view);
 
     return detector;
   }
@@ -398,7 +408,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   void onDragStart(DragStartDetails details)
   {
     // IOS back button functionality
-    if ((System().useragent == "ios" || isDesktop) && (details.globalPosition.dx < 50))
+    if (details.globalPosition.dx < 50)
     {
       swiping = true;
       start = details.globalPosition.dx;

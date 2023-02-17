@@ -29,7 +29,7 @@ class OverlayView extends StatefulWidget
   final Color? color;
   final Color? modalBarrierColor;
 
-  late final _OverlayViewState? state;
+  late _OverlayViewState? state;
 
   OverlayView({required this.child, this.id, this.width, this.height, this.dx, this.color, this.dy, this.resizeable = true, this.draggable = true, this.modal = false, this.closeable = true, this.dismissable = true, this.modalBarrierColor, this.pad, this.decorate}) : super();
 

@@ -7,7 +7,7 @@ class OverlayManager extends StatefulWidget
   final Widget? child;
   final List<OverlayView?> overlays = [];
   final List<OverlayView?> parking  = [];
-  late final _OverlayManagerState state;
+  late _OverlayManagerState state;
 
   OverlayManager({this.child}) : super();
 

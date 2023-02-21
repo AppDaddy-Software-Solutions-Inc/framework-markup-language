@@ -53,6 +53,8 @@ class CameraViewState extends State<CameraView>
 
   List<OverlayEntry> overlays = [];
 
+  late bool initialized;
+
   @override
   void initState() {
     super.initState();
@@ -65,8 +67,11 @@ class CameraViewState extends State<CameraView>
     // register camera
     widget.model.camera = this;
 
-    // start camera
-    initialize();
+    getCameras().then((value) {
+      initialized = true;
+      configureCameras();
+    });
+
   }
 
   /// Callback to fire the [CameraViewState.build] when the [CameraModel] changes
@@ -79,7 +84,7 @@ class CameraViewState extends State<CameraView>
       {
         // changed camera
         case 'index':
-          reInit();
+          reconfigureCameras();
           break;
 
         // enable/disable
@@ -108,7 +113,7 @@ class CameraViewState extends State<CameraView>
 
           // initialize the camera
           else
-            reInit();
+            reconfigureCameras();
           break;
 
       }
@@ -125,15 +130,45 @@ class CameraViewState extends State<CameraView>
 
   toggleCamera() async
   {
-    int index = widget.model.index ?? 0;
-    index++;
-    if (index >= cameras!.length) index = 0;
+    if (cameras != null) {
+      int index = widget.model.index ?? 0;
+      index++;
+      if (index >= cameras!.length) index = 0;
 
-    // this will fire onModelChange
-    widget.model.index = index;
+      // this will fire onModelChange
+      widget.model.index = index;
+    }
+    else {
+      Log().exception('No cameras to toggle',  caller: 'camera.View');
+    }
   }
 
-  initialize() async
+  Future<bool> getCameras() async {
+    // get cameras
+    try {
+      if (cameras == null) cameras = await availableCameras();
+    } catch(e) {
+      if (e is CameraException) {
+        switch (e.code.toLowerCase()) {
+          case 'permissiondenied':
+          // Thrown when user is not on a secure (https) connection.
+            widget.model.onFail(Data(), message: "Camera is only available over a secure (https) connection");
+            break;
+          default:
+          // Handle other errors here.
+            widget.model.onFail(Data(), message: "Unable to get any available Cameras");
+            break;
+        }
+      }
+      else {
+        Log().exception(e,  caller: 'camera.View');
+      }
+    }
+    print((cameras != null).toString());
+    return true;
+  }
+
+  configureCameras() async
   {
     try
     {
@@ -150,27 +185,13 @@ class CameraViewState extends State<CameraView>
         return;
       }
 
-      // get cameras
-      try {
-        if (cameras == null) cameras = await availableCameras();
-      } catch(e) {
-        if (e is CameraException) {
-          switch (e.code.toLowerCase()) {
-            case 'permissiondenied':
-            // Thrown when user is not on a secure (https) connection.
-              widget.model.onFail(Data(), message: "Camera is only available over a secure (https) connection");
-              break;
-            default:
-            // Handle other errors here.
-              widget.model.onFail(Data(), message: "Unable to get any available Cameras");
-              break;
-          }
-        }
-        else {
-          Log().exception(e,  caller: 'camera.View');
-        }
+      if (cameras == null) {
+        Log().exception('Unable to access device Camera(s) to initialize', caller: 'camera.View');
+        widget.model.onFail(Data(), message: "Unable to access device Camera(s) to initialize");
+        return;
       }
-      if ((cameras != null) && (cameras!.length > 0))
+
+      if (cameras!.length > 0)
       {
         // set specified camera
         int index = widget.model.index ?? -1;
@@ -197,7 +218,7 @@ class CameraViewState extends State<CameraView>
         }
 
         // set the camera
-        final camera = cameras![widget.model.index!];
+        var camera = cameras![widget.model.index!];
 
         // front facing camera
         widget.model.direction =
@@ -339,9 +360,8 @@ class CameraViewState extends State<CameraView>
     bool ok = true;
 
     try {
-      if ((controller != null) &&
-          (controller!.value.isInitialized) &&
-          (widget.model.busy != true)) {
+      if (cameras != null && cameras!.length > 0 && controller != null
+          && controller!.value.isInitialized && widget.model.busy != true) {
         // set busy
         widget.model.busy = true;
 
@@ -375,6 +395,7 @@ class CameraViewState extends State<CameraView>
       } else {
         ok = false;
         widget.model.onFail(Data(), message: "Failed to take picture");
+        Log().debug('Unable to take a snapshot');
       }
     } catch(e) {
       ok = false;
@@ -391,14 +412,15 @@ class CameraViewState extends State<CameraView>
     if (state == AppLifecycleState.inactive) {
       controller?.dispose();
     } else if (state == AppLifecycleState.resumed) {
-      reInit();
+      reconfigureCameras();
     }
   }
 
-  void reInit() async {
+  void reconfigureCameras() async {
     if (controller != null)
       await controller!.dispose();
-    initialize();
+    if (initialized)
+      configureCameras();
   }
 
 
@@ -535,7 +557,7 @@ class CameraViewState extends State<CameraView>
 
       // camera selector
       Widget selector;
-      if (cameras!.length > 1) {
+      if (cameras != null && cameras!.length > 1) {
         if (selectorbutton == null)
           selectorbutton = IconView(IconModel(null, null,
               icon: Icons.cameraswitch_sharp, size: 25, color: Colors.black));

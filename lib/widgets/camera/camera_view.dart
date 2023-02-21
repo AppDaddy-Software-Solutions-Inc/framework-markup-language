@@ -150,7 +150,25 @@ class CameraViewState extends State<CameraView>
       }
 
       // get cameras
-      if (cameras == null) cameras = await availableCameras();
+      try {
+        if (cameras == null) cameras = await availableCameras();
+      } catch(e) {
+        if (e is CameraException) {
+          switch (e.code.toLowerCase()) {
+            case 'permissiondenied':
+            // Thrown when user is not on a secure (https) connection.
+              widget.model.onFail(Data(), message: "Camera is only available over a secure (https) connection");
+              break;
+            default:
+            // Handle other errors here.
+              widget.model.onFail(Data(), message: "Unable to get any available Cameras");
+              break;
+          }
+        }
+        else {
+          Log().exception(e,  caller: 'camera.View');
+        }
+      }
       if ((cameras != null) && (cameras!.length > 0))
       {
         // set specified camera

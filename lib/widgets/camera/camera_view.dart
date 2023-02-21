@@ -157,6 +157,7 @@ class CameraViewState extends State<CameraView>
           default:
           // Handle other errors here.
             widget.model.onFail(Data(), message: "Unable to get any available Cameras");
+            Log().exception('Unable to get any available Cameras - ${e.code}: ${e.toString()}');
             break;
         }
       }

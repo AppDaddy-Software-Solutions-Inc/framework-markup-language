@@ -468,7 +468,7 @@ class CameraViewState extends State<CameraView>
 
     // wait for controller to initialize
     try {
-      if ((controller == null) || (!controller!.value.isInitialized))
+      if (initialized != true || (controller == null) || (!controller!.value.isInitialized))
         return Container();
     } catch(e) {
       return Container();

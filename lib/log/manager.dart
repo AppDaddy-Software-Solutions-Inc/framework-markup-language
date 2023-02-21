@@ -49,8 +49,7 @@ class Log
     }
     catch(ex)
     {
-      DATABASE.Log e = DATABASE.Log(type: "exception", message: 'Logging Error: $ex', caller:  'Future<void> exception(dynamic exception, {String? callingRoutine}) async');
-      _addEntry(e);
+      print('Catch - Exception: $exception' + (caller != null ? ' -> $caller' : ''));
     }
   }
 
@@ -67,8 +66,7 @@ class Log
     }
     catch(ex)
     {
-      DATABASE.Log e = DATABASE.Log(type: "exception", message: 'Logging Error: $ex', caller: 'Future<void> error(String message, {String? callingRoutine}) async');
-      _addEntry(e);
+      print('Catch - Error: $message' + (caller != null ? ' -> $caller' : ''));
     }
   }
 
@@ -85,8 +83,7 @@ class Log
     }
     catch(ex)
     {
-      DATABASE.Log e = DATABASE.Log(type: "exception", message: 'Logging Error: $ex', caller: 'Future<void> warning(String message, {String? callingRoutine}) async');
-      _addEntry(e);
+      print('Catch - Warning: $message' + (caller != null ? ' -> $caller' : ''));
     }
   }
 
@@ -103,8 +100,7 @@ class Log
     }
     catch(ex)
     {
-      DATABASE.Log e = DATABASE.Log(type: "exception", message: 'Logging Error: $ex', caller: 'Future<void> info(String message, {String? callingRoutine}) async');
-      _addEntry(e);
+      print('Catch - Info: $message' + (caller != null ? ' -> $caller' : ''));
     }
   }
 
@@ -121,8 +117,7 @@ class Log
     }
     catch(ex)
     {
-      DATABASE.Log e = DATABASE.Log(type: "exception", message: 'Logging Error: $ex', caller: 'Future<void> debug(String message, {String? callingRoutine}) async');
-      _addEntry(e);
+      print('Catch - Debug: $message' + (caller != null ? ' -> $caller' : ''));
     }
   }
 

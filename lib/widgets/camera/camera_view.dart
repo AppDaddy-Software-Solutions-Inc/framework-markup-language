@@ -146,7 +146,12 @@ class CameraViewState extends State<CameraView>
   Future<bool> getCameras() async {
     // get cameras
     try {
-      if (cameras == null) cameras = await availableCameras();
+      int tries = 0;
+      while (cameras == null && tries < 5) {
+        if (tries > 0) await Future.delayed(Duration(seconds: 1));
+        tries++;
+        cameras = await availableCameras();
+      }
     } catch(e) {
       if (e is CameraException) {
         switch (e.code.toLowerCase()) {

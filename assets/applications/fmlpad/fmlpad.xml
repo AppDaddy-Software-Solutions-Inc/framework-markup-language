@@ -52,7 +52,7 @@
             <PAD left="20"/>
             <IMAGE url="assets://images/fml-logo.png" height="30"/>
             <PAD left="10"/>
-            <TEXT value="{p1}" visible="=!{isSmall}" size="20"/>
+            <TEXT value="FmlPad" visible="=!{isSmall}" size="20"/>
             <PAD left="50" visible="=!{isSmall}"/>
 
             <!-- widgets -->

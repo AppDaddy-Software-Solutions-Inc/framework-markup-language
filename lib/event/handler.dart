@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart' deferred as fbauth;
 import 'package:firebase_core/firebase_core.dart' deferred as fbcore;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/dialog/manager.dart';
 import 'package:fml/eval/evaluator.dart';
 import 'package:fml/eval/expressions.dart';
@@ -721,7 +722,7 @@ class EventHandler extends Eval
     FrameworkView? framework = NavigationManager().frameworkOf();
     if (framework != null) {
       FrameworkModel model = framework.model;
-      EventManager.of(model)?.executeEvent(model, "LOG.export('html',true)");
+      EventManager.of(model)?.executeEvent(model, "DEBUG.open()");
       return true;
     }
     return false;
@@ -733,7 +734,7 @@ class EventHandler extends Eval
     FrameworkView? framework = NavigationManager().frameworkOf();
     if (framework != null) {
       FrameworkModel model = framework.model;
-      EventManager.of(model)?.executeEvent(model, "LOG.export('html',false)");
+      EventManager.of(model)?.executeEvent(model, "SYSTEM.LOG.export('html',false)");
       return true;
     }
     return false;

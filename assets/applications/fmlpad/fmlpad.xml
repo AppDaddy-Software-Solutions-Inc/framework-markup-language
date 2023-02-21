@@ -1,5 +1,7 @@
 <FML title="FmlPad" linkable="true" onstart="theme({STASH.FmlPadMode} ?? {THEME.brightness} == 'dark' ?'dark':'light');">
 
+    <VAR id="p1" onchange="noe({p1}) ? null : db1.url.set({p1})"/>
+
     <GET id="dbExamples" url="https://fml.dev/fmlpad/examples.xml" root="EXAMPLES.EXAMPLE"/>
     <VAR id="xml" value="{editor}" onchange="{r1} ? fmlpad.replaceChildren({xml},false) : null"/>
 
@@ -58,7 +60,6 @@
             <SELECT bordercolor="transparent" onchange="copy({this})" data="dbWidgets" hint="Widgets" width="150"  visible="=!{isSmall}">
                 <OPTION value="{data.value}" label="&lt;{data.title}/&gt;"/>
             </SELECT>
-
 
             <PAD left="20"/>
 
@@ -138,212 +139,41 @@
                     <SCROLLER>
                         <EDITOR id="editor" language="xml" value="{default}" theme="={theme} ?? solarized-light" />
                     </SCROLLER>
-                    <TREEVIEW icon="keyboard_arrow_right" expandedicon="keyboard_arrow_down" expand="false">
-                        <NODE label="Data Binding">
-                            <NODE label="SYSTEM" onclick="db1.url.set('https://fml.dev/assets/templates/examples/bindables-example1.xml?title=SYSTEM Bindings')" />
-                            <NODE label="USER" onclick="db1.url.set('https://fml.dev/assets/templates/examples/event/signinwithjwt-example1.xml?title=USER Bindings')" />
-                            <NODE label="Clock Example" onclick="db1.url.set('https://fml.dev/assets/templates/examples/timer-example1.xml?title=Time Bindings')" />
-                        </NODE>
-
-                        <NODE label="Datasources">
-                            <NODE label="DATA" onclick="db1.url.set('https://fml.dev/assets/templates/examples/data-example1.xml?title=DATA')" />
-                            <NODE label="DELETE" onclick="db1.url.set('https://fml.dev/assets/templates/examples/delete-example1.xml?title=DELETE')" />
-                            <NODE label="GET" onclick="db1.url.set('https://fml.dev/assets/templates/examples/get-example1.xml?title=GET')" />
-                            <NODE label="POST" onclick="db1.url.set('https://fml.dev/assets/templates/examples/post-example1.xml?title=POST')" />
-                            <NODE label="PUT" onclick="db1.url.set('https://fml.dev/assets/templates/examples/put-example1.xml?title=PUT')" />
-                            <NODE label="MQTT" onclick="db1.url.set('https://fml.dev/assets/templates/examples/mqtt-example1.xml?title=MQTT')" />
-                            <NODE label="SOCKET" expanded="false">
-                                <NODE label="Send Text" onclick="db1.url.set('https://fml.dev/assets/templates/examples/socket-example1.xml?title=SOCKET')" />
-                                <NODE label="Upload a File" onclick="db1.url.set('https://fml.dev/assets/templates/examples/socket-example2.xml?title=SOCKET')" />
-                            </NODE>
-                            <NODE label="CAMERA" onclick="db1.url.set('https://fml.dev/assets/templates/examples/camera-example1.xml?title=CAMERA')" />
-                            <NODE label="FILEPICKER" onclick="db1.url.set('https://fml.dev/assets/templates/examples/filepicker-example1.xml?title=FILEPICKER')" />
-                            <NODE label="GPS" onclick="db1.url.set('https://fml.dev/assets/templates/examples/gps-example1.xml?title=GPS')" />
-                            <NODE label="NFC" onclick="db1.url.set('https://fml.dev/assets/templates/examples/nfc-example1.xml?title=NFC')" />
-                            <NODE label="BEACON" onclick="" />
-                            <NODE label="ZEBRA" onclick="" />
-                            <NODE label="SSE" onclick="db1.url.set('https://fml.dev/assets/templates/examples/sse-example1.xml?title=SERVER SIDE EVENTS (SSE)')" />
-                            <NODE label="Detectors" expanded="false">
-                                <NODE label="BARCODE" onclick="db1.url.set('https://fml.dev/assets/templates/examples/barcode-detector-example1.xml?title=BARCODE DETECTION')"/>
-                                <NODE label="BIOMETRIC" onclick="" />
-                                <NODE label="OCR" onclick="" />
-                            </NODE>
-                            <NODE label="Transforms" expanded="false">
-                                <NODE label="Image Transforms" expanded="true">
-                                    <NODE label="CROP" onclick="db1.url.set('https://fml.dev/assets/templates/examples/image-transforms-example1.xml?title=IMAGE TRANSFORMS (Crop)')" />
-                                    <NODE label="FLIP" onclick="db1.url.set('https://fml.dev/assets/templates/examples/image-transforms-example2.xml?title=IMAGE TRANSFORMS (Flip)')" />
-                                    <NODE label="GRAYSCALE" onclick="db1.url.set('https://fml.dev/assets/templates/examples/image-transforms-example3.xml?title=IMAGE TRANSFORMS (Gray Scale)')" />
-                                    <NODE label="RESIZE" onclick="db1.url.set('https://fml.dev/assets/templates/examples/image-transforms-example4.xml?title=IMAGE TRANSFORMS (Resize)')" />
-                                </NODE>
-                                <NODE label="Data Transforms" expanded="true">
-                                    <NODE label="CALC" onclick="" />
-                                    <NODE label="DISTINCT" onclick="" />
-                                    <NODE label="EVAL" onclick="" />
-                                    <NODE label="FILTER" onclick="" />
-                                    <NODE label="FORMAT" onclick="" />
-                                    <NODE label="PIVOT" onclick="" />
-                                    <NODE label="SORT" onclick="" />
-                                </NODE>
-                            </NODE>
-                        </NODE>
-                        <NODE label="Events">
-
-                            <NODE label="alert()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/event/alert-example1.xml?title=alert()')" />
-                            <NODE label="animate()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/animation-example1.xml?title=animate()')" />
-                            <NODE label="back()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/event/back-example1.xml?title=back()')" />
-                            <NODE label="clear()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/event/clear-example1.xml?title=clear()')" />
-                            <NODE label="close()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/modal-example1.xml?title=close()')" />
-                            <NODE label="complete()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/form-example1.xml?title=complete()')" />
-                            <NODE label="cont()/continue()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/event/continue-example1.xml?title=continue()')" />
-                            <NODE label="copy()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/event/copy-example1.xml?title=copy()')" />
-                            <NODE label="export()" ZZZonclick="db1.url.set('https://fml.dev/assets/templates/examples/event/export-example1.xml?title=export()')" />
-                            <NODE label="focusnode()" ZZZonclick="db1.url.set('https://fml.dev/assets/templates/examples/event/focusnode-example1.xml?title=focusnode()')" />
-                            <NODE label="home()" ZZZonclick="db1.url.set('https://fml.dev/assets/templates/examples/event/home-example1.xml?title=home()')" />
-                            <NODE label="logoff()" ZZZonclick="db1.url.set('https://fml.dev/assets/templates/examples/event/logoff-example1.xml?title=logoff()')" />
-                            <!-- <NODE label="maximize()" ZZZonclick="db1.url.set('https://fml.dev/assets/templates/examples/event/minimize-example1.xml?title=minimize()')" /> -->
-                            <!-- <NODE label="minimize()" ZZZonclick="db1.url.set('https://fml.dev/assets/templates/examples/event/minimize-example1.xml?title=minimize()')" /> -->
-                            <NODE label="open()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/event/open-example1.xml?title=open()')" />
-                            <NODE label="page()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/pager-example1.xml?title=page()')" />
-                            <NODE label="post()" ZZZonclick="db1.url.set('https://fml.dev/assets/templates/examples/event/post-example1.xml?title=post()')" />
-                            <NODE label="refresh()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/event/refresh-example1.xml?title=refresh()')" />
-                            <NODE label="removewidget()" onclick="" />
-                            <NODE label="replaceroute()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/event/replaceroute-example1.xml?title=replace()')" />
-                            <NODE label="replacewidget()" onclick="" />
-                            <NODE label="save()" ZZZonclick="db1.url.set('https://fml.dev/assets/templates/examples/event/save-example1.xml?title=save()')" />
-                            <NODE label="scrollto()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/event/scrollto-example1.xml?title=scrollto()')" />
-                            <NODE label="set()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/event/set-example1.xml?title=set()')" />
-                            <NODE label="showdebug()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/event/show-example1.xml?title=showdebug()')" />
-                            <NODE label="showlog()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/event/show-example1.xml?title=showlog()')" />
-                            <NODE label="showtemplate()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/event/show-example1.xml?title=showtemplate()')" />
-                            <NODE label="signInWithFirebase()" ZZZonclick="db1.url.set('https://fml.dev/assets/templates/examples/event/signinwithfirebase-example1.xml?title=signinwithfirebase()')" />
-                            <NODE label="signInWithJwt()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/event/signinwithjwt-example1.xml?title=SignInWithJwt()')" />
-                            <NODE label="sound()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/event/sound-example1.xml?title=sound()')" />
-                            <NODE label="start()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/event/start-stop-example1.xml?title=start()')" />
-                            <NODE label="stash()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/event/stash-example1.xml?title=stash()')" />
-                            <NODE label="stop()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/event/start-stop-example1.xml?title=stop()')" />
-                            <NODE label="theme()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/event/theme-example1.xml?title=theme()')" />
-                            <NODE label="toast()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/event/toast-example1.xml?title=toast()')" />
-                            <NODE label="trigger()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/trigger-example1.xml?title=trigger()')" />
-                            <NODE label="wait()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/event/wait-example1.xml?title=wait()')" />
-                        </NODE>
-                        <NODE label="Evaluations" expanded="false">
-                            <NODE label="Arithmetic" onclick="db1.url.set('https://fml.dev/assets/templates/examples/eval/arithmetic-example1.xml?title=Arithmetic')" />
-                            <NODE label="Logic" onclick="db1.url.set('https://fml.dev/assets/templates/examples/eval/logic-example1.xml?title=Logic')" />
-                            <NODE label="Ternary" onclick="db1.url.set('https://fml.dev/assets/templates/examples/eval/ternary-example1.xml?title=Ternary Operator')" />
-                            <NODE label="bit()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/eval/bit-example1.xml?title=bit()')" />
-                            <NODE label="case()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/eval/case-example1.xml?title=case()')" />
-                            <NODE label="ceil()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/eval/rounding-example1.xml?title=ceil()')" />
-                            <NODE label="contains()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/eval/contains-example1.xml?title=contains()')" />
-                            <!-- <NODE label="decrypt()" onclick="" /> -->
-                            <!-- <NODE label="encrypt()" onclick="" /> -->
-                            <NODE label="endswith()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/eval/endswith-example1.xml?title=endswith()')" />
-                            <NODE label="floor()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/eval/rounding-example1.xml?title=floor()')" />
-                            <!-- <NODE label="hash()" onclick="" /> -->
-                            <NODE label="if()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/eval/if-example1.xml?title=if()')" />
-                            <NODE label="isbool()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/eval/is-example1.xml?title=isBool()')" />
-                            <NODE label="isnull()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/eval/is-example1.xml?title=isNull()')" />
-                            <NODE label="isnullorempty()/noe()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/eval/is-example1.xml?title=noe()')" />
-                            <NODE label="isnum()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/eval/is-example1.xml?title=isNum()')" />
-                            <NODE label="length()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/eval/length-example1.xml?title=length()')" />
-                            <xNODE label="mod()" onclick="" />
-                            <NODE label="number()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/eval/number-example1.xml?title=number()')" />
-                            <NODE label="nvl()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/eval/nvl-example1.xml?title=nvl()')" />
-                            <xNODE label="pi()/sin()/cos()/tan()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/eval/pi-example1.xml?title=pi()/sin()/cos()/tan()')" />
-                            <xNODE label="regex()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/eval/regex-example1.xml?title=regex()')" />
-                            <NODE label="replace()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/eval/replace-example1.xml?title=replace()')" />
-                            <NODE label="round()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/eval/rounding-example1.xml?title=round()')" />
-                            <NODE label="startswith()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/eval/startswith-example1.xml?title=startswith()')" />
-                            <NODE label="substring()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/eval/substring-example1.xml?title=substring()')" />
-                            <NODE label="tobool()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/eval/to-example1.xml?title=tobool()')" />
-                            <NODE label="todate()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/eval/todate-example1.xml?title=todate()')" />
-                            <NODE label="tolower()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/eval/to-example1.xml?title=tolower()')" />
-                            <xNODE label="tonum()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/eval/to-example1.xml?title=tonum()')" />
-                            <NODE label="tostring()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/eval/to-example1.xml?title=tostring()')" />
-                            <NODE label="toupper()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/eval/to-example1.xml?title=toupper()')" />
-                            <NODE label="truncate()" onclick="db1.url.set('https://fml.dev/assets/templates/examples/eval/rounding-example1.xml?title=truncate()')" />
-                        </NODE>
-                        <NODE label="Widgets" expanded="true">
-                            <NODE label="Interactive Widgets" expanded="false">
-                                <NODE label="Breadcrumb" onclick="db1.url.set('https://fml.dev/assets/templates/examples/breadcrumb-example1.xml?title=&lt;BREADCRUMB&gt;')" />
-                                <NODE label="Button" onclick="db1.url.set('https://fml.dev/assets/templates/examples/button-example1.xml?title=&lt;BUTTON&gt;')" />
-                                <NODE label="Checkbox" onclick="db1.url.set('https://fml.dev/assets/templates/examples/checkbox-example1.xml?title=&lt;CHECKBOX&gt;')" />
-                                <NODE label="Datepicker" onclick="db1.url.set('https://fml.dev/assets/templates/examples/datepicker-example1.xml?title=&lt;DATEPICKER&gt;')" />
-                                <NODE label="Gesture" onclick="db1.url.set('https://fml.dev/assets/templates/examples/gesture-example1.xml?title=&lt;GESTURE&gt;')" />
-                                <NODE label="Input" onclick="db1.url.set('https://fml.dev/assets/templates/examples/input-example1.xml?title=&lt;INPUT&gt;')" />
-                                <NODE label="Link" onclick="db1.url.set('https://fml.dev/assets/templates/examples/link-example1.xml?title=&lt;LINK&gt;')" />
-                                <NODE label="Popover" onclick="db1.url.set('https://fml.dev/assets/templates/examples/popover-example1.xml?title=&lt;POPOVER&gt;')" />
-                                <NODE label="Radio" onclick="db1.url.set('https://fml.dev/assets/templates/examples/radio-example1.xml?title=&lt;RADIO&gt;')" />
-                                <NODE label="Scribble" onclick="db1.url.set('https://fml.dev/assets/templates/examples/scribble-example1.xml?title=&lt;SCRIBBLE&gt;')" />
-                                <NODE label="Select" onclick="db1.url.set('https://fml.dev/assets/templates/examples/select-example1.xml?title=&lt;SELECT&gt;')" />
-                                <NODE label="Switch" onclick="db1.url.set('https://fml.dev/assets/templates/examples/switch-example1.xml?title=&lt;SWITCH&gt;')" />
-                                <NODE label="Slider" onclick="db1.url.set('https://fml.dev/assets/templates/examples/slider-example1.xml?title=&lt;SLIDER&gt;')" />
-                                <NODE label="Tooltip" onclick="db1.url.set('https://fml.dev/assets/templates/examples/tooltip-example1.xml?title=&lt;TOOLTIP&gt;')" />
-                            </NODE>
-                            <NODE label="Display Widgets" expanded="false">
-                                <NODE label="Animation" onclick="db1.url.set('https://fml.dev/assets/templates/examples/animation-example1.xml?title=&lt;ANIMATION&gt;')" />
-                                <NODE label="Busy" onclick="db1.url.set('https://fml.dev/assets/templates/examples/busy-example1.xml?title=&lt;BUSY&gt;')" />
-                                <NODE label="Html" onclick="db1.url.set('https://fml.dev/assets/templates/examples/html-example1.xml?title=&lt;HTML&gt;')" />
-                                <NODE label="Icon" onclick="db1.url.set('https://fml.dev/assets/templates/examples/icon-example1.xml?title=&lt;ICON&gt;')" />
-                                <NODE label="Image" onclick="db1.url.set('https://fml.dev/assets/templates/examples/image-example2.xml?title=&lt;IMAGE&gt;')" />
-                                <NODE label="Modal" onclick="db1.url.set('https://fml.dev/assets/templates/examples/modal-example1.xml?title=&lt;MODAL&gt;')" />
-                                <NODE label="Text" onclick="db1.url.set('https://fml.dev/assets/templates/examples/text-example1.xml?title=&lt;TEXT&gt;')" />
-                                <NODE label="Video" onclick="db1.url.set('https://fml.dev/assets/templates/examples/video-example1.xml?title=&lt;VIDEO&gt;')" />
-                            </NODE>
-                            <NODE label="Layout Widgets" expanded="false">
-                                <NODE label="Box" expanded="false">
-                                    <NODE label="Decorated Box" onclick="db1.url.set('https://fml.dev/assets/templates/examples/box-example1.xml?title=Decorated &lt;BOX&gt;')" />
-                                    <NODE label="Layout Box" onclick="db1.url.set('https://fml.dev/assets/templates/examples/box-example2.xml?title=Layout &lt;BOX&gt;')" />
-                                </NODE>
-                                <NODE label="Center" onclick="db1.url.set('https://fml.dev/assets/templates/examples/center-example1.xml?title=&lt;CENTER&gt;')" />
-                                <NODE label="Column" onclick="db1.url.set('https://fml.dev/assets/templates/examples/column-example1.xml?title=&lt;COLUMN&gt;')" />
-                                <NODE label="Drawer" onclick="db1.url.set('https://fml.dev/assets/templates/examples/drawer-example1.xml?title=&lt;DRAWER&gt;')" />
-                                <NODE label="Expanded" onclick="db1.url.set('https://fml.dev/assets/templates/examples/expanded-example1.xml?title=&lt;EXPANDED&gt;')" />
-                                <xNODE label="Footer" onclick="" />
-                                <xNODE label="Header" onclick="" />
-                                <NODE label="Padding" onclick="db1.url.set('https://fml.dev/assets/templates/examples/padding-example1.xml?title=&lt;PADDING&gt;')" />
-                                <NODE label="Pager" onclick="db1.url.set('https://fml.dev/assets/templates/examples/pager-example1.xml?title=&lt;PAGER&gt;')" />
-                                <NODE label="Row" onclick="db1.url.set('https://fml.dev/assets/templates/examples/row-example1.xml?title=&lt;ROW&gt;')" />
-                                <NODE label="Scroller" onclick="db1.url.set('https://fml.dev/assets/templates/examples/scroller-example1.xml?title=&lt;SCROLLER&gt;')" />
-                                <NODE label="Splitview" onclick="db1.url.set('https://fml.dev/assets/templates/examples/splitview-example1.xml?title=&lt;SPLITVIEW&gt;')" />
-                                <NODE label="Stack" onclick="db1.url.set('https://fml.dev/assets/templates/examples/stack-example1.xml?title=&lt;STACK&gt;')" />
-                                <NODE label="Tabview" onclick="db1.url.set('https://fml.dev/assets/templates/examples/tabview-example1.xml?title=&lt;TABVIEW&gt;')" />
-                                <NODE label="Treeview" onclick="db1.url.set('https://fml.dev/assets/templates/examples/treeview-example1.xml?title=&lt;TREEVIEW&gt;')" />
-                            </NODE>
-                            <NODE label="Data UI Widgets" expanded="false">
-                                <NODE label="Charts" expanded="false">
-                                    <NODE label="Pie" onclick="db1.url.set('https://fml.dev/assets/templates/examples/chart-example1.xml?title=Pie &lt;CHART&gt;')" />
-                                    <NODE label="Line" onclick="db1.url.set('https://fml.dev/assets/templates/examples/chart-example2.xml?title=Line &lt;CHART&gt;')" />
-                                    <NODE label="Bar" onclick="db1.url.set('https://fml.dev/assets/templates/examples/chart-example3.xml?title=Bar &lt;CHART&gt;')" />
-                                    <NODE label="Combination" onclick="db1.url.set('https://fml.dev/assets/templates/examples/chart-example4.xml?title=Combination &lt;CHART&gt;')" />
-                                    <NODE label="Grouped Bar" onclick="db1.url.set('https://fml.dev/assets/templates/examples/chart-example5.xml?title=Grouped Bar &lt;CHART&gt;')" />
-                                    <NODE label="Stacked Bar" onclick="db1.url.set('https://fml.dev/assets/templates/examples/chart-example6.xml?title=Stacked Bar &lt;CHART&gt;')" />
-                                    <NODE label="Grouped &amp; Stacked" onclick="db1.url.set('https://fml.dev/assets/templates/examples/chart-example7.xml?title=Grouped %26 Stacked Bar &lt;CHART&gt;')" />
-                                </NODE>
-                                <NODE label="List" expanded="false">
-                                    <NODE label="Collapsed List" onclick="db1.url.set('https://fml.dev/assets/templates/examples/list-example2.xml?title=&lt;LIST&gt;')" />
-                                    <NODE label="Dynamic List" onclick="db1.url.set('https://fml.dev/assets/templates/examples/list-example1.xml?title=&lt;LIST&gt;')" />
-                                </NODE>
-                                <NODE label="Grid" expanded="false">
-                                    <NODE label="Static Grid" onclick="db1.url.set('https://fml.dev/assets/templates/examples/grid-example1.xml?title=&lt;GRID&gt;')" />
-                                    <NODE label="Dynamic Grid" onclick="db1.url.set('https://fml.dev/assets/templates/examples/grid-example2.xml?title=&lt;GRID&gt;')" />
-                                </NODE>
-                                <NODE label="Maps" expanded="false">
-                                    <NODE label="Satellite Map" onclick="db1.url.set('https://fml.dev/assets/templates/examples/map-example1.xml?title=&lt;MAP&gt;')" />
-                                    <NODE label="Vector Map" onclick="db1.url.set('https://fml.dev/assets/templates/examples/map-example2.xml?title=&lt;MAP&gt;')" />
-                                </NODE>
-                                <NODE label="Menu" onclick="db1.url.set('https://fml.dev/assets/templates/examples/menu-example1.xml?title=&lt;MENU&gt;')" />
-                                <NODE label="Table" onclick="db1.url.set('https://fml.dev/assets/templates/examples/table-example1.xml?title=&lt;TABLE&gt;')" />
-                            </NODE>
-                            <NODE label="Utility Widgets" expanded="false">
-                                <NODE label="Form" onclick="" />
-                                <NODE label="Include" onclick="db1.url.set('https://fml.dev/assets/templates/examples/include-example1.xml?title=&lt;INCLUDE&gt;')" />
-                                <NODE label="Template" onclick="db1.url.set('https://fml.dev/assets/templates/examples/template-example1.xml?title=&lt;TEMPLATE&gt;')" />
-                                <NODE label="Timer" onclick="db1.url.set('https://fml.dev/assets/templates/examples/timer-example1.xml?title=&lt;TIMER&gt;')" />
-                                <NODE label="Trigger" onclick="db1.url.set('https://fml.dev/assets/templates/examples/trigger-example1.xml?title=&lt;TRIGGER&gt;')" />
-                                <NODE label="Variable" onclick="db1.url.set('https://fml.dev/assets/templates/examples/variable-example1.xml?title=&lt;VARIABLE&gt;')" />
-                            </NODE>
-                        </NODE>
-                    </TREEVIEW>
+                    <GRID data="dbExamples" direction="vertical">
+                        <ITEM width="200" height="90">
+                        <PAD all="10">
+                            <ANIMATION id="flippy" type="flip" duration="500" axis="vertical">
+                                <LINK onclick="db1.url.set({data.url})">
+                                <BOX id="front" center="true" elevation="0.1" radius="3" color="={db1.url}=={data.url} ? {THEME.inverseprimary} : {THEME.oninversesurface}" pad="10" opacity="0.8" layout="stack">
+                                    <CENTER>
+                                    <COL expand="false" halign="center">
+                                        <ICON icon="{data.icon}" color="{data.color}"/>
+                                        <TEXT value="{data.title}" size="12"/>
+                                    </COL>
+                                    </CENTER>
+                                    <POS right="0" top="0">
+                                        <LINK onclick="flippy.start()">
+                                            <ICON icon="info_outline" size="20" color="#C7C8CA" visible="=!noe({data.description})"/>
+                                        </LINK>
+                                    </POS>
+                                </BOX>
+                                </LINK>
+                                <BOX id="back" halign="center" elevation="0.1" radius="3" color="{THEME.oninversesurface}" pad="10" opacity="0.8" layout="stack">
+                                    <CENTER>
+                                        <SCROLLER>
+                                            <TEXT value="{data.description}" size="12"/>
+                                        </SCROLLER>
+                                    </CENTER>
+                                    <POS right="0" top="0">
+                                        <LINK onclick="flippy.start()">
+                                            <ICON icon="info_outline" size="20" color="#C7C8CA"/>
+                                        </LINK>
+                                    </POS>
+                                </BOX>
+                            </ANIMATION>
+                        </PAD>
+                        </ITEM>
+                    </GRID>
                 </ANIMATION>
 
                 <POSITIONED right="15" top="5">

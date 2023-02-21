@@ -231,7 +231,7 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
 
         // build the animation
         _controller = FlipCardController();
-        view = FlipCard(speed: duration, direction: axis, alignment: anchor, controller: _controller, front: front ?? Container(), back: back ?? Container());
+        view = FlipCard(speed: duration, direction: axis, alignment: anchor, controller: _controller, front: front ?? Container(), back: back ?? Container(), flipOnTouch: false,);
         break;
 
       case ANIMATION.Transitions.fade :

@@ -652,8 +652,9 @@ class S
   {
     // process bindings
     var original  = prototype;
-    var bindings  = Binding.getBindings(prototype)!;
+    var bindings  = Binding.getBindings(prototype);
     List<String?> processed = [];
+    if (bindings != null)
     bindings.forEach((binding)
     {
       if ((binding.source == 'data') && (!processed.contains(binding.signature)))

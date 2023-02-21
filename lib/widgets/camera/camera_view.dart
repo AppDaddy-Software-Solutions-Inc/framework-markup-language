@@ -206,9 +206,40 @@ class CameraViewState extends State<CameraView>
         controller = CameraController(camera, resolution, imageFormatGroup: format, enableAudio: false);
 
         // initialize the controller
-        await controller!.initialize();
+        try {
+          await controller!.initialize();
+          if (!mounted) return;
+        } catch(e) {
+          if (e is CameraException) {
+            switch (e.code) {
+              case 'CameraAccessDenied':
+              // Thrown when user denies the camera access permission.
+                break;
+              case 'CameraAccessDeniedWithoutPrompt':
+              // iOS only for now. Thrown when user has previously denied the permission. iOS does not allow prompting alert dialog a second time. Users will have to go to Settings > Privacy > Camera in order to enable camera access.
+                break;
+              case 'CameraAccessRestricted':
+              // iOS only for now. Thrown when camera access is restricted and users cannot grant permission (parental control).
+                break;
+              case 'AudioAccessDenied':
+              // Thrown when user denies the audio access permission.
+                break;
+              case 'AudioAccessDeniedWithoutPrompt':
+              // iOS only for now. Thrown when user has previously denied the permission. iOS does not allow prompting alert dialog a second time. Users will have to go to Settings > Privacy > Microphone in order to enable audio access.
+                break;
+              case 'AudioAccessRestricted':
+              // iOS only for now. Thrown when audio access is restricted and users cannot grant permission (parental control).
+                break;
+              default:
+              // Handle other errors here.
+                break;
+            }
+          }
+          else {
+            Log().exception(e,  caller: 'camera.View');
+          }
+        }
 
-        if (!mounted) return;
         try {
           // min zoom
           _zoom = await controller!.getMinZoomLevel();

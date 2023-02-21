@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/navigation/transition.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/theme/theme_model.dart';
 import 'package:fml/observable/observable_barrel.dart';

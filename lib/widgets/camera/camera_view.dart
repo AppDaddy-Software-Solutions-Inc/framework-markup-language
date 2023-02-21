@@ -150,7 +150,25 @@ class CameraViewState extends State<CameraView>
       }
 
       // get cameras
-      if (cameras == null) cameras = await availableCameras();
+      try {
+        if (cameras == null) cameras = await availableCameras();
+      } catch(e) {
+        if (e is CameraException) {
+          switch (e.code.toLowerCase()) {
+            case 'permissiondenied':
+            // Thrown when user is not on a secure (https) connection.
+              widget.model.onFail(Data(), message: "Camera is only available over a secure (https) connection");
+              break;
+            default:
+            // Handle other errors here.
+              widget.model.onFail(Data(), message: "Unable to get any available Cameras");
+              break;
+          }
+        }
+        else {
+          Log().exception(e,  caller: 'camera.View');
+        }
+      }
       if ((cameras != null) && (cameras!.length > 0))
       {
         // set specified camera
@@ -206,9 +224,47 @@ class CameraViewState extends State<CameraView>
         controller = CameraController(camera, resolution, imageFormatGroup: format, enableAudio: false);
 
         // initialize the controller
-        await controller!.initialize();
+        try {
+          await controller!.initialize();
+          if (!mounted) return;
+        } catch(e) {
+          if (e is CameraException) {
+            switch (e.code.toLowerCase()) {
+              case 'cameraaccessdenied':
+              // Thrown when user denies the camera access permission.
+                widget.model.onFail(Data(), message: "User denied Camera/Microphone access permissions");
+                break;
+              case 'cameraaccessdeniedwithoutprompt':
+              // iOS only for now. Thrown when user has previously denied the permission. iOS does not allow prompting alert dialog a second time. Users will have to go to Settings > Privacy > Camera in order to enable camera access.
+                widget.model.onFail(Data(), message: "User previously denied Camera access permissions, to change this go to Settings > Privacy > Camera");
+                break;
+              case 'cameraaccessrestricted':
+              // iOS only for now. Thrown when camera access is restricted and users cannot grant permission (parental control).
+                widget.model.onFail(Data(), message: "Parental control denied Camera access permissions");
+                break;
+              case 'audioaccessdenied':
+              // Thrown when user denies the audio access permission.
+                widget.model.onFail(Data(), message: "User denied Microphone access permissions");
+                break;
+              case 'audioaccessdeniedwithoutprompt':
+              // iOS only for now. Thrown when user has previously denied the permission. iOS does not allow prompting alert dialog a second time. Users will have to go to Settings > Privacy > Microphone in order to enable audio access.
+                widget.model.onFail(Data(), message: "User previously denied Microphone access permissions, to change this go to Settings > Privacy > Microphone");
+                break;
+              case 'audioaccessrestricted':
+              // iOS only for now. Thrown when audio access is restricted and users cannot grant permission (parental control).
+                widget.model.onFail(Data(), message: "Parental control denied Microphone access permissions");
+                break;
+              default:
+              // Handle other errors here.
+                widget.model.onFail(Data(), message: "Camera Initialization Error");
+                break;
+            }
+          }
+          else {
+            Log().exception(e,  caller: 'camera.View');
+          }
+        }
 
-        if (!mounted) return;
         try {
           // min zoom
           _zoom = await controller!.getMinZoomLevel();

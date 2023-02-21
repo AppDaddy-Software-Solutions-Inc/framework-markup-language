@@ -221,6 +221,7 @@ class _BoxViewState extends State<BoxView> implements IModelListener {
       child = Stack(
         children: children,
         alignment: aligned!,
+        fit: StackFit.expand
       );
     } else {
       child = Column(

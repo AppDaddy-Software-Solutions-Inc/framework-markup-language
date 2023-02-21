@@ -1,12 +1,12 @@
 <FML title="FmlPad" linkable="true" onstart="theme({STASH.FmlPadMode} ?? {THEME.brightness} == 'dark' ?'dark':'light');">
 
-    <VAR id="p1" onchange="noe({p1}) ? null : db1.url.set({p1})"/>
+    <VAR id="p1" value="{example}" onchange="db1.url.set({p1.value})"/>
 
     <GET id="dbExamples" url="https://fml.dev/fmlpad/examples.xml" root="EXAMPLES.EXAMPLE"/>
     <VAR id="xml" value="{editor}" onchange="{r1} ? fmlpad.replaceChildren({xml},false) : null"/>
 
     <!-- primary datasource for fetching example text -->
-    <GET id="db1" url="{examples}" onsuccess="editor.set({this.response})" refresh="true"/>
+    <GET id="db1" url="{p1}" onsuccess="editor.set({this.response})" refresh="true"/>
 
     <CONST id="default">
         <value>
@@ -52,7 +52,7 @@
             <PAD left="20"/>
             <IMAGE url="assets://images/fml-logo.png" height="30"/>
             <PAD left="10"/>
-            <TEXT value="FmlPad" visible="=!{isSmall}" size="20"/>
+            <TEXT value="{p1}" visible="=!{isSmall}" size="20"/>
             <PAD left="50" visible="=!{isSmall}"/>
 
             <!-- widgets -->
@@ -64,7 +64,7 @@
             <PAD left="20"/>
 
             <!-- examples -->
-            <TYPEAHEAD id="examples" bordercolor="transparent" value="" data="dbExamples" hint="Examples" width="250">
+            <TYPEAHEAD id="examples" bordercolor="transparent" value="" data="dbExamples" hint="Examples" width="250" onchange="p1.set({data.url})">
                 <OPTION value="{data.url}">
                     <label><ROW valign="center" expand="false"><ICON icon="{data.icon}" size="16" color="{data.color}"/><PAD left="10"/><TEXT value="{data.title}"/></ROW></label>
                 </OPTION>
@@ -143,7 +143,7 @@
                         <ITEM width="200" height="90">
                         <PAD all="10">
                             <ANIMATION id="flippy" type="flip" duration="500" axis="vertical">
-                                <LINK onclick="db1.url.set({data.url})">
+                                <LINK onclick="p1.set({data.url})">
                                 <BOX id="front" center="true" elevation="0.1" radius="3" color="={db1.url}=={data.url} ? {THEME.inverseprimary} : {THEME.oninversesurface}" pad="10" opacity="0.8" layout="stack">
                                     <CENTER>
                                     <COL expand="false" halign="center">

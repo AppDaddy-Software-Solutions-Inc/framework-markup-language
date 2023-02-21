@@ -145,29 +145,30 @@ class CameraViewState extends State<CameraView>
 
   Future<bool> getCameras() async {
     // get cameras
-    try {
       int tries = 0;
       while (cameras == null && tries < 5) {
         if (tries > 0) await Future.delayed(Duration(seconds: 1));
         tries++;
-        cameras = await availableCameras();
-      }
-    } catch(e) {
-      if (e is CameraException) {
-        switch (e.code.toLowerCase()) {
-          case 'permissiondenied':
-          // Thrown when user is not on a secure (https) connection.
-            widget.model.onFail(Data(), message: "Camera is only available over a secure (https) connection");
-            break;
-          default:
-          // Handle other errors here.
-            widget.model.onFail(Data(), message: "Unable to get any available Cameras");
-            Log().exception('Unable to get availableCameras() - ${e.code}: ${e.toString()}');
-            break;
+
+        try {
+          cameras = await availableCameras();
+        } catch(e) {
+        if (e is CameraException) {
+          switch (e.code.toLowerCase()) {
+            case 'permissiondenied':
+            // Thrown when user is not on a secure (https) connection.
+              widget.model.onFail(Data(), message: "Camera is only available over a secure (https) connection");
+              break;
+            default:
+            // Handle other errors here.
+              widget.model.onFail(Data(), message: "Unable to get any available Cameras");
+              Log().exception('Unable to get availableCameras() - ${e.code}: ${e.toString()}');
+              break;
+          }
         }
-      }
-      else {
-        Log().exception(e,  caller: 'camera.View');
+        else {
+          Log().exception(e,  caller: 'camera.View');
+        }
       }
     }
     print((cameras != null).toString());

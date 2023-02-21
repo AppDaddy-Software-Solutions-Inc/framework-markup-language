@@ -256,6 +256,7 @@ class CameraViewState extends State<CameraView>
                 break;
               default:
               // Handle other errors here.
+                widget.model.onFail(Data(), message: "Camera Initialization Error");
                 break;
             }
           }

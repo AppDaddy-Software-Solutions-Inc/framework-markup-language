@@ -721,7 +721,7 @@ class EventHandler extends Eval
     FrameworkView? framework = NavigationManager().frameworkOf();
     if (framework != null) {
       FrameworkModel model = framework.model;
-      EventManager.of(model)?.executeEvent(model, "LOG.export('html',true)");
+      EventManager.of(model)?.executeEvent(model, "DEBUG.open()");
       return true;
     }
     return false;
@@ -733,7 +733,7 @@ class EventHandler extends Eval
     FrameworkView? framework = NavigationManager().frameworkOf();
     if (framework != null) {
       FrameworkModel model = framework.model;
-      EventManager.of(model)?.executeEvent(model, "LOG.export('html',false)");
+      EventManager.of(model)?.executeEvent(model, "SYSTEM.LOG.export('html',false)");
       return true;
     }
     return false;

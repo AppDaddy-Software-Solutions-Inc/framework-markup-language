@@ -79,7 +79,7 @@ class CameraViewState extends State<CameraView>
       {
         // changed camera
         case 'index':
-          initialize();
+          reInit();
           break;
 
         // enable/disable
@@ -107,7 +107,8 @@ class CameraViewState extends State<CameraView>
           }
 
           // initialize the camera
-          else initialize();
+          else
+            reInit();
           break;
 
       }
@@ -222,6 +223,16 @@ class CameraViewState extends State<CameraView>
 
         // build the controller
         controller = CameraController(camera, resolution, imageFormatGroup: format, enableAudio: false);
+
+        if (controller != null) {
+          controller!.addListener(() {
+            if (controller!.value.hasError)
+              Log().debug('Camera Controller error ${controller!.value.errorDescription}', caller: 'camera/camera_view.dart => initialize()');
+          });
+        }
+        else {
+          Log().debug('Camera Controller is null', caller: 'camera/camera_view.dart => initialize()');
+        }
 
         // initialize the controller
         try {
@@ -380,9 +391,16 @@ class CameraViewState extends State<CameraView>
     if (state == AppLifecycleState.inactive) {
       controller?.dispose();
     } else if (state == AppLifecycleState.resumed) {
-      initialize();
+      reInit();
     }
   }
+
+  void reInit() async {
+    if (controller != null)
+      await controller!.dispose();
+    initialize();
+  }
+
 
   void _handleScaleStart(ScaleStartDetails details) {
     _baseScale = _zoom;
@@ -427,8 +445,12 @@ class CameraViewState extends State<CameraView>
     if (!widget.model.visible) return Offstage();
 
     // wait for controller to initialize
-    if ((controller == null) || (!controller!.value.isInitialized))
+    try {
+      if ((controller == null) || (!controller!.value.isInitialized))
+        return Container();
+    } catch(e) {
       return Container();
+    }
 
     //////////
     /* View */

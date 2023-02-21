@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/overlay/overlay_manager.dart';
+import 'package:fml/widgets/overlay/overlay_manager_model.dart';
+import 'package:fml/widgets/overlay/overlay_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/page.dart';
@@ -102,7 +104,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
       if (page is MaterialPage && page.child is OverlayManager)
       {
          var manager  = page.child as OverlayManager;
-         if (manager.child is FrameworkView) return manager.child as FrameworkView;
+         if (manager.model.child is FrameworkView) return manager.model.child as FrameworkView;
       }
     }
     return null;
@@ -341,7 +343,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
         break;
 
       default:
-        view =  OverlayManager(child: FrameworkView(FrameworkModel.fromUrl(System.app!, url, refresh: refresh, dependency: dependency)));
+        view =  OverlayManager(OverlayManagerModel(FrameworkView(FrameworkModel.fromUrl(System.app!, url, refresh: refresh, dependency: dependency))));
         break;
     }
 
@@ -448,19 +450,19 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     OverlayManager? manager = context != null ? context.findAncestorWidgetOfExactType<OverlayManager>() : null;
     if (manager != null)
     {
-      overlay = OverlayView(child: view, modal: modal, resizeable: resizeable, closeable: closeable, draggable: draggable, width: _toWidth(width), height: _toHeight(height));
-      manager.overlays.add(overlay);
-      manager.refresh();
+      overlay = OverlayView(OverlayModel(child: view, modal: modal, resizeable: resizeable, closeable: closeable, draggable: draggable, width: _toWidth(width), height: _toHeight(height)));
+      manager.model.overlays.add(overlay);
+      manager.model.refresh();
     }
     return overlay;
   }
 
   bool closeModal(OverlayView? overlay, BuildContext? context)
   {
-    if ((overlay == null) || (overlay.closeable == false)) return true;
-    overlay.close();
+    if ((overlay == null) || (overlay.model.closeable == false)) return true;
+    overlay.model.close();
     OverlayManager? manager = context != null ? context.findAncestorWidgetOfExactType<OverlayManager>() : null;
-    if (manager != null) manager.refresh();
+    if (manager != null) manager.model.refresh();
     return true;
   }
 

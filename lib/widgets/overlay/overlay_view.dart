@@ -6,58 +6,19 @@ import 'package:fml/event/event.dart'   ;
 import 'package:fml/system.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/overlay/overlay_manager.dart';
+import 'package:fml/widgets/overlay/overlay_model.dart';
 
 class OverlayView extends StatefulWidget
 {
-  final String? id;
-  final Widget child;
+  final OverlayModel model;
 
-  final double? width;
-  final double? height;
-
-  final bool closeable;
-  final bool resizeable;
-  final bool draggable;
-  final bool dismissable;
-  final bool modal;
-  final bool? pad;
-  final bool? decorate;
-
-  final double? dx;
-  final double? dy;
-
-  final Color? color;
-  final Color? modalBarrierColor;
-
-  late _OverlayViewState? state;
-
-  OverlayView({required this.child, this.id, this.width, this.height, this.dx, this.color, this.dy, this.resizeable = true, this.draggable = true, this.modal = false, this.closeable = true, this.dismissable = true, this.modalBarrierColor, this.pad, this.decorate}) : super();
+  OverlayView(this.model) : super();
 
   @override
-  _OverlayViewState createState()
-  {
-    this.state = _OverlayViewState();
-    return state!;
-  }
-
-  void close()
-  {
-    if (state != null) state!.onClose();
-  }
-
-  void dismiss()
-  {
-    if (state != null) state!.onDismiss();
-  }
-
-  bool get minimized
-  {
-    if (state != null) return state!.minimized;
-    return false;
-  }
+  OverlayViewState createState() => OverlayViewState();
 }
 
-class _OverlayViewState extends State<OverlayView>
+class OverlayViewState extends State<OverlayView>
 {
   double padding = 15;
 
@@ -86,28 +47,33 @@ class _OverlayViewState extends State<OverlayView>
   @override
   void initState()
   {
-    width  = widget.width;
-    height = widget.height;
-    dx     = widget.dx;
-    dy     = widget.dy;
+    widget.model.state = this;
+
+    width  = widget.model.width;
+    height = widget.model.height;
+    dx     = widget.model.dx;
+    dy     = widget.model.dy;
     super.initState();
   }
 
   @override
   didChangeDependencies()
   {
+    widget.model.state = this;
     super.didChangeDependencies();
   }
 
   @override
   void didUpdateWidget(OverlayView oldWidget)
   {
+    widget.model.state = this;
     super.didUpdateWidget(oldWidget);
   }
 
   @override
   void dispose()
   {
+    widget.model.state = null;
     super.dispose();
   }
 
@@ -124,62 +90,48 @@ class _OverlayViewState extends State<OverlayView>
   @override
   Widget build(BuildContext context)
   {
-    if (widget.pad == false) padding = 0;
+    if (widget.model.pad == false) padding = 0;
 
     ColorScheme t = Theme.of(context).colorScheme;
 
-    //////////
-    /* Size */
-    //////////
-    if ((width == null) || (height == null)) return Offstage(child: Material(child: MeasuredView(UnconstrainedBox(child: widget.child), onMeasured)));
+    // Size
+    if ((width == null) || (height == null)) return Offstage(child: Material(child: MeasuredView(UnconstrainedBox(child: widget.model.child), onMeasured)));
 
-    /////////////////////
-    /* Overlay Manager */
-    /////////////////////
+    // Overlay Manager
     OverlayManager? manager = context.findAncestorWidgetOfExactType<OverlayManager>();
 
-    /* SafeArea */
+    // SafeArea 
     double sa = MediaQuery.of(context).padding.top;
 
-    ///////////////////////////////
-    /* Exceeds Width of Viewport */
-    ///////////////////////////////
+    // Exceeds Width of Viewport
     maxWidth  = MediaQuery.of(context).size.width;
     if (width! > (maxWidth - (padding * 4))) width = (maxWidth - (padding * 4));
     if (width! <= 0) width = 50;
 
-    ////////////////////////////////
-    /* Exceeds Height of Viewport */
-    ////////////////////////////////
+    // Exceeds Height of Viewport
     maxHeight = MediaQuery.of(context).size.height - sa;
     if (height! > (maxHeight - (padding * 4))) height = (maxHeight - (padding * 4));
     if (height! <= 0) height = 50;
 
-    //////////
-    /* Card */
-    //////////
-    Widget content = UnconstrainedBox(child: ClipRect(child: SizedBox(height: height, width: width, child: widget.child)));
+    // Card
+    Widget content = UnconstrainedBox(child: ClipRect(child: SizedBox(height: height, width: width, child: widget.model.child)));
     Widget card;
-    if (widget.decorate == false)
+    if (widget.model.decorate == false)
          card = Card(child: content, margin: EdgeInsets.all(0.0), elevation: 0.0, borderOnForeground: false);
     else card = Card(child: content, margin: EdgeInsets.all(4.0), elevation: 25.0, borderOnForeground: true, shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5.0)), side: BorderSide(color: Colors.transparent)));
 
-    ////////////////////////
-    /* Non-Minimized View */
-    ////////////////////////
+    // Non-Minimized View
     if (minimized == false)
     {
-      ////////////////
-      /* Build View */
-      ////////////////
-      Widget close       = (widget.closeable == false)
+      // Build View
+      Widget close       = (widget.model.closeable == false)
           ? Container()
           : Padding(padding: EdgeInsets.only(left: 10), child: GestureDetector(onTap: () => onClose(),
             child: MouseRegion(cursor: SystemMouseCursors.click, onHover: (ev) => setState(() => closeHovered = true), onExit: (ev) => setState(() => closeHovered = false),
               child: UnconstrainedBox(child: SizedBox(height: 36, width: 36,
                 child: Tooltip(message: phrase.close,    child: Icon(Icons.close, size: 32, color: !closeHovered ? t.surfaceVariant : t.onBackground)))))));
 
-      Widget minimize    = ((widget.closeable == false)  || (widget.modal == true))
+      Widget minimize    = ((widget.model.closeable == false)  || (widget.model.modal == true))
           ? Container()
           : Padding(padding: EdgeInsets.only(left: 10), child: GestureDetector(onTap: () => onMinimize(),
             child: MouseRegion(cursor: SystemMouseCursors.click, onHover: (ev) => setState(() => minimizeHovered = true), onExit: (ev) => setState(() => minimizeHovered = false),
@@ -187,43 +139,35 @@ class _OverlayViewState extends State<OverlayView>
                 child: Tooltip(message: phrase.minimize, child: Icon(Icons.remove_circle, size: 32, color: !minimizeHovered ? t.surfaceVariant : t.onBackground)))))));
 
       Widget resize        = Icon(Icons.apps, size: 24, color: Colors.transparent);
-      Widget resizeableBR  = (widget.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeUpLeftDownRight, child: resize), onPanUpdate: onResizeBR, onTapDown: onBringToFront);
-      Widget resizeableBL  = (widget.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeUpRightDownLeft, child: resize), onPanUpdate: onResizeBL, onTapDown: onBringToFront);
-      Widget resizeableTL  = (widget.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeUpLeftDownRight, child: resize), onPanUpdate: onResizeTL, onTapDown: onBringToFront);
+      Widget resizeableBR  = (widget.model.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeUpLeftDownRight, child: resize), onPanUpdate: onResizeBR, onTapDown: onBringToFront);
+      Widget resizeableBL  = (widget.model.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeUpRightDownLeft, child: resize), onPanUpdate: onResizeBL, onTapDown: onBringToFront);
+      Widget resizeableTL  = (widget.model.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeUpLeftDownRight, child: resize), onPanUpdate: onResizeTL, onTapDown: onBringToFront);
 
       Widget resize2       = Container(width: isMobile ? 34 : 24, height: height);
-      Widget resizeableL   = (widget.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeLeftRight, child: resize2), onPanUpdate: onResizeL, onTapDown: onBringToFront);
-      Widget resizeableR   = (widget.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeLeftRight, child: resize2), onPanUpdate: onResizeR, onTapDown: onBringToFront);
+      Widget resizeableL   = (widget.model.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeLeftRight, child: resize2), onPanUpdate: onResizeL, onTapDown: onBringToFront);
+      Widget resizeableR   = (widget.model.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeLeftRight, child: resize2), onPanUpdate: onResizeR, onTapDown: onBringToFront);
 
       Widget resize3       = Container(width: width, height: isMobile ? 34 : 24);
-      Widget resizeableT   = (widget.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeUpDown, child: resize3), onPanUpdate: onResizeT, onTapDown: onBringToFront);
-      Widget resizeableB   = (widget.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeUpDown, child: resize3), onPanUpdate: onResizeB, onTapDown: onBringToFront);
+      Widget resizeableT   = (widget.model.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeUpDown, child: resize3), onPanUpdate: onResizeT, onTapDown: onBringToFront);
+      Widget resizeableB   = (widget.model.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeUpDown, child: resize3), onPanUpdate: onResizeB, onTapDown: onBringToFront);
 
-      ////////////////
-      /* Positioned */
-      ////////////////
+      // Positioned
       if (dx == null) dx = (maxWidth / 2)  - ((width!  + (padding * 2)) / 2);
       if (dy == null) dy = (maxHeight / 2) - ((height! + (padding * 2)) / 2) + sa;
 
-      ////////////////////////////
-      /* Original Size/Position */
-      ////////////////////////////
+      // Original Size/Position
       if (originalDx == null)     originalDx = dx;
       if (originalDy == null)     originalDy = dy;
       if (originalWidth == null)  originalWidth  = width;
       if (originalHeight == null) originalHeight = height;
 
-      ////////////////////////
-      /* Last Size/Position */
-      ////////////////////////
+      // Last Size/Position
       if (lastDx == null)     lastDx = dx;
       if (lastDy == null)     lastDy = dy;
       if (lastWidth == null)  lastWidth  = width;
       if (lastHeight == null) lastHeight = height;
 
-      //////////
-      /* View */
-      //////////
+      // View
       Widget content = UnconstrainedBox(child: SizedBox(height: height! + (padding * 2), width: width! + (padding * 2),
           child: Stack(children: [
             Center(child: card),
@@ -237,41 +181,31 @@ class _OverlayViewState extends State<OverlayView>
             Positioned(child: minimize, top: 15, right: 50),
             Positioned(child: close, top: 15, right: 15)])));
 
-      //////////////////////
-      /* Remove from Park */
-      //////////////////////
-      if (manager != null) manager.unpark(widget);
+      // Remove from Park
+      if (manager != null) manager.model.unpark(widget);
 
       Widget curtain = GestureDetector(child: content, onDoubleTap: onRestoreTo, onTapDown: onBringToFront, onPanStart: (_) => onBringToFront(null), onPanUpdate: onDrag, onPanEnd: onDragEnd, behavior: HitTestBehavior.deferToChild);
 
-      /////////////////
-      /* Return View */
-      /////////////////
+      // Return View
       return Positioned(top: dy, left: dx, child: curtain);
     }
 
-    ////////////////////
-    /* Minimized View */
-    ////////////////////
+    
+    // Minimized View 
+    
     else
     {
-      //////////////////////
-      /* Get Parking Spot */
-      //////////////////////
+      // Get Parking Spot
       int? slot = 0;
-      if (manager != null) slot = manager.park(widget);
+      if (manager != null) slot = manager.model.park(widget);
 
-      ////////////////
-      /* Build View */
-      ////////////////
+      // Build View
       Widget scaled  = Card(margin: EdgeInsets.all(1), child: SizedBox(width: 100, height: 50, child: Padding(child: FittedBox(child: card), padding:EdgeInsets.all(5))), elevation: 5, color: t.secondary.withOpacity(0.50), borderOnForeground: false, shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(4.0)), side: BorderSide(width: 2, color: t.primary)));
-      Widget close   = (widget.closeable == false) ? Container() : Padding(padding: EdgeInsets.only(left: 10), child: GestureDetector(onTap: () => onClose(),  child: MouseRegion(cursor: SystemMouseCursors.click, child: UnconstrainedBox(child: SizedBox(height: 24, width: 24, child: Container(decoration: BoxDecoration(color: t.primaryContainer, shape: BoxShape.circle), child: Tooltip(message: phrase.close, child: Icon(Icons.close, size: 24, color: t.onPrimaryContainer))))))));
+      Widget close   = (widget.model.closeable == false) ? Container() : Padding(padding: EdgeInsets.only(left: 10), child: GestureDetector(onTap: () => onClose(),  child: MouseRegion(cursor: SystemMouseCursors.click, child: UnconstrainedBox(child: SizedBox(height: 24, width: 24, child: Container(decoration: BoxDecoration(color: t.primaryContainer, shape: BoxShape.circle), child: Tooltip(message: phrase.close, child: Icon(Icons.close, size: 24, color: t.onPrimaryContainer))))))));
       Widget curtain = GestureDetector(onTap: onRestore, child: MouseRegion(cursor: SystemMouseCursors.click, child: SizedBox(width: 100, height: 50)));
       Widget view    = Stack(children: [scaled, curtain, Positioned(child: close, top: 15, right: 15)]);
 
-      /////////////////
-      /* Return View */
-      /////////////////
+      // Return View
       return Positioned(bottom: 10, left: 10 + (slot! * 110).toDouble(), child: view);
     }
   }
@@ -288,7 +222,7 @@ class _OverlayViewState extends State<OverlayView>
 
   onMinimize()
   {
-    if (widget.closeable == false) return;
+    if (widget.model.closeable == false) return;
     setState(()
     {
       minimized = true;
@@ -298,7 +232,7 @@ class _OverlayViewState extends State<OverlayView>
 
   onMaximize()
   {
-    if (widget.closeable == false) return;
+    if (widget.model.closeable == false) return;
     minimized = false;
     maximized = true;
 
@@ -344,7 +278,7 @@ class _OverlayViewState extends State<OverlayView>
 
   onRestore()
   {
-    if (widget.closeable == false) return;
+    if (widget.model.closeable == false) return;
     setState(()
     {
       minimized = false;
@@ -355,31 +289,31 @@ class _OverlayViewState extends State<OverlayView>
 
   onClose()
   {
-    if (widget.closeable == false) return;
+    if (widget.model.closeable == false) return;
     OverlayManager? overlay = context.findAncestorWidgetOfExactType<OverlayManager>();
     if (overlay != null)
     {
-      overlay.unpark(widget);
-      overlay.overlays.remove(widget);
-      overlay.refresh();
+      overlay.model.unpark(widget);
+      overlay.model.overlays.remove(widget);
+      overlay.model.refresh();
     }
   }
 
   onDismiss()
   {
-    if (widget.dismissable == false) return;
+    if (widget.model.dismissable == false) return;
     OverlayManager? overlay = context.findAncestorWidgetOfExactType<OverlayManager>();
     if (overlay != null)
     {
-      overlay.unpark(widget);
-      overlay.overlays.remove(widget);
-      overlay.refresh();
+      overlay.model.unpark(widget);
+      overlay.model.overlays.remove(widget);
+      overlay.model.refresh();
     }
   }
 
   onResizeBR(DragUpdateDetails details)
   {
-    if (widget.resizeable == false) return;
+    if (widget.model.resizeable == false) return;
     if (((width  ?? 0) + details.delta.dx) < 50) return;
     if (((height ?? 0) + details.delta.dy) < 50) return;
 
@@ -398,7 +332,7 @@ class _OverlayViewState extends State<OverlayView>
 
   onResizeBL(DragUpdateDetails details)
   {
-    if (widget.resizeable == false) return;
+    if (widget.model.resizeable == false) return;
     if (((width  ?? 0) - details.delta.dx) < 50) return;
     if (((height ?? 0) + details.delta.dy) < 50) return;
 
@@ -417,7 +351,7 @@ class _OverlayViewState extends State<OverlayView>
 
   onResizeTL(DragUpdateDetails details)
   {
-    if (widget.resizeable == false) return;
+    if (widget.model.resizeable == false) return;
     if (((width  ?? 0) - details.delta.dx) < 50) return;
     if (((height ?? 0) + details.delta.dy) < 50) return;
 
@@ -439,7 +373,7 @@ class _OverlayViewState extends State<OverlayView>
 
   onResizeT(DragUpdateDetails details)
   {
-    if (widget.resizeable == false) return;
+    if (widget.model.resizeable == false) return;
     if (((height ?? 0) - details.delta.dy) < 50) return;
     setState(()
     {
@@ -452,7 +386,7 @@ class _OverlayViewState extends State<OverlayView>
 
   onResizeB(DragUpdateDetails details)
   {
-    if (widget.resizeable == false) return;
+    if (widget.model.resizeable == false) return;
     if (((height ?? 0) + details.delta.dy) < 50) return;
 
     setState(()
@@ -464,7 +398,7 @@ class _OverlayViewState extends State<OverlayView>
 
   onResizeL(DragUpdateDetails details)
   {
-    if (widget.resizeable == false) return;
+    if (widget.model.resizeable == false) return;
     if (((width  ?? 0) - details.delta.dx) < 50) return;
     setState(()
     {
@@ -477,7 +411,7 @@ class _OverlayViewState extends State<OverlayView>
 
   onResizeR(DragUpdateDetails details)
   {
-    if (widget.resizeable == false) return;
+    if (widget.model.resizeable == false) return;
     if (((width  ?? 0) + details.delta.dx) < 50) return;
     setState(()
     {
@@ -489,12 +423,12 @@ class _OverlayViewState extends State<OverlayView>
 
   onDrag(DragUpdateDetails details)
   {
-    if (widget.draggable == false) return;
+    if (widget.model.draggable == false) return;
     setState(()
     {
       dx = dx! + details.delta.dx;
       dy = dy! + details.delta.dy;
-      if (widget.modal == true)
+      if (widget.model.modal == true)
       {
         var viewport = MediaQuery.of(context).size;
         if (dx! < 0) dx = 0;
@@ -512,7 +446,7 @@ class _OverlayViewState extends State<OverlayView>
 
   onDragEnd(DragEndDetails details)
   {
-    if ((widget.draggable == false) || (widget.modal == true)) return;
+    if ((widget.model.draggable == false) || (widget.model.modal == true)) return;
     var viewport = MediaQuery.of(context).size;
     bool minimize = (dx! + width! < 0) || (dx! > viewport.width) || (dy! + height! < 0) || (dy! > viewport.height);
     if (minimize)
@@ -528,13 +462,13 @@ class _OverlayViewState extends State<OverlayView>
   onBringToFront(TapDownDetails? details)
   {
     OverlayManager? overlay = context.findAncestorWidgetOfExactType<OverlayManager>();
-    if (overlay != null) overlay.bringToFront(widget);
+    if (overlay != null) overlay.model.bringToFront(widget);
   }
 
   void onCloseEvent(Event event)
   {
     String? id = (event.parameters != null)  ? event.parameters!['id'] : null;
-    if ((S.isNullOrEmpty(id)) || (id == widget.id))
+    if ((S.isNullOrEmpty(id)) || (id == widget.model.id))
     {
       event.handled = true;
       onClose();

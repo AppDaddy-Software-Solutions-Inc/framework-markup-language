@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/overlay/overlay_manager.dart';
+import 'package:fml/widgets/overlay/overlay_model.dart';
 import 'package:fml/widgets/table/row/cell/table_row_cell_model.dart';
 import 'package:fml/widgets/table/row/table_row_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
@@ -248,7 +249,7 @@ class _TableRowCellViewState extends State<TableRowCellView>
     OverlayManager? manger = context.findAncestorWidgetOfExactType<OverlayManager>();
     if (manger != null)
     {
-      OverlayView entry = OverlayView(
+      OverlayView entry = OverlayView(OverlayModel(
           child: widget,
           modal: true,
           dx: dx,
@@ -260,9 +261,9 @@ class _TableRowCellViewState extends State<TableRowCellView>
           dismissable: true,
           pad: false,
           decorate: false,
-          modalBarrierColor: Colors.transparent);
-      manger.overlays.add(entry);
-      manger.refresh();
+          modalBarrierColor: Colors.transparent));
+      manger.model.overlays.add(entry);
+      manger.model.refresh();
     }
   }
 }

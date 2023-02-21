@@ -214,21 +214,27 @@ class CameraViewState extends State<CameraView>
             switch (e.code) {
               case 'CameraAccessDenied':
               // Thrown when user denies the camera access permission.
+                widget.model.onFail(Data(), message: "User denied Camera/Microphone access permissions");
                 break;
               case 'CameraAccessDeniedWithoutPrompt':
               // iOS only for now. Thrown when user has previously denied the permission. iOS does not allow prompting alert dialog a second time. Users will have to go to Settings > Privacy > Camera in order to enable camera access.
+                widget.model.onFail(Data(), message: "User previously denied Camera access permissions, to change this go to Settings > Privacy > Camera");
                 break;
               case 'CameraAccessRestricted':
               // iOS only for now. Thrown when camera access is restricted and users cannot grant permission (parental control).
+                widget.model.onFail(Data(), message: "Parental control denied Camera access permissions");
                 break;
               case 'AudioAccessDenied':
               // Thrown when user denies the audio access permission.
+                widget.model.onFail(Data(), message: "User denied Microphone access permissions");
                 break;
               case 'AudioAccessDeniedWithoutPrompt':
               // iOS only for now. Thrown when user has previously denied the permission. iOS does not allow prompting alert dialog a second time. Users will have to go to Settings > Privacy > Microphone in order to enable audio access.
+                widget.model.onFail(Data(), message: "User previously denied Microphone access permissions, to change this go to Settings > Privacy > Microphone");
                 break;
               case 'AudioAccessRestricted':
               // iOS only for now. Thrown when audio access is restricted and users cannot grant permission (parental control).
+                widget.model.onFail(Data(), message: "Parental control denied Microphone access permissions");
                 break;
               default:
               // Handle other errors here.

@@ -1,12 +1,12 @@
 <FML title="FmlPad" linkable="true" onstart="theme({STASH.FmlPadMode} ?? {THEME.brightness} == 'dark' ?'dark':'light');">
 
-    <VAR id="p1" value="https://fml.dev/fmlpad/examples/{example}" onchange="dbExample.url.set({p1.value})"/>
+    <VAR id="p1"  value="https://fml.dev/fmlpad/examples/{example}" onchange="dbExample.url.set({p1.value})"/>
     <VAR id="xml" value="{editor}" onchange="{r1} ? fmlpad.replaceChildren({xml},false) : null"/>
 
     <GET id="dbWidgets"  url="https://fml.dev/fmlpad/widgets.xml"  root="WIDGETS.WIDGET" ttl="1m"/>
     <GET id="dbStyles"   url="https://fml.dev/fmlpad/styles.xml"   root="STYLES.STYLE" ttl="1d"/>
     <GET id="dbExamples" url="https://fml.dev/fmlpad/examples.xml" root="EXAMPLES.EXAMPLE"/>
-    <GET id="dbExample"  value="" url="{p1}" onsuccess="editor.set({this.response})" refresh="true"/>
+    <GET id="dbExample"  url="{p1}" onsuccess="editor.set({this.response})" refresh="true"/>
 
     <CONST id="default">
         <value>
@@ -63,7 +63,7 @@
             <PAD left="20"/>
 
             <!-- examples -->
-            <TYPEAHEAD id="examples" bordercolor="transparent" value="" data="dbExamples" hint="Examples" width="250" onchange="p1.set({data.url})">
+            <TYPEAHEAD id="examples" bordercolor="transparent" value="" data="dbExamples" hint="Examples" width="250" onchange="p1.set({this.value})">
                 <OPTION value="{data.url}">
                     <label><ROW valign="center" expand="false"><ICON icon="{data.icon}" size="16" color="{data.color}"/><PAD left="10"/><TEXT value="{data.title}"/></ROW></label>
                 </OPTION>
@@ -151,7 +151,7 @@
                                     </CENTER>
                                     <POS right="0" top="0">
                                         <LINK onclick="flippy.start()">
-                                            <ICON icon="info_outline" size="20" color="#C7C8CA" visible="=!noe({data.description})"/>
+                                            <ICON icon="info_outline" size="20" color="#47C4FB" visible="=!noe({data.description})"/>
                                         </LINK>
                                     </POS>
                                 </BOX>
@@ -164,7 +164,7 @@
                                     </CENTER>
                                     <POS right="0" top="0">
                                         <LINK onclick="flippy.start()">
-                                            <ICON icon="info_outline" size="20" color="#C7C8CA"/>
+                                            <ICON icon="info_outline" size="20" color="#47C4FB"/>
                                         </LINK>
                                     </POS>
                                 </BOX>

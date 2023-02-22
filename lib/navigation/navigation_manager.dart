@@ -3,7 +3,7 @@ import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
-import 'package:fml/widgets/overlay/overlay_manager.dart';
+import 'package:fml/widgets/overlay/overlay_manager_view.dart';
 import 'package:fml/widgets/overlay/overlay_manager_model.dart';
 import 'package:fml/widgets/overlay/overlay_model.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -101,9 +101,9 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     if (pages.isNotEmpty)
     {
       var page = pages.last;
-      if (page is MaterialPage && page.child is OverlayManager)
+      if (page is MaterialPage && page.child is OverlayManagerView)
       {
-         var manager  = page.child as OverlayManager;
+         var manager  = page.child as OverlayManagerView;
          if (manager.model.child is FrameworkView) return manager.model.child as FrameworkView;
       }
     }
@@ -343,7 +343,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
         break;
 
       default:
-        view =  OverlayManager(OverlayManagerModel(FrameworkView(FrameworkModel.fromUrl(System.app!, url, refresh: refresh, dependency: dependency))));
+        view =  OverlayManagerView(OverlayManagerModel(FrameworkView(FrameworkModel.fromUrl(System.app!, url, refresh: refresh, dependency: dependency))));
         break;
     }
 
@@ -447,7 +447,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
   OverlayView? openModal(Widget view, BuildContext? context, {bool modal = true, bool resizeable = true, bool closeable = true, bool draggable = true, String? width, String? height})
   {
     OverlayView? overlay;
-    OverlayManager? manager = context != null ? context.findAncestorWidgetOfExactType<OverlayManager>() : null;
+    OverlayManagerView? manager = context != null ? context.findAncestorWidgetOfExactType<OverlayManagerView>() : null;
     if (manager != null)
     {
       overlay = OverlayView(OverlayModel(child: view, modal: modal, resizeable: resizeable, closeable: closeable, draggable: draggable, width: _toWidth(width), height: _toHeight(height)));
@@ -461,7 +461,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
   {
     if ((overlay == null) || (overlay.model.closeable == false)) return true;
     overlay.model.close();
-    OverlayManager? manager = context != null ? context.findAncestorWidgetOfExactType<OverlayManager>() : null;
+    OverlayManagerView? manager = context != null ? context.findAncestorWidgetOfExactType<OverlayManagerView>() : null;
     if (manager != null) manager.model.refresh();
     return true;
   }

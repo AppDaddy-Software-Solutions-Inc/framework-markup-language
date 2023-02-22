@@ -3,17 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/overlay/overlay_manager_model.dart';
 import 'package:fml/widgets/overlay/overlay_view.dart';
 
-class OverlayManager extends StatefulWidget
+class OverlayManagerView extends StatefulWidget
 {
   final OverlayManagerModel model;
 
-  OverlayManager(this.model) : super();
+  OverlayManagerView(this.model) : super();
 
   @override
-  OverlayManagerState createState() => OverlayManagerState();
+  OverlayManagerViewState createState() => OverlayManagerViewState();
 }
 
-class OverlayManagerState extends State<OverlayManager>
+class OverlayManagerViewState extends State<OverlayManagerView>
 {
   void refresh()
   {
@@ -28,7 +28,7 @@ class OverlayManagerState extends State<OverlayManager>
   }
 
   @override
-  void didUpdateWidget(OverlayManager oldWidget)
+  void didUpdateWidget(OverlayManagerView oldWidget)
   {
     super.didUpdateWidget(oldWidget);
     widget.model.state = this;

@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/overlay/overlay_manager.dart';
+import 'package:fml/widgets/overlay/overlay_manager_view.dart';
 import 'package:fml/widgets/overlay/overlay_view.dart';
 
 class OverlayManagerModel
@@ -9,7 +9,7 @@ class OverlayManagerModel
   final List<OverlayView?> parking  = [];
   final Widget child;
 
-  OverlayManagerState? state;
+  OverlayManagerViewState? state;
 
   OverlayManagerModel(this.child);
 

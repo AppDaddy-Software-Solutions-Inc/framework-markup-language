@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/overlay/overlay_manager.dart';
+import 'package:fml/widgets/overlay/overlay_manager_view.dart';
 import 'package:fml/widgets/overlay/overlay_model.dart';
 import 'package:fml/widgets/table/row/cell/table_row_cell_model.dart';
 import 'package:fml/widgets/table/row/table_row_model.dart';
@@ -103,9 +103,7 @@ class _TableRowCellViewState extends State<TableRowCellView>
     WrapAlignment? mainWrapAlignment = align['mainWrapAlignment'];
     WrapCrossAlignment? crossWrapAlignment = align['crossWrapAlignment'];
 
-    //////////////
-    /* Contents */
-    //////////////
+    // Contents
     Widget contents;
     if (widget.model.wrap == true)
       contents = Wrap(
@@ -137,9 +135,7 @@ class _TableRowCellViewState extends State<TableRowCellView>
           .surfaceVariant);
     }
 
-    ///////////////
-    /* Container */
-    ///////////////
+    // Container
     int index = widget.model.index ?? 0;
     int lastIndex = (widget.model.parent as TableRowModel).cells.length - 1;
         // Colors.transparent;
@@ -149,9 +145,7 @@ class _TableRowCellViewState extends State<TableRowCellView>
 
     bool selectable = widget.model.visible;
 
-    //////////
-    /* Cell */
-    //////////
+    // Cell
     Widget cell = Container(
         //alignment: aligned, //this may cause a problem aligning both containers
         child: contents,
@@ -203,9 +197,7 @@ class _TableRowCellViewState extends State<TableRowCellView>
     //                 : BorderSide.none,
     //             bottom: BorderSide(color: outerbordercolor))));
 
-    //////////
-    /* View */
-    //////////
+    // View
     return Listener(
         onPointerDown: (_) => onTap(selectable),
         behavior: HitTestBehavior.translucent,
@@ -246,7 +238,7 @@ class _TableRowCellViewState extends State<TableRowCellView>
     /////////////////////////
     /* Build Overlay Entry */
     /////////////////////////
-    OverlayManager? manger = context.findAncestorWidgetOfExactType<OverlayManager>();
+    OverlayManagerView? manger = context.findAncestorWidgetOfExactType<OverlayManagerView>();
     if (manger != null)
     {
       OverlayView entry = OverlayView(OverlayModel(

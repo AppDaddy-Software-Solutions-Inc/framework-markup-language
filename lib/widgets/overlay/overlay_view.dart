@@ -5,7 +5,7 @@ import 'package:fml/helper/measured.dart';
 import 'package:fml/event/event.dart'   ;
 import 'package:fml/system.dart';
 import 'package:fml/helper/common_helpers.dart';
-import 'package:fml/widgets/overlay/overlay_manager.dart';
+import 'package:fml/widgets/overlay/overlay_manager_view.dart';
 import 'package:fml/widgets/overlay/overlay_model.dart';
 
 class OverlayView extends StatefulWidget
@@ -98,7 +98,7 @@ class OverlayViewState extends State<OverlayView>
     if ((width == null) || (height == null)) return Offstage(child: Material(child: MeasuredView(UnconstrainedBox(child: widget.model.child), onMeasured)));
 
     // Overlay Manager
-    OverlayManager? manager = context.findAncestorWidgetOfExactType<OverlayManager>();
+    OverlayManagerView? manager = context.findAncestorWidgetOfExactType<OverlayManagerView>();
 
     // SafeArea 
     double sa = MediaQuery.of(context).padding.top;
@@ -290,7 +290,7 @@ class OverlayViewState extends State<OverlayView>
   onClose()
   {
     if (widget.model.closeable == false) return;
-    OverlayManager? overlay = context.findAncestorWidgetOfExactType<OverlayManager>();
+    OverlayManagerView? overlay = context.findAncestorWidgetOfExactType<OverlayManagerView>();
     if (overlay != null)
     {
       overlay.model.unpark(widget);
@@ -302,7 +302,7 @@ class OverlayViewState extends State<OverlayView>
   onDismiss()
   {
     if (widget.model.dismissable == false) return;
-    OverlayManager? overlay = context.findAncestorWidgetOfExactType<OverlayManager>();
+    OverlayManagerView? overlay = context.findAncestorWidgetOfExactType<OverlayManagerView>();
     if (overlay != null)
     {
       overlay.model.unpark(widget);
@@ -461,7 +461,7 @@ class OverlayViewState extends State<OverlayView>
 
   onBringToFront(TapDownDetails? details)
   {
-    OverlayManager? overlay = context.findAncestorWidgetOfExactType<OverlayManager>();
+    OverlayManagerView? overlay = context.findAncestorWidgetOfExactType<OverlayManagerView>();
     if (overlay != null) overlay.model.bringToFront(widget);
   }
 

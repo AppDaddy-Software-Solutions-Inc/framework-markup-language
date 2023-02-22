@@ -315,8 +315,8 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
       int? requiredRights = S.toInt(Xml.attribute(node: xml, tag: 'rights'));
       if (requiredRights != null)
       {
-        int? myrights = S.toInt(System.app?.claim('rights') ?? 0);
-        bool connected = S.toBool(System.app?.claim('connected') ?? false)!;
+        int myrights   = System.app?.user.rights ?? 0;
+        bool connected = System.app?.user.connected ?? false;
 
         // logged on?
         if (!connected)
@@ -328,7 +328,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
         }
 
         // authorized?
-        else if (myrights! < requiredRights)
+        else if (myrights < requiredRights)
         {
           // fetch not authorized template
           var unauthorized = System.app?.unauthorizedPage;

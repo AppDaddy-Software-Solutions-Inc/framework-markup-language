@@ -324,15 +324,12 @@ class CameraModel extends CAMERA.CameraImageModel implements IViewableWidget
   {
     // Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
-
-    // dispose of the camera controller
-    camera?.controller?.dispose();
   }
 
   @override
   Future<bool> start({bool force = false, bool refresh = false, String? key}) async
   {
-    if (camera != null) camera!.start();
+    camera?.start();
     return true;
   }
 

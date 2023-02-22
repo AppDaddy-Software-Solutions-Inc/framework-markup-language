@@ -5,8 +5,6 @@ import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:google_fonts/google_fonts.dart' deferred as gf;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:fml/phrase.dart';
 
 class TextView extends StatefulWidget
 {
@@ -466,18 +464,6 @@ class _TextViewState extends State<TextView> implements IModelListener {
           overflow: textOverflow,
           textAlign: textAlign));
     }
-
-    view = GestureDetector(
-      onLongPress: () {
-        if (label != null) {
-          Clipboard.setData(ClipboardData(text: label));
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text('"' + label + '" ' + phrase.copiedToClipboard),
-              duration: Duration(seconds: 1),
-              behavior: SnackBarBehavior.floating,
-              elevation: 5));
-        }
-      }, child: view,);
 
     //////////////////
     /* Constrained? */

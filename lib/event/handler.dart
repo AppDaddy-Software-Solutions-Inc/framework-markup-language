@@ -546,7 +546,7 @@ class EventHandler extends Eval
     parameters['url']        = S.toStr(url);
     parameters['transition'] = S.toStr(transition);
     parameters['replace']    = "true";
-    if (S.isNullOrEmpty(url)) EventManager.of(model)?.broadcastEvent(model,Event(EventTypes.open, parameters: parameters, model: model));
+    if (url != null && url != '') EventManager.of(model)?.broadcastEvent(model,Event(EventTypes.open, parameters: parameters, model: model));
     return true;
   }
 

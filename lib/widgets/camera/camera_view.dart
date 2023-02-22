@@ -32,12 +32,10 @@ class CameraView extends StatefulWidget
   CameraViewState createState() => CameraViewState();
 }
 
-class CameraViewState extends State<CameraView>
-    implements IModelListener {
+class CameraViewState extends State<CameraView> implements IModelListener
+{
   CameraController? controller;
-
   List<CameraDescription>? cameras;
-  CameraPreview? camera;
 
   StreamView? backgroundStream;
 
@@ -56,22 +54,28 @@ class CameraViewState extends State<CameraView>
   late bool initialized;
 
   @override
-  void initState() {
+  void initState()
+  {
     super.initState();
 
-    ///////////////////////
-    /* Register Listener */
-    ///////////////////////
+    // register listener
     widget.model.registerListener(this);
 
     // register camera
     widget.model.camera = this;
 
-    getCameras().then((value) {
+    _getCameras().then((value)
+    {
       initialized = true;
-      configureCameras();
+      _configureCameras();
     });
+  }
 
+  @override
+  void dispose()
+  {
+    super.dispose();
+    _disposeOfCamera();
   }
 
   /// Callback to fire the [CameraViewState.build] when the [CameraModel] changes
@@ -120,14 +124,6 @@ class CameraViewState extends State<CameraView>
     }
   }
 
-  @override
-  void dispose()
-  {
-    controller?.dispose();
-    backgroundStream = null;
-    super.dispose();
-  }
-
   toggleCamera() async
   {
     if (cameras != null) {
@@ -143,18 +139,25 @@ class CameraViewState extends State<CameraView>
     }
   }
 
-  Future<bool> getCameras() async {
-    // get cameras
+  Future<bool> _getCameras() async
+  {
+      // get cameras
       int tries = 0;
-      while (cameras == null && tries < 5) {
+      while (cameras == null && tries < 5)
+      {
         if (tries > 0) await Future.delayed(Duration(seconds: 1));
         tries++;
 
-        try {
+        try
+        {
           cameras = await availableCameras();
-        } catch(e) {
-        if (e is CameraException) {
-          switch (e.code.toLowerCase()) {
+        }
+        catch(e)
+        {
+          if (e is CameraException)
+          {
+          switch (e.code.toLowerCase())
+          {
             case 'permissiondenied':
             // Thrown when user is not on a secure (https) connection.
               widget.model.onFail(Data(), message: "Camera is only available over a secure (https) connection");
@@ -166,7 +169,8 @@ class CameraViewState extends State<CameraView>
               break;
           }
         }
-        else {
+        else
+        {
           Log().exception(e,  caller: 'camera.View');
         }
       }
@@ -175,7 +179,7 @@ class CameraViewState extends State<CameraView>
     return true;
   }
 
-  configureCameras() async
+  _configureCameras() async
   {
     try
     {
@@ -225,14 +229,10 @@ class CameraViewState extends State<CameraView>
         }
 
         // set the camera
-        var camera = cameras![widget.model.index!];
+        CameraDescription camera = cameras![widget.model.index!];
 
         // front facing camera
-        widget.model.direction =
-            (camera.lensDirection == CameraLensDirection.external) ||
-                    (camera.lensDirection == CameraLensDirection.front)
-                ? S.fromEnum(CameraLensDirection.front)
-                : S.fromEnum(CameraLensDirection.back);
+        widget.model.direction = (camera.lensDirection == CameraLensDirection.external) || (camera.lensDirection == CameraLensDirection.front) ? S.fromEnum(CameraLensDirection.front) : S.fromEnum(CameraLensDirection.back);
 
         // camera name
         widget.model.name = camera.name;
@@ -242,33 +242,33 @@ class CameraViewState extends State<CameraView>
         if (kIsWeb) format = ImageFormatGroup.jpeg;
 
         // default the resolution
-        ResolutionPreset resolution =
-            S.toEnum(widget.model.resolution, ResolutionPreset.values) ??
-                ResolutionPreset.medium;
-        if (widget.model.stream)
-          resolution =
-              (kIsWeb) ? ResolutionPreset.medium : ResolutionPreset.low;
+        ResolutionPreset resolution = S.toEnum(widget.model.resolution, ResolutionPreset.values) ?? ResolutionPreset.medium;
+        if (widget.model.stream) resolution = (kIsWeb) ? ResolutionPreset.medium : ResolutionPreset.low;
 
         // build the controller
         controller = CameraController(camera, resolution, imageFormatGroup: format, enableAudio: false);
 
-        if (controller != null) {
-          controller!.addListener(() {
-            if (controller!.value.hasError)
-              Log().debug('Camera Controller error ${controller!.value.errorDescription}', caller: 'camera/camera_view.dart => initialize()');
+        if (controller != null)
+        {
+          controller!.addListener(()
+          {
+            if (controller!.value.hasError) Log().debug('Camera Controller error ${controller!.value.errorDescription}', caller: 'camera/camera_view.dart => initialize()');
           });
         }
-        else {
-          Log().debug('Camera Controller is null', caller: 'camera/camera_view.dart => initialize()');
-        }
+        else Log().debug('Camera Controller is null', caller: 'camera/camera_view.dart => initialize()');
 
         // initialize the controller
-        try {
+        try
+        {
           await controller!.initialize();
           if (!mounted) return;
-        } catch(e) {
-          if (e is CameraException) {
-            switch (e.code.toLowerCase()) {
+        }
+        catch(e)
+        {
+          if (e is CameraException)
+          {
+            switch (e.code.toLowerCase())
+            {
               case 'cameraaccessdenied':
               // Thrown when user denies the camera access permission.
                 widget.model.onFail(Data(), message: "User denied Camera/Microphone access permissions");
@@ -347,6 +347,18 @@ class CameraViewState extends State<CameraView>
     }
   }
 
+  Future<void> _disposeOfCamera() async
+  {
+    try
+    {
+      await controller?.dispose();
+    }
+    catch(e){}
+
+    controller = null;
+    backgroundStream = null;
+  }
+
   Future<bool> start() async {
     if ((controller != null) &&
         (controller!.value.isInitialized) &&
@@ -413,21 +425,25 @@ class CameraViewState extends State<CameraView>
     return ok;
   }
 
-  void didChangeAppLifecycleState(AppLifecycleState state) {
+  void didChangeAppLifecycleState(AppLifecycleState state)
+  {
+    System.toast("Life cycle change");
     if (controller == null || !controller!.value.isInitialized) return;
 
-    if (state == AppLifecycleState.inactive) {
-      controller?.dispose();
-    } else if (state == AppLifecycleState.resumed) {
+    if (state == AppLifecycleState.inactive)
+    {
+      _disposeOfCamera();
+    }
+    else if (state == AppLifecycleState.resumed)
+    {
       reconfigureCameras();
     }
   }
 
-  void reconfigureCameras() async {
-    if (controller != null)
-      await controller!.dispose();
-    if (initialized)
-      configureCameras();
+  void reconfigureCameras() async
+  {
+    await _disposeOfCamera();
+    if (initialized) _configureCameras();
   }
 
 

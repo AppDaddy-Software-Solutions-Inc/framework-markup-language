@@ -6,7 +6,7 @@
     <GET id="dbWidgets"  url="https://fml.dev/fmlpad/widgets.xml"  root="WIDGETS.WIDGET" ttl="1m"/>
     <GET id="dbStyles"   url="https://fml.dev/fmlpad/styles.xml"   root="STYLES.STYLE" ttl="1d"/>
     <GET id="dbExamples" url="https://fml.dev/fmlpad/examples.xml" root="EXAMPLES.EXAMPLE"/>
-    <GET id="dbExample"  url="{p1}" onsuccess="editor.set({this.response})" refresh="true"/>
+    <GET id="dbExample"  value="" url="{p1}" onsuccess="editor.set({this.response})" refresh="true"/>
 
     <CONST id="default">
         <value>

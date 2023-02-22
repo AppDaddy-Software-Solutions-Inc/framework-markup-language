@@ -176,7 +176,7 @@ class HttpModel extends DataSourceModel implements IDataSource
 
     // unresolved bindings?
     var url = this.url;
-    if (Binding.hasBindings(url)) return ok;
+    if (Binding.hasBindings(url) || url == null) return ok;
 
     // lookup data in hive cache
     var cached = await super.fromHive(url, refresh);

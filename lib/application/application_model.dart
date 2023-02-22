@@ -34,6 +34,7 @@ class ApplicationModel extends WidgetModel
 
   // Active user
   late UserModel _user;
+  UserModel get user => _user;
 
   // used for social media
   FirebaseApp? firebase;
@@ -439,6 +440,4 @@ class ApplicationModel extends WidgetModel
     _user.logoff();
     return true;
   }
-
-  String? claim(String property) => _user.claim(property);
 }

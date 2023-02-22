@@ -235,9 +235,7 @@ class _TableRowCellViewState extends State<TableRowCellView>
       if ((box.size.height) >= (height ?? 0)) height = box.size.height;
     }
 
-    /////////////////////////
-    /* Build Overlay Entry */
-    /////////////////////////
+    // Build Overlay Entry
     OverlayManagerView? manger = context.findAncestorWidgetOfExactType<OverlayManagerView>();
     if (manger != null)
     {

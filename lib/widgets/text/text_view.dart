@@ -5,8 +5,6 @@ import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:google_fonts/google_fonts.dart' deferred as gf;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:fml/phrase.dart';
 
 class TextView extends StatefulWidget
 {

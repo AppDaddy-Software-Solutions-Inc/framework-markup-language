@@ -18,6 +18,7 @@ class UserModel extends WidgetModel
 
   // user is logged on
   late final BooleanObservable _connected;
+  bool get connected => _connected.get() ?? false;
 
   // auhenticated token
   late final StringObservable _token;
@@ -27,6 +28,7 @@ class UserModel extends WidgetModel
 
   // user rights
   late final IntegerObservable _rights;
+  int? get rights => _rights.get();
 
   // user claims
   final Map<String, StringObservable> _claims = {};

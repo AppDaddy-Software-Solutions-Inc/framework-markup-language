@@ -467,18 +467,6 @@ class _TextViewState extends State<TextView> implements IModelListener {
           textAlign: textAlign));
     }
 
-    view = GestureDetector(
-      onLongPress: () {
-        if (label != null) {
-          Clipboard.setData(ClipboardData(text: label));
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text('"' + label + '" ' + phrase.copiedToClipboard),
-              duration: Duration(seconds: 1),
-              behavior: SnackBarBehavior.floating,
-              elevation: 5));
-        }
-      }, child: view,);
-
     //////////////////
     /* Constrained? */
     //////////////////

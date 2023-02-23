@@ -13,11 +13,15 @@ class DecoratedWidgetModel extends ViewableWidgetModel
       // build colors array
       if (v is String)
       {
-        var s = v.split(',');
-        if (s.length > 0) color  = s[0].trim();
-        if (s.length > 1) color2 = s[1].trim();
-        if (s.length > 2) color3 = s[2].trim();
-        if (s.length > 3) color4 = s[3].trim();
+        if (!Observable.isEvalSignature(v))
+        {
+          var s = v.split(',');
+          if (s.length > 0) color  = s[0].trim();
+          if (s.length > 1) color2 = s[1].trim();
+          if (s.length > 2) color3 = s[2].trim();
+          if (s.length > 3) color4 = s[3].trim();
+        }
+        else color = v;
       }
   }
   

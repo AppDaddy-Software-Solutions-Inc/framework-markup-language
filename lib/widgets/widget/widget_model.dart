@@ -1116,7 +1116,6 @@ class WidgetModel implements IDataSourceListener
     switch (function)
     {
       case 'set':
-
         // value
         var value = S.item(arguments, 0);
 

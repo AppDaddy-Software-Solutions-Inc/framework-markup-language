@@ -111,7 +111,6 @@
         <BOX color="{THEME.oninversesurface}" layout="row" halign="end" valign="center">
             <LOG id="log1"/>
             <EXPAND>
-                
                 <!--Error text display here-->
                 <TEXT color="{THEME.error}" value="{log1.xml}"/>
             </EXPAND>
@@ -178,19 +177,21 @@
 
                 <POSITIONED right="15" top="5">
                     <COL expand="false">
-                        <BUTTON onclick="fmlpad.replaceChildren({xml},false)" visible="=!{r1}">
-                            <BOX width="125" height="35" color="{THEME.inverseprimary}" bordercolor="{THEME.shadow}" layout="row" radius="5" valign="center" halign="center">
-                                <PAD left="10"/>
-                                <ICON icon="play_arrow" size="20"/>
-                                <PAD left="7"/>
-                                <TEXT value="Parse"/>
+                        <!-- Code / Example Toggle Button -->
+                        <BUTTON onclick="flippy.start()">
+                            <BOX width="100" height="35" color="{THEME.inverseprimary}" bordercolor="{THEME.shadow}" layout="row" radius="5" valign="center" halign="center">
+                                <ICON icon="={flippy.side} == 'front' ? 'code' : 'calendar_view_month'" size="20"/>
+                                <PAD left="5"/>
+                                <TEXT value="={flippy.side} == 'front' ? 'Code' : 'Examples'"/>
                             </BOX>
                         </BUTTON>
-                        <BUTTON onclick="flippy.start()">
-                            <BOX width="125" height="35" color="{THEME.inverseprimary}" bordercolor="{THEME.shadow}" layout="row" radius="5" valign="center" halign="center">
-                                <PAD left="10"/>
-                                <TEXT value="={flippy.side} == 'front' ? 'Show Editor' : 'Show Examples'"/>
-                                <PAD left="10"/>
+
+                        <!-- Parse Code Button -->
+                        <BUTTON onclick="fmlpad.replaceChildren({xml},false)" visible="=!{r1}">
+                            <BOX width="100" height="35" color="{THEME.inverseprimary}" bordercolor="{THEME.shadow}" layout="row" radius="5" valign="center" halign="center">
+                                <ICON icon="play_arrow" size="20"/>
+                                <PAD left="5"/>
+                                <TEXT value="Parse"/>
                             </BOX>
                         </BUTTON>
                     </COL>

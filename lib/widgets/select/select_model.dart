@@ -408,11 +408,21 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
     // value is not in data?
     if (!_containsOption())
     {
-      // set to first entry id no datasource defined
-      if (datasource == null) value = options.isNotEmpty ? options[0].value : null;
+      var value = options.isNotEmpty ? options[0].value : null;
 
-      // set to first entry if data has been returned
-      else if (options.isNotEmpty) value = options[0].value;
+      // set to first entry if no datasource
+      if (datasource == null)
+      {
+        // if we set value to itself it will cause an infinite loop
+        if (this.value != value) this.value = value;
+      }
+
+      // set to first entry after data has been returned
+      else if (options.isNotEmpty)
+      {
+        // if we set value to itself it will cause an infinite loop
+        if (this.value != value) this.value = value;
+      }
     }
 
     dynamic data;

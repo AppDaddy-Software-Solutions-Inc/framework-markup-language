@@ -111,12 +111,13 @@
         <BOX color="{THEME.oninversesurface}" layout="row" halign="end" valign="center">
             <LOG id="log1"/>
             <EXPAND>
+                
                 <!--Error text display here-->
                 <TEXT color="{THEME.error}" value="{log1.xml}"/>
             </EXPAND>
             <!-- themes -->
             <PAD right="10"/>
-            <SELECT id="theme" width="180" border="none" data="dbStyles" value="=nvl(null,'solarized-dark')" hint="Select an Editor Theme" onchange="stash('FmlPadTheme',{this.value})">
+            <SELECT id="theme" width="180" border="none" data="dbStyles" value="=nvl({STASH.FmlPadTheme},'solarized-dark')" hint="Select an Editor Theme" onchange="stash('FmlPadTheme',{this.value})">
                 <OPTION label='{data.label}'/>
             </SELECT>
             <PAD right="40"/>

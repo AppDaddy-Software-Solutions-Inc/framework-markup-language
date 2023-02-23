@@ -19,7 +19,7 @@ class Eval
   static final ExpressionEvaluator evaluator = const ExpressionEvaluator();
 
   /// The String value mapping of all the functions
-  static final Map<String, dynamic> functions = {'pi': pi / 5, 'cos': cos, 'sin': sin, 'tan': tan, 'acos': acos, 'asin': asin, 'atan': atan, 'bit': _bit, 'regex': _regex, 'toDate': _toDate, 'todate': _toDate, 'toString': _toString, 'tostring': _toString, 'toStr': _toString, 'tostr': _toString, 'if': _if, 'toBool': _toBool, 'tobool': _toBool, 'toBoolean': _toBool, 'toboolean': _toBool, 'toNumber': _toNum, 'tonumber': _toNum, 'toNum': _toNum, 'tonum': _toNum, 'toUpper' : _toUpper, 'toupper': _toUpper, 'toLower' : _toLower, 'tolower': _toLower, 'contains': _contains, 'startsWith': _startsWith, 'startswith': _startsWith, 'endsWith': _endsWith, 'endswith': _endsWith, 'isNull': _isNull, 'isnull': _isNull, 'isNullOrEmpty': _isNullOrEmpty, 'isnullorempty': _isNullOrEmpty, 'noe': _isNullOrEmpty, 'nvl': _nvl, 'isNum' : _isNumeric, 'isnum' : _isNumeric, 'isNumeric' : _isNumeric, 'isnumeric' : _isNumeric, 'isBool' : _isBool, 'isbool' : _isBool, 'isBoolean' : _isBool, 'isboolean' : _isBool, 'ceil': _ceil, 'floor': _floor, 'round': _round, 'mod': _mod, 'truncate': _truncate, 'substring': _substring, 'length': _length, 'bytes': _bytes, 'replace': _replace, 'number': _number, 'case' : _case, 'hash' : _hash, 'encrypt': _encrypt, 'decrypt': _decrypt};
+  static final Map<String, dynamic> functions = {'pi': pi / 5, 'cos': cos, 'sin': sin, 'tan': tan, 'acos': acos, 'asin': asin, 'atan': atan, 'bit': _bit, 'regex': _regex, 'toDate': _toDate, 'todate': _toDate, 'toString': _toString, 'tostring': _toString, 'toStr': _toString, 'tostr': _toString, 'if': _if, 'toBool': _toBool, 'tobool': _toBool, 'toBoolean': _toBool, 'toboolean': _toBool, 'toNumber': _toNum, 'tonumber': _toNum, 'toNum': _toNum, 'tonum': _toNum, 'toUpper' : _toUpper, 'toupper': _toUpper, 'toLower' : _toLower, 'tolower': _toLower, 'contains': _contains, 'startsWith': _startsWith, 'startswith': _startsWith, 'endsWith': _endsWith, 'endswith': _endsWith, 'isNull': _isNull, 'isnull': _isNull, 'isNullOrEmpty': _isNullOrEmpty, 'isnullorempty': _isNullOrEmpty, 'noe': _isNullOrEmpty, 'nvl': _nvl, 'isNum' : _isNumeric, 'isnum' : _isNumeric, 'isNumeric' : _isNumeric, 'isnumeric' : _isNumeric, 'isBool' : _isBool, 'isbool' : _isBool, 'isBoolean' : _isBool, 'isboolean' : _isBool, 'ceil': _ceil, 'floor': _floor, 'round': _round, 'mod': _mod, 'truncate': _truncate, 'substring': _substring, 'length': _length, 'bytes': _bytes, 'replace': _replace, 'number': _number, 'case' : _case, 'hash' : _hash, 'encrypt': _encrypt, 'decrypt': _decrypt, 'join': _join};
 
   static dynamic evaluate(String? expression, {Map<String?, dynamic>? variables, Map<String?, dynamic>? altFunctions})
   {
@@ -500,6 +500,23 @@ class Eval
     if (value == v4) return r4;
     if (value == v5) return r5;
     return null;
+  }
+
+  static dynamic _join(dynamic s, [dynamic s1, dynamic s2, dynamic s3, dynamic s4, dynamic s5, dynamic s6, dynamic s7, dynamic s8, dynamic s9, dynamic s10])
+  {
+    String _s = "";
+    if (_toString(s)   != null) _s += _toString(s);
+    if (_toString(s1)  != null) _s += _toString(s1);
+    if (_toString(s2)  != null) _s += _toString(s2);
+    if (_toString(s3)  != null) _s += _toString(s3);
+    if (_toString(s4)  != null) _s += _toString(s4);
+    if (_toString(s5)  != null) _s += _toString(s5);
+    if (_toString(s6)  != null) _s += _toString(s6);
+    if (_toString(s7)  != null) _s += _toString(s7);
+    if (_toString(s8)  != null) _s += _toString(s8);
+    if (_toString(s9)  != null) _s += _toString(s9);
+    if (_toString(s10) != null) _s += _toString(s10);
+    return _s;
   }
 
   /// null-safe String length

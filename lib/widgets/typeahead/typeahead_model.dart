@@ -386,9 +386,6 @@ class TypeaheadModel extends FormFieldModel implements IFormField, IViewableWidg
         });
       }
 
-      // Set value to first option or null if the current value is not in option list
-      if (!containsOption()) value = options.isNotEmpty ? options[0].value : null;
-
       // sets the data
       setData();
 

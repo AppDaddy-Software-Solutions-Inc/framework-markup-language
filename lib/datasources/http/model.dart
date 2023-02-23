@@ -219,23 +219,23 @@ class HttpModel extends DataSourceModel implements IDataSource
     switch (method)
     {
       case Methods.get:
-        response = await Http.get(url!, headers: headers, timeout: timeout, refresh: refresh);
+        response = await Http.get(url, headers: headers, timeout: timeout, refresh: refresh);
         break;
 
       case Methods.post:
-        response = await Http.post(url!, body ?? '', headers: headers, timeout: timeout);
+        response = await Http.post(url, body ?? '', headers: headers, timeout: timeout);
         break;
 
       case Methods.put:
-        response = await Http.put(url!, body ?? '', headers: headers, timeout: timeout);
+        response = await Http.put(url, body ?? '', headers: headers, timeout: timeout);
         break;
 
       case Methods.patch:
-        response = await Http.patch(url!, body, headers: headers, timeout: timeout);
+        response = await Http.patch(url, body, headers: headers, timeout: timeout);
         break;
 
       case Methods.delete:
-        response = await Http.delete(url!, headers: headers, timeout: timeout);
+        response = await Http.delete(url, headers: headers, timeout: timeout);
         break;
     }
 

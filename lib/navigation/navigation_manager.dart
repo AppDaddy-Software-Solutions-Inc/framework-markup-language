@@ -366,7 +366,8 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
       // match by index
       if (until.startsWith('[') && until.endsWith(']'))
       {
-        pages = S.toInt(until.substring(1, until.length - 1)) ?? -1;
+        int? pageIndex = S.toInt(until.substring(1, until.length - 1));
+        pages = pageIndex != null ? (_pages.length) - pageIndex : -1;
       }
 
       // match by name

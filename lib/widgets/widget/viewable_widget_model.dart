@@ -14,23 +14,23 @@ class ViewableWidgetModel extends WidgetModel
   DoubleObservable? _width;
   set width(dynamic v)
   {
-    if (_width == null)
+    if (v != null)
     {
-      if (v != null)
+      if (S.isPercentage(v))
       {
-        if (S.isPercentage(v))
-        {
-          _widthPercentage = S.toDouble(v.split("%")[0]);
-          v = null;
-        }
-        if (v != null && v.runtimeType == String && v.contains('%')) {
-          String s = v;
-          v = s.replaceAll('%', '000000');
-        }
-        _width = DoubleObservable(Binding.toKey(id, 'width'), v, scope: scope, listener: onPropertyChange);
+        _widthPercentage = S.toDouble(v.split("%")[0]);
+        v = null;
       }
+      else _widthPercentage = null;
+      if (v != null && v.runtimeType == String && v.contains('%'))
+      {
+        String s = v;
+        v = s.replaceAll('%', '000000');
+      }
+      if (_width == null)
+           _width = DoubleObservable(Binding.toKey(id, 'width'), v, scope: scope, listener: onPropertyChange);
+      else if (v != null) _width!.set(v);
     }
-    else _width!.set(v);
   }
   double? get width => _width?.get();
 
@@ -40,23 +40,23 @@ class ViewableWidgetModel extends WidgetModel
   DoubleObservable? _height;
   set height(dynamic v)
   {
-    if (_height == null)
+    if (v != null)
     {
-      if (v != null)
+      if (S.isPercentage(v))
       {
-        if (S.isPercentage(v))
-        {
-          _heightPercentage = S.toDouble(v.split("%")[0]);
-          v = null;
-        }
-        if (v != null && v.runtimeType == String && v.contains('%')) {
-          String s = v;
-          v = s.replaceAll('%', '000000');
-        }
-        _height = DoubleObservable(Binding.toKey(id, 'height'), v, scope: scope, listener: onPropertyChange);
+        _heightPercentage = S.toDouble(v.split("%")[0]);
+        v = null;
       }
+      else _heightPercentage = null;
+      if (v != null && v.runtimeType == String && v.contains('%'))
+      {
+        String s = v;
+        v = s.replaceAll('%', '000000');
+      }
+      if (_height == null)
+        _height = DoubleObservable(Binding.toKey(id, 'height'), v, scope: scope, listener: onPropertyChange);
+      else if (v != null) _height!.set(v);
     }
-    else _height!.set(v);
   }
   double? get height => _height?.get();
 

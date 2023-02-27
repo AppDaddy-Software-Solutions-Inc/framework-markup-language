@@ -13,6 +13,10 @@ import 'package:fml/helper/common_helpers.dart';
 
 class SplitModel extends DecoratedWidgetModel implements IViewableWidget
 {
+  /// vertical or horizontal splitter?
+  bool? _vertical;
+  bool get vertical => _vertical ?? false;
+
   /// The splitter bar divider color
   ColorObservable? _dividerColor;
   set dividerColor (dynamic v)
@@ -58,27 +62,10 @@ class SplitModel extends DecoratedWidgetModel implements IViewableWidget
   }
   Color? get dividerHandleColor => _dividerHandleColor?.get();
 
-  /// split ratio
-  DoubleObservable? _ratio;
-  set ratio (dynamic v)
+  SplitModel(WidgetModel parent, String? id, {dynamic width, bool? vertical}) : super(parent, id)
   {
-    if (_ratio != null)
-    {
-      _ratio!.set(v);
-    }
-    else if (v != null)
-    {
-      _ratio = DoubleObservable(null, v, scope: scope);
-    }
-  }
-  double get ratio => _ratio?.get() ?? 0.5;
-
-  SplitModel(WidgetModel parent, String? id,
-  {
-    dynamic width,
-  }) : super(parent, id)
-  {
-    this.width = width;
+    if (width != null) this.width = width;
+    if (vertical != null) _vertical = vertical;
   }
 
   @override
@@ -92,7 +79,7 @@ class SplitModel extends DecoratedWidgetModel implements IViewableWidget
     SplitModel? model;
     try
     {
-      model = SplitModel(parent, Xml.get(node: xml, tag: 'id'));
+      model = SplitModel(parent, Xml.get(node: xml, tag: 'id'), vertical: Xml.get(node: xml, tag: 'direction') == "vertical");
       model.deserialize(xml);
     }
     catch(e)
@@ -112,7 +99,14 @@ class SplitModel extends DecoratedWidgetModel implements IViewableWidget
     super.deserialize(xml);
 
     // properties
-    ratio         = Xml.get(node: xml, tag: 'ratio');
+    double ratio = S.toDouble(Xml.get(node: xml, tag: 'ratio')) ?? -1;
+    if (ratio >= 0 && ratio <= 1)
+    {
+      if (vertical)
+           height = "${ratio * 100}%";
+      else width  = "${ratio * 100}%";
+    }
+
     dividerColor  = Xml.get(node: xml, tag: 'dividercolor');
     dividerWidth  = Xml.get(node: xml, tag: 'dividerwidth');
     dividerHandleColor  = Xml.get(node: xml, tag: 'dividerhandlecolor');

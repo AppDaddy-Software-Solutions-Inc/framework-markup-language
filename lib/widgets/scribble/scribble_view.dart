@@ -8,6 +8,7 @@ import 'dart:typed_data';
 import 'dart:ui';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:perfect_freehand/perfect_freehand.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class ScribbleView extends StatefulWidget
 {
@@ -462,6 +463,10 @@ class _ScribbleViewState extends State<ScribbleView> implements IModelListener
             maxHeight: con.maxHeight!,
             minWidth: con.minWidth!,
             maxWidth: con.maxWidth!));
+
+    // wrap in visibility detector
+    if (widget.model.onstage != null) view = VisibilityDetector(key: ObjectKey(widget.model), onVisibilityChanged: widget.model.onVisibilityChanged, child: view);
+
     return view;
   }
 

@@ -1,8 +1,11 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/animation/animation_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/icon/icon_model.dart';
 import 'dart:math' as math;
+
+import 'package:visibility_detector/visibility_detector.dart';
 
 class IconView extends StatefulWidget
 {
@@ -69,10 +72,10 @@ class _IconViewState extends State<IconView> implements IModelListener
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // Set Build Constraints in the [WidgetModel]
-      widget.model.minWidth  = constraints.minWidth;
-      widget.model.maxWidth  = constraints.maxWidth;
-      widget.model.minHeight = constraints.minHeight;
-      widget.model.maxHeight = constraints.maxHeight;
+    widget.model.minWidth  = constraints.minWidth;
+    widget.model.maxWidth  = constraints.maxWidth;
+    widget.model.minHeight = constraints.minHeight;
+    widget.model.maxHeight = constraints.maxHeight;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -94,6 +97,12 @@ class _IconViewState extends State<IconView> implements IModelListener
 
     // rotation
     if (widget.model.rotation != 0) view = Transform.rotate(angle: widget.model.rotation * math.pi / 180, child: view);
+
+    // warp widget in animation model
+    if (widget.model.animations != null) view = AnimationView(widget.model.animations!.first, view);
+
+    // wrap in visibility detector
+    if (widget.model.onstage != null) view = VisibilityDetector(key: ObjectKey(widget.model), onVisibilityChanged: widget.model.onVisibilityChanged, child: view);
 
     return view;
   }

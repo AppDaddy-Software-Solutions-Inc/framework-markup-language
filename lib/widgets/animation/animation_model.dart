@@ -62,7 +62,6 @@ enum Curve {
 class AnimationModel extends DecoratedWidgetModel implements IViewableWidget
 {
   bool runonce = false;
-
   
   // animation
   /// Name of Animation to use
@@ -354,5 +353,5 @@ class AnimationModel extends DecoratedWidgetModel implements IViewableWidget
   }
 
   /// Returns the [ANIMATION] View
-  Widget getView({Key? key}) => AnimationView(this);
+  Widget getView({Key? key}) => AnimationView(this, null);
 }

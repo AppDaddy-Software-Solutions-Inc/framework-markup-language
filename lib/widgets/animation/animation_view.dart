@@ -17,8 +17,9 @@ class AnimationView extends StatefulWidget
 {
   final ANIMATION.AnimationModel model;
   final List<Widget> children = [];
+  final Widget? child;
 
-  AnimationView(this.model) : super(key: ObjectKey(model));
+  AnimationView(this.model, this.child) : super(key: ObjectKey(model));
 
   @override
   AnimationViewState createState() => AnimationViewState();
@@ -114,6 +115,7 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
     Widget? front;
     Widget? back;
     widget.children.clear();
+    if (widget.child != null) widget.children.add(widget.child!);
     if (widget.model.children != null)
       widget.model.children!.forEach((model)
       {

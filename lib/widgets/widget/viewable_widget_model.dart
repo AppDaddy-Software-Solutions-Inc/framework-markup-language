@@ -1,6 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:fml/widgets/animation/animation_model.dart';
 import 'package:fml/widgets/widget/constraint.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
@@ -8,6 +10,8 @@ import 'package:fml/widgets/widget/widget_model.dart';
 
 class ViewableWidgetModel extends WidgetModel
 {
+  List<AnimationModel>? animations;
+
   // Width
   double? _widthPercentage;
   double? get widthPercentage => _widthPercentage;
@@ -198,6 +202,21 @@ class ViewableWidgetModel extends WidgetModel
   }
   String? get valign => _valign?.get();
 
+  /// onstage represents the percent visibility (0-100) of the widget
+  DoubleObservable? _onstage;
+  set onstage(dynamic v)
+  {
+    if (_onstage != null)
+    {
+      _onstage!.set(v);
+    }
+    else if (v != null)
+    {
+      _onstage = DoubleObservable(Binding.toKey(id, 'onstage'), v, scope: scope);
+    }
+  }
+  double? get onstage => _onstage?.get();
+
   int paddings = 0; 
   set _paddings(dynamic v)
   {
@@ -305,15 +324,29 @@ class ViewableWidgetModel extends WidgetModel
     _modelConstraints.maxHeight = S.toDouble(Xml.get(node: xml, tag: 'maxheight'));
 
     // properties
-    visible = Xml.get(node: xml, tag: 'visible');
-    enabled = Xml.get(node: xml, tag: 'enabled');
-    width   = Xml.get(node: xml, tag: 'width');
-    height  = Xml.get(node: xml, tag: 'height');
-    halign  = Xml.get(node: xml, tag: 'halign');
-    valign  = Xml.get(node: xml, tag: 'valign');
+    visible  = Xml.get(node: xml, tag: 'visible');
+    enabled  = Xml.get(node: xml, tag: 'enabled');
+    width    = Xml.get(node: xml, tag: 'width');
+    height   = Xml.get(node: xml, tag: 'height');
+    halign   = Xml.get(node: xml, tag: 'halign');
+    valign   = Xml.get(node: xml, tag: 'valign');
+
+    // visibility wrappers are expensive, so only
+    // ask the view to wrap if the user requests
+    // it
+    var onstage = Xml.get(node: xml, tag: 'onstage');
+    if (S.isNumber(onstage)) this.onstage = onstage;
 
     // pad is always defined as an attribute. PAD as an element name is the PADDING widget
     _paddings = Xml.attribute(node: xml, tag: 'pad');
+
+    // animations
+    var animations = findChildrenOfExactType(AnimationModel).cast<AnimationModel>();
+    if (animations.isNotEmpty)
+    {
+      this.animations = animations;
+      removeChildrenOfExactType(AnimationModel);
+    }
   }
 
   static double getParentVPadding(int paddings, double? padding, double padding2, double padding3, double padding4)
@@ -386,4 +419,6 @@ class ViewableWidgetModel extends WidgetModel
     }
     return constraint;
   }
+
+  void onVisibilityChanged(VisibilityInfo info) => onstage = info.visibleFraction * 100;
 }

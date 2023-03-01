@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/helper/common_helpers.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 /// Button View
 ///
@@ -235,6 +236,10 @@ class _ButtonViewState extends State<ButtonView> implements IModelListener
         ),
       );
     }
+
+    // wrap in visibility detector
+    if (widget.model.onstage != null) view = VisibilityDetector(key: ObjectKey(widget.model), onVisibilityChanged: widget.model.onVisibilityChanged, child: view);
+
     return view;
   }
 

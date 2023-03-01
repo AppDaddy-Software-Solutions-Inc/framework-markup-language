@@ -1,5 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/widgets/animation/animation_model.dart';
+import 'package:fml/event/handler.dart';
 import 'package:fml/widgets/widget/constraint.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -10,8 +10,6 @@ import 'package:fml/widgets/widget/widget_model.dart';
 
 class ViewableWidgetModel extends WidgetModel
 {
-  List<AnimationModel>? animations;
-
   // Width
   double? _widthPercentage;
   double? get widthPercentage => _widthPercentage;
@@ -202,8 +200,13 @@ class ViewableWidgetModel extends WidgetModel
   }
   String? get valign => _valign?.get();
 
-  /// onstage represents the percent visibility (0-100) of the widget
-  DoubleObservable? _onstage;
+  // used by the veiw to determine if it needs to wrap itself
+  // in a VisibilityDetector
+  bool? _visibilityDetector;
+  bool get visibilityDetector => _visibilityDetector ?? false;
+
+  /// onstage event string - fires when object is 100 on screen
+  StringObservable? _onstage;
   set onstage(dynamic v)
   {
     if (_onstage != null)
@@ -212,10 +215,59 @@ class ViewableWidgetModel extends WidgetModel
     }
     else if (v != null)
     {
-      _onstage = DoubleObservable(Binding.toKey(id, 'onstage'), v, scope: scope);
+      _onstage = StringObservable(Binding.toKey(id, 'onstage'), v, scope: scope);
+
+      // create the visibility tag
+      visibility = 0;
     }
   }
-  double? get onstage => _onstage?.get();
+  String? get onstage => _onstage?.get();
+
+  /// offstage event string - fires when object is 100 on screen
+  StringObservable? _offstage;
+  set offstage(dynamic v)
+  {
+    if (_offstage != null)
+    {
+      _offstage!.set(v);
+    }
+    else if (v != null)
+    {
+      _offstage = StringObservable(Binding.toKey(id, 'offstage'), v, scope: scope);
+
+      // create the visibility tag
+      visibility = 0;
+    }
+  }
+  String? get offstage => _offstage?.get();
+
+  /// visibility - percent of object visible on screen
+  DoubleObservable? _visibility;
+  set visibility(dynamic v)
+  {
+    if (_visibility != null)
+    {
+      _visibility!.set(v);
+    }
+    else if (v != null)
+    {
+      _visibility = DoubleObservable(Binding.toKey(id, 'visibility'), v, scope: scope);
+    }
+  }
+  double? get visibility => _visibility?.get();
+
+  // animations
+  List<String>? _animations;
+  set animation(dynamic v)
+  {
+    if (v is String)
+    {
+      var s = v.split(",");
+      _animations = [];
+      s.forEach((element) => _animations!.add(element.trim()));
+    }
+  }
+  List<String> get animation => List.unmodifiable(_animations ?? []);
 
   int paddings = 0; 
   set _paddings(dynamic v)
@@ -324,29 +376,22 @@ class ViewableWidgetModel extends WidgetModel
     _modelConstraints.maxHeight = S.toDouble(Xml.get(node: xml, tag: 'maxheight'));
 
     // properties
-    visible  = Xml.get(node: xml, tag: 'visible');
-    enabled  = Xml.get(node: xml, tag: 'enabled');
-    width    = Xml.get(node: xml, tag: 'width');
-    height   = Xml.get(node: xml, tag: 'height');
-    halign   = Xml.get(node: xml, tag: 'halign');
-    valign   = Xml.get(node: xml, tag: 'valign');
+    visible   = Xml.get(node: xml, tag: 'visible');
+    enabled   = Xml.get(node: xml, tag: 'enabled');
+    width     = Xml.get(node: xml, tag: 'width');
+    height    = Xml.get(node: xml, tag: 'height');
+    halign    = Xml.get(node: xml, tag: 'halign');
+    valign    = Xml.get(node: xml, tag: 'valign');
+    onstage   = Xml.get(node: xml, tag: 'onstage');
+    offstage  = Xml.get(node: xml, tag: 'offstage');
+    animation = Xml.attribute(node: xml, tag: 'animation');
 
-    // visibility wrappers are expensive, so only
-    // ask the view to wrap if the user requests
-    // it
-    var onstage = Xml.get(node: xml, tag: 'onstage');
-    if (S.isNumber(onstage)) this.onstage = onstage;
+    // view requires a VisibilityDetector if either onstage or offstage is set or
+    // someone is bound to my visibility
+    _visibilityDetector = !S.isNullOrEmpty(onstage) || !S.isNullOrEmpty(offstage) || WidgetModel.isBound(this, Binding.toKey(id, 'visibility'));
 
     // pad is always defined as an attribute. PAD as an element name is the PADDING widget
     _paddings = Xml.attribute(node: xml, tag: 'pad');
-
-    // animations
-    var animations = findChildrenOfExactType(AnimationModel).cast<AnimationModel>();
-    if (animations.isNotEmpty)
-    {
-      this.animations = animations;
-      removeChildrenOfExactType(AnimationModel);
-    }
   }
 
   static double getParentVPadding(int paddings, double? padding, double padding2, double padding3, double padding4)
@@ -420,5 +465,12 @@ class ViewableWidgetModel extends WidgetModel
     return constraint;
   }
 
-  void onVisibilityChanged(VisibilityInfo info) => onstage = info.visibleFraction * 100;
+  // set visibility
+  void onVisibilityChanged(VisibilityInfo info)
+  {
+    visibility = info.visibleFraction * 100;
+    if (visibility! > 0)
+         EventHandler(this).execute(_onstage);
+    else EventHandler(this).execute(_offstage);
+  }
 }

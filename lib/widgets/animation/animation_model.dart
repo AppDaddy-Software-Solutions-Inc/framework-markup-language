@@ -59,10 +59,25 @@ enum Curve {
 
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
-class AnimationModel extends DecoratedWidgetModel implements IViewableWidget
+class AnimationModel extends WidgetModel implements IViewableWidget
 {
   bool runonce = false;
-  
+
+  // visible
+  BooleanObservable? _visible;
+  set visible(dynamic v)
+  {
+    if (_visible != null)
+    {
+      _visible!.set(v);
+    }
+    else if (v != null)
+    {
+      _visible = BooleanObservable(Binding.toKey(id, 'visible'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get visible => _visible?.get() ?? true;
+
   // animation
   /// Name of Animation to use
   StringObservable? _animation;
@@ -301,6 +316,7 @@ class AnimationModel extends DecoratedWidgetModel implements IViewableWidget
     super.deserialize(xml);
 
     // properties
+    visible     = Xml.get(node: xml, tag: 'visible');
     autoplay    = Xml.get(node: xml, tag: 'autoplay');
     animation   = Xml.get(node: xml, tag: 'type');
     transition  = Xml.get(node: xml, tag: 'transition');

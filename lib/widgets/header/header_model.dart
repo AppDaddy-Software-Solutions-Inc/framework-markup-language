@@ -13,19 +13,6 @@ enum Animations {fade, none}
 
 class HeaderModel extends DecoratedWidgetModel implements IViewableWidget
 {
-  // animation
-  Animations? _animation;
-  Animations get animation => _animation ?? Animations.none;
-  set animation (dynamic v)
-  {
-    if (v is Animations) _animation = v;
-    if (v is String)
-    {
-      Animations? a = S.toEnum(v, Animations.values);
-      if (a != null) _animation = a;
-    }
-  }
-
   // min height
   double? _minheight;
   set minheight (dynamic v)
@@ -71,7 +58,6 @@ class HeaderModel extends DecoratedWidgetModel implements IViewableWidget
     super.deserialize(xml);
 
     // properties
-    this.animation  = Xml.get(node: xml, tag: 'animation');
     this.minheight  = Xml.get(node: xml, tag: 'minheight');
     this.maxheight  = Xml.get(node: xml, tag: 'maxheight');
   }

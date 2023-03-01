@@ -98,11 +98,8 @@ class _IconViewState extends State<IconView> implements IModelListener
     // rotation
     if (widget.model.rotation != 0) view = Transform.rotate(angle: widget.model.rotation * math.pi / 180, child: view);
 
-    // warp widget in animation model
-    if (widget.model.animations != null) view = AnimationView(widget.model.animations!.first, view);
-
     // wrap in visibility detector
-    if (widget.model.onstage != null) view = VisibilityDetector(key: ObjectKey(widget.model), onVisibilityChanged: widget.model.onVisibilityChanged, child: view);
+    if (widget.model.hasVisibilityDetector) view = VisibilityDetector(key: ObjectKey(widget.model), onVisibilityChanged: widget.model.onVisibilityChanged, child: view);
 
     return view;
   }

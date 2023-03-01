@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/event/handler.dart';
+import 'package:fml/widgets/animation/animation_model.dart';
 import 'package:fml/widgets/widget/constraint.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -203,7 +204,7 @@ class ViewableWidgetModel extends WidgetModel
   // used by the veiw to determine if it needs to wrap itself
   // in a VisibilityDetector
   bool? _visibilityDetector;
-  bool get visibilityDetector => _visibilityDetector ?? false;
+  bool get needsVisibilityDetector => _visibilityDetector ?? false;
 
   /// onstage event string - fires when object is 100 on screen
   StringObservable? _onstage;
@@ -463,6 +464,13 @@ class ViewableWidgetModel extends WidgetModel
       else constraint.maxWidth = constraint.minWidth;
     }
     return constraint;
+  }
+
+  AnimationModel? findAnimation(String id)
+  {
+    var model = Scope.findWidgetModel(id, scope);
+    if (model is AnimationModel) return model;
+    return null;
   }
 
   // set visibility

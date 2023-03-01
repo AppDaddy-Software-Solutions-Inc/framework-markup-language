@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
+import 'package:fml/widgets/animation/animation_view.dart';
 import 'package:fml/widgets/button/button_model.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
@@ -237,8 +238,19 @@ class _ButtonViewState extends State<ButtonView> implements IModelListener
       );
     }
 
+    // wrap in animation?
+    if (widget.model.animation.isNotEmpty)
+    {
+      var animations = widget.model.animation.reversed;
+      animations.forEach((element)
+      {
+        var model = widget.model.findAnimation(widget.model.id);
+        if (model != null) view = AnimationView(model,view);
+      });
+    };
+
     // wrap in visibility detector
-    if (widget.model.onstage != null) view = VisibilityDetector(key: ObjectKey(widget.model), onVisibilityChanged: widget.model.onVisibilityChanged, child: view);
+    if (widget.model.needsVisibilityDetector) view = VisibilityDetector(key: ObjectKey(widget.model), onVisibilityChanged: widget.model.onVisibilityChanged, child: view);
 
     return view;
   }

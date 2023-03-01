@@ -2,6 +2,8 @@
 import 'dart:convert';
 import 'package:fml/phrase.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/animation/animation_model.dart';
+import 'package:fml/widgets/animation/animation_view.dart';
 import 'package:fml/widgets/scribble/scribble_model.dart';
 import 'dart:async';
 import 'dart:typed_data';
@@ -464,8 +466,19 @@ class _ScribbleViewState extends State<ScribbleView> implements IModelListener
             minWidth: con.minWidth!,
             maxWidth: con.maxWidth!));
 
+    // wrap in animation?
+    if (widget.model.animation.isNotEmpty)
+    {
+      var animations = widget.model.animation.reversed;
+      animations.forEach((element)
+      {
+        var model = widget.model.findAnimation(widget.model.id);
+        if (model != null) view = AnimationView(model,view);
+      });
+    };
+
     // wrap in visibility detector
-    if (widget.model.onstage != null) view = VisibilityDetector(key: ObjectKey(widget.model), onVisibilityChanged: widget.model.onVisibilityChanged, child: view);
+    if (widget.model.needsVisibilityDetector) view = VisibilityDetector(key: ObjectKey(widget.model), onVisibilityChanged: widget.model.onVisibilityChanged, child: view);
 
     return view;
   }

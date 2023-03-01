@@ -522,17 +522,27 @@ class ViewableWidgetModel extends WidgetModel
 
   // set visibility
   double oldVisibility = 0;
+  bool hasGoneOffscreen = false;
+  bool hasGoneOnscreen = false;
   void onVisibilityChanged(VisibilityInfo info)
   {
     visibility = info.visibleFraction * 100;
+
     if(oldVisibility == visibility) {
-      return;
+        return;
     }
+
     oldVisibility = visibility ?? 0;
     print(visibility.toString());
-    if (visibility! == 100)
-    EventHandler(this).execute(_onstage);
-    else if (visibility! == 0) EventHandler(this).execute(_offstage);
+    if (visibility! == 100 && !hasGoneOnscreen){
+      EventHandler(this).execute(_onstage);
+      hasGoneOnscreen = true;
+    }
+
+    else if (visibility! == 0  && hasGoneOnscreen) {
+      EventHandler(this).execute(_offstage);
+      hasGoneOnscreen = false;
+    }
   }
 
   Widget getReactiveView(Widget view)

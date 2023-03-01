@@ -237,7 +237,7 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
           _controller!.removeStatusListener(_animationListener);
         }
         _controller!.addStatusListener(_animationListener);
-        view = ScaleTransition(scale: _animation, child: child);
+        view = FadeTransition(opacity: _animation, child: child);
         break;
 
       case ANIMATION.Transitions.scale :

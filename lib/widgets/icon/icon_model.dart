@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/animation/animation_view.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:xml/xml.dart';
@@ -173,5 +174,17 @@ class IconModel extends DecoratedWidgetModel implements IViewableWidget
     super.dispose();
   }
 
-  Widget getView({Key? key}) => IconView(this);
+  Widget getView({Key? key})
+  {
+    Widget view = IconView(this);
+    if (this.animations.isEmpty) return view;
+
+    var animations = this.animations.reversed;
+    animations.forEach((element)
+    {
+      var model = getAnimationModel(element);
+      if (model != null) view = AnimationView(model, view);
+    });
+    return view;
+  }
 }

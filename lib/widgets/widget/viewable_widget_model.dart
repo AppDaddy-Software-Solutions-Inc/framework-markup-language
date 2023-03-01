@@ -1,4 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/widgets/animation/animation_model.dart';
@@ -519,9 +521,15 @@ class ViewableWidgetModel extends WidgetModel
   }
 
   // set visibility
+  double oldVisibility = 0;
   void onVisibilityChanged(VisibilityInfo info)
   {
     visibility = info.visibleFraction * 100;
+    if(oldVisibility == visibility) {
+      return;
+    }
+    oldVisibility = visibility ?? 0;
+    print(visibility.toString());
     if (visibility! > 0)
          EventHandler(this).execute(_onstage);
     else EventHandler(this).execute(_offstage);
@@ -529,7 +537,8 @@ class ViewableWidgetModel extends WidgetModel
 
   Widget getReactiveView(Widget view)
   {
-    // wrap in visibility detector
+    // wrap in visibility detector,
+    //TODO: dont wrap in visibility detector if invisible
     if (needsVisibilityDetector) view = VisibilityDetector(key: ObjectKey(this), onVisibilityChanged: onVisibilityChanged, child: view);
     if (this.animations.isEmpty) return view;
 

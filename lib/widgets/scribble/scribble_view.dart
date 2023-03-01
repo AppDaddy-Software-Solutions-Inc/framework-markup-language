@@ -466,10 +466,6 @@ class _ScribbleViewState extends State<ScribbleView> implements IModelListener
             minWidth: con.minWidth!,
             maxWidth: con.maxWidth!));
 
-
-    // wrap in visibility detector
-    if (widget.model.needsVisibilityDetector) view = VisibilityDetector(key: ObjectKey(widget.model), onVisibilityChanged: widget.model.onVisibilityChanged, child: view);
-
     return view;
   }
 

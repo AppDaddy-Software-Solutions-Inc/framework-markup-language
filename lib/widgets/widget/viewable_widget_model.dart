@@ -527,8 +527,10 @@ class ViewableWidgetModel extends WidgetModel
     else EventHandler(this).execute(_offstage);
   }
 
-  Widget getAnimatedView(Widget view)
+  Widget getReactiveView(Widget view)
   {
+    // wrap in visibility detector
+    if (needsVisibilityDetector) view = VisibilityDetector(key: ObjectKey(this), onVisibilityChanged: onVisibilityChanged, child: view);
     if (this.animations.isEmpty) return view;
 
     var animations = this.animations.reversed;

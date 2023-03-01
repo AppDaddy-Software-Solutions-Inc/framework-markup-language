@@ -187,7 +187,7 @@ class ScribbleModel extends FormFieldModel implements IFormField, IViewableWidge
     super.dispose();
   }
 
-  Widget getView({Key? key}) => getAnimatedView(ScribbleView(this));
+  Widget getView({Key? key}) => getReactiveView(ScribbleView(this));
 }
 
 class SignatureModel extends ViewableWidgetModel

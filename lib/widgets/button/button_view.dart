@@ -238,9 +238,6 @@ class _ButtonViewState extends State<ButtonView> implements IModelListener
       );
     }
 
-    // wrap in visibility detector
-    if (widget.model.needsVisibilityDetector) view = VisibilityDetector(key: ObjectKey(widget.model), onVisibilityChanged: widget.model.onVisibilityChanged, child: view);
-
     return view;
   }
 

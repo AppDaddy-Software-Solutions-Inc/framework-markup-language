@@ -1,6 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:flutter/material.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/widgets/animation/animation_model.dart';
+import 'package:fml/widgets/animation/animation_view.dart';
 import 'package:fml/widgets/widget/constraint.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:uuid/uuid.dart';
@@ -523,5 +525,18 @@ class ViewableWidgetModel extends WidgetModel
     if (visibility! > 0)
          EventHandler(this).execute(_onstage);
     else EventHandler(this).execute(_offstage);
+  }
+
+  Widget getAnimatedView(Widget view)
+  {
+    if (this.animations.isEmpty) return view;
+
+    var animations = this.animations.reversed;
+    animations.forEach((element)
+    {
+      var model = getAnimationModel(element);
+      if (model != null) view = AnimationView(model, view);
+    });
+    return view;
   }
 }

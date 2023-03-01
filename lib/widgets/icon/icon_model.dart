@@ -174,17 +174,6 @@ class IconModel extends DecoratedWidgetModel implements IViewableWidget
     super.dispose();
   }
 
-  Widget getView({Key? key})
-  {
-    Widget view = IconView(this);
-    if (this.animations.isEmpty) return view;
+  Widget getView({Key? key}) => getAnimatedView(IconView(this));
 
-    var animations = this.animations.reversed;
-    animations.forEach((element)
-    {
-      var model = getAnimationModel(element);
-      if (model != null) view = AnimationView(model, view);
-    });
-    return view;
-  }
 }

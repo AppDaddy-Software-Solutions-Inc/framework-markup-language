@@ -238,17 +238,6 @@ class _ButtonViewState extends State<ButtonView> implements IModelListener
       );
     }
 
-    // wrap in animation?
-    if (widget.model.animations.isNotEmpty)
-    {
-      var animations = widget.model.animations.reversed;
-      animations.forEach((element)
-      {
-        var model = widget.model.getAnimationModel(widget.model.id);
-        if (model != null) view = AnimationView(model,view);
-      });
-    };
-
     // wrap in visibility detector
     if (widget.model.needsVisibilityDetector) view = VisibilityDetector(key: ObjectKey(widget.model), onVisibilityChanged: widget.model.onVisibilityChanged, child: view);
 

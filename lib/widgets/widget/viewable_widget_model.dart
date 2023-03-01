@@ -530,9 +530,9 @@ class ViewableWidgetModel extends WidgetModel
     }
     oldVisibility = visibility ?? 0;
     print(visibility.toString());
-    if (visibility! > 0)
-         EventHandler(this).execute(_onstage);
-    else EventHandler(this).execute(_offstage);
+    if (visibility! == 100)
+    EventHandler(this).execute(_onstage);
+    else if (visibility! == 0) EventHandler(this).execute(_offstage);
   }
 
   Widget getReactiveView(Widget view)

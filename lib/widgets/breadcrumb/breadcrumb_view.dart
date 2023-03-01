@@ -2,13 +2,12 @@
 import 'package:fml/navigation/navigation_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/navigation/page.dart';
-import 'package:fml/widgets/breadcrumb/breadcrumb_model.dart' ;
+import 'package:fml/widgets/breadcrumb/breadcrumb_model.dart';
 
 /// Breadcrumb View
 ///
 /// Builds the View from the [BREADCRUMB.BreadcrumbModel] properties
-class BreadcrumbView extends StatefulWidget
-{
+class BreadcrumbView extends StatefulWidget {
   final BreadcrumbModel model;
 
   /// Height of the breadcrumb bar
@@ -27,8 +26,7 @@ class BreadcrumbView extends StatefulWidget
 
 class _BreadcrumbViewState extends State<BreadcrumbView> {
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
@@ -38,17 +36,23 @@ class _BreadcrumbViewState extends State<BreadcrumbView> {
     List<Page> pages = NavigationManager().pages;
 
     int index = 0;
-    pages.forEach((page)
-    {
-      if (page.arguments is PageConfiguration)
-      {
+    pages.forEach((page) {
+      if (page.arguments is PageConfiguration) {
         PageConfiguration conf = (page.arguments as PageConfiguration);
-        Widget view = _TextCrumb(conf.breadcrumb, widget.model.color ?? Theme.of(context).colorScheme.onBackground, height, '/', index == 0);
+        Widget view = _TextCrumb(
+            conf.breadcrumb,
+            widget.model.color ?? Theme.of(context).colorScheme.onBackground,
+            height,
+            '/',
+            index == 0);
 
         int i = pages.length - (index + 1);
         if (i > 0)
-             view = GestureDetector(onTap: () => NavigationManager().back(i),child: view);
-        else view = GestureDetector(onTap: () => NavigationManager().refresh(),child: view);
+          view = GestureDetector(
+              onTap: () => NavigationManager().back(i), child: view);
+        else
+          view = GestureDetector(
+              onTap: () => NavigationManager().refresh(), child: view);
         children.add(view);
 
         index++;
@@ -63,7 +67,8 @@ class _BreadcrumbViewState extends State<BreadcrumbView> {
               (MediaQuery.of(context).size.width + widget.model.width! > 0))
           ? widget.model.width
           : ((widget.model.width! >= 0) &&
-                  (MediaQuery.of(context).size.width - widget.model.width! >= 0))
+                  (MediaQuery.of(context).size.width - widget.model.width! >=
+                      0))
               ? (widget.model.width! - MediaQuery.of(context).size.width)
               : 0;
     else
@@ -83,6 +88,7 @@ class _BreadcrumbViewState extends State<BreadcrumbView> {
             )));
   }
 }
+
 /// TextCrumb Widget
 ///
 /// The individual crumbs that are contained in the [BREADCRUMB.getView]
@@ -117,9 +123,7 @@ class _TextCrumbState extends State<_TextCrumb> {
               start: widget.isFirstButton ? 16 : 8, end: 8),
           child: Text(
             widget.isFirstButton ? '' : widget.separator,
-            style: TextStyle(
-                color: widget.color,
-                fontSize: 14),
+            style: TextStyle(color: widget.color, fontSize: 14),
           ),
         ),
       ),

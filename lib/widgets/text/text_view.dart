@@ -67,6 +67,7 @@ class _TextViewState extends State<TextView> implements IModelListener {
   @override
   Widget build(BuildContext context)
   {
+
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible || !gfloaded) return Offstage();
 
@@ -469,28 +470,25 @@ class _TextViewState extends State<TextView> implements IModelListener {
     /* Constrained? */
     //////////////////
     bool isNotExpandedChild = false;
-          if(!widget.model.hasSizing) {
-            ScrollerModel? parentScroll = widget.model.findAncestorOfExactType(
-                ScrollerModel);
-            if (parentScroll != null &&
-                parentScroll.layout.toLowerCase() == "row") return view;
-            isNotExpandedChild = widget.model.findAncestorOfExactType(ExpandedModel) == null;
-          }
+    if(!widget.model.hasSizing) {
+      ScrollerModel? parentScroll = widget.model.findAncestorOfExactType(
+          ScrollerModel);
+      if (parentScroll != null &&
+          parentScroll.layout.toLowerCase() == "row") return view;
+      isNotExpandedChild = widget.model.findAncestorOfExactType(ExpandedModel) == null;
+    }
 
-          if( isNotExpandedChild || widget.model.hasSizing) {
-            var constr = widget.model.getConstraints();
-            view = ConstrainedBox(
-                child: view,
-                constraints: BoxConstraints(
-                    minWidth: constr.minWidth!,
-                    maxWidth: constr.maxWidth!,
-                )
-            );
-          }
-
-
-
+    if( isNotExpandedChild || widget.model.hasSizing) {
+      var constr = widget.model.getConstraints();
+      view = ConstrainedBox(
+          child: view,
+          constraints: BoxConstraints(
+              minWidth: constr.minWidth!,
+              maxWidth: constr.maxWidth!,
+          )
+      );
+    }
 
     return view;
   }
-  }
+}

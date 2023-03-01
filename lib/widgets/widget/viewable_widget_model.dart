@@ -259,7 +259,7 @@ class ViewableWidgetModel extends WidgetModel
 
   // animations
   List<String>? _animations;
-  set animation(dynamic v)
+  set animations(dynamic v)
   {
     if (v is String)
     {
@@ -268,7 +268,7 @@ class ViewableWidgetModel extends WidgetModel
       s.forEach((element) => _animations!.add(element.trim()));
     }
   }
-  List<String> get animation => List.unmodifiable(_animations ?? []);
+  List<String> get animations => List.unmodifiable(_animations ?? []);
 
   int paddings = 0; 
   set _paddings(dynamic v)
@@ -385,7 +385,7 @@ class ViewableWidgetModel extends WidgetModel
     valign    = Xml.get(node: xml, tag: 'valign');
     onstage   = Xml.get(node: xml, tag: 'onstage');
     offstage  = Xml.get(node: xml, tag: 'offstage');
-    animation = Xml.attribute(node: xml, tag: 'animation');
+    animations = Xml.attribute(node: xml, tag: 'animation');
 
     // view requires a VisibilityDetector if either onstage or offstage is set or
     // someone is bound to my visibility

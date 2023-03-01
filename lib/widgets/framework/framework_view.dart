@@ -219,7 +219,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     bodyModel.height    = viewportHeight - height - (footerModel.height ?? 0) - viewportSafeArea.ceil();
 
     // Opacity Fade
-    if (widget.model.header!.animation == Animations.fade)
+    if (widget.model.header!.animations == Animations.fade)
     {
       headerModel.opacity = 0;
       if (maxHeight != 0) headerModel.opacity = height / maxHeight;

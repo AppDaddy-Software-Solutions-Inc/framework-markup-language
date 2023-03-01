@@ -467,9 +467,9 @@ class _ScribbleViewState extends State<ScribbleView> implements IModelListener
             maxWidth: con.maxWidth!));
 
     // wrap in animation?
-    if (widget.model.animation.isNotEmpty)
+    if (widget.model.animations.isNotEmpty)
     {
-      var animations = widget.model.animation.reversed;
+      var animations = widget.model.animations.reversed;
       animations.forEach((element)
       {
         var model = widget.model.findAnimation(widget.model.id);

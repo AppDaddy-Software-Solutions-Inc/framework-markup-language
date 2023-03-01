@@ -239,9 +239,9 @@ class _ButtonViewState extends State<ButtonView> implements IModelListener
     }
 
     // wrap in animation?
-    if (widget.model.animation.isNotEmpty)
+    if (widget.model.animations.isNotEmpty)
     {
-      var animations = widget.model.animation.reversed;
+      var animations = widget.model.animations.reversed;
       animations.forEach((element)
       {
         var model = widget.model.findAnimation(widget.model.id);

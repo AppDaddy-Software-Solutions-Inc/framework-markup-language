@@ -356,8 +356,11 @@ class AnimationModel extends WidgetModel implements IViewableWidget
       case "animate" :
       case "start" :
         var view = findListenerOfExactType(AnimationViewState);
-        if (view is AnimationViewState) view.start();
-        return true;
+        if (view is AnimationViewState)
+        {
+          view.start();
+        }
+          return true;
 
       case "stop" :
         var view = findListenerOfExactType(AnimationViewState);

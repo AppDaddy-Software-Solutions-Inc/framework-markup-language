@@ -489,6 +489,7 @@ class ViewableWidgetModel extends WidgetModel
         // add to map
         if (_animationmap == null) _animationmap = Map<String, AnimationModel>();
         _animationmap![id] = model;
+        return model;
       }
     }
     return null;
@@ -506,9 +507,9 @@ class ViewableWidgetModel extends WidgetModel
       case "animate" :
         if (_animationmap != null)
         {
-          var id = S.item(arguments, 0);
-          if (id == null && animations.isNotEmpty) id = animations.first;
-          if (_animationmap!.containsKey(id)) _animationmap![id]!.execute(caller, propertyOrFunction, arguments);
+          var _id = S.item(arguments, 0);
+          if (_id == null && animations.isNotEmpty) _id = animations.first;
+          if (_animationmap!.containsKey(_id)) _animationmap![_id]!.execute(caller, propertyOrFunction, arguments);
         }
         return true;
     }

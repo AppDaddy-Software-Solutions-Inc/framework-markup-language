@@ -99,7 +99,7 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    if (!widget.model.visible || ((widget.model.children?.isEmpty ?? true) && widget.child == null)) return Offstage();
 
     // Animation Type
     ANIMATION.Transitions? type = S.toEnum(widget.model.animation, ANIMATION.Transitions.values);

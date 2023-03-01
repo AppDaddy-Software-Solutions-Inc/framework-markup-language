@@ -466,10 +466,10 @@ class ViewableWidgetModel extends WidgetModel
     return constraint;
   }
 
-  AnimationModel? findAnimation(String id)
+  AnimationModel? getAnimation(String id)
   {
     var model = Scope.findWidgetModel(id, scope);
-    if (model is AnimationModel) return model;
+    if (model is AnimationModel && model.element != null) return AnimationModel.fromXml(this, model.element!);
     return null;
   }
 

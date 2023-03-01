@@ -3,6 +3,7 @@ import 'package:fml/event/handler.dart';
 import 'package:fml/widgets/animation/animation_model.dart';
 import 'package:fml/widgets/widget/constraint.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
+import 'package:uuid/uuid.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -258,6 +259,7 @@ class ViewableWidgetModel extends WidgetModel
   double? get visibility => _visibility?.get();
 
   // animations
+  Map<String, AnimationModel>? _animationmap;
   List<String>? _animations;
   set animations(dynamic v)
   {
@@ -466,11 +468,51 @@ class ViewableWidgetModel extends WidgetModel
     return constraint;
   }
 
-  AnimationModel? getAnimation(String id)
+  AnimationModel? getAnimationModel(String id)
   {
+    // model already created
+    if (_animationmap != null && _animationmap!.containsKey(id)) return _animationmap![id];
+
     var model = Scope.findWidgetModel(id, scope);
-    if (model is AnimationModel && model.element != null) return AnimationModel.fromXml(this, model.element!);
+    if (model is AnimationModel && model.element != null)
+    {
+      // make a copy of the model
+      var xml = model.element!.copy();
+
+      // we dont want duplicate model ids
+      Xml.setAttribute(xml, "id", Uuid().v4().toString());
+
+      // build the model
+      model = AnimationModel.fromXml(this, model.element!);
+      if (model is AnimationModel)
+      {
+        // add to map
+        if (_animationmap == null) _animationmap = Map<String, AnimationModel>();
+        _animationmap![id] = model;
+      }
+    }
     return null;
+  }
+
+  @override
+  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
+  {
+    /// setter
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+
+    switch (function)
+    {
+      case "animate" :
+        if (_animationmap != null)
+        {
+          var id = S.item(arguments, 0);
+          if (id == null && animations.isNotEmpty) id = animations.first;
+          if (_animationmap!.containsKey(id)) _animationmap![id]!.execute(caller, propertyOrFunction, arguments);
+        }
+        return true;
+    }
+    return super.execute(caller, propertyOrFunction, arguments);
   }
 
   // set visibility

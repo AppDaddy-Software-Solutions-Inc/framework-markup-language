@@ -472,7 +472,7 @@ class _ScribbleViewState extends State<ScribbleView> implements IModelListener
       var animations = widget.model.animations.reversed;
       animations.forEach((element)
       {
-        var model = widget.model.getAnimation(widget.model.id);
+        var model = widget.model.getAnimationModel(widget.model.id);
         if (model != null) view = AnimationView(model,view);
       });
     };

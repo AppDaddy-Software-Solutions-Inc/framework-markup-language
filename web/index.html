@@ -29,28 +29,8 @@
 		script.onload  = function() { pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.4.456/pdf.worker.min.js'; };
 		// uncomment to include this functionality
 		//document.head.appendChild(script);
-
-		// add flutter.js script
-		var script     = document.createElement("script");
-		script.type    = "text/javascript";
-		script.src     = "flutter.js?version=" + version;
-		script.defer   = true;
-		document.head.appendChild(script);
 	</script>
 
-    <!--
-      If you are serving your web app in a path other than the root, change the
-      href value below to reflect the base path you are serving from.
-
-      The path provided below has to start and end with a slash "/" in order for
-      it to work correctly.
-
-      For more details:
-      * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-      This is a placeholder for base href that will be replaced by the value of
-      the `--base-href` argument provided to `flutter build`.
-    -->
     <base href="$FLUTTER_BASE_HREF">
 
     <meta charset="UTF-8">
@@ -59,63 +39,37 @@
     <!-- iOS meta tags & icons -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="untitled">
+    <meta name="apple-mobile-web-app-title" content="untitled7">
     <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="favicon.png"/>
-    <link rel="shortcut icon" type="image/png" href="favicon.png"/>
 
+    <title>untitled7</title>
     <link rel="manifest" href="manifest.json">
 
     <script>
-        // The value below is injected by flutter build, do not touch.
-        var serviceWorkerVersion = null;
-    </script>
+    // The value below is injected by flutter build, do not touch.
+    var serviceWorkerVersion = null;
+  </script>
+    <!-- This script adds the flutter initialization JS code -->
+    <script src="flutter.js" defer></script>
 </head>
-
-<body bgcolor="white">
-
-<div class="centered">
-    <img id="logo" class="centered" alt="Flutter Markup Langauge" height="300" width="400" src="assets/images/loading.gif"/>
-</div>
-
-<style type="text/css">
-.centered {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    margin-top: -150px;
-    margin-left: -200px;
-}
-</style>
-
-<!--
-Flutter Renderer (auto, html, canvaskit)
-auto      - automatically chooses which renderer to use. This option chooses the HTML renderer when the app is running in a mobile browser, and CanvasKit renderer when the app is running in a desktop browser.
-html      - always use the HTML renderer. Uses a combination of HTML elements, CSS, Canvas elements, and SVG elements. This renderer has a smaller download size.
-canvaskit - always use the CanvasKit renderer. This renderer is fully consistent with Flutter mobile and desktop, has faster performance with higher widget density, but adds about 2MB in download size.
--->
-<script>
-        // auto, html, canvaskit
-        let renderer = "auto";
-        console.log("Rendering with " + renderer);
-	    window.flutterWebRenderer = renderer;
-    </script>
-
+<body>
 <script>
     window.addEventListener('load', function(ev) {
       // Download main.dart.js
       _flutter.loader.loadEntrypoint({
         serviceWorker: {
           serviceWorkerVersion: serviceWorkerVersion,
+        },
+        onEntrypointLoaded: function(engineInitializer) {
+          engineInitializer.initializeEngine().then(function(appRunner) {
+            appRunner.runApp();
+          });
         }
-      }).then(function(engineInitializer) {
-        return engineInitializer.initializeEngine();
-      }).then(function(appRunner) {
-        return appRunner.runApp();
       });
     });
-    </script>
+  </script>
 </body>
 </html>

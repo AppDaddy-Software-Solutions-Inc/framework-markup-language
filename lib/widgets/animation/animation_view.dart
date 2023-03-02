@@ -29,6 +29,7 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
 {
   dynamic _controller;
   late Animation<double>   _animation;
+  Widget? transitionChild;
 
   int  _loop    = 0;
   bool _stopped = false;
@@ -91,6 +92,15 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
     if (this.mounted) setState((){});
   }
 
+  _buildTransitionChildren()
+  {
+    Widget? newChild = widget.child;
+    widget.model.transitionChildren.forEach((child) {
+      newChild = child.getTransitionView(newChild, _controller);
+    });
+    return newChild;
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: builder);
@@ -100,6 +110,14 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
   {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible || ((widget.model.children?.isEmpty ?? true) && widget.child == null)) return Offstage();
+
+    if(widget.model.transitionChildren.isNotEmpty && widget.child != null) {
+      _controller = AnimationController(duration: Duration(milliseconds: widget.model.duration), vsync: this);
+       Widget view = _buildTransitionChildren();
+      // Start the Controller
+      if ((widget.model.autoplay == true) && (!_stopped)) start();
+      return view;
+    }
 
     // Animation Type
     ANIMATION.Transitions? type = S.toEnum(widget.model.animation, ANIMATION.Transitions.values);

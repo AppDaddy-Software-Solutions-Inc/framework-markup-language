@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:flutter/material.dart';
@@ -290,6 +289,8 @@ class AnimationModel extends WidgetModel implements IViewableWidget
   }
   bool get autoplay => _autoplay?.get() ?? false;
 
+  final List transitionChildren = [];
+
   AnimationModel(WidgetModel parent, String?  id) : super(parent, id); // ; {key: value}
 
   static AnimationModel? fromXml(WidgetModel parent, XmlElement xml, {String? type})
@@ -329,6 +330,19 @@ class AnimationModel extends WidgetModel implements IViewableWidget
     dy          = Xml.get(node: xml, tag: 'y');
     anchor      = Xml.get(node: xml, tag: 'anchor');
     axis        = Xml.get(node: xml, tag: 'axis');
+
+
+
+    // clear options
+    this.transitionChildren.forEach((child) => child.dispose());
+    this.transitionChildren.clear();
+
+    // Build options
+    List? transitionChildren = children;
+
+    transitionChildren?.forEach((child) => this.transitionChildren.add(child));
+
+
   }
 
   @override
@@ -372,5 +386,12 @@ class AnimationModel extends WidgetModel implements IViewableWidget
   }
 
   /// Returns the [ANIMATION] View
-  Widget getView({Key? key}) => AnimationView(this, null);
+
+
+
+  Widget getView({Key? key}) {
+
+    return AnimationView(this, null);
+
+  }
 }

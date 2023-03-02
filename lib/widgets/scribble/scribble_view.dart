@@ -2,15 +2,12 @@
 import 'dart:convert';
 import 'package:fml/phrase.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/animation/animation_model.dart';
-import 'package:fml/widgets/animation/animation_view.dart';
 import 'package:fml/widgets/scribble/scribble_model.dart';
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:perfect_freehand/perfect_freehand.dart';
-import 'package:visibility_detector/visibility_detector.dart';
 
 class ScribbleView extends StatefulWidget
 {

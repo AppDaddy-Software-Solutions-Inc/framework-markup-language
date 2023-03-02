@@ -21,4 +21,5 @@ class Platform
   static Future<bool> deleteFile(String filepath) async => throw UnimplementedError();
   static Future<bool> goBackPages(int pages) async => throw UnimplementedError();
   static int getNavigationType() => throw UnimplementedError();
+  static String get title => throw UnimplementedError();
 }

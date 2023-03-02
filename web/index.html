@@ -9,6 +9,12 @@
 		var title = "Flutter Markup Language " + version;
 		document.title = title;
 
+		// set description
+        var meta = document.createElement("meta");
+        meta.name="description";
+        meta.content= title;
+        document.head.appendChild(meta);
+
 		// add google maps
 		var script = document.createElement("script");
 		script.type    = "text/javascript";
@@ -49,7 +55,6 @@
 
     <meta charset="UTF-8">
     <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-    <meta name="description" content="Flutter Markup Language">
 
     <!-- iOS meta tags & icons -->
     <meta name="apple-mobile-web-app-capable" content="yes">

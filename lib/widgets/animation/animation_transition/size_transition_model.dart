@@ -160,6 +160,36 @@ class SizeTransitionModel extends WidgetModel
     return f;
   }
 
+  /// Curve ending point from 1.0 to 0.0
+  StringObservable? _direction;
+  set direction (dynamic v)
+  {
+    if (_direction != null)
+    {
+      _direction!.set(v);
+    }
+    else if (v != null)
+    {
+      _direction = StringObservable(Binding.toKey(id, 'direction'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get direction =>  _direction?.get();
+
+  /// Curve ending point from 1.0 to 0.0
+  StringObservable? _align;
+  set align (dynamic v)
+  {
+    if (_align != null)
+    {
+      _align!.set(v);
+    }
+    else if (v != null)
+    {
+      _align = StringObservable(Binding.toKey(id, 'align'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get align =>  _align?.get();
+
 
   SizeTransitionModel(WidgetModel parent, String?  id) : super(parent, id); // ; {key: value}
 
@@ -191,6 +221,8 @@ class SizeTransitionModel extends WidgetModel
     curve       = Xml.get(node: xml, tag: 'curve');
     begin       = Xml.get(node: xml, tag: 'begin');
     end         = Xml.get(node: xml, tag: 'end');
+    align       = Xml.get(node: xml, tag: 'align');
+    direction   = Xml.get(node: xml, tag: 'direction');
 
 
   }

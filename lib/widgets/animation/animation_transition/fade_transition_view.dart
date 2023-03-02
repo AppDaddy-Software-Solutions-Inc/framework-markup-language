@@ -88,8 +88,6 @@ class FadeTransitionViewState extends State<FadeTransitionView> with TickerProvi
 
     // remove model listener
     widget.model.removeListener(this);
-    // remove controller
-    _controller.dispose();
 
     super.dispose();
   }

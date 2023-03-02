@@ -57,7 +57,7 @@ enum CurveEnum {
 class SlideTransitionModel extends WidgetModel
 {
   /// Curve starting point from 0.0 to 1.0
-  DoubleObservable? _from;
+  StringObservable? _from;
   set from (dynamic v)
   {
     if (_from != null)
@@ -66,13 +66,13 @@ class SlideTransitionModel extends WidgetModel
     }
     else if (v != null)
     {
-      _from = DoubleObservable(Binding.toKey(id, 'from'), v, scope: scope, listener: onPropertyChange);
+      _from = StringObservable(Binding.toKey(id, 'from'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  double get from => _from?.get() ?? -1.0;
+  String? get from => _from?.get();
 
   /// Curve ending point from 1.0 to 0.0
-  DoubleObservable? _to;
+  StringObservable? _to;
   set to (dynamic v)
   {
     if (_to != null)
@@ -81,10 +81,27 @@ class SlideTransitionModel extends WidgetModel
     }
     else if (v != null)
     {
-      _to = DoubleObservable(Binding.toKey(id, 'to'), v, scope: scope, listener: onPropertyChange);
+      _to = StringObservable(Binding.toKey(id, 'to'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  double get to =>  _to?.get() ?? 0.0;
+  String get to =>  _to?.get() ?? "0, 0";
+
+
+
+  /// Curve ending point from 1.0 to 0.0
+  StringObservable? _direction;
+  set direction (dynamic v)
+  {
+    if (_direction != null)
+    {
+      _direction!.set(v);
+    }
+    else if (v != null)
+    {
+      _direction = StringObservable(Binding.toKey(id, 'direction'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get direction =>  _direction?.get();
 
   /// Curve
   StringObservable? _curve;
@@ -177,6 +194,7 @@ class SlideTransitionModel extends WidgetModel
     curve       = Xml.get(node: xml, tag: 'curve');
     begin       = Xml.get(node: xml, tag: 'begin');
     end         = Xml.get(node: xml, tag: 'end');
+    direction   = Xml.get(node: xml, tag: 'direction');
 
 
   }

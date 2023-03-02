@@ -30,34 +30,6 @@ class FadeTransitionViewState extends State<SizeTransitionView> with TickerProvi
     super.initState();
 
     _controller = widget.controller;
-    // Tween
-    double from = widget.model.from;
-    double to   = widget.model.to;
-    double begin = widget.model.begin;
-    double end   = widget.model.end;
-    Curve curve = widget.model.getCurve();
-
-    // we must check from != to and begin !< end
-
-    if(begin != 0.0 || end != 1.0) {
-      _animation = Tween<double>(begin: from, end: to,
-      ).animate(CurvedAnimation(
-        curve: new Interval(
-          begin,
-          end,
-          // the style curve to pass.
-          curve: curve,
-        ),
-        parent: _controller,
-      ));
-    } else {
-      _animation = Tween<double>(begin: from, end: to,
-      ).animate(CurvedAnimation(
-        parent: _controller,
-        curve: curve,
-      ));
-    }
-
 
   }
 
@@ -88,8 +60,6 @@ class FadeTransitionViewState extends State<SizeTransitionView> with TickerProvi
 
     // remove model listener
     widget.model.removeListener(this);
-    // remove controller
-    _controller.dispose();
 
     super.dispose();
   }
@@ -106,13 +76,47 @@ class FadeTransitionViewState extends State<SizeTransitionView> with TickerProvi
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
+    // Tween
+    double from = widget.model.from;
+    double to   = widget.model.to;
+    double begin = widget.model.begin;
+    double end   = widget.model.end;
+    Curve curve = widget.model.getCurve();
+    //
+    Axis _direction = widget.model.direction?.toLowerCase() == "vertical" ? Axis.vertical : Axis.horizontal;
+    //start, end, center
+    double _align = widget.model.align?.toLowerCase() == "start" ? -1 :  widget.model.align?.toLowerCase() == "end" ? 1 : 0;
+
+
+    // we must check from != to and begin !< end
+
+    if(begin != 0.0 || end != 1.0) {
+      _animation = Tween<double>(begin: from, end: to,
+      ).animate(CurvedAnimation(
+        curve: new Interval(
+          begin,
+          end,
+          // the style curve to pass.
+          curve: curve,
+        ),
+        parent: _controller,
+      ));
+    } else {
+      _animation = Tween<double>(begin: from, end: to,
+      ).animate(CurvedAnimation(
+        parent: _controller,
+        curve: curve,
+      ));
+    }
+
+
     // Build View
     Widget? view;
 
     view = SizeTransition(
       sizeFactor: _animation,
-      axis: Axis.horizontal,
-      axisAlignment: 0,
+      axis: _direction,
+      axisAlignment: _align,
       child: widget.child,
     );
 

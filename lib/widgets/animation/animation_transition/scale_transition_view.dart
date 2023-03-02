@@ -1,25 +1,25 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/animation/animation_transition/size_transition_model.dart' as MODEL;
+import 'package:fml/widgets/animation/animation_transition/scale_transition_model.dart' as MODEL;
 import 'package:fml/widgets/widget/widget_model.dart';
 
 /// Animation View
 ///
 /// Builds the View from model properties
-class SizeTransitionView extends StatefulWidget
+class ScaleTransitionView extends StatefulWidget
 {
-  final MODEL.SizeTransitionModel model;
+  final MODEL.ScaleTransitionModel model;
   final List<Widget> children = [];
   final Widget? child;
   final AnimationController controller;
 
-  SizeTransitionView(this.model, this.child, this.controller) : super(key: ObjectKey(model));
+  ScaleTransitionView(this.model, this.child, this.controller) : super(key: ObjectKey(model));
 
   @override
-  SizeTransitionViewState createState() => SizeTransitionViewState();
+  ScaleTransitionViewState createState() => ScaleTransitionViewState();
 }
 
-class SizeTransitionViewState extends State<SizeTransitionView> with TickerProviderStateMixin implements IModelListener
+class ScaleTransitionViewState extends State<ScaleTransitionView> with TickerProviderStateMixin implements IModelListener
 {
   late AnimationController _controller;
   late Animation<double> _animation;
@@ -43,7 +43,7 @@ class SizeTransitionViewState extends State<SizeTransitionView> with TickerProvi
   }
 
   @override
-  void didUpdateWidget(SizeTransitionView oldWidget)
+  void didUpdateWidget(ScaleTransitionView oldWidget)
   {
     super.didUpdateWidget(oldWidget);
     if ((oldWidget.model != widget.model))
@@ -82,11 +82,9 @@ class SizeTransitionViewState extends State<SizeTransitionView> with TickerProvi
     double begin = widget.model.begin;
     double end   = widget.model.end;
     Curve curve = widget.model.getCurve();
-    //
-    Axis _direction = widget.model.size?.toLowerCase() == "height" ? Axis.vertical : Axis.horizontal;
-    //start, end, center
-    double _align = widget.model.align?.toLowerCase() == "start" ? -1 :  widget.model.align?.toLowerCase() == "end" ? 1 : 0;
 
+    //start, end, center
+    Alignment _align = toAlignment(widget.model.align?.toLowerCase());
 
     // we must check from != to and begin !< end
 
@@ -113,16 +111,51 @@ class SizeTransitionViewState extends State<SizeTransitionView> with TickerProvi
     // Build View
     Widget? view;
 
-    view = SizeTransition(
-      sizeFactor: _animation,
-      axis: _direction,
-      axisAlignment: _align,
+    view = ScaleTransition(
+      alignment: _align,
+      scale: _animation,
       child: widget.child,
     );
 
     // Return View
     return view;
   }
+
+  Alignment toAlignment(String? alignment) {
+    switch (alignment) {
+      case 'top':
+      case 'topcenter':
+      case 'centertop':
+        return Alignment.topCenter;
+      case 'bottom':
+      case 'bottomcenter':
+      case 'centerbottom':
+        return Alignment.bottomCenter;
+      case 'left':
+      case 'leftcenter':
+      case 'centerleft':
+        return Alignment.centerLeft;
+      case 'right':
+      case 'rightcenter':
+      case 'centerright':
+        return Alignment.centerRight;
+      case 'topleft':
+      case 'lefttop':
+        return Alignment.topLeft;
+      case 'topright':
+      case 'righttop':
+        return Alignment.topRight;
+      case 'bottomleft':
+      case 'leftbottom':
+        return Alignment.bottomLeft;
+      case 'bottomright':
+      case 'rightbottom':
+        return Alignment.bottomRight;
+      default:
+        return Alignment.center;
+    }
+  }
+
 
 
 }

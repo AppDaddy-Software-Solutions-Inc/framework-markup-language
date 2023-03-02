@@ -21,6 +21,7 @@ import 'package:fml/widgets/alarm/alarm_model.dart';
 import 'package:fml/widgets/animation/animation_model.dart';
 import 'package:fml/widgets/animation/animation_transition/fade_transition_model.dart';
 import 'package:fml/widgets/animation/animation_transition/size_transition_model.dart';
+import 'package:fml/widgets/animation/animation_transition/slide_transition_model.dart';
 import 'package:fml/widgets/breadcrumb/breadcrumb_model.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/button/button_model.dart';
@@ -567,6 +568,11 @@ class WidgetModel implements IDataSourceListener
         case "size":
           if (parent is AnimationModel) model = SizeTransitionModel.fromXml(parent, node);
           break;
+
+      case "slide":
+        if (parent is AnimationModel) model = SlideTransitionModel.fromXml(parent, node);
+        break;
+
 
       case "pad": // Preferred Case.
       case "padding": // Padding could be deprecated.

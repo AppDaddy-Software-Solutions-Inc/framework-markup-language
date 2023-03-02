@@ -45,6 +45,7 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
   {
     // register event listeners
     EventManager.of(widget.model)?.registerEventListener(EventTypes.animate, onAnimate);
+    EventManager.of(widget.model)?.registerEventListener(EventTypes.reset, onReset);
 
     // register model listener
     widget.model.registerListener(this);
@@ -60,9 +61,11 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
     {
       // de-register event listeners
       EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.animate, onAnimate);
+      EventManager.of(widget.model)?.removeEventListener(EventTypes.reset, onReset);
 
       // register event listeners
       EventManager.of(widget.model)?.registerEventListener(EventTypes.animate, onAnimate);
+      EventManager.of(widget.model)?.registerEventListener(EventTypes.reset, onReset);
 
       // re-register model listeners
       oldWidget.model.removeListener(this);
@@ -83,6 +86,7 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
 
     // de-register event listeners
     EventManager.of(widget.model)?.removeEventListener(EventTypes.animate, onAnimate);
+    EventManager.of(widget.model)?.removeEventListener(EventTypes.reset, onReset);
 
     super.dispose();
   }
@@ -338,6 +342,33 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
     }
   }
 
+  void onReset(Event event) {
+    String? id = (event.parameters != null) ? event.parameters!['id'] : null;
+    if ((S.isNullOrEmpty(id)) || (id == widget.model.id)) {
+      reset();
+    }
+
+
+  }
+
+
+  void reset(){
+    try
+    {
+      if (_controller != null)
+      {
+        if (_controller is AnimationController) {
+            _controller.reset();
+          } else if (_controller is FlipCardController) {
+          (_controller as FlipCardController).toggleCardWithoutAnimation();
+          bool front = (_controller as FlipCardController).state?.isFront ?? true;
+          widget.model.side = front ? "front" : "back";
+        }
+      }
+    }
+    catch(e){}
+  }
+
   void start()
   {
     try
@@ -349,8 +380,13 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
         _stopped = false;
         if (_controller is AnimationController)
         {
-          (_controller as AnimationController).reset();
-          (_controller as AnimationController).forward();
+          if(_controller.isCompleted) {
+            _controller.reverse();
+          } else if (_controller.isDismissed){
+            _controller.forward();
+          } else {
+            _controller.forward();
+          }
         }
         else if (_controller is FlipCardController)
         {

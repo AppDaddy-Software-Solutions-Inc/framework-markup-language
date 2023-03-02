@@ -334,7 +334,6 @@ class AnimationModel extends WidgetModel implements IViewableWidget
 
 
     // clear options
-    this.transitionChildren.forEach((child) => child.dispose());
     this.transitionChildren.clear();
 
     // Build options
@@ -358,6 +357,8 @@ class AnimationModel extends WidgetModel implements IViewableWidget
     return true;
   }
 
+  //we need a reset function to set the controller back to 0 without ticking.
+
   @override
   Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
   {
@@ -379,6 +380,10 @@ class AnimationModel extends WidgetModel implements IViewableWidget
       case "stop" :
         var view = findListenerOfExactType(AnimationViewState);
         if (view is AnimationViewState) view.stop();
+        return true;
+      case "reset" :
+        var view = findListenerOfExactType(AnimationViewState);
+        if (view is AnimationViewState) view.reset();
         return true;
 
     }

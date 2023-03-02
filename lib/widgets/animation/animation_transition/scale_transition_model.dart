@@ -207,8 +207,6 @@ class ScaleTransitionModel extends WidgetModel
     begin       = Xml.get(node: xml, tag: 'begin');
     end         = Xml.get(node: xml, tag: 'end');
     align       = Xml.get(node: xml, tag: 'align');
-
-
   }
 
   @override

@@ -62,20 +62,6 @@ class AnimationModel extends WidgetModel implements IViewableWidget
 {
   bool runonce = false;
 
-  // visible
-  BooleanObservable? _visible;
-  set visible(dynamic v)
-  {
-    if (_visible != null)
-    {
-      _visible!.set(v);
-    }
-    else if (v != null)
-    {
-      _visible = BooleanObservable(Binding.toKey(id, 'visible'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get visible => _visible?.get() ?? true;
 
   // animation
   /// Name of Animation to use
@@ -94,19 +80,19 @@ class AnimationModel extends WidgetModel implements IViewableWidget
   String? get animation => _animation?.get();
 
   /// Transition Curve
-  StringObservable? _transition;
-  set transition (dynamic v)
+  StringObservable? _curve;
+  set curve (dynamic v)
   {
-    if (_transition != null)
+    if (_curve != null)
     {
-      _transition!.set(v);
+      _curve!.set(v);
     }
     else if (v != null)
     {
-      _transition = StringObservable(Binding.toKey(id, 'transition'), v, scope: scope, listener: onPropertyChange);
+      _curve = StringObservable(Binding.toKey(id, 'curve'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  String? get transition => _transition?.get();
+  String? get curve => _curve?.get();
 
   /// anchor - used on on flip transition
   StringObservable? _anchor;
@@ -154,37 +140,6 @@ class AnimationModel extends WidgetModel implements IViewableWidget
   }
   String get side => _side?.get() ?? "front";
 
-  
-  /// Δ x value for transitions such as slide, defaults to 1.5
-  DoubleObservable? _dx;
-  set dx (dynamic v)
-  {
-    if (_dx != null)
-    {
-      _dx!.set(v);
-    }
-    else if (v != null)
-    {
-      _dx = DoubleObservable(Binding.toKey(id, 'x'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  double get dx => _dx?.get() ?? 1.5;
-
-  /// Δ y value for transitions such as slide
-  DoubleObservable? _dy;
-  set dy (dynamic v)
-  {
-    if (_dy != null)
-    {
-      _dy!.set(v);
-    }
-    else if (v != null)
-    {
-      _dy = DoubleObservable(Binding.toKey(id, 'y'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  double get dy => _dy?.get() ?? 0.0;
-  
   /// bool value to determine how many times the animation repeats
   ///
   /// Can take in an integer or string value
@@ -233,49 +188,21 @@ class AnimationModel extends WidgetModel implements IViewableWidget
   }
   int get duration => _duration?.get() ?? 1000;
 
-  /// Curve starting point from 0.0 to 1.0
-  DoubleObservable? _from;
-  set from (dynamic v)
+  /// Duration an animation takes to play once in milliseconds
+  IntegerObservable? _reverseduration;
+  set reverseduration (dynamic v)
   {
-    if (_from != null)
+    if (_reverseduration != null)
     {
-      _from!.set(v);
+      _reverseduration!.set(v);
     }
     else if (v != null)
     {
-      _from = DoubleObservable(Binding.toKey(id, 'from'), v, scope: scope, listener: onPropertyChange);
+      _reverseduration = IntegerObservable(Binding.toKey(id, 'reverseduration'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  double get from
-  {
-    if (_from == null) return 0.0;
-    double f = _from?.get() ?? 0.0;
-    if (f < 0.0) f = 0.0;
-    if (f > 1.0) f = 1.0;
-    return f;
-  }
+  int get reverseduration => _reverseduration?.get() ?? 1000;
 
-  /// Curve ending point from 1.0 to 0.0
-  DoubleObservable? _to;
-  set to (dynamic v)
-  {
-    if (_to != null)
-    {
-      _to!.set(v);
-    }
-    else if (v != null)
-    {
-      _to = DoubleObservable(Binding.toKey(id, 'to'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  double get to
-  {
-    if (_to == null) return 1.0;
-    double f = _to?.get() ?? 1.0;
-    if (f < 0.0) f = 0.0;
-    if (f > 1.0) f = 1.0;
-    return f;
-  }
 
   /// Play animation on build, default: false
   BooleanObservable? _autoplay;
@@ -317,17 +244,12 @@ class AnimationModel extends WidgetModel implements IViewableWidget
     super.deserialize(xml);
 
     // properties
-    visible     = Xml.get(node: xml, tag: 'visible');
     autoplay    = Xml.get(node: xml, tag: 'autoplay');
     animation   = Xml.get(node: xml, tag: 'type');
-    transition  = Xml.get(node: xml, tag: 'transition');
+    curve  = Xml.get(node: xml, tag: 'curve');
     repeat      = Xml.get(node: xml, tag: 'repeat') ?? 1;
     reverse     = Xml.get(node: xml, tag: 'reverse');
     duration    = Xml.get(node: xml, tag: 'duration');
-    from        = Xml.get(node: xml, tag: 'from');
-    to          = Xml.get(node: xml, tag: 'to');
-    dx          = Xml.get(node: xml, tag: 'x');
-    dy          = Xml.get(node: xml, tag: 'y');
     anchor      = Xml.get(node: xml, tag: 'anchor');
     axis        = Xml.get(node: xml, tag: 'axis');
 

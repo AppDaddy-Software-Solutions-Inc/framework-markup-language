@@ -113,7 +113,7 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible || ((widget.model.children?.isEmpty ?? true) && widget.child == null)) return Offstage();
+    if (((widget.model.children?.isEmpty ?? true) && widget.child == null)) return Offstage();
 
     if(widget.model.transitionChildren.isNotEmpty && widget.child != null) {
       _controller = AnimationController(duration: Duration(milliseconds: widget.model.duration), vsync: this);
@@ -152,7 +152,7 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
 
     // Animation Curve
     Curve curve;
-    ANIMATION.Curve? transitionCurve = S.toEnum(widget.model.transition, ANIMATION.Curve.values);
+    ANIMATION.Curve? transitionCurve = S.toEnum(widget.model.curve, ANIMATION.Curve.values);
     switch (transitionCurve)
     {
       case ANIMATION.Curve.linear                 : curve = Curves.linear; break;
@@ -200,11 +200,11 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
     }
     
     // Duration
-    int duration = widget.model.duration;
+    int _duration = widget.model.duration;
+    int _reverseDuration = widget.model.reverseduration;
 
-    // Tween
-    double from = widget.model.from;
-    double to   = widget.model.to;
+    _controller = AnimationController(vsync: this, duration: Duration(milliseconds: _duration,),  reverseDuration: Duration(milliseconds: _reverseDuration ?? _duration,),);
+
 
     switch (type)
     {
@@ -249,74 +249,25 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
 
         // build the animation
         _controller = FlipCardController();
-        view = FlipCard(speed: duration, direction: axis, alignment: anchor, controller: _controller, front: front ?? Container(), back: back ?? Container(), flipOnTouch: false,);
+        view = FlipCard(speed: _duration, direction: axis, alignment: anchor, controller: _controller, front: front ?? Container(), back: back ?? Container(), flipOnTouch: false,);
         break;
 
       case ANIMATION.Transitions.fade :
-        _controller = AnimationController(duration: Duration(milliseconds: duration), vsync: this);
-        _animation  = Tween(begin: from, end: to).animate(CurvedAnimation(parent: _controller!, curve: curve));
-        if (_controller != null) {
-          _controller!.removeStatusListener(_animationListener);
-        }
-        _controller!.addStatusListener(_animationListener);
-        view = FadeTransition(opacity: _animation, child: child);
         break;
 
       case ANIMATION.Transitions.scale :
-        _controller = AnimationController(duration: Duration(milliseconds: duration), vsync: this);
-        _animation  = Tween(begin: from, end: to).animate(CurvedAnimation(parent: _controller!, curve: curve));
-        if (_controller != null) {
-          _controller!.removeStatusListener(_animationListener);
-        }
-        _controller!.addStatusListener(_animationListener);
-        view = ScaleTransition(scale: _animation, child: child);
         break;
 
       case ANIMATION.Transitions.size:
-        _controller = AnimationController(duration: Duration(milliseconds: duration), vsync: this);
-        _animation  = Tween(begin: from, end: to).animate(CurvedAnimation(parent: _controller!, curve: curve));
-        if (_controller != null) {
-          _controller!.removeStatusListener(_animationListener);
-        }
-        _controller!.addStatusListener(_animationListener);
-        view = SizeTransition(sizeFactor: _animation, axis: Axis.horizontal, child: child);
         break;
 
       case ANIMATION.Transitions.rotate :
-        _controller = AnimationController(duration: Duration(milliseconds: duration), vsync: this);
-        _animation  = Tween(begin: from, end: to).animate(CurvedAnimation(parent: _controller!, curve: curve));
-        if (_controller != null) {
-          _controller!.removeStatusListener(_animationListener);
-        }
-        _controller!.addStatusListener(_animationListener);
-        view = RotationTransition(turns: _animation, child: child);
         break;
 
       case ANIMATION.Transitions.slide:
-        _controller = AnimationController(duration: Duration(milliseconds: duration), vsync: this);
-        _animation = CurvedAnimation(parent: _controller!, curve: curve);
-        if (_controller != null) {
-          _controller!.removeStatusListener(_animationListener);
-        }
-        _controller!.addStatusListener(_animationListener);
-        var tween = Tween<Offset>(begin: Offset(from * widget.model.dx, from * widget.model.dy), end: Offset(to * widget.model.dx, to * widget.model.dy));
-        view = SlideTransition(position: tween.animate(_animation), child: child);
         break;
 
-      case ANIMATION.Transitions.position: // TODO fix
-        _controller = AnimationController(duration: Duration(milliseconds: duration), vsync: this);
-        _animation  = Tween(begin: from, end: to).animate(CurvedAnimation(parent: _controller!, curve: curve));
-        if (_controller != null) {
-          _controller!.removeStatusListener(_animationListener);
-          _controller!.addStatusListener(_animationListener);
-        }
-
-        final Size biggest = constraints.biggest;
-        const double small = 100;
-        const double big   = 200;
-
-        RelativeRectTween tween = RelativeRectTween(begin: RelativeRect.fromSize(Rect.fromLTWH(0, 0, small, small), biggest), end: RelativeRect.fromSize(Rect.fromLTWH(biggest.width - big, biggest.height - big, big, big), biggest));
-        view = PositionedTransition(rect: tween.animate(CurvedAnimation(parent: _controller!, curve: curve)), child: child);
+      case ANIMATION.Transitions.position:
         break;
     }
 
@@ -324,7 +275,7 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
     if ((widget.model.autoplay == true) && (!_stopped)) start();
 
     // Return View
-    return view;
+    return view ?? child;
   }
 
   void onAnimate(Event event)

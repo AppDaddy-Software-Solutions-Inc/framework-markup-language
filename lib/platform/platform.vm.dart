@@ -241,4 +241,6 @@ class Platform
   static Future<bool> goBackPages(int pages) async => false;
 
   static int getNavigationType() => 0;
+
+  static String get title => applicationTitle;
 }

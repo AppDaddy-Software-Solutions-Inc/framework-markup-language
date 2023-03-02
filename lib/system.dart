@@ -371,6 +371,8 @@ class System extends WidgetModel implements IEventManager
     }
   }
 
+  static String get title => Platform.title;
+
   // launches the application
   launchApplication(ApplicationModel app, bool notifyOnThemeChange)
   {

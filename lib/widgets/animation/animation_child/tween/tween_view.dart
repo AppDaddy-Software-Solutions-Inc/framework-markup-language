@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:fml/helper/string.dart';
 import 'package:fml/widgets/animation/animation_helper.dart';
-import 'package:fml/widgets/animation/animation_child/tween_model.dart'
-as MODEL;
+import 'package:fml/widgets/animation/animation_child/tween/tween_model.dart'
+    as MODEL;
 import 'package:fml/widgets/widget/widget_model.dart';
 
 /// Animation View
@@ -36,14 +36,13 @@ class TweenViewState extends State<TweenView>
 
     widget.model.value = widget.model.from;
 
-    _controller.addListener((){
+    _controller.addListener(() {
       setState(() {
-          if(widget.model.type == "color") {
-            widget.model.value = "#${_animation.value.value.toRadixString(16)}";
-          }
-          else {
-            widget.model.value = _animation.value.toString();
-          }
+        if (widget.model.type == "color") {
+          widget.model.value = "#${_animation.value.value.toRadixString(16)}";
+        } else {
+          widget.model.value = _animation.value.toString();
+        }
       });
     });
   }
@@ -85,8 +84,6 @@ class TweenViewState extends State<TweenView>
   }
 
   Widget builder(BuildContext context, BoxConstraints constraints) {
-
-
     // Tween
 
     double _begin = widget.model.begin;
@@ -97,18 +94,20 @@ class TweenViewState extends State<TweenView>
     Tween<dynamic> _newTween;
     // we must check from != to and begin !< end
 
-    if(widget.model.type == "color") {
+    if (widget.model.type == "color") {
       _from = S.toColor(widget.model.from) ?? Colors.white;
       _to = S.toColor(widget.model.to) ?? Colors.black;
       _newTween = ColorTween(
-          begin: _from,
-          end: _to,);
+        begin: _from,
+        end: _to,
+      );
     } else {
       _from = S.toDouble(widget.model.from) ?? 0;
       _to = S.toDouble(widget.model.to) ?? 1;
       _newTween = Tween<double>(
-      begin: _from,
-      end: _to,);
+        begin: _from,
+        end: _to,
+      );
     }
 
     if (_begin != 0.0 || _end != 1.0) {

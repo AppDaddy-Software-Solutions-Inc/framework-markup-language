@@ -101,9 +101,9 @@ class FadeTransitionViewState extends State<SlideTransitionView>
     double _end = widget.model.end;
     Curve _curve = AnimationHelper.getCurve(widget.model.curve);
     Tween<Offset> _newTween = Tween<Offset>(
-        begin: fromOffset,
-        end: toOffset,
-      );
+      begin: fromOffset,
+      end: toOffset,
+    );
 
     if (_begin != 0.0 || _end != 1.0) {
       _curve = Interval(

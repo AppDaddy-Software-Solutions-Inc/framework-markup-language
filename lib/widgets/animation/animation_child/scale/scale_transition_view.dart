@@ -82,12 +82,10 @@ class ScaleTransitionViewState extends State<ScaleTransitionView>
     Alignment _align =
         AnimationHelper.getAlignment(widget.model.align?.toLowerCase());
 
-
-      Tween<double> _newTween = Tween<double>(
-        begin: from,
-        end: to,
-      );
-
+    Tween<double> _newTween = Tween<double>(
+      begin: from,
+      end: to,
+    );
 
     if (_begin != 0.0 || _end != 1.0) {
       _curve = Interval(

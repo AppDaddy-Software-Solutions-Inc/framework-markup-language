@@ -2,69 +2,67 @@
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/animation/animation_child/animation_child_model.dart';
-import 'package:fml/widgets/animation/animation_child/scale/scale_transition_view.dart';
+import 'package:fml/widgets/animation/animation_child/tween/tween_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
+/// Progression Curve of an Animation or Transition types
+
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
-class ScaleTransitionModel extends AnimationChildModel {
+class TweenModel extends AnimationChildModel {
   /// Curve starting point from 0.0 to 1.0
-  DoubleObservable? _from;
+
+  StringObservable? _from;
 
   set from(dynamic v) {
     if (_from != null) {
       _from!.set(v);
     } else if (v != null) {
-      _from = DoubleObservable(Binding.toKey(id, 'from'), v,
+      _from = StringObservable(Binding.toKey(id, 'from'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
 
-  double get from {
-    if (_from == null) return 0.0;
-    double f = _from?.get() ?? 0.0;
-    if (f < 0.0) f = 0.0;
-    return f;
-  }
+  String? get from => _from?.get() ?? "0";
 
-  /// Curve ending point from 1.0 to 0.0
-  DoubleObservable? _to;
+  /// Curve ending point
+  StringObservable? _to;
 
   set to(dynamic v) {
     if (_to != null) {
       _to!.set(v);
     } else if (v != null) {
-      _to = DoubleObservable(Binding.toKey(id, 'to'), v,
+      _to = StringObservable(Binding.toKey(id, 'to'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
 
-  double get to => _to?.get() ?? 1.0;
+  String get to => _to?.get() ?? "1";
 
-  /// Curve ending point from 1.0 to 0.0
-  StringObservable? _align;
+  /// type of tween, color or double
+  StringObservable? _type;
 
-  set align(dynamic v) {
-    if (_align != null) {
-      _align!.set(v);
+  set type(dynamic v) {
+    if (_type != null) {
+      _type!.set(v);
     } else if (v != null) {
-      _align = StringObservable(Binding.toKey(id, 'align'), v,
+      _type = StringObservable(Binding.toKey(id, 'type'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
 
-  String? get align => _align?.get();
+  String? get type => _type?.get();
 
-  ScaleTransitionModel(WidgetModel parent, String? id)
+  TweenModel(WidgetModel parent, String? id)
       : super(parent, id); // ; {key: value}
 
-  static ScaleTransitionModel? fromXml(WidgetModel parent, XmlElement xml) {
-    ScaleTransitionModel? model;
+  static TweenModel? fromXml(WidgetModel parent, XmlElement xml) {
+    TweenModel? model;
     try {
-      model = ScaleTransitionModel(parent, Xml.get(node: xml, tag: 'id'));
+      model = TweenModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     } catch (e) {
       Log().debug(e.toString());
@@ -78,19 +76,17 @@ class ScaleTransitionModel extends AnimationChildModel {
   void deserialize(XmlElement xml) async {
     // deserialize
     super.deserialize(xml);
-
+    type = Xml.get(node: xml, tag: 'type');
     from = Xml.get(node: xml, tag: 'from');
     to = Xml.get(node: xml, tag: 'to');
-    align = Xml.get(node: xml, tag: 'align');
   }
 
   @override
   dispose() {
-    // Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
   }
 
   Widget getTransitionView(Widget child, AnimationController controller) {
-    return ScaleTransitionView(this, child, controller);
+    return TweenView(this, child, controller);
   }
 }

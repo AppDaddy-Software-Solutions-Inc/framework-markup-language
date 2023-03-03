@@ -38,21 +38,24 @@ class FadeTransitionViewState extends State<FadeTransitionView>
     double _begin = widget.model.begin;
     double _end = widget.model.end;
     Curve _curve = AnimationHelper.getCurve(widget.model.curve);
-    Tween<double> _newTween = Tween<double>(begin: _from, end: _to,);
+    Tween<double> _newTween = Tween<double>(
+      begin: _from,
+      end: _to,
+    );
 
     if (_begin != 0.0 || _end != 1.0) {
-        _curve = Interval(
-          _begin,
-          _end,
-          // the style curve to pass.
-          curve: _curve,
-        );
-      }
-
-      _animation = _newTween.animate(CurvedAnimation(
+      _curve = Interval(
+        _begin,
+        _end,
+        // the style curve to pass.
         curve: _curve,
-        parent: _controller,
-      ));
+      );
+    }
+
+    _animation = _newTween.animate(CurvedAnimation(
+      curve: _curve,
+      parent: _controller,
+    ));
   }
 
   @override

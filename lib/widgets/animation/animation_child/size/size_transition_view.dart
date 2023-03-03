@@ -87,7 +87,10 @@ class SizeTransitionViewState extends State<SizeTransitionView>
         : widget.model.align?.toLowerCase() == "end"
             ? 1
             : 0;
-    Tween<double> _newTween = Tween<double>(begin: _from, end: _to,);
+    Tween<double> _newTween = Tween<double>(
+      begin: _from,
+      end: _to,
+    );
 
     if (_begin != 0.0 || _end != 1.0) {
       _curve = Interval(

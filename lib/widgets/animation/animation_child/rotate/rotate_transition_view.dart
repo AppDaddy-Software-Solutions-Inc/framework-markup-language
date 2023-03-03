@@ -81,25 +81,24 @@ class RotateTransitionViewState extends State<RotateTransitionView>
     //start, end, center
     Alignment _align = toAlignment(widget.model.align?.toLowerCase());
 
-      Tween<double> _newTween = Tween<double>(
-        begin: _from,
-        end: _to,
-      );
+    Tween<double> _newTween = Tween<double>(
+      begin: _from,
+      end: _to,
+    );
 
-
-      if (_begin != 0.0 || _end != 1.0) {
-        _curve = Interval(
-          _begin,
-          _end,
-          // the style curve to pass.
-          curve: _curve,
-        );
-      }
-
-      _animation = _newTween.animate(CurvedAnimation(
+    if (_begin != 0.0 || _end != 1.0) {
+      _curve = Interval(
+        _begin,
+        _end,
+        // the style curve to pass.
         curve: _curve,
-        parent: _controller,
-      ));
+      );
+    }
+
+    _animation = _newTween.animate(CurvedAnimation(
+      curve: _curve,
+      parent: _controller,
+    ));
 
     // Build View
     Widget? view;

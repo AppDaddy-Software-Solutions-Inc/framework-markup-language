@@ -1,11 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:fml/helper/string.dart';
 import 'package:fml/widgets/animation/animation_helper.dart';
-import 'package:fml/widgets/animation/animation_child/transform_model.dart'
-as MODEL;
+import 'package:fml/widgets/animation/animation_child/transform/transform_model.dart'
+    as MODEL;
 import 'package:fml/widgets/widget/widget_model.dart';
 
 /// Animation View
@@ -28,19 +26,15 @@ class TransformViewState extends State<TransformView>
     with TickerProviderStateMixin
     implements IModelListener {
   late AnimationController _controller;
-  List<double> _defaultFrom = [-1, 0];
   late Animation<double> _animation;
-  String? _direction;
 
   @override
   void initState() {
     super.initState();
 
     _controller = widget.controller;
-    _controller.addListener((){
-      setState(() {
-
-      });
+    _controller.addListener(() {
+      setState(() {});
     });
   }
 
@@ -81,9 +75,6 @@ class TransformViewState extends State<TransformView>
   }
 
   Widget builder(BuildContext context, BoxConstraints constraints) {
-    _direction = widget.model.direction?.toLowerCase();
-
-
     // Tween
 
     double _begin = widget.model.begin;
@@ -107,7 +98,6 @@ class TransformViewState extends State<TransformView>
       curve: _curve,
       parent: _controller,
     ));
-
 
     // Build View
     Widget? view;

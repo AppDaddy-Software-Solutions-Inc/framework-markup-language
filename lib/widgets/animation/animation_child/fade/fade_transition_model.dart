@@ -1,17 +1,15 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/animation/animation_transition/size/size_transition_view.dart';
+import 'package:fml/widgets/animation/animation_child/fade/fade_transition_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-/// Progression Curve of an Animation or Transition types
-
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
-class SizeTransitionModel extends WidgetModel {
+class FadeTransitionModel extends WidgetModel {
   /// Curve starting point from 0.0 to 1.0
   DoubleObservable? _from;
 
@@ -105,41 +103,13 @@ class SizeTransitionModel extends WidgetModel {
     return f;
   }
 
-  /// Curve ending point from 1.0 to 0.0
-  StringObservable? _size;
-
-  set size(dynamic v) {
-    if (_size != null) {
-      _size!.set(v);
-    } else if (v != null) {
-      _size = StringObservable(Binding.toKey(id, 'size'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  String? get size => _size?.get();
-
-  /// Curve ending point from 1.0 to 0.0
-  StringObservable? _align;
-
-  set align(dynamic v) {
-    if (_align != null) {
-      _align!.set(v);
-    } else if (v != null) {
-      _align = StringObservable(Binding.toKey(id, 'align'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  String? get align => _align?.get();
-
-  SizeTransitionModel(WidgetModel parent, String? id)
+  FadeTransitionModel(WidgetModel parent, String? id)
       : super(parent, id); // ; {key: value}
 
-  static SizeTransitionModel? fromXml(WidgetModel parent, XmlElement xml) {
-    SizeTransitionModel? model;
+  static FadeTransitionModel? fromXml(WidgetModel parent, XmlElement xml) {
+    FadeTransitionModel? model;
     try {
-      model = SizeTransitionModel(parent, Xml.get(node: xml, tag: 'id'));
+      model = FadeTransitionModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     } catch (e) {
       Log().debug(e.toString());
@@ -159,8 +129,6 @@ class SizeTransitionModel extends WidgetModel {
     curve = Xml.get(node: xml, tag: 'curve');
     begin = Xml.get(node: xml, tag: 'begin');
     end = Xml.get(node: xml, tag: 'end');
-    align = Xml.get(node: xml, tag: 'align');
-    size = Xml.get(node: xml, tag: 'size');
   }
 
   @override
@@ -170,6 +138,6 @@ class SizeTransitionModel extends WidgetModel {
   }
 
   Widget getTransitionView(Widget child, AnimationController controller) {
-    return SizeTransitionView(this, child, controller);
+    return FadeTransitionView(this, child, controller);
   }
 }

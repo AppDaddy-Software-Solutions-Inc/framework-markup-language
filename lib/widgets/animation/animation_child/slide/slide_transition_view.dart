@@ -97,33 +97,27 @@ class FadeTransitionViewState extends State<SlideTransitionView>
     List<String>? to = widget.model.to.split(",");
     Offset toOffset = Offset(
         S.toDouble(to.elementAt(0)) ?? 0, S.toDouble(to.elementAt(1)) ?? 0);
-    double begin = widget.model.begin;
-    double end = widget.model.end;
-    Curve curve = AnimationHelper.getCurve(widget.model.curve);
-    // we must check from != to and begin !< end
+    double _begin = widget.model.begin;
+    double _end = widget.model.end;
+    Curve _curve = AnimationHelper.getCurve(widget.model.curve);
+    Tween<Offset> _newTween = Tween<Offset>(
+        begin: fromOffset,
+        end: toOffset,
+      );
 
-    if (begin != 0.0 || end != 1.0) {
-      _animation = Tween<Offset>(
-        begin: fromOffset,
-        end: toOffset,
-      ).animate(CurvedAnimation(
-        curve: new Interval(
-          begin,
-          end,
-          // the style curve to pass.
-          curve: curve,
-        ),
-        parent: _controller,
-      ));
-    } else {
-      _animation = Tween<Offset>(
-        begin: fromOffset,
-        end: toOffset,
-      ).animate(CurvedAnimation(
-        parent: _controller,
-        curve: curve,
-      ));
+    if (_begin != 0.0 || _end != 1.0) {
+      _curve = Interval(
+        _begin,
+        _end,
+        // the style curve to pass.
+        curve: _curve,
+      );
     }
+
+    _animation = _newTween.animate(CurvedAnimation(
+      curve: _curve,
+      parent: _controller,
+    ));
 
     // Build View
     Widget? view;

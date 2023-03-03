@@ -72,11 +72,11 @@ class SizeTransitionViewState extends State<SizeTransitionView>
 
   Widget builder(BuildContext context, BoxConstraints constraints) {
     // Tween
-    double from = widget.model.from;
-    double to = widget.model.to;
-    double begin = widget.model.begin;
-    double end = widget.model.end;
-    Curve curve = AnimationHelper.getCurve(widget.model.curve);
+    double _from = widget.model.from;
+    double _to = widget.model.to;
+    double _begin = widget.model.begin;
+    double _end = widget.model.end;
+    Curve _curve = AnimationHelper.getCurve(widget.model.curve);
     //
     Axis _direction = widget.model.size?.toLowerCase() == "height"
         ? Axis.vertical
@@ -87,32 +87,21 @@ class SizeTransitionViewState extends State<SizeTransitionView>
         : widget.model.align?.toLowerCase() == "end"
             ? 1
             : 0;
+    Tween<double> _newTween = Tween<double>(begin: _from, end: _to,);
 
-    // we must check from != to and begin !< end
-
-    if (begin != 0.0 || end != 1.0) {
-      _animation = Tween<double>(
-        begin: from,
-        end: to,
-      ).animate(CurvedAnimation(
-        curve: new Interval(
-          begin,
-          end,
-          // the style curve to pass.
-          curve: curve,
-        ),
-        parent: _controller,
-      ));
-    } else {
-      _animation = Tween<double>(
-        begin: from,
-        end: to,
-      ).animate(CurvedAnimation(
-        parent: _controller,
-        curve: curve,
-      ));
+    if (_begin != 0.0 || _end != 1.0) {
+      _curve = Interval(
+        _begin,
+        _end,
+        // the style curve to pass.
+        curve: _curve,
+      );
     }
 
+    _animation = _newTween.animate(CurvedAnimation(
+      curve: _curve,
+      parent: _controller,
+    ));
     // Build View
     Widget? view;
 

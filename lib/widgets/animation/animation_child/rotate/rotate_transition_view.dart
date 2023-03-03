@@ -72,39 +72,34 @@ class RotateTransitionViewState extends State<RotateTransitionView>
 
   Widget builder(BuildContext context, BoxConstraints constraints) {
     // Tween
-    double from = widget.model.from;
-    double to = widget.model.to;
-    double begin = widget.model.begin;
-    double end = widget.model.end;
-    Curve curve = AnimationHelper.getCurve(widget.model.curve);
+    double _from = widget.model.from;
+    double _to = widget.model.to;
+    double _begin = widget.model.begin;
+    double _end = widget.model.end;
+    Curve _curve = AnimationHelper.getCurve(widget.model.curve);
 
     //start, end, center
     Alignment _align = toAlignment(widget.model.align?.toLowerCase());
 
-    // we must check from != to and begin !< end
+      Tween<double> _newTween = Tween<double>(
+        begin: _from,
+        end: _to,
+      );
 
-    if (begin != 0.0 || end != 1.0) {
-      _animation = Tween<double>(
-        begin: from,
-        end: to,
-      ).animate(CurvedAnimation(
-        curve: new Interval(
-          begin,
-          end,
+
+      if (_begin != 0.0 || _end != 1.0) {
+        _curve = Interval(
+          _begin,
+          _end,
           // the style curve to pass.
-          curve: curve,
-        ),
+          curve: _curve,
+        );
+      }
+
+      _animation = _newTween.animate(CurvedAnimation(
+        curve: _curve,
         parent: _controller,
       ));
-    } else {
-      _animation = Tween<double>(
-        begin: from,
-        end: to,
-      ).animate(CurvedAnimation(
-        parent: _controller,
-        curve: curve,
-      ));
-    }
 
     // Build View
     Widget? view;

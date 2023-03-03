@@ -18,6 +18,8 @@ import 'package:fml/datasources/socket/socket_model.dart';
 import 'package:fml/datasources/zebra/model.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/alarm/alarm_model.dart';
+import 'package:fml/widgets/animation/animation_child/transform_model.dart';
+import 'package:fml/widgets/animation/animation_child/tween_model.dart';
 import 'package:fml/widgets/animation/animation_model.dart';
 import 'package:fml/widgets/animation/animation_child/fade/fade_transition_model.dart';
 import 'package:fml/widgets/animation/animation_child/rotate/rotate_transition_model.dart';
@@ -581,6 +583,14 @@ class WidgetModel implements IDataSourceListener
 
       case "scale":
         if (parent is AnimationModel) model = ScaleTransitionModel.fromXml(parent, node);
+        break;
+
+      case "transform":
+        if (parent is AnimationModel) model = TransformModel.fromXml(parent, node);
+        break;
+
+      case "tween":
+        if (parent is AnimationModel) model = TweenModel.fromXml(parent, node);
         break;
 
 

@@ -1,37 +1,51 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
+import 'package:fml/helper/string.dart';
 import 'package:fml/widgets/animation/animation_helper.dart';
-import 'package:fml/widgets/animation/animation_child/scale/scale_transition_model.dart'
-    as MODEL;
+import 'package:fml/widgets/animation/animation_child/tween_model.dart'
+as MODEL;
 import 'package:fml/widgets/widget/widget_model.dart';
 
 /// Animation View
 ///
 /// Builds the View from model properties
-class ScaleTransitionView extends StatefulWidget {
-  final MODEL.ScaleTransitionModel model;
+class TweenView extends StatefulWidget {
+  final MODEL.TweenModel model;
   final List<Widget> children = [];
   final Widget? child;
   final AnimationController controller;
 
-  ScaleTransitionView(this.model, this.child, this.controller)
+  TweenView(this.model, this.child, this.controller)
       : super(key: ObjectKey(model));
 
   @override
-  ScaleTransitionViewState createState() => ScaleTransitionViewState();
+  TweenViewState createState() => TweenViewState();
 }
 
-class ScaleTransitionViewState extends State<ScaleTransitionView>
+class TweenViewState extends State<TweenView>
     with TickerProviderStateMixin
     implements IModelListener {
   late AnimationController _controller;
-  late Animation<double> _animation;
+  late Animation<dynamic> _animation;
 
   @override
   void initState() {
     super.initState();
 
     _controller = widget.controller;
+
+    widget.model.value = widget.model.from;
+
+    _controller.addListener((){
+      setState(() {
+          if(widget.model.type == "color") {
+            widget.model.value = "#${_animation.value.value.toRadixString(16)}";
+          }
+          else {
+            widget.model.value = _animation.value.toString();
+          }
+      });
+    });
   }
 
   @override
@@ -43,7 +57,7 @@ class ScaleTransitionViewState extends State<ScaleTransitionView>
   }
 
   @override
-  void didUpdateWidget(ScaleTransitionView oldWidget) {
+  void didUpdateWidget(TweenView oldWidget) {
     super.didUpdateWidget(oldWidget);
     if ((oldWidget.model != widget.model)) {
       // re-register model listeners
@@ -71,23 +85,31 @@ class ScaleTransitionViewState extends State<ScaleTransitionView>
   }
 
   Widget builder(BuildContext context, BoxConstraints constraints) {
+
+
     // Tween
-    double from = widget.model.from;
-    double to = widget.model.to;
+
     double _begin = widget.model.begin;
     double _end = widget.model.end;
     Curve _curve = AnimationHelper.getCurve(widget.model.curve);
+    dynamic _from;
+    dynamic _to;
+    Tween<dynamic> _newTween;
+    // we must check from != to and begin !< end
 
-    //start, end, center
-    Alignment _align =
-        AnimationHelper.getAlignment(widget.model.align?.toLowerCase());
-
-
-      Tween<double> _newTween = Tween<double>(
-        begin: from,
-        end: to,
-      );
-
+    if(widget.model.type == "color") {
+      _from = S.toColor(widget.model.from) ?? Colors.white;
+      _to = S.toColor(widget.model.to) ?? Colors.black;
+      _newTween = ColorTween(
+          begin: _from,
+          end: _to,);
+    } else {
+      _from = S.toDouble(widget.model.from) ?? 0;
+      _to = S.toDouble(widget.model.to) ?? 1;
+      _newTween = Tween<double>(
+      begin: _from,
+      end: _to,);
+    }
 
     if (_begin != 0.0 || _end != 1.0) {
       _curve = Interval(
@@ -102,16 +124,8 @@ class ScaleTransitionViewState extends State<ScaleTransitionView>
       curve: _curve,
       parent: _controller,
     ));
-    // Build View
-    Widget? view;
-
-    view = ScaleTransition(
-      alignment: _align,
-      scale: _animation,
-      child: widget.child,
-    );
 
     // Return View
-    return view;
+    return Container(child: widget.child);
   }
 }

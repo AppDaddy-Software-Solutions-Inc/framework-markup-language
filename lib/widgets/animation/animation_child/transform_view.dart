@@ -1,37 +1,47 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:fml/helper/string.dart';
 import 'package:fml/widgets/animation/animation_helper.dart';
-import 'package:fml/widgets/animation/animation_child/scale/scale_transition_model.dart'
-    as MODEL;
+import 'package:fml/widgets/animation/animation_child/transform_model.dart'
+as MODEL;
 import 'package:fml/widgets/widget/widget_model.dart';
 
 /// Animation View
 ///
 /// Builds the View from model properties
-class ScaleTransitionView extends StatefulWidget {
-  final MODEL.ScaleTransitionModel model;
+class TransformView extends StatefulWidget {
+  final MODEL.TransformModel model;
   final List<Widget> children = [];
   final Widget? child;
   final AnimationController controller;
 
-  ScaleTransitionView(this.model, this.child, this.controller)
+  TransformView(this.model, this.child, this.controller)
       : super(key: ObjectKey(model));
 
   @override
-  ScaleTransitionViewState createState() => ScaleTransitionViewState();
+  TransformViewState createState() => TransformViewState();
 }
 
-class ScaleTransitionViewState extends State<ScaleTransitionView>
+class TransformViewState extends State<TransformView>
     with TickerProviderStateMixin
     implements IModelListener {
   late AnimationController _controller;
+  List<double> _defaultFrom = [-1, 0];
   late Animation<double> _animation;
+  String? _direction;
 
   @override
   void initState() {
     super.initState();
 
     _controller = widget.controller;
+    _controller.addListener((){
+      setState(() {
+
+      });
+    });
   }
 
   @override
@@ -43,7 +53,7 @@ class ScaleTransitionViewState extends State<ScaleTransitionView>
   }
 
   @override
-  void didUpdateWidget(ScaleTransitionView oldWidget) {
+  void didUpdateWidget(TransformView oldWidget) {
     super.didUpdateWidget(oldWidget);
     if ((oldWidget.model != widget.model)) {
       // re-register model listeners
@@ -71,23 +81,18 @@ class ScaleTransitionViewState extends State<ScaleTransitionView>
   }
 
   Widget builder(BuildContext context, BoxConstraints constraints) {
+    _direction = widget.model.direction?.toLowerCase();
+
+
     // Tween
-    double from = widget.model.from;
-    double to = widget.model.to;
+
     double _begin = widget.model.begin;
     double _end = widget.model.end;
     Curve _curve = AnimationHelper.getCurve(widget.model.curve);
-
-    //start, end, center
-    Alignment _align =
-        AnimationHelper.getAlignment(widget.model.align?.toLowerCase());
-
-
-      Tween<double> _newTween = Tween<double>(
-        begin: from,
-        end: to,
-      );
-
+    Tween<double> _newTween = Tween<double>(
+      begin: 0.25,
+      end: 0.75,
+    );
 
     if (_begin != 0.0 || _end != 1.0) {
       _curve = Interval(
@@ -102,12 +107,19 @@ class ScaleTransitionViewState extends State<ScaleTransitionView>
       curve: _curve,
       parent: _controller,
     ));
+
+
     // Build View
     Widget? view;
 
-    view = ScaleTransition(
-      alignment: _align,
-      scale: _animation,
+    view = Transform(
+      transform: Matrix4.identity()
+        ..setEntry(3, 2, 0.0001)
+        ..rotateY(pi / 2 * (1 - _animation.value * 4))
+        ..rotateX(pi / 2 * (1 - _animation.value * 4))
+        ..translate(0.0, 0.0, 0.0),
+      alignment: Alignment.centerLeft,
+      //origin: Offset(0, 0),
       child: widget.child,
     );
 

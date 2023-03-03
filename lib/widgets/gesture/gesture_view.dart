@@ -2,10 +2,12 @@
 import 'package:flutter/material.dart';
 
 import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_state.dart';
 import 'gesture_model.dart' as LINK;
 
-class GestureView extends StatefulWidget
+class GestureView extends StatefulWidget implements IWidgetView
 {
   final LINK.GestureModel model;
   GestureView(this.model) : super(key: ObjectKey(model));
@@ -14,52 +16,8 @@ class GestureView extends StatefulWidget
   _GestureViewState createState() => _GestureViewState();
 }
 
-class _GestureViewState extends State<GestureView> implements IModelListener
+class _GestureViewState extends WidgetState<GestureView>
 {
-  @override
-  void initState()
-  {
-    super.initState();
-
-    
-   widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
-  }
-
-  @override
-  didChangeDependencies()
-  {
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(GestureView oldWidget)
-  {
-    super.didUpdateWidget(oldWidget);
-    
-    if ((oldWidget.model != widget.model))
-    {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
-
-  }
-
-  @override
-  void dispose()
-  {
-    widget.model.removeListener(this);
-
-    super.dispose();
-  }
-  /// Callback function for when the model changes, used to force a rebuild with setState()
-  onModelChange(WidgetModel model,{String? property, dynamic value})
-  {
-    if (this.mounted) setState((){});
-  }
-
   @override
   Widget build(BuildContext context)
   {

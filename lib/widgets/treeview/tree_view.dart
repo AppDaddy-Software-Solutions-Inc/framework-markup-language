@@ -4,9 +4,10 @@ import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/widgets/treeview/tree_model.dart';
 import 'package:fml/widgets/treeview/node/tree_node_view.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
-class TreeView extends StatefulWidget
+class TreeView extends StatefulWidget implements IWidgetView
 {
   final TreeModel model;
   TreeView(this.model) : super(key: ObjectKey(model));
@@ -15,17 +16,8 @@ class TreeView extends StatefulWidget
   _TreeViewState createState() => _TreeViewState();
 }
 
-class _TreeViewState extends State<TreeView> implements IModelListener
+class _TreeViewState extends WidgetState<TreeView>
 {
-  @override
-  void initState()
-  {
-    super.initState();
-
-    widget.model.registerListener(this);
-    widget.model.initialize();
-  }
-
   @override
   didChangeDependencies()
   {
@@ -46,31 +38,16 @@ class _TreeViewState extends State<TreeView> implements IModelListener
 
       // register new event listeners
       EventManager.of(widget.model)?.registerEventListener(EventTypes.focusnode, widget.model.onFocus);
-
-      // remove old model listener
-      oldWidget.model.removeListener(this);
-
-      // register new model listener
-      widget.model.registerListener(this);
-    }
+   }
   }
 
   @override
   void dispose()
   {
-    // remove model listener
-    widget.model.removeListener(this);
-
     // remove event listeners
     EventManager.of(widget.model)?.removeEventListener(EventTypes.focusnode, widget.model.onFocus);
 
     super.dispose();
-  }
-
-  /// Callback to fire the [_TreeViewState.build] when the [TreeModel] changes
-  onModelChange(WidgetModel model, {String? property, dynamic value})
-  {
-    if (this.mounted) setState((){});
   }
 
   @override

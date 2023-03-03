@@ -1,12 +1,14 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/datepicker/datepicker_model.dart' as DATEPICKER;
 import 'package:flutter/services.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
-class DatepickerView extends StatefulWidget
+class DatepickerView extends StatefulWidget implements IWidgetView
 {
   final DATEPICKER.DatepickerModel model;
   DatepickerView(this.model) : super(key: ObjectKey(model));
@@ -15,7 +17,8 @@ class DatepickerView extends StatefulWidget
   _DatepickerViewState createState() => _DatepickerViewState();
 }
 
-class _DatepickerViewState extends State<DatepickerView> implements IModelListener {
+class _DatepickerViewState extends WidgetState<DatepickerView>
+{
   String? format;
   String? date;
   RenderBox? box;
@@ -25,14 +28,9 @@ class _DatepickerViewState extends State<DatepickerView> implements IModelListen
   FocusNode? focusNode;
 
   @override
-  void initState() {
+  void initState()
+  {
     super.initState();
-
-    
-    widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
 
     focusNode = FocusNode();
 
@@ -40,7 +38,8 @@ class _DatepickerViewState extends State<DatepickerView> implements IModelListen
     cont = TextEditingController();
 
     // Add Controller Listener
-    if (cont != null) {
+    if (cont != null)
+    {
       cont!.addListener(onTextEditingController);
 
       // Set initial value to the controller
@@ -54,30 +53,23 @@ class _DatepickerViewState extends State<DatepickerView> implements IModelListen
   }
 
   @override
-  void didUpdateWidget(DatepickerView oldWidget) {
+  void didUpdateWidget(DatepickerView oldWidget)
+  {
     super.didUpdateWidget(oldWidget);
-
-    
-    if (
-        (oldWidget.model != widget.model)) {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
 
     /* Add Controller Listener */
     if (cont != null) cont!.addListener(onTextEditingController);
   }
 
   @override
-  void dispose() {
-    widget.model.removeListener(this);
+  void dispose()
+  {
+    super.dispose();
 
     // Remove Controller Listener
     cont?.removeListener(onTextEditingController);
     cont?.dispose();
     focusNode?.dispose();
-
-    super.dispose();
   }
 
   // Flex: We need to listen to the controller of the picker because it uses internal setstates
@@ -96,9 +88,7 @@ class _DatepickerViewState extends State<DatepickerView> implements IModelListen
   }
 
   @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(builder: builder);
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -109,10 +99,7 @@ class _DatepickerViewState extends State<DatepickerView> implements IModelListen
     if (!widget.model.visible) return Offstage();
 
     // Set Build Constraints in the [WidgetModel]
-    widget.model.minWidth = constraints.minWidth;
-    widget.model.maxWidth = constraints.maxWidth;
-    widget.model.minHeight = constraints.minHeight;
-    widget.model.maxHeight = constraints.maxHeight;
+    setConstraints(constraints);
 
     // set the border color arrays
     Color? enabledBorderColor;

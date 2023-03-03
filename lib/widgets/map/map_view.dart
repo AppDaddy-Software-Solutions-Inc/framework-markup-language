@@ -6,13 +6,15 @@ import 'package:fml/observable/binding.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/map/map_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/map/marker/map_marker_model.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:latlong2/latlong.dart';
 
-class MapView extends StatefulWidget
+class MapView extends StatefulWidget implements IWidgetView
 {
   final MapModel model;
   MapView(this.model) : super(key: ObjectKey(model));
@@ -21,7 +23,7 @@ class MapView extends StatefulWidget
   _MapViewState createState() => _MapViewState();
 }
 
-class _MapViewState extends State<MapView> implements IModelListener
+class _MapViewState extends WidgetState<MapView>
 {
   BusyView? busy;
   Future<MapModel>? future;
@@ -36,41 +38,6 @@ class _MapViewState extends State<MapView> implements IModelListener
   double? longitudeLowerBound;
   FlutterMap?  map;
 
-  @override
-  void initState()
-  {
-    super.initState();
-
-    // register listener to the model
-    widget.model.registerListener(this);
-
-    // if the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
-  }
-
-  @override
-  didChangeDependencies()
-  {
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(MapView oldWidget)
-  {
-    super.didUpdateWidget(oldWidget);
-    if ((oldWidget.model != widget.model))
-    {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
-  }
-
-  @override
-  void dispose()
-  {
-    widget.model.removeListener(this);
-    super.dispose();
-  }
   /// Callback function for when the model changes, used to force a rebuild with setState()
   onModelChange(WidgetModel model,{String? property, dynamic value})
   {
@@ -88,18 +55,12 @@ class _MapViewState extends State<MapView> implements IModelListener
   }
 
   @override
-  Widget build(BuildContext context)
-  {
-       return LayoutBuilder(builder: builder);
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraint)
   {
     // Set Build Constraints in the [WidgetModel]
-    widget.model.minWidth  = constraint.minWidth;
-    widget.model.maxWidth  = constraint.maxWidth;
-    widget.model.minHeight = constraint.minHeight;
-    widget.model.maxHeight = constraint.maxHeight;
+    setConstraints(constraint);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();

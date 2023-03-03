@@ -8,7 +8,7 @@ import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/event/event.dart' ;
-import 'package:fml/widgets/widget/widget_model.dart'        ;
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/scrollshadow/scroll_shadow_view.dart';
@@ -19,10 +19,11 @@ import 'package:fml/widgets/grid/item/grid_item_view.dart';
 import 'package:fml/widgets/grid/item/grid_item_model.dart';
 import 'package:fml/widgets/icon/icon_model.dart';
 import 'package:fml/widgets/button/button_model.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class GridView extends StatefulWidget
+class GridView extends StatefulWidget implements IWidgetView
 {
   final GridModel model;
   GridView(this.model) : super(key: ObjectKey(model));
@@ -31,7 +32,7 @@ class GridView extends StatefulWidget
   _GridViewState createState() => _GridViewState();
 }
 
-class _GridViewState extends State<GridView> implements IModelListener
+class _GridViewState extends WidgetState<GridView>
 {
   BusyView? busy;
   bool startup = true;
@@ -47,17 +48,12 @@ class _GridViewState extends State<GridView> implements IModelListener
   @override
   void initState()
   {
-    super.initState();
-
     scroller = ScrollController();
-
-    widget.model.registerListener(this);
 
     // Clean
     widget.model.clean = true;
 
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
+    super.initState();
   }
 
   @override
@@ -89,17 +85,12 @@ class _GridViewState extends State<GridView> implements IModelListener
       EventManager.of(widget.model)?.registerEventListener(EventTypes.sort,    onSort);
       EventManager.of(widget.model)?.registerEventListener(EventTypes.export,  onExport);
       EventManager.of(widget.model)?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
-
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
     }
   }
 
   @override
   void dispose()
   {
-    widget.model.removeListener(this);
-
     // remove event listeners
     EventManager.of(widget.model)?.removeEventListener(EventTypes.scroll,  onScroll);
     EventManager.of(widget.model)?.removeEventListener(EventTypes.sort,    onSort);
@@ -178,25 +169,14 @@ class _GridViewState extends State<GridView> implements IModelListener
       Log().exception(e, caller: 'table.View');
     }
   }
-  /// Callback function for when the model changes, used to force a rebuild with setState()
-  onModelChange(WidgetModel model,{String? property, dynamic value})
-  {
-    if (this.mounted) setState((){});
-  }
 
   @override
-  Widget build(BuildContext context)
-  {
-    return LayoutBuilder(builder: builder);
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // Set Build Constraints in the [WidgetModel]
-      widget.model.minWidth  = constraints.minWidth;
-      widget.model.maxWidth  = constraints.maxWidth;
-      widget.model.minHeight = constraints.minHeight;
-      widget.model.maxHeight = constraints.maxHeight;
+    setConstraints(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();

@@ -6,9 +6,10 @@ import 'package:fml/widgets/splitview/split_model.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/view/view_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
-class SplitView extends StatefulWidget
+class SplitView extends StatefulWidget implements IWidgetView
 {
   final SplitModel model;
   final List<Widget> views = [];
@@ -19,46 +20,8 @@ class SplitView extends StatefulWidget
   _SplitViewState createState() => _SplitViewState();
 }
 
-class _SplitViewState extends State<SplitView> implements IModelListener
+class _SplitViewState extends WidgetState<SplitView>
 {
-  @override
-  void initState()
-  {
-    super.initState();
-    widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
-  }
-
-  @override
-  didChangeDependencies()
-  {
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(SplitView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.model != widget.model)
-    {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
-  }
-
-  @override
-  void dispose() {
-    widget.model.removeListener(this);
-    super.dispose();
-  }
-
-  /// Callback to fire the [_BoxViewState.build] when the [BoxModel] changes
-  onModelChange(WidgetModel model, {String? property, dynamic value})
-  {
-    if (this.mounted) setState(() {});
-  }
-
   void onBack(Event event)
   {
     event.handled = true;
@@ -73,18 +36,12 @@ class _SplitViewState extends State<SplitView> implements IModelListener
   }
 
   @override
-  Widget build(BuildContext context)
-  {
-    return LayoutBuilder(builder: builder);
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // Set Build Constraints in the [WidgetModel]
-    widget.model.minWidth  = constraints.minWidth;
-    widget.model.maxWidth  = constraints.maxWidth;
-    widget.model.minHeight = constraints.minHeight;
-    widget.model.maxHeight = constraints.maxHeight;
+    setConstraints(constraints);
 
     var _dividerWidth = widget.model.dividerWidth ?? (System().useragent == 'desktop' || S.isNullOrEmpty(System().useragent) ? 6.0 : 12.0);
     if (_dividerWidth % 2 != 0) _dividerWidth = _dividerWidth + 1;

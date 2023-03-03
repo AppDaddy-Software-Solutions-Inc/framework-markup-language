@@ -6,14 +6,16 @@ import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 
 import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/select/select_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
-class SelectView extends StatefulWidget
+class SelectView extends StatefulWidget implements IWidgetView
 {
   final SelectModel model;
 
@@ -23,7 +25,8 @@ class SelectView extends StatefulWidget
   _SelectViewState createState() => _SelectViewState();
 }
 
-class _SelectViewState extends State<SelectView> implements IModelListener {
+class _SelectViewState extends WidgetState<SelectView>
+{
   List<DropdownMenuItem<OptionModel>> _list = [];
   late DropdownMenuItem<OptionModel> _input;
   bool _inputInitialized = false;
@@ -35,43 +38,10 @@ class _SelectViewState extends State<SelectView> implements IModelListener {
   String typeaheadText = '';
 
   @override
-  void initState() {
-    super.initState();
-    
-    widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
-  }
-
-  @override
-  didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(SelectView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    
-    if (
-        (oldWidget.model != widget.model)) {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
-
-  }
-
-  @override
-  void dispose() {
-    widget.model.removeListener(this);
+  void dispose()
+  {
     controller.dispose();
     super.dispose();
-  }
-
-  /// Callback to fire the [_SelectViewState.build] when the [SelectModel] changes
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    if (this.mounted) setState(() {});
-
   }
 
   _inputSelection(res)
@@ -141,9 +111,7 @@ class _SelectViewState extends State<SelectView> implements IModelListener {
   }
 
   @override
-  Widget build(BuildContext context) {
-return LayoutBuilder(builder: builder);
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
@@ -160,10 +128,7 @@ return LayoutBuilder(builder: builder);
     if (!widget.model.visible) return Offstage();
 
     // Set Build Constraints in the [WidgetModel]
-    widget.model.minWidth = constraints.minWidth;
-    widget.model.maxWidth = constraints.maxWidth;
-    widget.model.minHeight = constraints.minHeight;
-    widget.model.maxHeight = constraints.maxHeight;
+    setConstraints(constraints);
 
     ///////////
     /* Busy? */

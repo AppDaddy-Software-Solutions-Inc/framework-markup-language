@@ -58,7 +58,7 @@ dependencies:
   # Updated 2022/05/26
   decimal: 1.5.0
   # Apache-2.0
-  
+
   # file picker with extension support
   # Updated 2022/09/01
   file_picker: 5.0.1

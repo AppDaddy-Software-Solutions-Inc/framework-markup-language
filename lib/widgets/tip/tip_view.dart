@@ -6,6 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/tip/tip_model.dart';
+import 'package:fml/widgets/widget/iViewableWidget.dart';
 
 /// Modified Flutter Class to allow Widget Children within a tooltip
 class TipView extends StatefulWidget
@@ -447,29 +448,39 @@ class _WidgetTooltipState extends State<TipView> with SingleTickerProviderStateM
     triggerMode = widget.model.triggerMode ?? tooltipTheme.triggerMode ?? _defaultTriggerMode;
     enableFeedback = widget.model.enableFeedback ?? tooltipTheme.enableFeedback ?? _defaultEnableFeedback;
 
-    Widget? result = widget.model.child;
+    // build the children
+    List<Widget> children = [];
+    if (widget.model.children != null)
+    widget.model.children!.forEach((model)
+    {
+        if (model is IViewableWidget)
+        {
+          children.add((model as IViewableWidget).getView());
+        }
+    });
+    Widget child = children.length == 1 ? children[0] : Column(children: children, mainAxisSize: MainAxisSize.min);
 
     // Only check for gestures if tooltip should be visible.
     if (_visible) {
-      result = GestureDetector(
+      child = GestureDetector(
         behavior: HitTestBehavior.opaque,
         onLongPress: (triggerMode == TooltipTriggerMode.longPress) ?
         _handlePress : null,
         onTap: (triggerMode == TooltipTriggerMode.tap) ? _handlePress : null,
         excludeFromSemantics: true,
-        child: result,
+        child: child,
       );
       // Only check for hovering if there is a mouse connected.
       if (_mouseIsConnected!) {
-        result = MouseRegion(
+        child = MouseRegion(
           onEnter: (_) => _handleMouseEnter(),
           onExit: (_) => _handleMouseExit(),
-          child: result,
+          child: child,
         );
       }
     }
 
-    return result!;
+    return child;
   }
 }
 

@@ -54,11 +54,6 @@ class TipModel extends DecoratedWidgetModel implements IViewableWidget
   /// going to provide its own custom semantics label.
   bool? excludeFromSemantics;
 
-  /// The widget below this widget in the treeview.
-  ///
-  /// {@macro flutter.widgets.ProxyWidget.child}
-  Widget? child;
-
   /// Specifies the tooltip's shape and background color.
   ///
   /// The tooltip shape defaults to a rounded rectangle with a border radius of

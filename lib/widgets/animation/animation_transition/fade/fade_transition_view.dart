@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/animation/animation_helper.dart';
 import 'package:fml/widgets/animation/animation_transition/fade/fade_transition_model.dart' as MODEL;
 import 'package:fml/widgets/widget/widget_model.dart';
 
@@ -35,7 +36,7 @@ class FadeTransitionViewState extends State<FadeTransitionView> with TickerProvi
     double to   = widget.model.to;
     double begin = widget.model.begin;
     double end   = widget.model.end;
-    Curve curve = widget.model.getCurve();
+    Curve curve = AnimationHelper.getCurve(widget.model.curve);
 
     // we must check from != to and begin !< end
 

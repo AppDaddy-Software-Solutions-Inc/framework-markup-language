@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
+import 'package:fml/widgets/animation/animation_helper.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart'     ;
 import 'package:fml/widgets/animation/animation_model.dart' as ANIMATION;
@@ -150,54 +151,8 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
     Widget? view;
 
     // Animation Curve
-    Curve curve;
-    ANIMATION.Curve? transitionCurve = S.toEnum(widget.model.curve, ANIMATION.Curve.values);
-    switch (transitionCurve)
-    {
-      case ANIMATION.Curve.linear                 : curve = Curves.linear; break;
-      case ANIMATION.Curve.decelerate             : curve = Curves.decelerate; break;
-      case ANIMATION.Curve.fastLinearToSlowEaseIn : curve = Curves.fastLinearToSlowEaseIn; break;
-      case ANIMATION.Curve.ease                   : curve = Curves.ease; break;
-      case ANIMATION.Curve.easeIn                 : curve = Curves.easeIn; break;
-      case ANIMATION.Curve.easeInToLinear         : curve = Curves.easeInToLinear; break;
-      case ANIMATION.Curve.easeInSine             : curve = Curves.easeInSine; break;
-      case ANIMATION.Curve.easeInQuad             : curve = Curves.easeInQuad; break;
-      case ANIMATION.Curve.easeInCubic            : curve = Curves.easeInCubic; break;
-      case ANIMATION.Curve.easeInQuart            : curve = Curves.easeInQuart; break;
-      case ANIMATION.Curve.easeInQuint            : curve = Curves.easeInQuint; break;
-      case ANIMATION.Curve.easeInExpo             : curve = Curves.easeInExpo; break;
-      case ANIMATION.Curve.easeInCirc             : curve = Curves.easeInCirc; break;
-      case ANIMATION.Curve.easeInBack             : curve = Curves.easeInBack; break;
-      case ANIMATION.Curve.easeOut                : curve = Curves.easeOut; break;
-      case ANIMATION.Curve.linearToEaseOut        : curve = Curves.linearToEaseOut; break;
-      case ANIMATION.Curve.easeOutSine            : curve = Curves.easeOutSine; break;
-      case ANIMATION.Curve.easeOutQuad            : curve = Curves.easeOutQuad; break;
-      case ANIMATION.Curve.easeOutCubic           : curve = Curves.easeOutCubic; break;
-      case ANIMATION.Curve.easeOutQuart           : curve = Curves.easeOutQuart; break;
-      case ANIMATION.Curve.easeOutQuint           : curve = Curves.easeOutQuint; break;
-      case ANIMATION.Curve.easeOutExpo            : curve = Curves.easeOutExpo; break;
-      case ANIMATION.Curve.easeOutCirc            : curve = Curves.easeOutCirc; break;
-      case ANIMATION.Curve.easeOutBack            : curve = Curves.easeOutBack; break;
-      case ANIMATION.Curve.easeInOut              : curve = Curves.easeInOut; break;
-      case ANIMATION.Curve.easeInOutSine          : curve = Curves.easeInOutSine; break;
-      case ANIMATION.Curve.easeInOutQuad          : curve = Curves.easeInOutQuad; break;
-      case ANIMATION.Curve.easeInOutCubic         : curve = Curves.easeInOutCubic; break;
-      case ANIMATION.Curve.easeInOutQuart         : curve = Curves.easeInOutQuart; break;
-      case ANIMATION.Curve.easeInOutQuint         : curve = Curves.easeInOutQuint; break;
-      case ANIMATION.Curve.easeInOutExpo          : curve = Curves.easeInOutExpo; break;
-      case ANIMATION.Curve.easeInOutCirc          : curve = Curves.easeInOutCirc; break;
-      case ANIMATION.Curve.easeInOutBack          : curve = Curves.easeInOutBack; break;
-      case ANIMATION.Curve.fastOutSlowIn          : curve = Curves.fastOutSlowIn; break;
-      case ANIMATION.Curve.slowMiddle             : curve = Curves.slowMiddle; break;
-      case ANIMATION.Curve.bounceIn               : curve = Curves.bounceIn; break;
-      case ANIMATION.Curve.bounceOut              : curve = Curves.bounceOut; break;
-      case ANIMATION.Curve.bounceInOut            : curve = Curves.bounceInOut; break;
-      case ANIMATION.Curve.elasticIn              : curve = Curves.elasticIn; break;
-      case ANIMATION.Curve.elasticOut             : curve = Curves.elasticOut; break;
-      case ANIMATION.Curve.elasticInOut           : curve = Curves.elasticInOut; break;
-      default                                     : curve = Curves.linear; break;
-    }
-    
+    Curve curve = AnimationHelper.getCurve(widget.model.curve);;
+
     // Duration
     int _duration = widget.model.duration;
     int? _reverseDuration = widget.model.reverseduration;

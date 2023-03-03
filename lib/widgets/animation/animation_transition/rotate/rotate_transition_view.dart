@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/animation/animation_helper.dart';
 import 'package:fml/widgets/animation/animation_transition/rotate/rotate_transition_model.dart' as MODEL;
 import 'package:fml/widgets/widget/widget_model.dart';
 
@@ -81,7 +82,7 @@ class RotateTransitionViewState extends State<RotateTransitionView> with TickerP
     double to   = widget.model.to;
     double begin = widget.model.begin;
     double end   = widget.model.end;
-    Curve curve = widget.model.getCurve();
+    Curve curve = AnimationHelper.getCurve(widget.model.curve);
 
     //start, end, center
     Alignment _align = toAlignment(widget.model.align?.toLowerCase());

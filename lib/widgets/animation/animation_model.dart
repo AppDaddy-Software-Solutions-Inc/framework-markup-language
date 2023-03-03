@@ -11,51 +11,6 @@ import 'package:fml/helper/common_helpers.dart';
 /// Transition types
 enum Transitions {fade, position, scale, rotate, flip, size, slide}
 
-/// Progression Curve of an Animation or Transition types
-enum Curve {
-  linear, 
-  decelerate, 
-  fastLinearToSlowEaseIn, 
-  ease, 
-  easeIn, 
-  easeInToLinear, 
-  easeInSine, 
-  easeInQuad, 
-  easeInCubic, 
-  easeInQuart, 
-  easeInQuint, 
-  easeInExpo,
-  easeInCirc,
-  easeInBack,
-  easeOut,
-  linearToEaseOut,
-  easeOutSine,
-  easeOutQuad,
-  easeOutCubic,
-  easeOutQuart,
-  easeOutQuint,
-  easeOutExpo,
-  easeOutCirc,
-  easeOutBack,
-  easeInOut,
-  easeInOutSine,
-  easeInOutQuad,
-  easeInOutCubic,
-  easeInOutQuart,
-  easeInOutQuint,
-  easeInOutExpo,
-  easeInOutCirc,
-  easeInOutBack,
-  fastOutSlowIn,
-  slowMiddle,
-  bounceIn,
-  bounceOut,
-  bounceInOut,
-  elasticIn,
-  elasticOut,
-  elasticInOut
-}
-
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
 class AnimationModel extends WidgetModel implements IViewableWidget

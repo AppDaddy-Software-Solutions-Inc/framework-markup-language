@@ -1,42 +1,41 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/animation/animation_helper.dart';
-import 'package:fml/widgets/animation/animation_transition/size/size_transition_model.dart' as MODEL;
+import 'package:fml/widgets/animation/animation_transition/size/size_transition_model.dart'
+    as MODEL;
 import 'package:fml/widgets/widget/widget_model.dart';
 
 /// Animation View
 ///
 /// Builds the View from model properties
-class SizeTransitionView extends StatefulWidget
-{
+class SizeTransitionView extends StatefulWidget {
   final MODEL.SizeTransitionModel model;
   final List<Widget> children = [];
   final Widget? child;
   final AnimationController controller;
 
-  SizeTransitionView(this.model, this.child, this.controller) : super(key: ObjectKey(model));
+  SizeTransitionView(this.model, this.child, this.controller)
+      : super(key: ObjectKey(model));
 
   @override
   SizeTransitionViewState createState() => SizeTransitionViewState();
 }
 
-class SizeTransitionViewState extends State<SizeTransitionView> with TickerProviderStateMixin implements IModelListener
-{
+class SizeTransitionViewState extends State<SizeTransitionView>
+    with TickerProviderStateMixin
+    implements IModelListener {
   late AnimationController _controller;
   late Animation<double> _animation;
 
   @override
-  void initState()
-  {
+  void initState() {
     super.initState();
 
     _controller = widget.controller;
-
   }
 
   @override
-  didChangeDependencies()
-  {
+  didChangeDependencies() {
     // register model listener
     widget.model.registerListener(this);
 
@@ -44,11 +43,9 @@ class SizeTransitionViewState extends State<SizeTransitionView> with TickerProvi
   }
 
   @override
-  void didUpdateWidget(SizeTransitionView oldWidget)
-  {
+  void didUpdateWidget(SizeTransitionView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if ((oldWidget.model != widget.model))
-    {
+    if ((oldWidget.model != widget.model)) {
       // re-register model listeners
       oldWidget.model.removeListener(this);
       widget.model.registerListener(this);
@@ -56,9 +53,7 @@ class SizeTransitionViewState extends State<SizeTransitionView> with TickerProvi
   }
 
   @override
-  void dispose()
-  {
-
+  void dispose() {
     // remove model listener
     widget.model.removeListener(this);
 
@@ -67,7 +62,7 @@ class SizeTransitionViewState extends State<SizeTransitionView> with TickerProvi
 
   /// Callback to fire the [_AnimationViewState.build] when the [AnimationModel] changes
   onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    if (this.mounted) setState((){});
+    if (this.mounted) setState(() {});
   }
 
   @override
@@ -75,24 +70,30 @@ class SizeTransitionViewState extends State<SizeTransitionView> with TickerProvi
     return LayoutBuilder(builder: builder);
   }
 
-  Widget builder(BuildContext context, BoxConstraints constraints)
-  {
+  Widget builder(BuildContext context, BoxConstraints constraints) {
     // Tween
     double from = widget.model.from;
-    double to   = widget.model.to;
+    double to = widget.model.to;
     double begin = widget.model.begin;
-    double end   = widget.model.end;
+    double end = widget.model.end;
     Curve curve = AnimationHelper.getCurve(widget.model.curve);
     //
-    Axis _direction = widget.model.size?.toLowerCase() == "height" ? Axis.vertical : Axis.horizontal;
+    Axis _direction = widget.model.size?.toLowerCase() == "height"
+        ? Axis.vertical
+        : Axis.horizontal;
     //start, end, center
-    double _align = widget.model.align?.toLowerCase() == "start" ? -1 :  widget.model.align?.toLowerCase() == "end" ? 1 : 0;
-
+    double _align = widget.model.align?.toLowerCase() == "start"
+        ? -1
+        : widget.model.align?.toLowerCase() == "end"
+            ? 1
+            : 0;
 
     // we must check from != to and begin !< end
 
-    if(begin != 0.0 || end != 1.0) {
-      _animation = Tween<double>(begin: from, end: to,
+    if (begin != 0.0 || end != 1.0) {
+      _animation = Tween<double>(
+        begin: from,
+        end: to,
       ).animate(CurvedAnimation(
         curve: new Interval(
           begin,
@@ -103,13 +104,14 @@ class SizeTransitionViewState extends State<SizeTransitionView> with TickerProvi
         parent: _controller,
       ));
     } else {
-      _animation = Tween<double>(begin: from, end: to,
+      _animation = Tween<double>(
+        begin: from,
+        end: to,
       ).animate(CurvedAnimation(
         parent: _controller,
         curve: curve,
       ));
     }
-
 
     // Build View
     Widget? view;
@@ -124,6 +126,4 @@ class SizeTransitionViewState extends State<SizeTransitionView> with TickerProvi
     // Return View
     return view;
   }
-
-
 }

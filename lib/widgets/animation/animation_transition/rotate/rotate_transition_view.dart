@@ -1,42 +1,41 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/animation/animation_helper.dart';
-import 'package:fml/widgets/animation/animation_transition/rotate/rotate_transition_model.dart' as MODEL;
+import 'package:fml/widgets/animation/animation_transition/rotate/rotate_transition_model.dart'
+    as MODEL;
 import 'package:fml/widgets/widget/widget_model.dart';
 
 /// Animation View
 ///
 /// Builds the View from model properties
-class RotateTransitionView extends StatefulWidget
-{
+class RotateTransitionView extends StatefulWidget {
   final MODEL.RotateTransitionModel model;
   final List<Widget> children = [];
   final Widget? child;
   final AnimationController controller;
 
-  RotateTransitionView(this.model, this.child, this.controller) : super(key: ObjectKey(model));
+  RotateTransitionView(this.model, this.child, this.controller)
+      : super(key: ObjectKey(model));
 
   @override
   RotateTransitionViewState createState() => RotateTransitionViewState();
 }
 
-class RotateTransitionViewState extends State<RotateTransitionView> with TickerProviderStateMixin implements IModelListener
-{
+class RotateTransitionViewState extends State<RotateTransitionView>
+    with TickerProviderStateMixin
+    implements IModelListener {
   late AnimationController _controller;
   late Animation<double> _animation;
 
   @override
-  void initState()
-  {
+  void initState() {
     super.initState();
 
     _controller = widget.controller;
-
   }
 
   @override
-  didChangeDependencies()
-  {
+  didChangeDependencies() {
     // register model listener
     widget.model.registerListener(this);
 
@@ -44,11 +43,9 @@ class RotateTransitionViewState extends State<RotateTransitionView> with TickerP
   }
 
   @override
-  void didUpdateWidget(RotateTransitionView oldWidget)
-  {
+  void didUpdateWidget(RotateTransitionView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if ((oldWidget.model != widget.model))
-    {
+    if ((oldWidget.model != widget.model)) {
       // re-register model listeners
       oldWidget.model.removeListener(this);
       widget.model.registerListener(this);
@@ -56,9 +53,7 @@ class RotateTransitionViewState extends State<RotateTransitionView> with TickerP
   }
 
   @override
-  void dispose()
-  {
-
+  void dispose() {
     // remove model listener
     widget.model.removeListener(this);
 
@@ -67,7 +62,7 @@ class RotateTransitionViewState extends State<RotateTransitionView> with TickerP
 
   /// Callback to fire the [_AnimationViewState.build] when the [AnimationModel] changes
   onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    if (this.mounted) setState((){});
+    if (this.mounted) setState(() {});
   }
 
   @override
@@ -75,13 +70,12 @@ class RotateTransitionViewState extends State<RotateTransitionView> with TickerP
     return LayoutBuilder(builder: builder);
   }
 
-  Widget builder(BuildContext context, BoxConstraints constraints)
-  {
+  Widget builder(BuildContext context, BoxConstraints constraints) {
     // Tween
     double from = widget.model.from;
-    double to   = widget.model.to;
+    double to = widget.model.to;
     double begin = widget.model.begin;
-    double end   = widget.model.end;
+    double end = widget.model.end;
     Curve curve = AnimationHelper.getCurve(widget.model.curve);
 
     //start, end, center
@@ -89,8 +83,10 @@ class RotateTransitionViewState extends State<RotateTransitionView> with TickerP
 
     // we must check from != to and begin !< end
 
-    if(begin != 0.0 || end != 1.0) {
-      _animation = Tween<double>(begin: from, end: to,
+    if (begin != 0.0 || end != 1.0) {
+      _animation = Tween<double>(
+        begin: from,
+        end: to,
       ).animate(CurvedAnimation(
         curve: new Interval(
           begin,
@@ -101,13 +97,14 @@ class RotateTransitionViewState extends State<RotateTransitionView> with TickerP
         parent: _controller,
       ));
     } else {
-      _animation = Tween<double>(begin: from, end: to,
+      _animation = Tween<double>(
+        begin: from,
+        end: to,
       ).animate(CurvedAnimation(
         parent: _controller,
         curve: curve,
       ));
     }
-
 
     // Build View
     Widget? view;
@@ -156,7 +153,4 @@ class RotateTransitionViewState extends State<RotateTransitionView> with TickerP
         return Alignment.center;
     }
   }
-
-
-
 }

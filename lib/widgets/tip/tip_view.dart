@@ -5,130 +5,16 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/tip/tip_model.dart';
 
 /// Modified Flutter Class to allow Widget Children within a tooltip
-class WidgetTooltip extends StatefulWidget
+class TipView extends StatefulWidget
 {
-  const WidgetTooltip({
-    Key? key,
-    this.height,
-    this.padding,
-    this.margin,
-    this.verticalOffset,
-    this.preferBelow,
-    this.excludeFromSemantics,
-    this.decoration,
-    this.textStyle,
-    this.waitDuration,
-    this.showDuration,
-    this.child,
-    this.triggerMode,
-    this.enableFeedback,
-    Widget? widgetOverlay,
-  }) : super(key: key);
+  final TipModel model;
+  TipView(this.model) : super(key: ObjectKey(model));
 
-  /// The height of the tooltip's [child].
-  ///
-  /// If the [child] is null, then this is the tooltip's intrinsic height.
-  final double? height;
-
-  /// The amount of space by which to inset the tooltip's [child].
-  ///
-  /// Defaults to 16.0 logical pixels in each direction.
-  final EdgeInsetsGeometry? padding;
-
-  /// The empty space that surrounds the tooltip.
-  ///
-  /// Defines the tooltip's outer [Container.margin]. By default, a
-  /// long tooltip will span the width of its window. If long enough,
-  /// a tooltip might also span the window's height. This property allows
-  /// one to define how much space the tooltip must be inset from the edges
-  /// of their display window.
-  ///
-  /// If this property is null, then [TooltipThemeData.margin] is used.
-  /// If [TooltipThemeData.margin] is also null, the default margin is
-  /// 0.0 logical pixels on all sides.
-  final EdgeInsetsGeometry? margin;
-
-  /// The vertical gap between the widget and the displayed tooltip.
-  ///
-  /// When [preferBelow] is set to true and tooltips have sufficient space to
-  /// display themselves, this property defines how much vertical space
-  /// tooltips will position themselves under their corresponding widgets.
-  /// Otherwise, tooltips will position themselves above their corresponding
-  /// widgets with the given offset.
-  final double? verticalOffset;
-
-  /// Whether the tooltip defaults to being displayed below the widget.
-  ///
-  /// Defaults to true. If there is insufficient space to display the tooltip in
-  /// the preferred direction, the tooltip will be displayed in the opposite
-  /// direction.
-  final bool? preferBelow;
-
-  /// Whether the tooltip's [message] or [richMessage] should be excluded from
-  /// the semantics treeview.
-  ///
-  /// Defaults to false. A tooltip will add a [Semantics] label that is set to
-  /// [Tooltip.message] if non-null, or the plain text value of
-  /// [Tooltip.richMessage] otherwise. Set this property to true if the app is
-  /// going to provide its own custom semantics label.
-  final bool? excludeFromSemantics;
-
-  /// The widget below this widget in the treeview.
-  ///
-  /// {@macro flutter.widgets.ProxyWidget.child}
-  final Widget? child;
-
-  /// Specifies the tooltip's shape and background color.
-  ///
-  /// The tooltip shape defaults to a rounded rectangle with a border radius of
-  /// 4.0. Tooltips will also default to an opacity of 90% and with the color
-  /// [Colors.grey]\[700\] if [ThemeData.brightness] is [Brightness.dark], and
-  /// [Colors.white] if it is [Brightness.light].
-  final Decoration? decoration;
-
-  /// The style to use for the message of the tooltip.
-  ///
-  /// If null, the message's [TextStyle] will be determined based on
-  /// [ThemeData]. If [ThemeData.brightness] is set to [Brightness.dark],
-  /// [TextTheme.bodyMedium] of [ThemeData.textTheme] will be used with
-  /// [Colors.white]. Otherwise, if [ThemeData.brightness] is set to
-  /// [Brightness.light], [TextTheme.bodyMedium] of [ThemeData.textTheme] will be
-  /// used with [Colors.black].
-  final TextStyle? textStyle;
-
-  /// The length of time that a pointer must hover over a tooltip's widget
-  /// before the tooltip will be shown.
-  ///
-  /// Defaults to 0 milliseconds (tooltips are shown immediately upon hover).
-  final Duration? waitDuration;
-
-  /// The length of time that the tooltip will be shown after a long press
-  /// is released or mouse pointer exits the widget.
-  ///
-  /// Defaults to 1.5 seconds for long press released or 0.1 seconds for mouse
-  /// pointer exits the widget.
-  final Duration? showDuration;
-
-  /// The [TooltipTriggerMode] that will show the tooltip.
-  ///
-  /// If this property is null, then [TooltipThemeData.triggerMode] is used.
-  /// If [TooltipThemeData.triggerMode] is also null, the default mode is
-  /// [TooltipTriggerMode.longPress].
-  final TooltipTriggerMode? triggerMode;
-
-  /// Whether the tooltip should provide acoustic and/or haptic feedback.
-  ///
-  /// For example, on Android a tap will produce a clicking sound and a
-  /// long-press will produce a short vibration, when feedback is enabled.
-  ///
-  /// When null, the default value is true.
-  ///
-  /// See also:
-  ///
-  ///  * [Feedback], for providing platform-specific feedback to certain actions.
-  final bool? enableFeedback;
+  @override
+  _WidgetTooltipState createState() => _WidgetTooltipState();
 
   static final List<_WidgetTooltipState> _openedTooltips = <_WidgetTooltipState>[];
 
@@ -172,25 +58,22 @@ class WidgetTooltip extends StatefulWidget
   }
 
   @override
-  _WidgetTooltipState createState() => _WidgetTooltipState();
-
-  @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DoubleProperty('height', height, defaultValue: null));
-    properties.add(DiagnosticsProperty<EdgeInsetsGeometry>('padding', padding, defaultValue: null));
-    properties.add(DiagnosticsProperty<EdgeInsetsGeometry>('margin', margin, defaultValue: null));
-    properties.add(DoubleProperty('vertical offset', verticalOffset, defaultValue: null));
-    properties.add(FlagProperty('position', value: preferBelow, ifTrue: 'below', ifFalse: 'above', showName: true));
-    properties.add(FlagProperty('semantics', value: excludeFromSemantics, ifTrue: 'excluded', showName: true));
-    properties.add(DiagnosticsProperty<Duration>('wait duration', waitDuration, defaultValue: null));
-    properties.add(DiagnosticsProperty<Duration>('show duration', showDuration, defaultValue: null));
-    properties.add(DiagnosticsProperty<TooltipTriggerMode>('triggerMode', triggerMode, defaultValue: null));
-    properties.add(FlagProperty('enableFeedback', value: enableFeedback, ifTrue: 'true', showName: true));
+    properties.add(DoubleProperty('height', model.height, defaultValue: null));
+    properties.add(DiagnosticsProperty<EdgeInsetsGeometry>('padding', model.padit, defaultValue: null));
+    properties.add(DiagnosticsProperty<EdgeInsetsGeometry>('margin', model.margin, defaultValue: null));
+    properties.add(DoubleProperty('vertical offset', model.verticalOffset, defaultValue: null));
+    properties.add(FlagProperty('position', value: model.preferBelow, ifTrue: 'below', ifFalse: 'above', showName: true));
+    properties.add(FlagProperty('semantics', value: model.excludeFromSemantics, ifTrue: 'excluded', showName: true));
+    properties.add(DiagnosticsProperty<Duration>('wait duration', model.waitDuration, defaultValue: null));
+    properties.add(DiagnosticsProperty<Duration>('show duration', model.showDuration, defaultValue: null));
+    properties.add(DiagnosticsProperty<TooltipTriggerMode>('triggerMode', model.triggerMode, defaultValue: null));
+    properties.add(FlagProperty('enableFeedback', value: model.enableFeedback, ifTrue: 'true', showName: true));
   }
 }
 
-class _WidgetTooltipState extends State<WidgetTooltip> with SingleTickerProviderStateMixin {
+class _WidgetTooltipState extends State<TipView> with SingleTickerProviderStateMixin {
   static const double _defaultVerticalOffset = 24.0;
   static const bool _defaultPreferBelow = true;
   static const EdgeInsetsGeometry _defaultMargin = EdgeInsets.zero;
@@ -391,7 +274,7 @@ class _WidgetTooltipState extends State<WidgetTooltip> with SingleTickerProvider
     _forceRemoval = false;
     if (_isConcealed) {
       if (_mouseIsConnected!) {
-        WidgetTooltip._concealOtherTooltips(this);
+        TipView._concealOtherTooltips(this);
       }
       _revealTooltip();
       return true;
@@ -461,14 +344,14 @@ class _WidgetTooltipState extends State<WidgetTooltip> with SingleTickerProvider
       // Hovered tooltips shouldn't show more than one at once. For example, a chip with
       // a delete icon shouldn't show both the delete icon tooltip and the chip tooltip
       // at the same time.
-      WidgetTooltip._concealOtherTooltips(this);
+      TipView._concealOtherTooltips(this);
     }
-    assert(!WidgetTooltip._openedTooltips.contains(this));
-    WidgetTooltip._openedTooltips.add(this);
+    assert(!TipView._openedTooltips.contains(this));
+    TipView._openedTooltips.add(this);
   }
 
   void _removeEntry() {
-    WidgetTooltip._openedTooltips.remove(this);
+    TipView._openedTooltips.remove(this);
     _mouseIn.remove(this);
     _dismissTimer?.cancel();
     _dismissTimer = null;
@@ -480,7 +363,7 @@ class _WidgetTooltipState extends State<WidgetTooltip> with SingleTickerProvider
     _isConcealed = false;
     _entry = null;
     if (_mouseIsConnected!) {
-      WidgetTooltip._revealLastTooltip();
+      TipView._revealLastTooltip();
     }
   }
 
@@ -550,21 +433,21 @@ class _WidgetTooltipState extends State<WidgetTooltip> with SingleTickerProvider
       );
     }
 
-    height = widget.height ?? tooltipTheme.height ?? _getDefaultTooltipHeight();
-    padding = widget.padding ?? tooltipTheme.padding ?? _getDefaultPadding();
-    margin = widget.margin ?? tooltipTheme.margin ?? _defaultMargin;
-    verticalOffset = widget.verticalOffset ?? tooltipTheme.verticalOffset ?? _defaultVerticalOffset;
-    preferBelow = widget.preferBelow ?? tooltipTheme.preferBelow ?? _defaultPreferBelow;
-    excludeFromSemantics = widget.excludeFromSemantics ?? tooltipTheme.excludeFromSemantics ?? _defaultExcludeFromSemantics;
-    decoration = widget.decoration ?? tooltipTheme.decoration ?? defaultDecoration;
-    textStyle = widget.textStyle ?? tooltipTheme.textStyle ?? defaultTextStyle;
-    waitDuration = widget.waitDuration ?? tooltipTheme.waitDuration ?? _defaultWaitDuration;
-    showDuration = widget.showDuration ?? tooltipTheme.showDuration ?? _defaultShowDuration;
-    hoverShowDuration = widget.showDuration ?? tooltipTheme.showDuration ?? _defaultHoverShowDuration;
-    triggerMode = widget.triggerMode ?? tooltipTheme.triggerMode ?? _defaultTriggerMode;
-    enableFeedback = widget.enableFeedback ?? tooltipTheme.enableFeedback ?? _defaultEnableFeedback;
+    height = widget.model.height ?? tooltipTheme.height ?? _getDefaultTooltipHeight();
+    padding = widget.model.padit ?? tooltipTheme.padding ?? _getDefaultPadding();
+    margin = widget.model.margin ?? tooltipTheme.margin ?? _defaultMargin;
+    verticalOffset = widget.model.verticalOffset ?? tooltipTheme.verticalOffset ?? _defaultVerticalOffset;
+    preferBelow = widget.model.preferBelow ?? tooltipTheme.preferBelow ?? _defaultPreferBelow;
+    excludeFromSemantics = widget.model.excludeFromSemantics ?? tooltipTheme.excludeFromSemantics ?? _defaultExcludeFromSemantics;
+    decoration = widget.model.decoration ?? tooltipTheme.decoration ?? defaultDecoration;
+    textStyle = widget.model.textStyle ?? tooltipTheme.textStyle ?? defaultTextStyle;
+    waitDuration = widget.model.waitDuration ?? tooltipTheme.waitDuration ?? _defaultWaitDuration;
+    showDuration = widget.model.showDuration ?? tooltipTheme.showDuration ?? _defaultShowDuration;
+    hoverShowDuration = widget.model.showDuration ?? tooltipTheme.showDuration ?? _defaultHoverShowDuration;
+    triggerMode = widget.model.triggerMode ?? tooltipTheme.triggerMode ?? _defaultTriggerMode;
+    enableFeedback = widget.model.enableFeedback ?? tooltipTheme.enableFeedback ?? _defaultEnableFeedback;
 
-    Widget? result = widget.child;
+    Widget? result = widget.model.child;
 
     // Only check for gestures if tooltip should be visible.
     if (_visible) {

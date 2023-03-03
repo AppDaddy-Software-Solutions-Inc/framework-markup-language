@@ -1,0 +1,150 @@
+// © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:flutter/material.dart';
+import 'package:fml/log/manager.dart';
+import 'package:fml/widgets/animation/animation_child/animation_child_model.dart';
+import 'package:fml/widgets/animation/animation_child/flip/flip_card_view.dart';
+import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:xml/xml.dart';
+import 'package:fml/observable/observable_barrel.dart';
+import 'package:fml/helper/common_helpers.dart';
+
+/// Animation Model
+/// Defines the properties of an [ANIMATION.AnimationView]
+class FlipCardModel extends AnimationChildModel {
+  /// Curve ending point from 1.0 to 0.0
+  StringObservable? _align;
+
+  set align(dynamic v) {
+    if (_align != null) {
+      _align!.set(v);
+    } else if (v != null) {
+      _align = StringObservable(Binding.toKey(id, 'align'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  String? get align => _align?.get();
+
+
+  /// Curve ending point from 1.0 to 0.0
+  StringObservable? _direction;
+
+  set direction(dynamic v) {
+    if (_direction != null) {
+      _direction!.set(v);
+    } else if (v != null) {
+      _direction = StringObservable(Binding.toKey(id, 'direction'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  String? get direction => _direction?.get();
+
+
+  /// anchor - used on on flip transition
+  StringObservable? _anchor;
+
+  set anchor(dynamic v) {
+    if (_anchor != null) {
+      _anchor!.set(v);
+    } else if (v != null) {
+      _anchor = StringObservable(Binding.toKey(id, 'anchor'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  String get anchor => _anchor?.get() ?? "center";
+
+  /// axis - used on on flip transition
+  StringObservable? _axis;
+
+  set axis(dynamic v) {
+    if (_axis != null) {
+      _axis!.set(v);
+    } else if (v != null) {
+      _axis = StringObservable(Binding.toKey(id, 'axis'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  String get axis => _axis?.get() ?? "horizontal";
+
+  StringObservable? _side;
+
+  set side(dynamic v) {
+    if (_side != null) {
+      _side!.set(v);
+    } else if (v != null) {
+      // no listener since this is only set by the view
+      // and we don't want to trigger a rebuild
+      _side = StringObservable(Binding.toKey(id, 'side'), v, scope: scope);
+    }
+  }
+
+  String get side => _side?.get() ?? "front";
+
+  DoubleObservable? _from;
+
+  set from(dynamic v) {
+    if (_from != null) {
+      _from!.set(v);
+    } else if (v != null) {
+      _from = DoubleObservable(Binding.toKey(id, 'from'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  double get from => _from?.get() ?? 0.0;
+
+  /// Curve ending point from 1.0 to 0.0
+  DoubleObservable? _to;
+
+  set to(dynamic v) {
+    if (_to != null) {
+      _to!.set(v);
+    } else if (v != null) {
+      _to = DoubleObservable(Binding.toKey(id, 'to'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  double get to => _to?.get() ?? 1.0;
+
+
+  FlipCardModel(WidgetModel parent, String? id)
+      : super(parent, id); // ; {key: value}
+
+  static FlipCardModel? fromXml(WidgetModel parent, XmlElement xml) {
+    FlipCardModel? model;
+    try {
+      model = FlipCardModel(parent, Xml.get(node: xml, tag: 'id'));
+      model.deserialize(xml);
+    } catch (e) {
+      Log().debug(e.toString());
+      model = null;
+    }
+    return model;
+  }
+
+  /// Deserializes the FML template elements, attributes and children
+  @override
+  void deserialize(XmlElement xml) async {
+    // deserialize
+    super.deserialize(xml);
+
+    anchor = Xml.get(node: xml, tag: 'anchor');
+    axis = Xml.get(node: xml, tag: 'axis');
+    align = Xml.get(node: xml, tag: 'align');
+    direction = Xml.get(node: xml, tag: 'direction');
+  }
+
+  @override
+  dispose() {
+    // Log().debug('dispose called on => <$elementName id="$id">');
+    super.dispose();
+  }
+
+  Widget getTransitionView(Widget child, AnimationController controller) {
+    return FlipCardView(this, child, controller);
+  }
+}

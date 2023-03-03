@@ -1,10 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:flip_card/flip_card.dart';
 import 'package:fml/event/manager.dart';
-import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/animation/animation_helper.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/animation/animation_model.dart' as ANIMATION;
@@ -31,8 +28,6 @@ class AnimationViewState extends State<AnimationView>
   AnimationController? _controller;
   FlipCardController? _flipController;
   Widget? transitionChild;
-  late ANIMATION.Transitions? type =
-      S.toEnum(widget.model.animation, ANIMATION.Transitions.values);
 
   int _loop = 0;
   bool _stopped = false;
@@ -40,7 +35,6 @@ class AnimationViewState extends State<AnimationView>
   @override
   void initState() {
     super.initState();
-    if (type != ANIMATION.Transitions.flip) {
       _controller = AnimationController(
         vsync: this,
         duration: Duration(
@@ -50,9 +44,6 @@ class AnimationViewState extends State<AnimationView>
           milliseconds: widget.model.reverseduration ?? widget.model.duration,
         ),
       );
-    } else {
-      _flipController = FlipCardController();
-    }
   }
 
   @override
@@ -85,13 +76,11 @@ class AnimationViewState extends State<AnimationView>
       EventManager.of(widget.model)
           ?.registerEventListener(EventTypes.reset, onReset);
 
-      if (type == ANIMATION.Transitions.flip) {
+
         _controller!.duration = Duration(milliseconds: widget.model.duration);
         _controller!.reverseDuration = Duration(
             milliseconds:
                 widget.model.reverseduration ?? widget.model.duration);
-      }
-
       // re-register model listeners
       oldWidget.model.removeListener(this);
       widget.model.registerListener(this);
@@ -148,8 +137,6 @@ class AnimationViewState extends State<AnimationView>
     }
 
     // Build Children
-    Widget? front;
-    Widget? back;
     widget.children.clear();
     if (widget.child != null) widget.children.add(widget.child!);
     if (widget.model.children != null)
@@ -157,11 +144,7 @@ class AnimationViewState extends State<AnimationView>
         if (model is IViewableWidget) {
           var view = (model as IViewableWidget).getView();
           widget.children.add(view);
-          if (front == null)
-            front = view;
-          else if (back == null) back = view;
-        }
-      });
+      }});
     if (widget.children.isEmpty) widget.children.add(Container());
     var child = widget.children.length == 1
         ? widget.children[0]
@@ -171,36 +154,6 @@ class AnimationViewState extends State<AnimationView>
 
     // Build View
     Widget? view;
-
-    // Duration
-    int _duration = widget.model.duration;
-
-    switch (type) {
-      case ANIMATION.Transitions.flip:
-        // anchor
-        Alignment anchor =
-            AnimationHelper.getAlignment(widget.model.anchor.toLowerCase());
-
-        // axis
-        FlipDirection? axis =
-            S.toEnum(widget.model.axis.toUpperCase(), FlipDirection.values);
-        if (axis == null) axis = FlipDirection.HORIZONTAL;
-
-        // build the animation
-        view = FlipCard(
-          speed: _duration,
-          direction: axis,
-          alignment: anchor,
-          controller: _flipController,
-          front: front ?? Container(),
-          back: back ?? Container(),
-          flipOnTouch: false,
-        );
-        break;
-
-      default:
-        break;
-    }
 
     // Start the Controller
     if ((widget.model.autoplay == true) && (!_stopped)) start();
@@ -234,23 +187,18 @@ class AnimationViewState extends State<AnimationView>
 
   void reset() {
     try {
-      if (_controller != null) {
+
         _controller!.reset();
-      } else if (_flipController != null) {
-        _flipController!.toggleCardWithoutAnimation();
-        bool front = _flipController!.state?.isFront ?? true;
-        widget.model.side = front ? "front" : "back";
-      }
+
     } catch (e) {}
   }
 
   void start() {
     try {
-      if (_controller != null) {
-        Log().debug('starting animation');
+
         _loop = 0;
         _stopped = false;
-        if (_controller != null) {
+
           if (_controller!.isCompleted) {
             _controller!.reverse();
           } else if (_controller!.isDismissed) {
@@ -258,25 +206,15 @@ class AnimationViewState extends State<AnimationView>
           } else {
             _controller!.forward();
           }
-        } else if (_flipController != null) {
-          _flipController!.toggleCard();
-          bool front = _flipController!.state?.isFront ?? true;
-          widget.model.side = front ? "front" : "back";
-        }
-      }
+
     } catch (e) {}
   }
 
   void stop() {
     try {
       _stopped = true;
-      if (_controller != null) {
         _controller!.reset();
         _controller!.stop();
-      } else if (_flipController != null) {
-        widget.model.side =
-            _flipController!.state?.isFront ?? true ? "front" : "back";
-      }
     } catch (e) {}
   }
 

@@ -8,28 +8,11 @@ import 'package:fml/widgets/animation/animation_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-/// Transition types
-enum Transitions { fade, position, scale, rotate, flip, size, slide }
-
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
 class AnimationModel extends WidgetModel implements IViewableWidget {
   bool runonce = false;
 
-  // animation
-  /// Name of Animation to use
-  StringObservable? _animation;
-
-  set animation(dynamic v) {
-    if (_animation != null) {
-      _animation!.set(v);
-    } else if (v != null) {
-      _animation = StringObservable(Binding.toKey(id, 'animation'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  String? get animation => _animation?.get();
 
   /// Transition Curve
   StringObservable? _curve;
@@ -45,47 +28,6 @@ class AnimationModel extends WidgetModel implements IViewableWidget {
 
   String? get curve => _curve?.get();
 
-  /// anchor - used on on flip transition
-  StringObservable? _anchor;
-
-  set anchor(dynamic v) {
-    if (_anchor != null) {
-      _anchor!.set(v);
-    } else if (v != null) {
-      _anchor = StringObservable(Binding.toKey(id, 'anchor'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  String get anchor => _anchor?.get() ?? "center";
-
-  /// axis - used on on flip transition
-  StringObservable? _axis;
-
-  set axis(dynamic v) {
-    if (_axis != null) {
-      _axis!.set(v);
-    } else if (v != null) {
-      _axis = StringObservable(Binding.toKey(id, 'axis'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  String get axis => _axis?.get() ?? "horizontal";
-
-  StringObservable? _side;
-
-  set side(dynamic v) {
-    if (_side != null) {
-      _side!.set(v);
-    } else if (v != null) {
-      // no listener since this is only set by the view
-      // and we don't want to trigger a rebuild
-      _side = StringObservable(Binding.toKey(id, 'side'), v, scope: scope);
-    }
-  }
-
-  String get side => _side?.get() ?? "front";
 
   /// bool value to determine how many times the animation repeats
   ///
@@ -190,13 +132,11 @@ class AnimationModel extends WidgetModel implements IViewableWidget {
 
     // properties
     autoplay = Xml.get(node: xml, tag: 'autoplay');
-    animation = Xml.get(node: xml, tag: 'type');
     curve = Xml.get(node: xml, tag: 'curve');
     repeat = Xml.get(node: xml, tag: 'repeat') ?? 1;
     reverse = Xml.get(node: xml, tag: 'reverse');
     duration = Xml.get(node: xml, tag: 'duration');
-    anchor = Xml.get(node: xml, tag: 'anchor');
-    axis = Xml.get(node: xml, tag: 'axis');
+
 
     // clear options
     this.transitionChildren.clear();

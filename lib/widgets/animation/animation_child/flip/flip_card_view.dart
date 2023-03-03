@@ -1,27 +1,28 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/animation/animation_helper.dart';
-import 'package:fml/widgets/animation/animation_child/rotate/rotate_transition_model.dart'
+import 'package:fml/widgets/animation/animation_child/flip/flip_card_model.dart'
     as MODEL;
 import 'package:fml/widgets/widget/widget_model.dart';
 
 /// Animation View
 ///
 /// Builds the View from model properties
-class RotateTransitionView extends StatefulWidget {
-  final MODEL.RotateTransitionModel model;
+class FlipCardView extends StatefulWidget {
+  final MODEL.FlipCardModel model;
   final List<Widget> children = [];
   final Widget? child;
   final AnimationController controller;
 
-  RotateTransitionView(this.model, this.child, this.controller)
+  FlipCardView(this.model, this.child, this.controller)
       : super(key: ObjectKey(model));
 
   @override
-  RotateTransitionViewState createState() => RotateTransitionViewState();
+  FlipCardViewState createState() => FlipCardViewState();
 }
 
-class RotateTransitionViewState extends State<RotateTransitionView>
+class FlipCardViewState extends State<FlipCardView>
     with TickerProviderStateMixin
     implements IModelListener {
   late AnimationController _controller;
@@ -30,8 +31,10 @@ class RotateTransitionViewState extends State<RotateTransitionView>
   @override
   void initState() {
     super.initState();
-
     _controller = widget.controller;
+    _controller.addListener(() {setState(() {
+
+    });});
   }
 
   @override
@@ -43,7 +46,7 @@ class RotateTransitionViewState extends State<RotateTransitionView>
   }
 
   @override
-  void didUpdateWidget(RotateTransitionView oldWidget) {
+  void didUpdateWidget(FlipCardView oldWidget) {
     super.didUpdateWidget(oldWidget);
     if ((oldWidget.model != widget.model)) {
       // re-register model listeners
@@ -71,17 +74,31 @@ class RotateTransitionViewState extends State<RotateTransitionView>
   }
 
   Widget builder(BuildContext context, BoxConstraints constraints) {
-    // Tween
-    double _from = widget.model.from;
-    double _to = widget.model.to;
     double _begin = widget.model.begin;
     double _end = widget.model.end;
     Curve _curve = AnimationHelper.getCurve(widget.model.curve);
+    // Build View
+    Widget? view;
+    Alignment anchor =
+        AnimationHelper.getAlignment(widget.model.anchor.toLowerCase());
+    Widget? frontWidget;
+    Widget? backWidget;
+    double _from;
+    double _to;
+    Tween<double> _newTween;
 
-    //start, end, center
-    Alignment _align = AnimationHelper.getAlignment(widget.model.align?.toLowerCase());
+    if (_begin != 0.0 || _end != 1.0) {
+      _curve = Interval(
+        _begin,
+        _end,
+        // the style curve to pass.
+        curve: _curve,
+      );
+    }
 
-    Tween<double> _newTween = Tween<double>(
+    _from = widget.model.from;
+    _to = widget.model.to;
+    _newTween = Tween<double>(
       begin: _from,
       end: _to,
     );
@@ -100,16 +117,34 @@ class RotateTransitionViewState extends State<RotateTransitionView>
       parent: _controller,
     ));
 
-    // Build View
-    Widget? view;
+    //get front and back widgets.
 
-    view = RotationTransition(
-      alignment: _align,
-      turns: _animation,
-      child: widget.child,
-    );
+    // frontWidget = widget.firstLevelChildren?.elementAt(0);
+    // backWidget =  widget.firstLevelChildren?.elementAt(1);
 
-    // Return View
+    view = Stack(
+      alignment: anchor,
+      fit: StackFit.passthrough,
+      children:[ _buildContent(
+          frontWidget: frontWidget ?? Container(),
+          backWidget: backWidget ?? Container(),
+      )]);
+
     return view;
+  }
+
+  Widget _buildContent({required Widget frontWidget, required Widget backWidget}) {
+    /// pointer events that would reach the backside of the card should be
+        return Transform(
+          alignment: FractionalOffset.center,
+          transform: Matrix4.identity()
+            ..setEntry(3, 2, 0.0015)
+            ..rotateY(pi * _animation.value),
+          child: Card(
+            child: _animation.value <= 0.5
+                ? frontWidget
+                : backWidget,
+          ),
+        );
   }
 }

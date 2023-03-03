@@ -18,6 +18,7 @@ import 'package:fml/datasources/socket/socket_model.dart';
 import 'package:fml/datasources/zebra/model.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/alarm/alarm_model.dart';
+import 'package:fml/widgets/animation/animation_child/flip/flip_card_model.dart';
 import 'package:fml/widgets/animation/animation_child/transform/transform_model.dart';
 import 'package:fml/widgets/animation/animation_child/tween/tween_model.dart';
 import 'package:fml/widgets/animation/animation_model.dart';
@@ -444,6 +445,7 @@ class WidgetModel implements IDataSourceListener
 
       case "flip":
         if (parent is IDataSource) model = Flip.fromXml(parent, node);
+        if (parent is AnimationModel) model = FlipCardModel.fromXml(parent, node);
         break;
 
       case "fml":
@@ -592,6 +594,7 @@ class WidgetModel implements IDataSourceListener
       case "tween":
         if (parent is AnimationModel) model = TweenModel.fromXml(parent, node);
         break;
+
 
 
 

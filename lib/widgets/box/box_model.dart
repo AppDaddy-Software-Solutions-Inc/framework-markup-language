@@ -4,10 +4,9 @@ import 'package:fml/widgets/widget/decorated_widget_model.dart';
 
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:fml/widgets/box/box_view.dart' as BOX;
+import 'package:fml/widgets/box/box_view.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
-
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
@@ -319,8 +318,6 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
     super.dispose();
   }
 
-  /// Returns the [BOX] view
-  Widget getView({Key? key, Widget? child}) {
-    return BOX.BoxView(this, child: child);
-  }
+  Widget getView({Key? key}) => getReactiveView(BoxView(this));
+
 }

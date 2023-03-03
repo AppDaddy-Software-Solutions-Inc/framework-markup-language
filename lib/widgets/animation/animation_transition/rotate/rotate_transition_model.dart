@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/animation/animation_transition/slide_transition_view.dart';
+import 'package:fml/widgets/animation/animation_transition/rotate/rotate_transition_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -54,10 +54,10 @@ enum CurveEnum {
 
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
-class SlideTransitionModel extends WidgetModel
+class RotateTransitionModel extends WidgetModel
 {
-  /// Curve starting point from 0.0 to 1.0
-  StringObservable? _from;
+  /// Curve starting point from
+  DoubleObservable? _from;
   set from (dynamic v)
   {
     if (_from != null)
@@ -66,13 +66,13 @@ class SlideTransitionModel extends WidgetModel
     }
     else if (v != null)
     {
-      _from = StringObservable(Binding.toKey(id, 'from'), v, scope: scope, listener: onPropertyChange);
+      _from = DoubleObservable(Binding.toKey(id, 'from'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  String? get from => _from?.get();
+  double get from =>_from?.get() ?? 0.0;
 
   /// Curve ending point from 1.0 to 0.0
-  StringObservable? _to;
+  DoubleObservable? _to;
   set to (dynamic v)
   {
     if (_to != null)
@@ -81,27 +81,10 @@ class SlideTransitionModel extends WidgetModel
     }
     else if (v != null)
     {
-      _to = StringObservable(Binding.toKey(id, 'to'), v, scope: scope, listener: onPropertyChange);
+      _to = DoubleObservable(Binding.toKey(id, 'to'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  String get to =>  _to?.get() ?? "0, 0";
-
-
-
-  /// Curve ending point from 1.0 to 0.0
-  StringObservable? _direction;
-  set direction (dynamic v)
-  {
-    if (_direction != null)
-    {
-      _direction!.set(v);
-    }
-    else if (v != null)
-    {
-      _direction = StringObservable(Binding.toKey(id, 'direction'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  String? get direction =>  _direction?.get();
+  double get to => _to?.get() ?? 1.0;
 
   /// Curve
   StringObservable? _curve;
@@ -163,15 +146,30 @@ class SlideTransitionModel extends WidgetModel
     return f;
   }
 
-
-  SlideTransitionModel(WidgetModel parent, String?  id) : super(parent, id); // ; {key: value}
-
-  static SlideTransitionModel? fromXml(WidgetModel parent, XmlElement xml)
+  /// Curve ending point from 1.0 to 0.0
+  StringObservable? _align;
+  set align (dynamic v)
   {
-    SlideTransitionModel? model;
+    if (_align != null)
+    {
+      _align!.set(v);
+    }
+    else if (v != null)
+    {
+      _align = StringObservable(Binding.toKey(id, 'align'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get align =>  _align?.get();
+
+
+  RotateTransitionModel(WidgetModel parent, String?  id) : super(parent, id); // ; {key: value}
+
+  static RotateTransitionModel? fromXml(WidgetModel parent, XmlElement xml)
+  {
+    RotateTransitionModel? model;
     try
     {
-      model = SlideTransitionModel(parent, Xml.get(node: xml, tag: 'id'));
+      model = RotateTransitionModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
     catch(e)
@@ -194,9 +192,7 @@ class SlideTransitionModel extends WidgetModel
     curve       = Xml.get(node: xml, tag: 'curve');
     begin       = Xml.get(node: xml, tag: 'begin');
     end         = Xml.get(node: xml, tag: 'end');
-    direction   = Xml.get(node: xml, tag: 'direction');
-
-
+    align       = Xml.get(node: xml, tag: 'align');
   }
 
   @override
@@ -207,7 +203,7 @@ class SlideTransitionModel extends WidgetModel
   }
 
   Widget getTransitionView(Widget child, AnimationController controller) {
-    return SlideTransitionView(this, child, controller);
+    return RotateTransitionView(this, child, controller);
   }
 
 

@@ -28,7 +28,6 @@ class AnimationView extends StatefulWidget
 class AnimationViewState extends State<AnimationView> with TickerProviderStateMixin implements IModelListener
 {
   dynamic _controller;
-  late Animation<double>   _animation;
   Widget? transitionChild;
 
   int  _loop    = 0;
@@ -201,7 +200,7 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
     
     // Duration
     int _duration = widget.model.duration;
-    int _reverseDuration = widget.model.reverseduration;
+    int? _reverseDuration = widget.model.reverseduration;
 
     _controller = AnimationController(vsync: this, duration: Duration(milliseconds: _duration,),  reverseDuration: Duration(milliseconds: _reverseDuration ?? _duration,),);
 

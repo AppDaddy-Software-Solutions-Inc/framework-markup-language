@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/animation/animation_transition/scale_transition_model.dart' as MODEL;
+import 'package:fml/widgets/animation/animation_transition/scale/scale_transition_model.dart' as MODEL;
 import 'package:fml/widgets/widget/widget_model.dart';
 
 /// Animation View

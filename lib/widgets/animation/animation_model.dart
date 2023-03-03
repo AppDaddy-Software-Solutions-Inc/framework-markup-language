@@ -201,7 +201,7 @@ class AnimationModel extends WidgetModel implements IViewableWidget
       _reverseduration = IntegerObservable(Binding.toKey(id, 'reverseduration'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  int get reverseduration => _reverseduration?.get() ?? 1000;
+  int? get reverseduration => _reverseduration?.get();
 
 
   /// Play animation on build, default: false

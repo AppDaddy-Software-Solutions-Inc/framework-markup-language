@@ -1,4 +1,5 @@
 import 'package:flutter/animation.dart';
+import 'package:flutter/material.dart';
 import 'package:fml/helper/string.dart';
 
 class AnimationHelper {
@@ -50,6 +51,42 @@ class AnimationHelper {
   default : return Curves.linear;
   }
   }
+
+  static Alignment getAlignment(String? alignment) {
+    switch (alignment) {
+      case 'top':
+      case 'topcenter':
+      case 'centertop':
+        return Alignment.topCenter;
+      case 'bottom':
+      case 'bottomcenter':
+      case 'centerbottom':
+        return Alignment.bottomCenter;
+      case 'left':
+      case 'leftcenter':
+      case 'centerleft':
+        return Alignment.centerLeft;
+      case 'right':
+      case 'rightcenter':
+      case 'centerright':
+        return Alignment.centerRight;
+      case 'topleft':
+      case 'lefttop':
+        return Alignment.topLeft;
+      case 'topright':
+      case 'righttop':
+        return Alignment.topRight;
+      case 'bottomleft':
+      case 'leftbottom':
+        return Alignment.bottomLeft;
+      case 'bottomright':
+      case 'rightbottom':
+        return Alignment.bottomRight;
+      default:
+        return Alignment.center;
+    }
+  }
+
 }
 
 enum CurveEnum {

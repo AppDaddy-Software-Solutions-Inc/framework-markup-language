@@ -28,8 +28,10 @@ class AnimationView extends StatefulWidget
 
 class AnimationViewState extends State<AnimationView> with TickerProviderStateMixin implements IModelListener
 {
-  dynamic _controller;
+  AnimationController? _controller;
+  FlipCardController? _flipController;
   Widget? transitionChild;
+  late ANIMATION.Transitions? type = S.toEnum(widget.model.animation, ANIMATION.Transitions.values);
 
   int  _loop    = 0;
   bool _stopped = false;
@@ -38,6 +40,14 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
   void initState() 
   {
     super.initState();
+    if(type != ANIMATION.Transitions.flip) {
+      _controller = AnimationController(vsync: this,
+        duration: Duration(milliseconds: widget.model.duration,),
+        reverseDuration: Duration(milliseconds: widget.model.reverseduration ??
+            widget.model.duration,),);
+    } else {
+      _flipController = FlipCardController();
+    }
   }
 
   @override
@@ -59,6 +69,7 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
     super.didUpdateWidget(oldWidget);
     if ((oldWidget.model != widget.model))
     {
+
       // de-register event listeners
       EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.animate, onAnimate);
       EventManager.of(widget.model)?.removeEventListener(EventTypes.reset, onReset);
@@ -66,6 +77,13 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
       // register event listeners
       EventManager.of(widget.model)?.registerEventListener(EventTypes.animate, onAnimate);
       EventManager.of(widget.model)?.registerEventListener(EventTypes.reset, onReset);
+
+      if(type == ANIMATION.Transitions.flip) {
+        _controller!.duration = Duration(milliseconds: widget.model.duration);
+        _controller!.reverseDuration = Duration(
+            milliseconds: widget.model.reverseduration ??
+                widget.model.duration);
+      }
 
       // re-register model listeners
       oldWidget.model.removeListener(this);
@@ -82,7 +100,7 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
     widget.model.removeListener(this);
 
     // remove controller
-    if (_controller is AnimationController) (_controller as AnimationController).dispose();
+    _controller?.dispose();
 
     // de-register event listeners
     EventManager.of(widget.model)?.removeEventListener(EventTypes.animate, onAnimate);
@@ -116,16 +134,11 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
     if (((widget.model.children?.isEmpty ?? true) && widget.child == null)) return Offstage();
 
     if(widget.model.transitionChildren.isNotEmpty && widget.child != null) {
-      _controller = AnimationController(duration: Duration(milliseconds: widget.model.duration), vsync: this);
        Widget view = _buildTransitionChildren();
       // Start the Controller
       if ((widget.model.autoplay == true) && (!_stopped)) start();
       return view;
     }
-
-    // Animation Type
-    ANIMATION.Transitions? type = S.toEnum(widget.model.animation, ANIMATION.Transitions.values);
-    if (type == null) type = ANIMATION.Transitions.fade;
 
     // Build Children
     Widget? front;
@@ -150,79 +163,27 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
     // Build View
     Widget? view;
 
-    // Animation Curve
-    Curve curve = AnimationHelper.getCurve(widget.model.curve);;
-
     // Duration
     int _duration = widget.model.duration;
-    int? _reverseDuration = widget.model.reverseduration;
-
-    _controller = AnimationController(vsync: this, duration: Duration(milliseconds: _duration,),  reverseDuration: Duration(milliseconds: _reverseDuration ?? _duration,),);
-
 
     switch (type)
     {
       case ANIMATION.Transitions.flip :
 
         // anchor
-        Alignment anchor = Alignment.center;
-        switch (widget.model.anchor.toLowerCase())
-        {
-          case "topleft" :
-            anchor = Alignment.topLeft;
-            break;
-          case "centerleft" :
-            anchor = Alignment.centerLeft;
-            break;
-          case "bottomleft" :
-            anchor = Alignment.bottomLeft;
-            break;
-          case "topcenter" :
-            anchor = Alignment.topCenter;
-            break;
-          case "center" :
-            anchor = Alignment.center;
-            break;
-          case "bottomcenter" :
-            anchor = Alignment.bottomCenter;
-            break;
-          case "topright" :
-            anchor = Alignment.topRight;
-            break;
-          case "centerright" :
-            anchor = Alignment.centerRight;
-            break;
-          case "bottomright" :
-            anchor = Alignment.bottomRight;
-            break;
-        }
+        Alignment anchor = AnimationHelper.getAlignment(widget.model.anchor.toLowerCase());
 
         // axis
         FlipDirection? axis = S.toEnum(widget.model.axis.toUpperCase(), FlipDirection.values);
         if (axis == null) axis = FlipDirection.HORIZONTAL;
 
         // build the animation
-        _controller = FlipCardController();
-        view = FlipCard(speed: _duration, direction: axis, alignment: anchor, controller: _controller, front: front ?? Container(), back: back ?? Container(), flipOnTouch: false,);
+        view = FlipCard(speed: _duration, direction: axis, alignment: anchor, controller: _flipController, front: front ?? Container(), back: back ?? Container(), flipOnTouch: false,);
         break;
 
-      case ANIMATION.Transitions.fade :
-        break;
+        default:
+          break;
 
-      case ANIMATION.Transitions.scale :
-        break;
-
-      case ANIMATION.Transitions.size:
-        break;
-
-      case ANIMATION.Transitions.rotate :
-        break;
-
-      case ANIMATION.Transitions.slide:
-        break;
-
-      case ANIMATION.Transitions.position:
-        break;
     }
 
     // Start the Controller
@@ -253,7 +214,6 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
       reset();
     }
 
-
   }
 
 
@@ -262,13 +222,11 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
     {
       if (_controller != null)
       {
-        if (_controller is AnimationController) {
-            _controller.reset();
-          } else if (_controller is FlipCardController) {
-          (_controller as FlipCardController).toggleCardWithoutAnimation();
-          bool front = (_controller as FlipCardController).state?.isFront ?? true;
+            _controller!.reset();
+      } else if (_flipController != null) {
+                    _flipController!.toggleCardWithoutAnimation();
+          bool front = _flipController!.state?.isFront ?? true;
           widget.model.side = front ? "front" : "back";
-        }
       }
     }
     catch(e){}
@@ -283,20 +241,20 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
         Log().debug('starting animation');
         _loop = 0;
         _stopped = false;
-        if (_controller is AnimationController)
+        if (_controller != null)
         {
-          if(_controller.isCompleted) {
-            _controller.reverse();
-          } else if (_controller.isDismissed){
-            _controller.forward();
+          if(_controller!.isCompleted) {
+            _controller!.reverse();
+          } else if (_controller!.isDismissed){
+            _controller!.forward();
           } else {
-            _controller.forward();
+            _controller!.forward();
           }
         }
-        else if (_controller is FlipCardController)
+        else if (_flipController != null)
         {
-          (_controller as FlipCardController).toggleCard();
-          bool front = (_controller as FlipCardController).state?.isFront ?? true;
+          _flipController!.toggleCard();
+          bool front = _flipController!.state?.isFront ?? true;
           widget.model.side = front ? "front" : "back";
         }
       }
@@ -309,11 +267,12 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
     try
     {
       _stopped = true;
-      if (_controller is AnimationController)
+      if (_controller != null)
       {
-        (_controller as AnimationController).reset();
-        (_controller as AnimationController).stop();
-        widget.model.side = (_controller as FlipCardController).state?.isFront ?? true ? "front" : "back";
+        _controller!.reset();
+        _controller!.stop();
+      } else if (_flipController != null){
+        widget.model.side = _flipController!.state?.isFront ?? true ? "front" : "back";
       }
     }
     catch(e){}
@@ -321,7 +280,7 @@ class AnimationViewState extends State<AnimationView> with TickerProviderStateMi
 
   void _animationListener(AnimationStatus status)
   {
-    if (_controller is FlipCardController) return;
+    if (_flipController != null || _controller == null) return;
 
     // Animation Complete?
     if (status == AnimationStatus.completed)

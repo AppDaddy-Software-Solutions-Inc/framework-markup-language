@@ -70,7 +70,6 @@ class _TextViewState extends State<TextView> implements IModelListener {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible || !gfloaded) return Offstage();
 
-    String? label = widget.model.value;
     String? style = widget.model.style;
     double? size = widget.model.size;
     Color? color = widget.model.color;

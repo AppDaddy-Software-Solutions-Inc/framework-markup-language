@@ -104,42 +104,7 @@ class TipModel extends DecoratedWidgetModel implements IViewableWidget
   ///  * [Feedback], for providing platform-specific feedback to certain actions.
   bool? enableFeedback;
 
-
-  // background color
-  ColorObservable? _backgroundcolor;
-  set backgroundcolor (dynamic v)
-  {
-    if (_backgroundcolor != null)
-    {
-      _backgroundcolor!.set(v);
-    }
-    else if (v != null)
-    {
-      _backgroundcolor = ColorObservable(Binding.toKey(id, 'backgroundcolor'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  Color? get backgroundcolor =>  _backgroundcolor?.get();
-
-  // label
-  StringObservable? _label;
-  set label(String? v)
-  {
-    if (_label != null)
-    {
-      _label!.set(v);
-    }
-    else if (v != null)
-    {
-      _label = StringObservable(Binding.toKey(id, 'label'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  String? get label => _label?.get();
-
-  TipModel(WidgetModel parent, String? id, {dynamic label, dynamic color}) : super(parent, id)
-  {
-    this.label = label;
-    this.color = color;
-  }
+  TipModel(WidgetModel parent, String? id) : super(parent, id);
 
   static TipModel? fromXml(WidgetModel parent, XmlElement xml)
   {
@@ -166,10 +131,7 @@ class TipModel extends DecoratedWidgetModel implements IViewableWidget
     super.deserialize(xml);
 
     // properties
-    label = Xml.get(node: xml, tag: 'label');
-    if (label == null) label = Xml.get(node: xml, tag: 'text'); // backwards compatibility
-    if (label == null) label = Xml.get(node: xml, tag: 'value'); // backwards compatibility
-    backgroundcolor = Xml.get(node: xml, tag: 'backgroundcolor');
+    // label = Xml.get(node: xml, tag: 'label');
   }
 
   @override

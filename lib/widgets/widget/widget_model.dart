@@ -91,6 +91,7 @@ import 'package:fml/widgets/tabview/tab_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/theme/theme_model.dart';
 import 'package:fml/widgets/timer/timer_model.dart';
+import 'package:fml/widgets/tip/tip_model.dart';
 import 'package:fml/widgets/tooltip/tooltip_model.dart';
 import 'package:fml/datasources/transforms/calc.dart';
 import 'package:fml/datasources/transforms/distinct.dart';
@@ -716,8 +717,11 @@ class WidgetModel implements IDataSourceListener
         break;
 
       case "tooltip":
-      case "tip":
         model = TooltipModel.fromXml(parent, node);
+        break;
+
+      case "tip":
+        model = TipModel.fromXml(parent, node);
         break;
 
       case "treeview":

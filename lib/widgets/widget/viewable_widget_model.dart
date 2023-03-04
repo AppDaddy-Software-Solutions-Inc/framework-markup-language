@@ -1,4 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:flutter/material.dart';
+import 'package:fml/widgets/tip/tip_model.dart';
+import 'package:fml/widgets/tip/tip_view.dart';
 import 'package:fml/widgets/widget/constraint.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:xml/xml.dart';
@@ -8,6 +11,9 @@ import 'package:fml/widgets/widget/widget_model.dart';
 
 class ViewableWidgetModel extends WidgetModel
 {
+  // model holding the tooltip
+  TipModel? tipModel;
+
   // Width
   double? _widthPercentage;
   double? get widthPercentage => _widthPercentage;
@@ -314,6 +320,14 @@ class ViewableWidgetModel extends WidgetModel
 
     // pad is always defined as an attribute. PAD as an element name is the PADDING widget
     _paddings = Xml.attribute(node: xml, tag: 'pad');
+
+    // tip
+    List<TipModel> tips = findChildrenOfExactType(TipModel).cast<TipModel>();
+    if (tips.isNotEmpty)
+    {
+      tipModel = tips.first;
+      removeChildrenOfExactType(TipModel);
+    }
   }
 
   static double getParentVPadding(int paddings, double? padding, double padding2, double padding3, double padding4)
@@ -386,4 +400,12 @@ class ViewableWidgetModel extends WidgetModel
     }
     return constraint;
   }
+
+  Widget getReactiveView(Widget view)
+  {
+    // wrap as tooltip
+    if (tipModel != null) view = TipView(tipModel, view);
+    return view;
+  }
+
 }

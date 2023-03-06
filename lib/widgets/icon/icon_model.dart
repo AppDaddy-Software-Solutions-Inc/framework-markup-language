@@ -102,23 +102,6 @@ class IconModel extends DecoratedWidgetModel implements IViewableWidget
   }
   double get rotation => _rotation?.get() ?? 0.0;
 
-  /////////////
-  /* opacity */
-  /////////////
-  DoubleObservable? _opacity;
-  set opacity (dynamic v)
-  {
-    if (_opacity != null)
-    {
-      _opacity!.set(v);
-    }
-    else if (v != null)
-    {
-      _opacity = DoubleObservable(Binding.toKey(id, 'opacity'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  double? get opacity => _opacity?.get();
-
   IconModel(
     WidgetModel? parent,
     String?  id,

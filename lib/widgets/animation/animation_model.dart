@@ -106,6 +106,19 @@ class AnimationModel extends WidgetModel implements IViewableWidget {
 
   bool get autoplay => _autoplay?.get() ?? false;
 
+  /// Linked allows for passing the animation controller on a single animation. This will allow for the animation to sync to that controller.
+  StringObservable? _linked;
+
+  set linked(dynamic v) {
+    if (_linked != null) {
+      _linked!.set(v);
+    } else if (v != null) {
+      _linked = StringObservable(Binding.toKey(id, 'linked'), v, scope: scope);
+    }
+  }
+
+  String? get linked => _linked?.get();
+
   final List transitionChildren = [];
 
   AnimationModel(WidgetModel parent, String? id)
@@ -135,6 +148,7 @@ class AnimationModel extends WidgetModel implements IViewableWidget {
     repeat = Xml.get(node: xml, tag: 'repeat') ?? 1;
     reverse = Xml.get(node: xml, tag: 'reverse');
     duration = Xml.get(node: xml, tag: 'duration');
+    linked = Xml.get(node: xml, tag: 'duration');
 
 
     // clear options

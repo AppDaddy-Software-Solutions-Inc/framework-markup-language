@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:fml/helper/string.dart';
 import 'package:fml/widgets/animation/animation_helper.dart';
 import 'package:fml/widgets/animation/animation_child/transform/transform_model.dart'
     as MODEL;
@@ -26,7 +27,11 @@ class TransformViewState extends State<TransformView>
     with TickerProviderStateMixin
     implements IModelListener {
   late AnimationController _controller;
-  late Animation<double> _animation;
+  late Animation<double> _xAnimation;
+  late Animation<double> _yAnimation;
+  late Animation<double> _xTranslateAnimation;
+  late Animation<double> _yTranslateAnimation;
+  late Animation<double> _zTranslateAnimation;
 
   @override
   void initState() {
@@ -80,10 +85,17 @@ class TransformViewState extends State<TransformView>
     double _begin = widget.model.begin;
     double _end = widget.model.end;
     Curve _curve = AnimationHelper.getCurve(widget.model.curve);
-    Tween<double> _newTween = Tween<double>(
-      begin: 0.25,
-      end: 0.75,
-    );
+
+    List<String>? _rotateFrom = widget.model.rotateFrom?.split(",");
+    List<String>? _rotateTo = widget.model.rotateTo.split(",");
+    List<String>? _translateFrom = widget.model.translateFrom?.split(",");
+    List<String>? _translateTo = widget.model.translateTo.split(",");
+
+    //start, end, center
+    Alignment _align =
+    AnimationHelper.getAlignment(widget.model.align?.toLowerCase());
+
+
 
     if (_begin != 0.0 || _end != 1.0) {
       _curve = Interval(
@@ -94,10 +106,42 @@ class TransformViewState extends State<TransformView>
       );
     }
 
-    _animation = _newTween.animate(CurvedAnimation(
+    _xAnimation = Tween<double>(
+      begin: S.toDouble(_rotateFrom?.elementAt(0)) ?? 0,
+      end: S.toDouble(_rotateTo.elementAt(0)) ?? 0,
+    ).animate(CurvedAnimation(
       curve: _curve,
       parent: _controller,
     ));
+    _yAnimation = Tween<double>(
+      begin: S.toDouble(_rotateFrom?.elementAt(1)) ?? 0,
+      end: S.toDouble(_rotateTo?.elementAt(1)) ?? 0,
+    ).animate(CurvedAnimation(
+      curve: _curve,
+      parent: _controller,
+    ));
+    _xTranslateAnimation = Tween<double>(
+      begin: S.toDouble(_translateFrom?.elementAt(0)) ?? 0,
+      end: S.toDouble(_translateTo.elementAt(0)) ?? 0,
+    ).animate(CurvedAnimation(
+      curve: _curve,
+      parent: _controller,
+    ));
+    _yTranslateAnimation = Tween<double>(
+      begin: S.toDouble(_translateFrom?.elementAt(1)) ?? 0,
+      end: S.toDouble(_translateTo.elementAt(1)) ?? 0,
+    ).animate(CurvedAnimation(
+      curve: _curve,
+      parent: _controller,
+    ));
+    _zTranslateAnimation = Tween<double>(
+      begin: S.toDouble(_translateFrom?.elementAt(2)) ?? 0,
+      end: S.toDouble(_translateTo.elementAt(2)) ?? 0,
+    ).animate(CurvedAnimation(
+      curve: _curve,
+      parent: _controller,
+    ));
+
 
     // Build View
     Widget? view;
@@ -105,10 +149,10 @@ class TransformViewState extends State<TransformView>
     view = Transform(
       transform: Matrix4.identity()
         ..setEntry(3, 2, 0.0001)
-        ..rotateY(pi / 2 * (1 - _animation.value * 4))
-        ..rotateX(pi / 2 * (1 - _animation.value * 4))
-        ..translate(0.0, 0.0, 0.0),
-      alignment: Alignment.centerLeft,
+        ..rotateY(pi * _yAnimation.value * 2)
+        ..rotateX(pi * _xAnimation.value * 2)
+        ..translate(_xTranslateAnimation.value, _yTranslateAnimation.value, _zTranslateAnimation.value),
+      alignment: _align,
       //origin: Offset(0, 0),
       child: widget.child,
     );

@@ -14,46 +14,75 @@ import 'package:fml/helper/common_helpers.dart';
 /// Defines the properties of an [ANIMATION.AnimationView]
 class TransformModel extends AnimationChildModel {
   /// Curve starting point from 0.0 to 1.0
-  StringObservable? _from;
+  StringObservable? _rotateFrom;
 
-  set from(dynamic v) {
-    if (_from != null) {
-      _from!.set(v);
+  set rotateFrom(dynamic v) {
+    if (_rotateFrom != null) {
+      _rotateFrom!.set(v);
     } else if (v != null) {
-      _from = StringObservable(Binding.toKey(id, 'from'), v,
+      _rotateFrom = StringObservable(Binding.toKey(id, 'rotatefrom'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
 
-  String? get from => _from?.get();
+  String? get rotateFrom => _rotateFrom?.get();
 
   /// Curve ending point from 1.0 to 0.0
-  StringObservable? _to;
+  StringObservable? _rotateTo;
 
-  set to(dynamic v) {
-    if (_to != null) {
-      _to!.set(v);
+  set rotateTo(dynamic v) {
+    if (_rotateTo != null) {
+      _rotateTo!.set(v);
     } else if (v != null) {
-      _to = StringObservable(Binding.toKey(id, 'to'), v,
+      _rotateTo = StringObservable(Binding.toKey(id, 'rotateto'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
 
-  String get to => _to?.get() ?? "0, 0";
+  String get rotateTo => _rotateTo?.get() ?? "0, 0";
+
+
+  StringObservable? _translateFrom;
+
+  set translateFrom(dynamic v) {
+    if (_translateFrom != null) {
+      _translateFrom!.set(v);
+    } else if (v != null) {
+      _translateFrom = StringObservable(Binding.toKey(id, 'translatefrom'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  String? get translateFrom => _translateFrom?.get();
 
   /// Curve ending point from 1.0 to 0.0
-  StringObservable? _direction;
+  StringObservable? _translateTo;
 
-  set direction(dynamic v) {
-    if (_direction != null) {
-      _direction!.set(v);
+  set translateTo(dynamic v) {
+    if (_translateTo != null) {
+      _translateTo!.set(v);
     } else if (v != null) {
-      _direction = StringObservable(Binding.toKey(id, 'direction'), v,
+      _translateTo = StringObservable(Binding.toKey(id, 'translateto'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
 
-  String? get direction => _direction?.get();
+  String get translateTo => _translateTo?.get() ?? "0, 0, 0";
+
+  /// Curve ending point from 1.0 to 0.0
+  StringObservable? _align;
+
+  set align(dynamic v) {
+    if (_align != null) {
+      _align!.set(v);
+    } else if (v != null) {
+      _align = StringObservable(Binding.toKey(id, 'align'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  String? get align => _align?.get();
+
 
   TransformModel(WidgetModel parent, String? id)
       : super(parent, id); // ; {key: value}
@@ -76,9 +105,11 @@ class TransformModel extends AnimationChildModel {
     // deserialize
     super.deserialize(xml);
 
-    from = Xml.get(node: xml, tag: 'from');
-    to = Xml.get(node: xml, tag: 'to');
-    direction = Xml.get(node: xml, tag: 'direction');
+    rotateFrom = Xml.get(node: xml, tag: 'rotateFrom');
+    rotateTo = Xml.get(node: xml, tag: 'rotateTo');
+    translateFrom = Xml.get(node: xml, tag: 'translateFrom');
+    translateTo = Xml.get(node: xml, tag: 'translateTo');
+    align = Xml.get(node: xml, tag: 'align');
   }
 
   @override

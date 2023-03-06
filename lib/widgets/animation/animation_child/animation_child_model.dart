@@ -76,6 +76,19 @@ class AnimationChildModel extends WidgetModel {
     return f;
   }
 
+  /// Linked allows for passing the animation controller on a single animation. This will allow for the animation to sync to that controller.
+  StringObservable? _linked;
+
+  set linked(dynamic v) {
+    if (_linked != null) {
+      _linked!.set(v);
+    } else if (v != null) {
+      _linked = StringObservable(Binding.toKey(id, 'linked'), v, scope: scope);
+    }
+  }
+
+  String? get linked => _linked?.get();
+
   AnimationChildModel(WidgetModel parent, String? id)
       : super(parent, id); // ; {key: value}
 
@@ -99,6 +112,7 @@ class AnimationChildModel extends WidgetModel {
     curve = Xml.get(node: xml, tag: 'curve');
     begin = Xml.get(node: xml, tag: 'begin');
     end = Xml.get(node: xml, tag: 'end');
+    linked = Xml.get(node: xml, tag: 'linked');
   }
 
   @override

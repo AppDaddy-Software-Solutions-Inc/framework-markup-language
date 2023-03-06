@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/widgets/animation/animation_model.dart';
 import 'package:fml/widgets/animation/animation_view.dart';
+import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
+import 'package:fml/widgets/tooltip/v2/tooltip_view.dart';
 import 'package:fml/widgets/widget/constraint.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:uuid/uuid.dart';
@@ -14,6 +16,9 @@ import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 
 class ViewableWidgetModel extends WidgetModel {
+  // model holding the tooltip
+  TooltipModel? tipModel;
+
   // Width
   double? _widthPercentage;
 
@@ -444,6 +449,14 @@ class ViewableWidgetModel extends WidgetModel {
 
     // pad is always defined as an attribute. PAD as an element name is the PADDING widget
     _paddings = Xml.attribute(node: xml, tag: 'pad');
+
+    // tip
+    List<TooltipModel> tips =
+        findChildrenOfExactType(TooltipModel).cast<TooltipModel>();
+    if (tips.isNotEmpty) {
+      tipModel = tips.first;
+      removeChildrenOfExactType(TooltipModel);
+    }
   }
 
   static double getParentVPadding(int paddings, double? padding,
@@ -599,6 +612,7 @@ class ViewableWidgetModel extends WidgetModel {
           key: ObjectKey(this),
           onVisibilityChanged: onVisibilityChanged,
           child: view);
+    if (tipModel != null) view = TooltipView(tipModel!, view);
     if (this.animations.isEmpty) return view;
 
     var animations = this.animations.reversed;

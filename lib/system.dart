@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:core';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/rendering.dart';
 import 'package:fml/datasources/log/log_model.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
@@ -60,6 +61,9 @@ typedef CommitCallback = Future<bool> Function();
 
 // used in context lookup
 var applicationKey = GlobalKey();
+
+// has a mouse
+final bool hasMouse = RendererBinding.instance.mouseTracker.mouseIsConnected;
 
 class System extends WidgetModel implements IEventManager
 {

@@ -156,5 +156,5 @@ class IconModel extends DecoratedWidgetModel implements IViewableWidget
     super.dispose();
   }
 
-  Widget getView({Key? key}) => IconView(this);
+  Widget getView({Key? key}) => getReactiveView(IconView(this));
 }

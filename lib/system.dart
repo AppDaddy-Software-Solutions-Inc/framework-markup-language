@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:core';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/rendering.dart';
 import 'package:fml/datasources/log/log_model.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
@@ -36,7 +37,7 @@ final String applicationTitle = "Flutter Markup Language " + version;
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://applications/<app> to use the asset applications
-String get defaultDomain => 'https://fml.dev';
+String get defaultDomain => 'https://test.appdaddy.co';
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
@@ -60,6 +61,9 @@ typedef CommitCallback = Future<bool> Function();
 
 // used in context lookup
 var applicationKey = GlobalKey();
+
+// has a mouse
+final bool hasMouse = RendererBinding.instance.mouseTracker.mouseIsConnected;
 
 class System extends WidgetModel implements IEventManager
 {

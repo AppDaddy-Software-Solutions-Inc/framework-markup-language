@@ -5,7 +5,6 @@ import 'package:fml/system.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
 import 'src/arrow.dart';
 import 'src/bubble.dart';
 import 'src/element_box.dart';

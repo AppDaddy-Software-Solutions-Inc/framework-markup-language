@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/observable/scope.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/animation/animation_model.dart' as ANIMATION;
 import 'package:fml/event/event.dart';
 import 'package:fml/helper/common_helpers.dart';
@@ -12,7 +14,8 @@ import 'package:fml/helper/common_helpers.dart';
 /// Animation View
 ///
 /// Builds the View from [ANIMATION.AnimationModel] properties
-class AnimationView extends StatefulWidget {
+class AnimationView extends StatefulWidget implements IWidgetView
+{
   final ANIMATION.AnimationModel model;
   final List<Widget> children = [];
   final Widget? child;
@@ -24,9 +27,8 @@ class AnimationView extends StatefulWidget {
   AnimationViewState createState() => AnimationViewState();
 }
 
-class AnimationViewState extends State<AnimationView>
-    with TickerProviderStateMixin
-    implements IModelListener {
+class AnimationViewState extends WidgetState<AnimationView> with TickerProviderStateMixin implements IModelListener
+{
   AnimationController? _controller;
   AnimationController? publicController;
   FlipCardController? _flipController;
@@ -36,102 +38,76 @@ class AnimationViewState extends State<AnimationView>
   bool _stopped = false;
 
   @override
-  void initState() {
+  void initState()
+  {
     super.initState();
-      _controller = AnimationController(
-        vsync: this,
-        duration: Duration(
-          milliseconds: widget.model.duration,
-        ),
-        reverseDuration: Duration(
-          milliseconds: widget.model.reverseduration ?? widget.model.duration,
-        ),
-      );
-      widget.model.controller = _controller;
+    _controller = AnimationController(vsync: this, duration: Duration(milliseconds: widget.model.duration), reverseDuration: Duration(milliseconds: widget.model.reverseduration ?? widget.model.duration,));
+    widget.model.controller = _controller;
   }
 
   @override
-  didChangeDependencies() {
+  didChangeDependencies()
+  {
     // register event listeners
-    EventManager.of(widget.model)
-        ?.registerEventListener(EventTypes.animate, onAnimate);
-    EventManager.of(widget.model)
-        ?.registerEventListener(EventTypes.reset, onReset);
-
-    // register model listener
-    widget.model.registerListener(this);
+    EventManager.of(widget.model)?.registerEventListener(EventTypes.animate, onAnimate);
+    EventManager.of(widget.model)?.registerEventListener(EventTypes.reset, onReset);
 
     super.didChangeDependencies();
   }
 
   @override
-  void didUpdateWidget(AnimationView oldWidget) {
+  void didUpdateWidget(AnimationView oldWidget)
+  {
     super.didUpdateWidget(oldWidget);
-    if ((oldWidget.model != widget.model)) {
+    if ((oldWidget.model != widget.model))
+    {
       // de-register event listeners
-      EventManager.of(oldWidget.model)
-          ?.removeEventListener(EventTypes.animate, onAnimate);
-      EventManager.of(widget.model)
-          ?.removeEventListener(EventTypes.reset, onReset);
+      EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.animate, onAnimate);
+      EventManager.of(widget.model)?.removeEventListener(EventTypes.reset, onReset);
 
       // register event listeners
-      EventManager.of(widget.model)
-          ?.registerEventListener(EventTypes.animate, onAnimate);
-      EventManager.of(widget.model)
-          ?.registerEventListener(EventTypes.reset, onReset);
+      EventManager.of(widget.model)?.registerEventListener(EventTypes.animate, onAnimate);
+      EventManager.of(widget.model)?.registerEventListener(EventTypes.reset, onReset);
 
-
-        _controller!.duration = Duration(milliseconds: widget.model.duration);
-        _controller!.reverseDuration = Duration(
-            milliseconds:
-                widget.model.reverseduration ?? widget.model.duration);
-      // re-register model listeners
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
+      _controller!.duration = Duration(milliseconds: widget.model.duration);
+      _controller!.reverseDuration = Duration(milliseconds: widget.model.reverseduration ?? widget.model.duration);
     }
   }
 
   @override
-  void dispose() {
+  void dispose()
+  {
     stop();
-
-    // remove model listener
-    widget.model.removeListener(this);
 
     // remove controller
     _controller?.dispose();
 
     // de-register event listeners
-    EventManager.of(widget.model)
-        ?.removeEventListener(EventTypes.animate, onAnimate);
-    EventManager.of(widget.model)
-        ?.removeEventListener(EventTypes.reset, onReset);
+    EventManager.of(widget.model)?.removeEventListener(EventTypes.animate, onAnimate);
+    EventManager.of(widget.model)?.removeEventListener(EventTypes.reset, onReset);
+
+    model?.removeListener(this);
 
     super.dispose();
   }
 
-  /// Callback to fire the [_AnimationViewState.build] when the [AnimationModel] changes
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    if (this.mounted) setState(() {});
-  }
-
-  _buildTransitionChildren() {
+  _buildTransitionChildren()
+  {
     Widget? newChild = widget.child;
-    widget.model.transitionChildren.forEach((child) {
+    widget.model.transitionChildren.forEach((child)
+    {
       newChild = child.getTransitionView(newChild, _controller);
     });
     return newChild;
   }
 
   @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(builder: builder);
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
-  Widget builder(BuildContext context, BoxConstraints constraints) {
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
     // Check if widget is visible before wasting resources on building it
-    if (((widget.model.children?.isEmpty ?? true) && widget.child == null))
-      return Offstage();
+    if (((widget.model.children?.isEmpty ?? true) && widget.child == null)) return Offstage();
 
     //link animations to sync from a single controller
     if(widget.model.linked != null){

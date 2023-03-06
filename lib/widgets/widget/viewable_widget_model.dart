@@ -604,22 +604,27 @@ class ViewableWidgetModel extends WidgetModel {
     }
   }
 
-  Widget getReactiveView(Widget view) {
-    // wrap in visibility detector,
+  Widget getReactiveView(Widget view)
+  {
+    // wrap in visibility detector?
     //TODO: dont wrap in visibility detector if invisible
     if (needsVisibilityDetector)
       view = VisibilityDetector(
           key: ObjectKey(this),
           onVisibilityChanged: onVisibilityChanged,
           child: view);
-    if (tipModel != null) view = TooltipView(tipModel!, view);
-    if (this.animations.isEmpty) return view;
 
+    // wrap in tooltip?
+    if (tipModel != null) view = TooltipView(tipModel!, view);
+
+    // wrap animations
+    if (this.animations.isEmpty) return view;
     var animations = this.animations.reversed;
     animations.forEach((element) {
       var model = getAnimationModel(element);
       if (model != null) view = AnimationView(model, view, children);
     });
+
     return view;
   }
 }

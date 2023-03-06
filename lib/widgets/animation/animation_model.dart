@@ -152,17 +152,22 @@ class AnimationModel extends WidgetModel implements IViewableWidget {
   AnimationModel(WidgetModel parent, String? id)
       : super(parent, id); // ; {key: value}
 
-  static AnimationModel? fromXml(WidgetModel parent, XmlElement xml, bool requestedStandalone) {
+  static AnimationModel? fromXml(WidgetModel parent, XmlElement xml, bool requestedStandalone)
+  {
     AnimationModel? model;
-    try {
+    try
+    {
       model = AnimationModel(parent, Xml.get(node: xml, tag: 'id'));
-      if(requestedStandalone) {
+      if (requestedStandalone)
+      {
         var xmlCopy = xml.copy();
         xmlCopy.setAttribute('id', null);
         xml.children.add(xmlCopy);
       }
       model.deserialize(xml);
-    } catch (e) {
+    }
+    catch (e)
+    {
       Log().debug(e.toString());
       model = null;
     }
@@ -171,9 +176,8 @@ class AnimationModel extends WidgetModel implements IViewableWidget {
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml) async {
-
-
+  void deserialize(XmlElement xml) async
+  {
     // deserialize
     super.deserialize(xml);
 
@@ -184,7 +188,6 @@ class AnimationModel extends WidgetModel implements IViewableWidget {
     reverse = Xml.get(node: xml, tag: 'reverse');
     duration = Xml.get(node: xml, tag: 'duration');
     linked = Xml.get(node: xml, tag: 'linked');
-
 
     // clear options
     this.transitionChildren.clear();

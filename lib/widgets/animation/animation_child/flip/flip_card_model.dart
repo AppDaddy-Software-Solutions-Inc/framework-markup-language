@@ -11,6 +11,7 @@ import 'package:fml/helper/common_helpers.dart';
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
 class FlipCardModel extends AnimationChildModel {
+
   /// Curve ending point from 1.0 to 0.0
   StringObservable? _align;
 
@@ -26,7 +27,6 @@ class FlipCardModel extends AnimationChildModel {
   String? get align => _align?.get();
 
 
-  /// Curve ending point from 1.0 to 0.0
   StringObservable? _direction;
 
   set direction(dynamic v) {
@@ -40,34 +40,6 @@ class FlipCardModel extends AnimationChildModel {
 
   String? get direction => _direction?.get();
 
-
-  /// anchor - used on on flip transition
-  StringObservable? _anchor;
-
-  set anchor(dynamic v) {
-    if (_anchor != null) {
-      _anchor!.set(v);
-    } else if (v != null) {
-      _anchor = StringObservable(Binding.toKey(id, 'anchor'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  String get anchor => _anchor?.get() ?? "center";
-
-  /// axis - used on on flip transition
-  StringObservable? _axis;
-
-  set axis(dynamic v) {
-    if (_axis != null) {
-      _axis!.set(v);
-    } else if (v != null) {
-      _axis = StringObservable(Binding.toKey(id, 'axis'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  String get axis => _axis?.get() ?? "horizontal";
 
   StringObservable? _side;
 
@@ -132,8 +104,6 @@ class FlipCardModel extends AnimationChildModel {
     // deserialize
     super.deserialize(xml);
 
-    anchor = Xml.get(node: xml, tag: 'anchor');
-    axis = Xml.get(node: xml, tag: 'axis');
     align = Xml.get(node: xml, tag: 'align');
     direction = Xml.get(node: xml, tag: 'direction');
   }

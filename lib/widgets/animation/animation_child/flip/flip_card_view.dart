@@ -76,10 +76,9 @@ class FlipCardViewState extends State<FlipCardView>
     double _begin = widget.model.begin;
     double _end = widget.model.end;
     Curve _curve = AnimationHelper.getCurve(widget.model.curve);
+
     // Build View
     Widget? view;
-    Alignment anchor =
-        AnimationHelper.getAlignment(widget.model.anchor.toLowerCase());
     dynamic frontWidget;
     double _from;
     double _to;
@@ -127,6 +126,7 @@ class FlipCardViewState extends State<FlipCardView>
       frontWidget.model.children
           .elementAt(1)
           .visible = true;
+      widget.model.side = "front";
     } else {
     frontWidget.model.children
         .elementAt(0)
@@ -134,11 +134,11 @@ class FlipCardViewState extends State<FlipCardView>
     frontWidget.model.children
         .elementAt(1)
         .visible = false;
+    widget.model.side = "back";
     }
 
 
     view = Stack(
-      alignment: anchor,
       fit: StackFit.passthrough,
       children:[
         _buildContent(
@@ -151,6 +151,21 @@ class FlipCardViewState extends State<FlipCardView>
   Widget _buildContent({required dynamic frontWidget}) {
     /// pointer events that would reach the backside of the card should be
 
+
+      if (widget.model.direction?.toLowerCase() == "vertical") {
+        return Transform(
+            alignment: FractionalOffset.center,
+            transform: Matrix4.identity()
+              ..setEntry(3, 2, 0.0015)
+              ..rotateX(pi * _animation.value),
+            child: Container(
+              child:  Transform(
+                alignment: FractionalOffset.center,
+                transform:  Matrix4.identity()
+                  ..rotateX(_animation.value <= 0.5 ? 0: pi), child: frontWidget,),
+            ));
+
+      }
         return Transform(
           alignment: FractionalOffset.center,
           transform: Matrix4.identity()
@@ -160,7 +175,6 @@ class FlipCardViewState extends State<FlipCardView>
           child:  Transform(
           alignment: FractionalOffset.center,
     transform:  Matrix4.identity()
-    ..setEntry(3, 2, 0.0015)
     ..rotateY(_animation.value <= 0.5 ? 0: pi), child: frontWidget,),
         ));
   }

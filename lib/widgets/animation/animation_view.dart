@@ -2,6 +2,7 @@
 import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
+import 'package:fml/observable/scope.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/animation/animation_model.dart' as ANIMATION;
@@ -27,6 +28,7 @@ class AnimationViewState extends State<AnimationView>
     with TickerProviderStateMixin
     implements IModelListener {
   AnimationController? _controller;
+  AnimationController? publicController;
   FlipCardController? _flipController;
   Widget? transitionChild;
 
@@ -45,6 +47,7 @@ class AnimationViewState extends State<AnimationView>
           milliseconds: widget.model.reverseduration ?? widget.model.duration,
         ),
       );
+      widget.model.controller = _controller;
   }
 
   @override
@@ -129,6 +132,19 @@ class AnimationViewState extends State<AnimationView>
     // Check if widget is visible before wasting resources on building it
     if (((widget.model.children?.isEmpty ?? true) && widget.child == null))
       return Offstage();
+
+    //link animations to sync from a single controller
+    if(widget.model.linked != null){
+      WidgetModel? linkedAnimation = Scope.findWidgetModel(widget.model.linked, widget.model.scope);
+      if(linkedAnimation != null && linkedAnimation is ANIMATION.AnimationModel){
+         if (linkedAnimation.controller != null) {
+           _controller = linkedAnimation.controller;
+           widget.model.controller = _controller;
+         } else {
+           widget.model.controller = null;
+         }
+      }
+    }
 
     if (widget.model.transitionChildren.isNotEmpty && widget.child != null) {
       Widget view = _buildTransitionChildren();

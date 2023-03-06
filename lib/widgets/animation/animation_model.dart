@@ -120,6 +120,7 @@ class AnimationModel extends WidgetModel implements IViewableWidget {
   String? get linked => _linked?.get();
 
   final List transitionChildren = [];
+  AnimationController? controller;
 
   AnimationModel(WidgetModel parent, String? id)
       : super(parent, id); // ; {key: value}
@@ -148,7 +149,7 @@ class AnimationModel extends WidgetModel implements IViewableWidget {
     repeat = Xml.get(node: xml, tag: 'repeat') ?? 1;
     reverse = Xml.get(node: xml, tag: 'reverse');
     duration = Xml.get(node: xml, tag: 'duration');
-    linked = Xml.get(node: xml, tag: 'duration');
+    linked = Xml.get(node: xml, tag: 'linked');
 
 
     // clear options

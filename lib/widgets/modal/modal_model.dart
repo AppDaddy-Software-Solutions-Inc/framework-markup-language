@@ -174,5 +174,5 @@ class ModalModel extends DecoratedWidgetModel
   }
 
   /// Returns the [MODAL] View
-  Widget getView({Key? key}) => ModalView(this);
+  Widget getView({Key? key}) => getReactiveView(ModalView(this));
 }

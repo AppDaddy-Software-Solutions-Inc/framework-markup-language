@@ -417,5 +417,5 @@ class CameraModel extends CAMERA.CameraImageModel implements IViewableWidget
     }
   }
 
-  Widget getView({Key? key}) => CameraView(this);
+  Widget getView({Key? key}) => getReactiveView(CameraView(this));
 }

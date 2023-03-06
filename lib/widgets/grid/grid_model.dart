@@ -437,5 +437,5 @@ class GridModel extends DecoratedWidgetModel implements IViewableWidget, IScroll
     await EventHandler(this).execute(_onpulldown);
   }
 
-  Widget getView({Key? key}) => GRID.GridView(this);
+  Widget getView({Key? key}) => getReactiveView(GRID.GridView(this));
 }

@@ -104,5 +104,5 @@ class DraggableModel extends DecoratedWidgetModel implements IViewableWidget
     return ok;
   }
 
-  Widget getView({Key? key}) => DraggableView(this);
+  Widget getView({Key? key}) => getReactiveView(DraggableView(this));
 }

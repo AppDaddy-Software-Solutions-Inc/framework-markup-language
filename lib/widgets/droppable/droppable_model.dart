@@ -102,5 +102,5 @@ class DroppableModel extends DecoratedWidgetModel implements IViewableWidget
     super.dispose();
   }
 
-  Widget getView({Key? key}) => DroppableView(this);
+  Widget getView({Key? key}) => getReactiveView(DroppableView(this));
 }

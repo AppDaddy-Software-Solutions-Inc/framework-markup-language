@@ -80,5 +80,5 @@ class HtmlModel extends DecoratedWidgetModel implements IViewableWidget
   }
 
   @override
-  Widget getView({Key? key}) => HtmlView(this);
+  Widget getView({Key? key}) => getReactiveView(HtmlView(this));
 }

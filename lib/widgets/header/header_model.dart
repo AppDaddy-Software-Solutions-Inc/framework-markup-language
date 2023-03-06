@@ -69,5 +69,5 @@ class HeaderModel extends DecoratedWidgetModel implements IViewableWidget
     super.dispose();
   }
 
-  Widget getView({Key? key}) => HeaderView(this);
+  Widget getView({Key? key}) => getReactiveView(HeaderView(this));
 }

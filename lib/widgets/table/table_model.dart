@@ -919,5 +919,5 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
   }
 
 
-  Widget getView({Key? key}) => TableView(this);
+  Widget getView({Key? key}) => getReactiveView(TableView(this));
 }

@@ -304,5 +304,5 @@ class RadioModel extends FormFieldModel implements IFormField, IViewableWidget
     return true;
   }
 
-  Widget getView({Key? key}) => RadioView(this);
+  Widget getView({Key? key}) => getReactiveView(RadioView(this));
 }

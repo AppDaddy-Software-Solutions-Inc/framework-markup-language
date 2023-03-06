@@ -396,5 +396,5 @@ class ListModel extends DecoratedWidgetModel implements IViewableWidget, IForm, 
   }
 
 
-  Widget getView({Key? key}) => ListLayoutView(this);
+  Widget getView({Key? key}) => getReactiveView(ListLayoutView(this));
 }

@@ -172,5 +172,5 @@ class TreeNodeModel extends DecoratedWidgetModel implements IViewableWidget
   }
 
   @override
-  Widget getView({Key? key}) => TreeNodeView(this);
+  Widget getView({Key? key}) => getReactiveView(TreeNodeView(this));
 }

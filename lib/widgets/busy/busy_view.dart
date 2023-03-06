@@ -1,7 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 import 'busy_model.dart';
 
 /// Busy View
@@ -9,7 +10,7 @@ import 'busy_model.dart';
 /// Builds the View from [BUSY.Model] properties
 /// Acts as an indicator that a page or widget is loading
 /// to let the user know its 'busy' working in the background
-class BusyView extends StatefulWidget
+class BusyView extends StatefulWidget implements IWidgetView
 {
   final BusyModel model;
 
@@ -19,55 +20,8 @@ class BusyView extends StatefulWidget
   _BusyViewState createState() => _BusyViewState();
 }
 
-class _BusyViewState extends State<BusyView> implements IModelListener
+class _BusyViewState extends WidgetState<BusyView>
 {
-
-  @override
-  void initState()
-  {
-    super.initState();
-
-    ////////////////////////////
-    /* Register the Listeners */
-    ////////////////////////////
-    widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
-  }
-
-  @override
-  didChangeDependencies()
-  {
-    super.didChangeDependencies();
-    widget.model.registerListener(this);
-  }
-
-  
-  @override
-  void didUpdateWidget(BusyView oldWidget)
-  {
-    super.didUpdateWidget(oldWidget);
-    if ((oldWidget.model != widget.model))
-    {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
-  }
-
-  @override
-  void dispose()
-  {
-    widget.model.removeListener(this);
-
-    super.dispose();
-  }
-  /// Callback function for when the model changes, used to force a rebuild with setState()
-  onModelChange(WidgetModel model,{String? property, dynamic value})
-  {
-    if (this.mounted) setState((){});
-  }
-
   @override
   Widget build(BuildContext context)
   {

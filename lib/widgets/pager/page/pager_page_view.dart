@@ -1,10 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/pager/page/pager_page_model.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
-class PagerPageView extends StatefulWidget
+class PagerPageView extends StatefulWidget implements IWidgetView
 {
   final PagerPageModel model;
   PagerPageView(this.model) : super(key: ObjectKey(model));
@@ -13,25 +15,17 @@ class PagerPageView extends StatefulWidget
   _PagerPageViewState createState() => _PagerPageViewState();
 }
 
-class _PagerPageViewState extends State<PagerPageView> implements IModelListener {
-
-  Widget build(BuildContext context) {
-    return LayoutBuilder(builder: builder);
-  }
+class _PagerPageViewState extends WidgetState<PagerPageView>
+{
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    //String? _id = widget.model.id;
-
     // Check if widget is visible before wasting resources on building it
     if (widget.model.visible == false) return Offstage();
 
     // Set Build Constraints in the [WidgetModel]
-    widget.model.minWidth  = constraints.minWidth;
-    widget.model.maxWidth  = constraints.maxWidth;
-    widget.model.minHeight = constraints.minHeight;
-    widget.model.maxHeight = constraints.maxHeight;
-
+    setConstraints(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -74,5 +68,4 @@ class _PagerPageViewState extends State<PagerPageView> implements IModelListener
   onModelChange(WidgetModel model, {String? property, value}) {
 // TODO Missing setState?
   }
-
 }

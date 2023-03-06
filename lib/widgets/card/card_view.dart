@@ -2,13 +2,15 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/card/card_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
 /// Card View
 ///
 /// DEPRECATED
 /// Builds the Card View from [CardModel] properties
-class CardView extends StatefulWidget {
+class CardView extends StatefulWidget implements IWidgetView
+{
   final CardModel model;
 
   CardView(this.model) : super(key: ObjectKey(model));
@@ -17,55 +19,14 @@ class CardView extends StatefulWidget {
   _CardViewState createState() => _CardViewState();
 }
 
-class _CardViewState extends State<CardView> implements IModelListener {
-  
-  
+class _CardViewState extends WidgetState<CardView>
+{
   @override
-  void initState() {
-    super.initState();
-    widget.model.registerListener(this);
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
-  }
-
-  @override
-  didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
-  
-  @override
-  void didUpdateWidget(CardView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.model != widget.model) {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
-  }
-
-  @override
-  void dispose() {
-    widget.model.removeListener(this);
-    super.dispose();
-  }
-
-  /// Callback to fire the [_CardViewState.build] when the [CardModel] changes
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    if (this.mounted) setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(builder: builder);
-  }
-
-  Widget builder(BuildContext context, BoxConstraints constraints) {
-    // Set Build Constraints in the [WidgetModel]
-    widget.model.minWidth = constraints.minWidth;
-    widget.model.maxWidth = constraints.maxWidth;
-    widget.model.minHeight = constraints.minHeight;
-    widget.model.maxHeight = constraints.maxHeight;
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
+    setConstraints(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();

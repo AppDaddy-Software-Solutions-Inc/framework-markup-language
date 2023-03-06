@@ -3,13 +3,14 @@ import 'dart:convert';
 import 'package:fml/phrase.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/scribble/scribble_model.dart';
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:perfect_freehand/perfect_freehand.dart';
 
-class ScribbleView extends StatefulWidget
+class ScribbleView extends StatefulWidget implements IWidgetView
 {
   final ScribbleModel model;
   ScribbleView(this.model) : super(key: ObjectKey(model));
@@ -18,50 +19,15 @@ class ScribbleView extends StatefulWidget
   _ScribbleViewState createState() => _ScribbleViewState();
 }
 
-class _ScribbleViewState extends State<ScribbleView> implements IModelListener
+class _ScribbleViewState extends WidgetState<ScribbleView>
 {
-
-  @override
-  void initState()
-  {
-    super.initState();
-    widget.model.registerListener(this);
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
-  }
-
-  @override
-  didChangeDependencies()
-  {
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(ScribbleView oldWidget)
-  {
-    super.didUpdateWidget(oldWidget);
-    
-    if ((oldWidget.model != widget.model))
-    {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
-
-  }
 
   @override
   void dispose()
   {
-    widget.model.removeListener(this);
     linesStreamController.close();
     currentLineStreamController.close();
     super.dispose();
-  }
-
-  /// Callback function for when the model changes, used to force a rebuild with setState()
-  onModelChange(WidgetModel model,{String? property, dynamic value})
-  {
-    if (this.mounted) setState((){});
   }
 
   RenderBox? scribbleBox;

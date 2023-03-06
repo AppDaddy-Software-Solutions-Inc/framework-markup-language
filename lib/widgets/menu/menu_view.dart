@@ -1,5 +1,4 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'dart:async';
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/event/event.dart' ;
@@ -7,25 +6,24 @@ import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/menu/menu_model.dart';
 import 'package:fml/widgets/menu/item/menu_item_view.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
-class MenuView extends StatefulWidget
+class MenuView extends StatefulWidget implements IWidgetView
 {
   final MenuModel model;
-  MenuView(this.model) : super() {
-    // int i = 1;
-  }
+  MenuView(this.model);
 
   @override
   _MenuViewState createState() => _MenuViewState();
 }
 
-class _MenuViewState extends State<MenuView>
-    implements IModelListener, IEventScrolling {
+class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling
+{
   BusyView? busy;
-  Future<MenuModel>? model;
   ScrollController? vScroller;
 
   @override
@@ -33,10 +31,6 @@ class _MenuViewState extends State<MenuView>
   {
     super.initState();
     vScroller = ScrollController();
-    widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
   }
 
   @override
@@ -44,12 +38,12 @@ class _MenuViewState extends State<MenuView>
   {
     // register event listeners
     EventManager.of(widget.model)?.registerEventListener(EventTypes.scroll, onScroll);
-
     super.didChangeDependencies();
   }
 
   @override
-  void didUpdateWidget(MenuView oldWidget) {
+  void didUpdateWidget(MenuView oldWidget)
+  {
     super.didUpdateWidget(oldWidget);
     
     if ((oldWidget.model != widget.model))
@@ -59,21 +53,12 @@ class _MenuViewState extends State<MenuView>
 
       // register new event listeners
       EventManager.of(widget.model)?.registerEventListener(EventTypes.scroll, onScroll);
-
-      // remove old model listener
-      oldWidget.model.removeListener(this);
-
-      // register new model listenber
-      widget.model.registerListener(this);
     }
   }
 
   @override
   void dispose()
   {
-    // remove model listener
-    widget.model.removeListener(this);
-
     // remove event listeners
     EventManager.of(widget.model)?.removeEventListener(EventTypes.scroll, onScroll);
 
@@ -83,7 +68,8 @@ class _MenuViewState extends State<MenuView>
   }
 
   @override
-  void onScroll(Event event) async {
+  void onScroll(Event event) async
+  {
     if (this.vScroller != null) scroll(event, this.vScroller);
     event.handled = true;
   }
@@ -116,15 +102,11 @@ class _MenuViewState extends State<MenuView>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(builder: builder);
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
-  Widget builder(BuildContext context, BoxConstraints constraints) {
-    widget.model.minWidth = constraints.minWidth;
-    widget.model.maxWidth = constraints.maxWidth;
-    widget.model.minHeight = constraints.minHeight;
-    widget.model.maxHeight = constraints.maxHeight;
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
+    setConstraints(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();

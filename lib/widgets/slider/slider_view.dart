@@ -2,10 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/slider/slider_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/widget_state.dart' ;
 import 'package:fml/helper/common_helpers.dart';
 
-class SliderView extends StatefulWidget {
+class SliderView extends StatefulWidget implements IWidgetView
+{
   final SliderModel model;
   final dynamic onChangeCallback;
   SliderView(this.model, {this.onChangeCallback});
@@ -14,65 +16,22 @@ class SliderView extends StatefulWidget {
   _SliderViewState createState() => _SliderViewState();
 }
 
-class _SliderViewState extends State<SliderView>
-    with WidgetsBindingObserver
-    implements IModelListener {
+class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserver
+{
   RenderBox? box;
   Offset? position;
 
   @override
-  void initState() {
-    super.initState();
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
-    
-    widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
-  }
-
-  @override
-  didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(SliderView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    
-    if ((oldWidget.model != widget.model)) {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
-
-  }
-
-  @override
-  void dispose() {
-    widget.model.removeListener(this);
-    super.dispose();
-  }
-
-  /// Callback to fire the [_SliderViewState.build] when the [SliderModel] changes
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    if (this.mounted) setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(builder: builder);
-  }
-
-  Widget builder(BuildContext context, BoxConstraints constraints) {
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _afterBuild(context);
     });
 
     // Set Build Constraints in the [WidgetModel]
-    widget.model.minWidth = constraints.minWidth;
-    widget.model.maxWidth = constraints.maxWidth;
-    widget.model.minHeight = constraints.minHeight;
-    widget.model.maxHeight = constraints.maxHeight;
+    setConstraints(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();

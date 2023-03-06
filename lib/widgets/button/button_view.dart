@@ -1,15 +1,15 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/button/button_model.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
 /// Button View
 ///
 /// Builds the Button View from [ButtonModel] properties
-class ButtonView extends StatefulWidget
+class ButtonView extends StatefulWidget implements IWidgetView
 {
   final ButtonModel model;
   final Widget? child;
@@ -20,60 +20,13 @@ class ButtonView extends StatefulWidget
   _ButtonViewState createState() => _ButtonViewState();
 }
 
-class _ButtonViewState extends State<ButtonView> implements IModelListener
+class _ButtonViewState extends WidgetState<ButtonView>
 {
-  
-  
   @override
-  void initState()
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    super.initState();
-
-    widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-   widget.model.initialize();
-  }
-
-  @override
-  didChangeDependencies()
-  {
-    super.didChangeDependencies();
-  }
-
-  
-  @override
-  void didUpdateWidget(ButtonView oldWidget)
-  {
-    super.didUpdateWidget(oldWidget);
-    if ((oldWidget.model != widget.model))
-    {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
-
-  }
-
-  @override
-  void dispose()
-  {
-    widget.model.removeListener(this);
-
-    super.dispose();
-  }
-  /// Callback function for when the model changes, used to force a rebuild with setState()
-  onModelChange(WidgetModel model,{String? property, dynamic value})
-  {
-    if (this.mounted) setState((){});
-  }
-
-  @override
-  Widget build(BuildContext context)
-  {
-    return LayoutBuilder(builder: builder);
-  }
-
-  Widget builder(BuildContext context, BoxConstraints constraints) {
     // Set Build Constraints in the [WidgetModel]
     ButtonModel wm = widget.model;
     widget.model.minWidth = constraints.minWidth;
@@ -236,21 +189,5 @@ class _ButtonViewState extends State<ButtonView> implements IModelListener
       );
     }
     return view;
-  }
-
-  // Rebuild the view when the listener hears a model change
-  onViewModelChange({String? property, dynamic value})
-  {
-    try
-    {
-      if (this.mounted)
-      {
-        setState((){});
-      }
-    }
-    catch(e)
-    {
-      Log().exception(e, caller: 'button.View -> onViewModelChange()');
-    }
   }
 }

@@ -5,6 +5,7 @@ import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart'        ;
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart'       ;
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
@@ -13,8 +14,9 @@ import 'package:fml/widgets/list/item/list_item_view.dart';
 import 'package:fml/widgets/list/item/list_item_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
-class ListLayoutView extends StatefulWidget
+class ListLayoutView extends StatefulWidget implements IWidgetView
 {
   final ListModel model;
   ListLayoutView(this.model) : super(key: ObjectKey(model));
@@ -23,7 +25,7 @@ class ListLayoutView extends StatefulWidget
   _ListLayoutViewState createState() => _ListLayoutViewState();
 }
 
-class _ListLayoutViewState extends State<ListLayoutView> implements IModelListener, IEventScrolling
+class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEventScrolling
 {
   Future<ListModel>? listViewModel;
   BusyView? busy;
@@ -33,13 +35,7 @@ class _ListLayoutViewState extends State<ListLayoutView> implements IModelListen
   void initState()
   {
     super.initState();
-
     scroller = ScrollController();
-
-    widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
   }
 
   @override
@@ -58,8 +54,6 @@ class _ListLayoutViewState extends State<ListLayoutView> implements IModelListen
     super.didUpdateWidget(oldWidget);
     if ((oldWidget.model != widget.model))
     {
-      oldWidget.model.removeListener(this);
-
       // remove old event listeners
       EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.scroll,  onScroll);
       EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.scrollto, onScrollTo);
@@ -67,17 +61,12 @@ class _ListLayoutViewState extends State<ListLayoutView> implements IModelListen
       // register new event listeners
       EventManager.of(widget.model)?.registerEventListener(EventTypes.scroll,  onScroll);
       EventManager.of(widget.model)?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
-
-      widget.model.registerListener(this);
     }
   }
 
   @override
   void dispose()
   {
-    // remove model listener
-    widget.model.removeListener(this);
-
     // remove event listeners
     EventManager.of(widget.model)?.removeEventListener(EventTypes.scroll,  onScroll);
     EventManager.of(widget.model)?.removeEventListener(EventTypes.scrollto, onScrollTo);

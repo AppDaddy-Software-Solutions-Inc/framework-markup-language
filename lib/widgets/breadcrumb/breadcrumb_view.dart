@@ -3,11 +3,14 @@ import 'package:fml/navigation/navigation_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/navigation/page.dart';
 import 'package:fml/widgets/breadcrumb/breadcrumb_model.dart';
+import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
 /// Breadcrumb View
 ///
 /// Builds the View from the [BREADCRUMB.BreadcrumbModel] properties
-class BreadcrumbView extends StatefulWidget {
+class BreadcrumbView extends StatefulWidget implements IWidgetView
+{
   final BreadcrumbModel model;
 
   /// Height of the breadcrumb bar
@@ -24,9 +27,11 @@ class BreadcrumbView extends StatefulWidget {
   _BreadcrumbViewState createState() => _BreadcrumbViewState();
 }
 
-class _BreadcrumbViewState extends State<BreadcrumbView> {
+class _BreadcrumbViewState extends WidgetState<BreadcrumbView>
+{
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context)
+  {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 

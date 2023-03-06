@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/draggable/draggable_model.dart';
 
 import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:flutter/services.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
-class DraggableView extends StatefulWidget
+class DraggableView extends StatefulWidget implements IWidgetView
 {
   final DraggableModel model;
   DraggableView(this.model) : super(key: ObjectKey(model));
@@ -16,21 +17,15 @@ class DraggableView extends StatefulWidget
 }
 
 
-class _DraggableViewState extends State<DraggableView> implements IModelListener
+class _DraggableViewState extends WidgetState<DraggableView>
 {
   bool dragging = false;
   SystemMouseCursor cursor = SystemMouseCursors.grab;
+
   @override
   void initState()
   {
     super.initState();
-
-    
-    widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
-
     dragging = false;
   }
 
@@ -45,30 +40,9 @@ class _DraggableViewState extends State<DraggableView> implements IModelListener
   void didUpdateWidget(DraggableView oldWidget)
   {
     super.didUpdateWidget(oldWidget);
-    
-    if ((oldWidget.model != widget.model))
-    {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
-
     dragging = false;
-
   }
   
-  @override
-  void dispose()
-  {
-    widget.model.removeListener(this);
-
-    super.dispose();
-  }
-  /// Callback function for when the model changes, used to force a rebuild with setState()
-  onModelChange(WidgetModel model,{String? property, dynamic value})
-  {
-    if (this.mounted) setState((){});
-  }
-
   @override
   Widget build(BuildContext context)
   {

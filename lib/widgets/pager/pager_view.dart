@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/event/event.dart' ;
 import 'package:fml/widgets/busy/busy_view.dart';
@@ -9,8 +10,9 @@ import 'package:fml/widgets/pager/pager_model.dart';
 import 'package:fml/widgets/pager/page/pager_page_view.dart';
 import 'package:fml/widgets/pager/page/pager_page_model.dart';
 import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
-class PagerView extends StatefulWidget
+class PagerView extends StatefulWidget implements IWidgetView
 {
   final PagerModel model;
   PagerView(this.model) : super(key: ObjectKey(model));
@@ -19,7 +21,8 @@ class PagerView extends StatefulWidget
   _PagerViewState createState() => _PagerViewState();
 }
 
-class _PagerViewState extends State<PagerView> implements IModelListener {
+class _PagerViewState extends WidgetState<PagerView>
+{
   PageController? _controller;
   List<PagerPageView> _pages = [];
   BusyView? busy;
@@ -28,9 +31,6 @@ class _PagerViewState extends State<PagerView> implements IModelListener {
   void initState()
   {
     super.initState();
-
-    // register model listener
-    widget.model.registerListener(this);
 
     _controller = PageController(initialPage: (widget.model.initialpage != null ? widget.model.initialpage! - 1 : 0));
     widget.model.currentpage = widget.model.initialpage ?? 1;
@@ -57,21 +57,12 @@ class _PagerViewState extends State<PagerView> implements IModelListener {
 
       // register new event listeners
       EventManager.of(widget.model)?.registerEventListener(EventTypes.page, onPage);
-
-      // remove old model listener
-      oldWidget.model.removeListener(this);
-
-      // register new model listener
-      widget.model.registerListener(this);
     }
   }
 
   @override
   void dispose()
   {
-    // remove model listener
-    widget.model.removeListener(this);
-
     // remove old event listeners
     EventManager.of(widget.model)?.removeEventListener(EventTypes.page, onPage);
 
@@ -86,16 +77,12 @@ class _PagerViewState extends State<PagerView> implements IModelListener {
 
 
   @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(builder: builder);
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
-  Widget builder(BuildContext context, BoxConstraints constraints) {
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
     // Set Build Constraints in the [WidgetModel]
- widget.model.minWidth = constraints.minWidth;
-      widget.model.maxWidth = constraints.maxWidth;
-      widget.model.minHeight = constraints.minHeight;
-      widget.model.maxHeight = constraints.maxHeight;
+    setConstraints(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();

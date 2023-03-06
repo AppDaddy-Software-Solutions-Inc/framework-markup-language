@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
+import 'package:fml/widgets/widget/widget_state.dart';
 
 typedef OnChangeCallback = void Function (double percent);
 
@@ -30,7 +31,7 @@ class ScrollbarView extends StatefulWidget
   }
 }
 
-class _ScrollbarViewState extends State<ScrollbarView> implements IModelListener
+class _ScrollbarViewState extends WidgetState<ScrollbarView>
 {
   static double on  = .5;
   static double off = .05;

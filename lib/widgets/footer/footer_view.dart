@@ -2,10 +2,11 @@
 import 'package:flutter/material.dart';
 
 import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/footer/footer_model.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
-class FooterView extends StatefulWidget
+class FooterView extends StatefulWidget implements IWidgetView
 {
   final List<Widget> children = [];
   final FooterModel model;
@@ -16,60 +17,15 @@ class FooterView extends StatefulWidget
   _FooterViewState createState() => _FooterViewState();
 }
 
-class _FooterViewState extends State<FooterView> implements IModelListener
+class _FooterViewState extends WidgetState<FooterView>
 {
-  @override
-  void initState()
-  {
-    super.initState();
-
-    widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
-  }
-
-  @override
-  didChangeDependencies()
-  {
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(FooterView oldWidget)
-  {
-    super.didUpdateWidget(oldWidget);
-    // re-register model listener
-    if ((oldWidget.model != widget.model))
-    {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
-  }
-
-  @override
-  void dispose()
-  {
-    widget.model.removeListener(this);
-
-    super.dispose();
-  }
-  /// Callback function for when the model changes, used to force a rebuild with setState()
-  onModelChange(WidgetModel model,{String? property, dynamic value})
-  {
-    if (this.mounted) setState((){});
-  }
-
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // Set Build Constraints in the [WidgetModel]
-    widget.model.minWidth  = constraints.minWidth;
-    widget.model.maxWidth  = constraints.maxWidth;
-    widget.model.minHeight = constraints.minHeight;
-    widget.model.maxHeight = constraints.maxHeight;
+    setConstraints(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (widget.model.visible == false) return Offstage();

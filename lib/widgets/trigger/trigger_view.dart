@@ -1,9 +1,11 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/widgets/trigger/trigger_model.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
-class TriggerView extends StatefulWidget
+class TriggerView extends StatefulWidget implements IWidgetView
 {
   final List<Widget> children = [];
   final TriggerModel model;
@@ -13,46 +15,8 @@ class TriggerView extends StatefulWidget
   _TriggerViewState createState() => _TriggerViewState();
 }
 
-class _TriggerViewState extends State<TriggerView> implements IModelListener
+class _TriggerViewState extends WidgetState<TriggerView>
 {
-  @override
-  void initState()
-  {
-    super.initState();
-
-    
-
-      widget.model.registerListener(this);
-      widget.model.initialize();
-  }
-
-  @override
-  didChangeDependencies()
-  {
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(TriggerView oldWidget)
-  {
-    super.didUpdateWidget(oldWidget);
-    
-    if ((oldWidget.model != widget.model))
-    {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
-
-  }
-
-  @override
-  void dispose()
-  {
-    widget.model.removeListener(this);
-
-    super.dispose();
-  }
-
   /// Callback to fire the [_TriggerViewState.build] when the [TriggerModel] changes
   onModelChange(WidgetModel model, {String? property, dynamic value})
   {

@@ -6,14 +6,15 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/tabview/tab_model.dart';
 import 'package:fml/widgets/framework/framework_view.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class TabView extends StatefulWidget
+class TabView extends StatefulWidget implements IWidgetView
 {
   final TabModel model;
 
@@ -23,18 +24,10 @@ class TabView extends StatefulWidget
   _TabViewState createState() => _TabViewState();
 }
 
-class _TabViewState extends State<TabView> with TickerProviderStateMixin implements IModelListener
+class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
 {
   BusyView? busy;
   TabController? _tabController;
-
-  @override
-  void initState()
-  {
-    super.initState();
-
-    widget.model.registerListener(this);
-  }
 
   @override
   didChangeDependencies()
@@ -65,21 +58,12 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
       EventManager.of(widget.model)?.registerEventListener(EventTypes.open, onOpen, priority: 0);
       EventManager.of(widget.model)?.registerEventListener(EventTypes.close, onClose, priority: 0);
       EventManager.of(widget.model)?.registerEventListener(EventTypes.back, onBack, priority: 0);
-
-      // remove old model listener
-      oldWidget.model.removeListener(this);
-
-      // register new model listener
-      widget.model.registerListener(this);
     }
   }
 
   @override
   void dispose()
   {
-    // remove model listener
-    widget.model.removeListener(this);
-
     // remove old event listeners
     EventManager.of(widget.model)?.removeEventListener(EventTypes.refresh, onRefresh);
     EventManager.of(widget.model)?.removeEventListener(EventTypes.open, onOpen);
@@ -87,12 +71,6 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin impleme
     EventManager.of(widget.model)?.removeEventListener(EventTypes.back, onBack);
 
     super.dispose();
-  }
-
-  /// Callback to fire the [_TabViewState.build] when the [TabModel] changes
-  onModelChange(WidgetModel model, {String? property, dynamic value})
-  {
-    if (this.mounted) setState((){});
   }
 
   void onRefresh(Event event) async

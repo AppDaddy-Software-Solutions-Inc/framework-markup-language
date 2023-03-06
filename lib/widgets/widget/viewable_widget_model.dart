@@ -4,6 +4,7 @@ import 'package:fml/widgets/tip/tip_model.dart';
 import 'package:fml/widgets/tip/tip_view.dart';
 import 'package:fml/widgets/widget/constraint.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
+import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
@@ -404,7 +405,7 @@ class ViewableWidgetModel extends WidgetModel
   Widget getReactiveView(Widget view)
   {
     // wrap as tooltip
-    if (tipModel != null) view = TipView(tipModel, view);
+    if (tipModel != null) view = JustTheTooltip(child: view, content: tipModel!.getView(), backgroundColor: tipModel!.color);
     return view;
   }
 

@@ -154,6 +154,8 @@ dependencies:
   jaguar_jwt: 3.0.0
   # BSD-3-Clause
 
+  just_the_tooltip: 0.0.12
+
   # Updated 2022/12/13
   latlong2: 0.8.1
   # BSD-3-Clause

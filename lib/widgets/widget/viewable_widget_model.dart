@@ -604,7 +604,7 @@ class ViewableWidgetModel extends WidgetModel {
     var animations = this.animations.reversed;
     animations.forEach((element) {
       var model = getAnimationModel(element);
-      if (model != null) view = AnimationView(model, view);
+      if (model != null) view = AnimationView(model, view, children);
     });
     return view;
   }

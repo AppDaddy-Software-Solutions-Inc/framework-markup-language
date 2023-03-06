@@ -111,8 +111,7 @@ class AnimationModel extends WidgetModel implements IViewableWidget {
   AnimationModel(WidgetModel parent, String? id)
       : super(parent, id); // ; {key: value}
 
-  static AnimationModel? fromXml(WidgetModel parent, XmlElement xml,
-      {String? type}) {
+  static AnimationModel? fromXml(WidgetModel parent, XmlElement xml) {
     AnimationModel? model;
     try {
       model = AnimationModel(parent, Xml.get(node: xml, tag: 'id'));
@@ -191,6 +190,6 @@ class AnimationModel extends WidgetModel implements IViewableWidget {
   /// Returns the [ANIMATION] View
 
   Widget getView({Key? key}) {
-    return AnimationView(this, null);
+    return AnimationView(this, null, null);
   }
 }

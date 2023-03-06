@@ -14,7 +14,6 @@ class FlipCardView extends StatefulWidget {
   final List<Widget> children = [];
   final Widget? child;
   final AnimationController controller;
-
   FlipCardView(this.model, this.child, this.controller)
       : super(key: ObjectKey(model));
 
@@ -81,8 +80,8 @@ class FlipCardViewState extends State<FlipCardView>
     Widget? view;
     Alignment anchor =
         AnimationHelper.getAlignment(widget.model.anchor.toLowerCase());
-    Widget? frontWidget;
-    Widget? backWidget;
+    dynamic frontWidget;
+    dynamic backWidget;
     double _from;
     double _to;
     Tween<double> _newTween;
@@ -119,32 +118,51 @@ class FlipCardViewState extends State<FlipCardView>
 
     //get front and back widgets.
 
-    // frontWidget = widget.firstLevelChildren?.elementAt(0);
-    // backWidget =  widget.firstLevelChildren?.elementAt(1);
+    //this is done likely wrong. We need to find each element of type, not sure if getting the view here is any good
+
+     frontWidget = widget.child;
+    if(_animation.value <= 0.5) {
+      frontWidget.model.children
+          .elementAt(0)
+          .visible = false;
+      frontWidget.model.children
+          .elementAt(1)
+          .visible = true;
+    } else {
+    frontWidget.model.children
+        .elementAt(0)
+        .visible = true;
+    frontWidget.model.children
+        .elementAt(1)
+        .visible = false;
+    }
+
 
     view = Stack(
       alignment: anchor,
       fit: StackFit.passthrough,
-      children:[ _buildContent(
+      children:[
+        _buildContent(
           frontWidget: frontWidget ?? Container(),
-          backWidget: backWidget ?? Container(),
       )]);
 
     return view;
   }
 
-  Widget _buildContent({required Widget frontWidget, required Widget backWidget}) {
+  Widget _buildContent({required dynamic frontWidget}) {
     /// pointer events that would reach the backside of the card should be
+
         return Transform(
           alignment: FractionalOffset.center,
           transform: Matrix4.identity()
             ..setEntry(3, 2, 0.0015)
             ..rotateY(pi * _animation.value),
-          child: Card(
-            child: _animation.value <= 0.5
-                ? frontWidget
-                : backWidget,
-          ),
-        );
+          child: Container(
+          child:  Transform(
+          alignment: FractionalOffset.center,
+    transform:  Matrix4.identity()
+    ..setEntry(3, 2, 0.0015)
+    ..rotateY(_animation.value <= 0.5 ? 0: pi), child: frontWidget,),
+        ));
   }
 }

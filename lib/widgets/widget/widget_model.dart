@@ -580,7 +580,7 @@ class WidgetModel implements IDataSourceListener
           break;
 
       case "slide":
-        if (parent is AnimationModel) model = SlideTransitionModel.fromXml(parent, node);
+        if (parent is AnimationModel) model = SlideTransitionModel.fromXml(parent, node, );
         break;
 
       case "scale":

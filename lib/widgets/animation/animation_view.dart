@@ -15,8 +15,9 @@ class AnimationView extends StatefulWidget {
   final ANIMATION.AnimationModel model;
   final List<Widget> children = [];
   final Widget? child;
+  final List? childsChildren;
 
-  AnimationView(this.model, this.child) : super(key: ObjectKey(model));
+  AnimationView(this.model, this.child, this.childsChildren) : super(key: ObjectKey(model));
 
   @override
   AnimationViewState createState() => AnimationViewState();

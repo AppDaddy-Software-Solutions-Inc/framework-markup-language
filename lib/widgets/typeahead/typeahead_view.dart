@@ -3,14 +3,16 @@ import 'dart:async';
 import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/typeahead/typeahead_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
-class TypeaheadView extends StatefulWidget
+class TypeaheadView extends StatefulWidget implements IWidgetView
 {
   final TypeaheadModel model;
 
@@ -20,7 +22,8 @@ class TypeaheadView extends StatefulWidget
   _TypeaheadViewState createState() => _TypeaheadViewState();
 }
 
-class _TypeaheadViewState extends State<TypeaheadView> implements IModelListener {
+class _TypeaheadViewState extends WidgetState<TypeaheadView>
+{
   List<DropdownMenuItem<OptionModel>> _list = [];
   late DropdownMenuItem<OptionModel> _input;
   bool _inputInitialized = false;
@@ -32,43 +35,10 @@ class _TypeaheadViewState extends State<TypeaheadView> implements IModelListener
   String typeaheadText = '';
 
   @override
-  void initState() {
-    super.initState();
-
-    widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
-  }
-
-  @override
-  didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(TypeaheadView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    if (
-    (oldWidget.model != widget.model)) {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
-
-  }
-
-  @override
-  void dispose() {
-    widget.model.removeListener(this);
+  void dispose()
+  {
     controller.dispose();
     super.dispose();
-  }
-
-  /// Callback to fire the [_SelectViewState.build] when the [SelectModel] changes
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    if (this.mounted) setState(() {});
-
   }
 
   _inputSelection(res)

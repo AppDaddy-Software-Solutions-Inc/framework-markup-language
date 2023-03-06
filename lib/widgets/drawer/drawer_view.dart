@@ -3,14 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
 
 import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart'    ;
 import 'package:fml/event/event.dart'             ;
 import 'package:fml/widgets/framework/framework_model.dart' ;
 import 'package:fml/widgets/box/box_view.dart' as BOX;
 import 'package:fml/widgets/drawer/drawer_model.dart' as DRAWER;
 import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
-class DrawerView extends StatefulWidget implements IDragListener
+class DrawerView extends StatefulWidget implements IDragListener, IWidgetView
 {
   final List<Widget> children = [];
   final DRAWER.DrawerModel model;
@@ -48,7 +50,7 @@ class DrawerView extends StatefulWidget implements IDragListener
   }
 }
 
-class DrawerViewState extends State<DrawerView> implements IModelListener, IDragListener
+class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
 {
   BOX.BoxView? visibleDrawer;
   BOX.BoxView? top;
@@ -71,12 +73,6 @@ class DrawerViewState extends State<DrawerView> implements IModelListener, IDrag
   void initState()
   {
     super.initState();
-
-    widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
-
     widget.registerDrawerListener(this);
   }
 
@@ -98,8 +94,6 @@ class DrawerViewState extends State<DrawerView> implements IModelListener, IDrag
     super.didUpdateWidget(oldWidget);
     if ((oldWidget.model != widget.model))
     {
-      oldWidget.model.removeListener(this);
-
       // remove old event listeners
       EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.open, onOpen);
       EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.close, onClose);
@@ -107,8 +101,6 @@ class DrawerViewState extends State<DrawerView> implements IModelListener, IDrag
       // register new event listeners
       EventManager.of(widget.model)?.registerEventListener(EventTypes.open, onOpen);
       EventManager.of(widget.model)?.registerEventListener(EventTypes.close, onClose, priority: 0);
-
-      widget.model.registerListener(this);
     }
     widget.registerDrawerListener(this);
   }
@@ -116,7 +108,6 @@ class DrawerViewState extends State<DrawerView> implements IModelListener, IDrag
   @override
   void dispose()
   {
-    widget.model.removeListener(this);
     widget.removeDrawerListener(this);
 
     // remove event listeners
@@ -182,17 +173,12 @@ class DrawerViewState extends State<DrawerView> implements IModelListener, IDrag
   }
 
   @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(builder: builder);
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // set constraints
-    widget.model.minWidth  = constraints.minWidth;
-    widget.model.maxWidth  = constraints.maxWidth;
-    widget.model.minHeight = constraints.minHeight;
-    widget.model.maxHeight = constraints.maxHeight;
+    setConstraints(constraints);
 
     var con = widget.model.getConstraints();
     double h = con.maxHeight ?? MediaQuery.of(context).size.height;

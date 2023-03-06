@@ -10,13 +10,16 @@ import 'package:flutter_multi_formatter/formatters/phone_input_formatter.dart';
 import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/input/input_model.dart';
+import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class InputView extends StatefulWidget {
+class InputView extends StatefulWidget implements IWidgetView
+{
   final InputModel model;
   final dynamic onChangeCallback;
   final dynamic onSubmitted;
@@ -27,7 +30,7 @@ class InputView extends StatefulWidget {
   _InputViewState createState() => _InputViewState();
 }
 
-class _InputViewState extends State<InputView> with WidgetsBindingObserver implements IModelListener
+class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
 {
   final focus = FocusNode();
   bool hasSetObscure = false;
@@ -110,25 +113,12 @@ class _InputViewState extends State<InputView> with WidgetsBindingObserver imple
   }
 
   @override
-  didChangeDependencies()
-  {
-    super.didChangeDependencies();
-  }
-
-  @override
   void didUpdateWidget(InputView oldWidget)
   {
     super.didUpdateWidget(oldWidget);
-    
-    if (oldWidget.model != widget.model)
-    {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
 
     var oldcursorPos = widget.model.controller!.selection.base.offset;
     widget.model.controller!.value = TextEditingValue(text: widget.model.value ?? "", selection: TextSelection.fromPosition(TextPosition(offset: oldcursorPos)));
-
   }
 
   @override
@@ -142,8 +132,6 @@ class _InputViewState extends State<InputView> with WidgetsBindingObserver imple
     widget.model.controller = null;
 
     focus.dispose();
-
-    widget.model.removeListener(this);
 
     // Remove WidgetsBindingObserver mixin
     WidgetsBinding.instance.removeObserver(this);

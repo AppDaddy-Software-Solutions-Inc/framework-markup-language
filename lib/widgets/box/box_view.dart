@@ -4,11 +4,13 @@ import 'package:fml/helper/common_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/box/box_model.dart' as BOX;
+import 'package:fml/widgets/widget/widget_state.dart';
 
 /// [BOX] view
-class BoxView extends StatefulWidget {
+class BoxView extends StatefulWidget implements IWidgetView
+{
   final BOX.BoxModel model;
   final Widget? child;
 
@@ -74,46 +76,9 @@ List<Color> getGradientColors(c1, c2, c3, c4) {
   return gradientColors;
 }
 
-class _BoxViewState extends State<BoxView> implements IModelListener {
+class _BoxViewState extends WidgetState<BoxView>
+{
   bool isGradient = false;
-
-  
-  @override
-  void initState() {
-    super.initState();
-    widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
-
-  }
-
-  @override
-  didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
-  
-  @override
-  void didUpdateWidget(BoxView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.model != widget.model) 
-    {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
-  }
-
-  @override
-  void dispose() {
-    widget.model.removeListener(this);
-    super.dispose();
-  }
-
-  /// Callback to fire the [_BoxViewState.build] when the [BoxModel] changes
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    if (this.mounted) setState(() {});
-  }
 
   @override
   Widget build(BuildContext context)

@@ -1,11 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/widgets/row/row_model.dart';
+import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class RowView extends StatefulWidget
+class RowView extends StatefulWidget implements IWidgetView
 {
   final RowModel model;
 
@@ -15,50 +16,15 @@ class RowView extends StatefulWidget
   _RowViewState createState() => _RowViewState();
 }
 
-class _RowViewState extends State<RowView> implements IModelListener {
-
-  
+class _RowViewState extends WidgetState<RowView>
+{
   @override
-  void initState() {
-    super.initState();
-    widget.model.registerListener(this);
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
-  }
-
-  
-  @override
-  void didUpdateWidget(RowView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.model != widget.model) {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
-  }
-
-  @override
-  void dispose() {
-    widget.model.removeListener(this);
-    super.dispose();
-  }
-
-  /// Callback to fire the [_RowViewState.build] when the [RowModel] changes
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    if (this.mounted) setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(builder: builder);
-  }
-
-  Widget builder(BuildContext context, BoxConstraints constraints) {
-    // Set Build Constraints in the [WidgetModel]
-    widget.model.minWidth = constraints.minWidth;
-    widget.model.maxWidth = constraints.maxWidth;
-    widget.model.minHeight = constraints.minHeight;
-    widget.model.maxHeight = constraints.maxHeight;
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
+    // set constraints
+    setConstraints(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();

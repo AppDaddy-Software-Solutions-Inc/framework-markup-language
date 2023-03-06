@@ -2,10 +2,12 @@
 import 'package:flutter/material.dart';
 
 import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 import 'padding_model.dart';
 
-class PaddingView extends StatefulWidget {
+class PaddingView extends StatefulWidget implements IWidgetView
+{
   final PaddingModel model;
 
   PaddingView(this.model) : super(key: ObjectKey(model));
@@ -14,46 +16,10 @@ class PaddingView extends StatefulWidget {
   _PaddingViewState createState() => _PaddingViewState();
 }
 
-class _PaddingViewState extends State<PaddingView> implements IModelListener {
+class _PaddingViewState extends WidgetState<PaddingView>
+{
   @override
-  void initState() {
-    super.initState();
-
-    
-    widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
-  }
-
-  @override
-  void didUpdateWidget(PaddingView oldWidget)
-  {
-    super.didUpdateWidget(oldWidget);
-    
-    if (oldWidget.model != widget.model)
-    {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
-  }
-
-  @override
-  void dispose()
-  {
-    widget.model.removeListener(this);
-    super.dispose();
-  }
-
-  /// Callback to fire the [_PaddingViewState.build] when the [PaddingModel] changes
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    if (this.mounted) setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-return LayoutBuilder(builder: builder);
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints) 
   {

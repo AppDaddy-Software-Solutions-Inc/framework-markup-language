@@ -10,6 +10,7 @@ import 'package:fml/event/event.dart'        ;
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/table/table_model.dart';
 import 'package:fml/widgets/table/header/table_header_view.dart';
@@ -22,6 +23,7 @@ import 'package:fml/helper/measured.dart';
 import 'package:fml/widgets/scrollbar/scrollbar_view.dart';
 import 'package:fml/system.dart';
 import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
 class MyCustomScrollBehavior extends MaterialScrollBehavior
 {
@@ -32,7 +34,7 @@ class MyCustomScrollBehavior extends MaterialScrollBehavior
   }
 }
 
-class TableView extends StatefulWidget
+class TableView extends StatefulWidget implements IWidgetView
 {
   final TableModel model;
   TableView(this.model) : super(key: ObjectKey(model));
@@ -41,7 +43,7 @@ class TableView extends StatefulWidget
   _TableViewState createState() => _TableViewState();
 }
 
-class _TableViewState extends State<TableView> implements IModelListener, IEventScrolling
+class _TableViewState extends WidgetState<TableView> implements IEventScrolling
 {
   BusyView? busy;
   Future<TableModel>? future;
@@ -59,11 +61,6 @@ class _TableViewState extends State<TableView> implements IModelListener, IEvent
 
     hScroller = ScrollController();
     vScroller = ScrollController();
-
-    widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
   }
 
   @override
@@ -95,21 +92,12 @@ class _TableViewState extends State<TableView> implements IModelListener, IEvent
       EventManager.of(widget.model)?.registerEventListener(EventTypes.export,   onExport);
       EventManager.of(widget.model)?.registerEventListener(EventTypes.complete, onComplete);
       EventManager.of(widget.model)?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
-
-      // remove old model listener
-      oldWidget.model.removeListener(this);
-
-      // register model listener
-      widget.model.registerListener(this);
     }
   }
 
   @override
   void dispose()
   {
-    // remove model listener
-    widget.model.removeListener(this);
-
     // remove event listeners
     EventManager.of(widget.model)?.removeEventListener(EventTypes.scroll,   onScroll);
     EventManager.of(widget.model)?.removeEventListener(EventTypes.export,   onExport);
@@ -118,6 +106,7 @@ class _TableViewState extends State<TableView> implements IModelListener, IEvent
 
     hScroller?.dispose();
     vScroller?.dispose();
+
     super.dispose();
   }
 
@@ -314,10 +303,7 @@ class _TableViewState extends State<TableView> implements IModelListener, IEvent
   }
 
   @override
-  Widget build(BuildContext context)
-  {
-    return LayoutBuilder(builder: builder);
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
@@ -327,10 +313,7 @@ class _TableViewState extends State<TableView> implements IModelListener, IEvent
     widget.model.cellpadding.clear();
 
     // Set Build Constraints in the [WidgetModel]
-    widget.model.minWidth  = constraints.minWidth;
-    widget.model.maxWidth  = constraints.maxWidth;
-    widget.model.minHeight = constraints.minHeight;
-    widget.model.maxHeight = constraints.maxHeight;
+    setConstraints(constraints);
 
     double? viewportHeight = widget.model.height ?? widget.model.maxHeight;
 

@@ -1,14 +1,15 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/widget_model.dart'    ;
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/center/center_model.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
 /// Center View
 ///
 /// DEPRECATED
 /// Builds a centered Center View from [Model] properties
-class CenterView extends StatefulWidget
+class CenterView extends StatefulWidget implements IWidgetView
 {
   final CenterModel model;
   final List<Widget> children = [];
@@ -19,41 +20,15 @@ class CenterView extends StatefulWidget
   _CenterViewState createState() => _CenterViewState();
 }
 
-class _CenterViewState extends State<CenterView> implements IModelListener
+class _CenterViewState extends WidgetState<CenterView>
 {
   @override
-  void initState()
-  {
-    super.initState();
-    widget.model.registerListener(this);
-  }
-
-  @override
-  void dispose()
-  {
-    widget.model.removeListener(this);
-    super.dispose();
-  }
-
-  /// Callback to fire the [_CenterViewState.build] when the [CenterModel] changes
-  onModelChange(WidgetModel model, {String? property, dynamic value})
-  {
-    if (this.mounted) setState((){});
-  }
-
-  @override
-  Widget build(BuildContext context)
-  {
-    return LayoutBuilder(builder: builder);
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // Set Build Constraints in the [WidgetModel]
-      widget.model.minWidth  = constraints.minWidth;
-      widget.model.maxWidth  = constraints.maxWidth;
-      widget.model.minHeight = constraints.minHeight;
-      widget.model.maxHeight = constraints.maxHeight;
+    setConstraints(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();

@@ -2,11 +2,12 @@
 import 'package:flutter/material.dart';
 
 import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/widget_model.dart'   ;
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/theme/theme_model.dart';
 import 'package:fml/theme/theme.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
-class ThemeView extends StatefulWidget
+class ThemeView extends StatefulWidget implements IWidgetView
 {
   final ThemeModel model;
   final List<Widget> children = [];
@@ -17,45 +18,8 @@ class ThemeView extends StatefulWidget
   _ThemeViewState createState() => _ThemeViewState();
 }
 
-class _ThemeViewState extends State<ThemeView> implements IModelListener
+class _ThemeViewState extends WidgetState<ThemeView>
 {
-
-  @override
-  void initState() {
-    super.initState();
-    widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
-  }
-
-  @override
-  didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(ThemeView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.model != widget.model)
-    {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
-  }
-
-  @override
-  void dispose() {
-    widget.model.removeListener(this);
-    super.dispose();
-  }
-
-  /// Callback to fire the [_ThemeViewState.build] when the [THEME.ThemeModel] changes
-  onModelChange(WidgetModel model, {String? property, dynamic value})
-  {
-    if (this.mounted) setState((){});
-  }
-
   @override
   Widget build(BuildContext context)
   {

@@ -2,10 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/table/header/cell/table_header_cell_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
-class TableHeaderCellView extends StatefulWidget {
+class TableHeaderCellView extends StatefulWidget implements IWidgetView
+{
   final TableHeaderCellModel model;
 
   TableHeaderCellView(this.model) : super(key: ObjectKey(model));
@@ -14,51 +16,10 @@ class TableHeaderCellView extends StatefulWidget {
   _TableHeaderCellViewState createState() => _TableHeaderCellViewState();
 }
 
-class _TableHeaderCellViewState extends State<TableHeaderCellView>
-    implements IModelListener {
+class _TableHeaderCellViewState extends WidgetState<TableHeaderCellView>
+{
   @override
-  void initState() {
-    super.initState();
-
-    
-    widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
-  }
-
-  @override
-  didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(TableHeaderCellView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    
-    if ((oldWidget.model != widget.model)) {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
-
-  }
-
-  @override
-  void dispose() {
-    widget.model.removeListener(this);
-
-    super.dispose();
-  }
-
-  /// Callback function for when the model changes, used to force a rebuild with setState()
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    if (this.mounted) setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(builder: builder);
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints) {
 
@@ -66,10 +27,7 @@ class _TableHeaderCellViewState extends State<TableHeaderCellView>
       widget.model.onSort();
     }
       // Set Build Constraints in the [WidgetModel]
-      widget.model.minWidth = constraints.minWidth;
-      widget.model.maxWidth = constraints.maxWidth;
-      widget.model.minHeight = constraints.minHeight;
-      widget.model.maxHeight = constraints.maxHeight;
+    setConstraints(constraints);
 
       // Check if widget is visible before wasting resources on building it
       if (!widget.model.visible) return Offstage();

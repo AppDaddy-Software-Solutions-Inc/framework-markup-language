@@ -2,10 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/treeview/node/tree_node_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
-class TreeNodeView extends StatefulWidget
+class TreeNodeView extends StatefulWidget implements IWidgetView
 {
   final TreeNodeModel model;
 
@@ -15,49 +16,8 @@ class TreeNodeView extends StatefulWidget
   _TreeNodeViewState createState() => _TreeNodeViewState();
 }
 
-class _TreeNodeViewState extends State<TreeNodeView> implements IModelListener
+class _TreeNodeViewState extends WidgetState<TreeNodeView>
 {
-  @override
-  void initState()
-  {
-    super.initState();
-    widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
-  }
-
-  @override
-  didChangeDependencies()
-  {
-    super.didChangeDependencies();
-  }
-
-  
-  @override
-  void didUpdateWidget(TreeNodeView oldWidget)
-  {
-    super.didUpdateWidget(oldWidget);
-    if ((oldWidget.model != widget.model))
-    {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
-  }
-
-  @override
-  void dispose()
-  {
-    widget.model.removeListener(this);
-    super.dispose();
-  }
-
-  /// Callback function for when the model changes, used to force a rebuild with setState()
-  onModelChange(WidgetModel model,{String? property, dynamic value})
-  {
-    if (this.mounted) setState((){});
-  }
-
   @override
   Widget build(BuildContext context)
   {

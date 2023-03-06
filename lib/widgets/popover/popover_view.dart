@@ -1,10 +1,11 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/popover/popover_model.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
-class PopoverView extends StatefulWidget {
+class PopoverView extends StatefulWidget implements IWidgetView
+{
   final PopoverModel model;
   final Widget? child;
 
@@ -14,47 +15,8 @@ class PopoverView extends StatefulWidget {
   _PopoverViewState createState() => _PopoverViewState();
 }
 
-class _PopoverViewState extends State<PopoverView>
-    implements IModelListener {
-  @override
-  void initState() {
-    super.initState();
-
-    
-    widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
-  }
-
-  @override
-  didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(PopoverView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    
-    if ((oldWidget.model != widget.model)) {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
-
-  }
-
-  @override
-  void dispose() {
-    widget.model.removeListener(this);
-
-    super.dispose();
-  }
-
-  /// Callback function for when the model changes, used to force a rebuild with setState()
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    if (this.mounted) setState(() {});
-  }
-
+class _PopoverViewState extends WidgetState<PopoverView>
+{
   @override
   Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
@@ -98,15 +60,5 @@ class _PopoverViewState extends State<PopoverView>
                 itemBuilder: (BuildContext context) =>
                     <PopupMenuEntry>[...itemsList]),
           );
-  }
-
-  onViewModelChange({String? property, dynamic value}) {
-    try {
-      if (this.mounted) {
-        setState(() {});
-      }
-    } catch(e) {
-      Log().exception(e);
-    }
   }
 }

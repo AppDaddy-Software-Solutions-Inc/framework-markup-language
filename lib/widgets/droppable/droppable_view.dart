@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/droppable/droppable_model.dart';
 import 'package:fml/widgets/draggable/draggable_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/widget_model.dart'    ;
+import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
-class DroppableView extends StatefulWidget
+class DroppableView extends StatefulWidget implements IWidgetView
 {
   final DroppableModel model;
 
@@ -16,52 +17,8 @@ class DroppableView extends StatefulWidget
 }
 
 
-class _DroppableViewState extends State<DroppableView> implements IModelListener
+class _DroppableViewState extends WidgetState<DroppableView>
 {
-  @override
-  void initState()
-  {
-    super.initState();
-
-    
-    widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
-  }
-
-  @override
-  didChangeDependencies()
-  {
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(DroppableView oldWidget)
-  {
-    super.didUpdateWidget(oldWidget);
-    
-    if ((oldWidget.model != widget.model))
-    {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
-
-  }
-
-  @override
-  void dispose()
-  {
-    widget.model.removeListener(this);
-
-    super.dispose();
-  }
-  /// Callback function for when the model changes, used to force a rebuild with setState()
-  onModelChange(WidgetModel model,{String? property, dynamic value})
-  {
-    if (this.mounted) setState((){});
-  }
-
   @override
   Widget build(BuildContext context)
   {

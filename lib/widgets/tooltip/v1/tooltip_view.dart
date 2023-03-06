@@ -2,11 +2,12 @@
 import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/tooltip/v1/tooltip_model.dart';
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
-class TooltipView extends StatefulWidget
+class TooltipView extends StatefulWidget implements IWidgetView
 {
   final List<Widget> children = [];
   final TooltipModel model;
@@ -16,47 +17,8 @@ class TooltipView extends StatefulWidget
   _TooltipViewState createState() => _TooltipViewState();
 }
 
-class _TooltipViewState extends State<TooltipView> implements IModelListener
+class _TooltipViewState extends WidgetState<TooltipView>
 {
-  @override
-  void initState()
-  {
-    super.initState();
-      widget.model.registerListener(this);
-      widget.model.initialize();
-  }
-
-  @override
-  didChangeDependencies()
-  {
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(TooltipView oldWidget)
-  {
-    super.didUpdateWidget(oldWidget);
-    if ((oldWidget.model != widget.model))
-    {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
-  }
-
-  @override
-  void dispose()
-  {
-    widget.model.removeListener(this);
-
-    super.dispose();
-  }
-
-  /// Callback to fire the [_TooltipViewState.build] when the [TooltipModel] changes
-  onModelChange(WidgetModel model, {String? property, dynamic value})
-  {
-    if (this.mounted) setState((){});
-  }
-
   @override
   Widget build(BuildContext context)
   {

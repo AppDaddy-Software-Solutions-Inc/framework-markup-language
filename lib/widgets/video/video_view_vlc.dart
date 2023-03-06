@@ -5,13 +5,14 @@ import 'package:fml/widgets/icon/icon_view.dart';
 import 'package:fml/widgets/video/IVideoPlayer.dart';
 import 'package:fml/widgets/video/video_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:flutter/material.dart';
 import 'package:dart_vlc/dart_vlc.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
 StatefulWidget getVideoPlayerView(VideoModel model) => VideoViewVlc(model);
 
-class VideoViewVlc extends StatefulWidget
+class VideoViewVlc extends StatefulWidget implements IWidgetView
 {
   final VideoModel model;
 
@@ -21,7 +22,7 @@ class VideoViewVlc extends StatefulWidget
   VideoViewState createState() => VideoViewState();
 }
 
-class VideoViewState extends State<VideoViewVlc> implements IModelListener, IVideoPlayer
+class VideoViewState extends WidgetState<VideoViewVlc> implements IVideoPlayer
 {
   static Widget getVideoPlayer() => Container();
 
@@ -34,9 +35,6 @@ class VideoViewState extends State<VideoViewVlc> implements IModelListener, IVid
   {
     super.initState();
 
-    // register listener to the model
-    widget.model.registerListener(this);
-
     // initialize DartVLC
     DartVLC.initialize();
 
@@ -48,15 +46,6 @@ class VideoViewState extends State<VideoViewVlc> implements IModelListener, IVid
 
     // initialize the controller
     play(widget.model.url);
-  }
-
-  /// Callback to fire the [CameraViewState.build] when the [CameraModel] changes
-  onModelChange(WidgetModel model, {String? property, dynamic value})
-  {
-    if (this.mounted)
-    {
-      setState(() {});
-    }
   }
 
   @override
@@ -72,10 +61,7 @@ class VideoViewState extends State<VideoViewVlc> implements IModelListener, IVid
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // Set Build Constraints in the [WidgetModel]
-    widget.model.minWidth  = constraints.minWidth;
-    widget.model.maxWidth  = constraints.maxWidth;
-    widget.model.minHeight = constraints.minHeight;
-    widget.model.maxHeight = constraints.maxHeight;
+    setConstraints(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();

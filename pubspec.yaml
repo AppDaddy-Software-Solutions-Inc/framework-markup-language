@@ -4,7 +4,7 @@ description: Flutter Markup Language
 version: 1.2.2
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: '>=2.17.0 <3.0.0'
 
 dependencies:
 
@@ -153,10 +153,6 @@ dependencies:
   # Updated 2022/01/29
   jaguar_jwt: 3.0.0
   # BSD-3-Clause
-
-  # Updated 2023/03/06
-  just_the_tooltip: 0.0.12
-  # MIT
 
   # Updated 2022/12/13
   latlong2: 0.8.1

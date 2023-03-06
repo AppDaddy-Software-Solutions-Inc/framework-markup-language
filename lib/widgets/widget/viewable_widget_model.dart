@@ -1,9 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
+import 'package:fml/widgets/tooltip/v2/tooltip_view.dart';
 import 'package:fml/widgets/widget/constraint.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
-import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
@@ -404,23 +404,7 @@ class ViewableWidgetModel extends WidgetModel
   Widget getReactiveView(Widget view)
   {
     // wrap as tooltip
-    if (tipModel != null)
-    {
-      var position = AxisDirection.down;
-      switch (tipModel!.position?.toLowerCase().trim())
-      {
-        case 'up' :
-          position = AxisDirection.up;
-          break;
-        case 'left' :
-          position = AxisDirection.up;
-          break;
-        case 'right' :
-          position = AxisDirection.up;
-          break;
-      }
-      view = JustTheTooltip(child: view, content: tipModel!.getView(), backgroundColor: tipModel!.color,  preferredDirection: position);
-    }
+    if (tipModel != null) view = TooltipView(tipModel!, view);
     return view;
   }
 }

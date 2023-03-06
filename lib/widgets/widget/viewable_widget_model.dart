@@ -406,7 +406,20 @@ class ViewableWidgetModel extends WidgetModel
     // wrap as tooltip
     if (tipModel != null)
     {
-      view = JustTheTooltip(child: view, content: tipModel!.getView(), backgroundColor: tipModel!.color,  preferredDirection: AxisDirection.right);
+      var position = AxisDirection.down;
+      switch (tipModel!.position?.toLowerCase().trim())
+      {
+        case 'up' :
+          position = AxisDirection.up;
+          break;
+        case 'left' :
+          position = AxisDirection.up;
+          break;
+        case 'right' :
+          position = AxisDirection.up;
+          break;
+      }
+      view = JustTheTooltip(child: view, content: tipModel!.getView(), backgroundColor: tipModel!.color,  preferredDirection: position);
     }
     return view;
   }

@@ -10,6 +10,7 @@ import 'package:fml/system.dart';
 import 'package:fml/widgets/camera/camera_model.dart';
 import 'package:fml/widgets/camera/stream/stream.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/icon/icon_model.dart';
 import 'package:fml/widgets/icon/icon_view.dart';
@@ -21,8 +22,9 @@ import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
 if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
 if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
-class CameraView extends StatefulWidget
+class CameraView extends StatefulWidget implements IWidgetView
 {
   final CameraModel model;
 
@@ -32,7 +34,7 @@ class CameraView extends StatefulWidget
   CameraViewState createState() => CameraViewState();
 }
 
-class CameraViewState extends State<CameraView> implements IModelListener
+class CameraViewState extends WidgetState<CameraView>
 {
   CameraController? controller;
   List<CameraDescription>? cameras;
@@ -57,9 +59,6 @@ class CameraViewState extends State<CameraView> implements IModelListener
   void initState()
   {
     super.initState();
-
-    // register listener
-    widget.model.registerListener(this);
 
     // register camera
     widget.model.camera = this;

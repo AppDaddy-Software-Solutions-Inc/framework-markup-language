@@ -1,12 +1,13 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/widgets/expanded/expanded_model.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/text/text_model.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:google_fonts/google_fonts.dart' deferred as gf;
 import 'package:flutter/material.dart';
 
-class TextView extends StatefulWidget
+class TextView extends StatefulWidget implements IWidgetView
 {
   final TextModel model;
   TextView(this.model) : super(key: ObjectKey(model));
@@ -15,8 +16,8 @@ class TextView extends StatefulWidget
   _TextViewState createState() => _TextViewState();
 }
 
-class _TextViewState extends State<TextView> implements IModelListener {
-
+class _TextViewState extends WidgetState<TextView>
+{
   bool gfloaded = false;
 
   @override
@@ -33,40 +34,12 @@ class _TextViewState extends State<TextView> implements IModelListener {
         gfloaded = true;
       });
     });
-
-    widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
-  }
-
-  @override
-  void didUpdateWidget(TextView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    
-    if (
-        (oldWidget.model != widget.model)) {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
-
-  }
-
-  @override
-  void dispose()
-  {
-    widget.model.removeListener(this);
-    super.dispose();
-  }
-
-  /// Callback to fire the [_TextViewState.build] when the [TextModel] changes
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    if (this.mounted) setState(() {});
   }
 
   @override
   Widget build(BuildContext context)
   {
+
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible || !gfloaded) return Offstage();
 
@@ -468,28 +441,25 @@ class _TextViewState extends State<TextView> implements IModelListener {
     /* Constrained? */
     //////////////////
     bool isNotExpandedChild = false;
-          if(!widget.model.hasSizing) {
-            ScrollerModel? parentScroll = widget.model.findAncestorOfExactType(
-                ScrollerModel);
-            if (parentScroll != null &&
-                parentScroll.layout.toLowerCase() == "row") return view;
-            isNotExpandedChild = widget.model.findAncestorOfExactType(ExpandedModel) == null;
-          }
+    if(!widget.model.hasSizing) {
+      ScrollerModel? parentScroll = widget.model.findAncestorOfExactType(
+          ScrollerModel);
+      if (parentScroll != null &&
+          parentScroll.layout.toLowerCase() == "row") return view;
+      isNotExpandedChild = widget.model.findAncestorOfExactType(ExpandedModel) == null;
+    }
 
-          if( isNotExpandedChild || widget.model.hasSizing) {
-            var constr = widget.model.getConstraints();
-            view = ConstrainedBox(
-                child: view,
-                constraints: BoxConstraints(
-                    minWidth: constr.minWidth!,
-                    maxWidth: constr.maxWidth!,
-                )
-            );
-          }
-
-
-
+    if( isNotExpandedChild || widget.model.hasSizing) {
+      var constr = widget.model.getConstraints();
+      view = ConstrainedBox(
+          child: view,
+          constraints: BoxConstraints(
+              minWidth: constr.minWidth!,
+              maxWidth: constr.maxWidth!,
+          )
+      );
+    }
 
     return view;
   }
-  }
+}

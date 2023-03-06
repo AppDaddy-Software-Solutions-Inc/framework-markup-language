@@ -2,15 +2,17 @@
 import 'package:flutter/material.dart';
 
 import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/checkbox/checkbox_model.dart' as CHECKBOX;
 import 'package:fml/widgets/option/option_model.dart' as OPTION;
 import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
 /// Checkbox View
 ///
 /// Builds the Checkbox View from [Model] properties
-class CheckboxView extends StatefulWidget {
+class CheckboxView extends StatefulWidget implements IWidgetView
+{
   final CHECKBOX.CheckboxModel model;
   CheckboxView(this.model) : super(key: ObjectKey(model));
 
@@ -18,47 +20,11 @@ class CheckboxView extends StatefulWidget {
   _CheckboxViewState createState() => _CheckboxViewState();
 }
 
-class _CheckboxViewState extends State<CheckboxView> implements IModelListener {
+class _CheckboxViewState extends WidgetState<CheckboxView>
+{
   List<CheckBox> _list = [];
   RenderBox? box;
   Offset? position;
-
-  @override
-  void initState() {
-    super.initState();
-
-    widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
-  }
-
-  @override
-  didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(CheckboxView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if ((oldWidget.model != widget.model)) {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
-  }
-
-  @override
-  void dispose() {
-    widget.model.removeListener(this);
-
-    super.dispose();
-    widget.model.removeListener(this);
-  }
-
-  /// Callback to fire the [_CheckboxViewState.build] when the [CheckboxModel] changes
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    if (this.mounted) setState(() {});
-  }
 
   /// Builder for each checkbox [OPTION.OptionModel]
   _buildOptions() {
@@ -80,16 +46,12 @@ class _CheckboxViewState extends State<CheckboxView> implements IModelListener {
     }
   }
 
-  Widget build(BuildContext context) {
-    return LayoutBuilder(builder: builder);
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
-  Widget builder(BuildContext context, BoxConstraints constraints) {
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
     // Set Build Constraints in the [WidgetModel]
-    widget.model.minWidth = constraints.minWidth;
-    widget.model.maxWidth = constraints.maxWidth;
-    widget.model.minHeight = constraints.minHeight;
-    widget.model.maxHeight = constraints.maxHeight;
+    setConstraints(constraints);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _afterBuild(context);

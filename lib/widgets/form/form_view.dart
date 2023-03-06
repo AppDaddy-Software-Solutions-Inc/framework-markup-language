@@ -5,6 +5,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/widgets/form/iFormField.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
@@ -15,8 +16,9 @@ import 'package:fml/datasources/gps/iGpsListener.dart'  as GPS;
 import 'package:fml/widgets/form/form_model.dart' as FORM;
 import 'package:fml/widgets/pager/page/pager_page_model.dart' as PAGE;
 import 'package:fml/widgets/pager/pager_model.dart' as PAGER;
+import 'package:fml/widgets/widget/widget_state.dart';
 
-class FormView extends StatefulWidget
+class FormView extends StatefulWidget implements IWidgetView
 {
   final FORM.FormModel model;
   FormView(this.model) : super(key: ObjectKey(model));
@@ -25,7 +27,7 @@ class FormView extends StatefulWidget
   FormViewState createState() => FormViewState();
 }
 
-class FormViewState extends State<FormView> implements IModelListener,  GPS.IGpsListener
+class FormViewState extends WidgetState<FormView> implements GPS.IGpsListener
 {
   BUSY.BusyView? busy;
 
@@ -42,47 +44,15 @@ class FormViewState extends State<FormView> implements IModelListener,  GPS.IGps
 
     // Listen to GPS
     if (widget.model.geocode == true) System().gps.registerListener(this);
-
-    widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
-  }
-
-  @override
-  didChangeDependencies()
-  {
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(FormView oldWidget)
-  {
-    super.didUpdateWidget(oldWidget);
-    if ((oldWidget.model != widget.model))
-    {
-      // remove old model listener
-      oldWidget.model.removeListener(this);
-
-      // register new model listener
-      widget.model.registerListener(this);
-    }
   }
 
   @override
   void dispose()
   {
-    widget.model.removeListener(this);
-
     // Stop Listening to GPS
     System().gps.removeListener(this);
 
     super.dispose();
-  }
-  /// Callback function for when the model changes, used to force a rebuild with setState()
-  onModelChange(WidgetModel model,{String? property, dynamic value})
-  {
-    if (this.mounted) setState((){});
   }
 
   Future<bool> quit() async
@@ -147,10 +117,7 @@ class FormViewState extends State<FormView> implements IModelListener,  GPS.IGps
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // Set Build Constraints in the [WidgetModel]
-    widget.model.minWidth  = constraints.minWidth;
-    widget.model.maxWidth  = constraints.maxWidth;
-    widget.model.minHeight = constraints.minHeight;
-    widget.model.maxHeight = constraints.maxHeight;
+    setConstraints(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if ((widget.model.children == null) || ((!widget.model.visible))) return Offstage();

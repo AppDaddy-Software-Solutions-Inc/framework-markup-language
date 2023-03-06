@@ -30,36 +30,6 @@ class BreadcrumbModel extends DecoratedWidgetModel implements IViewableWidget
   }
   Color? get backgroundcolor => _backgroundcolor?.get();
 
-  /// Opacity
-  DoubleObservable? _opacity;
-  set opacity (dynamic v)
-  {
-    if (_opacity != null)
-    {
-      _opacity!.set(v);
-    }
-    else if (v != null)
-    {
-      _opacity = DoubleObservable(Binding.toKey(id, 'opacity'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  double? get opacity => _opacity?.get();
-
-  /// Width of the breadcrumbs and bar
-  DoubleObservable? _width;
-  set width (dynamic v)
-  {
-    if (_width != null)
-    {
-      _width!.set(v);
-    }
-    else if (v != null)
-    {
-      _width = DoubleObservable(Binding.toKey(id, 'width'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  double? get width => _width?.get();
-
   BreadcrumbModel({
     WidgetModel? parent,
     String? id,

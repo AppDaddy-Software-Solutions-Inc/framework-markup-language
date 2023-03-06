@@ -138,4 +138,12 @@ class Platform
       return 0;
     }
   }
+
+  static String get title
+  {
+    String? title;
+    var e = window.document.getElementsByName("description");
+    if (e != null && e.isNotEmpty && e.first is MetaElement) title = (e.first as MetaElement).content;
+    return title ?? applicationTitle;
+  }
 }

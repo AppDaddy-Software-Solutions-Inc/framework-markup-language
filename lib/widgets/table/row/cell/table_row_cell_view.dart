@@ -5,11 +5,14 @@ import 'package:fml/widgets/overlay/overlay_model.dart';
 import 'package:fml/widgets/table/row/cell/table_row_cell_model.dart';
 import 'package:fml/widgets/table/row/table_row_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/widget_state.dart' ;
 import 'package:fml/widgets/overlay/overlay_view.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class TableRowCellView extends StatefulWidget {
+class TableRowCellView extends StatefulWidget implements IWidgetView
+{
   final TableRowCellModel model;
   final int? row;
 
@@ -19,67 +22,21 @@ class TableRowCellView extends StatefulWidget {
   _TableRowCellViewState createState() => _TableRowCellViewState();
 }
 
-class _TableRowCellViewState extends State<TableRowCellView>
-    with WidgetsBindingObserver
-    implements IModelListener {
+class _TableRowCellViewState extends WidgetState<TableRowCellView> with WidgetsBindingObserver
+{
   @override
-  void initState() {
-    super.initState();
-
-    
-    widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
-  }
-
-  @override
-  void didChangeMetrics() {
-    // final RenderBox renderBox = context.findRenderObject();
-    // final position = renderBox.localToGlobal(Offset.zero);
-    // print("position : ${position.dx},${position.dy}");
-  }
-
-  @override
-  didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(TableRowCellView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    
-    if ((oldWidget.model != widget.model)) {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
-
-  }
-
-  @override
-  void dispose() {
-    widget.model.removeListener(this);
-
+  void dispose()
+  {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
-
-  /// Callback function for when the model changes, used to force a rebuild with setState()
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    if (this.mounted) setState(() {});
-  }
-
   @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(builder: builder);
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
-  Widget builder(BuildContext context, BoxConstraints constraints) {
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
     // Set Build Constraints in the [WidgetModel]
-    widget.model.minWidth = constraints.minWidth;
-    widget.model.maxWidth = constraints.maxWidth;
-    widget.model.minHeight = constraints.minHeight;
-    widget.model.maxHeight = constraints.maxHeight;
+    setConstraints(constraints);
 
     //////////////
     /* Children */

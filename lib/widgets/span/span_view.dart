@@ -1,11 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/span/span_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
 
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
-class SpanView extends StatefulWidget
+class SpanView extends StatefulWidget implements IWidgetView
 {
   final SpanModel model;
 
@@ -15,43 +16,9 @@ class SpanView extends StatefulWidget
   _SpanViewState createState() => _SpanViewState();
 }
 
-class _SpanViewState extends State<SpanView> implements IModelListener {
+class _SpanViewState extends WidgetState<SpanView>
+{
   List<InlineSpan>? _list;
-
-  @override
-  void initState() {
-    super.initState();
-
-    
-    widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
-  }
-
-  @override
-  void didUpdateWidget(SpanView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    
-    if (
-        (oldWidget.model != widget.model)) {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
-
-  }
-
-  @override
-  void dispose() {
-    widget.model.removeListener(this);
-
-    super.dispose();
-  }
-
-  /// Callback to fire the [_SpanViewState.build] when the [TextModel] changes
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    if (this.mounted) setState(() {});
-  }
 
   @override
   Widget build(BuildContext context)

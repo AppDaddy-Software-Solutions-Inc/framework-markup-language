@@ -1,12 +1,14 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/radio/radio_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
-class RadioView extends StatefulWidget {
+class RadioView extends StatefulWidget implements IWidgetView
+{
   final RadioModel model;
   RadioView(this.model) : super(key: ObjectKey(model));
 
@@ -14,63 +16,23 @@ class RadioView extends StatefulWidget {
   _RadioViewState createState() => _RadioViewState();
 }
 
-class _RadioViewState extends State<RadioView> implements IModelListener {
+class _RadioViewState extends WidgetState<RadioView>
+{
   List<Widget>? options;
   RenderBox? box;
   Offset? position;
 
   @override
-  void initState() {
-    super.initState();
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
-    widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
-  }
-
-  @override
-  didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(RadioView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    if ((oldWidget.model != widget.model)) {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
-  }
-
-  @override
-  void dispose() {
-    widget.model.removeListener(this);
-
-    super.dispose();
-  }
-
-  /// Callback to fire the [_RadioViewState.build] when the [RadioModel] changes
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    if (this.mounted) setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(builder: builder);
-  }
-
-  Widget builder(BuildContext context, BoxConstraints constraints) {
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _afterBuild(context);
     });
 
     // Set Build Constraints in the [WidgetModel]
-    widget.model.minWidth = constraints.minWidth;
-    widget.model.maxWidth = constraints.maxWidth;
-    widget.model.minHeight = constraints.minHeight;
-    widget.model.maxHeight = constraints.maxHeight;
+    setConstraints(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();

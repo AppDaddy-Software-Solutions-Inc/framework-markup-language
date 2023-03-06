@@ -72,7 +72,7 @@ class Application extends StatelessWidget
     themeNotifier.mapSystemThemeBindables();
 
     return MaterialApp.router(
-        title: applicationTitle,
+        title: System.title,
         debugShowCheckedModeBanner: false,
         routerDelegate: NavigationManager(),
         routeInformationParser: const RouteParser(),

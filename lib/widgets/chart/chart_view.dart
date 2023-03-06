@@ -12,10 +12,11 @@ import 'package:fml/widgets/chart/chart_model.dart';
 import 'package:fml/widgets/chart/series/chart_series_model.dart';
 import 'package:fml/widgets/chart/axis/chart_axis_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/busy/busy_view.dart' as BUSY;
 import 'package:fml/widgets/busy/busy_model.dart' as BUSY;
 import 'package:community_charts_flutter/community_charts_flutter.dart' as CF;
+import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:intl/intl.dart';
 
 enum ChartType {
@@ -30,7 +31,8 @@ enum ChartType {
 ///
 /// Builds a Chart View using [CHART.ChartModel], [SERIES.ChartSeriesModel], [AXIS.ChartAxisModel] and
 /// [EXCERPT.Model] properties
-class ChartView extends StatefulWidget {
+class ChartView extends StatefulWidget implements IWidgetView
+{
   final ChartModel model;
   ChartView(this.model) : super(key: ObjectKey(model));
 
@@ -38,60 +40,27 @@ class ChartView extends StatefulWidget {
   _ChartViewState createState() => _ChartViewState();
 }
 
-class _ChartViewState extends State<ChartView>
-    implements IModelListener {
+class _ChartViewState extends WidgetState<ChartView>
+{
   Future<Template>? template;
   Future<ChartModel>? chartViewModel;
   BUSY.BusyView? busy;
   ChartType? chartType;
 
-  
   @override
-  void initState() {
+  void initState()
+  {
     super.initState();
-
-    widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
-
     chartType = getChartType();
   }
-  
+
   @override
-  void didUpdateWidget(ChartView oldWidget)
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    super.didUpdateWidget(oldWidget);
-    if ((oldWidget.model != widget.model)) {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
-  }
-
-  @override
-  void dispose()
-  {
-    widget.model.removeListener(this);
-    super.dispose();
-  }
-
-  /// Callback function for when the model changes, used to force a rebuild with setState()
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    if (this.mounted) setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(builder: builder);
-  }
-
-  Widget builder(BuildContext context, BoxConstraints constraints) {
     // Set Build Constraints in the [WidgetModel]
-
-    widget.model.minWidth = constraints.minWidth;
-    widget.model.maxWidth = constraints.maxWidth;
-    widget.model.minHeight = constraints.minHeight;
-    widget.model.maxHeight = constraints.maxHeight;
+    setConstraints(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();

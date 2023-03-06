@@ -2,9 +2,10 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
-class ModalView extends StatefulWidget
+class ModalView extends StatefulWidget implements IWidgetView
 {
   final ModalModel model;
 
@@ -14,43 +15,8 @@ class ModalView extends StatefulWidget
   _ModalViewState createState() => _ModalViewState();
 }
 
-class _ModalViewState extends State<ModalView> implements IModelListener
+class _ModalViewState extends WidgetState<ModalView>
 {
-  @override
-  void initState()
-  {
-    super.initState();
-
-   widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
-  }
-
-  @override
-  void didUpdateWidget(ModalView oldWidget)
-  {
-    super.didUpdateWidget(oldWidget);
-    
-    if ((oldWidget.model != widget.model))
-    {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
-  }
-
-  @override
-  void dispose()
-  {
-    widget.model.removeListener(this);
-    super.dispose();
-  }
-  /// Callback function for when the model changes, used to force a rebuild with setState()
-  onModelChange(WidgetModel model,{String? property, dynamic value})
-  {
-    if (this.mounted) setState((){});
-  }
-
   @override
   Widget build(BuildContext context)
   {

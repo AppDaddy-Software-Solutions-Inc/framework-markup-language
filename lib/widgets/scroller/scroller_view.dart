@@ -5,9 +5,10 @@ import 'package:fml/event/manager.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
 
 import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/event/event.dart' ;
 import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
 /// Scroll View
 ///
@@ -15,7 +16,8 @@ import 'package:fml/helper/common_helpers.dart';
 /// This widget creates a scrollable widget that expands to its parents size
 /// constraint, if the children would overflow because they are larger they will
 /// instead be contained within this scrollable widget.
-class ScrollerView extends StatefulWidget {
+class ScrollerView extends StatefulWidget implements IWidgetView
+{
   final ScrollerModel model;
   ScrollerView(this.model) : super(key: ObjectKey(model));
 
@@ -23,7 +25,8 @@ class ScrollerView extends StatefulWidget {
   _ScrollerViewState createState() => _ScrollerViewState();
 }
 
-class _ScrollerViewState extends State<ScrollerView> implements IModelListener {
+class _ScrollerViewState extends WidgetState<ScrollerView>
+{
   final ScrollController _scrollController = ScrollController();
   // state holder for when a maxextent updates and we need a recalculation cycle
   int _tryToScrollBeyond = 0;
@@ -34,15 +37,10 @@ class _ScrollerViewState extends State<ScrollerView> implements IModelListener {
   bool hasScrolledThrough = false;
 
   @override
-  void initState() {
+  void initState()
+  {
     _scrollController.addListener(_scrollListener);
-
     super.initState();
-
-    widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
   }
 
   @override
@@ -50,7 +48,6 @@ class _ScrollerViewState extends State<ScrollerView> implements IModelListener {
   {
     // register event listeners
     EventManager.of(widget.model)?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
-
     super.didChangeDependencies();
   }
 
@@ -66,31 +63,16 @@ class _ScrollerViewState extends State<ScrollerView> implements IModelListener {
 
       // register new event listeners
       EventManager.of(widget.model)?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
-
-      // remove old model listener
-      oldWidget.model.removeListener(this);
-
-      // register new model listenber
-      widget.model.registerListener(this);
     }
   }
 
   @override
   void dispose()
   {
-    // remove model listener
-    widget.model.removeListener(this);
-
     // remove event listeners
     EventManager.of(widget.model)?.removeEventListener(EventTypes.scrollto, onScrollTo);
-
     _scrollController.dispose();
     super.dispose();
-  }
-
-  /// Callback function for when the model changes, used to force a rebuild with setState()
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    if (this.mounted) setState(() {});
   }
 
   /// Takes an event (onscroll) and uses the id to scroll to that widget

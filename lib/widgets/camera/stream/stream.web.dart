@@ -7,6 +7,8 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:ui' as ui;
 import 'package:fml/datasources/file/file.dart' as FILE;
@@ -21,7 +23,8 @@ if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image
 
 View getView(model) => View(model);
 
-class View extends StatefulWidget implements STREAM.StreamView {
+class View extends StatefulWidget implements IWidgetView, STREAM.StreamView
+{
   final CAMERA.CameraModel model;
 
   View(this.model) : super(key: ObjectKey(model));
@@ -30,7 +33,7 @@ class View extends StatefulWidget implements STREAM.StreamView {
   ViewState createState() => ViewState();
 }
 
-class ViewState extends State<View> implements IModelListener
+class ViewState extends WidgetState<View>
 {
   List<dynamic> cameras = [];
   int selectedCamera = 0;
@@ -81,11 +84,6 @@ class ViewState extends State<View> implements IModelListener
     // ignore: undefined_prefixed_name
     ui.platformViewRegistry.registerViewFactory(id, (int viewId) => video);
 
-    /*********************/
-    /* Register Listener */
-    /*********************/
-    widget.model.registerListener(this);
-
     /****************/
     /* Start Camera */
     /****************/
@@ -102,16 +100,6 @@ class ViewState extends State<View> implements IModelListener
       else
         stop();
     }
-  }
-
-  @override
-  didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(View oldWidget) {
-    super.didUpdateWidget(oldWidget);
   }
 
   @override

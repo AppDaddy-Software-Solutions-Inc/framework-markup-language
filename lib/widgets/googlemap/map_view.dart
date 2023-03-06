@@ -8,13 +8,14 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/googlemap/map_model.dart';
 import 'package:fml/widgets/googlemap/location/map_location_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class MapView extends StatefulWidget
+class MapView extends StatefulWidget implements IWidgetView
 {
   final MapModel model;
   MapView(this.model) : super(key: ObjectKey(model));
@@ -23,7 +24,7 @@ class MapView extends StatefulWidget
   _MapViewState createState() => _MapViewState();
 }
 
-class _MapViewState extends State<MapView> implements IModelListener
+class _MapViewState extends WidgetState<MapView>
 {
   BusyView? busy;
   Future<MapModel>? future;
@@ -43,46 +44,11 @@ class _MapViewState extends State<MapView> implements IModelListener
   {
     super.initState();
 
-    
-    widget.model.registerListener(this);
-
-    // If the model contains any databrokers we fire them before building so we can bind to the data
-    widget.model.initialize();
-
     /////////////////////
     /* Position Camera */
     /////////////////////
     Future.delayed(Duration(milliseconds: 500), _showAll);
     WidgetsBinding.instance.addPostFrameCallback((_) => Future.delayed(Duration(seconds: 1), () => busy = null));
-  }
-
-  @override
-  didChangeDependencies()
-  {
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(MapView oldWidget)
-  {
-    super.didUpdateWidget(oldWidget);
-    if ((oldWidget.model != widget.model))
-    {
-      oldWidget.model.removeListener(this);
-      widget.model.registerListener(this);
-    }
-  }
-
-  @override
-  void dispose()
-  {
-    widget.model.removeListener(this);
-    super.dispose();
-  }
-  /// Callback function for when the model changes, used to force a rebuild with setState()
-  onModelChange(WidgetModel model,{String? property, dynamic value})
-  {
-    if (this.mounted) setState(() {});
   }
 
   Completer<GoogleMapController> _controller = Completer();
@@ -117,21 +83,15 @@ class _MapViewState extends State<MapView> implements IModelListener
   // }
 
   @override
-  Widget build(BuildContext context)
-  {
-return LayoutBuilder(builder: builder);
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraint)
   {
     widget.model.busy = false;
 
     // Set Build Constraints in the [WidgetModel]
+    setConstraints(constraint);
 
-      widget.model.minWidth  = constraint.minWidth;
-      widget.model.maxWidth  = constraint.maxWidth;
-      widget.model.minHeight = constraint.minHeight;
-      widget.model.maxHeight = constraint.maxHeight;
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 

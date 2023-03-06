@@ -133,7 +133,7 @@ class SwitchModel extends FormFieldModel implements IFormField, IViewableWidget
     super.dispose();
   }
 
-  Widget getView({Key? key}) => SwitchView(this);
+  Widget getView({Key? key}) => getReactiveView(SwitchView(this));
 }
 
 class Suggestion {

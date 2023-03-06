@@ -531,5 +531,5 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
   }
 
   @override
-  Widget getView({Key? key}) => TextView(this);
+  Widget getView({Key? key}) => getReactiveView(TextView(this));
 }

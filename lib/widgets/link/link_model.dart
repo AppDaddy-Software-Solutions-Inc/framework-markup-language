@@ -194,5 +194,5 @@ class LinkModel extends DecoratedWidgetModel implements IViewableWidget
     return await EventHandler(this).execute(_ondoubletap);
   }
 
-  Widget getView({Key? key}) => LinkView(this);
+  Widget getView({Key? key}) => getReactiveView(LinkView(this));
 }

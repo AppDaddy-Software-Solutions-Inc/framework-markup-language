@@ -199,5 +199,5 @@ class ImageModel extends DecoratedWidgetModel implements IViewableWidget
     super.dispose();
   }
 
-  Widget getView({Key? key}) => ImageView(this);
+  Widget getView({Key? key}) => getReactiveView(ImageView(this));
 }

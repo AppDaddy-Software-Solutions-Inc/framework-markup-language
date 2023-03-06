@@ -199,5 +199,5 @@ class PagerModel extends DecoratedWidgetModel implements IViewableWidget
   }
   
   @override
-  Widget getView({Key? key}) => PagerView(this);
+  Widget getView({Key? key}) => getReactiveView(PagerView(this));
 }

@@ -144,5 +144,5 @@ class MenuModel extends DecoratedWidgetModel implements IViewableWidget
   }
 
   @override
-  Widget getView({Key? key}) => MenuView(this);
+  Widget getView({Key? key}) => getReactiveView(MenuView(this));
 }

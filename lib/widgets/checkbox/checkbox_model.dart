@@ -463,5 +463,5 @@ class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidge
     return ok;
   }
 
-  Widget getView({Key? key}) => CheckboxView(this);
+  Widget getView({Key? key}) => getReactiveView(CheckboxView(this));
 }

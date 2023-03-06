@@ -167,5 +167,5 @@ class BusyModel extends DecoratedWidgetModel implements IViewableWidget
     this.expand = expand;
   }
 
-  Widget getView({Key? key}) => BusyView(this);
+  Widget getView({Key? key}) => getReactiveView(BusyView(this));
 }

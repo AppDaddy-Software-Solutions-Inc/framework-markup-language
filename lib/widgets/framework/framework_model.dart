@@ -570,7 +570,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
-  Widget getView({Key? key}) => FrameworkView(this);
+  Widget getView({Key? key}) => getReactiveView(FrameworkView(this));
 }
 
 abstract class IDragListener

@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/tip/tip_model.dart';
-import 'package:fml/widgets/tip/tip_view.dart';
+import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
 import 'package:fml/widgets/widget/constraint.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
@@ -13,7 +12,7 @@ import 'package:fml/widgets/widget/widget_model.dart';
 class ViewableWidgetModel extends WidgetModel
 {
   // model holding the tooltip
-  TipModel? tipModel;
+  TooltipModel? tipModel;
 
   // Width
   double? _widthPercentage;
@@ -323,11 +322,11 @@ class ViewableWidgetModel extends WidgetModel
     _paddings = Xml.attribute(node: xml, tag: 'pad');
 
     // tip
-    List<TipModel> tips = findChildrenOfExactType(TipModel).cast<TipModel>();
+    List<TooltipModel> tips = findChildrenOfExactType(TooltipModel).cast<TooltipModel>();
     if (tips.isNotEmpty)
     {
       tipModel = tips.first;
-      removeChildrenOfExactType(TipModel);
+      removeChildrenOfExactType(TooltipModel);
     }
   }
 
@@ -405,8 +404,10 @@ class ViewableWidgetModel extends WidgetModel
   Widget getReactiveView(Widget view)
   {
     // wrap as tooltip
-    if (tipModel != null) view = JustTheTooltip(child: view, content: tipModel!.getView(), backgroundColor: tipModel!.color);
+    if (tipModel != null)
+    {
+      view = JustTheTooltip(child: view, content: tipModel!.getView(), backgroundColor: tipModel!.color,  preferredDirection: AxisDirection.right);
+    }
     return view;
   }
-
 }

@@ -1,24 +1,21 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/helper/measured.dart';
-import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/tip/tip_model.dart';
+import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
-import 'package:fml/widgets/tooltip/tooltip_model.dart';
-import 'package:fml/helper/common_helpers.dart';
 
-class TipView extends StatefulWidget
+class TooltipView extends StatefulWidget
 {
   final List<Widget> children = [];
-  final TipModel model;
-  TipView(this.model) : super(key: ObjectKey(model));
+  final TooltipModel model;
+  TooltipView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _TipViewState createState() => _TipViewState();
+  _TooltipViewState createState() => _TooltipViewState();
 }
 
-class _TipViewState extends State<TipView> implements IModelListener
+class _TooltipViewState extends State<TooltipView> implements IModelListener
 {
   double padding = 15;
   double? width;
@@ -46,7 +43,7 @@ class _TipViewState extends State<TipView> implements IModelListener
   }
 
   @override
-  void didUpdateWidget(TipView oldWidget)
+  void didUpdateWidget(TooltipView oldWidget)
   {
     super.didUpdateWidget(oldWidget);
     if ((oldWidget.model != widget.model))
@@ -108,7 +105,6 @@ class _TipViewState extends State<TipView> implements IModelListener
 
     Widget content = UnconstrainedBox(child: SizedBox(height: height, width: width, child: child));
 
-    // tooltip = WidgetTooltip(widgetOverlay: Icon(Icons.import_contacts_sharp, color: Colors.pinkAccent), message: widget.model.label ?? '', textStyle: Theme.of(context).accentTextTheme.overline, child: activator);
     return content;
   }
 }

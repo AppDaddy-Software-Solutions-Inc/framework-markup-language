@@ -143,7 +143,7 @@ class Platform
   {
     String? title;
     var e = window.document.getElementsByName("description");
-    if (e != null && e.isNotEmpty && e.first is MetaElement) title = (e.first as MetaElement).content;
+    if (e.isNotEmpty && e.first is MetaElement) title = (e.first as MetaElement).content;
     return title ?? applicationTitle;
   }
 }

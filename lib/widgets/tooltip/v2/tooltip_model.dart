@@ -1,15 +1,14 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/tip/tip_view.dart';
+import 'package:fml/widgets/tooltip/v2/tooltip_view.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
-import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class TipModel extends DecoratedWidgetModel implements IViewableWidget
+class TooltipModel extends DecoratedWidgetModel implements IViewableWidget
 {
   /// The amount of space by which to inset the tooltip's [child].
   ///
@@ -104,14 +103,14 @@ class TipModel extends DecoratedWidgetModel implements IViewableWidget
   ///  * [Feedback], for providing platform-specific feedback to certain actions.
   bool? enableFeedback;
 
-  TipModel(WidgetModel parent, String? id) : super(parent, id);
+  TooltipModel(WidgetModel parent, String? id) : super(parent, id);
 
-  static TipModel? fromXml(WidgetModel parent, XmlElement xml)
+  static TooltipModel? fromXml(WidgetModel parent, XmlElement xml)
   {
-    TipModel? model;
+    TooltipModel? model;
     try
     {
-      model = TipModel(parent, Xml.get(node: xml, tag: 'id'));
+      model = TooltipModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
     catch(e)
@@ -141,5 +140,5 @@ class TipModel extends DecoratedWidgetModel implements IViewableWidget
     super.dispose();
   }
 
-  Widget getView({Key? key}) => TipView(this);
+  Widget getView({Key? key}) => TooltipView(this);
 }

@@ -48,12 +48,11 @@ class _GridViewState extends WidgetState<GridView>
   @override
   void initState()
   {
+    super.initState();
+    
     scroller = ScrollController();
-
     // Clean
     widget.model.clean = true;
-
-    super.initState();
   }
 
   @override

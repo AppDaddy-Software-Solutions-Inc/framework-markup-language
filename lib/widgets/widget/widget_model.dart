@@ -300,7 +300,7 @@ class WidgetModel implements IDataSourceListener
 
       case "animate": // Preferred Case
       case "animation": // Animation may be deprecated
-        model = AnimationModel.fromXml(parent, node);
+        model = AnimationModel.fromXml(parent, node, false);
         break;
 
       case "autocomplete":
@@ -569,31 +569,37 @@ class WidgetModel implements IDataSourceListener
 
         case "fade":
          if (parent is AnimationModel) model = FadeTransitionModel.fromXml(parent, node);
-         else model = AnimationModel.fromXml(parent, node);
+         else model = AnimationModel.fromXml(parent, node, true);
          break;
 
       case "rotate":
         if (parent is AnimationModel) model = RotateTransitionModel.fromXml(parent, node);
+          else model = AnimationModel.fromXml(parent, node, true);
         break;
 
         case "size":
           if (parent is AnimationModel) model = SizeTransitionModel.fromXml(parent, node);
+          else model = AnimationModel.fromXml(parent, node, true);
           break;
 
       case "slide":
         if (parent is AnimationModel) model = SlideTransitionModel.fromXml(parent, node,);
+        else model = AnimationModel.fromXml(parent, node, true);
         break;
 
       case "scale":
         if (parent is AnimationModel) model = ScaleTransitionModel.fromXml(parent, node);
+        else model = AnimationModel.fromXml(parent, node, true);
         break;
 
       case "transform":
         if (parent is AnimationModel) model = TransformModel.fromXml(parent, node);
+        else model = AnimationModel.fromXml(parent, node, true);
         break;
 
       case "tween":
         if (parent is AnimationModel) model = TweenModel.fromXml(parent, node);
+        else model = AnimationModel.fromXml(parent, node, true);
         break;
 
 

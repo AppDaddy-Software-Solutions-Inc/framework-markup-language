@@ -81,7 +81,6 @@ class FlipCardViewState extends State<FlipCardView>
     Alignment anchor =
         AnimationHelper.getAlignment(widget.model.anchor.toLowerCase());
     dynamic frontWidget;
-    dynamic backWidget;
     double _from;
     double _to;
     Tween<double> _newTween;

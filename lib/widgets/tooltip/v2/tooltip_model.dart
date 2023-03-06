@@ -6,11 +6,12 @@ import 'package:fml/observable/observables/double.dart';
 import 'package:fml/observable/observables/integer.dart';
 import 'package:fml/observable/observables/string.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
+import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class TooltipModel extends DecoratedWidgetModel
+class TooltipModel extends DecoratedWidgetModel implements IWidgetView
 {
   // top, bottom, left, right
   StringObservable? _position;

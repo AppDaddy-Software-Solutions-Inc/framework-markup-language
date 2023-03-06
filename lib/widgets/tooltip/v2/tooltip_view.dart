@@ -1,7 +1,5 @@
-library el_tooltip;
-
 import 'dart:async';
-
+import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
@@ -15,7 +13,6 @@ import 'src/enum/el_tooltip_position.dart';
 import 'src/modal.dart';
 import 'src/position_manager.dart';
 import 'src/tooltip_elements_display.dart';
-
 export 'src/enum/el_tooltip_position.dart';
 
 /// Widget that displays a tooltip
@@ -31,7 +28,7 @@ class TooltipView extends StatefulWidget implements IWidgetView
 }
 
 /// _ElTooltipState extends ElTooltip class
-class _TooltipViewState extends State<TooltipView> with WidgetsBindingObserver implements IModelListener
+class _TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObserver
 {
   final ElementBox _arrowBox = ElementBox(h: 10.0, w: 16.0);
   ElementBox _overlayBox = ElementBox(h: 0.0, w: 0.0);
@@ -62,12 +59,6 @@ class _TooltipViewState extends State<TooltipView> with WidgetsBindingObserver i
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadHiddenOverlay(context));
     WidgetsBinding.instance.addObserver(this);
-  }
-
-  /// Callback to fire the [_TooltipViewState.build] when the [TooltipModel] changes
-  onModelChange(WidgetModel model, {String? property, dynamic value})
-  {
-    if (this.mounted) setState((){});
   }
 
   ElementBox get _screenSize => _getScreenSize();

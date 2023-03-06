@@ -49,6 +49,7 @@ class AnimationModel extends WidgetModel implements IViewableWidget {
 
   double get repeat => _repeat?.get() ?? 1;
 
+
   /// Direction to play the Animation in, if set to true will play in reverse, default: false
   BooleanObservable? _reverse;
 
@@ -118,6 +119,32 @@ class AnimationModel extends WidgetModel implements IViewableWidget {
   }
 
   String? get linked => _linked?.get();
+
+  /// scroll allows for passing the scrollcontroller on a single animation. This will allow for the animation to sync to that controller.
+  StringObservable? _scroll;
+
+  set scroll(dynamic v) {
+    if (_scroll != null) {
+      _scroll!.set(v);
+    } else if (v != null) {
+      _scroll = StringObservable(Binding.toKey(id, 'scroll'), v, scope: scope);
+    }
+  }
+
+  String? get scroll => _scroll?.get();
+
+  /// gesture allows for passing the gesturedetector on a single animation. This will allow for the animation to sync to that controller.
+  StringObservable? _gesture;
+
+  set gesture(dynamic v) {
+    if (_gesture != null) {
+      _gesture!.set(v);
+    } else if (v != null) {
+      _gesture = StringObservable(Binding.toKey(id, 'gesture'), v, scope: scope);
+    }
+  }
+
+  String? get gesture => _gesture?.get();
 
   final List transitionChildren = [];
   AnimationController? controller;

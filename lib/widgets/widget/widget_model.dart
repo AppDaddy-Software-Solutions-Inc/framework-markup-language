@@ -569,6 +569,7 @@ class WidgetModel implements IDataSourceListener
 
         case "fade":
          if (parent is AnimationModel) model = FadeTransitionModel.fromXml(parent, node);
+         else model = AnimationModel.fromXml(parent, node);
          break;
 
       case "rotate":
@@ -580,7 +581,7 @@ class WidgetModel implements IDataSourceListener
           break;
 
       case "slide":
-        if (parent is AnimationModel) model = SlideTransitionModel.fromXml(parent, node, );
+        if (parent is AnimationModel) model = SlideTransitionModel.fromXml(parent, node,);
         break;
 
       case "scale":

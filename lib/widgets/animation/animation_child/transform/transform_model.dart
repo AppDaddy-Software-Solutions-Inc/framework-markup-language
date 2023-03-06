@@ -83,6 +83,20 @@ class TransformModel extends AnimationChildModel {
 
   String? get align => _align?.get();
 
+  /// Curve ending point from 1.0 to 0.0
+  DoubleObservable? _warp;
+
+  set warp(dynamic v) {
+    if (_warp != null) {
+      _warp!.set(v);
+    } else if (v != null) {
+      _warp = DoubleObservable(Binding.toKey(id, 'warp'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  double? get warp => _warp?.get();
+
 
   TransformModel(WidgetModel parent, String? id)
       : super(parent, id); // ; {key: value}

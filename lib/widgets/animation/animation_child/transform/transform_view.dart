@@ -84,6 +84,8 @@ class TransformViewState extends State<TransformView>
 
     double _begin = widget.model.begin;
     double _end = widget.model.end;
+    // default warp is 0.0015, 0 is no warping. This could potentially be made smarter
+    double _warp = (widget.model.warp ?? 15) / 10000;
     Curve _curve = AnimationHelper.getCurve(widget.model.curve);
 
     List<String>? _rotateFrom = widget.model.rotateFrom?.split(",");
@@ -115,7 +117,7 @@ class TransformViewState extends State<TransformView>
     ));
     _yAnimation = Tween<double>(
       begin: S.toDouble(_rotateFrom?.elementAt(1)) ?? 0,
-      end: S.toDouble(_rotateTo?.elementAt(1)) ?? 0,
+      end: S.toDouble(_rotateTo.elementAt(1)) ?? 0,
     ).animate(CurvedAnimation(
       curve: _curve,
       parent: _controller,
@@ -148,7 +150,7 @@ class TransformViewState extends State<TransformView>
 
     view = Transform(
       transform: Matrix4.identity()
-        ..setEntry(3, 2, 0.0001)
+        ..setEntry(3, 2, _warp)
         ..rotateY(pi * _yAnimation.value * 2)
         ..rotateX(pi * _xAnimation.value * 2)
         ..translate(_xTranslateAnimation.value, _yTranslateAnimation.value, _zTranslateAnimation.value),

@@ -236,6 +236,6 @@ class AnimationModel extends WidgetModel implements IViewableWidget {
   /// Returns the [ANIMATION] View
 
   Widget getView({Key? key}) {
-    return AnimationView(this, null, null);
+    return AnimationView(this, null);
   }
 }

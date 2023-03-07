@@ -2,6 +2,22 @@
 import 'dart:html';
 import 'package:flutter/material.dart';
 import 'package:fml/event/handler.dart';
+import 'package:fml/widgets/animation/animation_child/fade/fade_transition_model.dart';
+import 'package:fml/widgets/animation/animation_child/fade/fade_transition_view.dart';
+import 'package:fml/widgets/animation/animation_child/flip/flip_card_model.dart';
+import 'package:fml/widgets/animation/animation_child/flip/flip_card_view.dart';
+import 'package:fml/widgets/animation/animation_child/rotate/rotate_transition_model.dart';
+import 'package:fml/widgets/animation/animation_child/rotate/rotate_transition_view.dart';
+import 'package:fml/widgets/animation/animation_child/scale/scale_transition_model.dart';
+import 'package:fml/widgets/animation/animation_child/scale/scale_transition_view.dart';
+import 'package:fml/widgets/animation/animation_child/size/size_transition_model.dart';
+import 'package:fml/widgets/animation/animation_child/size/size_transition_view.dart';
+import 'package:fml/widgets/animation/animation_child/slide/slide_transition_model.dart';
+import 'package:fml/widgets/animation/animation_child/slide/slide_transition_view.dart';
+import 'package:fml/widgets/animation/animation_child/transform/transform_model.dart';
+import 'package:fml/widgets/animation/animation_child/transform/transform_view.dart';
+import 'package:fml/widgets/animation/animation_child/tween/tween_model.dart';
+import 'package:fml/widgets/animation/animation_child/tween/tween_view.dart';
 import 'package:fml/widgets/animation/animation_model.dart';
 import 'package:fml/widgets/animation/animation_view.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
@@ -295,7 +311,7 @@ class ViewableWidgetModel extends WidgetModel {
   double? get visibility => _visibility?.get();
 
   // animations
-  Map<String, AnimationModel>? _animationmap;
+  Map<String, WidgetModel>? _animationmap;
   List<String>? _animations;
 
   set animations(dynamic v) {
@@ -535,13 +551,13 @@ class ViewableWidgetModel extends WidgetModel {
     return constraint;
   }
 
-  AnimationModel? getAnimationModel(String id) {
+  WidgetModel? getAnimationModel(String id) {
     // model already created
     if (_animationmap != null && _animationmap!.containsKey(id))
       return _animationmap![id];
 
     var model = Scope.findWidgetModel(id, scope);
-    if (model is AnimationModel && model.element != null) {
+    if (model?.element != null && model != null) {
       // make a copy of the model
       var xml = model.element!.copy();
 
@@ -549,14 +565,42 @@ class ViewableWidgetModel extends WidgetModel {
       Xml.setAttribute(xml, "id", Uuid().v4().toString());
 
       // build the model
-      model = AnimationModel.fromXml(this, model.element!);
-      if (model is AnimationModel) {
-        // add to map
-        if (_animationmap == null)
-          _animationmap = Map<String, AnimationModel>();
-        _animationmap![id] = model;
-        return model;
+      switch (model.elementName) {
+        case "ANIMATE":
+          model = AnimationModel.fromXml(this, model.element!);
+          break;
+        case "FADE":
+          model = FadeTransitionModel.fromXml(this, model.element!);
+          break;
+        case "FLIP":
+          model = FlipCardModel.fromXml(this, model.element!);
+          break;
+        case "ROTATE":
+          model = RotateTransitionModel.fromXml(this, model.element!);
+          break;
+        case "SCALE":
+          model = ScaleTransitionModel.fromXml(this, model.element!);
+          break;
+        case "SIZE":
+          model = SizeTransitionModel.fromXml(this, model.element!);
+          break;
+        case "SLIDE":
+          model = SlideTransitionModel.fromXml(this, model.element!);
+          break;
+        case "TRANSFORM":
+          model = TransformModel.fromXml(this, model.element!);
+          break;
+        case "TWEEN":
+          model = TweenModel.fromXml(this, model.element!);
+          break;
       }
+      // add to map
+      if (_animationmap == null) {
+        _animationmap = Map<String, AnimationModel>();
+      }
+       if(model != null) _animationmap![id] = model;
+
+      return model;
     }
     return null;
   }
@@ -622,7 +666,39 @@ class ViewableWidgetModel extends WidgetModel {
     var animations = this.animations.reversed;
     animations.forEach((element) {
       var model = getAnimationModel(element);
-      if (model != null) view = AnimationView(model, view, children);
+      if (model != null) {
+        switch(model.runtimeType){
+          case AnimationModel:
+            view = AnimationView(model as AnimationModel, view);
+            break;
+          case FadeTransitionModel:
+            view = FadeTransitionView(model as FadeTransitionModel, view, null);
+            break;
+          case FlipCardModel:
+            view = FlipCardView(model as FlipCardModel, view, null);
+            break;
+          case RotateTransitionModel:
+            view = RotateTransitionView(model as RotateTransitionModel, view, null);
+            break;
+          case ScaleTransitionModel:
+            view = ScaleTransitionView(model as ScaleTransitionModel, view, null);
+            break;
+          case SizeTransitionModel:
+            view = SizeTransitionView(model as SizeTransitionModel, view, null);
+            break;
+            case SlideTransitionModel:
+          view = SlideTransitionView(model as SlideTransitionModel, view, null);
+          break;
+          case TransformModel:
+            view = TransformView(model as TransformModel, view, null);
+            break;
+          case TweenModel:
+            view = TweenView(model as TweenModel, view, null);
+            break;
+
+        }
+
+      }
     });
 
     return view;

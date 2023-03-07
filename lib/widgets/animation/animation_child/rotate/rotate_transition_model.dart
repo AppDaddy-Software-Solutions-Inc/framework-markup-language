@@ -10,7 +10,7 @@ import 'package:fml/helper/common_helpers.dart';
 
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
-class AnimationModel extends AnimationChildModel {
+class RotateTransitionModel extends AnimationChildModel {
   /// Curve starting point from
   DoubleObservable? _from;
 
@@ -53,13 +53,13 @@ class AnimationModel extends AnimationChildModel {
 
   String? get align => _align?.get();
 
-  AnimationModel(WidgetModel parent, String? id)
+  RotateTransitionModel(WidgetModel parent, String? id)
       : super(parent, id); // ; {key: value}
 
-  static AnimationModel? fromXml(WidgetModel parent, XmlElement xml) {
-    AnimationModel? model;
+  static RotateTransitionModel? fromXml(WidgetModel parent, XmlElement xml) {
+    RotateTransitionModel? model;
     try {
-      model = AnimationModel(parent, Xml.get(node: xml, tag: 'id'));
+      model = RotateTransitionModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     } catch (e) {
       Log().debug(e.toString());

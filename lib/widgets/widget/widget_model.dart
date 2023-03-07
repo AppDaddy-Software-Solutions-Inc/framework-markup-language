@@ -18,15 +18,15 @@ import 'package:fml/datasources/socket/socket_model.dart';
 import 'package:fml/datasources/zebra/model.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/alarm/alarm_model.dart';
-import 'package:fml/widgets/animation/animation_child/flip/flip_card_model.dart' as FlipCardModel;
-import 'package:fml/widgets/animation/animation_child/transform/transform_model.dart' as TransformModel;
-import 'package:fml/widgets/animation/animation_child/tween/tween_model.dart' as TweenModel;
-import 'package:fml/widgets/animation/animation_model.dart' as BaseAnimationModel;
-import 'package:fml/widgets/animation/animation_child/fade/fade_transition_model.dart' as FadeTransitionModel;
-import 'package:fml/widgets/animation/animation_child/rotate/rotate_transition_model.dart' as RotateTransitionModel;
-import 'package:fml/widgets/animation/animation_child/scale/scale_transition_model.dart' as ScaleTransitionModel;
-import 'package:fml/widgets/animation/animation_child/size/size_transition_model.dart' as SizeTransitionModel;
-import 'package:fml/widgets/animation/animation_child/slide/slide_transition_model.dart' as SlideTransitionModel;
+import 'package:fml/widgets/animation/animation_child/flip/flip_card_model.dart';
+import 'package:fml/widgets/animation/animation_child/transform/transform_model.dart';
+import 'package:fml/widgets/animation/animation_child/tween/tween_model.dart';
+import 'package:fml/widgets/animation/animation_model.dart';
+import 'package:fml/widgets/animation/animation_child/fade/fade_transition_model.dart';
+import 'package:fml/widgets/animation/animation_child/rotate/rotate_transition_model.dart';
+import 'package:fml/widgets/animation/animation_child/scale/scale_transition_model.dart';
+import 'package:fml/widgets/animation/animation_child/size/size_transition_model.dart';
+import 'package:fml/widgets/animation/animation_child/slide/slide_transition_model.dart';
 import 'package:fml/widgets/breadcrumb/breadcrumb_model.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/button/button_model.dart';
@@ -301,7 +301,7 @@ class WidgetModel implements IDataSourceListener
 
       case "animate": // Preferred Case
       case "animation": // Animation may be deprecated
-        model = BaseAnimationModel.AnimationModel.fromXml(parent, node);
+        model = AnimationModel.fromXml(parent, node);
         break;
 
       case "autocomplete":
@@ -446,8 +446,8 @@ class WidgetModel implements IDataSourceListener
 
       case "flip":
         if (parent is IDataSource) model = Flip.fromXml(parent, node);
-        else if (parent is BaseAnimationModel.AnimationModel) model = FlipCardModel.AnimationModel.fromXml(parent, node);
-        else  model = FlipCardModel.AnimationModel.fromXml(parent, node);
+        else if (parent is AnimationModel) model = FlipCardModel.fromXml(parent, node);
+        else  model = FlipCardModel.fromXml(parent, node);
         break;
 
       case "fml":
@@ -570,38 +570,38 @@ class WidgetModel implements IDataSourceListener
         break;
 
         case "fade":
-         if (parent is BaseAnimationModel.AnimationModel) model = FadeTransitionModel.AnimationModel.fromXml(parent, node);
-         else model =  FadeTransitionModel.AnimationModel.fromXml(parent, node);
+         if (parent is AnimationModel) model = FadeTransitionModel.fromXml(parent, node);
+         else model =  FadeTransitionModel.fromXml(parent, node);
          break;
 
       case "rotate":
-        if (parent is BaseAnimationModel.AnimationModel) model = RotateTransitionModel.AnimationModel.fromXml(parent, node);
-          else model = RotateTransitionModel.AnimationModel.fromXml(parent, node);
+        if (parent is AnimationModel) model = RotateTransitionModel.fromXml(parent, node);
+          else model = RotateTransitionModel.fromXml(parent, node);
         break;
 
         case "size":
-          if (parent is BaseAnimationModel.AnimationModel) model = SizeTransitionModel.AnimationModel.fromXml(parent, node);
-          else model = SizeTransitionModel.AnimationModel.fromXml(parent, node);
+          if (parent is AnimationModel) model = SizeTransitionModel.fromXml(parent, node);
+          else model = SizeTransitionModel.fromXml(parent, node);
           break;
 
       case "slide":
-        if (parent is BaseAnimationModel.AnimationModel) model = SlideTransitionModel.AnimationModel.fromXml(parent, node,);
-        else model = SlideTransitionModel.AnimationModel.fromXml(parent, node);
+        if (parent is AnimationModel) model = SlideTransitionModel.fromXml(parent, node,);
+        else model = SlideTransitionModel.fromXml(parent, node);
         break;
 
       case "scale":
-        if (parent is BaseAnimationModel.AnimationModel) model = ScaleTransitionModel.AnimationModel.fromXml(parent, node);
-        else model = ScaleTransitionModel.AnimationModel.fromXml(parent, node);
+        if (parent is AnimationModel) model = ScaleTransitionModel.fromXml(parent, node);
+        else model = ScaleTransitionModel.fromXml(parent, node);
         break;
 
       case "transform":
-        if (parent is BaseAnimationModel.AnimationModel) model = TransformModel.AnimationModel.fromXml(parent, node);
-        else model = TransformModel.AnimationModel.fromXml(parent, node);
+        if (parent is AnimationModel) model = TransformModel.fromXml(parent, node);
+        else model = TransformModel.fromXml(parent, node);
         break;
 
       case "tween":
-        if (parent is BaseAnimationModel.AnimationModel) model = TweenModel.AnimationModel.fromXml(parent, node);
-        else model = TweenModel.AnimationModel.fromXml(parent, node);
+        if (parent is AnimationModel) model = TweenModel.fromXml(parent, node);
+        else model = TweenModel.fromXml(parent, node);
         break;
 
 

@@ -1,19 +1,19 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
+import 'package:fml/event/event.dart';
 import 'package:fml/helper/string.dart';
 import 'package:fml/widgets/animation/animation_helper.dart';
-import 'package:fml/widgets/animation/animation_child/tween/tween_model.dart'
-    as TweenModel;
+import 'package:fml/widgets/animation/animation_child/tween/tween_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 
 /// Animation View
 ///
 /// Builds the View from model properties
 class TweenView extends StatefulWidget {
-  final TweenModel.AnimationModel model;
+  final TweenModel model;
   final List<Widget> children = [];
   final Widget? child;
-  final AnimationController controller;
+  final AnimationController? controller;
 
   TweenView(this.model, this.child, this.controller)
       : super(key: ObjectKey(model));
@@ -31,20 +31,25 @@ class TweenViewState extends State<TweenView>
   @override
   void initState() {
     super.initState();
+    if (widget.controller == null) {
+      _controller = AnimationController(vsync: this, duration: Duration(milliseconds: widget.model.duration), reverseDuration: Duration(milliseconds: widget.model.reverseduration ?? widget.model.duration,));
+      widget.model.controller = _controller;
+    } else {
+      _controller = widget.controller!;
+      widget.model.controller = _controller;
+    }
 
-    _controller = widget.controller;
+      widget.model.value = widget.model.from;
 
-    widget.model.value = widget.model.from;
-
-    _controller.addListener(() {
-      setState(() {
-        if (widget.model.type == "color") {
-          widget.model.value = "#${_animation.value.value.toRadixString(16)}";
-        } else {
-          widget.model.value = _animation.value.toString();
-        }
+      _controller.addListener(() {
+        setState(() {
+          if (widget.model.type == "color") {
+            widget.model.value = "#${_animation.value.value.toRadixString(16)}";
+          } else {
+            widget.model.value = _animation.value.toString();
+          }
+        });
       });
-    });
   }
 
   @override
@@ -54,6 +59,7 @@ class TweenViewState extends State<TweenView>
 
     super.didChangeDependencies();
   }
+
 
   @override
   void didUpdateWidget(TweenView oldWidget) {
@@ -69,7 +75,7 @@ class TweenViewState extends State<TweenView>
   void dispose() {
     // remove model listener
     widget.model.removeListener(this);
-
+    _controller.dispose();
     super.dispose();
   }
 
@@ -92,6 +98,8 @@ class TweenViewState extends State<TweenView>
     dynamic _from;
     dynamic _to;
     Tween<dynamic> _newTween;
+
+
     // we must check from != to and begin !< end
 
     if (widget.model.type == "color") {
@@ -126,5 +134,57 @@ class TweenViewState extends State<TweenView>
 
     // Return View
     return Container(child: widget.child);
+  }
+
+
+  void onAnimate(Event event) {
+    if (event.parameters == null) return;
+
+    String? id = (event.parameters != null) ? event.parameters!['id'] : null;
+    if ((S.isNullOrEmpty(id)) || (id == widget.model.id)) {
+      bool? enabled = (event.parameters != null)
+          ? S.toBool(event.parameters!['enabled'])
+          : true;
+      if (enabled != false)
+        start();
+      else
+        stop();
+      event.handled = true;
+    }
+  }
+
+  void onReset(Event event) {
+    String? id = (event.parameters != null) ? event.parameters!['id'] : null;
+    if ((S.isNullOrEmpty(id)) || (id == widget.model.id)) {
+      reset();
+    }
+  }
+
+  void reset() {
+    try {
+
+      _controller.reset();
+
+    } catch (e) {}
+  }
+
+  void start() {
+    try {
+      if (_controller.isCompleted) {
+        _controller.reverse();
+      } else if (_controller.isDismissed) {
+        _controller.forward();
+      } else {
+        _controller.forward();
+      }
+
+    } catch (e) {}
+  }
+
+  void stop() {
+    try {
+      _controller.reset();
+      _controller.stop();
+    } catch (e) {}
   }
 }

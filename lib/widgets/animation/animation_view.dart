@@ -1,5 +1,4 @@
-// © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:flip_card/flip_card_controller.dart';
+// © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED
 import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/observable/scope.dart';
@@ -7,7 +6,7 @@ import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
-import 'package:fml/widgets/animation/animation_model.dart' as ANIMATION;
+import 'package:fml/widgets/animation/animation_model.dart' as BaseAnimationModel;
 import 'package:fml/event/event.dart';
 import 'package:fml/helper/common_helpers.dart';
 
@@ -16,12 +15,11 @@ import 'package:fml/helper/common_helpers.dart';
 /// Builds the View from [ANIMATION.AnimationModel] properties
 class AnimationView extends StatefulWidget implements IWidgetView
 {
-  final ANIMATION.AnimationModel model;
+  final BaseAnimationModel.AnimationModel model;
   final List<Widget> children = [];
   final Widget? child;
-  final List? childsChildren;
 
-  AnimationView(this.model, this.child, this.childsChildren) : super(key: ObjectKey(model));
+  AnimationView(this.model, this.child) : super(key: ObjectKey(model));
 
   @override
   AnimationViewState createState() => AnimationViewState();
@@ -31,7 +29,6 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
 {
   AnimationController? _controller;
   AnimationController? publicController;
-  FlipCardController? _flipController;
   Widget? transitionChild;
 
   int _loop = 0;
@@ -112,7 +109,7 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
     //link animations to sync from a single controller
     if(widget.model.linked != null){
       WidgetModel? linkedAnimation = Scope.findWidgetModel(widget.model.linked, widget.model.scope);
-      if(linkedAnimation != null && linkedAnimation is ANIMATION.AnimationModel){
+      if(linkedAnimation != null && linkedAnimation is BaseAnimationModel.AnimationModel){
          if (linkedAnimation.controller != null) {
            _controller = linkedAnimation.controller;
            widget.model.controller = _controller;
@@ -212,7 +209,7 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
   }
 
   void _animationListener(AnimationStatus status) {
-    if (_flipController != null || _controller == null) return;
+    if (_controller == null) return;
 
     // Animation Complete?
     if (status == AnimationStatus.completed) {

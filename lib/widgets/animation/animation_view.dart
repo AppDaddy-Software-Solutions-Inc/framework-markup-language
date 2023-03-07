@@ -28,7 +28,6 @@ class AnimationView extends StatefulWidget implements IWidgetView
 class AnimationViewState extends WidgetState<AnimationView> with TickerProviderStateMixin implements IModelListener
 {
   AnimationController? _controller;
-  AnimationController? publicController;
   Widget? transitionChild;
 
   int _loop = 0;

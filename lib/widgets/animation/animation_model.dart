@@ -76,7 +76,7 @@ class AnimationModel extends WidgetModel implements IViewableWidget {
     }
   }
 
-  int get duration => _duration?.get() ?? 1000;
+  int get duration => _duration?.get() ?? 300;
 
   /// Duration an animation takes to play once in milliseconds
   IntegerObservable? _reverseduration;

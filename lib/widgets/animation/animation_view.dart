@@ -106,6 +106,8 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
     if (((widget.model.children?.isEmpty ?? true) && widget.child == null)) return Offstage();
 
     //link animations to sync from a single controller
+    //TODO: This is not working as linking looks for an initial controller but the getreactiveview builds each with a new id.
+    //TODO: To get linking to work currently, it must be linked to an animation that has no views.
     if(widget.model.linked != null){
       WidgetModel? linkedAnimation = Scope.findWidgetModel(widget.model.linked, widget.model.scope);
       if(linkedAnimation != null && linkedAnimation is BaseAnimationModel.AnimationModel){

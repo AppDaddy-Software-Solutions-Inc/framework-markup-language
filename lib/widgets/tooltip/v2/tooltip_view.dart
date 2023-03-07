@@ -238,7 +238,7 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
         onExit: (_)
         {
           if (timer != null) timer!.cancel();
-          timer = Timer(Duration(milliseconds: widget.model.timeout > 0 ? widget.model.timeout : 1000), () => hideOverlay());
+          timer = Timer(Duration(milliseconds: widget.model.timeout > 0 ? widget.model.timeout : 250), () => hideOverlay());
         },
         child: widget.child);
         break;

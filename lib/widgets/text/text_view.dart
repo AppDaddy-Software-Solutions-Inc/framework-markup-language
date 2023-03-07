@@ -1,5 +1,4 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/eval/textParser.dart';
 import 'package:fml/helper/string.dart';
 import 'package:fml/widgets/expanded/expanded_model.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
@@ -7,7 +6,7 @@ import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:google_fonts/google_fonts.dart' deferred as gf;
-import 'package:fml/eval/textParser.dart' as PARSE;
+import 'package:fml/eval/textParser.dart' as parse;
 import 'package:flutter/material.dart';
 
 class TextView extends StatefulWidget implements IWidgetView
@@ -22,7 +21,7 @@ class TextView extends StatefulWidget implements IWidgetView
 class _TextViewState extends WidgetState<TextView>
 {
   bool gfloaded = false;
-  List<TextValue> markupTextValues = [];
+  List<parse.TextValue> markupTextValues = [];
 
   @override
   void initState()
@@ -48,10 +47,10 @@ class _TextViewState extends WidgetState<TextView>
     try {
       if (value!.contains(':')) value = S.parseEmojis(value);
       markupTextValues = [];
-      PARSE.textValues = [];
-      PARSE.matchElements(widget.model.value ?? '');
-      PARSE.textValues.isNotEmpty
-          ? markupTextValues = PARSE.textValues
+      parse.textValues = [];
+      parse.matchElements(widget.model.value ?? '');
+      parse.textValues.isNotEmpty
+          ? markupTextValues = parse.textValues
           : markupTextValues = [];
       markupTextValues.forEach((element) {
         finalVal = finalVal! + element.text;

@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
@@ -143,8 +144,51 @@ class AnimationModel extends WidgetModel implements IViewableWidget {
       _gesture = StringObservable(Binding.toKey(id, 'gesture'), v, scope: scope);
     }
   }
-
   String? get gesture => _gesture?.get();
+
+  StringObservable? _oncomplete;
+  set oncomplete (dynamic v)
+  {
+    if (_oncomplete != null)
+    {
+      _oncomplete!.set(v);
+    }
+    else if (v != null)
+    {
+      _oncomplete = StringObservable(Binding.toKey(id, 'oncomplete'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
+    }
+  }
+  String? get oncomplete => _oncomplete?.get();
+
+  StringObservable? _ondismiss;
+  set ondismiss (dynamic v)
+  {
+    if (_ondismiss != null)
+    {
+      _ondismiss!.set(v);
+    }
+    else if (v != null)
+    {
+      _ondismiss = StringObservable(Binding.toKey(id, 'ondismiss'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
+    }
+  }
+  String? get ondismiss => _ondismiss?.get();
+
+  StringObservable? _onstart;
+  set onstart (dynamic v)
+  {
+    if (_onstart != null)
+    {
+      _onstart!.set(v);
+    }
+    else if (v != null)
+    {
+      _onstart = StringObservable(Binding.toKey(id, 'onstart'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
+    }
+  }
+  String? get onstart => _onstart?.get();
+
+
 
   final List transitionChildren = [];
   AnimationController? controller;
@@ -182,6 +226,10 @@ class AnimationModel extends WidgetModel implements IViewableWidget {
     reverse = Xml.get(node: xml, tag: 'reverse');
     duration = Xml.get(node: xml, tag: 'duration');
     linked = Xml.get(node: xml, tag: 'linked');
+    onstart = Xml.get(node: xml, tag: 'onstart');
+    oncomplete = Xml.get(node: xml, tag: 'oncomplete');
+    ondismiss = Xml.get(node: xml, tag: 'ondismiss');
+
 
     // clear options
     this.transitionChildren.clear();
@@ -231,6 +279,21 @@ class AnimationModel extends WidgetModel implements IViewableWidget {
         return true;
     }
     return super.execute(caller, propertyOrFunction, arguments);
+  }
+
+  Future<bool> onStart(BuildContext context) async
+  {
+     return await EventHandler(this).execute(_onstart);
+  }
+
+  Future<bool> onDismiss(BuildContext context) async
+  {
+    return await EventHandler(this).execute(_ondismiss);
+  }
+
+  Future<bool> onComplete(BuildContext context) async
+  {
+    return await EventHandler(this).execute(_oncomplete);
   }
 
   /// Returns the [ANIMATION] View

@@ -37,7 +37,11 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
   void initState()
   {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: Duration(milliseconds: widget.model.duration), reverseDuration: Duration(milliseconds: widget.model.reverseduration ?? widget.model.duration,));
+    _controller = AnimationController(vsync: this, duration: Duration(milliseconds: widget.model.duration), reverseDuration: Duration(milliseconds: widget.model.reverseduration ?? widget.model.duration,))
+    ..addStatusListener((status) {
+      _animationListener(status);
+    });
+
     widget.model.controller = _controller;
   }
 
@@ -178,24 +182,24 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
 
   void reset() {
     try {
-
         _controller!.reset();
-
     } catch (e) {}
   }
 
   void start() {
     try {
-
         _loop = 0;
         _stopped = false;
 
           if (_controller!.isCompleted) {
             _controller!.reverse();
+            widget.model.onstart;
           } else if (_controller!.isDismissed) {
             _controller!.forward();
+            widget.model.onstart;
           } else {
             _controller!.forward();
+            widget.model.onstart;
           }
 
     } catch (e) {}
@@ -210,42 +214,10 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
   }
 
   void _animationListener(AnimationStatus status) {
-    if (_controller == null) return;
-
-    // Animation Complete?
     if (status == AnimationStatus.completed) {
-      _loop++;
-      if (_loop < widget.model.repeat || widget.model.repeat == 0) {
-        // Rewind
-        if (widget.model.reverse == true) {
-          // Reverse
-          if (_loop.isOdd) {
-            _controller!.reverse().whenComplete(() {
-              _loop++;
-              (_loop < widget.model.repeat || widget.model.repeat == 0)
-                  ? _controller!.forward()
-                  : _controller!.stop();
-            });
-          }
-
-          // Forward
-          else
-            _controller!.forward();
-        }
-
-        // Reset
-        else {
-          if (_loop < widget.model.repeat || widget.model.repeat == 0) {
-            _controller!.reset();
-            _controller!.forward();
-          } else
-            _controller!.stop();
-        }
-      }
-
-      // Stop
-      else
-        _controller!.stop();
+      widget.model.oncomplete;
+    } else if  (status == AnimationStatus.dismissed) {
+      widget.model.ondismiss;
     }
   }
 }

@@ -35,7 +35,10 @@ class SizeTransitionViewState extends State<SizeTransitionView>
     super.initState();
 
     if (widget.controller == null) {
-      _controller = AnimationController(vsync: this, duration: Duration(milliseconds: widget.model.duration), reverseDuration: Duration(milliseconds: widget.model.reverseduration ?? widget.model.duration,));
+      _controller = AnimationController(vsync: this, duration: Duration(milliseconds: widget.model.duration), reverseDuration: Duration(milliseconds: widget.model.reverseduration ?? widget.model.duration,))
+    ..addStatusListener((status) {
+    _animationListener(status);
+    });
       widget.model.controller = _controller;
       soloRequestBuild = true;
     } else {
@@ -201,10 +204,13 @@ class SizeTransitionViewState extends State<SizeTransitionView>
     try {
       if (_controller.isCompleted) {
         _controller.reverse();
+        widget.model.onstart;
       } else if (_controller.isDismissed) {
         _controller.forward();
+        widget.model.onstart;
       } else {
         _controller.forward();
+        widget.model.onstart;
       }
 
     } catch (e) {}
@@ -215,5 +221,13 @@ class SizeTransitionViewState extends State<SizeTransitionView>
       _controller.reset();
       _controller.stop();
     } catch (e) {}
+  }
+
+  void _animationListener(AnimationStatus status) {
+    if (status == AnimationStatus.completed) {
+      widget.model.oncomplete;
+    } else if  (status == AnimationStatus.dismissed) {
+      widget.model.ondismiss;
+    }
   }
 }

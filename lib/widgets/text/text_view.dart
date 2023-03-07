@@ -39,10 +39,10 @@ class _TextViewState extends WidgetState<TextView>
     });
   }
 
-  String? parseValue(String? value) {
+  void parseValue(String? value) {
     String? finalVal = '';
 
-    if (widget.model.raw) return value;
+    if (widget.model.raw) return;
 
     try {
       if (value!.contains(':')) value = S.parseEmojis(value);
@@ -58,8 +58,6 @@ class _TextViewState extends WidgetState<TextView>
     } catch(e) {
       finalVal = value;
     }
-
-    return finalVal;
   }
 
   @override

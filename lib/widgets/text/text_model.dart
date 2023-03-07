@@ -18,21 +18,20 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
   // value
   StringObservable? _value;
 
-  set value(dynamic v) {
-    if (_value != null) {
+  set value(dynamic v)
+  {
+    if (_value != null)
+    {
       _value!.set(v);
-    } else {
-      if ((v != null) ||
-          (WidgetModel.isBound(this, Binding.toKey(id, 'value'))))
-        _value = StringObservable(Binding.toKey(id, 'value'), v,
-            scope: scope, listener: onPropertyChange);
+      parseValue(v);
+    }
+    else
+    {
+      if ((v != null) || (WidgetModel.isBound(this, Binding.toKey(id, 'value')))) _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange);
+      parseValue(v);
     }
   }
-  String? get value {
-    if (_value == null)
-         return null;
-    else return parseValue(_value?.get());
-  }
+  String? get value => _value?.get();
 
   // value
   List<PARSE.TextValue> markupTextValues = [];
@@ -531,5 +530,5 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
   }
 
   @override
-  Widget getView({Key? key}) => TextView(this);
+  Widget getView({Key? key}) => getReactiveView(TextView(this));
 }

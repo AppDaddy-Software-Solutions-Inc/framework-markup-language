@@ -5,14 +5,19 @@ import 'package:fml/observable/observables/boolean.dart';
 import 'package:fml/observable/observables/double.dart';
 import 'package:fml/observable/observables/integer.dart';
 import 'package:fml/observable/observables/string.dart';
+import 'package:fml/widgets/tooltip/v2/tooltip_view.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/helper/common_helpers.dart';
 
+enum openMethods {tap, longpress, hover, manual}
+
 class TooltipModel extends DecoratedWidgetModel implements IWidgetView
 {
+  openMethods? openMethod;
+
   // top, bottom, left, right
   StringObservable? _position;
   set position(dynamic v)
@@ -112,7 +117,6 @@ class TooltipModel extends DecoratedWidgetModel implements IWidgetView
   @override
   void deserialize(XmlElement xml)
   {
-
     // deserialize 
     super.deserialize(xml);
 
@@ -122,6 +126,7 @@ class TooltipModel extends DecoratedWidgetModel implements IWidgetView
     modal    = Xml.attribute(node: xml, tag: 'modal');
     timeout  = Xml.get(node: xml, tag: 'timeout');
     distance = Xml.get(node: xml, tag: 'distance');
+    openMethod = S.toEnum(Xml.get(node: xml, tag: 'openMethod'), openMethods.values);
   }
 
   @override
@@ -129,5 +134,27 @@ class TooltipModel extends DecoratedWidgetModel implements IWidgetView
   {
     // Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
+  }
+
+  @override
+  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
+  {
+    /// setter
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+
+    switch (function)
+    {
+      case "open":
+        var view = findListenerOfExactType(TooltipViewState);
+        if (view is TooltipViewState && context != null && view.overlayEntry == null) view.showOverlay(context!);
+        return true;
+
+      case "close":
+        var view = findListenerOfExactType(TooltipViewState);
+        if (view is TooltipViewState && view.overlayEntry != null) view.hideOverlay();
+        return true;
+    }
+    return super.execute(caller, propertyOrFunction, arguments);
   }
 }

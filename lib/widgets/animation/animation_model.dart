@@ -238,19 +238,7 @@ class AnimationModel extends WidgetModel implements IViewableWidget
     children?.clear();
   }
 
-  @override
-  dispose() {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
-  }
-
-  // constrained?
-  bool isConstrained(String dimension) {
-    return true;
-  }
-
   //we need a reset function to set the controller back to 0 without ticking.
-
   @override
   Future<bool?> execute(
       String caller, String propertyOrFunction, List<dynamic> arguments) async {

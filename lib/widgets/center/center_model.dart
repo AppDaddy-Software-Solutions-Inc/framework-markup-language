@@ -44,20 +44,5 @@ class CenterModel extends DecoratedWidgetModel implements IViewableWidget
     // flex = Xml.get(node: xml, tag: 'flex);
   }
 
-  @override
-  dispose()
-  {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
-  }
-
-  //////////////////
-  /* Constrained? */
-  //////////////////
-  bool isConstrained(String dimension)
-  {
-    return true;
-  }
-
   Widget getView({Key? key}) => getReactiveView(CenterView(this));
 }

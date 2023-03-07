@@ -62,9 +62,6 @@ typedef CommitCallback = Future<bool> Function();
 // used in context lookup
 var applicationKey = GlobalKey();
 
-// has a mouse
-final bool hasMouse = RendererBinding.instance.mouseTracker.mouseIsConnected;
-
 class System extends WidgetModel implements IEventManager
 {
   static final String myId = "SYSTEM";
@@ -135,7 +132,7 @@ class System extends WidgetModel implements IEventManager
 
   // current domain
   late BooleanObservable? _mouse;
-  bool get mouse => _mouse?.get() ?? hasMouse;
+  bool get mouse => _mouse?.get() ?? false;
 
   // UUID
   StringObservable? _uuid;
@@ -179,6 +176,11 @@ class System extends WidgetModel implements IEventManager
     // used past this point
     baseUrl = Uri.base.toString();
 
+    // the mouse isn't always detected at startup
+    // not until the moves it or clicks
+    // this routine traps that
+    RendererBinding.instance.mouseTracker.addListener(onMouseDetected);
+
     // initialize platform
     await Platform.init();
 
@@ -205,6 +207,12 @@ class System extends WidgetModel implements IEventManager
 
     // signal complete
     _completer.complete(true);
+  }
+
+  onMouseDetected()
+  {
+    _mouse?.set(true);
+    RendererBinding.instance.mouseTracker.removeListener(onMouseDetected);
   }
 
   Future _initConnectivity() async
@@ -253,7 +261,7 @@ class System extends WidgetModel implements IEventManager
     _theme = ThemeModel(this, "THEME");
 
     // device settings
-    _mouse        = BooleanObservable(Binding.toKey('mouse'), hasMouse, scope: scope);
+    _mouse        = BooleanObservable(Binding.toKey('mouse'), RendererBinding.instance.mouseTracker.mouseIsConnected, scope: scope);
     _screenheight = IntegerObservable(Binding.toKey('screenheight'), WidgetsBinding.instance.window.physicalSize.height, scope: scope);
     _screenwidth  = IntegerObservable(Binding.toKey('screenwidth'),  WidgetsBinding.instance.window.physicalSize.width, scope: scope);
     _userplatform = StringObservable(Binding.toKey('platform'), platform, scope: scope);

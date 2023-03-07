@@ -133,6 +133,10 @@ class System extends WidgetModel implements IEventManager
   int get screenwidth => _screenwidth.get() ?? 0;
   set screenwidth (dynamic v) => _screenwidth.set(v);
 
+  // current domain
+  late BooleanObservable? _mouse;
+  bool get mouse => _mouse?.get() ?? hasMouse;
+
   // UUID
   StringObservable? _uuid;
   String uuid() => Uuid().v1();
@@ -249,6 +253,7 @@ class System extends WidgetModel implements IEventManager
     _theme = ThemeModel(this, "THEME");
 
     // device settings
+    _mouse        = BooleanObservable(Binding.toKey('mouse'), hasMouse, scope: scope);
     _screenheight = IntegerObservable(Binding.toKey('screenheight'), WidgetsBinding.instance.window.physicalSize.height, scope: scope);
     _screenwidth  = IntegerObservable(Binding.toKey('screenwidth'),  WidgetsBinding.instance.window.physicalSize.width, scope: scope);
     _userplatform = StringObservable(Binding.toKey('platform'), platform, scope: scope);

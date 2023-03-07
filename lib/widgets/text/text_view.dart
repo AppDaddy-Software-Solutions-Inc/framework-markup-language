@@ -41,7 +41,7 @@ class _TextViewState extends WidgetState<TextView>
   {
 
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible || !gfloaded) return Offstage();
+    if (!widget.model.visible) return Offstage();
 
     String? style = widget.model.style;
     double? size = widget.model.size;
@@ -325,7 +325,7 @@ class _TextViewState extends WidgetState<TextView>
         {
           TextStyle? textstyle;
           String? font = codeBlockFont ?? widget.model.font;
-          if (font != null)
+          if (font != null && gfloaded)
           {
             textstyle = gf.GoogleFonts.getFont(font,
                 backgroundColor: codeBlockBG,
@@ -385,7 +385,7 @@ class _TextViewState extends WidgetState<TextView>
     {
       TextStyle? textstyle;
       String? font = widget.model.font;
-      if (font != null)
+      if (font != null && gfloaded)
       {
          textstyle = gf.GoogleFonts.getFont(
             font,

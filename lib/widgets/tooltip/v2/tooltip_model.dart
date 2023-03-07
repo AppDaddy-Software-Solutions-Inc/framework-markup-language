@@ -1,24 +1,43 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/boolean.dart';
+import 'package:fml/observable/observables/color.dart';
 import 'package:fml/observable/observables/double.dart';
 import 'package:fml/observable/observables/integer.dart';
 import 'package:fml/observable/observables/string.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_view.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-enum openMethods {tap, longpress, hover, manual}
+enum OpenMethods {tap, longpress, hover, manual}
 
-class TooltipModel extends DecoratedWidgetModel implements IWidgetView
+class TooltipModel extends ViewableWidgetModel implements IWidgetView
 {
-  openMethods? openMethod;
+  OpenMethods? openMethod;
 
-  // top, bottom, left, right
+  // color
+  ColorObservable? _color;
+  set color(dynamic v)
+  {
+    if (_color != null) _color!.set(v);
+    else if (v != null) _color = ColorObservable(Binding.toKey(id, 'color'), v, scope: scope, listener: onPropertyChange);
+  }
+  Color? get color => _color?.get();
+
+  // padding
+  DoubleObservable? _padding;
+  set padding(dynamic v)
+  {
+    if (_padding != null) _padding!.set(v);
+    else if (v != null) _padding = DoubleObservable(Binding.toKey(id, 'padding'), v, scope: scope, listener: onPropertyChange);
+  }
+  double get padding => _padding?.get() ?? 14.0;
+
   StringObservable? _position;
   set position(dynamic v)
   {
@@ -46,7 +65,7 @@ class TooltipModel extends DecoratedWidgetModel implements IWidgetView
       _distance = DoubleObservable(Binding.toKey(id, 'distance'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  double get distance => _distance?.get() ?? 0.0;
+  double get distance => _distance?.get() ?? 10.0;
 
   /// [radius] Border radius around the tooltip.
   DoubleObservable? _radius;
@@ -61,7 +80,7 @@ class TooltipModel extends DecoratedWidgetModel implements IWidgetView
       _radius = DoubleObservable(Binding.toKey(id, 'radius'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  double get radius => _radius?.get() ?? 5.0;
+  double get radius => _radius?.get() ?? 8.0;
 
   /// [showModal] Shows a dark layer behind the tooltip.
   BooleanObservable? _modal;
@@ -121,12 +140,15 @@ class TooltipModel extends DecoratedWidgetModel implements IWidgetView
     super.deserialize(xml);
 
     // properties
+    color    = Xml.attribute(node: xml, tag: 'color');
+    padding  = Xml.attribute(node: xml, tag: 'pad');
+    if (_padding == null) padding  = Xml.attribute(node: xml, tag: 'padding');
     radius   = Xml.attribute(node: xml, tag: 'radius');
     position = Xml.attribute(node: xml, tag: 'position');
     modal    = Xml.attribute(node: xml, tag: 'modal');
     timeout  = Xml.get(node: xml, tag: 'timeout');
     distance = Xml.get(node: xml, tag: 'distance');
-    openMethod = S.toEnum(Xml.get(node: xml, tag: 'openMethod'), openMethods.values);
+    openMethod = S.toEnum(Xml.get(node: xml, tag: 'openMethod'), OpenMethods.values);
   }
 
   @override

@@ -6,7 +6,6 @@ import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_view.dart';
 import 'package:fml/widgets/widget/constraint.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/iAnimatedWidget.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -293,7 +292,7 @@ class ViewableWidgetModel extends WidgetModel {
   double? get visibility => _visibility?.get();
 
   // animations
-  Map<String, IAnimatedWidget>? _animationmap;
+  Map<String, AnimationModel>? _animationmap;
   List<String>? _animations;
 
   set animations(dynamic v) {
@@ -531,7 +530,7 @@ class ViewableWidgetModel extends WidgetModel {
     return constraint;
   }
 
-  IAnimatedWidget? getAnimationModel(String id)
+  AnimationModel? getAnimationModel(String id)
   {
     // model already created
     if (_animationmap != null && _animationmap!.containsKey(id)) return _animationmap![id];
@@ -540,11 +539,11 @@ class ViewableWidgetModel extends WidgetModel {
     if (model != null)
     {
       // add to map
-      var copy = model.clone(this);
-      if (copy is IAnimatedWidget)
+      var clone = model.clone(this);
+      if (clone is AnimationModel)
       {
         if (_animationmap == null) _animationmap = Map<String, AnimationModel>();
-        _animationmap![id] = copy as IAnimatedWidget;
+        _animationmap![id] = clone;
       }
     }
     return null;
@@ -608,7 +607,7 @@ class ViewableWidgetModel extends WidgetModel {
       var animations = this.animations.reversed;
       animations.forEach((element)
       {
-        IAnimatedWidget? model = getAnimationModel(element);
+        AnimationModel? model = getAnimationModel(element);
         if (model != null) view = model.getTransitionView(view);
       });
     }

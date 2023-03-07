@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/animation/animation_child/animation_child_model.dart';
 import 'package:fml/widgets/animation/animation_child/rotate/rotate_transition_view.dart';
-import 'package:fml/widgets/widget/iAnimatedWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -11,7 +10,7 @@ import 'package:fml/helper/common_helpers.dart';
 
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
-class RotateTransitionModel extends AnimationChildModel implements IAnimatedWidget
+class RotateTransitionModel extends AnimationChildModel
 {
   /// Curve starting point from
   DoubleObservable? _from;

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/animation/animation_child/animation_child_model.dart';
 import 'package:fml/widgets/animation/animation_child/flip/flip_card_view.dart';
-import 'package:fml/widgets/widget/iAnimatedWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -11,8 +10,8 @@ import 'package:fml/helper/common_helpers.dart';
 
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
-class FlipCardModel extends AnimationChildModel implements IAnimatedWidget {
-
+class FlipCardModel extends AnimationChildModel
+{
   /// Curve ending point from 1.0 to 0.0
   StringObservable? _align;
 

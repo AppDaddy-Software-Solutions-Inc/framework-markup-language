@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:fml/navigation/navigation_observer.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
@@ -14,20 +15,75 @@ import 'src/position_manager.dart';
 import 'src/tooltip_elements_display.dart';
 export 'src/enum/el_tooltip_position.dart';
 
-/// Widget that displays a tooltip
-/// It takes a widget as the trigger and a widget as the content
 class TooltipView extends StatefulWidget implements IWidgetView
 {
   final TooltipModel model;
   final Widget child;
-  TooltipView(this.model, this.child) : super(key: ObjectKey(model));
+  late final Widget content;
+  late final ElTooltipPosition position;
+
+  TooltipView(this.model, this.child) : super(key: ObjectKey(model))
+  {
+    // set tooltip position
+    var _pos = ElTooltipPosition.rightCenter;
+    switch (model.position?.toLowerCase().trim())
+    {
+      case 'leftstart' :
+        _pos = ElTooltipPosition.leftStart;
+        break;
+
+      case 'leftcenter' :
+        _pos = ElTooltipPosition.leftCenter;
+        break;
+
+      case 'leftend' :
+        _pos = ElTooltipPosition.leftEnd;
+        break;
+
+      case 'rightstart' :
+        _pos = ElTooltipPosition.rightStart;
+        break;
+
+      case 'rightcenter' :
+        _pos = ElTooltipPosition.rightCenter;
+        break;
+
+      case 'rightend' :
+        _pos = ElTooltipPosition.rightEnd;
+        break;
+
+      case 'topstart' :
+        _pos = ElTooltipPosition.topStart;
+        break;
+
+      case 'topcenter' :
+        _pos = ElTooltipPosition.topCenter;
+        break;
+
+      case 'topend' :
+        _pos = ElTooltipPosition.topEnd;
+        break;
+    }
+    this.position = _pos;
+
+    // set tooltip content
+    List<Widget> children = [];
+    if (model.children != null)
+    model.children!.forEach((model)
+    {
+      if (model is IViewableWidget) {
+        children.add((model as IViewableWidget).getView());
+      }
+    });
+    content = children.length == 1 ? children[0] : Column(children: children, mainAxisSize: MainAxisSize.min);
+  }
 
   @override
   TooltipViewState createState() => TooltipViewState();
 }
 
 /// _ElTooltipState extends ElTooltip class
-class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObserver
+class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObserver implements INavigatorObserver
 {
   final ElementBox _arrowBox = ElementBox(h: 10.0, w: 16.0);
   ElementBox _overlayBox = ElementBox(h: 0.0, w: 0.0);
@@ -35,21 +91,29 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
   OverlayEntry? _overlayEntryHidden;
   final GlobalKey _widgetKey = GlobalKey();
 
-  late openMethods opener;
+  late OpenMethods opener;
 
   /// Init state and trigger the hidden overlay to measure its size
   @override
   void initState()
   {
     // set opener
-    opener = widget.model.openMethod ?? (hasMouse ? openMethods.hover : openMethods.longpress);
+    opener = widget.model.openMethod ?? (System().mouse ? OpenMethods.hover : OpenMethods.longpress);
 
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadHiddenOverlay(context));
     WidgetsBinding.instance.addObserver(this);
   }
-  
-  /// Automatically hide the overlay when the screen dimension changes
+
+  @override
+  didChangeDependencies()
+  {
+    // listen to route changes
+    NavigationObserver().registerListener(this);
+    super.didChangeDependencies();
+  }
+
+    /// Automatically hide the overlay when the screen dimension changes
   /// or when the user scrolls. This is done to avoid displacement.
   @override
   void didChangeMetrics()
@@ -61,16 +125,21 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
   @override
   void dispose()
   {
+    // stop listening to route changes
+    NavigationObserver().removeListener(this);
+
+    // hide overlay
     hideOverlay();
+
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
-  // Nav Changes
+  // Nav Changes used to hide overlay
   BuildContext getNavigatorContext() => context;
   Map<String,String>? onNavigatorPop() => null;
-  onNavigatorChange() => null;
   void onNavigatorPush({Map<String?, String>? parameters}) => null;
+  onNavigatorChange() => hideOverlay();
 
   ElementBox get _screenSize => _getScreenSize();
 
@@ -104,7 +173,7 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
               key: _widgetKey,
               triggerBox: _triggerBox,
               padding: widget.model.padding,
-              child: widget.child,
+              child: widget.content,
             ),
           ),
         );
@@ -144,46 +213,6 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
   void showOverlay(BuildContext context) async
   {
     OverlayState? overlayState = Overlay.of(context);
-
-    var position = ElTooltipPosition.rightCenter;
-    switch (widget.model.position?.toLowerCase().trim())
-    {
-      case 'leftstart' :
-        position = ElTooltipPosition.leftStart;
-        break;
-
-      case 'leftcenter' :
-        position = ElTooltipPosition.leftCenter;
-        break;
-
-      case 'leftend' :
-        position = ElTooltipPosition.leftEnd;
-        break;
-
-      case 'rightstart' :
-        position = ElTooltipPosition.rightStart;
-        break;
-
-      case 'rightcenter' :
-        position = ElTooltipPosition.rightCenter;
-        break;
-
-      case 'rightend' :
-        position = ElTooltipPosition.rightEnd;
-        break;
-
-      case 'topstart' :
-        position = ElTooltipPosition.topStart;
-        break;
-
-      case 'topcenter' :
-        position = ElTooltipPosition.topCenter;
-        break;
-
-      case 'topend' :
-        position = ElTooltipPosition.topEnd;
-        break;
-    }
     
     /// By calling [PositionManager.load()] we get returned the position
     /// of the tooltip, the arrow and the trigger.
@@ -194,16 +223,15 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
       screenSize: _screenSize,
       distance: widget.model.distance,
       radius: widget.model.radius,
-    ).load(preferredPosition: position);
+    ).load(preferredPosition: widget.position);
 
     late Widget child;
 
     // mouse attached
     switch (opener)
     {
-      case openMethods.hover:
-        child = MouseRegion(
-        onEnter: (_)
+      case OpenMethods.hover:
+        child = MouseRegion(onEnter: (_)
         {
           if (timer != null) timer!.cancel();
         },
@@ -212,49 +240,28 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
           if (timer != null) timer!.cancel();
           timer = Timer(Duration(milliseconds: widget.model.timeout > 0 ? widget.model.timeout : 1000), () => hideOverlay());
         },
-        child: widget.child,
-        );
+        child: widget.child);
         break;
 
-      case openMethods.tap:
-        child = GestureDetector(
-        onTap: () {
-        overlayEntry != null ? hideOverlay() : showOverlay(context);
-        },
-        child: widget.child,
-        );
+      case OpenMethods.tap:
+        child = GestureDetector(onTap: () => overlayEntry != null ? hideOverlay() : showOverlay(context), child: widget.child);
         break;
 
-      case openMethods.longpress:
-        child = GestureDetector(
-          onLongPress: ()
-          {
-            overlayEntry != null ? hideOverlay() : showOverlay(context);
-          },
-          child: widget.child,
-        );
+      case OpenMethods.longpress:
+        child = GestureDetector(onLongPress: () => overlayEntry != null ? hideOverlay() : showOverlay(context), child: widget.child);
         break;
 
       default:
         child = widget.child;
         break;
     }
-
-    // build content
-    List<Widget> children = [];
-    if (widget.model.children != null)
-      widget.model.children!.forEach((model)
-      {
-        if (model is IViewableWidget) {
-          children.add((model as IViewableWidget).getView());
-        }
-      });
-    var content = children.length == 1 ? children[0] : Column(children: children, mainAxisSize: MainAxisSize.min);
     
     overlayEntry = OverlayEntry(
       builder: (context) {
         return Stack(
           children: [
+
+            // modal curtain
             Modal(
               color: Colors.black87,
               opacity: 0.7,
@@ -263,6 +270,8 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
                 hideOverlay();
               },
             ),
+
+            // bubble
             Positioned(
               top: toolTipElementsDisplay.bubble.y,
               left: toolTipElementsDisplay.bubble.x,
@@ -271,9 +280,11 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
                 padding: widget.model.padding,
                 radius: toolTipElementsDisplay.radius,
                 color: widget.model.color ?? Theme.of(context).colorScheme.surfaceVariant,
-                child: content,
+                child: widget.content,
               ),
             ),
+
+            // arrow
             Positioned(
               top: toolTipElementsDisplay.arrow.y,
               left: toolTipElementsDisplay.arrow.x,
@@ -284,6 +295,8 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
                 height: _arrowBox.h,
               ),
             ),
+
+            // child
             Positioned(
               top: _triggerBox.y,
               left: _triggerBox.x,
@@ -297,10 +310,7 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
     if (overlayEntry != null) overlayState.insert(overlayEntry!);
 
     // Add timeout for the tooltip to disappear after a few seconds
-    if (widget.model.timeout > 0 && opener != openMethods.hover)
-    {
-      await Future.delayed(Duration(milliseconds: widget.model.timeout > 0 ? widget.model.timeout : 3000)).whenComplete(() => hideOverlay());
-    }
+    if (widget.model.timeout > 0 && opener != OpenMethods.hover) await Future.delayed(Duration(milliseconds: widget.model.timeout > 0 ? widget.model.timeout : 3000)).whenComplete(() => hideOverlay());
   }
 
   /// Method to hide the tooltip
@@ -321,7 +331,7 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
     // mouse attached
     switch (opener)
     {
-      case openMethods.hover:
+      case OpenMethods.hover:
         child = MouseRegion(
           onEnter: (_)
           {
@@ -332,7 +342,7 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
         );
         break;
 
-      case openMethods.tap:
+      case OpenMethods.tap:
         child = GestureDetector(
         onTap: () {
           overlayEntry != null ? hideOverlay() : showOverlay(context);
@@ -341,7 +351,7 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
         );
         break;
 
-      case openMethods.longpress:
+      case OpenMethods.longpress:
         child = GestureDetector(
           onLongPress: () {
             overlayEntry != null ? hideOverlay() : showOverlay(context);

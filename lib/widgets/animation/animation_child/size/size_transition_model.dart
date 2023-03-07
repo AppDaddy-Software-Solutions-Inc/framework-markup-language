@@ -114,6 +114,34 @@ class SizeTransitionModel extends AnimationChildModel {
     super.dispose();
   }
 
+  @override
+  Future<bool?> execute(
+      String caller, String propertyOrFunction, List<dynamic> arguments) async {
+    /// setter
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+
+    switch (function) {
+      case "animate":
+      case "start":
+        var view = findListenerOfExactType(SizeTransitionViewState);
+        if (view is SizeTransitionViewState) {
+          view.start();
+        }
+        return true;
+
+      case "stop":
+        var view = findListenerOfExactType(SizeTransitionViewState);
+        if (view is SizeTransitionViewState) view.stop();
+        return true;
+      case "reset":
+        var view = findListenerOfExactType(SizeTransitionViewState);
+        if (view is SizeTransitionViewState) view.reset();
+        return true;
+    }
+    return super.execute(caller, propertyOrFunction, arguments);
+  }
+
   Widget getTransitionView(Widget child, AnimationController controller) {
     return SizeTransitionView(this, child, controller);
   }

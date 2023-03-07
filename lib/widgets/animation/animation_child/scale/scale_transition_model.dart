@@ -90,6 +90,34 @@ class ScaleTransitionModel extends AnimationChildModel {
     super.dispose();
   }
 
+  @override
+  Future<bool?> execute(
+      String caller, String propertyOrFunction, List<dynamic> arguments) async {
+    /// setter
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+
+    switch (function) {
+      case "animate":
+      case "start":
+        var view = findListenerOfExactType(ScaleTransitionViewState);
+        if (view is ScaleTransitionViewState) {
+          view.start();
+        }
+        return true;
+
+      case "stop":
+        var view = findListenerOfExactType(ScaleTransitionViewState);
+        if (view is ScaleTransitionViewState) view.stop();
+        return true;
+      case "reset":
+        var view = findListenerOfExactType(ScaleTransitionViewState);
+        if (view is ScaleTransitionViewState) view.reset();
+        return true;
+    }
+    return super.execute(caller, propertyOrFunction, arguments);
+  }
+
   Widget getTransitionView(Widget child, AnimationController controller) {
     return ScaleTransitionView(this, child, controller);
   }

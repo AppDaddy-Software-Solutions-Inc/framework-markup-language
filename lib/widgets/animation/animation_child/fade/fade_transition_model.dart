@@ -82,6 +82,34 @@ class FadeTransitionModel extends AnimationChildModel {
     super.dispose();
   }
 
+  @override
+  Future<bool?> execute(
+      String caller, String propertyOrFunction, List<dynamic> arguments) async {
+    /// setter
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+
+    switch (function) {
+      case "animate":
+      case "start":
+        var view = findListenerOfExactType(FadeTransitionViewState);
+        if (view is FadeTransitionViewState) {
+          view.start();
+        }
+        return true;
+
+      case "stop":
+        var view = findListenerOfExactType(FadeTransitionViewState);
+        if (view is FadeTransitionViewState) view.stop();
+        return true;
+      case "reset":
+        var view = findListenerOfExactType(FadeTransitionViewState);
+        if (view is FadeTransitionViewState) view.reset();
+        return true;
+    }
+    return super.execute(caller, propertyOrFunction, arguments);
+  }
+
   Widget getTransitionView(Widget child, AnimationController controller) {
     return FadeTransitionView(this, child, controller);
   }

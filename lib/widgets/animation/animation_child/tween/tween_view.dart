@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart';
+import 'package:fml/event/manager.dart';
 import 'package:fml/helper/string.dart';
 import 'package:fml/widgets/animation/animation_helper.dart';
 import 'package:fml/widgets/animation/animation_child/tween/tween_model.dart';
@@ -27,6 +28,7 @@ class TweenViewState extends State<TweenView>
     implements IModelListener {
   late AnimationController _controller;
   late Animation<dynamic> _animation;
+  bool soloRequestBuild = false;
 
   @override
   void initState() {
@@ -34,6 +36,7 @@ class TweenViewState extends State<TweenView>
     if (widget.controller == null) {
       _controller = AnimationController(vsync: this, duration: Duration(milliseconds: widget.model.duration), reverseDuration: Duration(milliseconds: widget.model.reverseduration ?? widget.model.duration,));
       widget.model.controller = _controller;
+      soloRequestBuild = true;
     } else {
       _controller = widget.controller!;
       widget.model.controller = _controller;
@@ -57,6 +60,14 @@ class TweenViewState extends State<TweenView>
     // register model listener
     widget.model.registerListener(this);
 
+    if(soloRequestBuild) {
+      // register event listeners
+      EventManager.of(widget.model)?.registerEventListener(
+          EventTypes.animate, onAnimate);
+      EventManager.of(widget.model)?.registerEventListener(
+          EventTypes.reset, onReset);
+    }
+
     super.didChangeDependencies();
   }
 
@@ -68,15 +79,45 @@ class TweenViewState extends State<TweenView>
       // re-register model listeners
       oldWidget.model.removeListener(this);
       widget.model.registerListener(this);
+
+      if(soloRequestBuild) {
+        // de-register event listeners
+        EventManager.of(oldWidget.model)?.removeEventListener(
+            EventTypes.animate, onAnimate);
+        EventManager.of(widget.model)?.removeEventListener(
+            EventTypes.reset, onReset);
+
+        // register event listeners
+        EventManager.of(widget.model)?.registerEventListener(
+            EventTypes.animate, onAnimate);
+        EventManager.of(widget.model)?.registerEventListener(
+            EventTypes.reset, onReset);
+
+        _controller.duration = Duration(milliseconds: widget.model.duration);
+        _controller.reverseDuration = Duration(
+            milliseconds: widget.model.reverseduration ??
+                widget.model.duration);
+      }
     }
   }
 
   @override
   void dispose() {
+    if(soloRequestBuild) {
+      stop();
+      // remove controller
+      _controller.dispose();
+      // de-register event listeners
+      EventManager.of(widget.model)?.removeEventListener(
+          EventTypes.animate, onAnimate);
+      EventManager.of(widget.model)?.removeEventListener(
+          EventTypes.reset, onReset);
+    }
+
     // remove model listener
     widget.model.removeListener(this);
-    _controller.dispose();
     super.dispose();
+
   }
 
   /// Callback to fire the [_AnimationViewState.build] when the [AnimationModel] changes

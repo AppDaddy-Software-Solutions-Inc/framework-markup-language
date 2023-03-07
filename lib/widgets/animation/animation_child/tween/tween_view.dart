@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:fml/helper/string.dart';
 import 'package:fml/widgets/animation/animation_helper.dart';
 import 'package:fml/widgets/animation/animation_child/tween/tween_model.dart'
-    as MODEL;
+    as TweenModel;
 import 'package:fml/widgets/widget/widget_model.dart';
 
 /// Animation View
 ///
 /// Builds the View from model properties
 class TweenView extends StatefulWidget {
-  final MODEL.TweenModel model;
+  final TweenModel.AnimationModel model;
   final List<Widget> children = [];
   final Widget? child;
   final AnimationController controller;

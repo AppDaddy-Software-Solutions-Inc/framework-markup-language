@@ -2,14 +2,14 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/animation/animation_helper.dart';
 import 'package:fml/widgets/animation/animation_child/size/size_transition_model.dart'
-    as MODEL;
+    as SizeTransitionModel;
 import 'package:fml/widgets/widget/widget_model.dart';
 
 /// Animation View
 ///
 /// Builds the View from model properties
 class SizeTransitionView extends StatefulWidget {
-  final MODEL.SizeTransitionModel model;
+  final SizeTransitionModel.AnimationModel model;
   final List<Widget> children = [];
   final Widget? child;
   final AnimationController controller;

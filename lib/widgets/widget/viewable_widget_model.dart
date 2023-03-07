@@ -549,7 +549,7 @@ class ViewableWidgetModel extends WidgetModel {
       Xml.setAttribute(xml, "id", Uuid().v4().toString());
 
       // build the model
-      model = AnimationModel.fromXml(this, model.element!, false);
+      model = AnimationModel.fromXml(this, model.element!);
       if (model is AnimationModel) {
         // add to map
         if (_animationmap == null)

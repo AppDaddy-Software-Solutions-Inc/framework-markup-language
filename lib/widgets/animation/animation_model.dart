@@ -152,18 +152,12 @@ class AnimationModel extends WidgetModel implements IViewableWidget {
   AnimationModel(WidgetModel parent, String? id)
       : super(parent, id); // ; {key: value}
 
-  static AnimationModel? fromXml(WidgetModel parent, XmlElement xml, bool requestedStandalone)
+  static AnimationModel? fromXml(WidgetModel parent, XmlElement xml)
   {
     AnimationModel? model;
     try
     {
       model = AnimationModel(parent, Xml.get(node: xml, tag: 'id'));
-      if (requestedStandalone)
-      {
-        var xmlCopy = xml.copy();
-        xmlCopy.setAttribute('id', null);
-        xml.children.add(xmlCopy);
-      }
       model.deserialize(xml);
     }
     catch (e)

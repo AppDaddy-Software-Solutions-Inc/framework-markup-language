@@ -4,25 +4,13 @@ import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/widgets/animation/animation_model.dart';
 
 /// Progression Curve of an Animation or Transition types
 
 /// Animation Model
 /// Defines the properties;
-class AnimationChildModel extends WidgetModel {
-  /// Curve
-  StringObservable? _curve;
-
-  set curve(dynamic v) {
-    if (_curve != null) {
-      _curve!.set(v);
-    } else if (v != null) {
-      _curve = StringObservable(Binding.toKey(id, 'curve'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  String? get curve => _curve?.get();
+class AnimationChildModel extends AnimationModel {
 
   /// Curve
   StringObservable? _value;
@@ -97,7 +85,6 @@ class AnimationChildModel extends WidgetModel {
   void deserialize(XmlElement xml) async {
     // deserialize
     super.deserialize(xml);
-    curve = Xml.get(node: xml, tag: 'curve');
     begin = Xml.get(node: xml, tag: 'begin');
     end = Xml.get(node: xml, tag: 'end');
   }

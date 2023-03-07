@@ -10,7 +10,7 @@ import 'package:fml/helper/common_helpers.dart';
 
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
-class FlipCardModel extends AnimationChildModel {
+class AnimationModel extends AnimationChildModel {
 
   /// Curve ending point from 1.0 to 0.0
   StringObservable? _align;
@@ -83,13 +83,13 @@ class FlipCardModel extends AnimationChildModel {
   double get to => _to?.get() ?? 1.0;
 
 
-  FlipCardModel(WidgetModel parent, String? id)
+  AnimationModel(WidgetModel parent, String? id)
       : super(parent, id); // ; {key: value}
 
-  static FlipCardModel? fromXml(WidgetModel parent, XmlElement xml) {
-    FlipCardModel? model;
+  static AnimationModel? fromXml(WidgetModel parent, XmlElement xml) {
+    AnimationModel? model;
     try {
-      model = FlipCardModel(parent, Xml.get(node: xml, tag: 'id'));
+      model = AnimationModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     } catch (e) {
       Log().debug(e.toString());

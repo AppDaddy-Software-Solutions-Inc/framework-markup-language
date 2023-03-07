@@ -3,14 +3,14 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/animation/animation_helper.dart';
 import 'package:fml/widgets/animation/animation_child/flip/flip_card_model.dart'
-    as MODEL;
+    as FlipCardModel;
 import 'package:fml/widgets/widget/widget_model.dart';
 
 /// Animation View
 ///
 /// Builds the View from model properties
 class FlipCardView extends StatefulWidget {
-  final MODEL.FlipCardModel model;
+  final FlipCardModel.AnimationModel model;
   final List<Widget> children = [];
   final Widget? child;
   final AnimationController controller;

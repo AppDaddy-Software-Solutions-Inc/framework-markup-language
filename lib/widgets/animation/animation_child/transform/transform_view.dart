@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:fml/helper/string.dart';
 import 'package:fml/widgets/animation/animation_helper.dart';
 import 'package:fml/widgets/animation/animation_child/transform/transform_model.dart'
-    as MODEL;
+    as TransformModel;
 import 'package:fml/widgets/widget/widget_model.dart';
 
 /// Animation View
 ///
 /// Builds the View from model properties
 class TransformView extends StatefulWidget {
-  final MODEL.TransformModel model;
+  final TransformModel.AnimationModel model;
   final List<Widget> children = [];
   final Widget? child;
   final AnimationController controller;

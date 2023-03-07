@@ -42,7 +42,7 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
   void initState()
   {
     // set opener
-    opener = widget.model.openMethod ?? (hasMouse ? openMethods.hover : openMethods.tap);
+    opener = widget.model.openMethod ?? (hasMouse ? openMethods.hover : openMethods.longpress);
 
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadHiddenOverlay(context));

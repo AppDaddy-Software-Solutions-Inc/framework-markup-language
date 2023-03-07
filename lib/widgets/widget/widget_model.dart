@@ -1159,6 +1159,21 @@ class WidgetModel implements IDataSourceListener
     return exception != null && nodes.length > 0;
   }
 
+  XmlElement? cloneNode({String? id})
+  {
+    if (element == null) return null;
+
+    // make a copy of the model
+    var xml = element!.copy();
+
+    // we dont want duplicate model ids
+    Xml.setAttribute(xml, "id", id ?? Uuid().v4().toString());
+
+    return xml;
+  }
+
+  WidgetModel? clone(WidgetModel parent, {String? id}) => null;
+
   Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
   {
     if (scope == null) return null;

@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
+import 'package:fml/widgets/widget/iAnimatedWidget.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:flutter/material.dart';
@@ -11,9 +12,9 @@ import 'package:fml/helper/common_helpers.dart';
 
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
-class AnimationModel extends WidgetModel implements IViewableWidget {
+class AnimationModel extends WidgetModel implements IViewableWidget, IAnimatedWidget
+{
   bool runonce = false;
-
 
   /// Transition Curve
   StringObservable? _curve;
@@ -188,9 +189,8 @@ class AnimationModel extends WidgetModel implements IViewableWidget {
   }
   String? get onstart => _onstart?.get();
 
+  final List<IAnimatedWidget> transitions = [];
 
-
-  final List transitionChildren = [];
   AnimationController? controller;
 
   AnimationModel(WidgetModel parent, String? id)
@@ -230,14 +230,13 @@ class AnimationModel extends WidgetModel implements IViewableWidget {
     oncomplete = Xml.get(node: xml, tag: 'oncomplete');
     ondismiss = Xml.get(node: xml, tag: 'ondismiss');
 
-
-    // clear options
-    this.transitionChildren.clear();
-
-    // Build options
-    List? transitionChildren = children;
-
-    transitionChildren?.forEach((child) => this.transitionChildren.add(child));
+    // build transitions
+    transitions.clear();
+    children?.forEach((child)
+    {
+      if (child is IAnimatedWidget) transitions.add(child as IAnimatedWidget);
+    });
+    children?.clear();
   }
 
   @override
@@ -296,9 +295,13 @@ class AnimationModel extends WidgetModel implements IViewableWidget {
     return await EventHandler(this).execute(_oncomplete);
   }
 
-  /// Returns the [ANIMATION] View
-
-  Widget getView({Key? key}) {
-    return AnimationView(this, null);
+  WidgetModel? clone(WidgetModel parent, {String? id})
+  {
+    var xml = super.cloneNode(id: id);
+    return (xml != null) ? fromXml(parent, xml) : null;
   }
+
+  Widget getView({Key? key}) => AnimationView(this, null);
+
+  Widget getTransitionView(Widget child, {AnimationController? controller}) => AnimationView(this, child);
 }

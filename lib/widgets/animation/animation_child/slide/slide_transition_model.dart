@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/animation/animation_child/animation_child_model.dart';
 import 'package:fml/widgets/animation/animation_child/slide/slide_transition_view.dart';
+import 'package:fml/widgets/widget/iAnimatedWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -12,7 +13,8 @@ import 'package:fml/helper/common_helpers.dart';
 
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
-class SlideTransitionModel extends AnimationChildModel {
+class SlideTransitionModel extends AnimationChildModel implements IAnimatedWidget
+{
   /// Curve starting point from 0.0 to 1.0
   StringObservable? _from;
 
@@ -115,7 +117,11 @@ class SlideTransitionModel extends AnimationChildModel {
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
-  Widget getTransitionView(Widget child, AnimationController controller) {
-    return SlideTransitionView(this, child, controller);
+  WidgetModel? clone(WidgetModel parent, {String? id})
+  {
+    var xml = super.cloneNode(id: id);
+    return (xml != null) ? fromXml(parent, xml) : null;
   }
+
+  Widget getTransitionView(Widget child, {AnimationController? controller}) => SlideTransitionView(this, child, controller);
 }

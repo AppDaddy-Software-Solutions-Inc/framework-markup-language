@@ -94,9 +94,9 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
   _buildTransitionChildren()
   {
     Widget? newChild = widget.child;
-    widget.model.transitionChildren.forEach((child)
+    widget.model.transitions.forEach((transition)
     {
-      newChild = child.getTransitionView(newChild, _controller);
+      newChild = transition.getTransitionView(newChild!, controller: _controller);
     });
     return newChild;
   }
@@ -124,8 +124,10 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
       }
     }
 
-    if (widget.model.transitionChildren.isNotEmpty && widget.child != null) {
+    if (widget.model.transitions.isNotEmpty && widget.child != null)
+    {
       Widget view = _buildTransitionChildren();
+
       // Start the Controller
       if ((widget.model.autoplay == true) && (!_stopped)) start();
       return view;

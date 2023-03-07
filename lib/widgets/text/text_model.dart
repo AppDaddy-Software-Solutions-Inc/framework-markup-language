@@ -7,7 +7,6 @@ import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/text/text_view.dart';
-import 'package:fml/eval/textParser.dart' as PARSE;
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
@@ -18,24 +17,19 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
   // value
   StringObservable? _value;
 
-  set value(dynamic v) {
-    if (_value != null) {
+  set value(dynamic v)
+  {
+    if (_value != null)
+    {
       _value!.set(v);
-    } else {
-      if ((v != null) ||
-          (WidgetModel.isBound(this, Binding.toKey(id, 'value'))))
-        _value = StringObservable(Binding.toKey(id, 'value'), v,
-            scope: scope, listener: onPropertyChange);
+    }
+    else
+    {
+      if ((v != null) || (WidgetModel.isBound(this, Binding.toKey(id, 'value'))))
+        _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  String? get value {
-    if (_value == null)
-         return null;
-    else return parseValue(_value?.get());
-  }
-
-  // value
-  List<PARSE.TextValue> markupTextValues = [];
+  String? get value => _value?.get();
 
   bool spanRequestBuild = false;
   bool addWhitespace = false;
@@ -505,29 +499,6 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
   {
     // Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
-  }
-
-  String? parseValue(String? value) {
-    String? finalVal = '';
-
-    if (raw) return value;
-
-    try {
-      if (value!.contains(':')) value = S.parseEmojis(value);
-      markupTextValues = [];
-      PARSE.textValues = [];
-      PARSE.matchElements(value);
-      PARSE.textValues.isNotEmpty
-          ? markupTextValues = PARSE.textValues
-          : markupTextValues = [];
-      markupTextValues.forEach((element) {
-        finalVal = finalVal! + element.text;
-      });
-    } catch(e) {
-      finalVal = value;
-    }
-
-    return finalVal;
   }
 
   @override

@@ -1,10 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:fml/helper/string.dart';
 import 'package:fml/widgets/expanded/expanded_model.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:google_fonts/google_fonts.dart' deferred as gf;
+import 'package:fml/eval/textParser.dart' as parse;
 import 'package:flutter/material.dart';
 
 class TextView extends StatefulWidget implements IWidgetView
@@ -19,6 +21,7 @@ class TextView extends StatefulWidget implements IWidgetView
 class _TextViewState extends WidgetState<TextView>
 {
   bool gfloaded = false;
+  List<parse.TextValue> markupTextValues = [];
 
   @override
   void initState()
@@ -36,12 +39,35 @@ class _TextViewState extends WidgetState<TextView>
     });
   }
 
+  void parseValue(String? value) {
+    String? finalVal = '';
+
+    if (widget.model.raw) return;
+
+    try {
+      if (value!.contains(':')) value = S.parseEmojis(value);
+      markupTextValues = [];
+      parse.textValues = [];
+      parse.matchElements(widget.model.value ?? '');
+      parse.textValues.isNotEmpty
+          ? markupTextValues = parse.textValues
+          : markupTextValues = [];
+      markupTextValues.forEach((element) {
+        finalVal = finalVal! + element.text;
+      });
+    } catch(e) {
+      finalVal = value;
+    }
+  }
+
   @override
   Widget build(BuildContext context)
   {
 
     // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible || !gfloaded) return Offstage();
+    if (!widget.model.visible) return Offstage();
+
+    parseValue(widget.model.value);
 
     String? style = widget.model.style;
     double? size = widget.model.size;
@@ -230,8 +256,8 @@ class _TextViewState extends WidgetState<TextView>
     List<InlineSpan> textSpans = [];
     //**bold** *italic* ***bold+italic***  _underline_  __strikethrough__  ___overline___ ^^subscript^^ ^superscript^
 
-    if (widget.model.markupTextValues.isNotEmpty && !widget.model.raw) {
-      widget.model.markupTextValues.forEach((element) {
+    if (markupTextValues.isNotEmpty && !widget.model.raw) {
+      markupTextValues.forEach((element) {
         InlineSpan textSpan;
         FontWeight? weight;
         FontStyle? style;
@@ -325,7 +351,7 @@ class _TextViewState extends WidgetState<TextView>
         {
           TextStyle? textstyle;
           String? font = codeBlockFont ?? widget.model.font;
-          if (font != null)
+          if (font != null && gfloaded)
           {
             textstyle = gf.GoogleFonts.getFont(font,
                 backgroundColor: codeBlockBG,
@@ -385,7 +411,7 @@ class _TextViewState extends WidgetState<TextView>
     {
       TextStyle? textstyle;
       String? font = widget.model.font;
-      if (font != null)
+      if (font != null && gfloaded)
       {
          textstyle = gf.GoogleFonts.getFont(
             font,

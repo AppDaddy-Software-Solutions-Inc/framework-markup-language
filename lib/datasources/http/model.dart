@@ -65,7 +65,7 @@ class HttpModel extends DataSourceModel implements IDataSource
     }
     else if (v != null)
     {
-      _timeout = IntegerObservable(Binding.toKey(id, 'timetoidle'), v, scope: scope, listener: onPropertyChange);
+      _timeout = IntegerObservable(Binding.toKey(id, 'timeout'), v, scope: scope, listener: onPropertyChange);
     }
   }
   int get timeout => _timeout?.get() ?? defaultTimeout;

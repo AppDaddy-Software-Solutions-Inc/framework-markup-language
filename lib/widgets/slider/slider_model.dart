@@ -266,7 +266,7 @@ class SliderModel extends FormFieldModel implements IFormField, IViewableWidget
     super.dispose();
   }
 
-  Widget getView({Key? key}) => SliderView(this);
+  Widget getView({Key? key}) => getReactiveView(SliderView(this));
 }
 
 class Suggestion {

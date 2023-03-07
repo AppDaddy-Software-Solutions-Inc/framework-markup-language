@@ -457,5 +457,5 @@ class TypeaheadModel extends FormFieldModel implements IFormField, IViewableWidg
     super.dispose();
   }
 
-  Widget getView({Key? key}) => TypeaheadView(this);
+  Widget getView({Key? key}) => getReactiveView(TypeaheadView(this));
 }

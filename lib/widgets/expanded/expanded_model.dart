@@ -68,5 +68,5 @@ class ExpandedModel extends DecoratedWidgetModel implements IViewableWidget
     super.dispose();
   }
 
-  Widget getView({Key? key}) => ExpandedView(this);
+  Widget getView({Key? key}) => getReactiveView(ExpandedView(this));
 }

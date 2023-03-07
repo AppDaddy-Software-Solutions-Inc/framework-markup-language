@@ -266,5 +266,5 @@ class DrawerModel extends DecoratedWidgetModel implements IViewableWidget
     }
   }
 
-  Widget getView({Key? key}) => DrawerView(this, Container());
+  Widget getView({Key? key}) => getReactiveView(DrawerView(this, Container()));
 }

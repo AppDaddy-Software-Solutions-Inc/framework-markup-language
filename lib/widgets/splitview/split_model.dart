@@ -115,7 +115,7 @@ class SplitModel extends DecoratedWidgetModel implements IViewableWidget
     children?.removeWhere((element) => !(element is ViewModel));
   }
 
-  Widget getView({Key? key}) => SplitView(this);
+  Widget getView({Key? key}) => getReactiveView(SplitView(this));
 }
 
 

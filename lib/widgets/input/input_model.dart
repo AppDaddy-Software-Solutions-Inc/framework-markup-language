@@ -725,7 +725,7 @@ class InputModel extends FormFieldModel implements IFormField, IViewableWidget
     return await EventHandler(this).execute(_onfocuslost);
   }
 
-  Widget getView({Key? key}) => InputView(this);
+  Widget getView({Key? key}) => getReactiveView(InputView(this));
 }
 
 class Suggestion {

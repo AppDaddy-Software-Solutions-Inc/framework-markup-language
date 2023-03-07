@@ -179,5 +179,5 @@ class PaddingModel extends ViewableWidgetModel implements IViewableWidget
     super.dispose();
   }
 
-  Widget getView({Key? key}) => PaddingView(this);
+  Widget getView({Key? key}) => getReactiveView(PaddingView(this));
 }

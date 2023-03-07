@@ -454,5 +454,5 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
     super.dispose();
   }
 
-  Widget getView({Key? key}) => SelectView(this);
+  Widget getView({Key? key}) => getReactiveView(SelectView(this));
 }

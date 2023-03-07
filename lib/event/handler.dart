@@ -109,6 +109,7 @@ class EventHandler extends Eval
       functions[S.fromEnum(EventTypes.replaceroute)]  = _handleEventReplace;
       functions[S.fromEnum(EventTypes.page)]          = _handleEventPage;
       functions[S.fromEnum(EventTypes.refresh)]       = _handleEventRefresh;
+      functions[S.fromEnum(EventTypes.reset)]         = _handleEventReset;
       functions[S.fromEnum(EventTypes.saveas)]        = _handleEventSaveAs;
       functions[S.fromEnum(EventTypes.scroll)]        = _handleEventScroll;
       functions[S.fromEnum(EventTypes.scrollto)]      = _handleEventScrollTo;
@@ -644,6 +645,16 @@ class EventHandler extends Eval
     parameters['id']      = S.toStr(id);
     parameters['enabled'] = S.toStr(enabled);
     EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.animate, parameters: parameters));
+    return true;
+  }
+
+  /// Broadcasts the animate event to be handled by individual widgets
+  Future<bool> _handleEventReset([dynamic id, dynamic enabled]) async
+  {
+    Map<String,String?> parameters = Map<String,String?>();
+    parameters['id']      = S.toStr(id);
+    parameters['enabled'] = S.toStr(enabled);
+    EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.reset, parameters: parameters));
     return true;
   }
 

@@ -264,5 +264,5 @@ class GestureModel extends DecoratedWidgetModel implements IViewableWidget
     return await EventHandler(this).execute(_onrightclick);
   }
 
-  Widget getView({Key? key}) => GestureView(this);
+  Widget getView({Key? key}) => getReactiveView(GestureView(this));
 }

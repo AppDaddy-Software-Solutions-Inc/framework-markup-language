@@ -221,7 +221,7 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
   }
 
 
-  Widget getView({Key? key}) => ScrollerView(this);
+  Widget getView({Key? key}) => getReactiveView(ScrollerView(this));
 }
 
 

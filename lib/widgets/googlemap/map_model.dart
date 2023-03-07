@@ -207,5 +207,5 @@ class MapModel extends DecoratedWidgetModel implements IViewableWidget
     super.dispose();
   }
 
-  Widget getView({Key? key}) => MapView(this);
+  Widget getView({Key? key}) => getReactiveView(MapView(this));
 }

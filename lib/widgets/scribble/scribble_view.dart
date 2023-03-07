@@ -428,6 +428,7 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
             maxHeight: con.maxHeight!,
             minWidth: con.minWidth!,
             maxWidth: con.maxWidth!));
+
     return view;
   }
 

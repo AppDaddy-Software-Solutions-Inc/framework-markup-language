@@ -161,5 +161,5 @@ class CardModel extends DecoratedWidgetModel implements IViewableWidget
     super.dispose();
   }
 
-  Widget getView({Key? key}) => CardView(this);
+  Widget getView({Key? key}) => getReactiveView(CardView(this));
 }

@@ -98,5 +98,5 @@ class EditorModel extends DecoratedWidgetModel implements IViewableWidget
   }
 
   @override
-  Widget getView({Key? key}) => EditorView(this);
+  Widget getView({Key? key}) => getReactiveView(EditorView(this));
 }

@@ -47,5 +47,5 @@ class FooterModel extends DecoratedWidgetModel implements IViewableWidget
     super.dispose();
   }
 
-  Widget getView({Key? key}) => FooterView(this);
+  Widget getView({Key? key}) => getReactiveView(FooterView(this));
 }

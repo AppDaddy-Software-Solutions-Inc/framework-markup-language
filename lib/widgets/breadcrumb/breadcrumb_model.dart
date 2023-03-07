@@ -87,5 +87,5 @@ class BreadcrumbModel extends DecoratedWidgetModel implements IViewableWidget
   }
 
   @override
-  Widget getView({Key? key}) => BreadcrumbView(this);
+  Widget getView({Key? key}) => getReactiveView(BreadcrumbView(this));
 }

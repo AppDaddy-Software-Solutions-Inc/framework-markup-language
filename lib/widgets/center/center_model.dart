@@ -59,5 +59,5 @@ class CenterModel extends DecoratedWidgetModel implements IViewableWidget
     return true;
   }
 
-  Widget getView({Key? key}) => CenterView(this);
+  Widget getView({Key? key}) => getReactiveView(CenterView(this));
 }

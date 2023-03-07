@@ -112,5 +112,5 @@ class StackModel extends DecoratedWidgetModel implements IViewableWidget
     super.dispose();
   }
 
-  Widget getView({Key? key}) => StackView(this);
+  Widget getView({Key? key}) => getReactiveView(StackView(this));
 }

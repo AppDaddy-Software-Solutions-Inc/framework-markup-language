@@ -123,5 +123,5 @@ class PopoverModel extends DecoratedWidgetModel implements IViewableWidget, IMod
     onPropertyChange(StringObservable(null, null)); // Allow us to rebuild the child model when it changes
   }
 
-  Widget getView({Key? key}) => PopoverView(this);
+  Widget getView({Key? key}) => getReactiveView(PopoverView(this));
 }

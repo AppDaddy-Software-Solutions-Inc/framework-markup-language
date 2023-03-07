@@ -275,6 +275,6 @@ class ButtonModel extends DecoratedWidgetModel implements IViewableWidget
     return await EventHandler(this).execute(_onexit);
   }
 
-  Widget getView({Key? key}) => ButtonView(this);
+  Widget getView({Key? key}) => getReactiveView(ButtonView(this));
 }
 

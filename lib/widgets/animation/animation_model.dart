@@ -1,271 +1,102 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/widget_model.dart'  ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/animation/animation_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-/// Transition types
-enum Transitions {fade, position, scale, rotate, flip, size, slide}
-
-/// Progression Curve of an Animation or Transition types
-enum Curve {
-  linear, 
-  decelerate, 
-  fastLinearToSlowEaseIn, 
-  ease, 
-  easeIn, 
-  easeInToLinear, 
-  easeInSine, 
-  easeInQuad, 
-  easeInCubic, 
-  easeInQuart, 
-  easeInQuint, 
-  easeInExpo,
-  easeInCirc,
-  easeInBack,
-  easeOut,
-  linearToEaseOut,
-  easeOutSine,
-  easeOutQuad,
-  easeOutCubic,
-  easeOutQuart,
-  easeOutQuint,
-  easeOutExpo,
-  easeOutCirc,
-  easeOutBack,
-  easeInOut,
-  easeInOutSine,
-  easeInOutQuad,
-  easeInOutCubic,
-  easeInOutQuart,
-  easeInOutQuint,
-  easeInOutExpo,
-  easeInOutCirc,
-  easeInOutBack,
-  fastOutSlowIn,
-  slowMiddle,
-  bounceIn,
-  bounceOut,
-  bounceInOut,
-  elasticIn,
-  elasticOut,
-  elasticInOut
-}
-
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
-class AnimationModel extends DecoratedWidgetModel implements IViewableWidget
-{
+class AnimationModel extends WidgetModel implements IViewableWidget {
   bool runonce = false;
 
-  
-  // animation
-  /// Name of Animation to use
-  StringObservable? _animation;
-  set animation (dynamic v)
-  {
-    if (_animation != null)
-    {
-      _animation!.set(v);
-    }
-    else if (v != null)
-    {
-      _animation = StringObservable(Binding.toKey(id, 'animation'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  String? get animation => _animation?.get();
 
   /// Transition Curve
-  StringObservable? _transition;
-  set transition (dynamic v)
-  {
-    if (_transition != null)
-    {
-      _transition!.set(v);
-    }
-    else if (v != null)
-    {
-      _transition = StringObservable(Binding.toKey(id, 'transition'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  String? get transition => _transition?.get();
+  StringObservable? _curve;
 
-  /// anchor - used on on flip transition
-  StringObservable? _anchor;
-  set anchor (dynamic v)
-  {
-    if (_anchor != null)
-    {
-      _anchor!.set(v);
-    }
-    else if (v != null)
-    {
-      _anchor = StringObservable(Binding.toKey(id, 'anchor'), v, scope: scope, listener: onPropertyChange);
+  set curve(dynamic v) {
+    if (_curve != null) {
+      _curve!.set(v);
+    } else if (v != null) {
+      _curve = StringObservable(Binding.toKey(id, 'curve'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
-  String get anchor => _anchor?.get() ?? "center";
 
-  /// axis - used on on flip transition
-  StringObservable? _axis;
-  set axis (dynamic v)
-  {
-    if (_axis != null)
-    {
-      _axis!.set(v);
-    }
-    else if (v != null)
-    {
-      _axis = StringObservable(Binding.toKey(id, 'axis'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  String get axis => _axis?.get() ?? "horizontal";
+  String? get curve => _curve?.get();
 
-  StringObservable? _side;
-  set side (dynamic v)
-  {
-    if (_side != null)
-    {
-      _side!.set(v);
-    }
-    else if (v != null)
-    {
-      // no listener since this is only set by the view
-      // and we don't want to trigger a rebuild
-      _side = StringObservable(Binding.toKey(id, 'side'), v, scope: scope);
-    }
-  }
-  String get side => _side?.get() ?? "front";
 
-  
-  /// Δ x value for transitions such as slide, defaults to 1.5
-  DoubleObservable? _dx;
-  set dx (dynamic v)
-  {
-    if (_dx != null)
-    {
-      _dx!.set(v);
-    }
-    else if (v != null)
-    {
-      _dx = DoubleObservable(Binding.toKey(id, 'x'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  double get dx => _dx?.get() ?? 1.5;
-
-  /// Δ y value for transitions such as slide
-  DoubleObservable? _dy;
-  set dy (dynamic v)
-  {
-    if (_dy != null)
-    {
-      _dy!.set(v);
-    }
-    else if (v != null)
-    {
-      _dy = DoubleObservable(Binding.toKey(id, 'y'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  double get dy => _dy?.get() ?? 0.0;
-  
   /// bool value to determine how many times the animation repeats
   ///
   /// Can take in an integer or string value
   DoubleObservable? _repeat;
-  set repeat (dynamic v)
-  {
-    if ((v is String) && (v.toLowerCase() == 'forever' || v.toLowerCase() == 'loop' || v.toLowerCase() == 'infinite' )) v = double.maxFinite;
-    if (_repeat != null)
-    {
+
+  set repeat(dynamic v) {
+    if ((v is String) &&
+        (v.toLowerCase() == 'forever' ||
+            v.toLowerCase() == 'loop' ||
+            v.toLowerCase() == 'infinite')) v = double.maxFinite;
+    if (_repeat != null) {
       _repeat!.set(v);
-    }
-    else if (v != null)
-    {
-      _repeat = DoubleObservable(Binding.toKey(id, 'repeat'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _repeat = DoubleObservable(Binding.toKey(id, 'repeat'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+
   double get repeat => _repeat?.get() ?? 1;
+
 
   /// Direction to play the Animation in, if set to true will play in reverse, default: false
   BooleanObservable? _reverse;
-  set reverse (dynamic v)
-  {
-    if (_reverse != null)
-    {
+
+  set reverse(dynamic v) {
+    if (_reverse != null) {
       _reverse!.set(v);
-    }
-    else if (v != null)
-    {
-      _reverse = BooleanObservable(Binding.toKey(id, 'reverse'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _reverse = BooleanObservable(Binding.toKey(id, 'reverse'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+
   bool get reverse => _reverse?.get() ?? false;
 
   /// Duration an animation takes to play once in milliseconds
   IntegerObservable? _duration;
-  set duration (dynamic v)
-  {
-    if (_duration != null)
-    {
+
+  set duration(dynamic v) {
+    if (_duration != null) {
       _duration!.set(v);
+    } else if (v != null) {
+      _duration = IntegerObservable(Binding.toKey(id, 'duration'), v,
+          scope: scope, listener: onPropertyChange);
     }
-    else if (v != null)
-    {
-      _duration = IntegerObservable(Binding.toKey(id, 'duration'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  int get duration => _duration?.get() ?? 1000;
-
-  /// Curve starting point from 0.0 to 1.0
-  DoubleObservable? _from;
-  set from (dynamic v)
-  {
-    if (_from != null)
-    {
-      _from!.set(v);
-    }
-    else if (v != null)
-    {
-      _from = DoubleObservable(Binding.toKey(id, 'from'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  double get from
-  {
-    if (_from == null) return 0.0;
-    double f = _from?.get() ?? 0.0;
-    if (f < 0.0) f = 0.0;
-    if (f > 1.0) f = 1.0;
-    return f;
   }
 
-  /// Curve ending point from 1.0 to 0.0
-  DoubleObservable? _to;
-  set to (dynamic v)
-  {
-    if (_to != null)
-    {
-      _to!.set(v);
-    }
-    else if (v != null)
-    {
-      _to = DoubleObservable(Binding.toKey(id, 'to'), v, scope: scope, listener: onPropertyChange);
+  int get duration => _duration?.get() ?? 300;
+
+  /// Duration an animation takes to play once in milliseconds
+  IntegerObservable? _reverseduration;
+
+  set reverseduration(dynamic v) {
+    if (_reverseduration != null) {
+      _reverseduration!.set(v);
+    } else if (v != null) {
+      _reverseduration = IntegerObservable(
+          Binding.toKey(id, 'reverseduration'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
-  double get to
-  {
-    if (_to == null) return 1.0;
-    double f = _to?.get() ?? 1.0;
-    if (f < 0.0) f = 0.0;
-    if (f > 1.0) f = 1.0;
-    return f;
-  }
+
+  int? get reverseduration => _reverseduration?.get();
 
   /// Play animation on build, default: false
   BooleanObservable? _autoplay;
+
   set autoplay(dynamic v) {
     if (_autoplay != null) {
       _autoplay!.set(v);
@@ -274,11 +105,98 @@ class AnimationModel extends DecoratedWidgetModel implements IViewableWidget
           scope: scope, listener: onPropertyChange);
     }
   }
+
   bool get autoplay => _autoplay?.get() ?? false;
 
-  AnimationModel(WidgetModel parent, String?  id) : super(parent, id); // ; {key: value}
+  /// Linked allows for passing the animation controller on a single animation. This will allow for the animation to sync to that controller.
+  StringObservable? _linked;
 
-  static AnimationModel? fromXml(WidgetModel parent, XmlElement xml, {String? type})
+  set linked(dynamic v) {
+    if (_linked != null) {
+      _linked!.set(v);
+    } else if (v != null) {
+      _linked = StringObservable(Binding.toKey(id, 'linked'), v, scope: scope);
+    }
+  }
+
+  String? get linked => _linked?.get();
+
+  /// scroll allows for passing the scrollcontroller on a single animation. This will allow for the animation to sync to that controller.
+  StringObservable? _scroll;
+
+  set scroll(dynamic v) {
+    if (_scroll != null) {
+      _scroll!.set(v);
+    } else if (v != null) {
+      _scroll = StringObservable(Binding.toKey(id, 'scroll'), v, scope: scope);
+    }
+  }
+
+  String? get scroll => _scroll?.get();
+
+  /// gesture allows for passing the gesturedetector on a single animation. This will allow for the animation to sync to that controller.
+  StringObservable? _gesture;
+
+  set gesture(dynamic v) {
+    if (_gesture != null) {
+      _gesture!.set(v);
+    } else if (v != null) {
+      _gesture = StringObservable(Binding.toKey(id, 'gesture'), v, scope: scope);
+    }
+  }
+  String? get gesture => _gesture?.get();
+
+  StringObservable? _oncomplete;
+  set oncomplete (dynamic v)
+  {
+    if (_oncomplete != null)
+    {
+      _oncomplete!.set(v);
+    }
+    else if (v != null)
+    {
+      _oncomplete = StringObservable(Binding.toKey(id, 'oncomplete'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
+    }
+  }
+  String? get oncomplete => _oncomplete?.get();
+
+  StringObservable? _ondismiss;
+  set ondismiss (dynamic v)
+  {
+    if (_ondismiss != null)
+    {
+      _ondismiss!.set(v);
+    }
+    else if (v != null)
+    {
+      _ondismiss = StringObservable(Binding.toKey(id, 'ondismiss'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
+    }
+  }
+  String? get ondismiss => _ondismiss?.get();
+
+  StringObservable? _onstart;
+  set onstart (dynamic v)
+  {
+    if (_onstart != null)
+    {
+      _onstart!.set(v);
+    }
+    else if (v != null)
+    {
+      _onstart = StringObservable(Binding.toKey(id, 'onstart'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
+    }
+  }
+  String? get onstart => _onstart?.get();
+
+
+
+  final List transitionChildren = [];
+  AnimationController? controller;
+
+  AnimationModel(WidgetModel parent, String? id)
+      : super(parent, id); // ; {key: value}
+
+  static AnimationModel? fromXml(WidgetModel parent, XmlElement xml)
   {
     AnimationModel? model;
     try
@@ -286,7 +204,7 @@ class AnimationModel extends DecoratedWidgetModel implements IViewableWidget
       model = AnimationModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
-    catch(e)
+    catch (e)
     {
       Log().debug(e.toString());
       model = null;
@@ -302,57 +220,85 @@ class AnimationModel extends DecoratedWidgetModel implements IViewableWidget
     super.deserialize(xml);
 
     // properties
-    autoplay    = Xml.get(node: xml, tag: 'autoplay');
-    animation   = Xml.get(node: xml, tag: 'type');
-    transition  = Xml.get(node: xml, tag: 'transition');
-    repeat      = Xml.get(node: xml, tag: 'repeat') ?? 1;
-    reverse     = Xml.get(node: xml, tag: 'reverse');
-    duration    = Xml.get(node: xml, tag: 'duration');
-    from        = Xml.get(node: xml, tag: 'from');
-    to          = Xml.get(node: xml, tag: 'to');
-    dx          = Xml.get(node: xml, tag: 'x');
-    dy          = Xml.get(node: xml, tag: 'y');
-    anchor      = Xml.get(node: xml, tag: 'anchor');
-    axis        = Xml.get(node: xml, tag: 'axis');
+    autoplay = Xml.get(node: xml, tag: 'autoplay');
+    curve = Xml.get(node: xml, tag: 'curve');
+    repeat = Xml.get(node: xml, tag: 'repeat') ?? 1;
+    reverse = Xml.get(node: xml, tag: 'reverse');
+    duration = Xml.get(node: xml, tag: 'duration');
+    linked = Xml.get(node: xml, tag: 'linked');
+    onstart = Xml.get(node: xml, tag: 'onstart');
+    oncomplete = Xml.get(node: xml, tag: 'oncomplete');
+    ondismiss = Xml.get(node: xml, tag: 'ondismiss');
+
+
+    // clear options
+    this.transitionChildren.clear();
+
+    // Build options
+    List? transitionChildren = children;
+
+    transitionChildren?.forEach((child) => this.transitionChildren.add(child));
   }
 
   @override
-  dispose()
-  {
+  dispose() {
     // Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
   }
 
   // constrained?
-  bool isConstrained(String dimension)
-  {
+  bool isConstrained(String dimension) {
     return true;
   }
 
+  //we need a reset function to set the controller back to 0 without ticking.
+
   @override
-  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
-  {
+  Future<bool?> execute(
+      String caller, String propertyOrFunction, List<dynamic> arguments) async {
     /// setter
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
 
-    switch (function)
-    {
-      case "animate" :
-      case "start" :
+    switch (function) {
+      case "animate":
+      case "start":
         var view = findListenerOfExactType(AnimationViewState);
-        if (view is AnimationViewState) view.start();
+        if (view is AnimationViewState) {
+          view.start();
+        }
         return true;
 
-      case "stop" :
+      case "stop":
         var view = findListenerOfExactType(AnimationViewState);
         if (view is AnimationViewState) view.stop();
         return true;
-
+      case "reset":
+        var view = findListenerOfExactType(AnimationViewState);
+        if (view is AnimationViewState) view.reset();
+        return true;
     }
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
+  Future<bool> onStart(BuildContext context) async
+  {
+     return await EventHandler(this).execute(_onstart);
+  }
+
+  Future<bool> onDismiss(BuildContext context) async
+  {
+    return await EventHandler(this).execute(_ondismiss);
+  }
+
+  Future<bool> onComplete(BuildContext context) async
+  {
+    return await EventHandler(this).execute(_oncomplete);
+  }
+
   /// Returns the [ANIMATION] View
-  Widget getView({Key? key}) => AnimationView(this);
+
+  Widget getView({Key? key}) {
+    return AnimationView(this, null);
+  }
 }

@@ -585,5 +585,5 @@ class DatepickerModel extends FormFieldModel implements IFormField, IViewableWid
     onChange(context);
   }
 
-  Widget getView({Key? key}) => DatepickerView(this);
+  Widget getView({Key? key}) => getReactiveView(DatepickerView(this));
 }

@@ -188,6 +188,7 @@ class _ButtonViewState extends WidgetState<ButtonView>
         ),
       );
     }
+
     return view;
   }
 }

@@ -85,5 +85,5 @@ class TooltipModel extends DecoratedWidgetModel implements IViewableWidget
     super.dispose();
   }
 
-  Widget getView({Key? key}) => TooltipView(this);
+  Widget getView({Key? key}) => getReactiveView(TooltipView(this));
 }

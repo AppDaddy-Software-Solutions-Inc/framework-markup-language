@@ -239,5 +239,5 @@ class PositionedModel extends DecoratedWidgetModel implements IViewableWidget
     super.dispose();
   }
 
-  Widget getView({Key? key}) => PositionedView(this);
+  Widget getView({Key? key}) => getReactiveView(PositionedView(this));
 }

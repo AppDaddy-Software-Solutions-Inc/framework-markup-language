@@ -18,7 +18,15 @@ import 'package:fml/datasources/socket/socket_model.dart';
 import 'package:fml/datasources/zebra/model.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/alarm/alarm_model.dart';
+import 'package:fml/widgets/animation/animation_child/flip/flip_card_model.dart';
+import 'package:fml/widgets/animation/animation_child/transform/transform_model.dart';
+import 'package:fml/widgets/animation/animation_child/tween/tween_model.dart';
 import 'package:fml/widgets/animation/animation_model.dart';
+import 'package:fml/widgets/animation/animation_child/fade/fade_transition_model.dart';
+import 'package:fml/widgets/animation/animation_child/rotate/rotate_transition_model.dart';
+import 'package:fml/widgets/animation/animation_child/scale/scale_transition_model.dart';
+import 'package:fml/widgets/animation/animation_child/size/size_transition_model.dart';
+import 'package:fml/widgets/animation/animation_child/slide/slide_transition_model.dart';
 import 'package:fml/widgets/breadcrumb/breadcrumb_model.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/button/button_model.dart';
@@ -438,6 +446,8 @@ class WidgetModel implements IDataSourceListener
 
       case "flip":
         if (parent is IDataSource) model = Flip.fromXml(parent, node);
+        else if (parent is AnimationModel) model = FlipCardModel.fromXml(parent, node);
+        else  model = FlipCardModel.fromXml(parent, node);
         break;
 
       case "fml":
@@ -558,6 +568,44 @@ class WidgetModel implements IDataSourceListener
       case "option":
         if (parent is SelectModel || parent is CheckboxModel || parent is RadioModel || parent is TypeaheadModel) model = OptionModel.fromXml(parent, node);
         break;
+
+        case "fade":
+         if (parent is AnimationModel) model = FadeTransitionModel.fromXml(parent, node);
+         else model =  FadeTransitionModel.fromXml(parent, node);
+         break;
+
+      case "rotate":
+        if (parent is AnimationModel) model = RotateTransitionModel.fromXml(parent, node);
+          else model = RotateTransitionModel.fromXml(parent, node);
+        break;
+
+        case "size":
+          if (parent is AnimationModel) model = SizeTransitionModel.fromXml(parent, node);
+          else model = SizeTransitionModel.fromXml(parent, node);
+          break;
+
+      case "slide":
+        if (parent is AnimationModel) model = SlideTransitionModel.fromXml(parent, node,);
+        else model = SlideTransitionModel.fromXml(parent, node);
+        break;
+
+      case "scale":
+        if (parent is AnimationModel) model = ScaleTransitionModel.fromXml(parent, node);
+        else model = ScaleTransitionModel.fromXml(parent, node);
+        break;
+
+      case "transform":
+        if (parent is AnimationModel) model = TransformModel.fromXml(parent, node);
+        else model = TransformModel.fromXml(parent, node);
+        break;
+
+      case "tween":
+        if (parent is AnimationModel) model = TweenModel.fromXml(parent, node);
+        else model = TweenModel.fromXml(parent, node);
+        break;
+
+
+
 
       case "pad": // Preferred Case.
       case "padding": // Padding could be deprecated.

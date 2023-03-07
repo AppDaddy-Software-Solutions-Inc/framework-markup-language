@@ -108,5 +108,5 @@ class RowModel extends DecoratedWidgetModel implements IViewableWidget
     super.dispose();
   }
 
-  Widget getView({Key? key}) => RowView(this);
+  Widget getView({Key? key}) => getReactiveView(RowView(this));
 }

@@ -177,7 +177,7 @@ class TabModel extends DecoratedWidgetModel implements IViewableWidget
     }
   }
 
-  Widget getView({Key? key}) => TabView(this);
+  Widget getView({Key? key}) => getReactiveView(TabView(this));
 }
 
 

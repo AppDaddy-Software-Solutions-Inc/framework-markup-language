@@ -6,8 +6,7 @@ import 'dart:math' as math;
 
 import 'package:fml/widgets/widget/widget_state.dart';
 
-class IconView extends StatefulWidget implements IWidgetView
-{
+class IconView extends StatefulWidget implements IWidgetView {
   final IconModel model;
 
   IconView(this.model) : super(key: ObjectKey(model));
@@ -16,20 +15,18 @@ class IconView extends StatefulWidget implements IWidgetView
   _IconViewState createState() => _IconViewState();
 }
 
-class _IconViewState extends WidgetState<IconView>
-{
+class _IconViewState extends WidgetState<IconView> {
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
-  Widget builder(BuildContext context, BoxConstraints constraints)
-  {
+  Widget builder(BuildContext context, BoxConstraints constraints) {
     // Set Build Constraints in the [WidgetModel]
     setConstraints(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    IconData? value  = widget.model.icon;
+    IconData? value = widget.model.icon;
 
     double? size = 32;
     if (widget.model.size != null) size = widget.model.size;
@@ -39,13 +36,16 @@ class _IconViewState extends WidgetState<IconView>
     ///////////
     Color? color = Theme.of(context).colorScheme.inverseSurface;
     if (widget.model.color != null) color = widget.model.color;
-    if (widget.model.opacity != null) color = color!.withOpacity(widget.model.opacity!);
+    if (widget.model.opacity != null)
+      color = color!.withOpacity(widget.model.opacity!);
 
     // view
     Widget view = Icon(value, size: size, color: color);
 
     // rotation
-    if (widget.model.rotation != 0) view = Transform.rotate(angle: widget.model.rotation * math.pi / 180, child: view);
+    if (widget.model.rotation != 0)
+      view = Transform.rotate(
+          angle: widget.model.rotation * math.pi / 180, child: view);
 
     return view;
   }

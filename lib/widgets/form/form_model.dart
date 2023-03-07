@@ -844,5 +844,5 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     return super.onDataSourceSuccess(source, list);
   }
 
-  Widget getView({Key? key}) => FormView(this);
+  Widget getView({Key? key}) => getReactiveView(FormView(this));
 }

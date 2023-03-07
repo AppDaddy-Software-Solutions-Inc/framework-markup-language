@@ -102,5 +102,5 @@ class ColumnModel extends DecoratedWidgetModel implements IViewableWidget
     super.dispose();
   }
 
-  Widget getView({Key? key}) => ColumnView(this);
+  Widget getView({Key? key}) => getReactiveView(ColumnView(this));
 }

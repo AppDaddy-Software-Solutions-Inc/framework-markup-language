@@ -226,6 +226,10 @@ dependencies:
   video_player: 2.4.9
   # BSD-3-Clause
 
+  # Updated 2023/02/28
+  visibility_detector: 0.3.3
+  # BSD-3-Clause
+
   # Updated 2022/05/26
   webview_flutter: 4.0.0
   # BSD-3-Clause

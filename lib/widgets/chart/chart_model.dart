@@ -227,7 +227,7 @@ class ChartModel extends DecoratedWidgetModel implements IViewableWidget {
 
   Widget getView({Key? key})
   {
-    return ChartView(this);
+    return getReactiveView(ChartView(this));
   }
 
 }

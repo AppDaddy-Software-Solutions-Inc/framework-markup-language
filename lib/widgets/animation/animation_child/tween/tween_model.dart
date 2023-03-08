@@ -57,6 +57,19 @@ class TweenModel extends AnimationChildModel
 
   String? get type => _type?.get();
 
+  /// Curve
+  StringObservable? _value;
+
+  set value(dynamic v) {
+    if (_value != null) {
+      _value!.set(v);
+    } else if (v != null) {
+      _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope);
+    }
+  }
+
+  String? get value => _value?.get();
+
   TweenModel(WidgetModel parent, String? id)
       : super(parent, id); // ; {key: value}
 
@@ -80,6 +93,7 @@ class TweenModel extends AnimationChildModel
     type = Xml.get(node: xml, tag: 'type');
     from = Xml.get(node: xml, tag: 'from');
     to = Xml.get(node: xml, tag: 'to');
+    value = from ?? "";
   }
 
   @override

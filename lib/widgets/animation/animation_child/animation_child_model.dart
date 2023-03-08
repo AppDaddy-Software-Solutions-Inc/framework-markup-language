@@ -12,18 +12,7 @@ import 'package:fml/widgets/animation/animation_model.dart';
 /// Defines the properties;
 class AnimationChildModel extends AnimationModel {
 
-  /// Curve
-  StringObservable? _value;
 
-  set value(dynamic v) {
-    if (_value != null) {
-      _value!.set(v);
-    } else if (v != null) {
-      _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope);
-    }
-  }
-
-  String? get value => _value?.get();
 
   /// Point at which the animation begins in the controllers value range of 0-1
   DoubleObservable? _begin;

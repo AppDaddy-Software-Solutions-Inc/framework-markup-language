@@ -6,7 +6,6 @@ import 'dart:ui' as UI;
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:uuid/uuid.dart';
 import 'inline_frame_model.dart';
 import 'inline_frame_view.dart';
 import 'package:fml/helper/common_helpers.dart';
@@ -90,7 +89,7 @@ class _InlineFrameViewState extends State<InlineFrameView>
 class IFrameWidget extends StatelessWidget {
   final InlineFrameModel model;
 
-  final String id = Uuid().v1().toString().substring(0, 5);
+  final String id = S.newId();
 
   late final Widget iFrame;
   late final HTML.IFrameElement iframe;

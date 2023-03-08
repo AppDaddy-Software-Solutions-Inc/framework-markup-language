@@ -5,11 +5,9 @@ import 'dart:typed_data';
 import 'package:fml/data/data.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
-import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
-import 'package:uuid/uuid.dart';
 import 'dart:ui' as ui;
 import 'package:fml/datasources/file/file.dart' as FILE;
 import 'package:fml/widgets/camera/camera_model.dart' as CAMERA;
@@ -43,7 +41,7 @@ class ViewState extends WidgetState<View>
   bool detectInImage = false;
   num detectedFrame = 0;
 
-  final String id = Uuid().v1().toString().substring(0, 5);
+  final String id = S.newId();
   num lastFrame = 0;
 
   Widget? videoWidget;
@@ -172,7 +170,7 @@ class ViewState extends WidgetState<View>
             canvas2.height = height;
             canvas2.context2D.putImageData(image, 0, 0);
             HTML.Blob blob = await canvas2.toBlob('image/png', 1.0);
-            await Platform.fileSaveAsFromBlob(blob, System().uuid() + '-' + '.png');
+            await Platform.fileSaveAsFromBlob(blob, "${S.newId()}-.png");
           }
 
           // process stream image
@@ -348,7 +346,7 @@ class ViewState extends WidgetState<View>
 
         if (widget.model.debug == true) {
           HTML.Blob blob = await canvas2.toBlob('image/png', 1.0);
-          await Platform.fileSaveAsFromBlob(blob, System().uuid() + '-' + '.png');
+          await Platform.fileSaveAsFromBlob(blob, "${S.newId()}-.png");
         }
 
         HTML.ImageData image2 =
@@ -401,7 +399,7 @@ class ViewState extends WidgetState<View>
     HTML.Blob blob = HTML.Blob(bytes);
     final url = HTML.Url.createObjectUrlFromBlob(blob);
 
-    String name = "${Uuid().v4().toString()}.pdf";
+    String name = "${S.newId()}.pdf";
 
     var file = FILE.File(blob, url, name, await S.mimetype(name), bytes.length);
     widget.model.onFile(file);

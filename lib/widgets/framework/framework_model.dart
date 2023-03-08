@@ -22,7 +22,6 @@ import 'package:fml/widgets/variable/variable_model.dart';
 import 'package:fml/widgets/framework/framework_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
-import 'package:uuid/uuid.dart';
 
 class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IModelListener, IEventManager
 {
@@ -384,7 +383,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
     super.deserialize(xml);
 
     // properties
-    key          = xml.getAttribute('key')                ?? key ?? Uuid().v4();
+    key          = xml.getAttribute('key')                ?? key ?? S.newId();
     dependency   = xml.getAttribute('dependency')         ?? dependency;
     title        = Xml.get(node: xml, tag: 'title')       ?? title;
     version      = Xml.get(node: xml, tag: 'version')     ?? version;

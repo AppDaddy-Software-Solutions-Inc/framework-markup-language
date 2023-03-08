@@ -17,7 +17,6 @@ import 'package:fml/widgets/table/footer/table_footer_model.dart';
 import 'package:fml/widgets/table/row/table_row_model.dart';
 import 'package:fml/widgets/table/row/cell/table_row_cell_model.dart';
 import 'package:flutter/material.dart';
-import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
@@ -669,7 +668,7 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
     var csvBytes = utf8.encode(csv);
 
     // save to file
-    Platform.fileSaveAs(csvBytes, "${Uuid().v4()}.csv");
+    Platform.fileSaveAs(csvBytes, "${S.newId()}.csv");
 
     return true;
   }

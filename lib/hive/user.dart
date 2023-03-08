@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
-import 'package:uuid/uuid.dart';
 import 'package:fml/hive/database.dart';
 import 'package:fml/helper/common_helpers.dart';
 
@@ -20,7 +19,7 @@ class User
 
   User({String? key, String? username, String? password, int? rights, String? language, Map<String,dynamic>? map})
   {
-    _map["key"]      = key ?? Uuid().v4();
+    _map["key"]      = key ?? S.newId();
     _map["username"] = username;
     _map["password"] = password;
     _map["language"] = language;

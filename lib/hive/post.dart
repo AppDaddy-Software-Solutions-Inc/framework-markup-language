@@ -2,7 +2,6 @@
 import 'dart:async';
 import 'package:fml/hive/database.dart';
 import 'package:fml/helper/common_helpers.dart';
-import 'package:uuid/uuid.dart';
 
 enum Fields {key, form_key, status, title, format, method, headers, url, body, date, attempts, info}
 
@@ -51,7 +50,7 @@ class Post
     String? body,
     String? info})
   {
-    _map["key"]      = key ?? Uuid().v4();
+    _map["key"]      = key ?? S.newId();
     _map["formKey"]  = formKey;
     _map["status"]   = status;
     _map["title"]    = title;

@@ -9,7 +9,6 @@ import 'package:fml/phrase.dart';
 import 'package:fml/hive/post.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
-import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
@@ -199,7 +198,7 @@ class HttpModel extends DataSourceModel implements IDataSource
       Map<String, String> headers = Http.encodeHeaders(this.headers);
 
       // save transaction
-      Post post = Post(key: Uuid().v4(), formKey: key, status: Post.statusINCOMPLETE, method: S.fromEnum(this.method), url: this.url, headers: headers, body: body, date: DateTime.now().millisecondsSinceEpoch, attempts: 0);
+      Post post = Post(key: S.newId(), formKey: key, status: Post.statusINCOMPLETE, method: S.fromEnum(this.method), url: this.url, headers: headers, body: body, date: DateTime.now().millisecondsSinceEpoch, attempts: 0);
       bool ok = await post.insert();
       if (ok) System().postmaster.start();
       return true;

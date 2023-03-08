@@ -3,7 +3,6 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
-import 'package:uuid/uuid.dart';
 import 'iMqttListener.dart';
 import 'payload.dart';
 import 'iMqtt.dart';
@@ -17,7 +16,7 @@ class MqttMobile implements IMqtt
   final String url;
   final String? username;
   final String? password;
-  final String identifier = (System.app?.user.claim('name') ?? 'unknown') + " : " + Uuid().v1();
+  final String identifier = (System.app?.user.claim('name') ?? 'unknown') + " : " + S.newId();
   final int    keepalive = 60;
 
   bool connected = false;

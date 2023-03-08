@@ -7,7 +7,6 @@ import 'package:fml/observable/observables/string.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/datasources/file/file.dart' as FILE;
-import 'package:uuid/uuid.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'binding.dart';
 
@@ -40,7 +39,7 @@ class Scope
 
   Scope({Scope? parent, String? id})
   {
-    this.id = id ?? Uuid().v4();
+    this.id = id ?? S.newId();
 
     // set parent
     this.parent = parent;

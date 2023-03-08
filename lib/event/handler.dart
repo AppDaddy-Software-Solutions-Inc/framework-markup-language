@@ -22,7 +22,6 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/eval/eval.dart';
 import 'package:fml/widgets/trigger/trigger_model.dart';
 import 'package:fml/sound/sound.dart';
-import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -63,7 +62,7 @@ class EventHandler extends Eval
     Map<String?, dynamic> variables = getVariables(observable);
 
     // evaluate the expression
-    if (expression is String) expression = await evaluate(expression, variables);
+    expression = await evaluate(expression, variables);
 
     // get event strings
     List<String> events = getEvents(expression);
@@ -559,7 +558,7 @@ class EventHandler extends Eval
   Future<bool> _handleEventBuild([dynamic xml, dynamic isModal, dynamic transition]) async
   {
     var document = XmlDocument.parse(xml);
-    String uuid = "${Uuid().v1()}.xml";
+    String uuid = "${S.newId()}.xml";
     TemplateManager().toMemory(uuid, document);
     return _handleEventOpen(uuid, isModal, transition);
   }

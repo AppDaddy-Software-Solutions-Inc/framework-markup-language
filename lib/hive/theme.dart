@@ -2,7 +2,6 @@
 import 'dart:async';
 import 'package:fml/hive/database.dart';
 import 'package:fml/helper/common_helpers.dart';
-import 'package:uuid/uuid.dart';
 
 class ThemeData
 {
@@ -66,7 +65,7 @@ class ThemeData
     String? onErrorContainer
   })
   {
-    _map["key"] = key ?? Uuid().v4();
+    _map["key"] = key ?? S.newId();
     _map["background"] = background;
     _map["onBackground"] = onBackground;
     _map["shadow"] = shadow;

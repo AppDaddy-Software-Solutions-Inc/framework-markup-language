@@ -700,5 +700,5 @@ class S
     return lowercase ? returnString.toLowerCase() : returnString;
   }
 
-  static String get newId => "ag${Uuid().v4().toString().replaceAll("-", "").toLowerCase()}";
+  static String newId() => "auto${Uuid().v4().replaceAll("-", "").toLowerCase()}";
 }

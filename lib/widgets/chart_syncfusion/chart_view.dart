@@ -17,7 +17,6 @@ import 'package:fml/widgets/chart_syncfusion/chart_model.dart' as CHART;
 import 'package:fml/widgets/chart_syncfusion/series/chart_series_model.dart' as SERIES;
 import 'package:fml/widgets/chart_syncfusion/axis/chart_axis_model.dart' as AXIS;
 import 'package:fml/widgets/chart_syncfusion/excerpts/functions.dart' as EXCERPT;
-import 'package:uuid/uuid.dart';
 import 'package:fml/helper/common_helpers.dart';
 
 import 'axis/chart_axis_model.dart';
@@ -190,7 +189,7 @@ class _ChartViewState extends State<ChartView> implements IModelListener
   Widget tooltipBuilder(dynamic data, dynamic point, dynamic series, int pointIndex, int seriesIndex)
   {
     COLUMN.ColumnModel? model = widget.model.buildTooltip(series, pointIndex);
-    return COLUMN.ColumnView(model ?? COLUMN.ColumnModel(null, Uuid().v1()));
+    return COLUMN.ColumnView(model ?? COLUMN.ColumnModel(null, S.newId()));
   }
 
   /// Parser for databroker data to convert it from a String to appropriate data type if need be

@@ -7,7 +7,6 @@ import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
-import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/googlemap/map_view.dart';
 import 'package:fml/widgets/googlemap/location/map_location_model.dart';
@@ -183,7 +182,7 @@ class MapModel extends DecoratedWidgetModel implements IViewableWidget
           int i = 0;
           list.forEach((data)
           {
-            XmlElement? node = S.fromPrototype(prototype, Uuid().v1());
+            XmlElement? node = S.fromPrototype(prototype, S.newId());
             i = i + 1;
 
             var location = MapLocationModel.fromXml(parent!, node, data: data);

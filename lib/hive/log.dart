@@ -2,7 +2,6 @@
 import 'dart:async';
 import 'package:fml/data/data.dart';
 import 'package:intl/intl.dart';
-import 'package:uuid/uuid.dart';
 import 'package:fml/hive/database.dart';
 import 'package:fml/helper/common_helpers.dart';
 
@@ -25,7 +24,7 @@ class Log
 
   Log({String? key, String? type, int? epoch, String? message, String? caller})
   {
-    _map["key"]     = key ?? Uuid().v4();
+    _map["key"]     = key ?? S.newId();
     _map["type"]    = type    ?? "error";
     _map["epoch"]   = epoch   ?? DateTime.now().millisecondsSinceEpoch;
     _map["date"]    = DateFormat("yyyy-MM-dd hh:mm:ss.sss").format(DateTime.fromMillisecondsSinceEpoch(this.epoch));

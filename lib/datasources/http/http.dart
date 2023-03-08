@@ -183,7 +183,7 @@ class Http
 
     Map<String, dynamic> parameters = {};
     parameters.addAll(uri.queryParameters);
-    if (refresh == true) parameters["refresh"] = System().uuid();
+    if (refresh == true) parameters["refresh"] = S.newId();
     parameters.forEach((key, value) => Uri.encodeComponent(value));
     return uri.replace(queryParameters: parameters);
   }

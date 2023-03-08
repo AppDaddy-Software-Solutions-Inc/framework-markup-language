@@ -167,5 +167,5 @@ class TransformModel extends AnimationChildModel
     return (xml != null) ? fromXml(parent, xml) : null;
   }
 
-  Widget getTransitionView(Widget child, {AnimationController? controller}) => TransformView(this, child, controller);
+  Widget getAnimatedView(Widget child, {AnimationController? controller}) => TransformView(this, child, controller);
 }

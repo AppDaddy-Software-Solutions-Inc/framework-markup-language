@@ -609,7 +609,7 @@ class ViewableWidgetModel extends WidgetModel {
       animations.forEach((element)
       {
         AnimationModel? model = getAnimationModel(element);
-        if (model != null) view = model.getTransitionView(view);
+        if (model != null) view = model.getAnimatedView(view);
       });
     }
     return view;

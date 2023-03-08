@@ -122,5 +122,5 @@ class SlideTransitionModel extends AnimationChildModel
     return (xml != null) ? fromXml(parent, xml) : null;
   }
 
-  Widget getTransitionView(Widget child, {AnimationController? controller}) => SlideTransitionView(this, child, controller);
+  Widget getAnimatedView(Widget child, {AnimationController? controller}) => SlideTransitionView(this, child, controller);
 }

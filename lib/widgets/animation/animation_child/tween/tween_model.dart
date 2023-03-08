@@ -121,5 +121,5 @@ class TweenModel extends AnimationChildModel
     return (xml != null) ? fromXml(parent, xml) : null;
   }
 
-  Widget getTransitionView(Widget child, {AnimationController? controller}) => TweenView(this, child, controller);
+  Widget getAnimatedView(Widget child, {AnimationController? controller}) => TweenView(this, child, controller);
 }

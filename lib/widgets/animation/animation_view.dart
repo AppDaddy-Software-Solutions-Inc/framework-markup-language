@@ -96,7 +96,7 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
     Widget? newChild = widget.child;
     widget.model.transitions.forEach((transition)
     {
-      newChild = transition.getTransitionView(newChild!, controller: _controller);
+      newChild = transition.getAnimatedView(newChild!, controller: _controller);
     });
     return newChild;
   }

@@ -290,5 +290,5 @@ class AnimationModel extends WidgetModel implements IViewableWidget
 
   Widget getView({Key? key}) => AnimationView(this, null);
 
-  Widget getTransitionView(Widget child, {AnimationController? controller}) => AnimationView(this, child);
+  Widget getAnimatedView(Widget child, {AnimationController? controller}) => AnimationView(this, child);
 }

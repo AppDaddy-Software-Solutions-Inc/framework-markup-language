@@ -544,6 +544,7 @@ class ViewableWidgetModel extends WidgetModel {
       {
         if (_animationmap == null) _animationmap = Map<String, AnimationModel>();
         _animationmap![id] = clone;
+        return clone;
       }
     }
     return null;

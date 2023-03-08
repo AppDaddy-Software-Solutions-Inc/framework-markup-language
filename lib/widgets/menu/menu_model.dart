@@ -7,7 +7,6 @@ import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/menu/menu_view.dart';
-import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
 import 'package:fml/helper/common_helpers.dart';
@@ -50,7 +49,7 @@ class MenuModel extends DecoratedWidgetModel implements IViewableWidget
     MenuModel? model;
     try
     {
-      model = MenuModel(parent, Uuid().v1());
+      model = MenuModel(parent, S.newId());
       model.unmap(map);
     }
     catch(e)
@@ -66,7 +65,7 @@ class MenuModel extends DecoratedWidgetModel implements IViewableWidget
     map.forEach((key, value) {
       MenuItemModel item = MenuItemModel(
         null,
-        Uuid().v1(),
+        S.newId(),
         // url: ,
         title: key,
         // subtitle: ,

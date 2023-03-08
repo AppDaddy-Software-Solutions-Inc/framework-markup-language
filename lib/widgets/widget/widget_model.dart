@@ -123,7 +123,6 @@ import 'package:fml/widgets/span/span_model.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/video/video_model.dart';
 import 'package:fml/widgets/view/view_model.dart';
-import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
@@ -268,7 +267,7 @@ class WidgetModel implements IDataSourceListener
   WidgetModel(WidgetModel? parent, String? id, {Scope? scope})
   {
     // default id
-    if (S.isNullOrEmpty(id)) id = S.newId;
+    if (S.isNullOrEmpty(id)) id = S.newId();
     this.id = id!;
 
     // set the parent
@@ -1178,7 +1177,7 @@ class WidgetModel implements IDataSourceListener
     var xml = element!.copy();
 
     // we dont want duplicate model ids
-    var parentId = id ?? S.newId;
+    var parentId = id ?? S.newId();
     Xml.setAttribute(xml, "id", parentId);
     xml.descendantElements.forEach((element)
     {

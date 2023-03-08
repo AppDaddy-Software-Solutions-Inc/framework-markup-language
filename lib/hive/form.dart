@@ -2,7 +2,6 @@
 import 'dart:async';
 import 'package:fml/hive/post.dart';
 import 'package:fml/log/manager.dart';
-import 'package:uuid/uuid.dart';
 import 'package:fml/hive/database.dart';
 import 'package:fml/helper/common_helpers.dart';
 
@@ -29,7 +28,7 @@ class Form implements Comparable
 
   Form({String? key, String? parent, bool? complete, int? created, int? updated, String? template, Map<String,dynamic>? data})
   {
-    _map["key"]      = key ?? Uuid().v4();
+    _map["key"]      = key ?? S.newId();
     _map["parent"]   = parent;
     _map["complete"] = complete ?? false;
     _map["created"]  = created ?? DateTime.now().millisecondsSinceEpoch;

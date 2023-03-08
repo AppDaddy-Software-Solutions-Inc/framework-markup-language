@@ -17,7 +17,6 @@ import 'package:flutter/services.dart';
 import 'package:fml/widgets/theme/theme_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:path/path.dart';
-import 'package:uuid/uuid.dart';
 import 'dart:async';
 import 'package:fml/hive/database.dart';
 import 'package:fml/datasources/gps/gps.dart' as GPS;
@@ -136,7 +135,6 @@ class System extends WidgetModel implements IEventManager
 
   // UUID
   StringObservable? _uuid;
-  String uuid() => Uuid().v1();
 
   // Dates
   Timer? clock;
@@ -267,7 +265,7 @@ class System extends WidgetModel implements IEventManager
     _userplatform = StringObservable(Binding.toKey('platform'), platform, scope: scope);
     _useragent    = StringObservable(Binding.toKey('useragent'), Platform.useragent, scope: scope);
     _version      = StringObservable(Binding.toKey('version'), version, scope: scope);
-    _uuid         = StringObservable(Binding.toKey('uuid'), uuid(), scope: scope, getter: uuid);
+    _uuid         = StringObservable(Binding.toKey('uuid'), S.newId(), scope: scope, getter: S.newId);
 
     // system dates
     _epoch  = IntegerObservable(Binding.toKey('epoch'), epoch(), scope: scope, getter: epoch);

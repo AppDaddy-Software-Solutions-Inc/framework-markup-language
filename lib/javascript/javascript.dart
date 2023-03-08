@@ -4,9 +4,7 @@ import 'dart:convert';
 import 'dart:html' as HTML;
 import 'dart:js' as JAVASCRIPT;
 import 'dart:ui' as UI;
-
 import 'package:fml/log/manager.dart';
-import 'package:uuid/uuid.dart';
 import 'package:fml/helper/common_helpers.dart';
 
 typedef OnMessageCallback = void Function(Map<String, dynamic> data, [String? type]);
@@ -19,7 +17,7 @@ class Bridge
   JAVASCRIPT.JsObject? _connector;
 
   final HashMap<String, List<OnMessageCallback>> _listeners = HashMap<String, List<OnMessageCallback>>();
-  final id = Uuid().v1().toString().substring(0,5);
+  final id = S.newId();
 
   Bridge(this.script)
   {

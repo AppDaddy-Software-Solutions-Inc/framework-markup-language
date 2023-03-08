@@ -5,7 +5,6 @@ import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/system.dart';
 import 'package:fml/template/template_manager.dart';
-import 'package:uuid/uuid.dart';
 import 'package:validators/validators.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -43,7 +42,7 @@ class Template
 
       // Replace System Uuid
       String s = Binding.toKey(System.myId, 'uuid')!;
-      while (xml!.contains(s)) xml = xml.replaceFirst(s, Uuid().v4());
+      while (xml!.contains(s)) xml = xml.replaceFirst(s, S.newId());
 
       // Convert Xml String to Xml Document
       XmlDocument document = XmlDocument.parse(xml);

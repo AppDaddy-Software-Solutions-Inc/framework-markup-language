@@ -15,7 +15,6 @@ import 'package:fml/widgets/grid/grid_view.dart' as GRID;
 import 'package:fml/widgets/grid/item/grid_item_model.dart';
 import 'package:fml/datasources/transforms/sort.dart' as TRANSFORM;
 import 'package:flutter/material.dart';
-import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
@@ -311,7 +310,7 @@ class GridModel extends DecoratedWidgetModel implements IViewableWidget, IScroll
 //    EXCEL
 //  //////////
 //    List<int> excelBytes = await EXCEL.Excel.create(this.data);
-//    if (excelBytes != null) System().fileSaveAs(excelBytes, Uuid().v1() + '.csv');
+//    if (excelBytes != null) System().fileSaveAs(excelBytes, S.newId() + '.csv');
 
 //  ////////
 //    CSV
@@ -324,7 +323,7 @@ class GridModel extends DecoratedWidgetModel implements IViewableWidget, IScroll
     if (raw == true) {
       String str = await csvStringFromData(this.data);
       csvBytes = utf8.encode(str);
-      Platform.fileSaveAs(csvBytes, Uuid().v1() + '.csv');
+      Platform.fileSaveAs(csvBytes, S.newId() + '.csv');
       return true;
     }
 
@@ -370,7 +369,7 @@ class GridModel extends DecoratedWidgetModel implements IViewableWidget, IScroll
     }
     csvBytes = [...csvBytes, ...utf8.encode('\r\n')]; // \r\n = 5c, 72, 5c, 6e
     // Uint8List.fromList(bytes) - typed_data conversion needed for converting back to Uint8List after manipulating the list
-    if ( csvBytes.isNotEmpty) Platform.fileSaveAs(Uint8List.fromList(csvBytes), Uuid().v1() + '.csv');
+    if ( csvBytes.isNotEmpty) Platform.fileSaveAs(Uint8List.fromList(csvBytes), S.newId() + '.csv');
     return true;
   }
 

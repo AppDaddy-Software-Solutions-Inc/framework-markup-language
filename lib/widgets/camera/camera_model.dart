@@ -9,7 +9,6 @@ import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/event/handler.dart' ;
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
-import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/datasources/detectors/detector_model.dart' ;
 import 'package:image/image.dart' as IMAGE;
@@ -391,7 +390,7 @@ class CameraModel extends CAMERA.CameraImageModel implements IViewableWidget
       // encode back to jpg
       var bytes = IMAGE.encodeJpg(image);
 
-      var name = basename(S.isNullOrEmpty(file.name) ? "${Uuid().v4().toString()}.jpg" : file.name);
+      var name = basename(S.isNullOrEmpty(file.name) ? "${S.newId()}.jpg" : file.name);
       var uri  = UriData.fromBytes(bytes, mimeType: await S.mimetype(name));
       var url  = uri.toString();
       var type = await S.mimetype(name);
@@ -407,7 +406,7 @@ class CameraModel extends CAMERA.CameraImageModel implements IViewableWidget
     {
       // set file - 'file:' required so image widget will decode as a file path.
       var url  = file.path.startsWith("blob:") ? file.path : "file:${file.path}";
-      var name = basename(S.isNullOrEmpty(file.name) ? "${Uuid().v4().toString()}.jpg" : file.name);
+      var name = basename(S.isNullOrEmpty(file.name) ? "${S.newId()}.jpg" : file.name);
       var type = await S.mimetype(name);
       var size = await file.length();
 

@@ -3,7 +3,6 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/event/handler.dart' ;
 import 'package:fml/widgets/trigger/condition/trigger_condition_model.dart';
-import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helper/common_helpers.dart';
 
@@ -22,7 +21,7 @@ class TriggerModel extends WidgetModel {
     if (S.isNullOrEmpty(id))
     {
       Log().warning('<TRIGGER> missing required id');
-      id = Uuid().v4().toString();
+      id = S.newId();
     }
 
     TriggerModel trigger = TriggerModel

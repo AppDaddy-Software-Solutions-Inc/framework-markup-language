@@ -34,8 +34,9 @@ import 'package:fml/helper/common_helpers.dart';
 /// within the appropriate widget(s) usually with the prefix 'on', example: `onClose`
 class EventHandler extends Eval
 {
-  static final RegExp nonQuotedSemiColons = new RegExp(r"\);(?=([^'\\]*(\\.|'([^'\\]*\\.)*[^'\\]*'))*[^']*$)");
-  static final RegExp nonQuotedPlusSigns  = new RegExp(r"\)\+(?=([^'\\]*(\\.|'([^'\\]*\\.)*[^'\\]*'))*[^']*$)");
+  static final RegExp thisDot = RegExp(r"\b[t^\.\w]his\.\b");
+  static final RegExp nonQuotedSemiColons = RegExp(r"\);(?=([^'\\]*(\\.|'([^'\\]*\\.)*[^'\\]*'))*[^']*$)");
+  static final RegExp nonQuotedPlusSigns  = RegExp(r"\)\+(?=([^'\\]*(\\.|'([^'\\]*\\.)*[^'\\]*'))*[^']*$)");
   final WidgetModel model;
 
   static final ExpressionEvaluator evaluator = const ExpressionEvaluator();
@@ -55,8 +56,8 @@ class EventHandler extends Eval
     String? expression = (observable.isEval) ? observable.value : (observable.signature ?? observable.value);
     if (S.isNullOrEmpty(expression)) return ok;
 
-    // replace this
-    if (expression!.contains('this.')) expression = expression.replaceAll('this.', "${model.id}.");
+    // replace 'this' pointer with the parent model id
+    if (expression!.contains(thisDot)) expression = expression.replaceAll(thisDot, "${model.id}.");
 
     // get variables from observable
     Map<String?, dynamic> variables = getVariables(observable);

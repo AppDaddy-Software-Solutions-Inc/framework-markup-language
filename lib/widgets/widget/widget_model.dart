@@ -285,22 +285,11 @@ class WidgetModel implements IDataSourceListener
 
   static WidgetModel? fromXml(WidgetModel parent, XmlElement node)
   {
+    // clone node?
+    node = cloneNode(node, parent.scope);
+
     // exclude this element?
     if (excludeFromTemplate(node, parent.scope)) return null;
-
-    // clone
-    if (Xml.hasAttribute(node: node, tag: "clone"))
-    {
-      var model = Scope.findWidgetModel(Xml.attribute(node: node, tag: "clone"), parent.scope);
-      if (model != null && model.element != null)
-      {
-        // overrwite/add
-        model.element!.attributes.forEach((attribute)
-        {
-          if (!Xml.hasAttribute(node: node, tag: attribute.localName)) Xml.setAttribute(node, attribute.localName, attribute.value);
-        });
-      }
-    }
 
     // element local name is the element name without the namespace prefix (if one exists)
     String elementLocalName = node.localName.toLowerCase();
@@ -1169,26 +1158,6 @@ class WidgetModel implements IDataSourceListener
     return exception != null && nodes.length > 0;
   }
 
-  XmlElement? cloneNode({String? id})
-  {
-    if (element == null) return null;
-
-    // make a copy of the model
-    var xml = element!.copy();
-
-    // we dont want duplicate model ids
-    var parentId = id ?? S.newId();
-    Xml.setAttribute(xml, "id", parentId);
-    xml.descendantElements.forEach((element)
-    {
-      var childId = Xml.attribute(node: element, tag: "id");
-      if (!S.isNullOrEmpty(childId)) element.setAttribute("id", "$parentId-$childId");
-    });
-    return xml;
-  }
-
-  WidgetModel? clone(WidgetModel parent, {String? id}) => null;
-
   Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
   {
     if (scope == null) return null;
@@ -1393,6 +1362,36 @@ class WidgetModel implements IDataSourceListener
     }
 
     return false;
+  }
+
+  static XmlElement cloneNode(XmlElement node, Scope? scope)
+  {
+    if (Xml.hasAttribute(node: node, tag: "clone"))
+    {
+      var id = Xml.attribute(node: node, tag: "clone");
+      var model = Scope.findWidgetModel(id, scope);
+      if (model != null)
+      {
+        if (model.element != null)
+        {
+          var n1 = model.element!.localName.trim();
+          var n2 = node.localName.trim();
+
+          if (n1.toLowerCase() == n2.toLowerCase())
+          {
+            // copy element
+            var element = model.element!.copy();
+            node.attributes.forEach((attribute) => Xml.setAttribute(element, attribute.localName, attribute.value));
+            node.replace(element);
+            node = element;
+          }
+          else Log().exception("A model of type <$n2/> cannot be cloned from a model of type <$n1/>");
+        }
+        else Log().exception("Model $id has no element to copy from");
+      }
+      else Log().exception("Error attempting to clone model $id. Model not found.");
+    }
+    return node;
   }
 
   static bool excludeFromTemplate(XmlElement node, Scope? scope) {

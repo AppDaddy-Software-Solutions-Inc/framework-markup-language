@@ -97,7 +97,6 @@ class ApplicationModel extends WidgetModel
 
   String  get homePage         => settings("HOME_PAGE") ?? "main.xml";
   String? get loginPage        => settings("LOGIN_PAGE");
-  String? get debugPage        => settings("DEBUG_PAGE");
   String? get unauthorizedPage => settings("UNAUTHORIZED_PAGE");
 
   Map<String,String?>? get configParameters => _config?.parameters;

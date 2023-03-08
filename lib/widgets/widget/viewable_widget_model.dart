@@ -580,13 +580,35 @@ class ViewableWidgetModel extends WidgetModel
 
     oldVisibility = visibility ?? 0;
     print(visibility.toString());
-    if (visibility! == 100 && !hasGoneOnscreen) {
-      EventHandler(this).execute(_onstage);
+    if (visibility! == 100 && !hasGoneOnscreen)
+    {
+      if (!S.isNullOrEmpty(_onstage))
+      {
+        print('Calling onstage');
+        EventHandler(this).execute(_onstage);
+      }
       hasGoneOnscreen = true;
-    } else if (visibility! == 0 && hasGoneOnscreen) {
-      EventHandler(this).execute(_offstage);
+    }
+    else if (visibility! == 0 && hasGoneOnscreen)
+    {
+      if (!S.isNullOrEmpty(_offstage))
+      {
+        print('Calling offstage');
+        EventHandler(this).execute(_offstage);
+      }
       hasGoneOnscreen = false;
     }
+  }
+
+  @override
+  void dispose()
+  {
+    // dispose of tip model
+    tipModel?.dispose();
+
+    // dispose of animations
+    animations?.forEach((animation) => animation.dispose());
+    super.dispose();
   }
 
   Widget getReactiveView(Widget view)

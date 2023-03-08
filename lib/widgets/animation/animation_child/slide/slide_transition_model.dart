@@ -12,7 +12,8 @@ import 'package:fml/helper/common_helpers.dart';
 
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
-class SlideTransitionModel extends AnimationChildModel {
+class SlideTransitionModel extends AnimationChildModel
+{
   /// Curve starting point from 0.0 to 1.0
   StringObservable? _from;
 
@@ -115,7 +116,11 @@ class SlideTransitionModel extends AnimationChildModel {
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
-  Widget getTransitionView(Widget child, AnimationController controller) {
-    return SlideTransitionView(this, child, controller);
+  WidgetModel? clone(WidgetModel parent, {String? id})
+  {
+    var xml = super.cloneNode(id: id);
+    return (xml != null) ? fromXml(parent, xml) : null;
   }
+
+  Widget getAnimatedView(Widget child, {AnimationController? controller}) => SlideTransitionView(this, child, controller);
 }

@@ -11,9 +11,9 @@ import 'package:fml/helper/common_helpers.dart';
 
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
-class AnimationModel extends WidgetModel implements IViewableWidget {
+class AnimationModel extends WidgetModel implements IViewableWidget
+{
   bool runonce = false;
-
 
   /// Transition Curve
   StringObservable? _curve;
@@ -188,9 +188,8 @@ class AnimationModel extends WidgetModel implements IViewableWidget {
   }
   String? get onstart => _onstart?.get();
 
+  final List<AnimationModel> transitions = [];
 
-
-  final List transitionChildren = [];
   AnimationController? controller;
 
   AnimationModel(WidgetModel parent, String? id)
@@ -230,29 +229,16 @@ class AnimationModel extends WidgetModel implements IViewableWidget {
     oncomplete = Xml.get(node: xml, tag: 'oncomplete');
     ondismiss = Xml.get(node: xml, tag: 'ondismiss');
 
-
-    // clear options
-    this.transitionChildren.clear();
-
-    // Build options
-    List? transitionChildren = children;
-
-    transitionChildren?.forEach((child) => this.transitionChildren.add(child));
-  }
-
-  @override
-  dispose() {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
-  }
-
-  // constrained?
-  bool isConstrained(String dimension) {
-    return true;
+    // build transitions
+    transitions.clear();
+    children?.forEach((child)
+    {
+      if (child is AnimationModel) transitions.add(child);
+    });
+    children?.clear();
   }
 
   //we need a reset function to set the controller back to 0 without ticking.
-
   @override
   Future<bool?> execute(
       String caller, String propertyOrFunction, List<dynamic> arguments) async {
@@ -296,9 +282,13 @@ class AnimationModel extends WidgetModel implements IViewableWidget {
     return await EventHandler(this).execute(_oncomplete);
   }
 
-  /// Returns the [ANIMATION] View
-
-  Widget getView({Key? key}) {
-    return AnimationView(this, null);
+  WidgetModel? clone(WidgetModel parent, {String? id})
+  {
+    var xml = super.cloneNode(id: id);
+    return (xml != null) ? fromXml(parent, xml) : null;
   }
+
+  Widget getView({Key? key}) => AnimationView(this, null);
+
+  Widget getAnimatedView(Widget child, {AnimationController? controller}) => AnimationView(this, child);
 }

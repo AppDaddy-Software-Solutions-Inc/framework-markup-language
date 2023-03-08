@@ -12,7 +12,8 @@ import 'package:fml/helper/common_helpers.dart';
 
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
-class TweenModel extends AnimationChildModel {
+class TweenModel extends AnimationChildModel
+{
   /// Curve starting point from 0.0 to 1.0
 
   StringObservable? _from;
@@ -114,8 +115,11 @@ class TweenModel extends AnimationChildModel {
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
-
-  Widget getTransitionView(Widget child, AnimationController controller) {
-    return TweenView(this, child, controller);
+  WidgetModel? clone(WidgetModel parent, {String? id})
+  {
+    var xml = super.cloneNode(id: id);
+    return (xml != null) ? fromXml(parent, xml) : null;
   }
+
+  Widget getAnimatedView(Widget child, {AnimationController? controller}) => TweenView(this, child, controller);
 }

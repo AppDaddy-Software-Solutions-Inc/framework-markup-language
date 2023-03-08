@@ -1,30 +1,11 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'dart:html';
 import 'package:flutter/material.dart';
 import 'package:fml/event/handler.dart';
-import 'package:fml/widgets/animation/animation_child/fade/fade_transition_model.dart';
-import 'package:fml/widgets/animation/animation_child/fade/fade_transition_view.dart';
-import 'package:fml/widgets/animation/animation_child/flip/flip_card_model.dart';
-import 'package:fml/widgets/animation/animation_child/flip/flip_card_view.dart';
-import 'package:fml/widgets/animation/animation_child/rotate/rotate_transition_model.dart';
-import 'package:fml/widgets/animation/animation_child/rotate/rotate_transition_view.dart';
-import 'package:fml/widgets/animation/animation_child/scale/scale_transition_model.dart';
-import 'package:fml/widgets/animation/animation_child/scale/scale_transition_view.dart';
-import 'package:fml/widgets/animation/animation_child/size/size_transition_model.dart';
-import 'package:fml/widgets/animation/animation_child/size/size_transition_view.dart';
-import 'package:fml/widgets/animation/animation_child/slide/slide_transition_model.dart';
-import 'package:fml/widgets/animation/animation_child/slide/slide_transition_view.dart';
-import 'package:fml/widgets/animation/animation_child/transform/transform_model.dart';
-import 'package:fml/widgets/animation/animation_child/transform/transform_view.dart';
-import 'package:fml/widgets/animation/animation_child/tween/tween_model.dart';
-import 'package:fml/widgets/animation/animation_child/tween/tween_view.dart';
 import 'package:fml/widgets/animation/animation_model.dart';
-import 'package:fml/widgets/animation/animation_view.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_view.dart';
 import 'package:fml/widgets/widget/constraint.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
-import 'package:uuid/uuid.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -258,9 +239,9 @@ class ViewableWidgetModel extends WidgetModel {
 
   // used by the veiw to determine if it needs to wrap itself
   // in a VisibilityDetector
-  bool? _visibilityDetector;
+  bool? _needsVisibilityDetector;
 
-  bool get needsVisibilityDetector => _visibilityDetector ?? false;
+  bool get needsVisibilityDetector => _needsVisibilityDetector ?? false;
 
   /// onstage event string - fires when object is 100 on screen
   StringObservable? _onstage;
@@ -311,7 +292,7 @@ class ViewableWidgetModel extends WidgetModel {
   double? get visibility => _visibility?.get();
 
   // animations
-  Map<String, WidgetModel>? _animationmap;
+  Map<String, AnimationModel>? _animationmap;
   List<String>? _animations;
 
   set animations(dynamic v) {
@@ -459,9 +440,7 @@ class ViewableWidgetModel extends WidgetModel {
 
     // view requires a VisibilityDetector if either onstage or offstage is set or
     // someone is bound to my visibility
-    _visibilityDetector = !S.isNullOrEmpty(onstage) ||
-        !S.isNullOrEmpty(offstage) ||
-        WidgetModel.isBound(this, Binding.toKey(id, 'visibility'));
+    _needsVisibilityDetector = !S.isNullOrEmpty(onstage) || !S.isNullOrEmpty(offstage) || WidgetModel.isBound(this, Binding.toKey(id, 'visibility'));
 
     // pad is always defined as an attribute. PAD as an element name is the PADDING widget
     _paddings = Xml.attribute(node: xml, tag: 'pad');
@@ -551,74 +530,41 @@ class ViewableWidgetModel extends WidgetModel {
     return constraint;
   }
 
-  WidgetModel? getAnimationModel(String id) {
+  AnimationModel? getAnimationModel(String id)
+  {
     // model already created
-    if (_animationmap != null && _animationmap!.containsKey(id))
-      return _animationmap![id];
+    if (_animationmap != null && _animationmap!.containsKey(id)) return _animationmap![id];
 
     var model = Scope.findWidgetModel(id, scope);
-    if (model?.element != null && model != null) {
-      // make a copy of the model
-      var xml = model.element!.copy();
-
-      // we dont want duplicate model ids
-      Xml.setAttribute(xml, "id", Uuid().v4().toString());
-
-      // build the model
-      switch (model.elementName) {
-        case "ANIMATE":
-          model = AnimationModel.fromXml(this, model.element!);
-          break;
-        case "FADE":
-          model = FadeTransitionModel.fromXml(this, model.element!);
-          break;
-        case "FLIP":
-          model = FlipCardModel.fromXml(this, model.element!);
-          break;
-        case "ROTATE":
-          model = RotateTransitionModel.fromXml(this, model.element!);
-          break;
-        case "SCALE":
-          model = ScaleTransitionModel.fromXml(this, model.element!);
-          break;
-        case "SIZE":
-          model = SizeTransitionModel.fromXml(this, model.element!);
-          break;
-        case "SLIDE":
-          model = SlideTransitionModel.fromXml(this, model.element!);
-          break;
-        case "TRANSFORM":
-          model = TransformModel.fromXml(this, model.element!);
-          break;
-        case "TWEEN":
-          model = TweenModel.fromXml(this, model.element!);
-          break;
-      }
+    if (model != null)
+    {
       // add to map
-      if (_animationmap == null) {
-        _animationmap = Map<String, AnimationModel>();
+      var clone = model.clone(this);
+      if (clone is AnimationModel)
+      {
+        if (_animationmap == null) _animationmap = Map<String, AnimationModel>();
+        _animationmap![id] = clone;
+        return clone;
       }
-       if(model != null) _animationmap![id] = model;
-
-      return model;
     }
     return null;
   }
 
   @override
-  Future<bool?> execute(
-      String caller, String propertyOrFunction, List<dynamic> arguments) async {
+  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
+  {
     /// setter
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
 
-    switch (function) {
+    switch (function)
+    {
       case "animate":
-        if (_animationmap != null) {
+        if (_animationmap != null)
+        {
           var _id = S.item(arguments, 0);
           if (_id == null && animations.isNotEmpty) _id = animations.first;
-          if (_animationmap!.containsKey(_id))
-            _animationmap![_id]!.execute(caller, propertyOrFunction, arguments);
+          if (_animationmap!.containsKey(_id)) _animationmap![_id]!.execute(caller, propertyOrFunction, arguments);
         }
         return true;
     }
@@ -651,56 +597,21 @@ class ViewableWidgetModel extends WidgetModel {
   Widget getReactiveView(Widget view)
   {
     // wrap in visibility detector?
-    //TODO: dont wrap in visibility detector if invisible
-    if (needsVisibilityDetector)
-      view = VisibilityDetector(
-          key: ObjectKey(this),
-          onVisibilityChanged: onVisibilityChanged,
-          child: view);
+    if (needsVisibilityDetector) view = VisibilityDetector(key: ObjectKey(this), onVisibilityChanged: onVisibilityChanged, child: view);
 
     // wrap in tooltip?
     if (tipModel != null) view = TooltipView(tipModel!, view);
 
     // wrap animations
-    if (this.animations.isEmpty) return view;
-    var animations = this.animations.reversed;
-    animations.forEach((element) {
-      var model = getAnimationModel(element);
-      if (model != null) {
-        switch(model.runtimeType){
-          case AnimationModel:
-            view = AnimationView(model as AnimationModel, view);
-            break;
-          case FadeTransitionModel:
-            view = FadeTransitionView(model as FadeTransitionModel, view, null);
-            break;
-          case FlipCardModel:
-            view = FlipCardView(model as FlipCardModel, view, null);
-            break;
-          case RotateTransitionModel:
-            view = RotateTransitionView(model as RotateTransitionModel, view, null);
-            break;
-          case ScaleTransitionModel:
-            view = ScaleTransitionView(model as ScaleTransitionModel, view, null);
-            break;
-          case SizeTransitionModel:
-            view = SizeTransitionView(model as SizeTransitionModel, view, null);
-            break;
-            case SlideTransitionModel:
-          view = SlideTransitionView(model as SlideTransitionModel, view, null);
-          break;
-          case TransformModel:
-            view = TransformView(model as TransformModel, view, null);
-            break;
-          case TweenModel:
-            view = TweenView(model as TweenModel, view, null);
-            break;
-
-        }
-
-      }
-    });
-
+    if (this.animations.isNotEmpty)
+    {
+      var animations = this.animations.reversed;
+      animations.forEach((element)
+      {
+        AnimationModel? model = getAnimationModel(element);
+        if (model != null) view = model.getAnimatedView(view);
+      });
+    }
     return view;
   }
 }

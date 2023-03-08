@@ -287,12 +287,6 @@ class AnimationModel extends ViewableWidgetModel implements IViewableWidget
     return await EventHandler(this).execute(_oncomplete);
   }
 
-  WidgetModel? clone(WidgetModel parent, {String? id})
-  {
-    var xml = super.cloneNode(id: id);
-    return (xml != null) ? fromXml(parent, xml) : null;
-  }
-
   Widget getView({Key? key}) => AnimationView(this, null);
 
   Widget getAnimatedView(Widget child, {AnimationController? controller}) => AnimationView(this, child);

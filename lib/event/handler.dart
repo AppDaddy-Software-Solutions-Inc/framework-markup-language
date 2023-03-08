@@ -55,6 +55,9 @@ class EventHandler extends Eval
     String? expression = (observable.isEval) ? observable.value : (observable.signature ?? observable.value);
     if (S.isNullOrEmpty(expression)) return ok;
 
+    // replace this
+    if (expression!.contains('this.')) expression = expression.replaceAll('this.', "${model.id}.");
+
     // get variables from observable
     Map<String?, dynamic> variables = getVariables(observable);
 

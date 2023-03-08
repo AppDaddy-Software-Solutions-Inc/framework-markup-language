@@ -2,6 +2,7 @@
 import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/widget/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -228,6 +229,10 @@ class AnimationModel extends WidgetModel implements IViewableWidget
     onstart = Xml.get(node: xml, tag: 'onstart');
     oncomplete = Xml.get(node: xml, tag: 'oncomplete');
     ondismiss = Xml.get(node: xml, tag: 'ondismiss');
+
+    // allow simple animations to be added automatically
+    // to the parent when the immediate parent is a viewable widget but not an Animation itself
+    if (this.parent is ViewableWidgetModel && !(this.parent is AnimationModel)) (this.parent as ViewableWidgetModel).addAnimation(this);
 
     // build transitions
     transitions.clear();

@@ -12,7 +12,7 @@ import 'package:fml/helper/common_helpers.dart';
 
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
-class AnimationModel extends WidgetModel implements IViewableWidget
+class AnimationModel extends ViewableWidgetModel implements IViewableWidget
 {
  bool hasrun = false;
   /// Transition Curve
@@ -202,9 +202,6 @@ class AnimationModel extends WidgetModel implements IViewableWidget
   }
   bool get runonce => _runonce?.get() ?? false;
 
-
-  final List<AnimationModel> transitions = [];
-
   AnimationController? controller;
 
   AnimationModel(WidgetModel parent, String? id)
@@ -244,18 +241,6 @@ class AnimationModel extends WidgetModel implements IViewableWidget
     oncomplete = Xml.get(node: xml, tag: 'oncomplete');
     ondismiss = Xml.get(node: xml, tag: 'ondismiss');
     runonce = Xml.get(node: xml, tag: 'runonce');
-
-    // allow simple animations to be added automatically
-    // to the parent when the immediate parent is a viewable widget but not an Animation itself
-    if (this.parent is ViewableWidgetModel && !(this.parent is AnimationModel)) (this.parent as ViewableWidgetModel).addAnimation(this);
-
-    // build transitions
-    transitions.clear();
-    children?.forEach((child)
-    {
-      if (child is AnimationModel) transitions.add(child);
-    });
-    children?.clear();
   }
 
   //we need a reset function to set the controller back to 0 without ticking.

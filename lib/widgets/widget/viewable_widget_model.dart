@@ -12,9 +12,13 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 
-class ViewableWidgetModel extends WidgetModel {
+class ViewableWidgetModel extends WidgetModel
+{
   // model holding the tooltip
   TooltipModel? tipModel;
+
+  // holds animations
+  List<AnimationModel>? animations;
 
   // Width
   double? _widthPercentage;
@@ -288,23 +292,8 @@ class ViewableWidgetModel extends WidgetModel {
           DoubleObservable(Binding.toKey(id, 'visibility'), v, scope: scope);
     }
   }
-
   double? get visibility => _visibility?.get();
 
-  // animations
-  Map<String, AnimationModel>? _animationmap;
-  List<String>? _animations;
-
-  set animations(dynamic v)
-  {
-    if (v is String)
-    {
-      var s = v.split(",");
-      _animations = [];
-      s.forEach((element) => _animations!.add(element.trim()));
-    }
-  }
-  List<String> get animations => List.unmodifiable(_animations ?? []);
 
   int paddings = 0;
 
@@ -437,7 +426,6 @@ class ViewableWidgetModel extends WidgetModel {
     valign = Xml.get(node: xml, tag: 'valign');
     onstage = Xml.get(node: xml, tag: 'onstage');
     offstage = Xml.get(node: xml, tag: 'offstage');
-    animations = Xml.attribute(node: xml, tag: 'animation');
 
     // view requires a VisibilityDetector if either onstage or offstage is set or
     // someone is bound to my visibility
@@ -447,12 +435,25 @@ class ViewableWidgetModel extends WidgetModel {
     _paddings = Xml.attribute(node: xml, tag: 'pad');
 
     // tip
-    List<TooltipModel> tips =
-        findChildrenOfExactType(TooltipModel).cast<TooltipModel>();
-    if (tips.isNotEmpty) {
+    List<TooltipModel> tips = findChildrenOfExactType(TooltipModel).cast<TooltipModel>();
+    if (tips.isNotEmpty)
+    {
       tipModel = tips.first;
       removeChildrenOfExactType(TooltipModel);
     }
+
+    // add animations
+    children?.forEach((child)
+    {
+      if (child is AnimationModel)
+      {
+        if (animations == null) animations = [];
+        animations!.add(child);
+      }
+    });
+
+    // remove animations from child list
+    if (animations != null) children?.removeWhere((element) => animations!.contains(element));
   }
 
   static double getParentVPadding(int paddings, double? padding,
@@ -533,22 +534,9 @@ class ViewableWidgetModel extends WidgetModel {
 
   AnimationModel? getAnimationModel(String id)
   {
-    // model already created
-    if (_animationmap != null && _animationmap!.containsKey(id)) return _animationmap![id];
-
-    var model = Scope.findWidgetModel(id, scope);
-    if (model != null)
-    {
-      // add to map
-      var clone = model.clone(this);
-      if (clone is AnimationModel)
-      {
-        if (_animationmap == null) _animationmap = Map<String, AnimationModel>();
-        _animationmap![id] = clone;
-        return clone;
-      }
-    }
-    return null;
+    if (animations == null) return null;
+    var models = animations!.where((model) => model.id == id);
+    return (models.isNotEmpty) ? models.first : null;
   }
 
   @override
@@ -561,11 +549,17 @@ class ViewableWidgetModel extends WidgetModel {
     switch (function)
     {
       case "animate":
-        if (_animationmap != null)
+        if (animations != null)
         {
-          var _id = S.item(arguments, 0);
-          if (_id == null && animations.isNotEmpty) _id = animations.first;
-          if (_animationmap!.containsKey(_id)) _animationmap![_id]!.execute(caller, propertyOrFunction, arguments);
+          var id = S.item(arguments, 0);
+          AnimationModel? animation;
+          if (!S.isNullOrEmpty(id))
+          {
+            var list = animations!.where((animation) => animation.id == id);
+            if (list.isNotEmpty) animation = list.first;
+          }
+          else animation = animations!.first;
+          animation?.execute(caller, propertyOrFunction, arguments);
         }
         return true;
     }
@@ -604,27 +598,11 @@ class ViewableWidgetModel extends WidgetModel {
     if (tipModel != null) view = TooltipView(tipModel!, view);
 
     // wrap animations
-    if (this.animations.isNotEmpty)
+    if (this.animations != null)
     {
-      var animations = this.animations.reversed;
-      animations.forEach((element)
-      {
-        AnimationModel? model = getAnimationModel(element);
-        if (model != null) view = model.getAnimatedView(view);
-      });
+      var animations = this.animations!.reversed;
+      animations.forEach((model) => view = model.getAnimatedView(view));
     }
     return view;
-  }
-
-  // this routine is called from the AnimationModel child
-  // to add child animations to its parent
-  void addAnimation(AnimationModel model)
-  {
-    if (_animations == null) _animations = [];
-    if (_animations!.contains(model.id)) return;
-    _animations!.add(model.id);
-
-    if (_animationmap == null) _animationmap = Map<String, AnimationModel>();
-    _animationmap![model.id] = model;
   }
 }

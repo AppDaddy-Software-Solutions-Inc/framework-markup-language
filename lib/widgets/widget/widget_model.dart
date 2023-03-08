@@ -1167,8 +1167,13 @@ class WidgetModel implements IDataSourceListener
     var xml = element!.copy();
 
     // we dont want duplicate model ids
-    Xml.setAttribute(xml, "id", id ?? Uuid().v4().toString());
-
+    var parentId = id ?? Uuid().v4().toString();
+    Xml.setAttribute(xml, "id", parentId);
+    xml.descendantElements.forEach((element)
+    {
+      var childId = Xml.attribute(node: element, tag: "id");
+      if (!S.isNullOrEmpty(childId)) element.setAttribute("id", "$parentId-$childId");
+    });
     return xml;
   }
 

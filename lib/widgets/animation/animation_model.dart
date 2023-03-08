@@ -2,6 +2,7 @@
 import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/widget/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -13,8 +14,7 @@ import 'package:fml/helper/common_helpers.dart';
 /// Defines the properties of an [ANIMATION.AnimationView]
 class AnimationModel extends WidgetModel implements IViewableWidget
 {
-  bool runonce = false;
-
+ bool hasrun = false;
   /// Transition Curve
   StringObservable? _curve;
 
@@ -188,6 +188,21 @@ class AnimationModel extends WidgetModel implements IViewableWidget
   }
   String? get onstart => _onstart?.get();
 
+  BooleanObservable? _runonce;
+  set runonce (dynamic v)
+  {
+    if (_runonce != null)
+    {
+      _runonce!.set(v);
+    }
+    else if (v != null)
+    {
+      _runonce = BooleanObservable(Binding.toKey(id, 'runonce'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get runonce => _runonce?.get() ?? false;
+
+
   final List<AnimationModel> transitions = [];
 
   AnimationController? controller;
@@ -228,6 +243,11 @@ class AnimationModel extends WidgetModel implements IViewableWidget
     onstart = Xml.get(node: xml, tag: 'onstart');
     oncomplete = Xml.get(node: xml, tag: 'oncomplete');
     ondismiss = Xml.get(node: xml, tag: 'ondismiss');
+    runonce = Xml.get(node: xml, tag: 'runonce');
+
+    // allow simple animations to be added automatically
+    // to the parent when the immediate parent is a viewable widget but not an Animation itself
+    if (this.parent is ViewableWidgetModel && !(this.parent is AnimationModel)) (this.parent as ViewableWidgetModel).addAnimation(this);
 
     // build transitions
     transitions.clear();

@@ -192,15 +192,18 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
     try {
         _loop = 0;
         _stopped = false;
-
+        if(widget.model.hasrun) return;
           if (_controller!.isCompleted) {
+            if(widget.model.runonce) widget.model.hasrun = true;
             _controller!.reverse();
             widget.model.onstart;
           } else if (_controller!.isDismissed) {
             _controller!.forward();
+            if(widget.model.runonce) widget.model.hasrun = true;
             widget.model.onstart;
           } else {
             _controller!.forward();
+            if(widget.model.runonce) widget.model.hasrun = true;
             widget.model.onstart;
           }
 

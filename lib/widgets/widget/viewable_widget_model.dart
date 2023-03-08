@@ -295,14 +295,15 @@ class ViewableWidgetModel extends WidgetModel {
   Map<String, AnimationModel>? _animationmap;
   List<String>? _animations;
 
-  set animations(dynamic v) {
-    if (v is String) {
+  set animations(dynamic v)
+  {
+    if (v is String)
+    {
       var s = v.split(",");
       _animations = [];
       s.forEach((element) => _animations!.add(element.trim()));
     }
   }
-
   List<String> get animations => List.unmodifiable(_animations ?? []);
 
   int paddings = 0;
@@ -613,5 +614,17 @@ class ViewableWidgetModel extends WidgetModel {
       });
     }
     return view;
+  }
+
+  // this routine is called from the AnimationModel child
+  // to add child animations to its parent
+  void addAnimation(AnimationModel model)
+  {
+    if (_animations == null) _animations = [];
+    if (_animations!.contains(model.id)) return;
+    _animations!.add(model.id);
+
+    if (_animationmap == null) _animationmap = Map<String, AnimationModel>();
+    _animationmap![model.id] = model;
   }
 }

@@ -268,7 +268,7 @@ class WidgetModel implements IDataSourceListener
   WidgetModel(WidgetModel? parent, String? id, {Scope? scope})
   {
     // default id
-    if (S.isNullOrEmpty(id)) id = Uuid().v1();
+    if (S.isNullOrEmpty(id)) id = S.newId;
     this.id = id!;
 
     // set the parent
@@ -288,6 +288,20 @@ class WidgetModel implements IDataSourceListener
   {
     // exclude this element?
     if (excludeFromTemplate(node, parent.scope)) return null;
+
+    // clone
+    if (Xml.hasAttribute(node: node, tag: "clone"))
+    {
+      var model = Scope.findWidgetModel(Xml.attribute(node: node, tag: "clone"), parent.scope);
+      if (model != null && model.element != null)
+      {
+        // overrwite/add
+        model.element!.attributes.forEach((attribute)
+        {
+          if (!Xml.hasAttribute(node: node, tag: attribute.localName)) Xml.setAttribute(node, attribute.localName, attribute.value);
+        });
+      }
+    }
 
     // element local name is the element name without the namespace prefix (if one exists)
     String elementLocalName = node.localName.toLowerCase();
@@ -603,9 +617,6 @@ class WidgetModel implements IDataSourceListener
         if (parent is AnimationModel) model = TweenModel.fromXml(parent, node);
         else model = TweenModel.fromXml(parent, node);
         break;
-
-
-
 
       case "pad": // Preferred Case.
       case "padding": // Padding could be deprecated.
@@ -1167,7 +1178,7 @@ class WidgetModel implements IDataSourceListener
     var xml = element!.copy();
 
     // we dont want duplicate model ids
-    var parentId = id ?? Uuid().v4().toString();
+    var parentId = id ?? S.newId;
     Xml.setAttribute(xml, "id", parentId);
     xml.descendantElements.forEach((element)
     {

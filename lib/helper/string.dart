@@ -12,6 +12,7 @@ import 'package:intl/intl.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/observable/observables/color.dart';
 import 'package:mime/mime.dart' deferred as mime;
+import 'package:uuid/uuid.dart';
 import 'package:xml/xml.dart';
 
 /// String Helpers
@@ -698,4 +699,6 @@ class S
     if (!withSpaces) returnString = returnString.replaceAll(' ', separator);
     return lowercase ? returnString.toLowerCase() : returnString;
   }
+
+  static String get newId => "ag${Uuid().v4().toString().replaceAll("-", "").toLowerCase()}";
 }

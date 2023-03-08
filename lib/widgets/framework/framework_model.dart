@@ -6,7 +6,6 @@ import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/navigation_manager.dart';
-import 'package:fml/widgets/modal/modal_model.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
@@ -340,9 +339,6 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
       var alias = Xml.attribute(node: xml, tag: "id");
       if (scope != null && alias != null) System.app?.scopeManager.add(scope!, alias: alias);
 
-      // inject debug window
-      if (!S.isNullOrEmpty(System.app?.debugPage)) await _injectDebugModal(this, refresh);
-
       // set template name
       templateName = uri.replace(queryParameters: null).toString();
       if (dependency != null) this.dependency = dependency;
@@ -464,32 +460,6 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
 
     // cleanup children
     super.dispose();
-  }
-
-  static Future<void> _injectDebugModal(FrameworkModel model, bool refresh) async
-  {
-    {
-      // get the debug template
-      var debug = System.app?.debugPage;
-      if (!S.isNullOrEmpty(debug))
-      {
-        // get the debug template
-        var doc = await Template.fetch(url: debug!, refresh: refresh);
-
-        // build modal node
-        XmlElement node = XmlElement(XmlName("MODAL"));
-        node.attributes.add(XmlAttribute(XmlName("id"), "DEBUG"));
-        doc.document!.rootElement.children.forEach((child) => node.children.insert(0, child.copy()));
-
-        // build modal model
-        ModalModel? modal = ModalModel.fromXml(model,node);
-        if (modal != null)
-        {
-          if (model.children == null) model.children = [];
-          model.children!.insert(0, modal);
-        }
-      }
-    }
   }
 
   Future<bool> onStart(BuildContext context) async

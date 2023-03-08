@@ -114,11 +114,5 @@ class RotateTransitionModel extends AnimationChildModel
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
-  WidgetModel? clone(WidgetModel parent, {String? id})
-  {
-    var xml = super.cloneNode(id: id);
-    return (xml != null) ? fromXml(parent, xml) : null;
-  }
-
   Widget getAnimatedView(Widget child, {AnimationController? controller}) => RotateTransitionView(this, child, controller);
 }

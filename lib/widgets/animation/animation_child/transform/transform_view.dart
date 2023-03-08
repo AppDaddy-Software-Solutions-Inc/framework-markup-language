@@ -247,15 +247,19 @@ class TransformViewState extends State<TransformView>
 
   void start() {
     try {
+      if(widget.model.hasrun) return;
       if (_controller.isCompleted) {
+        if(widget.model.runonce) widget.model.hasrun = true;
         _controller.reverse();
-        widget.model.onstart;
+        widget.model.onStart(context);
       } else if (_controller.isDismissed) {
         _controller.forward();
-        widget.model.onstart;
+        if(widget.model.runonce) widget.model.hasrun = true;
+        widget.model.onStart(context);
       } else {
         _controller.forward();
-        widget.model.onstart;
+        if(widget.model.runonce) widget.model.hasrun = true;
+        widget.model.onStart(context);
       }
 
     } catch (e) {}
@@ -270,9 +274,9 @@ class TransformViewState extends State<TransformView>
 
   void _animationListener(AnimationStatus status) {
     if (status == AnimationStatus.completed) {
-      widget.model.oncomplete;
+      widget.model.onComplete(context);
     } else if  (status == AnimationStatus.dismissed) {
-      widget.model.ondismiss;
+      widget.model.onDismiss(context);
     }
   }
 }

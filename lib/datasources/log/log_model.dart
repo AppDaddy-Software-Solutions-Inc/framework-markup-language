@@ -27,7 +27,7 @@ class LogModel extends DataSourceModel implements IDataSource
     }
     catch(e)
     {
-      Log().exception(e,  caller: 'iframe.Model');
+      Log().exception(e,  caller: 'log_model');
       model = null;
     }
     return model;

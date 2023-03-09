@@ -116,7 +116,7 @@ class HttpModel extends DataSourceModel implements IDataSource
     }
     catch(e)
     {
-      Log().exception(e,  caller: 'iframe.Model');
+      Log().exception(e,  caller: 'http.Model');
       model = null;
     }
     return model;

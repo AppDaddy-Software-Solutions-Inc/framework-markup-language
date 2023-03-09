@@ -508,6 +508,10 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
     // busy
     busy = false;
 
+    // requery?
+    if (((autoquery ?? 0) > 0) && (timer == null) && (!disposed))
+      timer = Timer.periodic(Duration(seconds: autoquery!), onTimer);
+
     return false;
   }
 

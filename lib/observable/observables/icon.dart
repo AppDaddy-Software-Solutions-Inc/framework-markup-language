@@ -1,11 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
-
 import 'package:fml/graphics.dart' deferred as icons;
 import 'package:flutter/material.dart';
 import 'package:fml/observable/observable.dart';
 import 'package:fml/observable/scope.dart';
-import 'package:fml/system.dart';
 
 class IconObservable extends Observable
 {
@@ -61,7 +59,7 @@ class IconObservable extends Observable
     }
     else
     {
-      _iconname = name;
+      _pendingIcon = name;
       icon = Icons.horizontal_rule;
     }
     return icon;

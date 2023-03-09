@@ -24,6 +24,7 @@ import 'package:xml/xml.dart';
 /// ```
 class S
 {
+  static bool _mimeLibraryLoaded = false;
 
   /// Parses Strings containing emoiji(s) in a text syntax like `:taco:` to `🌮`
   static String parseEmojis(String val) {
@@ -594,7 +595,11 @@ class S
     String type;
     try
     {
-      await mime.loadLibrary();
+      if (!_mimeLibraryLoaded)
+      {
+        await mime.loadLibrary();
+        _mimeLibraryLoaded = true;
+      }
       type = mime.lookupMimeType(path) ?? defaultType;
     }
     catch(e)

@@ -52,7 +52,7 @@ class IconObservable extends Observable
     else
     {
       _iconname = name;
-      icon = Icons.hourglass_empty_rounded;
+      icon = Icons.horizontal_rule;
     }
     return icon;
   }

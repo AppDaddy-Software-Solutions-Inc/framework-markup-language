@@ -107,14 +107,10 @@ class _BoxViewState extends WidgetState<BoxView>
 
     //var mainAxisSize = widget.model.expand == true ? MainAxisSize.min : MainAxisSize.max;
 
-    ///////////////
-    /* Gradient */
-    //////////////
+    // gradient
     if ((color != null) && (color2 != null)) isGradient = true;
 
-    ///////////
-    /* Child */
-    ///////////
+    // Child
     List<Widget> children = [];
     if (widget.model.children != null)
       widget.model.children!.forEach((model) 
@@ -124,11 +120,7 @@ class _BoxViewState extends WidgetState<BoxView>
         }
       });
 
-    if (children.isEmpty)
-      children.add(Container(
-        width: 0,
-        height: 0,
-      ));
+    if (children.isEmpty) children.add(Container(width: 0, height: 0));
 
     //this must go after the children are determined
     Map<String, dynamic> align = AlignmentHelper.alignWidgetAxis(
@@ -137,21 +129,29 @@ class _BoxViewState extends WidgetState<BoxView>
         widget.model.center,
         widget.model.halign,
         widget.model.valign);
+
     CrossAxisAlignment? crossAlignment = align['crossAlignment'];
     MainAxisAlignment? mainAlignment = align['mainAlignment'];
     WrapAlignment? mainWrapAlignment = align['mainWrapAlignment'];
     WrapCrossAlignment? crossWrapAlignment = align['crossWrapAlignment'];
     Alignment? aligned = align['aligned'];
 
+    // Setting aligned on widgets with BoxFit (images) causes layout issues
+    // so ignore the default (Alignment.topLeft) 
+    if (aligned == Alignment.topLeft) aligned = null;
+
     // set alignment if only a single child or a stack
     // TODO: consider adding scroll attribute scroll=true/false to match with the layout==row/col && expand==false;
     // return no row/col if only a single child and NOT stack
     // Flex: I removed the single child feature and just used a default column, result: not expanding to parent anymore
     dynamic child;
-    if (children.length == 1 && widget.model.layout != 'stack') {
+    if (children.length == 1 && widget.model.layout != 'stack')
+    {
       child = children[0];
-    } else if (widget.model.layout == 'column' ||
-        widget.model.layout == 'col') {
+    }
+
+    else if (widget.model.layout == 'column' || widget.model.layout == 'col')
+    {
       //here we check if wrap is true and return the corresponding direction.
       if (widget.model.wrap == true)
         child = Wrap(
@@ -166,7 +166,10 @@ class _BoxViewState extends WidgetState<BoxView>
           crossAxisAlignment: crossAlignment!,
           mainAxisAlignment: mainAlignment!,
         );
-    } else if (widget.model.layout == 'row') {
+    }
+
+    else if (widget.model.layout == 'row')
+    {
       if (widget.model.wrap == true)
         child = Wrap(
             children: children,
@@ -174,34 +177,21 @@ class _BoxViewState extends WidgetState<BoxView>
             alignment: mainWrapAlignment!,
             runAlignment: mainWrapAlignment,
             crossAxisAlignment: crossWrapAlignment!);
-      else
-        child = Row(
-          children: children,
-          crossAxisAlignment: crossAlignment!,
-          mainAxisAlignment: mainAlignment!,
-        );
-    } else if (widget.model.layout == 'stack')
+      else child = Row(children: children, crossAxisAlignment: crossAlignment!, mainAxisAlignment: mainAlignment!);
+    }
+
     // stack takes positioned but ignores layout attributes.
+    else if (widget.model.layout == 'stack')
     {
       children.add(SizedBox.expand());
-      child = Stack(
-        children: children,
-        alignment: aligned!,
-        fit: StackFit.loose
-      );
-    } else {
-      child = Column(
-        children: children,
-        mainAxisAlignment: mainAlignment!,
-        crossAxisAlignment: crossAlignment!,
-      );
+      child = aligned != null ? Stack(children: children, alignment: aligned, fit: StackFit.loose) : Stack(children: children, fit: StackFit.loose);
     }
+
+    else child = Column(children: children, mainAxisAlignment: mainAlignment!, crossAxisAlignment: crossAlignment!);
 
     if (widget.child != null) child = widget.child;
 
-    /////////////
-    /* Border? */
-    /////////////
+    // Border?
     Border? border;
     bool hasBorder = widget.model.border != 'none';
     String? radius = widget.model.radius;
@@ -241,9 +231,7 @@ class _BoxViewState extends WidgetState<BoxView>
       }
     }
 
-    ///////////////////////
-    /* Border Decoration */
-    ///////////////////////
+    // border decoration
     List<String> cornersFromTopRightClockwise = [];
     List<double?> radii = [];
     try {
@@ -299,14 +287,10 @@ class _BoxViewState extends WidgetState<BoxView>
         border: border,
         borderRadius: containerRadius);
 
-    //////////
-    /* View */
-    //////////
+    // View
     Widget view;
 
-    ////////////////////
-    /* Padding values */
-    ////////////////////
+    // Padding values
     EdgeInsets insets = EdgeInsets.only();
     if (widget.model.paddings > 0)
     {
@@ -359,9 +343,7 @@ class _BoxViewState extends WidgetState<BoxView>
           child: child));
     }
 
-    /////////////
-    /* Opacity */
-    /////////////
+    // Opacity
     if (widget.model.opacity != null) {
       if (widget.model.opacity! > 1)
         widget.model.opacity = 1;
@@ -379,36 +361,26 @@ class _BoxViewState extends WidgetState<BoxView>
         view = ClipRect(child: view);
     }
 
-    //////////////////
-    /* Constrained? */
-    //////////////////
+    // Constrained?
     bool expand = widget.model.expand;
     double? height = widget.model.height;
     double? width = widget.model.width;
 
     var constr = widget.model.getConstraints();
 
-
     ScrollerModel? scrollerModel = widget.model.findParentOfExactType(ScrollerModel);
-    if (scrollerModel != null && expand == true) {
+
+    if (scrollerModel != null && expand == true)
+    {
       expand = false;
-      if(scrollerModel.layout == "col" || scrollerModel.layout == "column")
-        width ??= constr.maxWidth;
-      if(scrollerModel.layout == "row")
-        height ??= constr.maxHeight;
+      if(scrollerModel.layout == "col" || scrollerModel.layout == "column") width ??= constr.maxWidth;
+      if(scrollerModel.layout == "row") height ??= constr.maxHeight;
     }
 
+    if (expand == false && height != null && width != null) expand = true;
 
-      if (expand == false) {
-        if (height != null && width != null)
-          expand = true;
-      }
-
-
-
-
-      if (expand == false) {
-
+    if (expand == false)
+    {
         //unsure how to make this work with maxwidth/maxheight, as it should yet constraints always come in. What should it do? same with minwidth/minheight...
         if (width != null) {
           view = UnconstrainedBox(
@@ -456,5 +428,4 @@ class _BoxViewState extends WidgetState<BoxView>
 
       return view;
     }
-
 }

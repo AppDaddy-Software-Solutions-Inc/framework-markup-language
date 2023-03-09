@@ -464,7 +464,10 @@ class ViewableWidgetModel extends WidgetModel
 
     // view requires a VisibilityDetector if either onstage or offstage is set or
     // someone is bound to my visibility
-    _needsVisibilityDetector = !S.isNullOrEmpty(onstage) || !S.isNullOrEmpty(offstage) || WidgetModel.isBound(this, Binding.toKey(id, 'visibility'));
+    _needsVisibilityDetector = !S.isNullOrEmpty(onstage) || !S.isNullOrEmpty(offstage) ||
+            WidgetModel.isBound(this, Binding.toKey(id, 'visiblearea')) ||
+            WidgetModel.isBound(this, Binding.toKey(id, 'visibleheight')) ||
+            WidgetModel.isBound(this, Binding.toKey(id, 'visiblewidth'));
 
     // pad is always defined as an attribute. PAD as an element name is the PADDING widget
     _paddings = Xml.attribute(node: xml, tag: 'pad');

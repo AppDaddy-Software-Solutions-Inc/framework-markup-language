@@ -258,7 +258,9 @@ class ViewableWidgetModel extends WidgetModel
           StringObservable(Binding.toKey(id, 'onstage'), v, scope: scope);
 
       // create the visibility tag
-      visibility = 0;
+      visibleArea   = 0;
+      visibleHeight = 0;
+      visibleWidth  = 0;
     }
   }
 
@@ -275,26 +277,59 @@ class ViewableWidgetModel extends WidgetModel
           StringObservable(Binding.toKey(id, 'offstage'), v, scope: scope);
 
       // create the visibility tag
-      visibility = 0;
+      visibleArea   = 0;
+      visibleHeight = 0;
+      visibleWidth  = 0;
     }
   }
 
   String? get offstage => _offstage?.get();
 
-  /// visibility - percent of object visible on screen
-  DoubleObservable? _visibility;
-
-  set visibility(dynamic v) {
-    if (_visibility != null) {
-      _visibility!.set(v);
-    } else if (v != null) {
-      _visibility =
-          DoubleObservable(Binding.toKey(id, 'visibility'), v, scope: scope);
+  /// visible area - percent of object visible on screen
+  DoubleObservable? _visibleArea;
+  set visibleArea(dynamic v) 
+  {
+    if (_visibleArea != null) 
+    {
+      _visibleArea!.set(v);
+    } 
+    else if (v != null) 
+    {
+      _visibleArea = DoubleObservable(Binding.toKey(id, 'visiblearea'), v, scope: scope);
     }
   }
-  double? get visibility => _visibility?.get();
+  double? get visibleArea => _visibleArea?.get();
 
+  /// visible Height - percent of objects height visible on screen
+  DoubleObservable? _visibleHeight;
+  set visibleHeight(dynamic v)
+  {
+    if (_visibleHeight != null)
+    {
+      _visibleHeight!.set(v);
+    }
+    else if (v != null)
+    {
+      _visibleHeight = DoubleObservable(Binding.toKey(id, 'visibleheight'), v, scope: scope);
+    }
+  }
+  double? get visibleHeight => _visibleHeight?.get();
 
+  /// visible Width - percent of objects width visible on screen
+  DoubleObservable? _visibleWidth;
+  set visibleWidth(dynamic v)
+  {
+    if (_visibleWidth != null)
+    {
+      _visibleWidth!.set(v);
+    }
+    else if (v != null)
+    {
+      _visibleWidth = DoubleObservable(Binding.toKey(id, 'visiblewidth'), v, scope: scope);
+    }
+  }
+  double? get visibleWidth => _visibleWidth?.get();
+  
   int paddings = 0;
 
   set _paddings(dynamic v) {
@@ -429,7 +464,10 @@ class ViewableWidgetModel extends WidgetModel
 
     // view requires a VisibilityDetector if either onstage or offstage is set or
     // someone is bound to my visibility
-    _needsVisibilityDetector = !S.isNullOrEmpty(onstage) || !S.isNullOrEmpty(offstage) || WidgetModel.isBound(this, Binding.toKey(id, 'visibility'));
+    _needsVisibilityDetector = !S.isNullOrEmpty(onstage) || !S.isNullOrEmpty(offstage) ||
+            WidgetModel.isBound(this, Binding.toKey(id, 'visiblearea')) ||
+            WidgetModel.isBound(this, Binding.toKey(id, 'visibleheight')) ||
+            WidgetModel.isBound(this, Binding.toKey(id, 'visiblewidth'));
 
     // pad is always defined as an attribute. PAD as an element name is the PADDING widget
     _paddings = Xml.attribute(node: xml, tag: 'pad');
@@ -571,16 +609,17 @@ class ViewableWidgetModel extends WidgetModel
   bool hasGoneOffscreen = false;
   bool hasGoneOnscreen = false;
 
-  void onVisibilityChanged(VisibilityInfo info) {
-    visibility = info.visibleFraction * 100;
+  void onVisibilityChanged(VisibilityInfo info)
+  {
+    if (oldVisibility == (info.visibleFraction * 100)) return;
 
-    if (oldVisibility == visibility) {
-      return;
-    }
+    visibleHeight = info.size.height > 0 ? ((info.visibleBounds.height / info.size.height) * 100) : 0.0;
+    visibleWidth  = info.size.width  > 0 ? ((info.visibleBounds.width  / info.size.width)  * 100) : 0.0;
+    visibleArea   = info.visibleFraction * 100;
 
-    oldVisibility = visibility ?? 0;
-    print(visibility.toString());
-    if (visibility! == 100 && !hasGoneOnscreen)
+    oldVisibility = visibleArea ?? 0.0;
+
+    if (visibleArea! == 100 && !hasGoneOnscreen)
     {
       if (!S.isNullOrEmpty(_onstage))
       {
@@ -589,7 +628,7 @@ class ViewableWidgetModel extends WidgetModel
       }
       hasGoneOnscreen = true;
     }
-    else if (visibility! == 0 && hasGoneOnscreen)
+    else if (visibleArea! == 0 && hasGoneOnscreen)
     {
       if (!S.isNullOrEmpty(_offstage))
       {

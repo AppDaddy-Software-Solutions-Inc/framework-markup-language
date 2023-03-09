@@ -61,8 +61,8 @@ class IconObservable extends Observable
     }
     else
     {
-      _pendingIcon = name;
-      icon = Icons.hourglass_empty_rounded;
+      _iconname = name;
+      icon = Icons.horizontal_rule;
     }
     return icon;
   }

@@ -224,10 +224,10 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
 
     int factor = 1;
     if (autoquery.endsWith('s')) factor = 1;
-    if (autoquery.endsWith('m')) factor = 1 * 60;
-    if (autoquery.endsWith('h')) factor = 1 * 60 * 60;
-    if (autoquery.endsWith('d')) factor = 1 * 60 * 60 * 24;
-    if (factor > 1)
+    else if (autoquery.endsWith('m')) factor = 1 * 60;
+    else if (autoquery.endsWith('h')) factor = 1 * 60 * 60;
+    else if (autoquery.endsWith('d')) factor = 1 * 60 * 60 * 24;
+    if (autoquery.endsWith('s') || autoquery.endsWith('m') || autoquery.endsWith('h') || autoquery.endsWith('d'))
       autoquery = (autoquery.length > 1)
           ? autoquery.substring(0, autoquery.length - 1)
           : null;
@@ -546,7 +546,8 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
         if (model is DataModel) model.onSuccess(data.clone());
 
     // requery?
-    if (((autoquery ?? 0) > 0) && (timer == null) && (!disposed)) timer = Timer.periodic(Duration(seconds: autoquery!), onTimer);
+    if (((autoquery ?? 0) > 0) && (timer == null) && (!disposed))
+      timer = Timer.periodic(Duration(seconds: autoquery!), onTimer);
 
     // busy
     busy = false;

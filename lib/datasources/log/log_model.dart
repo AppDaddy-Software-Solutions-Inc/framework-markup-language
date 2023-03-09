@@ -14,6 +14,9 @@ class LogModel extends DataSourceModel implements IDataSource
   @override
   Data? get data => Log().data;
 
+  @override
+  bool get autoexecute => super.autoexecute ?? true;
+
   static LogModel? fromXml(WidgetModel parent, XmlElement xml)
   {
     LogModel? model;

@@ -100,7 +100,6 @@ class HttpModel extends DataSourceModel implements IDataSource
       // then assign a value
       _response = StringObservable(Binding.toKey(id, 'response'), null, scope: scope, listener: onPropertyChange);
       _response!.set(v);
-      _response!.registerListener(onUrlChange);
     }
   }
   String? get response => _response?.get();

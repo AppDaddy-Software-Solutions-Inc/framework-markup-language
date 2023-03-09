@@ -1,34 +1,34 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:fml/hive/settings.dart';
 import 'package:fml/system.dart';
-import 'package:google_fonts/google_fonts.dart' deferred as gf;
+import 'package:google_fonts/google_fonts.dart' deferred as fonts;
 import 'package:fml/observable/observables/color.dart';
 
 class ThemeNotifier with ChangeNotifier
 {
+  // google fonts
+  static Completer? libraryLoader;
   ThemeData _themeData;
 
   ThemeNotifier(this._themeData)
   {
-   init();
-  }
-  getTheme() => _themeData;
-
-  bool gfloaded = false;
-
-  Future<bool> init() async
-  {
-    // load google fonts library
-    gf.loadLibrary().then((value)
+    // load the library
+    if (libraryLoader == null)
     {
-      gfloaded = true;
+      libraryLoader = Completer();
+      fonts.loadLibrary().then((value) => libraryLoader!.complete(true));
+    }
+
+    // wait for the library to load
+    if (!libraryLoader!.isCompleted) libraryLoader!.future.whenComplete(()
+    {
       setTheme(System.theme.brightness ?? 'light', System.theme.colorscheme ?? 'lightblue');
     });
-
-    // await getBrightness();
-    return true;
   }
+  getTheme() => _themeData;
 
   void mapSystemThemeBindables()
   {
@@ -71,7 +71,7 @@ class ThemeNotifier with ChangeNotifier
   {
     Brightness brightness = await Settings().get('brightness') == 'dark' ? Brightness.dark : Brightness.light;
 
-    TextTheme? fontTheme = gfloaded ? gf.GoogleFonts.getTextTheme(System.theme.font) : null;
+    TextTheme? fontTheme = (libraryLoader?.isCompleted ?? false) ? fonts.GoogleFonts.getTextTheme(System.theme.font) : null;
     if (sBrightness.toLowerCase() == 'light')
     {
       brightness = Brightness.light;

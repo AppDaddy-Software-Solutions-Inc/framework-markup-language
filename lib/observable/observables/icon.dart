@@ -1,20 +1,30 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/graphics.dart' deferred as gf;
+import 'dart:async';
+
+import 'package:fml/graphics.dart' deferred as icons;
 import 'package:flutter/material.dart';
 import 'package:fml/observable/observable.dart';
 import 'package:fml/observable/scope.dart';
+import 'package:fml/system.dart';
 
 class IconObservable extends Observable
 {
-  bool _libraryLoaded = false;
-  String? _iconname;
+  static Completer? libraryLoader;
+  String? _pendingIcon;
 
   IconObservable(String? name, dynamic value, {Scope? scope, OnChangeCallback? listener, Getter? getter, Setter? setter}) : super(name, value, scope: scope, listener: listener, getter: getter, setter: setter)
   {
-    gf.loadLibrary().then((_)
+    // load the library
+    if (libraryLoader == null)
     {
-      _libraryLoaded = true;
-      if (_iconname != null) set(toIcon(_iconname!));
+      libraryLoader = Completer();
+      icons.loadLibrary().then((value) => libraryLoader!.complete(true));
+    }
+
+    // wait for the library to load
+    if (!libraryLoader!.isCompleted) libraryLoader!.future.whenComplete(()
+    {
+      if (_pendingIcon != null) set(toIcon(_pendingIcon!));
     });
   }
 
@@ -44,10 +54,10 @@ class IconObservable extends Observable
   IconData? toIcon(String name)
   {
     IconData? icon;
-    if (_libraryLoaded)
+    if (libraryLoader?.isCompleted ?? false)
     {
       name = name.toLowerCase();
-      if (gf.Graphics.icons.containsKey(name)) icon = gf.Graphics.icons[name];
+      if (icons.Graphics.icons.containsKey(name)) icon = icons.Graphics.icons[name];
     }
     else
     {

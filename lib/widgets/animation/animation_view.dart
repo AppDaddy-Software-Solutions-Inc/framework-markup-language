@@ -37,12 +37,13 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
   void initState()
   {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: Duration(milliseconds: widget.model.duration), reverseDuration: Duration(milliseconds: widget.model.reverseduration ?? widget.model.duration,))
-    ..addStatusListener((status) {
+    _controller = AnimationController(vsync: this, duration: Duration(milliseconds: widget.model.duration), reverseDuration: Duration(milliseconds: widget.model.reverseduration ?? widget.model.duration,));
+    if(widget.model.controllerValue == 1 && widget.model.runonce == true) {
+      _controller?.animateTo(widget.model.controllerValue, duration: Duration());
+    }
+    _controller?.addStatusListener((status) {
       _animationListener(status);
     });
-
-    widget.model.controller = _controller;
   }
 
   @override
@@ -77,8 +78,6 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
   @override
   void dispose()
   {
-    stop();
-
     // remove controller
     _controller?.dispose();
 
@@ -111,27 +110,12 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
     // Check if widget is visible before wasting resources on building it
     if (((widget.model.children?.isEmpty ?? true) && widget.child == null)) return Offstage();
 
-    //link animations to sync from a single controller
-    //TODO: This is not working as linking looks for an initial controller but the getreactiveview builds each with a new id.
-    //TODO: To get linking to work currently, it must be linked to an animation that has no views.
-    if(widget.model.linked != null){
-      WidgetModel? linkedAnimation = Scope.findWidgetModel(widget.model.linked, widget.model.scope);
-      if(linkedAnimation != null && linkedAnimation is BaseAnimationModel.AnimationModel){
-         if (linkedAnimation.controller != null) {
-           _controller = linkedAnimation.controller;
-           widget.model.controller = _controller;
-         } else {
-           widget.model.controller = null;
-         }
-      }
-    }
-
     if (widget.model.animations != null && widget.model.animations!.isNotEmpty && widget.child != null)
     {
       Widget view = _buildTransitionChildren();
 
       // Start the Controller
-      if ((widget.model.autoplay == true) && (!_stopped)) start();
+      if (widget.model.autoplay == true && _controller?.isAnimating != true) start();
       return view;
     }
 
@@ -187,6 +171,7 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
   void reset() {
     try {
         _controller!.reset();
+        widget.model.controllerValue = 0;
     } catch (e) {}
   }
 
@@ -198,13 +183,16 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
           if (_controller!.isCompleted) {
             if(widget.model.runonce) widget.model.hasrun = true;
             _controller!.reverse();
+            widget.model.controllerValue = 0;
             widget.model.onStart(context);
           } else if (_controller!.isDismissed) {
             _controller!.forward();
+            widget.model.controllerValue = 1;
             if(widget.model.runonce) widget.model.hasrun = true;
             widget.model.onStart(context);
           } else {
             _controller!.forward();
+            widget.model.controllerValue = 1;
             if(widget.model.runonce) widget.model.hasrun = true;
             widget.model.onStart(context);
           }
@@ -216,14 +204,17 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
     try {
       _stopped = true;
         _controller!.reset();
+        widget.model.controllerValue = 0;
         _controller!.stop();
     } catch (e) {}
   }
 
   void _animationListener(AnimationStatus status) {
     if (status == AnimationStatus.completed) {
+      widget.model.controllerValue = 1;
       widget.model.onComplete(context);
     } else if  (status == AnimationStatus.dismissed) {
+      widget.model.controllerValue = 0;
       widget.model.onDismiss(context);
     }
   }

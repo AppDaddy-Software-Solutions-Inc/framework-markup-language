@@ -292,9 +292,11 @@ class FlipCardViewState extends State<FlipCardView>
   void _animationListener(AnimationStatus status) {
     if (status == AnimationStatus.completed) {
       widget.model.controllerValue = 1;
+      widget.model.side = "back";
       widget.model.onComplete(context);
     } else if  (status == AnimationStatus.dismissed) {
       widget.model.controllerValue = 0;
+      widget.model.side = "front";
       widget.model.onDismiss(context);
     }
   }

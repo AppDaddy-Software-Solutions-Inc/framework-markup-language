@@ -44,6 +44,8 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
     _controller?.addStatusListener((status) {
       _animationListener(status);
     });
+
+    if (widget.model.autoplay == true && _controller?.isAnimating != true) start();
   }
 
   @override
@@ -115,7 +117,7 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
       Widget view = _buildTransitionChildren();
 
       // Start the Controller
-      if (widget.model.autoplay == true && _controller?.isAnimating != true) start();
+
       return view;
     }
 

@@ -53,6 +53,12 @@ class LogModel extends DataSourceModel implements IDataSource
       case "clear":
         Log().clear();
         return true;
+
+      case 'start':
+      case 'fire':
+        Data logData = Log().data;
+        super.onSuccess(Log().data);
+        return true;
     }
     return super.execute(caller, propertyOrFunction, arguments);
   }

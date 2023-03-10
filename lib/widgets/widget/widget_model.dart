@@ -1431,6 +1431,8 @@ class WidgetModel implements IDataSourceListener
         return true;
       case "http":
         return true;
+      case 'log':
+        return true;
       case "mqtt":
         return true;
       case "nfc":

@@ -2,6 +2,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
+import 'package:fml/system.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
 
 import 'package:fml/widgets/widget/iViewableWidget.dart';
@@ -320,6 +321,9 @@ class _ScrollShadowState extends State<ScrollShadow> {
 
   @override
   Widget build(BuildContext context) {
+    // Remove shadows on mobile web.
+    if (System().userplatform == 'web' && (System().useragent == 'android' || System().useragent == 'ios'))
+      return Offstage();
     Positioned shadow;
     var col =
         widget.shadowColor as bool? ?? Theme.of(context).brightness == Brightness.light

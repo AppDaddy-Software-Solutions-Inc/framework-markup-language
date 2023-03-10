@@ -160,8 +160,8 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
          behavior = ScrollConfiguration.of(context).copyWith(scrollbars: widget.model.scrollbar == false ? false : true, dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse});
     else behavior = ScrollConfiguration.of(context).copyWith(scrollbars: widget.model.scrollbar == false ? false : true);
 
-   if(widget.model.onpulldown != null)
-   {
+    if(widget.model.onpulldown != null)
+    {
      scsv = RefreshIndicator(
          onRefresh: () => widget.model.onPull(context),
          child: SingleChildScrollView(
@@ -169,13 +169,11 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
          child: child,
          scrollDirection: direction,
          controller: _scrollController));
-   }
-   else scsv = SingleChildScrollView(child: child, scrollDirection: direction, controller: _scrollController);
+    }
+    else scsv = SingleChildScrollView(child: child, scrollDirection: direction, controller: _scrollController);
 
-   return scsv;
     // show no scroll bar
     // POINTERDEVICE MOUSE is not reccomended on web due to text selection difficulty, but i have added it in since we do not have text selection.
-
     if (widget.model.scrollbar !=  false)
     {
       scsv = Container(

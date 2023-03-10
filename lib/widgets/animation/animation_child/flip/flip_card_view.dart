@@ -175,7 +175,6 @@ class FlipCardViewState extends State<FlipCardView>
       frontWidget.model.children
           .elementAt(1)
           .visible = true;
-      widget.model.side = "front";
     } else {
     frontWidget.model.children
         .elementAt(0)
@@ -183,7 +182,6 @@ class FlipCardViewState extends State<FlipCardView>
     frontWidget.model.children
         .elementAt(1)
         .visible = false;
-    widget.model.side = "back";
     }
 
 

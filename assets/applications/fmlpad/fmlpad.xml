@@ -152,7 +152,7 @@
                 <BOX color="{THEME.background}" height="100%" id="flipbox" layout="stack"
                     width="100%">
 
-                    <FLIP duration="600" />
+                    <FLIP id="boxflip" duration="600" />
 
                     <GRID data="dbExamples" direction="vertical">
                         <ITEM height="90" width="200">

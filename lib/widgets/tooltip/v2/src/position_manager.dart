@@ -1,7 +1,22 @@
 import 'package:flutter/material.dart';
 import 'element_box.dart';
-import 'enum/el_tooltip_position.dart';
 import 'tooltip_elements_display.dart';
+
+enum TooltipPosition {
+  topStart,
+  topCenter,
+  topEnd,
+  rightStart,
+  rightCenter,
+  rightEnd,
+  bottomStart,
+  bottomCenter,
+  bottomEnd,
+  leftStart,
+  leftCenter,
+  leftEnd,
+}
+
 
 /// Calculates the position of the tooltip and the arrow on the screen
 /// Verifies if the desired position fits the screen.
@@ -48,7 +63,7 @@ class PositionManager {
         x: triggerBox.x + _half(triggerBox.w),
         y: triggerBox.y - overlayBox.h - distance - arrowBox.h,
       ),
-      position: ElTooltipPosition.topStart,
+      position: TooltipPosition.topStart,
       radius: BorderRadius.only(
         topLeft: Radius.circular(radius),
         topRight: Radius.circular(radius),
@@ -73,7 +88,7 @@ class PositionManager {
         x: triggerBox.x + _half(triggerBox.w) - _half(overlayBox.w),
         y: triggerBox.y - overlayBox.h - distance - arrowBox.h,
       ),
-      position: ElTooltipPosition.topCenter,
+      position: TooltipPosition.topCenter,
       radius: BorderRadius.all(Radius.circular(radius)),
     );
   }
@@ -92,7 +107,7 @@ class PositionManager {
         x: triggerBox.x - overlayBox.w + _half(triggerBox.w),
         y: triggerBox.y - overlayBox.h - distance - arrowBox.h,
       ),
-      position: ElTooltipPosition.topEnd,
+      position: TooltipPosition.topEnd,
       radius: BorderRadius.only(
         topLeft: Radius.circular(radius),
         topRight: Radius.circular(radius),
@@ -116,7 +131,7 @@ class PositionManager {
         x: triggerBox.x + _half(triggerBox.w),
         y: triggerBox.y + triggerBox.h + distance + arrowBox.h,
       ),
-      position: ElTooltipPosition.bottomStart,
+      position: TooltipPosition.bottomStart,
       radius: BorderRadius.only(
         topLeft: Radius.zero,
         topRight: Radius.circular(radius),
@@ -141,7 +156,7 @@ class PositionManager {
         x: triggerBox.x + _half(triggerBox.w) - _half(overlayBox.w),
         y: triggerBox.y + triggerBox.h + distance + arrowBox.h,
       ),
-      position: ElTooltipPosition.bottomCenter,
+      position: TooltipPosition.bottomCenter,
       radius: BorderRadius.all(Radius.circular(radius)),
     );
   }
@@ -160,7 +175,7 @@ class PositionManager {
         x: triggerBox.x + _half(triggerBox.w) - overlayBox.w,
         y: triggerBox.y + triggerBox.h + distance + arrowBox.h,
       ),
-      position: ElTooltipPosition.bottomEnd,
+      position: TooltipPosition.bottomEnd,
       radius: BorderRadius.only(
         topLeft: Radius.circular(radius),
         topRight: Radius.zero,
@@ -185,7 +200,7 @@ class PositionManager {
         x: triggerBox.x - overlayBox.x - overlayBox.w - distance - arrowBox.h,
         y: triggerBox.y + _half(triggerBox.h),
       ),
-      position: ElTooltipPosition.leftStart,
+      position: TooltipPosition.leftStart,
       radius: BorderRadius.only(
         topLeft: Radius.circular(radius),
         topRight: Radius.zero,
@@ -211,7 +226,7 @@ class PositionManager {
         x: triggerBox.x - overlayBox.x - overlayBox.w - distance - arrowBox.h,
         y: triggerBox.y + _half(triggerBox.h) - _half(overlayBox.h),
       ),
-      position: ElTooltipPosition.leftCenter,
+      position: TooltipPosition.leftCenter,
       radius: BorderRadius.all(Radius.circular(radius)),
     );
   }
@@ -231,7 +246,7 @@ class PositionManager {
         x: triggerBox.x - overlayBox.x - overlayBox.w - distance - arrowBox.h,
         y: triggerBox.y + _half(triggerBox.h) - overlayBox.h,
       ),
-      position: ElTooltipPosition.leftEnd,
+      position: TooltipPosition.leftEnd,
       radius: BorderRadius.only(
         topLeft: Radius.circular(radius),
         topRight: Radius.circular(radius),
@@ -256,7 +271,7 @@ class PositionManager {
             .floorToDouble(),
         y: (triggerBox.y + _half(triggerBox.h)).floorToDouble(),
       ),
-      position: ElTooltipPosition.rightStart,
+      position: TooltipPosition.rightStart,
       radius: BorderRadius.only(
         topLeft: Radius.zero,
         topRight: Radius.circular(radius),
@@ -281,7 +296,7 @@ class PositionManager {
         x: triggerBox.x + triggerBox.w + distance + arrowBox.h,
         y: triggerBox.y + _half(triggerBox.h) - _half(overlayBox.h),
       ),
-      position: ElTooltipPosition.rightCenter,
+      position: TooltipPosition.rightCenter,
       radius: BorderRadius.all(Radius.circular(radius)),
     );
   }
@@ -300,7 +315,7 @@ class PositionManager {
         x: triggerBox.x + triggerBox.w + distance + arrowBox.h,
         y: triggerBox.y + _half(triggerBox.h) - overlayBox.h,
       ),
-      position: ElTooltipPosition.rightEnd,
+      position: TooltipPosition.rightEnd,
       radius: BorderRadius.only(
         topLeft: Radius.circular(radius),
         topRight: Radius.circular(radius),
@@ -347,44 +362,44 @@ class PositionManager {
   }
 
   /// Load the calculated tooltip position
-  ToolTipElementsDisplay load({ElTooltipPosition? preferredPosition}) {
+  ToolTipElementsDisplay load({TooltipPosition? preferredPosition}) {
     ToolTipElementsDisplay elementPosition;
 
     switch (preferredPosition) {
-      case ElTooltipPosition.topStart:
+      case TooltipPosition.topStart:
         elementPosition = _topStart();
         break;
-      case ElTooltipPosition.topCenter:
+      case TooltipPosition.topCenter:
         elementPosition = _topCenter();
         break;
-      case ElTooltipPosition.topEnd:
+      case TooltipPosition.topEnd:
         elementPosition = _topEnd();
         break;
-      case ElTooltipPosition.bottomStart:
+      case TooltipPosition.bottomStart:
         elementPosition = _bottomStart();
         break;
-      case ElTooltipPosition.bottomCenter:
+      case TooltipPosition.bottomCenter:
         elementPosition = _bottomCenter();
         break;
-      case ElTooltipPosition.bottomEnd:
+      case TooltipPosition.bottomEnd:
         elementPosition = _bottomEnd();
         break;
-      case ElTooltipPosition.leftStart:
+      case TooltipPosition.leftStart:
         elementPosition = _leftStart();
         break;
-      case ElTooltipPosition.leftCenter:
+      case TooltipPosition.leftCenter:
         elementPosition = _leftCenter();
         break;
-      case ElTooltipPosition.leftEnd:
+      case TooltipPosition.leftEnd:
         elementPosition = _leftEnd();
         break;
-      case ElTooltipPosition.rightStart:
+      case TooltipPosition.rightStart:
         elementPosition = _rightStart();
         break;
-      case ElTooltipPosition.rightCenter:
+      case TooltipPosition.rightCenter:
         elementPosition = _rightCenter();
         break;
-      case ElTooltipPosition.rightEnd:
+      case TooltipPosition.rightEnd:
         elementPosition = _rightEnd();
         break;
       default:

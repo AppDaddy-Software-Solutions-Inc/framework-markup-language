@@ -1,11 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:async';
 import 'package:fml/helper/string.dart';
 import 'package:fml/widgets/expanded/expanded_model.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
-import 'package:google_fonts/google_fonts.dart' deferred as gf;
+import 'package:google_fonts/google_fonts.dart' deferred as fonts;
 import 'package:fml/eval/textParser.dart' as parse;
 import 'package:flutter/material.dart';
 
@@ -20,7 +21,8 @@ class TextView extends StatefulWidget implements IWidgetView
 
 class _TextViewState extends WidgetState<TextView>
 {
-  bool gfloaded = false;
+  // google fonts
+  static Completer? libraryLoader;
   List<parse.TextValue> markupTextValues = [];
 
   @override
@@ -28,14 +30,17 @@ class _TextViewState extends WidgetState<TextView>
   {
     super.initState();
 
-    // load google fonts library
-    gf.loadLibrary().then((value)
+    // load the library
+    if (libraryLoader == null)
     {
-      // rebuild the view
-      if (mounted) setState(()
-      {
-        gfloaded = true;
-      });
+      libraryLoader = Completer();
+      fonts.loadLibrary().then((value) => libraryLoader!.complete(true));
+    }
+
+    // wait for the library to load
+    if (!libraryLoader!.isCompleted) libraryLoader!.future.whenComplete(()
+    {
+      if (mounted) setState(() {});
     });
   }
 
@@ -63,7 +68,6 @@ class _TextViewState extends WidgetState<TextView>
   @override
   Widget build(BuildContext context)
   {
-
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
@@ -351,9 +355,9 @@ class _TextViewState extends WidgetState<TextView>
         {
           TextStyle? textstyle;
           String? font = codeBlockFont ?? widget.model.font;
-          if (font != null && gfloaded)
+          if (font != null && (libraryLoader?.isCompleted ?? false))
           {
-            textstyle = gf.GoogleFonts.getFont(font,
+            textstyle = fonts.GoogleFonts.getFont(font,
                 backgroundColor: codeBlockBG,
                 wordSpacing: wordSpace,
                 letterSpacing: letterSpace,
@@ -411,9 +415,9 @@ class _TextViewState extends WidgetState<TextView>
     {
       TextStyle? textstyle;
       String? font = widget.model.font;
-      if (font != null && gfloaded)
+      if (font != null && (libraryLoader?.isCompleted ?? false))
       {
-         textstyle = gf.GoogleFonts.getFont(
+         textstyle = fonts.GoogleFonts.getFont(
             font,
             fontSize: size ?? textStyle!.fontSize,
             wordSpacing: wordSpace,

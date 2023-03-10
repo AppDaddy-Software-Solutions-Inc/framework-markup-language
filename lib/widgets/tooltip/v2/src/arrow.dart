@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'enum/el_tooltip_position.dart';
 import 'paint/corner.dart';
 import 'paint/triangle.dart';
+import 'position_manager.dart';
 
 /// Loads the arrow from the paint code and applies the correct transformations
 /// color, rotation and mirroring
 class Arrow extends StatelessWidget {
   final Color color;
-  final ElTooltipPosition position;
+  final TooltipPosition position;
   final double width;
   final double height;
   const Arrow({
@@ -31,45 +31,45 @@ class Arrow extends StatelessWidget {
     int quarterTurns = 0;
 
     switch (position) {
-      case ElTooltipPosition.topStart:
+      case TooltipPosition.topStart:
         break;
-      case ElTooltipPosition.topCenter:
+      case TooltipPosition.topCenter:
         quarterTurns = 0;
         isArrow = true;
         break;
-      case ElTooltipPosition.topEnd:
+      case TooltipPosition.topEnd:
         scaleX = -1;
         break;
-      case ElTooltipPosition.bottomStart:
+      case TooltipPosition.bottomStart:
         scaleY = -1;
         break;
-      case ElTooltipPosition.bottomCenter:
+      case TooltipPosition.bottomCenter:
         quarterTurns = 2;
         isArrow = true;
         break;
-      case ElTooltipPosition.bottomEnd:
+      case TooltipPosition.bottomEnd:
         scaleX = -1;
         scaleY = -1;
         break;
-      case ElTooltipPosition.leftStart:
+      case TooltipPosition.leftStart:
         scaleY = -1;
         quarterTurns = 3;
         break;
-      case ElTooltipPosition.leftCenter:
+      case TooltipPosition.leftCenter:
         quarterTurns = 3;
         isArrow = true;
         break;
-      case ElTooltipPosition.leftEnd:
+      case TooltipPosition.leftEnd:
         quarterTurns = 3;
         break;
-      case ElTooltipPosition.rightStart:
+      case TooltipPosition.rightStart:
         quarterTurns = 1;
         break;
-      case ElTooltipPosition.rightCenter:
+      case TooltipPosition.rightCenter:
         quarterTurns = 1;
         isArrow = true;
         break;
-      case ElTooltipPosition.rightEnd:
+      case TooltipPosition.rightEnd:
         quarterTurns = 1;
         scaleY = -1;
         break;

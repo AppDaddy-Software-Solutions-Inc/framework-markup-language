@@ -27,7 +27,7 @@ class HttpGetModel extends HttpModel implements IDataSource
     }
     catch(e)
     {
-      Log().exception(e,  caller: 'iframe.Model');
+      Log().exception(e,  caller: 'get.Model');
       model = null;
     }
     return model;

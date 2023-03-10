@@ -28,7 +28,7 @@ class GpsModel extends DataSourceModel implements IDataSource, IGpsListener
     }
     catch(e)
     {
-      Log().exception(e,  caller: 'iframe.Model');
+      Log().exception(e,  caller: 'gps.Model');
       model = null;
     }
     return model;

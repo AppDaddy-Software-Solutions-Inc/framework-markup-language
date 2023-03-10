@@ -20,7 +20,7 @@ class CameraImageModel extends FileModel implements IDataSource
     }
     catch(e)
     {
-      Log().exception(e, caller: 'iframe.Model');
+      Log().exception(e, caller: 'camera.Model');
       model = null;
     }
     return model;

@@ -64,7 +64,7 @@ class FilepickerModel extends FILE.FileModel implements IDataSource
     }
     catch(e)
     {
-      Log().exception(e,  caller: 'iframe.Model');
+      Log().exception(e,  caller: 'filepicker_model');
       model = null;
     }
     return model;

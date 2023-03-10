@@ -9,59 +9,57 @@ import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'src/arrow.dart';
 import 'src/bubble.dart';
 import 'src/element_box.dart';
-import 'src/enum/el_tooltip_position.dart';
 import 'src/modal.dart';
 import 'src/position_manager.dart';
 import 'src/tooltip_elements_display.dart';
-export 'src/enum/el_tooltip_position.dart';
 
 class TooltipView extends StatefulWidget implements IWidgetView
 {
   final TooltipModel model;
   final Widget child;
   late final Widget content;
-  late final ElTooltipPosition position;
+  late final TooltipPosition position;
 
   TooltipView(this.model, this.child) : super(key: ObjectKey(model))
   {
     // set tooltip position
-    var _pos = ElTooltipPosition.rightCenter;
+    var _pos = TooltipPosition.rightCenter;
     switch (model.position?.toLowerCase().trim())
     {
       case 'leftstart' :
-        _pos = ElTooltipPosition.leftStart;
+        _pos = TooltipPosition.leftStart;
         break;
 
       case 'leftcenter' :
-        _pos = ElTooltipPosition.leftCenter;
+        _pos = TooltipPosition.leftCenter;
         break;
 
       case 'leftend' :
-        _pos = ElTooltipPosition.leftEnd;
+        _pos = TooltipPosition.leftEnd;
         break;
 
       case 'rightstart' :
-        _pos = ElTooltipPosition.rightStart;
+        _pos = TooltipPosition.rightStart;
         break;
 
       case 'rightcenter' :
-        _pos = ElTooltipPosition.rightCenter;
+        _pos = TooltipPosition.rightCenter;
         break;
 
       case 'rightend' :
-        _pos = ElTooltipPosition.rightEnd;
+        _pos = TooltipPosition.rightEnd;
         break;
 
       case 'topstart' :
-        _pos = ElTooltipPosition.topStart;
+        _pos = TooltipPosition.topStart;
         break;
 
       case 'topcenter' :
-        _pos = ElTooltipPosition.topCenter;
+        _pos = TooltipPosition.topCenter;
         break;
 
       case 'topend' :
-        _pos = ElTooltipPosition.topEnd;
+        _pos = TooltipPosition.topEnd;
         break;
     }
     this.position = _pos;
@@ -85,6 +83,9 @@ class TooltipView extends StatefulWidget implements IWidgetView
 /// _ElTooltipState extends ElTooltip class
 class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObserver implements INavigatorObserver
 {
+  // holds the wrapped view
+  Widget view = Container();
+
   final ElementBox _arrowBox = ElementBox(h: 10.0, w: 16.0);
   ElementBox _overlayBox = ElementBox(h: 0.0, w: 0.0);
   OverlayEntry? overlayEntry;
@@ -146,14 +147,14 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
   ElementBox get _triggerBox => _getTriggerSize();
 
   /// Measures the hidden tooltip after it's loaded with _loadHiddenOverlay(_)
-  void _getHiddenOverlaySize(context) {
+  void _getHiddenOverlaySize(context) 
+  {
     RenderBox box = _widgetKey.currentContext?.findRenderObject() as RenderBox;
-    if (mounted) {
-      setState(() {
-        _overlayBox = ElementBox(
-          w: box.size.width,
-          h: box.size.height,
-        );
+    if (mounted)
+    {
+      setState(() 
+      {
+        _overlayBox = ElementBox(w: box.size.width, h: box.size.height);
         _overlayEntryHidden?.remove();
       });
     }
@@ -187,7 +188,8 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
 
   /// Measures the size of the trigger widget
   ElementBox _getTriggerSize() {
-    if (mounted) {
+    if (mounted)
+    {
       final renderBox = context.findRenderObject() as RenderBox;
       final offset = renderBox.localToGlobal(Offset.zero);
       return ElementBox(
@@ -212,6 +214,8 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
   /// Loads the tooltip into view
   void showOverlay(BuildContext context) async
   {
+    if (overlayEntry != null) return;
+
     OverlayState? overlayState = Overlay.of(context);
     
     /// By calling [PositionManager.load()] we get returned the position
@@ -225,97 +229,57 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
       radius: widget.model.radius,
     ).load(preferredPosition: widget.position);
 
-    late Widget child;
 
-    // mouse attached
-    switch (opener)
-    {
-      case OpenMethods.hover:
-        child = MouseRegion(onEnter: (_)
-        {
-          if (timer != null) timer!.cancel();
-        },
-        onExit: (_)
-        {
-          if (timer != null) timer!.cancel();
-          timer = Timer(Duration(milliseconds: widget.model.timeout > 0 ? widget.model.timeout : 250), () => hideOverlay());
-        },
-        child: widget.child);
-        break;
+    // build the overlay
+    List<Widget> children = [];
 
-      case OpenMethods.tap:
-        child = GestureDetector(onTap: () => overlayEntry != null ? hideOverlay() : showOverlay(context), child: widget.child);
-        break;
+    // modal curtain
+    if (widget.model.modal) children.add(Modal(visible: widget.model.modal, onTap: () => hideOverlay()));
 
-      case OpenMethods.longpress:
-        child = GestureDetector(onLongPress: () => overlayEntry != null ? hideOverlay() : showOverlay(context), child: widget.child);
-        break;
+    // bubble
+    var bubble = Positioned(
+      top:  toolTipElementsDisplay.bubble.y,
+      left: toolTipElementsDisplay.bubble.x,
+      child: Bubble(
+        triggerBox: _triggerBox,
+        padding: widget.model.padding,
+        radius: toolTipElementsDisplay.radius,
+        color: widget.model.color ?? Theme.of(context).colorScheme.surfaceVariant,
+        child: widget.content,
+      ));
+    children.add(bubble);
 
-      default:
-        child = widget.child;
-        break;
-    }
-    
-    overlayEntry = OverlayEntry(
-      builder: (context) {
-        return Stack(
-          children: [
+    // arrow
+    var arrow = Positioned(
+      top: toolTipElementsDisplay.arrow.y,
+      left: toolTipElementsDisplay.arrow.x,
+      child: Arrow(
+        color: widget.model.color ?? Theme.of(context).colorScheme.surfaceVariant,
+        position: toolTipElementsDisplay.position,
+        width: _arrowBox.w,
+        height: _arrowBox.h));
+    children.add(arrow);
 
-            // modal curtain
-            Modal(
-              color: Colors.black87,
-              opacity: 0.7,
-              visible: widget.model.modal,
-              onTap: () {
-                hideOverlay();
-              },
-            ),
+    // child
+    if (widget.model.modal)
+      children.add(Positioned(
+          top: _triggerBox.y,
+          left: _triggerBox.x,
+          child: view));
 
-            // bubble
-            Positioned(
-              top: toolTipElementsDisplay.bubble.y,
-              left: toolTipElementsDisplay.bubble.x,
-              child: Bubble(
-                triggerBox: _triggerBox,
-                padding: widget.model.padding,
-                radius: toolTipElementsDisplay.radius,
-                color: widget.model.color ?? Theme.of(context).colorScheme.surfaceVariant,
-                child: widget.content,
-              ),
-            ),
-
-            // arrow
-            Positioned(
-              top: toolTipElementsDisplay.arrow.y,
-              left: toolTipElementsDisplay.arrow.x,
-              child: Arrow(
-                color: widget.model.color ?? Theme.of(context).colorScheme.surfaceVariant,
-                position: toolTipElementsDisplay.position,
-                width: _arrowBox.w,
-                height: _arrowBox.h,
-              ),
-            ),
-
-            // child
-            Positioned(
-              top: _triggerBox.y,
-              left: _triggerBox.x,
-              child: child
-            ),
-          ],
-        );
-      },
-    );
-
-    if (overlayEntry != null) overlayState.insert(overlayEntry!);
+    // build overlay
+    overlayEntry = OverlayEntry(builder: (context) => Stack(children: children));
+    overlayState.insert(overlayEntry!);
 
     // Add timeout for the tooltip to disappear after a few seconds
     if (widget.model.timeout > 0 && opener != OpenMethods.hover) await Future.delayed(Duration(milliseconds: widget.model.timeout > 0 ? widget.model.timeout : 3000)).whenComplete(() => hideOverlay());
   }
 
   /// Method to hide the tooltip
-  void hideOverlay() {
-    if (overlayEntry != null) {
+  void hideOverlay()
+  {
+    if (overlayEntry != null)
+    {
       overlayEntry?.remove();
       overlayEntry = null;
     }
@@ -326,44 +290,39 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
   @override
   Widget build(BuildContext context)
   {
-    late Widget child;
-
-    // mouse attached
+    // warp child in detector
     switch (opener)
     {
+      // hover
       case OpenMethods.hover:
-        child = MouseRegion(
-          onEnter: (_)
+        view = MouseRegion(onEnter: (_)
           {
             if (timer != null) timer!.cancel();
-            if (overlayEntry == null) showOverlay(context);
+            showOverlay(context);
           },
-          child: widget.child,
-        );
+          onExit: (_)
+          {
+            if (timer != null) timer!.cancel();
+            timer = Timer(Duration(milliseconds: widget.model.timeout > 0 ? widget.model.timeout : 250), () => hideOverlay());
+          },
+          child: widget.child, hitTestBehavior: HitTestBehavior.translucent);
         break;
 
+      // tap
       case OpenMethods.tap:
-        child = GestureDetector(
-        onTap: () {
-          overlayEntry != null ? hideOverlay() : showOverlay(context);
-        },
-        child: widget.child,
-        );
+        view = GestureDetector(onTap: () => overlayEntry == null ? showOverlay(context) : hideOverlay(), child: widget.child, behavior: HitTestBehavior.translucent);
         break;
 
+      // long tap
       case OpenMethods.longpress:
-        child = GestureDetector(
-          onLongPress: () {
-            overlayEntry != null ? hideOverlay() : showOverlay(context);
-          },
-          child: widget.child,
-        );
+        view = GestureDetector(onLongPress: () => overlayEntry == null ? showOverlay(context) : hideOverlay(), child: widget.child, behavior: HitTestBehavior.translucent);
         break;
 
+      // manual
       default:
-        child = widget.child;
+        view = widget.child;
         break;
     }
-    return child;
+    return view;
   }
 }

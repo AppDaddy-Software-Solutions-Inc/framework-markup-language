@@ -27,7 +27,7 @@ class LogModel extends DataSourceModel implements IDataSource
     }
     catch(e)
     {
-      Log().exception(e,  caller: 'iframe.Model');
+      Log().exception(e,  caller: 'log_model');
       model = null;
     }
     return model;
@@ -52,6 +52,12 @@ class LogModel extends DataSourceModel implements IDataSource
 
       case "clear":
         Log().clear();
+        return true;
+
+      case 'start':
+      case 'fire':
+        Data logData = Log().data;
+        super.onSuccess(Log().data);
         return true;
     }
     return super.execute(caller, propertyOrFunction, arguments);

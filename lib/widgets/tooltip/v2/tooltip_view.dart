@@ -1,7 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/rendering.dart';
 import 'package:fml/navigation/navigation_observer.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:flutter/material.dart';
@@ -86,6 +83,9 @@ class TooltipView extends StatefulWidget implements IWidgetView
 /// _ElTooltipState extends ElTooltip class
 class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObserver implements INavigatorObserver
 {
+  // holds the wrapped view
+  Widget view = Container();
+
   final ElementBox _arrowBox = ElementBox(h: 10.0, w: 16.0);
   ElementBox _overlayBox = ElementBox(h: 0.0, w: 0.0);
   OverlayEntry? overlayEntry;
@@ -229,88 +229,47 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
       radius: widget.model.radius,
     ).load(preferredPosition: widget.position);
 
-    // modal curtain
-    Widget curtain = Container();
-    if (widget.model.modal) curtain = Modal(visible: widget.model.modal, onTap: () => hideOverlay());
 
     // build the overlay
-    Widget child = UnconstrainedBox(child: Container(width: _triggerBox.w, height: _triggerBox.h, color: Colors.transparent));
-    if (widget.model.modal) child = widget.child;
+    List<Widget> children = [];
 
-    switch (opener)
-    {
-      // hover
-      case OpenMethods.hover:
-        child = MouseRegion(onEnter: (_)
-        {
-          if (timer != null) timer!.cancel();
-        },
-        onExit: (_)
-        {
-          if (timer != null) timer!.cancel();
-          timer = Timer(Duration(milliseconds: widget.model.timeout > 0 ? widget.model.timeout : 250), () => hideOverlay());
-        },
-        child: child, hitTestBehavior: HitTestBehavior.translucent);
-        break;
+    // modal curtain
+    if (widget.model.modal) children.add(Modal(visible: widget.model.modal, onTap: () => hideOverlay()));
 
-      // tap
-      case OpenMethods.tap:
-        child = GestureDetector(onTap: () => hideOverlay(), child: child, behavior: HitTestBehavior.translucent);
-        break;
+    // bubble
+    var bubble = Positioned(
+      top:  toolTipElementsDisplay.bubble.y,
+      left: toolTipElementsDisplay.bubble.x,
+      child: Bubble(
+        triggerBox: _triggerBox,
+        padding: widget.model.padding,
+        radius: toolTipElementsDisplay.radius,
+        color: widget.model.color ?? Theme.of(context).colorScheme.surfaceVariant,
+        child: widget.content,
+      ));
+    children.add(bubble);
 
-      // long press
-      case OpenMethods.longpress:
-        child = GestureDetector(onLongPress: () => hideOverlay(), child: child, behavior: HitTestBehavior.translucent);
-        break;
+    // arrow
+    var arrow = Positioned(
+      top: toolTipElementsDisplay.arrow.y,
+      left: toolTipElementsDisplay.arrow.x,
+      child: Arrow(
+        color: widget.model.color ?? Theme.of(context).colorScheme.surfaceVariant,
+        position: toolTipElementsDisplay.position,
+        width: _arrowBox.w,
+        height: _arrowBox.h));
+    children.add(arrow);
 
-      default:
-        child = child;
-    }
+    // child
+    if (widget.model.modal)
+      children.add(Positioned(
+          top: _triggerBox.y,
+          left: _triggerBox.x,
+          child: view));
 
-    overlayEntry = OverlayEntry(builder: (context)
-    {
-        return Stack(children: [
-
-            // modal curtain
-            curtain,
-
-            // bubble
-            Positioned(
-              top: toolTipElementsDisplay.bubble.y,
-              left: toolTipElementsDisplay.bubble.x,
-              child: Bubble(
-                triggerBox: _triggerBox,
-                padding: widget.model.padding,
-                radius: toolTipElementsDisplay.radius,
-                color: widget.model.color ?? Theme.of(context).colorScheme.surfaceVariant,
-                child: widget.content,
-              ),
-            ),
-
-            // arrow
-            Positioned(
-              top: toolTipElementsDisplay.arrow.y,
-              left: toolTipElementsDisplay.arrow.x,
-              child: Arrow(
-                color: widget.model.color ?? Theme.of(context).colorScheme.surfaceVariant,
-                position: toolTipElementsDisplay.position,
-                width: _arrowBox.w,
-                height: _arrowBox.h,
-              ),
-            ),
-
-            // trigger child area
-            Positioned(
-              top: _triggerBox.y,
-              left: _triggerBox.x,
-              child: child
-            ),
-          ],
-        );
-      },
-    );
-
-    if (overlayEntry != null) overlayState.insert(overlayEntry!);
+    // build overlay
+    overlayEntry = OverlayEntry(builder: (context) => Stack(children: children));
+    overlayState.insert(overlayEntry!);
 
     // Add timeout for the tooltip to disappear after a few seconds
     if (widget.model.timeout > 0 && opener != OpenMethods.hover) await Future.delayed(Duration(milliseconds: widget.model.timeout > 0 ? widget.model.timeout : 3000)).whenComplete(() => hideOverlay());
@@ -331,36 +290,39 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
   @override
   Widget build(BuildContext context)
   {
-    late Widget child;
-
     // warp child in detector
     switch (opener)
     {
       // hover
       case OpenMethods.hover:
-        child = MouseRegion(onEnter: (_)
+        view = MouseRegion(onEnter: (_)
           {
             if (timer != null) timer!.cancel();
             showOverlay(context);
+          },
+          onExit: (_)
+          {
+            if (timer != null) timer!.cancel();
+            timer = Timer(Duration(milliseconds: widget.model.timeout > 0 ? widget.model.timeout : 250), () => hideOverlay());
           },
           child: widget.child, hitTestBehavior: HitTestBehavior.translucent);
         break;
 
       // tap
       case OpenMethods.tap:
-        child = GestureDetector(onTap: () => showOverlay(context), child: widget.child, behavior: HitTestBehavior.translucent);
+        view = GestureDetector(onTap: () => overlayEntry == null ? showOverlay(context) : hideOverlay(), child: widget.child, behavior: HitTestBehavior.translucent);
         break;
 
       // long tap
       case OpenMethods.longpress:
-        child = GestureDetector(onLongPress: () => showOverlay(context), child: widget.child, behavior: HitTestBehavior.translucent);
+        view = GestureDetector(onLongPress: () => overlayEntry == null ? showOverlay(context) : hideOverlay(), child: widget.child, behavior: HitTestBehavior.translucent);
         break;
 
       // manual
       default:
-        child = widget.child;
+        view = widget.child;
         break;
     }
-    return child;
+    return view;
   }
 }

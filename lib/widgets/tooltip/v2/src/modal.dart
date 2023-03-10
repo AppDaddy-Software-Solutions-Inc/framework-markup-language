@@ -5,30 +5,23 @@ import 'package:fml/widgets/tooltip/v2/src/element_box.dart';
 /// It's used to focus the user attention to the tooltip.
 class Modal extends StatelessWidget {
   final bool visible;
-  final Color color;
-  final double opacity;
   final void Function()? onTap;
 
   const Modal({
     required this.onTap,
     this.visible = true,
-    this.color = Colors.black,
-    this.opacity = 0.6,
     super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
-    if (visible) {
-      return GestureDetector(
-        onTap: onTap,
-        child: Container(
-          color: color.withOpacity(opacity),
-        ),
-      );
-    } else {
-      return Container();
+  Widget build(BuildContext context)
+  {
+    if (visible)
+    {
+      var color = Theme.of(context).brightness == Brightness.light ? Colors.black38 : Colors.black54;
+      return GestureDetector(onTap: onTap, child: Container(color: color));
     }
+    else return Container();
   }
 }
 

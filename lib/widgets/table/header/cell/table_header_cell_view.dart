@@ -76,7 +76,7 @@ class _TableHeaderCellViewState extends WidgetState<TableHeaderCellView>
       /* Container */
       ///////////////
       // int index              = widget.model.index ?? 0;
-      Color color = widget.model.color ?? t.secondaryContainer;
+      Color color = widget.model.color ?? t.inversePrimary;
       Color bordercolor = widget.model.bordercolor ?? Colors.transparent;
       double borderwidth = widget.model.borderwidth ?? 1;
       // Color outerbordercolor = widget.model.outerbordercolor ?? Colors.transparent;

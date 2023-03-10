@@ -16,7 +16,7 @@ class ScrollbarView extends StatefulWidget
   final OnChangeCallback? onchange;
   final double size;
   final double controllerSize;
-  final double extent = isMobile ? 25 : 15;
+  final double extent = isMobile ? 24 : 12;
   final double? itemExtent;
 
   ScrollbarView(this.direction, this.controller, this.size, this.controllerSize, {this.onchange, this.itemExtent});
@@ -116,17 +116,16 @@ class _ScrollbarViewState extends WidgetState<ScrollbarView>
     Direction direction = widget.direction;
     //this.offset = toLocal(widget.controller.offset);
 
-    Color? col = Theme.of(context).colorScheme.secondaryContainer.withOpacity(opacity);
-    col = Theme.of(context).colorScheme.inversePrimary.withOpacity(0.60);
+    Color? col = Theme.of(context).colorScheme.inversePrimary;
 
     /////////////////////////
     /* Horizontal Scroller */
     /////////////////////////
     if (direction == Direction.horizontal)
     {
-      Widget thumb     = Container(width: thumbsize, height: widget.extent, decoration: ShapeDecoration(color: col, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0), side: BorderSide.none)));
+      Widget thumb     = Container(width: thumbsize, height: widget.extent, decoration: ShapeDecoration(color: col, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3.0), side: BorderSide.none),));
       Widget draggable = MouseRegion(cursor: SystemMouseCursors.grab, onEnter: onMouseEnter, onExit: onMouseExit, child: GestureDetector(behavior: HitTestBehavior.deferToChild, child: thumb, onHorizontalDragUpdate: onHorizontalDrag, onHorizontalDragStart: (_) => dragging = true, onHorizontalDragEnd: (_) => dragging = false));
-      Widget track     = MouseRegion(onEnter: onMouseEnter, onExit: onMouseExit, child: SizedBox(width: widget.size, height: widget.extent, child: Stack(fit: StackFit.passthrough, children: [Positioned(left: offset, child: draggable)])));
+      Widget track     = MouseRegion(onEnter: onMouseEnter, onExit: onMouseExit, child: SizedBox(width: widget.size, height: widget.extent, child: Stack(fit: StackFit.passthrough, children: [Container(color: Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.8)), Positioned(left: offset, child: draggable)])));
       return UnconstrainedBox(child: track);
     }
 
@@ -135,9 +134,9 @@ class _ScrollbarViewState extends WidgetState<ScrollbarView>
     ///////////////////////
     else
     {
-      Widget thumb     = Container(width: widget.extent, height: thumbsize, decoration: ShapeDecoration(color: col, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0), side: BorderSide.none)));
+      Widget thumb     = Container(width: widget.extent, height: thumbsize, decoration: ShapeDecoration(color: col, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0), side: BorderSide.none)));
       Widget draggable = MouseRegion(cursor: SystemMouseCursors.grab, onEnter: onMouseEnter, onExit: onMouseExit, child: GestureDetector(behavior: HitTestBehavior.deferToChild, child: thumb, onVerticalDragUpdate: onVerticalDrag, onVerticalDragStart: onVerticalDragStart, onVerticalDragEnd: onVerticalDragEnd));
-      Widget track     = MouseRegion(onEnter: onMouseEnter, onExit: onMouseExit, child: SizedBox(width: widget.extent, height: widget.size, child: Stack(fit: StackFit.passthrough, children: [Positioned(top: offset, child: draggable)])));
+      Widget track     = MouseRegion(onEnter: onMouseEnter, onExit: onMouseExit, child: SizedBox(width: widget.extent, height: widget.size, child: Stack(fit: StackFit.passthrough, children: [Container(color: Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.8)), Positioned(top: offset, child: draggable)])));
       return UnconstrainedBox(child: track);
     }
   }

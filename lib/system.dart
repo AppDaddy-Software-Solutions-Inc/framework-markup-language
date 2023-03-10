@@ -27,7 +27,7 @@ import 'package:fml/helper/common_helpers.dart';
 import 'dart:io' as io;
 
 // application build version
-final String version = '1.2.2';
+final String version = '1.2.3';
 
 // application title
 // only used in Android when viewing open applications
@@ -36,11 +36,12 @@ final String applicationTitle = "Flutter Markup Language " + version;
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://applications/<app> to use the asset applications
+
 String get defaultDomain => 'https://fml.appdaddy.co';
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
-final ApplicationTypes appType = ApplicationTypes.MultiApp;
+final ApplicationTypes appType = ApplicationTypes.SingleApp;
 
 enum ApplicationTypes{ SingleApp, MultiApp }
 
@@ -113,7 +114,7 @@ class System extends WidgetModel implements IEventManager
 
   /// Global System Observable
   StringObservable? _userplatform;
-  String? get userplatform => _userplatform?.get();
+  String? get userplatform => _userplatform?.get() ?? platform;
 
   StringObservable? _useragent;
   String? get useragent => _useragent?.get() ?? Platform.useragent;
@@ -217,6 +218,7 @@ class System extends WidgetModel implements IEventManager
   {
     try
     {
+
       connection = Connectivity();
 
       ConnectivityStatus initialConnection = await connection.checkConnectivity();

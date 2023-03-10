@@ -138,7 +138,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     }
     catch(e)
     {
-      Log().exception(e,  caller: 'iframe.Model');
+      Log().exception(e,  caller: 'socket.Model');
       model = null;
     }
     return model;

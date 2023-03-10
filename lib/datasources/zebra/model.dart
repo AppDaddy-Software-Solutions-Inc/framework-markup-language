@@ -27,7 +27,7 @@ class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener
     }
     catch(e)
     {
-      Log().exception(e,  caller: 'iframe.Model');
+      Log().exception(e,  caller: 'zebra.Model');
       model = null;
     }
     return model;

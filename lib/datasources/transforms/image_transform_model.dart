@@ -40,7 +40,7 @@ class ImageTransformModel extends TransformModel
     }
     catch(e)
     {
-      Log().exception(e,  caller: 'iframe.Model');
+      Log().exception(e,  caller: 'image_transform_model');
       model = null;
     }
     return model;

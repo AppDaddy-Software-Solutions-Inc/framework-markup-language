@@ -24,7 +24,7 @@ class HttpPutModel extends HttpModel implements IDataSource
     }
     catch(e)
     {
-      Log().exception(e,  caller: 'iframe.Model');
+      Log().exception(e,  caller: 'put.Model');
       model = null;
     }
     return model;

@@ -229,8 +229,14 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
       radius: widget.model.radius,
     ).load(preferredPosition: widget.position);
 
+    // modal curtain
+    Widget curtain = Container();
+    if (widget.model.modal) curtain = Modal(visible: widget.model.modal, onTap: () => hideOverlay());
+
     // build the overlay
-    Widget child = IgnorePointer(child: UnconstrainedBox(child: Container(width: _triggerBox.w, height: _triggerBox.h, color: Colors.transparent)));
+    Widget child = UnconstrainedBox(child: Container(width: _triggerBox.w, height: _triggerBox.h, color: Colors.transparent));
+    if (widget.model.modal) child = widget.child;
+
     switch (opener)
     {
       // hover
@@ -244,28 +250,22 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
           if (timer != null) timer!.cancel();
           timer = Timer(Duration(milliseconds: widget.model.timeout > 0 ? widget.model.timeout : 250), () => hideOverlay());
         },
-        child: child);
+        child: child, hitTestBehavior: HitTestBehavior.translucent);
         break;
 
       // tap
       case OpenMethods.tap:
-        child = GestureDetector(onTap: () => hideOverlay(), child: child);
+        child = GestureDetector(onTap: () => hideOverlay(), child: child, behavior: HitTestBehavior.translucent);
         break;
 
       // long press
       case OpenMethods.longpress:
-        child = GestureDetector(onLongPress: () => hideOverlay(), child: child);
+        child = GestureDetector(onLongPress: () => hideOverlay(), child: child, behavior: HitTestBehavior.translucent);
         break;
 
       default:
         child = child;
     }
-
-    Widget curtain = Container();
-    if (widget.model.modal) curtain = Modal(color: Colors.black87, opacity: 0.7, visible: widget.model.modal, onTap: () => hideOverlay());
-
-    Widget image = Container();
-    if (widget.model.modal) image = IgnorePointer(child: widget.child);
 
     overlayEntry = OverlayEntry(builder: (context)
     {
@@ -297,13 +297,6 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
                 width: _arrowBox.w,
                 height: _arrowBox.h,
               ),
-            ),
-
-            // image of trigger if modal
-            Positioned(
-                top: _triggerBox.y,
-                left: _triggerBox.x,
-                child: image
             ),
 
             // trigger child area

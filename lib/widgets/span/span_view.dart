@@ -112,65 +112,6 @@ class _SpanViewState extends WidgetState<SpanView>
         textDecoStyle = TextDecorationStyle.solid;
         break;
     }
-    //
-    // switch (style?.toLowerCase()) {
-    //   case "h1":
-    //   case "headline1":
-    //     textStyle = textTheme.headline1;
-    //     break;
-    //   case "h2":
-    //   case "headline2":
-    //     textStyle = textTheme.headline2;
-    //     break;
-    //   case "h3":
-    //   case "headline3":
-    //     textStyle = textTheme.headline3;
-    //     break;
-    //   case "h4":
-    //   case "headline4":
-    //     textStyle = textTheme.headline4;
-    //     break;
-    //   case "h5":
-    //   case "headline5":
-    //     textStyle = textTheme.headline5;
-    //     break;
-    //   case "h6":
-    //   case "headline6":
-    //     textStyle = textTheme.headline6;
-    //     break;
-    //   case "s1":
-    //   case "sub1":
-    //   case "subtitle1":
-    //     textStyle = textTheme.subtitle1;
-    //     break;
-    //   case "s2":
-    //   case "sub2":
-    //   case "subtitle2":
-    //     textStyle = textTheme.subtitle2;
-    //     break;
-    //   case "b1":
-    //   case "body1":
-    //   case "bodytext1":
-    //     textStyle = textTheme.bodyText1;
-    //     break;
-    //   case "b2":
-    //   case "body2":
-    //   case "bodytext2":
-    //     textStyle = textTheme.bodyText2;
-    //     break;
-    //   case "caption":
-    //     textStyle = textTheme.caption;
-    //     break;
-    //   case "button":
-    //     textStyle = textTheme.button;
-    //     break;
-    //   case "overline":
-    //     textStyle = textTheme.overline;
-    //     break;
-    //   default:
-    //     textStyle = textTheme.bodyText2;
-    //     break;
-    // }
 
     var textShadow = widget.model.elevation != 0
         ? [
@@ -206,9 +147,7 @@ class _SpanViewState extends WidgetState<SpanView>
             overflow: textOverflow,
             textAlign: textAlign));
 
-    //////////////////
-    /* Constrained? */
-    //////////////////
+    // Constrained?
     if (widget.model.hasSizing) {
       var constraints = widget.model.getConstraints();
       view = ConstrainedBox(
@@ -222,24 +161,20 @@ class _SpanViewState extends WidgetState<SpanView>
     return view;
   }
 
-  _buildSpans() {
+  _buildSpans()
+  {
     var model = widget.model;
     _list = [];
     bool first = true;
-
-    //////////////////////
-    /* Add Empty Option */
-    //////////////////////
-    if ((model.spanTextValues.isNotEmpty)) {
+    if (model.spanTextValues.isNotEmpty)
+    {
       _list!.clear();
-      for (TextModel text in model.spanTextValues) {
-
-        text.spanRequestBuild = true;
+      for (TextModel text in model.spanTextValues)
+      {
         if(!first) text.addWhitespace = true;
-
         var o =  WidgetSpan(child: text.getView());
         first = false;
-            _list!.add(o);
+        _list!.add(o);
       }
     }
   }

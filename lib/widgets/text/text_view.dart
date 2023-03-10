@@ -21,6 +21,10 @@ class TextView extends StatefulWidget implements IWidgetView
 
 class _TextViewState extends WidgetState<TextView>
 {
+  TextTheme? textTheme;
+  List<InlineSpan> textSpans = [];
+  String? text;
+
   // google fonts
   static Completer? libraryLoader;
   List<parse.TextValue> markupTextValues = [];
@@ -44,12 +48,56 @@ class _TextViewState extends WidgetState<TextView>
     });
   }
 
-  void parseValue(String? value) {
-    String? finalVal = '';
+  @override
+  Widget build(BuildContext context)
+  {
+    // Check if widget is visible before wasting resources on building it
+    if (!widget.model.visible) return Offstage();
 
+    // use this to optimize
+    bool textHasChanged = (text != widget.model.value);
+    text = widget.model.value;
+
+    // parse the values
+    if (textHasChanged) _parseText(widget.model.value);
+
+    TextStyle? textStyle = _getStyle();
+    TextOverflow textOverflow = _getOverflow();
+    TextAlign textAlign = _getAlign();
+    TextDecoration textDecoration = _getDecoration();
+    TextDecorationStyle? textDecoStyle = _getDecorationStyle();
+    Shadow? textShadow = _getShadow();
+
+    Widget view;
+    if (widget.model.raw)
+         view = _getSimpleTextView(textStyle, textDecoration, textDecoStyle, textOverflow, textAlign, textShadow);
+    else view = _getSpanTextView(textHasChanged, textStyle, textDecoration, textDecoStyle, textOverflow, textAlign, textShadow);
+
+    // Constrained?
+    bool isNotExpandedChild = false;
+    if(!widget.model.hasSizing)
+    {
+      ScrollerModel? parentScroll = widget.model.findAncestorOfExactType(ScrollerModel);
+      if (parentScroll != null && parentScroll.layout.toLowerCase() == "row") return view;
+      isNotExpandedChild = widget.model.findAncestorOfExactType(ExpandedModel) == null;
+    }
+
+    if (isNotExpandedChild || widget.model.hasSizing)
+    {
+      var constr = widget.model.getConstraints();
+      view = ConstrainedBox(child: view, constraints: BoxConstraints(minWidth: constr.minWidth!, maxWidth: constr.maxWidth!));
+    }
+
+    return view;
+  }
+
+  void _parseText(String? value)
+  {
+    String? finalVal = '';
     if (widget.model.raw) return;
 
-    try {
+    try
+    {
       if (value!.contains(':')) value = S.parseEmojis(value);
       markupTextValues = [];
       parse.textValues = [];
@@ -65,37 +113,67 @@ class _TextViewState extends WidgetState<TextView>
     }
   }
 
-  @override
-  Widget build(BuildContext context)
+  Widget _getSpanTextView(bool rebuildSpans, TextStyle? textStyle, TextDecoration textDecoration, TextDecorationStyle? textDecoStyle, TextOverflow textOverflow, TextAlign textAlign, Shadow? textShadow)
   {
-    // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    // build text spans
+    if (rebuildSpans) textSpans = _buildTextSpans(textShadow, textDecoStyle);
 
-    parseValue(widget.model.value);
+    Widget view = RichText(
+        text: TextSpan(children: textSpans, style: TextStyle(
+            fontSize: widget.model.size ?? textStyle!.fontSize,
+            color: widget.model.color ?? Theme.of(context).colorScheme.onBackground,
+            fontWeight: widget.model.bold ? FontWeight.bold : textStyle!.fontWeight,
+            fontStyle: widget.model.italic ? FontStyle.italic : textStyle!.fontStyle,
+            decoration: textDecoration)),
+        overflow: textOverflow,
+        textAlign: textAlign);
+    return view;
+  }
 
-    String? style = widget.model.style;
-    double? size = widget.model.size;
-    Color? color = widget.model.color;
-    String? decoration = widget.model.decoration;
-    bool bold = widget.model.bold ?? false;
-    bool italic = widget.model.italic ?? false;
-    String overflow = widget.model.overflow;
-    String halign = widget.model.halign;
-    String decorationstyle = widget.model.decorationstyle;
-    double? wordSpace = widget.model.wordspace;
-    double? letterSpace = widget.model.letterspace;
-    double? lineSpace = widget.model.lineheight;
+  Widget _getSimpleTextView(TextStyle? textStyle, TextDecoration textDecoration, TextDecorationStyle? textDecoStyle, TextOverflow textOverflow, TextAlign textAlign, Shadow? textShadow)
+  {
+    TextStyle? textstyle;
+    String? font = widget.model.font;
+    if (font != null && (libraryLoader?.isCompleted ?? false))
+    {
+      textstyle = fonts.GoogleFonts.getFont(
+          font,
+          fontSize: widget.model.size ?? textStyle!.fontSize,
+          wordSpacing: widget.model.wordspace,
+          letterSpacing: widget.model.letterspace,
+          height: widget.model.lineheight,
+          shadows: textShadow != null ? [textShadow] : null,
+          fontWeight: widget.model.bold  ? FontWeight.bold : FontWeight.normal,
+          fontStyle: widget.model.italic ? FontStyle.italic : FontStyle.normal,
+          decoration: textDecoration,
+          decorationStyle: textDecoStyle,
+          decorationColor: widget.model.decorationcolor,
+          decorationThickness: widget.model.decorationweight);
+    }
+    else
+    {
+      textstyle = TextStyle(
+          wordSpacing: widget.model.wordspace,
+          letterSpacing: widget.model.letterspace,
+          height: widget.model.lineheight,
+          shadows: textShadow != null ? [textShadow] : null,
+          fontWeight: widget.model.bold ? FontWeight.bold : FontWeight.normal,
+          fontStyle: widget.model.italic ? FontStyle.italic : FontStyle.normal,
+          decoration: textDecoration,
+          decorationStyle: textDecoStyle,
+          decorationColor: widget.model.decorationcolor,
+          decorationThickness: widget.model.decorationweight);
+    }
 
-    TextTheme textTheme = Theme
-        .of(context)
-        .textTheme;
-    TextStyle? textStyle = textTheme.bodyMedium;
-    TextOverflow textOverflow = TextOverflow.ellipsis;
-    TextAlign textAlign = TextAlign.left;
-    TextDecoration textDecoration = TextDecoration.none;
-    TextDecorationStyle textDecoStyle = TextDecorationStyle.solid;
+    //SizedBox is used to make the text fit the size of the widget.
+    return SizedBox(width: widget.model.width, child: Text(widget.model.value ?? '', style: textstyle));
+  }
 
-    switch (overflow.toLowerCase()) {
+  TextOverflow _getOverflow()
+  {
+    TextOverflow textOverflow = TextOverflow.visible;
+    switch (widget.model.overflow?.toLowerCase())
+    {
       case "wrap":
         textOverflow = TextOverflow.visible;
         break;
@@ -108,12 +186,15 @@ class _TextViewState extends WidgetState<TextView>
       case "clip":
         textOverflow = TextOverflow.clip;
         break;
-      default:
-        textOverflow = TextOverflow.visible;
-        break;
     }
+    return textOverflow;
+  }
 
-    switch (halign.toLowerCase()) {
+  TextAlign _getAlign()
+  {
+    TextAlign? textAlign = TextAlign.start;
+    switch (widget.model.halign?.toLowerCase())
+    {
       case "start":
       case "left":
         textAlign = TextAlign.left;
@@ -128,13 +209,15 @@ class _TextViewState extends WidgetState<TextView>
       case "justify":
         textAlign = TextAlign.justify;
         break;
-      default:
-        textAlign = TextAlign.left;
-        break;
     }
+    return textAlign;
+  }
 
-
-    switch (decoration?.toLowerCase()) {
+  TextDecoration _getDecoration()
+  {
+    TextDecoration textDecoration = TextDecoration.none;
+    switch (widget.model.decoration?.toLowerCase())
+    {
       case "underline":
         textDecoration = TextDecoration.underline;
         break;
@@ -144,12 +227,15 @@ class _TextViewState extends WidgetState<TextView>
       case "overline":
         textDecoration = TextDecoration.overline;
         break;
-      default:
-        textDecoration = TextDecoration.none;
-        break;
     }
+    return textDecoration;
+  }
 
-    switch (decorationstyle.toLowerCase()) {
+  TextDecorationStyle? _getDecorationStyle()
+  {
+    TextDecorationStyle? textDecoStyle;
+    switch (widget.model.decorationstyle?.toLowerCase())
+    {
       case "dashed":
         textDecoStyle = TextDecorationStyle.dashed;
         break;
@@ -166,9 +252,17 @@ class _TextViewState extends WidgetState<TextView>
         textDecoStyle = TextDecorationStyle.solid;
         break;
     }
+    return textDecoStyle;
+  }
 
+  TextStyle? _getStyle()
+  {
+    // get theme
+    var textTheme = Theme.of(context).textTheme;
 
-    switch (style?.toLowerCase()) {
+    TextStyle? textStyle = textTheme.bodyMedium;
+    switch (widget.model.style?.toLowerCase())
+    {
       case "h1":
       case "headline1":
       case "displaylarge":
@@ -239,257 +333,152 @@ class _TextViewState extends WidgetState<TextView>
         textStyle = textTheme.bodyMedium;
         break;
     }
-    var textShadow = widget.model.elevation != 0
-        ? [
-      Shadow(
-          color: widget.model.shadowcolor ?? Theme
-              .of(context)
-              .colorScheme
-              .outline
-              .withOpacity(0.4),
-          blurRadius: widget.model.elevation,
-          offset: Offset(
-              widget.model.shadowx!,
-              widget.model
-                  .shadowy!)),
-    ]
-        : null;
+    return textStyle;
+  }
 
+  Shadow? _getShadow()
+  {
+    if (widget.model.elevation <= 0) return null;
+    return Shadow(color: widget.model.shadowcolor ?? Theme.of(context).colorScheme.outline.withOpacity(0.4),
+        blurRadius: widget.model.elevation,
+        offset: Offset(widget.model.shadowx!,widget.model.shadowy!));
+  }
 
-    Color? fontColor = color;
+  List<InlineSpan> _buildTextSpans(Shadow? shadow, TextDecorationStyle? textDecoStyle)
+  {
     List<InlineSpan> textSpans = [];
-    //**bold** *italic* ***bold+italic***  _underline_  __strikethrough__  ___overline___ ^^subscript^^ ^superscript^
 
-    if (markupTextValues.isNotEmpty && !widget.model.raw) {
-      markupTextValues.forEach((element) {
-        InlineSpan textSpan;
-        FontWeight? weight;
-        FontStyle? style;
-        String? script;
-        TextDecoration? deco;
-        Color? codeBlockBG;
-        String? codeBlockFont;
+    if (markupTextValues.isNotEmpty)
+    markupTextValues.forEach((element)
+    {
+      InlineSpan textSpan;
+      FontWeight? weight;
+      FontStyle? style;
+      String? script;
+      TextDecoration? deco;
+      Color? codeBlockBG;
+      String? codeBlockFont;
 
-        element.styles.forEach((element) {
-          switch (element) {
-            case "underline":
-              deco = TextDecoration.underline;
-              break;
-            case "strikethrough":
-              deco = TextDecoration.lineThrough;
-              break;
-            case "overline":
-              deco = TextDecoration.overline;
-              break;
-            case "bold":
-              weight = FontWeight.bold;
-              break;
-            case "italic":
-              style = FontStyle.italic;
-              break;
-            case "subscript":
-              script = "sub";
-              break;
-            case "superscript":
-              script = "sup";
-              break;
-            case "code":
-              codeBlockBG = Theme.of(context).colorScheme.surfaceVariant;
-              codeBlockFont = 'Cutive Mono';
-              weight = FontWeight.w600;
-              break;
-            default:
-              codeBlockBG = Theme.of(context).colorScheme.surfaceVariant;
-              codeBlockFont = null;
-              weight = FontWeight.normal;
-              style = FontStyle.normal;
-              deco = TextDecoration.none;
-              script = "normal";
-              break;
-          }
-        });
-
-        String text = element.text.replaceAll('\\n', '\n').replaceAll('\\t',
-            '\t\t\t\t');
-
-        if (widget.model.addWhitespace) text = ' ' + text;
-
-        //4 ts here as dart interprets the tab character as a single space.
-        if (script == "sub")
+      element.styles.forEach((element)
+      {
+        switch (element)
         {
-          WidgetSpan widgetSpan = WidgetSpan(child: Transform.translate(
-            offset: const Offset(2, 4),
-            child: Text(text, textScaleFactor: 0.7,
-              style: TextStyle(
-                  wordSpacing: wordSpace,
-                  letterSpacing: letterSpace,
-                  height: lineSpace,
-                  shadows: textShadow,
-                  fontWeight: weight,
-                  fontStyle: style,
-                  decoration: deco,
-                  decorationStyle: textDecoStyle,
-                  decorationColor: widget.model.decorationcolor,
-                  decorationThickness: widget.model.decorationweight),),),);
-          textSpans.add(widgetSpan);
-        }
-        else if (script == "sup")
-        {
-          WidgetSpan widgetSpan = WidgetSpan(child: Transform.translate(
-            offset: const Offset(2, -4),
-            child: Text(text, textScaleFactor: 0.7,
-              style: TextStyle(
-                  wordSpacing: wordSpace,
-                  letterSpacing: letterSpace,
-                  height: lineSpace,
-                  shadows: textShadow,
-                  fontWeight: weight,
-                  fontStyle: style,
-                  decoration: deco,
-                  decorationStyle: textDecoStyle,
-                  decorationColor: widget.model.decorationcolor,
-                  decorationThickness: widget.model.decorationweight),),),);
-          textSpans.add(widgetSpan);
-        }
-        else
-        {
-          TextStyle? textstyle;
-          String? font = codeBlockFont ?? widget.model.font;
-          if (font != null && (libraryLoader?.isCompleted ?? false))
-          {
-            textstyle = fonts.GoogleFonts.getFont(font,
-                backgroundColor: codeBlockBG,
-                wordSpacing: wordSpace,
-                letterSpacing: letterSpace,
-                height: lineSpace,
-                shadows: textShadow,
-                fontWeight: weight,
-                fontStyle: style,
-                decoration: deco,
-                decorationStyle: textDecoStyle,
-                decorationColor: widget.model.decorationcolor,
-                decorationThickness: widget.model.decorationweight);
-          }
-          else
-          {
-            textstyle = TextStyle(
-                wordSpacing: wordSpace,
-                letterSpacing: letterSpace,
-                height: lineSpace,
-                shadows: textShadow,
-                fontWeight: weight,
-                fontStyle: style,
-                decoration: deco,
-                decorationStyle: textDecoStyle,
-                decorationColor: widget.model.decorationcolor,
-                decorationThickness: widget.model.decorationweight);
-          }
-          textSpan = TextSpan(text: text, style: textstyle);
-          textSpans.add(textSpan);
+          case "underline":
+            deco = TextDecoration.underline;
+            break;
+          case "strikethrough":
+            deco = TextDecoration.lineThrough;
+            break;
+          case "overline":
+            deco = TextDecoration.overline;
+            break;
+          case "bold":
+            weight = FontWeight.bold;
+            break;
+          case "italic":
+            style = FontStyle.italic;
+            break;
+          case "subscript":
+            script = "sub";
+            break;
+          case "superscript":
+            script = "sup";
+            break;
+          case "code":
+            codeBlockBG = Theme.of(context).colorScheme.surfaceVariant;
+            codeBlockFont = 'Cutive Mono';
+            weight = FontWeight.w600;
+            break;
+          default:
+            codeBlockBG = Theme.of(context).colorScheme.surfaceVariant;
+            codeBlockFont = null;
+            weight = FontWeight.normal;
+            style = FontStyle.normal;
+            deco = TextDecoration.none;
+            script = "normal";
+            break;
         }
       });
-    }
 
-    if(widget.model.spanRequestBuild) return RichText(
-        text: TextSpan(children: textSpans, style: TextStyle(
-            fontSize: size ?? textStyle!.fontSize,
-            color: fontColor ?? Theme
-                .of(context)
-                .colorScheme
-                .onBackground,
-            fontWeight: bold == true ? FontWeight.bold : textStyle!
-                .fontWeight,
-            fontStyle: italic == true ? FontStyle.italic : textStyle!
-                .fontStyle,
-            decoration: textDecoration)),
-        overflow: textOverflow,
-        textAlign: textAlign);
+      String text = element.text.replaceAll('\\n', '\n').replaceAll('\\t','\t\t\t\t');
 
+      if (widget.model.addWhitespace) text = ' ' + text;
 
-
-    Widget view;
-
-
-
-    if (widget.model.raw)
-    {
-      TextStyle? textstyle;
-      String? font = widget.model.font;
-      if (font != null && (libraryLoader?.isCompleted ?? false))
+      //4 ts here as dart interprets the tab character as a single space.
+      if (script == "sub")
       {
-         textstyle = fonts.GoogleFonts.getFont(
-            font,
-            fontSize: size ?? textStyle!.fontSize,
-            wordSpacing: wordSpace,
-            letterSpacing: letterSpace,
-            height: lineSpace,
-            shadows: textShadow,
-            fontWeight: widget.model.bold ?? false ? FontWeight.bold : FontWeight.normal,
-            fontStyle: widget.model.italic ?? false ? FontStyle.italic : FontStyle.normal,
-            decoration: textDecoration,
-            decorationStyle: textDecoStyle,
-            decorationColor: widget.model.decorationcolor,
-            decorationThickness: widget.model.decorationweight);
+        WidgetSpan widgetSpan = WidgetSpan(child: Transform.translate(
+          offset: const Offset(2, 4),
+          child: Text(text, textScaleFactor: 0.7,
+            style: TextStyle(
+                wordSpacing: widget.model.wordspace,
+                letterSpacing: widget.model.letterspace,
+                height: widget.model.lineheight,
+                shadows: shadow != null ? [shadow] : null,
+                fontWeight: weight,
+                fontStyle: style,
+                decoration: deco,
+                decorationStyle: textDecoStyle,
+                decorationColor: widget.model.decorationcolor,
+                decorationThickness: widget.model.decorationweight),),),);
+        textSpans.add(widgetSpan);
+      }
+      else if (script == "sup")
+      {
+        WidgetSpan widgetSpan = WidgetSpan(child: Transform.translate(
+          offset: const Offset(2, -4),
+          child: Text(text, textScaleFactor: 0.7,
+            style: TextStyle(
+                wordSpacing: widget.model.wordspace,
+                letterSpacing: widget.model.letterspace,
+                height: widget.model.lineheight,
+                shadows: shadow != null ? [shadow] : null,
+                fontWeight: weight,
+                fontStyle: style,
+                decoration: deco,
+                decorationStyle: textDecoStyle,
+                decorationColor: widget.model.decorationcolor,
+                decorationThickness: widget.model.decorationweight),),),);
+        textSpans.add(widgetSpan);
       }
       else
       {
-        textstyle = TextStyle(
-            wordSpacing: wordSpace,
-            letterSpacing: letterSpace,
-            height: lineSpace,
-            shadows: textShadow,
-            fontWeight: widget.model.bold ?? false ? FontWeight.bold : FontWeight.normal,
-            fontStyle: widget.model.italic ?? false ? FontStyle.italic : FontStyle.normal,
-            decoration: textDecoration,
-            decorationStyle: textDecoStyle,
-            decorationColor: widget.model.decorationcolor,
-            decorationThickness: widget.model.decorationweight);
+        TextStyle? textstyle;
+        String? font = codeBlockFont ?? widget.model.font;
+        if (font != null && (libraryLoader?.isCompleted ?? false))
+        {
+          textstyle = fonts.GoogleFonts.getFont(font,
+              backgroundColor: codeBlockBG,
+              wordSpacing: widget.model.wordspace,
+              letterSpacing: widget.model.letterspace,
+              height: widget.model.lineheight,
+              shadows: shadow != null ? [shadow] : null,
+              fontWeight: weight,
+              fontStyle: style,
+              decoration: deco,
+              decorationStyle: textDecoStyle,
+              decorationColor: widget.model.decorationcolor,
+              decorationThickness: widget.model.decorationweight);
+        }
+        else
+        {
+          textstyle = TextStyle(
+              wordSpacing: widget.model.wordspace,
+              letterSpacing: widget.model.letterspace,
+              height: widget.model.lineheight,
+              shadows: shadow != null ? [shadow] : null,
+              fontWeight: weight,
+              fontStyle: style,
+              decoration: deco,
+              decorationStyle: textDecoStyle,
+              decorationColor: widget.model.decorationcolor,
+              decorationThickness: widget.model.decorationweight);
+        }
+        textSpan = TextSpan(text: text, style: textstyle);
+        textSpans.add(textSpan);
       }
+    });
 
-      //SizedBox is used to make the text fit the size of the widget.
-      view = SizedBox(width: widget.model.width, child: Text(widget.model.value ?? '', style: textstyle));
-    }
-    else
-    {
-      view = SizedBox( child: RichText(
-          text: TextSpan(children: textSpans, style: TextStyle(
-              fontSize: size ?? textStyle!.fontSize,
-              color: fontColor ?? Theme
-                  .of(context)
-                  .colorScheme
-                  .onBackground,
-              fontWeight: bold == true ? FontWeight.bold : textStyle!
-                  .fontWeight,
-              fontStyle: italic == true ? FontStyle.italic : textStyle!
-                  .fontStyle,
-              decoration: textDecoration)),
-          overflow: textOverflow,
-          textAlign: textAlign));
-    }
-
-    //////////////////
-    /* Constrained? */
-    //////////////////
-    bool isNotExpandedChild = false;
-    if(!widget.model.hasSizing) {
-      ScrollerModel? parentScroll = widget.model.findAncestorOfExactType(
-          ScrollerModel);
-      if (parentScroll != null &&
-          parentScroll.layout.toLowerCase() == "row") return view;
-      isNotExpandedChild = widget.model.findAncestorOfExactType(ExpandedModel) == null;
-    }
-
-    if( isNotExpandedChild || widget.model.hasSizing) {
-      var constr = widget.model.getConstraints();
-      view = ConstrainedBox(
-          child: view,
-          constraints: BoxConstraints(
-              minWidth: constr.minWidth!,
-              maxWidth: constr.maxWidth!,
-          )
-      );
-    }
-
-    return view;
+    return textSpans;
   }
 }

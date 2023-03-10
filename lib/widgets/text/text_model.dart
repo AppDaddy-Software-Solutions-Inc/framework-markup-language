@@ -30,8 +30,6 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
     }
   }
   String? get value => _value?.get();
-
-  bool spanRequestBuild = false;
   bool addWhitespace = false;
 
   // size
@@ -194,7 +192,7 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
           scope: scope, listener: onPropertyChange);
     }
   }
-  bool? get bold => _bold?.get();
+  bool get bold => _bold?.get() ?? false;
 
   //////////////////////////////////////////////
   /* If the text is raw or uses special chars */
@@ -222,7 +220,7 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
           scope: scope, listener: onPropertyChange);
     }
   }
-  bool? get italic => _italic?.get();
+  bool get italic => _italic?.get() ?? false;
 
   ////////////////
   /* font theme */
@@ -310,7 +308,7 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
           scope: scope, listener: onPropertyChange);
     }
   }
-  String get decorationstyle => _decorationstyle?.get() ?? 'none';
+  String? get decorationstyle => _decorationstyle?.get();
 
   //////////////////
   /* wordspacing */
@@ -360,8 +358,8 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
   double? get lineheight => _lineheight?.get();
 
   // overrides
-  String get halign => super.halign ?? 'start';
-  String get valign => super.valign ?? 'start';
+  String? get halign => super.halign;
+  String? get valign => super.valign;
 
   ////////////////////
   /* overflow */
@@ -375,7 +373,7 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
           scope: scope, listener: onPropertyChange);
     }
   }
-  String get overflow => _overflow?.get() ?? 'wrap';
+  String? get overflow => _overflow?.get();
 
   TextModel(
     WidgetModel? parent,

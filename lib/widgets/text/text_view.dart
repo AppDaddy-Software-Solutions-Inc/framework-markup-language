@@ -23,7 +23,6 @@ class _TextViewState extends WidgetState<TextView>
 {
   ThemeData? theme;
   String? text;
-  List<InlineSpan> textSpans = [];
 
   // google fonts
   static Completer? libraryLoader;
@@ -52,8 +51,6 @@ class _TextViewState extends WidgetState<TextView>
   didChangeDependencies()
   {
     text = null;
-    theme = null;
-    textSpans = [];
     super.didChangeDependencies();
   }
 
@@ -130,7 +127,7 @@ class _TextViewState extends WidgetState<TextView>
     if (rebuild) _parseText(widget.model.value);
 
     // build text spans
-    textSpans = _buildTextSpans(textShadow, textDecoStyle);
+    List<InlineSpan> textSpans = _buildTextSpans(textShadow, textDecoStyle);
 
     var style = TextStyle(
         fontSize: widget.model.size ?? textStyle!.fontSize,

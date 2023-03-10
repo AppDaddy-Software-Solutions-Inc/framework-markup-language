@@ -38,6 +38,8 @@ class ScaleTransitionViewState extends State<ScaleTransitionView>
       _controller = AnimationController(vsync: this, duration: Duration(milliseconds: widget.model.duration), reverseDuration: Duration(milliseconds: widget.model.reverseduration ?? widget.model.duration,));
       if(widget.model.controllerValue == 1 && widget.model.runonce == true) {
         _controller.animateTo(widget.model.controllerValue, duration: Duration());
+
+        if (widget.model.autoplay == true && _controller.isAnimating != true) start();
       }
       _controller.addStatusListener((status) {
         _animationListener(status);

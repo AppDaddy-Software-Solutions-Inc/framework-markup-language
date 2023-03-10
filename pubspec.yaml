@@ -70,8 +70,6 @@ dependencies:
   firebase_core: 1.22.0
   # BSD-3-Clause
 
-  flip_card: 0.7.0
-
   # Updated 2023/02/02
   flutter_code_editor: 0.2.9
   # Apache-2.0, MIT

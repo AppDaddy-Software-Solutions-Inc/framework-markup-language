@@ -132,72 +132,76 @@
     <SPLITVIEW ratio=".50" dividerwidth="6.0" dividercolor="" dividerhandlecolor="{THEME.primary}">
 
         <VIEW>
-            <BOX color="{THEME.background}" width="100%" height="100%" layout="stack">
+            <STACK>
+            <BOX id="flipbox" color="{THEME.background}" width="100%" height="100%" layout="stack">
 
-                <ANIMATION id="flippy" type="flip" duration="500" axis="vertical">
-                    <SCROLLER>
-                        <EDITOR id="editor" language="xml" value="{default}" theme="={theme} ?? solarized-light" />
-                    </SCROLLER>
+                <FLIP duration="600"/>
+
                     <GRID data="dbExamples" direction="vertical">
                         <ITEM width="200" height="90">
-                        <PAD all="10">
-                            <ANIMATION id="flippy" type="flip" duration="500" axis="vertical">
+                            <STACK>
+                            <POS right="3" top="3" depth="0">
+                                <LINK onclick="flipcard.animate()">
+                                    <ICON icon="info_outline" size="20" color="#47C4FB"/>
+                                </LINK>
+                            </POS>
+                        <PAD  all="10">
+
                                 <LINK onclick="p1.set({data.url})">
-                                <BOX id="front" center="true" elevation="0.1" radius="3" color="=endswith({dbExample.url},{data.url}) ? {THEME.inverseprimary} : {THEME.oninversesurface}" pad="10" opacity="0.8" layout="stack">
+                                <BOX id="flipcard" center="true" elevation="0.1" radius="3" color="=endswith({dbExample.url},{data.url}) ? {THEME.inverseprimary} : {THEME.oninversesurface}" pad="10" opacity="0.8" layout="stack">
+                                    <FLIP id="cardflip" duration="600"/>
+                                    <CENTER>
+                                        <SCROLLER>
+                                            <TEXT value="{data.description}" size="12"/>
+                                        </SCROLLER>
+                                    </CENTER>
                                     <CENTER>
                                     <COL expand="false" halign="center">
                                         <ICON icon="{data.icon}" color="{data.color}"/>
                                         <TEXT value="{data.title}" size="12"/>
                                     </COL>
                                     </CENTER>
-                                    <POS right="0" top="0">
-                                        <LINK onclick="flippy.start()">
-                                            <ICON icon="info_outline" size="20" color="#47C4FB" visible="=!noe({data.description})"/>
-                                        </LINK>
-                                    </POS>
+
+
+
                                 </BOX>
                                 </LINK>
-                                <BOX id="back" halign="center" elevation="0.1" radius="3" color="{THEME.oninversesurface}" pad="10" opacity="0.8" layout="stack">
-                                    <CENTER>
-                                        <SCROLLER>
-                                            <TEXT value="{data.description}" size="12"/>
-                                        </SCROLLER>
-                                    </CENTER>
-                                    <POS right="0" top="0">
-                                        <LINK onclick="flippy.start()">
-                                            <ICON icon="info_outline" size="20" color="#47C4FB"/>
-                                        </LINK>
-                                    </POS>
-                                </BOX>
-                            </ANIMATION>
+
+
                         </PAD>
+                            </STACK>
                         </ITEM>
                     </GRID>
-                </ANIMATION>
 
-                <POSITIONED right="15" top="5">
-                    <COL expand="false">
-                        <!-- Code / Example Toggle Button -->
-                        <BUTTON onclick="flippy.start()">
-                            <BOX width="100" height="35" color="{THEME.inverseprimary}" bordercolor="{THEME.shadow}" layout="row" radius="5" valign="center" halign="center">
-                                <ICON icon="={flippy.side} == 'front' ? 'code' : 'calendar_view_month'" size="20"/>
-                                <PAD left="5"/>
-                                <TEXT value="={flippy.side} == 'front' ? 'Code' : 'Examples'"/>
-                            </BOX>
-                        </BUTTON>
+                  <SCROLLER>
+                    <EDITOR id="editor" language="xml" value="{default}" theme="={theme} ?? solarized-light" />
+                    </SCROLLER>
 
-                        <!-- Parse Code Button -->
-                        <BUTTON onclick="fmlpad.replaceChildren({xml},false)" visible="=!{r1}">
-                            <BOX width="100" height="35" color="{THEME.inverseprimary}" bordercolor="{THEME.shadow}" layout="row" radius="5" valign="center" halign="center">
-                                <ICON icon="play_arrow" size="20"/>
-                                <PAD left="5"/>
-                                <TEXT value="Parse"/>
-                            </BOX>
-                        </BUTTON>
-                    </COL>
-                </POSITIONED>
 
             </BOX>
+
+            <POSITIONED right="15" top="5">
+                <COL expand="false">
+                    <!-- Code / Example Toggle Button -->
+                    <BUTTON onclick="flipbox.animate()">
+                        <BOX width="100" height="35" color="{THEME.inverseprimary}" bordercolor="{THEME.shadow}" layout="row" radius="5" valign="center" halign="center">
+                            <ICON icon="={boxflip.side} == 'front' ? 'code' : 'calendar_view_month'" size="20"/>
+                            <PAD left="5"/>
+                            <TEXT value="={boxflip.side} == 'front' ? 'Code' : 'Examples'"/>
+                        </BOX>
+                    </BUTTON>
+
+                    <!-- Parse Code Button -->
+                    <BUTTON onclick="fmlpad.replaceChildren({xml},false)" visible="=!{r1}">
+                        <BOX width="100" height="35" color="{THEME.inverseprimary}" bordercolor="{THEME.shadow}" layout="row" radius="5" valign="center" halign="center">
+                            <ICON icon="play_arrow" size="20"/>
+                            <PAD left="5"/>
+                            <TEXT value="Parse"/>
+                        </BOX>
+                    </BUTTON>
+                </COL>
+            </POSITIONED>
+            </STACK>
         </VIEW>
 
         <VIEW id="fmlpad"/>

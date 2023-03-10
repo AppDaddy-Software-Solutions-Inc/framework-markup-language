@@ -35,15 +35,16 @@ class ScaleTransitionViewState extends State<ScaleTransitionView>
     super.initState();
 
     if (widget.controller == null) {
-      _controller = AnimationController(vsync: this, duration: Duration(milliseconds: widget.model.duration), reverseDuration: Duration(milliseconds: widget.model.reverseduration ?? widget.model.duration,))
-    ..addStatusListener((status) {
-    _animationListener(status);
-    });
-      widget.model.controller = _controller;
+      _controller = AnimationController(vsync: this, duration: Duration(milliseconds: widget.model.duration), reverseDuration: Duration(milliseconds: widget.model.reverseduration ?? widget.model.duration,));
+      if(widget.model.controllerValue == 1 && widget.model.runonce == true) {
+        _controller.animateTo(widget.model.controllerValue, duration: Duration());
+      }
+      _controller.addStatusListener((status) {
+        _animationListener(status);
+      });
       soloRequestBuild = true;
     } else {
       _controller = widget.controller!;
-      widget.model.controller = _controller;
     }
   }
 
@@ -189,9 +190,8 @@ class ScaleTransitionViewState extends State<ScaleTransitionView>
 
   void reset() {
     try {
-
       _controller.reset();
-
+      widget.model.controllerValue = 0;
     } catch (e) {}
   }
 
@@ -201,13 +201,16 @@ class ScaleTransitionViewState extends State<ScaleTransitionView>
       if (_controller.isCompleted) {
         if(widget.model.runonce) widget.model.hasrun = true;
         _controller.reverse();
+        widget.model.controllerValue = 0;
         widget.model.onStart(context);
       } else if (_controller.isDismissed) {
         _controller.forward();
+        widget.model.controllerValue = 1;
         if(widget.model.runonce) widget.model.hasrun = true;
         widget.model.onStart(context);
       } else {
         _controller.forward();
+        widget.model.controllerValue = 1;
         if(widget.model.runonce) widget.model.hasrun = true;
         widget.model.onStart(context);
       }
@@ -218,14 +221,17 @@ class ScaleTransitionViewState extends State<ScaleTransitionView>
   void stop() {
     try {
       _controller.reset();
+      widget.model.controllerValue = 0;
       _controller.stop();
     } catch (e) {}
   }
 
   void _animationListener(AnimationStatus status) {
     if (status == AnimationStatus.completed) {
+      widget.model.controllerValue = 1;
       widget.model.onComplete(context);
     } else if  (status == AnimationStatus.dismissed) {
+      widget.model.controllerValue = 0;
       widget.model.onDismiss(context);
     }
   }

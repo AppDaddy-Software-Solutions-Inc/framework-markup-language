@@ -1,13 +1,14 @@
-<FML title="FmlPad" linkable="true" onstart="theme({STASH.FmlPadMode} ?? {THEME.brightness} == 'dark' ?'dark':'light');">
+<FML linkable="true" onstart="theme({STASH.FmlPadMode} ?? {THEME.brightness} == 'dark' ?'dark':'light');"
+    title="FmlPad">
 
-    <VAR id="root" value="https://fml.dev/"/>
-    <VAR id="p1"   value="{example}" onchange="dbExample.url.set(join({root.value},{p1.value}))"/>
-    <VAR id="xml"  value="{editor}" onchange="{r1} ? fmlpad.replaceChildren({xml},false) : null"/>
+    <VAR id="root" value="https://fml.dev/" />
+    <VAR id="p1" onchange="dbExample.url.set(join({root.value},{p1.value}))" value="{example}" />
+    <VAR id="xml" onchange="{r1} ? fmlpad.replaceChildren({xml},false) : null" value="{editor}" />
 
-    <GET id="dbWidgets"  url="=join({root},'fmlpad/widgets.xml')"  root="WIDGETS.WIDGET" ttl="1m"/>
-    <GET id="dbStyles"   url="=join({root},'fmlpad/styles.xml')"   root="STYLES.STYLE" ttl="1d"/>
-    <GET id="dbExamples" url="=join({root},'fmlpad/examples.xml')" root="EXAMPLES.EXAMPLE"/>
-    <GET id="dbExample"  url="{p1}" onsuccess="editor.set({this.response})" refresh="true"/>
+    <GET id="dbWidgets" root="WIDGETS.WIDGET" ttl="1m" url="=join({root},'fmlpad/widgets.xml')" />
+    <GET id="dbStyles" root="STYLES.STYLE" ttl="1d" url="=join({root},'fmlpad/styles.xml')" />
+    <GET id="dbExamples" root="EXAMPLES.EXAMPLE" url="=join({root},'fmlpad/examples.xml')" />
+    <GET id="dbExample" onsuccess="editor.set({this.response})" refresh="true" url="{p1}" />
 
     <CONST id="default">
         <value>
@@ -46,27 +47,35 @@
     </CONST>
 
     <HEADER height="50">
-        <VAR id="isSmall" value="={SYSTEM.screenwidth}&lt;800"/>
-        <BOX color="{THEME.oninversesurface}" valign="center" halign="left" layout="row">
+        <VAR id="isSmall" value="={SYSTEM.screenwidth}&lt;800" />
+        <BOX color="{THEME.oninversesurface}" halign="left" layout="row" valign="center">
 
             <!-- logo -->
-            <PAD left="20"/>
-            <IMAGE url="assets://images/fml-logo.png" height="30"/>
-            <PAD left="10"/>
-            <TEXT value="FmlPad" visible="=!{isSmall}" size="20"/>
-            <PAD left="50" visible="=!{isSmall}"/>
+            <PAD left="20" />
+            <IMAGE height="30" url="assets://images/fml-logo.png" />
+            <PAD left="10" />
+            <TEXT size="20" value="FmlPad" visible="=!{isSmall}" />
+            <PAD left="50" visible="=!{isSmall}" />
 
             <!-- widgets -->
-            <SELECT bordercolor="transparent" onchange="copy({this})" data="dbWidgets" hint="Widgets" width="150"  visible="=!{isSmall}">
-                <OPTION value="{data.value}" label="&lt;{data.title}/&gt;"/>
+            <SELECT bordercolor="transparent" data="dbWidgets" hint="Widgets"
+                onchange="copy({this})" visible="=!{isSmall}" width="150">
+                <OPTION label="&lt;{data.title}/&gt;" value="{data.value}" />
             </SELECT>
 
-            <PAD left="20"/>
+            <PAD left="20" />
 
             <!-- examples -->
-            <TYPEAHEAD id="examples" bordercolor="transparent" value="" data="dbExamples" hint="Examples" width="250" onchange="p1.set({this.value})">
+            <TYPEAHEAD bordercolor="transparent" data="dbExamples" hint="Examples" id="examples"
+                onchange="p1.set({this.value})" value="" width="250">
                 <OPTION value="{data.url}">
-                    <label><ROW valign="center" expand="false"><ICON icon="{data.icon}" size="16" color="{data.color}"/><PAD left="10"/><TEXT value="{data.title}"/></ROW></label>
+                    <label>
+                        <ROW expand="false" valign="center">
+                            <ICON color="{data.color}" icon="{data.icon}" size="16" />
+                            <PAD left="10" />
+                            <TEXT value="{data.title}" />
+                        </ROW>
+                    </label>
                 </OPTION>
             </TYPEAHEAD>
 
@@ -75,32 +84,36 @@
                 <ROW halign="end" valign="center">
 
                     <!-- Reset button -->
-                    <BUTTON onclick="editor.set({default});examples.set(null);" visible="={default} != {editor}">
-                        <ICON icon="refresh" size="24"/>
+                    <BUTTON onclick="editor.set({default});examples.set(null);"
+                        visible="={default} != {editor}">
+                        <ICON icon="refresh" size="24" />
                     </BUTTON>
 
-                    <PAD left="20"/>
+                    <PAD left="20" />
 
                     <!-- Save button -->
                     <BUTTON onclick="saveas({editor},'fmlpad.xml')" visible="=!{isSmall}">
-                        <ICON icon="save" size="24"/>
+                        <ICON icon="save" size="24" />
                     </BUTTON>
 
-                    <PAD left="20"/>
+                    <PAD left="20" />
 
                     <!-- Open button -->
-                    <FILEPICKER id="fp1" onsuccess="editor.set({fp1.data.text})" allow=".xml"/>
+                    <FILEPICKER allow=".xml" id="fp1" onsuccess="editor.set({fp1.data.text})" />
                     <BUTTON onclick="fp1.start()" visible="=!{isSmall}">
-                        <ICON icon="folder" size="24"/>
+                        <ICON icon="folder" size="24" />
                     </BUTTON>
 
-                    <PAD left="40"/>
+                    <PAD left="40" />
 
                     <!-- Realtime Parsing button -->
-                    <TEXT value="Realtime:" color="={r1} ? '{THEME.primary}' : '{THEME.outline}'" visible="=!{isSmall}"/>
-                    <PAD left="20"/>
-                    <SWITCH id="r1" value="true" onchange="{this} ? fmlpad.replaceChildren({xml},false) : null" visible="=!{isSmall}"/>
-                    <PAD left="20"/>
+                    <TEXT color="={r1} ? '{THEME.primary}' : '{THEME.outline}'" value="Realtime:"
+                        visible="=!{isSmall}" />
+                    <PAD left="20" />
+                    <SWITCH id="r1" onchange="{this} ? fmlpad.replaceChildren({xml},false) : null"
+                        value="true"
+                        visible="=!{isSmall}" />
+                    <PAD left="20" />
 
                 </ROW>
             </EXPAND>
@@ -108,99 +121,114 @@
     </HEADER>
 
     <FOOTER height="50">
-        <BOX color="{THEME.oninversesurface}" layout="row" halign="end" valign="center">
-            <LOG id="log1"/>
+        <BOX color="{THEME.oninversesurface}" halign="end" layout="row" valign="center">
+            <LOG id="log1" />
             <EXPAND>
                 <!--Error text display here-->
-                <TEXT color="{THEME.error}" value="{log1.xml}"/>
+                <TEXT color="{THEME.error}" value="{log1.xml}" />
             </EXPAND>
             <!-- themes -->
-            <PAD right="10"/>
-            <SELECT id="theme" width="180" border="none" data="dbStyles" value="=nvl({STASH.FmlPadTheme},'solarized-dark')" hint="Select an Editor Theme" onchange="stash('FmlPadTheme',{this.value})">
-                <OPTION label='{data.label}'/>
+            <PAD right="10" />
+            <SELECT border="none" data="dbStyles" hint="Select an Editor Theme" id="theme"
+                onchange="stash('FmlPadTheme',{this.value})" value="=nvl({STASH.FmlPadTheme},'solarized-dark')"
+                width="180">
+                <OPTION label='{data.label}' />
             </SELECT>
-            <PAD right="40"/>
-            <ICON icon="light_mode" color="=!{mode} ? '#e6cc00' : 'grey'"/>
-            <PAD right="6"/>
-            <SWITCH id="mode"  value="={STASH.FmlPadMode} ?? {THEME.brightness} == 'dark'" onchange="stash('FmlPadMode',{this.value});theme({this}?'dark':'light');"/>
-            <PAD right="6"/>
-            <ICON icon="dark_mode" color="={mode} ? '{THEME.primary}' : 'grey'"/>
-            <PAD right="20"/>
+            <PAD right="40" />
+            <ICON color="=!{mode} ? '#e6cc00' : 'grey'" icon="light_mode" />
+            <PAD right="6" />
+            <SWITCH id="mode" onchange="stash('FmlPadMode',{this.value});theme({this}?'dark':'light');"
+                value="={STASH.FmlPadMode} ?? {THEME.brightness} == 'dark'" />
+            <PAD right="6" />
+            <ICON color="={mode} ? '{THEME.primary}' : 'grey'" icon="dark_mode" />
+            <PAD right="20" />
         </BOX>
     </FOOTER>
 
-    <SPLITVIEW ratio=".50" dividerwidth="6.0" dividercolor="" dividerhandlecolor="{THEME.primary}">
+    <SPLITVIEW dividercolor="" dividerhandlecolor="{THEME.primary}" dividerwidth="6.0" ratio=".50">
 
         <VIEW>
-            <BOX color="{THEME.background}" width="100%" height="100%" layout="stack">
+            <STACK>
+                <BOX color="{THEME.background}" height="100%" id="flipbox" layout="stack"
+                    width="100%">
 
-                <ANIMATION id="flippy" type="flip" duration="500" axis="vertical">
-                    <SCROLLER>
-                        <EDITOR id="editor" language="xml" value="{default}" theme="={theme} ?? solarized-light" />
-                    </SCROLLER>
+                    <FLIP id="boxflip" duration="600" />
+
                     <GRID data="dbExamples" direction="vertical">
-                        <ITEM width="200" height="90">
-                        <PAD all="10">
-                            <ANIMATION id="flippy" type="flip" duration="500" axis="vertical">
-                                <LINK onclick="p1.set({data.url})">
-                                <BOX id="front" center="true" elevation="0.1" radius="3" color="=endswith({dbExample.url},{data.url}) ? {THEME.inverseprimary} : {THEME.oninversesurface}" pad="10" opacity="0.8" layout="stack">
-                                    <CENTER>
-                                    <COL expand="false" halign="center">
-                                        <ICON icon="{data.icon}" color="{data.color}"/>
-                                        <TEXT value="{data.title}" size="12"/>
-                                    </COL>
-                                    </CENTER>
-                                    <POS right="0" top="0">
-                                        <LINK onclick="flippy.start()">
-                                            <ICON icon="info_outline" size="20" color="#47C4FB" visible="=!noe({data.description})"/>
-                                        </LINK>
-                                    </POS>
-                                </BOX>
-                                </LINK>
-                                <BOX id="back" halign="center" elevation="0.1" radius="3" color="{THEME.oninversesurface}" pad="10" opacity="0.8" layout="stack">
-                                    <CENTER>
-                                        <SCROLLER>
-                                            <TEXT value="{data.description}" size="12"/>
-                                        </SCROLLER>
-                                    </CENTER>
-                                    <POS right="0" top="0">
-                                        <LINK onclick="flippy.start()">
-                                            <ICON icon="info_outline" size="20" color="#47C4FB"/>
-                                        </LINK>
-                                    </POS>
-                                </BOX>
-                            </ANIMATION>
-                        </PAD>
+                        <ITEM height="90" width="200">
+                            <STACK>
+
+                                <PAD all="6">
+
+                                    <LINK onclick="p1.set({data.url})">
+                                        <BOX center="true" color="=endswith({dbExample.url},{data.url}) ? {THEME.inverseprimary} : {THEME.oninversesurface}" elevation="0.1" id="flipcard"
+                                            layout="stack"
+                                            opacity="0.8" pad="10" radius="3">
+                                            <FLIP duration="600" id="cardflip" />
+                                            <CENTER>
+                                                <SCROLLER>
+                                                    <TEXT size="12" value="{data.description}" />
+                                                </SCROLLER>
+                                            </CENTER>
+                                            <CENTER>
+                                                <COL expand="false" halign="center">
+                                                    <ICON color="{data.color}" icon="{data.icon}" />
+                                                    <TEXT size="12" value="{data.title}" />
+                                                </COL>
+                                            </CENTER>
+
+                                        </BOX>
+                                    </LINK>
+
+                                </PAD>
+                                <POS right="8" top="8">
+                                    <LINK onclick="flipcard.animate()">
+                                        <ICON color="#47C4FB" icon="info_outline" size="20" />
+                                    </LINK>
+                                </POS>
+                            </STACK>
                         </ITEM>
                     </GRID>
-                </ANIMATION>
+
+                    <SCROLLER>
+                        <EDITOR id="editor" language="xml" theme="={theme} ?? solarized-light"
+                            value="{default}" />
+                    </SCROLLER>
+
+
+                </BOX>
 
                 <POSITIONED right="15" top="5">
                     <COL expand="false">
                         <!-- Code / Example Toggle Button -->
-                        <BUTTON onclick="flippy.start()">
-                            <BOX width="100" height="35" color="{THEME.inverseprimary}" bordercolor="{THEME.shadow}" layout="row" radius="5" valign="center" halign="center">
-                                <ICON icon="={flippy.side} == 'front' ? 'code' : 'calendar_view_month'" size="20"/>
-                                <PAD left="5"/>
-                                <TEXT value="={flippy.side} == 'front' ? 'Code' : 'Examples'"/>
+                        <BUTTON onclick="flipbox.animate()">
+                            <BOX bordercolor="{THEME.shadow}" color="{THEME.inverseprimary}" halign="center"
+                                height="35" layout="row" radius="5" valign="center"
+                                width="100">
+                                <ICON
+                                    icon="={boxflip.side} == 'front' ? 'code' : 'calendar_view_month'"
+                                    size="20" />
+                                <PAD left="5" />
+                                <TEXT value="={boxflip.side} == 'front' ? 'Code' : 'Examples'" />
                             </BOX>
                         </BUTTON>
 
                         <!-- Parse Code Button -->
                         <BUTTON onclick="fmlpad.replaceChildren({xml},false)" visible="=!{r1}">
-                            <BOX width="100" height="35" color="{THEME.inverseprimary}" bordercolor="{THEME.shadow}" layout="row" radius="5" valign="center" halign="center">
-                                <ICON icon="play_arrow" size="20"/>
-                                <PAD left="5"/>
-                                <TEXT value="Parse"/>
+                            <BOX bordercolor="{THEME.shadow}" color="{THEME.inverseprimary}" halign="center"
+                                height="35" layout="row" radius="5" valign="center"
+                                width="100">
+                                <ICON icon="play_arrow" size="20" />
+                                <PAD left="5" />
+                                <TEXT value="Parse" />
                             </BOX>
                         </BUTTON>
                     </COL>
                 </POSITIONED>
-
-            </BOX>
+            </STACK>
         </VIEW>
 
-        <VIEW id="fmlpad"/>
+        <VIEW id="fmlpad" />
 
     </SPLITVIEW>
 </FML>

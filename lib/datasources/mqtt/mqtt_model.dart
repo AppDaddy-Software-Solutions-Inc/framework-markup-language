@@ -217,7 +217,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
     }
     catch(e)
     {
-      Log().exception(e,  caller: 'iframe.Model');
+      Log().exception(e,  caller: 'mqtt.Model');
       model = null;
     }
     return model;

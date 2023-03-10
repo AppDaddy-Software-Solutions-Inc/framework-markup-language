@@ -49,7 +49,7 @@ class TransformModel extends WidgetModel
     }
     catch(e)
     {
-      Log().exception(e,  caller: 'iframe.Model');
+      Log().exception(e,  caller: 'transform_model');
       model = null;
     }
     return model;

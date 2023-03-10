@@ -28,7 +28,7 @@ class FileModel extends DataSourceModel implements IDataSource
     }
     catch(e)
     {
-      Log().exception(e,  caller: 'iframe.Model');
+      Log().exception(e,  caller: 'file.Model');
       model = null;
     }
     return model;

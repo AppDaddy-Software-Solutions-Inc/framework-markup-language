@@ -24,7 +24,7 @@ class HttpPatchModel extends HttpModel implements IDataSource
     }
     catch(e)
     {
-      Log().exception(e,  caller: 'iframe.Model');
+      Log().exception(e,  caller: 'patch.Model');
       model = null;
     }
     return model;

@@ -44,7 +44,7 @@ class InlineFrameModel extends DecoratedWidgetModel implements IViewableWidget
     }
     catch(e)
     {
-      Log().exception(e,  caller: 'iframe.Model');
+      Log().exception(e,  caller: 'inline_frame_model');
       model = null;
     }
     return model;

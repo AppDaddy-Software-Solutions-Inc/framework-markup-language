@@ -52,7 +52,7 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
   ScrollController? hScroller;
   ScrollController? vScroller;
 
-  int visiblerows = 0;
+  int visibleRows = 0;
 
   @override
   void initState()
@@ -196,10 +196,7 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     if (event.parameters!['format'] != 'print')
     {
       event.handled = true;
-
-      final snackbar = SnackBar(content: Text(phrase.exportingData),duration: Duration(seconds: 1), behavior: SnackBarBehavior.floating, elevation: 5);
-      ScaffoldMessenger.of(context).showSnackBar(snackbar);
-
+      System.toast(S.toStr(phrase.exportingData), duration: 1);
       await widget.model.export();
     }
   }
@@ -367,7 +364,7 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     ///////////////
     double bodyHeight = viewportHeight! - headerHeight - footerHeight! - trackHeight;
     double bodyWidth = contentWidth + padding;
-    visiblerows = (bodyHeight / widget.model.heights['row']!).floor();
+    visibleRows = (bodyHeight / widget.model.heights['row']!).floor();
 
     //////////////////
     /* Build Header */
@@ -406,8 +403,7 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
           PointerDeviceKind.mouse,
         }) : MyCustomScrollBehavior();
 
-    Widget body = UnconstrainedBox(child: SizedBox(width: bodyWidth, height: bodyHeight, child: ScrollConfiguration(behavior:
-    behavior, child: list)));
+    Widget body = UnconstrainedBox(child: SizedBox(width: bodyWidth, height: bodyHeight, child: ScrollConfiguration(behavior: behavior, child: list)));
 
     ///////////////////////////////////
     /* Build Horizontal Scroll Track */
@@ -585,12 +581,15 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
       return Padding(padding: EdgeInsets.only(left: 10),
           child: Row(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Padding(child: Text(phrase.pagesize), padding: EdgeInsets.only(right: 6)),
+                Padding(child: Text(phrase.pagesize, style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)), padding: EdgeInsets.only(right: 6)),
                 MouseRegion(cursor: SystemMouseCursors.click,
                     child: UnconstrainedBox(clipBehavior: Clip.hardEdge,
                       child: DropdownButton<int>(value: selected.value,
-                          icon: Icon(Icons.arrow_drop_down, color: items.length > 1 ? Theme.of(context).colorScheme.onPrimaryContainer : Theme.of(context).colorScheme.onSecondaryContainer.withOpacity(0.2)),
-                          iconSize: 24, elevation: 4, items: items,
+                          underline: Container(),
+                          borderRadius: BorderRadius.all(Radius.circular(4)),
+                          style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 15),
+                          icon: Icon(Icons.keyboard_arrow_down, color: items.length > 1 ? Theme.of(context).colorScheme.onPrimaryContainer : Theme.of(context).colorScheme.onSecondaryContainer.withOpacity(0.2)),
+                          iconSize: 20, items: items,
                           onChanged: (int? newValue)  {
                             widget.model.page = 1;
                             widget.model.pagesize = newValue;
@@ -654,7 +653,7 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
       int? pageSize = widget.model.pagesize ?? records;
       int? pages = (widget.model.pagesize! > 0) ? (records! / pageSize!).ceil() : null;
       return Padding(padding: EdgeInsets.all(5),
-          child: Text('${widget.model.page ?? ''}${(pages != null && pages > 0) ? '/$pages' : ''}'));
+          child: Text('${widget.model.page ?? ''}${(pages != null && pages > 0) ? '/$pages' : ''}', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)));
     }
     return Container();
   }
@@ -688,12 +687,8 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
       }
       return Row(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Padding(child: Text(phrase.records), padding: EdgeInsets.only(left: 10, right: 10)),
-            Text(start.toString()),
-            Padding(child: Text('-'), padding: EdgeInsets.only(left:2, right: 2)),
-            Text(end.toString()),
-            Padding(child: Text(phrase.of), padding: EdgeInsets.only(left:5, right: 5)),
-            Text(records.toString())
+            Padding(padding: EdgeInsets.only(left: 10),
+                child: Text('${phrase.records} ${start.toString()} to ${end.toString()} ${phrase.of} ${records.toString()}', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),))
           ]);
     }
     return Container();
@@ -764,7 +759,7 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
 
   TableRowModel? getEmptyRowModel(int offset, index)
   {
-    if ((visiblerows - offset) > 0)
+    if ((visibleRows - offset) > 0)
     {
       var model = widget.model.getEmptyRowModel();
       if (model != null) model.index = index;

@@ -21,8 +21,7 @@ class TextView extends StatefulWidget implements IWidgetView
 
 class _TextViewState extends WidgetState<TextView>
 {
-  TextTheme? textTheme;
-  List<InlineSpan> textSpans = [];
+  ThemeData? theme;
   String? text;
 
   // google fonts
@@ -49,31 +48,32 @@ class _TextViewState extends WidgetState<TextView>
   }
 
   @override
+  didChangeDependencies()
+  {
+    text = null;
+    super.didChangeDependencies();
+  }
+
+  @override
   Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
+    // get the theme
+    theme = Theme.of(context);
+
     // use this to optimize
     bool textHasChanged = (text != widget.model.value);
     text = widget.model.value;
 
-    // parse the values
-    if (textHasChanged) _parseText(widget.model.value);
-
-    TextStyle? textStyle = _getStyle();
-    TextOverflow textOverflow = _getOverflow();
-    TextAlign textAlign = _getAlign();
-    TextDecoration textDecoration = _getDecoration();
-    TextDecorationStyle? textDecoStyle = _getDecorationStyle();
-    Shadow? textShadow = _getShadow();
-
+    // build the view
     Widget view;
     if (widget.model.raw)
-         view = _getSimpleTextView(textStyle, textDecoration, textDecoStyle, textOverflow, textAlign, textShadow);
-    else view = _getSpanTextView(textHasChanged, textStyle, textDecoration, textDecoStyle, textOverflow, textAlign, textShadow);
+         view = _getSimpleTextView();
+    else view = _getSpanTextView(rebuild: textHasChanged);
 
-    // Constrained?
+    // constrained?
     bool isNotExpandedChild = false;
     if(!widget.model.hasSizing)
     {
@@ -82,6 +82,7 @@ class _TextViewState extends WidgetState<TextView>
       isNotExpandedChild = widget.model.findAncestorOfExactType(ExpandedModel) == null;
     }
 
+    // constrained?
     if (isNotExpandedChild || widget.model.hasSizing)
     {
       var constr = widget.model.getConstraints();
@@ -113,32 +114,45 @@ class _TextViewState extends WidgetState<TextView>
     }
   }
 
-  Widget _getSpanTextView(bool rebuildSpans, TextStyle? textStyle, TextDecoration textDecoration, TextDecorationStyle? textDecoStyle, TextOverflow textOverflow, TextAlign textAlign, Shadow? textShadow)
+  Widget _getSpanTextView({required bool rebuild})
   {
-    // build text spans
-    if (rebuildSpans) textSpans = _buildTextSpans(textShadow, textDecoStyle);
+    TextStyle? textStyle = _getStyle();
+    TextOverflow textOverflow = _getOverflow();
+    TextAlign textAlign = _getAlign();
+    TextDecoration textDecoration = _getDecoration();
+    TextDecorationStyle? textDecoStyle = _getDecorationStyle();
+    Shadow? textShadow = _getShadow();
 
-    Widget view = RichText(
-        text: TextSpan(children: textSpans, style: TextStyle(
-            fontSize: widget.model.size ?? textStyle!.fontSize,
-            color: widget.model.color ?? Theme.of(context).colorScheme.onBackground,
-            fontWeight: widget.model.bold ? FontWeight.bold : textStyle!.fontWeight,
-            fontStyle: widget.model.italic ? FontStyle.italic : textStyle!.fontStyle,
-            decoration: textDecoration)),
-        overflow: textOverflow,
-        textAlign: textAlign);
-    return view;
+    // re-parse the text
+    if (rebuild) _parseText(widget.model.value);
+
+    // build text spans
+    List<InlineSpan> textSpans = _buildTextSpans(textShadow, textDecoStyle);
+
+    var style = TextStyle(
+        fontSize: widget.model.size ?? textStyle!.fontSize,
+        color: widget.model.color ?? theme?.colorScheme.onBackground,
+        fontWeight: widget.model.bold ? FontWeight.bold : textStyle!.fontWeight,
+        fontStyle: widget.model.italic ? FontStyle.italic : textStyle!.fontStyle,
+        decoration: textDecoration);
+
+    return RichText(text: TextSpan(children: textSpans, style: style), overflow: textOverflow, textAlign: textAlign);
   }
 
-  Widget _getSimpleTextView(TextStyle? textStyle, TextDecoration textDecoration, TextDecorationStyle? textDecoStyle, TextOverflow textOverflow, TextAlign textAlign, Shadow? textShadow)
+  Widget _getSimpleTextView()
   {
+    TextDecoration textDecoration = _getDecoration();
+    TextDecorationStyle? textDecoStyle = _getDecorationStyle();
+    Shadow? textShadow = _getShadow();
+
     TextStyle? textstyle;
     String? font = widget.model.font;
     if (font != null && (libraryLoader?.isCompleted ?? false))
     {
+      TextStyle? textStyle = _getStyle();
       textstyle = fonts.GoogleFonts.getFont(
           font,
-          fontSize: widget.model.size ?? textStyle!.fontSize,
+          fontSize: widget.model.size ?? textStyle?.fontSize,
           wordSpacing: widget.model.wordspace,
           letterSpacing: widget.model.letterspace,
           height: widget.model.lineheight,
@@ -257,8 +271,10 @@ class _TextViewState extends WidgetState<TextView>
 
   TextStyle? _getStyle()
   {
+    if (theme == null) return null;
+
     // get theme
-    var textTheme = Theme.of(context).textTheme;
+    var textTheme = theme!.textTheme;
 
     TextStyle? textStyle = textTheme.bodyMedium;
     switch (widget.model.style?.toLowerCase())
@@ -339,9 +355,8 @@ class _TextViewState extends WidgetState<TextView>
   Shadow? _getShadow()
   {
     if (widget.model.elevation <= 0) return null;
-    return Shadow(color: widget.model.shadowcolor ?? Theme.of(context).colorScheme.outline.withOpacity(0.4),
-        blurRadius: widget.model.elevation,
-        offset: Offset(widget.model.shadowx!,widget.model.shadowy!));
+    var color = widget.model.shadowcolor ?? theme?.colorScheme.outline.withOpacity(0.4) ?? Colors.black45;
+    return Shadow(color: color, blurRadius: widget.model.elevation, offset: Offset(widget.model.shadowx!,widget.model.shadowy!));
   }
 
   List<InlineSpan> _buildTextSpans(Shadow? shadow, TextDecorationStyle? textDecoStyle)
@@ -385,12 +400,12 @@ class _TextViewState extends WidgetState<TextView>
             script = "sup";
             break;
           case "code":
-            codeBlockBG = Theme.of(context).colorScheme.surfaceVariant;
+            codeBlockBG = theme?.colorScheme.surfaceVariant;
             codeBlockFont = 'Cutive Mono';
             weight = FontWeight.w600;
             break;
           default:
-            codeBlockBG = Theme.of(context).colorScheme.surfaceVariant;
+            codeBlockBG = theme?.colorScheme.surfaceVariant;
             codeBlockFont = null;
             weight = FontWeight.normal;
             style = FontStyle.normal;

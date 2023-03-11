@@ -82,7 +82,7 @@ class TooltipModel extends ViewableWidgetModel implements IWidgetView
   }
   double get radius => _radius?.get() ?? 8.0;
 
-  /// [showModal] Shows a dark layer behind the tooltip.
+  /// [modal] Shows a dark layer behind the tooltip.
   BooleanObservable? _modal;
   set modal(dynamic v)
   {
@@ -97,6 +97,21 @@ class TooltipModel extends ViewableWidgetModel implements IWidgetView
   }
   bool get modal => _modal?.get() ?? false;
 
+  /// [arrow] Show the tip arrow?
+  BooleanObservable? _arrow;
+  set arrow(dynamic v)
+  {
+    if (_arrow != null)
+    {
+      _arrow!.set(v);
+    }
+    else if (v != null)
+    {
+      _arrow = BooleanObservable(Binding.toKey(id, 'arrow'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get arrow => _arrow?.get() ?? false;
+  
   /// [timeout] Number of seconds until the tooltip disappears automatically
   /// The default value is 0 (zero) which means it never disappears.
   // timeout
@@ -148,6 +163,7 @@ class TooltipModel extends ViewableWidgetModel implements IWidgetView
     modal    = Xml.attribute(node: xml, tag: 'modal');
     timeout  = Xml.get(node: xml, tag: 'timeout');
     distance = Xml.get(node: xml, tag: 'distance');
+    arrow    = Xml.get(node: xml, tag: 'arrow');
     openMethod = S.toEnum(Xml.get(node: xml, tag: 'openMethod'), OpenMethods.values);
   }
 

@@ -6,7 +6,6 @@ class Bubble extends StatefulWidget {
   final Color color;
   final double padding;
   final double maxWidth;
-  final ElementBox triggerBox;
   final BorderRadiusGeometry? radius;
   final Widget child;
 
@@ -15,7 +14,6 @@ class Bubble extends StatefulWidget {
     this.padding = 10.0,
     this.radius = const BorderRadius.all(Radius.circular(0)),
     required this.child,
-    required this.triggerBox,
     this.maxWidth = 300.0,
     super.key,
   });

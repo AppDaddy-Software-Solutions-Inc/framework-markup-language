@@ -172,7 +172,6 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
           child: Center(
             child: Bubble(
               key: _widgetKey,
-              triggerBox: _triggerBox,
               padding: widget.model.padding,
               child: widget.content,
             ),
@@ -221,6 +220,7 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
     /// By calling [PositionManager.load()] we get returned the position
     /// of the tooltip, the arrow and the trigger.
     ToolTipElementsDisplay toolTipElementsDisplay = PositionManager(
+      showArrow: widget.model.arrow,
       arrowBox: _arrowBox,
       overlayBox: _overlayBox,
       triggerBox: _triggerBox,
@@ -241,7 +241,6 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
       top:  toolTipElementsDisplay.bubble.y,
       left: toolTipElementsDisplay.bubble.x,
       child: Bubble(
-        triggerBox: _triggerBox,
         padding: widget.model.padding,
         radius: toolTipElementsDisplay.radius,
         color: widget.model.color ?? Theme.of(context).colorScheme.surfaceVariant,
@@ -250,14 +249,14 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
     children.add(bubble);
 
     // arrow
-    var arrow = Positioned(
+    var arrow = widget.model.arrow ? Positioned(
       top: toolTipElementsDisplay.arrow.y,
       left: toolTipElementsDisplay.arrow.x,
       child: Arrow(
         color: widget.model.color ?? Theme.of(context).colorScheme.surfaceVariant,
         position: toolTipElementsDisplay.position,
         width: _arrowBox.w,
-        height: _arrowBox.h));
+        height: _arrowBox.h)) : Container();
     children.add(arrow);
 
     // child
@@ -290,7 +289,7 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
   @override
   Widget build(BuildContext context)
   {
-    // warp child in detector
+    // wrap child in detector
     switch (opener)
     {
       // hover

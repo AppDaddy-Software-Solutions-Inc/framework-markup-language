@@ -619,7 +619,7 @@ class ViewableWidgetModel extends WidgetModel
 
     oldVisibility = visibleArea ?? 0.0;
 
-    if (visibleArea! == 100 && !hasGoneOnscreen)
+    if (visibleArea! > 1 && !hasGoneOnscreen)
     {
       if (!S.isNullOrEmpty(_onstage))
       {

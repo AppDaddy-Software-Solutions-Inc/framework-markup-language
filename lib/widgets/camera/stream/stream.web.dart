@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
-import 'dart:html' as HTML;
+import 'package:universal_html/html.dart' as HTML;
 import 'dart:typed_data';
 import 'package:fml/data/data.dart';
 import 'package:fml/log/manager.dart';

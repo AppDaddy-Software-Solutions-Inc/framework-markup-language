@@ -16,7 +16,6 @@ import 'package:fml/widgets/tabview/tab_view.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart'    ;
 import 'package:fml/widgets/header/header_view.dart';
-import 'package:fml/widgets/header/header_model.dart';
 import 'package:fml/widgets/footer/footer_view.dart';
 import 'package:fml/widgets/drawer/drawer_view.dart';
 import 'package:fml/widgets/box/box_model.dart';
@@ -219,11 +218,11 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     bodyModel.height    = viewportHeight - height - (footerModel.height ?? 0) - viewportSafeArea.ceil();
 
     // Opacity Fade
-    if (widget.model.header!.animations == Animations.fade)
-    {
-      headerModel.opacity = 0;
-      if (maxHeight != 0) headerModel.opacity = height / maxHeight;
-    }
+    // if (widget.model.header!.animations == Animations.fade)
+    // {
+    //   headerModel.opacity = 0;
+    //   if (maxHeight != 0) headerModel.opacity = height / maxHeight;
+    // }
 
     /* Stop Notification Bubble */
     return false;

@@ -10,6 +10,8 @@ typedef OnConnected = void Function();
 class IOSseChannel extends StreamChannelMixin implements SseChannel
 {
   late final StreamController<String?> _controller;
+  late final SseTransformer _transformer;
+
   final _onConnected = Completer();
 
   final Uri url;
@@ -24,6 +26,7 @@ class IOSseChannel extends StreamChannelMixin implements SseChannel
     this.headers = headers;
     this.body = body;
     if (events != null) this.events.addAll(events);
+    _transformer = SseTransformer();
     _controller = StreamController<String?>.broadcast(onListen: _onListen, onCancel: _onCancel);
   }
 
@@ -43,7 +46,7 @@ class IOSseChannel extends StreamChannelMixin implements SseChannel
     {
       if (response.statusCode == 200)
       {
-        response.stream.transform(SseTransformer()).listen((event)
+        response.stream.transform(_transformer).listen((event)
         {
           if (!_controller.isClosed)
           {
@@ -62,7 +65,8 @@ class IOSseChannel extends StreamChannelMixin implements SseChannel
 
   void close()
   {
-    _controller.close();
+    if (!_controller.isClosed) _controller.close();
+    _transformer.dispose();
   }
 
   @override

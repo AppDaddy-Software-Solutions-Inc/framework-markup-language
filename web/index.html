@@ -29,12 +29,12 @@
             // document.head.appendChild(script);
 
             // add pdf script
-            var script = document.createElement("script");
-            script.type    = "text/javascript";
-            script.src     = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.4.456/pdf.min.js";
-            script.onload  = function() { pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.4.456/pdf.worker.min.js'; };
+            // var script = document.createElement("script");
+            // script.type    = "text/javascript";
+            // script.src     = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.4.456/pdf.min.js";
+            // script.onload  = function() { pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.4.456/pdf.worker.min.js'; };
             // uncomment to include this functionality
-            //document.head.appendChild(script);
+            // document.head.appendChild(script);
 
             // add flutter.js script
             var script     = document.createElement("script");
@@ -105,27 +105,18 @@
         <div id="loading" class="centered"></div>
 
         <script>
-        let renderer = "auto";
-        console.log("Rendering with " + renderer);
-
         window.addEventListener('load', function(ev) {
-            var loading = document.querySelector('#loading');
-            // loading.textContent = "Loading entrypoint...";
-            // Download main.dart.js
-            _flutter.loader.loadEntrypoint({
-                serviceWorker: {
-                  serviceWorkerVersion: serviceWorkerVersion,
-                },
-                onEntrypointLoaded: async function(engineInitializer) {
-                    let config = {
-                        renderer: renderer ? "html" : "canvaskit",
-                    }
-                    // loading.textContent = "Initializing engine...";
-                    let appRunner = await engineInitializer.initializeEngine(config)
-                    // loading.textContent = "Running app...";
-                    await appRunner.runApp();
-                }
-            });
+          // Download main.dart.js
+          _flutter.loader.loadEntrypoint({
+            serviceWorker: {
+              serviceWorkerVersion: serviceWorkerVersion,
+            },
+            onEntrypointLoaded: function(engineInitializer) {
+              engineInitializer.initializeEngine().then(function(appRunner) {
+                appRunner.runApp();
+              });
+            }
+          });
         });
         </script>
     </body>

@@ -56,7 +56,6 @@ class LogModel extends DataSourceModel implements IDataSource
 
       case 'start':
       case 'fire':
-        Data logData = Log().data;
         super.onSuccess(Log().data);
         return true;
     }

@@ -29,7 +29,6 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
   AnimationController? _controller;
   Widget? transitionChild;
 
-  int _loop = 0;
   bool _stopped = false;
 
   @override
@@ -178,7 +177,6 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
 
   void start() {
     try {
-        _loop = 0;
         _stopped = false;
         if(widget.model.hasrun) return;
           if (_controller!.isCompleted) {

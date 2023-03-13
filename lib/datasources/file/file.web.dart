@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'dart:typed_data';
-import 'dart:html' as HTML;
+import 'package:universal_html/html.dart' as HTML;
 import 'package:camera/camera.dart' show XFile;
 import 'package:fml/log/manager.dart';
 import 'file.base.dart';

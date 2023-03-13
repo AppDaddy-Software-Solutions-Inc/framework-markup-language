@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:convert';
-import 'dart:html' as HTML;
-import 'dart:js' as JAVASCRIPT;
+import 'package:universal_html/html.dart' as HTML;
+import 'package:universal_html/js.dart' as JAVASCRIPT;
 import 'dart:ui' as UI;
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';

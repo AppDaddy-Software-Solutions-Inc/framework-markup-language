@@ -71,7 +71,7 @@ class _TextViewState extends WidgetState<TextView>
     Widget view;
     if (widget.model.raw)
          view = _getSimpleTextView();
-    else return _getSpanTextView(rebuild: textHasChanged);
+    else return _getRichTextView(rebuild: textHasChanged);
 
     // constrained?
     bool isNotExpandedChild = false;
@@ -114,7 +114,7 @@ class _TextViewState extends WidgetState<TextView>
     }
   }
 
-  Widget _getSpanTextView({required bool rebuild})
+  Widget _getRichTextView({required bool rebuild})
   {
     TextStyle? textStyle = _getStyle();
     TextOverflow textOverflow = _getOverflow();

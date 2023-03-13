@@ -765,7 +765,7 @@ class WidgetModel implements IDataSourceListener
 
       case "tip":
       case "tooltip":
-        if (Xml.get(node: node, tag: "label") != null)
+        if (Xml.attribute(node: node, tag: "label") != null || Xml.attribute(node: node, tag: "text") != null)
              model = v1.TooltipModel.fromXml(parent, node);
         else model = v2.TooltipModel.fromXml(parent, node);
         break;

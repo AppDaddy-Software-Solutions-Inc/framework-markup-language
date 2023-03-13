@@ -48,7 +48,7 @@ class _TableHeaderCellViewState extends WidgetState<TableHeaderCellView>
 
       //this must go after the children are determined
       Map<String, dynamic> align = AlignmentHelper.alignWidgetAxis(2, 'col',
-          widget.model.center, widget.model.halign, widget.model.valign);
+          widget.model.center, widget.model.halign, widget.model.valign ?? 'center');
       CrossAxisAlignment? crossAlignment = align['crossAlignment'];
       MainAxisAlignment? mainAlignment = align['mainAlignment'];
       WrapAlignment? mainWrapAlignment = align['mainWrapAlignment'];
@@ -77,8 +77,8 @@ class _TableHeaderCellViewState extends WidgetState<TableHeaderCellView>
       ///////////////
       // int index              = widget.model.index ?? 0;
       Color color = widget.model.color ?? t.inversePrimary;
-      Color bordercolor = widget.model.bordercolor ?? Colors.transparent;
-      double borderwidth = widget.model.borderwidth ?? 1;
+      Color borderColor = widget.model.bordercolor ?? Colors.transparent;
+      double borderWidth = widget.model.borderwidth ?? 1;
       // Color outerbordercolor = widget.model.outerbordercolor ?? Colors.transparent;
 
       //////////
@@ -123,7 +123,7 @@ class _TableHeaderCellViewState extends WidgetState<TableHeaderCellView>
             child:
             GestureDetector(child: icon, onTap: () => widget.model.onSort()));
         view = Stack(fit: StackFit.passthrough, children: [
-          contents,
+          Padding(padding: EdgeInsets.only(left: 4, right: 12), child: contents),
           Positioned(top: 0, bottom: 0, right: 0, child: sort)
         ]);
 
@@ -143,10 +143,10 @@ class _TableHeaderCellViewState extends WidgetState<TableHeaderCellView>
           decoration: BoxDecoration(
               color: color,
               border: Border(
-                  left: BorderSide(color: bordercolor, width: borderwidth),
-                  right: BorderSide(color: bordercolor, width: borderwidth),
-                  top: BorderSide(color: bordercolor, width: borderwidth),
-                  bottom: BorderSide(color: bordercolor, width: borderwidth))));
+                  left: BorderSide(color: borderColor, width: borderWidth),
+                  right: BorderSide(color: borderColor, width: borderWidth),
+                  top: BorderSide(color: borderColor, width: borderWidth),
+                  bottom: BorderSide(color: borderColor, width: borderWidth))));
 
       ///////////////
       /* Outer Box */

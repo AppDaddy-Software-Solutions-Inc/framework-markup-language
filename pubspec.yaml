@@ -160,6 +160,10 @@ dependencies:
   jaguar_jwt: ^3.0.0
   # BSD-3-Clause
 
+  # Updated 2023/03/13
+  js: ^0.6.5
+  # BSD-3-Clause
+
   # Updated 2022/12/13
   latlong2: ^0.8.1
   # BSD-3-Clause
@@ -220,8 +224,8 @@ dependencies:
   # syncfusion_flutter_charts: ^20.1.57
   # https://pub.dev/packages/syncfusion_flutter_charts/license
 
-  # Updated 2022/12/28
-  stream_channel:
+  # Updated 2023/03/13
+  stream_channel: ^2.1.1
   # BSD-3-Clause
 
   # Updated 2022/05/26

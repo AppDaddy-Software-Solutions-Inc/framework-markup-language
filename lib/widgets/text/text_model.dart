@@ -2,6 +2,7 @@
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
+import 'package:fml/widgets/span/span_model.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:xml/xml.dart';
@@ -498,6 +499,8 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
     // Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
   }
+
+  bool get isSpan => (parent is SpanModel);
 
   @override
   Widget getView({Key? key}) => getReactiveView(TextView(this));

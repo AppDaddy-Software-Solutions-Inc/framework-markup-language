@@ -68,10 +68,10 @@ class _TextViewState extends WidgetState<TextView>
     text = widget.model.value;
 
     // build the view
-    Widget view;
-    if (widget.model.raw)
-         view = _getSimpleTextView();
-    else return _getRichTextView(rebuild: textHasChanged);
+    Widget view = widget.model.raw ? _getSimpleTextView() : _getRichTextView(rebuild: textHasChanged);
+
+    // is part of a larger span?
+    if (widget.model.isSpan) return SizedBox(child: view);
 
     // constrained?
     bool isNotExpandedChild = false;

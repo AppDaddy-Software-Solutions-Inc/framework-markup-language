@@ -268,6 +268,8 @@ class System extends WidgetModel implements IEventManager
     _useragent    = StringObservable(Binding.toKey('useragent'), Platform.useragent, scope: scope);
     _version      = StringObservable(Binding.toKey('version'), version, scope: scope);
     _uuid         = StringObservable(Binding.toKey('uuid'), S.newId(), scope: scope, getter: S.newId);
+    // this satisfies/eliminates the compiler warning
+    if (_uuid == null) print(_uuid);
 
     // system dates
     _epoch  = IntegerObservable(Binding.toKey('epoch'), epoch(), scope: scope, getter: epoch);

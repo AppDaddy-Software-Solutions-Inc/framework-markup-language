@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'element_box.dart';
 
 /// Bubble serves as the tooltip container
 class Bubble extends StatefulWidget {

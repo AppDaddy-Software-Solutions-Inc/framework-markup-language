@@ -1,10 +1,10 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
-import 'dart:html';
+import 'package:universal_html/html.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
-import 'dart:js';
+import 'package:universal_html/js.dart';
 import 'package:fml/helper/common_helpers.dart';
 
 class Platform

@@ -406,3 +406,5 @@ analysis_options.yaml
 .idea/modules.xml
 windows/flutter/generated_plugin_registrant.cc
 android/keystore.properties
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist

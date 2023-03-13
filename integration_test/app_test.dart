@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fml/system.dart';
-import 'package:integration_test/integration_test.dart';
 
 import 'package:fml/main.dart' as MAIN;
 
 void main() {
-  final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-
   group('[E2E INTEGRATION TEST]', ()
   {
     test('Compile Completed', () async => print('[PRINT] Commencing Application Testing'));

@@ -5,13 +5,14 @@ typedef RetryIndicator = void Function(Duration retry);
 
 class SseTransformer implements StreamTransformer<List<int>, Event> {
   RetryIndicator? retryIndicator;
+  late final StreamController<Event> _controller;
 
   SseTransformer({this.retryIndicator});
 
   @override
-  Stream<Event> bind(Stream<List<int>> stream) {
-    late StreamController<Event> controller;
-    controller = StreamController(onListen: () {
+  Stream<Event> bind(Stream<List<int>> stream)
+  {
+    _controller = StreamController(onListen: () {
       // the event we are currently building
       var currentEvent = Event();
       // the regexes we will use later
@@ -32,7 +33,7 @@ class SseTransformer implements StreamTransformer<List<int>, Event> {
                 removeEndingNewlineRegex.firstMatch(currentEvent.data!)!;
             currentEvent.data = match.group(1);
           }
-          controller.add(currentEvent);
+          _controller.add(currentEvent);
           currentEvent = Event();
           return;
         }
@@ -62,7 +63,12 @@ class SseTransformer implements StreamTransformer<List<int>, Event> {
         }
       });
     });
-    return controller.stream;
+    return _controller.stream;
+  }
+
+  dispose()
+  {
+    if (!_controller.isClosed) _controller.close();
   }
 
   @override

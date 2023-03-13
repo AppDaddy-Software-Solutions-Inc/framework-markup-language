@@ -78,6 +78,10 @@ dependencies:
   flutter_beacon: ^0.5.1
   # BSD-3-Clause
 
+  # Updated 2023/03/13
+  flutter_highlight: ^0.7.0
+  # MIT
+
   # Added 2022/06/10
   flutter_html: ^3.0.0-alpha.5
   # MIT
@@ -136,6 +140,10 @@ dependencies:
   google_maps_flutter_web: ^0.3.3
   # BSD-3-Clause, MIT
 
+  # Updated 2023/03/13
+  highlight: ^0.7.0
+  # MIT
+
   # Updated 2022/05/26
   hive: ^2.2.1
   # Apache-2.0
@@ -156,9 +164,17 @@ dependencies:
   latlong2: ^0.8.1
   # BSD-3-Clause
 
+  # Updated 2023/03/13
+  mime: ^1.0.4
+  # BSD-3-Clause
+
   # Updated 2023/01/05
   mqtt_client: ^9.7.4
   # BSD-3-Clause, MIT
+
+  # Updated 2023/03/13
+  ndef: ^0.3.1
+  # MIT
 
   # Updated 2022/10/31
   open_filex: ^4.2.2
@@ -195,6 +211,10 @@ dependencies:
   # Updated 2022/05/26
   provider: ^6.0.3
   # MIT
+
+  # Updated 2023/03/13
+  quiver: ^3.2.1
+  # Apache-2.0
 
   # Updated 2022/05/26
   # syncfusion_flutter_charts: ^20.1.57

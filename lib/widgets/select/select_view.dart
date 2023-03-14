@@ -225,7 +225,7 @@ class _SelectViewState extends WidgetState<SelectView>
       );
       focus.addListener(onFocusChange);
     } else {
-      OptionModel? dValue = ((_selected != null) && (_selected?.value != null)  && (_selected?.value == '')) ? null : _selected;
+      OptionModel? dValue = (_selected != null && _selected?.value != null && _selected?.value == '') ? null : _selected;
       view = widget.model.editable != false
           ? MouseRegion(
               cursor: SystemMouseCursors.click,

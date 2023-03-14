@@ -10,9 +10,20 @@ import 'package:fml/helper/common_helpers.dart';
 
 class Filter extends TransformModel implements ITransform
 {
-  ////////////
-  /* filter */
-  ////////////
+  // enabled
+  BooleanObservable? _enabled;
+  set enabled(dynamic v) {
+    if (_enabled != null) {
+      _enabled!.set(v);
+    }
+    else if (v != null)
+    {
+      _enabled = BooleanObservable(Binding.toKey(id, 'enabled'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get enabled => _enabled?.get() ?? true;
+
+  // filter
   StringObservable? _filter;
   set filter (dynamic v)
   {
@@ -26,7 +37,7 @@ class Filter extends TransformModel implements ITransform
     }
     else if (v != null)
     {
-      _filter = StringObservable(Binding.toKey(id, 'filter'), v, scope: scope);
+      _filter = StringObservable(Binding.toKey(id, 'filter'), v, scope: scope, listener: onPropertyChange);
     }
   }
   String? get filter
@@ -38,7 +49,7 @@ class Filter extends TransformModel implements ITransform
 
   Filter(WidgetModel? parent, {String? id, dynamic enabled, dynamic filter}) : super(parent, id)
   {
-    this.enabled  = enabled ?? true;
+    this.enabled  = enabled;
     this.filter   = filter;
   }
 

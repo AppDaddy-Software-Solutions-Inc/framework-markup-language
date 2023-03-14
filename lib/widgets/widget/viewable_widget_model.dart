@@ -247,34 +247,16 @@ class ViewableWidgetModel extends WidgetModel
 
   bool get needsVisibilityDetector => _needsVisibilityDetector ?? false;
 
-  /// onstage event string - fires when object is 100 on screen
-  StringObservable? _onstage;
-
-  set onstage(dynamic v) {
-    if (_onstage != null) {
-      _onstage!.set(v);
-    } else if (v != null) {
-      _onstage =
-          StringObservable(Binding.toKey(id, 'onstage'), v, scope: scope);
-
-      // create the visibility tag
-      visibleArea   = 0;
-      visibleHeight = 0;
-      visibleWidth  = 0;
-    }
-  }
-
-  String? get onstage => _onstage?.get();
-
-  /// offstage event string - fires when object is 100 on screen
-  StringObservable? _offstage;
-
-  set offstage(dynamic v) {
-    if (_offstage != null) {
-      _offstage!.set(v);
-    } else if (v != null) {
-      _offstage =
-          StringObservable(Binding.toKey(id, 'offstage'), v, scope: scope);
+  /// onscreen event string - fires when object is 100 on screen
+  StringObservable? _onscreen;
+  set onscreen(dynamic v) 
+  {
+    if (_onscreen != null) 
+    {
+      _onscreen!.set(v);
+    } else if (v != null) 
+    {
+      _onscreen = StringObservable(Binding.toKey(id, 'onscreen'), v, scope: scope);
 
       // create the visibility tag
       visibleArea   = 0;
@@ -282,8 +264,27 @@ class ViewableWidgetModel extends WidgetModel
       visibleWidth  = 0;
     }
   }
+  String? get onscreen => _onscreen?.get();
 
-  String? get offstage => _offstage?.get();
+  /// offscreen event string - fires when object is 100 on screen
+  StringObservable? _offscreen;
+  set offscreen(dynamic v) 
+  {
+    if (_offscreen != null) 
+    {
+      _offscreen!.set(v);
+    } 
+    else if (v != null) 
+    {
+      _offscreen = StringObservable(Binding.toKey(id, 'offscreen'), v, scope: scope);
+
+      // create the visibility tag
+      visibleArea   = 0;
+      visibleHeight = 0;
+      visibleWidth  = 0;
+    }
+  }
+  String? get offscreen => _offscreen?.get();
 
   /// visible area - percent of object visible on screen
   DoubleObservable? _visibleArea;
@@ -453,18 +454,18 @@ class ViewableWidgetModel extends WidgetModel
         S.toDouble(Xml.get(node: xml, tag: 'maxheight'));
 
     // properties
-    visible = Xml.get(node: xml, tag: 'visible');
-    enabled = Xml.get(node: xml, tag: 'enabled');
-    width = Xml.get(node: xml, tag: 'width');
-    height = Xml.get(node: xml, tag: 'height');
-    halign = Xml.get(node: xml, tag: 'halign');
-    valign = Xml.get(node: xml, tag: 'valign');
-    onstage = Xml.get(node: xml, tag: 'onstage');
-    offstage = Xml.get(node: xml, tag: 'offstage');
+    visible  = Xml.get(node: xml, tag: 'visible');
+    enabled  = Xml.get(node: xml, tag: 'enabled');
+    width    = Xml.get(node: xml, tag: 'width');
+    height   = Xml.get(node: xml, tag: 'height');
+    halign   = Xml.get(node: xml, tag: 'halign');
+    valign   = Xml.get(node: xml, tag: 'valign');
+    onscreen = Xml.get(node: xml, tag: 'onscreen');
+    onscreen = Xml.get(node: xml, tag: 'offscreen');
 
     // view requires a VisibilityDetector if either onstage or offstage is set or
     // someone is bound to my visibility
-    _needsVisibilityDetector = !S.isNullOrEmpty(onstage) || !S.isNullOrEmpty(offstage) ||
+    _needsVisibilityDetector = !S.isNullOrEmpty(onscreen) || !S.isNullOrEmpty(offscreen) ||
             WidgetModel.isBound(this, Binding.toKey(id, 'visiblearea')) ||
             WidgetModel.isBound(this, Binding.toKey(id, 'visibleheight')) ||
             WidgetModel.isBound(this, Binding.toKey(id, 'visiblewidth'));
@@ -621,19 +622,19 @@ class ViewableWidgetModel extends WidgetModel
 
     if (visibleArea! > 1 && !hasGoneOnscreen)
     {
-      if (!S.isNullOrEmpty(_onstage))
+      if (!S.isNullOrEmpty(_onscreen))
       {
         print('Calling onstage');
-        EventHandler(this).execute(_onstage);
+        EventHandler(this).execute(_onscreen);
       }
       hasGoneOnscreen = true;
     }
     else if (visibleArea! == 0 && hasGoneOnscreen)
     {
-      if (!S.isNullOrEmpty(_offstage))
+      if (!S.isNullOrEmpty(_offscreen))
       {
         print('Calling offstage');
-        EventHandler(this).execute(_offstage);
+        EventHandler(this).execute(_offscreen);
       }
       hasGoneOnscreen = false;
     }

@@ -110,7 +110,7 @@ class TooltipModel extends ViewableWidgetModel implements IWidgetView
       _arrow = BooleanObservable(Binding.toKey(id, 'arrow'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  bool get arrow => _arrow?.get() ?? false;
+  bool get arrow => _arrow?.get() ?? true;
   
   /// [timeout] Number of seconds until the tooltip disappears automatically
   /// The default value is 0 (zero) which means it never disappears.

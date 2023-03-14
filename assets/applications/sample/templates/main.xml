@@ -2,7 +2,7 @@
 
 	<BOX center="true" pad="20">
 
-		<IMAGE url="assets/images/fml-logo.png" width="100"/>
+		<IMAGE url="images/fml-logo.png" width="100"/>
 
 		<PAD top="20"/>
 		<TXT value="Flutter Markup Language" style="h4" wrap="true"/>
@@ -19,16 +19,16 @@
 		<ROW wrap="true">
 
 			<BTN onclick="open('https://discord.gg/NEXAXmNXTZ');">
-				<IMAGE url="assets/images/discord.svg" height="40"/>
+				<IMAGE url="images/discord.svg" height="40"/>
 			</BTN>
 			<BTN onclick="open('https://www.youtube.com/channel/UC96zHGCBQT_yklB1cKgR0qQ?sub_confirmation=1');" center="true">
-				<IMAGE url="assets/images/youtube.svg" height="40"/>
+				<IMAGE url="images/youtube.svg" height="40"/>
 			</BTN>
 			<BTN onclick="open('https://medium.com/@TheOlajos');" center="true">
-				<IMAGE url="assets/images/medium.svg" height="40"/>
+				<IMAGE url="images/medium.svg" height="40"/>
 			</BTN>
 			<BTN onclick="open('https://github.com/AppDaddy-Software-Solutions-Inc/Flutter-Markup-Language');" center="true">
-				<IMAGE url="assets/images/github.svg" height="40"/>
+				<IMAGE url="images/github.svg" height="40"/>
 			</BTN>
 
 		</ROW>

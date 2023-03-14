@@ -53,7 +53,7 @@ class _SplashState extends State<Splash>
 
     var svgLogo = SvgPicture.asset("assets/images/splash.svg", width: width);
     var gifLogo = Image.asset("assets/images/splash.gif", width: width);
-    return Container(color: Colors.white, child: Stack(children: [
+    return Container(color: Colors.black, child: Stack(children: [
       Center(child: gifLogo),
       Center(child: svgLogo),
     ]));

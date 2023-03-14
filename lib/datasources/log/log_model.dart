@@ -12,9 +12,6 @@ class LogModel extends DataSourceModel implements IDataSource
   LogModel(WidgetModel parent, String? id) : super(parent, id);
 
   @override
-  Data? get data => Log().data;
-
-  @override
   bool get autoexecute => super.autoexecute ?? true;
 
   static LogModel? fromXml(WidgetModel parent, XmlElement xml)
@@ -31,6 +28,16 @@ class LogModel extends DataSourceModel implements IDataSource
       model = null;
     }
     return model;
+  }
+
+  Future<bool> start({bool refresh = false, String? key}) async
+  {
+    if (enabled == false) return false;
+
+    busy = true;
+    Data data = Log().data;
+    busy = false;
+    return await super.onSuccess(data);
   }
 
   @override

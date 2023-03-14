@@ -454,14 +454,14 @@ class ViewableWidgetModel extends WidgetModel
         S.toDouble(Xml.get(node: xml, tag: 'maxheight'));
 
     // properties
-    visible  = Xml.get(node: xml, tag: 'visible');
-    enabled  = Xml.get(node: xml, tag: 'enabled');
-    width    = Xml.get(node: xml, tag: 'width');
-    height   = Xml.get(node: xml, tag: 'height');
-    halign   = Xml.get(node: xml, tag: 'halign');
-    valign   = Xml.get(node: xml, tag: 'valign');
-    onscreen = Xml.get(node: xml, tag: 'onscreen');
-    onscreen = Xml.get(node: xml, tag: 'offscreen');
+    visible   = Xml.get(node: xml, tag: 'visible');
+    enabled   = Xml.get(node: xml, tag: 'enabled');
+    width     = Xml.get(node: xml, tag: 'width');
+    height    = Xml.get(node: xml, tag: 'height');
+    halign    = Xml.get(node: xml, tag: 'halign');
+    valign    = Xml.get(node: xml, tag: 'valign');
+    onscreen  = Xml.get(node: xml, tag: 'onscreen');
+    offscreen = Xml.get(node: xml, tag: 'offscreen');
 
     // view requires a VisibilityDetector if either onstage or offstage is set or
     // someone is bound to my visibility

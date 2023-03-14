@@ -97,6 +97,7 @@
         <div id="loading" class="centered"></div>
 
         <script>
+        // canvaskit, html, auto
         let renderer = "canvaskit";
         console.log("Rendering with " + renderer);
 
@@ -110,7 +111,7 @@
                 },
                 onEntrypointLoaded: async function(engineInitializer) {
                     let config = {
-                        renderer: renderer ? "html" : "canvaskit",
+                        renderer: renderer,
                     }
                     // loading.textContent = "Initializing engine...";
                     let appRunner = await engineInitializer.initializeEngine(config)

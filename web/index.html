@@ -73,46 +73,40 @@
 
     <body bgcolor="black">
 
-        <div class="centered">
-            <img id="logo" class="centered" alt="Flutter Markup Langauge" height="338" width="600" src="assets/assets/images/loading.gif"/>
-        </div>
-
+        <!-- modify loading image here. Also, make sure you change <body bgcolor="black"> to the correct background color -->
+        <img id="logo" src="assets/assets/images/loading.gif"/>
         <style type="text/css">
-        .centered {
+        #logo
+		{
             position: fixed;
             top: 50%;
             left: 50%;
-            margin-top: -169px;
-            margin-left: -300px;
+            transform: translateX(-50%) translateY(-50%);
         }
         </style>
 
-        <!--
-        Flutter Renderer (auto, html, canvaskit)
-        auto      - automatically chooses which renderer to use. This option chooses the HTML renderer when the app is running in a mobile browser, and CanvasKit renderer when the app is running in a desktop browser.
-        html      - always use the HTML renderer. Uses a combination of HTML elements, CSS, Canvas elements, and SVG elements. This renderer has a smaller download size.
-        canvaskit - always use the CanvasKit renderer. This renderer is fully consistent with Flutter mobile and desktop, has faster performance with higher widget density, but adds about 2MB in download size.
-        -->
-
-        <div id="loading" class="centered"></div>
+        <div id="loading" class="centered"/>
 
         <script>
-        // canvaskit, html, auto
+        // Set Flutter Renderer
+        // auto      - automatically chooses which renderer to use. This option chooses the HTML renderer when the app is running in a mobile browser, and CanvasKit renderer when the app is running in a desktop browser.
+        // html      - always use the HTML renderer. Uses a combination of HTML elements, CSS, Canvas elements, and SVG elements. This renderer has a smaller download size.
+        // canvaskit - always use the CanvasKit renderer. This renderer is fully consistent with Flutter mobile and desktop, has faster performance with higher widget density, but adds about 2MB in download size.
+
         let renderer = "canvaskit";
         console.log("Rendering with " + renderer);
 
-        window.addEventListener('load', function(ev) {
+        // load main.dart.js
+        window.addEventListener('load', function(ev)
+        {
             var loading = document.querySelector('#loading');
-            // loading.textContent = "Loading entrypoint...";
-            // Download main.dart.js
-            _flutter.loader.loadEntrypoint({
-                serviceWorker: {
-                  serviceWorkerVersion: serviceWorkerVersion,
-                },
-                onEntrypointLoaded: async function(engineInitializer) {
-                    let config = {
-                        renderer: renderer,
-                    }
+            // loading.textContent = "Loading, please wait ...";
+            _flutter.loader.loadEntrypoint(
+            {
+                serviceWorker: {serviceWorkerVersion: serviceWorkerVersion},
+                onEntrypointLoaded: async function(engineInitializer)
+                {
+                    let config = {renderer: renderer}
                     // loading.textContent = "Initializing engine...";
                     let appRunner = await engineInitializer.initializeEngine(config)
                     // loading.textContent = "Running app...";

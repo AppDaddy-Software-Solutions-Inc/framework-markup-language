@@ -157,7 +157,9 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
 
     Widget scsv;
     ScrollBehavior behavior;
-    if(widget.model.onpulldown != null || widget.model.draggable == true)
+    // Check to see if pulldown is enabled, draggable is enabled, or horizontal is enabled (as web doesnt support device horizontal scrolling) and enable
+    // dragging for the scroller.
+    if(widget.model.onpulldown != null || widget.model.draggable == true || direction == Axis.horizontal)
          behavior = ScrollConfiguration.of(context).copyWith(scrollbars: widget.model.scrollbar == false ? false : true, dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse});
     else behavior = ScrollConfiguration.of(context).copyWith(scrollbars: widget.model.scrollbar == false ? false : true);
 

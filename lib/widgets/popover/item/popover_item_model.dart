@@ -20,7 +20,8 @@ class PopoverItemModel extends WidgetModel {
     }
   }
 
-  String? get label => _label?.get();
+  // label will crash if null
+  String? get label => _label?.get() ?? "";
 
   /////////////
   /* onclick */

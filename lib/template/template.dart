@@ -240,24 +240,33 @@ class Template
 
     String xml = '''
     <ERROR linkable="true">
-      <BOX width="100%" height="100%" color1="white" color2="grey" start="topleft" end="bottomright" center="true">
-        <ICON icon="error_outline" size="128" color="red" />
-        <PAD top="30" />
-        <CENTER>
+      <BOX width="100%" height="100%" color="#add4de" layout="stack">
+        
+        <POS bottom="0" right="0">
+        <IMAGE url="assets/assets/images/404.png" />
+        </POS>
+        
+        <POS top="50">
         <TEXT id="e1" size="26" color="#35363A" bold="true">
         <VALUE><![CDATA[$err1]]></VALUE>
         </TEXT> 
-        </CENTER>
-        <PAD top="10" visible="=!noe({e2})" />
-        <TEXT id="e2" visible="=!noe({e2})" size="16" color="red">
+        </POS>
+        
+        <POS top="80" visible="=!noe({e2})" >
+        <TEXT id="e2" size="16" color="red">
         <VALUE><![CDATA[$err2]]></VALUE>
-        </TEXT> 
-        <PAD top="10" visible="=!noe({e3})" />
-        <TEXT id="e3" visible="=!noe({e3})" size="16" color="#35363A">
+        </TEXT>
+        </POS>
+         
+        <POS top="100" visible="=!noe({e2})" >
+        <TEXT id="e3" size="16" color="#35363A">
         <VALUE><![CDATA[$err3]]></VALUE>
         </TEXT> 
-        <PAD top="30" />
+        </POS>
+        
+        <POS bottom="10">
         $backbutton
+        </POS>
       </BOX>
     </ERROR>
     ''';

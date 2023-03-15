@@ -243,7 +243,7 @@ class Template
       <BOX width="100%" height="100%" color="#add4de" layout="stack">
         
         <POS bottom="0" right="0">
-        <IMAGE url="assets/assets/images/404.png" />
+          <IMAGE url="assets/assets/images/404.png" width="50%"/>
         </POS>
         
         <POS top="50">

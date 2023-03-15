@@ -236,37 +236,33 @@ class Template
 
   static String errorTemplate(String err1, [String? err2, String? err3])
   {
-    String backbutton = NavigationManager().pages.length > 1 ? '<BUTTON onclick="back()" value="go back" type="text" color="#35363A" />' : '';
+    String backbutton = NavigationManager().pages.length > 1 ? '<BUTTON onclick="back()" ><BOX border="all" expand="false" bordercolor="white" radius="25" pad="8"><ICON icon="arrow_back" color="white" size="30" /></BOX></BUTTON>' : '';
 
     String xml = '''
     <ERROR linkable="true">
       <BOX width="100%" height="100%" color="#add4de" layout="stack">
         
         <POS bottom="0" right="0">
-          <IMAGE url="assets/assets/images/404.png" width="50%"/>
+          <IMAGE url="assets/assets/images/404.png" width="={SYSTEM.screenwidth} &lt; 600 ? '100%' : '50%'"/>
         </POS>
         
-        <POS top="50">
-        <TEXT id="e1" size="26" color="#35363A" bold="true">
+        <BOX pad="20" center="true">
+        
+        <TEXT id="e1" halign="center" style="h3" color="white" bold="true">
         <VALUE><![CDATA[$err1]]></VALUE>
         </TEXT> 
-        </POS>
-        
-        <POS top="80" visible="=!noe({e2})" >
-        <TEXT id="e2" size="16" color="red">
+        <TEXT id="e2" halign="center" style="h3" color="white" visible="=!noe({e2})">
         <VALUE><![CDATA[$err2]]></VALUE>
         </TEXT>
-        </POS>
-         
-        <POS top="100" visible="=!noe({e2})" >
-        <TEXT id="e3" size="16" color="#35363A">
+        <TEXT id="e3" halign="center" style="h3" color="white"  visible="=!noe({e2})">
         <VALUE><![CDATA[$err3]]></VALUE>
         </TEXT> 
-        </POS>
-        
-        <POS bottom="10">
+        <BOX height="20"/>
         $backbutton
-        </POS>
+       
+        <BOX height="80"/>
+        </BOX>
+
       </BOX>
     </ERROR>
     ''';

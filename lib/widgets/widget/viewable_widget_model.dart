@@ -536,12 +536,13 @@ class ViewableWidgetModel extends WidgetModel
 
   Constraint getConstraints() {
     Constraint constraint = Constraint();
-    constraint.minHeight =
-        height ?? _modelConstraints.minHeight ?? minHeight ?? 0.0;
+
+      constraint.minHeight =
+          height ?? _modelConstraints.minHeight ?? minHeight ??  0.0;
+      constraint.minWidth =
+          width ?? _modelConstraints.minWidth ?? minWidth ?? 0.0;
     constraint.maxHeight =
         height ?? _modelConstraints.maxHeight ?? maxHeight ?? double.infinity;
-    constraint.minWidth =
-        width ?? _modelConstraints.minWidth ?? minWidth ?? 0.0;
     constraint.maxWidth =
         width ?? _modelConstraints.maxWidth ?? maxWidth ?? double.infinity;
 

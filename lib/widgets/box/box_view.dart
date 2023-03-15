@@ -145,6 +145,25 @@ class _BoxViewState extends WidgetState<BoxView>
     // return no row/col if only a single child and NOT stack
     // Flex: I removed the single child feature and just used a default column, result: not expanding to parent anymore
     dynamic child;
+
+    // Constrained?
+    bool expand = widget.model.expand;
+    double? height = widget.model.height;
+    double? width = widget.model.width;
+
+    var constr = widget.model.getConstraints();
+
+    ScrollerModel? scrollerModel = widget.model.findParentOfExactType(ScrollerModel);
+
+    if (scrollerModel != null && expand == true)
+    {
+      expand = false;
+      if(scrollerModel.layout == "col" || scrollerModel.layout == "column") width ??= constr.maxWidth;
+      if(scrollerModel.layout == "row") height ??= constr.maxHeight;
+    }
+
+    if (expand == false && height != null && width != null) expand = true;
+
     if (children.length == 1 && widget.model.layout != 'stack')
     {
       child = children[0];
@@ -185,7 +204,8 @@ class _BoxViewState extends WidgetState<BoxView>
     {
       // We add a sizedbox.expand if expand is false to allow for stacks children to correctly align based on the alignment attribute.
       // SizedBox.expand crashes the layout if it is given to a contracting box.
-      if(widget.model.expand == false) children.add(SizedBox.expand());
+      // expand must be grabbed in its form b
+      if(expand == true) children.add(SizedBox.expand());
       child = aligned != null ? Stack(children: children, alignment: aligned, fit: StackFit.loose) : Stack(children: children, fit: StackFit.loose);
     }
 
@@ -363,23 +383,9 @@ class _BoxViewState extends WidgetState<BoxView>
         view = ClipRect(child: view);
     }
 
-    // Constrained?
-    bool expand = widget.model.expand;
-    double? height = widget.model.height;
-    double? width = widget.model.width;
 
-    var constr = widget.model.getConstraints();
 
-    ScrollerModel? scrollerModel = widget.model.findParentOfExactType(ScrollerModel);
 
-    if (scrollerModel != null && expand == true)
-    {
-      expand = false;
-      if(scrollerModel.layout == "col" || scrollerModel.layout == "column") width ??= constr.maxWidth;
-      if(scrollerModel.layout == "row") height ??= constr.maxHeight;
-    }
-
-    if (expand == false && height != null && width != null) expand = true;
 
     if (expand == false)
     {

@@ -37,7 +37,7 @@ final String applicationTitle = "Flutter Markup Language " + version;
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://applications/<app> to use the asset applications
 
-String get defaultDomain => 'https://fml.dev';
+String get defaultDomain => 'https://fml.appdaddy.co';
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup

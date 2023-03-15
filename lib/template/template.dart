@@ -236,25 +236,25 @@ class Template
 
   static String errorTemplate(String err1, [String? err2, String? err3])
   {
-    String backbutton = NavigationManager().pages.length > 1 ? '<BUTTON onclick="back()" ><BOX border="all" expand="false" bordercolor="white" radius="25" pad="8"><ICON icon="arrow_back" color="white" size="30" /></BOX></BUTTON>' : '';
+    String backbutton = NavigationManager().pages.length > 1 ? '<BUTTON onclick="back()" type="outlined" color="white" ><BOX expand="false" pad="8"><ICON icon="arrow_back" color="white" size="40" /></BOX></BUTTON>' : '';
 
     String xml = '''
     <ERROR linkable="true">
       <BOX width="100%" height="100%" color="#add4de" layout="stack">
         
         <POS bottom="0" right="0">
-          <IMAGE url="assets/assets/images/404.png" width="={SYSTEM.screenwidth} &lt; 600 ? '100%' : '50%'"/>
+          <IMAGE url="assets/assets/images/404.png" width="={SYSTEM.screenwidth} &lt; 700 ? '100%' : '50%'"/>
         </POS>
         
         <BOX pad="20" center="true">
         
-        <TEXT id="e1" halign="center" style="h3" color="white" bold="true">
+        <TEXT id="e1" halign="center" size="={SYSTEM.screenwidth} &gt; 700 ? '80' : '50'" color="white" bold="true">
         <VALUE><![CDATA[$err1]]></VALUE>
         </TEXT> 
-        <TEXT id="e2" halign="center" style="h3" color="white" visible="=!noe({e2})">
+        <TEXT id="e2" halign="center" size="={SYSTEM.screenwidth} &gt; 700 ? '80' : '50'" color="white" visible="=!noe({e2})">
         <VALUE><![CDATA[$err2]]></VALUE>
         </TEXT>
-        <TEXT id="e3" halign="center" style="h3" color="white"  visible="=!noe({e2})">
+        <TEXT id="e3" halign="center" size="={SYSTEM.screenwidth} &gt; 700 ? '80' : '50'" color="white"  visible="=!noe({e2})">
         <VALUE><![CDATA[$err3]]></VALUE>
         </TEXT> 
         <BOX height="20"/>

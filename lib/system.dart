@@ -41,7 +41,7 @@ String get defaultDomain => 'https://fml.appdaddy.co';
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
-final ApplicationTypes appType = ApplicationTypes.SingleApp;
+final ApplicationTypes appType = ApplicationTypes.MultiApp;
 
 enum ApplicationTypes{ SingleApp, MultiApp }
 

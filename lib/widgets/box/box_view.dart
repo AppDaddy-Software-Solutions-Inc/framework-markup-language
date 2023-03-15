@@ -183,7 +183,7 @@ class _BoxViewState extends WidgetState<BoxView>
     // stack takes positioned but ignores layout attributes.
     else if (widget.model.layout == 'stack')
     {
-      children.add(SizedBox.expand());
+      if(widget.model.expand == false) children.add(SizedBox.expand());
       child = aligned != null ? Stack(children: children, alignment: aligned, fit: StackFit.loose) : Stack(children: children, fit: StackFit.loose);
     }
 

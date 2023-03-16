@@ -99,10 +99,10 @@ class _TextViewState extends WidgetState<TextView>
 
     try
     {
-      if (value!.contains(':')) value = S.parseEmojis(value);
+      if (value?.contains(':') ?? false) value = S.parseEmojis(value!);
       markupTextValues = [];
       parse.textValues = [];
-      parse.matchElements(widget.model.value ?? '');
+      parse.matchElements(value ?? '');
       parse.textValues.isNotEmpty
           ? markupTextValues = parse.textValues
           : markupTextValues = [];

@@ -91,9 +91,11 @@
         }
         </style>
 
-        <!-- modify loading image here. Also, make sure you change <body bgcolor="black"> to the correct background color -->
-        <img class="centered" alt="Flutter Markup Language" src="assets/assets/images/loading.gif"/>
-        <p id="loading" class="centered text"/>
+        <!-- modify loadingImage here. Also, make sure you change <body bgcolor="black"> to the correct background color -->
+        <img id="loadingImage" class="centered" alt="Flutter Markup Language" src="assets/assets/images/loading.gif"/>
+
+        <!-- uncomment the loadingText.textContent lines if you wish to display text overlaid on the loading image -->
+        <p id="loadingText" class="centered text"/>
 
         <script>
         // Set Flutter Renderer
@@ -107,16 +109,25 @@
         // load main.dart.js
         window.addEventListener('load', function(ev)
         {
-            var loading = document.querySelector('#loading');
-            //loading.textContent = "Loading, please wait ...";
+            var loadingImage = document.querySelector('#loadingImage');
+            var loadingText  = document.querySelector('#loadingText');
+
+            // if (loadingText != null) loadingText.textContent = "Loading, please wait ...";
             _flutter.loader.loadEntrypoint(
             {
                 serviceWorker: {serviceWorkerVersion: serviceWorkerVersion},
                 onEntrypointLoaded: async function(engineInitializer)
                 {
                     let config = {renderer: renderer}
-                    //loading.textContent = "Initializing engine...";
+
+                    //if (loadingText != null) loadingText.textContent = "Initializing engine...";
                     let appRunner = await engineInitializer.initializeEngine(config)
+
+                    // remove loading image and text
+                    if (loadingImage != null) loadingImage.remove();
+                    if (loadingText  != null) loadingText.remove();
+
+                    // run the app
                     await appRunner.runApp();
                 }
             });

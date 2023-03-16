@@ -31,6 +31,10 @@
 - [ ] I have tested the changes on any pieces it may affect in both FMLPAD and my own test.
 - [ ] I have submitted a PR to the documentation to reflect these changes.
 - [ ] I have attached an example update for FMLPAD for any examples that will be affected by my change.
+- [ ] I have attached a test template with comments that highlights some of my main changes.
+
+### Test template with comments for reviewer (paste here):
+Paste a test case template here with comments on how to use and what to expect.
 
 ## Documentation and Examples
 
@@ -38,4 +42,9 @@
 -
 
 ### Updated PAD Example and name (paste here if applicable):
+Paste a pad example here with comments on what to expect, how to use, and relevant documentation line comments.
+
+
+
+
 

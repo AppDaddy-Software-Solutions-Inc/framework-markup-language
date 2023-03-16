@@ -118,9 +118,8 @@
                 serviceWorker: {serviceWorkerVersion: serviceWorkerVersion},
                 onEntrypointLoaded: async function(engineInitializer)
                 {
+                    // if (loadingText != null) loadingText.textContent = "Initializing engine...";
                     let config = {renderer: renderer}
-
-                    //if (loadingText != null) loadingText.textContent = "Initializing engine...";
                     let appRunner = await engineInitializer.initializeEngine(config)
 
                     // remove loading image and text

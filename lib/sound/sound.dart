@@ -3,6 +3,9 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:io' show Platform;
 
+import 'package:fml/log/manager.dart';
+
+
 class Sound {
   static AudioCache assetPlayer = AudioCache(); // asset caching for mobile only
   static AudioPlayer advancedPlayer = AudioPlayer();
@@ -26,24 +29,30 @@ class Sound {
 //  /web/assets/audio
 //  then play like so: Sound.playLocal('beep.mp3');
   static playLocal(String localPath, {int? duration}) async { // dir
-    await advancedPlayer.play(localPath, isLocal: true);
-    if (duration != null && duration > 0)
-      Future.delayed(Duration(seconds: duration), () => advancedPlayer.stop());
+    try {
+      await advancedPlayer.play(localPath, isLocal: true);
+      if (duration != null && duration > 0)
+        Future.delayed(Duration(seconds: duration), () => advancedPlayer.stop());
+    } catch (e) { Log().exception(e, caller: 'playLocal($localPath)'); }
   }
 
 //  To add local audio assets for mobile include the file in
 //  /assets/audio/
 //  and then under `assets:` in pubspec.yaml
   static playAsset(String filename, {int? duration}) async { // dir
-    AudioPlayer ap = await assetPlayer.play(filename);
-    if (duration != null && duration > 0)
-      Future.delayed(Duration(seconds: duration), () => ap.stop());
+    try {
+      AudioPlayer ap = await assetPlayer.play(filename);
+      if (duration != null && duration > 0)
+        Future.delayed(Duration(seconds: duration), () => ap.stop());
+    } catch(e) { Log().exception(e, caller: 'playAsset($filename)'); }
   }
 
 //  To play remote files use a url for the remotePath
   static playRemote(String remotePath, {int? duration}) async { // url
-    await advancedPlayer.play(remotePath, isLocal: false);
-    if (duration != null && duration > 0)
-      Future.delayed(Duration(seconds: duration), () => advancedPlayer.stop());
+    try {
+      await advancedPlayer.play(remotePath, isLocal: false);
+      if (duration != null && duration > 0)
+        Future.delayed(Duration(seconds: duration), () => advancedPlayer.stop());
+    } catch(e) { Log().exception(e, caller: 'playRemote($remotePath)'); }
   }
 }

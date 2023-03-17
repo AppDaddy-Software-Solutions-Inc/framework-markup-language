@@ -51,8 +51,14 @@ class _SplashState extends State<Splash>
     var width = constraints.maxWidth - (constraints.maxWidth/(portrait ? 3 : 1.5));
     if (width > 500) width = 500;
 
-    var svgLogo = SvgPicture.asset("assets/images/splash.svg", width: width);
-    var gifLogo = Image.asset("assets/images/splash.gif", width: width);
+    dynamic svgLogo = Container();
+    dynamic gifLogo = Container();
+    try {
+      svgLogo = SvgPicture.asset("assets/images/splash.svg", width: width);
+    } catch(e) {}
+    try {
+      gifLogo = Image.asset("assets/images/splash.gif", width: width);
+    } catch(e) {}
     return Container(color: Colors.black, child: Stack(children: [
       Center(child: gifLogo),
       Center(child: svgLogo),

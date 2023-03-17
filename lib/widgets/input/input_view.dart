@@ -408,7 +408,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
           hasSetObscure = true;
         }
         keyboardtype = "password";
-        overrideErrorText = "The password must be a minumum of 8 characters, including 1 upper and 1 lowercase.";
+        overrideErrorText = "The password must be at least 8 characters long, including upper/lowercase and a number.";
         validator = TextInputValidators().isPasswordValid;
         break;
 

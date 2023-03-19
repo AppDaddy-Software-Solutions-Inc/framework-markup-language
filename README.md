@@ -16,7 +16,7 @@ To learn more about what FML can do for you or your company and get started buil
 
 For a full language overview of FML and templating applications, check out the [**Language Documentation**](https://github.com/AppDaddy-Software-Solutions-Inc/Flutter-Markup-Language/wiki/Home)
 
-You can see functional demonstrations of all the [**Widget Examples**](https://fml.dev/#/assets/templates/examples/examples.xml)
+You can see functional demonstrations of all the [**Widget Examples**](https://pad.fml.dev)
 
 Finally if you want to dive in, begin with our [**Quick Start Guide**](https://github.com/AppDaddy-Software-Solutions-Inc/Flutter-Markup-Language/wiki/Quick-Start-Guide)
 

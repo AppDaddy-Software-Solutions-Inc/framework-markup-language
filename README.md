@@ -1,5 +1,9 @@
 # Flutter Markup Language
 
+
+#### Disclaimer
+This is a commercial package. To use this package, you need comply with the FML fair source [**License**](https://fml.dev/#/templates/license.xml)
+
 #### FML was designed with 3 provisions for developers
 ##### 1. **Prototype to Application**
 As software developers we know the importance of prototyping but the gap between a non-functional prototype, a functional prototype and an actual application is wide. Solutions either sacrificed capability or time, FML is specifically designed to be able to create a non-functional prototype skeleton which can be fleshed into a functional prototype by additional syntax/parameters. The simplicity of the language requires only modifications/tweaks to complete an application. One huge advantage of this is that pieces of the application can be at different prototyping stages depending on the development while still working as a whole application, this optimization offers a lot of flexibility for design, development and testing.
@@ -16,7 +20,7 @@ To learn more about what FML can do for you or your company and get started buil
 
 For a full language overview of FML and templating applications, check out the [**Language Documentation**](https://github.com/AppDaddy-Software-Solutions-Inc/Flutter-Markup-Language/wiki/Home)
 
-You can see functional demonstrations of all the [**Widget Examples**](https://fml.dev/#/assets/templates/examples/examples.xml)
+You can see functional demonstrations of all the [**Widget Examples**](https://pad.fml.dev)
 
 Finally if you want to dive in, begin with our [**Quick Start Guide**](https://github.com/AppDaddy-Software-Solutions-Inc/Flutter-Markup-Language/wiki/Quick-Start-Guide)
 

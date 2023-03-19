@@ -5,7 +5,7 @@ import 'package:flutter_multi_formatter/formatters/credit_card_cvc_input_formatt
 import 'package:flutter_multi_formatter/formatters/credit_card_expiration_input_formatter.dart';
 import 'package:flutter_multi_formatter/formatters/credit_card_number_input_formatter.dart';
 import 'package:flutter_multi_formatter/formatters/masked_input_formatter.dart';
-import 'package:flutter_multi_formatter/formatters/money_input_formatter.dart';
+import 'package:flutter_multi_formatter/formatters/currency_input_formatter.dart';
 import 'package:flutter_multi_formatter/formatters/phone_input_formatter.dart';
 import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
@@ -389,7 +389,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
         break;
 
       case 'currency':
-        formatters.add(MoneyInputFormatter());
+        formatters.add(CurrencyInputFormatter());
         keyboardtype = "numeric";
         overrideErrorText = "Invalid Currency";
         break;

@@ -121,7 +121,6 @@ import 'package:fml/widgets/variable/variable_model.dart';
 import 'package:fml/widgets/html/html_model.dart';
 import 'package:fml/widgets/span/span_model.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/video/video_model.dart';
 import 'package:fml/widgets/view/view_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -788,9 +787,9 @@ class WidgetModel implements IDataSourceListener
         model = VariableModel.fromXml(parent, node);
         break;
 
-      case "video":
-        model = VideoModel.fromXml(parent, node);
-        break;
+      // case "video":
+      //   model = VideoModel.fromXml(parent, node);
+      //   break;
 
       case "view":
         if (parent is SplitModel)

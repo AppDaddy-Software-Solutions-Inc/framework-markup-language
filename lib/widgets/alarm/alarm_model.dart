@@ -1,14 +1,119 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
+import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:xml/xml.dart';
 import 'package:fml/helper/common_helpers.dart';
 
 class AlarmModel extends WidgetModel
 {
-  final String? value;
+  /// The value of the alarms parent.
+  StringObservable? _value;
+  set value(dynamic v) {
+    if (_value != null) {
+      _value?.set(v);
+    } else if (v != null) {
+      _value = StringObservable(Binding.toKey(id, 'value'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get value => _value?.get();
 
-  AlarmModel(WidgetModel parent, String?  id, {this.value}) : super(parent, id); // ; {key: value}
+  /// The error text value passed to the main widget.
+  StringObservable? _errortext;
+  set errortext(dynamic v) {
+    if (_errortext != null) {
+      _errortext?.set(v);
+    } else if (v != null) {
+      _errortext = StringObservable(Binding.toKey(id, 'errortext'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get errortext => _errortext?.get();
+
+  /// The eval to determine if the error state of the parent is displayed.
+  BooleanObservable? _error;
+  set error(dynamic v) {
+    if (_error != null) {
+      _error?.set(v);
+    } else if (v != null) {
+      _error = BooleanObservable(Binding.toKey(id, 'error'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  bool? get error => _error?.get() ?? false;
+
+  /// The boolean to determine if the alarm marks the field as mandatory if it is alarming. True by default
+  BooleanObservable? _mandatory;
+  set mandatory(dynamic v) {
+    if (_mandatory != null) {
+      _mandatory?.set(v);
+    } else if (v != null) {
+      _mandatory = BooleanObservable(Binding.toKey(id, 'mandatory'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool? get mandatory => _mandatory?.get() ?? true;
+
+  /// The event string to execute when an alarm is triggered.
+  StringObservable? _onalarm;
+  set onalarm(dynamic v) {
+    if (_onalarm != null) {
+      _onalarm?.set(v);
+    } else if (v != null) {
+      _onalarm = StringObservable(Binding.toKey(id, 'value'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get onalarm => _onalarm?.get();
+
+  /// The event string to execute when an alarm is dismissed.
+  StringObservable? _ondismissed;
+  set ondismissed(dynamic v) {
+    if (_ondismissed != null) {
+      _ondismissed?.set(v);
+    } else if (v != null) {
+      _ondismissed = StringObservable(Binding.toKey(id, 'ondismissed'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get ondismissed => _ondismissed?.get();
+
+  /// The type of alarm trigger state. Can be validate (which will trigger on complete() or validate() of the form or the field, focus (when focus is lost), debounce (the built in debounce timer), or all.
+  StringObservable? _alarmtrigger;
+  set alarmtrigger(dynamic v) {
+    if (_alarmtrigger != null) {
+      _alarmtrigger?.set(v);
+    } else if (v != null) {
+      _alarmtrigger = StringObservable(Binding.toKey(id, 'alarmtrigger'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get alarmtrigger => _alarmtrigger?.get();
+
+
+
+  AlarmModel(
+      WidgetModel parent,
+      String?  id, {
+      dynamic value,
+      dynamic error,
+      dynamic errortext,
+      dynamic onalarm,
+      dynamic ondismissed,
+      dynamic alarmtrigger,
+      dynamic mandatory,
+  })
+      : super(parent, id) {
+      this.value = value;
+      this.error = error;
+      this.errortext = errortext;
+      this.onalarm = onalarm;
+      this.ondismissed = ondismissed;
+      this.alarmtrigger = alarmtrigger;
+      this.mandatory = mandatory;
+  }
 
   static AlarmModel? fromXml(WidgetModel parent, XmlElement xml)
   {
@@ -16,6 +121,7 @@ class AlarmModel extends WidgetModel
     try
     {
       model = AlarmModel(parent, Xml.get(node: xml, tag: 'id'), value: Xml.getText(xml));
+      model.deserialize(xml);
     }
     catch(e)
     {
@@ -24,4 +130,21 @@ class AlarmModel extends WidgetModel
     }
     return model;
   }
+
+  @override
+  void deserialize(XmlElement xml) {
+    // deserialize
+    super.deserialize(xml);
+
+    // set properties
+    value = Xml.get(node: xml, tag: 'value');
+    error = Xml.get(node: xml, tag: 'error');
+    errortext = Xml.get(node: xml, tag: 'errortext');
+    onalarm = Xml.get(node: xml, tag: 'onalarm');
+    ondismissed = Xml.get(node: xml, tag: 'ondismissed');
+    //override 'alarmtrigger' with 'type' as the xml attribute name;
+    alarmtrigger = Xml.get(node: xml, tag: 'type');
+    mandatory = Xml.get(node: xml, tag: 'mandatory');
+  }
+
 }

@@ -2,7 +2,7 @@ name: fml
 description: Flutter Markup Language
 homepage: https://fml.dev
 repository: https://github.com/AppDaddy-Software-Solutions-Inc/Flutter-Markup-Language.git
-version: 1.3.0+14
+version: 1.3.0
 
 environment:
   sdk: '>=2.17.0 <3.0.0'
@@ -286,7 +286,7 @@ dev_dependencies:
   test: ^1.21.1
 
 dependency_overrides:
-  firebase_core_platform_interface: ^4.5.1
+  firebase_core_platform_interface: 4.5.1
 
 flutter:
 

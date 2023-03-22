@@ -1,7 +1,7 @@
 <FML linkable="true" onstart="theme({STASH.FmlPadMode} ?? {THEME.brightness} == 'dark' ?'dark':'light');"
     title="FmlPad">
 
-    <VAR id="root" value="https://fml.dev/" />
+    <VAR id="root" value="https://pad.fml.dev/" />
     <VAR id="p1" onchange="dbExample.url.set(join({root.value},{p1.value}))" value="{example}" />
     <VAR id="xml" onchange="{r1} ? fmlpad.replaceChildren({xml},false) : null" value="{editor}" />
 
@@ -206,10 +206,10 @@
                                 height="35" layout="row" radius="5" valign="center"
                                 width="100">
                                 <ICON
-                                    icon="={boxflip.side} == 'front' ? 'code' : 'calendar_view_month'"
+                                    icon="={boxflip.side} == 'back' ? 'code' : 'calendar_view_month'"
                                     size="20" />
                                 <PAD left="5" />
-                                <TEXT value="={boxflip.side} == 'front' ? 'Code' : 'Examples'" />
+                                <TEXT value="={boxflip.side} == 'back' ? 'Code' : 'Examples'" />
                             </BOX>
                         </BUTTON>
 

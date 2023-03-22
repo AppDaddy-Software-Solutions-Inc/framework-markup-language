@@ -5,9 +5,9 @@
     <VAR id="p1" onchange="dbExample.url.set(join({root.value},{p1.value}))" value="{example}" />
     <VAR id="xml" onchange="{r1} ? fmlpad.replaceChildren({xml},false) : null" value="{editor}" />
 
-    <GET id="dbWidgets" root="WIDGETS.WIDGET" ttl="1m" url="=join({root},'fmlpad/widgets.xml')" />
-    <GET id="dbStyles" root="STYLES.STYLE" ttl="1d" url="=join({root},'fmlpad/styles.xml')" />
-    <GET id="dbExamples" root="EXAMPLES.EXAMPLE" url="=join({root},'fmlpad/examples.xml')" />
+    <GET id="dbWidgets" root="WIDGETS.WIDGET" ttl="1m" url="=join({root},'templates/widgets.xml')" />
+    <GET id="dbStyles" root="STYLES.STYLE" ttl="1d" url="=join({root},'templates/styles.xml')" />
+    <GET id="dbExamples" root="EXAMPLES.EXAMPLE" url="=join({root},'templates/examples.xml')" />
     <GET id="dbExample" onsuccess="editor.set({this.response})" refresh="true" url="{p1}" />
 
     <CONST id="default">

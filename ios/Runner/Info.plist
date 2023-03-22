@@ -54,6 +54,8 @@
 	</dict>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>Apple music data access</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>This app needs access to Bluetooth</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Bluetooth Communications</string>
 	<key>NSCalendarsUsageDescription</key>
@@ -70,6 +72,8 @@
 	<string>Keep GPS in background</string>
 	<key>NSLocationUsageDescription</key>
 	<string>Get GPS</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app needs access to the device location for the GPS</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Keep GPS location when open</string>
 	<key>NSMicrophoneUsageDescription</key>

@@ -52,20 +52,6 @@ class _HtmlViewState extends WidgetState<HtmlView>
         ));
 
 
-    //////////////////
-    /* Constrained? */
-    //////////////////
-    if (widget.model.hasSizing) {
-      var constraints = widget.model.getConstraints();
-      view = ConstrainedBox(
-          child: view,
-          constraints: BoxConstraints(
-              minHeight: constraints.minHeight!,
-              maxHeight: constraints.maxHeight!,
-              minWidth: constraints.minWidth!,
-              maxWidth: constraints.maxWidth!));
-    }
-
-    return view;
+    return getConstrainedView(widget, view);
   }
 }

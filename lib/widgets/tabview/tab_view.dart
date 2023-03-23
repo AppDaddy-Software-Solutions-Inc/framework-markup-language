@@ -425,16 +425,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
             index: widget.model.index);
       }
 
-      //////////////////
-      /* Constrained? */
-      //////////////////
-      if (widget.model.hasSizing)
-      {
-        var constraints = widget.model.getConstraints();
-        view = ConstrainedBox(child: view, constraints: BoxConstraints(minHeight: constraints.minHeight!, maxHeight: constraints.maxHeight!, minWidth: constraints.minWidth!, maxWidth: constraints.maxWidth!));
-      }
-
-      return view;
+      return getConstrainedView(widget, view);
     }
     else return Container();
   }

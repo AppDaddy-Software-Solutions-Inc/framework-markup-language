@@ -50,17 +50,6 @@ class _CenterViewState extends WidgetState<CenterView>
       ? widget.children[0]
       : Column(children: widget.children, crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.max));
 
-    /////////////////
-    /* Constrained */
-    /////////////////
-    if (widget.model.hasSizing)
-    {
-      var constraints = widget.model.getConstraints();
-      view = ConstrainedBox(child: view, constraints: BoxConstraints(
-      minHeight: constraints.minHeight!, maxHeight: constraints.maxHeight!,
-          minWidth: constraints.minWidth!, maxWidth: constraints.maxWidth!));
-    }
-
-    return view;
+    return getConstrainedView(widget, view);
   }
 }

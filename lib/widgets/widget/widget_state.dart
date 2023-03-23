@@ -60,79 +60,56 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
     }
   }
 
-  Widget getConstrainedView(Widget view, ViewableWidgetModel model, bool expand)
+  Widget getConstrainedView(IWidgetView widget, Widget view)
   {
+    var model = widget.model;
     if (model is ViewableWidgetModel)
     {
-      double? width  = model.width;
-      double? height = model.height;
-
-      if (expand)
+      // width specified
+      if (model.width != null && model.height == null)
       {
-        ScrollerModel? scrollerModel = model.findParentOfExactType(ScrollerModel);
-        if (scrollerModel != null)
+        view = UnconstrainedBox(child: SizedBox(child: view, width: model.width), constrainedAxis: Axis.vertical);
+        if (model.hasVerticalSizing)
         {
-          expand = false;
-          if (scrollerModel.layout == "col" || scrollerModel.layout == "column") width ??= constraints.maxWidth;
-          if (scrollerModel.layout == "row") height ??= constraints.maxHeight;
-        }
-      }
-      if (expand == false && height != null && width != null) expand = true;
-
-      if (!expand)
-      {
-        // unsure how to make this work with maxwidth/maxheight, as it should yet constraints always come in. What should it do? same with minwidth/minheight...
-        if (width != null || height != null)
-        {
-          view = UnconstrainedBox(
-            child: LimitedBox(
-              maxWidth: constraints.maxWidth!,
-              child: ConstrainedBox(
-                  child: view,
-                  constraints: BoxConstraints(
-                    minHeight: constraints.minHeight!,
-                    minWidth: constraints.minWidth!,)),
-            ),
-          );
-        }
-        else if (height != null)
-        {
-          view = UnconstrainedBox(
-            child: LimitedBox(
-              maxHeight: constraints.maxHeight!,
-              child: ConstrainedBox(
-                  child: view,
-                  constraints: BoxConstraints(
-                    minHeight: constraints.minHeight!,
-                    minWidth: constraints.minWidth!,)),
-            ),
-          );
-        }
-        else
-        {
-          view = UnconstrainedBox(
-              child:
-              ConstrainedBox(
-                  child: view,
-                  constraints: BoxConstraints(
-                    minHeight: constraints.minHeight!,
-                    minWidth: constraints.minWidth!,))
-          );
+          var constraints  = model.getConstraints();
+          double minHeight = constraints.minHeight ?? 0.0;
+          double maxHeight = constraints.maxHeight ?? double.infinity;
+          view = ConstrainedBox(child: view, constraints: BoxConstraints(minHeight: minHeight, maxHeight: maxHeight));
         }
       }
 
-      else
+      // height specified
+      else if (model.width == null && model.height != null)
       {
-        view = ConstrainedBox(
-            child: view,
-            constraints: BoxConstraints(
-                minHeight: constraints.minHeight!,
-                maxHeight: constraints.maxHeight!,
-                minWidth: constraints.minWidth!,
-                maxWidth: constraints.maxWidth!));
+        view = UnconstrainedBox(child: SizedBox(child: view, height: model.height), constrainedAxis: Axis.horizontal);
+        if (model.hasHorizontalSizing)
+        {
+          var constraints = model.getConstraints();
+          double minWidth = constraints.minWidth ?? 0.0;
+          double maxWidth = constraints.maxWidth ?? double.infinity;
+          view = ConstrainedBox(child: view, constraints: BoxConstraints(minHeight: minWidth, maxHeight: maxWidth));
+        }
+        return view;
+      }
+
+      // width & height specified
+      else if (model.width != null && model.height != null)
+      {
+        view = UnconstrainedBox(child: SizedBox(child: view, width: model.width, height: model.height));
+      }
+
+      // neither width or height specified
+      // but min, max width or height defined
+      else if (model.hasSizing)
+      {
+        var constraints  = model.getConstraints();
+        double minWidth  = model.hasHorizontalSizing ? constraints.minWidth  ?? 0.0 : 0.0;
+        double maxWidth  = model.hasHorizontalSizing ? constraints.maxWidth  ?? double.infinity : double.infinity;
+        double minHeight = model.hasVerticalSizing   ? constraints.minHeight ?? 0.0 : 0.0;
+        double maxHeight = model.hasVerticalSizing   ? constraints.maxHeight ?? double.infinity : double.infinity;
+        view = ConstrainedBox(child: view, constraints: BoxConstraints(minHeight: minHeight, maxHeight: maxHeight, minWidth: minWidth, maxWidth: maxWidth));
       }
     }
-
     return view;
   }
 }

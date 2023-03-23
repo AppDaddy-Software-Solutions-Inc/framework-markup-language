@@ -258,18 +258,6 @@ class _ImageViewState extends WidgetState<ImageView>
     // Interactive
     if (widget.model.interactive == true) view = InteractiveViewer(child: view);
 
-    // constrained?
-    if (widget.model.hasSizing) {
-      var constraints = widget.model.getConstraints();
-      view = ConstrainedBox(
-          child: view,
-          constraints: BoxConstraints(
-              minHeight: constraints.minHeight!,
-              maxHeight: constraints.maxHeight!,
-              minWidth: constraints.minWidth!,
-              maxWidth: constraints.maxWidth!));
-    }
-
-    return view;
+    return getConstrainedView(widget, view);
   }
 }

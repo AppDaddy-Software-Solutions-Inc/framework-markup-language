@@ -110,21 +110,6 @@ class _CardViewState extends WidgetState<CardView>
             )),
         child: child);
 
-    //////////////////
-    /* Constrained? */
-    //////////////////
-    if (widget.model.hasSizing) {
-      var constraints = widget.model.getConstraints();
-      view = UnconstrainedBox(
-          child: ConstrainedBox(
-              child: view,
-              constraints: BoxConstraints(
-                  minHeight: constraints.minHeight!,
-                  maxHeight: constraints.maxHeight!,
-                  minWidth: constraints.minWidth!,
-                  maxWidth: constraints.maxWidth!)));
-    }
-
-    return view;
+    return getConstrainedView(widget, view);
   }
 }

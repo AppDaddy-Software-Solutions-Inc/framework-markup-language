@@ -164,31 +164,6 @@ class _ButtonViewState extends WidgetState<ButtonView>
       view = Opacity(opacity: 0.9, child: view); // Disabled
     }
 
-    //unsure how to make this work with maxwidth/maxheight, as it should yet constraints always come in. What should it do? same with minwidth/minheight...
-    if (widget.model.height != null && widget.model.width != null ) {
-      view = ConstrainedBox(
-          child: Container(child:view) ,
-          constraints: BoxConstraints(
-              minHeight: constr.minHeight!,
-              maxHeight: constr.maxHeight!,
-              minWidth: constr.minWidth!,
-              maxWidth: constr.maxWidth!));
-    } else if (widget.model.width != null) {
-      view = UnconstrainedBox(
-        child: LimitedBox(
-          child: view,
-          maxWidth: constr.maxWidth!,
-        ),
-      );
-    } else if (widget.model.height != null) {
-      view = UnconstrainedBox(
-        child: LimitedBox(
-          child: view,
-          maxHeight: constr.maxHeight!,
-        ),
-      );
-    }
-
-    return view;
+    return getConstrainedView(widget, view);
   }
 }

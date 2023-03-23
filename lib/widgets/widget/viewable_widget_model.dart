@@ -81,12 +81,12 @@ class ViewableWidgetModel extends WidgetModel
       (modelConstraints.minHeight != null) ||
       (modelConstraints.maxHeight != null);
 
-  bool get haslHorizontalSizing =>
+  bool get hasHorizontalSizing =>
       ((width != null) && (width! >= 0)) ||
       (modelConstraints.minWidth != null) ||
       (modelConstraints.maxWidth != null);
 
-  bool get hasSizing => hasVerticalSizing || haslHorizontalSizing;
+  bool get hasSizing => hasVerticalSizing || hasHorizontalSizing;
 
   // Min Width
   set minWidth(double? v) => viewConstraints.minWidth = v;

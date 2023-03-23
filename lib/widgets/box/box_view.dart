@@ -113,7 +113,7 @@ class _BoxViewState extends WidgetState<BoxView>
     Map<String, dynamic> alignment = AlignmentHelper.alignWidgetAxis(children.length, widget.model.layout, widget.model.center, widget.model.halign, widget.model.valign);
 
     // get child
-    Widget child = _getChild(_constraints, children, alignment);
+    Widget child = _layoutChildren(_constraints, children, alignment);
 
     // border
     Border? border = _getBorder();
@@ -153,11 +153,18 @@ class _BoxViewState extends WidgetState<BoxView>
       else view = ClipRect(child: view);
     }
 
+    // constrain the children
+    view = getConstrainedView(widget, view);
+
+    // containers will expand to the size of their parent
+    // unless we wrap in an Unconstrained
+    if (!widget.model.expanded) view = UnconstrainedBox(child: view);
+
     // return view
-    return _getConstrainedView(_constraints, view);
+    return view;
   }
 
-  Widget _getChild(Constraint constraints, List<Widget> children, Map<String, dynamic> alignment)
+  Widget _layoutChildren(Constraint constraints, List<Widget> children, Map<String, dynamic> alignment)
   {
     Widget? child;
 
@@ -192,8 +199,7 @@ class _BoxViewState extends WidgetState<BoxView>
             child = Column(
               children: children,
               crossAxisAlignment: crossAlignment!,
-              mainAxisAlignment: mainAlignment!,
-            );
+              mainAxisAlignment: mainAlignment!);
           break;
 
         case 'row':
@@ -204,7 +210,10 @@ class _BoxViewState extends WidgetState<BoxView>
                 alignment: mainWrapAlignment!,
                 runAlignment: mainWrapAlignment,
                 crossAxisAlignment: crossWrapAlignment!);
-          else child = Row(children: children, crossAxisAlignment: crossAlignment!, mainAxisAlignment: mainAlignment!);
+          else child = Row(
+              children: children,
+              crossAxisAlignment: crossAlignment!,
+              mainAxisAlignment: mainAlignment!);
           break;
 
         case 'stack':
@@ -219,7 +228,10 @@ class _BoxViewState extends WidgetState<BoxView>
           break;
 
         default:
-          child = Column(children: children, mainAxisAlignment: mainAlignment!, crossAxisAlignment: crossAlignment!);
+          child = Column(
+              children: children,
+              mainAxisAlignment: mainAlignment!,
+              crossAxisAlignment: crossAlignment!);
           break;
       }
     }
@@ -416,7 +428,7 @@ class _BoxViewState extends WidgetState<BoxView>
     if (!expanded)
     {
       // unsure how to make this work with maxwidth/maxheight, as it should yet constraints always come in. What should it do? same with minwidth/minheight...
-      if (width != null || height != null)
+      if (width != null)
       {
         view = UnconstrainedBox(
           child: LimitedBox(

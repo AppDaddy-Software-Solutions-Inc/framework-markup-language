@@ -84,17 +84,6 @@ class _StackViewState extends WidgetState<StackView>
       view = Padding(padding: insets, child: view);
     }
 
-    // Constrained?
-    if (widget.model.hasSizing)
-    {
-      view = ConstrainedBox(child: view,
-          constraints: BoxConstraints(
-              minHeight: constr.minHeight!,
-              maxHeight: constr.maxHeight!,
-              minWidth: constr.minWidth!,
-              maxWidth: constr.maxWidth!));
-    }
-
-    return view;
+    return getConstrainedView(widget, view);
   }
 }

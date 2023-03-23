@@ -99,17 +99,6 @@ class _RowViewState extends WidgetState<RowView>
               mainAxisAlignment: mainAlignment!,
               mainAxisSize: mainAxisSize));
 
-    // Constrained?
-    if (widget.model.hasSizing)
-    {
-      var constraints =  widget.model.getConstraints();
-      double minWidth  = widget.model.haslHorizontalSizing ? constraints.minWidth  ?? 0.0 : 0.0;
-      double maxWidth  = widget.model.haslHorizontalSizing ? constraints.maxWidth  ?? double.infinity : double.infinity;
-      double minHeight = widget.model.hasVerticalSizing   ? constraints.minHeight ?? 0.0 : 0.0;
-      double maxHeight = widget.model.hasVerticalSizing   ? constraints.maxHeight ?? double.infinity : double.infinity;
-      view = ConstrainedBox(child: view, constraints: BoxConstraints(minHeight: minHeight, maxHeight: maxHeight, minWidth: minWidth, maxWidth: maxWidth));
-    }
-
-    return view;
+    return getConstrainedView(widget, view);
   }
 }

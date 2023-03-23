@@ -75,19 +75,13 @@ class _TextViewState extends WidgetState<TextView>
 
     // constrained?
     bool isNotExpandedChild = false;
-    if(!widget.model.hasSizing)
+    if (!widget.model.hasSizing)
     {
       ScrollerModel? parentScroll = widget.model.findAncestorOfExactType(ScrollerModel);
       if (parentScroll != null && parentScroll.layout.toLowerCase() == "row") return view;
       isNotExpandedChild = widget.model.findAncestorOfExactType(ExpandedModel) == null;
     }
-
-    // constrained?
-    if (isNotExpandedChild || widget.model.hasSizing)
-    {
-      var constr = widget.model.getConstraints();
-      view = ConstrainedBox(child: view, constraints: BoxConstraints(minWidth: constr.minWidth!, maxWidth: constr.maxWidth!));
-    }
+    if (isNotExpandedChild || widget.model.hasSizing) view = getConstrainedView(widget, view);
 
     return view;
   }

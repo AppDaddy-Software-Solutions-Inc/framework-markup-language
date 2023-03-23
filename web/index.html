@@ -1,41 +1,6 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <script type="text/javascript">
-            // version
-            var version = "1.3.0";
-
-            // set title
-            var title = "Flutter Markup Language " + version;
-            document.title = title;
-
-            // set description
-            var meta = document.createElement("meta");
-            meta.name = "description";
-            meta.content = title;
-            document.head.appendChild(meta);
-
-            // set apple-mobile-web-app-title
-            var iosmeta = document.createElement("meta");
-            iosmeta.name = "apple-mobile-web-app-title";
-            iosmeta.content = title;
-            document.head.appendChild(iosmeta);
-
-            // add google maps
-            // var script = document.createElement("script");
-            // script.type    = "text/javascript";
-            // script.src     = "https://maps.googleapis.com/maps/api/js?key=<your api key here>";
-            // uncomment to include this functionality
-            // document.head.appendChild(script);
-
-            // add flutter.js script
-            var script     = document.createElement("script");
-            script.type    = "text/javascript";
-            script.src     = "flutter.js?version=" + version;
-            script.defer   = true;
-            document.head.appendChild(script);
-        </script>
-
         <!--
           If you are serving your web app in a path other than the root, change the
           href value below to reflect the base path you are serving from.
@@ -68,6 +33,54 @@
         <script>
             // The value below is injected by flutter build, do not touch.
             var serviceWorkerVersion = null;
+        </script>
+
+        <script type="text/javascript">
+
+            // default title if config.xml does not contain an `APPLICATION_NAME`
+            var title = "Flutter Markup Language";
+            try
+            {
+                // read config.xml
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("GET", "config.xml", false);
+                xhttp.send();
+                var xmlDoc = xhttp.responseXML;
+
+                // read title
+                var e = xmlDoc.getElementsByTagName("APPLICATION_NAME");
+                if (e != null) title = e[0].getAttribute('value');
+            }
+            catch(e) {}
+
+            // set document title
+            document.title = title;
+
+            // set description
+            var meta = document.createElement("meta");
+            meta.name = "description";
+            meta.content = title;
+            document.head.appendChild(meta);
+
+            // set apple-mobile-web-app-title
+            var iosmeta = document.createElement("meta");
+            iosmeta.name = "apple-mobile-web-app-title";
+            iosmeta.content = title;
+            document.head.appendChild(iosmeta);
+
+            // add google maps
+            // var script   = document.createElement("script");
+            // script.type  = "text/javascript";
+            // script.src   = "https://maps.googleapis.com/maps/api/js?key=<your api key here>";
+            // uncomment to include this functionality
+            // document.head.appendChild(script);
+
+            // add flutter.js script
+            var script      = document.createElement("script");
+            script.type     = "text/javascript";
+            script.src      = "flutter.js?version=" + serviceWorkerVersion;
+            script.defer    = true;
+            document.head.appendChild(script);
         </script>
     </head>
 
@@ -115,6 +128,7 @@
             // if (loadingText != null) loadingText.textContent = "Loading, please wait ...";
             _flutter.loader.loadEntrypoint(
             {
+                entrypointUrl: `main.dart.js?v=${serviceWorkerVersion}`,
                 serviceWorker: {serviceWorkerVersion: serviceWorkerVersion},
                 onEntrypointLoaded: async function(engineInitializer)
                 {

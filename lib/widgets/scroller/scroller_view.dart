@@ -135,14 +135,14 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
     if (_viewSize != null) _viewSize = _scrollController.position.viewportDimension;
 
     // Flex: on my phone there is a 36px padding on the keyboard so I've subtracted it here
-    if (widget.model.direction != 'horizontal')
+    if (widget.model.layout != 'row')
     {
       double keyboardSpacer = MediaQuery.of(context).viewInsets.bottom;
       children.add(Container(height: keyboardSpacer < 36 ? keyboardSpacer : (keyboardSpacer - 36)));
     }
 
     Axis direction = Axis.vertical;
-    if (widget.model.layout == 'row' || widget.model.direction == 'horizontal') direction = Axis.horizontal;
+    if (widget.model.layout == 'row') direction = Axis.horizontal;
 
     var layoutType = (direction == Axis.horizontal) ? 'row' : 'column';
 

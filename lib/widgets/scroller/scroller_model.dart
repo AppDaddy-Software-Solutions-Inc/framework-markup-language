@@ -17,29 +17,10 @@ import 'package:fml/helper/common_helpers.dart';
 class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
 {
   @override
-  double? get maxWidth  => direction == 'horizontal' ? double.infinity : super.maxWidth;
+  double? get maxWidth  => layout == 'row' ? double.infinity : super.maxWidth;
 
   @override
-  double? get maxHeight => direction == 'vertical'   ? double.infinity : super.maxHeight;
-
-  /// Scroll direction, `horizontal` or `vertical`
-  StringObservable? _direction;
-  set direction (dynamic v)
-  {
-    if (_direction != null)
-    {
-      _direction!.set(v);
-    }
-    else if (v != null)
-    {
-      _direction = StringObservable(Binding.toKey(id, 'direction'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  dynamic get direction => _direction?.get() ?? 'vertical';
-
-  /// alignment and layout attributes
-  ///
-
+  double? get maxHeight => layout == 'column' ? double.infinity : super.maxHeight;
 
   /// The cross alignment of the widgets children. Can be `top`, `bottom`, `start`, or `end`.
   StringObservable? _align;
@@ -59,16 +40,28 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
 
   /// Layout determines the widgets childrens layout. Can be `row`, `column`, `col`. Defaulted to `column`. Overrides direction.
   StringObservable? _layout;
-  set layout(dynamic v) {
-    if (_layout != null) {
+  set layout(dynamic v)
+  {
+    if (v == 'horizontal') v = 'row';
+    if (v == 'vertical')   v = 'column';
+    if (v == 'col')        v = 'column';
+    if (_layout != null)
+    {
       _layout!.set(v);
-    } else if (v != null) {
-      _layout = StringObservable(Binding.toKey(id, 'layout'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else if (v != null)
+    {
+      _layout = StringObservable(Binding.toKey(id, 'layout'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  String get layout => _layout?.get()?.toLowerCase() ?? 'column';
-
+  String get layout
+  {
+    var v = _layout?.get()?.toLowerCase().trim();
+    if (v == 'horizontal') v = 'row';
+    if (v == 'vertical')   v = 'column';
+    if (v == 'col')        v = 'column';
+    return v ?? 'column';
+  }
 
   /// If true will display a scrollbar, just used as a backup if flutter's built in scrollbar doesn't work
   BooleanObservable? _scrollbar;
@@ -155,7 +148,6 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
         dynamic maxheight,})
       : super(parent, id)
   {
-    this.direction = direction;
     this.draggable = draggable;
     this.onpulldown = onpulldown;
     this.align = align;
@@ -199,10 +191,9 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
     super.deserialize(xml);
 
     // properties
-    direction = Xml.get(node: xml, tag: 'direction');
     scrollbar = Xml.get(node: xml, tag: 'scrollbar');
     align = Xml.get(node: xml, tag: 'align');
-    layout = Xml.get(node: xml, tag: 'layout');
+    layout = Xml.get(node: xml, tag: 'layout') ?? Xml.get(node: xml, tag: 'direction');
     onscrolledtoend = Xml.get(node: xml, tag: 'onscrolledtoend');
     shadowcolor = Xml.get(node: xml, tag: 'shadowcolor');
     onpulldown = Xml.get(node: xml, tag: 'onpulldown');

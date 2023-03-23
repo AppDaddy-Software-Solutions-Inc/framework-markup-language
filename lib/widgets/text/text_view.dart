@@ -73,17 +73,12 @@ class _TextViewState extends WidgetState<TextView>
     // is part of a larger span?
     if (widget.model.isSpan) return SizedBox(child: view);
 
-    // constrained?
-    bool childOfExpanded = false;
-    if (!widget.model.hasHorizontalSizing)
-    {
-      ScrollerModel? parentScroll = widget.model.findAncestorOfExactType(ScrollerModel);
-      if (parentScroll != null && parentScroll.layout == "row") return view;
-      childOfExpanded = widget.model.findAncestorOfExactType(ExpandedModel) != null;
-    }
+    // check if parent is an expanded widget
+    bool isNotExpandedChild = false;
+    if (!widget.model.hasHorizontalSizing) isNotExpandedChild = widget.model.findAncestorOfExactType(ExpandedModel) == null;
 
     // constrained?
-    if (!childOfExpanded || widget.model.hasHorizontalSizing)
+    if (isNotExpandedChild || widget.model.hasHorizontalSizing)
     {
       var constraints = widget.model.getConstraints();
       view = ConstrainedBox(child: view, constraints: BoxConstraints(minWidth: constraints.minWidth!, maxWidth: constraints.maxWidth!));

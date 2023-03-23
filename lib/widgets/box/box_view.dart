@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
+import 'package:fml/widgets/widget/constraint.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/box/box_model.dart' as BOX;
@@ -78,13 +79,8 @@ List<Color> getGradientColors(c1, c2, c3, c4) {
 
 class _BoxViewState extends WidgetState<BoxView>
 {
-  bool isGradient = false;
-
   @override
-  Widget build(BuildContext context)
-  {
-    return LayoutBuilder(builder: builder);
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
@@ -99,221 +95,261 @@ class _BoxViewState extends WidgetState<BoxView>
     widget.model.minHeight = constraints.minHeight - ((S.toDouble(widget.model.borderwidth) ?? 0) * 2);
     widget.model.maxHeight = constraints.maxHeight;
 
-    // get colors
-    Color?  color  = widget.model.color;
-    Color?  color2 = widget.model.color2;
-    Color?  color3 = widget.model.color3;
-    Color?  color4 = widget.model.color4;
+    // get constraints
+    var _constraints = widget.model.getConstraints();
 
-    //var mainAxisSize = widget.model.expand == true ? MainAxisSize.min : MainAxisSize.max;
-
-    // gradient
-    if ((color != null) && (color2 != null)) isGradient = true;
-
-    // Child
+    // build the children
     List<Widget> children = [];
     if (widget.model.children != null)
-      widget.model.children!.forEach((model) 
-      {
-        if (model is IViewableWidget) {
-          children.add((model as IViewableWidget).getView());
-        }
-      });
-
+    widget.model.children!.forEach((model)
+    {
+      if (model is IViewableWidget) {
+        children.add((model as IViewableWidget).getView());
+      }
+    });
     if (children.isEmpty) children.add(Container(width: 0, height: 0));
 
     //this must go after the children are determined
-    Map<String, dynamic> align = AlignmentHelper.alignWidgetAxis(
-        children.length,
-        widget.model.layout,
-        widget.model.center,
-        widget.model.halign,
-        widget.model.valign);
+    Map<String, dynamic> alignment = AlignmentHelper.alignWidgetAxis(children.length, widget.model.layout, widget.model.center, widget.model.halign, widget.model.valign);
 
-    CrossAxisAlignment? crossAlignment = align['crossAlignment'];
-    MainAxisAlignment? mainAlignment = align['mainAlignment'];
-    WrapAlignment? mainWrapAlignment = align['mainWrapAlignment'];
-    WrapCrossAlignment? crossWrapAlignment = align['crossWrapAlignment'];
-    Alignment? aligned = align['aligned'];
+    // get child
+    Widget child = _getChild(_constraints, children, alignment);
 
-    // Setting aligned on widgets with BoxFit (images) causes layout issues
-    // so ignore the default (Alignment.topLeft) 
-    if (aligned == Alignment.topLeft) aligned = null;
+    // border
+    Border? border = _getBorder();
 
-    // set alignment if only a single child or a stack
-    // TODO: consider adding scroll attribute scroll=true/false to match with the layout==row/col && expand==false;
-    // return no row/col if only a single child and NOT stack
-    // Flex: I removed the single child feature and just used a default column, result: not expanding to parent anymore
-    dynamic child;
+    // border radius
+    BorderRadius? radius = _getRadius(border);
 
-    // Constrained?
-    bool expand = widget.model.expand;
-    double? height = widget.model.height;
-    double? width = widget.model.width;
+    // box decoration
+    BoxDecoration? decoration = _getBoxDecoration(radius);
 
-    var constr = widget.model.getConstraints();
+    // border decoration
+    BoxDecoration? borderDecoration = border != null ? BoxDecoration(border: border, borderRadius: radius) : null;
 
-    ScrollerModel? scrollerModel = widget.model.findParentOfExactType(ScrollerModel);
+    // padding values
+    EdgeInsets insets = _getInsets();
 
-    if (scrollerModel != null && expand == true)
+    // blurred?
+    if (widget.model.blur) child = _getBlurredView(child, borderDecoration);
+
+    // View
+    Widget view = Container(decoration: borderDecoration, child: Container(
+        padding: insets,
+        clipBehavior: Clip.antiAlias,
+        decoration: decoration,
+        alignment: alignment['aligned'],
+        child: child));
+
+    // opacity
+    if (widget.model.opacity != null) _getFadedView(view);
+
+    // white10 = Blur (This creates mirrored/frosted effect overtop of something else)
+    if (widget.model.color == Colors.white10)
     {
-      expand = false;
-      if(scrollerModel.layout == "col" || scrollerModel.layout == "column") width ??= constr.maxWidth;
-      if(scrollerModel.layout == "row") height ??= constr.maxHeight;
+      view = BackdropFilter(filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8), child: view);
+      if (radius != null)
+           view = ClipRRect(borderRadius: radius, child: view);
+      else view = ClipRect(child: view);
     }
 
-    if (expand == false && height != null && width != null) expand = true;
+    // return view
+    return _getConstrainedView(_constraints, view);
+  }
 
-    if (children.length == 1 && widget.model.layout != 'stack')
-    {
-      child = children[0];
-    }
+  Widget _getChild(Constraint constraints, List<Widget> children, Map<String, dynamic> alignment)
+  {
+    Widget? child;
 
-    else if (widget.model.layout == 'column' || widget.model.layout == 'col')
-    {
-      //here we check if wrap is true and return the corresponding direction.
-      if (widget.model.wrap == true)
-        child = Wrap(
-            children: children,
-            direction: Axis.vertical,
-            alignment: mainWrapAlignment!,
-            runAlignment: mainWrapAlignment,
-            crossAxisAlignment: crossWrapAlignment!);
-      else
-        child = Column(
-          children: children,
-          crossAxisAlignment: crossAlignment!,
-          mainAxisAlignment: mainAlignment!,
-        );
-    }
-
-    else if (widget.model.layout == 'row')
-    {
-      if (widget.model.wrap == true)
-        child = Wrap(
-            children: children,
-            direction: Axis.horizontal,
-            alignment: mainWrapAlignment!,
-            runAlignment: mainWrapAlignment,
-            crossAxisAlignment: crossWrapAlignment!);
-      else child = Row(children: children, crossAxisAlignment: crossAlignment!, mainAxisAlignment: mainAlignment!);
-    }
-
-    // stack takes positioned but ignores layout attributes.
-    else if (widget.model.layout == 'stack')
-    {
-      // We add a sizedbox.expand if expand is false to allow for stacks children to correctly align based on the alignment attribute.
-      // SizedBox.expand crashes the layout if it is given to a contracting box.
-      // expand must be grabbed in its form b
-      if(expand == true) children.add(SizedBox.expand());
-      child = aligned != null ? Stack(children: children, alignment: aligned, fit: StackFit.loose) : Stack(children: children, fit: StackFit.loose);
-    }
-
-    else child = Column(children: children, mainAxisAlignment: mainAlignment!, crossAxisAlignment: crossAlignment!);
-
+    if (children.length == 1 && widget.model.layout != 'stack') child = children[0];
     if (widget.child != null) child = widget.child;
 
-    // Border?
+    if (child == null)
+    {
+      CrossAxisAlignment? crossAlignment = alignment['crossAlignment'];
+      MainAxisAlignment? mainAlignment = alignment['mainAlignment'];
+      WrapAlignment? mainWrapAlignment = alignment['mainWrapAlignment'];
+      WrapCrossAlignment? crossWrapAlignment = alignment['crossWrapAlignment'];
+
+      // Setting aligned on widgets with BoxFit (images) causes layout issues
+      // so ignore the default (Alignment.topLeft)
+      if (alignment['aligned'] == Alignment.topLeft) alignment['aligned'] = null;
+
+      var layout = widget.model.layout.trim().toLowerCase();
+      switch (layout)
+      {
+        case 'col':
+        case 'column':
+        //here we check if wrap is true and return the corresponding direction.
+          if (widget.model.wrap == true)
+            child = Wrap(
+                children: children,
+                direction: Axis.vertical,
+                alignment: mainWrapAlignment!,
+                runAlignment: mainWrapAlignment,
+                crossAxisAlignment: crossWrapAlignment!);
+          else
+            child = Column(
+              children: children,
+              crossAxisAlignment: crossAlignment!,
+              mainAxisAlignment: mainAlignment!,
+            );
+          break;
+
+        case 'row':
+          if (widget.model.wrap == true)
+            child = Wrap(
+                children: children,
+                direction: Axis.horizontal,
+                alignment: mainWrapAlignment!,
+                runAlignment: mainWrapAlignment,
+                crossAxisAlignment: crossWrapAlignment!);
+          else child = Row(children: children, crossAxisAlignment: crossAlignment!, mainAxisAlignment: mainAlignment!);
+          break;
+
+        case 'stack':
+          var stack = Stack(children: children, alignment: alignment['aligned'] ?? AlignmentDirectional.topStart);
+          child = ConstrainedBox(
+              child: stack,
+              constraints: BoxConstraints(
+                  minHeight: constraints.minHeight!,
+                  maxHeight: constraints.maxHeight!,
+                  minWidth: constraints.minWidth!,
+                  maxWidth: constraints.maxWidth!));
+          break;
+
+        default:
+          child = Column(children: children, mainAxisAlignment: mainAlignment!, crossAxisAlignment: crossAlignment!);
+          break;
+      }
+    }
+
+    return child;
+  }
+
+  Border? _getBorder()
+  {
     Border? border;
     bool hasBorder = widget.model.border != 'none';
-    String? radius = widget.model.radius;
-    if (hasBorder) {
-      if (widget.model.border == 'all') {
+    if (hasBorder)
+    {
+      if (widget.model.border == 'all')
+      {
         border = Border.all(
             color: widget.model.bordercolor ?? Theme.of(context).colorScheme.onInverseSurface,
             width: widget.model.borderwidth!);
       } else {
         border = Border(
           top: (widget.model.border == 'top' ||
-                  widget.model.border == 'vertical')
+              widget.model.border == 'vertical')
               ? BorderSide(
-                  width: widget.model.borderwidth!,
-                  color: widget.model.bordercolor ?? Theme.of(context).colorScheme.onInverseSurface)
+              width: widget.model.borderwidth!,
+              color: widget.model.bordercolor ?? Theme.of(context).colorScheme.onInverseSurface)
               : BorderSide(width: 0, color: Colors.transparent),
           bottom: (widget.model.border == 'bottom' ||
-                  widget.model.border == 'vertical')
+              widget.model.border == 'vertical')
               ? BorderSide(
-                  width: widget.model.borderwidth!,
-                  color: widget.model.bordercolor ?? Theme.of(context).colorScheme.onInverseSurface)
+              width: widget.model.borderwidth!,
+              color: widget.model.bordercolor ?? Theme.of(context).colorScheme.onInverseSurface)
               : BorderSide(width: 0, color: Colors.transparent),
           left: (widget.model.border == 'left' ||
-                  widget.model.border == 'horizontal')
+              widget.model.border == 'horizontal')
               ? BorderSide(
-                  width: widget.model.borderwidth!,
-                  color: widget.model.bordercolor ?? Theme.of(context).colorScheme.onInverseSurface)
+              width: widget.model.borderwidth!,
+              color: widget.model.bordercolor ?? Theme.of(context).colorScheme.onInverseSurface)
               : BorderSide(width: 0, color: Colors.transparent),
           right: (widget.model.border == 'right' ||
-                  widget.model.border == 'horizontal')
+              widget.model.border == 'horizontal')
               ? BorderSide(
-                  width: widget.model.borderwidth!,
-                  color: widget.model.bordercolor ?? Theme.of(context).colorScheme.onInverseSurface)
+              width: widget.model.borderwidth!,
+              color: widget.model.bordercolor ?? Theme.of(context).colorScheme.onInverseSurface)
               : BorderSide(width: 0, color: Colors.transparent),
         );
-        radius = null;
       }
     }
+    return border;
+  }
+
+  BorderRadius? _getRadius(Border? border)
+  {
+    String? radius = widget.model.radius;
+    if (radius == null) return null;
+    if (border != null && widget.model.border != 'all') return null;
 
     // border decoration
     List<String> cornersFromTopRightClockwise = [];
     List<double?> radii = [];
-    try {
-      if (radius != null) cornersFromTopRightClockwise = radius.split(',');
+    try
+    {
+      cornersFromTopRightClockwise = radius.split(',');
       if (cornersFromTopRightClockwise.length == 1) // round all the same
-        radii =
-            List<double?>.filled(4, S.toDouble(cornersFromTopRightClockwise[0]));
-      else // round corners [NE, SE, SW, NW] based on csv
-        radii = cornersFromTopRightClockwise.map((r) => S.toDouble(r)).toList();
-    } catch(e) {
+           radii = List<double?>.filled(4, S.toDouble(cornersFromTopRightClockwise[0]));
+      else radii = cornersFromTopRightClockwise.map((r) => S.toDouble(r)).toList();
+    }
+    catch(e)
+    {
       // TODO LOG
       radii = List<double>.filled(4, 0);
     }
 
-    BorderRadius? containerRadius = (radius != null)
-        ? BorderRadius.only(
-            topRight: Radius.circular(
-                radii.asMap().containsKey(0) ? radii[0] ?? 0 : 0),
-            bottomRight: Radius.circular(
-                radii.asMap().containsKey(1) ? radii[1] ?? 0 : 0),
-            bottomLeft: Radius.circular(
-                radii.asMap().containsKey(2) ? radii[2] ?? 0 : 0),
-            topLeft: Radius.circular(
-                radii.asMap().containsKey(3) ? radii[3] ?? 0 : 0))
-        : null;
+    BorderRadius? containerRadius =
+        BorderRadius.only(
+        topRight: Radius.circular(
+            radii.asMap().containsKey(0) ? radii[0] ?? 0 : 0),
+        bottomRight: Radius.circular(
+            radii.asMap().containsKey(1) ? radii[1] ?? 0 : 0),
+        bottomLeft: Radius.circular(
+            radii.asMap().containsKey(2) ? radii[2] ?? 0 : 0),
+        topLeft: Radius.circular(
+            radii.asMap().containsKey(3) ? radii[3] ?? 0 : 0));
 
-    List<BoxShadow>? boxShadow = widget.model.elevation != 0
-        ? [
-            BoxShadow(
-                color: widget.model.shadowcolor,
-                spreadRadius: widget.model.elevation,
-                blurRadius: widget.model.elevation * 2,
-                offset: Offset(
-                    widget.model.shadowx,
-                    widget.model
-                        .shadowy)), // potentially add shadowoffset to control this
-          ]
-        : null;
+    return containerRadius;
+  }
 
-    BoxDecoration? decoration = BoxDecoration(
-        borderRadius: containerRadius,
-        boxShadow: boxShadow,
-        color: isGradient ? null : color,
-        gradient: isGradient
-            ? LinearGradient(
-                begin: BoxView.toGradientAlignment(widget.model.start)!,
-                end: BoxView.toGradientAlignment(widget.model.end)!,
-                colors: getGradientColors(color, color2, color3, color4),
-                tileMode: TileMode.clamp) // Flutter doesn't display other TileModes correctly in skia web
-            : null);
+  BoxShadow? _getShadow()
+  {
+    BoxShadow? shadow;
+    if (widget.model.elevation != 0)
+      shadow = BoxShadow(
+          color: widget.model.shadowcolor,
+          spreadRadius: widget.model.elevation,
+          blurRadius: widget.model.elevation * 2,
+          offset: Offset(
+              widget.model.shadowx,
+              widget.model
+                  .shadowy));
+    return shadow;
+  }
 
-    BoxDecoration borderDeco = BoxDecoration(
-        border: border,
-        borderRadius: containerRadius);
+  _getBoxDecoration(BorderRadius? radius)
+  {
+    // shadow
+    BoxShadow? boxShadow = _getShadow();
 
-    // View
-    Widget view;
+    // get colors
+    Color?  color  = widget.model.color;
+    Color?  color2 = widget.model.color2;
+    Color?  color3 = widget.model.color3;
+    Color?  color4 = widget.model.color4;
 
-    // Padding values
-    EdgeInsets insets = EdgeInsets.only();
+    // gradient
+    LinearGradient? gradient;
+    if ((color != null) && (color2 != null))
+    {
+      gradient = LinearGradient(
+        begin: BoxView.toGradientAlignment(widget.model.start)!,
+        end: BoxView.toGradientAlignment(widget.model.end)!,
+        colors: getGradientColors(color, color2, color3, color4),
+        tileMode: TileMode.clamp);
+
+      color = null;
+    }
+    return BoxDecoration(borderRadius: radius, boxShadow: boxShadow != null ? [boxShadow] : null, color: color, gradient: gradient);
+  }
+
+  EdgeInsets _getInsets()
+  {
+    var insets = EdgeInsets.only();
     if (widget.model.paddings > 0)
     {
       // pad all
@@ -328,112 +364,108 @@ class _BoxViewState extends WidgetState<BoxView>
       // pad sides top, right, bottom
       else if (widget.model.paddings == 4) insets = EdgeInsets.only(top: widget.model.padding, right: widget.model.padding2, bottom: widget.model.padding3, left: widget.model.padding4);
     }
+    return insets;
+  }
 
-    // if blur is true, blur the containers children.
-    if (widget.model.blur) {
-      view = Container(decoration: borderDeco, child: Container(
-        padding: insets,
-        clipBehavior: Clip.antiAlias,
-        decoration: decoration,
-        alignment: aligned,
-        child: Stack(
-            fit: StackFit.expand,
-            clipBehavior: Clip.none,
-            children: <Widget>[
-              child,
-              ClipRect(
-                clipBehavior: Clip.antiAlias,
-                // <-- clips to the [Container] below
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                  child: Container(
-                    decoration: borderDeco,
-                    color: Colors.transparent,
-                  ),
-                ),
+  Widget _getFadedView(Widget view)
+  {
+    double? opacity = widget.model.opacity;
+    if (opacity == null) return view;
+    if (opacity > 1) opacity = 1;
+    if (opacity < 0) opacity = 0;
+    return Opacity(child: view, opacity: opacity);
+  }
+
+  Widget _getBlurredView(Widget child, Decoration? decoration)
+  {
+     return Stack(
+        fit: StackFit.expand,
+        clipBehavior: Clip.none,
+        children: <Widget>[
+          child,
+          ClipRect(
+            clipBehavior: Clip.antiAlias,
+            // <-- clips to the [Container] below
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+              child: Container(
+                decoration: decoration,
+                color: Colors.transparent,
               ),
-            ]),
-      ));
-    }
-    else {
-      view = Container(decoration: borderDeco, child: Container(
-          padding: insets,
-          clipBehavior: Clip.antiAlias, // .antiAlias - Flex: removed because of canvaskit assertion errors while scrolling ???
-          decoration: decoration,
-          //set alignment based on valign and halign.
-          alignment: aligned,
-          child: child));
-    }
+            ),
+          ),
+        ]);
+  }
 
-    // Opacity
-    if (widget.model.opacity != null) {
-      if (widget.model.opacity! > 1)
-        widget.model.opacity = 1;
-      else if (widget.model.opacity! < 0) widget.model.opacity = 0;
-      view = Opacity(child: view, opacity: widget.model.opacity!);
-    }
+  _getConstrainedView(Constraint constraints, Widget view)
+  {
+    // Constrained?
+    bool expanded  = widget.model.expanded;
+    double? height = widget.model.height;
+    double? width  = widget.model.width;
 
-    // white10 = Blur (This creates mirrored/frosted effect overtop of something else)
-    if (color == Colors.white10) {
-      view = BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8), child: view);
-      if (containerRadius != null && radius != null)
-        view = ClipRRect(borderRadius: containerRadius, child: view);
-      else
-        view = ClipRect(child: view);
-    }
-
-
-
-
-
-    if (expand == false)
+    ScrollerModel? scrollerModel = widget.model.findParentOfExactType(ScrollerModel);
+    if (scrollerModel != null && expanded == true)
     {
-        //unsure how to make this work with maxwidth/maxheight, as it should yet constraints always come in. What should it do? same with minwidth/minheight...
-        if (width != null) {
-          view = UnconstrainedBox(
-            child: LimitedBox(
-              maxWidth: constr.maxWidth!,
-              child: ConstrainedBox(
-                  child: view,
-                  constraints: BoxConstraints(
-                    minHeight: constr.minHeight!,
-                    minWidth: constr.minWidth!,)),
-            ),
-          );
-        } else if (height != null) {
-          view = UnconstrainedBox(
-            child: LimitedBox(
-              maxHeight: constr.maxHeight!,
-              child: ConstrainedBox(
-                  child: view,
-                  constraints: BoxConstraints(
-                    minHeight: constr.minHeight!,
-                    minWidth: constr.minWidth!,)),
-            ),
-          );
-        }
-        else {
-          view = UnconstrainedBox(
-              child:
-              ConstrainedBox(
-                  child: view,
-                  constraints: BoxConstraints(
-                    minHeight: constr.minHeight!,
-                    minWidth: constr.minWidth!,))
-          );
-        }
-
-      } else {
-        view = ConstrainedBox(
-            child: view,
-            constraints: BoxConstraints(
-                minHeight: constr.minHeight!,
-                maxHeight: constr.maxHeight!,
-                minWidth: constr.minWidth!,
-                maxWidth: constr.maxWidth!));
-      }
-
-      return view;
+      expanded = false;
+      if (scrollerModel.layout == "col" || scrollerModel.layout == "column") width ??= constraints.maxWidth;
+      if(scrollerModel.layout == "row") height ??= constraints.maxHeight;
     }
+    if (expanded == false && height != null && width != null) expanded = true;
+
+    if (!expanded)
+    {
+      // unsure how to make this work with maxwidth/maxheight, as it should yet constraints always come in. What should it do? same with minwidth/minheight...
+      if (width != null || height != null)
+      {
+        view = UnconstrainedBox(
+          child: LimitedBox(
+            maxWidth: constraints.maxWidth!,
+            child: ConstrainedBox(
+                child: view,
+                constraints: BoxConstraints(
+                  minHeight: constraints.minHeight!,
+                  minWidth: constraints.minWidth!,)),
+          ),
+        );
+      }
+      else if (height != null)
+      {
+        view = UnconstrainedBox(
+          child: LimitedBox(
+            maxHeight: constraints.maxHeight!,
+            child: ConstrainedBox(
+                child: view,
+                constraints: BoxConstraints(
+                  minHeight: constraints.minHeight!,
+                  minWidth: constraints.minWidth!,)),
+          ),
+        );
+      }
+      else
+      {
+        view = UnconstrainedBox(
+            child:
+            ConstrainedBox(
+                child: view,
+                constraints: BoxConstraints(
+                  minHeight: constraints.minHeight!,
+                  minWidth: constraints.minWidth!,))
+        );
+      }
+    }
+
+    else
+    {
+      view = ConstrainedBox(
+          child: view,
+          constraints: BoxConstraints(
+              minHeight: constraints.minHeight!,
+              maxHeight: constraints.maxHeight!,
+              minWidth: constraints.minWidth!,
+              maxWidth: constraints.maxWidth!));
+    }
+
+    return view;
+  }
 }

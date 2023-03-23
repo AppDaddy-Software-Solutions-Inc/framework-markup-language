@@ -2,11 +2,37 @@
 <html>
     <head>
         <script type="text/javascript">
-            // version
+            // get title and version
             var version = "1.3.0";
-
-            // set title
             var title = "Flutter Markup Language " + version;
+            try
+            {
+                var xhttp;
+                //code for IE7+, Firefox, Chrome, Opera, Safari
+                if (window.XMLHttpRequest)
+                {
+                    xhttp  =  new XMLHttpRequest();
+                }
+                // code for IE6, IE5
+                else
+                {
+                    xhttp  =  new ActiveXObject("Microsoft.XMLHTTP");
+                }
+                xhttp.open("GET", "config.xml", false);
+                xhttp.send();
+
+                var xmlDoc = xhttp.responseXML;
+                title   = xmlDoc.getElementsByTagName("APPLICATION_NAME")[0].childNodes[0].nodeValue;
+                version = xmlDoc.getElementsByTagName("VERSION")[0].childNodes[0].nodeValue;
+            }
+            catch(e)
+            {
+
+            }
+            alert(title);
+            alert(version);
+
+            // set document title
             document.title = title;
 
             // set description

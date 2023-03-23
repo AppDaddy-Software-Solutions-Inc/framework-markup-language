@@ -61,7 +61,7 @@ class _StackViewState extends WidgetState<StackView>
     //////////
     /* View */
     //////////
-    Widget view;
+    Widget view = Stack(children: children, alignment: aligned, fit: StackFit.loose);
 
     ////////////////////
     /* Padding values */
@@ -80,24 +80,14 @@ class _StackViewState extends WidgetState<StackView>
 
       // pad sides top, right, bottom
       else if (widget.model.paddings == 4) insets = EdgeInsets.only(top: widget.model.padding, right: widget.model.padding2, bottom: widget.model.padding3, left: widget.model.padding4);
+
+      view = Padding(padding: insets, child: view);
     }
 
-    view = Padding(
-        padding: insets,
-        child:
-            Stack(children: children, alignment: aligned, fit: StackFit.loose));
-
-    //////////////////
-    /* Constrained? */
-    //////////////////
-
-    if (widget.model.expand == false) {
-      view = Padding(
-          padding: insets,
-          child: Stack(children: children, alignment: aligned));
-    } else if (widget.model.hasSizing) {
-      view = ConstrainedBox(
-          child: view,
+    // Constrained?
+    if (widget.model.hasSizing)
+    {
+      view = ConstrainedBox(child: view,
           constraints: BoxConstraints(
               minHeight: constr.minHeight!,
               maxHeight: constr.maxHeight!,

@@ -189,16 +189,16 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
   bool get wrap => _wrap?.get() ?? false;
 
   /// Expand, which is true by default, tells the widget if it should shrink to its children, or grow to its parents constraints. Width/Height attributes will override expand.
-  BooleanObservable? _expand;
-  set expand(dynamic v) {
-    if (_expand != null) {
-      _expand!.set(v);
+  BooleanObservable? _expanded;
+  set expanded(dynamic v) {
+    if (_expanded != null) {
+      _expanded!.set(v);
     } else if (v != null) {
-      _expand = BooleanObservable(Binding.toKey(id, 'expand'), v,
+      _expanded = BooleanObservable(Binding.toKey(id, 'expand'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
-  bool get expand => _expand?.get() ?? true;
+  bool get expanded => _expanded?.get() ?? true;
 
   BoxModel(
     WidgetModel? parent,
@@ -230,32 +230,32 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
     dynamic center,
     dynamic wrap,
   }) : super(parent, id) {
-    this.width = width;
-    this.height = height;
-    this.padding = padding;
-    this.minWidth = minwidth;
-    this.minHeight = minheight;
-    this.maxWidth = maxwidth;
-    this.maxHeight = maxheight;
-    this.opacity = opacity;
-    this.color = color;
-    this.start = start;
-    this.end = end;
-    this.shadowcolor = shadowcolor;
-    this.shadowy = shadowy;
-    this.shadowx = shadowx;
-    this.elevation = elevation;
-    this.radius = radius;
-    this.bordercolor = bordercolor;
-    this.borderwidth = borderwidth;
-    this.border = border;
-    this.halign = halign;
-    this.valign = valign;
-    this.center = center;
-    this.layout = layout;
-    this.expand = expand;
-    this.blur = blur;
-    this.wrap = wrap;
+    if (width != null) this.width = width;
+    if (height != null) this.height = height;
+    if (padding != null) this.padding = padding;
+    if (minwidth != null) this.minWidth = minwidth;
+    if (minheight != null) this.minHeight = minheight;
+    if (maxwidth != null) this.maxWidth = maxwidth;
+    if (maxheight != null) this.maxHeight = maxheight;
+    if (opacity != null) this.opacity = opacity;
+    if (color != null) this.color = color;
+    if (start != null) this.start = start;
+    if (end != null) this.end = end;
+    if (shadowcolor != null) this.shadowcolor = shadowcolor;
+    if (shadowy != null) this.shadowy = shadowy;
+    if (shadowx != null) this.shadowx = shadowx;
+    if (elevation != null) this.elevation = elevation;
+    if (radius != null) this.radius = radius;
+    if (bordercolor != null) this.bordercolor = bordercolor;
+    if (borderwidth != null) this.borderwidth = borderwidth;
+    if (border != null) this.border = border;
+    if (halign != null) this.halign = halign;
+    if (valign != null) this.valign = valign;
+    if (center != null) this.center = center;
+    if (layout != null) this.layout = layout;
+    if (expand != null) this.expanded = expand;
+    if (blur != null) this.blur = blur;
+    if (wrap != null) this.wrap = wrap;
   }
 
   static BoxModel? fromXml(WidgetModel parent, XmlElement xml, {String? type}) {
@@ -306,7 +306,7 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
     // expand="false" is same as adding attribute shrink
     var expand = Xml.get(node: xml, tag: 'expand');
     if (expand == null && Xml.hasAttribute(node: xml, tag: 'shrink')) expand = 'false';
-    this.expand = expand;
+    this.expanded = expand;
 
     wrap = Xml.get(node: xml, tag: 'wrap');
   }

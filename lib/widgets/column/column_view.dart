@@ -82,6 +82,7 @@ class _ColumnViewState extends WidgetState<ColumnView>
           crossAxisAlignment: alignment.crossAlignment,
           mainAxisSize: mainAxisSize));
 
+    // wrap constraints
     return getConstrainedView(widget, view);
   }
 }

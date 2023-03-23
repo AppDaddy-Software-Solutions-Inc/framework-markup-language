@@ -33,7 +33,6 @@ class BusyModel extends DecoratedWidgetModel implements IViewableWidget
   @override
   bool get visible => _visible?.get() ?? false;
 
-
   /// Size of the widget sets the width and height
   bool _sizeIsPercent = false;
   DoubleObservable? _size;
@@ -109,8 +108,6 @@ class BusyModel extends DecoratedWidgetModel implements IViewableWidget
   }
   bool get expand => _expand?.get() ?? true;
 
-
-
   BusyModel(WidgetModel? parent, {String? id, dynamic visible, dynamic expand, dynamic size, dynamic color, dynamic modal, Observable? observable}) : super(parent, id)
   {
     //this.visible = (visible == true) ? true : false; // TODO this causes issues with binding as we are not setting it to widget.model's observable
@@ -124,12 +121,9 @@ class BusyModel extends DecoratedWidgetModel implements IViewableWidget
 
   void onObservableChange(Observable observable)
   {
-
-      var v = observable.get();
-      this.visible = v;
-
+    var v = observable.get();
+    this.visible = v;
   }
-
 
   static BusyModel? fromXml(WidgetModel parent, XmlElement xml)
   {
@@ -147,13 +141,10 @@ class BusyModel extends DecoratedWidgetModel implements IViewableWidget
     return model;
   }
 
-
-
   /// Deserializes the FML template elements, attributes and children
   @override
   void deserialize(XmlElement xml)
   {
-
     // deserialize 
     super.deserialize(xml);
 

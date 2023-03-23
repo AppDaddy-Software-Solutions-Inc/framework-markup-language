@@ -110,6 +110,7 @@ class _CardViewState extends WidgetState<CardView>
             )),
         child: child);
 
+    // wrap constraints
     return getConstrainedView(widget, view);
   }
 }

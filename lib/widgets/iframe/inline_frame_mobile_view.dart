@@ -70,7 +70,7 @@ class _InlineFrameViewState extends WidgetState<InlineFrameView>
       view = WebViewWidget(controller: controller);
     }
 
-    // build the view
+    // wrap constraints
     if (model.hasSizing)
          return getConstrainedView(widget, view);
     else return Container(child: view, width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.height);

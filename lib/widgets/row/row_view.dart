@@ -90,6 +90,7 @@ class _RowViewState extends WidgetState<RowView>
               mainAxisAlignment: alignment.mainAlignment,
               mainAxisSize: mainAxisSize));
 
+    // wrap constraints
     return getConstrainedView(widget, view);
   }
 }

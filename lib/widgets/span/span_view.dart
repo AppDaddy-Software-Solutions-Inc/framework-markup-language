@@ -147,6 +147,7 @@ class _SpanViewState extends WidgetState<SpanView>
             overflow: textOverflow,
             textAlign: textAlign));
 
+    // wrap constraints
     return getConstrainedView(widget, view);
   }
 

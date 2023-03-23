@@ -369,10 +369,8 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
       bottomDrawer,
     ]); // view;
 
-    //////////////////
-    /* Constrained? */
-    //////////////////
-    view = ConstrainedBox(child: view, constraints: BoxConstraints(minHeight: con.minHeight!, maxHeight: con.maxHeight!, minWidth: con.minWidth!, maxWidth: con.maxWidth!));
+    // wrap constraints
+    view = getConstrainedView(widget, view);
 
     view = WillPopScope(onWillPop: () async => preventPop(), child: view);
 

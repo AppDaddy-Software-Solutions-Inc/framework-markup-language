@@ -42,15 +42,7 @@ class _ModalViewState extends WidgetState<ModalView>
     //////////
     Widget view = SingleChildScrollView(child: child, scrollDirection: Axis.vertical);
 
-    var constr = widget.model.getConstraints();
-    view = ConstrainedBox(
-        child: view,
-        constraints: BoxConstraints(
-            minHeight: constr.minHeight!,
-            maxHeight: constr.maxHeight!,
-            minWidth: constr.minWidth!,
-            maxWidth: constr.maxWidth!));
-
-    return view;
+    // wrap constraints
+    return getConstrainedView(widget, view);
   }
 }

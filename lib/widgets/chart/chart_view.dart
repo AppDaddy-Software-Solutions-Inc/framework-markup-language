@@ -112,22 +112,8 @@ class _ChartViewState extends WidgetState<ChartView>
     // Display children over chart
     Widget view = Stack(children: children, fit: StackFit.loose);
 
-    //////////////////
-    /* Constrained? */
-    //////////////////
-    if (true) {
-      // Always constrain based on parent constraints
-      var constraints = widget.model.getConstraints();
-      view = ConstrainedBox(
-          child: view,
-          constraints: BoxConstraints(
-              minHeight: constraints.minHeight!,
-              maxHeight: constraints.maxHeight!,
-              minWidth: constraints.minWidth!,
-              maxWidth: constraints.maxWidth!));
-    }
-
-    return view;
+    // wrap constraints
+    return getConstrainedView(widget, view);
   }
 
   /// Identifies the chart type from the model attributes

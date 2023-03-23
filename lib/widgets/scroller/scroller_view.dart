@@ -238,15 +238,9 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
         ),
       );
     }
-    var constr = widget.model.getConstraints();
 
-    return view = ConstrainedBox(
-        child: view,
-        constraints: BoxConstraints(
-            minHeight: constr.minHeight!,
-            maxHeight: constr.maxHeight!,
-            minWidth: constr.minWidth!,
-            maxWidth: constr.maxWidth!));
+    // wrap constraints
+    return getConstrainedView(widget, view);
   }
 }
 

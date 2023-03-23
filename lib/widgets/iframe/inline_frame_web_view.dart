@@ -57,7 +57,7 @@ class _InlineFrameViewState extends WidgetState<InlineFrameView>
     if (iframe == null) iframe = IFrameWidget(model: model);
     Widget view = iframe!;
 
-    // build the view
+    // wrap constraints
     if (model.hasSizing)
          return getConstrainedView(widget, view);
     else return Container(child: view, width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.height);

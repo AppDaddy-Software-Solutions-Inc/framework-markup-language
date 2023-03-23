@@ -425,6 +425,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
             index: widget.model.index);
       }
 
+      // wrap constraints
       return getConstrainedView(widget, view);
     }
     else return Container();

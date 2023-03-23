@@ -78,49 +78,10 @@ class _BusyViewState extends WidgetState<BusyView>
 
     if (children.isEmpty) children.add(Container());
 
-    view = Stack(alignment: Alignment(0.0, 0.0), children: children);
-      bool expand = widget.model.expand;
-      var constr = widget.model.getConstraints();
-      view = Container(color: Colors.transparent, child: view);
-      if (expand == false) {
-        if (widget.model.height != null && widget.model.width != null)
-          expand = true;
-      }
+    view = Container(color: Colors.transparent, child: Stack(alignment: Alignment(0.0, 0.0), children: children));
 
-      if (expand == false) {
-        //unsure how to make this work with maxwidth/maxheight, as it should yet constraints always come in. What should it do? same with minwidth/minheight...
-        if (widget.model.width != null) {
-          view = UnconstrainedBox(
-            child: LimitedBox(
-              child: view,
-              maxWidth: constr.maxWidth!,
-            ),
-          );
-        } else if (widget.model.height != null) {
-          view = UnconstrainedBox(
-            child: LimitedBox(
-              child: view,
-              maxHeight: constr.maxHeight!,
-            ),
-          );
-        } else {
-          view = UnconstrainedBox(
-            child: view,
-          );
-        }
-      } else {
-        //the container blocks user input behind the busy widget so you do not have to use a container.
-
-
-        view = ConstrainedBox(
-            child: view,
-            constraints: BoxConstraints(
-                minHeight: constr.minHeight!,
-                maxHeight: constr.maxHeight!,
-                minWidth: constr.minWidth!,
-                maxWidth: constr.maxWidth!));
-      }
-      return view;
+    // wrap constraints
+    return getConstrainedView(widget, view);
   }
 }
 

@@ -153,7 +153,7 @@ class _BoxViewState extends WidgetState<BoxView>
       else view = ClipRect(child: view);
     }
 
-    // constrain the children
+    // wrap constraints
     view = getConstrainedView(widget, view);
 
     // this is a safe guard to ensure widgets

@@ -78,6 +78,7 @@ class _StackViewState extends WidgetState<StackView>
       view = Padding(padding: insets, child: view);
     }
 
+    // wrap constraints
     return getConstrainedView(widget, view);
   }
 }

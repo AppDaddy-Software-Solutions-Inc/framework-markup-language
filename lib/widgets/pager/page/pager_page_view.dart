@@ -45,23 +45,11 @@ class _PagerPageViewState extends WidgetState<PagerPageView>
     var child = Column(children: children, mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start);
 
 
-    Widget view;
+    Widget view = child;
 
-    if(widget.model.hasSizing)
-    {
-      var constr = widget.model.getConstraints();
-      view = ConstrainedBox(
-          child: child,
-          constraints: BoxConstraints(
-              minWidth: constr.minWidth!,
-              maxWidth: constr.maxWidth!,
-              minHeight: constr.minHeight!,
-              maxHeight: constr.maxHeight!
-          ));
-    } else view = child;
-
+    // wrap constraints
+    if (widget.model.hasSizing) view = getConstrainedView(widget, view);
     return view;
-
   }
 
   @override

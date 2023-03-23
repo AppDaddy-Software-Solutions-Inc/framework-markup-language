@@ -419,17 +419,8 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
       ]),
     );
 
-    var con = widget.model.getConstraints();
-
-    view = ConstrainedBox(
-        child: view,
-        constraints: BoxConstraints(
-            minHeight: con.minHeight!,
-            maxHeight: con.maxHeight!,
-            minWidth: con.minWidth!,
-            maxWidth: con.maxWidth!));
-
-    return view;
+    // wrap constraints
+    return getConstrainedView(widget, view);
   }
 
   /// After [iFormFields] are drawn we get the global offset for scrollTo functionality

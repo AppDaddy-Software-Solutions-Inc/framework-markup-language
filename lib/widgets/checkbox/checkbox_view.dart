@@ -61,16 +61,7 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
     if (!widget.model.visible) return Offstage();
 
     //this must go after the children are determined
-    Map<String, dynamic> align = AlignmentHelper.alignWidgetAxis(
-        2,
-        widget.model.layout,
-        widget.model.center,
-        widget.model.halign,
-        widget.model.valign);
-    CrossAxisAlignment? crossAlignment = align['crossAlignment'];
-    MainAxisAlignment? mainAlignment = align['mainAlignment'];
-    WrapAlignment? mainWrapAlignment = align['mainWrapAlignment'];
-    WrapCrossAlignment? crossWrapAlignment = align['crossWrapAlignment'];
+    var alignment = AlignmentHelper.alignWidgetAxis(2, widget.model.layout, widget.model.center, widget.model.halign, widget.model.valign);
 
     _buildOptions();
 
@@ -81,15 +72,15 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
             child: Wrap(
                 children: _list,
                 direction: Axis.horizontal,
-                alignment: mainWrapAlignment!,
-                runAlignment: mainWrapAlignment,
-                crossAxisAlignment: crossWrapAlignment!));
+                alignment: alignment.mainWrapAlignment,
+                runAlignment: alignment.mainWrapAlignment,
+                crossAxisAlignment: alignment.crossWrapAlignment));
       else
         view = Center(
             child: Row(
                 mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: crossAlignment!,
-                mainAxisAlignment: mainAlignment!,
+                crossAxisAlignment: alignment.crossAlignment,
+                mainAxisAlignment: alignment.mainAlignment,
                 children: _list));
     } else {
       if (widget.model.wrap == true)
@@ -97,14 +88,14 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
             child: Wrap(
                 children: _list,
                 direction: Axis.vertical,
-                alignment: mainWrapAlignment!,
-                runAlignment: mainWrapAlignment,
-                crossAxisAlignment: crossWrapAlignment!));
+                alignment: alignment.mainWrapAlignment,
+                runAlignment: alignment.mainWrapAlignment,
+                crossAxisAlignment: alignment.crossWrapAlignment));
       else
         view = Center(
             child: Column(
-                crossAxisAlignment: crossAlignment!,
-                mainAxisAlignment: mainAlignment!,
+                crossAxisAlignment: alignment.crossAlignment,
+                mainAxisAlignment: alignment.mainAlignment,
                 children: _list));
     }
 

@@ -16,6 +16,12 @@ import 'package:fml/helper/common_helpers.dart';
 /// Defines the properties used to build a [SCROLLER.ScrollerView]
 class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
 {
+  @override
+  double? get maxWidth  => direction == 'horizontal' ? double.infinity : super.maxWidth;
+
+  @override
+  double? get maxHeight => direction == 'vertical'   ? double.infinity : super.maxHeight;
+
   /// Scroll direction, `horizontal` or `vertical`
   StringObservable? _direction;
   set direction (dynamic v)

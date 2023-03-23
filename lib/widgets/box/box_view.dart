@@ -2,7 +2,7 @@
 import 'dart:ui';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/scroller/scroller_model.dart';
+import 'package:fml/widgets/widget/alignment.dart';
 import 'package:fml/widgets/widget/constraint.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
@@ -110,7 +110,7 @@ class _BoxViewState extends WidgetState<BoxView>
     if (children.isEmpty) children.add(Container(width: 0, height: 0));
 
     //this must go after the children are determined
-    Map<String, dynamic> alignment = AlignmentHelper.alignWidgetAxis(children.length, widget.model.layout, widget.model.center, widget.model.halign, widget.model.valign);
+    var alignment = AlignmentHelper.alignWidgetAxis(children.length, widget.model.layout, widget.model.center, widget.model.halign, widget.model.valign);
 
     // get child
     Widget child = _layoutChildren(_constraints, children, alignment);
@@ -138,7 +138,7 @@ class _BoxViewState extends WidgetState<BoxView>
         padding: insets,
         clipBehavior: Clip.antiAlias,
         decoration: decoration,
-        alignment: alignment['aligned'],
+        alignment: alignment.aligned,
         child: child));
 
     // opacity
@@ -156,15 +156,20 @@ class _BoxViewState extends WidgetState<BoxView>
     // constrain the children
     view = getConstrainedView(widget, view);
 
+    // this is a safe guard to ensure widgets
+    // do not expand out infinitely
+    bool expanded = widget.model.expand;
+    if (expanded && (_constraints.maxWidth == double.infinity || _constraints.maxHeight == double.infinity)) expanded = false;
+
     // containers will expand to the size of their parent
     // unless we wrap in an Unconstrained
-    if (!widget.model.expanded) view = UnconstrainedBox(child: view);
+    if (!expanded) view = UnconstrainedBox(child: view);
 
     // return view
     return view;
   }
 
-  Widget _layoutChildren(Constraint constraints, List<Widget> children, Map<String, dynamic> alignment)
+  Widget _layoutChildren(Constraint constraints, List<Widget> children, WidgetAlignment alignment)
   {
     Widget? child;
 
@@ -173,15 +178,6 @@ class _BoxViewState extends WidgetState<BoxView>
 
     if (child == null)
     {
-      CrossAxisAlignment? crossAlignment = alignment['crossAlignment'];
-      MainAxisAlignment? mainAlignment = alignment['mainAlignment'];
-      WrapAlignment? mainWrapAlignment = alignment['mainWrapAlignment'];
-      WrapCrossAlignment? crossWrapAlignment = alignment['crossWrapAlignment'];
-
-      // Setting aligned on widgets with BoxFit (images) causes layout issues
-      // so ignore the default (Alignment.topLeft)
-      if (alignment['aligned'] == Alignment.topLeft) alignment['aligned'] = null;
-
       var layout = widget.model.layout.trim().toLowerCase();
       switch (layout)
       {
@@ -192,14 +188,14 @@ class _BoxViewState extends WidgetState<BoxView>
             child = Wrap(
                 children: children,
                 direction: Axis.vertical,
-                alignment: mainWrapAlignment!,
-                runAlignment: mainWrapAlignment,
-                crossAxisAlignment: crossWrapAlignment!);
+                alignment: alignment.mainWrapAlignment,
+                runAlignment: alignment.mainWrapAlignment,
+                crossAxisAlignment: alignment.crossWrapAlignment);
           else
             child = Column(
               children: children,
-              crossAxisAlignment: crossAlignment!,
-              mainAxisAlignment: mainAlignment!);
+              crossAxisAlignment: alignment.crossAlignment,
+              mainAxisAlignment: alignment.mainAlignment);
           break;
 
         case 'row':
@@ -207,17 +203,17 @@ class _BoxViewState extends WidgetState<BoxView>
             child = Wrap(
                 children: children,
                 direction: Axis.horizontal,
-                alignment: mainWrapAlignment!,
-                runAlignment: mainWrapAlignment,
-                crossAxisAlignment: crossWrapAlignment!);
+                alignment: alignment.mainWrapAlignment,
+                runAlignment: alignment.mainWrapAlignment,
+                crossAxisAlignment: alignment.crossWrapAlignment);
           else child = Row(
               children: children,
-              crossAxisAlignment: crossAlignment!,
-              mainAxisAlignment: mainAlignment!);
+              crossAxisAlignment: alignment.crossAlignment,
+              mainAxisAlignment: alignment.mainAlignment);
           break;
 
         case 'stack':
-          var stack = Stack(children: children, alignment: alignment['aligned'] ?? AlignmentDirectional.topStart);
+          var stack = Stack(children: children, alignment: alignment.aligned);
           child = ConstrainedBox(
               child: stack,
               constraints: BoxConstraints(
@@ -230,8 +226,8 @@ class _BoxViewState extends WidgetState<BoxView>
         default:
           child = Column(
               children: children,
-              mainAxisAlignment: mainAlignment!,
-              crossAxisAlignment: crossAlignment!);
+              mainAxisAlignment: alignment.mainAlignment,
+              crossAxisAlignment: alignment.crossAlignment);
           break;
       }
     }
@@ -407,77 +403,5 @@ class _BoxViewState extends WidgetState<BoxView>
             ),
           ),
         ]);
-  }
-
-  _getConstrainedView(Constraint constraints, Widget view)
-  {
-    // Constrained?
-    bool expanded  = widget.model.expanded;
-    double? height = widget.model.height;
-    double? width  = widget.model.width;
-
-    ScrollerModel? scrollerModel = widget.model.findParentOfExactType(ScrollerModel);
-    if (scrollerModel != null && expanded == true)
-    {
-      expanded = false;
-      if (scrollerModel.layout == "col" || scrollerModel.layout == "column") width ??= constraints.maxWidth;
-      if(scrollerModel.layout == "row") height ??= constraints.maxHeight;
-    }
-    if (expanded == false && height != null && width != null) expanded = true;
-
-    if (!expanded)
-    {
-      // unsure how to make this work with maxwidth/maxheight, as it should yet constraints always come in. What should it do? same with minwidth/minheight...
-      if (width != null)
-      {
-        view = UnconstrainedBox(
-          child: LimitedBox(
-            maxWidth: constraints.maxWidth!,
-            child: ConstrainedBox(
-                child: view,
-                constraints: BoxConstraints(
-                  minHeight: constraints.minHeight!,
-                  minWidth: constraints.minWidth!,)),
-          ),
-        );
-      }
-      else if (height != null)
-      {
-        view = UnconstrainedBox(
-          child: LimitedBox(
-            maxHeight: constraints.maxHeight!,
-            child: ConstrainedBox(
-                child: view,
-                constraints: BoxConstraints(
-                  minHeight: constraints.minHeight!,
-                  minWidth: constraints.minWidth!,)),
-          ),
-        );
-      }
-      else
-      {
-        view = UnconstrainedBox(
-            child:
-            ConstrainedBox(
-                child: view,
-                constraints: BoxConstraints(
-                  minHeight: constraints.minHeight!,
-                  minWidth: constraints.minWidth!,))
-        );
-      }
-    }
-
-    else
-    {
-      view = ConstrainedBox(
-          child: view,
-          constraints: BoxConstraints(
-              minHeight: constraints.minHeight!,
-              maxHeight: constraints.maxHeight!,
-              minWidth: constraints.minWidth!,
-              maxWidth: constraints.maxWidth!));
-    }
-
-    return view;
   }
 }

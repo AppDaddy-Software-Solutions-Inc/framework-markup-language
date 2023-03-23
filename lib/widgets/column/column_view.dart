@@ -42,17 +42,7 @@ class _ColumnViewState extends WidgetState<ColumnView>
     if (children.isEmpty) children.add(Container());
 
     //this must go after the children are determined
-    Map<String, dynamic> align = AlignmentHelper.alignWidgetAxis(
-        children.length,
-        'column',
-        widget.model.center,
-        widget.model.halign,
-        widget.model.valign);
-    CrossAxisAlignment? crossAlignment = align['crossAlignment'];
-    MainAxisAlignment? mainAlignment = align['mainAlignment'];
-    WrapAlignment? mainWrapAlignment = align['mainWrapAlignment'];
-    WrapCrossAlignment? crossWrapAlignment = align['crossWrapAlignment'];
-    //Alignment aligned = align['aligned'];
+    var alignment = AlignmentHelper.alignWidgetAxis(children.length, 'column', widget.model.center, widget.model.halign, widget.model.valign);
 
     // set main axis size
     var mainAxisSize = widget.model.expand == false ? MainAxisSize.min : MainAxisSize.max;
@@ -82,14 +72,14 @@ class _ColumnViewState extends WidgetState<ColumnView>
       view = Padding( padding: insets, child: Wrap(
           children: children,
           direction: Axis.vertical,
-          alignment: mainWrapAlignment!,
-          runAlignment: mainWrapAlignment,
-          crossAxisAlignment: crossWrapAlignment!));
+          alignment: alignment.mainWrapAlignment,
+          runAlignment: alignment.mainWrapAlignment,
+          crossAxisAlignment: alignment.crossWrapAlignment));
     else
       view = Padding( padding: insets, child:Column(
           children: children,
-          mainAxisAlignment: mainAlignment!,
-          crossAxisAlignment: crossAlignment!,
+          mainAxisAlignment: alignment.mainAlignment,
+          crossAxisAlignment: alignment.crossAlignment,
           mainAxisSize: mainAxisSize));
 
     return getConstrainedView(widget, view);

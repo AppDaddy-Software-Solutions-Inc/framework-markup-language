@@ -97,60 +97,39 @@ class _RadioViewState extends WidgetState<RadioView>
     }
 
     //this must go after the children are determined
-    Map<String, dynamic> align = AlignmentHelper.alignWidgetAxis(
-        2,
-        widget.model.layout,
-        widget.model.center,
-        widget.model.halign,
-        widget.model.valign);
-    CrossAxisAlignment? crossAlignment = align['crossAlignment'];
-    MainAxisAlignment? mainAlignment = align['mainAlignment'];
-    WrapAlignment? mainWrapAlignment = align['mainWrapAlignment'];
-    WrapCrossAlignment? crossWrapAlignment = align['crossWrapAlignment'];
-    //Alignment aligned = align['aligned'];
+    var alignment = AlignmentHelper.alignWidgetAxis(2, widget.model.layout, widget.model.center, widget.model.halign, widget.model.valign);
 
-    //////////
     /* View */
-    //////////
     Widget view;
     if (widget.model.layout == 'row') {
       if (widget.model.wrap == true)
         view = Wrap(
             children: options!,
             direction: Axis.horizontal,
-            alignment: mainWrapAlignment!,
-            runAlignment: mainWrapAlignment,
-            crossAxisAlignment: crossWrapAlignment!);
+            alignment: alignment.mainWrapAlignment,
+            runAlignment: alignment.mainWrapAlignment,
+            crossAxisAlignment: alignment.crossWrapAlignment);
       else
         view = Row(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: crossAlignment!,
-            mainAxisAlignment: mainAlignment!,
+            crossAxisAlignment: alignment.crossAlignment,
+            mainAxisAlignment: alignment.mainAlignment,
             children: options!);
     } else {
       if (widget.model.wrap == true)
         view = Wrap(
             children: options!,
             direction: Axis.vertical,
-            alignment: mainWrapAlignment!,
-            runAlignment: mainWrapAlignment,
-            crossAxisAlignment: crossWrapAlignment!);
+            alignment: alignment.mainWrapAlignment,
+            runAlignment: alignment.mainWrapAlignment,
+            crossAxisAlignment: alignment.crossWrapAlignment);
       else
         view = Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: crossAlignment!,
-            mainAxisAlignment: mainAlignment!,
+            crossAxisAlignment: alignment.crossAlignment,
+            mainAxisAlignment: alignment.mainAlignment,
             children: options!);
     }
-
-    //////////////////
-    /* Constrained? */
-    //////////////////
-    // if (widget.model.constrained)
-    // {
-    //   Map<String,double> constraints = widget.model.constraints;
-    //   view = ConstrainedBox(child: view, constraints: BoxConstraints(minHeight: constraints.minHeight, maxHeight: constraints.maxHeight, minWidth: constraints.minWidth, maxWidth: constraints.maxWidth));
-    // }
 
     return view;
   }

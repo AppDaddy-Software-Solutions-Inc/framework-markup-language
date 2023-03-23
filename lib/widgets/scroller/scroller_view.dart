@@ -146,13 +146,12 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
 
     var layoutType = (direction == Axis.horizontal) ? 'row' : 'column';
 
-    Map<String, dynamic> align = AlignmentHelper.alignWidgetAxis(children.length, layoutType, false, widget.model.align, widget.model.align);
-    CrossAxisAlignment? crossAlignment = align['crossAlignment'];
+    var alignment = AlignmentHelper.alignWidgetAxis(children.length, layoutType, false, widget.model.align, widget.model.align);
 
     var child;
     if (direction == Axis.vertical)
-         child = Column(children: children, crossAxisAlignment: crossAlignment!);
-    else child = Row(children: children, crossAxisAlignment: crossAlignment!);
+         child = Column(children: children, crossAxisAlignment: alignment.crossAlignment);
+    else child = Row(children: children, crossAxisAlignment: alignment.crossAlignment);
     children.add(Column(mainAxisSize: MainAxisSize.max));
 
     Widget scsv;

@@ -53,12 +53,7 @@ class _TableRowCellViewState extends WidgetState<TableRowCellView> with WidgetsB
     if (children.isEmpty) children.add(Container());
 
     //this must go after the children are determined
-    Map<String, dynamic> align = AlignmentHelper.alignWidgetAxis(2, 'col',
-        widget.model.center, widget.model.halign, widget.model.valign);
-    CrossAxisAlignment? crossAlignment = align['crossAlignment'];
-    MainAxisAlignment? mainAlignment = align['mainAlignment'];
-    WrapAlignment? mainWrapAlignment = align['mainWrapAlignment'];
-    WrapCrossAlignment? crossWrapAlignment = align['crossWrapAlignment'];
+    var alignment= AlignmentHelper.alignWidgetAxis(2, 'col', widget.model.center, widget.model.halign, widget.model.valign);
 
     // Contents
     Widget contents;
@@ -66,14 +61,14 @@ class _TableRowCellViewState extends WidgetState<TableRowCellView> with WidgetsB
       contents = Wrap(
           children: children,
           direction: Axis.vertical,
-          alignment: mainWrapAlignment!,
-          runAlignment: mainWrapAlignment,
-          crossAxisAlignment: crossWrapAlignment!);
+          alignment: alignment.mainWrapAlignment,
+          runAlignment: alignment.mainWrapAlignment,
+          crossAxisAlignment: alignment.crossWrapAlignment);
     else
       contents = Column(
           children: children,
-          mainAxisAlignment: mainAlignment!,
-          crossAxisAlignment: crossAlignment!,
+          mainAxisAlignment: alignment.mainAlignment,
+          crossAxisAlignment: alignment.crossAlignment,
           mainAxisSize: MainAxisSize.min);
 
 

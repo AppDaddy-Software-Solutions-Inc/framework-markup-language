@@ -50,18 +50,12 @@ class _StackViewState extends WidgetState<StackView>
               minWidth: constr.minWidth!,
               maxWidth: constr.maxWidth!)));
 
-    Map<String, dynamic> align = AlignmentHelper.alignWidgetAxis(
-        children.length,
-        'stack',
-        widget.model.center,
-        widget.model.halign,
-        widget.model.valign);
-    Alignment aligned = align['aligned'];
+    var alignment = AlignmentHelper.alignWidgetAxis(children.length, 'stack', widget.model.center, widget.model.halign, widget.model.valign);
 
     //////////
     /* View */
     //////////
-    Widget view = Stack(children: children, alignment: aligned, fit: StackFit.loose);
+    Widget view = Stack(children: children, alignment: alignment.aligned, fit: StackFit.loose);
 
     ////////////////////
     /* Padding values */

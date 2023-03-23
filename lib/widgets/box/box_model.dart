@@ -189,16 +189,19 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
   bool get wrap => _wrap?.get() ?? false;
 
   /// Expand, which is true by default, tells the widget if it should shrink to its children, or grow to its parents constraints. Width/Height attributes will override expand.
-  BooleanObservable? _expanded;
-  set expanded(dynamic v) {
-    if (_expanded != null) {
-      _expanded!.set(v);
-    } else if (v != null) {
-      _expanded = BooleanObservable(Binding.toKey(id, 'expand'), v,
-          scope: scope, listener: onPropertyChange);
+  BooleanObservable? _expand;
+  set expand(dynamic v)
+  {
+    if (_expand != null)
+    {
+      _expand!.set(v);
+    }
+    else if (v != null)
+    {
+      _expand = BooleanObservable(Binding.toKey(id, 'expand'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  bool get expanded => _expanded?.get() ?? true;
+  bool get expand => _expand?.get() ?? true;
 
   BoxModel(
     WidgetModel? parent,
@@ -253,7 +256,7 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
     if (valign != null) this.valign = valign;
     if (center != null) this.center = center;
     if (layout != null) this.layout = layout;
-    if (expand != null) this.expanded = expand;
+    if (expand != null) this.expand = expand;
     if (blur != null) this.blur = blur;
     if (wrap != null) this.wrap = wrap;
   }
@@ -306,7 +309,7 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
     // expand="false" is same as adding attribute shrink
     var expand = Xml.get(node: xml, tag: 'expand');
     if (expand == null && Xml.hasAttribute(node: xml, tag: 'shrink')) expand = 'false';
-    this.expanded = expand;
+    this.expand = expand;
 
     wrap = Xml.get(node: xml, tag: 'wrap');
   }

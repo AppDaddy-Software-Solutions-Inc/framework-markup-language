@@ -117,96 +117,81 @@ class ViewableWidgetModel extends WidgetModel
   }
 
   // Max Width
-  set maxWidth(double? v) {
+  set maxWidth(double? v)
+  {
     viewConstraints.maxWidth = v;
-    if (_width?.value != null && _width!.value >= 100000)
-      _widthPercentage = (_width!.value / 1000000)!;
-    if (_widthPercentage != null) {
+    if (_width?.value != null && _width!.value >= 100000) _widthPercentage = (_width!.value / 1000000)!;
+    if (_widthPercentage != null)
+    {
       double? width;
       var maxwidth = this.maxWidth;
-      if (maxwidth != null) {
+      if (maxwidth != null)
+      {
         width = maxwidth * (_widthPercentage! / 100.0);
-        if ((modelConstraints.minWidth != null) &&
-            (modelConstraints.minWidth! > width))
-          width = modelConstraints.minWidth;
-        if ((modelConstraints.maxWidth != null) &&
-            (modelConstraints.maxWidth! < width!))
-          width = modelConstraints.maxWidth;
+        if (modelConstraints.minWidth != null && modelConstraints.minWidth! > width)  width = modelConstraints.minWidth;
+        if (modelConstraints.maxWidth != null && modelConstraints.maxWidth! < width!) width = modelConstraints.maxWidth;
       }
       _width?.set(width, notify: false);
     }
   }
 
-  double? get maxWidth {
+  double? get maxWidth
+  {
     double? v;
-    if ((v == null) &&
-        (viewConstraints.maxWidth != null) &&
-        (viewConstraints.maxWidth != double.infinity))
-      v = viewConstraints.maxWidth;
-    if ((v == null) && (parent != null)) {
-      ViewableWidgetModel? parent = (this.parent is ViewableWidgetModel)
-          ? (this.parent as ViewableWidgetModel)
-          : null;
-      if (parent?.padding != null) {
-        var vpad = getParentHPadding(parent!.paddings, parent.padding,
-            parent.padding2, parent.padding3, parent.padding4);
-        v = (parent.width != null)
-            ? (parent.width! - vpad)
-            : (parent.maxWidth! - vpad);
-      } else if (parent != null) v = (parent.width ?? parent.maxWidth);
+    if (v == null && viewConstraints.maxWidth != null && viewConstraints.maxWidth != double.infinity) v = viewConstraints.maxWidth;
+    if ((v == null) && (parent != null))
+    {
+      ViewableWidgetModel? parent = (this.parent is ViewableWidgetModel) ? (this.parent as ViewableWidgetModel) : null;
+      if (parent?.padding != null)
+      {
+        var vpad = getParentHPadding(parent!.paddings, parent.padding, parent.padding2, parent.padding3, parent.padding4);
+        v = (parent.width != null) ? (parent.width! - vpad) : (parent.maxWidth! - vpad);
+      }
+      else if (parent != null) v = (parent.width ?? parent.maxWidth);
     }
     return v;
   }
 
   // Max Height
-  set maxHeight(double? v) {
+  set maxHeight(double? v)
+  {
     viewConstraints.maxHeight = v;
 
-    if (_height?.value != null && _height!.value >= 100000)
-      _heightPercentage = (_height!.value / 1000000)!;
-    if (_heightPercentage != null) {
+    if (_height?.value != null && _height!.value >= 100000) _heightPercentage = (_height!.value / 1000000)!;
+    if (_heightPercentage != null)
+    {
       double? height;
       var maxheight = this.maxHeight;
-      if (maxheight != null) {
-        if (this.parent != null) {
+      if (maxheight != null)
+      {
+        if (this.parent != null)
+        {
           double vpadding = 0;
-          ViewableWidgetModel? parent = (this.parent is ViewableWidgetModel)
-              ? (this.parent as ViewableWidgetModel)
-              : null;
-          if (parent != null)
-            vpadding = getParentVPadding(parent.paddings, parent.padding,
-                parent.padding2, parent.padding3, parent.padding4);
+          ViewableWidgetModel? parent = (this.parent is ViewableWidgetModel) ? (this.parent as ViewableWidgetModel) : null;
+          if (parent != null) vpadding = getParentVPadding(parent.paddings, parent.padding, parent.padding2, parent.padding3, parent.padding4);
 
           height = ((maxheight - vpadding) * (_heightPercentage! / 100.0));
-          if ((modelConstraints.minHeight != null) &&
-              (modelConstraints.minHeight! > height))
-            height = modelConstraints.minHeight ?? 0;
-          if ((modelConstraints.maxHeight != null) &&
-              (modelConstraints.maxHeight! < height))
-            height = modelConstraints.maxHeight;
+          if (modelConstraints.minHeight != null && modelConstraints.minHeight! > height) height = modelConstraints.minHeight ?? 0;
+          if (modelConstraints.maxHeight != null && modelConstraints.maxHeight! < height) height = modelConstraints.maxHeight;
         }
       }
       _height?.set(height, notify: false);
     }
   }
 
-  double? get maxHeight {
+  double? get maxHeight
+  {
     double? v;
-    if ((v == null) &&
-        (viewConstraints.maxHeight != null) &&
-        (viewConstraints.maxHeight != double.infinity))
-      v = viewConstraints.maxHeight;
-    if ((v == null) && (parent != null)) {
-      ViewableWidgetModel? parent = (this.parent is ViewableWidgetModel)
-          ? (this.parent as ViewableWidgetModel)
-          : null;
-      if (parent?.padding != null && _heightPercentage == null) {
-        var vpad = getParentVPadding(parent!.paddings, parent.padding,
-            parent.padding2, parent.padding3, parent.padding4);
-        v = (parent.height != null)
-            ? (parent.height! - vpad)
-            : (parent.maxHeight! - vpad);
-      } else if (parent != null) v = (parent.height ?? parent.maxHeight);
+    if ( v == null && viewConstraints.maxHeight != null && viewConstraints.maxHeight != double.infinity) v = viewConstraints.maxHeight;
+    if ((v == null) && (parent != null))
+    {
+      ViewableWidgetModel? parent = (this.parent is ViewableWidgetModel) ? (this.parent as ViewableWidgetModel) : null;
+      if (parent?.padding != null && _heightPercentage == null)
+      {
+        var vpad = getParentVPadding(parent!.paddings, parent.padding, parent.padding2, parent.padding3, parent.padding4);
+        v = (parent.height != null) ? (parent.height! - vpad) : (parent.maxHeight! - vpad);
+      }
+      else if (parent != null) v = (parent.height ?? parent.maxHeight);
     }
     return v;
   }

@@ -42,16 +42,7 @@ class _RowViewState extends WidgetState<RowView>
     if (children.isEmpty) children.add(Container());
 
     //this must go after the children are determined. Returns an alignment map.
-    Map<String, dynamic> align = AlignmentHelper.alignWidgetAxis(
-        children.length,
-        'row',
-        widget.model.center,
-        widget.model.halign,
-        widget.model.valign);
-    CrossAxisAlignment? crossAlignment = align['crossAlignment'];
-    MainAxisAlignment? mainAlignment = align['mainAlignment'];
-    WrapAlignment? mainWrapAlignment = align['mainWrapAlignment'];
-    WrapCrossAlignment? crossWrapAlignment = align['crossWrapAlignment'];
+    var alignment = AlignmentHelper.alignWidgetAxis(children.length, 'row', widget.model.center, widget.model.halign, widget.model.valign);
 
     // set main axis size
     var mainAxisSize = widget.model.expand == false ? MainAxisSize.min : MainAxisSize.max;
@@ -87,16 +78,16 @@ class _RowViewState extends WidgetState<RowView>
           child: Wrap(
               children: children,
               direction: Axis.horizontal,
-              alignment: mainWrapAlignment!,
-              runAlignment: mainWrapAlignment,
-              crossAxisAlignment: crossWrapAlignment!));
+              alignment: alignment.mainWrapAlignment,
+              runAlignment: alignment.mainWrapAlignment,
+              crossAxisAlignment: alignment.crossWrapAlignment));
     else
       view = Padding(
           padding: insets,
           child: Row(
               children: children,
-              crossAxisAlignment: crossAlignment!,
-              mainAxisAlignment: mainAlignment!,
+              crossAxisAlignment: alignment.crossAlignment,
+              mainAxisAlignment: alignment.mainAlignment,
               mainAxisSize: mainAxisSize));
 
     return getConstrainedView(widget, view);

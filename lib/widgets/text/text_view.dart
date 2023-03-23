@@ -74,14 +74,20 @@ class _TextViewState extends WidgetState<TextView>
     if (widget.model.isSpan) return SizedBox(child: view);
 
     // constrained?
-    bool isNotExpandedChild = false;
-    if (!widget.model.hasSizing)
+    bool childOfExpanded = false;
+    if (!widget.model.hasHorizontalSizing)
     {
       ScrollerModel? parentScroll = widget.model.findAncestorOfExactType(ScrollerModel);
-      if (parentScroll != null && parentScroll.layout.toLowerCase() == "row") return view;
-      isNotExpandedChild = widget.model.findAncestorOfExactType(ExpandedModel) == null;
+      if (parentScroll != null && parentScroll.layout == "row") return view;
+      childOfExpanded = widget.model.findAncestorOfExactType(ExpandedModel) != null;
     }
-    if (isNotExpandedChild || widget.model.hasSizing) view = getConstrainedView(widget, view);
+
+    // constrained?
+    if (!childOfExpanded || widget.model.hasHorizontalSizing)
+    {
+      var constraints = widget.model.getConstraints();
+      view = ConstrainedBox(child: view, constraints: BoxConstraints(minWidth: constraints.minWidth!, maxWidth: constraints.maxWidth!));
+    }
 
     return view;
   }
@@ -185,6 +191,7 @@ class _TextViewState extends WidgetState<TextView>
       case "wrap":
         textOverflow = TextOverflow.visible;
         break;
+      case "ellipsis":
       case "ellipses":
         textOverflow = TextOverflow.ellipsis;
         break;

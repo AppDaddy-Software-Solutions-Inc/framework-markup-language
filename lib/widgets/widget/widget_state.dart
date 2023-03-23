@@ -84,16 +84,13 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
           var constraints = model.getConstraints();
           double minWidth = constraints.minWidth ?? 0.0;
           double maxWidth = constraints.maxWidth ?? double.infinity;
-          view = ConstrainedBox(child: view, constraints: BoxConstraints(minHeight: minWidth, maxHeight: maxWidth));
+          view = ConstrainedBox(child: view, constraints: BoxConstraints(minWidth: minWidth, maxWidth: maxWidth));
         }
         return view;
       }
 
       // width & height specified
-      else if (model.width != null && model.height != null)
-      {
-        view = UnconstrainedBox(child: SizedBox(child: view, width: model.width, height: model.height));
-      }
+      else if (model.width != null && model.height != null) view = UnconstrainedBox(child: SizedBox(child: view, width: model.width, height: model.height));
 
       // neither width or height specified
       // but min, max width or height defined

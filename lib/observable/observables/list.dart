@@ -81,9 +81,7 @@ class ListObservable extends Observable with ListMixin<dynamic>
   @override
   set(dynamic value, {bool notify = true})
   {
-    ////////////////
-    /* Null Value */
-    ////////////////
+    // null value
     if (value == null)
     {
       _value.clear();
@@ -100,9 +98,7 @@ class ListObservable extends Observable with ListMixin<dynamic>
       return;
     }
 
-    ////////////////////
-    /* List of Values */
-    ////////////////////
+    // list of values
     if (value is List)
     {
       _value = value;
@@ -110,9 +106,7 @@ class ListObservable extends Observable with ListMixin<dynamic>
       return;
     }
 
-    //////////////////
-    /* Single Value */
-    //////////////////
+    // list of values
     if (_value is List<Map>)
     {
       Binding? binding = Binding.fromString(this.key);
@@ -121,9 +115,7 @@ class ListObservable extends Observable with ListMixin<dynamic>
       return;
     }
 
-    //////////////////
-    /* Single Value */
-    //////////////////
+    // single value
     if (value is String)
     {
       _value.clear();

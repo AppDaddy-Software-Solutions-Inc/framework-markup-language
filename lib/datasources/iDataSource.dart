@@ -24,6 +24,7 @@ abstract class IDataSource
   Future<bool> clear({int? start, int? end});
   register(IDataSourceListener listener);
   remove(IDataSourceListener listener);
+  Future<bool> onSuccess(Data data, {int? code, String? message, Observable? onSuccessOverride});
   notify();
   dispose();
 }

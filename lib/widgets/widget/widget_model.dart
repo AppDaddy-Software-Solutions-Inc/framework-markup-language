@@ -442,7 +442,7 @@ class WidgetModel implements IDataSourceListener
 
       case "filter":
         if (parent is IDataSource)
-          model = Filter.fromXml(model, node, parent.scope);
+          model = Filter.fromXml(parent, node);
         break;
 
       case "flip":

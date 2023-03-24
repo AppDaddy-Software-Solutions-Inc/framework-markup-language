@@ -57,18 +57,38 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
     }
   }
 
-  Widget getConstrainedView(IWidgetView widget, Widget view)
+  Widget getConstrainedView(IWidgetView widget, Widget view, {bool? expand})
   {
     var model = widget.model;
     if (model is ViewableWidgetModel)
     {
-      // width specified
-      if (model.width != null && model.height == null)
+      var width  = model.width;
+      var height = model.height;
+      var constraints = model.getConstraints();
+      var hasVerticalSizing = model.hasVerticalSizing;
+      var hasHorizontalSizing = model.hasHorizontalSizing;
+
+      // expanded?
+      if (expand == true)
       {
-        view = UnconstrainedBox(child: SizedBox(child: view, width: model.width), constrainedAxis: Axis.vertical);
-        if (model.hasVerticalSizing)
+        // this is a safe guard to ensure widgets
+        // do not expand out infinitely
+        if (constraints.maxWidth == double.infinity || constraints.maxHeight == double.infinity) expand = false;
+
+        // expand in all directions
+        if (expand == true)
         {
-          var constraints  = model.getConstraints();
+          width  = constraints.maxWidth;
+          height = constraints.maxHeight;
+        }
+      }
+
+      // width specified
+      if (width != null && height == null)
+      {
+        view = UnconstrainedBox(child: SizedBox(child: view, width: width), constrainedAxis: Axis.vertical);
+        if (hasVerticalSizing)
+        {
           double minHeight = constraints.minHeight ?? 0.0;
           double maxHeight = constraints.maxHeight ?? double.infinity;
           view = ConstrainedBox(child: view, constraints: BoxConstraints(minHeight: minHeight, maxHeight: maxHeight));
@@ -76,12 +96,11 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
       }
 
       // height specified
-      else if (model.width == null && model.height != null)
+      else if (width == null && height != null)
       {
-        view = UnconstrainedBox(child: SizedBox(child: view, height: model.height), constrainedAxis: Axis.horizontal);
-        if (model.hasHorizontalSizing)
+        view = UnconstrainedBox(child: SizedBox(child: view, height: height), constrainedAxis: Axis.horizontal);
+        if (hasHorizontalSizing)
         {
-          var constraints = model.getConstraints();
           double minWidth = constraints.minWidth ?? 0.0;
           double maxWidth = constraints.maxWidth ?? double.infinity;
           view = ConstrainedBox(child: view, constraints: BoxConstraints(minWidth: minWidth, maxWidth: maxWidth));
@@ -90,19 +109,23 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
       }
 
       // width & height specified
-      else if (model.width != null && model.height != null) view = UnconstrainedBox(child: SizedBox(child: view, width: model.width, height: model.height));
+      else if (width != null && height != null) view = UnconstrainedBox(child: SizedBox(child: view, width: width, height: height));
 
       // neither width or height specified
       // but min, max width or height defined
-      else if (model.hasSizing)
+      else if (hasVerticalSizing || hasHorizontalSizing)
       {
-        var constraints  = model.getConstraints();
-        double minWidth  = model.hasHorizontalSizing ? constraints.minWidth  ?? 0.0 : 0.0;
-        double maxWidth  = model.hasHorizontalSizing ? constraints.maxWidth  ?? double.infinity : double.infinity;
-        double minHeight = model.hasVerticalSizing   ? constraints.minHeight ?? 0.0 : 0.0;
-        double maxHeight = model.hasVerticalSizing   ? constraints.maxHeight ?? double.infinity : double.infinity;
+        double minWidth  = hasHorizontalSizing ? constraints.minWidth  ?? 0.0 : 0.0;
+        double maxWidth  = hasHorizontalSizing ? constraints.maxWidth  ?? double.infinity : double.infinity;
+        double minHeight = hasVerticalSizing   ? constraints.minHeight ?? 0.0 : 0.0;
+        double maxHeight = hasVerticalSizing   ? constraints.maxHeight ?? double.infinity : double.infinity;
         view = ConstrainedBox(child: view, constraints: BoxConstraints(minHeight: minHeight, maxHeight: maxHeight, minWidth: minWidth, maxWidth: maxWidth));
       }
+
+      // containers will expand to the size of their parent
+      // unless we wrap in an Unconstrained
+      // may not be required - legacy
+      if (expand == false && view is! UnconstrainedBox) view = UnconstrainedBox(child: view);
     }
     return view;
   }

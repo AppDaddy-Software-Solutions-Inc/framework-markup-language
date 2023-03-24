@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/alignment.dart';
-import 'package:fml/widgets/widget/constraint.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/box/box_model.dart' as BOX;
@@ -79,97 +78,7 @@ List<Color> getGradientColors(c1, c2, c3, c4) {
 
 class _BoxViewState extends WidgetState<BoxView>
 {
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints)
-  {
-    //String? _id = widget.model.id;
-
-    // Check if widget is visible before wasting resources on building it
-    if (widget.model.visible == false) return Offstage();
-
-    // Set Build Constraints in the [WidgetModel]
-    widget.model.minWidth  = constraints.minWidth;
-    widget.model.maxWidth  = constraints.maxWidth  - ((S.toDouble(widget.model.borderwidth) ?? 0) * 2);
-    widget.model.minHeight = constraints.minHeight - ((S.toDouble(widget.model.borderwidth) ?? 0) * 2);
-    widget.model.maxHeight = constraints.maxHeight;
-
-    // get constraints
-    var _constraints = widget.model.getConstraints();
-
-    // build the children
-    List<Widget> children = [];
-    if (widget.model.children != null)
-    widget.model.children!.forEach((model)
-    {
-      if (model is IViewableWidget) {
-        children.add((model as IViewableWidget).getView());
-      }
-    });
-    if (children.isEmpty) children.add(Container(width: 0, height: 0));
-
-    //this must go after the children are determined
-    var alignment = AlignmentHelper.alignWidgetAxis(children.length, widget.model.layout, widget.model.center, widget.model.halign, widget.model.valign);
-
-    // get child
-    Widget child = _layoutChildren(_constraints, children, alignment);
-
-    // border
-    Border? border = _getBorder();
-
-    // border radius
-    BorderRadius? radius = _getRadius(border);
-
-    // box decoration
-    BoxDecoration? decoration = _getBoxDecoration(radius);
-
-    // border decoration
-    BoxDecoration? borderDecoration = border != null ? BoxDecoration(border: border, borderRadius: radius) : null;
-
-    // padding values
-    EdgeInsets insets = _getInsets();
-
-    // blurred?
-    if (widget.model.blur) child = _getBlurredView(child, borderDecoration);
-
-    // View
-    Widget view = Container(decoration: borderDecoration, child: Container(
-        padding: insets,
-        clipBehavior: Clip.antiAlias,
-        decoration: decoration,
-        alignment: alignment.aligned,
-        child: child));
-
-    // opacity
-    if (widget.model.opacity != null) _getFadedView(view);
-
-    // white10 = Blur (This creates mirrored/frosted effect overtop of something else)
-    if (widget.model.color == Colors.white10)
-    {
-      view = BackdropFilter(filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8), child: view);
-      if (radius != null)
-           view = ClipRRect(borderRadius: radius, child: view);
-      else view = ClipRect(child: view);
-    }
-
-    // wrap constraints
-    view = getConstrainedView(widget, view);
-
-    // this is a safe guard to ensure widgets
-    // do not expand out infinitely
-    bool expanded = widget.model.expand;
-    if (expanded && (_constraints.maxWidth == double.infinity || _constraints.maxHeight == double.infinity)) expanded = false;
-
-    // containers will expand to the size of their parent
-    // unless we wrap in an Unconstrained
-    if (!expanded) view = UnconstrainedBox(child: view);
-
-    // return view
-    return view;
-  }
-
-  Widget _layoutChildren(Constraint constraints, List<Widget> children, WidgetAlignment alignment)
+  Widget _layoutChildren(List<Widget> children, WidgetAlignment alignment)
   {
     Widget? child;
 
@@ -213,6 +122,7 @@ class _BoxViewState extends WidgetState<BoxView>
           break;
 
         case 'stack':
+          var constraints = widget.model.getConstraints();
           var stack = Stack(children: children, alignment: alignment.aligned);
           child = ConstrainedBox(
               child: stack,
@@ -384,6 +294,15 @@ class _BoxViewState extends WidgetState<BoxView>
     return Opacity(child: view, opacity: opacity);
   }
 
+  Widget _getFrostedView(Widget child, BorderRadius? radius)
+  {
+     Widget view = BackdropFilter(filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8), child: child);
+     if (radius != null)
+          view = ClipRRect(borderRadius: radius, child: view);
+     else view = ClipRect(child: view);
+     return view;
+  }
+
   Widget _getBlurredView(Widget child, Decoration? decoration)
   {
      return Stack(
@@ -403,5 +322,72 @@ class _BoxViewState extends WidgetState<BoxView>
             ),
           ),
         ]);
+  }
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
+    // Check if widget is visible before wasting resources on building it
+    if (widget.model.visible == false) return Offstage();
+
+    // Set Build Constraints in the [WidgetModel]
+    widget.model.minWidth  = constraints.minWidth;
+    widget.model.maxWidth  = constraints.maxWidth  - ((S.toDouble(widget.model.borderwidth) ?? 0) * 2);
+    widget.model.minHeight = constraints.minHeight - ((S.toDouble(widget.model.borderwidth) ?? 0) * 2);
+    widget.model.maxHeight = constraints.maxHeight;
+
+    // build the children
+    List<Widget> children = [];
+    if (widget.model.children != null)
+      widget.model.children!.forEach((model)
+      {
+        if (model is IViewableWidget) {
+          children.add((model as IViewableWidget).getView());
+        }
+      });
+    if (children.isEmpty) children.add(Container(width: 0, height: 0));
+
+    // this must go after the children are determined
+    var alignment = AlignmentHelper.alignWidgetAxis(children.length, widget.model.layout, widget.model.center, widget.model.halign, widget.model.valign);
+
+    // get child
+    Widget child = _layoutChildren(children, alignment);
+
+    // border
+    Border? border = _getBorder();
+
+    // border radius
+    BorderRadius? radius = _getRadius(border);
+
+    // box decoration
+    BoxDecoration? decoration = _getBoxDecoration(radius);
+
+    // border decoration
+    BoxDecoration? borderDecoration = border != null ? BoxDecoration(border: border, borderRadius: radius) : null;
+
+    // padding values
+    EdgeInsets insets = _getInsets();
+
+    // blurred?
+    if (widget.model.blur) child = _getBlurredView(child, borderDecoration);
+
+    // box view
+    Widget box = Container(decoration: borderDecoration, child: Container(
+        padding: insets,
+        clipBehavior: Clip.antiAlias,
+        decoration: decoration,
+        alignment: alignment.aligned,
+        child: child));
+
+    // opacity
+    if (widget.model.opacity != null) _getFadedView(box);
+
+    // white10 = Blur (This creates mirrored/frosted effect overtop of something else)
+    if (widget.model.color == Colors.white10) _getFrostedView(box, radius);
+
+    // return constrained view
+    return getConstrainedView(widget, box, expand: widget.model.expand);
   }
 }

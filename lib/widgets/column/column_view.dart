@@ -83,6 +83,6 @@ class _ColumnViewState extends WidgetState<ColumnView>
           mainAxisSize: mainAxisSize));
 
     // wrap constraints
-    return getConstrainedView(widget, view);
+    return getConstrainedView(widget, view, expand: widget.model.expand);
   }
 }

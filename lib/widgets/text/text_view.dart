@@ -2,7 +2,6 @@
 import 'dart:async';
 import 'package:fml/helper/string.dart';
 import 'package:fml/widgets/expanded/expanded_model.dart';
-import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';

@@ -37,11 +37,11 @@ final String applicationTitle = "Flutter Markup Language " + version;
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://applications/<app> to use the asset applications
 
-String get defaultDomain => 'https://pad.fml.dev';
+String get defaultDomain => 'https://test.appdaddy.co/#/resources/debug.xml';
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
-final ApplicationTypes appType = ApplicationTypes.MultiApp;
+final ApplicationTypes appType = ApplicationTypes.SingleApp;
 
 enum ApplicationTypes{ SingleApp, MultiApp }
 

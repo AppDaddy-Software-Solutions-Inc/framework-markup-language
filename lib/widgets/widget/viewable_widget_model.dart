@@ -45,18 +45,18 @@ class ViewableWidgetModel extends WidgetModel
   set maxWidth(dynamic v) => _constraints.maxWidth = v;
   double? getMaxWidth() => _constraints.getMaxWidth();
 
-  // min width
+  // min height
   set minHeight(dynamic v) => _constraints.minHeight = v;
   double? getMinHeight()  => _constraints.getMinHeight();
 
-  // max width
+  // max height
   set maxHeight(dynamic v) => _constraints.maxHeight = v;
   double? getMaxHeight() => _constraints.getMaxHeight();
 
-  // set system constrains oin layout builder
+  // sets system constraints on layout
   setConstraints(BoxConstraints? v) => _constraints.setConstraints(v);
 
-  // set system constrains oin layout builder
+  // calculates and returns the constraints
   Constraint getConstraints() => _constraints.getConstraints();
 
   // manually constraints

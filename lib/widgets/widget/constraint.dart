@@ -201,10 +201,10 @@ class Constraints
   Constraint getConstraints()
   {
     Constraint constraint = Constraint();
-    constraint.minHeight = height ?? minHeight ?? getMinHeight() ??  0.0;
     constraint.minWidth  = width  ?? minWidth  ?? getMinWidth()  ?? 0.0;
-    constraint.maxHeight = height ?? maxHeight ?? getMaxHeight() ?? double.infinity;
     constraint.maxWidth  = width  ?? maxWidth  ?? getMaxWidth()  ?? double.infinity;
+    constraint.minHeight = height ?? minHeight ?? getMinHeight() ?? 0.0;
+    constraint.maxHeight = height ?? maxHeight ?? getMaxHeight() ?? double.infinity;
 
     // ensure not negative
     if (constraint.minHeight! < 0) constraint.minHeight = 0;

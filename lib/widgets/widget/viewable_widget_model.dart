@@ -314,7 +314,6 @@ class ViewableWidgetModel extends WidgetModel
     _constraints.width     = Xml.get(node: xml, tag: 'width');
     _constraints.height    = Xml.get(node: xml, tag: 'height');
     _constraints.minWidth  = Xml.get(node: xml, tag: 'minwidth');
-    _constraints.minWidth  = Xml.get(node: xml, tag: 'minwidth');
     _constraints.maxWidth  = Xml.get(node: xml, tag: 'maxwidth');
     _constraints.minHeight = Xml.get(node: xml, tag: 'minheight');
     _constraints.maxHeight = Xml.get(node: xml, tag: 'maxheight');

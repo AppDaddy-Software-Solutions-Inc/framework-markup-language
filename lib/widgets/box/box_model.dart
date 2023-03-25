@@ -286,10 +286,6 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
     // deserialize 
     super.deserialize(xml);
 
-    /// Attributes
-    ///
-    /// Contstraint Attributes
-
     /// Style Attributes
     start = Xml.get(node: xml, tag: 'start');
     end = Xml.get(node: xml, tag: 'end');

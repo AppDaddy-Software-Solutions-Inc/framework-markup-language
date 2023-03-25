@@ -153,7 +153,7 @@ class Constraints
   double? calcMaxWidth()
   {
     double? v;
-    if (v == null && _system.maxWidth != null && _system.maxWidth != double.infinity) v = _system.maxWidth;
+    if (_system.maxWidth != null && _system.maxWidth != double.infinity) v = _system.maxWidth;
     if ((v == null) && (parent != null))
     {
       ViewableWidgetModel? parent = (this.parent is ViewableWidgetModel) ? (this.parent as ViewableWidgetModel) : null;

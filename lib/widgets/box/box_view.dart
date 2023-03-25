@@ -389,6 +389,6 @@ class _BoxViewState extends WidgetState<BoxView>
     if (widget.model.color == Colors.white10) _getFrostedView(box, radius);
 
     // return constrained view
-    return getConstrainedView(box, expand: widget.model.expand);
+    return getConstrainedView(box);
   }
 }

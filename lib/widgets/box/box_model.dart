@@ -12,91 +12,121 @@ import 'package:fml/helper/common_helpers.dart';
 
 class BoxModel extends DecoratedWidgetModel implements IViewableWidget
 {
+  @override
+  double? get width
+  {
+    if (expand != false) return getConstraints().maxWidth;
+    return super.width;
+  }
+
+  @override
+  double? get height
+  {
+    if (expand != false) return getConstraints().maxHeight;
+    return super.height;
+  }
+
+  // box blur
   BooleanObservable? _blur;
-  set blur(dynamic v) {
-    if (_blur != null) {
+  set blur(dynamic v)
+  {
+    if (_blur != null)
+    {
       _blur!.set(v);
-    } else if (v != null) {
-      _blur = BooleanObservable(Binding.toKey(id, 'blur'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else if (v != null)
+    {
+      _blur = BooleanObservable(Binding.toKey(id, 'blur'), v, scope: scope, listener: onPropertyChange);
     }
   }
   bool get blur => _blur?.get() ?? false;
 
   /// The start of the gradient in location, this will be the first `color` position if two colors are given
   StringObservable? _start;
-  set start(dynamic v) {
-    if (_start != null) {
+  set start(dynamic v)
+  {
+    if (_start != null)
+    {
       _start!.set(v);
-    } else if (v != null) {
-      _start = StringObservable(Binding.toKey(id, 'start'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else if (v != null)
+    {
+      _start = StringObservable(Binding.toKey(id, 'start'), v, scope: scope, listener: onPropertyChange);
     }
   }
   String get start => _start?.get()?.toLowerCase() ?? 'top';
 
   /// The end of the gradient in location, this will be the second `color` position if two colors are given
   StringObservable? _end;
-  set end(dynamic v) {
-    if (_end != null) {
+  set end(dynamic v)
+  {
+    if (_end != null)
+    {
       _end!.set(v);
-    } else if (v != null) {
-      _end = StringObservable(Binding.toKey(id, 'end'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else if (v != null)
+    {
+      _end = StringObservable(Binding.toKey(id, 'end'), v, scope: scope, listener: onPropertyChange);
     }
   }
   String get end => _end?.get()?.toLowerCase() ?? 'bottom';
 
-  /// border design attributes
-
-  /////////////
-  /* Radius */
-  /////////////
+  // box radius
   StringObservable? _radius;
-  set radius(dynamic v) {
-    if (_radius != null) {
+  set radius(dynamic v)
+  {
+    if (_radius != null)
+    {
       _radius!.set(v);
-    } else if (v != null) {
-      _radius = StringObservable(Binding.toKey(id, 'radius'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else if (v != null)
+    {
+      _radius = StringObservable(Binding.toKey(id, 'radius'), v, scope: scope, listener: onPropertyChange);
     }
   }
   String? get radius => _radius?.get()?.toLowerCase();
 
   /// The color of the border for box, defaults to black54
   ColorObservable? _bordercolor;
-  set bordercolor(dynamic v) {
-    if (_bordercolor != null) {
+  set bordercolor(dynamic v)
+  {
+    if (_bordercolor != null)
+    {
       _bordercolor!.set(v);
-    } else if (v != null) {
-      _bordercolor = ColorObservable(
-          Binding.toKey(id, 'bordercolor'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else if (v != null)
+    {
+      _bordercolor = ColorObservable(Binding.toKey(id, 'bordercolor'), v, scope: scope, listener: onPropertyChange);
     }
   }
   Color? get bordercolor => _bordercolor?.get();
 
   /// The width of the containers border, defaults to 0
   DoubleObservable? _borderwidth;
-  set borderwidth(dynamic v) {
-    if (_borderwidth != null) {
+  set borderwidth(dynamic v)
+  {
+    if (_borderwidth != null)
+    {
       _borderwidth!.set(v);
-    } else if (v != null) {
-      _borderwidth = DoubleObservable(
-          Binding.toKey(id, 'borderwidth'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else if (v != null)
+    {
+      _borderwidth = DoubleObservable(Binding.toKey(id, 'borderwidth'), v, scope: scope, listener: onPropertyChange);
     }
   }
   double? get borderwidth => _borderwidth?.get() ?? (border == 'none' ? 0 : 2);
 
   /// The border choice, can be `all`, `none`, `top`, `left`, `right`, `bottom`, `vertical`, or `horizontal`
   StringObservable? _border;
-  set border(dynamic v) {
-    if (_border != null) {
+  set border(dynamic v)
+  {
+    if (_border != null)
+    {
       _border!.set(v);
-    } else if (v != null) {
-      _border = StringObservable(Binding.toKey(id, 'border'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else if (v != null)
+    {
+      _border = StringObservable(Binding.toKey(id, 'border'), v, scope: scope, listener: onPropertyChange);
     }
   }
   String get border => _border?.get()?.toLowerCase() ?? 'none';
@@ -105,13 +135,15 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
   ///
   /// the color of the elevation shadow, defaults to black26
   ColorObservable? _shadowcolor;
-  set shadowcolor(dynamic v) {
-    if (_shadowcolor != null) {
+  set shadowcolor(dynamic v)
+  {
+    if (_shadowcolor != null)
+    {
       _shadowcolor!.set(v);
-    } else if (v != null) {
-      _shadowcolor = ColorObservable(
-          Binding.toKey(id, 'shadowcolor'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else if (v != null)
+    {
+      _shadowcolor = ColorObservable(Binding.toKey(id, 'shadowcolor'), v, scope: scope, listener: onPropertyChange);
     }
   }
   Color get shadowcolor => _shadowcolor?.get() ?? Colors.black26;

@@ -30,11 +30,8 @@ class _BusyViewState extends WidgetState<BusyView>
 
   Widget builder(BuildContext context, BoxConstraints? constraints)
   {
-    // Set Build Constraints in the [WidgetModel]
-      widget.model.minWidth  = constraints?.minWidth;
-      widget.model.maxWidth  = constraints?.maxWidth;
-      widget.model.minHeight = constraints?.minHeight;
-      widget.model.maxHeight = constraints?.maxHeight;
+    // save system constraints
+    widget.model.constraints.system = constraints;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -81,7 +78,7 @@ class _BusyViewState extends WidgetState<BusyView>
     view = Container(color: Colors.transparent, child: Stack(alignment: Alignment(0.0, 0.0), children: children));
 
     // wrap constraints
-    return getConstrainedView(widget, view);
+    return applyUserContraints(view);
   }
 }
 

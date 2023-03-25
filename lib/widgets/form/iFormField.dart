@@ -38,10 +38,6 @@ abstract class IFormField
   set dirty (dynamic b);
   BooleanObservable? get dirtyObservable;
 
-  // dirtyObservable width
-  double? get width;
-  set width (dynamic v);
-
   // fielf is editable
   bool? get editable;
   set editable (dynamic v);

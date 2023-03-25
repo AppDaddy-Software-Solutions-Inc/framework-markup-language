@@ -141,11 +141,11 @@ class ModalModel extends DecoratedWidgetModel
         
         // modal width
         String? width = arguments.length > 0 ? S.toStr(arguments[0]) : null;
-        if (width == null) width = (widthPercentage != null) ? "${this.widthPercentage}%" : "${this.width}";
+        if (width == null) width = (constraints.widthPercentage != null) ? "${constraints.widthPercentage}%" : "${this.width}";
 
         // modal height
         String? height = arguments.length > 1 ? S.toStr(arguments[1]) : null;
-        if (height == null) height = (heightPercentage != null) ? "${this.heightPercentage}%" : "${this.height}";
+        if (height == null) height = (constraints.heightPercentage != null) ? "${constraints.heightPercentage}%" : "${this.height}";
 
         // resizeable
         bool resizeable = this.resizeable;

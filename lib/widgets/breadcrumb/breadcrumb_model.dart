@@ -40,11 +40,13 @@ class BreadcrumbModel extends DecoratedWidgetModel implements IViewableWidget
     dynamic width,
   }) : super(parent, id)
   {
-    this.height   = height;
+    // constraints
+    if (height != null) this.constraints.height = height;
+    if (width  != null) this.constraints.width  = width;
+
     this.color    = color;
     this.backgroundcolor = backgroundcolor;
     this.opacity = opacity;
-    this.width = width;
   }
 
   static BreadcrumbModel? fromXml(WidgetModel parent, XmlElement xml)

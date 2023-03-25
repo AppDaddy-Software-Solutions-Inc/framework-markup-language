@@ -98,8 +98,8 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    // Set Build Constraints in the [WidgetModel]
-    setConstraints(constraints);
+    // save system constraints
+    widget.model.constraints.system = constraints;
 
     // set the border color arrays
     Color? enabledBorderColor;

@@ -281,11 +281,11 @@ class TableRowCellModel extends DecoratedWidgetModel
   }
   double? get expandedheight => _expandedheight?.get();
 
-  TableRowCellModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic altcolor})
-      : super(parent, id) {
-    this.width = width;
+  TableRowCellModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic altcolor}) : super(parent, id)
+  {
+    if (width  != null) constraints.width  = width;
+    if (height != null) constraints.height = height;
     this.altcolor = altcolor;
-    this.height = height;
   }
 
   static TableRowCellModel? fromXml(WidgetModel parent, XmlElement xml) {

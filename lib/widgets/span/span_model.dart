@@ -332,6 +332,8 @@ class SpanModel extends DecoratedWidgetModel implements IViewableWidget
         dynamic halign,
         dynamic style,
       }) : super(parent, id) {
+
+
     if (color != null) this.color = color;
     if (elevation != null) this.elevation = elevation;
     if (shadowcolor != null) this.shadowcolor = shadowcolor;
@@ -341,7 +343,6 @@ class SpanModel extends DecoratedWidgetModel implements IViewableWidget
     if (weight != null) this.weight = weight;
     if (bold != null) this.bold = bold;
     if (italic != null) this.italic = italic;
-    if (width != null) this.width = width;
     if (theme != null) this.theme = theme;
     if (decoration != null) this.decoration = decoration;
     if (decorationcolor != null) this.decorationcolor = decorationcolor;

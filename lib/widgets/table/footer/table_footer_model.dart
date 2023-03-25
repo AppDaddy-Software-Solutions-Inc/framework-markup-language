@@ -62,8 +62,8 @@ class TableFooterModel extends DecoratedWidgetModel
 
   TableFooterModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic color}) : super(parent, id, scope: Scope(parent: parent.scope))
   {
-    this.width  = width;
-    this.height = height;
+    if (width  != null) constraints.width  = width;
+    if (height != null) constraints.height = height;
     this.color  = color;
   }
 

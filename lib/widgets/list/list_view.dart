@@ -138,11 +138,8 @@ return LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    // Set Build Constraints in the [WidgetModel]
-      widget.model.minWidth  = constraints.minWidth;
-      widget.model.maxWidth  = constraints.maxWidth;
-      widget.model.minHeight = constraints.minHeight;
-      widget.model.maxHeight = constraints.maxHeight;
+    // save system constraints
+    widget.model.constraints.system = constraints;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -188,13 +185,14 @@ return LayoutBuilder(builder: builder);
           ),
           child: view,
       );
-        ////////////////////////
+
+    ////////////////////////
     /* Constrain the View */
     ////////////////////////
     double? width  = widget.model.width;
     double? height = widget.model.height;
-    if (constraints.maxHeight == double.infinity || constraints.maxHeight == double.negativeInfinity || height == null) height = widget.model.maxHeight ?? constraints.maxHeight;
-    if (constraints.maxWidth  == double.infinity || constraints.maxWidth  == double.negativeInfinity || width  == null) width  = widget.model.maxWidth  ?? constraints.maxWidth;
+    if (constraints.maxHeight == double.infinity || constraints.maxHeight == double.negativeInfinity || height == null) height = widget.model.constraints.getMaxHeight() ?? constraints.maxHeight;
+    if (constraints.maxWidth  == double.infinity || constraints.maxWidth  == double.negativeInfinity || width  == null) width  = widget.model.constraints.getMaxWidth()  ?? constraints.maxWidth;
     view = UnconstrainedBox(child: SizedBox(height: height, width: width, child: view));
 
     children.addAll([view, Center(child: busy)]);

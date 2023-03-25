@@ -603,7 +603,7 @@ class InputModel extends FormFieldModel implements IFormField, IViewableWidget
     if (mask          != null) this.mask = mask;
     if (color         != null) this.color = color;
     if (defaultValue  != null) this.defaultValue = defaultValue;
-    if (width         != null) this.width = width;
+    if (width         != null) this.constraints.width = width;
     if (hint          != null) this.hint = hint;
     if (size          != null) this.size = size;
     if (weight        != null) this.weight = weight;

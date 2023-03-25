@@ -326,6 +326,7 @@ class TableRowModel extends DecoratedWidgetModel
     WidgetModel parent,
     String? id, {
     dynamic data,
+    dynamic width,
     dynamic height,
     dynamic oncomplete,
     dynamic halign,
@@ -337,9 +338,11 @@ class TableRowModel extends DecoratedWidgetModel
     dynamic onclick,
   }) : super(parent, id, scope: Scope(parent: parent.scope))
   {
+    if (width  != null) constraints.width  = width;
+    if (height != null) constraints.height = height;
+
     this.data = data;
     this.altcolor = altcolor;
-    this.height = height;
     this.oncomplete = oncomplete;
     this.dirty = false;
     this.color = color;

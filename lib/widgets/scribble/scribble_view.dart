@@ -382,11 +382,8 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
     // Check if widget is visible before wasting resources on building it
     if (((!widget.model.visible))) return Offstage();
 
-    // Set Build Constraints in the [WidgetModel]
-    widget.model.minWidth  = constraints.minWidth;
-    widget.model.maxWidth  = constraints.maxWidth;
-    widget.model.minHeight = constraints.minHeight;
-    widget.model.maxHeight = constraints.maxHeight;
+    // save system constraints
+    widget.model.constraints.system = constraints;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _afterBuild(context);
@@ -420,7 +417,7 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
     );
 
     // wrap constraints
-    return getConstrainedView(widget, view);
+    return applyUserContraints(view);
   }
 
   /// After [iFormFields] are drawn we get the global offset for scrollTo functionality

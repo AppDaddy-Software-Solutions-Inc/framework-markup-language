@@ -23,8 +23,8 @@ class _ColumnViewState extends WidgetState<ColumnView>
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    // Set Build Constraints in the [WidgetModel]
-    setConstraints(constraints);
+    // save system constraints
+    widget.model.constraints.system = constraints;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -83,6 +83,6 @@ class _ColumnViewState extends WidgetState<ColumnView>
           mainAxisSize: mainAxisSize));
 
     // wrap constraints
-    return getConstrainedView(widget, view, expand: widget.model.expand);
+    return applyUserContraints(view);
   }
 }

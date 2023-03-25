@@ -108,14 +108,16 @@ class CardModel extends DecoratedWidgetModel implements IViewableWidget
     dynamic margin,
     dynamic radius,
     dynamic borderwidth,
-  }) : super(parent, id) {
+  }) : super(parent, id)
+  {
+    if (width  != null) constraints.width  = width;
+    if (height != null) constraints.height = height;
+
     this.padding = padding;
     this.radius = radius;
     this.color = color;
     this.bordercolor = bordercolor;
     this.elevation = elevation;
-    this.width = width;
-    this.height = height;
     this.margin = margin;
     this.halign = halign;
     this.valign = valign;

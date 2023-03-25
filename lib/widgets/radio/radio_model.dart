@@ -158,7 +158,7 @@ class RadioModel extends FormFieldModel implements IFormField, IViewableWidget
     if (enabled      != null) this.enabled      = enabled;
     if (value        != null) this.value        = value;
     if (defaultValue != null) this.defaultValue = defaultValue;
-    if (width        != null) this.width        = width;
+    if (width        != null) this.constraints.width = width;
     if (size         != null) this.size         = size;
     if (color        != null) this.color        = color;
     if (post         != null) this.post         = post;

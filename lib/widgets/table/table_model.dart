@@ -452,11 +452,13 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
       : super(parent, id) {
     // instantiate busy observable
     busy = false;
+
+    if (width  != null) constraints.width  = width;
+    if (height != null) constraints.height = height;
+
     this.selected = selected;
     this.draggable = draggable;
     this.onpulldown = onpulldown;
-    this.width = width;
-    this.height = height;
     this.oncomplete = oncomplete;
     this.dirty = false;
     this.margin = margin;
@@ -502,8 +504,10 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
     onpulldown = Xml.get(node: xml, tag: 'onpulldown');
     pagesize = Xml.get(node: xml, tag: 'pagesize');
     paged = Xml.get(node: xml, tag: 'paged');
-    width = Xml.get(node: xml, tag: 'width');
-    height = Xml.get(node: xml, tag: 'height');
+
+    if (width != null)  constraints.width = Xml.get(node: xml, tag: 'width');
+    if (height != null) constraints.height = Xml.get(node: xml, tag: 'height');
+
     center = Xml.get(node: xml, tag: 'center');
     altcolor = Xml.get(node: xml, tag: 'altcolor');
     wrap = Xml.get(node: xml, tag: 'wrap');

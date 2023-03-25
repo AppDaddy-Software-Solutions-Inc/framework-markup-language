@@ -23,8 +23,8 @@ class _RowViewState extends WidgetState<RowView>
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    // set constraints
-    setConstraints(constraints);
+    // save system constraints
+    widget.model.constraints.system = constraints;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -91,6 +91,6 @@ class _RowViewState extends WidgetState<RowView>
               mainAxisSize: mainAxisSize));
 
     // wrap constraints
-    return getConstrainedView(widget, view);
+    return applyUserContraints(view);
   }
 }

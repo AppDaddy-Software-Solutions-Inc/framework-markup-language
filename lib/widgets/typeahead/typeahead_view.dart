@@ -126,11 +126,8 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    // Set Build Constraints in the [WidgetModel]
-    widget.model.minWidth = constraints.minWidth;
-    widget.model.maxWidth = constraints.maxWidth;
-    widget.model.minHeight = constraints.minHeight;
-    widget.model.maxHeight = constraints.maxHeight;
+    // save system constraints
+    widget.model.constraints.system = constraints;
 
     ///////////
     /* Busy? */
@@ -169,7 +166,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
 
       List<OptionModel>? suggestions;
       view = SizedBox(
-          width: widget.model.maxWidth,
+          width: widget.model.constraints.getMaxWidth(),
           child: TypeAheadField(
             textFieldConfiguration: TextFieldConfiguration(
                 enabled: widget.model.enabled != false,

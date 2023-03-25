@@ -26,7 +26,8 @@ class _CardViewState extends WidgetState<CardView>
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    setConstraints(constraints);
+    // save system constraints
+    widget.model.constraints.system = constraints;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -111,6 +112,6 @@ class _CardViewState extends WidgetState<CardView>
         child: child);
 
     // wrap constraints
-    return getConstrainedView(widget, view);
+    return applyUserContraints(view);
   }
 }

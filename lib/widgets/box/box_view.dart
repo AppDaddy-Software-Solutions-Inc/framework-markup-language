@@ -332,11 +332,12 @@ class _BoxViewState extends WidgetState<BoxView>
     // Check if widget is visible before wasting resources on building it
     if (widget.model.visible == false) return Offstage();
 
-    // Set Build Constraints in the [WidgetModel]
-    widget.model.minWidth  = constraints.minWidth;
-    widget.model.maxWidth  = constraints.maxWidth  - ((S.toDouble(widget.model.borderwidth) ?? 0) * 2);
-    widget.model.minHeight = constraints.minHeight - ((S.toDouble(widget.model.borderwidth) ?? 0) * 2);
-    widget.model.maxHeight = constraints.maxHeight;
+    // save system constraints
+    var minWidth  = constraints.minWidth;
+    var maxWidth  = constraints.maxWidth  - ((S.toDouble(widget.model.borderwidth) ?? 0) * 2);
+    var minHeight = constraints.minHeight - ((S.toDouble(widget.model.borderwidth) ?? 0) * 2);
+    var maxHeight = constraints.maxHeight;
+    widget.model.constraints.system = BoxConstraints(minWidth:  minWidth, maxWidth:  maxWidth, minHeight: minHeight, maxHeight: maxHeight);
 
     // build the children
     List<Widget> children = [];
@@ -388,6 +389,6 @@ class _BoxViewState extends WidgetState<BoxView>
     if (widget.model.color == Colors.white10) _getFrostedView(box, radius);
 
     // return constrained view
-    return getConstrainedView(widget, box, expand: widget.model.expand);
+    return applyUserContraints(box, expand: widget.model.expand);
   }
 }

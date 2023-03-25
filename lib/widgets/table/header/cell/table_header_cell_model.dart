@@ -193,12 +193,11 @@ class TableHeaderCellModel extends DecoratedWidgetModel
 
   bool sorted = false;
 
-  TableHeaderCellModel(WidgetModel parent, String? id,
-      {String? field, dynamic width, dynamic height, dynamic sortbydefault})
-      : super(parent, id) {
-    this.width = width;
+  TableHeaderCellModel(WidgetModel parent, String? id, {String? field, dynamic width, dynamic height, dynamic sortbydefault}) : super(parent, id)
+  {
+    if (width  != null) constraints.width  = width;
+    if (height != null) constraints.height = height;
     this.sortbydefault = sortbydefault;
-    this.height = height;
     this.sortAscending = false;
   }
 
@@ -230,8 +229,6 @@ class TableHeaderCellModel extends DecoratedWidgetModel
     // properties
     field       = Xml.get(node: xml, tag: 'field');
     sortbydefault       = Xml.get(node: xml, tag: 'sortbydefault');
-    width       = Xml.get(node: xml, tag: 'width');
-    height      = Xml.get(node: xml, tag: 'height');
     bordercolor = Xml.get(node: xml, tag: 'bordercolor');
     borderwidth = Xml.get(node: xml, tag: 'borderwidth');
 

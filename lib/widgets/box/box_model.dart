@@ -232,14 +232,17 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
     dynamic expand,
     dynamic center,
     dynamic wrap,
-  }) : super(parent, id) {
-    if (width != null) this.width = width;
-    if (height != null) this.height = height;
-    if (padding != null) this.padding = padding;
-    if (minwidth != null) this.minWidth = minwidth;
-    if (minheight != null) this.minHeight = minheight;
-    if (maxwidth != null) this.maxWidth = maxwidth;
-    if (maxheight != null) this.maxHeight = maxheight;
+  }) : super(parent, id)
+  {
+    // constraints
+    if (width     != null) this.constraints.width     = width;
+    if (height    != null) this.constraints.height    = height;
+    if (minwidth  != null) this.constraints.minWidth  = minwidth;
+    if (minheight != null) this.constraints.minHeight = minheight;
+    if (maxwidth  != null) this.constraints.maxWidth  = maxwidth;
+    if (maxheight != null) this.constraints.maxHeight = maxheight;
+
+    if (padding   != null) this.padding = padding;
     if (opacity != null) this.opacity = opacity;
     if (color != null) this.color = color;
     if (start != null) this.start = start;

@@ -59,8 +59,8 @@ class _ChartViewState extends WidgetState<ChartView>
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    // Set Build Constraints in the [WidgetModel]
-    setConstraints(constraints);
+    // save system constraints
+    widget.model.constraints.system = constraints;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -113,7 +113,7 @@ class _ChartViewState extends WidgetState<ChartView>
     Widget view = Stack(children: children, fit: StackFit.loose);
 
     // wrap constraints
-    return getConstrainedView(widget, view);
+    return applyUserContraints(view);
   }
 
   /// Identifies the chart type from the model attributes

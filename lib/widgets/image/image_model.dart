@@ -145,10 +145,11 @@ class ImageModel extends DecoratedWidgetModel implements IViewableWidget
     dynamic interactive
    }) : super(parent, id)
   {
+    if (width  != null) constraints.width  = width;
+    if (height != null) constraints.height = height;
+
     this.rotation     = rotation;
     this.opacity      = opacity;
-    this.width        = width;
-    this.height       = height;
     this.url          = url;
     this.defaultvalue = defaultvalue;
     this.fit          = fit;

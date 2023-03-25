@@ -131,12 +131,13 @@ class ScribbleModel extends FormFieldModel implements IFormField, IViewableWidge
     dynamic post,
     }) : super(parent, id)
   {
+    if (width  != null) constraints.width  = width;
+    if (height != null) constraints.height = height;
+
     if (mandatory != null) this.mandatory = mandatory;
     if (editable  != null) this.editable  = editable;
     if (enabled   != null) this.enabled   = enabled;
     if (value     != null) this.value     = value;
-    if (height    != null) this.height    = height;
-    if (width     != null) this.width     = width;
     if (hint      != null) this.hint      = hint;
     if (size      != null) this.size      = size;
     if (color     != null) this.color     = color;
@@ -207,7 +208,7 @@ class SignatureModel extends ViewableWidgetModel
     this.penStrokeWidth = 3.0}) : super(parent, id)
   {
     if ((points != null) && (points.isNotEmpty)) this.points.addAll(points);
-    super.width  = width;
-    super.height = height;
+    if (width  != null) constraints.width  = width;
+    if (height != null) constraints.height = height;
   }
 }

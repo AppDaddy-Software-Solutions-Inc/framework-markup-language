@@ -20,7 +20,12 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
   double? get maxWidth  => layout == 'row' ? double.infinity : super.maxWidth;
 
   @override
-  double? get maxHeight => layout == 'column' ? double.infinity : super.maxHeight;
+  double? getMaxHeight()
+  {
+    if (layout == 'column')
+         return double.infinity;
+    else return super.constraints.getMaxHeight();
+  }
 
   /// The cross alignment of the widgets children. Can be `top`, `bottom`, `start`, or `end`.
   StringObservable? _align;
@@ -140,6 +145,7 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
         dynamic layout,
         dynamic shadowcolor,
         dynamic onscrolledtoend,
+        dynamic width,
         dynamic height,
         dynamic minwidth,
         dynamic minheight,
@@ -148,16 +154,18 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
         dynamic maxheight,})
       : super(parent, id)
   {
+    // constraints
+    if (width     != null) this.constraints.width     = width;
+    if (height    != null) this.constraints.height    = height;
+    if (minwidth  != null) this.constraints.minWidth  = minwidth;
+    if (minheight != null) this.constraints.minHeight = minheight;
+    if (maxwidth  != null) this.constraints.maxWidth  = maxwidth;
+    if (maxheight != null) this.constraints.maxHeight = maxheight;
+
     this.draggable = draggable;
     this.onpulldown = onpulldown;
     this.align = align;
-    this.width = width;
     this.shadowcolor = shadowcolor;
-    this.height = height;
-    this.minWidth = minwidth;
-    this.minHeight = minheight;
-    this.maxWidth = maxwidth;
-    this.maxHeight = maxheight;
     this.layout = layout;
     this.scrollbar = scrollbar;
     this.onscrolledtoend = onscrolledtoend;

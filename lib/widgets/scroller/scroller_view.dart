@@ -240,7 +240,7 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
     }
 
     // wrap constraints
-    return getConstrainedView(widget, view);
+    return view;//applyUserContraints(view);
   }
 }
 

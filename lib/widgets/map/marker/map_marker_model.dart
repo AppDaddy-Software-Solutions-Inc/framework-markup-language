@@ -131,8 +131,6 @@ class MapMarkerModel extends DecoratedWidgetModel
     description = Xml.get(node: xml, tag: 'infoSnippet');
     label       = Xml.get(node: xml, tag: 'label');
     marker      = Xml.get(node: xml, tag: 'marker');
-    width       = Xml.get(node: xml, tag: 'width');
-    height      = Xml.get(node: xml, tag: 'height');
 
     // remove datasource listener. The parent map will take care of this.
     if ((datasource != null) && (scope != null) && (scope!.datasources.containsKey(datasource))) scope!.datasources[datasource!]!.remove(this);

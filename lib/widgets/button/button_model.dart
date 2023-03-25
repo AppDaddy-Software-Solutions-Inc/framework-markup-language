@@ -177,6 +177,14 @@ class ButtonModel extends DecoratedWidgetModel implements IViewableWidget
     List<WidgetModel>? children
   }) : super(parent, id)
   {
+    // constraints
+    if (width     != null) this.constraints.width     = width;
+    if (height    != null) this.constraints.height    = height;
+    if (minwidth  != null) this.constraints.minWidth  = minwidth;
+    if (minheight != null) this.constraints.minHeight = minheight;
+    if (maxwidth  != null) this.constraints.maxWidth  = maxwidth;
+    if (maxheight != null) this.constraints.maxHeight = maxheight;
+
     this.onclick    = onclick;
     this.onenter    = onenter;
     this.onexit     = onexit;
@@ -186,13 +194,8 @@ class ButtonModel extends DecoratedWidgetModel implements IViewableWidget
     this.color      = color;
     this.radius     = radius;
     this.enabled    = enabled;
-    this.width      = width;
-    this.height     = height;
-    this.maxWidth   = maxwidth;
-    this.maxHeight  = maxheight;
-    this.minWidth   = minwidth;
-    this.minHeight  = minheight;
-    if (children != null) {
+    if (children != null)
+    {
       this.children = [];
       this.children!.addAll(children);
     }

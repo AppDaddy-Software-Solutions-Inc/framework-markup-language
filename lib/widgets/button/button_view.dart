@@ -27,12 +27,10 @@ class _ButtonViewState extends WidgetState<ButtonView>
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    // Set Build Constraints in the [WidgetModel]
+    // save system constraints
+    widget.model.constraints.system = constraints;
+
     ButtonModel wm = widget.model;
-    widget.model.minWidth = constraints.minWidth;
-    widget.model.maxWidth = constraints.maxWidth;
-    widget.model.minHeight = constraints.minHeight;
-    widget.model.maxHeight = constraints.maxHeight;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -165,6 +163,6 @@ class _ButtonViewState extends WidgetState<ButtonView>
     }
 
     // wrap constraints
-    return getConstrainedView(widget, view);
+    return applyUserContraints(view);
   }
 }

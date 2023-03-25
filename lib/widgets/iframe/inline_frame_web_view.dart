@@ -35,11 +35,8 @@ class _InlineFrameViewState extends WidgetState<InlineFrameView>
   {
     InlineFrameModel model = widget.model;
 
-    // Set Build Constraints in the [WidgetModel]
-    widget.model.minWidth  = constraints.minWidth;
-    widget.model.maxWidth  = constraints.maxWidth;
-    widget.model.minHeight = constraints.minHeight;
-    widget.model.maxHeight = constraints.maxHeight;
+    // save system constraints
+    widget.model.constraints.system = constraints;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -58,8 +55,8 @@ class _InlineFrameViewState extends WidgetState<InlineFrameView>
     Widget view = iframe!;
 
     // wrap constraints
-    if (model.hasSizing)
-         return getConstrainedView(widget, view);
+    if (model.constraints.hasSizing)
+         return applyUserContraints(view);
     else return Container(child: view, width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.height);
   }
 }

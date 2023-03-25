@@ -35,17 +35,21 @@ class IconModel extends DecoratedWidgetModel implements IViewableWidget {
   //////////
   bool _sizeIsPercent = false;
   DoubleObservable? _size;
-  set size(dynamic v) {
-    if (_size != null) {
+  set size(dynamic v)
+  {
+    if (_size != null)
+    {
       _size!.set(v);
-      width = v;
-    } else if (v != null) {
-      if (S.isPercentage(v)) {
+      constraints.width = v;
+    }
+    else if (v != null)
+    {
+      if (S.isPercentage(v))
+      {
         _sizeIsPercent = true;
         v = v.split("%")[0];
       }
-      _size = DoubleObservable(Binding.toKey(id, 'size'), v,
-          scope: scope, listener: onPropertyChange);
+      _size = DoubleObservable(Binding.toKey(id, 'size'), v, scope: scope, listener: onPropertyChange);
     }
   }
 
@@ -57,13 +61,13 @@ class IconModel extends DecoratedWidgetModel implements IViewableWidget {
       var s1;
       var s2;
 
-      var mh = maxHeight;
+      var mh = constraints.getMaxHeight();
       if (mh != null)
         s1 = mh * (s / 100.0);
       else
         s1 = null;
 
-      var mw = maxWidth;
+      var mw = constraints.getMaxWidth();
       if (mw != null)
         s2 = mw * (s / 100.0);
       else

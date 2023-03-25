@@ -48,13 +48,16 @@ class StackModel extends DecoratedWidgetModel implements IViewableWidget
     dynamic halign,
     dynamic expand,
     dynamic center,
-  }) : super(parent, id) {
-    this.width = width;
-    this.height = height;
-    this.minWidth = minwidth;
-    this.minHeight = minheight;
-    this.maxWidth = maxwidth;
-    this.maxHeight = maxheight;
+  }) : super(parent, id)
+  {
+    // constraints
+    if (width     != null) this.constraints.width     = width;
+    if (height    != null) this.constraints.height    = height;
+    if (minwidth  != null) this.constraints.minWidth  = minwidth;
+    if (minheight != null) this.constraints.minHeight = minheight;
+    if (maxwidth  != null) this.constraints.maxWidth  = maxwidth;
+    if (maxheight != null) this.constraints.maxHeight = maxheight;
+
     this.halign = halign;
     this.valign = valign;
     this.center = center;

@@ -1453,10 +1453,3 @@ class WidgetModel implements IDataSourceListener
     }
   }
 }
-
-class Constraints {
-  double minWidth = 0.0;
-  double maxWidth = double.infinity;
-  double minHeight = 0.0;
-  double maxHeight = double.infinity;
-}

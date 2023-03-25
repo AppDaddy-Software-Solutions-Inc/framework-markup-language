@@ -214,8 +214,8 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     scrolled = scrolled > maxHeight ? maxHeight : scrolled;
     height = maxHeight - scrolled;
     if (height < minHeight) height = minHeight;
-    headerModel.height  = height;
-    bodyModel.height    = viewportHeight - height - (footerModel.height ?? 0) - viewportSafeArea.ceil();
+    headerModel.constraints.height  = height;
+    bodyModel.constraints.height    = viewportHeight - height - (footerModel.height ?? 0) - viewportSafeArea.ceil();
 
     // Opacity Fade
     // if (widget.model.header!.animations == Animations.fade)
@@ -284,11 +284,8 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     }
     SystemChrome.setPreferredOrientations(orientation);
 
-    // set constraints
-    widget.model.minWidth  = constraints.minWidth;
-    widget.model.maxWidth  = constraints.maxWidth;
-    widget.model.minHeight = constraints.minHeight;
-    widget.model.maxHeight = constraints.maxHeight;
+    // save system constraints
+    widget.model.constraints.system = constraints;
 
     // build body
     List<Widget> children = [];
@@ -318,35 +315,33 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     {
       // setting the min and max heights from the constraint
       // sets the height if height is a percentage
-      widget.model.header!.minHeight = constraints.minHeight;
-      widget.model.header!.maxHeight = constraints.maxHeight;
+      widget.model.header!.constraints.system = constraints;
 
       // set width && height
-      headerModel.width  = viewportWidth;
-      headerModel.height = widget.model.header!.height ?? widget.model.header!.maxheight;
+      headerModel.constraints.width  = viewportWidth;
+      headerModel.constraints.height = widget.model.header!.height ?? widget.model.header!.maxheight;
 
       // build the header
       header = BoxView(headerModel, child: HeaderView(widget.model.header!));
     }
-    else headerModel.height = 0;
+    else headerModel.constraints.height = 0;
 
     // build footer model
     Widget footer = Container();
     if (widget.model.footer != null && widget.model.footer!.visible != false)
     {
-      widget.model.footer!.minHeight = constraints.minHeight;
-      widget.model.footer!.maxHeight = constraints.maxHeight;
+      widget.model.footer!.constraints.system = constraints;
 
       // set width && height
-      footerModel.width  = viewportWidth;
-      footerModel.height = widget.model.footer!.height;
+      footerModel.constraints.width  = viewportWidth;
+      footerModel.constraints.height = widget.model.footer!.height;
 
       footer = BoxView(footerModel, child: FooterView(widget.model.footer!));
     }
-    else footerModel.height = 0;
+    else footerModel.constraints.height = 0;
 
-    bodyModel.height = viewportHeight - (headerModel.height ?? 0) - (footerModel.height ?? 0) - viewportSafeArea.ceil();
-    bodyModel.width  = viewportWidth;
+    bodyModel.constraints.height = viewportHeight - (headerModel.height ?? 0) - (footerModel.height ?? 0) - viewportSafeArea.ceil();
+    bodyModel.constraints.width  = viewportWidth;
     Widget body = NotificationListener<ScrollNotification>(onNotification: onScroll, child: BoxView(bodyModel, child: Stack(fit: StackFit.loose, children: children)));
 
     List<Widget> stackChildren = [];

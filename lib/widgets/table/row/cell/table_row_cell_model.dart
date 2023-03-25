@@ -283,8 +283,8 @@ class TableRowCellModel extends DecoratedWidgetModel
 
   TableRowCellModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic altcolor}) : super(parent, id)
   {
-    if (width  != null) constraints.width  = width;
-    if (height != null) constraints.height = height;
+    if (width  != null) this.width  = width;
+    if (height != null) this.height = height;
     this.altcolor = altcolor;
   }
 

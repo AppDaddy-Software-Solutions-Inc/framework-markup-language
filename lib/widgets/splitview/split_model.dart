@@ -64,8 +64,8 @@ class SplitModel extends DecoratedWidgetModel implements IViewableWidget
 
   SplitModel(WidgetModel parent, String? id, {dynamic width, dynamic height, bool? vertical}) : super(parent, id)
   {
-    if (width  != null) constraints.width  = width;
-    if (height != null) constraints.height = height;
+    if (width  != null) this.width  = width;
+    if (height != null) this.height = height;
 
     if (vertical != null) _vertical = vertical;
   }
@@ -105,8 +105,8 @@ class SplitModel extends DecoratedWidgetModel implements IViewableWidget
     if (ratio >= 0 && ratio <= 1)
     {
       if (vertical)
-           this.constraints.height = "${ratio * 100}%";
-      else this.constraints.width  = "${ratio * 100}%";
+           this.height = "${ratio * 100}%";
+      else this.width  = "${ratio * 100}%";
     }
 
     dividerColor  = Xml.get(node: xml, tag: 'dividercolor');

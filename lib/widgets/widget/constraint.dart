@@ -128,43 +128,29 @@ class Constraints
   }
   double? get maxHeight => _maxHeight?.get();
 
-  bool get hasVerticalSizing   => ((height != null) && (height! >= 0)) || (minHeight != null) || (maxHeight != null);
-  bool get hasHorizontalSizing => ((width  != null) && (width!  >= 0)) || (minWidth != null)  || (maxWidth != null);
-  bool get hasSizing => hasVerticalSizing || hasHorizontalSizing;
 
-
-  // this holds the constraints passed in the layout builder
-  Constraint _system = Constraint();
-  set system(BoxConstraints? constraints)
-  {
-    if (constraints != null)
-    {
-      _system.minWidth  = constraints.minWidth;
-      _system.maxWidth  = constraints.maxWidth;
-      _system.minHeight = constraints.minHeight;
-      _system.maxHeight = constraints.maxHeight;
-    }
-  }
+  bool isVerticallyConstrained()   => (height != null && height! >= 0) || minHeight != null || maxHeight != null;
+  bool isHorizontallyConstrained() => (width  != null && width!  >= 0) || minWidth  != null || maxWidth  != null;
 
   // min width
-  double? getMinWidth()
+  double? calcMinWidth()
   {
     double? v;
     if ((v == null) && (_system.minWidth != null) && (_system.minWidth != double.infinity)) v = _system.minWidth;
-    if ((v == null) && (parent is ViewableWidgetModel)) v = (parent as ViewableWidgetModel).constraints.getMinWidth();
+    if ((v == null) && (parent is ViewableWidgetModel)) v = (parent as ViewableWidgetModel).getMinWidth();
     return v;
   }
 
   // min height
-  double? getMinHeight()
+  double? calcMinHeight()
   {
     double? v;
     if ((v == null) && (_system.minHeight != null) && (_system.minHeight != double.infinity)) v = _system.minHeight;
-    if ((v == null) && (parent is ViewableWidgetModel)) v = (parent as ViewableWidgetModel).constraints.getMinHeight();
+    if ((v == null) && (parent is ViewableWidgetModel)) v = (parent as ViewableWidgetModel).getMinHeight();
     return v;
   }
 
-  double? getMaxWidth()
+  double? calcMaxWidth()
   {
     double? v;
     if (v == null && _system.maxWidth != null && _system.maxWidth != double.infinity) v = _system.maxWidth;
@@ -176,17 +162,17 @@ class Constraints
         var hpad = _getHPadding(parent!.paddings, parent.padding, parent.padding2, parent.padding3, parent.padding4);
         if (parent.width == null)
         {
-           var w = parent.constraints.getMaxWidth();
+           var w = parent.getMaxWidth();
            if (w != null) v = w - hpad;
         }
         else v = parent.width! - hpad;
       }
-      else if (parent != null) v = (parent.width ?? parent.constraints.getMaxWidth());
+      else if (parent != null) v = (parent.width ?? parent.getMaxWidth());
     }
     return v;
   }
 
-  double? getMaxHeight()
+  double? calcMaxHeight()
   {
     double? v;
     if ( v == null && _system.maxHeight != null && _system.maxHeight != double.infinity) v = _system.maxHeight;
@@ -198,18 +184,66 @@ class Constraints
         var vpad = _getVPadding(parent!.paddings, parent.padding, parent.padding2, parent.padding3, parent.padding4);
         if (parent.height == null)
         {
-          var h = parent.constraints.getMaxHeight();
+          var h = parent.getMaxHeight();
           if (h != null) v = h - vpad;
         }
         else v = parent.height! - vpad;
       }
-      else if (parent != null) v = (parent.height ?? parent.constraints.getMaxHeight());
+      else if (parent != null) v = (parent.height ?? parent.getMaxHeight());
     }
     return v;
   }
 
+  Constraint getConstraints()
+  {
+    Constraint constraint = Constraint();
+
+    constraint.minHeight = height ?? minHeight ?? calcMinHeight() ??  0.0;
+    constraint.minWidth  = width  ?? minWidth  ?? calcMinWidth()  ?? 0.0;
+    constraint.maxHeight = height ?? maxHeight ?? calcMaxHeight() ?? double.infinity;
+    constraint.maxWidth  = width  ?? maxWidth  ?? calcMaxWidth()  ?? double.infinity;
+
+    // ensure not negative
+    if (constraint.minHeight! < 0) constraint.minHeight = 0;
+    if (constraint.maxHeight! < 0) constraint.maxHeight = double.infinity;
+
+    // ensure max > min
+    if (constraint.minHeight! > constraint.maxHeight!)
+    {
+      if (maxHeight != null)
+           constraint.minHeight = constraint.maxHeight;
+      else constraint.maxHeight = constraint.minHeight;
+    }
+
+    // ensure not negative
+    if (constraint.minWidth! < 0) constraint.minWidth = 0;
+    if (constraint.maxWidth! < 0) constraint.maxWidth = double.infinity;
+
+    // ensure max > min
+    if (constraint.minWidth! > constraint.maxWidth!)
+    {
+      if (maxWidth != null)
+           constraint.minWidth = constraint.maxWidth;
+      else constraint.maxWidth = constraint.minWidth;
+    }
+    return constraint;
+  }
+
+  // this holds the constraints passed in the layout builder
+  Constraint _system = Constraint();
+  set system(BoxConstraints? constraints)
+  {
+    _setMinWidth(constraints?.minWidth);
+    _setMinHeight(constraints?.minHeight);
+    _setMaxWidth(constraints?.maxWidth);
+    _setMaxHeight(constraints?.maxHeight);
+  }
+
+  // sets the min width
+  _setMinWidth(double? v) => _system.minWidth = v;
+
   // sets the max width
-  setMaxWidth(double? v)
+  _setMaxWidth(double? v)
   {
     _system.maxWidth = v;
     if (_width?.value != null && _width!.value >= 100000) _widthPercentage = (_width!.value / 1000000)!;
@@ -227,8 +261,11 @@ class Constraints
     }
   }
 
+  // sets the min height
+  _setMinHeight(double? v) => _system.minHeight = v;
+
   // sets the max height
-  setMaxHeight(double? v)
+  _setMaxHeight(double? v)
   {
     _system.maxHeight = v;
 

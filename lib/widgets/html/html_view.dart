@@ -53,6 +53,6 @@ class _HtmlViewState extends WidgetState<HtmlView>
 
 
     // wrap constraints
-    return applyUserContraints(view);
+    return getConstrainedView(view);
   }
 }

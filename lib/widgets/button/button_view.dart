@@ -28,7 +28,7 @@ class _ButtonViewState extends WidgetState<ButtonView>
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // save system constraints
-    widget.model.constraints.system = constraints;
+    widget.model.setSystemConstraints(constraints);
 
     ButtonModel wm = widget.model;
 
@@ -163,6 +163,6 @@ class _ButtonViewState extends WidgetState<ButtonView>
     }
 
     // wrap constraints
-    return applyUserContraints(view);
+    return getConstrainedView(view);
   }
 }

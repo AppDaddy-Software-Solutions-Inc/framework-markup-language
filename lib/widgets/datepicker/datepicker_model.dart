@@ -351,7 +351,7 @@ class DatepickerModel extends FormFieldModel implements IFormField, IViewableWid
     if (enabled      != null) this.enabled = enabled;
     if (value        != null) this.value = value;
     if (defaultValue != null) this.defaultValue = defaultValue;
-    if (width        != null) this.constraints.width = width;
+    if (width        != null) this.width = width;
     if (hint         != null) this.hint = hint;
     if (format       != null) this.format = format;
     if (post         != null) this.post = post;

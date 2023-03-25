@@ -285,7 +285,7 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
     if (inputenabled  != null)  this.inputenabled  = inputenabled;
     if (value         != null)  this.value         = value;
     if (defaultValue  != null)  this.defaultValue  = defaultValue;
-    if (width         != null)  this.constraints.width = width;
+    if (width         != null)  this.width = width;
     if (onchange      != null)  this.onchange      = onchange;
     if (post          != null)  this.post          = post;
     if (typeahead     != null)  this.typeahead     = typeahead;

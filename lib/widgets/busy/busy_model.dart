@@ -41,7 +41,7 @@ class BusyModel extends DecoratedWidgetModel implements IViewableWidget
     if (_size != null)
     {
       _size!.set(v);
-      this.constraints.width = v;
+      this.width = v;
     }
     else if (v != null)
     {
@@ -64,12 +64,12 @@ class BusyModel extends DecoratedWidgetModel implements IViewableWidget
       var s1;
       var s2;
 
-      var mh = constraints.getMaxHeight();
+      var mh = getMaxHeight();
       if (mh != null)
         s1 = mh * (s/100.0);
       else s1 = null;
 
-      var mw = constraints.getMaxWidth();
+      var mw = getMaxWidth();
       if (mw != null)
         s2 = mw * (s/100.0);
       else s2 = null;

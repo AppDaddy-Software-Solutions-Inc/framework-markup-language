@@ -311,7 +311,7 @@ class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidge
     if (enabled      != null) this.enabled      = enabled;
     if (value        != null) this.value        = value;
     if (defaultValue != null) this.defaultValue = defaultValue;
-    if (width        != null) this.constraints.width = width;
+    if (width        != null) this.width = width;
     if (layout       != null) this.layout       = layout;
     if (center       != null) this.center       = center;
     if (valign       != null) this.valign       = valign;

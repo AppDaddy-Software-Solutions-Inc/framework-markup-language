@@ -337,7 +337,7 @@ class _BoxViewState extends WidgetState<BoxView>
     var maxWidth  = constraints.maxWidth  - ((S.toDouble(widget.model.borderwidth) ?? 0) * 2);
     var minHeight = constraints.minHeight - ((S.toDouble(widget.model.borderwidth) ?? 0) * 2);
     var maxHeight = constraints.maxHeight;
-    widget.model.constraints.system = BoxConstraints(minWidth:  minWidth, maxWidth:  maxWidth, minHeight: minHeight, maxHeight: maxHeight);
+    widget.model.setSystemConstraints(BoxConstraints(minWidth:  minWidth, maxWidth:  maxWidth, minHeight: minHeight, maxHeight: maxHeight));
 
     // build the children
     List<Widget> children = [];
@@ -389,6 +389,6 @@ class _BoxViewState extends WidgetState<BoxView>
     if (widget.model.color == Colors.white10) _getFrostedView(box, radius);
 
     // return constrained view
-    return applyUserContraints(box, expand: widget.model.expand);
+    return getConstrainedView(box, expand: widget.model.expand);
   }
 }

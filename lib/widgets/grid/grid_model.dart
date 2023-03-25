@@ -203,8 +203,8 @@ class GridModel extends DecoratedWidgetModel implements IViewableWidget, IScroll
     // instantiate busy observable
     busy = false;
 
-    if (width  != null) constraints.width  = width;
-    if (height != null) constraints.height = height;
+    if (width  != null) this.width  = width;
+    if (height != null) this.height = height;
 
     this.draggable = draggable;
     this.onpulldown    = onpulldown;

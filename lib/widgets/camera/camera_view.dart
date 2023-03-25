@@ -480,7 +480,7 @@ class CameraViewState extends WidgetState<CameraView>
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // save system constraints
-    widget.model.constraints.system = constraints;
+    widget.model.setSystemConstraints(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -525,8 +525,8 @@ class CameraViewState extends WidgetState<CameraView>
     double height = MediaQuery.of(context).size.height;
 
     // wrap constraints
-    if (widget.model.constraints.hasSizing)
-         view = applyUserContraints(view);
+    if (widget.model.isConstrained)
+         view = getConstrainedView(view);
     else view = Container(child: view, width: width, height: height);
 
     // stack children

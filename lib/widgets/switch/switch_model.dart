@@ -83,7 +83,7 @@ class SwitchModel extends FormFieldModel implements IFormField, IViewableWidget
     if (enabled      != null) this.enabled    = enabled;
     if (value        != null) this.value      = value;
     if (defaultValue != null) this.defaultValue = defaultValue;
-    if (width        != null) this.constraints.width = width;
+    if (width        != null) this.width = width;
     if (label         != null) this.label       = label;
     if (color        != null) this.color      = color;
     if (onchange     != null) this.onchange   = onchange;

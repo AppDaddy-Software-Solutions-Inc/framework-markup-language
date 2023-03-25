@@ -39,7 +39,7 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
   set size(dynamic v) {
     if (_size != null) {
       _size!.set(v);
-      this.constraints.width = v;
+      this.width = v;
     } else if (v != null) {
       if (S.isPercentage(v)) {
         _sizeIsPercent = true;
@@ -57,13 +57,13 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
       double? s1;
       double? s2;
 
-      double? mh = constraints.getMaxHeight();
+      double? mh = getMaxHeight();
       if (mh != null)
         s1 = mh * (s / 100.0);
       else
         s1 = null;
 
-      double? mw = constraints.getMaxWidth();
+      double? mw = getMaxWidth();
       if (mw != null)
         s2 = mw * (s / 100.0);
       else
@@ -421,7 +421,7 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
     if (weight != null) this.weight = weight;
     if (bold != null) this.bold = bold;
     if (italic != null) this.italic = italic;
-    if (width != null) this.constraints.width = width;
+    if (width != null) this.width = width;
     if (theme != null) this.theme = theme;
     if (decoration != null) this.decoration = decoration;
     if (decorationcolor != null) this.decorationcolor = decorationcolor;

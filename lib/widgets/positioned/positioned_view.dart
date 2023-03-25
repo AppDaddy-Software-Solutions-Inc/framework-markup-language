@@ -45,8 +45,8 @@ class _PositionedViewState extends WidgetState<PositionedView>
     /* Parent Must be a Stack */
     ////////////////////////////
     if (widget.model.xoffset != null && widget.model.yoffset != null) {
-      double fromTop = (widget.model.constraints.getMaxHeight()! / 2) + widget.model.yoffset!;
-      double fromLeft = (widget.model.constraints.getMaxWidth()! / 2) + widget.model.xoffset!;
+      double fromTop = (widget.model.getMaxHeight()! / 2) + widget.model.yoffset!;
+      double fromLeft = (widget.model.getMaxWidth()! / 2) + widget.model.xoffset!;
       return Positioned(top: fromTop, left: fromLeft, child: child);
     } else
       return Positioned(

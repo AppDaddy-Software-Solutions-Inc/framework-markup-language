@@ -41,7 +41,7 @@ class _SplitViewState extends WidgetState<SplitView>
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // save system constraints
-    widget.model.constraints.system = constraints;
+    widget.model.setSystemConstraints(constraints);
 
     var _dividerWidth = widget.model.dividerWidth ?? (System().useragent == 'desktop' || S.isNullOrEmpty(System().useragent) ? 6.0 : 12.0);
     if (_dividerWidth % 2 != 0) _dividerWidth = _dividerWidth + 1;
@@ -58,7 +58,7 @@ class _SplitViewState extends WidgetState<SplitView>
 
     // calculate sizes
     var size1 = (widget.model.vertical ? widget.model.height ?? 0 : widget.model.width  ?? 0);
-    var size2 = (widget.model.vertical ? widget.model.constraints.getMaxHeight()! : widget.model.constraints.getMaxWidth()!) - size1;
+    var size2 = (widget.model.vertical ? widget.model.getMaxHeight()! : widget.model.getMaxWidth()!) - size1;
     size1 = size1 - (_dividerWidth/2);
     size2 = size2 - (_dividerWidth/2);
     if (size1 < 0)
@@ -99,15 +99,15 @@ class _SplitViewState extends WidgetState<SplitView>
     {
       var height = (widget.model.height ?? 0) + details.delta.dy;
       if (height < 0) height = 0;
-      if (height > widget.model.constraints.getMaxHeight()!) height = widget.model.constraints.getMaxHeight()!;
-      widget.model.constraints.height = height;
+      if (height > widget.model.getMaxHeight()!) height = widget.model.getMaxHeight()!;
+      widget.model.height = height;
     }
     else
     {
       var width = (widget.model.width ?? 0) + details.delta.dx;
       if (width < 0) width = 0;
-      if (width > widget.model.constraints.getMaxWidth()!) width = widget.model.constraints.getMaxWidth()!;
-      widget.model.constraints.width = width;
+      if (width > widget.model.getMaxWidth()!) width = widget.model.getMaxWidth()!;
+      widget.model.width = width;
     }
   }
 }

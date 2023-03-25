@@ -336,7 +336,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // save system constraints
-    widget.model.constraints.system = constraints;
+    widget.model.setSystemConstraints(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -360,7 +360,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
       ////////////////
       /* Max Height */
       ////////////////
-      double? height = widget.model.constraints.getMaxHeight();
+      double? height = widget.model.getMaxHeight();
 
       ////////////////
       /* Split View */
@@ -370,9 +370,9 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
       if (widget.model.tabbar == true && widget.model.tabbutton == true) {
         view = Column(children: [
           Container(color: Theme.of(context).colorScheme.onInverseSurface, child:
-            Padding(padding: EdgeInsets.only(top: barpadding), child: SizedBox(width: widget.model.constraints.getMaxWidth(), height: barheight,
+            Padding(padding: EdgeInsets.only(top: barpadding), child: SizedBox(width: widget.model.getMaxWidth(), height: barheight,
                 child: Row(children: [
-                  SizedBox(width: (widget.model.constraints.getMaxWidth()! - buttonWidth < 0 ? 0 : widget.model.constraints.getMaxWidth()! - buttonWidth),
+                  SizedBox(width: (widget.model.getMaxWidth()! - buttonWidth < 0 ? 0 : widget.model.getMaxWidth()! - buttonWidth),
                       height: barheight,
                       child: bar),
                   SizedBox(width: buttonWidth, height: barheight, child: button),
@@ -392,7 +392,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
         var con = widget.model.getConstraints();
 
         view = Column(children: [
-          SizedBox(width: widget.model.constraints.getMaxWidth(), height: barheight,
+          SizedBox(width: widget.model.getMaxWidth(), height: barheight,
             child: bar
           ),
           SizedBox(
@@ -423,7 +423,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
       }
 
       // wrap constraints
-      return applyUserContraints(view);
+      return getConstrainedView(view);
     }
     else return Container();
   }

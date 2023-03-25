@@ -17,14 +17,19 @@ import 'package:fml/helper/common_helpers.dart';
 class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
 {
   @override
-  double? get maxWidth  => layout == 'row' ? double.infinity : super.maxWidth;
+  double? getMaxWidth()
+  {
+    if (layout == 'row')
+         return double.infinity;
+    else return super.getMaxWidth();
+  }
 
   @override
   double? getMaxHeight()
   {
     if (layout == 'column')
          return double.infinity;
-    else return super.constraints.getMaxHeight();
+    else return super.getMaxHeight();
   }
 
   /// The cross alignment of the widgets children. Can be `top`, `bottom`, `start`, or `end`.
@@ -155,12 +160,12 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
       : super(parent, id)
   {
     // constraints
-    if (width     != null) this.constraints.width     = width;
-    if (height    != null) this.constraints.height    = height;
-    if (minwidth  != null) this.constraints.minWidth  = minwidth;
-    if (minheight != null) this.constraints.minHeight = minheight;
-    if (maxwidth  != null) this.constraints.maxWidth  = maxwidth;
-    if (maxheight != null) this.constraints.maxHeight = maxheight;
+    if (width     != null) this.width     = width;
+    if (height    != null) this.height    = height;
+    if (minwidth  != null) this.minWidth  = minwidth;
+    if (minheight != null) this.minHeight = minheight;
+    if (maxwidth  != null) this.maxWidth  = maxwidth;
+    if (maxheight != null) this.maxHeight = maxheight;
 
     this.draggable = draggable;
     this.onpulldown = onpulldown;

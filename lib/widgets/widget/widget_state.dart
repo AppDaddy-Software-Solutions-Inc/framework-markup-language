@@ -45,7 +45,7 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
     if (this.mounted) setState((){});
   }
 
-  Widget applyUserContraints(Widget view, {bool? expand})
+  Widget getConstrainedView(Widget view, {bool? expand})
   {
     if (this.model is ViewableWidgetModel)
     {
@@ -54,8 +54,8 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
       var width  = model.width;
       var height = model.height;
       var constraints = model.getConstraints();
-      var hasVerticalSizing = model.constraints.hasVerticalSizing;
-      var hasHorizontalSizing = model.constraints.hasHorizontalSizing;
+      var hasVerticalSizing   = model.isConstrainedVertically;
+      var hasHorizontalSizing = model.isConstrainedHorizontally;
 
       // expanded?
       if (expand == true)

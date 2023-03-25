@@ -31,7 +31,7 @@ class _BusyViewState extends WidgetState<BusyView>
   Widget builder(BuildContext context, BoxConstraints? constraints)
   {
     // save system constraints
-    widget.model.constraints.system = constraints;
+    widget.model.setSystemConstraints(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -78,7 +78,7 @@ class _BusyViewState extends WidgetState<BusyView>
     view = Container(color: Colors.transparent, child: Stack(alignment: Alignment(0.0, 0.0), children: children));
 
     // wrap constraints
-    return applyUserContraints(view);
+    return getConstrainedView(view);
   }
 }
 

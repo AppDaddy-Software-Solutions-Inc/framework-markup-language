@@ -20,49 +20,94 @@ class ViewableWidgetModel extends WidgetModel
   // holds animations
   List<AnimationModel>? animations;
 
+  // Constraints
+  late final Constraints _constraints;
+  
   // width
-  double? get width    => constraints.width;
+  double? get width  => _constraints.width;
+  set width(dynamic v)  => _constraints.width = v;
 
   // height
-  double? get height    => constraints.height;
+  double? get height => _constraints.height;
+  set height(dynamic v)  => _constraints.height = v;
 
-  // Constraints
-  late final Constraints constraints;
+  // percent width
+  double? get pctWidth => _constraints.widthPercentage;
+
+  // min width
+  double? get minWidth => _constraints.minWidth;
+  set minWidth(dynamic v)  => _constraints.minWidth = v;
+
+  // max width
+  double? get maxWidth => _constraints.maxWidth;
+  set maxWidth(dynamic v)  => _constraints.maxWidth = v;
+
+  // percent height
+  double? get pctHeight => _constraints.heightPercentage;
+
+  // min height
+  double? get minHeight => _constraints.minHeight;
+  set minHeight(dynamic v) => _constraints.minHeight = v;
+
+  // max height
+  double? get maxHeight => _constraints.maxHeight;
+  set maxHeight(dynamic v) => _constraints.maxHeight = v;
+
+  // calculated min width
+  double? getMinWidth() => _constraints.calcMinWidth();
+
+  // calculated min height
+  double? getMinHeight() => _constraints.calcMinHeight();
+
+  // calculated max width
+  double? getMaxWidth() => _constraints.calcMaxWidth();
+
+  // calculated max height
+  double? getMaxHeight() => _constraints.calcMaxHeight();
+
+  // calculated max height
+  setSystemConstraints(BoxConstraints? v) => _constraints.system = v;
+
+  // manually constraints
+  bool get isConstrained => _constraints.isHorizontallyConstrained() || _constraints.isVerticallyConstrained();
+  bool get isConstrainedHorizontally => _constraints.isHorizontallyConstrained();
+  bool get isConstrainedVertically   => _constraints.isVerticallyConstrained();
 
   /// alignment and layout attributes
   ///
   /// The horizontal alignment of the widgets children, overrides `center`. Can be `left`, `right`, `start`, or `end`.
   StringObservable? _halign;
-
-  set halign(dynamic v) {
-    if (_halign != null) {
+  set halign(dynamic v)
+  {
+    if (_halign != null)
+    {
       _halign!.set(v);
-    } else if (v != null) {
-      _halign = StringObservable(Binding.toKey(id, 'halign'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else if (v != null)
+    {
+      _halign = StringObservable(Binding.toKey(id, 'halign'), v, scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get halign => _halign?.get();
 
   /// The vertical alignment of the widgets children, overrides `center`. Can be `top`, `bottom`, `start`, or `end`.
   StringObservable? _valign;
-
-  set valign(dynamic v) {
-    if (_valign != null) {
+  set valign(dynamic v)
+  {
+    if (_valign != null)
+    {
       _valign!.set(v);
-    } else if (v != null) {
-      _valign = StringObservable(Binding.toKey(id, 'valign'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else if (v != null)
+    {
+      _valign = StringObservable(Binding.toKey(id, 'valign'), v, scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get valign => _valign?.get();
 
   // used by the veiw to determine if it needs to wrap itself
   // in a VisibilityDetector
   bool? _needsVisibilityDetector;
-
   bool get needsVisibilityDetector => _needsVisibilityDetector ?? false;
 
   /// onscreen event string - fires when object is 100 on screen
@@ -72,7 +117,8 @@ class ViewableWidgetModel extends WidgetModel
     if (_onscreen != null) 
     {
       _onscreen!.set(v);
-    } else if (v != null) 
+    }
+    else if (v != null)
     {
       _onscreen = StringObservable(Binding.toKey(id, 'onscreen'), v, scope: scope);
 
@@ -254,7 +300,7 @@ class ViewableWidgetModel extends WidgetModel
   ViewableWidgetModel(WidgetModel? parent, String? id, {Scope? scope}) : super(parent, id, scope: scope)
   {
     // create model constraints
-    constraints = Constraints(this.id, this.scope, parent, onPropertyChange);
+    _constraints = Constraints(this.id, this.scope, parent, onPropertyChange);
   }
 
   /// Deserializes the FML template elements, attributes and children
@@ -265,13 +311,13 @@ class ViewableWidgetModel extends WidgetModel
     super.deserialize(xml);
 
     // set constraints
-    constraints.width     = Xml.get(node: xml, tag: 'width');
-    constraints.height    = Xml.get(node: xml, tag: 'height');
-    constraints.minWidth  = Xml.get(node: xml, tag: 'minwidth');
-    constraints.minWidth  = Xml.get(node: xml, tag: 'minwidth');
-    constraints.maxWidth  = Xml.get(node: xml, tag: 'maxwidth');
-    constraints.minHeight = Xml.get(node: xml, tag: 'minheight');
-    constraints.maxHeight = Xml.get(node: xml, tag: 'maxheight');
+    _constraints.width     = Xml.get(node: xml, tag: 'width');
+    _constraints.height    = Xml.get(node: xml, tag: 'height');
+    _constraints.minWidth  = Xml.get(node: xml, tag: 'minwidth');
+    _constraints.minWidth  = Xml.get(node: xml, tag: 'minwidth');
+    _constraints.maxWidth  = Xml.get(node: xml, tag: 'maxwidth');
+    _constraints.minHeight = Xml.get(node: xml, tag: 'minheight');
+    _constraints.maxHeight = Xml.get(node: xml, tag: 'maxheight');
 
     // properties
     visible   = Xml.get(node: xml, tag: 'visible');
@@ -336,10 +382,10 @@ class ViewableWidgetModel extends WidgetModel
   {
     Constraint constraint = Constraint();
 
-    constraint.minHeight = height ?? constraints.minHeight ?? constraints.getMinHeight() ??  0.0;
-    constraint.minWidth  = width  ?? constraints.minWidth  ?? constraints.getMinWidth()  ?? 0.0;
-    constraint.maxHeight = height ?? constraints.maxHeight ?? constraints.getMaxHeight() ?? double.infinity;
-    constraint.maxWidth  = width  ?? constraints.maxWidth  ?? constraints.getMaxWidth()  ?? double.infinity;
+    constraint.minHeight = height ?? minHeight ?? getMinHeight() ??  0.0;
+    constraint.minWidth  = width  ?? minWidth  ?? getMinWidth()  ?? 0.0;
+    constraint.maxHeight = height ?? maxHeight ?? getMaxHeight() ?? double.infinity;
+    constraint.maxWidth  = width  ?? maxWidth  ?? getMaxWidth()  ?? double.infinity;
 
     // ensure not negative
     if (constraint.minHeight! < 0) constraint.minHeight = 0;
@@ -348,7 +394,7 @@ class ViewableWidgetModel extends WidgetModel
     // ensure max > min
     if (constraint.minHeight! > constraint.maxHeight!)
     {
-      if (constraints.maxHeight != null)
+      if (maxHeight != null)
            constraint.minHeight = constraint.maxHeight;
       else constraint.maxHeight = constraint.minHeight;
     }
@@ -360,7 +406,7 @@ class ViewableWidgetModel extends WidgetModel
     // ensure max > min
     if (constraint.minWidth! > constraint.maxWidth!)
     {
-      if (constraints.maxWidth != null)
+      if (maxWidth != null)
            constraint.minWidth = constraint.maxWidth;
       else constraint.maxWidth = constraint.minWidth;
     }

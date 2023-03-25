@@ -25,7 +25,7 @@ class _FooterViewState extends WidgetState<FooterView>
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // save system constraints
-    widget.model.constraints.system = constraints;
+    widget.model.setSystemConstraints(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (widget.model.visible == false) return Offstage();

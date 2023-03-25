@@ -41,8 +41,8 @@ class BreadcrumbModel extends DecoratedWidgetModel implements IViewableWidget
   }) : super(parent, id)
   {
     // constraints
-    if (height != null) this.constraints.height = height;
-    if (width  != null) this.constraints.width  = width;
+    if (height != null) this.height = height;
+    if (width  != null) this.width  = width;
 
     this.color    = color;
     this.backgroundcolor = backgroundcolor;

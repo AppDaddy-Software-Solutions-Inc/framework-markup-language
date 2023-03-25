@@ -198,12 +198,15 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
 
   /// Layout determines the widgets childrens layout. Can be `row`, `column`, `col`, or `stack`. Defaulted to `column`. If set to `stack` it can take `POSITIONED` as a child.
   StringObservable? _layout;
-  set layout(dynamic v) {
-    if (_layout != null) {
+  set layout(dynamic v)
+  {
+    if (_layout != null)
+    {
       _layout!.set(v);
-    } else if (v != null) {
-      _layout = StringObservable(Binding.toKey(id, 'layout'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else if (v != null)
+    {
+      _layout = StringObservable(Binding.toKey(id, 'layout'), v, scope: scope, listener: onPropertyChange);
     }
   }
   String get layout => _layout?.get()?.toLowerCase() ?? 'column';

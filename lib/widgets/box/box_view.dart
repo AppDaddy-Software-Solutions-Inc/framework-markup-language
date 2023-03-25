@@ -86,47 +86,51 @@ class _BoxViewState extends WidgetState<BoxView>
     if (widget.child != null) child = widget.child;
 
     if (child == null)
+    switch (widget.model.layout)
     {
-      var layout = widget.model.layout.trim().toLowerCase();
-      switch (layout)
-      {
-        case 'col':
-        case 'column':
-          // wrapped widget
-          if (widget.model.wrap == true)
-               child = Wrap(direction: Axis.vertical, children: children, alignment: alignment.mainWrapAlignment, runAlignment: alignment.mainWrapAlignment, crossAxisAlignment: alignment.crossWrapAlignment);
+      case 'col':
+      case 'column':
+        // wrapped widget
+        if (widget.model.wrap == true)
+          child = Wrap(direction: Axis.vertical, children: children, alignment: alignment.mainWrapAlignment, runAlignment: alignment.mainWrapAlignment, crossAxisAlignment: alignment.crossWrapAlignment);
 
-          // column widget
-          else child = Column(children: children, crossAxisAlignment: alignment.crossAlignment, mainAxisAlignment: alignment.mainAlignment);
-          break;
+        // column widget
+        else child = Column(children: children, crossAxisAlignment: alignment.crossAlignment, mainAxisAlignment: alignment.mainAlignment);
+        break;
 
-        case 'row':
-          // wrapped widget
-          if (widget.model.wrap == true)
-               child = Wrap(direction: Axis.horizontal, children: children, alignment: alignment.mainWrapAlignment, runAlignment: alignment.mainWrapAlignment, crossAxisAlignment: alignment.crossWrapAlignment);
+      case 'row':
+        // wrapped widget
+        if (widget.model.wrap == true)
+          child = Wrap(direction: Axis.horizontal, children: children, alignment: alignment.mainWrapAlignment, runAlignment: alignment.mainWrapAlignment, crossAxisAlignment: alignment.crossWrapAlignment);
 
-          // row widget
-          else child = Row(children: children, crossAxisAlignment: alignment.crossAlignment, mainAxisAlignment: alignment.mainAlignment);
-          break;
+        // row widget
+        else child = Row(children: children, crossAxisAlignment: alignment.crossAlignment, mainAxisAlignment: alignment.mainAlignment);
+        break;
 
-        case 'stack':
-          // this forces the stack to expand to its
-          // parent size rather than shrinking to its smallest child
-          if (widget.model.expand != false)
-          {
-            var box = SizedBox.expand();
-            children.add(box);
-          }
-          // create the stack
-          child = Stack(children: children, alignment: alignment.aligned);
-          break;
+      case 'stack':
+        // this forces the stack to expand to its
+        // parent size rather than shrinking to its smallest child
+        if (widget.model.expand != false)
+        {
+          var box = SizedBox.expand();
+          //children.add(box);
+        }
+        // create the stack
+        var constraints = widget.model.getConstraints();
+        var stack = Stack(children: children, alignment: alignment.aligned);
+        child = ConstrainedBox(
+            child: stack,
+            constraints: BoxConstraints(
+                minHeight: constraints.minHeight!,
+                maxHeight: constraints.maxHeight!,
+                minWidth: constraints.minWidth!,
+                maxWidth: constraints.maxWidth!));
+        break;
 
-        default:
-          child = Column(children: children, mainAxisAlignment: alignment.mainAlignment, crossAxisAlignment: alignment.crossAlignment);
-          break;
-      }
+      default:
+        child = Column(children: children, mainAxisAlignment: alignment.mainAlignment, crossAxisAlignment: alignment.crossAlignment);
+        break;
     }
-
     return child;
   }
 

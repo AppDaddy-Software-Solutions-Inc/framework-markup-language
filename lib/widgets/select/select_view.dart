@@ -128,7 +128,7 @@ class _SelectViewState extends WidgetState<SelectView>
     if (!widget.model.visible) return Offstage();
 
     // save system constraints
-    widget.model.setSystemConstraints(constraints);
+    widget.model.setConstraints(constraints);
 
     ///////////
     /* Busy? */

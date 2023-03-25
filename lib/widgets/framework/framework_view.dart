@@ -285,7 +285,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     SystemChrome.setPreferredOrientations(orientation);
 
     // save system constraints
-    widget.model.setSystemConstraints(constraints);
+    widget.model.setConstraints(constraints);
 
     // build body
     List<Widget> children = [];
@@ -315,7 +315,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     {
       // setting the min and max heights from the constraint
       // sets the height if height is a percentage
-      widget.model.header!.setSystemConstraints(constraints);
+      widget.model.header!.setConstraints(constraints);
 
       // set width && height
       headerModel.width  = viewportWidth;
@@ -330,7 +330,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     Widget footer = Container();
     if (widget.model.footer != null && widget.model.footer!.visible != false)
     {
-      widget.model.footer!.setSystemConstraints(constraints);
+      widget.model.footer!.setConstraints(constraints);
 
       // set width && height
       footerModel.width  = viewportWidth;

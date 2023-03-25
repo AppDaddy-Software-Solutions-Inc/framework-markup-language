@@ -32,41 +32,32 @@ class ViewableWidgetModel extends WidgetModel
   set height(dynamic v)  => _constraints.height = v;
 
   // percent width
-  double? get pctWidth => _constraints.widthPercentage;
-
-  // min width
-  double? get minWidth => _constraints.minWidth;
-  set minWidth(dynamic v)  => _constraints.minWidth = v;
-
-  // max width
-  double? get maxWidth => _constraints.maxWidth;
-  set maxWidth(dynamic v)  => _constraints.maxWidth = v;
+  double? get pctWidth => _constraints.pctWidth;
 
   // percent height
-  double? get pctHeight => _constraints.heightPercentage;
+  double? get pctHeight => _constraints.pctHeight;
 
-  // min height
-  double? get minHeight => _constraints.minHeight;
+  // min width
+  set minWidth(dynamic v) => _constraints.minWidth = v;
+  double? getMinWidth()  => _constraints.getMinWidth();
+
+  // max width
+  set maxWidth(dynamic v) => _constraints.maxWidth = v;
+  double? getMaxWidth() => _constraints.getMaxWidth();
+
+  // min width
   set minHeight(dynamic v) => _constraints.minHeight = v;
+  double? getMinHeight()  => _constraints.getMinHeight();
 
-  // max height
-  double? get maxHeight => _constraints.maxHeight;
+  // max width
   set maxHeight(dynamic v) => _constraints.maxHeight = v;
+  double? getMaxHeight() => _constraints.getMaxHeight();
 
-  // calculated min width
-  double? getMinWidth() => _constraints.calcMinWidth();
+  // set system constrains oin layout builder
+  setConstraints(BoxConstraints? v) => _constraints.setConstraints(v);
 
-  // calculated min height
-  double? getMinHeight() => _constraints.calcMinHeight();
-
-  // calculated max width
-  double? getMaxWidth() => _constraints.calcMaxWidth();
-
-  // calculated max height
-  double? getMaxHeight() => _constraints.calcMaxHeight();
-
-  // calculated max height
-  setSystemConstraints(BoxConstraints? v) => _constraints.system = v;
+  // set system constrains oin layout builder
+  Constraint getConstraints() => _constraints.getConstraints();
 
   // manually constraints
   bool get isConstrained => _constraints.isHorizontallyConstrained() || _constraints.isVerticallyConstrained();
@@ -375,41 +366,6 @@ class ViewableWidgetModel extends WidgetModel
     }
     //should add up all of the padded siblings to do this so you can have multiple padded siblings unconstrained.
     return insets;
-  }
-
-  Constraint getConstraints()
-  {
-    Constraint constraint = Constraint();
-
-    constraint.minHeight = height ?? minHeight ?? getMinHeight() ??  0.0;
-    constraint.minWidth  = width  ?? minWidth  ?? getMinWidth()  ?? 0.0;
-    constraint.maxHeight = height ?? maxHeight ?? getMaxHeight() ?? double.infinity;
-    constraint.maxWidth  = width  ?? maxWidth  ?? getMaxWidth()  ?? double.infinity;
-
-    // ensure not negative
-    if (constraint.minHeight! < 0) constraint.minHeight = 0;
-    if (constraint.maxHeight! < 0) constraint.maxHeight = double.infinity;
-
-    // ensure max > min
-    if (constraint.minHeight! > constraint.maxHeight!)
-    {
-      if (maxHeight != null)
-           constraint.minHeight = constraint.maxHeight;
-      else constraint.maxHeight = constraint.minHeight;
-    }
-
-    // ensure not negative
-    if (constraint.minWidth! < 0) constraint.minWidth = 0;
-    if (constraint.maxWidth! < 0) constraint.maxWidth = double.infinity;
-
-    // ensure max > min
-    if (constraint.minWidth! > constraint.maxWidth!)
-    {
-      if (maxWidth != null)
-           constraint.minWidth = constraint.maxWidth;
-      else constraint.maxWidth = constraint.minWidth;
-    }
-    return constraint;
   }
 
   AnimationModel? getAnimationModel(String id)

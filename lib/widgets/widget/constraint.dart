@@ -14,11 +14,17 @@ class Constraints
   OnChangeCallback? listener;
   WidgetModel? parent;
 
+  // holds the system layout constraints
+  Constraint _flutterConstraints = Constraint();
+
   Constraints(this.id, this.scope, this.parent, this.listener);
+
+  bool isVerticallyConstrained()   => (height != null && height! >= 0) || minHeight != null || maxHeight != null;
+  bool isHorizontallyConstrained() => (width  != null && width!  >= 0) || minWidth  != null || maxWidth  != null;
 
   // width
   double? _widthPercentage;
-  double? get widthPercentage => _widthPercentage;
+  double? get pctWidth => _widthPercentage;
   DoubleObservable? _width;
   set width(dynamic v)
   {
@@ -44,7 +50,7 @@ class Constraints
 
   // height
   double? _heightPercentage;
-  double? get heightPercentage => _heightPercentage;
+  double? get pctHeight => _heightPercentage;
   DoubleObservable? _height;
   set height(dynamic v)
   {
@@ -128,38 +134,26 @@ class Constraints
   }
   double? get maxHeight => _maxHeight?.get();
 
-
-  bool isVerticallyConstrained()   => (height != null && height! >= 0) || minHeight != null || maxHeight != null;
-  bool isHorizontallyConstrained() => (width  != null && width!  >= 0) || minWidth  != null || maxWidth  != null;
-
-  // min width
-  double? calcMinWidth()
+  // calculates the min width
+  double? getMinWidth()
   {
     double? v;
-    if ((v == null) && (_system.minWidth != null) && (_system.minWidth != double.infinity)) v = _system.minWidth;
-    if ((v == null) && (parent is ViewableWidgetModel)) v = (parent as ViewableWidgetModel).getMinWidth();
+    if (_flutterConstraints.minWidth != null && _flutterConstraints.minWidth != double.infinity) v = _flutterConstraints.minWidth;
+    if (v == null && parent is ViewableWidgetModel) v = (parent as ViewableWidgetModel).getMinWidth();
     return v;
   }
 
-  // min height
-  double? calcMinHeight()
+  // calculates the max width
+  double? getMaxWidth()
   {
     double? v;
-    if ((v == null) && (_system.minHeight != null) && (_system.minHeight != double.infinity)) v = _system.minHeight;
-    if ((v == null) && (parent is ViewableWidgetModel)) v = (parent as ViewableWidgetModel).getMinHeight();
-    return v;
-  }
-
-  double? calcMaxWidth()
-  {
-    double? v;
-    if (_system.maxWidth != null && _system.maxWidth != double.infinity) v = _system.maxWidth;
-    if ((v == null) && (parent != null))
+    if (_flutterConstraints.maxWidth != null && _flutterConstraints.maxWidth != double.infinity) v = _flutterConstraints.maxWidth;
+    if (v == null && this.parent is ViewableWidgetModel)
     {
-      ViewableWidgetModel? parent = (this.parent is ViewableWidgetModel) ? (this.parent as ViewableWidgetModel) : null;
-      if (parent?.padding != null)
+      ViewableWidgetModel parent = (this.parent as ViewableWidgetModel);
+      if (_widthPercentage == null)
       {
-        var hpad = _getHPadding(parent!.paddings, parent.padding, parent.padding2, parent.padding3, parent.padding4);
+        var hpad = _getHPadding(parent.paddings, parent.padding, parent.padding2, parent.padding3, parent.padding4);
         if (parent.width == null)
         {
            var w = parent.getMaxWidth();
@@ -167,21 +161,31 @@ class Constraints
         }
         else v = parent.width! - hpad;
       }
-      else if (parent != null) v = (parent.width ?? parent.getMaxWidth());
+      else v = parent.width ?? parent.getMaxWidth();
     }
     return v;
   }
 
-  double? calcMaxHeight()
+  // calculates the min height
+  double? getMinHeight()
   {
     double? v;
-    if ( v == null && _system.maxHeight != null && _system.maxHeight != double.infinity) v = _system.maxHeight;
-    if ((v == null) && (parent != null))
+    if (_flutterConstraints.minHeight != null && _flutterConstraints.minHeight != double.infinity) v = _flutterConstraints.minHeight;
+    if (v == null && parent is ViewableWidgetModel) v = (parent as ViewableWidgetModel).getMinHeight();
+    return v;
+  }
+
+  // calculates the max height
+  double? getMaxHeight()
+  {
+    double? v;
+    if (_flutterConstraints.maxHeight != null && _flutterConstraints.maxHeight != double.infinity) v = _flutterConstraints.maxHeight;
+    if (v == null && parent is ViewableWidgetModel)
     {
-      ViewableWidgetModel? parent = (this.parent is ViewableWidgetModel) ? (this.parent as ViewableWidgetModel) : null;
-      if (parent?.padding != null && _heightPercentage == null)
+      ViewableWidgetModel? parent = (this.parent as ViewableWidgetModel);
+      if (_heightPercentage == null)
       {
-        var vpad = _getVPadding(parent!.paddings, parent.padding, parent.padding2, parent.padding3, parent.padding4);
+        var vpad = _getVPadding(parent.paddings, parent.padding, parent.padding2, parent.padding3, parent.padding4);
         if (parent.height == null)
         {
           var h = parent.getMaxHeight();
@@ -189,7 +193,7 @@ class Constraints
         }
         else v = parent.height! - vpad;
       }
-      else if (parent != null) v = (parent.height ?? parent.getMaxHeight());
+      else v = parent.height ?? parent.getMaxHeight();
     }
     return v;
   }
@@ -197,11 +201,10 @@ class Constraints
   Constraint getConstraints()
   {
     Constraint constraint = Constraint();
-
-    constraint.minHeight = height ?? minHeight ?? calcMinHeight() ??  0.0;
-    constraint.minWidth  = width  ?? minWidth  ?? calcMinWidth()  ?? 0.0;
-    constraint.maxHeight = height ?? maxHeight ?? calcMaxHeight() ?? double.infinity;
-    constraint.maxWidth  = width  ?? maxWidth  ?? calcMaxWidth()  ?? double.infinity;
+    constraint.minHeight = height ?? minHeight ?? getMinHeight() ??  0.0;
+    constraint.minWidth  = width  ?? minWidth  ?? getMinWidth()  ?? 0.0;
+    constraint.maxHeight = height ?? maxHeight ?? getMaxHeight() ?? double.infinity;
+    constraint.maxWidth  = width  ?? maxWidth  ?? getMaxWidth()  ?? double.infinity;
 
     // ensure not negative
     if (constraint.minHeight! < 0) constraint.minHeight = 0;
@@ -229,51 +232,38 @@ class Constraints
     return constraint;
   }
 
-  // this holds the constraints passed in the layout builder
-  Constraint _system = Constraint();
-  set system(BoxConstraints? constraints)
+  // sets the layout constraints and adjust the height & width accordingly
+  void setConstraints(BoxConstraints? constraints)
   {
-    _setMinWidth(constraints?.minWidth);
-    _setMinHeight(constraints?.minHeight);
-    _setMaxWidth(constraints?.maxWidth);
-    _setMaxHeight(constraints?.maxHeight);
-  }
+    _flutterConstraints.minWidth  = constraints?.minWidth;
+    _flutterConstraints.maxWidth  = constraints?.maxWidth;
+    _flutterConstraints.minHeight = constraints?.minHeight;
+    _flutterConstraints.maxHeight = constraints?.maxHeight;
 
-  // sets the min width
-  _setMinWidth(double? v) => _system.minWidth = v;
-
-  // sets the max width
-  _setMaxWidth(double? v)
-  {
-    _system.maxWidth = v;
-    if (_width?.value != null && _width!.value >= 100000) _widthPercentage = (_width!.value / 1000000)!;
+    // adjust the width
+    if (width != null && width! >= 100000) _widthPercentage = (width!/1000000);
     if (_widthPercentage != null)
     {
+      // calculate the width
       double? width;
-      var maxwidth = this.maxWidth;
+      double? maxwidth = getMaxWidth();
       if (maxwidth != null)
       {
         width = maxwidth * (_widthPercentage! / 100.0);
         if (minWidth != null && minWidth! > width)  width = minWidth;
         if (maxWidth != null && maxWidth! < width!) width = maxWidth;
       }
+
+      // set the width
       _width?.set(width, notify: false);
     }
-  }
 
-  // sets the min height
-  _setMinHeight(double? v) => _system.minHeight = v;
-
-  // sets the max height
-  _setMaxHeight(double? v)
-  {
-    _system.maxHeight = v;
-
-    if (_height?.value != null && _height!.value >= 100000) _heightPercentage = (_height!.value / 1000000)!;
+    // adjust the height
+    if (height != null && height! >= 100000) _heightPercentage = (height!/1000000);
     if (_heightPercentage != null)
     {
       double? height;
-      var maxheight = this.maxHeight;
+      double? maxheight = getMaxWidth();
       if (maxheight != null)
       {
         if (this.parent != null)
@@ -289,6 +279,7 @@ class Constraints
       }
       _height?.set(height, notify: false);
     }
+
   }
 
   static double _getVPadding(int paddings, double? padding, double padding2, double padding3, double padding4)

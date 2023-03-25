@@ -44,7 +44,7 @@ class _TableHeaderViewState extends WidgetState<TableHeaderView>
     if ((widget.model == null) || (widget.model!.visible == false)) return Offstage();
 
     // save system constraints
-    widget.model?.setSystemConstraints(constraints);
+    widget.model?.setConstraints(constraints);
 
     ///////////
     /* Cells */

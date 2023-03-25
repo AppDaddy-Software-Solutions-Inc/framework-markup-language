@@ -178,7 +178,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // save system constraints
-    widget.model.setSystemConstraints(constraints);
+    widget.model.setConstraints(constraints);
 
     var con = widget.model.getConstraints();
     double h = con.maxHeight ?? MediaQuery.of(context).size.height;

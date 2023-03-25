@@ -25,7 +25,7 @@ class _PagerPageViewState extends WidgetState<PagerPageView>
     if (widget.model.visible == false) return Offstage();
 
     // save system constraints
-    widget.model.setSystemConstraints(constraints);
+    widget.model.setConstraints(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();

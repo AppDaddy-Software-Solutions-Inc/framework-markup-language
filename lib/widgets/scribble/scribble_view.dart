@@ -383,7 +383,7 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
     if (((!widget.model.visible))) return Offstage();
 
     // save system constraints
-    widget.model.setSystemConstraints(constraints);
+    widget.model.setConstraints(constraints);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _afterBuild(context);

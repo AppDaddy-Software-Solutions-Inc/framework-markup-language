@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
+import 'package:fml/widgets/widget/constraint.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
 
 import 'package:fml/widgets/widget/iViewableWidget.dart';
@@ -12,30 +13,6 @@ import 'package:fml/helper/common_helpers.dart';
 
 class BoxModel extends DecoratedWidgetModel implements IViewableWidget
 {
-  @override
-  double? get width
-  {
-    if (!expand)
-    {
-      var c = getConstraints();
-      var w = c.maxWidth;
-      if ((w == null || w == double.infinity) && (c.minWidth ?? 0) > 0) w = c.minWidth;
-      if (w == null || w == double.infinity) w = super.width;
-      return w;
-    }
-    else return super.width;
-  }
-
-  @override
-  double? get height
-  {
-    var c = getConstraints();
-    var h = c.maxHeight;
-    if ((h == null || h == double.infinity) && (c.minHeight ?? 0) > 0) h = c.minHeight;
-    if (h == null || h == double.infinity) h = super.height;
-    return h;
-  }
-
   // box blur
   BooleanObservable? _blur;
   set blur(dynamic v)

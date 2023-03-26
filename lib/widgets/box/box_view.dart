@@ -86,28 +86,29 @@ class _BoxViewState extends WidgetState<BoxView>
     switch (widget.model.layout)
     {
       case 'stack':
-
-      // The stack sizes itself to contain all the non-positioned children,
-      // which are positioned according to alignment.
-      // The positioned children are then placed relative to the stack according to their top, right, bottom, and left properties.
-        double width  = 0;
-        double height = 0;
+        // The stack sizes itself to contain all the non-positioned children,
+        // which are positioned according to alignment.
+        // The positioned children are then placed relative to the stack according to their top, right, bottom, and left properties.
+        double? width;
+        double? height;
         if (widget.model.expand)
         {
-          // force the stack to be at least the size of the
-          // min and max widths specified
-          var constraints = widget.model.getConstraints();
-          if (constraints.maxWidth  != null && constraints.maxWidth  != double.infinity) width  = constraints.maxWidth!;
-          if (constraints.maxHeight != null && constraints.maxHeight != double.infinity) height = constraints.maxHeight!;
+          var c = widget.model.getConstraints();
+          width = c.maxWidth;
+          if ((width == null || width == double.infinity) && (c.minWidth ?? 0) > 0) width = c.minWidth;
+
+          height = c.maxHeight;
+          if ((height == null || height == double.infinity) && (c.minHeight ?? 0) > 0) height = c.minHeight;
+
         }
-        children.add(SizedBox.fromSize(size: Size(width, height)));
+        children.add(SizedBox.fromSize(size: Size(width ?? 0, height ?? 0)));
 
         // create the stack
         child = Stack(children: children, alignment: alignment.aligned);
         break;
 
       case 'row':
-      // row widget
+        // row widget
         if (widget.model.wrap != true)
              child = Row(children: children, crossAxisAlignment: alignment.crossAlignment, mainAxisAlignment: alignment.mainAlignment);
         else child = Wrap(direction: Axis.horizontal, children: children, alignment: alignment.mainWrapAlignment, runAlignment: alignment.mainWrapAlignment, crossAxisAlignment: alignment.crossWrapAlignment);
@@ -369,7 +370,7 @@ class _BoxViewState extends WidgetState<BoxView>
     if (widget.model.color == Colors.white10) view = _getFrostedView(view, radius);
 
     // get constrained view
-    if (!widget.model.expand) view = getConstrainedView(view);
+    view = (widget.model.expand) ? getConstrainedView(view) : UnconstrainedBox(child: view);
 
     return view;
   }

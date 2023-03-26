@@ -355,7 +355,7 @@ class _BoxViewState extends WidgetState<BoxView>
     if (widget.model.blur) child = _getBlurredView(child, borderDecoration);
 
     // box view
-    Widget box = Container(decoration: borderDecoration, child: Container(
+    Widget view = Container(decoration: borderDecoration, child: Container(
         padding: insets,
         clipBehavior: Clip.antiAlias,
         decoration: decoration,
@@ -363,13 +363,13 @@ class _BoxViewState extends WidgetState<BoxView>
         child: child));
 
     // opacity
-    if (widget.model.opacity != null) _getFadedView(box);
+    if (widget.model.opacity != null) view = _getFadedView(view);
 
     // white10 = Blur (This creates mirrored/frosted effect overtop of something else)
-    if (widget.model.color == Colors.white10) _getFrostedView(box, radius);
+    if (widget.model.color == Colors.white10) view = _getFrostedView(view, radius);
 
     // get constrained view
-    var view = getConstrainedView(box);
+    if (!widget.model.expand) view = getConstrainedView(view);
 
     return view;
   }

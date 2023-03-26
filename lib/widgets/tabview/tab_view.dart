@@ -226,10 +226,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
   }
 
   @override
-  Widget build(BuildContext context)
-  {
-    return LayoutBuilder(builder: builder);
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   List<Tab> _buildTabs(double? height)
   {

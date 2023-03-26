@@ -70,9 +70,7 @@ class _CardViewState extends WidgetState<CardView>
         break;
     }
 
-    //////////////
-    /* Children */
-    //////////////
+    // build children
     List<Widget> children = [];
     if (widget.model.children != null)
       widget.model.children!.forEach((model)

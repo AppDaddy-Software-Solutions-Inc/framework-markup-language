@@ -23,22 +23,17 @@ class BusyView extends StatefulWidget implements IWidgetView
 class _BusyViewState extends WidgetState<BusyView>
 {
   @override
-  Widget build(BuildContext context)
-  {
-    return builder(context, null);
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
-  Widget builder(BuildContext context, BoxConstraints? constraints)
+  Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    // save system constraints
-    widget.model.setConstraints(constraints);
-
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    //////////////
-    /* Children */
-    //////////////
+    // save system constraints
+    widget.model.setConstraints(constraints);
+
+    // build children
     List<Widget> children = [];
     if (widget.model.children != null)
       widget.model.children!.forEach((model)

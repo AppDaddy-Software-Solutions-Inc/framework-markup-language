@@ -38,9 +38,7 @@ class _TableRowCellViewState extends WidgetState<TableRowCellView> with WidgetsB
     // save system constraints
     widget.model.setConstraints(constraints);
 
-    //////////////
-    /* Children */
-    //////////////
+    // build children
     List<Widget> children = [];
     if (widget.model.visible) {
       if (widget.model.children != null)

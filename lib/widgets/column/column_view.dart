@@ -29,9 +29,7 @@ class _ColumnViewState extends WidgetState<ColumnView>
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    ///////////
-    /* Child */
-    ///////////
+    // build children
     List<Widget> children = [];
     if (widget.model.children != null)
       widget.model.children!.forEach((model) {
@@ -41,7 +39,7 @@ class _ColumnViewState extends WidgetState<ColumnView>
       });
     if (children.isEmpty) children.add(Container());
 
-    //this must go after the children are determined
+    // this must go after the children are determined
     var alignment = AlignmentHelper.alignWidgetAxis(children.length, 'column', widget.model.center, widget.model.halign, widget.model.valign);
 
     // set main axis size

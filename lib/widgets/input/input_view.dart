@@ -254,10 +254,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
   }
 
   @override
-  Widget build(BuildContext context)
-  {
-    return LayoutBuilder(builder: builder);
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {

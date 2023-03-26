@@ -249,11 +249,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   }
 
   @override
-  Widget build(BuildContext context)
-  {
-    super.build(context);
-    return LayoutBuilder(builder: builder);
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {

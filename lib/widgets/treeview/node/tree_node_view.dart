@@ -24,9 +24,7 @@ class _TreeNodeViewState extends WidgetState<TreeNodeView>
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    //////////////
-    /* Children */
-    //////////////
+    // build children
     List<Widget> children = [];
     List<Widget> nodes    = [];
     if (widget.model.children != null)

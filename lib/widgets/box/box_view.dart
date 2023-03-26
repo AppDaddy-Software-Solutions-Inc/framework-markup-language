@@ -370,6 +370,16 @@ class _BoxViewState extends WidgetState<BoxView>
     if (widget.model.color == Colors.white10) view = _getFrostedView(view, radius);
 
     // get constrained view
+    // if (widget.model.height == null && widget.model.width == null)
+    //   {
+    //     var constraints  = widget.model.getConstraints();
+    //     double minWidth  = widget.model.isConstrainedHorizontally ? constraints.minWidth  ?? 0.0 : 0.0;
+    //     double maxWidth  = widget.model.isConstrainedHorizontally ? constraints.maxWidth  ?? double.infinity : double.infinity;
+    //     double minHeight = widget.model.isConstrainedVertically   ? constraints.minHeight ?? 0.0 : 0.0;
+    //     double maxHeight = widget.model.isConstrainedVertically   ? constraints.maxHeight ?? double.infinity : double.infinity;
+    //     view = ConstrainedBox(child: view, constraints: BoxConstraints(minHeight: minHeight, maxHeight: maxHeight, minWidth: minWidth, maxWidth: maxWidth));
+    //   }
+
     view = (widget.model.expand) ? getConstrainedView(view) : UnconstrainedBox(child: view);
 
     return view;

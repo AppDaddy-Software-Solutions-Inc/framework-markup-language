@@ -80,55 +80,46 @@ class _BoxViewState extends WidgetState<BoxView>
 {
   Widget _layoutChildren(List<Widget> children, WidgetAlignment alignment)
   {
+    if (widget.child != null) return widget.child!;
+
     Widget? child;
-
-    if (children.length == 1 && widget.model.layout != 'stack') child = children[0];
-    if (widget.child != null) child = widget.child;
-
-    if (child == null)
     switch (widget.model.layout)
     {
-      case 'col':
-      case 'column':
-        // wrapped widget
-        if (widget.model.wrap == true)
-          child = Wrap(direction: Axis.vertical, children: children, alignment: alignment.mainWrapAlignment, runAlignment: alignment.mainWrapAlignment, crossAxisAlignment: alignment.crossWrapAlignment);
+      case 'stack':
 
-        // column widget
-        else child = Column(children: children, crossAxisAlignment: alignment.crossAlignment, mainAxisAlignment: alignment.mainAlignment);
+      // The stack sizes itself to contain all the non-positioned children,
+      // which are positioned according to alignment.
+      // The positioned children are then placed relative to the stack according to their top, right, bottom, and left properties.
+        double width  = 0;
+        double height = 0;
+        if (widget.model.expand)
+        {
+          // force the stack to be at least the size of the
+          // min and max widths specified
+          var constraints = widget.model.getConstraints();
+          if (constraints.maxWidth  != null && constraints.maxWidth  != double.infinity) width  = constraints.maxWidth!;
+          if (constraints.maxHeight != null && constraints.maxHeight != double.infinity) height = constraints.maxHeight!;
+        }
+        children.add(SizedBox.fromSize(size: Size(width, height)));
+
+        // create the stack
+        child = Stack(children: children, alignment: alignment.aligned);
         break;
 
       case 'row':
-        // wrapped widget
-        if (widget.model.wrap == true)
-          child = Wrap(direction: Axis.horizontal, children: children, alignment: alignment.mainWrapAlignment, runAlignment: alignment.mainWrapAlignment, crossAxisAlignment: alignment.crossWrapAlignment);
-
-        // row widget
-        else child = Row(children: children, crossAxisAlignment: alignment.crossAlignment, mainAxisAlignment: alignment.mainAlignment);
+      // row widget
+        if (widget.model.wrap != true)
+             child = Row(children: children, crossAxisAlignment: alignment.crossAlignment, mainAxisAlignment: alignment.mainAlignment);
+        else child = Wrap(direction: Axis.horizontal, children: children, alignment: alignment.mainWrapAlignment, runAlignment: alignment.mainWrapAlignment, crossAxisAlignment: alignment.crossWrapAlignment);
         break;
 
-      case 'stack':
-        // this forces the stack to expand to its
-        // parent size rather than shrinking to its smallest child
-        if (widget.model.expand != false)
-        {
-          var box = SizedBox.expand();
-          //children.add(box);
-        }
-        // create the stack
-        var constraints = widget.model.getConstraints();
-        var stack = Stack(children: children, alignment: alignment.aligned);
-        child = ConstrainedBox(
-            child: stack,
-            constraints: BoxConstraints(
-                minHeight: constraints.minHeight!,
-                maxHeight: constraints.maxHeight!,
-                minWidth: constraints.minWidth!,
-                maxWidth: constraints.maxWidth!));
-        break;
-
+      case 'col':
+      case 'column':
       default:
-        child = Column(children: children, mainAxisAlignment: alignment.mainAlignment, crossAxisAlignment: alignment.crossAlignment);
+        // column widget
+        if (widget.model.wrap != true)
+             child = Column(children: children, crossAxisAlignment: alignment.crossAlignment, mainAxisAlignment: alignment.mainAlignment);
+        else child = Wrap(direction: Axis.vertical, children: children, alignment: alignment.mainWrapAlignment, runAlignment: alignment.mainWrapAlignment, crossAxisAlignment: alignment.crossWrapAlignment);
         break;
     }
     return child;
@@ -379,10 +370,6 @@ class _BoxViewState extends WidgetState<BoxView>
 
     // get constrained view
     var view = getConstrainedView(box);
-
-    // containers will expand to the size of their parent
-    // unless we wrap in an Unconstrained box
-    if (widget.model.expand == false) view = UnconstrainedBox(child: view);
 
     return view;
   }

@@ -15,15 +15,21 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
   @override
   double? get width
   {
-    if (expand != false) return getConstraints().maxWidth;
-    return super.width;
+    var c = getConstraints();
+    var w = c.maxWidth;
+    if ((w == null || w == double.infinity) && (c.minWidth ?? 0) > 0) w = c.minWidth;
+    if (w == null || w == double.infinity) w = super.width;
+    return w;
   }
 
   @override
   double? get height
   {
-    if (expand != false) return getConstraints().maxHeight;
-    return super.height;
+    var c = getConstraints();
+    var h = c.maxHeight;
+    if ((h == null || h == double.infinity) && (c.minHeight ?? 0) > 0) h = c.minHeight;
+    if (h == null || h == double.infinity) h = super.height;
+    return h;
   }
 
   // box blur

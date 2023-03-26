@@ -22,17 +22,13 @@ class ExpandedView extends StatefulWidget implements IWidgetView
 class _ExpandedViewState extends WidgetState<ExpandedView>
 {
   @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints)
+  Widget build(BuildContext context)
   {
-    // Check if widget is visible before wasting resources on building it
+    /// Unfortunately, this cant go inside a layoutBuilder() like other widgets.
+    /// If placed inside a layoutBuilder(), children don't expand correctly.
+
+    // Check if widget is visible before wasting resources on building it.
     if (!widget.model.visible) return Offstage();
-
-    // save system constraints
-    widget.model.setConstraints(constraints);
-
-    var c = widget.model.getConstraints();
 
     // build children
     List<Widget> children = [];
@@ -68,14 +64,10 @@ class _ExpandedViewState extends WidgetState<ExpandedView>
     // Set the Fit
     // tight: The child is forced to fill the available space. This is the default for the Expanded() widget.
     // loose: The child can be at most as large as the available space (but is allowed to be smaller). This is the default for the Flexible() widget.
-    var fit = FlexFit.tight;
+    // var fit = FlexFit.tight;
 
-    /// safeguard - don't allow infinite size
-    if (constraints.maxHeight == double.infinity || constraints.maxWidth == double.infinity) fit = FlexFit.tight;
-
-    // crate the view
-    view = Flexible(flex: widget.model.flex, child: view, fit: fit);
-
-    return view;
+    // create the view
+    // return Flexible(flex: widget.model.flex, child: view, fit: fit);
+    return Expanded(flex: widget.model.flex, child: view);
   }
 }

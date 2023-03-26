@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/alignment.dart';
+import 'package:fml/widgets/widget/constraint.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/box/box_model.dart' as BOX;
@@ -76,29 +77,38 @@ List<Color> getGradientColors(c1, c2, c3, c4) {
   return gradientColors;
 }
 
+enum layoutTypes {none, row, column, stack}
+
 class _BoxViewState extends WidgetState<BoxView>
 {
-  Widget _layoutChildren(List<Widget> children, WidgetAlignment alignment)
+  static layoutTypes _getLayoutType(String layout)
   {
-    if (widget.child != null) return widget.child!;
+    var l = layout.toLowerCase().trim();
+    if (l == 'col')    return layoutTypes.column;
+    if (l == 'column') return layoutTypes.column;
+    if (l == 'row')    return layoutTypes.row;
+    if (l == 'stack')  return layoutTypes.stack;
+    return layoutTypes.column;
+  }
 
+  static Widget _layoutChildren(layoutTypes layout, Constraint constraints, bool expand, bool wrap, List<Widget> children, WidgetAlignment alignment)
+  {
     Widget? child;
-    switch (widget.model.layout)
+    switch (layout)
     {
-      case 'stack':
+      case layoutTypes.stack:
         // The stack sizes itself to contain all the non-positioned children,
         // which are positioned according to alignment.
         // The positioned children are then placed relative to the stack according to their top, right, bottom, and left properties.
         double? width;
         double? height;
-        if (widget.model.expand)
+        if (expand)
         {
-          var c = widget.model.getConstraints();
-          width = c.maxWidth;
-          if ((width == null || width == double.infinity) && (c.minWidth ?? 0) > 0) width = c.minWidth;
+          width = constraints.maxWidth;
+          if ((width == null || width == double.infinity) && (constraints.minWidth ?? 0) > 0) width = constraints.minWidth;
 
-          height = c.maxHeight;
-          if ((height == null || height == double.infinity) && (c.minHeight ?? 0) > 0) height = c.minHeight;
+          height = constraints.maxHeight;
+          if ((height == null || height == double.infinity) && (constraints.minHeight ?? 0) > 0) height = constraints.minHeight;
 
         }
         children.add(SizedBox.fromSize(size: Size(width ?? 0, height ?? 0)));
@@ -107,18 +117,17 @@ class _BoxViewState extends WidgetState<BoxView>
         child = Stack(children: children, alignment: alignment.aligned);
         break;
 
-      case 'row':
+      case layoutTypes.row:
         // row widget
-        if (widget.model.wrap != true)
+        if (!wrap)
              child = Row(children: children, crossAxisAlignment: alignment.crossAlignment, mainAxisAlignment: alignment.mainAlignment);
         else child = Wrap(direction: Axis.horizontal, children: children, alignment: alignment.mainWrapAlignment, runAlignment: alignment.mainWrapAlignment, crossAxisAlignment: alignment.crossWrapAlignment);
         break;
 
-      case 'col':
-      case 'column':
+      case layoutTypes.column:
       default:
         // column widget
-        if (widget.model.wrap != true)
+        if (!wrap)
              child = Column(children: children, crossAxisAlignment: alignment.crossAlignment, mainAxisAlignment: alignment.mainAlignment);
         else child = Wrap(direction: Axis.vertical, children: children, alignment: alignment.mainWrapAlignment, runAlignment: alignment.mainWrapAlignment, crossAxisAlignment: alignment.crossWrapAlignment);
         break;
@@ -246,7 +255,7 @@ class _BoxViewState extends WidgetState<BoxView>
     return BoxDecoration(borderRadius: radius, boxShadow: boxShadow != null ? [boxShadow] : null, color: color, gradient: gradient);
   }
 
-  EdgeInsets _getInsets()
+  EdgeInsets _getPadding()
   {
     var insets = EdgeInsets.only();
     if (widget.model.paddings > 0)
@@ -334,8 +343,17 @@ class _BoxViewState extends WidgetState<BoxView>
     // this must go after the children are determined
     var alignment = AlignmentHelper.alignWidgetAxis(children.length, widget.model.layout, widget.model.center, widget.model.halign, widget.model.valign);
 
-    // get child
-    Widget child = _layoutChildren(children, alignment);
+    layoutTypes layout = layoutTypes.none;
+    var wrap = widget.model.wrap;
+    var expand = widget.model.expand;
+
+    // layout children
+    Widget? child = widget.child;
+    if (child == null)
+    {
+      layout = _getLayoutType(widget.model.layout);
+      child = _layoutChildren(layout, widget.model.getConstraints(), expand, wrap, children, alignment);
+    }
 
     // border
     Border? border = _getBorder();
@@ -349,15 +367,12 @@ class _BoxViewState extends WidgetState<BoxView>
     // border decoration
     BoxDecoration? borderDecoration = border != null ? BoxDecoration(border: border, borderRadius: radius) : null;
 
-    // padding values
-    EdgeInsets insets = _getInsets();
-
     // blurred?
     if (widget.model.blur) child = _getBlurredView(child, borderDecoration);
 
     // box view
     Widget view = Container(decoration: borderDecoration, child: Container(
-        padding: insets,
+        padding: _getPadding(),
         clipBehavior: Clip.antiAlias,
         decoration: decoration,
         alignment: alignment.aligned,
@@ -369,19 +384,22 @@ class _BoxViewState extends WidgetState<BoxView>
     // white10 = Blur (This creates mirrored/frosted effect overtop of something else)
     if (widget.model.color == Colors.white10) view = _getFrostedView(view, radius);
 
-    // get constrained view
-    // if (widget.model.height == null && widget.model.width == null)
-    //   {
-    //     var constraints  = widget.model.getConstraints();
-    //     double minWidth  = widget.model.isConstrainedHorizontally ? constraints.minWidth  ?? 0.0 : 0.0;
-    //     double maxWidth  = widget.model.isConstrainedHorizontally ? constraints.maxWidth  ?? double.infinity : double.infinity;
-    //     double minHeight = widget.model.isConstrainedVertically   ? constraints.minHeight ?? 0.0 : 0.0;
-    //     double maxHeight = widget.model.isConstrainedVertically   ? constraints.maxHeight ?? double.infinity : double.infinity;
-    //     view = ConstrainedBox(child: view, constraints: BoxConstraints(minHeight: minHeight, maxHeight: maxHeight, minWidth: minWidth, maxWidth: maxWidth));
-    //   }
+    // apply constraints to ensure widget doesn't
+    // expand indefinitely
+    bool constrainVertical = false;
+    bool constrainHorizontal = false;
+    if (expand)
+    {
+      // safeguard against infinite expansion
+      if (layout == layoutTypes.column && constraints.maxHeight == double.infinity) constrainVertical   = true;
+      if (layout == layoutTypes.row    && constraints.maxWidth  == double.infinity) constrainHorizontal = true;
+      if (layout == layoutTypes.stack  && constraints.maxWidth  == double.infinity) constrainHorizontal = true;
+      if (layout == layoutTypes.stack  && constraints.maxHeight == double.infinity) constrainVertical   = true;
+      if (constrainHorizontal || constrainVertical) expand = false;
+    }
 
-    view = (widget.model.expand) ? getConstrainedView(view) : UnconstrainedBox(child: view);
-
-    return view;
+    if (expand)
+         return getConstrainedView(view);
+    else return UnconstrainedBox(child: view);
   }
 }

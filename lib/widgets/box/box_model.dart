@@ -15,11 +15,15 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
   @override
   double? get width
   {
-    var c = getConstraints();
-    var w = c.maxWidth;
-    if ((w == null || w == double.infinity) && (c.minWidth ?? 0) > 0) w = c.minWidth;
-    if (w == null || w == double.infinity) w = super.width;
-    return w;
+    if (!expand)
+    {
+      var c = getConstraints();
+      var w = c.maxWidth;
+      if ((w == null || w == double.infinity) && (c.minWidth ?? 0) > 0) w = c.minWidth;
+      if (w == null || w == double.infinity) w = super.width;
+      return w;
+    }
+    else return super.width;
   }
 
   @override

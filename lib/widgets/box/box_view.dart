@@ -88,19 +88,6 @@ class _BoxViewState extends WidgetState<BoxView>
         // which are positioned according to alignment.
         // The positioned children are then placed relative to the stack according to their top, right, bottom, and left properties.
 
-        // double? width;
-        // double? height;
-        // if (expand)
-        // {
-        //   width = constraints.maxWidth;
-        //   if ((width == null || width == double.infinity) && (constraints.minWidth ?? 0) > 0) width = constraints.minWidth;
-        //
-        //   height = constraints.maxHeight;
-        //   if ((height == null || height == double.infinity) && (constraints.minHeight ?? 0) > 0) height = constraints.minHeight;
-        //
-        // }
-        // children.add(SizedBox.fromSize(size: Size(width ?? 0, height ?? 0)));
-
         // inflate the stack
         if (expand) children.add(SizedBox.expand());
 

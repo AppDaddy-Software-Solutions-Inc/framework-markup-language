@@ -29,9 +29,7 @@ class _RowViewState extends WidgetState<RowView>
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    //////////////////
-    /* Add Children */
-    //////////////////
+    // build children
     List<Widget> children = [];
     if (widget.model.children != null)
       widget.model.children!.forEach((model) {
@@ -51,12 +49,7 @@ class _RowViewState extends WidgetState<RowView>
     var mainAxisSize = widget.model.expand == false ? MainAxisSize.min : MainAxisSize.max;
 
     /// safeguard - don't allow infinite width
-    if (constraints.maxWidth == double.infinity && mainAxisSize == MainAxisSize.max && !localConstraints.hasHorizontalExpansionConstraints)
-    {
-      var globalConstraints = widget.model.getGlobalConstraints();
-      localConstraints.maxWidth = globalConstraints.maxWidth;
-      if (localConstraints.maxWidth == double.infinity) mainAxisSize = MainAxisSize.min;
-    }
+    if (constraints.maxWidth == double.infinity && mainAxisSize == MainAxisSize.max && !localConstraints.hasHorizontalExpansionConstraints) mainAxisSize = MainAxisSize.min;
 
     // check if wrap is true,and return the wrap widgets children.
     Widget view;

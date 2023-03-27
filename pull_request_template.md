@@ -2,11 +2,11 @@
 
 
 ### Type of Request and links to any relevate issues or PRs (remove any unrelevant types):
-- [Bug Fix]
-- [New Feature]
-- [Improved Feature]
-- [Refactoring]
-- [Breaking Change]
+- [**Bug Fix**]
+- [**New Feature**]
+- [**Improved Feature**]
+- [**Refactoring**]
+- [**Breaking Change**]
 
 
 ### Describe your changes for the release notes in bullet form:
@@ -29,12 +29,11 @@
 Paste a complete test template within the xml markdown and if applicable write here how to effectivly reproduce your test.
 
 <details>
-  
-  <summary> Show Example FML Template </summary>
+<summary> Show Example FML Template </summary>
     
-    ```xml
-    <PASTE_TEST_TEMPLATE_HERE />
-    ```
+```xml
+<PASTE_TEST_TEMPLATE_HERE />
+```
 
 </details>  
 
@@ -42,6 +41,7 @@ Paste a complete test template within the xml markdown and if applicable write h
 ## Checklist
 
 ### Checklist before requesting a review:
+- [x] I have created a PR.
 - [ ] I have performed a Self-Review and Refactor of my code.
 - [ ] I have formatted my code to follow project style guidelines.
 - [ ] I have commented my code with clear and informative descriptions.
@@ -49,5 +49,7 @@ Paste a complete test template within the xml markdown and if applicable write h
 - [ ] I have tested the changes on any pieces and all platforms it may affect.
 - [ ] I have attached a test template with comments that highlights some of my main changes.
 - [ ] I have noted all changes that invalidate the wiki documentation or fmlpad and any refactoring required.
+
+Thank you for your effort to improve FML! If you have any other comments please leave them as a separate comment on this PR.  
 
 

@@ -41,27 +41,31 @@ class ViewableWidgetModel extends WidgetModel
 
   // min width
   @protected
+  double? get minWidth  => _constraintModel.minWidth;
   set minWidth(dynamic v) => _constraintModel.minWidth = v;
 
   // max width
   @protected
+  double? get maxWidth  => _constraintModel.maxWidth;
   set maxWidth(dynamic v) => _constraintModel.maxWidth = v;
 
   // min height
   @protected
+  double? get minHeight  => _constraintModel.minHeight;
   set minHeight(dynamic v) => _constraintModel.minHeight = v;
 
   // max height
   @protected
+  double? get maxHeight  => _constraintModel.maxHeight;
   set maxHeight(dynamic v) => _constraintModel.maxHeight = v;
 
-  double? getSystemMaxWidth() => _constraintModel.getSystemMaxWidth();
+  double? getGlobalMaxWidth() => _constraintModel.getGlobalMaxWidth();
 
-  double? getSystemMinWidth()  => _constraintModel.getSystemMinWidth();
+  double? getGlobalMinWidth()  => _constraintModel.getGlobalMinWidth();
 
-  double? getSystemMinHeight()  => _constraintModel.getSystemMinHeight();
+  double? getGlobalMinHeight()  => _constraintModel.getGlobalMinHeight();
 
-  double? getSystemMaxHeight() => _constraintModel.getSystemMaxHeight();
+  double? getGlobalMaxHeight() => _constraintModel.getGlobalMaxHeight();
 
   /// user constraints as per the template
   Constraints getLocalConstraints() => _constraintModel.getLocalConstraints();

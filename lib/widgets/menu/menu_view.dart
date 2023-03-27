@@ -122,7 +122,7 @@ class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling
     /* View */
     //////////
     Widget view = Stack(children: [
-      _buildMenuItems(widget.model.getSystemMaxWidth()!),
+      _buildMenuItems(widget.model.getGlobalMaxWidth()!),
       Center(child: busy)
     ]);
     return Container(

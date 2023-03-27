@@ -17,19 +17,19 @@ import 'package:fml/helper/common_helpers.dart';
 class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
 {
   @override
-  double? getSystemMaxWidth()
+  double? getGlobalMaxWidth()
   {
     if (layout == 'row')
          return double.infinity;
-    else return super.getSystemMaxWidth();
+    else return super.getGlobalMaxWidth();
   }
 
   @override
-  double? getSystemMaxHeight()
+  double? getGlobalMaxHeight()
   {
     if (layout == 'column')
          return double.infinity;
-    else return super.getSystemMaxHeight();
+    else return super.getGlobalMaxHeight();
   }
 
   /// The cross alignment of the widgets children. Can be `top`, `bottom`, `start`, or `end`.

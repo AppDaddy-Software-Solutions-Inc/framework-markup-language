@@ -14,20 +14,26 @@ enum LayoutTypes {none, row, column, stack}
 class BoxModel extends DecoratedWidgetModel implements IViewableWidget
 {
   @override
-  double? get width
-  {
-    if (expand)
-         return getGlobalConstraints().maxWidth;
-    else return super.width;
-  }
+  double? get width => expand ? getGlobalConstraints().maxWidth : super.width;
 
   @override
-  double? get height
-  {
-    if (expand)
-         return getGlobalConstraints().maxHeight;
-    else return super.width;
-  }
+  double? get height => expand ? getGlobalConstraints().maxHeight : super.height;
+
+  // min width
+  @override
+  double? get minWidth => expand ? null : super.minWidth;
+
+  // max width
+  @protected
+  double? get maxWidth => expand ? null : super.maxWidth;
+
+  // min height
+  @protected
+  double? get minHeight => expand ? null : super.minHeight;
+
+  // max height
+  @protected
+  double? get maxHeight => expand ? null : super.maxHeight;
 
   // box blur
   BooleanObservable? _blur;

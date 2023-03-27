@@ -135,17 +135,17 @@ class ConstraintModel
 
   /// walks up the model tree looking for
   /// the first system non-null minWidth value
-  double? getSystemMinWidth()
+  double? getGlobalMinWidth()
   {
     double? v;
     if (_systemConstraints.minWidth != null && _systemConstraints.minWidth != double.infinity) v = _systemConstraints.minWidth;
-    if (v == null && parent is ViewableWidgetModel) v = (parent as ViewableWidgetModel).getSystemMinWidth();
+    if (v == null && parent is ViewableWidgetModel) v = (parent as ViewableWidgetModel).getGlobalMinWidth();
     return v;
   }
 
   /// walks up the model tree looking for
   /// the first system non-null maxWidth value
-  double? getSystemMaxWidth()
+  double? getGlobalMaxWidth()
   {
     double? v;
     if (_systemConstraints.maxWidth != null && _systemConstraints.maxWidth != double.infinity) v = _systemConstraints.maxWidth;
@@ -157,29 +157,29 @@ class ConstraintModel
         var hpad = _getHorizontalPadding(parent.paddings, parent.padding, parent.padding2, parent.padding3, parent.padding4);
         if (parent.width == null)
         {
-           var w = parent.getSystemMaxWidth();
+           var w = parent.getGlobalMaxWidth();
            if (w != null) v = w - hpad;
         }
         else v = parent.width! - hpad;
       }
-      else v = parent.width ?? parent.getSystemMaxWidth();
+      else v = parent.width ?? parent.getGlobalMaxWidth();
     }
     return v;
   }
 
   /// walks up the model tree looking for
   /// the first system non-null minHeight value
-  double? getSystemMinHeight()
+  double? getGlobalMinHeight()
   {
     double? v;
     if (_systemConstraints.minHeight != null && _systemConstraints.minHeight != double.infinity) v = _systemConstraints.minHeight;
-    if (v == null && parent is ViewableWidgetModel) v = (parent as ViewableWidgetModel).getSystemMinHeight();
+    if (v == null && parent is ViewableWidgetModel) v = (parent as ViewableWidgetModel).getGlobalMinHeight();
     return v;
   }
 
   /// walks up the model tree looking for
   /// the first system non-null maxHeight value
-  double? getSystemMaxHeight()
+  double? getGlobalMaxHeight()
   {
     double? v;
     if (_systemConstraints.maxHeight != null && _systemConstraints.maxHeight != double.infinity) v = _systemConstraints.maxHeight;
@@ -191,12 +191,12 @@ class ConstraintModel
         var vpad = _getVerticalPadding(parent.paddings, parent.padding, parent.padding2, parent.padding3, parent.padding4);
         if (parent.height == null)
         {
-          var h = parent.getSystemMaxHeight();
+          var h = parent.getGlobalMaxHeight();
           if (h != null) v = h - vpad;
         }
         else v = parent.height! - vpad;
       }
-      else v = parent.height ?? parent.getSystemMaxHeight();
+      else v = parent.height ?? parent.getGlobalMaxHeight();
     }
     return v;
   }
@@ -210,15 +210,15 @@ class ConstraintModel
 
     // WIDTH
     constraint.width     = width;
-    constraint.minWidth  = width  ?? minWidth  ?? getSystemMinWidth();
-    constraint.maxWidth  = width  ?? maxWidth  ?? getSystemMaxWidth();
+    constraint.minWidth  = width  ?? minWidth  ?? getGlobalMinWidth();
+    constraint.maxWidth  = width  ?? maxWidth  ?? getGlobalMaxWidth();
 
     // ensure not negative
     if (constraint.minWidth == null || constraint.minWidth! < 0) constraint.minWidth = 0;
     if (constraint.maxWidth == null || constraint.maxWidth! < 0) constraint.maxWidth = double.infinity;
 
     // ensure max > min
-    if (constraint.minWidth! > constraint.maxWidth!)
+    if (constraint.minWidth != null && constraint.maxWidth != null && constraint.minWidth! > constraint.maxWidth!)
     {
       var v = constraint.minWidth;
       constraint.minWidth = constraint.maxWidth;
@@ -227,15 +227,15 @@ class ConstraintModel
 
     // HEIGHT
     constraint.height    = height;
-    constraint.minHeight = height ?? minHeight ?? getSystemMinHeight();
-    constraint.maxHeight = height ?? maxHeight ?? getSystemMaxHeight();
+    constraint.minHeight = height ?? minHeight ?? getGlobalMinHeight();
+    constraint.maxHeight = height ?? maxHeight ?? getGlobalMaxHeight();
 
     // ensure not negative
     if (constraint.minHeight != null && constraint.minHeight! < 0) constraint.minHeight = 0;
     if (constraint.maxHeight != null && constraint.maxHeight! < 0) constraint.maxHeight = double.infinity;
 
     // ensure max > min
-    if (constraint.minHeight! > constraint.maxHeight!)
+    if (constraint.minHeight != null && constraint.maxHeight != null && constraint.minHeight! > constraint.maxHeight!)
     {
       var v = constraint.minHeight;
       constraint.minHeight = constraint.maxHeight;
@@ -286,7 +286,7 @@ class ConstraintModel
     {
       // calculate the width
       double? width;
-      double? maxwidth = getSystemMaxWidth();
+      double? maxwidth = getGlobalMaxWidth();
       if (maxwidth != null)
       {
         width = maxwidth * (_widthPercentage! / 100.0);
@@ -303,7 +303,7 @@ class ConstraintModel
     if (_heightPercentage != null)
     {
       double? height;
-      double? maxheight = getSystemMaxWidth();
+      double? maxheight = getGlobalMaxWidth();
       if (maxheight != null)
       {
         if (this.parent != null)

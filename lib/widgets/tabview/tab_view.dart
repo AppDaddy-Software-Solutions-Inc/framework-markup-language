@@ -357,7 +357,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
       ////////////////
       /* Max Height */
       ////////////////
-      double? height = widget.model.getSystemMaxHeight();
+      double? height = widget.model.getGlobalMaxHeight();
 
       ////////////////
       /* Split View */
@@ -367,9 +367,9 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
       if (widget.model.tabbar == true && widget.model.tabbutton == true) {
         view = Column(children: [
           Container(color: Theme.of(context).colorScheme.onInverseSurface, child:
-            Padding(padding: EdgeInsets.only(top: barpadding), child: SizedBox(width: widget.model.getSystemMaxWidth(), height: barheight,
+            Padding(padding: EdgeInsets.only(top: barpadding), child: SizedBox(width: widget.model.getGlobalMaxWidth(), height: barheight,
                 child: Row(children: [
-                  SizedBox(width: (widget.model.getSystemMaxWidth()! - buttonWidth < 0 ? 0 : widget.model.getSystemMaxWidth()! - buttonWidth),
+                  SizedBox(width: (widget.model.getGlobalMaxWidth()! - buttonWidth < 0 ? 0 : widget.model.getGlobalMaxWidth()! - buttonWidth),
                       height: barheight,
                       child: bar),
                   SizedBox(width: buttonWidth, height: barheight, child: button),
@@ -389,7 +389,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
         var con = widget.model.getGlobalConstraints();
 
         view = Column(children: [
-          SizedBox(width: widget.model.getSystemMaxWidth(), height: barheight,
+          SizedBox(width: widget.model.getGlobalMaxWidth(), height: barheight,
             child: bar
           ),
           SizedBox(

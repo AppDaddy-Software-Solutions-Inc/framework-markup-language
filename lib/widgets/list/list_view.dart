@@ -188,8 +188,8 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
     ////////////////////////
     double? width  = widget.model.width;
     double? height = widget.model.height;
-    if (constraints.maxHeight == double.infinity || constraints.maxHeight == double.negativeInfinity || height == null) height = widget.model.getSystemMaxHeight() ?? constraints.maxHeight;
-    if (constraints.maxWidth  == double.infinity || constraints.maxWidth  == double.negativeInfinity || width  == null) width  = widget.model.getSystemMaxWidth()  ?? constraints.maxWidth;
+    if (constraints.maxHeight == double.infinity || constraints.maxHeight == double.negativeInfinity || height == null) height = widget.model.getGlobalMaxHeight() ?? constraints.maxHeight;
+    if (constraints.maxWidth  == double.infinity || constraints.maxWidth  == double.negativeInfinity || width  == null) width  = widget.model.getGlobalMaxWidth()  ?? constraints.maxWidth;
     view = UnconstrainedBox(child: SizedBox(height: height, width: width, child: view));
 
     children.addAll([view, Center(child: busy)]);

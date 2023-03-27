@@ -112,7 +112,7 @@ class _PagerViewState extends WidgetState<PagerView>
 
     var c = widget.model.getGlobalConstraints();
     if (c.hasNoConstraints && constraints.maxWidth == double.infinity)
-      pageView = UnconstrainedBox(child: SizedBox(height: widget.model.height ?? widget.model.getSystemMaxHeight(), width: widget.model.width ?? widget.model.getSystemMaxWidth(), child: pageView));
+      pageView = UnconstrainedBox(child: SizedBox(height: widget.model.height ?? widget.model.getGlobalMaxHeight(), width: widget.model.width ?? widget.model.getGlobalMaxWidth(), child: pageView));
 
     var view = Stack(alignment: Alignment.bottomCenter, children: [pageView, pager, Center(child: busy)]);
 

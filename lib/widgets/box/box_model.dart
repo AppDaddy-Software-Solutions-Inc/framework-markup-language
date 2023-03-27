@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
+import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/constraint.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
@@ -15,14 +16,14 @@ enum LayoutTypes {none, row, column, stack}
 class BoxModel extends DecoratedWidgetModel implements IViewableWidget
 {
   @override
-  Constraints getLocalConstraintss()
+  Constraints getLocalConstraints()
   {
     var constraints = super.getLocalConstraints();
     if (expand)
     {
       constraints.width     = constraints.width  ?? getGlobalConstraints().maxWidth;
       constraints.height    = constraints.height ?? getGlobalConstraints().maxHeight;
-      constraints.minWidth  = null;
+;      constraints.minWidth  = null;
       constraints.minHeight = null;
     }
     else

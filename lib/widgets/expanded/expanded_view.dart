@@ -7,6 +7,7 @@ import 'package:fml/widgets/expanded/expanded_model.dart';
 import 'package:fml/widgets/row/row_model.dart';
 import 'package:fml/widgets/column/column_model.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/widget/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:hive/hive.dart';
 
@@ -44,15 +45,13 @@ class _ExpandedViewState extends WidgetState<ExpandedView>
 
     var view = children.length == 1 ? children[0] : Column(children: children);
 
-    // determine the layout type of the parent
-    LayoutTypes? layout;
-         if (widget.model.parent is RowModel) layout = LayoutTypes.row;
-    else if (widget.model.parent is ColumnModel) layout = LayoutTypes.column;
-    else if (widget.model.parent is BoxModel) layout = (widget.model.parent as BoxModel).getLayoutType();
+    // determine the parent has a size in its primary axis
+    // if no size, Expanded will fail. We therefore just return the view
+    bool constrained = false;
+    if (widget.model.parent is RowModel) constrained = (widget.model.parent as RowModel).isConstrained();
+    if (widget.model.parent is ColumnModel) constrained = (widget.model.parent as ColumnModel).isConstrained();
+    if (widget.model.parent is BoxModel) constrained = (widget.model.parent as BoxModel).isConstrained();
 
-    // parent must be a Row or Column or Box Model
-    if (layout == LayoutTypes.row || layout == LayoutTypes.column)
-           view = Expanded(flex: widget.model.flex, child: view);
-    return view;
+    return constrained ? Expanded(flex: widget.model.flex, child: view) : view;
   }
 }

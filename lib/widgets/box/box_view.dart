@@ -361,7 +361,7 @@ class _BoxViewState extends WidgetState<BoxView>
     view = applyConstraints(view, widget.model.getLocalConstraints());
 
     // this allows the view to shrink accordingly
-    if (!widget.model.expand) view = UnconstrainedBox(child: view);
+    if (!widget.model.expanded) view = UnconstrainedBox(child: view);
 
     return view;
   }

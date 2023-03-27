@@ -103,9 +103,27 @@ class RowModel extends DecoratedWidgetModel implements IViewableWidget
   }
 
   @override
-  dispose() {
-// Log().debug('dispose called on => <$elementName id="$id">');
+  dispose()
+  {
+    // Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
+  }
+
+  /// determines if the widget has a size in its primary axis
+  bool isConstrained()
+  {
+    // get constraints
+    var systemConstraints = getSystemConstraints();
+    var localConstraints  = getLocalConstraints();
+    var globalConstraints = getGlobalConstraints();
+
+    var expanding = expand;
+    if (expanding  && systemConstraints.maxWidth == double.infinity) expanding = false;
+    if (expanding  && localConstraints.hasHorizontalExpansionConstraints) return true;
+    if (expanding  && (globalConstraints.maxWidth ?? double.infinity) != double.infinity) return true;
+    if (!expanding && localConstraints.hasHorizontalContractionConstraints) return true;
+
+    return false;
   }
 
   Widget getView({Key? key}) => getReactiveView(RowView(this));

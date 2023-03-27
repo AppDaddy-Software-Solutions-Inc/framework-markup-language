@@ -246,6 +246,7 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
     }
   }
   bool get expand => _expand?.get() ?? true;
+  bool get expanded => expand;
 
   BoxModel(
     WidgetModel? parent,
@@ -371,6 +372,34 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
   {
     // Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
+  }
+
+  /// determines if the widget has a size in its primary axis
+  bool isConstrained()
+  {
+    // get constraints
+    var systemConstraints = getSystemConstraints();
+    var localConstraints  = getLocalConstraints();
+    var globalConstraints = getGlobalConstraints();
+
+    var layout = getLayoutType();
+    if (layout == LayoutTypes.row)
+    {
+      if (expand  && localConstraints.hasHorizontalExpansionConstraints) return true;
+      if (expand  && (globalConstraints.maxWidth ?? double.infinity) != double.infinity) return true;
+      if (expand  && (systemConstraints.maxWidth ?? double.infinity) == double.infinity) return false;
+      if (!expand && localConstraints.hasHorizontalContractionConstraints) return true;
+    }
+
+    else if (layout == LayoutTypes.column)
+    {
+      if (expand  && localConstraints.hasVerticalExpansionConstraints) return true;
+      if (expand  && (globalConstraints.maxHeight ?? double.infinity) != double.infinity) return true;
+      if (expand  && (systemConstraints.maxHeight ?? double.infinity) == double.infinity) return false;
+      if (!expand && localConstraints.hasVerticalContractionConstraints) return true;
+    }
+
+    return false;
   }
 
   Widget getView({Key? key}) => getReactiveView(BoxView(this));

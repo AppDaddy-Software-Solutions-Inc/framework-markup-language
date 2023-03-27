@@ -413,7 +413,7 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
       ]),
     );
 
-    // wrap constraints
+    // apply user defined constraints
     return applyConstraints(view, widget.model.getUserConstraints());
   }
 

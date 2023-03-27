@@ -42,7 +42,7 @@ class _ModalViewState extends WidgetState<ModalView>
     //////////
     Widget view = SingleChildScrollView(child: child, scrollDirection: Axis.vertical);
 
-    // wrap constraints
+    // apply user defined constraints
     return applyConstraints(view, widget.model.getUserConstraints());
   }
 }

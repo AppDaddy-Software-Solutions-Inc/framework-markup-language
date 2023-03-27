@@ -258,7 +258,7 @@ class _ImageViewState extends WidgetState<ImageView>
     // Interactive
     if (widget.model.interactive == true) view = InteractiveViewer(child: view);
 
-    // wrap constraints
+    // apply user defined constraints
     return applyConstraints(view, widget.model.getUserConstraints());
   }
 }

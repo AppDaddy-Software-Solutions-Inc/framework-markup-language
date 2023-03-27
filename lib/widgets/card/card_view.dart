@@ -109,7 +109,7 @@ class _CardViewState extends WidgetState<CardView>
             )),
         child: child);
 
-    // wrap constraints
+    // apply user defined constraints
     return applyConstraints(view, widget.model.getUserConstraints());
   }
 }

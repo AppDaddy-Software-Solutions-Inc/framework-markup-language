@@ -137,13 +137,13 @@ class _BoxViewState extends WidgetState<BoxView>
 
   Widget _constrainedView(Widget view, BoxConstraints systemConstraints, LayoutTypes layout, bool expand)
   {
-    // apply constraints to ensure widget doesn't
+    // apply user defined constraints to ensure widget doesn't
     // expand indefinitely
     // safeguard against infinite expansion
     if (expand)
     {
       Constraints userConstraints = widget.model.getUserConstraints();
-      Constraints maxConstraints  = widget.model.getBlendedConstraints();
+      Constraints blendedConstraints  = widget.model.getBlendedConstraints();
 
       switch (layout)
       {
@@ -154,7 +154,7 @@ class _BoxViewState extends WidgetState<BoxView>
           {
             expand = false;
             if (userConstraints.width == null && userConstraints.maxWidth == null)
-              userConstraints.maxWidth = maxConstraints.maxWidth;
+              userConstraints.maxWidth = blendedConstraints.maxWidth;
           }
 
           break;
@@ -166,7 +166,7 @@ class _BoxViewState extends WidgetState<BoxView>
           {
             expand = false;
             if (userConstraints.height == null && userConstraints.maxHeight == null)
-              userConstraints.maxHeight = maxConstraints.maxHeight;
+              userConstraints.maxHeight = blendedConstraints.maxHeight;
           }
 
           break;
@@ -178,7 +178,7 @@ class _BoxViewState extends WidgetState<BoxView>
           {
             expand = false;
             if (userConstraints.width == null && userConstraints.maxWidth == null)
-              userConstraints.maxWidth = maxConstraints.maxWidth;
+              userConstraints.maxWidth = blendedConstraints.maxWidth;
           }
 
           // constrain height
@@ -186,7 +186,7 @@ class _BoxViewState extends WidgetState<BoxView>
           {
             expand = false;
             if (userConstraints.height == null && userConstraints.maxHeight == null)
-              userConstraints.maxHeight = maxConstraints.maxHeight;
+              userConstraints.maxHeight = blendedConstraints.maxHeight;
           }
 
           break;

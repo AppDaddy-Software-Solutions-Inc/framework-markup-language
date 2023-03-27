@@ -45,12 +45,21 @@ class _ColumnViewState extends WidgetState<ColumnView>
     // set main axis size
     var mainAxisSize = widget.model.expand == false ? MainAxisSize.min : MainAxisSize.max;
 
-    /// safeguard - don't allow infinite size
-    if (mainAxisSize == MainAxisSize.max && constraints.maxHeight == double.infinity) mainAxisSize = MainAxisSize.min;
+    /// safeguard - don't allow infinite height
+    var userConstraints = widget.model.getUserConstraints();
+    if (constraints.maxHeight == double.infinity && mainAxisSize == MainAxisSize.max)
+    {
+      if (userConstraints.height == null && userConstraints.maxHeight == null)
+      {
+        var blendedConstraints = widget.model.getBlendedConstraints();
+        userConstraints.maxHeight = blendedConstraints.maxHeight;
+        if (userConstraints.maxHeight == double.infinity) mainAxisSize = MainAxisSize.min;
+      }
+    }
 
     Widget view;
 
-    // paddings
+    // set padding
     EdgeInsets insets = EdgeInsets.only();
     if (widget.model.paddings > 0)
     {
@@ -66,6 +75,8 @@ class _ColumnViewState extends WidgetState<ColumnView>
      // pad sides top, right, bottom
      else if (widget.model.paddings == 4) insets = EdgeInsets.only(top: widget.model.padding, right: widget.model.padding2, bottom: widget.model.padding3, left: widget.model.padding4);
     }
+
+    // create view
     if (widget.model.wrap == true)
       view = Padding( padding: insets, child: Wrap(
           children: children,
@@ -80,7 +91,7 @@ class _ColumnViewState extends WidgetState<ColumnView>
           crossAxisAlignment: alignment.crossAlignment,
           mainAxisSize: mainAxisSize));
 
-    // wrap constraints
-    return applyConstraints(view, widget.model.getUserConstraints());
+    // apply user defined constraints
+    return applyConstraints(view, userConstraints);
   }
 }

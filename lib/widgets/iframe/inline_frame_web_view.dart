@@ -57,7 +57,7 @@ class _InlineFrameViewState extends WidgetState<InlineFrameView>
     // basic view
     view = Container(child: view, width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.height);
 
-    // wrap constraints
+    // apply user defined constraints
     view = applyConstraints(view, widget.model.getUserConstraints());
 
     return view;

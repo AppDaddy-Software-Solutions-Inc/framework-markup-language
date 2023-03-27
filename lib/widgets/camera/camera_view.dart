@@ -525,7 +525,7 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
     // basic constraints
     view = Container(child: view, width: width, height: height);
 
-    // apply constraints
+    // apply user defined constraints
     view = applyConstraints(view, widget.model.getUserConstraints());
 
     // stack children

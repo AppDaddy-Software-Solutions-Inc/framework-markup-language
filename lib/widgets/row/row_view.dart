@@ -47,15 +47,22 @@ class _RowViewState extends WidgetState<RowView>
     // set main axis size
     var mainAxisSize = widget.model.expand == false ? MainAxisSize.min : MainAxisSize.max;
 
-    /// safeguard - don't allow infinite size
-    if (mainAxisSize == MainAxisSize.max && constraints.maxWidth == double.infinity) mainAxisSize = MainAxisSize.min;
+    /// safeguard - don't allow infinite width
+    var userConstraints = widget.model.getUserConstraints();
+    if (constraints.maxWidth == double.infinity && mainAxisSize == MainAxisSize.max)
+    {
+      if (userConstraints.width == null && userConstraints.maxWidth == null)
+      {
+        var blendedConstraints = widget.model.getBlendedConstraints();
+        userConstraints.maxWidth = blendedConstraints.maxWidth;
+        if (userConstraints.maxWidth == double.infinity) mainAxisSize = MainAxisSize.min;
+      }
+    }
 
     // check if wrap is true,and return the wrap widgets children.
     Widget view;
 
-    ////////////////////
-    /* Padding values */
-    ////////////////////
+    // set padding 
     EdgeInsets insets = EdgeInsets.only();
     if (widget.model.paddings > 0)
     {
@@ -72,6 +79,7 @@ class _RowViewState extends WidgetState<RowView>
       else if (widget.model.paddings == 4) insets = EdgeInsets.only(top: widget.model.padding, right: widget.model.padding2, bottom: widget.model.padding3, left: widget.model.padding4);
     }
 
+    // create view
     if (widget.model.wrap == true)
       view = Padding(
           padding: insets,
@@ -90,7 +98,7 @@ class _RowViewState extends WidgetState<RowView>
               mainAxisAlignment: alignment.mainAlignment,
               mainAxisSize: mainAxisSize));
 
-    // wrap constraints
-    return applyConstraints(view, widget.model.getUserConstraints());
+    // apply user defined constraints
+    return applyConstraints(view, userConstraints);
   }
 }

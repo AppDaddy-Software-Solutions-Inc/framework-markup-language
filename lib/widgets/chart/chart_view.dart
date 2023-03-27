@@ -112,7 +112,7 @@ class _ChartViewState extends WidgetState<ChartView>
     // Display children over chart
     Widget view = Stack(children: children, fit: StackFit.loose);
 
-    // wrap constraints
+    // apply user defined constraints
     return applyConstraints(view, widget.model.getUserConstraints());
   }
 

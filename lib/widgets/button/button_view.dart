@@ -162,7 +162,7 @@ class _ButtonViewState extends WidgetState<ButtonView>
       view = Opacity(opacity: 0.9, child: view); // Disabled
     }
 
-    // wrap constraints
+    // apply user defined constraints
     return applyConstraints(view, widget.model.getUserConstraints());
   }
 }

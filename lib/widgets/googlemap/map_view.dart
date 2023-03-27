@@ -138,7 +138,7 @@ class _MapViewState extends WidgetState<MapView>
                     child: Stack(fit: StackFit.expand,
                         children: [map!, Positioned(top: 10, right: 10, child: reset), busy!])))));
 
-    // wrap constraints
+    // apply user defined constraints
     return applyConstraints(view, widget.model.getUserConstraints());
   }
 

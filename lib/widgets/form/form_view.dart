@@ -145,7 +145,7 @@ class FormViewState extends WidgetState<FormView> implements GPS.IGpsListener
 
     view = Stack(children: [willpop, Center(child: busy)]);
 
-    // wrap constraints
+    // apply user defined constraints
     return applyConstraints(view, widget.model.getUserConstraints());
   }
 }

@@ -214,15 +214,15 @@ class ConstraintModel
     constraint.maxWidth  = width  ?? maxWidth  ?? getSystemMaxWidth();
 
     // ensure not negative
-    if (constraint.minWidth! < 0) constraint.minWidth = 0;
-    if (constraint.maxWidth! < 0) constraint.maxWidth = double.infinity;
+    if (constraint.minWidth == null || constraint.minWidth! < 0) constraint.minWidth = 0;
+    if (constraint.maxWidth == null || constraint.maxWidth! < 0) constraint.maxWidth = double.infinity;
 
     // ensure max > min
     if (constraint.minWidth! > constraint.maxWidth!)
     {
-      if (maxWidth != null)
-           constraint.minWidth = constraint.maxWidth;
-      else constraint.maxWidth = constraint.minWidth;
+      var v = constraint.minWidth;
+      constraint.minWidth = constraint.maxWidth;
+      constraint.maxWidth = v;
     }
 
     // HEIGHT
@@ -237,9 +237,9 @@ class ConstraintModel
     // ensure max > min
     if (constraint.minHeight! > constraint.maxHeight!)
     {
-      if (maxHeight != null)
-        constraint.minHeight = constraint.maxHeight;
-      else constraint.maxHeight = constraint.minHeight;
+      var v = constraint.minHeight;
+      constraint.minHeight = constraint.maxHeight;
+      constraint.maxHeight = v;
     }
 
     return constraint;

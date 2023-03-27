@@ -44,19 +44,18 @@ class _RowViewState extends WidgetState<RowView>
     //this must go after the children are determined. Returns an alignment map.
     var alignment = AlignmentHelper.alignWidgetAxis(children.length, 'row', widget.model.center, widget.model.halign, widget.model.valign);
 
+    // get user defined constraints
+    var userConstraints = widget.model.getUserConstraints();
+
     // set main axis size
     var mainAxisSize = widget.model.expand == false ? MainAxisSize.min : MainAxisSize.max;
 
     /// safeguard - don't allow infinite width
-    var userConstraints = widget.model.getUserConstraints();
-    if (constraints.maxWidth == double.infinity && mainAxisSize == MainAxisSize.max)
+    if (constraints.maxWidth == double.infinity && mainAxisSize == MainAxisSize.max && userConstraints.isNotHorizontallyConstrained)
     {
-      if (userConstraints.width == null && userConstraints.maxWidth == null)
-      {
-        var blendedConstraints = widget.model.getBlendedConstraints();
-        userConstraints.maxWidth = blendedConstraints.maxWidth;
-        if (userConstraints.maxWidth == double.infinity) mainAxisSize = MainAxisSize.min;
-      }
+      var blendedConstraints = widget.model.getBlendedConstraints();
+      userConstraints.maxWidth = blendedConstraints.maxWidth;
+      if (userConstraints.maxWidth == double.infinity) mainAxisSize = MainAxisSize.min;
     }
 
     // check if wrap is true,and return the wrap widgets children.

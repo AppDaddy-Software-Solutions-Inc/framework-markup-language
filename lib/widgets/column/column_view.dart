@@ -42,19 +42,18 @@ class _ColumnViewState extends WidgetState<ColumnView>
     // this must go after the children are determined
     var alignment = AlignmentHelper.alignWidgetAxis(children.length, 'column', widget.model.center, widget.model.halign, widget.model.valign);
 
+    // get user defined constraints
+    var userConstraints = widget.model.getUserConstraints();
+
     // set main axis size
     var mainAxisSize = widget.model.expand == false ? MainAxisSize.min : MainAxisSize.max;
 
     /// safeguard - don't allow infinite height
-    var userConstraints = widget.model.getUserConstraints();
-    if (constraints.maxHeight == double.infinity && mainAxisSize == MainAxisSize.max)
+    if (constraints.maxHeight == double.infinity && mainAxisSize == MainAxisSize.max && userConstraints.isNotVerticallyConstrained)
     {
-      if (userConstraints.height == null && userConstraints.maxHeight == null)
-      {
-        var blendedConstraints = widget.model.getBlendedConstraints();
-        userConstraints.maxHeight = blendedConstraints.maxHeight;
-        if (userConstraints.maxHeight == double.infinity) mainAxisSize = MainAxisSize.min;
-      }
+      var blendedConstraints = widget.model.getBlendedConstraints();
+      userConstraints.maxHeight = blendedConstraints.maxHeight;
+      if (userConstraints.maxHeight == double.infinity) mainAxisSize = MainAxisSize.min;
     }
 
     Widget view;

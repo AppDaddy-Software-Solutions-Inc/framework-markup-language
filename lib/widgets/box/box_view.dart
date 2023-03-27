@@ -144,9 +144,9 @@ class _BoxViewState extends WidgetState<BoxView>
     // apply user defined constraints to ensure widget doesn't
     // expand indefinitely
     // safeguard against infinite expansion
+    Constraints localConstraints = widget.model.getLocalConstraints();
     if (expand)
     {
-      Constraints localConstraints  = widget.model.getLocalConstraints();
       Constraints globalConstraints = widget.model.getGlobalConstraints();
 
       switch (layout)
@@ -168,7 +168,7 @@ class _BoxViewState extends WidgetState<BoxView>
          // constrain height
           if (systemConstraints.maxHeight == double.infinity)
           {
-            expand = false;
+            expand = true;
             if (localConstraints.height == null && localConstraints.maxHeight == null)
               localConstraints.maxHeight = globalConstraints.maxHeight;
           }
@@ -200,7 +200,7 @@ class _BoxViewState extends WidgetState<BoxView>
     }
 
     // construct view
-    return expand ? UnconstrainedBox(child: view) : applyConstraints(view, widget.model.getLocalConstraints());
+    return expand ? UnconstrainedBox(child: view) : applyConstraints(view, localConstraints);
   }
 
   Border? _getBorder()
@@ -453,6 +453,6 @@ class _BoxViewState extends WidgetState<BoxView>
     if (widget.model.color == Colors.white10) view = _getFrostedView(view, radius);
 
     // fill the parent container
-    return _constrainedView(view, constraints, layout, expand);
+    return UnconstrainedBox(child: view);//_constrainedView(view, constraints, layout, expand);
   }
 }

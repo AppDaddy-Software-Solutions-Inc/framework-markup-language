@@ -45,6 +45,9 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
     if (this.mounted) setState((){});
   }
 
+  /// This routine applies the given constraints to the supplied
+  /// view and then returns a widget with the view wrapped in those
+  /// constraints
   Widget applyConstraints(Widget view, Constraints constraints)
   {
     // If no constraints are specified

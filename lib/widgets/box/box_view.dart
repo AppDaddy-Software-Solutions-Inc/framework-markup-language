@@ -143,7 +143,7 @@ class _BoxViewState extends WidgetState<BoxView>
     if (expand)
     {
       Constraints userConstraints = widget.model.getUserConstraints();
-      Constraints maxConstraints  = widget.model.getHierarcicalConstraints();
+      Constraints maxConstraints  = widget.model.getBlendedConstraints();
 
       switch (layout)
       {
@@ -410,7 +410,7 @@ class _BoxViewState extends WidgetState<BoxView>
     LayoutTypes layout = LayoutTypes.none;
     var wrap = widget.model.wrap;
     var expand = widget.model.expand;
-    var constraint = widget.model.getHierarcicalConstraints();
+    var constraint = widget.model.getBlendedConstraints();
 
     // layout children
     Widget? child = widget.child;

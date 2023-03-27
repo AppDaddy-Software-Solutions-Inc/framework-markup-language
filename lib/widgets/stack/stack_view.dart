@@ -40,7 +40,7 @@ class _StackViewState extends WidgetState<StackView>
         }
       });
     if (children.isEmpty) children.add(Container());
-    var constr = widget.model.getHierarcicalConstraints();
+    var constr = widget.model.getBlendedConstraints();
     if (widget.model.expand)
       children.add(ConstrainedBox(
           child: Container(),

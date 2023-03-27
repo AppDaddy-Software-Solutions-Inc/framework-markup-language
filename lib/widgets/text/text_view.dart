@@ -80,7 +80,7 @@ class _TextViewState extends WidgetState<TextView>
     // constrained?
     if (isNotExpandedChild || c.hasHorizontalConstraints)
     {
-      var constraints = widget.model.getHierarcicalConstraints();
+      var constraints = widget.model.getBlendedConstraints();
       view = ConstrainedBox(child: view, constraints: BoxConstraints(minWidth: constraints.minWidth!, maxWidth: constraints.maxWidth!));
     }
 

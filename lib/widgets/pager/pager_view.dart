@@ -110,7 +110,7 @@ class _PagerViewState extends WidgetState<PagerView>
       },
     ))) : Container();
 
-    var c = widget.model.getHierarcicalConstraints();
+    var c = widget.model.getBlendedConstraints();
     if (c.hasNoConstraints && constraints.maxWidth == double.infinity)
       pageView = UnconstrainedBox(child: SizedBox(height: widget.model.height ?? widget.model.getSystemMaxHeight(), width: widget.model.width ?? widget.model.getSystemMaxWidth(), child: pageView));
 

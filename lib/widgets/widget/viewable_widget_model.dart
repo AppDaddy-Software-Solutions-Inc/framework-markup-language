@@ -36,10 +36,10 @@ class ViewableWidgetModel extends WidgetModel
   double? get height => _constraintModel.height;
   set height(dynamic v)  => _constraintModel.height = v;
 
-  // percent width
+  // %width
   double? get pctWidth => _constraintModel.pctWidth;
 
-  // percent height
+  // %height
   double? get pctHeight => _constraintModel.pctHeight;
 
   // min width
@@ -62,20 +62,13 @@ class ViewableWidgetModel extends WidgetModel
   set maxHeight(dynamic v) => _constraintModel.maxHeight = v;
   double? getSystemMaxHeight() => _constraintModel.getSystemMaxHeight();
 
-  /// system constraints as per the layout builder
-
   // used to set the system constraints in layout builder
   setSystemConstraints(BoxConstraints? v) => _constraintModel.setSystemConstraints(v);
 
-  // gets the local system constraints
-  Constraints getSystemConstraints() => _constraintModel.getSystemConstraints();
-
-  /// constraints derrived from blending
+  /// constraints derived from blending
   /// user and system constraints from the model
   /// hierarchy
-
-  // calculates and returns the constraints
-  Constraints getHierarcicalConstraints() => _constraintModel.getHierarchicalConstraints();
+  Constraints getBlendedConstraints() => _constraintModel.getBlendedConstraints();
 
   /// alignment and layout attributes
   ///

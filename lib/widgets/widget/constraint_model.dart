@@ -133,7 +133,8 @@ class ConstraintModel
   }
   double? get maxHeight => _maxHeight?.get();
 
-  // calculates the min width
+  /// walks up the model tree looking for
+  /// the first system non-null minWidth value
   double? getSystemMinWidth()
   {
     double? v;
@@ -142,7 +143,8 @@ class ConstraintModel
     return v;
   }
 
-  // calculates the max width
+  /// walks up the model tree looking for
+  /// the first system non-null maxWidth value
   double? getSystemMaxWidth()
   {
     double? v;
@@ -165,7 +167,8 @@ class ConstraintModel
     return v;
   }
 
-  // calculates the min height
+  /// walks up the model tree looking for
+  /// the first system non-null minHeight value
   double? getSystemMinHeight()
   {
     double? v;
@@ -174,7 +177,8 @@ class ConstraintModel
     return v;
   }
 
-  // calculates the max height
+  /// walks up the model tree looking for
+  /// the first system non-null maxHeight value
   double? getSystemMaxHeight()
   {
     double? v;
@@ -200,7 +204,7 @@ class ConstraintModel
   // walks up the tree
   // blending the system and user defined
   // constraints
-  Constraints getHierarchicalConstraints()
+  Constraints getBlendedConstraints()
   {
     Constraints constraint = Constraints();
     constraint.width     = width;
@@ -250,10 +254,6 @@ class ConstraintModel
     constraint.maxHeight = maxHeight;
     return constraint;
   }
-
-  // returns the constraints as specified
-  // by the system in layoutBuilder()
-  Constraints getSystemConstraints() => _systemConstraints;
 
   // sets the layout constraints and adjust the height & width accordingly
   void setSystemConstraints(BoxConstraints? constraints)

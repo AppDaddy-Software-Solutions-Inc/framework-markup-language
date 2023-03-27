@@ -204,27 +204,14 @@ class ConstraintModel
   // walks up the tree
   // blending the system and user defined
   // constraints
-  Constraints getBlendedConstraints()
+  Constraints getGlobalConstraints()
   {
     Constraints constraint = Constraints();
+
+    // WIDTH
     constraint.width     = width;
-    constraint.height    = height;
     constraint.minWidth  = width  ?? minWidth  ?? getSystemMinWidth();
     constraint.maxWidth  = width  ?? maxWidth  ?? getSystemMaxWidth();
-    constraint.minHeight = height ?? minHeight ?? getSystemMinHeight();
-    constraint.maxHeight = height ?? maxHeight ?? getSystemMaxHeight();
-
-    // ensure not negative
-    if (constraint.minHeight != null && constraint.minHeight! < 0) constraint.minHeight = 0;
-    if (constraint.maxHeight != null && constraint.maxHeight! < 0) constraint.maxHeight = double.infinity;
-
-    // ensure max > min
-    if (constraint.minHeight! > constraint.maxHeight!)
-    {
-      if (maxHeight != null)
-           constraint.minHeight = constraint.maxHeight;
-      else constraint.maxHeight = constraint.minHeight;
-    }
 
     // ensure not negative
     if (constraint.minWidth! < 0) constraint.minWidth = 0;
@@ -238,12 +225,29 @@ class ConstraintModel
       else constraint.maxWidth = constraint.minWidth;
     }
 
+    // HEIGHT
+    constraint.height    = height;
+    constraint.minHeight = height ?? minHeight ?? getSystemMinHeight();
+    constraint.maxHeight = height ?? maxHeight ?? getSystemMaxHeight();
+
+    // ensure not negative
+    if (constraint.minHeight != null && constraint.minHeight! < 0) constraint.minHeight = 0;
+    if (constraint.maxHeight != null && constraint.maxHeight! < 0) constraint.maxHeight = double.infinity;
+
+    // ensure max > min
+    if (constraint.minHeight! > constraint.maxHeight!)
+    {
+      if (maxHeight != null)
+        constraint.minHeight = constraint.maxHeight;
+      else constraint.maxHeight = constraint.minHeight;
+    }
+
     return constraint;
   }
 
   // returns the constraints as specified
   // in the template
-  Constraints getUserConstraints()
+  Constraints getLocalConstraints()
   {
     Constraints constraint = Constraints();
     constraint.width     = width;

@@ -43,17 +43,17 @@ class _ColumnViewState extends WidgetState<ColumnView>
     var alignment = AlignmentHelper.alignWidgetAxis(children.length, 'column', widget.model.center, widget.model.halign, widget.model.valign);
 
     // get user defined constraints
-    var userConstraints = widget.model.getUserConstraints();
+    var localConstraints = widget.model.getLocalConstraints();
 
     // set main axis size
     var mainAxisSize = widget.model.expand == false ? MainAxisSize.min : MainAxisSize.max;
 
     /// safeguard - don't allow infinite height
-    if (constraints.maxHeight == double.infinity && mainAxisSize == MainAxisSize.max && userConstraints.isNotVerticallyConstrained)
+    if (constraints.maxHeight == double.infinity && mainAxisSize == MainAxisSize.max && localConstraints.isNotVerticallyConstrained)
     {
-      var blendedConstraints = widget.model.getBlendedConstraints();
-      userConstraints.maxHeight = blendedConstraints.maxHeight;
-      if (userConstraints.maxHeight == double.infinity) mainAxisSize = MainAxisSize.min;
+      var globalConstraints = widget.model.getGlobalConstraints();
+      localConstraints.maxHeight = globalConstraints.maxHeight;
+      if (localConstraints.maxHeight == double.infinity) mainAxisSize = MainAxisSize.min;
     }
 
     Widget view;
@@ -91,6 +91,6 @@ class _ColumnViewState extends WidgetState<ColumnView>
           mainAxisSize: mainAxisSize));
 
     // apply user defined constraints
-    return applyConstraints(view, userConstraints);
+    return applyConstraints(view, localConstraints);
   }
 }

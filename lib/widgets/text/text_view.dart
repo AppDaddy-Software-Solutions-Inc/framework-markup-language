@@ -74,13 +74,13 @@ class _TextViewState extends WidgetState<TextView>
 
     // check if parent is an expanded widget
     bool isNotExpandedChild = false;
-    var c = widget.model.getUserConstraints();
+    var c = widget.model.getLocalConstraints();
     if (c.hasNoHorizontalConstraints) isNotExpandedChild = widget.model.findAncestorOfExactType(ExpandedModel) == null;
 
     // constrained?
     if (isNotExpandedChild || c.hasHorizontalConstraints)
     {
-      var constraints = widget.model.getBlendedConstraints();
+      var constraints = widget.model.getGlobalConstraints();
       view = ConstrainedBox(child: view, constraints: BoxConstraints(minWidth: constraints.minWidth!, maxWidth: constraints.maxWidth!));
     }
 

@@ -48,7 +48,7 @@ class _PagerPageViewState extends WidgetState<PagerPageView>
     Widget view = child;
 
     // apply user defined constraints
-    view = applyConstraints(view, widget.model.getUserConstraints());
+    view = applyConstraints(view, widget.model.getLocalConstraints());
 
     return view;
   }

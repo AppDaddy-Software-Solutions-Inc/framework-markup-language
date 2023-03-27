@@ -45,17 +45,17 @@ class _RowViewState extends WidgetState<RowView>
     var alignment = AlignmentHelper.alignWidgetAxis(children.length, 'row', widget.model.center, widget.model.halign, widget.model.valign);
 
     // get user defined constraints
-    var userConstraints = widget.model.getUserConstraints();
+    var localConstraints = widget.model.getLocalConstraints();
 
     // set main axis size
     var mainAxisSize = widget.model.expand == false ? MainAxisSize.min : MainAxisSize.max;
 
     /// safeguard - don't allow infinite width
-    if (constraints.maxWidth == double.infinity && mainAxisSize == MainAxisSize.max && userConstraints.isNotHorizontallyConstrained)
+    if (constraints.maxWidth == double.infinity && mainAxisSize == MainAxisSize.max && localConstraints.isNotHorizontallyConstrained)
     {
-      var blendedConstraints = widget.model.getBlendedConstraints();
-      userConstraints.maxWidth = blendedConstraints.maxWidth;
-      if (userConstraints.maxWidth == double.infinity) mainAxisSize = MainAxisSize.min;
+      var globalConstraints = widget.model.getGlobalConstraints();
+      localConstraints.maxWidth = globalConstraints.maxWidth;
+      if (localConstraints.maxWidth == double.infinity) mainAxisSize = MainAxisSize.min;
     }
 
     // check if wrap is true,and return the wrap widgets children.
@@ -98,6 +98,6 @@ class _RowViewState extends WidgetState<RowView>
               mainAxisSize: mainAxisSize));
 
     // apply user defined constraints
-    return applyConstraints(view, userConstraints);
+    return applyConstraints(view, localConstraints);
   }
 }

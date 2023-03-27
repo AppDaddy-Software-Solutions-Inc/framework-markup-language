@@ -25,9 +25,6 @@ class ViewableWidgetModel extends WidgetModel
   // Constraints
   late final ConstraintModel _constraintModel;
 
-  /// user constraints as per the template
-  Constraints getUserConstraints() => _constraintModel.getUserConstraints();
-
   // width
   double? get width  => _constraintModel.width;
   set width(dynamic v)  => _constraintModel.width = v;
@@ -45,30 +42,37 @@ class ViewableWidgetModel extends WidgetModel
   // min width
   @protected
   set minWidth(dynamic v) => _constraintModel.minWidth = v;
-  double? getSystemMinWidth()  => _constraintModel.getSystemMinWidth();
 
   // max width
   @protected
   set maxWidth(dynamic v) => _constraintModel.maxWidth = v;
-  double? getSystemMaxWidth() => _constraintModel.getSystemMaxWidth();
 
   // min height
   @protected
   set minHeight(dynamic v) => _constraintModel.minHeight = v;
-  double? getSystemMinHeight()  => _constraintModel.getSystemMinHeight();
 
   // max height
   @protected
   set maxHeight(dynamic v) => _constraintModel.maxHeight = v;
+
+  double? getSystemMaxWidth() => _constraintModel.getSystemMaxWidth();
+
+  double? getSystemMinWidth()  => _constraintModel.getSystemMinWidth();
+
+  double? getSystemMinHeight()  => _constraintModel.getSystemMinHeight();
+
   double? getSystemMaxHeight() => _constraintModel.getSystemMaxHeight();
 
-  // used to set the system constraints in layout builder
-  setSystemConstraints(BoxConstraints? v) => _constraintModel.setSystemConstraints(v);
+  /// user constraints as per the template
+  Constraints getLocalConstraints() => _constraintModel.getLocalConstraints();
 
   /// constraints derived from blending
   /// user and system constraints from the model
   /// hierarchy
-  Constraints getBlendedConstraints() => _constraintModel.getBlendedConstraints();
+  Constraints getGlobalConstraints() => _constraintModel.getGlobalConstraints();
+
+  /// used to set the system constraints in layout builder
+  setSystemConstraints(BoxConstraints? v) => _constraintModel.setSystemConstraints(v);
 
   /// alignment and layout attributes
   ///

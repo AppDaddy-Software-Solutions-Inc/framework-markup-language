@@ -88,7 +88,7 @@ class _MapViewState extends WidgetState<MapView>
     dynamic view = Container(child: SizedBox(width: width, height: height, child: Stack(fit: StackFit.expand, children: [map!, busy!])));
 
     // apply user defined constraints
-    return applyConstraints(view, widget.model.getUserConstraints());
+    return applyConstraints(view, widget.model.getLocalConstraints());
   }
 
   FlutterMap? _buildMap()

@@ -146,8 +146,8 @@ class _BoxViewState extends WidgetState<BoxView>
     // safeguard against infinite expansion
     if (expand)
     {
-      Constraints userConstraints = widget.model.getUserConstraints();
-      Constraints blendedConstraints  = widget.model.getBlendedConstraints();
+      Constraints localConstraints  = widget.model.getLocalConstraints();
+      Constraints globalConstraints = widget.model.getGlobalConstraints();
 
       switch (layout)
       {
@@ -157,8 +157,8 @@ class _BoxViewState extends WidgetState<BoxView>
           if (systemConstraints.maxWidth == double.infinity)
           {
             expand = false;
-            if (userConstraints.width == null && userConstraints.maxWidth == null)
-              userConstraints.maxWidth = blendedConstraints.maxWidth;
+            if (localConstraints.width == null && localConstraints.maxWidth == null)
+              localConstraints.maxWidth = globalConstraints.maxWidth;
           }
 
           break;
@@ -169,8 +169,8 @@ class _BoxViewState extends WidgetState<BoxView>
           if (systemConstraints.maxHeight == double.infinity)
           {
             expand = false;
-            if (userConstraints.height == null && userConstraints.maxHeight == null)
-              userConstraints.maxHeight = blendedConstraints.maxHeight;
+            if (localConstraints.height == null && localConstraints.maxHeight == null)
+              localConstraints.maxHeight = globalConstraints.maxHeight;
           }
 
           break;
@@ -181,16 +181,16 @@ class _BoxViewState extends WidgetState<BoxView>
           if (systemConstraints.maxWidth == double.infinity)
           {
             expand = false;
-            if (userConstraints.width == null && userConstraints.maxWidth == null)
-              userConstraints.maxWidth = blendedConstraints.maxWidth;
+            if (localConstraints.width == null && localConstraints.maxWidth == null)
+              localConstraints.maxWidth = globalConstraints.maxWidth;
           }
 
           // constrain height
           if (systemConstraints.maxHeight == double.infinity)
           {
             expand = false;
-            if (userConstraints.height == null && userConstraints.maxHeight == null)
-              userConstraints.maxHeight = blendedConstraints.maxHeight;
+            if (localConstraints.height == null && localConstraints.maxHeight == null)
+              localConstraints.maxHeight = globalConstraints.maxHeight;
           }
 
           break;
@@ -200,7 +200,7 @@ class _BoxViewState extends WidgetState<BoxView>
     }
 
     // construct view
-    return expand ? UnconstrainedBox(child: view) : applyConstraints(view, widget.model.getUserConstraints());
+    return expand ? UnconstrainedBox(child: view) : applyConstraints(view, widget.model.getLocalConstraints());
   }
 
   Border? _getBorder()

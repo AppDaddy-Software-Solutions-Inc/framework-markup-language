@@ -386,7 +386,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
       }
       else if (widget.model.tabbar == true && widget.model.tabbutton == false)
       {
-        var con = widget.model.getBlendedConstraints();
+        var con = widget.model.getGlobalConstraints();
 
         view = Column(children: [
           SizedBox(width: widget.model.getSystemMaxWidth(), height: barheight,
@@ -420,7 +420,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
       }
 
       // apply user defined constraints
-      return applyConstraints(view, widget.model.getUserConstraints());
+      return applyConstraints(view, widget.model.getLocalConstraints());
     }
     else return Container();
   }

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/expanded/expanded_model.dart';
 import 'package:fml/widgets/widget/alignment.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';

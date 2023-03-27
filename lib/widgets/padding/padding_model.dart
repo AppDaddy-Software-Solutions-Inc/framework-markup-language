@@ -141,9 +141,7 @@ class PaddingModel extends ViewableWidgetModel implements IViewableWidget
   static PaddingModel? fromXml(WidgetModel parent, XmlElement xml) {
     PaddingModel? model;
     try {
-      /////////////////
-      /* Build Model */
-      /////////////////
+// build model
       model = PaddingModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     } catch(e) {

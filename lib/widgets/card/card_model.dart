@@ -127,9 +127,7 @@ class CardModel extends DecoratedWidgetModel implements IViewableWidget
   static CardModel? fromXml(WidgetModel parent, XmlElement xml) {
     CardModel? model;
     try {
-      /////////////////
-      /* Build Model */
-      /////////////////
+// build model
       model = CardModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     } catch(e) {

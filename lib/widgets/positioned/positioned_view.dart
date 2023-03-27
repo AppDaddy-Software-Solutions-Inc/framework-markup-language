@@ -1,5 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/stack/stack_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
@@ -28,9 +30,7 @@ class _PositionedViewState extends WidgetState<PositionedView>
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    //////////////////
-    /* Add Children */
-    //////////////////
+    // build children
     List<Widget> children = [];
     if (widget.model.children != null)
       widget.model.children!.forEach((model) {
@@ -41,19 +41,20 @@ class _PositionedViewState extends WidgetState<PositionedView>
     if (children.isEmpty) children.add(Container());
     var child = children.length == 1 ? children[0] : Column(children: children);
 
-    ////////////////////////////
-    /* Parent Must be a Stack */
-    ////////////////////////////
-    if (widget.model.xoffset != null && widget.model.yoffset != null) {
-      double fromTop = (widget.model.getGlobalMaxHeight()! / 2) + widget.model.yoffset!;
-      double fromLeft = (widget.model.getGlobalMaxWidth()! / 2) + widget.model.xoffset!;
-      return Positioned(top: fromTop, left: fromLeft, child: child);
-    } else
-      return Positioned(
-          top: widget.model.top,
-          bottom: widget.model.bottom,
-          left: widget.model.left,
-          right: widget.model.right,
-          child: child);
+    Widget view = child;
+
+    // Parent Must be a Stack
+    if (widget.model.parent is StackModel)
+    {
+      if (widget.model.xoffset != null && widget.model.yoffset != null)
+      {
+        double fromTop = (widget.model.getGlobalMaxHeight()! / 2) + widget.model.yoffset!;
+        double fromLeft = (widget.model.getGlobalMaxWidth()! / 2) + widget.model.xoffset!;
+        view = Positioned(top: fromTop, left: fromLeft, child: view);
+      }
+      else view = Positioned(top: widget.model.top, bottom: widget.model.bottom, left: widget.model.left, right: widget.model.right, child: view);
+    }
+
+    return view;
   }
 }

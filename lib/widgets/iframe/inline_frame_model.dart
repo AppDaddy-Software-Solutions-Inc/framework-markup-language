@@ -36,9 +36,7 @@ class InlineFrameModel extends DecoratedWidgetModel implements IViewableWidget
     InlineFrameModel? model;
     try
     {
-      /////////////////
-      /* Build Model */
-      /////////////////
+// build model
       model = InlineFrameModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }

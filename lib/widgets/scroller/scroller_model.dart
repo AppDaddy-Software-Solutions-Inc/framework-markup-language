@@ -181,9 +181,7 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
     ScrollerModel? model;
     try
     {
-      /////////////////
-      /* Build Model */
-      /////////////////
+// build model
       model = ScrollerModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }

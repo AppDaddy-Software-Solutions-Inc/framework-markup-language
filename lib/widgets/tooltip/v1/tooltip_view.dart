@@ -25,9 +25,7 @@ class _TooltipViewState extends WidgetState<TooltipView>
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    //////////////////
-    /* Add Children */
-    //////////////////
+// build children
     List<Widget> children = [];
     if (widget.model.children != null)
       widget.model.children!.forEach((model)

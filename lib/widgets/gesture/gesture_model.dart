@@ -184,9 +184,7 @@ class GestureModel extends DecoratedWidgetModel implements IViewableWidget
     GestureModel? model;
     try
     {
-      /////////////////
-      /* Build Model */
-      /////////////////
+// build model
       model = GestureModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }

@@ -132,9 +132,7 @@ class LinkModel extends DecoratedWidgetModel implements IViewableWidget
     LinkModel? model;
     try
     {
-      /////////////////
-      /* Build Model */
-      /////////////////
+// build model
       model = LinkModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }

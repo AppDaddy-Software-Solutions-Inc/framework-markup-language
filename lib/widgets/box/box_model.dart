@@ -15,7 +15,7 @@ enum LayoutTypes {none, row, column, stack}
 class BoxModel extends DecoratedWidgetModel implements IViewableWidget
 {
   @override
-  Constraints getLocalConstraints()
+  Constraints getLocalConstraintss()
   {
     var constraints = super.getLocalConstraints();
     if (expand)

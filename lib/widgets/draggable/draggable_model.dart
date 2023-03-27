@@ -57,9 +57,7 @@ class DraggableModel extends DecoratedWidgetModel implements IViewableWidget
     DraggableModel? model;
     try
     {
-      /////////////////
-      /* Build Model */
-      /////////////////
+// build model
       model = DraggableModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }

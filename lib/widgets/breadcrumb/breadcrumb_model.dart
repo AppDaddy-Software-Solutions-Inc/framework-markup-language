@@ -54,9 +54,7 @@ class BreadcrumbModel extends DecoratedWidgetModel implements IViewableWidget
     BreadcrumbModel? model;
     try
     {
-      /////////////////
-      /* Build Model */
-      /////////////////
+// build model
       model = BreadcrumbModel(parent: parent);
       model.deserialize(xml);
     }

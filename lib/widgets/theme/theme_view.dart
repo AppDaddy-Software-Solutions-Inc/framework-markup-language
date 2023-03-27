@@ -26,9 +26,7 @@ class _ThemeViewState extends WidgetState<ThemeView>
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    //////////////////
-    /* Add Children */
-    //////////////////
+// build children
     widget.children.clear();
     if (widget.model.children != null)
       widget.model.children!.forEach((model)

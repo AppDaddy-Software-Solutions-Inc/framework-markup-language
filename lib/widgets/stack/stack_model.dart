@@ -67,9 +67,7 @@ class StackModel extends DecoratedWidgetModel implements IViewableWidget
   static StackModel? fromXml(WidgetModel parent, XmlElement xml) {
     StackModel? model;
     try {
-      /////////////////
-      /* Build Model */
-      /////////////////
+// build model
       model = StackModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     } catch(e) {

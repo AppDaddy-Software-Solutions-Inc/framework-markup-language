@@ -281,9 +281,7 @@ class CameraModel extends CAMERA.CameraImageModel implements IViewableWidget
     CameraModel? model;
     try
     {
-      /////////////////
-      /* Build Model */
-      /////////////////
+// build model
       model = CameraModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }

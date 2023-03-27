@@ -64,9 +64,7 @@ class ColumnModel extends DecoratedWidgetModel implements IViewableWidget
   static ColumnModel? fromXml(WidgetModel? parent, XmlElement xml) {
     ColumnModel? model;
     try {
-      /////////////////
-      /* Build Model */
-      /////////////////
+// build model
       model = ColumnModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     } catch(e) {

@@ -43,9 +43,7 @@ class DroppableModel extends DecoratedWidgetModel implements IViewableWidget
     DroppableModel? model;
     try
     {
-      /////////////////
-      /* Build Model */
-      /////////////////
+// build model
       model = DroppableModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }

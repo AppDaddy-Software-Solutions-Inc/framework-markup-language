@@ -201,9 +201,7 @@ class PositionedModel extends DecoratedWidgetModel implements IViewableWidget
     PositionedModel? model;
     try
     {
-      /////////////////
-      /* Build Model */
-      /////////////////
+      // build model
       model = PositionedModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }

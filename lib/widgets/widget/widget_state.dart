@@ -47,23 +47,31 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
 
   Widget applyConstraints(Widget view, Constraints constraints)
   {
-    // no constraints specified
+    // If no constraints are specified
+    // return the view
     if (constraints.hasNoConstraints) return view;
 
-    // width specified
+    // If a hard width is specified
+    // wrap the view in an unconstrained box of the specified
+    // width and maintain any vertical constraints
     if (constraints.width != null && constraints.height == null)
       view = UnconstrainedBox(child: SizedBox(child: view, width: constraints.width), constrainedAxis: Axis.vertical);
 
-    // height specified
+    // if a hard height is specified
+    // wrap the view in an unconstrained box of the specified
+    // height and maintain any horizontal constraints
     else if (constraints.width == null && constraints.height != null)
       view = UnconstrainedBox(child: SizedBox(child: view, height: constraints.height), constrainedAxis: Axis.horizontal);
 
-    // width & height specified
+    // If a both a hard width and height are specified
+    // wrap the view in an unconstrained box of the specified
+    // width and height and defeat all other constraints
     else if (constraints.width != null && constraints.height != null)
       view = UnconstrainedBox(child: SizedBox(child: view, width: constraints.width, height: constraints.height));
 
-    // apply user defined constraints
-    if (constraints.minWidth != null || constraints.maxWidth != null || constraints.minHeight != null || constraints.maxHeight != null)
+    // Apply min and max constraints to the view only if
+    // they are supplied and have not already been applied above
+    if ((constraints.isHorizontallyConstrained && constraints.width == null) || (constraints.isVerticallyConstrained && constraints.height == null))
       view = ConstrainedBox(child: view, constraints: BoxConstraints(minWidth: constraints.minWidth ?? 0, maxWidth: constraints.maxWidth ?? double.infinity, minHeight: constraints.minHeight ?? 0, maxHeight: constraints.maxHeight ?? double.infinity));
 
     return view;

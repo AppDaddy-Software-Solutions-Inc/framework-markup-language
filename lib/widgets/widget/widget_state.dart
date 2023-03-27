@@ -53,19 +53,19 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
 
     // If a hard width is specified
     // wrap the view in an unconstrained box of the specified
-    // width and maintain any vertical constraints
+    // width and honor any applicable vertical constraints
     if (constraints.width != null && constraints.height == null)
       view = UnconstrainedBox(child: SizedBox(child: view, width: constraints.width), constrainedAxis: Axis.vertical);
 
     // if a hard height is specified
     // wrap the view in an unconstrained box of the specified
-    // height and maintain any horizontal constraints
+    // height and honor any applicable horizontal constraints
     else if (constraints.width == null && constraints.height != null)
       view = UnconstrainedBox(child: SizedBox(child: view, height: constraints.height), constrainedAxis: Axis.horizontal);
 
     // If a both a hard width and height are specified
     // wrap the view in an unconstrained box of the specified
-    // width and height and defeat all other constraints
+    // width and height and defeat any vertical and/or horizontal constraints
     else if (constraints.width != null && constraints.height != null)
       view = UnconstrainedBox(child: SizedBox(child: view, width: constraints.width, height: constraints.height));
 

@@ -91,7 +91,7 @@ class _BoxViewState extends WidgetState<BoxView>
     return LayoutTypes.column;
   }
 
-  static Widget _layoutChildren(LayoutTypes layout, Constraints constraints, bool expand, bool wrap, List<Widget> children, WidgetAlignment alignment)
+  static Widget _layoutChildren(LayoutTypes layout, bool expand, bool wrap, List<Widget> children, WidgetAlignment alignment)
   {
     Widget? child;
     switch (layout)
@@ -100,18 +100,22 @@ class _BoxViewState extends WidgetState<BoxView>
         // The stack sizes itself to contain all the non-positioned children,
         // which are positioned according to alignment.
         // The positioned children are then placed relative to the stack according to their top, right, bottom, and left properties.
-        double? width;
-        double? height;
-        if (expand)
-        {
-          width = constraints.maxWidth;
-          if ((width == null || width == double.infinity) && (constraints.minWidth ?? 0) > 0) width = constraints.minWidth;
 
-          height = constraints.maxHeight;
-          if ((height == null || height == double.infinity) && (constraints.minHeight ?? 0) > 0) height = constraints.minHeight;
+        // double? width;
+        // double? height;
+        // if (expand)
+        // {
+        //   width = constraints.maxWidth;
+        //   if ((width == null || width == double.infinity) && (constraints.minWidth ?? 0) > 0) width = constraints.minWidth;
+        //
+        //   height = constraints.maxHeight;
+        //   if ((height == null || height == double.infinity) && (constraints.minHeight ?? 0) > 0) height = constraints.minHeight;
+        //
+        // }
+        // children.add(SizedBox.fromSize(size: Size(width ?? 0, height ?? 0)));
 
-        }
-        children.add(SizedBox.fromSize(size: Size(width ?? 0, height ?? 0)));
+        // inflate the stack
+        if (expand) children.add(SizedBox.expand());
 
         // create the stack
         child = Stack(children: children, alignment: alignment.aligned);
@@ -410,14 +414,13 @@ class _BoxViewState extends WidgetState<BoxView>
     LayoutTypes layout = LayoutTypes.none;
     var wrap = widget.model.wrap;
     var expand = widget.model.expand;
-    var constraint = widget.model.getBlendedConstraints();
 
     // layout children
     Widget? child = widget.child;
     if (child == null)
     {
       layout = _getLayoutType(widget.model.layout);
-      child = _layoutChildren(layout, constraint, expand, wrap, children, alignment);
+      child = _layoutChildren(layout, expand, wrap, children, alignment);
     }
 
     // border

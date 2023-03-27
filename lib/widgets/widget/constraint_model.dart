@@ -74,65 +74,81 @@ class ConstraintModel
   double? get height => _height?.get();
 
   // min width
+  double? _minWidthPercentage;
   DoubleObservable? _minWidth;
   set minWidth(dynamic v)
   {
-    if (_minWidth != null)
+    if (v != null)
     {
-      _minWidth!.set(v);
-    }
-    else if (v != null)
-    {
-      _minWidth = DoubleObservable(Binding.toKey(id, 'minwidth'), v, scope: scope, listener: listener);
+      if (S.isPercentage(v))
+      {
+        _minWidthPercentage = S.toDouble(v.split("%")[0]);
+        v = null;
+      }
+      else _minWidthPercentage = null;
+      if (_minWidth == null) _minWidth = DoubleObservable(Binding.toKey(id, 'minWidth'), v, scope: scope, listener: listener);
+      else if (v != null) _minWidth!.set(v);
     }
   }
   double? get minWidth => _minWidth?.get();
 
   // max width
+  double? _maxWidthPercentage;
   DoubleObservable? _maxWidth;
   set maxWidth(dynamic v)
   {
-    if (_maxWidth != null)
+    if (v != null)
     {
-      _maxWidth!.set(v);
-    }
-    else if (v != null)
-    {
-      _maxWidth = DoubleObservable(Binding.toKey(id, 'maxwidth'), v, scope: scope, listener: listener);
+      if (S.isPercentage(v))
+      {
+        _maxWidthPercentage = S.toDouble(v.split("%")[0]);
+        v = null;
+      }
+      else _maxWidthPercentage = null;
+      if (_maxWidth == null) _maxWidth = DoubleObservable(Binding.toKey(id, 'maxwidth'), v, scope: scope, listener: listener);
+      else if (v != null) _maxWidth!.set(v);
     }
   }
   double? get maxWidth => _maxWidth?.get();
 
   // min height
+  double? _minHeightPercentage;
   DoubleObservable? _minHeight;
   set minHeight(dynamic v)
   {
-    if (_minHeight != null)
+    if (v != null)
     {
-      _minHeight!.set(v);
-    }
-    else if (v != null)
-    {
-      _minHeight = DoubleObservable(Binding.toKey(id, 'minheight'), v, scope: scope, listener: listener);
+      if (S.isPercentage(v))
+      {
+        _minHeightPercentage = S.toDouble(v.split("%")[0]);
+        v = null;
+      }
+      else _minHeightPercentage = null;
+      if (_minHeight == null) _minHeight = DoubleObservable(Binding.toKey(id, 'minheight'), v, scope: scope, listener: listener);
+      else if (v != null) _minHeight!.set(v);
     }
   }
   double? get minHeight => _minHeight?.get();
 
   // max height
+  double? _maxHeightPercentage;
   DoubleObservable? _maxHeight;
   set maxHeight(dynamic v)
   {
-    if (_maxHeight != null)
+    if (v != null)
     {
-      _maxHeight!.set(v);
-    }
-    else if (v != null)
-    {
-      _maxHeight = DoubleObservable(Binding.toKey(id, 'maxheight'), v, scope: scope, listener: listener);
+      if (S.isPercentage(v))
+      {
+        _maxHeightPercentage = S.toDouble(v.split("%")[0]);
+        v = null;
+      }
+      else _maxHeightPercentage = null;
+      if (_maxHeight == null) _maxHeight = DoubleObservable(Binding.toKey(id, 'maxheight'), v, scope: scope, listener: listener);
+      else if (v != null) _maxHeight!.set(v);
     }
   }
   double? get maxHeight => _maxHeight?.get();
-
+  
   /// walks up the model tree looking for
   /// the first system non-null minWidth value
   double? getGlobalMinWidth()
@@ -275,21 +291,22 @@ class ConstraintModel
   // sets the layout constraints and adjust the height & width accordingly
   void setSystemConstraints(BoxConstraints? constraints)
   {
+    // set the system constraints
     _systemConstraints.minWidth  = constraints?.minWidth;
     _systemConstraints.maxWidth  = constraints?.maxWidth;
     _systemConstraints.minHeight = constraints?.minHeight;
     _systemConstraints.maxHeight = constraints?.maxHeight;
 
-    // adjust the width
-    if (width != null && width! >= 100000) _widthPercentage = (width!/1000000);
+    // adjust the width if defined as a percentage
+    if (width != null && width! >= 100000 && width != double.infinity) _widthPercentage = (width!/1000000);
     if (_widthPercentage != null)
     {
       // calculate the width
-      double? width;
-      double? maxwidth = getGlobalMaxWidth();
-      if (maxwidth != null)
+      double? width = _pctWidth(_widthPercentage!);
+
+      // adjust min and max widths
+      if (width != null)
       {
-        width = maxwidth * (_widthPercentage! / 100.0);
         if (minWidth != null && minWidth! > width)  width = minWidth;
         if (maxWidth != null && maxWidth! < width!) width = maxWidth;
       }
@@ -298,30 +315,49 @@ class ConstraintModel
       _width?.set(width, notify: false);
     }
 
-    // adjust the height
-    if (height != null && height! >= 100000) _heightPercentage = (height!/1000000);
+    // adjust the min/max widths if defined as percentages
+    if (_minWidthPercentage != null) _minWidth?.set(_pctWidth(_minWidthPercentage!), notify: false);
+    if (_maxWidthPercentage != null) _maxWidth?.set(_pctWidth(_maxWidthPercentage!), notify: false);
+
+    // adjust the height if defined as a percentage
+    if (height != null && height! >= 100000 && height != double.infinity) _heightPercentage = (height!/1000000);
     if (_heightPercentage != null)
     {
-      double? height;
-      double? maxheight = getGlobalMaxWidth();
-      if (maxheight != null)
-      {
-        if (this.parent != null)
-        {
-          double vpadding = 0;
-          ViewableWidgetModel? parent = (this.parent is ViewableWidgetModel) ? (this.parent as ViewableWidgetModel) : null;
-          if (parent != null) vpadding = _getVerticalPadding(parent.paddings, parent.padding, parent.padding2, parent.padding3, parent.padding4);
+      // calculate the height
+      double? height = _pctHeight(_heightPercentage!);
 
-          height = ((maxheight - vpadding) * (_heightPercentage! / 100.0));
-          if (minHeight != null && minHeight! > height) height = minHeight ?? 0;
-          if (maxHeight != null && maxHeight! < height) height = maxHeight;
-        }
+      // adjust min and max heights
+      if (height != null)
+      {
+        if (minHeight != null && minHeight! > height)  height = minHeight;
+        if (maxHeight != null && maxHeight! < height!) height = maxHeight;
       }
+
+      // set the height
       _height?.set(height, notify: false);
     }
 
+    // adjust the min/max heights
+    if (_minHeightPercentage != null) _minHeight?.set(_pctHeight(_minHeightPercentage!), notify: false);
+    if (_maxHeightPercentage != null) _maxHeight?.set(_pctHeight(_maxHeightPercentage!), notify: false);
   }
 
+  double? _pctWidth(double percent)
+  {
+    double? pct;
+    double? max = getGlobalMaxWidth();
+    if (max != null) pct = max * (percent/100.0);
+    return pct;
+  }
+
+  double? _pctHeight(double percent)
+  {
+    double? pct;
+    double? max = getGlobalMaxHeight();
+    if (max != null) pct = max * (percent/100.0);
+    return pct;
+  }
+  
   static double _getVerticalPadding(int paddings, double? padding, double padding2, double padding3, double padding4)
   {
     double insets = 0.0;

@@ -51,7 +51,7 @@ class _RowViewState extends WidgetState<RowView>
     var mainAxisSize = widget.model.expand == false ? MainAxisSize.min : MainAxisSize.max;
 
     /// safeguard - don't allow infinite width
-    if (constraints.maxWidth == double.infinity && mainAxisSize == MainAxisSize.max && localConstraints.isNotHorizontallyConstrained)
+    if (constraints.maxWidth == double.infinity && mainAxisSize == MainAxisSize.max && !localConstraints.hasHorizontalExpansionConstraints)
     {
       var globalConstraints = widget.model.getGlobalConstraints();
       localConstraints.maxWidth = globalConstraints.maxWidth;

@@ -368,8 +368,13 @@ class _BoxViewState extends WidgetState<BoxView>
     if (widget.model.color == Colors.white10) view = _getFrostedView(view, radius);
 
     // apply constraints
-    // note: width and height have model overrides
-    // to ensure they do not extend infinitely
-    return applyConstraints(view, widget.model.getLocalConstraints());
+    // note: getLocalConstraints() is overridden in BoxModel
+    // in order to handle "expand" correctly
+    view = applyConstraints(view, widget.model.getLocalConstraints());
+
+    // this allows the view to shrink accordingly
+    if (!widget.model.expand) view = UnconstrainedBox(child: view);
+
+    return view;
   }
 }

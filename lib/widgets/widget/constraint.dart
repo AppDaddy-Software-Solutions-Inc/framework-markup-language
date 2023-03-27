@@ -65,22 +65,11 @@ class Constraints
   bool get hasConstraints => hasVerticalConstraints || hasHorizontalConstraints;
   bool get hasNoConstraints => !hasConstraints;
 
-  bool get hasVerticalConstraints   => height != null || minHeight != null || maxHeight != null;
-  bool get hasNoVerticalConstraints => !hasVerticalConstraints;
+  bool get hasVerticalContractionConstraints => height != null || minHeight != null;
+  bool get hasVerticalExpansionConstraints => height != null || maxHeight != null;
+  bool get hasVerticalConstraints => hasVerticalExpansionConstraints || hasVerticalContractionConstraints;
 
-  /// if there is an upper limit on the height
-  /// restricting it from expanding infinitely in the vertical
-  /// direction
-  bool get isVerticallyConstrained  => height != null || maxHeight != null;
-  bool get isNotVerticallyConstrained  => !isVerticallyConstrained;
-
-
-  bool get hasHorizontalConstraints => width != null || minWidth != null || maxWidth != null;
-  bool get hasNoHorizontalConstraints => !hasHorizontalConstraints;
-
-  /// if there is an upper limit on the width
-  /// restricting it from expanding infinitely in the horizontal
-  /// direction
-  bool get isHorizontallyConstrained => width != null || maxWidth != null;
-  bool get isNotHorizontallyConstrained => !isHorizontallyConstrained;
+  bool get hasHorizontalContractionConstraints => width != null || minWidth != null;
+  bool get hasHorizontalExpansionConstraints => width != null || maxWidth != null;
+  bool get hasHorizontalConstraints => hasHorizontalExpansionConstraints || hasHorizontalContractionConstraints;
 }

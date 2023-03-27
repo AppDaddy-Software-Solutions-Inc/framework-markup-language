@@ -49,7 +49,7 @@ class _ColumnViewState extends WidgetState<ColumnView>
     var mainAxisSize = widget.model.expand == false ? MainAxisSize.min : MainAxisSize.max;
 
     /// safeguard - don't allow infinite height
-    if (constraints.maxHeight == double.infinity && mainAxisSize == MainAxisSize.max && localConstraints.isNotVerticallyConstrained)
+    if (constraints.maxHeight == double.infinity && mainAxisSize == MainAxisSize.max && !localConstraints.hasVerticalExpansionConstraints)
     {
       var globalConstraints = widget.model.getGlobalConstraints();
       localConstraints.maxHeight = globalConstraints.maxHeight;

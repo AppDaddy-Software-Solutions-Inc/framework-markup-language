@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
+import 'package:fml/widgets/widget/constraint.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -14,26 +15,25 @@ enum LayoutTypes {none, row, column, stack}
 class BoxModel extends DecoratedWidgetModel implements IViewableWidget
 {
   @override
-  double? get width => expand ? getGlobalConstraints().maxWidth : super.width;
-
-  @override
-  double? get height => expand ? getGlobalConstraints().maxHeight : super.height;
-
-  // min width
-  @override
-  double? get minWidth => expand ? null : super.minWidth;
-
-  // max width
-  @protected
-  double? get maxWidth => expand ? null : super.maxWidth;
-
-  // min height
-  @protected
-  double? get minHeight => expand ? null : super.minHeight;
-
-  // max height
-  @protected
-  double? get maxHeight => expand ? null : super.maxHeight;
+  Constraints getLocalConstraints()
+  {
+    var constraints = super.getLocalConstraints();
+    if (expand)
+    {
+      constraints.width     = constraints.width  ?? getGlobalConstraints().maxWidth;
+      constraints.height    = constraints.height ?? getGlobalConstraints().maxHeight;
+      constraints.minWidth  = null;
+      constraints.minHeight = null;
+    }
+    else
+    {
+      if (constraints.width  == null && constraints.minWidth  != null) constraints.width  = constraints.minWidth;
+      if (constraints.height == null && constraints.minHeight != null) constraints.height = constraints.minHeight;
+      constraints.maxWidth  = null;
+      constraints.maxHeight = null;
+    }
+    return constraints;
+  }
 
   // box blur
   BooleanObservable? _blur;

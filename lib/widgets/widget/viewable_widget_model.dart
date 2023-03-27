@@ -71,6 +71,10 @@ class ViewableWidgetModel extends WidgetModel
   /// hierarchy
   Constraints getGlobalConstraints() => _constraintModel.getGlobalConstraints();
 
+  // returns the constraints as specified
+  // by the system in LayoutBuilder()
+  Constraints getSystemConstraints() => _constraintModel.getSystemConstraints();
+
   /// used to set the system constraints in layout builder
   setSystemConstraints(BoxConstraints? v) => _constraintModel.setSystemConstraints(v);
 

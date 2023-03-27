@@ -9,8 +9,26 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
+enum LayoutTypes {none, row, column, stack}
+
 class BoxModel extends DecoratedWidgetModel implements IViewableWidget
 {
+  @override
+  double? get width
+  {
+    if (expand)
+         return getGlobalConstraints().maxWidth;
+    else return super.width;
+  }
+
+  @override
+  double? get height
+  {
+    if (expand)
+         return getGlobalConstraints().maxHeight;
+    else return super.width;
+  }
+
   // box blur
   BooleanObservable? _blur;
   set blur(dynamic v)
@@ -194,7 +212,7 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
       _layout = StringObservable(Binding.toKey(id, 'layout'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  String get layout => _layout?.get()?.toLowerCase() ?? 'column';
+  String get layout => _layout?.get()?.toLowerCase().trim() ?? 'column';
 
   /// wrap determines the widget, if layout is row or col, how it will wrap.
   BooleanObservable? _wrap;
@@ -333,6 +351,15 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
     wrap = Xml.get(node: xml, tag: 'wrap');
   }
 
+  LayoutTypes getLayoutType()
+  {
+    if (layout == 'col')    return LayoutTypes.column;
+    if (layout == 'column') return LayoutTypes.column;
+    if (layout == 'row')    return LayoutTypes.row;
+    if (layout == 'stack')  return LayoutTypes.stack;
+    return LayoutTypes.column;
+  }
+
   @override
   dispose()
   {
@@ -341,5 +368,4 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
   }
 
   Widget getView({Key? key}) => getReactiveView(BoxView(this));
-
 }

@@ -253,9 +253,22 @@ class ConstraintModel
     constraint.width     = width;
     constraint.minWidth  = minWidth;
     constraint.maxWidth  = maxWidth;
+
     constraint.height    = height;
     constraint.minHeight = minHeight;
     constraint.maxHeight = maxHeight;
+    return constraint;
+  }
+
+  // returns the constraints as specified
+  // by the system in LayoutBuilder()
+  Constraints getSystemConstraints()
+  {
+    Constraints constraint = Constraints();
+    constraint.minWidth  = _systemConstraints.minWidth;
+    constraint.maxWidth  = _systemConstraints.maxWidth;
+    constraint.minHeight = _systemConstraints.minHeight;
+    constraint.maxHeight = _systemConstraints.maxHeight;
     return constraint;
   }
 

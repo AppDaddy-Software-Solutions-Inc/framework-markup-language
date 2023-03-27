@@ -2,17 +2,16 @@
 import 'dart:ui';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/widget/alignment.dart';
-import 'package:fml/widgets/widget/constraint.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
-import 'package:fml/widgets/box/box_model.dart' as BOX;
 import 'package:fml/widgets/widget/widget_state.dart';
 
 /// [BOX] view
 class BoxView extends StatefulWidget implements IWidgetView
 {
-  final BOX.BoxModel model;
+  final BoxModel model;
   final Widget? child;
 
   BoxView(this.model, {this.child});
@@ -77,20 +76,8 @@ List<Color> getGradientColors(c1, c2, c3, c4) {
   return gradientColors;
 }
 
-enum LayoutTypes {none, row, column, stack}
-
 class _BoxViewState extends WidgetState<BoxView>
 {
-  static LayoutTypes _getLayoutType(String layout)
-  {
-    var l = layout.toLowerCase().trim();
-    if (l == 'col')    return LayoutTypes.column;
-    if (l == 'column') return LayoutTypes.column;
-    if (l == 'row')    return LayoutTypes.row;
-    if (l == 'stack')  return LayoutTypes.stack;
-    return LayoutTypes.column;
-  }
-
   static Widget _layoutChildren(LayoutTypes layout, bool expand, bool wrap, List<Widget> children, WidgetAlignment alignment)
   {
     Widget? child;
@@ -137,70 +124,6 @@ class _BoxViewState extends WidgetState<BoxView>
         break;
     }
     return child;
-  }
-
-  Widget _constrainedView(Widget view, BoxConstraints systemConstraints, LayoutTypes layout, bool expand)
-  {
-    // apply user defined constraints to ensure widget doesn't
-    // expand indefinitely
-    // safeguard against infinite expansion
-    Constraints localConstraints = widget.model.getLocalConstraints();
-    if (expand)
-    {
-      Constraints globalConstraints = widget.model.getGlobalConstraints();
-
-      switch (layout)
-      {
-        case LayoutTypes.row:
-
-          // constrain width
-          if (systemConstraints.maxWidth == double.infinity)
-          {
-            expand = false;
-            if (localConstraints.width == null && localConstraints.maxWidth == null)
-              localConstraints.maxWidth = globalConstraints.maxWidth;
-          }
-
-          break;
-
-        case LayoutTypes.column:
-
-         // constrain height
-          if (systemConstraints.maxHeight == double.infinity)
-          {
-            expand = true;
-            if (localConstraints.height == null && localConstraints.maxHeight == null)
-              localConstraints.maxHeight = globalConstraints.maxHeight;
-          }
-
-          break;
-
-        case LayoutTypes.stack:
-
-          // constrain width
-          if (systemConstraints.maxWidth == double.infinity)
-          {
-            expand = false;
-            if (localConstraints.width == null && localConstraints.maxWidth == null)
-              localConstraints.maxWidth = globalConstraints.maxWidth;
-          }
-
-          // constrain height
-          if (systemConstraints.maxHeight == double.infinity)
-          {
-            expand = false;
-            if (localConstraints.height == null && localConstraints.maxHeight == null)
-              localConstraints.maxHeight = globalConstraints.maxHeight;
-          }
-
-          break;
-
-        default: break;
-      }
-    }
-
-    // construct view
-    return expand ? UnconstrainedBox(child: view) : applyConstraints(view, localConstraints);
   }
 
   Border? _getBorder()
@@ -411,17 +334,9 @@ class _BoxViewState extends WidgetState<BoxView>
     // this must go after the children are determined
     var alignment = AlignmentHelper.alignWidgetAxis(children.length, widget.model.layout, widget.model.center, widget.model.halign, widget.model.valign);
 
-    LayoutTypes layout = LayoutTypes.none;
-    var wrap = widget.model.wrap;
-    var expand = widget.model.expand;
-
     // layout children
     Widget? child = widget.child;
-    if (child == null)
-    {
-      layout = _getLayoutType(widget.model.layout);
-      child = _layoutChildren(layout, expand, wrap, children, alignment);
-    }
+    if (child == null) child = _layoutChildren(widget.model.getLayoutType(), widget.model.expand, widget.model.wrap, children, alignment);
 
     // border
     Border? border = _getBorder();
@@ -452,7 +367,9 @@ class _BoxViewState extends WidgetState<BoxView>
     // white10 = Blur (This creates mirrored/frosted effect overtop of something else)
     if (widget.model.color == Colors.white10) view = _getFrostedView(view, radius);
 
-    // fill the parent container
-    return UnconstrainedBox(child: view);//_constrainedView(view, constraints, layout, expand);
+    // apply constraints
+    // note: width and height have model overrides
+    // to ensure they do not extend infinitely
+    return applyConstraints(view, widget.model.getLocalConstraints());
   }
 }

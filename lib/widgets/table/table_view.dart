@@ -310,9 +310,9 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     widget.model.cellpadding.clear();
 
     // save system constraints
-    widget.model.setConstraints(constraints);
+    widget.model.setSystemConstraints(constraints);
 
-    double? viewportHeight = widget.model.height ?? widget.model.getMaxHeight();
+    double? viewportHeight = widget.model.height ?? widget.model.getSystemMaxHeight();
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();

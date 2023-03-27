@@ -216,7 +216,7 @@ class _ImageViewState extends WidgetState<ImageView>
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // save system constraints
-    widget.model.setConstraints(constraints);
+    widget.model.setSystemConstraints(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -259,6 +259,6 @@ class _ImageViewState extends WidgetState<ImageView>
     if (widget.model.interactive == true) view = InteractiveViewer(child: view);
 
     // wrap constraints
-    return getConstrainedView(view);
+    return applyConstraints(view, widget.model.getUserConstraints());
   }
 }

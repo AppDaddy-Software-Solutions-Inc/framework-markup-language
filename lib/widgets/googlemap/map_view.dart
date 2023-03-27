@@ -90,7 +90,7 @@ class _MapViewState extends WidgetState<MapView>
     widget.model.busy = false;
 
     // save system constraints
-    widget.model.setConstraints(constraints);
+    widget.model.setSystemConstraints(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -113,14 +113,14 @@ class _MapViewState extends WidgetState<MapView>
     /* Width */
     ///////////
     var width = widget.model.width;
-    if (width == null) width = widget.model.getMaxWidth();
+    if (width == null) width = widget.model.getSystemMaxWidth();
     if ((width == null) || (width <= 0)) width = MediaQuery.of(context).size.width;
 
     ////////////
     /* Height */
     ////////////
     var height = widget.model.height;
-    if (height == null) height = widget.model.getMaxHeight();
+    if (height == null) height = widget.model.getSystemMaxHeight();
     if ((height == null) || (height <= 0)) height = MediaQuery.of(context).size.height;
 
     //////////////////
@@ -139,7 +139,7 @@ class _MapViewState extends WidgetState<MapView>
                         children: [map!, Positioned(top: 10, right: 10, child: reset), busy!])))));
 
     // wrap constraints
-    return getConstrainedView(view);
+    return applyConstraints(view, widget.model.getUserConstraints());
   }
 
   GoogleMap? _buildGoogleMap()

@@ -29,7 +29,7 @@ class _TableHeaderCellViewState extends WidgetState<TableHeaderCellView>
     }
 
     // save system constraints
-    widget.model.setConstraints(constraints);
+    widget.model.setSystemConstraints(constraints);
 
 
       // Check if widget is visible before wasting resources on building it

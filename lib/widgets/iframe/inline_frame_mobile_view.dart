@@ -42,7 +42,7 @@ class _InlineFrameViewState extends WidgetState<InlineFrameView>
     var model = widget.model;
 
     // save system constraints
-    widget.model.setConstraints(constraints);
+    widget.model.setSystemConstraints(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if ((model.visible == false)) return Offstage();
@@ -67,10 +67,13 @@ class _InlineFrameViewState extends WidgetState<InlineFrameView>
       view = WebViewWidget(controller: controller);
     }
 
+    // basic view
+    view = Container(child: view, width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.height);
+
     // wrap constraints
-    if (model.isConstrained)
-         return getConstrainedView(view);
-    else return Container(child: view, width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.height);
+    view = applyConstraints(view, widget.model.getUserConstraints());
+
+    return view;
   }
 
   void onMessageReceived(dynamic message)

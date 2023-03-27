@@ -61,13 +61,13 @@ class IconModel extends DecoratedWidgetModel implements IViewableWidget {
       var s1;
       var s2;
 
-      var mh = getMaxHeight();
+      var mh = getSystemMaxHeight();
       if (mh != null)
         s1 = mh * (s / 100.0);
       else
         s1 = null;
 
-      var mw = getMaxWidth();
+      var mw = getSystemMaxWidth();
       if (mw != null)
         s2 = mw * (s / 100.0);
       else

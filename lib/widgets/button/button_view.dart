@@ -28,7 +28,7 @@ class _ButtonViewState extends WidgetState<ButtonView>
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // save system constraints
-    widget.model.setConstraints(constraints);
+    widget.model.setSystemConstraints(constraints);
 
     ButtonModel wm = widget.model;
 
@@ -102,7 +102,7 @@ class _ButtonViewState extends WidgetState<ButtonView>
         return 3.0;
       return 5.0;
     }) : null;
-    var constr = widget.model.getConstraints();
+    var constr = widget.model.getHierarcicalConstraints();
 
     if(constr.minWidth == null || constr.minWidth == 0.0) {constr.minWidth = (S.isNullOrEmpty(wm.label)) ? 36 : 72.0;} //if the button should size itself, the min width needs to be set if not defined.
 
@@ -163,6 +163,6 @@ class _ButtonViewState extends WidgetState<ButtonView>
     }
 
     // wrap constraints
-    return getConstrainedView(view);
+    return applyConstraints(view, widget.model.getUserConstraints());
   }
 }

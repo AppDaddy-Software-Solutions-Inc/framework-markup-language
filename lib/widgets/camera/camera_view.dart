@@ -478,7 +478,7 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // save system constraints
-    widget.model.setConstraints(constraints);
+    widget.model.setSystemConstraints(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -522,10 +522,11 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
     double width  = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
 
-    // wrap constraints
-    if (widget.model.isConstrained)
-         view = getConstrainedView(view);
-    else view = Container(child: view, width: width, height: height);
+    // basic constraints
+    view = Container(child: view, width: width, height: height);
+
+    // apply constraints
+    view = applyConstraints(view, widget.model.getUserConstraints());
 
     // stack children
     List<Widget> children = [];

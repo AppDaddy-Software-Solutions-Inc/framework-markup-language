@@ -125,7 +125,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
     if (!widget.model.visible) return Offstage();
 
     // save system constraints
-    widget.model.setConstraints(constraints);
+    widget.model.setSystemConstraints(constraints);
 
     ///////////
     /* Busy? */
@@ -164,7 +164,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
 
       List<OptionModel>? suggestions;
       view = SizedBox(
-          width: widget.model.getMaxWidth(),
+          width: widget.model.getSystemMaxWidth(),
           child: TypeAheadField(
             textFieldConfiguration: TextFieldConfiguration(
                 enabled: widget.model.enabled != false,

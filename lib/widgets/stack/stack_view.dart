@@ -24,7 +24,7 @@ class _StackViewState extends WidgetState<StackView>
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // save system constraints
-    widget.model.setConstraints(constraints);
+    widget.model.setSystemConstraints(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -40,7 +40,7 @@ class _StackViewState extends WidgetState<StackView>
         }
       });
     if (children.isEmpty) children.add(Container());
-    var constr = widget.model.getConstraints();
+    var constr = widget.model.getHierarcicalConstraints();
     if (widget.model.expand)
       children.add(ConstrainedBox(
           child: Container(),
@@ -79,6 +79,6 @@ class _StackViewState extends WidgetState<StackView>
     }
 
     // wrap constraints
-    return getConstrainedView(view);
+    return applyConstraints(view, widget.model.getUserConstraints());
   }
 }

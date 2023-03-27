@@ -12,6 +12,8 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 
+import 'constraint_model.dart';
+
 class ViewableWidgetModel extends WidgetModel
 {
   // model holding the tooltip
@@ -21,48 +23,59 @@ class ViewableWidgetModel extends WidgetModel
   List<AnimationModel>? animations;
 
   // Constraints
-  late final Constraints _constraints;
-  
+  late final ConstraintModel _constraintModel;
+
+  /// user constraints as per the template
+  Constraints getUserConstraints() => _constraintModel.getUserConstraints();
+
   // width
-  double? get width  => _constraints.width;
-  set width(dynamic v)  => _constraints.width = v;
+  double? get width  => _constraintModel.width;
+  set width(dynamic v)  => _constraintModel.width = v;
 
   // height
-  double? get height => _constraints.height;
-  set height(dynamic v)  => _constraints.height = v;
+  double? get height => _constraintModel.height;
+  set height(dynamic v)  => _constraintModel.height = v;
 
   // percent width
-  double? get pctWidth => _constraints.pctWidth;
+  double? get pctWidth => _constraintModel.pctWidth;
 
   // percent height
-  double? get pctHeight => _constraints.pctHeight;
+  double? get pctHeight => _constraintModel.pctHeight;
 
   // min width
-  set minWidth(dynamic v) => _constraints.minWidth = v;
-  double? getMinWidth()  => _constraints.getMinWidth();
+  @protected
+  set minWidth(dynamic v) => _constraintModel.minWidth = v;
+  double? getSystemMinWidth()  => _constraintModel.getSystemMinWidth();
 
   // max width
-  set maxWidth(dynamic v) => _constraints.maxWidth = v;
-  double? getMaxWidth() => _constraints.getMaxWidth();
+  @protected
+  set maxWidth(dynamic v) => _constraintModel.maxWidth = v;
+  double? getSystemMaxWidth() => _constraintModel.getSystemMaxWidth();
 
   // min height
-  set minHeight(dynamic v) => _constraints.minHeight = v;
-  double? getMinHeight()  => _constraints.getMinHeight();
+  @protected
+  set minHeight(dynamic v) => _constraintModel.minHeight = v;
+  double? getSystemMinHeight()  => _constraintModel.getSystemMinHeight();
 
   // max height
-  set maxHeight(dynamic v) => _constraints.maxHeight = v;
-  double? getMaxHeight() => _constraints.getMaxHeight();
+  @protected
+  set maxHeight(dynamic v) => _constraintModel.maxHeight = v;
+  double? getSystemMaxHeight() => _constraintModel.getSystemMaxHeight();
 
-  // sets system constraints on layout
-  setConstraints(BoxConstraints? v) => _constraints.setConstraints(v);
+  /// system constraints as per the layout builder
+
+  // used to set the system constraints in layout builder
+  setSystemConstraints(BoxConstraints? v) => _constraintModel.setSystemConstraints(v);
+
+  // gets the local system constraints
+  Constraints getSystemConstraints() => _constraintModel.getSystemConstraints();
+
+  /// constraints derrived from blending
+  /// user and system constraints from the model
+  /// hierarchy
 
   // calculates and returns the constraints
-  Constraint getConstraints() => _constraints.getConstraints();
-
-  // manually constraints
-  bool get isConstrained => _constraints.isHorizontallyConstrained() || _constraints.isVerticallyConstrained();
-  bool get isConstrainedHorizontally => _constraints.isHorizontallyConstrained();
-  bool get isConstrainedVertically   => _constraints.isVerticallyConstrained();
+  Constraints getHierarcicalConstraints() => _constraintModel.getHierarchicalConstraints();
 
   /// alignment and layout attributes
   ///
@@ -291,7 +304,7 @@ class ViewableWidgetModel extends WidgetModel
   ViewableWidgetModel(WidgetModel? parent, String? id, {Scope? scope}) : super(parent, id, scope: scope)
   {
     // create model constraints
-    _constraints = Constraints(this.id, this.scope, parent, onPropertyChange);
+    _constraintModel = ConstraintModel(this.id, this.scope, parent, onPropertyChange);
   }
 
   /// Deserializes the FML template elements, attributes and children
@@ -302,12 +315,12 @@ class ViewableWidgetModel extends WidgetModel
     super.deserialize(xml);
 
     // set constraints
-    _constraints.width     = Xml.get(node: xml, tag: 'width');
-    _constraints.height    = Xml.get(node: xml, tag: 'height');
-    _constraints.minWidth  = Xml.get(node: xml, tag: 'minwidth');
-    _constraints.maxWidth  = Xml.get(node: xml, tag: 'maxwidth');
-    _constraints.minHeight = Xml.get(node: xml, tag: 'minheight');
-    _constraints.maxHeight = Xml.get(node: xml, tag: 'maxheight');
+    _constraintModel.width     = Xml.get(node: xml, tag: 'width');
+    _constraintModel.height    = Xml.get(node: xml, tag: 'height');
+    _constraintModel.minWidth  = Xml.get(node: xml, tag: 'minwidth');
+    _constraintModel.maxWidth  = Xml.get(node: xml, tag: 'maxwidth');
+    _constraintModel.minHeight = Xml.get(node: xml, tag: 'minheight');
+    _constraintModel.maxHeight = Xml.get(node: xml, tag: 'maxheight');
 
     // properties
     visible   = Xml.get(node: xml, tag: 'visible');

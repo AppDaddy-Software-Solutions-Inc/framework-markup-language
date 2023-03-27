@@ -117,7 +117,7 @@ class FormViewState extends WidgetState<FormView> implements GPS.IGpsListener
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // save system constraints
-    widget.model.setConstraints(constraints);
+    widget.model.setSystemConstraints(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if ((widget.model.children == null) || ((!widget.model.visible))) return Offstage();
@@ -146,6 +146,6 @@ class FormViewState extends WidgetState<FormView> implements GPS.IGpsListener
     view = Stack(children: [willpop, Center(child: busy)]);
 
     // wrap constraints
-    return getConstrainedView(view);
+    return applyConstraints(view, widget.model.getUserConstraints());
   }
 }

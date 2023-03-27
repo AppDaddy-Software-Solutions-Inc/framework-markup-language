@@ -99,7 +99,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
     if (!widget.model.visible) return Offstage();
 
     // save system constraints
-    widget.model.setConstraints(constraints);
+    widget.model.setSystemConstraints(constraints);
 
     // set the border color arrays
     Color? enabledBorderColor;

@@ -23,7 +23,7 @@ class _ViewState extends WidgetState<View>
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // save system constraints
-    widget.model.setConstraints(constraints);
+    widget.model.setSystemConstraints(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -39,7 +39,7 @@ class _ViewState extends WidgetState<View>
     if (children.isEmpty) children.add(Container());
 
     // view
-    var view = children.length == 1 ? children[0] : SizedBox(height: widget.model.getMaxHeight(), child: Column(children: children, mainAxisAlignment: MainAxisAlignment.start, mainAxisSize: MainAxisSize.min));
+    var view = children.length == 1 ? children[0] : SizedBox(height: widget.model.getSystemMaxHeight(), child: Column(children: children, mainAxisAlignment: MainAxisAlignment.start, mainAxisSize: MainAxisSize.min));
     return view;
   }
 }

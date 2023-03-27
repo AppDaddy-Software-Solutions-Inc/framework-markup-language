@@ -178,9 +178,9 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // save system constraints
-    widget.model.setConstraints(constraints);
+    widget.model.setSystemConstraints(constraints);
 
-    var con = widget.model.getConstraints();
+    var con = widget.model.getHierarcicalConstraints();
     double h = con.maxHeight ?? MediaQuery.of(context).size.height;
     double w = con.maxWidth  ?? MediaQuery.of(context).size.width;
 
@@ -370,7 +370,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
     ]); // view;
 
     // wrap constraints
-    view = getConstrainedView(view);
+    view = applyConstraints(view, widget.model.getUserConstraints());
 
     view = WillPopScope(onWillPop: () async => preventPop(), child: view);
 
@@ -416,7 +416,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
     // if (animate == false) {
 
 
-    var con = widget.model.getConstraints();
+    var con = widget.model.getHierarcicalConstraints();
     double h = con.maxHeight ?? MediaQuery.of(context).size.height;
     double w = con.maxWidth  ?? MediaQuery.of(context).size.width;
 
@@ -477,7 +477,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
   {
     const int dragLeeway = 200; // drag leeway for completing open/closes on drag end
 
-    var con = widget.model.getConstraints();
+    var con = widget.model.getHierarcicalConstraints();
     double h = con.maxHeight?? MediaQuery.of(context).size.height;
     double w = con.maxWidth ?? MediaQuery.of(context).size.width;
 
@@ -662,7 +662,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
   onDragSheet(DragUpdateDetails dragUpdateDetails, String dir, bool opening) {
     if (animate == false)
     {
-      var constraints = widget.model.getConstraints();
+      var constraints = widget.model.getHierarcicalConstraints();
       double h = constraints.maxHeight?? MediaQuery.of(context).size.height;
       double w = constraints.maxWidth ?? MediaQuery.of(context).size.width;
       double screenHeight = h;
@@ -841,7 +841,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
   }
 
   void openTop() {
-    var constraints = widget.model.getConstraints();
+    var constraints = widget.model.getHierarcicalConstraints();
 
     double h = constraints.maxHeight?? MediaQuery.of(context).size.height;
     double screenHeight = h;
@@ -855,7 +855,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
   }
 
   void openBottom() {
-    var constraints = widget.model.getConstraints();
+    var constraints = widget.model.getHierarcicalConstraints();
     double h = constraints.maxHeight?? MediaQuery.of(context).size.height;
     double screenHeight = h;
     setState(() {
@@ -868,7 +868,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
   }
 
   void openLeft() {
-    var constraints = widget.model.getConstraints();
+    var constraints = widget.model.getHierarcicalConstraints();
     double w = constraints.maxWidth ?? MediaQuery.of(context).size.width;
     double screenWidth = w;
     setState(() {
@@ -882,7 +882,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
   }
 
   void openRight() {
-    var constraints = widget.model.getConstraints();
+    var constraints = widget.model.getHierarcicalConstraints();
     double w = constraints.maxWidth ?? MediaQuery.of(context).size.width;
     double screenWidth = w;
     setState(() {
@@ -896,7 +896,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
   }
 
   closeDrawer(String? drawer, {cb}) {
-    var constraints = widget.model.getConstraints();
+    var constraints = widget.model.getHierarcicalConstraints();
     double h = constraints.maxHeight?? MediaQuery.of(context).size.height;
     double w = constraints.maxWidth ?? MediaQuery.of(context).size.width;
     var screenHeight = h;

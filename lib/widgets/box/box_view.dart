@@ -88,7 +88,7 @@ class _BoxViewState extends WidgetState<BoxView>
         // The positioned children are then placed relative to the stack according to their top, right, bottom, and left properties.
 
         // inflate the stack
-        if (expand) children.add(SizedBox.expand());
+        children.add(SizedBox.expand());
 
         // create the stack
         child = Stack(children: children, alignment: alignment.aligned);
@@ -320,7 +320,7 @@ class _BoxViewState extends WidgetState<BoxView>
     // this must go after the children are determined
     var alignment = AlignmentHelper.alignWidgetAxis(children.length, widget.model.layout, widget.model.center, widget.model.halign, widget.model.valign);
 
-    // layout children
+    // layout the children
     Widget? child = _layoutChildren(widget.model.getLayoutType(), widget.model.expand, widget.model.wrap, children, alignment);
 
     // border

@@ -222,9 +222,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
         });
     }
 
-    ///////////
-    /* Child */
-    ///////////
+// layout children
     List<Widget> children = [];
     if (widget.model.children != null)
     widget.model.children!.forEach((model)

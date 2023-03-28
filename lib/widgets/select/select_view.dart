@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'package:collection/collection.dart';
 import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
@@ -196,10 +197,8 @@ class _SelectViewState extends WidgetState<SelectView>
                 itemBuilder: (context, dynamic suggestion) {
                   Widget? item;
                   if (suggestion is OptionModel) {
-                      var option = _list.firstWhere(
-                          (option) => (option.value == suggestion),
-                          orElse: null);
-                          item = option.child;
+                      var option = _list.firstWhereOrNull((option) => (option.value == suggestion));
+                      item = option?.child;
                   }
                   if (item == null) item = Container(height: 12);
                   return Padding(

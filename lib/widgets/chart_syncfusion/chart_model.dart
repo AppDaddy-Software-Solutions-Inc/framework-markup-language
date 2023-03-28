@@ -272,7 +272,7 @@ class ChartModel extends DecoratedWidgetModel implements IViewableWidget
     List series = this.series;
     try
     {
-      ChartSeriesModel? s; // series.firstWhere((e) => e == sfSeries);
+      ChartSeriesModel? s; // series.firstWhereOrNull((e) => e == sfSeries);
       for (int i = 0; i < series.length; i++)
       {
         if (series[i].sfSeries == sfSeries)

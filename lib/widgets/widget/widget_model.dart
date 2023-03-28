@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:collection/collection.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/beacon/beacon_model.dart';
 import 'package:fml/datasources/detectors/biometrics/biometrics_detector_model.dart';
@@ -1039,7 +1040,7 @@ class WidgetModel implements IDataSourceListener
 
   dynamic findChildOfExactType(Type T, {String? id}) {
     if (children != null)
-      return children!.firstWhere((child) => child.runtimeType == T && (child.id == (id ?? child.id)), orElse: null);
+      return children!.firstWhereOrNull((child) => child.runtimeType == T && (child.id == (id ?? child.id)));
   }
 
   List<dynamic> findChildrenOfExactType(Type T, {String? id}) {

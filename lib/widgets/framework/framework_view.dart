@@ -13,6 +13,7 @@ import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
+import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/tabview/tab_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart'    ;
 import 'package:fml/widgets/drawer/drawer_view.dart';
@@ -34,17 +35,12 @@ class FrameworkView extends StatefulWidget
 class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveClientMixin implements IModelListener, INavigatorObserver
 {
   BusyView? busy;
-  ScrollController _scrollController = ScrollController();
 
   // this is used to fire the models onstart
   bool started = false;
 
   Widget? minimized;
   Widget? maximized;
-
-  List<DeviceOrientation> orientation = [];
-
-  DrawerView? drawerView;
 
   @override
   bool get wantKeepAlive => true;
@@ -132,8 +128,6 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     // Remove the Listener
     widget.model.removeListener(this);
 
-    _scrollController.dispose();
-
     // framework is top level model?
     // cleanup the model
     if (widget.model.findAncestorOfExactType(FrameworkModel) == null) widget.model.dispose();
@@ -181,6 +175,8 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
   bool onScroll (ScrollNotification notification)
   {
+    print('Scrolling ...');
+
     if ((notification.metrics.axisDirection == AxisDirection.left) || (notification.metrics.axisDirection == AxisDirection.right)) return false;
 
     double maxHeight = widget.model.header?.height ?? widget.model.header?.localConstraints.maxHeight ?? 0;
@@ -306,6 +302,120 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     onLongPressTimer = null;
   }
 
+  Widget _buildHeader(BoxConstraints constraints)
+  {
+    Widget view = Container();
+    widget.model.header?.expand = false;
+    if (widget.model.header != null && widget.model.header!.visible != false)
+    {
+      var model = widget.model.header!;
+
+      // set header constraints
+      model.width = constraints.maxWidth;
+
+      // this is required to drive %sizing
+      model.setSystemConstraints(BoxConstraints(maxWidth: constraints.maxWidth, maxHeight: constraints.maxHeight));
+
+      // build framework header view
+      view = model.getView();
+    }
+    else widget.model.header?.height = 0;
+
+    return view;
+  }
+
+  Widget _buildFooter(BoxConstraints constraints)
+  {
+    Widget view = Container();
+
+    widget.model.footer?.expand = false;
+    if (widget.model.footer != null && widget.model.footer!.visible != false)
+    {
+      var model = widget.model.footer!;
+
+      // set footer constraints
+      model.width = constraints.maxWidth;
+
+      // this is required to drive %sizing
+      model.setSystemConstraints(BoxConstraints(maxWidth: constraints.maxWidth, maxHeight: constraints.maxHeight));
+
+      // build framework footer view
+      view = model.getView();
+    }
+    else widget.model.footer?.height = 0;
+
+    return view;
+  }
+
+  _setDeviceOrientation(String? orientation)
+  {
+    List<DeviceOrientation> _orientation = [];
+
+    orientation = orientation?.toLowerCase().trim();
+    switch (orientation)
+    {
+      case "landscape":
+        _orientation = [DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft];
+        break;
+      case "portrait":
+        _orientation = [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown];
+        break;
+      case "all":
+      default:
+        _orientation = [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown, DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft];
+        break;
+    }
+    SystemChrome.setPreferredOrientations(_orientation);
+  }
+
+  GestureDetector _getGestureDetector(Widget view, DrawerView? drawer)
+  {
+    late final GestureDetector detector;
+
+    if (drawer != null)
+    {
+      detector = GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () =>  WidgetModel.unfocus(),
+          onVerticalDragStart: (dragStartDetails) => drawer.onDragOpen(dragStartDetails, 'vertical'),
+          onHorizontalDragStart: (dragStartDetails) => drawer.onDragOpen(dragStartDetails, 'horizontal'),
+          onVerticalDragUpdate: (dragUpdateDetails) => drawer.onDragSheet(dragUpdateDetails, 'vertical', true),
+          onHorizontalDragUpdate: (dragUpdateDetails) => drawer.onDragSheet(dragUpdateDetails, 'horizontal', true),
+          onVerticalDragEnd: (dragEndDetails) => drawer.onDragEnd(dragEndDetails, 'vertical', false),
+          onHorizontalDragEnd: (dragEndDetails) => drawer.onDragEnd(dragEndDetails, 'horizontal', false),
+          onLongPressStart: kDebugMode ? (_) => onLongPressStart() : null,
+          onLongPressEnd:   kDebugMode ? (_) => onLongPressEnd()   : null,
+          child: view);
+
+      return detector;
+    }
+
+    // simulate a swipe to move back on all desktop applications
+    // and mobile IOS applications
+    bool enableSwipeBack = isDesktop || (isMobile && System().useragent == "ios");
+
+    if (enableSwipeBack)
+    {
+      detector = GestureDetector(behavior: HitTestBehavior.translucent,
+          onHorizontalDragStart: onDragStart,
+          onHorizontalDragEnd: onDragEnd,
+          onHorizontalDragUpdate: onDragUpdate,
+          onTap: () =>  WidgetModel.unfocus(),
+          onLongPressStart: kDebugMode ? (_) => onLongPressStart() : null,
+          onLongPressEnd:   kDebugMode ? (_) => onLongPressEnd()   : null,
+          child: view);
+
+      return detector;
+    }
+
+    detector = GestureDetector(behavior: HitTestBehavior.translucent,
+        onTap: () =>  WidgetModel.unfocus(),
+        onLongPressStart: kDebugMode ? (_) => onLongPressStart() : null,
+        onLongPressEnd:   kDebugMode ? (_) => onLongPressEnd()   : null,
+        child: view);
+
+    return detector;
+  }
   @override
   Widget build(BuildContext context)
   {
@@ -323,24 +433,8 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     // fire navigator change
     onNavigatorChange();
 
-    // set orientation
-    String ori = widget.model.orientation ?? 'all';
-    switch (ori.toLowerCase())
-    {
-      case "landscape":
-        orientation = [DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft];
-        break;
-      case "portrait":
-        orientation = [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown];
-        break;
-      case "all":
-        orientation = [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown, DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft];
-        break;
-      default:
-        orientation = [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown, DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft];
-        break;
-    }
-    SystemChrome.setPreferredOrientations(orientation);
+    // set device orientation
+    _setDeviceOrientation(widget.model.orientation);
 
     // post onstart callback
     if (!started)
@@ -350,40 +444,10 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     }
 
     // build framework header
-    Widget header = Container();
-    widget.model.header?.expand = false;
-    if (widget.model.header != null && widget.model.header!.visible != false)
-    {
-      var model = widget.model.header!;
-
-      // set header constraints
-      model.width = constraints.maxWidth;
-
-      // this is required to drive %sizing
-      model.setSystemConstraints(BoxConstraints(maxWidth: constraints.maxWidth, maxHeight: constraints.maxHeight));
-
-      // build framework header view
-      header = model.getView();
-    }
-    else widget.model.header?.height = 0;
+    Widget header = _buildHeader(constraints);
 
     // build framework footer
-    Widget footer = Container();
-    widget.model.footer?.expand = false;
-    if (widget.model.footer != null && widget.model.footer!.visible != false)
-    {
-      var model = widget.model.footer!;
-
-      // set footer constraints
-      model.width = constraints.maxWidth;
-
-      // this is required to drive %sizing
-      model.setSystemConstraints(BoxConstraints(maxWidth: constraints.maxWidth, maxHeight: constraints.maxHeight));
-
-      // build framework footer view
-      footer = model.getView();
-    }
-    else widget.model.footer?.height = 0;
+    Widget footer = _buildFooter(constraints);
 
     // set body constraints
     widget.model.expand = false;
@@ -394,55 +458,26 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     widget.model.width  = constraints.maxWidth;
 
     // build framework body view
-    Widget? body = NotificationListener<ScrollNotification>(onNotification: onScroll, child: BoxView(widget.model));
+    Widget? body = BoxView(widget.model);
+
+    // listen to scroll events if the body
+    // is wrapped in a Scroller
+    if (widget.model.findChildOfExactType(ScrollerModel) != null) body = NotificationListener<ScrollNotification>(onNotification: onScroll, child: body);
 
     // build framework view
-    List<Widget> children = [header, body, footer];
+    Widget view = Column(mainAxisSize: MainAxisSize.min, children: [header, body, footer]);
 
     // We need to provide the stacks children to drawer because positioned
     // widgets must be direct children but the drawer uses a builder widget
-    drawerView = (widget.model.drawer != null) ? DrawerView(widget.model.drawer!, Column(mainAxisSize: MainAxisSize.min, children: [...children])) : null;
-    Widget? drawer = drawerView != null ? drawerView : Container();
+    DrawerView? drawer;
+    if (widget.model.drawer != null) drawer = DrawerView(widget.model.drawer!, view);
 
-    // primary view
-    Widget? view = drawerView != null ? drawer : Container(child: SingleChildScrollView( controller: _scrollController, child: Column(mainAxisSize: MainAxisSize.min, children: [...children])));
+    // wrap view in gesture detector
+    view = _getGestureDetector(view,drawer);
 
     // scaffold with safe area
     view = SafeArea(child: Scaffold(resizeToAvoidBottomInset: true, body: view));
 
-    // simulate a swipe to move back on all desktop applications
-    // and mobile IOS applications
-    bool enableSwipeBack = isDesktop || (isMobile && System().useragent == "ios");
-
-    final detector = (drawerView != null) ?
-      GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: () =>  WidgetModel.unfocus(),
-      onVerticalDragStart: (dragStartDetails) => drawerView!.onDragOpen(dragStartDetails, 'vertical'),
-      onHorizontalDragStart: (dragStartDetails) => drawerView!.onDragOpen(dragStartDetails, 'horizontal'),
-      onVerticalDragUpdate: (dragUpdateDetails) => drawerView!.onDragSheet(dragUpdateDetails, 'vertical', true),
-      onHorizontalDragUpdate: (dragUpdateDetails) => drawerView!.onDragSheet(dragUpdateDetails, 'horizontal', true),
-      onVerticalDragEnd: (dragEndDetails) => drawerView!.onDragEnd(dragEndDetails, 'vertical', false),
-      onHorizontalDragEnd: (dragEndDetails) => drawerView!.onDragEnd(dragEndDetails, 'horizontal', false),
-      onLongPressStart: kDebugMode ? (_) => onLongPressStart() : null,
-      onLongPressEnd:   kDebugMode ? (_) => onLongPressEnd()   : null,
-      child: view)
-     :
-     enableSwipeBack ?
-     GestureDetector(behavior: HitTestBehavior.translucent,
-      onHorizontalDragStart: onDragStart,
-      onHorizontalDragEnd: onDragEnd,
-      onHorizontalDragUpdate: onDragUpdate,
-      onTap: () =>  WidgetModel.unfocus(),
-      onLongPressStart: kDebugMode ? (_) => onLongPressStart() : null,
-      onLongPressEnd:   kDebugMode ? (_) => onLongPressEnd()   : null,
-      child: view) :
-     GestureDetector(behavior: HitTestBehavior.translucent,
-         onTap: () =>  WidgetModel.unfocus(),
-         onLongPressStart: kDebugMode ? (_) => onLongPressStart() : null,
-         onLongPressEnd:   kDebugMode ? (_) => onLongPressEnd()   : null,
-         child: view);
-
-    return detector;
+    return view;
   }
 }

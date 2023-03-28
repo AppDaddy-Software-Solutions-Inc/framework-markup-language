@@ -27,6 +27,19 @@ class FrameworkModel extends BoxModel implements IViewableWidget, IModelListener
   @override
   String get layout => super.layout ?? 'stack';
 
+  @override
+  setSystemConstraints(BoxConstraints? v)
+  {
+    // set body model (this)
+    super.setSystemConstraints(v);
+
+    // set header model
+    header?.setSystemConstraints(v);
+
+    // set footer model
+    footer?.setSystemConstraints(v);
+  }
+
   /// Event Manager Host
   final EventManager manager = EventManager();
   registerEventListener(EventTypes type, OnEventCallback callback, {int? priority}) => manager.register(type, callback, priority: priority);

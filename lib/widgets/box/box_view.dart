@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/expanded/expanded_model.dart';
 import 'package:fml/widgets/widget/alignment.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
@@ -13,9 +12,8 @@ import 'package:fml/widgets/widget/widget_state.dart';
 class BoxView extends StatefulWidget implements IWidgetView
 {
   final BoxModel model;
-  final Widget? child;
 
-  BoxView(this.model, {this.child});
+  BoxView(this.model) : super(key: ObjectKey(model));
 
   @override
   _BoxViewState createState() => _BoxViewState();
@@ -323,8 +321,7 @@ class _BoxViewState extends WidgetState<BoxView>
     var alignment = AlignmentHelper.alignWidgetAxis(children.length, widget.model.layout, widget.model.center, widget.model.halign, widget.model.valign);
 
     // layout children
-    Widget? child = widget.child;
-    if (child == null) child = _layoutChildren(widget.model.getLayoutType(), widget.model.expand, widget.model.wrap, children, alignment);
+    Widget? child = _layoutChildren(widget.model.getLayoutType(), widget.model.expand, widget.model.wrap, children, alignment);
 
     // border
     Border? border = _getBorder();
@@ -356,9 +353,9 @@ class _BoxViewState extends WidgetState<BoxView>
     if (widget.model.color == Colors.white10) view = _getFrostedView(view, radius);
 
     // apply constraints
-    // note: getLocalConstraints() is overridden in BoxModel
+    // note: localConstraints is overridden in BoxModel
     // in order to handle "expand" correctly
-    view = applyConstraints(view, widget.model.getLocalConstraints());
+    view = applyConstraints(view, widget.model.localConstraints);
 
     // this allows the view to shrink accordingly
     if (!widget.model.expanded) view = UnconstrainedBox(child: view);

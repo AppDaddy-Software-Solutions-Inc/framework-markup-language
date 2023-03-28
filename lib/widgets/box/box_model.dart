@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/constraint.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
@@ -16,14 +15,14 @@ enum LayoutTypes {none, row, column, stack}
 class BoxModel extends DecoratedWidgetModel implements IViewableWidget
 {
   @override
-  Constraints getLocalConstraints()
+  Constraints get localConstraints
   {
-    var constraints = super.getLocalConstraints();
+    var constraints = super.localConstraints;
     if (expand)
     {
-      constraints.width     = constraints.width  ?? getGlobalConstraints().maxWidth;
-      constraints.height    = constraints.height ?? getGlobalConstraints().maxHeight;
-;      constraints.minWidth  = null;
+      constraints.width     = constraints.width  ?? globalConstraints.maxWidth;
+      constraints.height    = constraints.height ?? globalConstraints.maxHeight;
+      constraints.minWidth  = null;
       constraints.minHeight = null;
     }
     else
@@ -219,7 +218,7 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
       _layout = StringObservable(Binding.toKey(id, 'layout'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  String get layout => _layout?.get()?.toLowerCase().trim() ?? 'column';
+  String? get layout => _layout?.get()?.toLowerCase().trim();
 
   /// wrap determines the widget, if layout is row or col, how it will wrap.
   BooleanObservable? _wrap;
@@ -252,6 +251,7 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
   BoxModel(
     WidgetModel? parent,
     String? id, {
+    Scope?  scope,
     dynamic width,
     dynamic height,
     dynamic minwidth,
@@ -278,7 +278,7 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
     dynamic expand,
     dynamic center,
     dynamic wrap,
-  }) : super(parent, id)
+  }) : super(parent, id, scope: scope)
   {
     // constraints
     if (width     != null) this.width     = width;
@@ -326,7 +326,8 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement? xml) {
+  void deserialize(XmlElement? xml)
+  {
     if (xml == null) return;
 
     // deserialize 
@@ -357,6 +358,17 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
     this.expand = expand;
 
     wrap = Xml.get(node: xml, tag: 'wrap');
+
+    // if stack, sort children by depth
+    if (getLayoutType() == LayoutTypes.stack)
+    if (children != null)
+    {
+      children?.sort((a, b)
+      {
+        if(a.depth != null && b.depth != null) return a.depth?.compareTo(b.depth!) ?? 0;
+        return 0;
+      });
+    }
   }
 
   LayoutTypes getLayoutType()
@@ -379,9 +391,9 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
   bool isConstrained()
   {
     // get constraints
-    var systemConstraints = getSystemConstraints();
-    var localConstraints  = getLocalConstraints();
-    var globalConstraints = getGlobalConstraints();
+    var systemConstraints = this.systemConstraints;
+    var localConstraints  = this.localConstraints;
+    var globalConstraints = this.globalConstraints;
 
     var layout = getLayoutType();
     if (layout == LayoutTypes.row)

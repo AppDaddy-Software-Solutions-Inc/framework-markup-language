@@ -51,6 +51,6 @@ class _CenterViewState extends WidgetState<CenterView>
       : Column(children: widget.children, crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.max));
 
     // apply user defined constraints
-    return applyConstraints(view, widget.model.getLocalConstraints());
+    return applyConstraints(view, widget.model.localConstraints);
   }
 }

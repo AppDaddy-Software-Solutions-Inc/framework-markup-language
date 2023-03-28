@@ -113,7 +113,7 @@ class _ChartViewState extends WidgetState<ChartView>
     Widget view = Stack(children: children, fit: StackFit.loose);
 
     // apply user defined constraints
-    return applyConstraints(view, widget.model.getLocalConstraints());
+    return applyConstraints(view, widget.model.localConstraints);
   }
 
   /// Identifies the chart type from the model attributes

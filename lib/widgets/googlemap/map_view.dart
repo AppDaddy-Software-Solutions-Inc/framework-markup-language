@@ -113,14 +113,14 @@ class _MapViewState extends WidgetState<MapView>
     /* Width */
     ///////////
     var width = widget.model.width;
-    if (width == null) width = widget.model.getGlobalMaxWidth();
+    if (width == null) width = widget.model.globalMaxWidth;
     if ((width == null) || (width <= 0)) width = MediaQuery.of(context).size.width;
 
     ////////////
     /* Height */
     ////////////
     var height = widget.model.height;
-    if (height == null) height = widget.model.getGlobalMaxHeight();
+    if (height == null) height = widget.model.globalMaxHeight;
     if ((height == null) || (height <= 0)) height = MediaQuery.of(context).size.height;
 
     //////////////////
@@ -139,7 +139,7 @@ class _MapViewState extends WidgetState<MapView>
                         children: [map!, Positioned(top: 10, right: 10, child: reset), busy!])))));
 
     // apply user defined constraints
-    return applyConstraints(view, widget.model.getLocalConstraints());
+    return applyConstraints(view, widget.model.localConstraints);
   }
 
   GoogleMap? _buildGoogleMap()

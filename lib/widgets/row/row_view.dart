@@ -43,7 +43,7 @@ class _RowViewState extends WidgetState<RowView>
     var alignment = AlignmentHelper.alignWidgetAxis(children.length, 'row', widget.model.center, widget.model.halign, widget.model.valign);
 
     // get user defined constraints
-    var localConstraints = widget.model.getLocalConstraints();
+    var localConstraints = widget.model.localConstraints;
 
     // set main axis size
     var mainAxisSize = widget.model.expand == false ? MainAxisSize.min : MainAxisSize.max;

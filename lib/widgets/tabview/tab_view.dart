@@ -357,7 +357,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
       ////////////////
       /* Max Height */
       ////////////////
-      double? height = widget.model.getGlobalMaxHeight();
+      double? height = widget.model.globalMaxHeight;
 
       ////////////////
       /* Split View */
@@ -367,9 +367,9 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
       if (widget.model.tabbar == true && widget.model.tabbutton == true) {
         view = Column(children: [
           Container(color: Theme.of(context).colorScheme.onInverseSurface, child:
-            Padding(padding: EdgeInsets.only(top: barpadding), child: SizedBox(width: widget.model.getGlobalMaxWidth(), height: barheight,
+            Padding(padding: EdgeInsets.only(top: barpadding), child: SizedBox(width: widget.model.globalMaxWidth, height: barheight,
                 child: Row(children: [
-                  SizedBox(width: (widget.model.getGlobalMaxWidth()! - buttonWidth < 0 ? 0 : widget.model.getGlobalMaxWidth()! - buttonWidth),
+                  SizedBox(width: (widget.model.globalMaxWidth! - buttonWidth < 0 ? 0 : widget.model.globalMaxWidth! - buttonWidth),
                       height: barheight,
                       child: bar),
                   SizedBox(width: buttonWidth, height: barheight, child: button),
@@ -386,10 +386,10 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
       }
       else if (widget.model.tabbar == true && widget.model.tabbutton == false)
       {
-        var con = widget.model.getGlobalConstraints();
+        var con = widget.model.globalConstraints;
 
         view = Column(children: [
-          SizedBox(width: widget.model.getGlobalMaxWidth(), height: barheight,
+          SizedBox(width: widget.model.globalMaxWidth, height: barheight,
             child: bar
           ),
           SizedBox(
@@ -420,7 +420,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
       }
 
       // apply user defined constraints
-      return applyConstraints(view, widget.model.getLocalConstraints());
+      return applyConstraints(view, widget.model.localConstraints);
     }
     else return Container();
   }

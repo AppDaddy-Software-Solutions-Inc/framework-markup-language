@@ -11,7 +11,6 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
-
 import 'constraint_model.dart';
 
 class ViewableWidgetModel extends WidgetModel
@@ -55,25 +54,25 @@ class ViewableWidgetModel extends WidgetModel
   @protected
   set maxHeight(dynamic v) => _constraintModel.maxHeight = v;
 
-  double? getGlobalMaxWidth() => _constraintModel.getGlobalMaxWidth();
+  double? get globalMaxWidth => _constraintModel.getGlobalMaxWidth();
 
-  double? getGlobalMinWidth()  => _constraintModel.getGlobalMinWidth();
+  double? get globalMinWidth => _constraintModel.getGlobalMinWidth();
 
-  double? getGlobalMinHeight()  => _constraintModel.getGlobalMinHeight();
+  double? get globalMinHeight => _constraintModel.getGlobalMinHeight();
 
-  double? getGlobalMaxHeight() => _constraintModel.getGlobalMaxHeight();
+  double? get globalMaxHeight => _constraintModel.getGlobalMaxHeight();
 
   /// user constraints as per the template
-  Constraints getLocalConstraints() => _constraintModel.getLocalConstraints();
+  Constraints get localConstraints => _constraintModel.getLocalConstraints();
 
   /// constraints derived from blending
   /// user and system constraints from the model
   /// hierarchy
-  Constraints getGlobalConstraints() => _constraintModel.getGlobalConstraints();
+  Constraints get globalConstraints => _constraintModel.getGlobalConstraints();
 
   // returns the constraints as specified
   // by the system in LayoutBuilder()
-  Constraints getSystemConstraints() => _constraintModel.getSystemConstraints();
+  Constraints get systemConstraints => _constraintModel.getSystemConstraints();
 
   /// used to set the system constraints in layout builder
   setSystemConstraints(BoxConstraints? v) => _constraintModel.setSystemConstraints(v);

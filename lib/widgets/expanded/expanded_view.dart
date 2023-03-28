@@ -1,15 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/expanded/expanded_model.dart';
 import 'package:fml/widgets/row/row_model.dart';
 import 'package:fml/widgets/column/column_model.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/widget/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
-import 'package:hive/hive.dart';
 
 class ExpandedView extends StatefulWidget implements IWidgetView
 {

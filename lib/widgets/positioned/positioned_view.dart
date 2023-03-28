@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/stack/stack_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
@@ -48,8 +47,8 @@ class _PositionedViewState extends WidgetState<PositionedView>
     {
       if (widget.model.xoffset != null && widget.model.yoffset != null)
       {
-        double fromTop = (widget.model.getGlobalMaxHeight()! / 2) + widget.model.yoffset!;
-        double fromLeft = (widget.model.getGlobalMaxWidth()! / 2) + widget.model.xoffset!;
+        double fromTop = (widget.model.globalMaxHeight! / 2) + widget.model.yoffset!;
+        double fromLeft = (widget.model.globalMaxWidth! / 2) + widget.model.xoffset!;
         view = Positioned(top: fromTop, left: fromLeft, child: view);
       }
       else view = Positioned(top: widget.model.top, bottom: widget.model.bottom, left: widget.model.left, right: widget.model.right, child: view);

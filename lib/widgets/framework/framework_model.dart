@@ -6,7 +6,7 @@ import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/navigation_manager.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/system.dart';
@@ -22,8 +22,11 @@ import 'package:fml/widgets/framework/framework_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IModelListener, IEventManager
+class FrameworkModel extends BoxModel implements IViewableWidget, IModelListener, IEventManager
 {
+  @override
+  String get layout => super.layout ?? 'stack';
+
   /// Event Manager Host
   final EventManager manager = EventManager();
   registerEventListener(EventTypes type, OnEventCallback callback, {int? priority}) => manager.register(type, callback, priority: priority);
@@ -34,7 +37,6 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
   HeaderModel?  header;
   FooterModel?  footer;
   DrawerModel?  drawer;
-  WidgetModel?  body;
 
   List<String>? bindables;
 
@@ -361,8 +363,10 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
+  void deserialize(XmlElement? xml)
   {
+    if (xml == null) return;
+
     Log().debug('Deserialize called on framework model => <FML name="$templateName" url="$url"/>');
 
     // remember xml node
@@ -390,17 +394,15 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
 
     // header
     List<HeaderModel> headers = findChildrenOfExactType(HeaderModel).cast<HeaderModel>();
-      headers.forEach((header)
+    headers.forEach((header)
+    {
+      if (header == headers.first)
       {
-        if (header == headers.first)
-        {
-          this.header = header;
-          this.header!.registerListener(this);
-        }
-        if (children!.contains(header)) children!.remove(header);
-      });
-
-    // remove from view stream
+        this.header = header;
+        this.header!.registerListener(this);
+      }
+      if (children!.contains(header)) children!.remove(header);
+    });
     removeChildrenOfExactType(HeaderModel);
 
     // footer
@@ -414,22 +416,12 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
       }
       if (children!.contains(footer)) children!.remove(footer);
     });
-
-    // remove from view stream
     removeChildrenOfExactType(FooterModel);
 
     // build drawers
     List<XmlElement>? nodes;
     nodes = Xml.getChildElements(node: xml, tag: "DRAWER");
     if (nodes != null && nodes.isNotEmpty) drawer = DrawerModel.fromXmlList(this, nodes);
-
-    // sort children by depth
-    if (children != null) {
-      children?.sort((a, b) {
-        if(a.depth != null && b.depth != null)return a.depth?.compareTo(b.depth!) ?? 0;
-        return 0;
-      });
-    }
 
     // ready
     initialized = true;

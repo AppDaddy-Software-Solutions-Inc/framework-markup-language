@@ -40,7 +40,7 @@ class _StackViewState extends WidgetState<StackView>
         }
       });
     if (children.isEmpty) children.add(Container());
-    var constr = widget.model.getGlobalConstraints();
+    var constr = widget.model.globalConstraints;
     if (widget.model.expand)
       children.add(ConstrainedBox(
           child: Container(),
@@ -79,6 +79,6 @@ class _StackViewState extends WidgetState<StackView>
     }
 
     // apply user defined constraints
-    return applyConstraints(view, widget.model.getLocalConstraints());
+    return applyConstraints(view, widget.model.localConstraints);
   }
 }

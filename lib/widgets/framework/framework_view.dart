@@ -164,6 +164,9 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   {
     try
     {
+      print('property >>>> $property');
+      if (building) return;
+
       var b = Binding.fromString(property);
       if (widget.model.initialized && this.mounted && b?.property != 'busy') setState(() {});
     }
@@ -305,7 +308,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   Widget _buildHeader(BoxConstraints constraints)
   {
     Widget view = Container();
-    widget.model.header?.expand = false;
+
     if (widget.model.header != null && widget.model.header!.visible != false)
     {
       var model = widget.model.header!;
@@ -328,7 +331,6 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   {
     Widget view = Container();
 
-    widget.model.footer?.expand = false;
     if (widget.model.footer != null && widget.model.footer!.visible != false)
     {
       var model = widget.model.footer!;
@@ -423,12 +425,19 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     return LayoutBuilder(builder: builder);
   }
 
+  bool building = false;
+
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
+    building = true;
     Log().debug('Build called on framework view => <FML name=${widget.model.templateName} url="${widget.model.url}"/>');
 
     // model is initializing
-    if (!widget.model.initialized) return Scaffold(body: Center(child: BusyView(BusyModel(null, visible: true))));
+    if (!widget.model.initialized)
+    {
+      building = false;
+      return Scaffold(body: Center(child: BusyView(BusyModel(null, visible: true))));
+    }
 
     // fire navigator change
     onNavigatorChange();
@@ -450,7 +459,6 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     Widget footer = _buildFooter(constraints);
 
     // set body constraints
-    widget.model.expand = false;
     widget.model.setSystemConstraints(BoxConstraints(maxWidth: constraints.maxWidth, maxHeight: constraints.maxHeight));
 
     var safeArea = MediaQuery.of(context).padding.top.ceil();
@@ -478,6 +486,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     // scaffold with safe area
     view = SafeArea(child: Scaffold(resizeToAvoidBottomInset: true, body: view));
 
+    building = false;
     return view;
   }
 }

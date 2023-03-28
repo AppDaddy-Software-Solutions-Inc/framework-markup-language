@@ -2,7 +2,6 @@
 import 'package:fml/widgets/row/row_model.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/helper/common_helpers.dart';
 
@@ -29,14 +28,8 @@ class _RowViewState extends WidgetState<RowView>
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    // build children
-    List<Widget> children = [];
-    if (widget.model.children != null)
-      widget.model.children!.forEach((model) {
-        if (model is IViewableWidget) {
-          children.add((model as IViewableWidget).getView());
-        }
-      });
+    // build the child views
+    List<Widget> children = widget.model.inflate();
     if (children.isEmpty) children.add(Container());
 
     //this must go after the children are determined. Returns an alignment map.

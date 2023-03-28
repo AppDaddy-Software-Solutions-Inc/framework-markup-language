@@ -2,7 +2,6 @@
 import 'dart:convert';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/iframe/inline_frame_model.dart' as IFRAME;
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
@@ -46,16 +45,6 @@ class _InlineFrameViewState extends WidgetState<InlineFrameView>
 
     // Check if widget is visible before wasting resources on building it
     if ((model.visible == false)) return Offstage();
-
-    // build children
-    List<Widget> children = [];
-    if (model.children != null)
-      model.children!.forEach((model)
-      {
-        if (model is IViewableWidget) {
-          children.add((model as IViewableWidget).getView());
-        }
-      });
 
     // build view
     Widget? view = iframe;

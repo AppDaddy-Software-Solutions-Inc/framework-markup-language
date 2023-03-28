@@ -129,6 +129,7 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
           widget.children.add(view);
       }});
     if (widget.children.isEmpty) widget.children.add(Container());
+
     var child = widget.children.length == 1
         ? widget.children[0]
         : Column(

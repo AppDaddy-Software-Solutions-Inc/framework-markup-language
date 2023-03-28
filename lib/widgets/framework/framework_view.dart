@@ -359,13 +359,12 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       var safeArea = MediaQuery.of(context).padding.top.ceil();
 
       // set body constraints
-      model.layout = "column";
+      model.layout = "stack";
       model.height = constraints.maxHeight - (widget.model.header?.height ?? 0) - (widget.model.footer?.height ?? 0) - safeArea;
       model.width  = constraints.maxWidth;
 
       // build framework footer view
-      var widgets = model.inflate();
-      view = BoxView(model,child: widgets.isNotEmpty ? widgets.first : null);
+      view = BoxView(model, child: Stack(children: model.inflate()));
 
       // listen to scroll events if the body
       // is wrapped in a Scroller

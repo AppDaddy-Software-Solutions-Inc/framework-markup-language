@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/stack/stack_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'positioned_model.dart';
@@ -27,14 +26,8 @@ class _PositionedViewState extends WidgetState<PositionedView>
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    // build children
-    List<Widget> children = [];
-    if (widget.model.children != null)
-      widget.model.children!.forEach((model)
-      {
-        if (model is IViewableWidget)
-          children.add((model as IViewableWidget).getView());
-      });
+    // build the child views
+    List<Widget> children = widget.model.inflate();
     if (children.isEmpty) children.add(Container());
     var child = children.length == 1 ? children[0] : Column(children: children);
 

@@ -35,7 +35,7 @@ class _ButtonViewState extends WidgetState<ButtonView>
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-// build children
+    // build children
     List<Widget> children = [];
     if ((widget.model.contents != null)) {
       widget.model.contents!.forEach((model) {

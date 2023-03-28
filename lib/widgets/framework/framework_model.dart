@@ -21,7 +21,6 @@ import 'package:fml/widgets/variable/variable_model.dart';
 import 'package:fml/widgets/framework/framework_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
-import 'package:fml/widgets/widget/widget_state.dart';
 
 class FrameworkModel extends BoxModel implements IViewableWidget, IModelListener, IEventManager
 {

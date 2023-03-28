@@ -4,7 +4,6 @@ import 'package:fml/helper/common_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/widget/alignment.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
@@ -307,15 +306,10 @@ class _BoxViewState extends WidgetState<BoxView>
     var maxHeight = constraints.maxHeight;
     widget.model.setSystemConstraints(BoxConstraints(minWidth:  minWidth, maxWidth:  maxWidth, minHeight: minHeight, maxHeight: maxHeight));
 
-    // build the children
-    List<Widget> children = widget.model.inflateViews();
-    if (widget.model.children != null)
-      widget.model.children!.forEach((model)
-      {
-        if (model is IViewableWidget) {
-          children.add((model as IViewableWidget).getView());
-        }
-      });
+    if (widget.child != null) return widget.child!;
+
+    // build the child views
+    List<Widget> children = widget.model.inflate();
     if (children.isEmpty) children.add(Container(width: 0, height: 0));
 
     // this must go after the children are determined

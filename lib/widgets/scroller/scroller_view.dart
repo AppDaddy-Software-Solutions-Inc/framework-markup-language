@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
-
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/event/event.dart' ;
 import 'package:fml/helper/common_helpers.dart';
@@ -111,14 +109,8 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    // Build Children
-    List<Widget> children = [];
-    if (widget.model.children != null)
-      widget.model.children!.forEach((model) {
-        if (model is IViewableWidget) {
-                    children.add((model as IViewableWidget).getView());
-        }
-      });
+    // build the child views
+    List<Widget> children = widget.model.inflate();
     if (children.isEmpty) children.add(Container());
 
     if (_tryToScrollBeyond == 1)

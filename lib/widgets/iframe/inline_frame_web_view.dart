@@ -7,7 +7,6 @@ import 'package:universal_html/js.dart' as JAVASCRIPT;
 import 'dart:ui' as UI;
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'inline_frame_model.dart';
 import 'inline_frame_view.dart';
 import 'package:fml/helper/common_helpers.dart';
@@ -40,15 +39,6 @@ class _InlineFrameViewState extends WidgetState<InlineFrameView>
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
-
-    // build children
-    List<Widget> children = [];
-    if (model.children != null)
-      model.children!.forEach((model) {
-        if (model is IViewableWidget) {
-          children.add((model as IViewableWidget).getView());
-        }
-      });
 
     //This prevents the iframe from rebuilding and hiding the keyboard every time.
     if (iframe == null) iframe = IFrameWidget(model: model);

@@ -9,7 +9,6 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/camera/camera_model.dart';
 import 'package:fml/widgets/camera/stream/stream.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/icon/icon_model.dart';
@@ -539,12 +538,8 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
         children.add(Offstage(child: backgroundStream as Widget?));
     }
 
-    if (widget.model.children != null)
-      widget.model.children!.forEach((model) {
-        if (model is IViewableWidget) {
-          children.add((model as IViewableWidget).getView());
-        }
-      });
+    // build the child views
+    children.addAll(widget.model.inflate());
 
     // show controls
     if (widget.model.controls != false) {

@@ -24,7 +24,7 @@ class _GridItemViewState extends WidgetState<GridItemView>
     // Check if widget is visible before wasting resources on building it
     if ((widget.model == null) || (widget.model!.visible == false)) return Offstage();
 
-// build children
+    // build children
     List<Widget> children = [];
     if (widget.model!.children != null)
     widget.model!.children!.forEach((model)

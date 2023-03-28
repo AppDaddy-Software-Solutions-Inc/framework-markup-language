@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/center/center_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
@@ -34,18 +33,11 @@ class _CenterViewState extends WidgetState<CenterView>
     if (!widget.model.visible) return Offstage();
 
     widget.children.clear();
-    if (widget.model.children != null)
-      widget.model.children!.forEach((model)
-      {
-        if (model is IViewableWidget) {
-          widget.children.add((model as IViewableWidget).getView());
-        }
-      });
-    if (widget.children.isEmpty) widget.children.add(Container());
 
-    ////////////
-    /* Center */
-    ////////////
+    // build the child views
+    widget.children.addAll(widget.model.inflate());
+
+    // center
     dynamic view = Center(child: widget.children.length == 1
       ? widget.children[0]
       : Column(children: widget.children, crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.max));

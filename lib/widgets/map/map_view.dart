@@ -5,7 +5,6 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/map/map_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/busy/busy_view.dart';
@@ -173,16 +172,12 @@ class _MapViewState extends WidgetState<MapView>
 
   Widget _markerBuilder(List<WidgetModel>? children)
   {
-    List<Widget> _children = [];
-    if (children != null)
-    children.forEach((model)
-    {
-      if (model is IViewableWidget) _children.add((model as IViewableWidget).getView());
-    });
+    // build the child views
+    List<Widget> children = widget.model.inflate();
 
     Widget child = FlutterLogo();
-    if (_children.length == 1) child = _children.first;
-    if (_children.length >  1) child = Column(children: _children);
+    if (children.length == 1) child = children.first;
+    if (children.length >  1) child = Column(children: children);
     return child;
   }
 }

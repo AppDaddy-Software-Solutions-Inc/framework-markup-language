@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/expanded/expanded_model.dart';
 import 'package:fml/widgets/row/row_model.dart';
@@ -30,16 +29,8 @@ class _ExpandedViewState extends WidgetState<ExpandedView>
     if (!widget.model.visible) return Offstage();
 
     // build children
-    List<Widget> children = [];
-    if (widget.model.children != null)
-      widget.model.children!.forEach((model)
-      {
-        if (model is IViewableWidget) {
-          children.add((model as IViewableWidget).getView());
-        }
-      });
+    List<Widget> children = widget.model.inflate();
     if (children.isEmpty) children.add(Container());
-
     var view = children.length == 1 ? children[0] : Column(children: children);
 
     // determine the parent has a size in its primary axis

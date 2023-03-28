@@ -4,7 +4,6 @@ import 'package:fml/widgets/overlay/overlay_manager_view.dart';
 import 'package:fml/widgets/overlay/overlay_model.dart';
 import 'package:fml/widgets/table/row/cell/table_row_cell_model.dart';
 import 'package:fml/widgets/table/row/table_row_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart' ;
@@ -38,16 +37,8 @@ class _TableRowCellViewState extends WidgetState<TableRowCellView> with WidgetsB
     // save system constraints
     widget.model.setSystemConstraints(constraints);
 
-    // build children
-    List<Widget> children = [];
-    if (widget.model.visible) {
-      if (widget.model.children != null)
-        widget.model.children!.forEach((model) {
-          if (model is IViewableWidget) {
-            children.add((model as IViewableWidget).getView());
-          }
-        });
-    }
+    // build the child views
+    List<Widget> children = widget.model.inflate();
     if (children.isEmpty) children.add(Container());
 
     //this must go after the children are determined

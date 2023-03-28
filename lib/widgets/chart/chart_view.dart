@@ -11,7 +11,6 @@ import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart/chart_model.dart';
 import 'package:fml/widgets/chart/series/chart_series_model.dart';
 import 'package:fml/widgets/chart/axis/chart_axis_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/busy/busy_view.dart' as BUSY;
 import 'package:fml/widgets/busy/busy_model.dart' as BUSY;
@@ -95,13 +94,8 @@ class _ChartViewState extends WidgetState<ChartView>
     chart = Listener(behavior: HitTestBehavior.opaque, child: chart);
     if (chart != null) children.add(new SafeArea(child: chart));
 
-    // Add children
-    if (widget.model.children != null)
-      widget.model.children!.forEach((model) {
-        if (model is IViewableWidget) {
-          children.add((model as IViewableWidget).getView());
-        }
-      });
+    // build the child views
+    children.addAll(widget.model.inflate());
 
     /// Busy / Loading Indicator
     if (busy == null)

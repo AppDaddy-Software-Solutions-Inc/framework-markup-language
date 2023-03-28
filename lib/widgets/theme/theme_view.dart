@@ -1,7 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/theme/theme_model.dart';
 import 'package:fml/theme/theme.dart';
@@ -26,15 +24,9 @@ class _ThemeViewState extends WidgetState<ThemeView>
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-// build children
+    // build children
     widget.children.clear();
-    if (widget.model.children != null)
-      widget.model.children!.forEach((model)
-      {
-        if (model is IViewableWidget) {
-          widget.children.add((model as IViewableWidget).getView());
-        }
-      });
+    widget.children.addAll(widget.model.inflate());
     if (widget.children.isEmpty) widget.children.add(Container());
 
     var m = widget.model;

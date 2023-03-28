@@ -12,8 +12,9 @@ import 'package:fml/widgets/widget/widget_state.dart';
 class BoxView extends StatefulWidget implements IWidgetView
 {
   final BoxModel model;
+  final Widget? child;
 
-  BoxView(this.model) : super(key: ObjectKey(model));
+  BoxView(this.model,{this.child}) : super(key: ObjectKey(model));
 
   @override
   _BoxViewState createState() => _BoxViewState();
@@ -307,7 +308,7 @@ class _BoxViewState extends WidgetState<BoxView>
     widget.model.setSystemConstraints(BoxConstraints(minWidth:  minWidth, maxWidth:  maxWidth, minHeight: minHeight, maxHeight: maxHeight));
 
     // build the children
-    List<Widget> children = [];
+    List<Widget> children = widget.model.inflateViews();
     if (widget.model.children != null)
       widget.model.children!.forEach((model)
       {
@@ -321,7 +322,8 @@ class _BoxViewState extends WidgetState<BoxView>
     var alignment = AlignmentHelper.alignWidgetAxis(children.length, widget.model.layout, widget.model.center, widget.model.halign, widget.model.valign);
 
     // layout the children
-    Widget? child = _layoutChildren(widget.model.getLayoutType(), widget.model.expand, widget.model.wrap, children, alignment);
+    Widget? child = widget.child;
+    if (child == null) child = _layoutChildren(widget.model.getLayoutType(), widget.model.expand, widget.model.wrap, children, alignment);
 
     // border
     Border? border = _getBorder();

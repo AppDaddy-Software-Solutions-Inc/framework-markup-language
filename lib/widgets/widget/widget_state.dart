@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/constraint.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
+import 'iViewableWidget.dart';
 
 abstract class WidgetState<T extends StatefulWidget> extends State<T> implements IModelListener
 {

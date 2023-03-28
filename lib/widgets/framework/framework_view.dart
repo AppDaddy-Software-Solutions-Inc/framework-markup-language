@@ -164,9 +164,6 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   {
     try
     {
-      print('property >>>> $property');
-      if (building) return;
-
       var b = Binding.fromString(property);
       if (widget.model.initialized && this.mounted && b?.property != 'busy') setState(() {});
     }
@@ -314,6 +311,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       var model = widget.model.header!;
 
       // set header constraints
+      model.layout = "stack";
       model.width = constraints.maxWidth;
 
       // this is required to drive %sizing
@@ -336,6 +334,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       var model = widget.model.footer!;
 
       // set footer constraints
+      model.layout = "stack";
       model.width = constraints.maxWidth;
 
       // this is required to drive %sizing
@@ -346,6 +345,32 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     }
     else widget.model.footer?.height = 0;
 
+    return view;
+  }
+
+  Widget _buildBody(BoxConstraints constraints)
+  {
+    Widget view = Container();
+    if (widget.model.body != null)
+    {
+      var model = widget.model.body!;
+
+      // build body
+      var safeArea = MediaQuery.of(context).padding.top.ceil();
+
+      // set body constraints
+      model.layout = "column";
+      model.height = constraints.maxHeight - (widget.model.header?.height ?? 0) - (widget.model.footer?.height ?? 0) - safeArea;
+      model.width  = constraints.maxWidth;
+
+      // build framework footer view
+      var widgets = model.inflate();
+      view = BoxView(model,child: widgets.isNotEmpty ? widgets.first : null);
+
+      // listen to scroll events if the body
+      // is wrapped in a Scroller
+      if (model.findChildOfExactType(ScrollerModel) != null) view = NotificationListener<ScrollNotification>(onNotification: onScroll, child: view);
+    }
     return view;
   }
 
@@ -425,19 +450,15 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     return LayoutBuilder(builder: builder);
   }
 
-  bool building = false;
-
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    building = true;
+    // model is initializing
+    if (!widget.model.initialized) return Scaffold(body: Center(child: BusyView(BusyModel(null, visible: true))));
+
     Log().debug('Build called on framework view => <FML name=${widget.model.templateName} url="${widget.model.url}"/>');
 
-    // model is initializing
-    if (!widget.model.initialized)
-    {
-      building = false;
-      return Scaffold(body: Center(child: BusyView(BusyModel(null, visible: true))));
-    }
+    // stop listening during build
+    widget.model.removeListener(this);
 
     // fire navigator change
     onNavigatorChange();
@@ -458,22 +479,11 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     // build framework footer
     Widget footer = _buildFooter(constraints);
 
-    // set body constraints
-    widget.model.setSystemConstraints(BoxConstraints(maxWidth: constraints.maxWidth, maxHeight: constraints.maxHeight));
+    // build framework body
+    Widget body = _buildBody(constraints);
 
-    var safeArea = MediaQuery.of(context).padding.top.ceil();
-    widget.model.height = constraints.maxHeight - (widget.model.header?.height ?? 0) - (widget.model.footer?.height ?? 0) - safeArea;
-    widget.model.width  = constraints.maxWidth;
-
-    // build framework body view
-    Widget? body = BoxView(widget.model);
-
-    // listen to scroll events if the body
-    // is wrapped in a Scroller
-    if (widget.model.findChildOfExactType(ScrollerModel) != null) body = NotificationListener<ScrollNotification>(onNotification: onScroll, child: body);
-
-    // build framework view
-    Widget view = Column(mainAxisSize: MainAxisSize.min, children: [header, body, footer]);
+    // framework is header, body, footer stacked in a single column inside a fixed frame
+    Widget view = Column(children: [header, body, footer]);
 
     // We need to provide the stacks children to drawer because positioned
     // widgets must be direct children but the drawer uses a builder widget
@@ -486,7 +496,9 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     // scaffold with safe area
     view = SafeArea(child: Scaffold(resizeToAvoidBottomInset: true, body: view));
 
-    building = false;
+    // start listening to model changes
+    widget.model.registerListener(this);
+
     return view;
   }
 }

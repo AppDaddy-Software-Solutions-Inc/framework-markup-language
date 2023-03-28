@@ -6,6 +6,7 @@ import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_view.dart';
 import 'package:fml/widgets/widget/constraint.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
+import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -476,5 +477,15 @@ class ViewableWidgetModel extends WidgetModel
       animations.forEach((model) => view = model.getAnimatedView(view));
     }
     return view;
+  }
+
+  List<Widget> inflate()
+  {
+    List<Widget> list = [];
+    children?.forEach((model)
+    {
+      if (model is IViewableWidget) list.add((model as IViewableWidget).getView());
+    });
+    return list;
   }
 }

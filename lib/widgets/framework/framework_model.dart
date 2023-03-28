@@ -21,6 +21,7 @@ import 'package:fml/widgets/variable/variable_model.dart';
 import 'package:fml/widgets/framework/framework_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 
 class FrameworkModel extends BoxModel implements IViewableWidget, IModelListener, IEventManager
 {
@@ -36,6 +37,7 @@ class FrameworkModel extends BoxModel implements IViewableWidget, IModelListener
 
   HeaderModel?  header;
   FooterModel?  footer;
+  BoxModel?     body;
   DrawerModel?  drawer;
 
   List<String>? bindables;
@@ -417,6 +419,23 @@ class FrameworkModel extends BoxModel implements IViewableWidget, IModelListener
       if (children!.contains(footer)) children!.remove(footer);
     });
     removeChildrenOfExactType(FooterModel);
+
+    // add all visual elements to the body
+    // adn remove from this model
+    this.children?.forEach((model)
+    {
+      if (model is IViewableWidget)
+      {
+        if (this.body == null)
+        {
+          this.body = BoxModel(this,null);
+          this.body!.registerListener(this);
+          this.body!.children = [];
+        }
+        this.body?.children?.add(model);
+      }
+    });
+    if (this.body?.children != null) this.children!.removeWhere((child) => this.body!.children!.contains(child));
 
     // build drawers
     List<XmlElement>? nodes;

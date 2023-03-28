@@ -1,12 +1,23 @@
 class Constraints
 {
+  Constraints({double? width, double? minWidth, double? maxWidth, double? height, double? minHeight, double? maxHeight})
+  {
+    this.width    = width;
+    this.minWidth = minWidth;
+    this.maxWidth = maxWidth;
+
+    this.height    = width;
+    this.minHeight = minHeight;
+    this.maxHeight = maxHeight;
+  }
+
   // width
   double? _width;
   set width(double? v) => _width = v;
   double? get width
   {
     if (_width == null) return null;
-    if (_width == double.infinity) return null;
+    if (_width == double.infinity || _width == double.negativeInfinity) return null;
     if (_width! < 0) return null;
     return _width;
   } 
@@ -16,7 +27,7 @@ class Constraints
   double? get minWidth
   {
     if (_minWidth == null) return null;
-    if (_minWidth == double.infinity) return null;
+    if (_minWidth == double.infinity || _minWidth == double.negativeInfinity) return null;
     if (_minWidth! < 0) return null;
     return _minWidth;
   }
@@ -26,7 +37,7 @@ class Constraints
   double? get maxWidth
   {
     if (_maxWidth == null) return null;
-    if (_maxWidth == double.infinity) return null;
+    if (_maxWidth == double.infinity || _maxWidth == double.negativeInfinity) return null;
     if (_maxWidth! < 0) return null;
     return _maxWidth;
   }
@@ -37,7 +48,7 @@ class Constraints
   double? get height
   {
     if (_height == null) return null;
-    if (_height == double.infinity) return null;
+    if (_height == double.infinity || _height == double.negativeInfinity) return null;
     if (_height! < 0) return null;
     return _height;
   }
@@ -47,7 +58,7 @@ class Constraints
   double? get minHeight
   {
     if (_minHeight == null) return null;
-    if (_minHeight == double.infinity) return null;
+    if (_minHeight == double.infinity || _minHeight == double.negativeInfinity) return null;
     if (_minHeight! < 0) return null;
     return _minHeight;
   }
@@ -57,7 +68,7 @@ class Constraints
   double? get maxHeight
   {
     if (_maxHeight == null) return null;
-    if (_maxHeight == double.infinity) return null;
+    if (_maxHeight == double.infinity || _maxHeight == double.negativeInfinity) return null;
     if (_maxHeight! < 0) return null;
     return _maxHeight;
   }

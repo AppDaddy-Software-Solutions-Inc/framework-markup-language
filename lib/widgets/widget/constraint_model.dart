@@ -154,7 +154,7 @@ class ConstraintModel
   double? getGlobalMinWidth()
   {
     double? v;
-    if (_systemConstraints.minWidth != null && _systemConstraints.minWidth != double.infinity) v = _systemConstraints.minWidth;
+    if (_systemConstraints.minWidth != null) v = _systemConstraints.minWidth;
     if (v == null && parent is ViewableWidgetModel) v = (parent as ViewableWidgetModel).globalMinWidth;
     return v;
   }
@@ -164,7 +164,7 @@ class ConstraintModel
   double? getGlobalMaxWidth()
   {
     double? v;
-    if (_systemConstraints.maxWidth != null && _systemConstraints.maxWidth != double.infinity) v = _systemConstraints.maxWidth;
+    if (_systemConstraints.maxWidth != null) v = _systemConstraints.maxWidth;
     if (v == null && this.parent is ViewableWidgetModel)
     {
       ViewableWidgetModel parent = (this.parent as ViewableWidgetModel);
@@ -188,7 +188,7 @@ class ConstraintModel
   double? getGlobalMinHeight()
   {
     double? v;
-    if (_systemConstraints.minHeight != null && _systemConstraints.minHeight != double.infinity) v = _systemConstraints.minHeight;
+    if (_systemConstraints.minHeight != null) v = _systemConstraints.minHeight;
     if (v == null && parent is ViewableWidgetModel) v = (parent as ViewableWidgetModel).globalMinHeight;
     return v;
   }
@@ -198,7 +198,7 @@ class ConstraintModel
   double? getGlobalMaxHeight()
   {
     double? v;
-    if (_systemConstraints.maxHeight != null && _systemConstraints.maxHeight != double.infinity) v = _systemConstraints.maxHeight;
+    if (_systemConstraints.maxHeight != null) v = _systemConstraints.maxHeight;
     if (v == null && parent is ViewableWidgetModel)
     {
       ViewableWidgetModel? parent = (this.parent as ViewableWidgetModel);
@@ -230,8 +230,8 @@ class ConstraintModel
     constraint.maxWidth  = width  ?? maxWidth  ?? getGlobalMaxWidth();
 
     // ensure not negative
-    if (constraint.minWidth == null || constraint.minWidth! < 0) constraint.minWidth = 0;
-    if (constraint.maxWidth == null || constraint.maxWidth! < 0) constraint.maxWidth = double.infinity;
+    if (constraint.minWidth == null || constraint.minWidth! < 0) constraint.minWidth = null;
+    if (constraint.maxWidth == null || constraint.maxWidth! < 0) constraint.maxWidth = null;
 
     // ensure max > min
     if (constraint.minWidth != null && constraint.maxWidth != null && constraint.minWidth! > constraint.maxWidth!)
@@ -247,8 +247,8 @@ class ConstraintModel
     constraint.maxHeight = height ?? maxHeight ?? getGlobalMaxHeight();
 
     // ensure not negative
-    if (constraint.minHeight != null && constraint.minHeight! < 0) constraint.minHeight = 0;
-    if (constraint.maxHeight != null && constraint.maxHeight! < 0) constraint.maxHeight = double.infinity;
+    if (constraint.minHeight != null && constraint.minHeight! < 0) constraint.minHeight = null;
+    if (constraint.maxHeight != null && constraint.maxHeight! < 0) constraint.maxHeight = null;
 
     // ensure max > min
     if (constraint.minHeight != null && constraint.maxHeight != null && constraint.minHeight! > constraint.maxHeight!)
@@ -298,7 +298,7 @@ class ConstraintModel
     _systemConstraints.maxHeight = constraints?.maxHeight;
 
     // adjust the width if defined as a percentage
-    if (width != null && width! >= 100000 && width != double.infinity) _widthPercentage = (width!/1000000);
+    if (width != null && width! >= 100000) _widthPercentage = (width!/1000000);
     if (_widthPercentage != null)
     {
       // calculate the width
@@ -320,7 +320,7 @@ class ConstraintModel
     if (_maxWidthPercentage != null) _maxWidth?.set(_pctWidth(_maxWidthPercentage!), notify: false);
 
     // adjust the height if defined as a percentage
-    if (height != null && height! >= 100000 && height != double.infinity) _heightPercentage = (height!/1000000);
+    if (height != null && height! >= 100000) _heightPercentage = (height!/1000000);
     if (_heightPercentage != null)
     {
       // calculate the height

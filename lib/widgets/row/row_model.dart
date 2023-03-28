@@ -118,9 +118,9 @@ class RowModel extends DecoratedWidgetModel implements IViewableWidget
     var globalConstraints = this.globalConstraints;
 
     var expanding = expand;
-    if (expanding  && systemConstraints.maxWidth == double.infinity) expanding = false;
+    if (expanding  && systemConstraints.maxWidth == null) expanding = false;
     if (expanding  && localConstraints.hasHorizontalExpansionConstraints) return true;
-    if (expanding  && (globalConstraints.maxWidth ?? double.infinity) != double.infinity) return true;
+    if (expanding  && globalConstraints.maxWidth != null) return true;
     if (!expanding && localConstraints.hasHorizontalContractionConstraints) return true;
 
     return false;

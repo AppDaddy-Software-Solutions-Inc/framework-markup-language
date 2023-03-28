@@ -25,20 +25,7 @@ import 'package:fml/helper/common_helpers.dart';
 class FrameworkModel extends BoxModel implements IViewableWidget, IModelListener, IEventManager
 {
   @override
-  String get layout => super.layout ?? 'stack';
-
-  @override
-  setSystemConstraints(BoxConstraints? v)
-  {
-    // set body model (this)
-    super.setSystemConstraints(v);
-
-    // set header model
-    header?.setSystemConstraints(v);
-
-    // set footer model
-    footer?.setSystemConstraints(v);
-  }
+  String get layout => super.layout ?? 'column';
 
   /// Event Manager Host
   final EventManager manager = EventManager();

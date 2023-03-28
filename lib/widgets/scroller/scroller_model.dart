@@ -20,7 +20,7 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
   double? get globalMaxWidth
   {
     if (layout == 'row')
-         return double.infinity;
+         return null;
     else return super.globalMaxWidth;
   }
 
@@ -28,7 +28,7 @@ class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
   double? get globalMaxHeight
   {
     if (layout == 'column')
-         return double.infinity;
+         return null;
     else return super.globalMaxHeight;
   }
 

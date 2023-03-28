@@ -179,10 +179,6 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     }
   }
 
-  double viewportWidth  = 0;
-  double viewportHeight = 0;
-  double viewportSafeArea = 0;
-
   bool onScroll (ScrollNotification notification)
   {
     if ((notification.metrics.axisDirection == AxisDirection.left) || (notification.metrics.axisDirection == AxisDirection.right)) return false;
@@ -201,8 +197,11 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
     height = maxHeight - scrolled;
     if (height < minHeight) height = minHeight;
+
+    var safeArea = MediaQuery.of(context).padding.top.ceil();
+    var viewportHeight = widget.model.systemConstraints.maxHeight!;
     widget.model.header?.height = height;
-    widget.model.height = viewportHeight - height - (widget.model.footer?.localConstraints.height ?? 0) - viewportSafeArea.ceil();
+    widget.model.height = viewportHeight - height - (widget.model.footer?.localConstraints.height ?? 0) - safeArea;
 
     /* Stop Notification Bubble */
     return false;
@@ -343,9 +342,6 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     }
     SystemChrome.setPreferredOrientations(orientation);
 
-    // save system constraints
-    widget.model.setSystemConstraints(constraints);
-
     // post onstart callback
     if (!started)
     {
@@ -353,20 +349,18 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       WidgetsBinding.instance.addPostFrameCallback((_) => widget.model.onStart(context));
     }
 
-    // set viewport sizing
-    viewportWidth    = constraints.maxWidth;
-    viewportHeight   = constraints.maxHeight;
-    viewportSafeArea = MediaQuery.of(context).padding.top;
-
     // build framework header
     Widget header = Container();
+    widget.model.header?.expand = false;
     if (widget.model.header != null && widget.model.header!.visible != false)
     {
       var model = widget.model.header!;
 
-      // set framework header width & height
-      model.width  = viewportWidth;
-      model.height = model.height ?? model.localConstraints.maxHeight;
+      // set header constraints
+      model.width = constraints.maxWidth;
+
+      // this is required to drive %sizing
+      model.setSystemConstraints(BoxConstraints(maxWidth: constraints.maxWidth, maxHeight: constraints.maxHeight));
 
       // build framework header view
       header = model.getView();
@@ -375,24 +369,32 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
     // build framework footer
     Widget footer = Container();
+    widget.model.footer?.expand = false;
     if (widget.model.footer != null && widget.model.footer!.visible != false)
     {
       var model = widget.model.footer!;
 
-      // set framework footer width
-      model.width  = viewportWidth;
+      // set footer constraints
+      model.width = constraints.maxWidth;
+
+      // this is required to drive %sizing
+      model.setSystemConstraints(BoxConstraints(maxWidth: constraints.maxWidth, maxHeight: constraints.maxHeight));
 
       // build framework footer view
       footer = model.getView();
     }
     else widget.model.footer?.height = 0;
 
-    // set framework body width and height
-    widget.model.height = viewportHeight - (widget.model.header?.height ?? 0) - (widget.model.footer?.height ?? 0) - viewportSafeArea.ceil();
-    widget.model.width  = viewportWidth;
+    // set body constraints
+    widget.model.expand = false;
+    widget.model.setSystemConstraints(BoxConstraints(maxWidth: constraints.maxWidth, maxHeight: constraints.maxHeight));
+
+    var safeArea = MediaQuery.of(context).padding.top.ceil();
+    widget.model.height = constraints.maxHeight - (widget.model.header?.height ?? 0) - (widget.model.footer?.height ?? 0) - safeArea;
+    widget.model.width  = constraints.maxWidth;
 
     // build framework body view
-    Widget? body = NotificationListener<ScrollNotification>(onNotification: onScroll, child: widget.model.getReactiveView(BoxView(widget.model)));
+    Widget? body = NotificationListener<ScrollNotification>(onNotification: onScroll, child: BoxView(widget.model));
 
     // build framework view
     List<Widget> children = [header, body, footer];

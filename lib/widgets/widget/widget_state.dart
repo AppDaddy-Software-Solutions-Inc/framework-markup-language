@@ -57,10 +57,10 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
     // Apply min and max constraints to the view only if
     // they are supplied and have not already been applied using
     // width and/or height
-    //if (constraints.minWidth  != null) view = ConstrainedBox(child: view, constraints: BoxConstraints(minWidth:  constraints.minWidth!));
-    //if (constraints.maxWidth  != null) view = ConstrainedBox(child: view, constraints: BoxConstraints(maxWidth:  constraints.maxWidth!));
-    //if (constraints.minHeight != null) view = ConstrainedBox(child: view, constraints: BoxConstraints(minHeight: constraints.minHeight!));
-    //if (constraints.maxHeight != null) view = ConstrainedBox(child: view, constraints: BoxConstraints(maxHeight: constraints.maxHeight!));
+    if (constraints.minWidth  != null) view = ConstrainedBox(child: view, constraints: BoxConstraints(minWidth:  constraints.minWidth!));
+    if (constraints.maxWidth  != null) view = ConstrainedBox(child: view, constraints: BoxConstraints(maxWidth:  constraints.maxWidth!));
+    if (constraints.minHeight != null) view = ConstrainedBox(child: view, constraints: BoxConstraints(minHeight: constraints.minHeight!));
+    if (constraints.maxHeight != null) view = ConstrainedBox(child: view, constraints: BoxConstraints(maxHeight: constraints.maxHeight!));
 
     // If a hard width is specified
     // wrap the view in an unconstrained box of the specified

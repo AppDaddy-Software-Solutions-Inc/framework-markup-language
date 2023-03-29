@@ -6,14 +6,14 @@ import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/widget/alignment.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:hive/hive.dart';
 
 /// [BOX] view
 class BoxView extends StatefulWidget implements IWidgetView
 {
   final BoxModel model;
-  final Widget? child;
 
-  BoxView(this.model,{this.child}) : super(key: ObjectKey(model));
+  BoxView(this.model) : super(key: ObjectKey(model));
 
   @override
   _BoxViewState createState() => _BoxViewState();
@@ -77,8 +77,13 @@ List<Color> getGradientColors(c1, c2, c3, c4) {
 
 class _BoxViewState extends WidgetState<BoxView>
 {
-  static Widget _layoutChildren(LayoutTypes layout, bool expand, bool wrap, List<Widget> children, WidgetAlignment alignment)
+  Widget _layoutChildren(List<Widget> children, WidgetAlignment alignment)
   {
+
+    var layout = widget.model.getLayoutType();
+    var expand = widget.model.expand;
+    var wrap   = widget.model.wrap;
+
     Widget? child;
     switch (layout)
     {
@@ -86,7 +91,6 @@ class _BoxViewState extends WidgetState<BoxView>
         // The stack sizes itself to contain all the non-positioned children,
         // which are positioned according to alignment.
         // The positioned children are then placed relative to the stack according to their top, right, bottom, and left properties.
-
         // inflate the stack
         children.add(SizedBox.expand());
 
@@ -304,9 +308,8 @@ class _BoxViewState extends WidgetState<BoxView>
     var maxWidth  = constraints.maxWidth  - ((S.toDouble(widget.model.borderwidth) ?? 0) * 2);
     var minHeight = constraints.minHeight - ((S.toDouble(widget.model.borderwidth) ?? 0) * 2);
     var maxHeight = constraints.maxHeight;
-    widget.model.setSystemConstraints(BoxConstraints(minWidth:  minWidth, maxWidth:  maxWidth, minHeight: minHeight, maxHeight: maxHeight));
 
-    if (widget.child != null) return widget.child!;
+    widget.model.setSystemConstraints(BoxConstraints(minWidth:  minWidth, maxWidth:  maxWidth, minHeight: minHeight, maxHeight: maxHeight));
 
     // build the child views
     List<Widget> children = widget.model.inflate();
@@ -316,8 +319,7 @@ class _BoxViewState extends WidgetState<BoxView>
     var alignment = AlignmentHelper.alignWidgetAxis(children.length, widget.model.layout, widget.model.center, widget.model.halign, widget.model.valign);
 
     // layout the children
-    Widget? child = widget.child;
-    if (child == null) child = _layoutChildren(widget.model.getLayoutType(), widget.model.expand, widget.model.wrap, children, alignment);
+    Widget? child = _layoutChildren(children, alignment);
 
     // border
     Border? border = _getBorder();
@@ -334,18 +336,19 @@ class _BoxViewState extends WidgetState<BoxView>
     // blurred?
     if (widget.model.blur) child = _getBlurredView(child, borderDecoration);
 
-    // box view
-    Widget view = Container(decoration: borderDecoration, child: Container(
-        padding: _getPadding(),
-        clipBehavior: Clip.antiAlias,
-        decoration: decoration,
-        alignment: alignment.aligned,
-        child: child));
+    // blurred?
+    if (widget.model.blur) child = _getBlurredView(child, borderDecoration);
 
-    // opacity
+    // inner box - contents
+    Widget view = Container(padding: _getPadding(), clipBehavior: Clip.antiAlias, decoration: decoration, alignment: alignment.aligned, child: child);
+
+    // outer box - border
+    view = Container(decoration: borderDecoration, child: view);
+
+    // set opacity
     if (widget.model.opacity != null) view = _getFadedView(view);
 
-    // white10 = Blur (This creates mirrored/frosted effect overtop of something else)
+    // set blur - white10 = Blur (This creates mirrored/frosted effect overtop of something else)
     if (widget.model.color == Colors.white10) view = _getFrostedView(view, radius);
 
     // apply constraints

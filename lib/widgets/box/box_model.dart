@@ -17,22 +17,44 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
   @override
   Constraints get localConstraints
   {
-    var constraints = super.localConstraints;
-    if (expand)
+    var layout = getLayoutType();
+
+    var local  = super.localConstraints;
+    var system = systemConstraints;
+    var global = globalConstraints;
+
+    switch (layout)
     {
-      constraints.width     = constraints.width  ?? globalConstraints.maxWidth;
-      constraints.height    = constraints.height ?? globalConstraints.maxHeight;
-      constraints.minWidth  = null;
-      constraints.minHeight = null;
+      case LayoutTypes.column:
+         if (!system.hasVerticalExpansionConstraints && !local.hasVerticalExpansionConstraints) local.maxHeight = global.maxHeight;
+         break;
+
+      case LayoutTypes.row:
+        if (!system.hasHorizontalExpansionConstraints && !local.hasHorizontalExpansionConstraints) local.maxWidth = global.maxWidth;
+        break;
+
+      case LayoutTypes.stack:
+      default:
+        if (!system.hasVerticalExpansionConstraints && !local.hasVerticalExpansionConstraints) local.maxHeight = global.maxHeight;
+        if (!system.hasHorizontalExpansionConstraints && !local.hasHorizontalExpansionConstraints) local.maxWidth = global.maxWidth;
+        break;
     }
-    else
-    {
-      if (constraints.width  == null && constraints.minWidth  != null) constraints.width  = constraints.minWidth;
-      if (constraints.height == null && constraints.minHeight != null) constraints.height = constraints.minHeight;
-      constraints.maxWidth  = null;
-      constraints.maxHeight = null;
-    }
-    return constraints;
+
+    // if (expand)
+    // {
+    //   local.width     = local.width  ?? global.maxWidth;
+    //   local.height    = local.height ?? global.maxHeight;
+    //   local.minWidth  = null;
+    //   local.minHeight = null;
+    // }
+    // else
+    // {
+    //   if (local.width  == null && local.minWidth  != null) local.width  = local.minWidth;
+    //   if (local.height == null && local.minHeight != null) local.height = local.minHeight;
+    //   local.maxWidth  = null;
+    //   local.maxHeight = null;
+    // }
+    return local;
   }
 
   // box blur

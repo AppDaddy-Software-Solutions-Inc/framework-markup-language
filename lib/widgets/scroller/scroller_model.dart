@@ -16,22 +16,6 @@ import 'package:fml/helper/common_helpers.dart';
 /// Defines the properties used to build a [SCROLLER.ScrollerView]
 class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
 {
-  @override
-  double? get globalMaxWidth
-  {
-    if (layout == 'row')
-         return null;
-    else return super.globalMaxWidth;
-  }
-
-  @override
-  double? get globalMaxHeight
-  {
-    if (layout == 'column')
-         return null;
-    else return super.globalMaxHeight;
-  }
-
   /// The cross alignment of the widgets children. Can be `top`, `bottom`, `start`, or `end`.
   StringObservable? _align;
 

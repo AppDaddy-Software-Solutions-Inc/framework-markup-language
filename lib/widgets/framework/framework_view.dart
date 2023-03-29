@@ -9,7 +9,6 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:fml/navigation/navigation_observer.dart';
 import 'package:fml/event/event.dart'             ;
-import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
@@ -315,7 +314,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       model.width = constraints.maxWidth;
 
       // this is required to drive %sizing
-      model.setSystemConstraints(BoxConstraints(maxWidth: constraints.maxWidth, maxHeight: constraints.maxHeight));
+      model.setSystemConstraints(constraints);
 
       // build framework header view
       view = model.getView();
@@ -338,7 +337,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       model.width = constraints.maxWidth;
 
       // this is required to drive %sizing
-      model.setSystemConstraints(BoxConstraints(maxWidth: constraints.maxWidth, maxHeight: constraints.maxHeight));
+      model.setSystemConstraints(constraints);
 
       // build framework footer view
       view = model.getView();
@@ -363,8 +362,11 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       model.height = constraints.maxHeight - (widget.model.header?.height ?? 0) - (widget.model.footer?.height ?? 0) - safeArea;
       model.width  = constraints.maxWidth;
 
+      // set constraints
+      model.setSystemConstraints(constraints);
+
       // build framework footer view
-      view = BoxView(model, child: Stack(children: model.inflate()));
+      view = model.getView();
 
       // listen to scroll events if the body
       // is wrapped in a Scroller
@@ -453,6 +455,9 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   {
     // model is initializing
     if (!widget.model.initialized) return Scaffold(body: Center(child: BusyView(BusyModel(null, visible: true))));
+
+    // set the system constraints
+    widget.model.setSystemConstraints(constraints);
 
     Log().debug('Build called on framework view => <FML name=${widget.model.templateName} url="${widget.model.url}"/>');
 

@@ -9,6 +9,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:fml/navigation/navigation_observer.dart';
 import 'package:fml/event/event.dart'             ;
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
@@ -311,7 +312,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
       // set header constraints
       model.layout = "stack";
-      model.width = constraints.maxWidth;
+      model.width = MediaQuery.of(context).size.width;
 
       // this is required to drive %sizing
       model.systemConstraints = constraints;
@@ -334,7 +335,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
       // set footer constraints
       model.layout = "stack";
-      model.width  = constraints.maxWidth;
+      model.width  = MediaQuery.of(context).size.width;
 
       // this is required to drive %sizing
       model.systemConstraints = constraints;
@@ -349,31 +350,26 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
   Widget _buildBody(BoxConstraints constraints)
   {
-    Widget view = Container();
-    if (widget.model.body != null)
-    {
-      var model = widget.model.body!;
+    var model = (widget.model as BoxModel);
 
-      // build body
-      var safeArea = MediaQuery.of(context).padding.top.ceil();
+    // build body
+    var safeArea = MediaQuery.of(context).padding.top.ceil();
 
-      // set body constraints
-      var usedHeight = (widget.model.header?.height ?? 0) + (widget.model.footer?.height ?? 0) + safeArea;
-      model.layout = "stack";
-      model.height = constraints.maxHeight - usedHeight;
-      model.width  = constraints.maxWidth;
+    // set body constraints
+    var usedHeight = (widget.model.header?.height ?? 0) + (widget.model.footer?.height ?? 0) + safeArea;
+    model.layout    = "stack";
+    model.height    = MediaQuery.of(context).size.height - usedHeight;
+    model.width     = MediaQuery.of(context).size.width;
+    model.expand    = false;
 
-      // set system constraints
-      model.systemConstraints = BoxConstraints(maxHeight: model.height!, maxWidth: model.width!);
+    // build framework body
+    Widget view =  widget.model.getBoxView();
 
-      // build framework footer view
-      view = model.getView();
+    // listen to scroll events if the body
+    // is wrapped in a Scroller
+    if (model.findChildOfExactType(ScrollerModel) != null) view = NotificationListener<ScrollNotification>(onNotification: onScroll, child: view);
 
-      // listen to scroll events if the body
-      // is wrapped in a Scroller
-      if (model.findChildOfExactType(ScrollerModel) != null) view = NotificationListener<ScrollNotification>(onNotification: onScroll, child: view);
-    }
-    return view;
+    return UnconstrainedBox(child: SizedBox(child: view, width: model.width, height: model.height));
   }
 
   _setDeviceOrientation(String? orientation)

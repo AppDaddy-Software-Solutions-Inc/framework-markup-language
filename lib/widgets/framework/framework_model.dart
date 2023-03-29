@@ -7,6 +7,7 @@ import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/system.dart';
@@ -36,7 +37,6 @@ class FrameworkModel extends BoxModel implements IViewableWidget, IModelListener
 
   HeaderModel?  header;
   FooterModel?  footer;
-  BoxModel?     body;
   DrawerModel?  drawer;
 
   List<String>? bindables;
@@ -419,23 +419,6 @@ class FrameworkModel extends BoxModel implements IViewableWidget, IModelListener
     });
     removeChildrenOfExactType(FooterModel);
 
-    // add all visual elements to the body
-    // adn remove from this model
-    this.children?.forEach((model)
-    {
-      if (model is IViewableWidget)
-      {
-        if (this.body == null)
-        {
-          this.body = BoxModel(this,null);
-          this.body!.registerListener(this);
-          this.body!.children = [];
-        }
-        this.body?.children?.add(model);
-      }
-    });
-    if (this.body?.children != null) this.children!.removeWhere((child) => this.body!.children!.contains(child));
-
     // build drawers
     List<XmlElement>? nodes;
     nodes = Xml.getChildElements(node: xml, tag: "DRAWER");
@@ -549,6 +532,7 @@ class FrameworkModel extends BoxModel implements IViewableWidget, IModelListener
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
+  Widget getBoxView({Key? key}) => getReactiveView(BoxView(this));
   Widget getView({Key? key}) => getReactiveView(FrameworkView(this));
 }
 

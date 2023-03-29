@@ -90,11 +90,14 @@ class _BoxViewState extends WidgetState<BoxView>
         // which are positioned according to alignment.
         // The positioned children are then placed relative to the stack according to their top, right, bottom, and left properties.
         // inflate the stack
-        bool expandVertical   = widget.model.allowVerticalExpansion();
-        bool expandHorizontal = widget.model.allowHorizontalExpansion();
-             if ( expandVertical &&  expandHorizontal) children.add(SizedBox.expand());
-        else if ( expandVertical && !expandHorizontal) children.add(SizedBox(height: double.infinity));
-        else if (!expandVertical &&  expandHorizontal) children.add(SizedBox(width: double.infinity));
+        if (widget.model.expand)
+        {
+          bool expandVertical   = widget.model.allowVerticalExpansion();
+          bool expandHorizontal = widget.model.allowHorizontalExpansion();
+               if ( expandVertical &&  expandHorizontal) children.add(SizedBox.expand());
+          else if ( expandVertical && !expandHorizontal) children.add(SizedBox(height: double.infinity));
+          else if (!expandVertical &&  expandHorizontal) children.add(SizedBox(width: double.infinity));
+        }
 
         // create the stack
         child = Stack(children: children, alignment: alignment.aligned);

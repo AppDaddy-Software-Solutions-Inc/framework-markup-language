@@ -50,10 +50,12 @@ class ViewableWidgetModel extends WidgetModel
   // min height
   @protected
   set minHeight(dynamic v) => _constraintModel.minHeight = v;
+  double? get minHeight => _constraintModel.minHeight;
 
   // max height
   @protected
   set maxHeight(dynamic v) => _constraintModel.maxHeight = v;
+  double? get maxHeight => _constraintModel.maxHeight;
 
   double? get globalMaxWidth => _constraintModel.getGlobalMaxWidth();
 

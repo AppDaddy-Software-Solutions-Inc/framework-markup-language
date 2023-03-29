@@ -14,49 +14,6 @@ enum LayoutTypes {none, row, column, stack}
 
 class BoxModel extends DecoratedWidgetModel implements IViewableWidget
 {
-  @override
-  Constraints get localConstraints
-  {
-    var layout = getLayoutType();
-
-    var local  = super.localConstraints;
-    var system = systemConstraints;
-    var global = globalConstraints;
-
-    switch (layout)
-    {
-      case LayoutTypes.column:
-         if (!system.hasVerticalExpansionConstraints && !local.hasVerticalExpansionConstraints) local.maxHeight = global.maxHeight;
-         break;
-
-      case LayoutTypes.row:
-        if (!system.hasHorizontalExpansionConstraints && !local.hasHorizontalExpansionConstraints) local.maxWidth = global.maxWidth;
-        break;
-
-      case LayoutTypes.stack:
-      default:
-        if (!system.hasVerticalExpansionConstraints && !local.hasVerticalExpansionConstraints) local.maxHeight = global.maxHeight;
-        if (!system.hasHorizontalExpansionConstraints && !local.hasHorizontalExpansionConstraints) local.maxWidth = global.maxWidth;
-        break;
-    }
-
-    // if (expand)
-    // {
-    //   local.width     = local.width  ?? global.maxWidth;
-    //   local.height    = local.height ?? global.maxHeight;
-    //   local.minWidth  = null;
-    //   local.minHeight = null;
-    // }
-    // else
-    // {
-    //   if (local.width  == null && local.minWidth  != null) local.width  = local.minWidth;
-    //   if (local.height == null && local.minHeight != null) local.height = local.minHeight;
-    //   local.maxWidth  = null;
-    //   local.maxHeight = null;
-    // }
-    return local;
-  }
-
   // box blur
   BooleanObservable? _blur;
   set blur(dynamic v)
@@ -268,7 +225,6 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
     }
   }
   bool get expand => _expand?.get() ?? true;
-  bool get expanded => expand;
 
   BoxModel(
     WidgetModel? parent,
@@ -391,6 +347,63 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
         return 0;
       });
     }
+  }
+
+  bool get expanding => canExpandVertically() && canExpandHorizontally();
+  bool get shrinking => !expanding;
+
+  bool canExpandVertically()
+  {
+    if (!expand) return false;
+
+    var layout = getLayoutType();
+
+    var local  = super.localConstraints;
+    var system = systemConstraints;
+
+    switch (layout)
+    {
+      case LayoutTypes.column:
+        if (!system.hasVerticalExpansionConstraints && !local.hasVerticalExpansionConstraints) return false;
+        break;
+
+      case LayoutTypes.row:
+        return true;
+        break;
+
+      case LayoutTypes.stack:
+      default:
+        if (!system.hasVerticalExpansionConstraints && !local.hasVerticalExpansionConstraints) return false;
+        break;
+    }
+    return true;
+  }
+
+  bool canExpandHorizontally()
+  {
+    if (!expand) return false;
+
+    var layout = getLayoutType();
+
+    var local  = super.localConstraints;
+    var system = systemConstraints;
+
+    switch (layout)
+    {
+      case LayoutTypes.column:
+        return true;
+        break;
+
+      case LayoutTypes.row:
+        if (!system.hasHorizontalExpansionConstraints && !local.hasHorizontalExpansionConstraints) return false;
+        break;
+
+      case LayoutTypes.stack:
+      default:
+        if (!system.hasHorizontalExpansionConstraints && !local.hasHorizontalExpansionConstraints) return false;
+        break;
+    }
+    return true;
   }
 
   LayoutTypes getLayoutType()

@@ -307,7 +307,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
     if (widget.model.header != null && widget.model.header!.visible != false)
     {
-      var model = widget.model.header!;
+      var model  = widget.model.header!;
 
       // set header constraints
       model.layout = "stack";
@@ -334,7 +334,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
       // set footer constraints
       model.layout = "stack";
-      model.width = constraints.maxWidth;
+      model.width  = constraints.maxWidth;
 
       // this is required to drive %sizing
       model.setSystemConstraints(constraints);
@@ -358,12 +358,13 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       var safeArea = MediaQuery.of(context).padding.top.ceil();
 
       // set body constraints
+      var usedHeight = (widget.model.header?.height ?? 0) + (widget.model.footer?.height ?? 0) + safeArea;
       model.layout = "stack";
-      model.height = constraints.maxHeight - (widget.model.header?.height ?? 0) - (widget.model.footer?.height ?? 0) - safeArea;
+      model.height = constraints.maxHeight - usedHeight;
       model.width  = constraints.maxWidth;
 
       // set constraints
-      model.setSystemConstraints(constraints);
+      model.setSystemConstraints(BoxConstraints(maxHeight: model.height!, maxWidth: model.width!));
 
       // build framework footer view
       view = model.getView();

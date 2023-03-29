@@ -12,7 +12,7 @@ class FooterModel extends BoxModel implements IViewableWidget
   String get layout => super.layout ?? 'stack';
 
   @override
-  double get height => super.height ?? 50;
+  double get height => super.height ?? maxHeight ?? minHeight ?? 50;
 
   FooterModel(WidgetModel parent, String? id) : super(parent, id);
 

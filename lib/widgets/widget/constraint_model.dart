@@ -346,7 +346,7 @@ class ConstraintModel
   double? _pctWidth(double percent)
   {
     double? pct;
-    double? max = global.maxWidth;
+    double? max = _calculateGlobalMaxWidth();
     if (max != null) pct = max * (percent/100.0);
     return pct;
   }
@@ -354,7 +354,7 @@ class ConstraintModel
   double? _pctHeight(double percent)
   {
     double? pct;
-    double? max = global.maxHeight;
+    double? max = _calculateGlobalMaxHeight();
     if (max != null) pct = max * (percent/100.0);
     return pct;
   }

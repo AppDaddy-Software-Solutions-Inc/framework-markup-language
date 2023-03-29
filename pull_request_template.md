@@ -26,7 +26,7 @@
 
 
 ### Test template with comments for reviewer (remove if not applicable):
-Paste a complete test template within the xml markdown and if applicable write here how to effectivly reproduce your test.
+Paste a complete test template within the xml markdown and if applicable write here how to effectively reproduce your test.
 
 <details>
 <summary> Show Example FML Template </summary>

@@ -8,9 +8,6 @@ import 'package:fml/widgets/widget/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'constraint.dart';
 
-enum ConstraintType {width, height, minWidth, maxWidth, minHeight, maxHeight}
-enum ConstraintSource {system, model, global}
-
 class ConstraintModel
 {
   String? id;
@@ -278,13 +275,6 @@ class ConstraintModel
 
   ConstraintModel(this.id, this.scope, this.parent, this.listener);
 
-  // return the requested constraint value from the source specified
-  double? getConstraint(ConstraintSource source, ConstraintType constraint)
-  {
-    var constraints = _getConstraints(source);
-    return _getConstraint(constraints, constraint);
-  }
-
   /// walks up the model tree looking for
   /// the first system non-null minWidth value
   double? _calculateGlobalMinWidth()
@@ -405,47 +395,5 @@ class ConstraintModel
 
     //should add up all of the padded siblings to do this.
     return insets;
-  }
-
-  // return the constraint object
-  Constraints _getConstraints(ConstraintSource source)
-  {
-       switch (source)
-       {
-         case ConstraintSource.system: 
-           return this.system;
-           
-         case ConstraintSource.model:  
-           return this.model;
-           
-         case ConstraintSource.global:
-         default:
-           return this.global;
-       }
-  }
-
-  // return the constraint value from ths constraints
-  double? _getConstraint(Constraints constraints, ConstraintType constraint)
-  {
-    switch (constraint)
-    {
-      case ConstraintType.width:
-        return constraints.width;
-
-      case ConstraintType.minWidth:
-        return constraints.minWidth;
-
-      case ConstraintType.maxWidth:
-        return constraints.maxWidth;
-
-      case ConstraintType.height:
-        return constraints.height;
-
-      case ConstraintType.minHeight:
-        return constraints.minHeight;
-
-      case ConstraintType.maxHeight:
-        return constraints.maxHeight;
-    }
   }
 }

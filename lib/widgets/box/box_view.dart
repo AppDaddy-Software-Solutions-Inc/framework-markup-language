@@ -345,9 +345,6 @@ class _BoxViewState extends WidgetState<BoxView>
     // blurred?
     if (widget.model.blur) child = _getBlurredView(child, borderDecoration);
 
-    // blurred?
-    if (widget.model.blur) child = _getBlurredView(child, borderDecoration);
-
     // inner box - contents
     Widget view = Container(padding: _getPadding(), clipBehavior: Clip.antiAlias, decoration: decoration, alignment: alignment.aligned, child: child);
 
@@ -366,7 +363,8 @@ class _BoxViewState extends WidgetState<BoxView>
     view = applyConstraints(view, widget.model.modelConstraints);
 
     // this allows the view to shrink accordingly
-    if (widget.model.getLayoutType() == LayoutTypes.stack) view = UnconstrainedBox(child: view);
+    bool expanding = widget.model.expand && widget.model.allowHorizontalExpansion() && widget.model.allowVerticalExpansion();
+    if (!expanding) view = UnconstrainedBox(child: view);
 
     return view;
   }

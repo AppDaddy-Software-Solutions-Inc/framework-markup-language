@@ -24,51 +24,52 @@ class ViewableWidgetModel extends WidgetModel
 
   /// Constraints Attributes
   ///
-  late final ConstraintModel _constraintModel;
+  late final ConstraintModel _constraints;
   
   // width
-  double? get width  => _constraintModel.width;
-  set width(dynamic v)  => _constraintModel.width = v;
+  double? get width  => _constraints.width;
+  set width(dynamic v)  => _constraints.width = v;
 
   // height
-  double? get height => _constraintModel.height;
-  set height(dynamic v)  => _constraintModel.height = v;
+  double? get height => _constraints.height;
+  set height(dynamic v)  => _constraints.height = v;
 
   // %width
-  double? get pctWidth => _constraintModel.pctWidth;
+  double? get pctWidth => _constraints.pctWidth;
 
   // %height
-  double? get pctHeight => _constraintModel.pctHeight;
+  double? get pctHeight => _constraints.pctHeight;
 
   // min width
   @protected
-  set minWidth(dynamic v) => _constraintModel.minWidth = v;
+  set minWidth(dynamic v) => _constraints.minWidth = v;
 
   // max width
   @protected
-  set maxWidth(dynamic v) => _constraintModel.maxWidth = v;
+  set maxWidth(dynamic v) => _constraints.maxWidth = v;
 
   // min height
   @protected
-  set minHeight(dynamic v) => _constraintModel.minHeight = v;
-  double? get minHeight => _constraintModel.minHeight;
+  set minHeight(dynamic v) => _constraints.minHeight = v;
+  double? get minHeight => _constraints.minHeight;
 
   // max height
   @protected
-  set maxHeight(dynamic v) => _constraintModel.maxHeight = v;
-  double? get maxHeight => _constraintModel.maxHeight;
+  set maxHeight(dynamic v) => _constraints.maxHeight = v;
+  double? get maxHeight => _constraints.maxHeight;
 
-  /// constraints as per the model template
-  Constraints get modelConstraints  => _constraintModel.model;
+  /// holds constraints defined in the template
+  Constraints get modelConstraints  => _constraints.model;
 
-  /// constraints as per flutter layout builder
-  Constraints get systemConstraints => _constraintModel.system;
+  /// holds constraints passed in flutter layout builder
+  Constraints get systemConstraints => _constraints.system;
 
-  /// constraints as per walking up the tree
-  Constraints get globalConstraints => _constraintModel.global;
+  /// constraints calculated by walking up the
+  /// model tree comparing both model and flutter constraints
+  Constraints get globalConstraints => _constraints.global;
 
   /// used to set the system constraints in layout builder
-  set systemConstraints(dynamic v) => _constraintModel.system = v;
+  set systemConstraints(dynamic v) => _constraints.system = v;
   
   /// alignment and layout attributes
   ///
@@ -297,7 +298,7 @@ class ViewableWidgetModel extends WidgetModel
   ViewableWidgetModel(WidgetModel? parent, String? id, {Scope? scope}) : super(parent, id, scope: scope)
   {
     // create model constraints
-    _constraintModel = ConstraintModel(this.id, this.scope, parent, onPropertyChange);
+    _constraints = ConstraintModel(this.id, this.scope, parent, onPropertyChange);
   }
 
   /// Deserializes the FML template elements, attributes and children
@@ -308,12 +309,12 @@ class ViewableWidgetModel extends WidgetModel
     super.deserialize(xml);
 
     // set constraints
-    _constraintModel.width     = Xml.get(node: xml, tag: 'width');
-    _constraintModel.height    = Xml.get(node: xml, tag: 'height');
-    _constraintModel.minWidth  = Xml.get(node: xml, tag: 'minwidth');
-    _constraintModel.maxWidth  = Xml.get(node: xml, tag: 'maxwidth');
-    _constraintModel.minHeight = Xml.get(node: xml, tag: 'minheight');
-    _constraintModel.maxHeight = Xml.get(node: xml, tag: 'maxheight');
+    _constraints.width     = Xml.get(node: xml, tag: 'width');
+    _constraints.height    = Xml.get(node: xml, tag: 'height');
+    _constraints.minWidth  = Xml.get(node: xml, tag: 'minwidth');
+    _constraints.maxWidth  = Xml.get(node: xml, tag: 'maxwidth');
+    _constraints.minHeight = Xml.get(node: xml, tag: 'minheight');
+    _constraints.maxHeight = Xml.get(node: xml, tag: 'maxheight');
 
     // properties
     visible   = Xml.get(node: xml, tag: 'visible');

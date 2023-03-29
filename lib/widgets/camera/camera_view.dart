@@ -467,9 +467,16 @@ class CameraViewState extends WidgetState<CameraView>
 
     final offset = Offset(details.localPosition.dx / constraints.maxWidth,
         details.localPosition.dy / constraints.maxHeight);
-
-    cameraController.setExposurePoint(offset);
-    cameraController.setFocusPoint(offset);
+    try {
+      cameraController.setExposurePoint(offset);
+    } catch(e) {
+      Log().debug(e.toString(), caller: 'onViewFinderTap() cameraController.setExposurePoint');
+    }
+    try {
+      cameraController.setFocusPoint(offset);
+    } catch(e) {
+      Log().debug(e.toString(), caller: 'onViewFinderTap() cameraController.setFocusPoint');
+    }
   }
 
   @override

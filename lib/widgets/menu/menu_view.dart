@@ -107,7 +107,7 @@ class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // save system constraints
-    widget.model.setSystemConstraints(constraints);
+    widget.model.systemConstraints = constraints;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -122,7 +122,7 @@ class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling
     /* View */
     //////////
     Widget view = Stack(children: [
-      _buildMenuItems(widget.model.globalMaxWidth!),
+      _buildMenuItems(widget.model.globalConstraints.maxWidth!),
       Center(child: busy)
     ]);
     return Container(

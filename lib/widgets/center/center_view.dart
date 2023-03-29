@@ -27,7 +27,7 @@ class _CenterViewState extends WidgetState<CenterView>
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // save system constraints
-    widget.model.setSystemConstraints(constraints);
+    widget.model.systemConstraints = constraints;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -43,6 +43,6 @@ class _CenterViewState extends WidgetState<CenterView>
       : Column(children: widget.children, crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.max));
 
     // apply user defined constraints
-    return applyConstraints(view, widget.model.localConstraints);
+    return applyConstraints(view, widget.model.modelConstraints);
   }
 }

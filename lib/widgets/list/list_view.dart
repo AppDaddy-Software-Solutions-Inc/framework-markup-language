@@ -136,7 +136,7 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // save system constraints
-    widget.model.setSystemConstraints(constraints);
+    widget.model.systemConstraints = constraints;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -188,8 +188,8 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
     ////////////////////////
     double? width  = widget.model.width;
     double? height = widget.model.height;
-    if (constraints.maxHeight == double.infinity || constraints.maxHeight == double.negativeInfinity || height == null) height = widget.model.globalMaxHeight ?? constraints.maxHeight;
-    if (constraints.maxWidth  == double.infinity || constraints.maxWidth  == double.negativeInfinity || width  == null) width  = widget.model.globalMaxWidth  ?? constraints.maxWidth;
+    if (constraints.maxHeight == double.infinity || constraints.maxHeight == double.negativeInfinity || height == null) height = widget.model.globalConstraints.maxHeight ?? constraints.maxHeight;
+    if (constraints.maxWidth  == double.infinity || constraints.maxWidth  == double.negativeInfinity || width  == null) width  = widget.model.globalConstraints.maxWidth  ?? constraints.maxWidth;
     view = UnconstrainedBox(child: SizedBox(height: height, width: width, child: view));
 
     children.addAll([view, Center(child: busy)]);

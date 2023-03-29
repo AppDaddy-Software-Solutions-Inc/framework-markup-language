@@ -148,7 +148,7 @@ class _SpanViewState extends WidgetState<SpanView>
             textAlign: textAlign));
 
     // apply user defined constraints
-    return applyConstraints(view, widget.model.localConstraints);
+    return applyConstraints(view, widget.model.modelConstraints);
   }
 
   _buildSpans()

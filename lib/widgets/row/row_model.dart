@@ -23,7 +23,6 @@ class RowModel extends DecoratedWidgetModel implements IViewableWidget
   }
   bool get center => _center?.get() ?? false;
 
-
   /// wrap is a boolean that dictates if the widget will wrap or not.
   //to use wrapping with minmax constraints and expanded, ROW needs to only wrap when its width is less than the sum of its childrens min constraints. Suggested wrap="dymamic or wrap="null""
   BooleanObservable? _wrap;
@@ -114,7 +113,7 @@ class RowModel extends DecoratedWidgetModel implements IViewableWidget
   {
     // get constraints
     var systemConstraints = this.systemConstraints;
-    var localConstraints  = this.localConstraints;
+    var localConstraints  = this.modelConstraints;
     var globalConstraints = this.globalConstraints;
 
     var expanding = expand;

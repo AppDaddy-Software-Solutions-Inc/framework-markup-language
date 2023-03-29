@@ -35,7 +35,7 @@ class _InlineFrameViewState extends WidgetState<InlineFrameView>
     InlineFrameModel model = widget.model;
 
     // save system constraints
-    widget.model.setSystemConstraints(constraints);
+    widget.model.systemConstraints = constraints;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -48,7 +48,7 @@ class _InlineFrameViewState extends WidgetState<InlineFrameView>
     view = Container(child: view, width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.height);
 
     // apply user defined constraints
-    view = applyConstraints(view, widget.model.localConstraints);
+    view = applyConstraints(view, widget.model.modelConstraints);
 
     return view;
   }

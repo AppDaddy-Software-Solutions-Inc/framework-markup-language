@@ -380,7 +380,7 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
     if (((!widget.model.visible))) return Offstage();
 
     // save system constraints
-    widget.model.setSystemConstraints(constraints);
+    widget.model.systemConstraints = constraints;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _afterBuild(context);
@@ -414,7 +414,7 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
     );
 
     // apply user defined constraints
-    return applyConstraints(view, widget.model.localConstraints);
+    return applyConstraints(view, widget.model.modelConstraints);
   }
 
   /// After [iFormFields] are drawn we get the global offset for scrollTo functionality

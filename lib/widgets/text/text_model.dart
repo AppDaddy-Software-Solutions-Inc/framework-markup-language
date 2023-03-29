@@ -57,13 +57,13 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
       double? s1;
       double? s2;
 
-      double? mh = globalMaxHeight;
+      double? mh = globalConstraints.maxHeight;
       if (mh != null)
         s1 = mh * (s / 100.0);
       else
         s1 = null;
 
-      double? mw = globalMaxWidth;
+      double? mw = globalConstraints.maxWidth;
       if (mw != null)
         s2 = mw * (s / 100.0);
       else

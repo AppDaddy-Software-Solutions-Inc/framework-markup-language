@@ -48,11 +48,11 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
   /// This routine applies the given constraints to the supplied
   /// view and then returns a widget with the view wrapped in those
   /// constraints
-  Widget applyConstraints(Widget view, Constraints constraints)
+  static Widget applyConstraints(Widget view, Constraints constraints)
   {
     // If no constraints are specified
     // return the view
-    if (constraints.hasNoConstraints) return view;
+    if (constraints.isEmpty) return view;
 
     // Apply min and max constraints to the view only if
     // they are supplied and have not already been applied using

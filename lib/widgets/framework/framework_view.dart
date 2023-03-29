@@ -178,10 +178,10 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
     if ((notification.metrics.axisDirection == AxisDirection.left) || (notification.metrics.axisDirection == AxisDirection.right)) return false;
 
-    double maxHeight = widget.model.header?.height ?? widget.model.header?.localConstraints.maxHeight ?? 0;
+    double maxHeight = widget.model.header?.height ?? widget.model.header?.modelConstraints.maxHeight ?? 0;
     if (maxHeight < 0) maxHeight = 0;
 
-    double minHeight = widget.model.header?.height ?? widget.model.header?.localConstraints.minHeight ?? 0;
+    double minHeight = widget.model.header?.height ?? widget.model.header?.modelConstraints.minHeight ?? 0;
     if (minHeight < 0) minHeight = 0;
 
     // Non-Resizeable Header
@@ -196,7 +196,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     var safeArea = MediaQuery.of(context).padding.top.ceil();
     var viewportHeight = widget.model.systemConstraints.maxHeight!;
     widget.model.header?.height = height;
-    widget.model.height = viewportHeight - height - (widget.model.footer?.localConstraints.height ?? 0) - safeArea;
+    widget.model.height = viewportHeight - height - (widget.model.footer?.modelConstraints.height ?? 0) - safeArea;
 
     /* Stop Notification Bubble */
     return false;
@@ -314,7 +314,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       model.width = constraints.maxWidth;
 
       // this is required to drive %sizing
-      model.setSystemConstraints(constraints);
+      model.systemConstraints = constraints;
 
       // build framework header view
       view = model.getView();
@@ -337,7 +337,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       model.width  = constraints.maxWidth;
 
       // this is required to drive %sizing
-      model.setSystemConstraints(constraints);
+      model.systemConstraints = constraints;
 
       // build framework footer view
       view = model.getView();
@@ -363,8 +363,8 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       model.height = constraints.maxHeight - usedHeight;
       model.width  = constraints.maxWidth;
 
-      // set constraints
-      model.setSystemConstraints(BoxConstraints(maxHeight: model.height!, maxWidth: model.width!));
+      // set system constraints
+      model.systemConstraints = BoxConstraints(maxHeight: model.height!, maxWidth: model.width!);
 
       // build framework footer view
       view = model.getView();
@@ -458,7 +458,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     if (!widget.model.initialized) return Scaffold(body: Center(child: BusyView(BusyModel(null, visible: true))));
 
     // set the system constraints
-    widget.model.setSystemConstraints(constraints);
+    widget.model.systemConstraints = constraints;
 
     Log().debug('Build called on framework view => <FML name=${widget.model.templateName} url="${widget.model.url}"/>');
 

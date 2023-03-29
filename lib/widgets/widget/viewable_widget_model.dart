@@ -5,6 +5,7 @@ import 'package:fml/widgets/animation/animation_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_view.dart';
 import 'package:fml/widgets/widget/constraint.dart';
+import 'package:fml/widgets/widget/constraint_model.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -12,7 +13,6 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
-import 'constraint_model.dart';
 
 class ViewableWidgetModel extends WidgetModel
 {
@@ -22,9 +22,10 @@ class ViewableWidgetModel extends WidgetModel
   // holds animations
   List<AnimationModel>? animations;
 
-  // Constraints
+  /// Constraints Attributes
+  ///
   late final ConstraintModel _constraintModel;
-
+  
   // width
   double? get width  => _constraintModel.width;
   set width(dynamic v)  => _constraintModel.width = v;
@@ -57,29 +58,18 @@ class ViewableWidgetModel extends WidgetModel
   set maxHeight(dynamic v) => _constraintModel.maxHeight = v;
   double? get maxHeight => _constraintModel.maxHeight;
 
-  double? get globalMaxWidth => _constraintModel.getGlobalMaxWidth();
+  /// constraints as per the model template
+  Constraints get modelConstraints  => _constraintModel.model;
 
-  double? get globalMinWidth => _constraintModel.getGlobalMinWidth();
+  /// constraints as per flutter layout builder
+  Constraints get systemConstraints => _constraintModel.system;
 
-  double? get globalMinHeight => _constraintModel.getGlobalMinHeight();
-
-  double? get globalMaxHeight => _constraintModel.getGlobalMaxHeight();
-
-  /// user constraints as per the template
-  Constraints get localConstraints => _constraintModel.getLocalConstraints();
-
-  /// constraints derived from blending
-  /// user and system constraints from the model
-  /// hierarchy
-  Constraints get globalConstraints => _constraintModel.getGlobalConstraints();
-
-  // returns the constraints as specified
-  // by the system in LayoutBuilder()
-  Constraints get systemConstraints => _constraintModel.getSystemConstraints();
+  /// constraints as per walking up the tree
+  Constraints get globalConstraints => _constraintModel.global;
 
   /// used to set the system constraints in layout builder
-  setSystemConstraints(BoxConstraints? v) => _constraintModel.setSystemConstraints(v);
-
+  set systemConstraints(dynamic v) => _constraintModel.system = v;
+  
   /// alignment and layout attributes
   ///
   /// The horizontal alignment of the widgets children, overrides `center`. Can be `left`, `right`, `start`, or `end`.

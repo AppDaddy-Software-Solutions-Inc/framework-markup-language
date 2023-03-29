@@ -106,7 +106,7 @@ class ColumnModel extends DecoratedWidgetModel implements IViewableWidget
   {
     // get constraints
     var systemConstraints = this.systemConstraints;
-    var localConstraints  = this.localConstraints;
+    var localConstraints  = this.modelConstraints;
     var globalConstraints = this.globalConstraints;
 
     var expanding = expand;

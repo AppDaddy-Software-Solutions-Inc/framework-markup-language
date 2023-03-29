@@ -23,7 +23,7 @@ class _ColumnViewState extends WidgetState<ColumnView>
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // save system constraints
-    widget.model.setSystemConstraints(constraints);
+    widget.model.systemConstraints = constraints;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -36,7 +36,7 @@ class _ColumnViewState extends WidgetState<ColumnView>
     var alignment = AlignmentHelper.alignWidgetAxis(children.length, 'column', widget.model.center, widget.model.halign, widget.model.valign);
 
     // get user defined constraints
-    var localConstraints = widget.model.localConstraints;
+    var localConstraints = widget.model.modelConstraints;
 
     // set main axis size
     var mainAxisSize = widget.model.expand == false ? MainAxisSize.min : MainAxisSize.max;

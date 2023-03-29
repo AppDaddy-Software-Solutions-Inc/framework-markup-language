@@ -6,8 +6,10 @@ import 'package:fml/observable/observables/double.dart';
 import 'package:fml/observable/scope.dart';
 import 'package:fml/widgets/widget/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
-
 import 'constraint.dart';
+
+enum ConstraintType {width, height, minWidth, maxWidth, minHeight, maxHeight}
+enum ConstraintSource {system, model, global}
 
 class ConstraintModel
 {
@@ -16,11 +18,136 @@ class ConstraintModel
   OnChangeCallback? listener;
   WidgetModel? parent;
 
-  // holds the system layout constraints
-  Constraints _systemConstraints = Constraints();
+  // returns the constraints as specified
+  // in the model template
+  Constraints get model
+  {
+    Constraints constraint = Constraints();
+    constraint.width     = width;
+    constraint.minWidth  = minWidth;
+    constraint.maxWidth  = maxWidth;
+    constraint.height    = height;
+    constraint.minHeight = minHeight;
+    constraint.maxHeight = maxHeight;
+    return constraint;
+  }
 
-  ConstraintModel(this.id, this.scope, this.parent, this.listener);
+  // constraints as specified
+  // by the layoutBuilder()
+  Constraints _system = Constraints();
+  set system (dynamic constraints)
+  {
+    if (constraints is BoxConstraints)
+    {
+      // set the system constraints
+      _system.minWidth  = constraints.minWidth;
+      _system.maxWidth  = constraints.maxWidth;
+      _system.minHeight = constraints.minHeight;
+      _system.maxHeight = constraints.maxHeight;
 
+      // adjust the width if defined as a percentage
+      if (width != null && width! >= 100000) _widthPercentage = (width!/1000000);
+      if (_widthPercentage != null)
+      {
+        // calculate the width
+        double? width = _pctWidth(_widthPercentage!);
+
+        // adjust min and max widths
+        if (width != null)
+        {
+          if (minWidth != null && minWidth! > width)  width = minWidth;
+          if (maxWidth != null && maxWidth! < width!) width = maxWidth;
+        }
+
+        // set the width
+        _width?.set(width, notify: false);
+      }
+
+      // adjust the min/max widths if defined as percentages
+      if (_minWidthPercentage != null) _minWidth?.set(_pctWidth(_minWidthPercentage!), notify: false);
+      if (_maxWidthPercentage != null) _maxWidth?.set(_pctWidth(_maxWidthPercentage!), notify: false);
+
+      // adjust the height if defined as a percentage
+      if (height != null && height! >= 100000) _heightPercentage = (height!/1000000);
+      if (_heightPercentage != null)
+      {
+        // calculate the height
+        double? height = _pctHeight(_heightPercentage!);
+
+        // adjust min and max heights
+        if (height != null)
+        {
+          if (minHeight != null && minHeight! > height)  height = minHeight;
+          if (maxHeight != null && maxHeight! < height!) height = maxHeight;
+        }
+
+        // set the height
+        _height?.set(height, notify: false);
+      }
+
+      // adjust the min/max heights
+      if (_minHeightPercentage != null) _minHeight?.set(_pctHeight(_minHeightPercentage!), notify: false);
+      if (_maxHeightPercentage != null) _maxHeight?.set(_pctHeight(_maxHeightPercentage!), notify: false);
+    }
+  }
+  Constraints get system => _system;
+
+  // returns the constraints as calculated
+  // by walking up the model tree and
+  // examining system and local model constraints
+  Constraints get global
+  {
+    Constraints constraints = Constraints();
+
+    // calculates global constraints
+    Constraints global = Constraints();
+    global.minWidth  = _calculateGlobalMinWidth();
+    global.maxWidth  = _calculateGlobalMaxWidth();
+    global.minHeight = _calculateGlobalMinHeight();
+    global.maxHeight = _calculateGlobalMaxHeight();
+
+    // constraints as specified on the model template
+    Constraints model = this.model;
+
+    // WIDTH
+    constraints.width     = model.width;
+    constraints.minWidth  = model.width  ?? model.minWidth  ?? global.minWidth;
+    constraints.maxWidth  = model.width  ?? model.maxWidth  ?? global.maxWidth;
+
+    // ensure not negative
+    if (constraints.minWidth == null || constraints.minWidth! < 0) constraints.minWidth = null;
+    if (constraints.maxWidth == null || constraints.maxWidth! < 0) constraints.maxWidth = null;
+
+    // ensure max > min
+    if (constraints.minWidth != null && constraints.maxWidth != null && constraints.minWidth! > constraints.maxWidth!)
+    {
+      var v = constraints.minWidth;
+      constraints.minWidth = constraints.maxWidth;
+      constraints.maxWidth = v;
+    }
+
+    // HEIGHT
+    constraints.height    = model.height;
+    constraints.minHeight = model.height ?? model.minHeight ?? global.minHeight;
+    constraints.maxHeight = model.height ?? model.maxHeight ?? global.maxHeight;
+
+    // ensure not negative
+    if (constraints.minHeight != null && constraints.minHeight! < 0) constraints.minHeight = null;
+    if (constraints.maxHeight != null && constraints.maxHeight! < 0) constraints.maxHeight = null;
+
+    // ensure max > min
+    if (constraints.minHeight != null && constraints.maxHeight != null && constraints.minHeight! > constraints.maxHeight!)
+    {
+      var v = constraints.minHeight;
+      constraints.minHeight = constraints.maxHeight;
+      constraints.maxHeight = v;
+    }
+
+    return constraints;
+  }
+
+  /// Local Constraints 
+  /// 
   // width
   double? _widthPercentage;
   double? get pctWidth => _widthPercentage;
@@ -148,23 +275,32 @@ class ConstraintModel
     }
   }
   double? get maxHeight => _maxHeight?.get();
-  
+
+  ConstraintModel(this.id, this.scope, this.parent, this.listener);
+
+  // return the requested constraint value from the source specified
+  double? getConstraint(ConstraintSource source, ConstraintType constraint)
+  {
+    var constraints = _getConstraints(source);
+    return _getConstraint(constraints, constraint);
+  }
+
   /// walks up the model tree looking for
   /// the first system non-null minWidth value
-  double? getGlobalMinWidth()
+  double? _calculateGlobalMinWidth()
   {
     double? v;
-    if (_systemConstraints.minWidth != null) v = _systemConstraints.minWidth;
-    if (v == null && parent is ViewableWidgetModel) v = (parent as ViewableWidgetModel).globalMinWidth;
+    if (_system.minWidth != null) v = _system.minWidth;
+    if (v == null && parent is ViewableWidgetModel) v = (parent as ViewableWidgetModel).globalConstraints.minWidth;
     return v;
   }
 
   /// walks up the model tree looking for
   /// the first system non-null maxWidth value
-  double? getGlobalMaxWidth()
+  double? _calculateGlobalMaxWidth()
   {
     double? v;
-    if (_systemConstraints.maxWidth != null) v = _systemConstraints.maxWidth;
+    if (_system.maxWidth != null) v = _system.maxWidth;
     if (v == null && this.parent is ViewableWidgetModel)
     {
       ViewableWidgetModel parent = (this.parent as ViewableWidgetModel);
@@ -173,32 +309,32 @@ class ConstraintModel
         var hpad = _getHorizontalPadding(parent.paddings, parent.padding, parent.padding2, parent.padding3, parent.padding4);
         if (parent.width == null)
         {
-           var w = parent.globalMaxWidth;
+           var w = parent.globalConstraints.maxWidth;
            if (w != null) v = w - hpad;
         }
         else v = parent.width! - hpad;
       }
-      else v = parent.width ?? parent.globalMaxWidth;
+      else v = parent.width ?? parent.globalConstraints.maxWidth;
     }
     return v;
   }
 
   /// walks up the model tree looking for
   /// the first system non-null minHeight value
-  double? getGlobalMinHeight()
+  double? _calculateGlobalMinHeight()
   {
     double? v;
-    if (_systemConstraints.minHeight != null) v = _systemConstraints.minHeight;
-    if (v == null && parent is ViewableWidgetModel) v = (parent as ViewableWidgetModel).globalMinHeight;
+    if (_system.minHeight != null) v = _system.minHeight;
+    if (v == null && parent is ViewableWidgetModel) v = (parent as ViewableWidgetModel).globalConstraints.minHeight;
     return v;
   }
 
   /// walks up the model tree looking for
   /// the first system non-null maxHeight value
-  double? getGlobalMaxHeight()
+  double? _calculateGlobalMaxHeight()
   {
     double? v;
-    if (_systemConstraints.maxHeight != null) v = _systemConstraints.maxHeight;
+    if (_system.maxHeight != null) v = _system.maxHeight;
     if (v == null && parent is ViewableWidgetModel)
     {
       ViewableWidgetModel? parent = (this.parent as ViewableWidgetModel);
@@ -207,145 +343,20 @@ class ConstraintModel
         var vpad = _getVerticalPadding(parent.paddings, parent.padding, parent.padding2, parent.padding3, parent.padding4);
         if (parent.height == null)
         {
-          var h = parent.globalMaxHeight;
+          var h = parent.globalConstraints.maxHeight;
           if (h != null) v = h - vpad;
         }
         else v = parent.height! - vpad;
       }
-      else v = parent.height ?? parent.globalMaxHeight;
+      else v = parent.height ?? parent.globalConstraints.maxHeight;
     }
     return v;
-  }
-
-  // walks up the tree
-  // blending the system and user defined
-  // constraints
-  Constraints getGlobalConstraints()
-  {
-    Constraints constraint = Constraints();
-
-    // WIDTH
-    constraint.width     = width;
-    constraint.minWidth  = width  ?? minWidth  ?? getGlobalMinWidth();
-    constraint.maxWidth  = width  ?? maxWidth  ?? getGlobalMaxWidth();
-
-    // ensure not negative
-    if (constraint.minWidth == null || constraint.minWidth! < 0) constraint.minWidth = null;
-    if (constraint.maxWidth == null || constraint.maxWidth! < 0) constraint.maxWidth = null;
-
-    // ensure max > min
-    if (constraint.minWidth != null && constraint.maxWidth != null && constraint.minWidth! > constraint.maxWidth!)
-    {
-      var v = constraint.minWidth;
-      constraint.minWidth = constraint.maxWidth;
-      constraint.maxWidth = v;
-    }
-
-    // HEIGHT
-    constraint.height    = height;
-    constraint.minHeight = height ?? minHeight ?? getGlobalMinHeight();
-    constraint.maxHeight = height ?? maxHeight ?? getGlobalMaxHeight();
-
-    // ensure not negative
-    if (constraint.minHeight != null && constraint.minHeight! < 0) constraint.minHeight = null;
-    if (constraint.maxHeight != null && constraint.maxHeight! < 0) constraint.maxHeight = null;
-
-    // ensure max > min
-    if (constraint.minHeight != null && constraint.maxHeight != null && constraint.minHeight! > constraint.maxHeight!)
-    {
-      var v = constraint.minHeight;
-      constraint.minHeight = constraint.maxHeight;
-      constraint.maxHeight = v;
-    }
-
-    return constraint;
-  }
-
-  // returns the constraints as specified
-  // in the template
-  Constraints getLocalConstraints()
-  {
-    Constraints constraint = Constraints();
-    constraint.width     = width;
-    constraint.minWidth  = minWidth;
-    constraint.maxWidth  = maxWidth;
-
-    constraint.height    = height;
-    constraint.minHeight = minHeight;
-    constraint.maxHeight = maxHeight;
-    return constraint;
-  }
-
-  // returns the constraints as specified
-  // by the system in LayoutBuilder()
-  Constraints getSystemConstraints()
-  {
-    Constraints constraint = Constraints();
-    constraint.minWidth  = _systemConstraints.minWidth;
-    constraint.maxWidth  = _systemConstraints.maxWidth;
-    constraint.minHeight = _systemConstraints.minHeight;
-    constraint.maxHeight = _systemConstraints.maxHeight;
-    return constraint;
-  }
-
-  // sets the layout constraints and adjust the height & width accordingly
-  void setSystemConstraints(BoxConstraints? constraints)
-  {
-    // set the system constraints
-    _systemConstraints.minWidth  = constraints?.minWidth;
-    _systemConstraints.maxWidth  = constraints?.maxWidth;
-    _systemConstraints.minHeight = constraints?.minHeight;
-    _systemConstraints.maxHeight = constraints?.maxHeight;
-
-    // adjust the width if defined as a percentage
-    if (width != null && width! >= 100000) _widthPercentage = (width!/1000000);
-    if (_widthPercentage != null)
-    {
-      // calculate the width
-      double? width = _pctWidth(_widthPercentage!);
-
-      // adjust min and max widths
-      if (width != null)
-      {
-        if (minWidth != null && minWidth! > width)  width = minWidth;
-        if (maxWidth != null && maxWidth! < width!) width = maxWidth;
-      }
-
-      // set the width
-      _width?.set(width, notify: false);
-    }
-
-    // adjust the min/max widths if defined as percentages
-    if (_minWidthPercentage != null) _minWidth?.set(_pctWidth(_minWidthPercentage!), notify: false);
-    if (_maxWidthPercentage != null) _maxWidth?.set(_pctWidth(_maxWidthPercentage!), notify: false);
-
-    // adjust the height if defined as a percentage
-    if (height != null && height! >= 100000) _heightPercentage = (height!/1000000);
-    if (_heightPercentage != null)
-    {
-      // calculate the height
-      double? height = _pctHeight(_heightPercentage!);
-
-      // adjust min and max heights
-      if (height != null)
-      {
-        if (minHeight != null && minHeight! > height)  height = minHeight;
-        if (maxHeight != null && maxHeight! < height!) height = maxHeight;
-      }
-
-      // set the height
-      _height?.set(height, notify: false);
-    }
-
-    // adjust the min/max heights
-    if (_minHeightPercentage != null) _minHeight?.set(_pctHeight(_minHeightPercentage!), notify: false);
-    if (_maxHeightPercentage != null) _maxHeight?.set(_pctHeight(_maxHeightPercentage!), notify: false);
   }
 
   double? _pctWidth(double percent)
   {
     double? pct;
-    double? max = getGlobalMaxWidth();
+    double? max = global.maxWidth;
     if (max != null) pct = max * (percent/100.0);
     return pct;
   }
@@ -353,7 +364,7 @@ class ConstraintModel
   double? _pctHeight(double percent)
   {
     double? pct;
-    double? max = getGlobalMaxHeight();
+    double? max = global.maxHeight;
     if (max != null) pct = max * (percent/100.0);
     return pct;
   }
@@ -394,5 +405,47 @@ class ConstraintModel
 
     //should add up all of the padded siblings to do this.
     return insets;
+  }
+
+  // return the constraint object
+  Constraints _getConstraints(ConstraintSource source)
+  {
+       switch (source)
+       {
+         case ConstraintSource.system: 
+           return this.system;
+           
+         case ConstraintSource.model:  
+           return this.model;
+           
+         case ConstraintSource.global:
+         default:
+           return this.global;
+       }
+  }
+
+  // return the constraint value from ths constraints
+  double? _getConstraint(Constraints constraints, ConstraintType constraint)
+  {
+    switch (constraint)
+    {
+      case ConstraintType.width:
+        return constraints.width;
+
+      case ConstraintType.minWidth:
+        return constraints.minWidth;
+
+      case ConstraintType.maxWidth:
+        return constraints.maxWidth;
+
+      case ConstraintType.height:
+        return constraints.height;
+
+      case ConstraintType.minHeight:
+        return constraints.minHeight;
+
+      case ConstraintType.maxHeight:
+        return constraints.maxHeight;
+    }
   }
 }

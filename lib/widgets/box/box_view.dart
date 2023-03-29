@@ -312,7 +312,7 @@ class _BoxViewState extends WidgetState<BoxView>
     var maxHeight = constraints.maxHeight;
 
     // set system sizing
-    widget.model.setSystemConstraints(BoxConstraints(minWidth:  minWidth, maxWidth:  maxWidth, minHeight: minHeight, maxHeight: maxHeight));
+    widget.model.systemConstraints = BoxConstraints(minWidth:  minWidth, maxWidth:  maxWidth, minHeight: minHeight, maxHeight: maxHeight);
 
     // build the child views
     List<Widget> children = widget.model.inflate();
@@ -357,10 +357,10 @@ class _BoxViewState extends WidgetState<BoxView>
     // apply constraints
     // note: localConstraints is overridden in BoxModel
     // in order to handle "expand" correctly
-    view = applyConstraints(view, widget.model.localConstraints);
+    view = applyConstraints(view, widget.model.modelConstraints);
 
     // this allows the view to shrink accordingly
-    if (!widget.model.shrinking) view = UnconstrainedBox(child: view);
+    if (widget.model.shrinking) view = UnconstrainedBox(child: view);
 
     return view;
   }

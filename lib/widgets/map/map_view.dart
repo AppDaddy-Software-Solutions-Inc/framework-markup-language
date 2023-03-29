@@ -59,7 +59,7 @@ class _MapViewState extends WidgetState<MapView>
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // save system constraints
-    widget.model.setSystemConstraints(constraints);
+    widget.model.systemConstraints = constraints;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -75,19 +75,19 @@ class _MapViewState extends WidgetState<MapView>
 
     // map width
     var width = widget.model.width;
-    if (width == null) width = widget.model.globalMaxWidth;
+    if (width == null) width = widget.model.globalConstraints.maxWidth;
     if ((width == null) || (width <= 0)) width = MediaQuery.of(context).size.width;
 
     // map height
     var height = widget.model.height;
-    if (height == null) height = widget.model.globalMaxHeight;
+    if (height == null) height = widget.model.globalConstraints.maxHeight;
     if ((height == null) || (height <= 0)) height = MediaQuery.of(context).size.height;
 
     // view
     dynamic view = Container(child: SizedBox(width: width, height: height, child: Stack(fit: StackFit.expand, children: [map!, busy!])));
 
     // apply user defined constraints
-    return applyConstraints(view, widget.model.localConstraints);
+    return applyConstraints(view, widget.model.modelConstraints);
   }
 
   FlutterMap? _buildMap()

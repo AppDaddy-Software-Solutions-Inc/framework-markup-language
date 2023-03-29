@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/constraint.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -358,7 +357,7 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
 
     var layout = getLayoutType();
 
-    var local  = super.localConstraints;
+    var local  = super.modelConstraints;
     var system = systemConstraints;
 
     switch (layout)
@@ -369,7 +368,6 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
 
       case LayoutTypes.row:
         return true;
-        break;
 
       case LayoutTypes.stack:
       default:
@@ -385,14 +383,13 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
 
     var layout = getLayoutType();
 
-    var local  = super.localConstraints;
+    var local  = super.modelConstraints;
     var system = systemConstraints;
 
     switch (layout)
     {
       case LayoutTypes.column:
         return true;
-        break;
 
       case LayoutTypes.row:
         if (!system.hasHorizontalExpansionConstraints && !local.hasHorizontalExpansionConstraints) return false;
@@ -427,7 +424,7 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
   {
     // get constraints
     var systemConstraints = this.systemConstraints;
-    var localConstraints  = this.localConstraints;
+    var localConstraints  = this.modelConstraints;
     var globalConstraints = this.globalConstraints;
 
     var layout = getLayoutType();

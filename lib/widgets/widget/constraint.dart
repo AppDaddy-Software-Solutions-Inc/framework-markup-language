@@ -73,8 +73,8 @@ class Constraints
     return _maxHeight;
   }
 
-  bool get hasConstraints => hasVerticalConstraints || hasHorizontalConstraints;
-  bool get hasNoConstraints => !hasConstraints;
+  bool get isNotEmpty => hasVerticalConstraints || hasHorizontalConstraints;
+  bool get isEmpty => !isNotEmpty;
 
   bool get hasVerticalContractionConstraints => height != null || minHeight != null;
   bool get hasVerticalExpansionConstraints => height != null || maxHeight != null;

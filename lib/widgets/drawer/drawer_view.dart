@@ -176,7 +176,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // save system constraints
-    widget.model.setSystemConstraints(constraints);
+    widget.model.systemConstraints = constraints;
 
     var con = widget.model.globalConstraints;
     double h = con.maxHeight ?? MediaQuery.of(context).size.height;
@@ -358,7 +358,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
     ]); // view;
 
     // apply user defined constraints
-    view = applyConstraints(view, widget.model.localConstraints);
+    view = applyConstraints(view, widget.model.modelConstraints);
 
     view = WillPopScope(onWillPop: () async => preventPop(), child: view);
 

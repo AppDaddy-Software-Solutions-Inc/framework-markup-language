@@ -37,8 +37,8 @@ class _PositionedViewState extends WidgetState<PositionedView>
     {
       if (widget.model.xoffset != null && widget.model.yoffset != null)
       {
-        double fromTop = (widget.model.globalMaxHeight! / 2) + widget.model.yoffset!;
-        double fromLeft = (widget.model.globalMaxWidth! / 2) + widget.model.xoffset!;
+        double fromTop = (widget.model.globalConstraints.maxHeight! / 2) + widget.model.yoffset!;
+        double fromLeft = (widget.model.globalConstraints.maxWidth! / 2) + widget.model.xoffset!;
         view = Positioned(top: fromTop, left: fromLeft, child: view);
       }
       else view = Positioned(top: widget.model.top, bottom: widget.model.bottom, left: widget.model.left, right: widget.model.right, child: view);

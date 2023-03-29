@@ -129,7 +129,7 @@ class _SelectViewState extends WidgetState<SelectView>
     if (!widget.model.visible) return Offstage();
 
     // save system constraints
-    widget.model.setSystemConstraints(constraints);
+    widget.model.systemConstraints = constraints;
 
     ///////////
     /* Busy? */
@@ -175,7 +175,7 @@ class _SelectViewState extends WidgetState<SelectView>
 
         List<OptionModel>? suggestions;
         view = SizedBox(
-          width: widget.model.globalMaxWidth,
+          width: widget.model.globalConstraints.maxWidth,
               child: TypeAheadField(
                 textFieldConfiguration: TextFieldConfiguration(
                     focusNode: focus,

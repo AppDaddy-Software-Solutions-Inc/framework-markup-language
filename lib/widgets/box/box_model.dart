@@ -348,59 +348,38 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
     }
   }
 
-  bool get expanding => canExpandVertically() && canExpandHorizontally();
-  bool get shrinking => !expanding;
-
-  bool canExpandVertically()
+  bool allowVerticalExpansion()
   {
-    if (!expand) return false;
-
     var layout = getLayoutType();
-
-    var local  = super.modelConstraints;
-    var system = systemConstraints;
-
     switch (layout)
     {
       case LayoutTypes.column:
-        if (!system.hasVerticalExpansionConstraints && !local.hasVerticalExpansionConstraints) return false;
-        break;
+        return modelConstraints.hasVerticalExpansionConstraints || systemConstraints.hasVerticalExpansionConstraints;
 
       case LayoutTypes.row:
         return true;
 
       case LayoutTypes.stack:
       default:
-        if (!system.hasVerticalExpansionConstraints && !local.hasVerticalExpansionConstraints) return false;
-        break;
+        return modelConstraints.hasVerticalExpansionConstraints || systemConstraints.hasVerticalExpansionConstraints;
     }
-    return true;
   }
 
-  bool canExpandHorizontally()
+  bool allowHorizontalExpansion()
   {
-    if (!expand) return false;
-
     var layout = getLayoutType();
-
-    var local  = super.modelConstraints;
-    var system = systemConstraints;
-
     switch (layout)
     {
       case LayoutTypes.column:
         return true;
 
       case LayoutTypes.row:
-        if (!system.hasHorizontalExpansionConstraints && !local.hasHorizontalExpansionConstraints) return false;
-        break;
+        return modelConstraints.hasHorizontalExpansionConstraints || systemConstraints.hasHorizontalExpansionConstraints;
 
       case LayoutTypes.stack:
       default:
-        if (!system.hasHorizontalExpansionConstraints && !local.hasHorizontalExpansionConstraints) return false;
-        break;
+        return modelConstraints.hasHorizontalExpansionConstraints || systemConstraints.hasHorizontalExpansionConstraints;
     }
-    return true;
   }
 
   LayoutTypes getLayoutType()

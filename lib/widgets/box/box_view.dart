@@ -90,28 +90,34 @@ class _BoxViewState extends WidgetState<BoxView>
         // which are positioned according to alignment.
         // The positioned children are then placed relative to the stack according to their top, right, bottom, and left properties.
         // inflate the stack
-             if ( widget.model.canExpandHorizontally() &&  widget.model.canExpandVertically()) children.add(SizedBox.expand());
-        else if ( widget.model.canExpandHorizontally() && !widget.model.canExpandVertically()) children.add(SizedBox(width: double.infinity));
-        else if (!widget.model.canExpandHorizontally() &&  widget.model.canExpandVertically()) children.add(SizedBox(height: double.infinity));
+        bool expandVertical   = widget.model.allowVerticalExpansion();
+        bool expandHorizontal = widget.model.allowHorizontalExpansion();
+             if ( expandVertical &&  expandHorizontal) children.add(SizedBox.expand());
+        else if ( expandVertical && !expandHorizontal) children.add(SizedBox(height: double.infinity));
+        else if (!expandVertical &&  expandHorizontal) children.add(SizedBox(width: double.infinity));
 
         // create the stack
         child = Stack(children: children, alignment: alignment.aligned);
         break;
 
       case LayoutTypes.row:
-        var mainAxisSize = widget.model.canExpandHorizontally() ? MainAxisSize.max : MainAxisSize.min;
+
+        bool expand = widget.model.allowHorizontalExpansion();
+
         // row widget
         if (!wrap)
-             child = Row(mainAxisSize: mainAxisSize, children: children, crossAxisAlignment: alignment.crossAlignment, mainAxisAlignment: alignment.mainAlignment);
+             child = Row(mainAxisSize: expand ? MainAxisSize.max : MainAxisSize.min, children: children, crossAxisAlignment: alignment.crossAlignment, mainAxisAlignment: alignment.mainAlignment);
         else child = Wrap(direction: Axis.horizontal, children: children, alignment: alignment.mainWrapAlignment, runAlignment: alignment.mainWrapAlignment, crossAxisAlignment: alignment.crossWrapAlignment);
         break;
 
       case LayoutTypes.column:
       default:
-        var mainAxisSize = widget.model.canExpandVertically() ? MainAxisSize.max : MainAxisSize.min;
+
+        bool expand = widget.model.allowVerticalExpansion();
+
         // column widget
         if (!wrap)
-             child = Column(mainAxisSize: mainAxisSize, children: children, crossAxisAlignment: alignment.crossAlignment, mainAxisAlignment: alignment.mainAlignment);
+             child = Column(mainAxisSize: expand ? MainAxisSize.max : MainAxisSize.min, children: children, crossAxisAlignment: alignment.crossAlignment, mainAxisAlignment: alignment.mainAlignment);
         else child = Wrap(direction: Axis.vertical, children: children, alignment: alignment.mainWrapAlignment, runAlignment: alignment.mainWrapAlignment, crossAxisAlignment: alignment.crossWrapAlignment);
         break;
     }
@@ -360,7 +366,7 @@ class _BoxViewState extends WidgetState<BoxView>
     view = applyConstraints(view, widget.model.modelConstraints);
 
     // this allows the view to shrink accordingly
-    if (widget.model.shrinking) view = UnconstrainedBox(child: view);
+    //if (widget.model.getLayoutType() == LayoutTypes.stack) view = UnconstrainedBox(child: view);
 
     return view;
   }

@@ -417,10 +417,10 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
 
     else if (layout == LayoutTypes.column)
     {
-      if (expand  && localConstraints.hasVerticalExpansionConstraints) return true;
-      if (expand  && constraints.global.maxHeight != null) return true;
-      if (expand  && constraints.system.maxHeight == null) return false;
-      if (!expand && localConstraints.hasVerticalContractionConstraints) return true;
+      if (expand  && model.hasVerticalExpansionConstraints) return true;
+      if (expand  && global.maxHeight != null) return true;
+      if (expand  && system.maxHeight == null) return false;
+      if (!expand && model.hasVerticalContractionConstraints) return true;
     }
 
     return false;

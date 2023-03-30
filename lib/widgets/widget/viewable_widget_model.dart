@@ -23,39 +23,40 @@ class ViewableWidgetModel extends WidgetModel
   List<AnimationModel>? animations;
 
   // constraints
+  late final ConstraintModel _constraints;
   late final ConstraintSet constraints;
   
   // width
-  double? get width  => constraints.model.width;
-  set width(dynamic v) => constraints.model.width = v;
+  double? get width  => _constraints.width;
+  set width(dynamic v) => _constraints.width = v;
 
   // height
-  double? get height => constraints.model.height;
-  set height(dynamic v)  => constraints.model.height = v;
+  double? get height => _constraints.height;
+  set height(dynamic v)  => _constraints.height = v;
 
   // %width
-  double? get pctWidth => constraints.model.pctWidth;
+  double? get pctWidth => _constraints.pctWidth;
 
   // %height
-  double? get pctHeight => constraints.model.pctHeight;
+  double? get pctHeight => _constraints.pctHeight;
 
   // min width
   @protected
-  set minWidth(dynamic v) => constraints.model.minWidth = v;
+  set minWidth(dynamic v) => _constraints.minWidth = v;
 
   // max width
   @protected
-  set maxWidth(dynamic v) => constraints.model.maxWidth = v;
+  set maxWidth(dynamic v) => _constraints.maxWidth = v;
 
   // min height
   @protected
-  set minHeight(dynamic v) => constraints.model.minHeight = v;
-  double? get minHeight => constraints.model.minHeight;
+  set minHeight(dynamic v) => _constraints.minHeight = v;
+  double? get minHeight => _constraints.minHeight;
 
   // max height
   @protected
-  set maxHeight(dynamic v) => constraints.model.maxHeight = v;
-  double? get maxHeight => constraints.model.maxHeight;
+  set maxHeight(dynamic v) => _constraints.maxHeight = v;
+  double? get maxHeight => _constraints.maxHeight;
   
   /// alignment and layout attributes
   ///
@@ -284,8 +285,8 @@ class ViewableWidgetModel extends WidgetModel
   ViewableWidgetModel(WidgetModel? parent, String? id, {Scope? scope}) : super(parent, id, scope: scope)
   {
     // create model constraints
-    var model = ConstraintModel(this.id, this.scope, parent, onPropertyChange);
-    constraints = ConstraintSet(model);
+    _constraints = ConstraintModel(this.id, this.scope, parent, onPropertyChange);
+    constraints  = ConstraintSet(_constraints);
   }
 
   /// Deserializes the FML template elements, attributes and children
@@ -296,12 +297,12 @@ class ViewableWidgetModel extends WidgetModel
     super.deserialize(xml);
 
     // set constraints
-    constraints.model.width     = Xml.get(node: xml, tag: 'width');
-    constraints.model.height    = Xml.get(node: xml, tag: 'height');
-    constraints.model.minWidth  = Xml.get(node: xml, tag: 'minwidth');
-    constraints.model.maxWidth  = Xml.get(node: xml, tag: 'maxwidth');
-    constraints.model.minHeight = Xml.get(node: xml, tag: 'minheight');
-    constraints.model.maxHeight = Xml.get(node: xml, tag: 'maxheight');
+    _constraints.width     = Xml.get(node: xml, tag: 'width');
+    _constraints.height    = Xml.get(node: xml, tag: 'height');
+    _constraints.minWidth  = Xml.get(node: xml, tag: 'minwidth');
+    _constraints.maxWidth  = Xml.get(node: xml, tag: 'maxwidth');
+    _constraints.minHeight = Xml.get(node: xml, tag: 'minheight');
+    _constraints.maxHeight = Xml.get(node: xml, tag: 'maxheight');
 
     // properties
     visible   = Xml.get(node: xml, tag: 'visible');
@@ -474,15 +475,15 @@ class ConstraintSet
 {
   /// holds constraints defined in the template
   late final ConstraintModel _model;
-  Constraints get model => _model.;
+  Constraints get model => _model.model;
   
   // holds constraints passed in flutter layout builder
-  Constraints get system => model.system;
-  set system(dynamic v) => model.system = v;
+  Constraints get system => _model.system;
+  set system(dynamic v) => _model.system = v;
 
   /// constraints calculated by walking up the
   /// model tree comparing both model and flutter constraints
-  Constraints get global => model.global;
+  Constraints get global => _model.global;
   
   ConstraintSet(ConstraintModel model)
   {

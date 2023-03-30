@@ -23,8 +23,9 @@ class FormFieldModel extends DecoratedWidgetModel
     if (_defaultValue != null) {
       _defaultValue!.set(v);
     } else {
-      if (v != null)
+      if (v != null) {
         _defaultValue = StringObservable(null, v, scope: scope);
+      }
     }
   }
   dynamic get defaultValue => _defaultValue?.get();
@@ -102,7 +103,9 @@ class FormFieldModel extends DecoratedWidgetModel
     if (post != null) return post!;
     if ((value == null) || value is List && value.isEmpty) return false;
     WidgetModel model = this;
-    while (model.parent != null) model = model.parent!;
+    while (model.parent != null) {
+      model = model.parent!;
+    }
     return true;
   }
 
@@ -157,11 +160,10 @@ class FormFieldModel extends DecoratedWidgetModel
     }
   }
 
-  bool? get error {
-    if (_error == null) return false;
-    return _error!.get();
-  }
+  bool get error => _error?.get() ?? false;
 
+  /// If an alarm is going off, seperate from the error field as to not override it.
+  bool alarmerror = false;
 
   /// The error message value of a form field.
   StringObservable? _errortext;
@@ -174,10 +176,10 @@ class FormFieldModel extends DecoratedWidgetModel
     }
   }
 
-  String? get errortext {
-    if (_errortext == null) return null;
-    return _errortext!.get();
-  }
+  String? get errortext => _errortext?.get();
+
+  /// the alarm that is going off's error text. As to not override errortext.
+  String? alarmerrortext;
 
   /// True if there is an alarm sounding on a [iFormField]
   BooleanObservable? _alarming;
@@ -220,31 +222,19 @@ class FormFieldModel extends DecoratedWidgetModel
 
     // Build alarms
     List<AlarmModel> alarms = findChildrenOfExactType(AlarmModel).cast<AlarmModel>();
-    alarms.forEach((alarm)
-    {
-      if (_alarms == null) _alarms = Map<String?, BooleanObservable>();
-      this._alarms!.clear();
-      if (!S.isNullOrEmpty(alarm.error)) _alarms?[alarm.id] = BooleanObservable(null, alarm.error, scope: scope, listener: _onAlarm);
-    });
+    for (var alarm in alarms) {
+      _alarms ??= {};
+      _alarms!.clear();
+
+      //register a listener to always throw the alarm state when the value of the alarm changes if the alarm type is 'all'
+      if(alarm.alarmtrigger == 'all' || alarm.alarmtrigger == null) alarm.seterror?.registerListener(onAlarmChange);
+    }
   }
 
-  void _onAlarm(Observable alarm)
-  {
-    if (_alarms == null) return;
-
-    String? id;
-    bool alarming = false;
-    _alarms!.forEach((key, value)
-    {
-      if ((value.get() == true))
-      {
-        alarming = true;
-        if (id == null) id = key;
-      }
-    });
-
-    this.alarming = alarming;
-    this.alarm = id;
+  void onAlarmChange(Observable error) {
+    //get the error state of the alarm and set it to that of the form field.
+    alarmerror = error.get();
+    if(alarmerror) alarming = true;
   }
 
   // values
@@ -300,8 +290,26 @@ class FormFieldModel extends DecoratedWidgetModel
       }
 
       // save succeeded. set dirty
-      else dirty = true;
+      else {
+        dirty = true;
+      }
     }
     return ok;
+  }
+
+
+  //Return the error state between the alarm and the error set on the model
+  bool returnErrorState(){
+    if(alarmerror == true) return true;
+    if(error == true) return true;
+    return false;
+  }
+
+  // return the correct combination of error and errotext based on the alarm vs the error.
+  String returnErrorText(){
+    if(!S.isNullOrEmpty(alarmerrortext) && alarmerror == true) return alarmerrortext!;
+    if(!S.isNullOrEmpty(errortext) && error == true) return errortext!;
+    if(error == true || alarmerror == true) return errortext ?? alarmerrortext ?? '';
+    return '';
   }
 }

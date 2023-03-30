@@ -32,17 +32,17 @@ class AlarmModel extends WidgetModel
   String? get errortext => _errortext?.get();
 
   /// The eval to determine if the error state of the parent is displayed.
-  BooleanObservable? _error;
+  BooleanObservable? seterror;
   set error(dynamic v) {
-    if (_error != null) {
-      _error?.set(v);
+    if (seterror != null) {
+      seterror?.set(v);
     } else if (v != null) {
-      _error = BooleanObservable(Binding.toKey(id, 'error'), v,
+      seterror = BooleanObservable(Binding.toKey(id, 'error'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
 
-  bool? get error => _error?.get() ?? false;
+  bool? get error => seterror?.get() ?? false;
 
   /// The boolean to determine if the alarm marks the field as mandatory if it is alarming. True by default
   BooleanObservable? _mandatory;

@@ -161,7 +161,7 @@ class Observable
 
   registerListener(OnChangeCallback callback)
   {
-    if (listeners == null) listeners = [];
+    listeners ??= [];
     if (!listeners!.contains(callback)) listeners!.add(callback);
   }
 

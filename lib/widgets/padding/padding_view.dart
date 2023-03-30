@@ -37,7 +37,7 @@ class _PaddingViewState extends WidgetState<PaddingView>
     var maxWidth  = constraints.maxWidth - pLeft - pRight;
     var minHeight = constraints.minHeight + pTop + pBottom;
     var maxHeight = constraints.maxHeight - pTop - pBottom;
-    widget.model.systemConstraints = BoxConstraints(minWidth:  minWidth, maxWidth:  maxWidth, minHeight: minHeight, maxHeight: maxHeight);
+    widget.model.constraints.system = BoxConstraints(minWidth:  minWidth, maxWidth:  maxWidth, minHeight: minHeight, maxHeight: maxHeight);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();

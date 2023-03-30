@@ -51,7 +51,7 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // save system constraints
-    widget.model.systemConstraints = constraints;
+    widget.model.constraints.system = constraints;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _afterBuild(context);

@@ -477,7 +477,7 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // save system constraints
-    widget.model.systemConstraints = constraints;
+    widget.model.constraints.system = constraints;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -525,7 +525,7 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
     view = Container(child: view, width: width, height: height);
 
     // apply user defined constraints
-    view = applyConstraints(view, widget.model.modelConstraints);
+    view = applyConstraints(view, widget.model.constraints.model);
 
     // stack children
     List<Widget> children = [];

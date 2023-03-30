@@ -53,6 +53,6 @@ class _HtmlViewState extends WidgetState<HtmlView>
 
 
     // apply user defined constraints
-    return applyConstraints(view, widget.model.modelConstraints);
+    return applyConstraints(view, widget.model.constraints.model);
   }
 }

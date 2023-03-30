@@ -175,7 +175,7 @@ class _GridViewState extends WidgetState<GridView>
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // save system constraints
-    widget.model.systemConstraints = constraints;
+    widget.model.constraints.system = constraints;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -205,18 +205,18 @@ class _GridViewState extends WidgetState<GridView>
       return prototypeGrid;
     }
 
-    gridWidth  = widget.model.globalConstraints.maxWidth  ?? widget.model.width  ?? MediaQuery.of(context).size.width;
-    gridHeight = widget.model.globalConstraints.maxHeight ?? widget.model.height ?? MediaQuery.of(context).size.height;
+    gridWidth  = widget.model.constraints.global.maxWidth  ?? widget.model.width  ?? MediaQuery.of(context).size.width;
+    gridHeight = widget.model.constraints.global.maxHeight ?? widget.model.height ?? MediaQuery.of(context).size.height;
 
     if (widget.model.items.isNotEmpty) 
     {
-      prototypeWidth  = widget.model.items.entries.first.value.width ?? (widget.model.globalConstraints.maxWidth   ?? widget.model.width  ?? widget.model.itemSize?.width ?? MediaQuery.of(context).size.width) / (sqrt(widget.model.items.length) + 1);
-      prototypeHeight = widget.model.items.entries.first.value.height ?? (widget.model.globalConstraints.maxHeight ?? widget.model.height ?? widget.model.itemSize?.height ?? MediaQuery.of(context).size.height) / (sqrt(widget.model.items.length) + 1);
+      prototypeWidth  = widget.model.items.entries.first.value.width ?? (widget.model.constraints.global.maxWidth   ?? widget.model.width  ?? widget.model.itemSize?.width ?? MediaQuery.of(context).size.width) / (sqrt(widget.model.items.length) + 1);
+      prototypeHeight = widget.model.items.entries.first.value.height ?? (widget.model.constraints.global.maxHeight ?? widget.model.height ?? widget.model.itemSize?.height ?? MediaQuery.of(context).size.height) / (sqrt(widget.model.items.length) + 1);
     }
     else 
     {
-      prototypeWidth  = (widget.model.globalConstraints.maxWidth  ?? widget.model.width  ?? widget.model.itemSize?.width  ?? MediaQuery.of(context).size.width) / (sqrt(widget.model.items.length) + 1);
-      prototypeHeight = (widget.model.globalConstraints.maxHeight ?? widget.model.height ?? widget.model.itemSize?.height ?? MediaQuery.of(context).size.height) / (sqrt(widget.model.items.length) + 1);
+      prototypeWidth  = (widget.model.constraints.global.maxWidth  ?? widget.model.width  ?? widget.model.itemSize?.width  ?? MediaQuery.of(context).size.width) / (sqrt(widget.model.items.length) + 1);
+      prototypeHeight = (widget.model.constraints.global.maxHeight ?? widget.model.height ?? widget.model.itemSize?.height ?? MediaQuery.of(context).size.height) / (sqrt(widget.model.items.length) + 1);
     }
 
 
@@ -290,9 +290,9 @@ class _GridViewState extends WidgetState<GridView>
     var w  = widget.model.width;
     var h = widget.model.height;
     if (constraints.maxHeight == double.infinity || constraints.maxHeight == double.negativeInfinity || h == null)
-      h = widget.model.globalConstraints.maxHeight ?? constraints.maxHeight;
+      h = widget.model.constraints.global.maxHeight ?? constraints.maxHeight;
     if (constraints.maxWidth  == double.infinity || constraints.maxWidth  == double.negativeInfinity || w  == null)
-      w  = widget.model.globalConstraints.maxWidth ?? constraints.maxWidth;
+      w  = widget.model.constraints.global.maxWidth ?? constraints.maxWidth;
     view = UnconstrainedBox(child: SizedBox(height: h, width: w, child: view));
 
     children.add(view);

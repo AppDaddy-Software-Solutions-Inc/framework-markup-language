@@ -61,13 +61,13 @@ class IconModel extends DecoratedWidgetModel implements IViewableWidget {
       var s1;
       var s2;
 
-      var mh = globalConstraints.maxHeight;
+      var mh = constraints.global.maxHeight;
       if (mh != null)
         s1 = mh * (s / 100.0);
       else
         s1 = null;
 
-      var mw = globalConstraints.maxWidth;
+      var mw = constraints.global.maxWidth;
       if (mw != null)
         s2 = mw * (s / 100.0);
       else

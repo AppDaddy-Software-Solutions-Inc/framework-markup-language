@@ -22,54 +22,40 @@ class ViewableWidgetModel extends WidgetModel
   // holds animations
   List<AnimationModel>? animations;
 
-  /// Constraints Attributes
-  ///
-  late final ConstraintModel _constraints;
+  // constraints
+  late final ConstraintSet constraints;
   
   // width
-  double? get width  => _constraints.width;
-  set width(dynamic v)  => _constraints.width = v;
+  double? get width  => constraints.model.width;
+  set width(dynamic v) => constraints.model.width = v;
 
   // height
-  double? get height => _constraints.height;
-  set height(dynamic v)  => _constraints.height = v;
+  double? get height => constraints.model.height;
+  set height(dynamic v)  => constraints.model.height = v;
 
   // %width
-  double? get pctWidth => _constraints.pctWidth;
+  double? get pctWidth => constraints.model.pctWidth;
 
   // %height
-  double? get pctHeight => _constraints.pctHeight;
+  double? get pctHeight => constraints.model.pctHeight;
 
   // min width
   @protected
-  set minWidth(dynamic v) => _constraints.minWidth = v;
+  set minWidth(dynamic v) => constraints.model.minWidth = v;
 
   // max width
   @protected
-  set maxWidth(dynamic v) => _constraints.maxWidth = v;
+  set maxWidth(dynamic v) => constraints.model.maxWidth = v;
 
   // min height
   @protected
-  set minHeight(dynamic v) => _constraints.minHeight = v;
-  double? get minHeight => _constraints.minHeight;
+  set minHeight(dynamic v) => constraints.model.minHeight = v;
+  double? get minHeight => constraints.model.minHeight;
 
   // max height
   @protected
-  set maxHeight(dynamic v) => _constraints.maxHeight = v;
-  double? get maxHeight => _constraints.maxHeight;
-
-  /// holds constraints defined in the template
-  Constraints get modelConstraints  => _constraints.model;
-
-  /// holds constraints passed in flutter layout builder
-  Constraints get systemConstraints => _constraints.system;
-
-  /// constraints calculated by walking up the
-  /// model tree comparing both model and flutter constraints
-  Constraints get globalConstraints => _constraints.global;
-
-  /// used to set the system constraints in layout builder
-  set systemConstraints(dynamic v) => _constraints.system = v;
+  set maxHeight(dynamic v) => constraints.model.maxHeight = v;
+  double? get maxHeight => constraints.model.maxHeight;
   
   /// alignment and layout attributes
   ///
@@ -298,7 +284,8 @@ class ViewableWidgetModel extends WidgetModel
   ViewableWidgetModel(WidgetModel? parent, String? id, {Scope? scope}) : super(parent, id, scope: scope)
   {
     // create model constraints
-    _constraints = ConstraintModel(this.id, this.scope, parent, onPropertyChange);
+    var model = ConstraintModel(this.id, this.scope, parent, onPropertyChange);
+    constraints = ConstraintSet(model);
   }
 
   /// Deserializes the FML template elements, attributes and children
@@ -309,12 +296,12 @@ class ViewableWidgetModel extends WidgetModel
     super.deserialize(xml);
 
     // set constraints
-    _constraints.width     = Xml.get(node: xml, tag: 'width');
-    _constraints.height    = Xml.get(node: xml, tag: 'height');
-    _constraints.minWidth  = Xml.get(node: xml, tag: 'minwidth');
-    _constraints.maxWidth  = Xml.get(node: xml, tag: 'maxwidth');
-    _constraints.minHeight = Xml.get(node: xml, tag: 'minheight');
-    _constraints.maxHeight = Xml.get(node: xml, tag: 'maxheight');
+    constraints.model.width     = Xml.get(node: xml, tag: 'width');
+    constraints.model.height    = Xml.get(node: xml, tag: 'height');
+    constraints.model.minWidth  = Xml.get(node: xml, tag: 'minwidth');
+    constraints.model.maxWidth  = Xml.get(node: xml, tag: 'maxwidth');
+    constraints.model.minHeight = Xml.get(node: xml, tag: 'minheight');
+    constraints.model.maxHeight = Xml.get(node: xml, tag: 'maxheight');
 
     // properties
     visible   = Xml.get(node: xml, tag: 'visible');
@@ -482,3 +469,25 @@ class ViewableWidgetModel extends WidgetModel
     return list;
   }
 }
+
+class ConstraintSet
+{
+  /// holds constraints defined in the template
+  late final ConstraintModel _model;
+  Constraints get model => _model.;
+  
+  // holds constraints passed in flutter layout builder
+  Constraints get system => model.system;
+  set system(dynamic v) => model.system = v;
+
+  /// constraints calculated by walking up the
+  /// model tree comparing both model and flutter constraints
+  Constraints get global => model.global;
+  
+  ConstraintSet(ConstraintModel model)
+  {
+    _model = model;
+  }
+}
+
+

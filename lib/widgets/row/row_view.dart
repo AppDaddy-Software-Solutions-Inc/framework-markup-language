@@ -23,7 +23,7 @@ class _RowViewState extends WidgetState<RowView>
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // save system constraints
-    widget.model.systemConstraints = constraints;
+    widget.model.constraints.system = constraints;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -36,7 +36,7 @@ class _RowViewState extends WidgetState<RowView>
     var alignment = AlignmentHelper.alignWidgetAxis(children.length, 'row', widget.model.center, widget.model.halign, widget.model.valign);
 
     // get user defined constraints
-    var localConstraints = widget.model.modelConstraints;
+    var localConstraints = widget.model.constraints.model;
 
     // set main axis size
     var mainAxisSize = widget.model.expand == false ? MainAxisSize.min : MainAxisSize.max;

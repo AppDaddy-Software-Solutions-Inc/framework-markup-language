@@ -9,7 +9,6 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:fml/navigation/navigation_observer.dart';
 import 'package:fml/event/event.dart'             ;
-import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
@@ -179,10 +178,10 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
     if ((notification.metrics.axisDirection == AxisDirection.left) || (notification.metrics.axisDirection == AxisDirection.right)) return false;
 
-    double maxHeight = widget.model.header?.height ?? widget.model.header?.modelConstraints.maxHeight ?? 0;
+    double maxHeight = widget.model.header?.height ?? widget.model.header?.constraints.model.maxHeight ?? 0;
     if (maxHeight < 0) maxHeight = 0;
 
-    double minHeight = widget.model.header?.height ?? widget.model.header?.modelConstraints.minHeight ?? 0;
+    double minHeight = widget.model.header?.height ?? widget.model.header?.constraints.model.minHeight ?? 0;
     if (minHeight < 0) minHeight = 0;
 
     // Non-Resizeable Header
@@ -195,9 +194,9 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     if (height < minHeight) height = minHeight;
 
     var safeArea = MediaQuery.of(context).padding.top.ceil();
-    var viewportHeight = widget.model.systemConstraints.maxHeight!;
+    var viewportHeight = widget.model.constraints.system.maxHeight!;
     widget.model.header?.height = height;
-    widget.model.height = viewportHeight - height - (widget.model.footer?.modelConstraints.height ?? 0) - safeArea;
+    widget.model.height = viewportHeight - height - (widget.model.footer?.constraints.model.height ?? 0) - safeArea;
 
     /* Stop Notification Bubble */
     return false;
@@ -315,7 +314,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       model.width = MediaQuery.of(context).size.width;
 
       // this is required to drive %sizing
-      model.systemConstraints = constraints;
+      model.constraints.system = constraints;
 
       // build framework header view
       view = model.getView();
@@ -338,7 +337,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       model.width  = MediaQuery.of(context).size.width;
 
       // this is required to drive %sizing
-      model.systemConstraints = constraints;
+      model.constraints.system = constraints;
 
       // build framework footer view
       view = model.getView();
@@ -350,7 +349,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
   Widget _buildBody(BoxConstraints constraints)
   {
-    var model = (widget.model as BoxModel);
+    var model = widget.model;
 
     // build body
     var safeArea = MediaQuery.of(context).padding.top.ceil();
@@ -454,7 +453,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     if (!widget.model.initialized) return Scaffold(body: Center(child: BusyView(BusyModel(null, visible: true))));
 
     // set the system constraints
-    widget.model.systemConstraints = constraints;
+    widget.model.constraints.system = constraints;
 
     Log().debug('Build called on framework view => <FML name=${widget.model.templateName} url="${widget.model.url}"/>');
 

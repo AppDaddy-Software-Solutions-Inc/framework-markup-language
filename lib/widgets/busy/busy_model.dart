@@ -56,7 +56,7 @@ class BusyModel extends DecoratedWidgetModel implements IViewableWidget
 
   double? get size
   {
-    var constraints = globalConstraints;
+    var constraints = constraints.global;
 
     var s = _size?.get();
     if (s == null) return null;

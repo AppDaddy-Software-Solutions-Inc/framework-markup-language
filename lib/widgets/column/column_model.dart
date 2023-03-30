@@ -105,15 +105,15 @@ class ColumnModel extends DecoratedWidgetModel implements IViewableWidget
   bool isConstrained()
   {
     // get constraints
-    var systemConstraints = this.systemConstraints;
-    var localConstraints  = this.modelConstraints;
-    var globalConstraints = this.globalConstraints;
+    var system = this.constraints.system;
+    var model  = this.constraints.model;
+    var global = this.constraints.global;
 
     var expanding = expand;
-    if (expanding  && systemConstraints.maxHeight == null) expanding = false;
-    if (expanding  && localConstraints.hasVerticalExpansionConstraints) return true;
-    if (expanding  && globalConstraints.maxHeight != null) return true;
-    if (!expanding && localConstraints.hasVerticalContractionConstraints) return true;
+    if (expanding  && system.maxHeight == null) expanding = false;
+    if (expanding  && model.hasVerticalExpansionConstraints) return true;
+    if (expanding  && global.maxHeight != null) return true;
+    if (!expanding && model.hasVerticalContractionConstraints) return true;
 
     return false;
   }

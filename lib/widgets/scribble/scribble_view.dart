@@ -80,7 +80,7 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
         color: Colors.black // Hardcode color to black for export a there will be no background/theming
     );
 
-    var constraints = widget.model.globalConstraints;
+    var constraints = widget.model.constraints.global;
     return await painter.export(Size(
         widget.model.width ?? constraints.maxWidth ?? constraints.minWidth ?? 300,
         widget.model.height ?? constraints.maxHeight?? constraints.minHeight?? 200));
@@ -120,7 +120,7 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
   void onPointerMove(PointerMoveEvent details) {
     if (canScribble == true)
     {
-      var constraints = widget.model.globalConstraints;
+      var constraints = widget.model.constraints.global;
 
       final box = context.findRenderObject() as RenderBox;
       final offset = box.globalToLocal(details.position);
@@ -380,7 +380,7 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
     if (((!widget.model.visible))) return Offstage();
 
     // save system constraints
-    widget.model.systemConstraints = constraints;
+    widget.model.constraints.system = constraints;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _afterBuild(context);
@@ -414,7 +414,7 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
     );
 
     // apply user defined constraints
-    return applyConstraints(view, widget.model.modelConstraints);
+    return applyConstraints(view, widget.model.constraints.model);
   }
 
   /// After [iFormFields] are drawn we get the global offset for scrollTo functionality

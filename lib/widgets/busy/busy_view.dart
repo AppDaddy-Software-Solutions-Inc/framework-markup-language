@@ -30,7 +30,7 @@ class _BusyViewState extends WidgetState<BusyView>
     if (!widget.model.visible) return Offstage();
 
     // save system constraints
-    widget.model.systemConstraints = constraints;
+    widget.model.constraints.system = constraints;
 
     // build the child views
     List<Widget> children = widget.model.inflate();
@@ -63,7 +63,7 @@ class _BusyViewState extends WidgetState<BusyView>
     view = Container(color: Colors.transparent, child: Stack(alignment: Alignment(0.0, 0.0), children: children));
 
     // apply user defined constraints
-    return applyConstraints(view, widget.model.modelConstraints);
+    return applyConstraints(view, widget.model.constraints.model);
   }
 }
 

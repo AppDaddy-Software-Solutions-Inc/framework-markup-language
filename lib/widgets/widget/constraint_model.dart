@@ -281,7 +281,7 @@ class ConstraintModel
   {
     double? v;
     if (_system.minWidth != null) v = _system.minWidth;
-    if (v == null && parent is ViewableWidgetModel) v = (parent as ViewableWidgetModel).globalConstraints.minWidth;
+    if (v == null && parent is ViewableWidgetModel) v = (parent as ViewableWidgetModel).constraints.global.minWidth;
     return v;
   }
 
@@ -299,12 +299,12 @@ class ConstraintModel
         var hpad = _getHorizontalPadding(parent.paddings, parent.padding, parent.padding2, parent.padding3, parent.padding4);
         if (parent.width == null)
         {
-           var w = parent.globalConstraints.maxWidth;
+           var w = parent.constraints.global.maxWidth;
            if (w != null) v = w - hpad;
         }
         else v = parent.width! - hpad;
       }
-      else v = parent.width ?? parent.globalConstraints.maxWidth;
+      else v = parent.width ?? parent.constraints.global.maxWidth;
     }
     return v;
   }
@@ -315,7 +315,7 @@ class ConstraintModel
   {
     double? v;
     if (_system.minHeight != null) v = _system.minHeight;
-    if (v == null && parent is ViewableWidgetModel) v = (parent as ViewableWidgetModel).globalConstraints.minHeight;
+    if (v == null && parent is ViewableWidgetModel) v = (parent as ViewableWidgetModel).constraints.global.minHeight;
     return v;
   }
 
@@ -333,12 +333,12 @@ class ConstraintModel
         var vpad = _getVerticalPadding(parent.paddings, parent.padding, parent.padding2, parent.padding3, parent.padding4);
         if (parent.height == null)
         {
-          var h = parent.globalConstraints.maxHeight;
+          var h = parent.constraints.global.maxHeight;
           if (h != null) v = h - vpad;
         }
         else v = parent.height! - vpad;
       }
-      else v = parent.height ?? parent.globalConstraints.maxHeight;
+      else v = parent.height ?? parent.constraints.global.maxHeight;
     }
     return v;
   }

@@ -348,24 +348,24 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
     }
   }
 
-  bool allowVerticalExpansion()
+  bool isVerticallyConstrained()
   {
     var layout = getLayoutType();
     switch (layout)
     {
       case LayoutTypes.column:
-        return modelConstraints.hasVerticalExpansionConstraints || systemConstraints.hasVerticalExpansionConstraints;
+        return constraints.model.hasVerticalExpansionConstraints || constraints.system.hasVerticalExpansionConstraints;
 
       case LayoutTypes.row:
         return true;
 
       case LayoutTypes.stack:
       default:
-        return modelConstraints.hasVerticalExpansionConstraints || systemConstraints.hasVerticalExpansionConstraints;
+        return constraints.model.hasVerticalExpansionConstraints || constraints.system.hasVerticalExpansionConstraints;
     }
   }
 
-  bool allowHorizontalExpansion()
+  bool isHorizontallyConstrained()
   {
     var layout = getLayoutType();
     switch (layout)
@@ -374,11 +374,11 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
         return true;
 
       case LayoutTypes.row:
-        return modelConstraints.hasHorizontalExpansionConstraints || systemConstraints.hasHorizontalExpansionConstraints;
+        return constraints.model.hasHorizontalExpansionConstraints || constraints.system.hasHorizontalExpansionConstraints;
 
       case LayoutTypes.stack:
       default:
-        return modelConstraints.hasHorizontalExpansionConstraints || systemConstraints.hasHorizontalExpansionConstraints;
+        return constraints.model.hasHorizontalExpansionConstraints || constraints.system.hasHorizontalExpansionConstraints;
     }
   }
 
@@ -402,24 +402,24 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
   bool isConstrained()
   {
     // get constraints
-    var systemConstraints = this.systemConstraints;
-    var localConstraints  = this.modelConstraints;
-    var globalConstraints = this.globalConstraints;
+    var system = this.constraints.system;
+    var model  = this.constraints.model;
+    var global = this.constraints.global;
 
     var layout = getLayoutType();
     if (layout == LayoutTypes.row)
     {
-      if (expand  && localConstraints.hasHorizontalExpansionConstraints) return true;
-      if (expand  && globalConstraints.maxWidth != null) return true;
-      if (expand  && systemConstraints.maxWidth != null) return false;
-      if (!expand && localConstraints.hasHorizontalContractionConstraints) return true;
+      if (expand  && model.hasHorizontalExpansionConstraints) return true;
+      if (expand  && global.maxWidth != null) return true;
+      if (expand  && system.maxWidth != null) return false;
+      if (!expand && model.hasHorizontalContractionConstraints) return true;
     }
 
     else if (layout == LayoutTypes.column)
     {
       if (expand  && localConstraints.hasVerticalExpansionConstraints) return true;
-      if (expand  && globalConstraints.maxHeight != null) return true;
-      if (expand  && systemConstraints.maxHeight == null) return false;
+      if (expand  && constraints.global.maxHeight != null) return true;
+      if (expand  && constraints.system.maxHeight == null) return false;
       if (!expand && localConstraints.hasVerticalContractionConstraints) return true;
     }
 

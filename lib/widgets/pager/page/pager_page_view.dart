@@ -24,7 +24,7 @@ class _PagerPageViewState extends WidgetState<PagerPageView>
     if (widget.model.visible == false) return Offstage();
 
     // save system constraints
-    widget.model.systemConstraints = constraints;
+    widget.model.constraints.system = constraints;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -38,7 +38,7 @@ class _PagerPageViewState extends WidgetState<PagerPageView>
     Widget view = child;
 
     // apply user defined constraints
-    view = applyConstraints(view, widget.model.modelConstraints);
+    view = applyConstraints(view, widget.model.constraints.model);
 
     return view;
   }

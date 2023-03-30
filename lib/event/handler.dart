@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:convert';
 import 'dart:core';
-import 'package:collection/collection.dart' show IterableExtension;
 import 'package:firebase_auth/firebase_auth.dart' deferred as fbauth;
 import 'package:firebase_core/firebase_core.dart' deferred as fbcore;
 import 'package:flutter/material.dart';
@@ -59,7 +58,7 @@ class EventHandler extends Eval
     if (expression!.contains(thisDot)) expression = expression.replaceAll(thisDot, "${model.id}.");
 
     // get variables from observable
-    Map<String?, dynamic> variables = getVariables(observable);
+    Map<String?, dynamic> variables = observable.getVariables();
 
     // evaluate the expression
     expression = await evaluate(expression, variables);
@@ -202,21 +201,7 @@ class EventHandler extends Eval
     return expression;
   }
 
-  Map<String?, dynamic> getVariables(Observable observable)
-  {
-    Map<String?, dynamic> variables =  Map<String?, dynamic>();
-    if (observable.bindings != null)
-    observable.bindings!.forEach((binding)
-    {
-      Observable? source;
-      if (observable.sources != null) source = observable.sources!.firstWhereOrNull((observable) => observable.key == binding.key);
-      variables[binding.signature] = (source != null)  ? binding.translate(source.get()) : null;
-
-    });
-    return variables;
-  }
-
-  List<String> getConditionals(Expression? parsed)
+  static List<String> getConditionals(Expression? parsed)
   {
     List<String> s = [];
     if (parsed is ConditionalExpression)
@@ -228,7 +213,7 @@ class EventHandler extends Eval
     return s;
   }
 
-  List<String> getEvents(String? expression)
+  static List<String> getEvents(String? expression)
   {
     List<String> events = [];
     if (expression is String)
@@ -239,6 +224,7 @@ class EventHandler extends Eval
     }
     return events;
   }
+
   void _broadcast(EventTypes type)
   {
     EventManager.of(model)?.broadcastEvent(model,Event(type, model: model));

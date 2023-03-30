@@ -22,6 +22,22 @@ class TransformModel extends WidgetModel
   }
   bool get enabled => _enabled?.get() ?? true;
 
+  // row element
+  ListObservable? _row;
+  set row(dynamic v)
+  {
+    if (_row != null)
+    {
+      _row!.set(v);
+    }
+    else if (v != null)
+    {
+      _row = ListObservable(Binding.toKey(id, 'row'), null, scope: scope, listener: onPropertyChange);
+      _row!.set(v);
+    }
+  }
+  get row => _row?.get();
+
   /// source
   StringObservable? _source;
   set source (dynamic v)

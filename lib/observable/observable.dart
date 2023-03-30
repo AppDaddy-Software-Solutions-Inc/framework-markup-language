@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:collection/collection.dart';
 import 'package:fml/log/manager.dart';
 import 'binding.dart';
 import 'scope.dart';
@@ -179,6 +180,12 @@ class Observable
     if (!sources!.contains(source)) sources!.add(source);
   }
 
+  removeSource(Observable source)
+  {
+    if (sources == null) return;
+    if (sources!.contains(source)) sources!.remove(source);
+  }
+
   dispose()
   {
     // Clear Listeners
@@ -275,19 +282,32 @@ class Observable
     return null;
   }
 
-  static dynamic doEvaluation(dynamic value, {Map<String?, dynamic>? variables})
+  static dynamic doEvaluation(dynamic expression, {Map<String?, dynamic>? variables})
   {
     dynamic result;
     try
     {
-      result = EVALUATE.Eval.evaluate(value, variables: variables);
+      result = EVALUATE.Eval.evaluate(expression, variables: variables);
       if (result == null) result = "";
     }
     catch(e)
     {
-      Log().error('Error in Eval() -> $value. Error is $e');
+      Log().error('Error in Eval() -> $expression. Error is $e');
       result = null;
     }
     return result;
+  }
+
+  Map<String?, dynamic> getVariables()
+  {
+    Map<String?, dynamic> variables =  Map<String?, dynamic>();
+    if (bindings != null)
+    bindings!.forEach((binding)
+    {
+      Observable? source;
+      if (sources != null) source = sources!.firstWhereOrNull((observable) => observable.key == binding.key);
+      variables[binding.signature] = (source != null)  ? binding.translate(source.get()) : null;
+    });
+    return variables;
   }
 }

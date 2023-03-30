@@ -296,7 +296,7 @@ class AppFormState extends State<AppForm>
     // missing scheme
     if (!uri.hasScheme)
     {
-      uri = uri.replace(scheme: "https");
+      uri = Uri.parse('https://${uri.url}');
       urlController.text = uri.toString();
     }
 

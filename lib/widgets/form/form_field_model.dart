@@ -223,14 +223,28 @@ class FormFieldModel extends DecoratedWidgetModel
     alarms.forEach((alarm)
     {
       if (_alarms == null) _alarms = Map<String?, BooleanObservable>();
-      String id = alarm.id;
-      if (!S.isNullOrEmpty(alarm.error)) _alarms?[id] = BooleanObservable(null, alarm.error, scope: scope, setter: (value) => touched! ? value : false, listener: _onAlarm);
+      this._alarms!.clear();
+      if (!S.isNullOrEmpty(alarm.error)) _alarms?[alarm.id] = BooleanObservable(null, alarm.error, scope: scope, listener: _onAlarm);
     });
   }
 
   void _onAlarm(Observable alarm)
   {
-    var i = _alarms;
+    if (_alarms == null) return;
+
+    String? id;
+    bool alarming = false;
+    _alarms!.forEach((key, value)
+    {
+      if ((value.get() == true))
+      {
+        alarming = true;
+        if (id == null) id = key;
+      }
+    });
+
+    this.alarming = alarming;
+    this.alarm = id;
   }
 
   // values

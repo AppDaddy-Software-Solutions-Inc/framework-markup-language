@@ -62,7 +62,7 @@ class AlarmModel extends WidgetModel
     if (_onalarm != null) {
       _onalarm?.set(v);
     } else if (v != null) {
-      _onalarm = StringObservable(Binding.toKey(id, 'value'), v,
+      _onalarm = StringObservable(Binding.toKey(id, 'onalarm'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
@@ -137,7 +137,6 @@ class AlarmModel extends WidgetModel
     super.deserialize(xml);
 
     // set properties
-    value = Xml.get(node: xml, tag: 'value');
     error = Xml.get(node: xml, tag: 'error');
     errortext = Xml.get(node: xml, tag: 'errortext');
     onalarm = Xml.get(node: xml, tag: 'onalarm');

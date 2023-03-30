@@ -133,7 +133,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
 
     if (!isMobile)
     {
-      System.toast("NFC is only available on mobile devices", duration: 3);
+      System.toast("NFC is only available on mobile devices", duration: 4);
       return ok;
     }
 
@@ -238,7 +238,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
 
     if (!isMobile)
     {
-      System.toast("NFC is only available on mobile devices", duration: 3);
+      System.toast("NFC is only available on mobile devices", duration: 4);
       statusmessage = "NFC is only available on mobile devices";
       return false;
     }

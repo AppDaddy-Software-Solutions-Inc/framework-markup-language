@@ -146,6 +146,39 @@ class FormFieldModel extends DecoratedWidgetModel
   }
   String? get alarm => _alarm?.get();
 
+  /// If the field will display its error state.
+  BooleanObservable? _error;
+  set error(dynamic v) {
+    if (_error != null) {
+      _error!.set(v);
+    } else if (v != null) {
+      _error = BooleanObservable(Binding.toKey(id, 'error'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  bool? get error {
+    if (_error == null) return false;
+    return _error!.get();
+  }
+
+
+  /// The error message value of a form field.
+  StringObservable? _errortext;
+  set errortext(dynamic v) {
+    if (_errortext != null) {
+      _errortext!.set(v);
+    } else if (v != null) {
+      _errortext = StringObservable(Binding.toKey(id, 'errortext'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  String? get errortext {
+    if (_errortext == null) return null;
+    return _errortext!.get();
+  }
+
   /// True if there is an alarm sounding on a [iFormField]
   BooleanObservable? _alarming;
   set alarming(dynamic v) {
@@ -161,7 +194,15 @@ class FormFieldModel extends DecoratedWidgetModel
   // field offset
   Offset? offset;
 
-  FormFieldModel(WidgetModel? parent, String? id) : super(parent, id);
+  FormFieldModel(
+      WidgetModel? parent,
+      String? id, {
+      dynamic error,
+      dynamic errortext,
+      }) : super(parent, id){
+    if (error         != null) this.error = error;
+    if (errortext     != null) this.errortext = errortext;
+  }
 
   @override
   void deserialize(XmlElement xml)
@@ -182,29 +223,14 @@ class FormFieldModel extends DecoratedWidgetModel
     alarms.forEach((alarm)
     {
       if (_alarms == null) _alarms = Map<String?, BooleanObservable>();
-      this._alarms!.clear();
       String id = alarm.id;
-      if (!S.isNullOrEmpty(alarm.value)) _alarms![id] = BooleanObservable(null, value, scope: scope, setter: (value) => touched! ? value : false, listener: _onAlarm);
+      if (!S.isNullOrEmpty(alarm.error)) _alarms?[id] = BooleanObservable(null, alarm.error, scope: scope, setter: (value) => touched! ? value : false, listener: _onAlarm);
     });
   }
 
   void _onAlarm(Observable alarm)
   {
-    if (_alarms == null) return;
-
-    String? id;
-    bool alarming = false;
-    _alarms!.forEach((key, value)
-    {
-      if ((value.get() == true))
-      {
-        alarming = true;
-        if (id == null) id = key;
-      }
-    });
-
-    this.alarming = alarming;
-    this.alarm = id;
+    var i = _alarms;
   }
 
   // values

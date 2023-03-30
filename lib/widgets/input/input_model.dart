@@ -70,39 +70,6 @@ class InputModel extends FormFieldModel implements IFormField, IViewableWidget
   }
 
 
-  /// If the input will display its error state.
-  BooleanObservable? _error;
-  set error(dynamic v) {
-    if (_error != null) {
-      _error!.set(v);
-    } else if (v != null) {
-      _error = BooleanObservable(Binding.toKey(id, 'error'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  bool? get error {
-    if (_error == null) return false;
-    return _error!.get();
-  }
-
-
-  /// The error value of an input.
-  StringObservable? _errortext;
-  set errortext(dynamic v) {
-    if (_errortext != null) {
-      _errortext!.set(v);
-    } else if (v != null) {
-      _errortext = StringObservable(Binding.toKey(id, 'errortext'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  String? get errortext {
-    if (_errortext == null) return null;
-    return _errortext!.get();
-  }
-
   Suggestion? suggestion;
 
   /// If the input excludes the label above, and minimises the vertical space it takes up.
@@ -567,8 +534,6 @@ class InputModel extends FormFieldModel implements IFormField, IViewableWidget
     dynamic style,
     dynamic lines,
     dynamic length,
-    dynamic error,
-    dynamic errortext,
     dynamic obscure,
     dynamic mask,
     dynamic clear,
@@ -608,8 +573,6 @@ class InputModel extends FormFieldModel implements IFormField, IViewableWidget
     if (size          != null) this.size = size;
     if (weight        != null) this.weight = weight;
     if (style         != null) this.style = style;
-    if (error         != null) this.error = error;
-    if (errortext     != null) this.errortext = errortext;
     if (lines         != null) this.lines = lines;
     if (length        != null) this.length = length;
     if (padding       != null) this.padding = padding;

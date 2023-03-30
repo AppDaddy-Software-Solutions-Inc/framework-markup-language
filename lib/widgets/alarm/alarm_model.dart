@@ -80,7 +80,7 @@ class AlarmModel extends WidgetModel
   }
   String? get ondismissed => _ondismissed?.get();
 
-  /// The type of alarm trigger state. Can be validate (which will trigger on complete() or validate() of the form or the field, focus (when focus is lost), debounce (the built in debounce timer), or all.
+  /// 'Type' in FML, The type of alarm trigger state. Can be validate (which will trigger on complete() or validate() of the form or the field, focus (when focus is lost), debounce (the built in debounce timer), or all.
   StringObservable? _alarmtrigger;
   set alarmtrigger(dynamic v) {
     if (_alarmtrigger != null) {

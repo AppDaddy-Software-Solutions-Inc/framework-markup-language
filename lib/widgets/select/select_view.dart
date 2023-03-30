@@ -175,7 +175,7 @@ class _SelectViewState extends WidgetState<SelectView>
 
         List<OptionModel>? suggestions;
         view = SizedBox(
-          width: widget.model.constraints.global.maxWidth,
+          width: widget.model.calculateMaxWidth(),
               child: TypeAheadField(
                 textFieldConfiguration: TextFieldConfiguration(
                     focusNode: focus,

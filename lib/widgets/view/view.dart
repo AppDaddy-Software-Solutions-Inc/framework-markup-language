@@ -32,7 +32,7 @@ class _ViewState extends WidgetState<View>
     if (children.isEmpty) children.add(Container());
 
     // view
-    var view = children.length == 1 ? children[0] : SizedBox(height: widget.model.constraints.global.maxHeight, child: Column(children: children, mainAxisAlignment: MainAxisAlignment.start, mainAxisSize: MainAxisSize.min));
+    var view = children.length == 1 ? children[0] : SizedBox(height: widget.model.calculateMaxHeight(), child: Column(children: children, mainAxisAlignment: MainAxisAlignment.start, mainAxisSize: MainAxisSize.min));
     return view;
   }
 }

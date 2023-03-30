@@ -404,7 +404,7 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
     // get constraints
     var system = this.constraints.system;
     var model  = this.constraints.model;
-    var global = this.constraints.global;
+    var global = this.constraints.calculate();
 
     var layout = getLayoutType();
     if (layout == LayoutTypes.row)

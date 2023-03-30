@@ -25,7 +25,11 @@ class ViewableWidgetModel extends WidgetModel
   // constraints
   late final ConstraintModel _constraints;
   late final ConstraintSet constraints;
-  
+  double? calculateMinWidth()  => _constraints.calculateMinWidth();
+  double? calculateMaxWidth()  => _constraints.calculateMaxWidth();
+  double? calculateMinHeight() => _constraints.calculateMinHeight();
+  double? calculateMaxHeight() => _constraints.calculateMaxHeight();
+
   // width
   double? get width  => _constraints.width;
   set width(dynamic v) => _constraints.width = v;
@@ -475,7 +479,7 @@ class ConstraintSet
 {
   /// holds constraints defined in the template
   late final ConstraintModel _model;
-  Constraints get model => _model.model;
+  Constraints get model => _model.getModelConstraints();
   
   // holds constraints passed in flutter layout builder
   Constraints get system => _model.system;
@@ -483,8 +487,8 @@ class ConstraintSet
 
   /// constraints calculated by walking up the
   /// model tree comparing both model and flutter constraints
-  Constraints get global => _model.global;
-  
+  Constraints calculate() => _model.calculate();
+
   ConstraintSet(ConstraintModel model)
   {
     _model = model;

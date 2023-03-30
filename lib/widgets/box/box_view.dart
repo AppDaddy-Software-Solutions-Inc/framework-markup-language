@@ -324,22 +324,6 @@ class _BoxViewState extends WidgetState<BoxView>
         ]);
   }
 
-  /// this routine removes constraints from the
-  /// unconstrained axis if not expanded and
-  //
-  Widget _applyShrinkwrap(Widget view, bool vConstrained, bool hConstrained)
-  {
-    if (!widget.model.expand)
-    {
-      return UnconstrainedBox(child: view);
-      // wrap view in unconstrained box from any axis that is constrained
-      if ( vConstrained &&  hConstrained) return UnconstrainedBox(child: view);
-      if ( vConstrained && !hConstrained) return UnconstrainedBox(child: view, constrainedAxis: Axis.vertical);
-      if (!vConstrained &&  hConstrained) return UnconstrainedBox(child: view, constrainedAxis: Axis.horizontal);
-    }
-    return view;
-  }
-
   Widget _applyExpansionConstraints(Widget view)
   {
     // if widget is expanding we need to limit
@@ -354,7 +338,7 @@ class _BoxViewState extends WidgetState<BoxView>
       if (!hConstrained || !vConstrained)
       {
         // calculate global min/max constraints
-        var global = widget.model.constraints.global;
+        var global = widget.model.constraints.calculate();
 
         // min width is either the global value or the size of the display
         var maxWidth  = global.maxWidth  ?? MediaQuery.of(context).size.height;

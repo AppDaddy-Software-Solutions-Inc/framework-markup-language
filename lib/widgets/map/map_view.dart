@@ -75,12 +75,12 @@ class _MapViewState extends WidgetState<MapView>
 
     // map width
     var width = widget.model.width;
-    if (width == null) width = widget.model.constraints.global.maxWidth;
+    if (width == null) width = widget.model.calculateMaxWidth();
     if ((width == null) || (width <= 0)) width = MediaQuery.of(context).size.width;
 
     // map height
     var height = widget.model.height;
-    if (height == null) height = widget.model.constraints.global.maxHeight;
+    if (height == null) height = widget.model.calculateMaxHeight();
     if ((height == null) || (height <= 0)) height = MediaQuery.of(context).size.height;
 
     // view

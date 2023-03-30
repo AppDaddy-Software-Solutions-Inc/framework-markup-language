@@ -32,7 +32,7 @@ class _StackViewState extends WidgetState<StackView>
     List<Widget> children = widget.model.inflate();
     if (children.isEmpty) children.add(Container());
 
-    var constr = widget.model.constraints.global;
+    var constr = widget.model.constraints.calculate();
     if (widget.model.expand)
       children.add(ConstrainedBox(
           child: Container(),

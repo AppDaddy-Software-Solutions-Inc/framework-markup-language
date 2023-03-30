@@ -58,7 +58,7 @@ class _SplitViewState extends WidgetState<SplitView>
 
     // calculate sizes
     var size1 = (widget.model.vertical ? widget.model.height ?? 0 : widget.model.width  ?? 0);
-    var size2 = (widget.model.vertical ? widget.model.constraints.global.maxHeight! : widget.model.constraints.global.maxWidth!) - size1;
+    var size2 = (widget.model.vertical ? widget.model.calculateMaxHeight()! : widget.model.calculateMaxWidth()!) - size1;
     size1 = size1 - (_dividerWidth/2);
     size2 = size2 - (_dividerWidth/2);
     if (size1 < 0)
@@ -99,14 +99,14 @@ class _SplitViewState extends WidgetState<SplitView>
     {
       var height = (widget.model.height ?? 0) + details.delta.dy;
       if (height < 0) height = 0;
-      if (height > widget.model.constraints.global.maxHeight!) height = widget.model.constraints.global.maxHeight!;
+      if (height > widget.model.calculateMaxHeight()!) height = widget.model.calculateMaxHeight()!;
       widget.model.height = height;
     }
     else
     {
       var width = (widget.model.width ?? 0) + details.delta.dx;
       if (width < 0) width = 0;
-      if (width > widget.model.constraints.global.maxWidth!) width = widget.model.constraints.global.maxWidth!;
+      if (width > widget.model.calculateMaxWidth()!) width = widget.model.calculateMaxWidth()!;
       widget.model.width = width;
     }
   }

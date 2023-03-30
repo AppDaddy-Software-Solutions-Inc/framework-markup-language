@@ -78,11 +78,7 @@ class _TextViewState extends WidgetState<TextView>
     if (!model.hasHorizontalExpansionConstraints) isNotExpandedChild = widget.model.findAncestorOfExactType(ExpandedModel) == null;
 
     // constrained?
-    if (isNotExpandedChild || model.hasHorizontalConstraints)
-    {
-      var constraints = widget.model.constraints.calculate();
-      view = ConstrainedBox(child: view, constraints: BoxConstraints(minWidth: constraints.minWidth!, maxWidth: constraints.maxWidth!));
-    }
+    if (isNotExpandedChild) view = applyConstraints(view, widget.model.constraints.model);
 
     return view;
   }

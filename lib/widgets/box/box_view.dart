@@ -1,8 +1,10 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:ui';
+import 'package:collection/collection.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/positioned/positioned_view.dart';
 import 'package:fml/widgets/widget/alignment.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
@@ -76,27 +78,34 @@ List<Color> getGradientColors(c1, c2, c3, c4) {
 
 class _BoxViewState extends WidgetState<BoxView>
 {
-  Widget _layoutChildren(bool vExpand, bool hExpand, List<Widget> children, WidgetAlignment alignment)
+  Widget _layoutChildren(List<Widget> children, WidgetAlignment alignment)
   {
-
     var layout = widget.model.getLayoutType();
-    var wrap   = widget.model.wrap;
+    var wrap = widget.model.wrap;
+    var constraints = widget.model.constraints.model;
+    var expanding = widget.model.expand;
 
     Widget? child;
     switch (layout)
     {
       // stack widget
       case LayoutTypes.stack:
-        // The stack sizes itself to contain all the non-positioned children,
-        // which are positioned according to alignment.
-        // The positioned children are then placed relative to the stack according to their top, right, bottom, and left properties.
-        // inflate the stack
-        if (widget.model.expand)
+
+        if (!expanding)
         {
-               if ( vExpand &&  hExpand) children.add(SizedBox.expand());
-          else if ( vExpand && !hExpand) children.add(SizedBox(height: double.infinity));
-          else if (!vExpand &&  hExpand) children.add(SizedBox(width: double.infinity));
+          // The stack sizes itself to contain all the non-positioned children,
+          // which are positioned according to alignment.
+          var hasNonPositionedChildren = children.firstWhereOrNull((child) => child is! PositionedView) != null;
+
+          // we default the size to 50 pixels in the case
+          // where there is no dimension or min dimension and the stack has no
+          // non positioned children. Otherwise the stack size would be 0;
+          var width  = constraints.width  ?? constraints.minWidth  ?? (hasNonPositionedChildren ? null : 50);
+          var height = constraints.height ?? constraints.minHeight ?? (hasNonPositionedChildren ? null : 50);
+          if (width  != null) children.add(SizedBox.fromSize(size: Size(width, 0)));
+          if (height != null) children.add(SizedBox.fromSize(size: Size(0, height)));
         }
+        else children.add(SizedBox.expand());
 
         // create the stack
         child = Stack(children: children, alignment: alignment.aligned);
@@ -104,18 +113,34 @@ class _BoxViewState extends WidgetState<BoxView>
 
       // row widget
       case LayoutTypes.row:
+
+        // if the box is contracting and
+        // there are no horizontal model (template) constraints
+        // limiting the expansion (width, maxWidth) of the box,
+        // set the axis size to min
+        var mainAxisSize = MainAxisSize.max;
+        if (!expanding && !constraints.hasHorizontalExpansionConstraints) mainAxisSize = MainAxisSize.min;
+
         if (!wrap)
-             child = Row(mainAxisSize: hExpand ? MainAxisSize.max : MainAxisSize.min, children: children, crossAxisAlignment: alignment.crossAlignment, mainAxisAlignment: alignment.mainAlignment);
+             child = Row(mainAxisSize: mainAxisSize, children: children, crossAxisAlignment: alignment.crossAlignment, mainAxisAlignment: alignment.mainAlignment);
         else child = Wrap(direction: Axis.horizontal, children: children, alignment: alignment.mainWrapAlignment, runAlignment: alignment.mainWrapAlignment, crossAxisAlignment: alignment.crossWrapAlignment);
         break;
 
       // column widget
       case LayoutTypes.column:
       default:
+
+        // if the box isn't expanding and
+        // there are no vertical model (template) constraints
+        // limiting the expansion (height, maxHeight) of the box,
+        // set the axis size to min
+        var mainAxisSize = MainAxisSize.max;
+        if (!expanding && !widget.model.constraints.model.hasVerticalExpansionConstraints) mainAxisSize = MainAxisSize.min;
+
         if (!wrap)
-             child = Column(mainAxisSize: vExpand ? MainAxisSize.max : MainAxisSize.min, children: children, crossAxisAlignment: alignment.crossAlignment, mainAxisAlignment: alignment.mainAlignment);
-        else child = Wrap(direction: Axis.vertical, children: children, alignment: alignment.mainWrapAlignment, runAlignment: alignment.mainWrapAlignment, crossAxisAlignment: alignment.crossWrapAlignment);
-        break;
+               child = Column(mainAxisSize: mainAxisSize, children: children, crossAxisAlignment: alignment.crossAlignment, mainAxisAlignment: alignment.mainAlignment);
+          else child = Wrap(direction: Axis.vertical, children: children, alignment: alignment.mainWrapAlignment, runAlignment: alignment.mainWrapAlignment, crossAxisAlignment: alignment.crossWrapAlignment);
+          break;
     }
     return child;
   }
@@ -306,11 +331,49 @@ class _BoxViewState extends WidgetState<BoxView>
   {
     if (!widget.model.expand)
     {
+      return UnconstrainedBox(child: view);
       // wrap view in unconstrained box from any axis that is constrained
       if ( vConstrained &&  hConstrained) return UnconstrainedBox(child: view);
       if ( vConstrained && !hConstrained) return UnconstrainedBox(child: view, constrainedAxis: Axis.vertical);
       if (!vConstrained &&  hConstrained) return UnconstrainedBox(child: view, constrainedAxis: Axis.horizontal);
     }
+    return view;
+  }
+
+  Widget _applyExpansionConstraints(Widget view)
+  {
+    // if widget is expanding we need to limit
+    // its size if there are no limiting constraints
+    if (widget.model.expand)
+    {
+      // get constraints in both axis?
+      var hConstrained = widget.model.isHorizontallyConstrained();
+      var vConstrained = widget.model.isVerticallyConstrained();
+
+      // is the box unconstrained in either axis?
+      if (!hConstrained || !vConstrained)
+      {
+        // calculate global min/max constraints
+        var global = widget.model.constraints.global;
+
+        // min width is either the global value or the size of the display
+        var maxWidth  = global.maxWidth  ?? MediaQuery.of(context).size.height;
+        var maxHeight = global.maxHeight ?? MediaQuery.of(context).size.height;
+
+        // set constraints in order to contain the box
+        // otherwise the flutter layout with throw an exception
+        BoxConstraints constraints = BoxConstraints(maxHeight: maxHeight);
+        if (!hConstrained && !vConstrained) constraints = BoxConstraints(maxWidth: maxWidth, maxHeight: maxHeight);
+        if (!hConstrained &&  vConstrained) constraints = BoxConstraints(maxWidth: maxWidth);
+
+        // set the constraints on the view
+        view = ConstrainedBox(child: view, constraints: constraints);
+      }
+    }
+
+    // allow box to shrink at will
+    else view = UnconstrainedBox(child: view);
+
     return view;
   }
 
@@ -338,11 +401,8 @@ class _BoxViewState extends WidgetState<BoxView>
     // this must go after the children are determined
     var alignment = AlignmentHelper.alignWidgetAxis(children.length, widget.model.layout, widget.model.center, widget.model.halign, widget.model.valign);
 
-    bool vExpand = widget.model.isVerticallyConstrained();
-    bool hExpand = widget.model.isHorizontallyConstrained();
-
     // layout the children
-    Widget? child = _layoutChildren(vExpand, hExpand, children, alignment);
+    Widget? child = _layoutChildren(children, alignment);
 
     // border
     Border? border = _getBorder();
@@ -376,8 +436,9 @@ class _BoxViewState extends WidgetState<BoxView>
     // in order to handle "expand" correctly
     view = applyConstraints(view, widget.model.constraints.model);
 
-    // this allows the view to shrink accordingly
-    view = _applyShrinkwrap(view, !vExpand, !hExpand);
+    // apply constraints to allow the box
+    // to fit properly based on expand=true/false
+    view = _applyExpansionConstraints(view);
 
     return view;
   }

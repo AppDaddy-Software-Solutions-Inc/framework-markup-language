@@ -133,7 +133,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
 
     if (!isMobile)
     {
-      System.toast("NFC is only available on mobile devices");
+      System.toast("NFC is only available on mobile devices", duration: 3);
       return ok;
     }
 
@@ -238,13 +238,13 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
 
     if (!isMobile)
     {
-      System.toast("NFC is only available on mobile devices");
+      System.toast("NFC is only available on mobile devices", duration: 3);
       statusmessage = "NFC is only available on mobile devices";
       return false;
     }
 
     String function = propertyOrFunction.toLowerCase().trim();
-    if (function == "write"){
+    if (function == "write") {
       statusmessage = "Approach an NFC tag to Write";
       String? message = S.toStr(S.item(arguments, 0));
       return await _write(message, restart: true);

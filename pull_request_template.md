@@ -1,7 +1,7 @@
 ## Description
 
 
-### Type of Request and links to any relevate issues or PRs (remove any unrelevant types):
+### Type of Request and links to any relevant issues or PRs (remove any irrelevant types):
 - [**Bug Fix**]
 - [**New Feature**]
 - [**Improved Feature**]
@@ -17,7 +17,7 @@
 - 
 
 
-### List ALL potentially Affected Widgets/Events/Evals/Systems/Platforms:
+### List ALL potentially Affected Widgets/Events/Evaluations/Systems/Platforms:
 - 
 
 

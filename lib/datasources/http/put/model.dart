@@ -35,4 +35,18 @@ class HttpPutModel extends HttpModel implements IDataSource
   void deserialize(XmlElement xml)
   {    super.deserialize(xml);
   }
+
+  @override
+  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
+  {
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+
+    bool refresh = S.toBool(S.item(arguments,0)) ?? false;
+    switch (function)
+    {
+      case "put" : return await start(refresh: refresh);
+    }
+    return super.execute(caller, propertyOrFunction, arguments);
+  }
 }

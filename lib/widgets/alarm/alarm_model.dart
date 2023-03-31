@@ -19,16 +19,17 @@ class AlarmModel extends WidgetModel
   }
   String? get value => _value?.get();
 
-  /// The error text value passed to the main widget.
+  /// The error message value of a form field.
   StringObservable? _errortext;
   set errortext(dynamic v) {
     if (_errortext != null) {
-      _errortext?.set(v);
+      _errortext!.set(v);
     } else if (v != null) {
       _errortext = StringObservable(Binding.toKey(id, 'errortext'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
+
   String? get errortext => _errortext?.get();
 
   /// The eval to determine if the error state of the parent is displayed.
@@ -42,7 +43,7 @@ class AlarmModel extends WidgetModel
     }
   }
 
-  bool? get error => seterror?.get() ?? false;
+  bool? get error => seterror?.get();
 
   /// The boolean to determine if the alarm marks the field as mandatory if it is alarming. True by default
   BooleanObservable? _mandatory;
@@ -106,13 +107,13 @@ class AlarmModel extends WidgetModel
       dynamic mandatory,
   })
       : super(parent, id) {
-      this.value = value;
-      this.error = error;
-      this.errortext = errortext;
-      this.onalarm = onalarm;
-      this.ondismissed = ondismissed;
-      this.alarmtrigger = alarmtrigger;
-      this.mandatory = mandatory;
+    if (value     != null) this.value = value;
+    if (error     != null) this.error = error;
+    if (errortext     != null) this.errortext = errortext;
+    if (onalarm     != null) this.onalarm = onalarm;
+    if (ondismissed     != null) this.ondismissed = ondismissed;
+    if (alarmtrigger     != null) this.alarmtrigger = alarmtrigger;
+    if (mandatory     != null) this.mandatory = mandatory;
   }
 
   static AlarmModel? fromXml(WidgetModel parent, XmlElement xml)

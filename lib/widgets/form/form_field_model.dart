@@ -136,7 +136,7 @@ class FormFieldModel extends DecoratedWidgetModel
   String? get onchange => _onchange?.get();
 
   /// [Alarm]s based on validation checks
-  Map<String?, BooleanObservable>? _alarms;
+  Map<String?, AlarmModel>? _alarms = {};
 
   StringObservable? _alarm;
   set alarm(dynamic v) {
@@ -222,19 +222,23 @@ class FormFieldModel extends DecoratedWidgetModel
 
     // Build alarms
     List<AlarmModel> alarms = findChildrenOfExactType(AlarmModel).cast<AlarmModel>();
+    _alarms!.clear();
     for (var alarm in alarms) {
-      _alarms ??= {};
-      _alarms!.clear();
-
+      _alarms![alarm.id] = alarm;
       //register a listener to always throw the alarm state when the value of the alarm changes if the alarm type is 'all'
       if(alarm.alarmtrigger == 'all' || alarm.alarmtrigger == null) alarm.seterror?.registerListener(onAlarmChange);
     }
   }
 
-  void onAlarmChange(Observable error) {
+  void onAlarmChange(Observable errorObservable) {
+
     //get the error state of the alarm and set it to that of the form field.
-    alarmerror = error.get();
-    if(alarmerror) alarming = true;
+    error = errorObservable.get();
+     if(error) {
+       var sourceid = errorObservable.scope?.id;
+       alarming = true;
+       errortext = _alarms?[sourceid]?.errortext;
+     }
   }
 
   // values

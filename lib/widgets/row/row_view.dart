@@ -33,7 +33,7 @@ class _RowViewState extends WidgetState<RowView>
     if (children.isEmpty) children.add(Container());
 
     //this must go after the children are determined. Returns an alignment map.
-    var alignment = AlignmentHelper.alignWidgetAxis(children.length, 'row', widget.model.center, widget.model.halign, widget.model.valign);
+    var alignment = AlignmentHelper.alignWidgetAxis(children.length, LayoutType.row, widget.model.center, widget.model.halign, widget.model.valign);
 
     // get user defined constraints
     var localConstraints = widget.model.constraints.model;

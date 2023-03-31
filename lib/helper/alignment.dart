@@ -2,60 +2,50 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/alignment.dart';
 
+enum LayoutType {none, row, column, stack}
+enum VerticalAlignmentType {top, bottom, center, around, between, evenly}
+enum HorizontalAlignmentType {left, right, center, around, between, evenly}
+
 class AlignmentHelper
 {
-  static WidgetAlignment alignWidgetAxis(int childrenLength, String? modelLayoutType, bool? modelCenter, String? modelHorizontalAlignment, String? modelVerticalAlignment)
+  static WidgetAlignment alignWidgetAxis(int childrenLength, LayoutType modelLayoutType, bool? modelCenter, HorizontalAlignmentType? modelHorizontalAlignment, VerticalAlignmentType? modelVerticalAlignment)
   {
-    String halign;
-    String valign;
+    HorizontalAlignmentType halign;
+    VerticalAlignmentType valign;
 
     var alignment =  WidgetAlignment();
 
     // halign override for center if set;
-    if (modelHorizontalAlignment == null && modelCenter == true)
-    {
-      halign = 'center';
-    }
+     if (modelHorizontalAlignment == null && modelCenter == true)
+       halign = HorizontalAlignmentType.center;
     else if (modelHorizontalAlignment == null && modelCenter == false)
-    {
-      halign = 'start';
-    }
+      halign = HorizontalAlignmentType.left;
     else
-    {
-      halign = modelHorizontalAlignment ?? 'start';
-    }
+      halign = modelHorizontalAlignment ?? HorizontalAlignmentType.left;
 
     // valign overrides center if set;
     if (modelVerticalAlignment == null && modelCenter == true)
-    {
-      valign = 'center';
-    }
+      valign = VerticalAlignmentType.center;
     else if (modelVerticalAlignment == null && modelCenter == false)
-    {
-      valign = 'start';
-    }
+      valign = VerticalAlignmentType.top;
     else
-    {
-      valign = modelVerticalAlignment ?? 'start';
-    }
+      valign = modelVerticalAlignment ?? VerticalAlignmentType.top;
 
     // determine the alignment for the layout type based on the axes;
-    if (modelLayoutType == 'row')
+    if (modelLayoutType == LayoutType.row)
     {
       // cases for Cross axis
       switch (valign)
       {
-        case 'center':
+        case VerticalAlignmentType.center:
           alignment.crossAlignment = CrossAxisAlignment.center;
           alignment.crossWrapAlignment = WrapCrossAlignment.center;
           break;
-        case 'start':
-        case 'top':
+        case VerticalAlignmentType.top:
           alignment.crossAlignment = CrossAxisAlignment.start;
           alignment.crossWrapAlignment = WrapCrossAlignment.start;
           break;
-        case 'end':
-        case 'bottom':
+        case VerticalAlignmentType.bottom:
           alignment.crossAlignment = CrossAxisAlignment.end;
           alignment.crossWrapAlignment = WrapCrossAlignment.end;
           break;
@@ -68,32 +58,27 @@ class AlignmentHelper
       // cases for main axis
       switch (halign)
           {
-        case 'center':
+        case HorizontalAlignmentType.center:
           alignment.mainAlignment = MainAxisAlignment.center;
           alignment.mainWrapAlignment = WrapAlignment.center;
           break;
-        case 'start':
-        case 'left':
+        case HorizontalAlignmentType.left:
           alignment.mainAlignment = MainAxisAlignment.start;
           alignment.mainWrapAlignment = WrapAlignment.start;
           break;
-        case 'end':
-        case 'right':
+        case HorizontalAlignmentType.right:
           alignment.mainAlignment = MainAxisAlignment.end;
           alignment.mainWrapAlignment = WrapAlignment.end;
           break;
-        case 'spacearound':
-        case 'around':
+        case HorizontalAlignmentType.around:
           alignment.mainAlignment = MainAxisAlignment.spaceAround;
           alignment.mainWrapAlignment = WrapAlignment.spaceAround;
           break;
-        case 'spacebetween':
-        case 'between':
+        case HorizontalAlignmentType.between:
           alignment.mainAlignment = MainAxisAlignment.spaceBetween;
           alignment.mainWrapAlignment = WrapAlignment.spaceBetween;
           break;
-        case 'spaceevenly':
-        case 'evenly':
+        case HorizontalAlignmentType.evenly:
           alignment.mainAlignment = MainAxisAlignment.spaceEvenly;
           alignment.mainWrapAlignment = WrapAlignment.spaceEvenly;
           break;
@@ -103,21 +88,19 @@ class AlignmentHelper
           break;
       }
     }
-    else if (modelLayoutType == 'column' || modelLayoutType == 'col')
+    else if (modelLayoutType == LayoutType.column)
     {
       switch (halign)
       {
-        case 'center':
+        case HorizontalAlignmentType.center:
           alignment.crossAlignment = CrossAxisAlignment.center;
           alignment.crossWrapAlignment = WrapCrossAlignment.center;
           break;
-        case 'start':
-        case 'left':
+        case HorizontalAlignmentType.left:
           alignment.crossAlignment = CrossAxisAlignment.start;
           alignment.crossWrapAlignment = WrapCrossAlignment.start;
           break;
-        case 'end':
-        case 'right':
+        case HorizontalAlignmentType.right:
           alignment.crossAlignment = CrossAxisAlignment.end;
           alignment.crossWrapAlignment = WrapCrossAlignment.end;
           break;
@@ -130,32 +113,27 @@ class AlignmentHelper
       // cases for main axis
       switch (valign)
       {
-        case 'center':
+        case VerticalAlignmentType.center:
           alignment.mainAlignment = MainAxisAlignment.center;
           alignment.mainWrapAlignment = WrapAlignment.center;
           break;
-        case 'start':
-        case 'top':
+        case VerticalAlignmentType.top:
           alignment.mainAlignment = MainAxisAlignment.start;
           alignment.mainWrapAlignment = WrapAlignment.start;
           break;
-        case 'end':
-        case 'bottom':
+        case VerticalAlignmentType.bottom:
           alignment.mainAlignment = MainAxisAlignment.end;
           alignment.mainWrapAlignment = WrapAlignment.end;
           break;
-        case 'spacearound':
-        case 'around':
+        case VerticalAlignmentType.around:
           alignment.mainAlignment = MainAxisAlignment.spaceAround;
           alignment.mainWrapAlignment = WrapAlignment.spaceAround;
           break;
-        case 'spacebetween':
-        case 'between':
+        case VerticalAlignmentType.between:
           alignment.mainAlignment = MainAxisAlignment.spaceBetween;
           alignment.mainWrapAlignment = WrapAlignment.spaceBetween;
           break;
-        case 'spaceevenly':
-        case 'evenly':
+        case VerticalAlignmentType.evenly:
           alignment.mainAlignment = MainAxisAlignment.spaceEvenly;
           alignment.mainWrapAlignment = WrapAlignment.spaceEvenly;
           break;
@@ -166,20 +144,18 @@ class AlignmentHelper
       }
     }
 
-    if (modelLayoutType == 'row')
+    if (modelLayoutType == LayoutType.row)
     {
       // row Alignment for box align
       switch (valign)
       {
-        case 'center':
+        case VerticalAlignmentType.center:
           alignment.aligned = Alignment.centerLeft;
           break;
-        case 'start':
-        case 'top':
+        case VerticalAlignmentType.top:
           alignment.aligned = Alignment.topLeft;
           break;
-        case 'end':
-        case 'bottom':
+        case VerticalAlignmentType.bottom:
           alignment.aligned = Alignment.bottomLeft;
           break;
         default:
@@ -188,20 +164,18 @@ class AlignmentHelper
       }
     }
 
-    if (modelLayoutType == 'column' || modelLayoutType == 'col')
+    if (modelLayoutType == LayoutType.column)
     {
       // Column Alignment for box align
       switch (halign)
       {
-        case 'center':
+        case HorizontalAlignmentType.center:
           alignment.aligned = Alignment.topCenter;
           break;
-        case 'start':
-        case 'left':
+        case HorizontalAlignmentType.left:
           alignment.aligned = Alignment.topLeft;
           break;
-        case 'end':
-        case 'right':
+        case HorizontalAlignmentType.right:
           alignment.aligned = Alignment.topRight;
           break;
         default:
@@ -210,51 +184,109 @@ class AlignmentHelper
       }
     }
 
-    if (childrenLength == 1 || modelLayoutType == 'stack')
+    if (childrenLength == 1 || modelLayoutType == LayoutType.stack)
     {
-      switch (valign + halign)
+      switch (valign)
       {
-        case 'center' + 'center':
-          alignment.aligned = Alignment.center;
+        case VerticalAlignmentType.top:
+          if (halign == HorizontalAlignmentType.left) alignment.aligned = Alignment.topLeft;
+          if (halign == HorizontalAlignmentType.center) alignment.aligned = Alignment.topCenter;
+          if (halign == HorizontalAlignmentType.right) alignment.aligned = Alignment.topRight;
           break;
-        case 'top' + 'center':
-        case 'start' + 'center':
-          alignment.aligned = Alignment.topCenter;
+
+        case VerticalAlignmentType.center:
+          if (halign == HorizontalAlignmentType.center) alignment.aligned = Alignment.center;
           break;
-        case 'top' + 'left':
-        case 'start' + 'left':
-        case 'top' + 'start':
-        case 'start' + 'start':
-          alignment.aligned = Alignment.topLeft;
+
+        case VerticalAlignmentType.bottom:
+          if (halign == HorizontalAlignmentType.left) alignment.aligned = Alignment.bottomLeft;
+          if (halign == HorizontalAlignmentType.center) alignment.aligned = Alignment.bottomCenter;
+          if (halign == HorizontalAlignmentType.right) alignment.aligned = Alignment.bottomRight;
           break;
-        case 'top' + 'right':
-        case 'start' + 'right':
-        case 'top' + 'end':
-        case 'start' + 'end':
-          alignment.aligned = Alignment.topRight;
-          break;
-        case 'end' + 'center':
-        case 'bottom' + 'center':
-          alignment.aligned = Alignment.bottomCenter;
-          break;
-        case 'end' + 'left':
-        case 'bottom' + 'left':
-        case 'end' + 'start':
-        case 'bottom' + 'start':
-          alignment.aligned = Alignment.bottomLeft;
-          break;
-        case 'end' + 'right':
-        case 'bottom' + 'right':
-        case 'end' + 'end':
-        case 'bottom' + 'end':
-          alignment.aligned = Alignment.bottomRight;
-          break;
-        default:
-          alignment.aligned = Alignment.topLeft;
-          break;
+
+        default: alignment.aligned = Alignment.topLeft;
       }
     }
-
     return alignment;
+  }
+
+  static LayoutType getLayoutType(String? layout, {LayoutType defaultLayout = LayoutType.column})
+  {
+    switch (layout?.toLowerCase().trim())
+    {
+      case 'col':
+      case 'column':
+        return LayoutType.column;
+
+      case 'row':
+        return LayoutType.row;
+
+      case 'stack':
+        return LayoutType.stack;
+
+      default: return defaultLayout;
+    }
+  }
+
+  static VerticalAlignmentType getVerticalAlignmentType(String? alignment, {VerticalAlignmentType defaultType = VerticalAlignmentType.start})
+  {
+    switch (alignment?.toLowerCase().trim())
+    {
+      case 'top':
+      case 'start':
+        return VerticalAlignmentType.top;
+
+      case 'bottom':
+      case 'end':
+        return VerticalAlignmentType.bottom;
+
+      case 'center':
+        return VerticalAlignmentType.center;
+
+      case 'spacearound':
+      case 'around':
+        return VerticalAlignmentType.around;
+
+      case 'spacebetween':
+      case 'between':
+        return VerticalAlignmentType.between;
+
+      case 'spacearound':
+      case 'around':
+        return VerticalAlignmentType.around;
+
+      default: return defaultType;
+    }
+  }
+
+  static HorizontalAlignmentType getHorizontalAlignmentType(String? alignment, {HorizontalAlignmentType defaultType = HorizontalAlignmentType.start})
+  {
+    switch (alignment?.toLowerCase().trim())
+    {
+      case 'left':
+      case 'start':
+        return HorizontalAlignmentType.left;
+
+      case 'right':
+      case 'end':
+        return HorizontalAlignmentType.right;
+
+      case 'center':
+        return HorizontalAlignmentType.center;
+
+      case 'spacearound':
+      case 'around':
+        return HorizontalAlignmentType.around;
+
+      case 'spacebetween':
+      case 'between':
+        return HorizontalAlignmentType.between;
+
+      case 'spacearound':
+      case 'around':
+        return HorizontalAlignmentType.around;
+
+      default: return defaultType;
+    }
   }
 }

@@ -9,8 +9,6 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-enum LayoutTypes {none, row, column, stack}
-
 class BoxModel extends DecoratedWidgetModel implements IViewableWidget
 {
   // box blur
@@ -337,7 +335,7 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
     wrap = Xml.get(node: xml, tag: 'wrap');
 
     // if stack, sort children by depth
-    if (getLayoutType() == LayoutTypes.stack)
+    if (AlignmentHelper.getLayoutType(layout) == LayoutType.stack)
     if (children != null)
     {
       children?.sort((a, b)
@@ -350,16 +348,15 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
 
   bool isVerticallyConstrained()
   {
-    var layout = getLayoutType();
-    switch (layout)
+    switch (AlignmentHelper.getLayoutType(this.layout))
     {
-      case LayoutTypes.column:
+      case LayoutType.column:
         return constraints.model.hasVerticalExpansionConstraints || constraints.system.hasVerticalExpansionConstraints;
 
-      case LayoutTypes.row:
+      case LayoutType.row:
         return true;
 
-      case LayoutTypes.stack:
+      case LayoutType.stack:
       default:
         return constraints.model.hasVerticalExpansionConstraints || constraints.system.hasVerticalExpansionConstraints;
     }
@@ -367,28 +364,18 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
 
   bool isHorizontallyConstrained()
   {
-    var layout = getLayoutType();
-    switch (layout)
+    switch (AlignmentHelper.getLayoutType(this.layout))
     {
-      case LayoutTypes.column:
+      case LayoutType.column:
         return true;
 
-      case LayoutTypes.row:
+      case LayoutType.row:
         return constraints.model.hasHorizontalExpansionConstraints;
 
-      case LayoutTypes.stack:
+      case LayoutType.stack:
       default:
         return constraints.model.hasHorizontalExpansionConstraints || constraints.system.hasHorizontalExpansionConstraints;
     }
-  }
-
-  LayoutTypes getLayoutType()
-  {
-    if (layout == 'col')    return LayoutTypes.column;
-    if (layout == 'column') return LayoutTypes.column;
-    if (layout == 'row')    return LayoutTypes.row;
-    if (layout == 'stack')  return LayoutTypes.stack;
-    return LayoutTypes.column;
   }
 
   @override
@@ -406,8 +393,8 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
     var model  = this.constraints.model;
     var global = this.constraints.calculate();
 
-    var layout = getLayoutType();
-    if (layout == LayoutTypes.row)
+    var layout = AlignmentHelper.getLayoutType(this.layout);
+    if (layout == LayoutType.row)
     {
       if (expand  && model.hasHorizontalExpansionConstraints) return true;
       if (expand  && global.maxWidth != null) return true;
@@ -415,7 +402,7 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
       if (!expand && model.hasHorizontalContractionConstraints) return true;
     }
 
-    else if (layout == LayoutTypes.column)
+    else if (layout == LayoutType.column)
     {
       if (expand  && model.hasVerticalExpansionConstraints) return true;
       if (expand  && global.maxHeight != null) return true;

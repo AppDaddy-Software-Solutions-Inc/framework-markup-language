@@ -42,7 +42,7 @@ class _TableRowCellViewState extends WidgetState<TableRowCellView> with WidgetsB
     if (children.isEmpty) children.add(Container());
 
     //this must go after the children are determined
-    var alignment= AlignmentHelper.alignWidgetAxis(2, 'col', widget.model.center, widget.model.halign, widget.model.valign);
+    var alignment= AlignmentHelper.alignWidgetAxis(2, LayoutType.column, widget.model.center, widget.model.halign, widget.model.valign);
 
     // Contents
     Widget contents;

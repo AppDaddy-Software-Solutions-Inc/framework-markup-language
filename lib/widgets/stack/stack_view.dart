@@ -42,7 +42,7 @@ class _StackViewState extends WidgetState<StackView>
               minWidth: constr.minWidth!,
               maxWidth: constr.maxWidth!)));
 
-    var alignment = AlignmentHelper.alignWidgetAxis(children.length, 'stack', widget.model.center, widget.model.halign, widget.model.valign);
+    var alignment = AlignmentHelper.alignWidgetAxis(children.length, LayoutType.stack, widget.model.center, widget.model.halign, widget.model.valign);
 
     //////////
     /* View */

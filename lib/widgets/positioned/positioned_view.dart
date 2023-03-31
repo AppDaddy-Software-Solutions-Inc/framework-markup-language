@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
+import 'package:fml/helper/alignment.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/stack/stack_model.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
@@ -33,7 +34,10 @@ class _PositionedViewState extends WidgetState<PositionedView>
 
     // A positioned widget's immediate parent must be a stack
     Widget view = child;
-    if (widget.model.parent is StackModel || (widget.model.parent is BoxModel && (widget.model.parent as BoxModel).getLayoutType() == LayoutTypes.stack))
+    LayoutType? layout;
+    if (widget.model.parent is StackModel) layout = LayoutType.stack;
+    if (widget.model.parent is BoxModel && AlignmentHelper.getLayoutType((widget.model.parent as BoxModel).layout) == LayoutType.stack) layout = LayoutType.stack;
+    if (layout == LayoutType.stack)
     {
       if (widget.model.xoffset != null && widget.model.yoffset != null)
       {

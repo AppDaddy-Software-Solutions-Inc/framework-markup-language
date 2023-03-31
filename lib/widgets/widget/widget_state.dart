@@ -48,7 +48,7 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
   /// This routine applies the given constraints to the supplied
   /// view and then returns a widget with the view wrapped in those
   /// constraints
-  Widget applyConstraints(Widget view, Constraints constraints, {bool restrainVerticalAxis = false, restrainHorizontalAxis = false, Constraints? maxConstraints})
+  Widget applyConstraints(Widget view, Constraints constraints)
   {
     // If no constraints are specified
     // return the view
@@ -80,46 +80,55 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
     else if (constraints.width != null && constraints.height != null)
       view = UnconstrainedBox(child: SizedBox(child: view, width: constraints.width, height: constraints.height));
 
-    // checks that either of the axis are unrestrained by the system
-    // if if so, applies basis size restrictions in order to avoid
-    // an infinitely expanding widget error
-    if (restrainVerticalAxis || restrainHorizontalAxis)
+    return view;
+  }
+
+  /// This routine constrains the specified Axis. If Axis is nuull, it will constrain
+  /// both Axis.vertical and Axis.horizontal if unconstrained
+  Widget constrainAxis(Widget view, Constraints constraints, Constraints maxConstraints, {Axis? axis})
+  {
+    // If no constraints are specified
+    // return the view
+    if (constraints.isEmpty) return view;
+
+    double? maxWidth;
+    double? maxHeight;
+
+    // restrain the vertical if if unconstrained (double.infinity)
+    if (axis == Axis.vertical || axis == null)
+    {
+      // the vertical axis is constrained if a height or max height
+      // is specified since it would have already been applied above
+      var constrained = constraints.height != null || constraints.maxHeight != null;
+
+      // max height is either the calculated max height
+      // or the height of the display (default). The default could very well be
+      // any other arbitrary size.
+      if (!constrained) maxHeight = maxConstraints.maxHeight ?? MediaQuery.of(context).size.height;
+    }
+
+    // restrain the horizontal if unconstrained (double.infinity)
+    if (axis == Axis.vertical || axis == null)
     {
       // the horizontal axis is constrained if a width or max width
       // is specified since it would have already been applied above
-      var horizontalAxisConstrained = constraints.width  != null || constraints.maxWidth  != null;
-      var horizontalAxisUnconstrained = !horizontalAxisConstrained;
+      var constrained = constraints.width != null || constraints.maxWidth  != null;
 
-      // the vertical axis is constrained if a height or max height
-      // is specified since it would have already been applied above
-      var verticalAxisConstrained = constraints.height != null || constraints.maxHeight != null;
-      var verticalAxisUnconstrained = !verticalAxisConstrained;
-
-      // If the box unconstrained in either axis,
-      // we need to constrain it, otherwise it
-      // will throw a flutter exception
-      if (horizontalAxisUnconstrained || verticalAxisUnconstrained)
-      {
-        // max width is either the calculated max width
-        // or the width of the display (default). The default could very well be
-        // any other arbitrary size.
-        var maxWidth  = maxConstraints?.maxWidth  ?? MediaQuery.of(context).size.width;
-
-        // max height is either the calculated max height
-        // or the height of the display (default). The default could very well be
-        // any other arbitrary size.
-        var maxHeight = maxConstraints?.maxHeight ?? MediaQuery.of(context).size.height;
-
-        // set constraints in order to contain the box
-        BoxConstraints? constraints;
-        if (horizontalAxisUnconstrained && verticalAxisUnconstrained) constraints = BoxConstraints(maxWidth: maxWidth, maxHeight: maxHeight);
-        if (horizontalAxisUnconstrained && verticalAxisConstrained)   constraints = BoxConstraints(maxHeight: maxWidth);
-        if (horizontalAxisConstrained   && verticalAxisUnconstrained) constraints = BoxConstraints(maxWidth: maxHeight);
-
-        // set the constraints on the view
-        if (constraints != null) view = ConstrainedBox(child: view, constraints: constraints);
-      }
+      // max width is either the calculated max width
+      // or the width of the display (default). The default could very well be
+      // any other arbitrary size.
+      if (!constrained) maxHeight = maxConstraints.maxWidth ?? MediaQuery.of(context).size.width;
     }
+
+    // set constraints in order to contain the box
+    BoxConstraints? boxConstraints;
+    if (maxWidth != null && maxHeight != null) boxConstraints = BoxConstraints(maxWidth: maxWidth, maxHeight: maxHeight);
+    if (maxWidth != null && maxHeight == null) boxConstraints = BoxConstraints(maxWidth: maxWidth);
+    if (maxWidth == null && maxHeight != null) boxConstraints = BoxConstraints(maxHeight: maxHeight);
+
+    // set the constraints on the view
+    if (boxConstraints != null) view = ConstrainedBox(child: view, constraints: boxConstraints);
+
     return view;
   }
 }

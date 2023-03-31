@@ -337,11 +337,11 @@ class _BoxViewState extends WidgetState<BoxView>
 
   Widget _applyConstraints(Widget view, MainAxisSize? vertAxisSize, MainAxisSize? horzAxisSize)
   {
-    bool verticalAxisShrinking = (vertAxisSize != MainAxisSize.max);
-    bool verticalAxisExpanding = !verticalAxisShrinking;
+    bool verticalAxisExpanding = (vertAxisSize == MainAxisSize.max);
+    bool verticalAxisShrinking = (vertAxisSize == MainAxisSize.min);
 
-    bool horizontalAxisShrinking = (horzAxisSize != MainAxisSize.max);
-    bool horizontalAxisExpanding = !horizontalAxisShrinking;
+    bool horizontalAxisExpanding = (horzAxisSize == MainAxisSize.max);
+    bool horizontalAxisShrinking = (horzAxisSize == MainAxisSize.max);
 
     // apply model constraints
     view = applyConstraints(view, widget.model.constraints.model);

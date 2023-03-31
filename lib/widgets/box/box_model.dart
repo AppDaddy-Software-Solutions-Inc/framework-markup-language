@@ -374,7 +374,7 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
         return true;
 
       case LayoutTypes.row:
-        return constraints.model.hasHorizontalExpansionConstraints || constraints.system.hasHorizontalExpansionConstraints;
+        return constraints.model.hasHorizontalExpansionConstraints;
 
       case LayoutTypes.stack:
       default:

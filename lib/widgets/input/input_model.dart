@@ -123,24 +123,6 @@ class InputModel extends FormFieldModel implements IFormField, IViewableWidget
     return _obscure!.get();
   }
 
-  /// True if there is an alarm sounding on a [IFormField]
-  BooleanObservable? _alarming;
-  set alarming(dynamic v)
-  {
-    if (_alarming != null)
-    {
-      _alarming!.set(v);
-    }
-    else if (v != null)
-    {
-      _alarming = BooleanObservable(Binding.toKey(id, 'alarming'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool? get alarming
-  {
-    if (_alarming == null) return null;
-    return _alarming!.get();
-  }
 
   /// the value of the input. If not set to "" initially, the value will not be settable through events.
   StringObservable? _value;

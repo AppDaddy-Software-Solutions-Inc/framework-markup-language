@@ -58,17 +58,6 @@ class RadioModel extends FormFieldModel implements IFormField, IViewableWidget
   }
   String get layout => _layout?.get()?.toLowerCase() ?? 'column';
 
-  /// True if there is an alarm sounding on a [IFormField]
-  BooleanObservable? _alarming;
-  set alarming(dynamic v) {
-    if (_alarming != null) {
-      _alarming!.set(v);
-    } else if (v != null) {
-      _alarming = BooleanObservable(Binding.toKey(id, 'alarming'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool? get alarming => _alarming?.get();
 
   /// the value of the widget. The label becomes the value if not specified. If specified, the options will reflect the value.
   StringObservable? _value;

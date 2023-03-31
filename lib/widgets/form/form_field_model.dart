@@ -16,6 +16,8 @@ class FormFieldModel extends DecoratedWidgetModel
   set value(dynamic v){}
   dynamic get value => null;
 
+  String didSetAlarm = '';
+
   // default value
   StringObservable? _defaultValue;
   set defaultValue(dynamic v)
@@ -191,7 +193,7 @@ class FormFieldModel extends DecoratedWidgetModel
           scope: scope);
     }
   }
-  bool? get alarming => _alarming?.get();
+  bool get alarming => _alarming?.get() ?? false;
 
   // field offset
   Offset? offset;
@@ -233,12 +235,16 @@ class FormFieldModel extends DecoratedWidgetModel
   void onAlarmChange(Observable errorObservable) {
 
     //get the error state of the alarm and set it to that of the form field.
-    error = errorObservable.get();
-     if(error) {
-       var sourceid = errorObservable.scope?.id;
+     error = errorObservable.get();
+     String? sourceid = errorObservable.key?.split('.')[0];
+     if(error && !alarming) {
+       alarmerrortext = _alarms?[sourceid]?.errortext;
        alarming = true;
-       errortext = _alarms?[sourceid]?.errortext;
+       didSetAlarm = sourceid ?? '';
+     } else if(!error && (didSetAlarm == sourceid) && alarming){
+       alarming = false;
      }
+
   }
 
   // values

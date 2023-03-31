@@ -523,7 +523,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
           ),
           counterText: "",
           // widget.model.error is getting set to null somewhere.
-          errorText: widget.model.error == true && widget.model.errortext != 'null' && widget.model.errortext != 'none' ? errorText ?? "" : null,
+          errorText: widget.model.error == true && widget.model.errortext != 'null' && widget.model.errortext != 'none' ? widget.model.alarmerrortext ?? errorText ?? "" : null,
           errorStyle: TextStyle(
             fontSize: fontsize ?? 12,
             fontWeight: FontWeight.w300,

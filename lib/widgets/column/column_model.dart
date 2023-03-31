@@ -101,22 +101,5 @@ class ColumnModel extends DecoratedWidgetModel implements IViewableWidget
     super.dispose();
   }
 
-  /// determines if the widget has a size in its primary axis
-  bool isConstrained()
-  {
-    // get constraints
-    var system = this.constraints.system;
-    var model  = this.constraints.model;
-    var global = this.constraints.calculate();
-
-    var expanding = expand;
-    if (expanding  && system.maxHeight == null) expanding = false;
-    if (expanding  && model.hasVerticalExpansionConstraints) return true;
-    if (expanding  && global.maxHeight != null) return true;
-    if (!expanding && model.hasVerticalContractionConstraints) return true;
-
-    return false;
-  }
-
   Widget getView({Key? key}) => getReactiveView(ColumnView(this));
 }

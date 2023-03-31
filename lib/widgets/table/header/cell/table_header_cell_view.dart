@@ -40,7 +40,7 @@ class _TableHeaderCellViewState extends WidgetState<TableHeaderCellView>
       if (children.isEmpty) children.add(Container());
 
       //this must go after the children are determined
-      var alignment = AlignmentHelper.alignWidgetAxis(2, LayoutType.column, widget.model.center, widget.model.halign, widget.model.valign ?? 'center');
+      var alignment = AlignmentHelper.alignWidgetAxis(2, LayoutType.column, widget.model.center, AlignmentHelper.getHorizontalAlignmentType(widget.model.halign), AlignmentHelper.getVerticalAlignmentType(widget.model.valign, defaultType: VerticalAlignmentType.center));
 
       //////////////
       /* Contents */

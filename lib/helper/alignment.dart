@@ -228,7 +228,7 @@ class AlignmentHelper
     }
   }
 
-  static VerticalAlignmentType getVerticalAlignmentType(String? alignment, {VerticalAlignmentType defaultType = VerticalAlignmentType.start})
+  static VerticalAlignmentType? getVerticalAlignmentType(String? alignment, {VerticalAlignmentType? defaultType})
   {
     switch (alignment?.toLowerCase().trim())
     {
@@ -259,7 +259,7 @@ class AlignmentHelper
     }
   }
 
-  static HorizontalAlignmentType getHorizontalAlignmentType(String? alignment, {HorizontalAlignmentType defaultType = HorizontalAlignmentType.start})
+  static HorizontalAlignmentType? getHorizontalAlignmentType(String? alignment, {HorizontalAlignmentType? defaultType})
   {
     switch (alignment?.toLowerCase().trim())
     {

@@ -138,7 +138,7 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
 
     var layoutType = (direction == Axis.horizontal) ? LayoutType.row : LayoutType.column;
 
-    var alignment = AlignmentHelper.alignWidgetAxis(children.length, layoutType, false, widget.model.align, widget.model.align);
+    var alignment = AlignmentHelper.alignWidgetAxis(children.length, layoutType, false, AlignmentHelper.getHorizontalAlignmentType(widget.model.halign), AlignmentHelper.getVerticalAlignmentType(widget.model.valign));
 
     var child;
     if (direction == Axis.vertical)

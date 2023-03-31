@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
+import 'package:fml/helper/alignment.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/expanded/expanded_model.dart';
 import 'package:fml/widgets/row/row_model.dart';
@@ -35,11 +36,11 @@ class _ExpandedViewState extends WidgetState<ExpandedView>
 
     // determine the parent has a size in its primary axis
     // if no size, Expanded will fail. We therefore just return the view
-    bool constrained = false;
-    if (widget.model.parent is RowModel) constrained = (widget.model.parent as RowModel).isConstrained();
-    if (widget.model.parent is ColumnModel) constrained = (widget.model.parent as ColumnModel).isConstrained();
-    if (widget.model.parent is BoxModel) constrained = (widget.model.parent as BoxModel).isConstrained();
+    bool allow =
+        (widget.model.parent is RowModel) ||
+        (widget.model.parent is ColumnModel) ||
+        (widget.model.parent is BoxModel && AlignmentHelper.getLayoutType((widget.model.parent as BoxModel).layout) != LayoutType.stack);
 
-    return constrained ? Expanded(flex: widget.model.flex, child: view) : view;
+    return allow ? Expanded(flex: widget.model.flex, child: view) : view;
   }
 }

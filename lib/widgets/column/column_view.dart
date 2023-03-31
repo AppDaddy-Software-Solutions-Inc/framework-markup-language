@@ -33,7 +33,7 @@ class _ColumnViewState extends WidgetState<ColumnView>
     if (children.isEmpty) children.add(Container());
 
     // this must go after the children are determined
-    var alignment = AlignmentHelper.alignWidgetAxis(children.length, LayoutType.column, widget.model.center, widget.model.halign, widget.model.valign);
+    var alignment = AlignmentHelper.alignWidgetAxis(children.length, LayoutType.column, widget.model.center, AlignmentHelper.getHorizontalAlignmentType(widget.model.halign), AlignmentHelper.getVerticalAlignmentType(widget.model.valign));
 
     // get user defined constraints
     var localConstraints = widget.model.constraints.model;

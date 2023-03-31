@@ -405,7 +405,7 @@ class _BoxViewState extends WidgetState<BoxView>
     if (children.isEmpty) children.add(Container(width: 0, height: 0));
 
     // this must go after the children are determined
-    var alignment = AlignmentHelper.alignWidgetAxis(children.length, AlignmentHelper.getLayoutType(widget.model.layout), widget.model.center, widget.model.halign, widget.model.valign);
+    var alignment = AlignmentHelper.alignWidgetAxis(children.length, AlignmentHelper.getLayoutType(widget.model.layout), widget.model.center, AlignmentHelper.getHorizontalAlignmentType(widget.model.halign), AlignmentHelper.getVerticalAlignmentType(widget.model.valign));
 
     // determine axis sizes
     MainAxisSize? vertAxisSize = _getVerticalAxisSize();

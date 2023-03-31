@@ -174,8 +174,6 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
   bool onScroll (ScrollNotification notification)
   {
-    print('Scrolling ...');
-
     if ((notification.metrics.axisDirection == AxisDirection.left) || (notification.metrics.axisDirection == AxisDirection.right)) return false;
 
     double maxHeight = widget.model.header?.height ?? widget.model.header?.constraints.model.maxHeight ?? 0;

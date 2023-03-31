@@ -418,20 +418,12 @@ class ViewableWidgetModel extends WidgetModel
 
     if (visibleArea! > 1 && !hasGoneOnscreen)
     {
-      if (!S.isNullOrEmpty(_onscreen))
-      {
-        print('Calling onstage');
-        EventHandler(this).execute(_onscreen);
-      }
+      if (!S.isNullOrEmpty(_onscreen)) EventHandler(this).execute(_onscreen);
       hasGoneOnscreen = true;
     }
     else if (visibleArea! == 0 && hasGoneOnscreen)
     {
-      if (!S.isNullOrEmpty(_offscreen))
-      {
-        print('Calling offstage');
-        EventHandler(this).execute(_offscreen);
-      }
+      if (!S.isNullOrEmpty(_offscreen)) EventHandler(this).execute(_offscreen);
       hasGoneOnscreen = false;
     }
   }

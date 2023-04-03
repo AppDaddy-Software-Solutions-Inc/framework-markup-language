@@ -8,7 +8,6 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/box_view.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/system.dart';
 import 'package:fml/template/template.dart';
@@ -23,7 +22,7 @@ import 'package:fml/widgets/framework/framework_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class FrameworkModel extends BoxModel implements IViewableWidget, IModelListener, IEventManager
+class FrameworkModel extends BoxModel implements IModelListener, IEventManager
 {
   @override
   String get layout => super.layout ?? 'column';

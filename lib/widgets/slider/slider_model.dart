@@ -5,7 +5,6 @@ import 'package:fml/system.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:fml/widgets/form/iFormField.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/datasources/gps/payload.dart' as GPS;
@@ -15,7 +14,7 @@ import 'package:fml/helper/common_helpers.dart';
 
 enum InputTypes { numeric, integer, text, boolean}
 
-class SliderModel extends FormFieldModel implements IFormField, IViewableWidget
+class SliderModel extends FormFieldModel implements IFormField
 {
   ///////////
   /* Width */

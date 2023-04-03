@@ -6,7 +6,6 @@ import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/form_model.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/datasources/transforms/sort.dart' as TRANSFORM;
 import 'package:fml/event/handler.dart' ;
@@ -24,7 +23,7 @@ import 'package:fml/helper/common_helpers.dart';
 
 enum PaddingType { none, first, last, evenly, proportionately }
 
-class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm, IScrolling {
+class TableModel extends DecoratedWidgetModel implements IForm, IScrolling {
   // prototype
   String? prototype;
   TableRowModel? prototypeModel;

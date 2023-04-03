@@ -6,7 +6,6 @@ import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/framework/framework_view.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/tabview/tab_view.dart';
@@ -14,7 +13,7 @@ import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class TabModel extends DecoratedWidgetModel implements IViewableWidget
+class TabModel extends DecoratedWidgetModel 
 {
   LinkedHashMap<String, FrameworkView> views = LinkedHashMap<String, FrameworkView>();
 

@@ -1,33 +1,14 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/expanded/expanded_view.dart';
-import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class ExpandedModel extends DecoratedWidgetModel implements IViewableWidget
+class ExpandedModel extends DecoratedWidgetModel 
 {
-  //////////
-  /* flex */
-  //////////
-  IntegerObservable? _flex;
-  set flex (dynamic v)
-  {
-    if (_flex != null)
-    {
-      _flex!.set(v);
-    }
-    else if (v != null)
-    {
-      _flex = IntegerObservable(Binding.toKey(id, 'flex'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  int get flex => _flex?.get() ?? 1;
-
   ExpandedModel(WidgetModel parent, String?  id, {dynamic flex}) : super(parent, id)
   {
     this.flex = flex;

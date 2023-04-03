@@ -35,7 +35,7 @@ class _InlineFrameViewState extends WidgetState<InlineFrameView>
     InlineFrameModel model = widget.model;
 
     // save system constraints
-    widget.model.constraints.system = constraints;
+    onLayout(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();

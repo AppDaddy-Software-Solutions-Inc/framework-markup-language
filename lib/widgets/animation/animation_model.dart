@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +11,7 @@ import 'package:fml/helper/common_helpers.dart';
 
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]
-class AnimationModel extends ViewableWidgetModel implements IViewableWidget
+class AnimationModel extends ViewableWidgetModel 
 {
  bool hasrun = false;
   /// Transition Curve

@@ -1,8 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
-
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -14,7 +12,7 @@ import 'package:fml/helper/common_helpers.dart';
 ///
 /// DEPRECATED
 /// Defines the properties used to build a [CARD.CardView]
-class CardModel extends DecoratedWidgetModel implements IViewableWidget
+class CardModel extends DecoratedWidgetModel 
 {
   ///////////////
   /* elevation */
@@ -89,7 +87,7 @@ class CardModel extends DecoratedWidgetModel implements IViewableWidget
   double get borderwidth => _borderwidth?.get() ?? 1;
 
   //overrides
-  double get padding => super.paddings == 0 ? 5 : super.padding;
+  double? get padding => super.padding == null ? 5 : super.padding;
   String get halign  => super.halign  ?? "start";
   String get valign  => super.valign  ?? "start";
 

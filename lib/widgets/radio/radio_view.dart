@@ -1,10 +1,10 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/radio/radio_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/widgets/widget/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class RadioView extends StatefulWidget implements IWidgetView
@@ -19,23 +19,17 @@ class RadioView extends StatefulWidget implements IWidgetView
 class _RadioViewState extends WidgetState<RadioView>
 {
   List<Widget>? options;
-  RenderBox? box;
-  Offset? position;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _afterBuild(context);
-    });
-
-    // save system constraints
-    widget.model.constraints.system = constraints;
-
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
+
+    // save system constraints
+    onLayout(constraints);
 
     /////////////
     /* Options */
@@ -77,7 +71,7 @@ class _RadioViewState extends WidgetState<RadioView>
         /* Label */
         ///////////
         Widget label = Text('');
-        if (option.label is IViewableWidget) label = option.label!.getView();
+        if (option.label is ViewableWidgetModel) label = option.label!.getView();
 
         ////////////
         /* Option */
@@ -97,7 +91,7 @@ class _RadioViewState extends WidgetState<RadioView>
     }
 
     //this must go after the children are determined
-    var alignment = AlignmentHelper.alignWidgetAxis(2, AlignmentHelper.getLayoutType(widget.model.layout), widget.model.center, AlignmentHelper.getHorizontalAlignmentType(widget.model.halign), AlignmentHelper.getVerticalAlignmentType(widget.model.valign));
+    var alignment = AlignmentHelper.alignWidgetAxis(AlignmentHelper.getLayoutType(widget.model.layout), widget.model.center, AlignmentHelper.getHorizontalAlignmentType(widget.model.halign), AlignmentHelper.getVerticalAlignmentType(widget.model.valign));
 
     /* View */
     Widget view;
@@ -132,14 +126,6 @@ class _RadioViewState extends WidgetState<RadioView>
     }
 
     return view;
-  }
-
-  /// After [iFormFields] are drawn we get the global offset for scrollTo functionality
-  _afterBuild(BuildContext context) {
-    // Set the global offset position of each input
-    box = context.findRenderObject() as RenderBox?;
-    if (box != null) position = box!.localToGlobal(Offset.zero);
-    if (position != null) widget.model.offset = position;
   }
 
   void _onCheck(OptionModel option) async {

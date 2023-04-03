@@ -8,7 +8,7 @@ enum HorizontalAlignmentType {left, right, center, around, between, evenly}
 
 class AlignmentHelper
 {
-  static WidgetAlignment alignWidgetAxis(int childrenLength, LayoutType modelLayoutType, bool? modelCenter, HorizontalAlignmentType? modelHorizontalAlignment, VerticalAlignmentType? modelVerticalAlignment)
+  static WidgetAlignment alignWidgetAxis(LayoutType modelLayoutType, bool? modelCenter, HorizontalAlignmentType? modelHorizontalAlignment, VerticalAlignmentType? modelVerticalAlignment)
   {
     HorizontalAlignmentType halign;
     VerticalAlignmentType valign;
@@ -184,7 +184,7 @@ class AlignmentHelper
       }
     }
 
-    if (childrenLength == 1 || modelLayoutType == LayoutType.stack)
+    if (modelLayoutType == LayoutType.stack)
     {
       switch (valign)
       {

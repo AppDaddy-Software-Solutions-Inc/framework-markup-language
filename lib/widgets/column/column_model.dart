@@ -1,59 +1,25 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
-
-import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/widget/layout_widget_model.dart';
+import 'package:fml/widgets/widget/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/column/column_view.dart';
-import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class ColumnModel extends DecoratedWidgetModel implements IViewableWidget
+class ColumnModel extends LayoutWidgetModel
 {
-  /// Center attribute allows a simple boolean override for halign and valign both being center. halign and valign will override center if given.
-  BooleanObservable? _center;
-  set center(dynamic v) {
-    if (_center != null) {
-      _center!.set(v);
-    } else if (v != null) {
-      _center = BooleanObservable(Binding.toKey(id, 'center'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get center => _center?.get() ?? false;
+  // flexible children with no percent specified
+  List<ViewableWidgetModel> get flexibleChildren => viewableChildren.where((child) => ((child.flex ?? 0) > 0) && child.pctHeight == null).toList();
 
-  /// wrap is a boolean that dictates if the widget will wrap or not.
-  BooleanObservable? _wrap;
-  set wrap(dynamic v) {
-    if (_wrap != null) {
-      _wrap!.set(v);
-    } else if (v != null) {
-      _wrap = BooleanObservable(Binding.toKey(id, 'wrap'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get wrap => _wrap?.get() ?? false;
+  // children sized by parents height
+  List<ViewableWidgetModel> get sizedChildren => viewableChildren.where((child) => child.pctHeight != null).toList();
 
-  /// Expand, which is true by default, tells the widget if it should shrink to its children, or grow to its parents constraints. Width/Height attributes will override expand.
-  BooleanObservable? _expand;
-  set expand(dynamic v) {
-    if (_expand != null) {
-      _expand!.set(v);
-    } else if (v != null) {
-      _expand = BooleanObservable(Binding.toKey(id, 'expand'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get expand => _expand?.get() ?? true;
+  @override
+  String? get layout => 'column';
 
-  ColumnModel(
-    WidgetModel? parent,
-    String? id, {
-    dynamic halign,
-    dynamic valign,
-    dynamic expand,
+  ColumnModel(WidgetModel? parent, String? id, {dynamic halign, dynamic valign, dynamic expand,
     dynamic expanded,
   }) : super(parent, id) {
     this.halign = halign;
@@ -63,13 +29,15 @@ class ColumnModel extends DecoratedWidgetModel implements IViewableWidget
 
   static ColumnModel? fromXml(WidgetModel? parent, XmlElement xml) {
     ColumnModel? model;
-    try {
-// build model
+    try
+    {
+      // build model
       model = ColumnModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
-    } catch(e) {
-      Log().exception(e,
-           caller: 'column.Model');
+    }
+    catch(e)
+    {
+      Log().exception(e, caller: 'column.Model');
       model = null;
     }
     return model;
@@ -77,28 +45,71 @@ class ColumnModel extends DecoratedWidgetModel implements IViewableWidget
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
+  void deserialize(XmlElement? xml)
   {
     // deserialize
     super.deserialize(xml);
-
-    /// Attributes
-    ///
-    /// Layout Attributes
-    wrap = Xml.get(node: xml, tag: 'wrap');
-    center = Xml.get(node: xml, tag: 'center');
-
-    // expand="false" is same as adding attribute shrink
-    var expand = Xml.get(node: xml, tag: 'expand');
-    if (expand == null && Xml.hasAttribute(node: xml, tag: 'shrink')) expand = 'false';
-    this.expand = expand;
   }
 
   @override
-  dispose()
+  List<Widget> inflate()
   {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
+    // layout fixed sized children
+    List<Widget> views = [];
+    viewableChildren.forEach((child)
+    {
+      // set height on percent and flex children to zero
+      if (child.pctHeight != null || child.flex != null)
+      {
+        child.height = 0;
+      }
+      views.add(child.getView());
+    });
+    return views;
+  }
+
+  @override
+  void onLayoutComplete(RenderBox? box, Offset? position)
+  {
+    super.onLayoutComplete(box, position);
+
+    // if fewer than 1 sized child no need to do anything
+    var allowSizing = (sizedChildren.length + flexibleChildren.length) <= 1;
+    if (allowSizing) return;
+
+    // calculate max height from system
+    var max = calculateMaxHeight() ?? 0;
+
+    // calculate sum of flex values
+    double sum = 0;
+    flexibleChildren.forEach((child) => sum += child.flex!);
+
+    // calculate usable space
+    var usable = max - (viewHeight ?? 0);
+
+    // set height on % sized children
+    sizedChildren.forEach((child)
+    {
+      var height = max * (child.pctHeight! / 100);
+      if (height != child.height)
+      {
+        child.height = height;
+      }
+    });
+
+    // set height on flex values
+    flexibleChildren.forEach((child)
+    {
+      if (usable > 0)
+      {
+        var height = (child.flex! / sum) * usable;
+        if (height != child.height)
+        {
+          child.height = height;
+        }
+        usable = usable - height;
+      }
+    });
   }
 
   Widget getView({Key? key}) => getReactiveView(ColumnView(this));

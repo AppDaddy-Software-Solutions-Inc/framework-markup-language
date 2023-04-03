@@ -35,14 +35,14 @@ class _TableRowCellViewState extends WidgetState<TableRowCellView> with WidgetsB
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // save system constraints
-    widget.model.constraints.system = constraints;
+    onLayout(constraints);
 
     // build the child views
     List<Widget> children = widget.model.inflate();
     if (children.isEmpty) children.add(Container());
 
     //this must go after the children are determined
-    var alignment= AlignmentHelper.alignWidgetAxis(2, LayoutType.column, widget.model.center, AlignmentHelper.getHorizontalAlignmentType(widget.model.halign), AlignmentHelper.getVerticalAlignmentType(widget.model.valign));
+    var alignment= AlignmentHelper.alignWidgetAxis(LayoutType.column, widget.model.center, AlignmentHelper.getHorizontalAlignmentType(widget.model.halign), AlignmentHelper.getVerticalAlignmentType(widget.model.valign));
 
     // Contents
     Widget contents;

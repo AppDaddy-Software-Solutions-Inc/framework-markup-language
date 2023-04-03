@@ -2,14 +2,13 @@
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/icon/icon_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class IconModel extends DecoratedWidgetModel implements IViewableWidget {
+class IconModel extends DecoratedWidgetModel  {
   @override
   double get width {
     return 24;

@@ -7,7 +7,6 @@ import 'package:fml/widgets/tooltip/v2/tooltip_view.dart';
 import 'package:fml/widgets/widget/constraint.dart';
 import 'package:fml/widgets/widget/constraint_model.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -30,13 +29,26 @@ class ViewableWidgetModel extends WidgetModel
   double? calculateMinHeight() => _constraints.calculateMinHeight();
   double? calculateMaxHeight() => _constraints.calculateMaxHeight();
 
+  // viewable children
+  List<ViewableWidgetModel> get viewableChildren
+  {
+    List<ViewableWidgetModel> list = [];
+    children?.forEach((child)
+    {
+      if (child is ViewableWidgetModel) list.add(child);
+    });
+    return list;
+  }
+
   // width
   double? get width  => _constraints.width;
   set width(dynamic v) => _constraints.width = v;
+  setWidth(double? v) => _constraints.setWidth(v);
 
   // height
   double? get height => _constraints.height;
-  set height(dynamic v)  => _constraints.height = v;
+  set height(dynamic v) => _constraints.height = v;
+  setHeight(double? v) => _constraints.setHeight(v);
 
   // %width
   double? get pctWidth => _constraints.pctWidth;
@@ -61,6 +73,56 @@ class ViewableWidgetModel extends WidgetModel
   @protected
   set maxHeight(dynamic v) => _constraints.maxHeight = v;
   double? get maxHeight => _constraints.maxHeight;
+
+  /// VIEW LAYOUT
+
+  // view width
+  double? _viewWidth;
+  DoubleObservable? _viewWidthObservable;
+  set viewWidth(double? v)
+  {
+    // we handle this slightly different for performance reasons
+    // The observable is only created in deserialize if its bound
+    if (_viewWidthObservable != null) _viewWidthObservable!.set(v);
+    _viewWidth = v;
+  }
+  double? get viewWidth => _viewWidth;
+
+  // view height
+  double? _viewHeight;
+  DoubleObservable? _viewHeightObservable;
+  set viewHeight(double? v)
+  {
+    // we handle this slightly different for performance reasons
+    // The observable is only crted in deserialize if its bound
+    if (_viewHeightObservable != null) _viewHeightObservable!.set(v);
+    _viewHeight = v;
+  }
+  double? get viewHeight => _viewHeight;
+
+  // view global X position
+  double? _viewX;
+  DoubleObservable? _viewXObservable;
+  set viewX(double? v)
+  {
+    // we handle this slightly different for performance reasons
+    // The observable is only crted in deserialize if its bound
+    if (_viewXObservable != null) _viewXObservable!.set(v);
+    _viewX = v;
+  }
+  double? get viewX => _viewX;
+
+  // view global Y position
+  double? _viewY;
+  DoubleObservable? _viewYObservable;
+  set viewY(double? v)
+  {
+    // we handle this slightly different for performance reasons
+    // The observable is only crted in deserialize if its bound
+    if (_viewYObservable != null) _viewYObservable!.set(v);
+    _viewY = v;
+  }
+  double? get viewY => _viewY;
   
   /// alignment and layout attributes
   ///
@@ -94,10 +156,25 @@ class ViewableWidgetModel extends WidgetModel
   }
   String? get valign => _valign?.get();
 
-  // used by the veiw to determine if it needs to wrap itself
+  // flex
+  IntegerObservable? _flex;
+  set flex (dynamic v)
+  {
+    if (_flex != null)
+    {
+      _flex!.set(v);
+    }
+    else if (v != null)
+    {
+      _flex = IntegerObservable(Binding.toKey(id, 'flex'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  int? get flex => _flex?.get();
+
+  // used by the view to determine if it needs to wrap itself
   // in a VisibilityDetector
-  bool? _needsVisibilityDetector;
-  bool get needsVisibilityDetector => _needsVisibilityDetector ?? false;
+  bool? _addVisibilityDetector;
+  bool get needsVisibilityDetector => _addVisibilityDetector ?? false;
 
   /// onscreen event string - fires when object is 100 on screen
   StringObservable? _onscreen;
@@ -183,15 +260,14 @@ class ViewableWidgetModel extends WidgetModel
     }
   }
   double? get visibleWidth => _visibleWidth?.get();
-  
-  int paddings = 0;
 
-  set _paddings(dynamic v) {
+  set _paddings(dynamic v)
+  {
     // build PADDINGS array
-    if (v is String) {
+    if (v is String)
+    {
       var s = v.split(',');
-      paddings = s.length;
-      if (s.length > 0) padding = s[0];
+      if (s.length > 0) padding  = s[0];
       if (s.length > 1) padding2 = s[1];
       if (s.length > 2) padding3 = s[2];
       if (s.length > 3) padding4 = s[3];
@@ -200,55 +276,40 @@ class ViewableWidgetModel extends WidgetModel
 
   // padding
   DoubleObservable? _padding;
-
-  set padding(dynamic v) {
-    if (_padding != null)
-      _padding!.set(v);
-    else if (v != null)
-      _padding = DoubleObservable(Binding.toKey(id, 'pad'), v,
-          scope: scope, listener: onPropertyChange);
+  set padding(dynamic v)
+  {
+    if (_padding != null) _padding!.set(v);
+    else if (v != null) _padding = DoubleObservable(Binding.toKey(id, 'pad'), v, scope: scope, listener: onPropertyChange);
   }
-
-  double get padding => _padding?.get() ?? 0;
+  double? get padding => _padding?.get();
 
   // padding 2
   DoubleObservable? _padding2;
-
-  set padding2(dynamic v) {
-    if (_padding2 != null)
-      _padding2!.set(v);
-    else if (v != null)
-      _padding2 = DoubleObservable(Binding.toKey(id, 'pad2'), v,
-          scope: scope, listener: onPropertyChange);
+  set padding2(dynamic v)
+  {
+    if (_padding2 != null) _padding2!.set(v);
+    else if (v != null) _padding2 = DoubleObservable(Binding.toKey(id, 'pad2'), v, scope: scope, listener: onPropertyChange);
   }
-
-  double get padding2 => _padding2?.get() ?? 0;
+  double? get padding2 => _padding2?.get();
 
   // padding 3
   DoubleObservable? _padding3;
-
-  set padding3(dynamic v) {
-    if (_padding3 != null)
-      _padding3!.set(v);
+  set padding3(dynamic v)
+  {
+    if (_padding3 != null) _padding3!.set(v);
     else if (v != null)
-      _padding3 = DoubleObservable(Binding.toKey(id, 'pad3'), v,
-          scope: scope, listener: onPropertyChange);
+      _padding3 = DoubleObservable(Binding.toKey(id, 'pad3'), v, scope: scope, listener: onPropertyChange);
   }
-
-  double get padding3 => _padding3?.get() ?? 0;
+  double? get padding3 => _padding3?.get();
 
   // padding 4
   DoubleObservable? _padding4;
-
-  set padding4(dynamic v) {
-    if (_padding4 != null)
-      _padding4!.set(v);
-    else if (v != null)
-      _padding4 = DoubleObservable(Binding.toKey(id, 'pad4'), v,
-          scope: scope, listener: onPropertyChange);
+  set padding4(dynamic v)
+  {
+    if (_padding4 != null) _padding4!.set(v);
+    else if (v != null) _padding4 = DoubleObservable(Binding.toKey(id, 'pad4'), v, scope: scope, listener: onPropertyChange);
   }
-
-  double get padding4 => _padding4?.get() ?? 0;
+  double? get padding4 => _padding4?.get();
 
   // visible
   BooleanObservable? _visible;
@@ -260,7 +321,6 @@ class ViewableWidgetModel extends WidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get visible => _visible?.get() ?? true;
 
   // is visible
@@ -313,15 +373,28 @@ class ViewableWidgetModel extends WidgetModel
     enabled   = Xml.get(node: xml, tag: 'enabled');
     halign    = Xml.get(node: xml, tag: 'halign');
     valign    = Xml.get(node: xml, tag: 'valign');
+    flex      = Xml.get(node: xml, tag: 'flex');
     onscreen  = Xml.get(node: xml, tag: 'onscreen');
     offscreen = Xml.get(node: xml, tag: 'offscreen');
 
+    // view sizing and position
+    // these are treated differently for efficiency reasons
+    // we only crteate the observvable if its bound to in the template
+    // otherwise we just store the value in a simple double variable
+    String? key;
+    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewwidth')))  _viewWidthObservable  = DoubleObservable(key, null, scope: scope);
+    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewheight'))) _viewHeightObservable = DoubleObservable(key, null, scope: scope);
+    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewx')))      _viewXObservable      = DoubleObservable(key, null, scope: scope);
+    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewy')))      _viewYObservable      = DoubleObservable(key, null, scope: scope);
+    
     // view requires a VisibilityDetector if either onstage or offstage is set or
     // someone is bound to my visibility
-    _needsVisibilityDetector = !S.isNullOrEmpty(onscreen) || !S.isNullOrEmpty(offscreen) ||
-            WidgetModel.isBound(this, Binding.toKey(id, 'visiblearea')) ||
-            WidgetModel.isBound(this, Binding.toKey(id, 'visibleheight')) ||
-            WidgetModel.isBound(this, Binding.toKey(id, 'visiblewidth'));
+    _addVisibilityDetector = visible != false ||
+        !S.isNullOrEmpty(onscreen) ||
+        !S.isNullOrEmpty(offscreen) ||
+        WidgetModel.isBound(this, Binding.toKey(id, 'visiblearea')) ||
+        WidgetModel.isBound(this, Binding.toKey(id, 'visibleheight')) ||
+        WidgetModel.isBound(this, Binding.toKey(id, 'visiblewidth'));
 
     // pad is always defined as an attribute. PAD as an element name is the PADDING widget
     _paddings = Xml.attribute(node: xml, tag: 'pad');
@@ -447,8 +520,8 @@ class ViewableWidgetModel extends WidgetModel
     // wrap in tooltip?
     if (tipModel != null) view = TooltipView(tipModel!, view);
 
-    // wrap animations
-    if (this.animations != null)
+    // wrap animations. Only animate if visible and dimesions are greater than zero
+    if (this.animations != null && visible != false && ((width ?? 0) > 0) && ((height ?? 0) > 0))
     {
       var animations = this.animations!.reversed;
       animations.forEach((model) => view = model.getAnimatedView(view));
@@ -458,13 +531,22 @@ class ViewableWidgetModel extends WidgetModel
 
   List<Widget> inflate()
   {
-    List<Widget> list = [];
-    children?.forEach((model)
-    {
-      if (model is IViewableWidget) list.add((model as IViewableWidget).getView());
-    });
-    return list;
+    List<Widget> views = [];
+    viewableChildren.forEach((model) => views.add(model.getView()));
+    return views;
   }
+
+  void onLayout(BoxConstraints constraints) => _constraints.setLayoutConstraints(constraints);
+
+  void onLayoutComplete(RenderBox? box, Offset? position)
+  {
+    viewWidth  = box?.size.width;
+    viewHeight = box?.size.height;
+    viewX      = position?.dx;
+    viewY      = position?.dy;
+  }
+
+  Widget getView() => throw("getView() Not Implemented");
 }
 
 class ConstraintSet
@@ -475,7 +557,6 @@ class ConstraintSet
   
   // holds constraints passed in flutter layout builder
   Constraints get system => _model.system;
-  set system(dynamic v) => _model.system = v;
 
   /// constraints calculated by walking up the
   /// model tree comparing both model and flutter constraints

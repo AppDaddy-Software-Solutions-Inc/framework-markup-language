@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
@@ -12,7 +11,7 @@ import 'package:fml/widgets/pager/page/pager_page_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class PagerModel extends DecoratedWidgetModel implements IViewableWidget
+class PagerModel extends DecoratedWidgetModel 
 {
   PageController? controller;
 

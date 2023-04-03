@@ -28,7 +28,7 @@ class _TableHeaderCellViewState extends WidgetState<TableHeaderCellView>
     }
 
     // save system constraints
-    widget.model.constraints.system = constraints;
+    onLayout(constraints);
 
       // Check if widget is visible before wasting resources on building it
       if (!widget.model.visible) return Offstage();
@@ -40,7 +40,7 @@ class _TableHeaderCellViewState extends WidgetState<TableHeaderCellView>
       if (children.isEmpty) children.add(Container());
 
       //this must go after the children are determined
-      var alignment = AlignmentHelper.alignWidgetAxis(2, LayoutType.column, widget.model.center, AlignmentHelper.getHorizontalAlignmentType(widget.model.halign), AlignmentHelper.getVerticalAlignmentType(widget.model.valign, defaultType: VerticalAlignmentType.center));
+      var alignment = AlignmentHelper.alignWidgetAxis(LayoutType.column, widget.model.center, AlignmentHelper.getHorizontalAlignmentType(widget.model.halign), AlignmentHelper.getVerticalAlignmentType(widget.model.valign, defaultType: VerticalAlignmentType.center));
 
       //////////////
       /* Contents */

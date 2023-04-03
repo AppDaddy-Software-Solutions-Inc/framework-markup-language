@@ -7,8 +7,6 @@ import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart/series/chart_series_model.dart';
 import 'package:fml/widgets/chart/axis/chart_axis_model.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
-
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/chart/chart_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -18,7 +16,7 @@ import 'package:xml/xml.dart';
 /// Chart [ChartModel]
 ///
 /// Defines the properties used to build a Chart
-class ChartModel extends DecoratedWidgetModel implements IViewableWidget {
+class ChartModel extends DecoratedWidgetModel  {
   ChartAxisModel? xaxis; // = ChartAxisModel(null, null, Axis.X, title: null, fontsize: null, fontcolor: Colors.white, type: ChartAxisModel.type_category);
   ChartAxisModel? yaxis; // = ChartAxisModel(null, null, Axis.Y, title: null, fontsize: null, fontcolor: Colors.white, type: ChartAxisModel.type_numeric);
   final List<ChartSeriesModel> series = [];

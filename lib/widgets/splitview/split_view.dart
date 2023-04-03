@@ -41,7 +41,7 @@ class _SplitViewState extends WidgetState<SplitView>
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // save system constraints
-    widget.model.constraints.system = constraints;
+    onLayout(constraints);
 
     var _dividerWidth = widget.model.dividerWidth ?? (System().useragent == 'desktop' || S.isNullOrEmpty(System().useragent) ? 6.0 : 12.0);
     if (_dividerWidth % 2 != 0) _dividerWidth = _dividerWidth + 1;

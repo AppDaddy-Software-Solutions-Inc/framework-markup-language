@@ -34,8 +34,6 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
 {
   final focus = FocusNode();
   bool hasSetObscure = false;
-  RenderBox? box;
-  Offset? position;
   Timer? debounce;
   Function? validator;
   bool? obscure = false;
@@ -253,481 +251,6 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     }
   }
 
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints)
-  {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _afterBuild(context);
-    });
-
-    // save system constraints
-    widget.model.constraints.system = constraints;
-
-    // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
-
-    // set the border color arrays
-    Color? enabledBorderColor;
-    Color? disabledBorderColor;
-    Color? focusBorderColor;
-    Color? errorBorderColor;
-    List? bordercolors = [];
-    if (widget.model.bordercolor != null) {
-      bordercolors = widget.model.bordercolor?.split(',');
-      enabledBorderColor = ColorObservable.toColor(bordercolors![0]?.trim());
-      if (bordercolors.length > 1)
-        disabledBorderColor = ColorObservable.toColor(bordercolors[1]?.trim());
-      if (bordercolors.length > 2)
-        focusBorderColor = ColorObservable.toColor(bordercolors[2]?.trim());
-       if (bordercolors.length > 3)
-         errorBorderColor = ColorObservable.toColor(bordercolors[3]?.trim());
-    }
-
-    var formatter;
-    List? formatterTypes = [];
-    if (widget.model.format != null) {
-      formatterTypes = widget.model.format.split(',');
-      formatter = formatterTypes![0].trim();
-    }
-
-    // set the text color arrays
-    Color? enabledTextColor;
-    Color? disabledTextColor;
-    Color? hintTextColor;
-    Color? errorTextColor;
-    List? textColors = [];
-    if (widget.model.textcolor != null) {
-      textColors = widget.model.textcolor?.split(',');
-      enabledTextColor = ColorObservable.toColor(textColors![0]?.trim());
-      if (textColors.length > 1)
-        disabledTextColor = ColorObservable.toColor(textColors[1]?.trim());
-      if (textColors.length > 2)
-        hintTextColor = ColorObservable.toColor(textColors[2]?.trim());
-      if (textColors.length > 3)
-         errorTextColor = ColorObservable.toColor(textColors[3]?.trim());
-    }
-
-    // get colors
-    Color? enabledColor  = widget.model.color;
-    Color? disabledColor = widget.model.color2;
-    Color? errorColor    = widget.model.color3;
-
-    double? fontsize = widget.model.size;
-    String? hint = widget.model.hint;
-    int? length = widget.model.length;
-    int? lines = widget.model.lines;
-
-
-    if(!S.isNullOrEmpty(widget.model.obscure)) obscure = widget.model.obscure;
-    if (obscure == true) lines = 1;
-
-    ////////////////
-    /* Formatters */
-    ////////////////
-    List<TextInputFormatter> formatters = [];
-
-    ////////////////////
-    /* Capitalization */
-    ////////////////////
-    if (widget.model.capitalization == CapitalizationTypes.upper)
-      formatters.add(UpperCaseTextFormatter());
-    if (widget.model.capitalization == CapitalizationTypes.lower)
-      formatters.add(LowerCaseTextFormatter());
-    if (length != null)
-      formatters.add(LengthLimitingTextInputFormatter(length));
-
-    /////////////////
-    /* Format type */
-    /////////////////
-    String? keyboardtype = widget.model.keyboardtype;
-
-    switch (formatter?.toLowerCase()) {
-      // not 100% sure what the purpose of the first 3 formatters are.
-      case 'numeric':
-        formatters.add(TextToNumericFormatter());
-        keyboardtype = "numeric";
-        overrideErrorText = "Value is not a number";
-        break;
-
-      case 'int':
-        formatters.add(TextToIntegerFormatter());
-        keyboardtype = "numeric";
-        overrideErrorText = "Value is not an integer";
-        break;
-
-      case 'bool':
-        formatters.add(TextToBooleanFormatter());
-        overrideErrorText = "Value must be a boolean";
-        break;
-
-      case 'credit':
-        formatters.add(CreditCardNumberInputFormatter());
-        keyboardtype = "numeric";
-        overrideErrorText = "Invalid card number";
-        validator = isCardValidNumber;
-        break;
-
-      case 'cvc':
-        formatters.add(CreditCardCvcInputFormatter());
-        keyboardtype = "numeric";
-        overrideErrorText = "Invalid CVC code";
-        break;
-
-      case 'expire':
-        formatters.add(CreditCardExpirationDateFormatter());
-        keyboardtype = "numeric";
-        overrideErrorText = "Invalid expiry date";
-        validator = TextInputValidators().isExpiryValid;
-        break;
-
-      case 'currency':
-        formatters.add(CurrencyInputFormatter());
-        keyboardtype = "numeric";
-        overrideErrorText = "Invalid Currency";
-        break;
-
-      case 'phone':
-        formatters.add(PhoneInputFormatter());
-        // isPhoneValid(widget.model.value);
-        keyboardtype = "phone";
-        overrideErrorText = "Invalid phone number";
-        validator = isPhoneValid;
-        break;
-
-      case 'password':
-        if(!hasSetObscure) {
-          obscure = true;
-          hasSetObscure = true;
-        }
-        keyboardtype = "password";
-        overrideErrorText = "The password must be at least 8 characters long, including upper/lowercase and a number.";
-        validator = TextInputValidators().isPasswordValid;
-        break;
-
-      case 'email':
-        keyboardtype = "email";
-        overrideErrorText = "Invalid email";
-        validator = TextInputValidators().isEmailValid;
-        break;
-
-
-      default:
-        break;
-
-    }
-    if(userSetErrorText) errorText = widget.model.errortext;
-
-
-    //using allow must not use a mask for filteringtextformatter, causes issues.
-    if (widget.model.allow != null && widget.model.mask == null)
-      formatters.add(
-          FilteringTextInputFormatter.allow(RegExp(r'[' + widget.model.allow! + ']')));
-    if (widget.model.deny != null)
-      formatters.add(
-          FilteringTextInputFormatter.deny(RegExp(r'[' + widget.model.deny! + ']')));
-
-
-    // The mask formatter with allow
-    if (widget.model.mask != null){
-      if(widget.model.allow != null) formatters.add( MaskedInputFormatter(
-      widget.model.mask,
-      allowedCharMatcher: RegExp(r'[' + widget.model.allow! + ']+'),
-    ));
-      else formatters.add( MaskedInputFormatter(
-        widget.model.mask,
-      ));
-    }
-
-
-    ///////////////////////
-    /* Custom Formatters */
-    ///////////////////////
-    //if (!S.isNullOrEmpty(model.formatter)) formatters.add(CustomFormatter(model.formatter));
-
-    Widget view = TextField(
-        controller: widget.model.controller,
-        focusNode: focus,
-        autofocus: false,
-        autocorrect: false,
-        expands: widget.model.expand == true,
-        obscureText: obscure!,
-        keyboardType: (keyboardtype != null)
-            ? (keyboardTypes[keyboardtype.toLowerCase()] ??
-                TextInputType.text)
-            : TextInputType.text,
-        textInputAction: (widget.model.keyboardinput != null)
-            ? (keyboardInputs[widget.model.keyboardinput?.toLowerCase()] ??
-                TextInputAction.next)
-            : TextInputAction.next,
-        inputFormatters: formatters,
-        enabled:  (widget.model.enabled == false) ? false : true,
-        style: TextStyle(
-            color: widget.model.enabled != false
-                ? enabledTextColor ?? Theme.of(context).colorScheme.onBackground
-                : disabledTextColor ?? Theme.of(context).colorScheme.surfaceVariant,
-            fontSize: fontsize),
-        onChanged: (text) => onValue(text),
-        onEditingComplete: _commit,
-        onSubmitted: (s)
-        {
-          if (widget.onSubmitted != null) widget.onSubmitted();
-          _handleSubmit(s);
-        }
-
-        ,
-        textAlignVertical: widget.model.expand == true ? TextAlignVertical.top : TextAlignVertical.center,
-        maxLength: length,
-        maxLines: widget.model.expand == true ? null : obscure! ? 1 : widget.model.maxlines != null ?  widget.model.maxlines : widget.model.wrap == true ? null : lines != null ? lines : 1,
-        minLines: widget.model.expand == true ? null : lines ?? 1,
-        maxLengthEnforcement: length != null
-            ? MaxLengthEnforcement.enforced
-            : MaxLengthEnforcement.none,
-        decoration: InputDecoration(
-          isDense: (widget.model.dense == true),
-          errorMaxLines: 8,
-          hintMaxLines: 8,
-          fillColor: widget.model.enabled == false
-              ? disabledColor ?? Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.2)
-              : widget.model.error == true
-                ? errorColor ?? Colors.transparent
-                : enabledColor ?? Colors.transparent,
-          filled: true,
-          contentPadding: ((widget.model.dense == true)
-              ? EdgeInsets.only(
-                  left: widget.model.padding,
-                  top: widget.model.padding + 10,
-                  right: widget.model.padding,
-                  bottom: widget.model.padding,
-                )
-              : EdgeInsets.only(
-                  left: widget.model.padding + 10,
-                  top: widget.model.padding + 4,
-                  right: widget.model.padding,
-                  bottom: widget.model.padding + 4,
-                )),
-          alignLabelWithHint: true,
-          labelText: widget.model.dense! ? null : hint,
-          labelStyle: TextStyle(
-            fontSize: fontsize != null ? fontsize - 2 : 14,
-            color: widget.model.enabled != false
-                ? hintTextColor ?? Theme.of(context).colorScheme.outline
-                : disabledTextColor ?? Theme.of(context).colorScheme.surfaceVariant,
-          ),
-          counterText: "",
-          // widget.model.error is getting set to null somewhere.
-          errorText: widget.model.error == true && widget.model.errortext != 'null' && widget.model.errortext != 'none' ? errorText ?? "" : null,
-          errorStyle: TextStyle(
-            fontSize: fontsize ?? 12,
-            fontWeight: FontWeight.w300,
-            color: errorTextColor ?? Theme.of(context).colorScheme.error,
-          ),
-          errorBorder: (widget.model.border == "outline" ||
-              widget.model.border == "all")
-              ? OutlineInputBorder(
-            borderRadius: BorderRadius.all(
-                Radius.circular(widget.model.radius ?? 4)),
-            borderSide: BorderSide(
-                color: errorBorderColor ?? (Theme.of(context).brightness == Brightness.light ? Theme.of(context).colorScheme.error.withOpacity(0.70) : Theme.of(context).colorScheme.onError),
-                width: widget.model.borderwidth ?? 1.0),
-          )
-              : widget.model.border == "none"
-              ? InputBorder.none
-              : (widget.model.border == "bottom" ||
-              widget.model.border == "underline")
-              ? UnderlineInputBorder(
-            borderRadius: BorderRadius.all(
-                Radius.circular(widget.model.radius ?? 0)),
-            borderSide: BorderSide(
-                color: errorBorderColor ?? Theme.of(context).colorScheme.error,
-                width: widget.model.borderwidth ?? 1.0),
-          )
-              : InputBorder.none,
-          focusedErrorBorder: (widget.model.border == "outline" ||
-              widget.model.border == "all")
-              ? OutlineInputBorder(
-            borderRadius: BorderRadius.all(
-                Radius.circular(widget.model.radius ?? 4)),
-            borderSide: BorderSide(
-                color: errorBorderColor ?? (Theme.of(context).brightness == Brightness.light ? Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.errorContainer),
-                width: widget.model.borderwidth ?? 1.0),
-          )
-              : widget.model.border == "none"
-              ? InputBorder.none
-              : (widget.model.border == "bottom" ||
-              widget.model.border == "underline")
-              ? UnderlineInputBorder(
-            borderRadius: BorderRadius.all(
-                Radius.circular(widget.model.radius ?? 0)),
-            borderSide: BorderSide(
-                color: errorBorderColor ?? Theme.of(context).colorScheme.error,
-                width: widget.model.borderwidth ?? 1.0),
-          )
-              : InputBorder.none,
-          hintText: widget.model.dense! ? hint : null,
-          hintStyle: TextStyle(
-            fontSize: fontsize ?? 14,
-            fontWeight: FontWeight.w300,
-            color: widget.model.enabled != false
-                ? hintTextColor ?? Theme.of(context).colorScheme.outline
-                : disabledTextColor ?? Theme.of(context).colorScheme.surfaceVariant,
-          ),
-          prefixIcon: (widget.model.icon != null)
-              ? Padding(
-                  padding: EdgeInsets.only(right: 10),
-                  child: Icon(widget.model.icon))
-              : null,
-          prefixIconConstraints: (widget.model.icon != null)
-              ? BoxConstraints(maxHeight: 14, minWidth: 30)
-              : null,
-          suffixIcon: (formatter?.toLowerCase() == "password" && widget.model.clear == false) ?
-          IconButton(
-
-            icon: Icon(
-              obscure!
-                  ? Icons.visibility
-                  : Icons.visibility_off,
-              size: 17,
-              color: hintTextColor ?? Theme.of(context).colorScheme.outline,
-            ),
-            onPressed: () {
-              widget.model.obscure = !obscure!;
-            },) : (widget.model.enabled != false &&
-                  widget.model.editable != false &&
-                  widget.model.clear!)
-              ?
-          IconButton(
-            padding: EdgeInsets.zero,
-            icon: Icon(
-
-              Icons.clear_rounded,
-              size: 17,
-              color: hintTextColor ?? Theme.of(context).colorScheme.outline,
-            ),
-            onPressed: () {
-              onClear();
-               },)
-
-              : null,
-          suffixIconConstraints: (widget.model.enabled != false &&
-                  widget.model.editable != false &&
-                  widget.model.clear!)
-              ? BoxConstraints(maxHeight: 20)
-              : null,
-          border: (widget.model.border == "outline" ||
-                  widget.model.border == "all")
-              ? OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                      Radius.circular(widget.model.radius ?? 4)),
-                  borderSide: BorderSide(
-                      color: enabledBorderColor ?? Theme.of(context).colorScheme.outline,
-                      width: widget.model.borderwidth ?? 1.0),
-                )
-              : widget.model.border == "none"
-                  ? InputBorder.none
-                  : (widget.model.border == "bottom" ||
-                          widget.model.border == "underline")
-                      ? UnderlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                              Radius.circular(widget.model.radius ?? 0)),
-                          borderSide: BorderSide(
-                              color: enabledBorderColor ?? Theme.of(context).colorScheme.outline,
-                              width: widget.model.borderwidth ?? 1.0),
-                        )
-                      : InputBorder.none,
-          focusedBorder:
-              (widget.model.border == "outline" || widget.model.border == "all")
-                  ? OutlineInputBorder(
-                      borderRadius: BorderRadius.all(
-                          Radius.circular(widget.model.radius ?? 4)),
-                      borderSide: BorderSide(
-                          color: focusBorderColor ??
-                              Theme.of(context).colorScheme.primary,
-                          width: widget.model.borderwidth ?? 1.0),
-                    )
-                  : (widget.model.border == "bottom" ||
-                          widget.model.border == "underline")
-                      ? UnderlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                              Radius.circular(widget.model.radius ?? 0)),
-                          borderSide: BorderSide(
-                              color: focusBorderColor ?? Theme.of(context).colorScheme.primary,
-                              width: widget.model.borderwidth ?? 1.0),
-                        )
-                      : widget.model.border == "none"
-                          ? InputBorder.none
-                          : InputBorder.none,
-          enabledBorder: (widget.model.border == "outline" ||
-                  widget.model.border == "all")
-              ? OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                      Radius.circular(widget.model.radius ?? 4)),
-                  borderSide: BorderSide(
-                      color: enabledBorderColor ?? Theme.of(context).colorScheme.outline,
-                      width: widget.model.borderwidth ?? 1.0),
-                )
-              : widget.model.border == "none"
-                  ? InputBorder.none
-                  : (widget.model.border == "bottom" ||
-                          widget.model.border == "underline")
-                      ? UnderlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                              Radius.circular(widget.model.radius ?? 0)),
-                          borderSide: BorderSide(
-                              color: enabledBorderColor ?? Theme.of(context).colorScheme.outline,
-                              width: widget.model.borderwidth ?? 1.0),
-                        )
-                      : InputBorder.none,
-          disabledBorder:
-              (widget.model.border == "outline" || widget.model.border == "all")
-                  ? OutlineInputBorder(
-                      borderRadius: BorderRadius.all(
-                          Radius.circular(widget.model.radius ?? 4)),
-                      borderSide: BorderSide(
-
-                          color: disabledBorderColor ?? Theme.of(context).colorScheme.surfaceVariant,
-                          width: widget.model.borderwidth ?? 1.0),
-                    )
-                  : widget.model.border == "none"
-                      ? InputBorder.none
-                      : (widget.model.border == "bottom" ||
-                              widget.model.border == "underline")
-                          ? UnderlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                  Radius.circular(widget.model.radius ?? 0)),
-                              borderSide: BorderSide(
-                                  color: widget.model.editable == false ? enabledBorderColor ?? Theme.of(context).colorScheme.surfaceVariant
-                                      : disabledBorderColor ?? Theme.of(context).colorScheme.surfaceVariant,
-                                  width: widget.model.borderwidth ?? 1.0),
-                            )
-                          : InputBorder.none,
-        ));
-
-        view = Padding(padding: EdgeInsets.symmetric(vertical: widget.model.dense! ? 0 : 4), child: view);
-
-    ///////////
-    /* Width */
-    ///////////
-    var width = widget.model.expand == true ? double.infinity : widget.model.width ?? 200;
-
-    ////////////////////
-    /* Constrain Size */
-    ////////////////////
-    view = SizedBox(child: view, width: width);
-
-    return view;
-  }
-
-  /// After [iFormFields] are drawn we get the global offset for scrollTo functionality
-  _afterBuild(BuildContext context)
-  {
-    // Set the global offset position of each input
-    box = context.findRenderObject() as RenderBox?;
-    if (box != null) position = box!.localToGlobal(Offset.zero);
-    if (position != null) widget.model.offset = position;
-  }
-
   String validate(String text) {
     return 'field must be supplied';
   }
@@ -873,6 +396,472 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
       widget.onChangeCallback(widget.model, '');
     widget.model.controller!.text = '';
     _commit();
+  }
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
+    // Check if widget is visible before wasting resources on building it
+    if (!widget.model.visible) return Offstage();
+
+    // save system constraints
+    onLayout(constraints);
+
+    // set the border color arrays
+    Color? enabledBorderColor;
+    Color? disabledBorderColor;
+    Color? focusBorderColor;
+    Color? errorBorderColor;
+    List? bordercolors = [];
+    if (widget.model.bordercolor != null) {
+      bordercolors = widget.model.bordercolor?.split(',');
+      enabledBorderColor = ColorObservable.toColor(bordercolors![0]?.trim());
+      if (bordercolors.length > 1)
+        disabledBorderColor = ColorObservable.toColor(bordercolors[1]?.trim());
+      if (bordercolors.length > 2)
+        focusBorderColor = ColorObservable.toColor(bordercolors[2]?.trim());
+      if (bordercolors.length > 3)
+        errorBorderColor = ColorObservable.toColor(bordercolors[3]?.trim());
+    }
+
+    var formatter;
+    List? formatterTypes = [];
+    if (widget.model.format != null) {
+      formatterTypes = widget.model.format.split(',');
+      formatter = formatterTypes![0].trim();
+    }
+
+    // set the text color arrays
+    Color? enabledTextColor;
+    Color? disabledTextColor;
+    Color? hintTextColor;
+    Color? errorTextColor;
+    List? textColors = [];
+    if (widget.model.textcolor != null) {
+      textColors = widget.model.textcolor?.split(',');
+      enabledTextColor = ColorObservable.toColor(textColors![0]?.trim());
+      if (textColors.length > 1)
+        disabledTextColor = ColorObservable.toColor(textColors[1]?.trim());
+      if (textColors.length > 2)
+        hintTextColor = ColorObservable.toColor(textColors[2]?.trim());
+      if (textColors.length > 3)
+        errorTextColor = ColorObservable.toColor(textColors[3]?.trim());
+    }
+
+    // get colors
+    Color? enabledColor  = widget.model.color;
+    Color? disabledColor = widget.model.color2;
+    Color? errorColor    = widget.model.color3;
+
+    double? fontsize = widget.model.size;
+    String? hint = widget.model.hint;
+    int? length = widget.model.length;
+    int? lines = widget.model.lines;
+
+
+    if(!S.isNullOrEmpty(widget.model.obscure)) obscure = widget.model.obscure;
+    if (obscure == true) lines = 1;
+
+    ////////////////
+    /* Formatters */
+    ////////////////
+    List<TextInputFormatter> formatters = [];
+
+    ////////////////////
+    /* Capitalization */
+    ////////////////////
+    if (widget.model.capitalization == CapitalizationTypes.upper)
+      formatters.add(UpperCaseTextFormatter());
+    if (widget.model.capitalization == CapitalizationTypes.lower)
+      formatters.add(LowerCaseTextFormatter());
+    if (length != null)
+      formatters.add(LengthLimitingTextInputFormatter(length));
+
+    /////////////////
+    /* Format type */
+    /////////////////
+    String? keyboardtype = widget.model.keyboardtype;
+
+    switch (formatter?.toLowerCase()) {
+    // not 100% sure what the purpose of the first 3 formatters are.
+      case 'numeric':
+        formatters.add(TextToNumericFormatter());
+        keyboardtype = "numeric";
+        overrideErrorText = "Value is not a number";
+        break;
+
+      case 'int':
+        formatters.add(TextToIntegerFormatter());
+        keyboardtype = "numeric";
+        overrideErrorText = "Value is not an integer";
+        break;
+
+      case 'bool':
+        formatters.add(TextToBooleanFormatter());
+        overrideErrorText = "Value must be a boolean";
+        break;
+
+      case 'credit':
+        formatters.add(CreditCardNumberInputFormatter());
+        keyboardtype = "numeric";
+        overrideErrorText = "Invalid card number";
+        validator = isCardValidNumber;
+        break;
+
+      case 'cvc':
+        formatters.add(CreditCardCvcInputFormatter());
+        keyboardtype = "numeric";
+        overrideErrorText = "Invalid CVC code";
+        break;
+
+      case 'expire':
+        formatters.add(CreditCardExpirationDateFormatter());
+        keyboardtype = "numeric";
+        overrideErrorText = "Invalid expiry date";
+        validator = TextInputValidators().isExpiryValid;
+        break;
+
+      case 'currency':
+        formatters.add(CurrencyInputFormatter());
+        keyboardtype = "numeric";
+        overrideErrorText = "Invalid Currency";
+        break;
+
+      case 'phone':
+        formatters.add(PhoneInputFormatter());
+        // isPhoneValid(widget.model.value);
+        keyboardtype = "phone";
+        overrideErrorText = "Invalid phone number";
+        validator = isPhoneValid;
+        break;
+
+      case 'password':
+        if(!hasSetObscure) {
+          obscure = true;
+          hasSetObscure = true;
+        }
+        keyboardtype = "password";
+        overrideErrorText = "The password must be at least 8 characters long, including upper/lowercase and a number.";
+        validator = TextInputValidators().isPasswordValid;
+        break;
+
+      case 'email':
+        keyboardtype = "email";
+        overrideErrorText = "Invalid email";
+        validator = TextInputValidators().isEmailValid;
+        break;
+
+
+      default:
+        break;
+
+    }
+    if(userSetErrorText) errorText = widget.model.errortext;
+
+
+    //using allow must not use a mask for filteringtextformatter, causes issues.
+    if (widget.model.allow != null && widget.model.mask == null)
+      formatters.add(
+          FilteringTextInputFormatter.allow(RegExp(r'[' + widget.model.allow! + ']')));
+    if (widget.model.deny != null)
+      formatters.add(
+          FilteringTextInputFormatter.deny(RegExp(r'[' + widget.model.deny! + ']')));
+
+
+    // The mask formatter with allow
+    if (widget.model.mask != null){
+      if(widget.model.allow != null) formatters.add( MaskedInputFormatter(
+        widget.model.mask,
+        allowedCharMatcher: RegExp(r'[' + widget.model.allow! + ']+'),
+      ));
+      else formatters.add( MaskedInputFormatter(
+        widget.model.mask,
+      ));
+    }
+
+    var padding = widget.model.padding ?? 0;
+
+    ///////////////////////
+    /* Custom Formatters */
+    ///////////////////////
+    //if (!S.isNullOrEmpty(model.formatter)) formatters.add(CustomFormatter(model.formatter));
+
+    Widget view = TextField(
+        controller: widget.model.controller,
+        focusNode: focus,
+        autofocus: false,
+        autocorrect: false,
+        expands: widget.model.expand == true,
+        obscureText: obscure!,
+        keyboardType: (keyboardtype != null)
+            ? (keyboardTypes[keyboardtype.toLowerCase()] ??
+            TextInputType.text)
+            : TextInputType.text,
+        textInputAction: (widget.model.keyboardinput != null)
+            ? (keyboardInputs[widget.model.keyboardinput?.toLowerCase()] ??
+            TextInputAction.next)
+            : TextInputAction.next,
+        inputFormatters: formatters,
+        enabled:  (widget.model.enabled == false) ? false : true,
+        style: TextStyle(
+            color: widget.model.enabled != false
+                ? enabledTextColor ?? Theme.of(context).colorScheme.onBackground
+                : disabledTextColor ?? Theme.of(context).colorScheme.surfaceVariant,
+            fontSize: fontsize),
+        onChanged: (text) => onValue(text),
+        onEditingComplete: _commit,
+        onSubmitted: (s)
+        {
+          if (widget.onSubmitted != null) widget.onSubmitted();
+          _handleSubmit(s);
+        }
+
+        ,
+        textAlignVertical: widget.model.expand == true ? TextAlignVertical.top : TextAlignVertical.center,
+        maxLength: length,
+        maxLines: widget.model.expand == true ? null : obscure! ? 1 : widget.model.maxlines != null ?  widget.model.maxlines : widget.model.wrap == true ? null : lines != null ? lines : 1,
+        minLines: widget.model.expand == true ? null : lines ?? 1,
+        maxLengthEnforcement: length != null
+            ? MaxLengthEnforcement.enforced
+            : MaxLengthEnforcement.none,
+        decoration: InputDecoration(
+          isDense: (widget.model.dense == true),
+          errorMaxLines: 8,
+          hintMaxLines: 8,
+          fillColor: widget.model.enabled == false
+              ? disabledColor ?? Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.2)
+              : widget.model.error == true
+              ? errorColor ?? Colors.transparent
+              : enabledColor ?? Colors.transparent,
+          filled: true,
+          contentPadding: ((widget.model.dense == true)
+              ? EdgeInsets.only(
+            left: padding,
+            top: padding + 10,
+            right: padding,
+            bottom: padding,
+          )
+              : EdgeInsets.only(
+            left: padding + 10,
+            top: padding + 4,
+            right: padding,
+            bottom: padding + 4,
+          )),
+          alignLabelWithHint: true,
+          labelText: widget.model.dense! ? null : hint,
+          labelStyle: TextStyle(
+            fontSize: fontsize != null ? fontsize - 2 : 14,
+            color: widget.model.enabled != false
+                ? hintTextColor ?? Theme.of(context).colorScheme.outline
+                : disabledTextColor ?? Theme.of(context).colorScheme.surfaceVariant,
+          ),
+          counterText: "",
+          // widget.model.error is getting set to null somewhere.
+          errorText: widget.model.error == true && widget.model.errortext != 'null' && widget.model.errortext != 'none' ? errorText ?? "" : null,
+          errorStyle: TextStyle(
+            fontSize: fontsize ?? 12,
+            fontWeight: FontWeight.w300,
+            color: errorTextColor ?? Theme.of(context).colorScheme.error,
+          ),
+          errorBorder: (widget.model.border == "outline" ||
+              widget.model.border == "all")
+              ? OutlineInputBorder(
+            borderRadius: BorderRadius.all(
+                Radius.circular(widget.model.radius ?? 4)),
+            borderSide: BorderSide(
+                color: errorBorderColor ?? (Theme.of(context).brightness == Brightness.light ? Theme.of(context).colorScheme.error.withOpacity(0.70) : Theme.of(context).colorScheme.onError),
+                width: widget.model.borderwidth ?? 1.0),
+          )
+              : widget.model.border == "none"
+              ? InputBorder.none
+              : (widget.model.border == "bottom" ||
+              widget.model.border == "underline")
+              ? UnderlineInputBorder(
+            borderRadius: BorderRadius.all(
+                Radius.circular(widget.model.radius ?? 0)),
+            borderSide: BorderSide(
+                color: errorBorderColor ?? Theme.of(context).colorScheme.error,
+                width: widget.model.borderwidth ?? 1.0),
+          )
+              : InputBorder.none,
+          focusedErrorBorder: (widget.model.border == "outline" ||
+              widget.model.border == "all")
+              ? OutlineInputBorder(
+            borderRadius: BorderRadius.all(
+                Radius.circular(widget.model.radius ?? 4)),
+            borderSide: BorderSide(
+                color: errorBorderColor ?? (Theme.of(context).brightness == Brightness.light ? Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.errorContainer),
+                width: widget.model.borderwidth ?? 1.0),
+          )
+              : widget.model.border == "none"
+              ? InputBorder.none
+              : (widget.model.border == "bottom" ||
+              widget.model.border == "underline")
+              ? UnderlineInputBorder(
+            borderRadius: BorderRadius.all(
+                Radius.circular(widget.model.radius ?? 0)),
+            borderSide: BorderSide(
+                color: errorBorderColor ?? Theme.of(context).colorScheme.error,
+                width: widget.model.borderwidth ?? 1.0),
+          )
+              : InputBorder.none,
+          hintText: widget.model.dense! ? hint : null,
+          hintStyle: TextStyle(
+            fontSize: fontsize ?? 14,
+            fontWeight: FontWeight.w300,
+            color: widget.model.enabled != false
+                ? hintTextColor ?? Theme.of(context).colorScheme.outline
+                : disabledTextColor ?? Theme.of(context).colorScheme.surfaceVariant,
+          ),
+          prefixIcon: (widget.model.icon != null)
+              ? Padding(
+              padding: EdgeInsets.only(right: 10),
+              child: Icon(widget.model.icon))
+              : null,
+          prefixIconConstraints: (widget.model.icon != null)
+              ? BoxConstraints(maxHeight: 14, minWidth: 30)
+              : null,
+          suffixIcon: (formatter?.toLowerCase() == "password" && widget.model.clear == false) ?
+          IconButton(
+
+            icon: Icon(
+              obscure!
+                  ? Icons.visibility
+                  : Icons.visibility_off,
+              size: 17,
+              color: hintTextColor ?? Theme.of(context).colorScheme.outline,
+            ),
+            onPressed: () {
+              widget.model.obscure = !obscure!;
+            },) : (widget.model.enabled != false &&
+              widget.model.editable != false &&
+              widget.model.clear!)
+              ?
+          IconButton(
+            padding: EdgeInsets.zero,
+            icon: Icon(
+
+              Icons.clear_rounded,
+              size: 17,
+              color: hintTextColor ?? Theme.of(context).colorScheme.outline,
+            ),
+            onPressed: () {
+              onClear();
+            },)
+
+              : null,
+          suffixIconConstraints: (widget.model.enabled != false &&
+              widget.model.editable != false &&
+              widget.model.clear!)
+              ? BoxConstraints(maxHeight: 20)
+              : null,
+          border: (widget.model.border == "outline" ||
+              widget.model.border == "all")
+              ? OutlineInputBorder(
+            borderRadius: BorderRadius.all(
+                Radius.circular(widget.model.radius ?? 4)),
+            borderSide: BorderSide(
+                color: enabledBorderColor ?? Theme.of(context).colorScheme.outline,
+                width: widget.model.borderwidth ?? 1.0),
+          )
+              : widget.model.border == "none"
+              ? InputBorder.none
+              : (widget.model.border == "bottom" ||
+              widget.model.border == "underline")
+              ? UnderlineInputBorder(
+            borderRadius: BorderRadius.all(
+                Radius.circular(widget.model.radius ?? 0)),
+            borderSide: BorderSide(
+                color: enabledBorderColor ?? Theme.of(context).colorScheme.outline,
+                width: widget.model.borderwidth ?? 1.0),
+          )
+              : InputBorder.none,
+          focusedBorder:
+          (widget.model.border == "outline" || widget.model.border == "all")
+              ? OutlineInputBorder(
+            borderRadius: BorderRadius.all(
+                Radius.circular(widget.model.radius ?? 4)),
+            borderSide: BorderSide(
+                color: focusBorderColor ??
+                    Theme.of(context).colorScheme.primary,
+                width: widget.model.borderwidth ?? 1.0),
+          )
+              : (widget.model.border == "bottom" ||
+              widget.model.border == "underline")
+              ? UnderlineInputBorder(
+            borderRadius: BorderRadius.all(
+                Radius.circular(widget.model.radius ?? 0)),
+            borderSide: BorderSide(
+                color: focusBorderColor ?? Theme.of(context).colorScheme.primary,
+                width: widget.model.borderwidth ?? 1.0),
+          )
+              : widget.model.border == "none"
+              ? InputBorder.none
+              : InputBorder.none,
+          enabledBorder: (widget.model.border == "outline" ||
+              widget.model.border == "all")
+              ? OutlineInputBorder(
+            borderRadius: BorderRadius.all(
+                Radius.circular(widget.model.radius ?? 4)),
+            borderSide: BorderSide(
+                color: enabledBorderColor ?? Theme.of(context).colorScheme.outline,
+                width: widget.model.borderwidth ?? 1.0),
+          )
+              : widget.model.border == "none"
+              ? InputBorder.none
+              : (widget.model.border == "bottom" ||
+              widget.model.border == "underline")
+              ? UnderlineInputBorder(
+            borderRadius: BorderRadius.all(
+                Radius.circular(widget.model.radius ?? 0)),
+            borderSide: BorderSide(
+                color: enabledBorderColor ?? Theme.of(context).colorScheme.outline,
+                width: widget.model.borderwidth ?? 1.0),
+          )
+              : InputBorder.none,
+          disabledBorder:
+          (widget.model.border == "outline" || widget.model.border == "all")
+              ? OutlineInputBorder(
+            borderRadius: BorderRadius.all(
+                Radius.circular(widget.model.radius ?? 4)),
+            borderSide: BorderSide(
+
+                color: disabledBorderColor ?? Theme.of(context).colorScheme.surfaceVariant,
+                width: widget.model.borderwidth ?? 1.0),
+          )
+              : widget.model.border == "none"
+              ? InputBorder.none
+              : (widget.model.border == "bottom" ||
+              widget.model.border == "underline")
+              ? UnderlineInputBorder(
+            borderRadius: BorderRadius.all(
+                Radius.circular(widget.model.radius ?? 0)),
+            borderSide: BorderSide(
+                color: widget.model.editable == false ? enabledBorderColor ?? Theme.of(context).colorScheme.surfaceVariant
+                    : disabledBorderColor ?? Theme.of(context).colorScheme.surfaceVariant,
+                width: widget.model.borderwidth ?? 1.0),
+          )
+              : InputBorder.none,
+        ));
+
+    view = Padding(padding: EdgeInsets.symmetric(vertical: widget.model.dense! ? 0 : 4), child: view);
+
+    ///////////
+    /* Width */
+    ///////////
+    var width = widget.model.expand == true ? double.infinity : widget.model.width ?? 200;
+
+    ////////////////////
+    /* Constrain Size */
+    ////////////////////
+    view = SizedBox(child: view, width: width);
+
+    // apply padding
+    view = applyPadding(view);
+
+    return view;
   }
 }
 

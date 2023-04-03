@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/constraint.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 
 abstract class WidgetState<T extends StatefulWidget> extends State<T> implements IModelListener
 {
-  WidgetModel? get model => (widget is IWidgetView) ? (widget as IWidgetView).model : null;
+  ViewableWidgetModel? get model => (widget is IWidgetView) ? (widget as IWidgetView).model : null;
 
   @override
   void initState()
@@ -43,6 +44,34 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
   onModelChange(WidgetModel model, {String? property, dynamic value})
   {
     if (this.mounted) setState((){});
+  }
+
+  Widget applyPadding(Widget view)
+  {
+    if (model?.padding == null) return view;
+
+    double padding = 0.0;
+    var paddings = (model?.padding != null ? 1 : 0) + (model?.padding2 != null ? 1 : 0) + (model?.padding3 != null ? 1 : 0) + (model?.padding4 != null ? 1 : 0);
+
+    EdgeInsets insets = EdgeInsets.all(model?.padding ?? 0);
+
+    // pad all
+    if (paddings == 1) insets = EdgeInsets.all(model?.padding ?? 0);
+
+    // pad directions v,h
+    else if (padding == 2) insets = EdgeInsets.symmetric(vertical: model?.padding ?? 0, horizontal: model?.padding2 ?? 0);
+
+    // pad sides top, right, bottom
+    else if (padding == 3) insets = EdgeInsets.only(top: model?.padding ?? 0, left: model?.padding2 ?? 0, right: model?.padding2 ?? 0, bottom: model?.padding3 ?? 0);
+
+    // pad sides top, right, bottom
+    else if (padding == 4) insets = EdgeInsets.only(top: model?.padding ?? 0, right: model?.padding2 ?? 0, bottom: model?.padding3 ?? 0, left: model?.padding4 ?? 0);
+
+    // pad all
+    else insets = EdgeInsets.all(model?.padding ?? 0);
+
+    // create view
+    return Padding(padding: insets, child: view);
   }
 
   /// This routine applies the given constraints to the supplied
@@ -130,5 +159,16 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
     if (boxConstraints != null) view = ConstrainedBox(child: view, constraints: boxConstraints);
 
     return view;
+  }
+
+  void onLayout(BoxConstraints constraints)
+  {
+    model?.onLayout(constraints);
+    WidgetsBinding.instance.addPostFrameCallback((_)
+    {
+      var box = context.findRenderObject() as RenderBox?;
+      var position = (box != null) ? box.localToGlobal(Offset.zero) : null;
+      model?.onLayoutComplete(box, position);
+    });
   }
 }

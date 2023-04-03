@@ -1,8 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED
 import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/animation/animation_model.dart' as BaseAnimationModel;
@@ -124,8 +124,8 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
     if (widget.child != null) widget.children.add(widget.child!);
     if (widget.model.children != null)
       widget.model.children!.forEach((model) {
-        if (model is IViewableWidget) {
-          var view = (model as IViewableWidget).getView();
+        if (model is ViewableWidgetModel) {
+          var view = model.getView();
           widget.children.add(view);
       }});
     if (widget.children.isEmpty) widget.children.add(Container());

@@ -21,8 +21,6 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
 {
   String? format;
   String? date;
-  RenderBox? box;
-  Offset? position;
   String? oldValue;
   TextEditingController? cont;
   FocusNode? focusNode;
@@ -90,16 +88,13 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
-  Widget builder(BuildContext context, BoxConstraints constraints) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _afterBuild(context);
-    });
-
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
     // save system constraints
-    widget.model.constraints.system = constraints;
+    onLayout(constraints);
 
     // set the border color arrays
     Color? enabledBorderColor;
@@ -151,9 +146,9 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
     double? rad = S.toDouble(widget.model.radius);
     cont = TextEditingController(text: value);
 
-    //////////
-    /* View */
-    //////////
+    var padding = widget.model.padding ?? 0;
+
+    // View
     Widget view;
     view = GestureDetector(
       //a wee bit janky way of copying and highlighting entire selection without datepicker opening.
@@ -213,16 +208,16 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
               filled: true,
               contentPadding: ((widget.model.dense == true)
                   ? EdgeInsets.only(
-                      left: widget.model.padding,
-                      top: widget.model.padding + 10,
-                      right: widget.model.padding,
-                      bottom: widget.model.padding,
+                      left: padding,
+                      top: padding + 10,
+                      right: padding,
+                      bottom: padding,
                     )
                   : EdgeInsets.only(
-                      left: widget.model.padding + 10,
-                      top: widget.model.padding + 4,
-                      right: widget.model.padding,
-                      bottom: widget.model.padding + 4,
+                      left: padding + 10,
+                      top: padding + 4,
+                      right: padding,
+                      bottom: padding + 4,
                     )),
               alignLabelWithHint: true,
               labelText: widget.model.dense ? null : hint,
@@ -429,15 +424,9 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
     ////////////////////
     view = SizedBox(child: view, width: width);
 
-    return view;
-  }
+    view = applyPadding(view);
 
-  /// After [iFormFields] are drawn we get the global offset for scrollTo functionality
-  _afterBuild(BuildContext context) {
-    // Set the global offset position of each input
-    box = context.findRenderObject() as RenderBox?;
-    if (box != null) position = box!.localToGlobal(Offset.zero);
-    if (position != null) widget.model.offset = position;
+    return view;
   }
 
   void onChange(String d) async {

@@ -22,7 +22,7 @@ import 'package:fml/helper/common_helpers.dart';
 /// Chart [ChartModel]
 ///
 /// Defines the properties used to build a Chart
-class ChartModel extends DecoratedWidgetModel implements IViewableWidget
+class ChartModel extends DecoratedWidgetModel 
 {
   final List<ChartSeriesModel> series = [];
   sfAXIS.ChartAxisModel xaxis = sfAXIS.ChartAxisModel(null, null, sfAXIS.Axis.X, title: null, fontsize: null, fontcolor: Colors.white, type: sfAXIS.AxisType.category);

@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/widget/layout_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +8,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class BoxModel extends DecoratedWidgetModel implements IViewableWidget
+class BoxModel extends LayoutWidgetModel
 {
   // box blur
   BooleanObservable? _blur;
@@ -195,33 +194,6 @@ class BoxModel extends DecoratedWidgetModel implements IViewableWidget
     }
   }
   String? get layout => _layout?.get()?.toLowerCase().trim();
-
-  /// wrap determines the widget, if layout is row or col, how it will wrap.
-  BooleanObservable? _wrap;
-  set wrap(dynamic v) {
-    if (_wrap != null) {
-      _wrap!.set(v);
-    } else if (v != null) {
-      _wrap = BooleanObservable(Binding.toKey(id, 'wrap'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get wrap => _wrap?.get() ?? false;
-
-  /// Expand, which is true by default, tells the widget if it should shrink to its children, or grow to its parents constraints. Width/Height attributes will override expand.
-  BooleanObservable? _expand;
-  set expand(dynamic v)
-  {
-    if (_expand != null)
-    {
-      _expand!.set(v);
-    }
-    else if (v != null)
-    {
-      _expand = BooleanObservable(Binding.toKey(id, 'expand'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get expand => _expand?.get() ?? true;
 
   BoxModel(
     WidgetModel? parent,

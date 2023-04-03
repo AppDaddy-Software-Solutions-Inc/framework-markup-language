@@ -116,7 +116,7 @@ class FormViewState extends WidgetState<FormView> implements GPS.IGpsListener
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // save system constraints
-    widget.model.constraints.system = constraints;
+    onLayout(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if ((widget.model.children == null) || ((!widget.model.visible))) return Offstage();

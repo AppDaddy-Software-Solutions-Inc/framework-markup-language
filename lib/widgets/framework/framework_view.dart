@@ -314,7 +314,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       model.width = viewportWidth;
 
       // this is required to drive %sizing
-      model.constraints.system = constraints;
+      //model.constraints.system = constraints;
 
       // build framework header view
       view = model.getView();
@@ -339,7 +339,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       model.width  = viewportWidth;
 
       // this is required to drive %sizing
-      model.constraints.system = constraints;
+      //model.constraints.system = constraints;
 
       // build framework footer view
       view = model.getView();
@@ -458,7 +458,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     if (!widget.model.initialized) return Scaffold(body: Center(child: BusyView(BusyModel(null, visible: true))));
 
     // set the system constraints
-    widget.model.constraints.system = constraints;
+    widget.model.onLayout(constraints);
 
     Log().debug('Build called on framework view => <FML name=${widget.model.templateName} url="${widget.model.url}"/>');
 

@@ -18,23 +18,16 @@ class SliderView extends StatefulWidget implements IWidgetView
 
 class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserver
 {
-  RenderBox? box;
-  Offset? position;
-
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _afterBuild(context);
-    });
-
-    // save system constraints
-    widget.model.constraints.system = constraints;
-
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
+
+    // save system constraints
+    onLayout(constraints);
 
     var min   = S.toDouble(widget.model.minimum) ?? 0;
     var max   = S.toDouble(widget.model.maximum) ?? 0;
@@ -115,14 +108,6 @@ class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserv
     view = SizedBox(child: view, width: width);
 
     return view;
-  }
-
-  /// After [iFormFields] are drawn we get the global offset for scrollTo functionality
-  _afterBuild(BuildContext context) {
-    // Set the global offset position of each input
-   box = context.findRenderObject() as RenderBox?;
-    if (box != null) position = box!.localToGlobal(Offset.zero);
-    if (position != null) widget.model.offset = position;
   }
 
   String validate(String text) {

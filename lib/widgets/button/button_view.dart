@@ -1,9 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/widgets/button/button_model.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/widgets/widget/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 /// Button View
@@ -28,7 +28,7 @@ class _ButtonViewState extends WidgetState<ButtonView>
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // save system constraints
-    widget.model.constraints.system = constraints;
+    onLayout(constraints);
 
     ButtonModel wm = widget.model;
 
@@ -39,8 +39,8 @@ class _ButtonViewState extends WidgetState<ButtonView>
     List<Widget> children = [];
     if ((widget.model.contents != null)) {
       widget.model.contents!.forEach((model) {
-        if (model is IViewableWidget) {
-          children.add((model as IViewableWidget).getView());
+        if (model is ViewableWidgetModel) {
+          children.add(model.getView());
         }
       });
     }

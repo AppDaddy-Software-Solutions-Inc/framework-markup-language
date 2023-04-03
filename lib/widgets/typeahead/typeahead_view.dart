@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/typeahead/typeahead_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
@@ -31,8 +31,6 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
   OptionModel? _selected;
   final TextEditingController controller = TextEditingController();
   FocusNode focus = FocusNode();
-  RenderBox? box;
-  Offset? position;
   String typeaheadText = '';
 
   @override
@@ -98,7 +96,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
       for (OptionModel option in model.options)
       {
         Widget view = Text('');
-        if (option.label is IViewableWidget) view = option.label!.getView();
+        if (option.label is ViewableWidgetModel) view = option.label!.getView();
 
         var o = DropdownMenuItem(value: option, child: view);
         if (model.value == option.value) _selected = option;
@@ -113,10 +111,6 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _afterBuild(context);
-    });
-
     ///////////////////
     /* Build Options */
     ///////////////////
@@ -126,7 +120,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
     if (!widget.model.visible) return Offstage();
 
     // save system constraints
-    widget.model.constraints.system = constraints;
+    onLayout(constraints);
 
     ///////////
     /* Busy? */
@@ -250,15 +244,6 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
     view = SizedBox(width: widget.model.width ?? 200, height: widget.model.height ?? 48, child: view);
 
     return Padding(padding: EdgeInsets.symmetric(vertical: /*widget.model.dense ? 0 : */4), child: view);
-  }
-
-  /// After [iFormFields] are drawn we get the global offset for scrollTo functionality
-  _afterBuild(BuildContext context)
-  {
-    // Set the global offset position of each input
-    box = context.findRenderObject() as RenderBox?;
-    if (box != null) position = box!.localToGlobal(Offset.zero);
-    if (position != null) widget.model.offset = position;
   }
 
   Future<List<OptionModel>> getSuggestions(String pattern) async

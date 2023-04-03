@@ -4,7 +4,9 @@ import 'package:collection/collection.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/column/column_view.dart';
 import 'package:fml/widgets/positioned/positioned_view.dart';
+import 'package:fml/widgets/row/row_view.dart';
 import 'package:fml/widgets/widget/alignment.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
@@ -114,7 +116,7 @@ class _BoxViewState extends WidgetState<BoxView>
     }
   }
 
-  Widget _layoutChildren(List<Widget> children, WidgetAlignment alignment, MainAxisSize? verticalAxisSize, MainAxisSize? horizontalAxisSize)
+  Widget _layoutChildren(WidgetAlignment alignment, MainAxisSize? verticalAxisSize, MainAxisSize? horizontalAxisSize)
   {
     switch (AlignmentHelper.getLayoutType(widget.model.layout))
     {
@@ -123,6 +125,10 @@ class _BoxViewState extends WidgetState<BoxView>
 
         // get model constraints
         var constraints = widget.model.constraints.model;
+
+        // build the child views
+        List<Widget> children = widget.model.inflate();
+        if (children.isEmpty) children.add(Container(width: 0, height: 0));
 
         // The stack sizes itself to contain all the non-positioned children,
         // which are positioned according to alignment.
@@ -143,16 +149,12 @@ class _BoxViewState extends WidgetState<BoxView>
 
       // row widget
       case LayoutType.row:
-        if (widget.model.wrap)
-             return Wrap(direction: Axis.horizontal, children: children, alignment: alignment.mainWrapAlignment, runAlignment: alignment.mainWrapAlignment, crossAxisAlignment: alignment.crossWrapAlignment);
-        else return Row(mainAxisSize: horizontalAxisSize ?? MainAxisSize.max, children: children, crossAxisAlignment: alignment.crossAlignment, mainAxisAlignment: alignment.mainAlignment);
+        return RowView(widget.model);
 
       // column widget
       case LayoutType.column:
       default:
-        if (widget.model.wrap)
-             return Wrap(direction: Axis.vertical, children: children, alignment: alignment.mainWrapAlignment, runAlignment: alignment.mainWrapAlignment, crossAxisAlignment: alignment.crossWrapAlignment);
-        else return Column(mainAxisSize: verticalAxisSize ?? MainAxisSize.max, children: children, crossAxisAlignment: alignment.crossAlignment, mainAxisAlignment: alignment.mainAlignment);
+        return ColumnView(widget.model);
     }
   }
 
@@ -276,26 +278,6 @@ class _BoxViewState extends WidgetState<BoxView>
     return BoxDecoration(borderRadius: radius, boxShadow: boxShadow != null ? [boxShadow] : null, color: color, gradient: gradient);
   }
 
-  EdgeInsets _getPadding()
-  {
-    var insets = EdgeInsets.only();
-    if (widget.model.paddings > 0)
-    {
-      // pad all
-      if (widget.model.paddings == 1) insets = EdgeInsets.all(widget.model.padding);
-
-      // pad directions v,h
-      else if (widget.model.paddings == 2) insets = EdgeInsets.symmetric(vertical: widget.model.padding, horizontal: widget.model.padding2);
-
-      // pad sides top, right, bottom
-      else if (widget.model.paddings == 3) insets = EdgeInsets.only(top: widget.model.padding, left: widget.model.padding2, right: widget.model.padding2, bottom: widget.model.padding3);
-
-      // pad sides top, right, bottom
-      else if (widget.model.paddings == 4) insets = EdgeInsets.only(top: widget.model.padding, right: widget.model.padding2, bottom: widget.model.padding3, left: widget.model.padding4);
-    }
-    return insets;
-  }
-
   Widget _getFadedView(Widget view)
   {
     double? opacity = widget.model.opacity;
@@ -398,21 +380,17 @@ class _BoxViewState extends WidgetState<BoxView>
     var maxHeight = constraints.maxHeight;
 
     // set system sizing
-    widget.model.constraints.system = BoxConstraints(minWidth:  minWidth, maxWidth:  maxWidth, minHeight: minHeight, maxHeight: maxHeight);
-
-    // build the child views
-    List<Widget> children = widget.model.inflate();
-    if (children.isEmpty) children.add(Container(width: 0, height: 0));
+    onLayout(BoxConstraints(minWidth:  minWidth, maxWidth:  maxWidth, minHeight: minHeight, maxHeight: maxHeight));
 
     // this must go after the children are determined
-    var alignment = AlignmentHelper.alignWidgetAxis(children.length, AlignmentHelper.getLayoutType(widget.model.layout), widget.model.center, AlignmentHelper.getHorizontalAlignmentType(widget.model.halign), AlignmentHelper.getVerticalAlignmentType(widget.model.valign));
+    var alignment = AlignmentHelper.alignWidgetAxis(AlignmentHelper.getLayoutType(widget.model.layout), widget.model.center, AlignmentHelper.getHorizontalAlignmentType(widget.model.halign), AlignmentHelper.getVerticalAlignmentType(widget.model.valign));
 
     // determine axis sizes
     MainAxisSize? vertAxisSize = _getVerticalAxisSize();
     MainAxisSize? horzAxisSize = _getHorizontalAxisSize();
 
     // layout the children
-    Widget? child = _layoutChildren(children, alignment, vertAxisSize, horzAxisSize);
+    Widget? child = _layoutChildren(alignment, vertAxisSize, horzAxisSize);
 
     // build the border
     Border? border = _getBorder();
@@ -429,8 +407,11 @@ class _BoxViewState extends WidgetState<BoxView>
     // blur the view
     if (widget.model.blur) child = _getBlurredView(child, borderDecoration);
 
+    // apply padding
+    child = applyPadding(child);
+
     // inner box - contents
-    Widget view = Container(padding: _getPadding(), clipBehavior: Clip.antiAlias, decoration: decoration, alignment: alignment.aligned, child: child);
+    Widget view = Container(clipBehavior: Clip.antiAlias, decoration: decoration, alignment: alignment.aligned, child: child);
 
     // build the outer box - border
     view = Container(decoration: borderDecoration, child: view);

@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
-
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/gps/payload.dart' as GPS;
 import 'package:fml/datasources/iDataSource.dart';
@@ -11,7 +10,6 @@ import 'package:fml/widgets/form/iFormField.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/hive/form.dart' as HIVE;
@@ -44,7 +42,7 @@ abstract class IForm
 
 enum StatusCodes {incomplete, complete}
 
-class FormModel extends DecoratedWidgetModel implements IViewableWidget
+class FormModel extends DecoratedWidgetModel 
 {
   List<IFormField> fields = [];
 

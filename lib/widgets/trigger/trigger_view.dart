@@ -1,11 +1,10 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/widgets/trigger/trigger_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
-class TriggerView extends StatefulWidget implements IWidgetView
+class TriggerView extends StatefulWidget
 {
   final List<Widget> children = [];
   final TriggerModel model;

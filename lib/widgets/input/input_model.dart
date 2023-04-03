@@ -4,8 +4,6 @@ import 'package:fml/event/handler.dart' ;
 import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:fml/widgets/form/iFormField.dart';
 import 'package:flutter/material.dart';
-
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/input/input_view.dart';
@@ -15,12 +13,12 @@ import 'package:fml/helper/common_helpers.dart';
 enum InputFormats {numeric, integer, text, boolean, xml}
 enum CapitalizationTypes {mixed, camel, upper, lower, sentences, words}
 
-class InputModel extends FormFieldModel implements IFormField, IViewableWidget
+class InputModel extends FormFieldModel implements IFormField
 {
   List<Suggestion> suggestions = [];
 
   // override
-  double get padding => super.paddings == 0 ? 4 : super.padding;
+  double? get padding => super.padding == null ? 4 : super.padding;
 
   /// Capitilization sets the input to uppercase or lowercase with `upper` and `lower`
   // TODO: maybe change this to caps or uppercase = t/f?

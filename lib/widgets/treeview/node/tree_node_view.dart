@@ -1,9 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/treeview/node/tree_node_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/widgets/widget/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class TreeNodeView extends StatefulWidget implements IWidgetView
@@ -33,8 +33,8 @@ class _TreeNodeViewState extends WidgetState<TreeNodeView>
         if (model is TreeNodeModel) {
           nodes.add(TreeNodeView(model));
         }
-        else if (model is IViewableWidget) {
-          children.add((model as IViewableWidget).getView());
+        else if (model is ViewableWidgetModel) {
+          children.add(model.getView());
         }
       });
 

@@ -1,8 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
-
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/event/handler.dart' ;
 import 'package:flutter/material.dart';
@@ -12,7 +10,7 @@ import 'package:fml/widgets/popover/item/popover_item_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class PopoverModel extends DecoratedWidgetModel implements IViewableWidget, IModelListener
+class PopoverModel extends DecoratedWidgetModel implements IModelListener
 {
   List<PopoverItemModel> items = [];
 

@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/viewable_widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/padding/padding_view.dart';
@@ -9,7 +8,7 @@ import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class PaddingModel extends ViewableWidgetModel implements IViewableWidget
+class PaddingModel extends ViewableWidgetModel 
 {
   //////////
   /* all */

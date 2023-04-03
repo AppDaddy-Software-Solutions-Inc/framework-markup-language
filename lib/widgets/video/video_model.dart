@@ -14,7 +14,7 @@
 // if (dart.library.io)   'package:fml/widgets/video/video_view_selector_vm.dart'
 // if (dart.library.html) 'package:fml/widgets/video/video_view_selector_web.dart';
 //
-// class VideoModel extends DecoratedWidgetModel implements IViewableWidget
+// class VideoModel extends DecoratedWidgetModel 
 // {
 //   IVideoPlayer? player;
 //

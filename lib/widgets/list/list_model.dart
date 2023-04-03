@@ -3,10 +3,9 @@ import 'dart:collection';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/form/form_model.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/form/form_model.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/event/handler.dart'            ;
 import 'package:fml/widgets/list/list_view.dart';
@@ -15,7 +14,7 @@ import 'package:fml/widgets/widget/widget_model.dart'     ;
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class ListModel extends DecoratedWidgetModel implements IViewableWidget, IForm, IScrolling
+class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
 {
   final HashMap<int,ListItemModel> items = HashMap<int,ListItemModel>();
   bool   selectable = false;

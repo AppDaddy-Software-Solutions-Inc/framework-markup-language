@@ -1,25 +1,21 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
-
 import 'package:fml/log/manager.dart';
 import 'package:fml/event/event.dart' ;
 import 'package:fml/event/handler.dart' ;
 import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
-
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/button/button_view.dart';
-
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
 /// Button [ButtonModel]
 ///
 /// Defines the properties used to build a [BUTTON.ButtonView]
-class ButtonModel extends DecoratedWidgetModel implements IViewableWidget
+class ButtonModel extends DecoratedWidgetModel 
 {
   /// [Event]s to execute when the button is clicked
   StringObservable? _onclick;

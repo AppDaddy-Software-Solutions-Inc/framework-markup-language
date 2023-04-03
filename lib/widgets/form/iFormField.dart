@@ -1,5 +1,4 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'dart:ui';
 import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/observable/observable_barrel.dart';
 
@@ -22,9 +21,6 @@ abstract class IFormField
   // field metadata
   dynamic get meta;
   set meta (dynamic v);
-
-  // Offset input global position (implemented for scrolling to fields)
-  Offset? offset;
 
   // field is required
   bool? get mandatory;

@@ -41,6 +41,6 @@ class _ExpandedViewState extends WidgetState<ExpandedView>
         (widget.model.parent is ColumnModel) ||
         (widget.model.parent is BoxModel && AlignmentHelper.getLayoutType((widget.model.parent as BoxModel).layout) != LayoutType.stack);
 
-    return allow ? Expanded(flex: widget.model.flex, child: view) : view;
+    return allow ? Expanded(flex: widget.model.flex ?? 1, child: view) : view;
   }
 }

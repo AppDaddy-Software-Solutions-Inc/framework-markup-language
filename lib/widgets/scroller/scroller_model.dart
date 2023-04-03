@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:flutter/material.dart';
@@ -14,7 +13,7 @@ import 'package:fml/helper/common_helpers.dart';
 /// Button [ScrollerModel]
 ///
 /// Defines the properties used to build a [SCROLLER.ScrollerView]
-class ScrollerModel extends ViewableWidgetModel implements IViewableWidget
+class ScrollerModel extends ViewableWidgetModel 
 {
   /// The cross alignment of the widgets children. Can be `top`, `bottom`, `start`, or `end`.
   StringObservable? _align;

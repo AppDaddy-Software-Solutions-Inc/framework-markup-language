@@ -23,7 +23,7 @@ class _StackViewState extends WidgetState<StackView>
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // save system constraints
-    widget.model.constraints.system = constraints;
+    onLayout(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -42,33 +42,13 @@ class _StackViewState extends WidgetState<StackView>
               minWidth: constr.minWidth!,
               maxWidth: constr.maxWidth!)));
 
-    var alignment = AlignmentHelper.alignWidgetAxis(children.length, LayoutType.stack, widget.model.center, AlignmentHelper.getHorizontalAlignmentType(widget.model.halign), AlignmentHelper.getVerticalAlignmentType(widget.model.valign));
+    var alignment = AlignmentHelper.alignWidgetAxis(LayoutType.stack, widget.model.center, AlignmentHelper.getHorizontalAlignmentType(widget.model.halign), AlignmentHelper.getVerticalAlignmentType(widget.model.valign));
 
-    //////////
-    /* View */
-    //////////
+    // create the stack
     Widget view = Stack(children: children, alignment: alignment.aligned, fit: StackFit.loose);
 
-    ////////////////////
-    /* Padding values */
-    ////////////////////
-    EdgeInsets insets = EdgeInsets.only();
-    if (widget.model.paddings > 0)
-    {
-      // pad all
-      if (widget.model.paddings == 1) insets = EdgeInsets.all(widget.model.padding);
-
-      // pad directions v,h
-      else if (widget.model.paddings == 2) insets = EdgeInsets.symmetric(vertical: widget.model.padding, horizontal: widget.model.padding2);
-
-      // pad sides top, right, bottom
-      else if (widget.model.paddings == 3) insets = EdgeInsets.only(top: widget.model.padding, left: widget.model.padding2, right: widget.model.padding2, bottom: widget.model.padding3);
-
-      // pad sides top, right, bottom
-      else if (widget.model.paddings == 4) insets = EdgeInsets.only(top: widget.model.padding, right: widget.model.padding2, bottom: widget.model.padding3, left: widget.model.padding4);
-
-      view = Padding(padding: insets, child: view);
-    }
+    // apply user padding
+    view = applyPadding(view);
 
     // apply user defined constraints
     return applyConstraints(view, widget.model.constraints.model);

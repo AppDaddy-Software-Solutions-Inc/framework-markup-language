@@ -30,7 +30,7 @@ class _BusyViewState extends WidgetState<BusyView>
     if (!widget.model.visible) return Offstage();
 
     // save system constraints
-    widget.model.constraints.system = constraints;
+    onLayout(constraints);
 
     // build the child views
     List<Widget> children = widget.model.inflate();

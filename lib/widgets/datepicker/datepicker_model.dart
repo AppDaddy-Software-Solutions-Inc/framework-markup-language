@@ -4,8 +4,6 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:fml/widgets/form/iFormField.dart';
 import 'package:flutter/material.dart';
-
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/datepicker/datepicker_view.dart';
@@ -15,7 +13,7 @@ import 'package:fml/helper/common_helpers.dart';
 
 enum METHODS { launch }
 
-class DatepickerModel extends FormFieldModel implements IFormField, IViewableWidget
+class DatepickerModel extends FormFieldModel implements IFormField
 {
   bool isPicking = false;
 
@@ -298,7 +296,7 @@ class DatepickerModel extends FormFieldModel implements IFormField, IViewableWid
   double? get size => _size?.get();
 
   /// override - pads the inner content of the input.
-  double get padding => super.paddings == 0 ? 4 : super.padding;
+  double? get padding => super.padding == null ? 4 : super.padding;
 
   /// The prefix icon within the input
   IconObservable? _icon;

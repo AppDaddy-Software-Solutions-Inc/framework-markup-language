@@ -4,15 +4,13 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:fml/widgets/form/iFormField.dart';
 import 'package:flutter/material.dart';
-
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/switch/switch_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class SwitchModel extends FormFieldModel implements IFormField, IViewableWidget
+class SwitchModel extends FormFieldModel implements IFormField
 {
   ///////////
   /* Width */

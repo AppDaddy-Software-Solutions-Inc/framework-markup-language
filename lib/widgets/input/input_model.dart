@@ -126,6 +126,7 @@ class InputModel extends FormFieldModel implements IFormField, IViewableWidget
 
   /// the value of the input. If not set to "" initially, the value will not be settable through events.
   StringObservable? _value;
+  @override
   set value(dynamic v)
   {
     if (_value != null)
@@ -138,6 +139,7 @@ class InputModel extends FormFieldModel implements IFormField, IViewableWidget
     }
   }
 
+  @override
   dynamic get value
   {
     if (_value == null) return defaultValue;

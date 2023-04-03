@@ -789,35 +789,41 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
   Future<List<IFormField>?> _getMissing() async
   {
     List<IFormField>? missing;
-    fields.forEach((field)
-    {
+    for (var field in fields) {
       bool? isMandatory;
       if ((isMandatory == null) && (field.mandatory != null)) isMandatory = field.mandatory;
-      if ((isMandatory == null) && (this.mandatory != null))  isMandatory = this.mandatory;
-      if (isMandatory  == null) isMandatory = false;
+      if ((isMandatory == null) && (mandatory != null))  isMandatory = mandatory;
+      isMandatory ??= false;
       if ((isMandatory) && (!field.answered))
       {
-        if (missing == null) missing = [];
-        missing!.add(field);
+        missing ??= [];
+        missing.add(field);
       }
-    });
+    }
     return missing;
   }
 
   Future<List<IFormField>?> _getAlarms() async
   {
     List<IFormField>? alarming;
-    fields.forEach((field)
-    {
+    for (var field in fields) {
       if (field.alarming!)
       {
-        if (alarming == null) alarming = [];
-        alarming!.add(field);
+        //tell the form that validation has been hit
+        field.validationHasHit = true;
+        //set the fields error state to sound
+        field.error = true;
+        alarming ??= [];
+        //add the field to the forms list of alarms
+        alarming.add(field);
       }
-    });
+    }
     return alarming;
   }
 
+
+
+  @override
   Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
   {
     if (scope == null) return null;
@@ -846,5 +852,6 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     return super.onDataSourceSuccess(source, list);
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(FormView(this));
 }

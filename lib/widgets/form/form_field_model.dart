@@ -195,6 +195,20 @@ class FormFieldModel extends DecoratedWidgetModel
   }
   bool get alarming => _alarming?.get() ?? false;
 
+
+  /// True if there is an alarm sounding on a [iFormField]
+  BooleanObservable? _validationHasHit;
+  set validationHasHit(dynamic v) {
+    if (_validationHasHit != null) {
+      _validationHasHit!.set(v);
+    } else if (v != null) {
+      _validationHasHit = BooleanObservable(Binding.toKey(id, 'validationHasHit'), v,
+          scope: scope);
+    }
+  }
+  bool get validationHasHit => _validationHasHit?.get() ?? false;
+
+
   // field offset
   Offset? offset;
 
@@ -203,9 +217,11 @@ class FormFieldModel extends DecoratedWidgetModel
       String? id, {
       dynamic error,
       dynamic errortext,
+      dynamic validationHasHit
       }) : super(parent, id){
     if (error         != null) this.error = error;
     if (errortext     != null) this.errortext = errortext;
+    this.validationHasHit = false;
   }
 
   @override
@@ -228,23 +244,39 @@ class FormFieldModel extends DecoratedWidgetModel
     for (var alarm in alarms) {
       _alarms![alarm.id] = alarm;
       //register a listener to always throw the alarm state when the value of the alarm changes if the alarm type is 'all'
-      if(alarm.alarmtrigger == 'all' || alarm.alarmtrigger == null) alarm.seterror?.registerListener(onAlarmChange);
+      alarm.seterror?.registerListener(onAlarmChange);
     }
   }
 
+
+
   void onAlarmChange(Observable errorObservable) {
 
-    //get the error state of the alarm and set it to that of the form field.
-     error = errorObservable.get();
+     //get the error state of the alarm and set it to that of the form field.
      String? sourceid = errorObservable.key?.split('.')[0];
-     if(error && !alarming) {
-       alarmerrortext = _alarms?[sourceid]?.errortext;
-       alarming = true;
-       didSetAlarm = sourceid ?? '';
-     } else if(!error && (didSetAlarm == sourceid) && alarming){
+     bool alarmSounding = errorObservable.get();
+     String? triggerType = _alarms?[sourceid]?.alarmtrigger;
+
+     //set the error if the trigger type is not validation based, or if validation has already been hit
+     if(triggerType != "validate" || validationHasHit == true) error = alarmSounding;
+
+     //turn off the validation state if the alarm has been dismissed to require a validation per alarm sounding
+     if(validationHasHit == true && !error) validationHasHit = false;
+
+     //check to see if an alarm is already sounding and ensure the field is not alarming already
+     if(alarmSounding && !alarming)
+     {
+        alarmerrortext = _alarms?[sourceid]?.errortext;
+        alarming = true;
+        //tell the field which alarm has set its alarm state, this prevents multiple alarms
+        didSetAlarm = sourceid ?? '';
+     }
+     //check that the changed alarm has set the alarming state, and that the alarm is not sounding
+     else if(!alarmSounding && didSetAlarm == sourceid)
+     {
+       //set the alarming state to false
        alarming = false;
      }
-
   }
 
   // values

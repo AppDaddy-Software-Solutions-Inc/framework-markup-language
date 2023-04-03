@@ -58,10 +58,9 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     {
       var values = v.split(",");
       _postbrokers = [];
-      values.forEach((e)
-      {
+      for (var e in values) {
         if (!S.isNullOrEmpty(e)) _postbrokers!.add(e.trim());
-      });
+      }
     }
   }
   List<String>? get postbrokers => _postbrokers;
@@ -79,8 +78,8 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     }
     else if (v != null)
     {
-      if (_status == null)    _status    = StringObservable(Binding.toKey(id, 'status'),   v, scope: scope);
-      if (_completed == null) _completed = BooleanObservable(Binding.toKey(id, 'complete'), (status == StatusCodes.complete), scope: scope);
+      _status ??= StringObservable(Binding.toKey(id, 'status'),   v, scope: scope);
+      _completed ??= BooleanObservable(Binding.toKey(id, 'complete'), (status == StatusCodes.complete), scope: scope);
     }
   }
   String? get status => _status?.get();
@@ -157,10 +156,9 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
   {
     // set form dirty
     bool isDirty = false;
-    fields.forEach((field)
-    {
+    for (var field in fields) {
       if (field.dirty == true) isDirty = true;
-    });
+    }
     dirty = isDirty;
 
     // auto save?
@@ -170,10 +168,14 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
   set clean (bool b)
   {
     // clean all fields
-    fields.forEach((field) => field.dirty = false);
+    for (var field in fields) {
+      field.dirty = false;
+    }
 
     // clean all sub-forms
-    forms.forEach((form)   => form.clean  = false);
+    for (var form in forms) {
+      form.clean  = false;
+    }
   }
 
   // gps 
@@ -228,10 +230,9 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
 
   Map<String, String?> get map
   {
-    Map<String, String?> _map = Map<String, String?>();
+    Map<String, String?> _map = <String, String?>{};
 
-      fields.forEach((field)
-      {
+      for (var field in fields) {
         if ((field.elementName != "attachment") && (!S.isNullOrEmpty(field.value)))
         {
           String? value;
@@ -239,22 +240,21 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
           
           // List of Values 
           
-          if (field.value is List) field.value.forEach((v)
+          if (field.value is List) {
+            field.value.forEach((v)
           {
-            value = (value == null) ? v.toString() : value! + "," + v.toString();
+            value = (value == null) ? v.toString() : "${value!},$v";
           });
-
-          //
-          // Single Value 
-          //
-          else value = field.value.toString();
+          } else {
+            value = field.value.toString();
+          }
 
           ///
           // Set the Value 
           ///
           if(field.id != null) _map[field.id!] = value;
         }
-      });
+      }
 
     return _map;
   }
@@ -267,7 +267,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     this.status         = status;
     this.autosave       = autosave;
     this.mandatory      = mandatory;
-    this.dirty          = false;
+    dirty               = false;
     this.geocode        = geocode;
     this.oncomplete     = oncomplete;
     this.showexception  = showexception;
@@ -328,9 +328,11 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
         if (field != null)
         {
           dynamic value = field.value;
-          if (value is List)
-               field.value.clear();
-          else field.value = null;
+          if (value is List) {
+            field.value.clear();
+          } else {
+            field.value = null;
+          }
         }
       }
 
@@ -345,9 +347,11 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
         IFormField field = getField(id)!;
 
           dynamic value = field.value;
-          if (value is List)
-               field.value.add(answer);
-          else field.value = answer;
+          if (value is List) {
+            field.value.add(answer);
+          } else {
+            field.value = answer;
+          }
 
         /// GeoCode for each [iFormField] which is set on answer
         field.geocode = GPS.Payload(
@@ -361,58 +365,63 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     clean = true;
 
     // add dirty listener to each field
-    fields.forEach((field)
-    {
+    for (var field in fields) {
       if (field.dirtyObservable != null) field.dirtyObservable!.registerListener(onDirtyListener);
-    });
+    }
 
     // add dirty listener to each sub-form
-    forms.forEach((form)
-    {
+    for (var form in forms) {
       Observable? property = form.dirtyObservable;
       if (property != null) property.registerListener(onDirtyListener);
-    });
+    }
   }
 
   static List<IFormField> getFields(List<WidgetModel>? children)
   {
     List<IFormField> fields = [];
-    if (children != null)
-      children.forEach((child)
-      {
+    if (children != null) {
+      for (var child in children) {
         if (child is IFormField) fields.add(child as IFormField);
-        if (!(child is IForm)) fields.addAll(getFields(child.children));
-      });
+        if (child is! IForm) fields.addAll(getFields(child.children));
+      }
+    }
     return fields;
   }
 
   static List<IForm> getForms(List<WidgetModel>? children)
   {
     List<IForm> forms = [];
-    if (children != null)
-      children.forEach((child)
-      {
+    if (children != null) {
+      for (var child in children) {
         if (child is IForm) forms.add(child as IForm);
-        if (!(child is IForm)) forms.addAll(getForms(child.children));
-      });
+        if (child is! IForm) forms.addAll(getForms(child.children));
+      }
+    }
     return forms;
   }
 
   Future<bool> _post(HIVE.Form? form, {bool? commit}) async
   {
     bool ok = true;
-    if ((scope != null) && (postbrokers != null))
+    if ((scope != null) && (postbrokers != null)) {
       for (String id in postbrokers!)
       {
         IDataSource? source = scope!.getDataSource(id);
         if ((source != null) && (ok) && (commit != false))
         {
-          if (source.custombody != true) source.body = await buildPostingBody(fields, rootname: source.root ?? "FORM");
+          if (source.custombody != true)
+          {
+            source.body = await buildPostingBody(fields, rootname: source.root ?? "FORM");
+          }
           ok = await source.start(key: form!.key);
         }
         if (!ok) break;
       }
-    else ok = false;
+    }
+    else
+    {
+      ok = false;
+    }
     return ok;
   }
 
@@ -423,10 +432,10 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     bool ok = true;
 
     // Clear Fields
-    fields.forEach((field)
+    for (var field in fields)
     {
       field.value = field.defaultValue ?? "";
-    });
+    }
 
     // Set Clean
     if (ok == true) clean = true;
@@ -492,13 +501,17 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     
     node.children.removeWhere((child)
     {
-      if ((child is XmlElement) && (child.name.local== "ANSWER"))
-           return true;
-      else return false;
+      if ((child is XmlElement) && (child.name.local== "ANSWER")) {
+        return true;
+      } else {
+        return false;
+      }
     });
 
     // Insert New Answers
-    fields.forEach((field) => _insertAnswers(node, field));
+    for (var field in fields) {
+      _insertAnswers(node, field);
+    }
 
     return ok;
   }
@@ -508,9 +521,8 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     try
     {
       // field is postable?
-      if ((field.postable ?? false) && (field.values != null))
-        field.values!.forEach((value)
-        {
+      if ((field.postable ?? false) && (field.values != null)) {
+        for (var value in field.values!) {
           // create new element
           XmlElement node = XmlElement(XmlName("ANSWER"));
 
@@ -542,10 +554,13 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
             }
 
             // special characters in xml? wrap in CDATA
-            else if (Xml.hasIllegalCharacters(value)) node.children.add(XmlCDATA(value));
-
-            // normal text
-            else node.children.add(XmlText(value));
+            else if (Xml.hasIllegalCharacters(value))
+            {
+              node.children.add(XmlCDATA(value));
+            } else
+            {
+              node.children.add(XmlText(value));
+            }
           }
           catch(e)
           {
@@ -554,7 +569,8 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
 
           // add to root
           root.children.add(node);
-        });
+        }
+      }
     }
     catch(e)
     {
@@ -585,9 +601,8 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
       XmlElement root = XmlElement(XmlName(S.isNullOrEmpty(rootname) ? "FORM" : rootname));
       document.children.add(root);
 
-      if (fields != null)
-        fields.forEach((field)
-        {
+      if (fields != null) {
+        for (var field in fields) {
           // postable?
           if (field.postable == true)
           {
@@ -639,10 +654,11 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
                   }
 
                   // Non-XML? Wrap in CDATA
-                  else if (Xml.hasIllegalCharacters(value)) node.children.add(XmlCDATA(value));
-
-                  // Normal Text
-                  else node.children.add(XmlText(value));
+                  else if (Xml.hasIllegalCharacters(value)) {
+                    node.children.add(XmlCDATA(value));
+                  } else {
+                    node.children.add(XmlText(value));
+                  }
                 }
                 on XmlException catch(e)
                 {
@@ -688,7 +704,8 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
               root.children.add(node);
             }
           }
-        });
+        }
+      }
 
       // Set Body
       return document.toXmlString(pretty: true);
@@ -749,7 +766,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     if (ok)
     {
       // Serialize the Form
-      await serialize(this.element, fields);
+      await serialize(element, fields);
 
       // Serialize Outer Xml
       String xml = framework!.element!.toXmlString(pretty: true);

@@ -65,12 +65,27 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
   }
   List<String>? get postbrokers => _postbrokers;
 
+  // datasource to fill the form
+  List<String>? _data;
+  set data(dynamic v)
+  {
+    if (v is String)
+    {
+      var values = v.split(",");
+      _data = [];
+      for (var e in values) {
+        if (!S.isNullOrEmpty(e)) _data!.add(e.trim());
+      }
+    }
+  }
+  List<String>? get data => _data;
+
   // status
   StringObservable? _status;
   set status (dynamic v)
   {
     StatusCodes? status = S.toEnum(v.toString(), StatusCodes.values);
-    if (status == null) status = StatusCodes.incomplete;
+    status ??= StatusCodes.incomplete;
     v = S.fromEnum(status);
     if (_status != null)
     {
@@ -248,10 +263,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
           } else {
             value = field.value.toString();
           }
-
-          ///
-          // Set the Value 
-          ///
+          // Set the value of the field
           if(field.id != null) _map[field.id!] = value;
         }
       }
@@ -259,7 +271,18 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     return _map;
   }
 
-  FormModel(WidgetModel parent, String? id, {String? type, String? title, dynamic status, dynamic visible, dynamic autosave, dynamic mandatory, dynamic geocode, dynamic oncomplete, dynamic showexception}) : super(parent, id)
+  FormModel(WidgetModel parent, String? id, {
+    String? type,
+    String? title,
+    dynamic status,
+    dynamic visible,
+    dynamic autosave,
+    dynamic mandatory,
+    dynamic geocode,
+    dynamic oncomplete,
+    dynamic showexception,
+    dynamic data,
+  }) : super(parent, id)
   {
     // instantiate busy observable
     busy = false;
@@ -271,13 +294,9 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     this.geocode        = geocode;
     this.oncomplete     = oncomplete;
     this.showexception  = showexception;
+    this.data           = data;
   }
 
-  @override
-  dispose()
-  {
-    super.dispose();
-  }
 
   static FormModel? fromXml(WidgetModel parent, XmlElement xml)
   {
@@ -310,6 +329,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     geocode     = Xml.get(node: xml, tag: 'geocode');
     oncomplete  = Xml.get(node: xml, tag: 'oncomplete');
     postbrokers = Xml.attribute(node: xml, tag: 'post');
+    data = Xml.attribute(node: xml, tag: 'data');
 
     // get fields
     fields.addAll(getFields(children));

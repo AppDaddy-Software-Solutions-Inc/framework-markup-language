@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'package:fml/system.dart';
 import 'package:fml/widgets/icon/icon_model.dart';
 import 'package:fml/widgets/icon/icon_view.dart';
 import 'package:fml/widgets/video/IVideoPlayer.dart';
@@ -9,6 +10,7 @@ import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:video_player/video_player.dart';
+import 'package:video_player_win/video_player_win_plugin.dart';
 
 class VideoView extends StatefulWidget implements IWidgetView
 {
@@ -30,6 +32,9 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
   void initState()
   {
     super.initState();
+
+    // If running on windows ensure to register the Windows Media Player
+    if (System().useragent == 'windows') WindowsVideoPlayer.registerWith();
 
     // set player
     widget.model.player = this;

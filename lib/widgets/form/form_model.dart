@@ -473,9 +473,6 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
 
     bool ok = true;
 
-    // Set Complete
-    status = StatusCodes.complete;
-
     // Post Sub-Forms
     for (IForm form in forms)
     {
@@ -483,21 +480,32 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
       if (!ok) break;
     }
 
-    // Save the Form
-    HIVE.Form? form = await save();
+    // validate the form in the complete method.
+    bool validated = (await validate() == null);
 
-    // Post the Form
-    if (ok) ok = await _post(form);
+    // Save the Form and pass the validation check so validate is not called a second time. This is so the form is always saved on complete.
+    HIVE.Form? form = await save(previouslyValidated: true, validation: validated);
 
-    // Set Clean
-    if (ok == true) clean = true;
+    if(!validated) {
+      busy = false;
+      return false;
+    }
 
-    // fire on complete events
-    if (ok && _oncomplete != null) ok = await EventHandler(this).execute(_oncomplete);
+      // Post the Form
+      if (ok) ok = await _post(form);
 
-    busy = false;
+      // Set Clean
+      if (ok == true) clean = true;
 
-    return ok;
+      // fire on complete events
+      if (ok && _oncomplete != null) ok = await EventHandler(this).execute(_oncomplete);
+
+      busy = false;
+
+      // Set Complete
+      status = StatusCodes.complete;
+
+      return ok;
   }
 
   IFormField? getField(String? id)
@@ -778,12 +786,16 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     return null;
   }
 
-  Future<HIVE.Form?> save() async
+  Future<HIVE.Form?> save({bool previouslyValidated = false, bool validation = false}) async
   {
     HIVE.Form? form;
 
+    bool ok = validation;
+
     // Validate the Data
-    bool ok = (await validate() == null);
+    if(!previouslyValidated) {
+      ok = (await validate() == null);
+    }
 
     // Show Success
     if (ok)

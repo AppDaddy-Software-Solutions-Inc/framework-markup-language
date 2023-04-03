@@ -252,35 +252,36 @@ class FormFieldModel extends DecoratedWidgetModel
 
   void onAlarmChange(Observable errorObservable) {
 
-     //get the error state of the alarm and set it to that of the form field.
+     // get the error state of the alarm and set it to that of the form field.
      String? sourceid = errorObservable.key?.split('.')[0];
+     // The errorobservable from the alarm is the value of the alarms error atrribute.
      bool alarmSounding = errorObservable.get();
      AlarmModel? currentAlarm = _alarms[sourceid];
      String? triggerType = currentAlarm?.alarmtrigger;
 
-     //set the error if the trigger type is not validation based, or if validation has already been hit
+     // set the error if the trigger type is not validation based, or if validation has already been hit
      if(triggerType != "validate" || validationHasHit == true) error = alarmSounding;
 
-     //turn off the validation state if the alarm has been dismissed to require a validation per alarm sounding
+     // turn off the validation state if the alarm has been dismissed to require a validation per alarm sounding
      if(validationHasHit == true && !error) validationHasHit = false;
 
-     //check to see if an alarm is already sounding and ensure the field is not alarming already
+     // check to see if an alarm is already sounding and ensure the field is not alarming already
      if(alarmSounding && !alarming)
      {
         alarmerrortext = currentAlarm?.errortext;
         alarming = true;
 
-        //execute the onalarm event string if the error state is active, this will not activate if validate is the type until validation happens.
+        // execute the onalarm event string if the error state is active, this will not activate if validate is the type until validation happens.
         if(error) currentAlarm?.executeAlarmString(true);
-        //tell the field which alarm has set its alarm state, this prevents multiple alarms
+        // tell the field which alarm has set its alarm state, this prevents multiple alarms
         didSetAlarm = sourceid ?? '';
      }
-     //check that the changed alarm has set the alarming state, and that the alarm is not sounding
+     // check that the changed alarm has set the alarming state, and that the alarm is not sounding
      else if(!alarmSounding && didSetAlarm == sourceid)
      {
-       //set the alarming state to false
+       // set the alarming state to false
        alarming = false;
-       //execute the ondismiss event string
+       // execute the ondismiss event string
          currentAlarm?.executeAlarmString(false);
      }
   }

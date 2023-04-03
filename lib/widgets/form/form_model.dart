@@ -435,7 +435,9 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
           }
           ok = await source.start(key: form!.key);
         }
-        if (!ok) break;
+        if (!ok) {
+          break;
+        }
       }
     }
     else
@@ -753,6 +755,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
 
       // scroll to the field
       var view = findListenerOfExactType(FormViewState);
+      //TODO: when field is cleared, scroll to the next alarming field without validation.
       if (view is FormViewState) view.show(missing.first);
 
       return missing;

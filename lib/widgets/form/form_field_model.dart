@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/datasources/gps/payload.dart' as GPS;
+import 'package:fml/datasources/gps/payload.dart' as gps;
 import 'package:fml/system.dart';
 import 'package:fml/widgets/alarm/alarm_model.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
@@ -112,7 +112,7 @@ class FormFieldModel extends DecoratedWidgetModel
   }
 
   /// GeoCode for each [iFormField] which is set on answer
-  GPS.Payload? geocode;
+  gps.Payload? geocode;
 
   //field is editable
   BooleanObservable? _editable;
@@ -138,7 +138,7 @@ class FormFieldModel extends DecoratedWidgetModel
   String? get onchange => _onchange?.get();
 
   /// [Alarm]s based on validation checks
-  Map<String?, AlarmModel>? _alarms = {};
+  final Map<String?, AlarmModel> _alarms = {};
 
   StringObservable? _alarm;
   set alarm(dynamic v) {
@@ -240,9 +240,9 @@ class FormFieldModel extends DecoratedWidgetModel
 
     // Build alarms
     List<AlarmModel> alarms = findChildrenOfExactType(AlarmModel).cast<AlarmModel>();
-    _alarms!.clear();
+    _alarms.clear();
     for (var alarm in alarms) {
-      _alarms![alarm.id] = alarm;
+      _alarms[alarm.id] = alarm;
       //register a listener to always throw the alarm state when the value of the alarm changes if the alarm type is 'all'
       alarm.seterror?.registerListener(onAlarmChange);
     }
@@ -255,7 +255,8 @@ class FormFieldModel extends DecoratedWidgetModel
      //get the error state of the alarm and set it to that of the form field.
      String? sourceid = errorObservable.key?.split('.')[0];
      bool alarmSounding = errorObservable.get();
-     String? triggerType = _alarms?[sourceid]?.alarmtrigger;
+     AlarmModel? currentAlarm = _alarms[sourceid];
+     String? triggerType = currentAlarm?.alarmtrigger;
 
      //set the error if the trigger type is not validation based, or if validation has already been hit
      if(triggerType != "validate" || validationHasHit == true) error = alarmSounding;
@@ -266,8 +267,11 @@ class FormFieldModel extends DecoratedWidgetModel
      //check to see if an alarm is already sounding and ensure the field is not alarming already
      if(alarmSounding && !alarming)
      {
-        alarmerrortext = _alarms?[sourceid]?.errortext;
+        alarmerrortext = currentAlarm?.errortext;
         alarming = true;
+
+        //execute the onalarm event string if the error state is active, this will not activate if validate is the type until validation happens.
+        if(error) currentAlarm?.executeAlarmString(true);
         //tell the field which alarm has set its alarm state, this prevents multiple alarms
         didSetAlarm = sourceid ?? '';
      }
@@ -276,6 +280,8 @@ class FormFieldModel extends DecoratedWidgetModel
      {
        //set the alarming state to false
        alarming = false;
+       //execute the ondismiss event string
+         currentAlarm?.executeAlarmString(false);
      }
   }
 
@@ -313,7 +319,7 @@ class FormFieldModel extends DecoratedWidgetModel
       var oldGeocode = geocode;
 
       // set geocode
-      geocode = GPS.Payload(
+      geocode = gps.Payload(
           latitude: System().currentLocation?.latitude,
           longitude: System().currentLocation?.longitude,
           altitude: System().currentLocation?.altitude,

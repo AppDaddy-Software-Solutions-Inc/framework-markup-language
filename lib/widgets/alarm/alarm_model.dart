@@ -5,6 +5,8 @@ import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:xml/xml.dart';
 import 'package:fml/helper/common_helpers.dart';
 
+import '../../event/handler.dart';
+
 class AlarmModel extends WidgetModel
 {
   /// The value of the alarms parent.
@@ -145,6 +147,16 @@ class AlarmModel extends WidgetModel
     //override 'alarmtrigger' with 'type' as the xml attribute name;
     alarmtrigger = Xml.get(node: xml, tag: 'type');
     mandatory = Xml.get(node: xml, tag: 'mandatory');
+  }
+
+  void executeAlarmString(bool isAlarming){
+    if(isAlarming) {
+      //execute the onalarm
+      EventHandler(this).execute(_onalarm);
+    } else {
+      // execute the ondismissed
+      EventHandler(this).execute(_ondismissed);
+    }
   }
 
 }

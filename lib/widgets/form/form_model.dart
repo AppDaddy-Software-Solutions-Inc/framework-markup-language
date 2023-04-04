@@ -2,6 +2,7 @@
 import 'dart:async';
 
 import 'package:fml/data/data.dart';
+import 'package:fml/data/dotnotation.dart';
 import 'package:fml/datasources/gps/payload.dart' as GPS;
 import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/log/manager.dart';
@@ -66,19 +67,19 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
   List<String>? get postbrokers => _postbrokers;
 
   // datasource to fill the form
-  List<String>? _data;
-  set data(dynamic v)
+  StringObservable? _data;
+  set data (dynamic v)
   {
-    if (v is String)
+    if (_data != null)
     {
-      var values = v.split(",");
-      _data = [];
-      for (var e in values) {
-        if (!S.isNullOrEmpty(e)) _data!.add(e.trim());
-      }
+      _data!.set(v);
+    }
+    else if (v != null)
+    {
+      _data = StringObservable(Binding.toKey(id, 'data'), v, scope: scope);
     }
   }
-  List<String>? get data => _data;
+  String? get data => _data?.get();
 
   // status
   StringObservable? _status;
@@ -331,8 +332,13 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     postbrokers = Xml.attribute(node: xml, tag: 'post');
     data = Xml.attribute(node: xml, tag: 'data');
 
+
+
     // get fields
     fields.addAll(getFields(children));
+
+    // fill all empty fields with the datasource
+    _fillEmptyFields();
 
     // get forms
     forms.addAll(getForms(children));
@@ -853,6 +859,35 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
       }
     }
     return missing;
+  }
+
+
+  Future<void> _fillEmptyFields() async
+  {
+    //display busy
+    busy = true;
+    bool ok = false;
+    if ((scope != null) && (data != null)) {
+
+      //for a single datasource grab the scope
+        IDataSource? source = scope!.getDataSource(data);
+        if (source != null) {
+          ok = await source.start();
+
+        }
+      if (source?.data == null || source == null) ok = false;
+      if (ok) {
+        for (var field in fields) {
+          if (!field.answered && field.value == null) {
+            //assign the signature of the source to the field
+           String binding = '$data.data.${source?.root}.${field.id}';
+            field.value = Data.fromDotNotation(source!.data!, DotNotation.fromString(binding)!).toString();
+          }
+        }
+      }
+      busy = false;
+    }
+
   }
 
   Future<List<IFormField>?> _getAlarms() async

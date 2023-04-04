@@ -346,6 +346,12 @@ class FormFieldModel extends DecoratedWidgetModel
     return ok;
   }
 
+  @override
+  dispose() {
+    super.dispose();
+    removeAllListeners();
+  }
+
 
   //Return the error state between the alarm and the error set on the model
   bool returnErrorState(){

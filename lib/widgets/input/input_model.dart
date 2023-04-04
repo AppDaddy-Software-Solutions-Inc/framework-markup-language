@@ -12,12 +12,17 @@ import 'package:fml/widgets/input/input_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
+import '../form/form_model.dart';
+
 enum InputFormats {numeric, integer, text, boolean, xml}
 enum CapitalizationTypes {mixed, camel, upper, lower, sentences, words}
 
 class InputModel extends FormFieldModel implements IFormField, IViewableWidget
 {
   List<Suggestion> suggestions = [];
+
+  FormModel? _form;
+  set form(FormModel form) => _form = form;
 
   // override
   double get padding => super.paddings == 0 ? 4 : super.padding;

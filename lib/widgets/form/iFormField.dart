@@ -2,6 +2,7 @@
 import 'dart:ui';
 import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/observable/observable_barrel.dart';
+import 'package:fml/widgets/form/form_model.dart';
 
 abstract class IFormField
 {

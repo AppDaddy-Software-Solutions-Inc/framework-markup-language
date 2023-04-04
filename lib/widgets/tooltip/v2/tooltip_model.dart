@@ -155,8 +155,6 @@ class TooltipModel extends ViewableWidgetModel
 
     // properties
     color    = Xml.attribute(node: xml, tag: 'color');
-    padding  = Xml.attribute(node: xml, tag: 'pad');
-    if (_padding == null) padding  = Xml.attribute(node: xml, tag: 'padding');
     radius   = Xml.attribute(node: xml, tag: 'radius');
     position = Xml.attribute(node: xml, tag: 'position');
     modal    = Xml.attribute(node: xml, tag: 'modal');

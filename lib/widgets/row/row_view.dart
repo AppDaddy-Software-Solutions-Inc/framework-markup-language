@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:fml/widgets/row/row_model.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/layout_widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
@@ -36,13 +37,13 @@ class _RowViewState extends WidgetState<RowView>
     var alignment = AlignmentHelper.alignWidgetAxis(LayoutType.row, widget.model.center, AlignmentHelper.getHorizontalAlignmentType(widget.model.halign), AlignmentHelper.getVerticalAlignmentType(widget.model.valign));
 
     // get user defined constraints
-    var localConstraints = widget.model.constraints.model;
+    var modelConstraints = widget.model.constraints.model;
 
-    // set main axis size
-    var mainAxisSize = widget.model.expand == false ? MainAxisSize.min : MainAxisSize.max;
+    // get main axis size
+    MainAxisSize? mainAxisSize = widget.model.getHorizontalAxisSize();
 
     /// safeguard - don't allow infinite width
-    if (constraints.maxWidth == double.infinity && mainAxisSize == MainAxisSize.max && !localConstraints.hasHorizontalExpansionConstraints) mainAxisSize = MainAxisSize.min;
+    if (constraints.maxWidth == double.infinity && mainAxisSize == MainAxisSize.max && !modelConstraints.hasHorizontalExpansionConstraints) mainAxisSize = MainAxisSize.min;
 
     // check if wrap is true,and return the wrap widgets children.
     Widget view;
@@ -63,9 +64,13 @@ class _RowViewState extends WidgetState<RowView>
               mainAxisSize: mainAxisSize);
 
     // apply user padding
-    view = applyPadding(view);
+    // skip these if this is being managed at a higher level (BoxModel)
+    if (widget.model is RowModel) view = applyPadding(view);
 
     // apply user defined constraints
-    return applyConstraints(view, localConstraints);
+    // skip these if this is being managed at a higher level (BoxModel)
+    if (widget.model is RowModel) view = applyConstraints(view, widget.model.constraints.model);
+
+    return view;
   }
 }

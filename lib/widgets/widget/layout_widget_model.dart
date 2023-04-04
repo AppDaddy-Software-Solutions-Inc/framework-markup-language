@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:fml/helper/alignment.dart';
 import 'package:fml/helper/xml.dart';
 import 'package:fml/log/manager.dart';
@@ -11,6 +12,18 @@ import 'package:xml/xml.dart';
 
 class LayoutWidgetModel extends DecoratedWidgetModel
 {
+  // override this routine in the outer model
+  bool isVerticallyConstrained() => true;
+
+  // override this routine in the outer model
+  bool isHorizontallyConstrained() => true;
+
+  // override this routine in the outer model
+  MainAxisSize getVerticalAxisSize() => MainAxisSize.min;
+
+  // override this routine in the outer model
+  MainAxisSize getHorizontalAxisSize() => MainAxisSize.min;
+
   /// Center attribute allows a simple boolean override for halign and valign both being center. halign and valign will override center if given.
   BooleanObservable? _center;
   set center(dynamic v) {

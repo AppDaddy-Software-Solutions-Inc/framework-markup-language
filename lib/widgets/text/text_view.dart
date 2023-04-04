@@ -53,10 +53,15 @@ class _TextViewState extends WidgetState<TextView>
   }
 
   @override
-  Widget build(BuildContext context)
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
+
+    // save system constraints
+    onLayout(constraints);
 
     // get the theme
     theme = Theme.of(context);

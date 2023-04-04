@@ -87,9 +87,9 @@ class CardModel extends DecoratedWidgetModel
   double get borderwidth => _borderwidth?.get() ?? 1;
 
   //overrides
-  double? get padding => super.padding == null ? 5 : super.padding;
-  String get halign  => super.halign  ?? "start";
-  String get valign  => super.valign  ?? "start";
+  double? get padding => super.padding1 ?? 5;
+  String  get halign   => super.halign  ?? "start";
+  String  get valign   => super.valign  ?? "start";
 
   CardModel(
     WidgetModel parent,
@@ -144,7 +144,6 @@ class CardModel extends DecoratedWidgetModel
     super.deserialize(xml);
 
     // properties
-    padding = Xml.get(node: xml, tag: 'padding');
     margin = Xml.get(node: xml, tag: 'margin');
     elevation = Xml.get(node: xml, tag: 'elevation');
     bordercolor = Xml.get(node: xml, tag: 'bordercolor');

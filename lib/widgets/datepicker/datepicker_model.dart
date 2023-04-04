@@ -296,7 +296,7 @@ class DatepickerModel extends FormFieldModel implements IFormField
   double? get size => _size?.get();
 
   /// override - pads the inner content of the input.
-  double? get padding => super.padding == null ? 4 : super.padding;
+  double? get padding => super.padding1 ?? 4;
 
   /// The prefix icon within the input
   IconObservable? _icon;
@@ -417,7 +417,6 @@ class DatepickerModel extends FormFieldModel implements IFormField
     error = Xml.get(node: xml, tag: 'error');
     errortext = Xml.get(node: xml, tag: 'errortext');
     size = Xml.get(node: xml, tag: 'size');
-    padding = Xml.get(node: xml, tag: 'padd');
     icon = Xml.get(node: xml, tag: 'icon');
   }
 

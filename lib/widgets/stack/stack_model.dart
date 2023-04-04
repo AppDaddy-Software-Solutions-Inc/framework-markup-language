@@ -1,38 +1,25 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
+import 'package:fml/widgets/widget/layout_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/stack/stack_view.dart';
-import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class StackModel extends DecoratedWidgetModel 
+class StackModel extends LayoutWidgetModel
 {
-  /// Center attribute allows a simple boolean override for halign and valign both being center. halign and valign will override center if given.
-  BooleanObservable? _center;
-  set center(dynamic v) {
-    if (_center != null) {
-      _center!.set(v);
-    } else if (v != null) {
-      _center = BooleanObservable(Binding.toKey(id, 'center'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get center => _center?.get() ?? false;
+  @override
+  bool isHorizontallyConstrained() => constraints.model.hasHorizontalExpansionConstraints || constraints.system.hasHorizontalExpansionConstraints;
 
-  /// Expand, which is true by default, tells the widget if it should shrink to its children, or grow to its parents constraints. Width/Height attributes will override expand.
-  BooleanObservable? _expand;
-  set expand(dynamic v) {
-    if (_expand != null) {
-      _expand!.set(v);
-    } else if (v != null) {
-      _expand = BooleanObservable(Binding.toKey(id, 'expand'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get expand => _expand?.get() ?? true;
+  @override
+  bool isVerticallyConstrained() => constraints.model.hasVerticalExpansionConstraints || constraints.system.hasVerticalExpansionConstraints;
+
+  @override
+  MainAxisSize getVerticalAxisSize() => (expand && isHorizontallyConstrained()) ? MainAxisSize.max : MainAxisSize.min;
+
+  @override
+  MainAxisSize getHorizontalAxisSize() => MainAxisSize.min;
 
   StackModel(
     WidgetModel parent,
@@ -56,22 +43,24 @@ class StackModel extends DecoratedWidgetModel
     if (minheight != null) this.minHeight = minheight;
     if (maxwidth  != null) this.maxWidth  = maxwidth;
     if (maxheight != null) this.maxHeight = maxheight;
-
-    this.halign = halign;
-    this.valign = valign;
-    this.center = center;
-    this.expand = expand;
+    if (halign    != null) this.halign    = halign;
+    if (valign    != null) this.valign    = valign;
+    if (center    != null) this.center    = center;
+    if (expand    != null) this.expand    = expand;
   }
 
-  static StackModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static StackModel? fromXml(WidgetModel parent, XmlElement xml)
+  {
     StackModel? model;
-    try {
-// build model
+    try
+    {
+      // build model
       model = StackModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
-    } catch(e) {
-      Log().exception(e,
-           caller: 'stack.Model');
+    }
+    catch(e)
+    {
+      Log().exception(e, caller: 'stack.Model');
       model = null;
     }
     return model;
@@ -79,36 +68,14 @@ class StackModel extends DecoratedWidgetModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
+  void deserialize(XmlElement? xml)
   {
     // deserialize
     super.deserialize(xml);
-
-    /// Attributes
-    ///
-    /// Constraint Attributes
-    /// Layout Attributes
-    center = Xml.get(node: xml, tag: 'center');
-
-    // expand="false" is same as adding attribute shrink
-    var expand = Xml.get(node: xml, tag: 'expand');
-    if (expand == null && Xml.hasAttribute(node: xml, tag: 'shrink')) expand = 'false';
-    this.expand = expand;
-
-    ////////////////////////////
-    /* Sort Children by Depth */
-    ////////////////////////////
-    if (children != null) children?.sort((a, b)
-    {
-      if(a.depth != null && b.depth != null) return a.depth?.compareTo(b.depth!) ?? 0;
-      return 0;
-    }
-    );
   }
 
   @override
   dispose() {
-// Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
   }
 

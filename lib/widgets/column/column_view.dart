@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/column/column_model.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/widget/layout_widget_model.dart';
@@ -38,8 +39,8 @@ class _ColumnViewState extends WidgetState<ColumnView>
     // get user defined constraints
     var localConstraints = widget.model.constraints.model;
 
-    // set main axis size
-    var mainAxisSize = widget.model.expand == false ? MainAxisSize.min : MainAxisSize.max;
+    // get main axis size
+    MainAxisSize? mainAxisSize = widget.model.getVerticalAxisSize();
 
     /// safeguard - don't allow infinite height
     if (constraints.maxHeight == double.infinity && mainAxisSize == MainAxisSize.max && !localConstraints.hasVerticalExpansionConstraints) mainAxisSize = MainAxisSize.min;
@@ -61,9 +62,13 @@ class _ColumnViewState extends WidgetState<ColumnView>
           mainAxisSize: mainAxisSize);
 
     // apply user padding
-    view = applyPadding(view);
+    // skip these if this is being managed at a higher level (BoxModel)
+    if (widget.model is ColumnModel) view = applyPadding(view);
 
     // apply user defined constraints
-    return applyConstraints(view, localConstraints);
+    // skip these if this is being managed at a higher level (BoxModel)
+    if (widget.model is ColumnModel) view = applyConstraints(view, widget.model.constraints.model);
+
+    return view;
   }
 }

@@ -10,11 +10,30 @@ import 'package:fml/helper/common_helpers.dart';
 
 class ColumnModel extends LayoutWidgetModel
 {
+  @override
+  bool isVerticallyConstrained() => constraints.model.hasVerticalExpansionConstraints || constraints.system.hasVerticalExpansionConstraints;
+
+  @override
+  bool isHorizontallyConstrained() => true;
+
+  @override
+  MainAxisSize getVerticalAxisSize() => (expand && isVerticallyConstrained()) ? MainAxisSize.max : MainAxisSize.min;
+
   // flexible children with no percent specified
   List<ViewableWidgetModel> get flexibleChildren => viewableChildren.where((child) => ((child.flex ?? 0) > 0) && child.pctHeight == null).toList();
 
   // children sized by parents height
-  List<ViewableWidgetModel> get sizedChildren => viewableChildren.where((child) => child.pctHeight != null).toList();
+  List<ViewableWidgetModel> get percentChildren => viewableChildren.where((child) => child.pctHeight != null).toList();
+
+  // children that do not have % height or flex sizing
+  List<ViewableWidgetModel> get unsizedChildren => viewableChildren.where((child) => child.flex == null && child.pctHeight == null).toList();
+
+  // children that have a % height or flex sizing
+  List<ViewableWidgetModel> get sizedChildren => viewableChildren.where((child) => child.flex != null || child.pctHeight != null).toList();
+
+  // if there are 2 or more viewable children and any one of them is
+  // sized then we need to perform layout sizing
+  bool get performLayoutSizing => (viewableChildren.length > 1 && sizedChildren.isNotEmpty);
 
   @override
   String? get layout => 'column';
@@ -54,62 +73,63 @@ class ColumnModel extends LayoutWidgetModel
   @override
   List<Widget> inflate()
   {
-    // layout fixed sized children
-    List<Widget> views = [];
-    viewableChildren.forEach((child)
-    {
-      // set height on percent and flex children to zero
-      if (child.pctHeight != null || child.flex != null)
-      {
-        child.height = 0;
-      }
-      views.add(child.getView());
-    });
-    return views;
+    // set height on all sized children to zero
+    if (performLayoutSizing) sizedChildren.forEach((child) => child.setHeight(0));
+    return super.inflate();
   }
 
   @override
   void onLayoutComplete(RenderBox? box, Offset? position)
   {
     super.onLayoutComplete(box, position);
-
-    // if fewer than 1 sized child no need to do anything
-    var allowSizing = (sizedChildren.length + flexibleChildren.length) <= 1;
-    if (allowSizing) return;
-
-    // calculate max height from system
-    var max = calculateMaxHeight() ?? 0;
-
-    // calculate sum of flex values
-    double sum = 0;
-    flexibleChildren.forEach((child) => sum += child.flex!);
-
-    // calculate usable space
-    var usable = max - (viewHeight ?? 0);
-
-    // set height on % sized children
-    sizedChildren.forEach((child)
+    if (performLayoutSizing)
     {
-      var height = max * (child.pctHeight! / 100);
-      if (height != child.height)
-      {
-        child.height = height;
-      }
-    });
+      var x = flexibleChildren.toList();
+      var y = percentChildren.toList();
+      var z = viewableChildren.toList();
+      var w = viewWidth;
+      var h = viewHeight;
 
-    // set height on flex values
-    flexibleChildren.forEach((child)
-    {
-      if (usable > 0)
+      // calculate max height from system
+      var max = calculateMaxHeight() ?? 0;
+
+      // calculate sum of flex values
+      double sum = 0;
+      flexibleChildren.forEach((child) => sum += child.flex!);
+
+      // calculate used height
+      double used = 0;
+      unsizedChildren.forEach((child) => used += (child.viewHeight ?? 0));
+
+      var xxx = unsizedChildren;
+
+      // calculate usable space
+      var usable = max - used;
+
+      // set width on % sized children
+      percentChildren.forEach((child)
       {
-        var height = (child.flex! / sum) * usable;
+        var height = usable * (child.pctHeight!/100);
         if (height != child.height)
         {
           child.height = height;
         }
-        usable = usable - height;
-      }
-    });
+      });
+
+      // set width on flexible children
+      flexibleChildren.forEach((child)
+      {
+        if (usable > 0)
+        {
+          var width = (child.flex! / sum) * usable;
+          if (width != child.width)
+          {
+            child.width = width;
+          }
+          usable = usable - width;
+        }
+      });
+    }
   }
 
   Widget getView({Key? key}) => getReactiveView(ColumnView(this));

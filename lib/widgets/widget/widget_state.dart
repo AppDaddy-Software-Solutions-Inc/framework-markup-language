@@ -48,27 +48,27 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
 
   Widget applyPadding(Widget view)
   {
-    if (model?.padding == null) return view;
+    if (model?.padding1 == null) return view;
 
     double padding = 0.0;
-    var paddings = (model?.padding != null ? 1 : 0) + (model?.padding2 != null ? 1 : 0) + (model?.padding3 != null ? 1 : 0) + (model?.padding4 != null ? 1 : 0);
+    var paddings = (model?.padding1 != null ? 1 : 0) + (model?.padding2 != null ? 1 : 0) + (model?.padding3 != null ? 1 : 0) + (model?.padding4 != null ? 1 : 0);
 
-    EdgeInsets insets = EdgeInsets.all(model?.padding ?? 0);
+    EdgeInsets insets = EdgeInsets.all(model?.padding1 ?? 0);
 
     // pad all
-    if (paddings == 1) insets = EdgeInsets.all(model?.padding ?? 0);
+    if (paddings == 1) insets = EdgeInsets.all(model?.padding1 ?? 0);
 
     // pad directions v,h
-    else if (padding == 2) insets = EdgeInsets.symmetric(vertical: model?.padding ?? 0, horizontal: model?.padding2 ?? 0);
+    else if (padding == 2) insets = EdgeInsets.symmetric(vertical: model?.padding1 ?? 0, horizontal: model?.padding2 ?? 0);
 
     // pad sides top, right, bottom
-    else if (padding == 3) insets = EdgeInsets.only(top: model?.padding ?? 0, left: model?.padding2 ?? 0, right: model?.padding2 ?? 0, bottom: model?.padding3 ?? 0);
+    else if (padding == 3) insets = EdgeInsets.only(top: model?.padding1 ?? 0, left: model?.padding2 ?? 0, right: model?.padding2 ?? 0, bottom: model?.padding3 ?? 0);
 
     // pad sides top, right, bottom
-    else if (padding == 4) insets = EdgeInsets.only(top: model?.padding ?? 0, right: model?.padding2 ?? 0, bottom: model?.padding3 ?? 0, left: model?.padding4 ?? 0);
+    else if (padding == 4) insets = EdgeInsets.only(top: model?.padding1 ?? 0, right: model?.padding2 ?? 0, bottom: model?.padding3 ?? 0, left: model?.padding4 ?? 0);
 
     // pad all
-    else insets = EdgeInsets.all(model?.padding ?? 0);
+    else insets = EdgeInsets.all(model?.padding1 ?? 0);
 
     // create view
     return Padding(padding: insets, child: view);

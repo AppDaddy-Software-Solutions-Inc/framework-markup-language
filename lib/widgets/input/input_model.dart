@@ -18,7 +18,7 @@ class InputModel extends FormFieldModel implements IFormField
   List<Suggestion> suggestions = [];
 
   // override
-  double? get padding => super.padding == null ? 4 : super.padding;
+  double? get padding => super.padding1 ?? 4;
 
   /// Capitilization sets the input to uppercase or lowercase with `upper` and `lower`
   // TODO: maybe change this to caps or uppercase = t/f?
@@ -659,7 +659,6 @@ class InputModel extends FormFieldModel implements IFormField
     super.deserialize(xml);
 
     // set properties
-    padding = Xml.get(node: xml, tag: 'padding');
     format = Xml.get(node: xml, tag: S.fromEnum('type'));
     if (format == InputFormats.xml)
     {

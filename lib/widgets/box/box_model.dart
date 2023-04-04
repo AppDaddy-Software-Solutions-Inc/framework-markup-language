@@ -168,33 +168,6 @@ class BoxModel extends LayoutWidgetModel
   }
   double get shadowy => _shadowy?.get() ?? 4;
 
-  /// Center attribute allows a simple boolean override for halign and valign both being center. halign and valign will override center if given.
-  BooleanObservable? _center;
-  set center(dynamic v) {
-    if (_center != null) {
-      _center!.set(v);
-    } else if (v != null) {
-      _center = BooleanObservable(Binding.toKey(id, 'center'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get center => _center?.get() ?? false;
-
-  /// Layout determines the widgets childrens layout. Can be `row`, `column`, `col`, or `stack`. Defaulted to `column`. If set to `stack` it can take `POSITIONED` as a child.
-  StringObservable? _layout;
-  set layout(dynamic v)
-  {
-    if (_layout != null)
-    {
-      _layout!.set(v);
-    }
-    else if (v != null)
-    {
-      _layout = StringObservable(Binding.toKey(id, 'layout'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  String? get layout => _layout?.get()?.toLowerCase().trim();
-
   BoxModel(
     WidgetModel? parent,
     String? id, {
@@ -318,71 +291,11 @@ class BoxModel extends LayoutWidgetModel
     }
   }
 
-  bool isVerticallyConstrained()
-  {
-    switch (AlignmentHelper.getLayoutType(this.layout))
-    {
-      case LayoutType.column:
-        return constraints.model.hasVerticalExpansionConstraints || constraints.system.hasVerticalExpansionConstraints;
-
-      case LayoutType.row:
-        return true;
-
-      case LayoutType.stack:
-      default:
-        return constraints.model.hasVerticalExpansionConstraints || constraints.system.hasVerticalExpansionConstraints;
-    }
-  }
-
-  bool isHorizontallyConstrained()
-  {
-    switch (AlignmentHelper.getLayoutType(this.layout))
-    {
-      case LayoutType.column:
-        return true;
-
-      case LayoutType.row:
-        return constraints.model.hasHorizontalExpansionConstraints;
-
-      case LayoutType.stack:
-      default:
-        return constraints.model.hasHorizontalExpansionConstraints || constraints.system.hasHorizontalExpansionConstraints;
-    }
-  }
-
   @override
   dispose()
   {
     // Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
-  }
-
-  /// determines if the widget has a size in its primary axis
-  bool isConstrained()
-  {
-    // get constraints
-    var system = this.constraints.system;
-    var model  = this.constraints.model;
-    var global = this.constraints.calculate();
-
-    var layout = AlignmentHelper.getLayoutType(this.layout);
-    if (layout == LayoutType.row)
-    {
-      if (expand  && model.hasHorizontalExpansionConstraints) return true;
-      if (expand  && global.maxWidth != null) return true;
-      if (expand  && system.maxWidth != null) return false;
-      if (!expand && model.hasHorizontalContractionConstraints) return true;
-    }
-
-    else if (layout == LayoutType.column)
-    {
-      if (expand  && model.hasVerticalExpansionConstraints) return true;
-      if (expand  && global.maxHeight != null) return true;
-      if (expand  && system.maxHeight == null) return false;
-      if (!expand && model.hasVerticalContractionConstraints) return true;
-    }
-
-    return false;
   }
 
   Widget getView({Key? key}) => getReactiveView(BoxView(this));

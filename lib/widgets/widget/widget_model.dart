@@ -49,7 +49,6 @@ import 'package:fml/datasources/http/delete/model.dart';
 import 'package:fml/widgets/draggable/draggable_model.dart';
 import 'package:fml/widgets/droppable/droppable_model.dart';
 import 'package:fml/widgets/editor/editor_model.dart';
-import 'package:fml/widgets/expanded/expanded_model.dart';
 import 'package:fml/widgets/filepicker/filepicker_model.dart';
 import 'package:fml/widgets/footer/footer_model.dart';
 import 'package:fml/widgets/form/form_model.dart';
@@ -428,9 +427,11 @@ class WidgetModel implements IDataSourceListener
         model = EditorModel.fromXml(parent, node);
         break;
 
-      case "expand": // Preferred CaFooterModel
-      case "expanded": // Expanded may be deprecated
-        model = ExpandedModel.fromXml(parent, node);
+        // deprecated. use row/column/box with %sizing or flex
+      case "expand":
+      case "expanded":
+        model = ColumnModel.fromXml(parent, node);
+        if (model is ColumnModel && model.flex == null) model.flex = "1";
         break;
 
       case "eval":

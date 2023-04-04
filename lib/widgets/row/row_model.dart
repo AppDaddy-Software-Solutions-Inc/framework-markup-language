@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:fml/helper/measured.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/layout_widget_model.dart';
 import 'package:fml/widgets/widget/viewable_widget_model.dart';
@@ -10,11 +11,30 @@ import 'package:fml/helper/common_helpers.dart';
 
 class RowModel extends LayoutWidgetModel
 {
+  @override
+  bool isVerticallyConstrained() => true;
+
+  @override
+  bool isHorizontallyConstrained() => constraints.model.hasHorizontalExpansionConstraints || constraints.system.hasHorizontalExpansionConstraints;
+
+  @override
+  MainAxisSize getHorizontalAxisSize() => MainAxisSize.min;//(expand && isHorizontallyConstrained()) ? MainAxisSize.max : MainAxisSize.min;
+
   // flexible children with no percent width specified
   List<ViewableWidgetModel> get flexibleChildren => viewableChildren.where((child) => ((child.flex ?? 0) > 0) && child.pctWidth == null).toList();
 
   // children sized by parents width
-  List<ViewableWidgetModel> get sizedChildren => viewableChildren.where((child) => child.pctWidth != null).toList();
+  List<ViewableWidgetModel> get percentChildren => viewableChildren.where((child) => child.pctWidth != null).toList();
+
+  // children that do not have % width or flex sizing
+  List<ViewableWidgetModel> get unsizedChildren => viewableChildren.where((child) => child.flex == null && child.pctWidth == null).toList();
+
+  // children that have a % width or flex sizing
+  List<ViewableWidgetModel> get sizedChildren => viewableChildren.where((child) => child.flex != null || child.pctWidth != null).toList();
+
+  // if there are 2 or more viewable children and any one of them is
+  // sized then we need to perform layout sizing
+  bool get performLayoutSizing => (viewableChildren.length > 1 && sizedChildren.isNotEmpty);
 
   @override
   String? get layout => 'row';
@@ -63,34 +83,23 @@ class RowModel extends LayoutWidgetModel
   @override
   List<Widget> inflate()
   {
-    // layout fixed sized children
+    // set width on all `sized children to zero
     List<Widget> views = [];
-    children?.forEach((child)
+    if (performLayoutSizing)
     {
-      if (child is ViewableWidgetModel)
-      {
-        if (child.pctWidth != null || child.flex != null)
-        {
-          child.setWidth(0);
-        }
-        views.add(child.getView());
-      }
-    });
+      List<Widget> children = [];
+      unsizedChildren.forEach((model) => children.add(model.getView()));
+      var measured = MeasuredView(UnconstrainedBox(child: Row(mainAxisSize: MainAxisSize.min, children: children)),OnWidgetSized);
+      views.add(measured);
+    }
+    else views = super.inflate();
     return views;
   }
 
-  @override
-  void onLayoutComplete(RenderBox? box, Offset? position)
+  void OnWidgetSized(Size size, {dynamic data})
   {
-    super.onLayoutComplete(box, position);
-
-    var x = flexibleChildren.toList();
-    var y = sizedChildren.toList();
-    var z = viewableChildren.toList();
-
-    // if fewer than 1 sized child no need to do anything
-    var allowSizing = (sizedChildren.length + flexibleChildren.length) <= 1;
-    if (allowSizing) return;
+    var w = size.width;
+    var h = size.height;
 
     // calculate max width from system
     var max = calculateMaxWidth() ?? 0;
@@ -99,13 +108,19 @@ class RowModel extends LayoutWidgetModel
     double sum = 0;
     flexibleChildren.forEach((child) => sum += child.flex!);
 
+    // calculate used width
+    double used = 0;
+    unsizedChildren.forEach((child) => used += (child.viewWidth ?? 0));
+
+    var xxx = unsizedChildren;
+
     // calculate usable space
-    var usable = max - (viewWidth ?? 0);
+    var usable = max - used;
 
     // set width on % sized children
-    sizedChildren.forEach((child)
+    percentChildren.forEach((child)
     {
-      var width = max * (child.pctWidth!/100);
+      var width = usable * (child.pctWidth!/100);
       if (width != child.width)
       {
         child.width = width;
@@ -125,6 +140,8 @@ class RowModel extends LayoutWidgetModel
         usable = usable - width;
       }
     });
+
+    notifyListeners(null, null);
   }
 
   Widget getView({Key? key}) => getReactiveView(RowView(this));

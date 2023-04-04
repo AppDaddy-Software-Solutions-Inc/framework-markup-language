@@ -113,9 +113,7 @@ class _SelectViewState extends WidgetState<SelectView>
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    ///////////////////
-    /* Build Options */
-    ///////////////////
+    // build options
     _buildOptions();
 
     // Check if widget is visible before wasting resources on building it
@@ -124,9 +122,7 @@ class _SelectViewState extends WidgetState<SelectView>
     // save system constraints
     onLayout(constraints);
 
-    ///////////
-    /* Busy? */
-    ///////////
+    // busy?
     var busy;
     if (widget.model.busy == true && widget.model.typeahead != true)
       busy = BusyView(BusyModel(widget.model,
@@ -281,9 +277,7 @@ class _SelectViewState extends WidgetState<SelectView>
     // display busy
     if (busy != null) view = Stack(children: [view, Positioned(top: 0, bottom: 0, left: 0, right: 0, child: busy)]);
 
-    ////////////
-    /* Sized? */
-    ////////////
+    // Sized?
     view = SizedBox(width: widget.model.width ?? 200, height: widget.model.height ?? 48, child: view);
 
     return Padding(padding: EdgeInsets.symmetric(vertical: /*widget.model.dense ? 0 : */4), child: view);

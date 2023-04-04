@@ -255,7 +255,7 @@ class ConstraintModel
     {      ViewableWidgetModel parent = (this.parent as ViewableWidgetModel);
       if (_widthPercentage == null)
       {
-        var hpad = _getHorizontalPadding(parent.padding, parent.padding2, parent.padding3, parent.padding4);
+        var hpad = _getHorizontalPadding(parent.padding1, parent.padding2, parent.padding3, parent.padding4);
         if (parent.width == null)
         {
            var w = parent.calculateMaxHeight();
@@ -289,7 +289,7 @@ class ConstraintModel
       ViewableWidgetModel? parent = (this.parent as ViewableWidgetModel);
       if (_heightPercentage == null)
       {
-        var vpad = _getVerticalPadding(parent.padding, parent.padding2, parent.padding3, parent.padding4);
+        var vpad = _getVerticalPadding(parent.padding1, parent.padding2, parent.padding3, parent.padding4);
         if (parent.height == null)
         {
           var h = parent.calculateMaxHeight();
@@ -371,14 +371,14 @@ class ConstraintModel
     if (parent is RowModel)
     {
       var model = parent as RowModel;
-      if (model.flexibleChildren.length + model.sizedChildren.length > 0) allowPercentWidthSizing = false;
+      allowPercentWidthSizing = !model.performLayoutSizing;
     }
 
     bool allowPercentHeightSizing = true;
     if (parent is ColumnModel)
     {
       var model = parent as ColumnModel;
-      if (model.flexibleChildren.length + model.sizedChildren.length > 0) allowPercentHeightSizing = false;
+      allowPercentHeightSizing = !model.performLayoutSizing;
     }
 
     // adjust the width if defined as a percentage

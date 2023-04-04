@@ -1,13 +1,11 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:ui';
-import 'package:collection/collection.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/column/column_view.dart';
-import 'package:fml/widgets/positioned/positioned_view.dart';
 import 'package:fml/widgets/row/row_view.dart';
-import 'package:fml/widgets/widget/alignment.dart';
+import 'package:fml/widgets/stack/stack_view.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
@@ -80,72 +78,15 @@ List<Color> getGradientColors(c1, c2, c3, c4) {
 
 class _BoxViewState extends WidgetState<BoxView>
 {
-  MainAxisSize? _getHorizontalAxisSize()
-  {
-    switch (AlignmentHelper.getLayoutType(widget.model.layout))
-    {
-      case LayoutType.column:
-        return null;
-
-      // expand only if horizontally constrained
-      case LayoutType.row:
-        return (widget.model.expand && widget.model.isHorizontallyConstrained()) ? MainAxisSize.max : MainAxisSize.min;
-
-      // expand only if horizontally constrained
-      case LayoutType.stack:
-      default:
-        return (widget.model.expand && widget.model.isHorizontallyConstrained()) ? MainAxisSize.max : MainAxisSize.min;
-    }
-  }
-
-  MainAxisSize? _getVerticalAxisSize()
-  {
-    switch (AlignmentHelper.getLayoutType(widget.model.layout))
-    {
-      // expand only if vertically constrained
-      case LayoutType.column:
-        return (widget.model.expand && widget.model.isVerticallyConstrained()) ? MainAxisSize.max : MainAxisSize.min;
-
-      case LayoutType.row:
-        return null;
-
-      // expand only if vertically constrained
-      case LayoutType.stack:
-      default:
-        return (widget.model.expand && widget.model.isVerticallyConstrained()) ? MainAxisSize.max : MainAxisSize.min;
-    }
-  }
-
-  Widget _layoutChildren(WidgetAlignment alignment, MainAxisSize? verticalAxisSize, MainAxisSize? horizontalAxisSize)
+  Widget _layoutChildren()
   {
     switch (AlignmentHelper.getLayoutType(widget.model.layout))
     {
       // stack widget
       case LayoutType.stack:
 
-        // get model constraints
-        var constraints = widget.model.constraints.model;
-
-        // build the child views
-        List<Widget> children = widget.model.inflate();
-        if (children.isEmpty) children.add(Container(width: 0, height: 0));
-
-        // The stack sizes itself to contain all the non-positioned children,
-        // which are positioned according to alignment.
-        var hasNonPositionedChildren = children.firstWhereOrNull((child) => child is! PositionedView) != null;
-
-        // calculate the box width
-        double? width = (horizontalAxisSize == MainAxisSize.min) ? (constraints.width ?? constraints.minWidth  ?? (hasNonPositionedChildren ? null : 50))  : double.infinity;
-
-        // calculate the box height
-        double? height = (verticalAxisSize == MainAxisSize.min) ? (constraints.height ?? constraints.minHeight ?? (hasNonPositionedChildren ? null : 50)) : double.infinity;
-
-        // a sized box where width is double.infinity and height is double.infinity
-        // is the same as using SizedBox.expand()
-        children.add(SizedBox(width: width, height: height));
-
         // create the stack
-        return Stack(children: children, alignment: alignment.aligned);
+        return StackView(widget.model);
 
       // row widget
       case LayoutType.row:
@@ -317,8 +258,12 @@ class _BoxViewState extends WidgetState<BoxView>
         ]);
   }
 
-  Widget _applyConstraints(Widget view, MainAxisSize? vertAxisSize, MainAxisSize? horzAxisSize)
+  Widget _applyConstraints(Widget view)
   {
+    // determine axis sizes
+    MainAxisSize? vertAxisSize = widget.model.getVerticalAxisSize();
+    MainAxisSize? horzAxisSize = widget.model.getHorizontalAxisSize();
+
     bool verticalAxisExpanding = (vertAxisSize == MainAxisSize.max);
     bool verticalAxisShrinking = (vertAxisSize == MainAxisSize.min);
 
@@ -385,12 +330,8 @@ class _BoxViewState extends WidgetState<BoxView>
     // this must go after the children are determined
     var alignment = AlignmentHelper.alignWidgetAxis(AlignmentHelper.getLayoutType(widget.model.layout), widget.model.center, AlignmentHelper.getHorizontalAlignmentType(widget.model.halign), AlignmentHelper.getVerticalAlignmentType(widget.model.valign));
 
-    // determine axis sizes
-    MainAxisSize? vertAxisSize = _getVerticalAxisSize();
-    MainAxisSize? horzAxisSize = _getHorizontalAxisSize();
-
     // layout the children
-    Widget? child = _layoutChildren(alignment, vertAxisSize, horzAxisSize);
+    Widget? child = _layoutChildren();
 
     // build the border
     Border? border = _getBorder();
@@ -424,7 +365,7 @@ class _BoxViewState extends WidgetState<BoxView>
 
     // apply constraints to allow the box to
     // shrink/expand properly
-    view = _applyConstraints(view, vertAxisSize, horzAxisSize);
+    view = _applyConstraints(view);
 
     return view;
   }

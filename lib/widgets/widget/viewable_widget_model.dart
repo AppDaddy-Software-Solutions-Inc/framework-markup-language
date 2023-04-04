@@ -43,11 +43,15 @@ class ViewableWidgetModel extends WidgetModel
   // width
   double? get width  => _constraints.width;
   set width(dynamic v) => _constraints.width = v;
+
+  // sets the width without nullifying the % value
   setWidth(double? v) => _constraints.setWidth(v);
 
   // height
   double? get height => _constraints.height;
   set height(dynamic v) => _constraints.height = v;
+
+  // sets the height without nullifying the % value
   setHeight(double? v) => _constraints.setHeight(v);
 
   // %width
@@ -261,13 +265,13 @@ class ViewableWidgetModel extends WidgetModel
   }
   double? get visibleWidth => _visibleWidth?.get();
 
-  set _paddings(dynamic v)
+  set padding(dynamic v)
   {
     // build PADDINGS array
     if (v is String)
     {
       var s = v.split(',');
-      if (s.length > 0) padding  = s[0];
+      if (s.length > 0) padding1 = s[0];
       if (s.length > 1) padding2 = s[1];
       if (s.length > 2) padding3 = s[2];
       if (s.length > 3) padding4 = s[3];
@@ -275,13 +279,13 @@ class ViewableWidgetModel extends WidgetModel
   }
 
   // padding
-  DoubleObservable? _padding;
-  set padding(dynamic v)
+  DoubleObservable? _padding1;
+  set padding1(dynamic v)
   {
-    if (_padding != null) _padding!.set(v);
-    else if (v != null) _padding = DoubleObservable(Binding.toKey(id, 'pad'), v, scope: scope, listener: onPropertyChange);
+    if (_padding1 != null) _padding1!.set(v);
+    else if (v != null) _padding1 = DoubleObservable(Binding.toKey(id, 'pad'), v, scope: scope, listener: onPropertyChange);
   }
-  double? get padding => _padding?.get();
+  double? get padding1 => _padding1?.get();
 
   // padding 2
   DoubleObservable? _padding2;
@@ -396,8 +400,10 @@ class ViewableWidgetModel extends WidgetModel
         WidgetModel.isBound(this, Binding.toKey(id, 'visibleheight')) ||
         WidgetModel.isBound(this, Binding.toKey(id, 'visiblewidth'));
 
-    // pad is always defined as an attribute. PAD as an element name is the PADDING widget
-    _paddings = Xml.attribute(node: xml, tag: 'pad');
+    // set padding. can be comma seperated top,left,bottom,right
+    var padding = Xml.attribute(node: xml, tag: 'pad');
+    if (padding == null) padding  = Xml.attribute(node: xml, tag: 'padding');
+    this.padding = padding;
 
     // tip
     List<TooltipModel> tips = findChildrenOfExactType(TooltipModel).cast<TooltipModel>();
@@ -521,7 +527,7 @@ class ViewableWidgetModel extends WidgetModel
     if (tipModel != null) view = TooltipView(tipModel!, view);
 
     // wrap animations. Only animate if visible and dimesions are greater than zero
-    if (this.animations != null && visible != false && ((width ?? 0) > 0) && ((height ?? 0) > 0))
+    if (this.animations != null)
     {
       var animations = this.animations!.reversed;
       animations.forEach((model) => view = model.getAnimatedView(view));

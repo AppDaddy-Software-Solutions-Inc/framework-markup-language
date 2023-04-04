@@ -542,7 +542,7 @@ class ViewableWidgetModel extends WidgetModel
     return views;
   }
 
-  void onLayout(BoxConstraints constraints) => _constraints.setLayoutConstraints(constraints);
+  void setLayoutConstraints(BoxConstraints constraints) => _constraints.setLayoutConstraints(constraints);
 
   void onLayoutComplete(RenderBox? box, Offset? position)
   {

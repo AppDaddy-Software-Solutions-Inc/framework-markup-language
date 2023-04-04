@@ -458,7 +458,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     if (!widget.model.initialized) return Scaffold(body: Center(child: BusyView(BusyModel(null, visible: true))));
 
     // set the system constraints
-    widget.model.onLayout(constraints);
+    widget.model.setLayoutConstraints(constraints);
 
     Log().debug('Build called on framework view => <FML name=${widget.model.templateName} url="${widget.model.url}"/>');
 

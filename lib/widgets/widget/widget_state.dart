@@ -163,7 +163,7 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
 
   void onLayout(BoxConstraints constraints)
   {
-    model?.onLayout(constraints);
+    model?.setLayoutConstraints(constraints);
     WidgetsBinding.instance.addPostFrameCallback((_)
     {
       var box = context.findRenderObject() as RenderBox?;

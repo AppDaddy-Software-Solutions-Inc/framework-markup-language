@@ -47,17 +47,7 @@ class AlarmModel extends WidgetModel
 
   bool? get error => seterror?.get();
 
-  /// The boolean to determine if the alarm marks the field as mandatory if it is alarming. True by default
-  BooleanObservable? _mandatory;
-  set mandatory(dynamic v) {
-    if (_mandatory != null) {
-      _mandatory?.set(v);
-    } else if (v != null) {
-      _mandatory = BooleanObservable(Binding.toKey(id, 'mandatory'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool? get mandatory => _mandatory?.get() ?? true;
+  // TODO: implement mandatory to allow for forms to pass with alarms
 
   /// The event string to execute when an alarm is triggered.
   StringObservable? _onalarm;
@@ -83,7 +73,7 @@ class AlarmModel extends WidgetModel
   }
   String? get ondismissed => _ondismissed?.get();
 
-  /// 'Type' in FML, The type of alarm trigger state. Can be validate (which will trigger on complete() or validate() of the form or the field, focus (when focus is lost), debounce (the built in debounce timer), or all.
+  /// 'Type' in FML, The type of alarm trigger state. Can be validate (which will trigger on complete(), save() or validate() of the form or the field, or all.
   StringObservable? _alarmtrigger;
   set alarmtrigger(dynamic v) {
     if (_alarmtrigger != null) {
@@ -106,7 +96,6 @@ class AlarmModel extends WidgetModel
       dynamic onalarm,
       dynamic ondismissed,
       dynamic alarmtrigger,
-      dynamic mandatory,
   })
       : super(parent, id) {
     if (value     != null) this.value = value;
@@ -115,7 +104,6 @@ class AlarmModel extends WidgetModel
     if (onalarm     != null) this.onalarm = onalarm;
     if (ondismissed     != null) this.ondismissed = ondismissed;
     if (alarmtrigger     != null) this.alarmtrigger = alarmtrigger;
-    if (mandatory     != null) this.mandatory = mandatory;
   }
 
   static AlarmModel? fromXml(WidgetModel parent, XmlElement xml)
@@ -146,7 +134,6 @@ class AlarmModel extends WidgetModel
     ondismissed = Xml.get(node: xml, tag: 'ondismissed');
     //override 'alarmtrigger' with 'type' as the xml attribute name;
     alarmtrigger = Xml.get(node: xml, tag: 'type');
-    mandatory = Xml.get(node: xml, tag: 'mandatory');
   }
 
   void executeAlarmString(bool isAlarming){

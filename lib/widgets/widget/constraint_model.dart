@@ -99,10 +99,6 @@ class ConstraintModel
   // width
   double? _widthPercentage;
   double? get pctWidth => _widthPercentage;
-  setWidth(double? v) => _width?.set(v, notify: false);
-  setMinWidth(double? v) => _minWidth?.set(v, notify: false);
-  setMaxWidth(double? v) => _maxWidth?.set(v, notify: false);
-
   DoubleObservable? _width;
   set width(dynamic v)
   {
@@ -129,11 +125,6 @@ class ConstraintModel
   // height
   double? _heightPercentage;
   double? get pctHeight => _heightPercentage;
-
-  setHeight(double? v) => _height?.set(v, notify: false);
-  setMinHeight(double? v) => _minHeight?.set(v, notify: false);
-  setMaxHeight(double? v) => _maxHeight?.set(v, notify: false);
-
   DoubleObservable? _height;
   set height(dynamic v)
   {
@@ -396,18 +387,7 @@ class ConstraintModel
       }
 
       // set the width
-      setWidth(width);
-    }
-
-    // adjust the min/max widths if defined as percentages
-    if (_minWidthPercentage != null && allowPercentWidthSizing)
-    {
-      setMinWidth(_pctWidth(_minWidthPercentage!));
-    }
-
-    if (_maxWidthPercentage != null && allowPercentWidthSizing)
-    {
-      setMaxWidth(_pctWidth(_maxWidthPercentage!));
+      _maxWidth?.set(width);
     }
 
     // adjust the height if defined as a percentage
@@ -425,18 +405,7 @@ class ConstraintModel
       }
 
       // set the height
-      setHeight(height);
-    }
-
-    // adjust the min/max heights
-    if (_minHeightPercentage != null && allowPercentHeightSizing)
-    {
-      setMinHeight(_pctHeight(_minHeightPercentage!));
-    }
-
-    if (_maxHeightPercentage != null && allowPercentHeightSizing)
-    {
-      setMaxHeight(_pctHeight(_maxHeightPercentage!));
+      _maxHeight?.set(height);
     }
   }
 }

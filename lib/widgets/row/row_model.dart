@@ -83,7 +83,7 @@ class RowModel extends LayoutWidgetModel
   @override
   List<Widget> inflate()
   {
-    // set width on all `sized children to zero
+    // set width on all sized children to zero
     List<Widget> views = [];
     if (performLayoutSizing)
     {

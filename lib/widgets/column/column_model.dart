@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:fml/helper/measured.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/layout_widget_model.dart';
 import 'package:fml/widgets/widget/viewable_widget_model.dart';
@@ -73,63 +74,68 @@ class ColumnModel extends LayoutWidgetModel
   @override
   List<Widget> inflate()
   {
-    // set height on all sized children to zero
-    if (performLayoutSizing) sizedChildren.forEach((child) => child.setHeight(0));
-    return super.inflate();
-  }
-
-  @override
-  void onLayoutComplete(RenderBox? box, Offset? position)
-  {
-    super.onLayoutComplete(box, position);
+    // set width on all sized children to zero
+    List<Widget> views = [];
     if (performLayoutSizing)
     {
-      var x = flexibleChildren.toList();
-      var y = percentChildren.toList();
-      var z = viewableChildren.toList();
-      var w = viewWidth;
-      var h = viewHeight;
-
-      // calculate max height from system
-      var max = calculateMaxHeight() ?? 0;
-
-      // calculate sum of flex values
-      double sum = 0;
-      flexibleChildren.forEach((child) => sum += child.flex!);
-
-      // calculate used height
-      double used = 0;
-      unsizedChildren.forEach((child) => used += (child.viewHeight ?? 0));
-
-      var xxx = unsizedChildren;
-
-      // calculate usable space
-      var usable = max - used;
-
-      // set width on % sized children
-      percentChildren.forEach((child)
-      {
-        var height = usable * (child.pctHeight!/100);
-        if (height != child.height)
-        {
-          child.height = height;
-        }
-      });
-
-      // set width on flexible children
-      flexibleChildren.forEach((child)
-      {
-        if (usable > 0)
-        {
-          var width = (child.flex! / sum) * usable;
-          if (width != child.width)
-          {
-            child.width = width;
-          }
-          usable = usable - width;
-        }
-      });
+      List<Widget> children = [];
+      unsizedChildren.forEach((model) => children.add(model.getView()));
+      var measured = MeasuredView(UnconstrainedBox(child: Row(mainAxisSize: MainAxisSize.min, children: children)),OnWidgetSized);
+      views.add(measured);
     }
+    else views = super.inflate();
+    return views;
+  }
+
+  void OnWidgetSized(Size size, {dynamic data})
+  {
+    var x = flexibleChildren.toList();
+    var y = percentChildren.toList();
+    var z = viewableChildren.toList();
+    var w = viewWidth;
+    var h = viewHeight;
+
+    // calculate max height from system
+    var max = calculateMaxHeight() ?? 0;
+
+    // calculate sum of flex values
+    double sum = 0;
+    flexibleChildren.forEach((child) => sum += child.flex!);
+
+    // calculate used height
+    double used = 0;
+    unsizedChildren.forEach((child) => used += (child.viewHeight ?? 0));
+
+    var xxx = unsizedChildren;
+
+    // calculate usable space
+    var usable = max - used;
+
+    // set width on % sized children
+    percentChildren.forEach((child)
+    {
+      var height = usable * (child.pctHeight!/100);
+      if (height != child.height)
+      {
+        child.height = height;
+      }
+    });
+
+    // set width on flexible children
+    flexibleChildren.forEach((child)
+    {
+      if (usable > 0)
+      {
+        var width = (child.flex! / sum) * usable;
+        if (width != child.width)
+        {
+          child.width = width;
+        }
+        usable = usable - width;
+      }
+    });
+
+    notifyListeners(null, null);
   }
 
   Widget getView({Key? key}) => getReactiveView(ColumnView(this));

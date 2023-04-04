@@ -44,15 +44,9 @@ class ViewableWidgetModel extends WidgetModel
   double? get width  => _constraints.width;
   set width(dynamic v) => _constraints.width = v;
 
-  // sets the width without nullifying the % value
-  setWidth(double? v) => _constraints.setWidth(v);
-
   // height
   double? get height => _constraints.height;
   set height(dynamic v) => _constraints.height = v;
-
-  // sets the height without nullifying the % value
-  setHeight(double? v) => _constraints.setHeight(v);
 
   // %width
   double? get pctWidth => _constraints.pctWidth;

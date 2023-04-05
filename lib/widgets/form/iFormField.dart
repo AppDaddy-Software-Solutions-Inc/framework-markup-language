@@ -68,6 +68,9 @@ abstract class IFormField
   String? get alarm;
   bool? get alarming;
 
+  bool? get hasDefaulted;
+  set hasDefaulted(dynamic v);
+
   bool? get validationHasHit;
   set validationHasHit(dynamic v);
 

@@ -18,6 +18,7 @@ class FormFieldModel extends DecoratedWidgetModel
 
   String didSetAlarm = '';
 
+
   // default value
   StringObservable? _defaultValue;
   set defaultValue(dynamic v)
@@ -208,6 +209,18 @@ class FormFieldModel extends DecoratedWidgetModel
   }
   bool get validationHasHit => _validationHasHit?.get() ?? false;
 
+  /// True if there is an alarm sounding on a [iFormField]
+  BooleanObservable? _hasDefaulted;
+  set hasDefaulted(dynamic v) {
+    if (_hasDefaulted != null) {
+      _hasDefaulted!.set(v);
+    } else if (v != null) {
+      _hasDefaulted = BooleanObservable(Binding.toKey(id, 'hasDefaulted'), v,
+          scope: scope);
+    }
+  }
+  bool get hasDefaulted => _hasDefaulted?.get() ?? false;
+
 
   // field offset
   Offset? offset;
@@ -217,11 +230,13 @@ class FormFieldModel extends DecoratedWidgetModel
       String? id, {
       dynamic error,
       dynamic errortext,
-      dynamic validationHasHit
+      dynamic validationHasHit,
+      dynamic hasDefaulted
       }) : super(parent, id){
     if (error         != null) this.error = error;
     if (errortext     != null) this.errortext = errortext;
     this.validationHasHit = false;
+    this.hasDefaulted = false;
   }
 
   @override

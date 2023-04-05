@@ -141,6 +141,8 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
   // prototype
   String? prototype;
 
+
+
   // options
   final List<OptionModel> options = [];
 
@@ -329,6 +331,9 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
     typeahead = Xml.get(node: xml, tag: 'typeahead');
     matchtype = Xml.get(node: xml, tag: 'matchtype') ?? Xml.get(node: xml, tag: 'searchtype');
 
+    //check to see if value has been specified so the form does not fill it out.
+    hasDefaulted = (Xml.get(node: xml, tag: 'value') == null);
+
     String? empty = Xml.get(node: xml, tag: 'addempty');
     if (S.isBool(empty)) addempty = S.toBool(empty);
 
@@ -408,13 +413,22 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
     // value is not in data?
     if (!_containsOption())
     {
-      var value = options.isNotEmpty ? options[0].value : null;
+      dynamic value;
+
+      if(options.isNotEmpty){
+        value = options[0].value;
+      }
 
       // set to first entry if no datasource
       if (datasource == null)
       {
+
         // if we set value to itself it will cause an infinite loop
-        if (this.value != value) this.value = value;
+        if (this.value != value)
+        {
+        this.value = value;
+        }
+
       }
 
       // set to first entry after data has been returned
@@ -422,18 +436,19 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
       {
         // if we set value to itself it will cause an infinite loop
         if (this.value != value) this.value = value;
+        //tell the form that I have set my own value outside of a user choice;
+
       }
     }
 
     dynamic data;
-    options.forEach((option)
-    {
+    for (var option in options) {
       if (option.value == value)
       {
         data = option.data;
         this.label = option.labelValue;
       }
-    });
+    }
     this.data = data;
   }
 

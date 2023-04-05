@@ -338,7 +338,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     fields.addAll(getFields(children));
 
     // fill all empty fields with the datasource if specified
-    if(data != null) _fillEmptyFields();
+    _fillEmptyFields();
 
     // get forms
     forms.addAll(getForms(children));
@@ -878,12 +878,13 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
         }
 
         // if the data is null do not fill fields
-      if (source?.data == null) ok = false;
+      if (source?.data == null || source == null) ok = false;
 
       if (ok) {
         for (var field in fields) {
-          // check to see if the field is not assigned a value, is not touched, and is not answered
-          if (!field.answered && field.value == null && field.touched == false) {
+
+          // check to see if the field is not assigned a by the developer, even if that value is null, and is not answered.
+          if ((S.isNullOrEmpty(field.value) || field.hasDefaulted == true) && field.touched == false) {
           //create the binding string based on the fields ID.
            String binding = '${field.id}';
            //assign the signature of the source to the field

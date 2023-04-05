@@ -106,7 +106,10 @@ class _SelectViewState extends WidgetState<SelectView>
         if (model.value == option.value) _selected = option;
         _list.add(o);
       }
-      if ((_selected == null) && (_list.isNotEmpty)) _selected = _list[0].value;
+      if ((_selected == null) && (_list.isNotEmpty)) {
+        _selected = _list[0].value;
+        widget.model.hasDefaulted = true;
+      }
     }
   }
 

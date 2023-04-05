@@ -21,9 +21,6 @@ class InputModel extends FormFieldModel implements IFormField, IViewableWidget
 {
   List<Suggestion> suggestions = [];
 
-  FormModel? _form;
-  set form(FormModel form) => _form = form;
-
   // override
   double get padding => super.paddings == 0 ? 4 : super.padding;
 

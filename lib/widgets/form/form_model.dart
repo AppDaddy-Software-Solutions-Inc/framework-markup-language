@@ -337,8 +337,8 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     // get fields
     fields.addAll(getFields(children));
 
-    // fill all empty fields with the datasource
-    _fillEmptyFields();
+    // fill all empty fields with the datasource if specified
+    if(data != null) _fillEmptyFields();
 
     // get forms
     forms.addAll(getForms(children));
@@ -867,24 +867,31 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     //display busy
     busy = true;
     bool ok = false;
+
     if ((scope != null) && (data != null)) {
 
       //for a single datasource grab the scope
         IDataSource? source = scope!.getDataSource(data);
         if (source != null) {
+          // start the datasource
           ok = await source.start();
-
         }
-      if (source?.data == null || source == null) ok = false;
+
+        // if the data is null do not fill fields
+      if (source?.data == null) ok = false;
+
       if (ok) {
         for (var field in fields) {
-          if (!field.answered && field.value == null) {
-            //assign the signature of the source to the field
-           String binding = '$data.data.${source?.root}.${field.id}';
-            field.value = Data.fromDotNotation(source!.data!, DotNotation.fromString(binding)!).toString();
+          // check to see if the field is not assigned a value, is not touched, and is not answered
+          if (!field.answered && field.value == null && field.touched == false) {
+          //create the binding string based on the fields ID.
+           String binding = '${field.id}';
+           //assign the signature of the source to the field
+            field.value = Data.fromDotNotation(source!.data!, DotNotation.fromString(binding)!)?.elementAt(0).toString();
           }
         }
       }
+      //Set busy to false
       busy = false;
     }
 

@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
+import 'package:fml/helper/alignment.dart';
 import 'package:fml/helper/string.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observable.dart';
 import 'package:fml/observable/observables/double.dart';
 import 'package:fml/observable/scope.dart';
-import 'package:fml/widgets/column/column_model.dart';
-import 'package:fml/widgets/row/row_model.dart';
+import 'package:fml/widgets/widget/layout_widget_model.dart';
 import 'package:fml/widgets/widget/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'constraint.dart';
@@ -98,7 +98,7 @@ class ConstraintModel
   /// 
   // width
   double? _widthPercentage;
-  double? get pctWidth => _widthPercentage;
+  double? get widthPercentage => _widthPercentage;
   DoubleObservable? _width;
   set width(dynamic v)
   {
@@ -121,10 +121,16 @@ class ConstraintModel
     }
   }
   double? get width => _width?.get();
+  setWidth(double? v, {bool notify = false})
+  {
+    if (_width == null) _width = DoubleObservable(Binding.toKey(id, 'width'), null, scope: scope, listener: listener);
+    _width?.set(v, notify: notify);
+  }
+
 
   // height
   double? _heightPercentage;
-  double? get pctHeight => _heightPercentage;
+  double? get heightPercentage => _heightPercentage;
   DoubleObservable? _height;
   set height(dynamic v)
   {
@@ -147,6 +153,11 @@ class ConstraintModel
     }
   }
   double? get height => _height?.get();
+  setHeight(double? v, {bool notify = false})
+  {
+    if (_height == null) _height = DoubleObservable(Binding.toKey(id, 'height'), null, scope: scope, listener: listener);
+    _height?.set(v, notify:notify);
+  }
 
   // min width
   double? _minWidthPercentage;
@@ -243,7 +254,8 @@ class ConstraintModel
     double? v;
     if (system.maxWidth != null) v = system.maxWidth;
     if (v == null && this.parent is ViewableWidgetModel)
-    {      ViewableWidgetModel parent = (this.parent as ViewableWidgetModel);
+    {
+      ViewableWidgetModel parent = (this.parent as ViewableWidgetModel);
       if (_widthPercentage == null)
       {
         var hpad = _getHorizontalPadding(parent.padding1, parent.padding2, parent.padding3, parent.padding4);
@@ -293,19 +305,19 @@ class ConstraintModel
     return v;
   }
 
-  double? _pctWidth(double percent)
+  double? _widthAsPercentage(double percent)
   {
     double? pct;
     double? max = _calculateMaxWidth();
-    if (max != null) pct = max * (percent/100.0);
+    if (max != null) pct = (max * (percent/100.0)).toPrecision(0);
     return pct;
   }
 
-  double? _pctHeight(double percent)
+  double? _heightAsPercentage(double percent)
   {
     double? pct;
     double? max = _calculateMaxHeight();
-    if (max != null) pct = max * (percent/100.0);
+    if (max != null) pct = (max * (percent/100.0)).toPrecision(0);
     return pct;
   }
   
@@ -358,26 +370,17 @@ class ConstraintModel
     system.minHeight = constraints.minHeight;
     system.maxHeight = constraints.maxHeight;
 
-    bool allowPercentWidthSizing = true;
-    if (parent is RowModel)
-    {
-      var model = parent as RowModel;
-      allowPercentWidthSizing = !model.performLayoutSizing;
-    }
+    LayoutWidgetModel? layoutModel = parent is LayoutWidgetModel ? (parent as LayoutWidgetModel) : null;
 
-    bool allowPercentHeightSizing = true;
-    if (parent is ColumnModel)
-    {
-      var model = parent as ColumnModel;
-      allowPercentHeightSizing = !model.performLayoutSizing;
-    }
+    LayoutType? layoutType = LayoutType.none;
+    if (layoutModel != null) layoutType = AlignmentHelper.getLayoutType(layoutModel.layout);
 
     // adjust the width if defined as a percentage
     if (width != null && width! >= 100000) _widthPercentage = (width!/1000000);
-    if (_widthPercentage != null && allowPercentWidthSizing)
+    if (_widthPercentage != null)
     {
       // calculate the width
-      double? width = _pctWidth(_widthPercentage!);
+      double? width = _widthAsPercentage(_widthPercentage!);
 
       // adjust min and max widths
       if (width != null)
@@ -387,15 +390,15 @@ class ConstraintModel
       }
 
       // set the width
-      _maxWidth?.set(width);
+      if (layoutType != LayoutType.row) setWidth(width);
     }
 
     // adjust the height if defined as a percentage
     if (height != null && height! >= 100000) _heightPercentage = (height!/1000000);
-    if (_heightPercentage != null && allowPercentHeightSizing)
+    if (_heightPercentage != null)
     {
       // calculate the height
-      double? height = _pctHeight(_heightPercentage!);
+      double? height = _heightAsPercentage(_heightPercentage!);
 
       // adjust min and max heights
       if (height != null)
@@ -405,7 +408,7 @@ class ConstraintModel
       }
 
       // set the height
-      _maxHeight?.set(height);
+      if (layoutType != LayoutType.column) setHeight(height);
     }
   }
 }

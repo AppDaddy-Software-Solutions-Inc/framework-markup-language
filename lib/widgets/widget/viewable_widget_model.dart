@@ -28,6 +28,8 @@ class ViewableWidgetModel extends WidgetModel
   double? calculateMaxWidth()  => _constraints.calculateMaxWidth();
   double? calculateMinHeight() => _constraints.calculateMinHeight();
   double? calculateMaxHeight() => _constraints.calculateMaxHeight();
+  setWidth(double? v, {bool notify = false}) => _constraints.setWidth(v, notify: notify);
+  setHeight(double? v, {bool notify = false}) => _constraints.setHeight(v, notify: notify);
 
   // viewable children
   List<ViewableWidgetModel> get viewableChildren
@@ -49,10 +51,10 @@ class ViewableWidgetModel extends WidgetModel
   set height(dynamic v) => _constraints.height = v;
 
   // %width
-  double? get pctWidth => _constraints.pctWidth;
+  double? get pctWidth => _constraints.widthPercentage;
 
   // %height
-  double? get pctHeight => _constraints.pctHeight;
+  double? get pctHeight => _constraints.heightPercentage;
 
   // min width
   @protected
@@ -75,52 +77,52 @@ class ViewableWidgetModel extends WidgetModel
   /// VIEW LAYOUT
 
   // view width
-  double? _viewWidth;
-  DoubleObservable? _viewWidthObservable;
-  set viewWidth(double? v)
+  int? _viewWidth;
+  IntegerObservable? viewWidthObservable;
+  set viewWidth(int? v)
   {
     // we handle this slightly different for performance reasons
     // The observable is only created in deserialize if its bound
-    if (_viewWidthObservable != null) _viewWidthObservable!.set(v);
+    if (viewWidthObservable != null) viewWidthObservable!.set(v);
     _viewWidth = v;
   }
-  double? get viewWidth => _viewWidth;
+  int? get viewWidth => _viewWidth;
 
   // view height
-  double? _viewHeight;
-  DoubleObservable? _viewHeightObservable;
-  set viewHeight(double? v)
+  int? _viewHeight;
+  IntegerObservable? viewHeightObservable;
+  set viewHeight(int? v)
   {
     // we handle this slightly different for performance reasons
     // The observable is only crted in deserialize if its bound
-    if (_viewHeightObservable != null) _viewHeightObservable!.set(v);
+    if (viewHeightObservable != null) viewHeightObservable!.set(v);
     _viewHeight = v;
   }
-  double? get viewHeight => _viewHeight;
+  int? get viewHeight => _viewHeight;
 
   // view global X position
-  double? _viewX;
-  DoubleObservable? _viewXObservable;
-  set viewX(double? v)
+  int? _viewX;
+  IntegerObservable? _viewXObservable;
+  set viewX(int? v)
   {
     // we handle this slightly different for performance reasons
     // The observable is only crted in deserialize if its bound
     if (_viewXObservable != null) _viewXObservable!.set(v);
     _viewX = v;
   }
-  double? get viewX => _viewX;
+  int? get viewX => _viewX;
 
   // view global Y position
-  double? _viewY;
-  DoubleObservable? _viewYObservable;
-  set viewY(double? v)
+  int? _viewY;
+  IntegerObservable? _viewYObservable;
+  set viewY(int? v)
   {
     // we handle this slightly different for performance reasons
     // The observable is only crted in deserialize if its bound
     if (_viewYObservable != null) _viewYObservable!.set(v);
     _viewY = v;
   }
-  double? get viewY => _viewY;
+  int? get viewY => _viewY;
   
   /// alignment and layout attributes
   ///
@@ -377,13 +379,13 @@ class ViewableWidgetModel extends WidgetModel
 
     // view sizing and position
     // these are treated differently for efficiency reasons
-    // we only crteate the observvable if its bound to in the template
+    // we only create the observable if its bound to in the template
     // otherwise we just store the value in a simple double variable
     String? key;
-    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewwidth')))  _viewWidthObservable  = DoubleObservable(key, null, scope: scope);
-    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewheight'))) _viewHeightObservable = DoubleObservable(key, null, scope: scope);
-    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewx')))      _viewXObservable      = DoubleObservable(key, null, scope: scope);
-    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewy')))      _viewYObservable      = DoubleObservable(key, null, scope: scope);
+    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewwidth')))  viewWidthObservable  = IntegerObservable(key, null, scope: scope);
+    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewheight'))) viewHeightObservable = IntegerObservable(key, null, scope: scope);
+    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewx')))      _viewXObservable     = IntegerObservable(key, null, scope: scope);
+    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewy')))      _viewYObservable     = IntegerObservable(key, null, scope: scope);
     
     // view requires a VisibilityDetector if either onstage or offstage is set or
     // someone is bound to my visibility
@@ -540,10 +542,10 @@ class ViewableWidgetModel extends WidgetModel
 
   void onLayoutComplete(RenderBox? box, Offset? position)
   {
-    viewWidth  = box?.size.width;
-    viewHeight = box?.size.height;
-    viewX      = position?.dx;
-    viewY      = position?.dy;
+    viewWidth  = box?.size.width.round();
+    viewHeight = box?.size.height.round();
+    viewX      = position?.dx.round();
+    viewY      = position?.dy.round();
   }
 
   Widget getView() => throw("getView() Not Implemented");

@@ -22,6 +22,12 @@ import 'package:xml/xml.dart';
 /// String myString = ":burrito: or :taco:?"
 /// print(S.parseEmojis(myString)); // outputs: 🌯 or 🌮
 /// ```
+///
+
+extension Ex on double {
+  double toPrecision(int n) => double.parse(toStringAsFixed(n));
+}
+
 class S
 {
   static bool _mimeLibraryLoaded = false;

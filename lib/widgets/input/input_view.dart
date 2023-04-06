@@ -581,7 +581,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
       ));
     }
 
-    var padding = widget.model.padtop ?? 0;
+    double pad = (widget.model.dense ? 0 : 4);
 
     ///////////////////////
     /* Custom Formatters */
@@ -637,18 +637,8 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
               : enabledColor ?? Colors.transparent,
           filled: true,
           contentPadding: ((widget.model.dense == true)
-              ? EdgeInsets.only(
-            left: padding,
-            top: padding + 10,
-            right: padding,
-            bottom: padding,
-          )
-              : EdgeInsets.only(
-            left: padding + 10,
-            top: padding + 4,
-            right: padding,
-            bottom: padding + 4,
-          )),
+              ? EdgeInsets.only(left: pad, top: pad + 10, right: pad, bottom: pad)
+              : EdgeInsets.only(left: pad + 10, top: pad + 4, right: pad, bottom: pad + 4)),
           alignLabelWithHint: true,
           labelText: widget.model.dense ? null : hint,
           labelStyle: TextStyle(

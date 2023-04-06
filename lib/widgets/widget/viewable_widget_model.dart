@@ -438,7 +438,8 @@ class ViewableWidgetModel extends WidgetModel
 
     // set padding. can be comma seperated top,left,bottom,right
     var padding = Xml.attribute(node: xml, tag: 'pad');
-    if (padding == null) padding  = Xml.attribute(node: xml, tag: 'padding');
+    if (padding == null) padding = Xml.attribute(node: xml, tag: 'padding');
+    if (padding == null) padding = Xml.attribute(node: xml, tag: 'margin');
     this.padding = padding;
 
     // tip

@@ -182,6 +182,7 @@ class Data with ListMixin<dynamic>
             break;
           }
           _data = _data[property.offset];
+
           if ((_data is Map) && (_data.containsKey(property.name))) _data = _data[property.name];
         }
 

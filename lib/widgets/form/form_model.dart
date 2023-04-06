@@ -882,13 +882,15 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
 
       if (ok) {
         for (var field in fields) {
-
           // check to see if the field is not assigned a by the developer, even if that value is null, and is not answered.
           if ((S.isNullOrEmpty(field.value) || field.hasDefaulted == true) && field.touched == false) {
           //create the binding string based on the fields ID.
            String binding = '${field.id}';
-           //assign the signature of the source to the field
-            field.value = Data.fromDotNotation(source!.data!, DotNotation.fromString(binding)!)?.elementAt(0).toString();
+            //assign the signature of the source to the field and grab it from the data. Data will generally return a list, so we must grab the 0th element.
+             dynamic sourceData = Data.fromDotNotation(source!.data!, DotNotation.fromString(binding)!)?.elementAt(0);
+
+             //data can return a jsonmap as part of the data's list if it fails to grab the binding. If this is the case, do not set the value.
+             if(sourceData != null && sourceData is! Map) field.value = sourceData.toString();
           }
         }
       }

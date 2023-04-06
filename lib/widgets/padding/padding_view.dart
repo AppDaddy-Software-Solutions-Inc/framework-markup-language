@@ -22,10 +22,10 @@ class _PaddingViewState extends WidgetState<PaddingView>
   Widget builder(BuildContext context, BoxConstraints constraints) 
   {
 
-    double pTop    = widget.model.padtop    ?? 0.0;
-    double pBottom = widget.model.padbottom ?? 0.0;
-    double pLeft   = widget.model.padleft   ?? 0.0;
-    double pRight  = widget.model.padright  ?? 0.0;
+    double pTop    = widget.model.marginTop    ?? 0.0;
+    double pBottom = widget.model.marginBottom ?? 0.0;
+    double pLeft   = widget.model.marginLeft   ?? 0.0;
+    double pRight  = widget.model.marginRight  ?? 0.0;
 
     if(pTop.isNegative) pTop = 0;
     if(pBottom.isNegative) pBottom = 0;

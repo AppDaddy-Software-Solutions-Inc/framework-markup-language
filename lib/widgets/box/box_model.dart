@@ -208,7 +208,7 @@ class BoxModel extends LayoutWidgetModel
     if (maxwidth  != null) this.maxWidth  = maxwidth;
     if (maxheight != null) this.maxHeight = maxheight;
 
-    if (padding   != null) this.padding = padding;
+    if (padding   != null) this.margins = padding;
     if (opacity != null) this.opacity = opacity;
     if (color != null) this.color = color;
     if (start != null) this.start = start;

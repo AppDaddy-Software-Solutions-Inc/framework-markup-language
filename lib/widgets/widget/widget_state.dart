@@ -46,11 +46,11 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
     if (this.mounted) setState((){});
   }
 
-  // applies padding to the view based on the widget model
-  Widget applyPadding(Widget view)
+  // applies margins to the view based on the widget model
+  Widget addMargins(Widget view)
   {
-    if (model!.padtop == null) return view;
-    return Padding(child: view, padding: EdgeInsets.only(top: model?.padtop ?? 0, right: model?.padright ?? 0, bottom: model?.padbottom ?? 0, left: model?.padleft ?? 0));
+    if (model!.marginTop == null) return view;
+    return Padding(child: view, padding: EdgeInsets.only(top: model?.marginTop ?? 0, right: model?.marginRight ?? 0, bottom: model?.marginBottom ?? 0, left: model?.marginLeft ?? 0));
   }
 
   /// This routine applies the given constraints to the supplied

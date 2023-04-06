@@ -34,31 +34,31 @@ class PaddingModel extends ViewableWidgetModel
     super.deserialize(xml);
 
     // properties
-    padtop    = Xml.get(node: xml, tag: 'top');
-    padright  = Xml.get(node: xml, tag: 'right');
-    padbottom = Xml.get(node: xml, tag: 'bottom');
-    padleft   = Xml.get(node: xml, tag: 'left');
+    marginTop    = Xml.get(node: xml, tag: 'top');
+    marginRight  = Xml.get(node: xml, tag: 'right');
+    marginBottom = Xml.get(node: xml, tag: 'bottom');
+    marginLeft   = Xml.get(node: xml, tag: 'left');
 
     var all = Xml.get(node: xml, tag: 'all');
     if (all != null)
     {
-      padtop=all;
-      padright=all;
-      padbottom=all;
-      padleft=all;
+      marginTop=all;
+      marginRight=all;
+      marginBottom=all;
+      marginLeft=all;
     }
 
     var horizontal = Xml.get(node: xml, tag: 'horizontal') ?? Xml.get(node: xml, tag: 'hor');
     if (horizontal != null)
     {
-     padright=horizontal;
-     padleft=horizontal;
+     marginRight=horizontal;
+     marginLeft=horizontal;
     }
 
     var vertical = Xml.get(node: xml, tag: 'vertical') ?? Xml.get(node: xml, tag: 'ver');
     {
-    padtop=vertical;
-    padbottom=vertical;
+    marginTop=vertical;
+    marginBottom=vertical;
     }
   }
 

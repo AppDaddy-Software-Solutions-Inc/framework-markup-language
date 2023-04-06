@@ -269,7 +269,7 @@ class ViewableWidgetModel extends WidgetModel
   }
   double? get visibleWidth => _visibleWidth?.get();
 
-  set padding(dynamic v)
+  set margins(dynamic v)
   {
     // build PADDINGS array
     if (v is String)
@@ -279,77 +279,77 @@ class ViewableWidgetModel extends WidgetModel
       // all
       if (s.length == 1)
       {
-        padtop=s[0];
-        padright=s[0];
-        padbottom=s[0];
-        padleft=s[0];
+        marginTop=s[0];
+        marginRight=s[0];
+        marginBottom=s[0];
+        marginLeft=s[0];
       }
 
       // top/bottom
       else if (s.length == 2)
       {
-        padtop=s[0];
-        padright=s[1];
-        padbottom=s[0];
-        padleft=s[1];
+        marginTop=s[0];
+        marginRight=s[1];
+        marginBottom=s[0];
+        marginLeft=s[1];
       }
 
       // top/bottom
       else if (s.length == 3)
       {
-        padtop=s[0];
-        padright=s[1];
-        padbottom=s[2];
-        padleft=null;
+        marginTop=s[0];
+        marginRight=s[1];
+        marginBottom=s[2];
+        marginLeft=null;
       }
 
       // top/bottom
       else if (s.length > 3)
       {
-        padtop=s[1];
-        padright=s[2];
-        padbottom=s[3];
-        padleft=s[4];
+        marginTop=s[1];
+        marginRight=s[2];
+        marginBottom=s[3];
+        marginLeft=s[4];
       }
     }
   }
 
-  // padding top
-  DoubleObservable? _padtop;
-  set padtop(dynamic v)
+  // margins top
+  DoubleObservable? _marginTop;
+  set marginTop(dynamic v)
   {
-    if (_padtop != null) _padtop!.set(v);
-    else if (v != null) _padtop = DoubleObservable(Binding.toKey(id, 'padtop'), v, scope: scope, listener: onPropertyChange);
+    if (_marginTop != null) _marginTop!.set(v);
+    else if (v != null) _marginTop = DoubleObservable(Binding.toKey(id, 'margintop'), v, scope: scope, listener: onPropertyChange);
   }
-  double? get padtop => _padtop?.get();
+  double? get marginTop => _marginTop?.get();
 
-  // padding right
-  DoubleObservable? _padright;
-  set padright(dynamic v)
+  // margins right
+  DoubleObservable? _marginRight;
+  set marginRight(dynamic v)
   {
-    if (_padright != null) _padright!.set(v);
-    else if (v != null) _padright = DoubleObservable(Binding.toKey(id, 'padright'), v, scope: scope, listener: onPropertyChange);
+    if (_marginRight != null) _marginRight!.set(v);
+    else if (v != null) _marginRight = DoubleObservable(Binding.toKey(id, 'marginright'), v, scope: scope, listener: onPropertyChange);
   }
-  double? get padright => _padright?.get();
+  double? get marginRight => _marginRight?.get();
 
-  // padding bottom
-  DoubleObservable? _padbottom;
-  set padbottom(dynamic v)
+  // margins bottom
+  DoubleObservable? _marginBottom;
+  set marginBottom(dynamic v)
   {
-    if (_padbottom != null) _padbottom!.set(v);
+    if (_marginBottom != null) _marginBottom!.set(v);
     else if (v != null)
-      _padbottom = DoubleObservable(Binding.toKey(id, 'padbottom'), v, scope: scope, listener: onPropertyChange);
+      _marginBottom = DoubleObservable(Binding.toKey(id, 'marginbottom'), v, scope: scope, listener: onPropertyChange);
   }
-  double? get padbottom => _padbottom?.get();
+  double? get marginBottom => _marginBottom?.get();
 
-  // padding left
-  DoubleObservable? _padleft;
-  set padleft(dynamic v)
+  // margins left
+  DoubleObservable? _marginLeft;
+  set marginLeft(dynamic v)
   {
-    if (_padleft != null) _padleft!.set(v);
-    else if (v != null) _padleft = DoubleObservable(Binding.toKey(id, 'padleft'), v, scope: scope, listener: onPropertyChange);
+    if (_marginLeft != null) _marginLeft!.set(v);
+    else if (v != null) _marginLeft = DoubleObservable(Binding.toKey(id, 'marginleft'), v, scope: scope, listener: onPropertyChange);
   }
-  double? get padleft => _padleft?.get();
+  double? get marginLeft => _marginLeft?.get();
 
   // visible
   BooleanObservable? _visible;
@@ -436,11 +436,15 @@ class ViewableWidgetModel extends WidgetModel
         WidgetModel.isBound(this, Binding.toKey(id, 'visibleheight')) ||
         WidgetModel.isBound(this, Binding.toKey(id, 'visiblewidth'));
 
-    // set padding. can be comma seperated top,left,bottom,right
-    var padding = Xml.attribute(node: xml, tag: 'pad');
-    if (padding == null) padding = Xml.attribute(node: xml, tag: 'padding');
-    if (padding == null) padding = Xml.attribute(node: xml, tag: 'margin');
-    this.padding = padding;
+    // set margins. Can be comma separated top,left,bottom,right
+    var margins = Xml.attribute(node: xml, tag: 'margin');
+    this.margins = margins;
+
+    // legacy support.
+    // Use margins when referring to space around the outside of the widget.
+    // Use padding when referring to space around the contents of inside of the widget.
+    var padding = Xml.attribute(node: xml, tag: 'pad') ?? Xml.attribute(node: xml, tag: 'padding');
+    if (margins == null && padding != null) this.margins = padding;
 
     // tip
     List<TooltipModel> tips = findChildrenOfExactType(TooltipModel).cast<TooltipModel>();

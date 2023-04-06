@@ -164,7 +164,7 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
           child: Center(
             child: Bubble(
               key: _widgetKey,
-              padding: widget.model.padding,
+              padding: widget.model.margins,
               child: widget.content,
             ),
           ),
@@ -233,7 +233,7 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
       top:  toolTipElementsDisplay.bubble.y,
       left: toolTipElementsDisplay.bubble.x,
       child: Bubble(
-        padding: widget.model.padding,
+        padding: widget.model.margins,
         radius: toolTipElementsDisplay.radius,
         color: widget.model.color ?? Theme.of(context).colorScheme.surfaceVariant,
         child: widget.content,

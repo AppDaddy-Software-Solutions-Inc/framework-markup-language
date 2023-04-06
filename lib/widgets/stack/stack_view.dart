@@ -68,9 +68,9 @@ class _StackViewState extends WidgetState<StackView>
     // create the stack
     Widget view = Stack(children: children, alignment: alignment.aligned, fit: StackFit.loose);
 
-    // apply user padding
+    // add margins
     // skip these if this is being managed at a higher level (BoxModel)
-    if (widget.model is StackModel) view = applyPadding(view);
+    if (widget.model is StackModel) view = addMargins(view);
 
     // apply user defined constraints
     // skip these if this is being managed at a higher level (BoxModel)

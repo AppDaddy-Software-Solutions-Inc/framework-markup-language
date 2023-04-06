@@ -101,8 +101,8 @@ class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserv
     // apply constraints
     view = applyConstraints(view, modelConstraints);
 
-    // apply padding
-    view = applyPadding(view);
+    // add margins
+    view = addMargins(view);
 
     return view;
   }

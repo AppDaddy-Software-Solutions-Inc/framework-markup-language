@@ -42,20 +42,6 @@ class CardModel extends DecoratedWidgetModel
   }
   double get radius => _radius?.get() ?? 4;
 
-  /////////////
-  /* padding */
-  /////////////
-  DoubleObservable? _margin;
-  set margin(dynamic v) {
-    if (_margin != null) {
-      _margin!.set(v);
-    } else if (v != null) {
-      _margin = DoubleObservable(Binding.toKey(id, 'margin'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  double get margin => _margin?.get() ?? 5;
-
   //////////////////
   /* border color */
   //////////////////
@@ -87,9 +73,9 @@ class CardModel extends DecoratedWidgetModel
   double get borderwidth => _borderwidth?.get() ?? 1;
 
   //overrides
-  double? get padding => super.padtop ?? 5;
-  String  get halign   => super.halign  ?? "start";
-  String  get valign   => super.valign  ?? "start";
+  double? get margins => super.marginTop ?? 5;
+  String  get halign  => super.halign  ?? "start";
+  String  get valign  => super.valign  ?? "start";
 
   CardModel(
     WidgetModel parent,
@@ -111,7 +97,7 @@ class CardModel extends DecoratedWidgetModel
     if (width  != null) this.width  = width;
     if (height != null) this.height = height;
 
-    this.padding = padding;
+    this.margins = padding;
     this.radius = radius;
     this.color = color;
     this.bordercolor = bordercolor;

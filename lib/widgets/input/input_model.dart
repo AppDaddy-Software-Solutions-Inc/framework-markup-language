@@ -18,10 +18,10 @@ class InputModel extends FormFieldModel implements IFormField
   List<Suggestion> suggestions = [];
 
   // override padding
-  double? get padtop    => super.padtop    ?? (dense ? 0 : 4);
-  double? get padbottom => super.padbottom ?? (dense ? 0 : 4);
-  double? get padleft   => super.padleft   ?? (dense ? 0 : 4);
-  double? get padright  => super.padright  ?? (dense ? 0 : 4);
+  double? get marginTop    => super.marginTop    ?? (dense ? 0 : 4);
+  double? get marginBottom => super.marginBottom ?? (dense ? 0 : 4);
+  double? get marginLeft   => super.marginLeft   ?? (dense ? 0 : 4);
+  double? get marginRight  => super.marginRight  ?? (dense ? 0 : 4);
 
   /// Capitilization sets the input to uppercase or lowercase with `upper` and `lower`
   // TODO: maybe change this to caps or uppercase = t/f?
@@ -573,7 +573,7 @@ class InputModel extends FormFieldModel implements IFormField
     if (errortext     != null) this.errortext = errortext;
     if (lines         != null) this.lines = lines;
     if (length        != null) this.length = length;
-    if (padding       != null) this.padding = padding;
+    if (padding       != null) this.margins = padding;
     if (obscure       != null) this.obscure = obscure;
     if (clear         != null) this.clear = clear;
     if (onchange      != null) this.onchange = onchange;

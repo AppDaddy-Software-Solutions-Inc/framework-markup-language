@@ -845,8 +845,8 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     // apply constraints
     view = applyConstraints(view, modelConstraints);
 
-    // apply padding
-    view = applyPadding(view);
+    // add margins
+    view = addMargins(view);
 
     return view;
   }

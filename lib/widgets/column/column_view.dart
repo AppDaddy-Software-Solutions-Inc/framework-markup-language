@@ -61,9 +61,9 @@ class _ColumnViewState extends WidgetState<ColumnView>
           crossAxisAlignment: alignment.crossAlignment,
           mainAxisSize: mainAxisSize);
 
-    // apply user padding
+    // add margins
     // skip these if this is being managed at a higher level (BoxModel)
-    if (widget.model is ColumnModel) view = applyPadding(view);
+    if (widget.model is ColumnModel) view = addMargins(view);
 
     // apply user defined constraints
     // skip these if this is being managed at a higher level (BoxModel)

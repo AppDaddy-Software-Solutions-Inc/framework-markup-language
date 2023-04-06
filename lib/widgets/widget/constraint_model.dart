@@ -258,7 +258,7 @@ class ConstraintModel
       ViewableWidgetModel parent = (this.parent as ViewableWidgetModel);
       if (_widthPercentage == null)
       {
-        var hpad = (parent.padright ?? 0) + (parent.padleft ?? 0);
+        var hpad = (parent.marginRight ?? 0) + (parent.marginLeft ?? 0);
         if (parent.width == null)
         {
            var w = parent.calculateMaxHeight();
@@ -292,7 +292,7 @@ class ConstraintModel
       ViewableWidgetModel? parent = (this.parent as ViewableWidgetModel);
       if (_heightPercentage == null)
       {
-        var vpad = (parent.padtop ?? 0) + (parent.padbottom ?? 0);
+        var vpad = (parent.marginTop ?? 0) + (parent.marginBottom ?? 0);
         if (parent.height == null)
         {
           var h = parent.calculateMaxHeight();

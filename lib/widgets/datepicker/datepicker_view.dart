@@ -146,7 +146,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
     double? rad = S.toDouble(widget.model.radius);
     cont = TextEditingController(text: value);
 
-    var padding = widget.model.padding ?? 0;
+    var padding = widget.model.margins ?? 0;
 
     // View
     Widget view;
@@ -424,7 +424,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
     ////////////////////
     view = SizedBox(child: view, width: width);
 
-    view = applyPadding(view);
+    view = addMargins(view);
 
     return view;
   }

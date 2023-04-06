@@ -348,8 +348,8 @@ class _BoxViewState extends WidgetState<BoxView>
     // blur the view
     if (widget.model.blur) child = _getBlurredView(child, borderDecoration);
 
-    // apply padding
-    child = applyPadding(child);
+    // add margins
+    child = addMargins(child);
 
     // inner box - contents
     Widget view = Container(clipBehavior: Clip.antiAlias, decoration: decoration, alignment: alignment.aligned, child: child);

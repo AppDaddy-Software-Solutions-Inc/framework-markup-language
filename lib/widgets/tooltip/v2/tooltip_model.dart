@@ -30,12 +30,12 @@ class TooltipModel extends ViewableWidgetModel
 
   // padding
   DoubleObservable? _padding;
-  set padding(dynamic v)
+  set margins(dynamic v)
   {
     if (_padding != null) _padding!.set(v);
     else if (v != null) _padding = DoubleObservable(Binding.toKey(id, 'padding'), v, scope: scope, listener: onPropertyChange);
   }
-  double get padding => _padding?.get() ?? 14.0;
+  double get margins => _padding?.get() ?? 14.0;
 
   StringObservable? _position;
   set position(dynamic v)

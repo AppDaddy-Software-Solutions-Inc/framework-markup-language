@@ -240,12 +240,12 @@ class LayoutWidgetModel extends DecoratedWidgetModel
       double fixed = 0;
       for (var child in fixedChildren) fixed += (child.visible) ? (child.viewWidth ?? 0) : 0;
 
-      // calculate padding
-      double padding = 0;
-      for (var child in viewableChildren) padding += (child.visible) ? ((child.padleft ?? 0) + (child.padright ?? 0)) : 0;
+      // calculate margins
+      double margins = 0;
+      for (var child in viewableChildren) margins += (child.visible) ? ((child.marginLeft ?? 0) + (child.marginRight ?? 0)) : 0;
 
       // calculate usable space (max - fixed - padding)
-      var usable = maximum - fixed - padding;
+      var usable = maximum - fixed - margins;
 
       // set % sizing on variable children
       var free = usable;
@@ -310,11 +310,11 @@ class LayoutWidgetModel extends DecoratedWidgetModel
       for (var child in fixedChildren) fixed += (child.visible) ? (child.viewHeight ?? 0) : 0;
 
       // calculate padding
-      double padding = 0;
-      for (var child in viewableChildren) padding += (child.visible) ? ((child.padtop ?? 0) + (child.padbottom ?? 0)) : 0;
+      double margins = 0;
+      for (var child in viewableChildren) margins += (child.visible) ? ((child.marginTop ?? 0) + (child.marginBottom ?? 0)) : 0;
 
       // calculate usable space (max - fixed - padding)
-      var usable = maximum - fixed - padding;
+      var usable = maximum - fixed - margins;
 
       // set % sizing on variable children
       var free = usable;

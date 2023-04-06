@@ -63,9 +63,9 @@ class _RowViewState extends WidgetState<RowView>
               mainAxisAlignment: alignment.mainAlignment,
               mainAxisSize: mainAxisSize);
 
-    // apply user padding
+    // add margins
     // skip these if this is being managed at a higher level (BoxModel)
-    if (widget.model is RowModel) view = applyPadding(view);
+    if (widget.model is RowModel) view = addMargins(view);
 
     // apply user defined constraints
     // skip these if this is being managed at a higher level (BoxModel)

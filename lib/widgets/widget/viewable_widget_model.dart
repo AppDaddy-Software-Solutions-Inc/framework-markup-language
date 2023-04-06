@@ -77,52 +77,60 @@ class ViewableWidgetModel extends WidgetModel
   /// VIEW LAYOUT
 
   // view width
-  int? _viewWidth;
-  IntegerObservable? viewWidthObservable;
-  set viewWidth(int? v)
+  double? _viewWidth;
+  DoubleObservable? viewWidthObservable;
+  set viewWidth(double? v)
   {
+    // important this gets before the observable
+    _viewWidth = v;
+
     // we handle this slightly different for performance reasons
     // The observable is only created in deserialize if its bound
     if (viewWidthObservable != null) viewWidthObservable!.set(v);
-    _viewWidth = v;
   }
-  int? get viewWidth => _viewWidth;
+  double? get viewWidth => _viewWidth;
 
   // view height
-  int? _viewHeight;
-  IntegerObservable? viewHeightObservable;
-  set viewHeight(int? v)
+  double? _viewHeight;
+  DoubleObservable? viewHeightObservable;
+  set viewHeight(double? v)
   {
-    // we handle this slightly different for performance reasons
-    // The observable is only crted in deserialize if its bound
-    if (viewHeightObservable != null) viewHeightObservable!.set(v);
+    // important this gets before the observable
     _viewHeight = v;
+
+    // we handle this slightly different for performance reasons
+    // The observable is only created in deserialize if its bound
+    if (viewHeightObservable != null) viewHeightObservable!.set(v);
   }
-  int? get viewHeight => _viewHeight;
+  double? get viewHeight => _viewHeight;
 
   // view global X position
-  int? _viewX;
-  IntegerObservable? _viewXObservable;
-  set viewX(int? v)
+  double? _viewX;
+  DoubleObservable? _viewXObservable;
+  set viewX(double? v)
   {
-    // we handle this slightly different for performance reasons
-    // The observable is only crted in deserialize if its bound
-    if (_viewXObservable != null) _viewXObservable!.set(v);
+    // important this gets before the observable
     _viewX = v;
+
+    // we handle this slightly different for performance reasons
+    // The observable is only created in deserialize if its bound
+    if (_viewXObservable != null) _viewXObservable!.set(v);
   }
-  int? get viewX => _viewX;
+  double? get viewX => _viewX;
 
   // view global Y position
-  int? _viewY;
-  IntegerObservable? _viewYObservable;
-  set viewY(int? v)
+  double? _viewY;
+  DoubleObservable? _viewYObservable;
+  set viewY(double? v)
   {
-    // we handle this slightly different for performance reasons
-    // The observable is only crted in deserialize if its bound
-    if (_viewYObservable != null) _viewYObservable!.set(v);
+    // important this gets before the observable
     _viewY = v;
+
+    // we handle this slightly different for performance reasons
+    // The observable is only created in deserialize if its bound
+    if (_viewYObservable != null) _viewYObservable!.set(v);
   }
-  int? get viewY => _viewY;
+  double? get viewY => _viewY;
   
   /// alignment and layout attributes
   ///
@@ -267,49 +275,81 @@ class ViewableWidgetModel extends WidgetModel
     if (v is String)
     {
       var s = v.split(',');
-      if (s.length > 0) padding1 = s[0];
-      if (s.length > 1) padding2 = s[1];
-      if (s.length > 2) padding3 = s[2];
-      if (s.length > 3) padding4 = s[3];
+
+      // all
+      if (s.length == 1)
+      {
+        padtop=s[0];
+        padright=s[0];
+        padbottom=s[0];
+        padleft=s[0];
+      }
+
+      // top/bottom
+      else if (s.length == 2)
+      {
+        padtop=s[0];
+        padright=s[1];
+        padbottom=s[0];
+        padleft=s[1];
+      }
+
+      // top/bottom
+      else if (s.length == 3)
+      {
+        padtop=s[0];
+        padright=s[1];
+        padbottom=s[2];
+        padleft=null;
+      }
+
+      // top/bottom
+      else if (s.length > 3)
+      {
+        padtop=s[1];
+        padright=s[2];
+        padbottom=s[3];
+        padleft=s[4];
+      }
     }
   }
 
-  // padding
-  DoubleObservable? _padding1;
-  set padding1(dynamic v)
+  // padding top
+  DoubleObservable? _padtop;
+  set padtop(dynamic v)
   {
-    if (_padding1 != null) _padding1!.set(v);
-    else if (v != null) _padding1 = DoubleObservable(Binding.toKey(id, 'pad'), v, scope: scope, listener: onPropertyChange);
+    if (_padtop != null) _padtop!.set(v);
+    else if (v != null) _padtop = DoubleObservable(Binding.toKey(id, 'padtop'), v, scope: scope, listener: onPropertyChange);
   }
-  double? get padding1 => _padding1?.get();
+  double? get padtop => _padtop?.get();
 
-  // padding 2
-  DoubleObservable? _padding2;
-  set padding2(dynamic v)
+  // padding right
+  DoubleObservable? _padright;
+  set padright(dynamic v)
   {
-    if (_padding2 != null) _padding2!.set(v);
-    else if (v != null) _padding2 = DoubleObservable(Binding.toKey(id, 'pad2'), v, scope: scope, listener: onPropertyChange);
+    if (_padright != null) _padright!.set(v);
+    else if (v != null) _padright = DoubleObservable(Binding.toKey(id, 'padright'), v, scope: scope, listener: onPropertyChange);
   }
-  double? get padding2 => _padding2?.get();
+  double? get padright => _padright?.get();
 
-  // padding 3
-  DoubleObservable? _padding3;
-  set padding3(dynamic v)
+  // padding bottom
+  DoubleObservable? _padbottom;
+  set padbottom(dynamic v)
   {
-    if (_padding3 != null) _padding3!.set(v);
+    if (_padbottom != null) _padbottom!.set(v);
     else if (v != null)
-      _padding3 = DoubleObservable(Binding.toKey(id, 'pad3'), v, scope: scope, listener: onPropertyChange);
+      _padbottom = DoubleObservable(Binding.toKey(id, 'padbottom'), v, scope: scope, listener: onPropertyChange);
   }
-  double? get padding3 => _padding3?.get();
+  double? get padbottom => _padbottom?.get();
 
-  // padding 4
-  DoubleObservable? _padding4;
-  set padding4(dynamic v)
+  // padding left
+  DoubleObservable? _padleft;
+  set padleft(dynamic v)
   {
-    if (_padding4 != null) _padding4!.set(v);
-    else if (v != null) _padding4 = DoubleObservable(Binding.toKey(id, 'pad4'), v, scope: scope, listener: onPropertyChange);
+    if (_padleft != null) _padleft!.set(v);
+    else if (v != null) _padleft = DoubleObservable(Binding.toKey(id, 'padleft'), v, scope: scope, listener: onPropertyChange);
   }
-  double? get padding4 => _padding4?.get();
+  double? get padleft => _padleft?.get();
 
   // visible
   BooleanObservable? _visible;
@@ -382,10 +422,10 @@ class ViewableWidgetModel extends WidgetModel
     // we only create the observable if its bound to in the template
     // otherwise we just store the value in a simple double variable
     String? key;
-    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewwidth')))  viewWidthObservable  = IntegerObservable(key, null, scope: scope);
-    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewheight'))) viewHeightObservable = IntegerObservable(key, null, scope: scope);
-    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewx')))      _viewXObservable     = IntegerObservable(key, null, scope: scope);
-    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewy')))      _viewYObservable     = IntegerObservable(key, null, scope: scope);
+    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewwidth')))  viewWidthObservable  = DoubleObservable(key, null, scope: scope);
+    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewheight'))) viewHeightObservable = DoubleObservable(key, null, scope: scope);
+    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewx')))      _viewXObservable     = DoubleObservable(key, null, scope: scope);
+    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewy')))      _viewYObservable     = DoubleObservable(key, null, scope: scope);
     
     // view requires a VisibilityDetector if either onstage or offstage is set or
     // someone is bound to my visibility
@@ -540,12 +580,24 @@ class ViewableWidgetModel extends WidgetModel
 
   void setLayoutConstraints(BoxConstraints constraints) => _constraints.setLayoutConstraints(constraints);
 
-  void onLayoutComplete(RenderBox? box, Offset? position)
+  void onLayoutComplete()
   {
-    viewWidth  = box?.size.width.round();
-    viewHeight = box?.size.height.round();
-    viewX      = position?.dx.round();
-    viewY      = position?.dy.round();
+    if (this.context == null) return;
+
+    var box = context!.findRenderObject() as RenderBox?;
+    if (box == null) return;
+
+    var position = box.localToGlobal(Offset.zero);
+    var size = box.size;
+
+    if (size.width != viewWidth || size.height != viewHeight || position.dx != viewX || position.dy != viewY)
+    {
+      viewWidth  = size.width;
+      viewHeight = size.height;
+      viewX      = position.dx;
+      viewY      = position.dy;
+      if (parent is ViewableWidgetModel) (parent as ViewableWidgetModel).onLayoutComplete();
+    }
   }
 
   Widget getView() => throw("getView() Not Implemented");

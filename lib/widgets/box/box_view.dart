@@ -355,7 +355,7 @@ class _BoxViewState extends WidgetState<BoxView>
     Widget view = Container(clipBehavior: Clip.antiAlias, decoration: decoration, alignment: alignment.aligned, child: child);
 
     // build the outer box - border
-    view = Container(decoration: borderDecoration, child: view);
+    if (borderDecoration != null) view = Container(decoration: borderDecoration, child: view);
 
     // set the box opacity
     if (widget.model.opacity != null) view = _getFadedView(view);

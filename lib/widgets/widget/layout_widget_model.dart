@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:fml/helper/alignment.dart';
 import 'package:fml/helper/common_helpers.dart';
-import 'package:fml/helper/xml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observable.dart';
 import 'package:fml/observable/observables/boolean.dart';
 import 'package:fml/observable/observables/double.dart';
-import 'package:fml/observable/observables/integer.dart';
 import 'package:fml/observable/observables/string.dart';
 import 'package:fml/observable/scope.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
@@ -161,7 +158,6 @@ class LayoutWidgetModel extends DecoratedWidgetModel
     print("inflate() => model id=$id");
 
     var layout = AlignmentHelper.getLayoutType(this.layout);
-
     var variableChildren = this.variableWidthChildren;
     var fixedChildren = (layout == LayoutType.row) ? this.fixedWidthChildren : this.fixedHeightChildren;
 
@@ -177,13 +173,13 @@ class LayoutWidgetModel extends DecoratedWidgetModel
         switch (layout)
         {
           case LayoutType.row:
-            if (child.viewWidthObservable == null) child.viewWidthObservable = IntegerObservable(Binding.toKey(child.id, 'viewwidth'), null, scope: child.scope);
+            if (child.viewWidthObservable == null) child.viewWidthObservable = DoubleObservable(Binding.toKey(child.id, 'viewwidth'), null, scope: child.scope);
             child.viewWidthObservable!.registerListener(onWidthChange);
             child.viewWidth = null;
             break;
 
           case LayoutType.column:
-            if (child.viewHeightObservable == null) child.viewHeightObservable = IntegerObservable(Binding.toKey(child.id, 'viewheight'), null, scope: child.scope);
+            if (child.viewHeightObservable == null) child.viewHeightObservable = DoubleObservable(Binding.toKey(child.id, 'viewheight'), null, scope: child.scope);
             child.viewHeightObservable!.registerListener(onHeightChange);
             child.viewHeight = 0;
             break;
@@ -196,19 +192,18 @@ class LayoutWidgetModel extends DecoratedWidgetModel
       // add the view
       views.add(view);
     }
-
     return views;
   }
 
   @override
-  void onLayoutComplete(RenderBox? box, Offset? position)
+  void onLayoutComplete()
   {
-    super.onLayoutComplete(box, position);
-
-    var id = this.id;
+    super.onLayoutComplete();
 
     var layout = AlignmentHelper.getLayoutType(this.layout);
     var fixedChildren = (layout == LayoutType.row) ? this.fixedWidthChildren : this.fixedHeightChildren;
+
+    // we need a callback to build if we have no fixed children
     if (fixedChildren.isEmpty)
     {
       switch (layout)
@@ -227,31 +222,30 @@ class LayoutWidgetModel extends DecoratedWidgetModel
     }
   }
 
-  void onWidthChange(_)
+  void onWidthChange(Observable? child)
   {
-    var id = this.id;
-
     // layout can be performed when all fixed sized children have been laid out
     var unsizedChildren = fixedWidthChildren.where((child) => child.viewWidth == null);
     if (unsizedChildren.isEmpty)
     {
-      print("onWidthChange() => model id=$id");
+      print("onWidthChange() => id=$id child=${child?.key}");
 
       // calculate maximum space
-      var maximum = width ?? calculateMaxWidth() ?? 0;
+      var maximum = calculateMaxWidth() ?? 0;
 
       var variableChildren = this.variableWidthChildren;
       var fixedChildren = this.fixedWidthChildren;
 
       // calculate fixed space
       double fixed = 0;
-      for (var child in fixedChildren)
-      {
-        if (child.visible) fixed += (child.viewWidth ?? 0);
-      };
+      for (var child in fixedChildren) fixed += (child.visible) ? (child.viewWidth ?? 0) : 0;
 
-      // calculate usable space (max - fixed)
-      var usable = maximum - fixed;
+      // calculate padding
+      double padding = 0;
+      for (var child in viewableChildren) padding += (child.visible) ? ((child.padleft ?? 0) + (child.padright ?? 0)) : 0;
+
+      // calculate usable space (max - fixed - padding)
+      var usable = maximum - fixed - padding;
 
       // set % sizing on variable children
       var free = usable;
@@ -259,24 +253,23 @@ class LayoutWidgetModel extends DecoratedWidgetModel
       {
         if (child.visible && child.pctWidth != null)
         {
-          var size = (usable * (child.pctWidth!/100)).toPrecision(0);
+          // calculate size from %
+          var size = (usable * (child.pctWidth!/100)).floor();
+
+          // must be 0 or greater
+          if (size < 0) size = 0;
+
+          // reduce free space
           free = free - size;
-          if (child.width != size)
-          {
-            child.setWidth(size, notify: true);
-          }
+
+          // set the size
+          if (child.width != size) child.setWidth(size.toDouble(), notify: true);
         }
-      };
+      }
 
       // calculate sum of all flex values
       double flexsum = 0;
-      for (var child in variableChildren)
-      {
-        if (child.visible && child.pctWidth == null && child.flex != null && child.flex! > 0)
-        {
-          flexsum += child.flex!;
-        }
-      };
+      for (var child in variableChildren) flexsum += (child.visible && child.pctWidth == null && child.flex != null && child.flex! > 0) ? child.flex! : 0;
 
       // set flex sizing on flexible children
       for (var child in variableChildren)
@@ -285,21 +278,21 @@ class LayoutWidgetModel extends DecoratedWidgetModel
         // and would have been laid out above
         if (child.visible && child.pctWidth == null && child.flex != null && child.flex! > 0)
         {
-          var size = ((child.flex! / flexsum) * free).toPrecision(0);
+          // calculate size from flex
+          var size = ((child.flex! / flexsum) * free).floor();
+
+          // must be 0 or greater
           if (size < 0) size = 0;
-          if (child.width != size)
-          {
-            child.setWidth(size, notify: true);
-          }
+
+          // set the size
+          if (child.width != size) child.setWidth(size.toDouble(), notify: true);
         }
-      };
+      }
     }
   }
 
-  void onHeightChange(_)
+  void onHeightChange(Observable? child)
   {
-    var id = this.id;
-
     // layout can be performed when all fixed sized children have been laid out
     var unsizedChildren = fixedHeightChildren.where((child) => child.viewHeight == null);
     if (unsizedChildren.isEmpty)
@@ -314,13 +307,14 @@ class LayoutWidgetModel extends DecoratedWidgetModel
 
       // calculate fixed space
       double fixed = 0;
-      for (var child in fixedChildren)
-      {
-        if (child.visible) fixed += (child.viewHeight ?? 0);
-      };
+      for (var child in fixedChildren) fixed += (child.visible) ? (child.viewHeight ?? 0) : 0;
 
-      // calculate usable space (max - fixed)
-      var usable = maximum - fixed;
+      // calculate padding
+      double padding = 0;
+      for (var child in viewableChildren) padding += (child.visible) ? ((child.padtop ?? 0) + (child.padbottom ?? 0)) : 0;
+
+      // calculate usable space (max - fixed - padding)
+      var usable = maximum - fixed - padding;
 
       // set % sizing on variable children
       var free = usable;
@@ -328,24 +322,23 @@ class LayoutWidgetModel extends DecoratedWidgetModel
       {
         if (child.visible && child.pctHeight != null)
         {
-          var size = (usable * (child.pctHeight!/100)).toPrecision(0);
+          // calculate size from %
+          var size = (usable * (child.pctHeight!/100)).floor();
+
+          // must be 0 or greater
+          if (size < 0) size = 0;
+
+          // reduce free space
           free = free - size;
-          if (child.height != size)
-          {
-            child.setHeight(size, notify: true);
-          }
+
+          // set the size
+          if (child.height != size) child.setHeight(size.toDouble(), notify: true);
         }
-      };
+      }
 
       // calculate sum of all flex values
       double flexsum = 0;
-      for (var child in variableChildren)
-      {
-        if (child.visible && child.pctHeight == null && child.flex != null && child.flex! > 0)
-        {
-          flexsum += child.flex!;
-        }
-      };
+      for (var child in variableChildren) flexsum += (child.visible && child.pctHeight == null && child.flex != null && child.flex! > 0) ? child.flex! : 0;
 
       // set flex sizing on flexible children
       for (var child in variableChildren)
@@ -354,14 +347,16 @@ class LayoutWidgetModel extends DecoratedWidgetModel
         // and would have been laid out above
         if (child.visible && child.pctHeight == null && child.flex != null && child.flex! > 0)
         {
-          var size = ((child.flex! / flexsum) * free).toPrecision(0);
+          // calculate size from flex
+          var size = ((child.flex! / flexsum) * free).floor();
+
+          // must be 0 or greater
           if (size < 0) size = 0;
-          if (child.height != size)
-          {
-            child.setHeight(size, notify: true);
-          }
+
+          // set the size
+          if (child.height != size) child.setHeight(size.toDouble(), notify: true);
         }
-      };
+      }
     }
   }
 }

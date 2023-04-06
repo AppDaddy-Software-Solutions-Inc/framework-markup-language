@@ -87,7 +87,7 @@ class CardModel extends DecoratedWidgetModel
   double get borderwidth => _borderwidth?.get() ?? 1;
 
   //overrides
-  double? get padding => super.padding1 ?? 5;
+  double? get padding => super.padtop ?? 5;
   String  get halign   => super.halign  ?? "start";
   String  get valign   => super.valign  ?? "start";
 

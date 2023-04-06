@@ -296,7 +296,7 @@ class DatepickerModel extends FormFieldModel implements IFormField
   double? get size => _size?.get();
 
   /// override - pads the inner content of the input.
-  double? get padding => super.padding1 ?? 4;
+  double? get padding => super.padtop ?? 4;
 
   /// The prefix icon within the input
   IconObservable? _icon;

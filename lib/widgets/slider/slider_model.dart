@@ -16,15 +16,6 @@ enum InputTypes { numeric, integer, text, boolean}
 
 class SliderModel extends FormFieldModel implements IFormField
 {
-  ///////////
-  /* Width */
-  ///////////
-  @override
-  double get width
-  {
-    return super.width ?? 200;
-  }
-
   ////////////////////
   /* capitalization */
   ////////////////////

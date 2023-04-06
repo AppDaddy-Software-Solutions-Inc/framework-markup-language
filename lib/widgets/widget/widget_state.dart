@@ -46,32 +46,11 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
     if (this.mounted) setState((){});
   }
 
+  // applies padding to the view based on the widget model
   Widget applyPadding(Widget view)
   {
-    if (model?.padding1 == null) return view;
-
-    double padding = 0.0;
-    var paddings = (model?.padding1 != null ? 1 : 0) + (model?.padding2 != null ? 1 : 0) + (model?.padding3 != null ? 1 : 0) + (model?.padding4 != null ? 1 : 0);
-
-    EdgeInsets insets = EdgeInsets.all(model?.padding1 ?? 0);
-
-    // pad all
-    if (paddings == 1) insets = EdgeInsets.all(model?.padding1 ?? 0);
-
-    // pad directions v,h
-    else if (padding == 2) insets = EdgeInsets.symmetric(vertical: model?.padding1 ?? 0, horizontal: model?.padding2 ?? 0);
-
-    // pad sides top, right, bottom
-    else if (padding == 3) insets = EdgeInsets.only(top: model?.padding1 ?? 0, left: model?.padding2 ?? 0, right: model?.padding2 ?? 0, bottom: model?.padding3 ?? 0);
-
-    // pad sides top, right, bottom
-    else if (padding == 4) insets = EdgeInsets.only(top: model?.padding1 ?? 0, right: model?.padding2 ?? 0, bottom: model?.padding3 ?? 0, left: model?.padding4 ?? 0);
-
-    // pad all
-    else insets = EdgeInsets.all(model?.padding1 ?? 0);
-
-    // create view
-    return Padding(padding: insets, child: view);
+    if (model!.padtop == null) return view;
+    return Padding(child: view, padding: EdgeInsets.only(top: model?.padtop ?? 0, right: model?.padright ?? 0, bottom: model?.padbottom ?? 0, left: model?.padleft ?? 0));
   }
 
   /// This routine applies the given constraints to the supplied
@@ -164,11 +143,6 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
   void onLayout(BoxConstraints constraints)
   {
     model?.setLayoutConstraints(constraints);
-    WidgetsBinding.instance.addPostFrameCallback((_)
-    {
-      var box = context.findRenderObject() as RenderBox?;
-      var position = (box != null) ? box.localToGlobal(Offset.zero) : null;
-      model?.onLayoutComplete(box, position);
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => model?.onLayoutComplete());
   }
 }

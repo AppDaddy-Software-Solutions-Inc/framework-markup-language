@@ -59,18 +59,30 @@ class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserv
       }
     }
 
-    //////////
-    /* View */
-    //////////
-
-    Widget? view;
-    if (widget.model.range == false)
+    // create the view
+    Widget view;
+    if (widget.model.range)
+      view = RangeSlider(
+          values: RangeValues(S.toDouble(value1)!,
+              S.toDouble(value2)!),
+          min: min,
+          max: max,
+          divisions: !S.isNullOrEmpty(widget.model.divisions) &&
+              S.toInt(widget.model.divisions)! > 0
+              ? S.toInt(widget.model.divisions)
+              : null,
+          labels: RangeLabels(value1.toString(),
+              value2.toString()),
+          onChanged: (RangeValues values) => onRangeChange(values),
+          activeColor: ColorHelper.lighten(widget.model.color ?? Theme.of(context).colorScheme.primary, 0.05),
+          inactiveColor: Theme.of(context).colorScheme.secondaryContainer);
+    else
       view = Slider(
         value: value1,
         min: min,
         max: max,
         divisions: !S.isNullOrEmpty(widget.model.divisions) &&
-                S.toInt(widget.model.divisions)! > 0
+            S.toInt(widget.model.divisions)! > 0
             ? S.toInt(widget.model.divisions)
             : null,
         label: label,
@@ -79,33 +91,18 @@ class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserv
         inactiveColor: Theme.of(context).colorScheme.secondaryContainer,
         thumbColor: widget.model.color ?? Theme.of(context).colorScheme.primary,
       );
-    else if (widget.model.range == true) {
-      view = RangeSlider(
-        values: RangeValues(S.toDouble(value1)!,
-            S.toDouble(value2)!),
-        min: min,
-        max: max,
-        divisions: !S.isNullOrEmpty(widget.model.divisions) &&
-            S.toInt(widget.model.divisions)! > 0
-            ? S.toInt(widget.model.divisions)
-            : null,
-        labels: RangeLabels(value1.toString(),
-            value2.toString()),
-        onChanged: (RangeValues values) => onRangeChange(values),
-        activeColor: ColorHelper.lighten(widget.model.color ?? Theme.of(context).colorScheme.primary, 0.05),
-        inactiveColor: Theme.of(context).colorScheme.secondaryContainer,
-      );
-    }
 
-    ///////////
-    /* Width */
-    ///////////
-    double width = widget.model.width;
+    // get the model constraints
+    var modelConstraints = widget.model.constraints.model;
 
-    ////////////////////
-    /* Constrain Size */
-    ////////////////////
-    view = SizedBox(child: view, width: width);
+    // constrain the input to 200 pixels if not constrained by the model
+    if (!modelConstraints.hasHorizontalExpansionConstraints) modelConstraints.width = 200;
+
+    // apply constraints
+    view = applyConstraints(view, modelConstraints);
+
+    // apply padding
+    view = applyPadding(view);
 
     return view;
   }

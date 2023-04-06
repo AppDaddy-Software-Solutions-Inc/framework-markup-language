@@ -258,7 +258,7 @@ class ConstraintModel
       ViewableWidgetModel parent = (this.parent as ViewableWidgetModel);
       if (_widthPercentage == null)
       {
-        var hpad = _getHorizontalPadding(parent.padding1, parent.padding2, parent.padding3, parent.padding4);
+        var hpad = (parent.padright ?? 0) + (parent.padleft ?? 0);
         if (parent.width == null)
         {
            var w = parent.calculateMaxHeight();
@@ -292,7 +292,7 @@ class ConstraintModel
       ViewableWidgetModel? parent = (this.parent as ViewableWidgetModel);
       if (_heightPercentage == null)
       {
-        var vpad = _getVerticalPadding(parent.padding1, parent.padding2, parent.padding3, parent.padding4);
+        var vpad = (parent.padtop ?? 0) + (parent.padbottom ?? 0);
         if (parent.height == null)
         {
           var h = parent.calculateMaxHeight();
@@ -305,61 +305,20 @@ class ConstraintModel
     return v;
   }
 
-  double? _widthAsPercentage(double percent)
+  int? _widthAsPercentage(double percent)
   {
-    double? pct;
-    double? max = _calculateMaxWidth();
-    if (max != null) pct = (max * (percent/100.0)).toPrecision(0);
-    return pct;
+    var max = _calculateMaxWidth();
+    if (max != null)
+         return (max * (percent/100.0)).floor();
+    else return null;
   }
 
-  double? _heightAsPercentage(double percent)
+  int? _heightAsPercentage(double percent)
   {
-    double? pct;
-    double? max = _calculateMaxHeight();
-    if (max != null) pct = (max * (percent/100.0)).toPrecision(0);
-    return pct;
-  }
-  
-  static double _getVerticalPadding(double? padding1, double? padding2, double? padding3, double? padding4)
-  {
-    double padding = 0.0;
-    double paddings = (padding1 ?? 0) + (padding2 ?? 0) + (padding3 ?? 0) + (padding4 ?? 0);
-
-    if (paddings > 0)
-    {
-      // pad all
-      if (paddings == 1) padding = (padding1 ?? 0) * 2;
-
-      // pad directions v,h
-      else if (paddings == 2) padding = (padding1 ?? 0) * 2;
-
-      // pad sides top, right, bottom, left
-      else if (paddings > 2) padding = (padding1 ?? 0)  + (padding3 ?? 0);
-    }
-
-    //should add up all of the padded siblings to do this.
-    return padding;
-  }
-
-  static double _getHorizontalPadding(double? padding1, double? padding2, double? padding3, double? padding4)
-  {
-    double padding = 0.0;
-    double paddings = (padding1 ?? 0) + (padding2 ?? 0) + (padding3 ?? 0) + (padding4 ?? 0);
-    if (paddings > 0)
-    {
-      // pad all
-      if (paddings == 1) padding = (padding1 ?? 0) * 2;
-
-      // pad directions v,h
-      else if (paddings == 2) padding = (padding2 ?? 0) * 2;
-
-      // pad sides top, right, bottom, left
-      else if (paddings > 2) padding = (padding2 ?? 0) + (padding4 ?? 0);
-    }
-
-    //should add up all of the padded siblings to do this.
-    return padding;
+    var max = _calculateMaxHeight();
+    if (max != null)
+         return (max * (percent/100.0)).floor();
+    else return null;
   }
 
   setLayoutConstraints(BoxConstraints constraints)
@@ -380,17 +339,17 @@ class ConstraintModel
     if (_widthPercentage != null)
     {
       // calculate the width
-      double? width = _widthAsPercentage(_widthPercentage!);
+      int? width = _widthAsPercentage(_widthPercentage!);
 
       // adjust min and max widths
       if (width != null)
       {
-        if (minWidth != null && minWidth! > width)  width = minWidth;
-        if (maxWidth != null && maxWidth! < width!) width = maxWidth;
+        if (minWidth != null && minWidth! > width)  width = minWidth?.toInt();
+        if (maxWidth != null && maxWidth! < width!) width = maxWidth?.toInt();
       }
 
       // set the width
-      if (layoutType != LayoutType.row) setWidth(width);
+      if (layoutType != LayoutType.row) setWidth(width?.toDouble());
     }
 
     // adjust the height if defined as a percentage
@@ -398,17 +357,17 @@ class ConstraintModel
     if (_heightPercentage != null)
     {
       // calculate the height
-      double? height = _heightAsPercentage(_heightPercentage!);
+      int? height = _heightAsPercentage(_heightPercentage!);
 
       // adjust min and max heights
       if (height != null)
       {
-        if (minHeight != null && minHeight! > height)  height = minHeight;
-        if (maxHeight != null && maxHeight! < height!) height = maxHeight;
+        if (minHeight != null && minHeight! > height)  height = minHeight?.toInt();
+        if (maxHeight != null && maxHeight! < height!) height = maxHeight?.toInt();
       }
 
       // set the height
-      if (layoutType != LayoutType.column) setHeight(height);
+      if (layoutType != LayoutType.column) setHeight(height?.toDouble());
     }
   }
 }

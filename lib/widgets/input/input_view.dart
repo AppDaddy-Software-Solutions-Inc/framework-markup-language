@@ -581,7 +581,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
       ));
     }
 
-    var padding = widget.model.padding ?? 0;
+    var padding = widget.model.padtop ?? 0;
 
     ///////////////////////
     /* Custom Formatters */
@@ -650,7 +650,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
             bottom: padding + 4,
           )),
           alignLabelWithHint: true,
-          labelText: widget.model.dense! ? null : hint,
+          labelText: widget.model.dense ? null : hint,
           labelStyle: TextStyle(
             fontSize: fontsize != null ? fontsize - 2 : 14,
             color: widget.model.enabled != false
@@ -669,10 +669,10 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
               widget.model.border == "all")
               ? OutlineInputBorder(
             borderRadius: BorderRadius.all(
-                Radius.circular(widget.model.radius ?? 4)),
+                Radius.circular(widget.model.radius)),
             borderSide: BorderSide(
                 color: errorBorderColor ?? (Theme.of(context).brightness == Brightness.light ? Theme.of(context).colorScheme.error.withOpacity(0.70) : Theme.of(context).colorScheme.onError),
-                width: widget.model.borderwidth ?? 1.0),
+                width: widget.model.borderwidth),
           )
               : widget.model.border == "none"
               ? InputBorder.none
@@ -680,20 +680,20 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
               widget.model.border == "underline")
               ? UnderlineInputBorder(
             borderRadius: BorderRadius.all(
-                Radius.circular(widget.model.radius ?? 0)),
+                Radius.circular(widget.model.radius)),
             borderSide: BorderSide(
                 color: errorBorderColor ?? Theme.of(context).colorScheme.error,
-                width: widget.model.borderwidth ?? 1.0),
+                width: widget.model.borderwidth),
           )
               : InputBorder.none,
           focusedErrorBorder: (widget.model.border == "outline" ||
               widget.model.border == "all")
               ? OutlineInputBorder(
             borderRadius: BorderRadius.all(
-                Radius.circular(widget.model.radius ?? 4)),
+                Radius.circular(widget.model.radius)),
             borderSide: BorderSide(
                 color: errorBorderColor ?? (Theme.of(context).brightness == Brightness.light ? Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.errorContainer),
-                width: widget.model.borderwidth ?? 1.0),
+                width: widget.model.borderwidth),
           )
               : widget.model.border == "none"
               ? InputBorder.none
@@ -701,13 +701,13 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
               widget.model.border == "underline")
               ? UnderlineInputBorder(
             borderRadius: BorderRadius.all(
-                Radius.circular(widget.model.radius ?? 0)),
+                Radius.circular(widget.model.radius)),
             borderSide: BorderSide(
                 color: errorBorderColor ?? Theme.of(context).colorScheme.error,
-                width: widget.model.borderwidth ?? 1.0),
+                width: widget.model.borderwidth),
           )
               : InputBorder.none,
-          hintText: widget.model.dense! ? hint : null,
+          hintText: widget.model.dense ? hint : null,
           hintStyle: TextStyle(
             fontSize: fontsize ?? 14,
             fontWeight: FontWeight.w300,
@@ -737,7 +737,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
               widget.model.obscure = !obscure!;
             },) : (widget.model.enabled != false &&
               widget.model.editable != false &&
-              widget.model.clear!)
+              widget.model.clear)
               ?
           IconButton(
             padding: EdgeInsets.zero,
@@ -754,17 +754,17 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
               : null,
           suffixIconConstraints: (widget.model.enabled != false &&
               widget.model.editable != false &&
-              widget.model.clear!)
+              widget.model.clear)
               ? BoxConstraints(maxHeight: 20)
               : null,
           border: (widget.model.border == "outline" ||
               widget.model.border == "all")
               ? OutlineInputBorder(
             borderRadius: BorderRadius.all(
-                Radius.circular(widget.model.radius ?? 4)),
+                Radius.circular(widget.model.radius)),
             borderSide: BorderSide(
                 color: enabledBorderColor ?? Theme.of(context).colorScheme.outline,
-                width: widget.model.borderwidth ?? 1.0),
+                width: widget.model.borderwidth),
           )
               : widget.model.border == "none"
               ? InputBorder.none
@@ -772,30 +772,30 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
               widget.model.border == "underline")
               ? UnderlineInputBorder(
             borderRadius: BorderRadius.all(
-                Radius.circular(widget.model.radius ?? 0)),
+                Radius.circular(widget.model.radius)),
             borderSide: BorderSide(
                 color: enabledBorderColor ?? Theme.of(context).colorScheme.outline,
-                width: widget.model.borderwidth ?? 1.0),
+                width: widget.model.borderwidth),
           )
               : InputBorder.none,
           focusedBorder:
           (widget.model.border == "outline" || widget.model.border == "all")
               ? OutlineInputBorder(
             borderRadius: BorderRadius.all(
-                Radius.circular(widget.model.radius ?? 4)),
+                Radius.circular(widget.model.radius)),
             borderSide: BorderSide(
                 color: focusBorderColor ??
                     Theme.of(context).colorScheme.primary,
-                width: widget.model.borderwidth ?? 1.0),
+                width: widget.model.borderwidth),
           )
               : (widget.model.border == "bottom" ||
               widget.model.border == "underline")
               ? UnderlineInputBorder(
             borderRadius: BorderRadius.all(
-                Radius.circular(widget.model.radius ?? 0)),
+                Radius.circular(widget.model.radius)),
             borderSide: BorderSide(
                 color: focusBorderColor ?? Theme.of(context).colorScheme.primary,
-                width: widget.model.borderwidth ?? 1.0),
+                width: widget.model.borderwidth),
           )
               : widget.model.border == "none"
               ? InputBorder.none
@@ -804,10 +804,10 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
               widget.model.border == "all")
               ? OutlineInputBorder(
             borderRadius: BorderRadius.all(
-                Radius.circular(widget.model.radius ?? 4)),
+                Radius.circular(widget.model.radius)),
             borderSide: BorderSide(
                 color: enabledBorderColor ?? Theme.of(context).colorScheme.outline,
-                width: widget.model.borderwidth ?? 1.0),
+                width: widget.model.borderwidth),
           )
               : widget.model.border == "none"
               ? InputBorder.none
@@ -815,21 +815,21 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
               widget.model.border == "underline")
               ? UnderlineInputBorder(
             borderRadius: BorderRadius.all(
-                Radius.circular(widget.model.radius ?? 0)),
+                Radius.circular(widget.model.radius)),
             borderSide: BorderSide(
                 color: enabledBorderColor ?? Theme.of(context).colorScheme.outline,
-                width: widget.model.borderwidth ?? 1.0),
+                width: widget.model.borderwidth),
           )
               : InputBorder.none,
           disabledBorder:
           (widget.model.border == "outline" || widget.model.border == "all")
               ? OutlineInputBorder(
             borderRadius: BorderRadius.all(
-                Radius.circular(widget.model.radius ?? 4)),
+                Radius.circular(widget.model.radius)),
             borderSide: BorderSide(
 
                 color: disabledBorderColor ?? Theme.of(context).colorScheme.surfaceVariant,
-                width: widget.model.borderwidth ?? 1.0),
+                width: widget.model.borderwidth),
           )
               : widget.model.border == "none"
               ? InputBorder.none
@@ -837,26 +837,23 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
               widget.model.border == "underline")
               ? UnderlineInputBorder(
             borderRadius: BorderRadius.all(
-                Radius.circular(widget.model.radius ?? 0)),
+                Radius.circular(widget.model.radius)),
             borderSide: BorderSide(
                 color: widget.model.editable == false ? enabledBorderColor ?? Theme.of(context).colorScheme.surfaceVariant
                     : disabledBorderColor ?? Theme.of(context).colorScheme.surfaceVariant,
-                width: widget.model.borderwidth ?? 1.0),
+                width: widget.model.borderwidth),
           )
               : InputBorder.none,
         ));
 
-    view = Padding(padding: EdgeInsets.symmetric(vertical: widget.model.dense! ? 0 : 4), child: view);
+    // get the model constraints
+    var modelConstraints = widget.model.constraints.model;
 
-    ///////////
-    /* Width */
-    ///////////
-    var width = widget.model.expand == true ? double.infinity : widget.model.width ?? 200;
+    // constrain the input to 200 pixels if not constrained by the model
+    if (!modelConstraints.hasHorizontalExpansionConstraints && !widget.model.expand) modelConstraints.width = 200;
 
-    ////////////////////
-    /* Constrain Size */
-    ////////////////////
-    view = SizedBox(child: view, width: width);
+    // apply constraints
+    view = applyConstraints(view, modelConstraints);
 
     // apply padding
     view = applyPadding(view);

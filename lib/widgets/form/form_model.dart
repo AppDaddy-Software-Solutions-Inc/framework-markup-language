@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:validators/validators.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/hive/form.dart' as HIVE;
@@ -883,7 +884,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
       if (ok) {
         for (var field in fields) {
           // check to see if the field is not assigned a by the developer, even if that value is null, and is not answered.
-          if ((S.isNullOrEmpty(field.value) || field.hasDefaulted == true) && field.touched == false) {
+          if ((isNull(field.value) || field.hasDefaulted == true) && field.touched == false) {
           //create the binding string based on the fields ID.
            String binding = '${field.id}';
             //assign the signature of the source to the field and grab it from the data. Data will generally return a list, so we must grab the 0th element.

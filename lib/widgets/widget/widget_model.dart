@@ -49,6 +49,7 @@ import 'package:fml/widgets/draggable/draggable_model.dart';
 import 'package:fml/widgets/droppable/droppable_model.dart';
 import 'package:fml/widgets/editor/editor_model.dart';
 import 'package:fml/widgets/expanded/expanded_model.dart';
+import 'package:fml/widgets/field/field_model.dart';
 import 'package:fml/widgets/filepicker/filepicker_model.dart';
 import 'package:fml/widgets/footer/footer_model.dart';
 import 'package:fml/widgets/form/form_model.dart';
@@ -434,6 +435,10 @@ class WidgetModel implements IDataSourceListener
 
       case "eval":
         if (parent is IDataSource) model = Eval.fromXml(model, node);
+        break;
+
+      case "field":
+        model = FieldModel.fromXml(parent, node);
         break;
 
       case "filepicker":

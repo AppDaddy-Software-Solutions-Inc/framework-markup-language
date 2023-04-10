@@ -2,29 +2,30 @@
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/log/manager.dart';
+import 'package:fml/hive/stash.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/datasources/base/model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class LogModel extends DataSourceModel implements IDataSource
+class StashModel extends DataSourceModel implements IDataSource
 {
-  LogModel(WidgetModel parent, String? id) : super(parent, id);
+  StashModel(WidgetModel parent, String? id) : super(parent, id);
 
   @override
   bool get autoexecute => super.autoexecute ?? true;
 
-  static LogModel? fromXml(WidgetModel parent, XmlElement xml)
+  static StashModel? fromXml(WidgetModel parent, XmlElement xml)
   {
-    LogModel? model;
+    StashModel? model;
     try
     {
-      model = LogModel(parent, Xml.get(node: xml, tag: 'id'));
+      model = StashModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
     catch(e)
     {
-      Log().exception(e,  caller: 'log_model');
+      Log().exception(e,  caller: 'stash_model');
       model = null;
     }
     return model;
@@ -33,8 +34,9 @@ class LogModel extends DataSourceModel implements IDataSource
   Future<bool> start({bool refresh = false, String? key}) async
   {
     if (enabled == false) return false;
+
     busy = true;
-    Data data = Log().data;
+    Data data = await Stash.getData();
     busy = false;
     return await super.onSuccess(data);
   }
@@ -45,24 +47,21 @@ class LogModel extends DataSourceModel implements IDataSource
     var function = propertyOrFunction.toLowerCase().trim();
     switch (function)
     {
-      case "write":
-        String? message = S.toStr(S.item(arguments, 0));
-        if (message != null) Log().info(message, caller: id);
-        return true;
 
-      case "export":
-        String format  =  S.toStr(S.item(arguments, 0))?.toLowerCase() ?? "html";
-        bool   history =  S.toBool(S.item(arguments, 1)) ?? false;
-        Log().export(format: format, withHistory: history);
-        return true;
+      // case "export":
+      //   String format  =  S.toStr(S.item(arguments, 0))?.toLowerCase() ?? "html";
+      //   bool   history =  S.toBool(S.item(arguments, 1)) ?? false;
+      //   Stash().export(format: format, withHistory: history);
+      //   return true;
 
-      case "clear":
-        Log().clear();
-        return true;
+      // case "clear":
+      //   Stash().delete();
+      //   return true;
 
       case 'start':
       case 'fire':
-        super.onSuccess(Log().data);
+        Data data = await Stash.getData();
+        super.onSuccess(data);
         return true;
     }
     return super.execute(caller, propertyOrFunction, arguments);

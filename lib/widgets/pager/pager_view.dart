@@ -100,13 +100,16 @@ class _PagerViewState extends WidgetState<PagerView>
       _pages.add(page);
     }
 
-    dynamic pageView = PageView.builder(controller: _controller, itemBuilder: buildPage, itemCount: _pages.length);
+    dynamic pageView = PageView.builder(
+        controller: _controller,
+        itemBuilder: buildPage,
+        itemCount: _pages.length,
+        // Maintains our `currentpage` bindable when a page is changed, by dotsindicator/scroll/drag/event
+        onPageChanged: (int page) => widget.model.currentpage = page + 1);
 
-    
     dynamic pager = widget.model.pager ? Positioned(bottom: 8, child: Container(child: DotsIndicator(controller: _controller!, itemCount: _pages.length, color: widget.model.color ?? Theme.of(context).colorScheme.onBackground,
       onPageSelected: (int page) {
         _controller!.animateToPage(page, duration: Duration(milliseconds: 150), curve: Curves.ease,);
-        widget.model.currentpage = page + 1;
       },
     ))) : Container();
 
@@ -149,7 +152,6 @@ class _PagerViewState extends WidgetState<PagerView>
 
       if (page > pages) page = 1;
       if (page < 1) page = pages;
-      widget.model.currentpage = page;
       int diff = (initialPage - page).abs();
       if (diff > 9) _controller!.jumpToPage(page - 1);
       _controller!.animateToPage(page - 1, duration: Duration(milliseconds: diff * 150), curve: Curves.easeInOutQuad);

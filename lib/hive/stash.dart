@@ -1,6 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'package:fml/data/data.dart';
 import 'package:fml/hive/database.dart';
+import 'package:fml/system.dart';
 
 class Stash
 {
@@ -37,4 +39,22 @@ class Stash
     Map<String, dynamic>? entry = await Database().find(tableName, key);
     return Stash(key, entry ?? Map<String, dynamic>());
   }
+
+  static Future<Stash> getStash() async
+  {
+    String domain = System().domain ?? '';
+    Map<String, dynamic> entries = await Database().find(tableName, domain) ?? {};
+    return Stash(domain, entries);
+  }
+
+  static Future<Data> getData() async
+  {
+    Stash stash = await getStash();
+    Data data = new Data();
+    // data.addAll();
+    stash.map.forEach((k, v) { data.add({'key': k, 'value': v}); });
+    // data.addAll(stash.map);
+    return data;
+  }
+
 }

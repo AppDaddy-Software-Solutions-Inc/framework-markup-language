@@ -492,13 +492,18 @@ class Eval
     return s;
   }
 
-  static dynamic _case(dynamic value, [dynamic v1, dynamic r1, dynamic v2, dynamic r2, dynamic v3, dynamic r3, dynamic v4, dynamic r4, dynamic v5, dynamic r5])
+  static dynamic _case(dynamic value, [dynamic v0, dynamic r0, dynamic v1, dynamic r1, dynamic v2, dynamic r2, dynamic v3, dynamic r3, dynamic v4, dynamic r4, dynamic v5, dynamic r5, dynamic v6, dynamic r6, dynamic v7, dynamic r7, dynamic v8, dynamic r8, dynamic v9, dynamic r9])
   {
+    if (value == v0) return r0;
     if (value == v1) return r1;
     if (value == v2) return r2;
     if (value == v3) return r3;
     if (value == v4) return r4;
     if (value == v5) return r5;
+    if (value == v6) return r6;
+    if (value == v7) return r7;
+    if (value == v8) return r8;
+    if (value == v9) return r9;
     return null;
   }
 

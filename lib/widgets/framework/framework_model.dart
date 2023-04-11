@@ -24,9 +24,6 @@ import 'package:fml/helper/common_helpers.dart';
 
 class FrameworkModel extends BoxModel implements IModelListener, IEventManager
 {
-  @override
-  String get layout => super.layout ?? 'column';
-
   /// Event Manager Host
   final EventManager manager = EventManager();
   registerEventListener(EventTypes type, OnEventCallback callback, {int? priority}) => manager.register(type, callback, priority: priority);

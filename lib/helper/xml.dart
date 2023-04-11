@@ -309,6 +309,25 @@ class Xml {
     }
   }
 
+  /// Changes an [XmlElement] attribute value
+  static void changeAttributeName(XmlElement node, String tag, String name)
+  {
+    try
+    {
+      XmlAttribute? a = node.getAttributeNode(tag);
+      if (a != null)
+      {
+        var value = a.value;
+        node.removeAttribute(tag);
+        setAttribute(node, name, value);
+      }
+    }
+    catch(e)
+    {
+      Log().exception(e, caller: 'xml.dart => String attribute({XmlElement node, String tag})');
+    }
+  }
+
   /// Returns the value of a child [XmlElement] element
   static String? element({required XmlElement node, required String tag})
   {

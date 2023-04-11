@@ -9,9 +9,6 @@ enum Animations {fade, none}
 class HeaderModel extends BoxModel
 {
   @override
-  String get layout => super.layout ?? 'stack';
-
-  @override
   double get height => super.height ?? maxHeight ?? minHeight ?? 100;
 
   HeaderModel(WidgetModel parent, String? id) : super(parent, id);

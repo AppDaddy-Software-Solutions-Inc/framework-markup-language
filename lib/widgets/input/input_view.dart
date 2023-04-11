@@ -115,8 +115,8 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
   {
     super.didUpdateWidget(oldWidget);
 
-    var oldcursorPos = widget.model.controller!.selection.base.offset;
-    widget.model.controller!.value = TextEditingValue(text: widget.model.value ?? "", selection: TextSelection.fromPosition(TextPosition(offset: oldcursorPos)));
+    var oldcursorPos = widget.model.controller?.selection.base.offset;
+    if (oldcursorPos != null) widget.model.controller!.value = TextEditingValue(text: widget.model.value ?? "", selection: TextSelection.fromPosition(TextPosition(offset: oldcursorPos)));
   }
 
   @override
@@ -842,11 +842,11 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     // constrain the input to 200 pixels if not constrained by the model
     if (!modelConstraints.hasHorizontalExpansionConstraints && !widget.model.expand) modelConstraints.width = 200;
 
-    // apply constraints
-    view = applyConstraints(view, modelConstraints);
-
     // add margins
     view = addMargins(view);
+
+    // apply constraints
+    view = applyConstraints(view, modelConstraints);
 
     return view;
   }

@@ -305,13 +305,13 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
     if (widget.model.header != null && widget.model.header!.visible != false)
     {
-      var model  = widget.model.header!;
+      var model = widget.model.header!;
 
       var viewportWidth  = constraints.maxWidth;
 
       // set header constraints
       model.layout = "stack";
-      model.width = viewportWidth;
+      model.width  = viewportWidth;
 
       // this is required to drive %sizing
       //model.constraints.system = constraints;
@@ -361,10 +361,9 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
     // set body constraints
     var usedHeight = (widget.model.header?.height ?? 0) + (widget.model.footer?.height ?? 0) + safeArea;
-    model.layout    = "stack";
-    model.height    = viewportHeight- usedHeight;
-    model.width     = viewportWidth;
-    model.expand    = false;
+    model.layout = widget.model.layout;
+    model.height = viewportHeight- usedHeight;
+    model.width  = viewportWidth;
 
     // build framework body
     Widget view =  widget.model.getBoxView();

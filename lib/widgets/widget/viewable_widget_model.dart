@@ -31,6 +31,22 @@ class ViewableWidgetModel extends WidgetModel
   setWidth(double? v, {bool notify = false}) => _constraints.setWidth(v, notify: notify);
   setHeight(double? v, {bool notify = false}) => _constraints.setHeight(v, notify: notify);
 
+  bool get verticallyConstrained
+  {
+    if (constraints.model.hasVerticalExpansionConstraints)  return true;
+    if (constraints.system.hasVerticalExpansionConstraints) return true;
+    if (parent is ViewableWidgetModel) return (parent as ViewableWidgetModel).verticallyConstrained;
+    return false;
+  }
+
+  bool get horizontallyConstrained
+  {
+    if (constraints.model.hasHorizontalExpansionConstraints)  return true;
+    if (constraints.system.hasHorizontalExpansionConstraints) return true;
+    if (parent is ViewableWidgetModel) return (parent as ViewableWidgetModel).horizontallyConstrained;
+    return false;
+  }
+
   // viewable children
   List<ViewableWidgetModel> get viewableChildren
   {
@@ -131,7 +147,7 @@ class ViewableWidgetModel extends WidgetModel
     if (_viewYObservable != null) _viewYObservable!.set(v);
   }
   double? get viewY => _viewY;
-  
+
   /// alignment and layout attributes
   ///
   /// The horizontal alignment of the widgets children, overrides `center`. Can be `left`, `right`, `start`, or `end`.
@@ -424,26 +440,21 @@ class ViewableWidgetModel extends WidgetModel
     String? key;
     if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewwidth')))  viewWidthObservable  = DoubleObservable(key, null, scope: scope);
     if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewheight'))) viewHeightObservable = DoubleObservable(key, null, scope: scope);
-    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewx')))      _viewXObservable     = DoubleObservable(key, null, scope: scope);
-    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewy')))      _viewYObservable     = DoubleObservable(key, null, scope: scope);
+    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewx')))      _viewXObservable      = DoubleObservable(key, null, scope: scope);
+    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewy')))      _viewYObservable      = DoubleObservable(key, null, scope: scope);
     
     // view requires a VisibilityDetector if either onstage or offstage is set or
     // someone is bound to my visibility
-    _addVisibilityDetector = visible != false ||
-        !S.isNullOrEmpty(onscreen) ||
-        !S.isNullOrEmpty(offscreen) ||
-        WidgetModel.isBound(this, Binding.toKey(id, 'visiblearea')) ||
-        WidgetModel.isBound(this, Binding.toKey(id, 'visibleheight')) ||
-        WidgetModel.isBound(this, Binding.toKey(id, 'visiblewidth'));
+    _addVisibilityDetector = visible && (!S.isNullOrEmpty(onscreen) || !S.isNullOrEmpty(offscreen) || WidgetModel.isBound(this, Binding.toKey(id, 'visiblearea')) || WidgetModel.isBound(this, Binding.toKey(id, 'visibleheight')) || WidgetModel.isBound(this, Binding.toKey(id, 'visiblewidth')));
 
     // set margins. Can be comma separated top,left,bottom,right
-    var margins = Xml.attribute(node: xml, tag: 'margin');
+    var margins = Xml.attribute(node: xml, tag: 'margin') ?? Xml.attribute(node: xml, tag: 'margins');
     this.margins = margins;
 
     // legacy support.
     // Use margins when referring to space around the outside of the widget.
     // Use padding when referring to space around the contents of inside of the widget.
-    var padding = Xml.attribute(node: xml, tag: 'pad') ?? Xml.attribute(node: xml, tag: 'padding');
+    var padding = Xml.attribute(node: xml, tag: 'pad') ?? Xml.attribute(node: xml, tag: 'padding') ?? Xml.attribute(node: xml, tag: 'padd');
     if (margins == null && padding != null) this.margins = padding;
 
     // tip

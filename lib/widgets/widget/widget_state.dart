@@ -49,8 +49,12 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
   // applies margins to the view based on the widget model
   Widget addMargins(Widget view)
   {
-    if (model!.marginTop == null) return view;
-    return Padding(child: view, padding: EdgeInsets.only(top: model?.marginTop ?? 0, right: model?.marginRight ?? 0, bottom: model?.marginBottom ?? 0, left: model?.marginLeft ?? 0));
+    if (model?.marginTop != null)
+    {
+      var inset = EdgeInsets.only(top: model?.marginTop ?? 0, right: model?.marginRight ?? 0, bottom: model?.marginBottom ?? 0, left: model?.marginLeft ?? 0);
+      view = Padding(child: view, padding: inset);
+    }
+    return view;
   }
 
   /// This routine applies the given constraints to the supplied
@@ -65,10 +69,14 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
     // Apply min and max constraints to the view only if
     // they are supplied and have not already been applied using
     // width and/or height
-    if (constraints.minWidth  != null) view = ConstrainedBox(child: view, constraints: BoxConstraints(minWidth:  constraints.minWidth!));
-    if (constraints.maxWidth  != null) view = ConstrainedBox(child: view, constraints: BoxConstraints(maxWidth:  constraints.maxWidth!));
-    if (constraints.minHeight != null) view = ConstrainedBox(child: view, constraints: BoxConstraints(minHeight: constraints.minHeight!));
-    if (constraints.maxHeight != null) view = ConstrainedBox(child: view, constraints: BoxConstraints(maxHeight: constraints.maxHeight!));
+    if ((constraints.minWidth ?? 0) > 0 ||
+        (constraints.maxWidth ?? double.infinity) < double.infinity ||
+        (constraints.minHeight ?? 0) > 0 ||
+        (constraints.maxHeight ?? double.infinity) < double.infinity)
+    {
+      var box = BoxConstraints(minWidth: constraints.minWidth ?? 0, maxWidth: constraints.maxWidth ?? double.infinity, minHeight: constraints.minHeight ?? 0, maxHeight: constraints.maxHeight ?? double.infinity);
+      view = ConstrainedBox(child: view, constraints: box);
+    }
 
     // If a hard width is specified
     // wrap the view in an unconstrained box of the specified
@@ -82,11 +90,13 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
     else if (constraints.width == null && constraints.height != null)
       view = UnconstrainedBox(child: SizedBox(child: view, height: constraints.height), constrainedAxis: Axis.horizontal);
 
+
     // If a both a hard width and height are specified
     // wrap the view in an unconstrained box of the specified
     // width and height and defeat any vertical and/or horizontal constraints
     else if (constraints.width != null && constraints.height != null)
       view = UnconstrainedBox(child: SizedBox(child: view, width: constraints.width, height: constraints.height));
+
 
     return view;
   }

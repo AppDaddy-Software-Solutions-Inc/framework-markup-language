@@ -1,6 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/layout_widget_model.dart';
+import 'package:fml/widgets/column/column_view.dart';
+import 'package:fml/widgets/row/row_view.dart';
+import 'package:fml/widgets/stack/stack_view.dart';
+import 'package:fml/widgets/widget/layout_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:flutter/material.dart';
@@ -8,8 +11,52 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class BoxModel extends LayoutWidgetModel
+class BoxModel extends LayoutModel
 {
+  LayoutType get layoutType => LayoutModel.getLayoutType(layout);
+
+  MainAxisSize get verticalAxisSize
+  {
+    switch (layoutType)
+    {
+      case LayoutType.row:
+        return MainAxisSize.max;
+
+      case LayoutType.stack:
+      case LayoutType.column:
+      default:
+        return (expand && verticallyConstrained) ? MainAxisSize.max : MainAxisSize.min;
+    }
+  }
+
+  MainAxisSize get horizontalAxisSize
+  {
+    switch (layoutType)
+    {
+      case LayoutType.row:
+        return MainAxisSize.max;
+
+      case LayoutType.stack:
+      case LayoutType.row:
+      default:
+        return (expand && horizontallyConstrained) ? MainAxisSize.max : MainAxisSize.min;
+    }
+  }
+
+  StringObservable? _layout;
+  set layout(dynamic v)
+  {
+    if (_layout != null)
+    {
+      _layout!.set(v);
+    }
+    else if (v != null)
+    {
+      _layout = StringObservable(Binding.toKey(id, 'layout'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get layout => _layout?.get()?.toLowerCase().trim();
+
   // box blur
   BooleanObservable? _blur;
   set blur(dynamic v)
@@ -98,7 +145,7 @@ class BoxModel extends LayoutWidgetModel
       _borderwidth = DoubleObservable(Binding.toKey(id, 'borderwidth'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  double? get borderwidth => _borderwidth?.get() ?? (border == 'none' ? 0 : 2);
+  double get borderwidth => _borderwidth?.get() ?? (border == 'none' ? 0 : 2);
 
   /// The border choice, can be `all`, `none`, `top`, `left`, `right`, `bottom`, `vertical`, or `horizontal`
   StringObservable? _border;
@@ -168,67 +215,89 @@ class BoxModel extends LayoutWidgetModel
   }
   double get shadowy => _shadowy?.get() ?? 4;
 
-  BoxModel(
-    WidgetModel? parent,
-    String? id, {
-    Scope?  scope,
-    dynamic width,
-    dynamic height,
-    dynamic minwidth,
-    dynamic padding,
-    dynamic minheight,
-    dynamic maxwidth,
-    dynamic maxheight,
-    dynamic opacity,
-    dynamic blur,
-    dynamic color,
-    dynamic start,
-    dynamic end,
-    dynamic elevation,
-    dynamic shadowcolor,
-    dynamic shadowy,
-    dynamic shadowx,
-    dynamic radius,
-    dynamic bordercolor,
-    dynamic borderwidth,
-    dynamic border,
-    dynamic layout,
-    dynamic valign,
-    dynamic halign,
-    dynamic expand,
-    dynamic center,
-    dynamic wrap,
-  }) : super(parent, id, scope: scope)
+  set padding(dynamic v)
   {
-    // constraints
-    if (width     != null) this.width     = width;
-    if (height    != null) this.height    = height;
-    if (minwidth  != null) this.minWidth  = minwidth;
-    if (minheight != null) this.minHeight = minheight;
-    if (maxwidth  != null) this.maxWidth  = maxwidth;
-    if (maxheight != null) this.maxHeight = maxheight;
+    // build PADDINGS array
+    if (v is String)
+    {
+      var s = v.split(',');
 
-    if (padding   != null) this.margins = padding;
-    if (opacity != null) this.opacity = opacity;
-    if (color != null) this.color = color;
-    if (start != null) this.start = start;
-    if (end != null) this.end = end;
-    if (shadowcolor != null) this.shadowcolor = shadowcolor;
-    if (shadowy != null) this.shadowy = shadowy;
-    if (shadowx != null) this.shadowx = shadowx;
-    if (elevation != null) this.elevation = elevation;
-    if (radius != null) this.radius = radius;
-    if (bordercolor != null) this.bordercolor = bordercolor;
-    if (borderwidth != null) this.borderwidth = borderwidth;
-    if (border != null) this.border = border;
-    if (halign != null) this.halign = halign;
-    if (valign != null) this.valign = valign;
-    if (center != null) this.center = center;
-    if (layout != null) this.layout = layout;
-    if (expand != null) this.expand = expand;
-    if (blur != null) this.blur = blur;
-    if (wrap != null) this.wrap = wrap;
+      // all
+      if (s.length == 1)
+      {
+        paddingTop=s[0];
+        paddingRight=s[0];
+        paddingBottom=s[0];
+        paddingLeft=s[0];
+      }
+
+      // top/bottom
+      else if (s.length == 2)
+      {
+        paddingTop=s[0];
+        paddingRight=s[1];
+        paddingBottom=s[0];
+        paddingLeft=s[1];
+      }
+
+      // top/bottom
+      else if (s.length == 3)
+      {
+        paddingTop=s[0];
+        paddingRight=s[1];
+        paddingBottom=s[2];
+        paddingLeft=null;
+      }
+
+      // top/bottom
+      else if (s.length > 3)
+      {
+        paddingTop=s[1];
+        paddingRight=s[2];
+        paddingBottom=s[3];
+        paddingLeft=s[4];
+      }
+    }
   }
+
+  // paddings top
+  DoubleObservable? _paddingTop;
+  set paddingTop(dynamic v)
+  {
+    if (_paddingTop != null) _paddingTop!.set(v);
+    else if (v != null) _paddingTop = DoubleObservable(Binding.toKey(id, 'paddingtop'), v, scope: scope, listener: onPropertyChange);
+  }
+  double? get paddingTop => _paddingTop?.get();
+
+  // paddings right
+  DoubleObservable? _paddingRight;
+  set paddingRight(dynamic v)
+  {
+    if (_paddingRight != null) _paddingRight!.set(v);
+    else if (v != null) _paddingRight = DoubleObservable(Binding.toKey(id, 'paddingright'), v, scope: scope, listener: onPropertyChange);
+  }
+  double? get paddingRight => _paddingRight?.get();
+
+  // paddings bottom
+  DoubleObservable? _paddingBottom;
+  set paddingBottom(dynamic v)
+  {
+    if (_paddingBottom != null) _paddingBottom!.set(v);
+    else if (v != null)
+      _paddingBottom = DoubleObservable(Binding.toKey(id, 'paddingbottom'), v, scope: scope, listener: onPropertyChange);
+  }
+  double? get paddingBottom => _paddingBottom?.get();
+
+  // paddings left
+  DoubleObservable? _paddingLeft;
+  set paddingLeft(dynamic v)
+  {
+    if (_paddingLeft != null) _paddingLeft!.set(v);
+    else if (v != null) _paddingLeft = DoubleObservable(Binding.toKey(id, 'paddingleft'), v, scope: scope, listener: onPropertyChange);
+  }
+  double? get paddingLeft => _paddingLeft?.get();
+
+  BoxModel(WidgetModel? parent, String? id, {Scope?  scope}) : super(parent, id, scope: scope);
 
   static BoxModel? fromXml(WidgetModel parent, XmlElement xml, {String? type}) {
     BoxModel? model;
@@ -250,6 +319,15 @@ class BoxModel extends LayoutWidgetModel
   {
     if (xml == null) return;
 
+    // legacy support for padding vs margin
+    if ((Xml.get(node: xml, tag: 'margin') ?? Xml.get(node: xml, tag: 'margins')) == null)
+    {
+      var attribute = xml.getAttributeNode("pad");
+      if (attribute == null) attribute = xml.getAttributeNode("padding");
+      if (attribute == null) attribute = xml.getAttributeNode("padd");
+      if (attribute != null) Xml.changeAttributeName(xml, attribute.localName, "margin");
+    }
+
     // deserialize 
     super.deserialize(xml);
 
@@ -268,35 +346,25 @@ class BoxModel extends LayoutWidgetModel
     shadowy = Xml.get(node: xml, tag: 'shadowy');
     shadowx = Xml.get(node: xml, tag: 'shadowx');
 
-    /// Layout Attributes
+    /// Build the layout
     layout = Xml.get(node: xml, tag: 'layout');
-    center = Xml.get(node: xml, tag: 'center');
-
-    // expand="false" is same as adding attribute shrink
-    var expand = Xml.get(node: xml, tag: 'expand');
-    if (expand == null && Xml.hasAttribute(node: xml, tag: 'shrink')) expand = 'false';
-    this.expand = expand;
-
-    wrap = Xml.get(node: xml, tag: 'wrap');
-
-    // if stack, sort children by depth
-    if (AlignmentHelper.getLayoutType(layout) == LayoutType.stack)
-    if (children != null)
-    {
-      children?.sort((a, b)
-      {
-        if(a.depth != null && b.depth != null) return a.depth?.compareTo(b.depth!) ?? 0;
-        return 0;
-      });
-    }
-  }
-
-  @override
-  dispose()
-  {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
   }
 
   Widget getView({Key? key}) => getReactiveView(BoxView(this));
+  Widget getContentView({Key? key})
+  {
+    switch (layoutType)
+    {
+      case LayoutType.row:
+        return RowView(this);
+
+      case LayoutType.column:
+        return ColumnView(this);
+
+      case LayoutType.stack:
+      default:
+        return StackView(this);
+    }
+  }
+
 }

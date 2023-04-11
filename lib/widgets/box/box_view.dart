@@ -3,11 +3,9 @@ import 'dart:ui';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/column/column_view.dart';
-import 'package:fml/widgets/row/row_view.dart';
-import 'package:fml/widgets/stack/stack_view.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/widget/alignment.dart';
 
 /// [BOX] view
 class BoxView extends StatefulWidget implements IWidgetView
@@ -78,27 +76,6 @@ List<Color> getGradientColors(c1, c2, c3, c4) {
 
 class _BoxViewState extends WidgetState<BoxView>
 {
-  Widget _layoutChildren()
-  {
-    switch (AlignmentHelper.getLayoutType(widget.model.layout))
-    {
-      // stack widget
-      case LayoutType.stack:
-
-        // create the stack
-        return StackView(widget.model);
-
-      // row widget
-      case LayoutType.row:
-        return RowView(widget.model);
-
-      // column widget
-      case LayoutType.column:
-      default:
-        return ColumnView(widget.model);
-    }
-  }
-
   Border? _getBorder()
   {
     Border? border;
@@ -109,31 +86,31 @@ class _BoxViewState extends WidgetState<BoxView>
       {
         border = Border.all(
             color: widget.model.bordercolor ?? Theme.of(context).colorScheme.onInverseSurface,
-            width: widget.model.borderwidth!);
+            width: widget.model.borderwidth);
       } else {
         border = Border(
           top: (widget.model.border == 'top' ||
               widget.model.border == 'vertical')
               ? BorderSide(
-              width: widget.model.borderwidth!,
+              width: widget.model.borderwidth,
               color: widget.model.bordercolor ?? Theme.of(context).colorScheme.onInverseSurface)
               : BorderSide(width: 0, color: Colors.transparent),
           bottom: (widget.model.border == 'bottom' ||
               widget.model.border == 'vertical')
               ? BorderSide(
-              width: widget.model.borderwidth!,
+              width: widget.model.borderwidth,
               color: widget.model.bordercolor ?? Theme.of(context).colorScheme.onInverseSurface)
               : BorderSide(width: 0, color: Colors.transparent),
           left: (widget.model.border == 'left' ||
               widget.model.border == 'horizontal')
               ? BorderSide(
-              width: widget.model.borderwidth!,
+              width: widget.model.borderwidth,
               color: widget.model.bordercolor ?? Theme.of(context).colorScheme.onInverseSurface)
               : BorderSide(width: 0, color: Colors.transparent),
           right: (widget.model.border == 'right' ||
               widget.model.border == 'horizontal')
               ? BorderSide(
-              width: widget.model.borderwidth!,
+              width: widget.model.borderwidth,
               color: widget.model.bordercolor ?? Theme.of(context).colorScheme.onInverseSurface)
               : BorderSide(width: 0, color: Colors.transparent),
         );
@@ -261,52 +238,40 @@ class _BoxViewState extends WidgetState<BoxView>
   Widget _applyConstraints(Widget view)
   {
     // determine axis sizes
-    MainAxisSize? vertAxisSize = widget.model.getVerticalAxisSize();
-    MainAxisSize? horzAxisSize = widget.model.getHorizontalAxisSize();
+    // MainAxisSize? vertAxisSize = widget.model.body.verticalAxisSize;
+    // MainAxisSize? horzAxisSize = widget.model.body.horizontalAxisSize;
 
-    bool verticalAxisExpanding = (vertAxisSize == MainAxisSize.max);
-    bool verticalAxisShrinking = (vertAxisSize == MainAxisSize.min);
+    // bool verticalAxisExpanding = (vertAxisSize == MainAxisSize.max);
+    // bool verticalAxisShrinking = (vertAxisSize == MainAxisSize.min);
+    //
+    // bool horizontalAxisExpanding = (horzAxisSize == MainAxisSize.max);
+    // bool horizontalAxisShrinking = (horzAxisSize == MainAxisSize.min);
 
-    bool horizontalAxisExpanding = (horzAxisSize == MainAxisSize.max);
-    bool horizontalAxisShrinking = (horzAxisSize == MainAxisSize.max);
+    var id = widget.model.id;
 
     // apply model constraints
     view = applyConstraints(view, widget.model.constraints.model);
 
-    // if expanding, constrain the axis from expanding too far
-    if (horizontalAxisExpanding || verticalAxisExpanding)
-    {
-      switch (AlignmentHelper.getLayoutType(widget.model.layout))
-      {
-        case LayoutType.row:
-          if (horizontalAxisExpanding) view = constrainAxis(view, widget.model.constraints.model, widget.model.constraints.calculate(), axis: Axis.horizontal);
-          break;
-
-        case LayoutType.column:
-          if (verticalAxisExpanding) view = constrainAxis(view, widget.model.constraints.model, widget.model.constraints.calculate(), axis: Axis.vertical);
-          break;
-
-        case LayoutType.stack:
-        default:
-          // constrain both axis
-          if (verticalAxisExpanding && horizontalAxisExpanding) view = constrainAxis(view, widget.model.constraints.model, widget.model.constraints.calculate());
-
-          // constrain only the vertical
-          if (verticalAxisExpanding && horizontalAxisShrinking) view = constrainAxis(view, widget.model.constraints.model, widget.model.constraints.calculate(), axis: Axis.vertical);
-
-          // constrain only the horizontal
-          if (verticalAxisShrinking && horizontalAxisExpanding) view = constrainAxis(view, widget.model.constraints.model, widget.model.constraints.calculate(), axis: Axis.horizontal);
-          break;
-      }
-    }
-
     // allow the box to shrink on any axis that is not expanding
     // this is done by applying an UnconstrainedBox() to the view
     // in the direction of the constrained axis
-    if (verticalAxisShrinking && horizontalAxisShrinking) view = UnconstrainedBox(child: view);
-    if (verticalAxisShrinking && horizontalAxisExpanding) view = UnconstrainedBox(child: view, constrainedAxis: Axis.horizontal);
-    if (verticalAxisExpanding && horizontalAxisShrinking) view = UnconstrainedBox(child: view, constrainedAxis: Axis.vertical);
+    view = UnconstrainedBox(child: view);
 
+    return view;
+  }
+
+  // applies padding around the of the box
+  Widget addPadding(Widget view)
+  {
+    if (model is BoxModel)
+    {
+      var model = (this.model as BoxModel);
+      if (model.paddingTop != null)
+      {
+        var inset = EdgeInsets.only(top: model.paddingTop ?? 0, right: model.paddingRight ?? 0, bottom: model.paddingBottom ?? 0, left: model.paddingLeft ?? 0);
+        view = Padding(child: view, padding: inset);
+      }
+    }
     return view;
   }
 
@@ -315,23 +280,19 @@ class _BoxViewState extends WidgetState<BoxView>
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
+    var id = widget.model.id;
+
     // Check if widget is visible before wasting resources on building it
     if (widget.model.visible == false) return Offstage();
 
-    // save system constraints
-    var minWidth  = constraints.minWidth;
-    var maxWidth  = constraints.maxWidth  - ((S.toDouble(widget.model.borderwidth) ?? 0) * 2);
-    var minHeight = constraints.minHeight - ((S.toDouble(widget.model.borderwidth) ?? 0) * 2);
-    var maxHeight = constraints.maxHeight;
-
     // set system sizing
-    onLayout(BoxConstraints(minWidth:  minWidth, maxWidth:  maxWidth, minHeight: minHeight, maxHeight: maxHeight));
+    onLayout(constraints);
 
     // this must go after the children are determined
-    var alignment = AlignmentHelper.alignWidgetAxis(AlignmentHelper.getLayoutType(widget.model.layout), widget.model.center, AlignmentHelper.getHorizontalAlignmentType(widget.model.halign), AlignmentHelper.getVerticalAlignmentType(widget.model.valign));
+    var alignment = WidgetAlignment(widget.model.layoutType, widget.model.center, WidgetAlignment.getHorizontalAlignmentType(widget.model.halign), WidgetAlignment.getVerticalAlignmentType(widget.model.valign));
 
     // layout the children
-    Widget? child = _layoutChildren();
+    Widget content = widget.model.getContentView();
 
     // build the border
     Border? border = _getBorder();
@@ -346,13 +307,13 @@ class _BoxViewState extends WidgetState<BoxView>
     BoxDecoration? borderDecoration = border != null ? BoxDecoration(border: border, borderRadius: radius) : null;
 
     // blur the view
-    if (widget.model.blur) child = _getBlurredView(child, borderDecoration);
+    if (widget.model.blur) content = _getBlurredView(content, borderDecoration);
 
-    // add margins
-    child = addMargins(child);
+    // add padding
+    content = addPadding(content);
 
     // inner box - contents
-    Widget view = Container(clipBehavior: Clip.antiAlias, decoration: decoration, alignment: alignment.aligned, child: child);
+    Widget view = Container(clipBehavior: Clip.antiAlias, decoration: decoration, alignment: alignment.aligned, child: content);
 
     // build the outer box - border
     if (borderDecoration != null) view = Container(decoration: borderDecoration, child: view);
@@ -366,6 +327,9 @@ class _BoxViewState extends WidgetState<BoxView>
     // apply constraints to allow the box to
     // shrink/expand properly
     view = _applyConstraints(view);
+
+    // add margins
+    view = addMargins(view);
 
     return view;
   }

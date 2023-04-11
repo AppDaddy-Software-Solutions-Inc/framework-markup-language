@@ -414,17 +414,16 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
       ),
     );
 
-    ///////////
-    /* Width */
-    ///////////
-    var width = widget.model.width ?? 200;
+    // get the model constraints
+    var modelConstraints = widget.model.constraints.model;
 
-    ////////////////////
-    /* Constrain Size */
-    ////////////////////
-    view = SizedBox(child: view, width: width);
+    // constrain the input to 200 pixels if not constrained by the model
+    if (!modelConstraints.hasHorizontalExpansionConstraints) modelConstraints.width = 200;
 
     view = addMargins(view);
+
+    // apply user defined constraints
+    view = applyConstraints(view, widget.model.constraints.model);
 
     return view;
   }

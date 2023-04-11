@@ -5,7 +5,7 @@ import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart'    ;
 import 'package:fml/event/event.dart'             ;
 import 'package:fml/widgets/framework/framework_model.dart' ;
-import 'package:fml/widgets/box/box_view.dart' as BOX;
+import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/drawer/drawer_model.dart' as DRAWER;
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
@@ -50,11 +50,11 @@ class DrawerView extends StatefulWidget implements IDragListener, IWidgetView
 
 class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
 {
-  BOX.BoxView? visibleDrawer;
-  BOX.BoxView? top;
-  BOX.BoxView? bottom;
-  BOX.BoxView? left;
-  BOX.BoxView? right;
+  BoxView? visibleDrawer;
+  BoxView? top;
+  BoxView? bottom;
+  BoxView? left;
+  BoxView? right;
   String? openSheet;
   double? fromTop;
   double? fromBottom;
@@ -192,10 +192,10 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
       fromRight = w;
     }
 
-    top     = widget.model.top    != null ? BOX.BoxView(widget.model.top!)    : null;
-    bottom  = widget.model.bottom != null ? BOX.BoxView(widget.model.bottom!) : null;
-    left    = widget.model.left   != null ? BOX.BoxView(widget.model.left!)   : null;
-    right   = widget.model.right  != null ? BOX.BoxView(widget.model.right!)  : null;
+    top     = widget.model.top    != null ? BoxView(widget.model.top!)    : null;
+    bottom  = widget.model.bottom != null ? BoxView(widget.model.bottom!) : null;
+    left    = widget.model.left   != null ? BoxView(widget.model.left!)   : null;
+    right   = widget.model.right  != null ? BoxView(widget.model.right!)  : null;
 
     double screenHeight = h;
     double screenWidth = w;

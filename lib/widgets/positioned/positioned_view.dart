@@ -1,9 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/helper/alignment.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/stack/stack_model.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/layout_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'positioned_model.dart';
 
@@ -36,7 +36,7 @@ class _PositionedViewState extends WidgetState<PositionedView>
     Widget view = child;
     LayoutType? layout;
     if (widget.model.parent is StackModel) layout = LayoutType.stack;
-    if (widget.model.parent is BoxModel && AlignmentHelper.getLayoutType((widget.model.parent as BoxModel).layout) == LayoutType.stack) layout = LayoutType.stack;
+    if (widget.model.parent is BoxModel && LayoutModel.getLayoutType((widget.model.parent as BoxModel).layout) == LayoutType.stack) layout = LayoutType.stack;
     if (layout == LayoutType.stack)
     {
       if (widget.model.xoffset != null && widget.model.yoffset != null)

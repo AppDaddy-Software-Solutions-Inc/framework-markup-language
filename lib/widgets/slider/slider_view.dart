@@ -98,11 +98,11 @@ class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserv
     // constrain the input to 200 pixels if not constrained by the model
     if (!modelConstraints.hasHorizontalExpansionConstraints) modelConstraints.width = 200;
 
-    // apply constraints
-    view = applyConstraints(view, modelConstraints);
-
     // add margins
     view = addMargins(view);
+
+    // apply constraints
+    view = applyConstraints(view, modelConstraints);
 
     return view;
   }

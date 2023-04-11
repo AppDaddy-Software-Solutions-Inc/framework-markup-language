@@ -85,7 +85,7 @@ class _CardViewState extends WidgetState<CardView>
     /* View */
     //////////
     Widget view = Card(
-        margin: EdgeInsets.all(widget.model.margin),
+        margin: EdgeInsets.all(widget.model.padding),
         clipBehavior: Clip.antiAlias,
         color: widget.model.color ?? Theme.of(context).colorScheme.surface,
         elevation: widget.model.elevation,

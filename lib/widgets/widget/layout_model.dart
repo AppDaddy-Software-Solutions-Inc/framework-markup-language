@@ -5,26 +5,26 @@ import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observable.dart';
 import 'package:fml/observable/observables/boolean.dart';
 import 'package:fml/observable/observables/double.dart';
-import 'package:fml/observable/observables/string.dart';
 import 'package:fml/observable/scope.dart';
 import 'package:fml/widgets/widget/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
 
-class LayoutWidgetModel extends DecoratedWidgetModel
+enum LayoutType {none, row, column, stack}
+enum VerticalAlignmentType {top, bottom, center, around, between, evenly}
+enum HorizontalAlignmentType {left, right, center, around, between, evenly}
+
+class LayoutModel extends DecoratedWidgetModel
 {
-  // override this routine in the outer model
-  bool isVerticallyConstrained() => true;
+  @required
+  LayoutType get layoutType => throw(UnimplementedError);
 
-  // override this routine in the outer model
-  bool isHorizontallyConstrained() => true;
+  @required
+  MainAxisSize get verticalAxisSize => throw(UnimplementedError);
 
-  // override this routine in the outer model
-  MainAxisSize getVerticalAxisSize() => MainAxisSize.min;
-
-  // override this routine in the outer model
-  MainAxisSize getHorizontalAxisSize() => MainAxisSize.min;
+  @required
+  MainAxisSize get horizontalAxisSize => throw(UnimplementedError);
 
   // children with variable width
   List<ViewableWidgetModel> get variableWidthChildren => viewableChildren.where((child) => child.flex != null || child.pctWidth != null).toList();
@@ -40,39 +40,30 @@ class LayoutWidgetModel extends DecoratedWidgetModel
 
   /// Center attribute allows a simple boolean override for halign and valign both being center. halign and valign will override center if given.
   BooleanObservable? _center;
-  set center(dynamic v) {
-    if (_center != null) {
+  set center(dynamic v)
+  {
+    if (_center != null)
+    {
       _center!.set(v);
-    } else if (v != null) {
-      _center = BooleanObservable(Binding.toKey(id, 'center'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else if (v != null)
+    {
+      _center = BooleanObservable(Binding.toKey(id, 'center'), v, scope: scope, listener: onPropertyChange);
     }
   }
   bool get center => _center?.get() ?? false;
 
-  /// Layout determines the widgets childrens layout. Can be `row`, `column`, `col`, or `stack`. Defaulted to `column`. If set to `stack` it can take `POSITIONED` as a child.
-  StringObservable? _layout;
-  set layout(dynamic v)
+  /// wrap determines the widget, if layout is row or col, how it will wrap.
+  BooleanObservable? _wrap;
+  set wrap(dynamic v)
   {
-    if (_layout != null)
+    if (_wrap != null)
     {
-      _layout!.set(v);
+      _wrap!.set(v);
     }
     else if (v != null)
     {
-      _layout = StringObservable(Binding.toKey(id, 'layout'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  String? get layout => _layout?.get()?.toLowerCase().trim();
-
-  /// wrap determines the widget, if layout is row or col, how it will wrap.
-  BooleanObservable? _wrap;
-  set wrap(dynamic v) {
-    if (_wrap != null) {
-      _wrap!.set(v);
-    } else if (v != null) {
-      _wrap = BooleanObservable(Binding.toKey(id, 'wrap'), v,
-          scope: scope, listener: onPropertyChange);
+      _wrap = BooleanObservable(Binding.toKey(id, 'wrap'), v, scope: scope, listener: onPropertyChange);
     }
   }
   bool get wrap => _wrap?.get() ?? false;
@@ -92,27 +83,13 @@ class LayoutWidgetModel extends DecoratedWidgetModel
   }
   bool get expand => _expand?.get() ?? true;
 
-  LayoutWidgetModel(
-      WidgetModel? parent,
-      String? id, {
-        Scope?  scope,
-        dynamic layout,
-        dynamic expand,
-        dynamic center,
-        dynamic wrap,
-      }) : super(parent, id, scope: scope)
-  {
-    if (center != null) this.center = center;
-    if (layout != null) this.layout = layout;
-    if (expand != null) this.expand = expand;
-    if (wrap != null) this.wrap = wrap;
-  }
+  LayoutModel(WidgetModel? parent, String? id, {Scope?  scope}) : super(parent, id, scope: scope);
 
-  static LayoutWidgetModel? fromXml(WidgetModel parent, XmlElement xml, {String? type})
+  static LayoutModel? fromXml(WidgetModel parent, XmlElement xml, {String? type})
   {
-    LayoutWidgetModel? model;
+    LayoutModel? model;
     try {
-      model = LayoutWidgetModel(parent, Xml.get(node: xml, tag: 'id'));
+      model = LayoutModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
     catch(e)
@@ -132,21 +109,16 @@ class LayoutWidgetModel extends DecoratedWidgetModel
     // deserialize
     super.deserialize(xml);
 
-    /// Layout Attributes
-    layout = Xml.get(node: xml, tag: 'layout');
+    // properties
     center = Xml.get(node: xml, tag: 'center');
-    expand = Xml.get(node: xml, tag: 'expand');
     wrap   = Xml.get(node: xml, tag: 'wrap');
+    expand = Xml.get(node: xml, tag: 'expand');
 
-    // if stack, sort children by depth
-    if (AlignmentHelper.getLayoutType(layout) == LayoutType.stack)
-    if (children != null)
+    // expand=true is the same as setting the width and height to 100%
+    if (expand)
     {
-      children?.sort((a, b)
-      {
-        if(a.depth != null && b.depth != null) return a.depth?.compareTo(b.depth!) ?? 0;
-        return 0;
-      });
+      if (width  == null && pctWidth  == null) width  = "100%";
+      if (height == null && pctHeight == null) height = "100%";
     }
   }
 
@@ -157,7 +129,7 @@ class LayoutWidgetModel extends DecoratedWidgetModel
 
     print("inflate() => model id=$id");
 
-    var layout = AlignmentHelper.getLayoutType(this.layout);
+    var layout = this.layoutType;
     var variableChildren = this.variableWidthChildren;
     var fixedChildren = (layout == LayoutType.row) ? this.fixedWidthChildren : this.fixedHeightChildren;
 
@@ -200,13 +172,12 @@ class LayoutWidgetModel extends DecoratedWidgetModel
   {
     super.onLayoutComplete();
 
-    var layout = AlignmentHelper.getLayoutType(this.layout);
-    var fixedChildren = (layout == LayoutType.row) ? this.fixedWidthChildren : this.fixedHeightChildren;
+    var fixedChildren = (layoutType == LayoutType.row) ? this.fixedWidthChildren : this.fixedHeightChildren;
 
     // we need a callback to build if we have no fixed children
     if (fixedChildren.isEmpty)
     {
-      switch (layout)
+      switch (layoutType)
       {
         case LayoutType.row:
           onWidthChange(null);
@@ -254,7 +225,7 @@ class LayoutWidgetModel extends DecoratedWidgetModel
         if (child.visible && child.pctWidth != null)
         {
           // calculate size from %
-          var size = (usable * (child.pctWidth!/100)).floor();
+          int size = (usable * (child.pctWidth!/100)).floor();
 
           // must be 0 or greater
           if (size < 0) size = 0;
@@ -263,7 +234,7 @@ class LayoutWidgetModel extends DecoratedWidgetModel
           free = free - size;
 
           // set the size
-          if (child.width != size) child.setWidth(size.toDouble(), notify: true);
+          if (child.width != size) child.setWidth(size.toDouble() - (child.marginLeft ?? 0) - (child.marginRight ?? 0), notify: true);
         }
       }
 
@@ -357,6 +328,24 @@ class LayoutWidgetModel extends DecoratedWidgetModel
           if (child.height != size) child.setHeight(size.toDouble(), notify: true);
         }
       }
+    }
+  }
+
+  static LayoutType getLayoutType(String? layout, {LayoutType defaultLayout = LayoutType.column})
+  {
+    switch (layout?.toLowerCase().trim())
+    {
+      case 'col':
+      case 'column':
+        return LayoutType.column;
+
+      case 'row':
+        return LayoutType.row;
+
+      case 'stack':
+        return LayoutType.stack;
+
+      default: return defaultLayout;
     }
   }
 }

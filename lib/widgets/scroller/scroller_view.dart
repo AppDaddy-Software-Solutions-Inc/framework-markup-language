@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
+import 'package:fml/widgets/widget/alignment.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/event/event.dart' ;
-import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/widget/layout_model.dart';
 
 /// Scroll View
 ///
@@ -138,7 +139,7 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
 
     var layoutType = (direction == Axis.horizontal) ? LayoutType.row : LayoutType.column;
 
-    var alignment = AlignmentHelper.alignWidgetAxis(layoutType, false, AlignmentHelper.getHorizontalAlignmentType(widget.model.halign), AlignmentHelper.getVerticalAlignmentType(widget.model.valign));
+    var alignment = WidgetAlignment(layoutType, false, WidgetAlignment.getHorizontalAlignmentType(widget.model.halign), WidgetAlignment.getVerticalAlignmentType(widget.model.valign));
 
     var child;
     if (direction == Axis.vertical)

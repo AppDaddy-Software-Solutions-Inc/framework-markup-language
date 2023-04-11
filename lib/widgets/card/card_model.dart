@@ -42,6 +42,18 @@ class CardModel extends DecoratedWidgetModel
   }
   double get radius => _radius?.get() ?? 4;
 
+  // padding inside the widget 
+  DoubleObservable? _padding;
+  set padding(dynamic v) {
+    if (_padding != null) {
+      _padding!.set(v);
+    } else if (v != null) {
+      _padding = DoubleObservable(Binding.toKey(id, 'padding'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  double get padding => _padding?.get() ?? 5;
+
   //////////////////
   /* border color */
   //////////////////
@@ -81,7 +93,7 @@ class CardModel extends DecoratedWidgetModel
     WidgetModel parent,
     String? id, {
     dynamic visible,
-    dynamic padding,
+    dynamic margin,
     dynamic elevation,
     dynamic color,
     dynamic bordercolor,
@@ -89,7 +101,7 @@ class CardModel extends DecoratedWidgetModel
     dynamic valign,
     dynamic width,
     dynamic height,
-    dynamic margin,
+    dynamic padding,
     dynamic radius,
     dynamic borderwidth,
   }) : super(parent, id)
@@ -97,12 +109,12 @@ class CardModel extends DecoratedWidgetModel
     if (width  != null) this.width  = width;
     if (height != null) this.height = height;
 
-    this.margins = padding;
+    this.margins = margin;
     this.radius = radius;
     this.color = color;
     this.bordercolor = bordercolor;
     this.elevation = elevation;
-    this.margin = margin;
+    this.padding = padding;
     this.halign = halign;
     this.valign = valign;
     this.borderwidth = borderwidth;
@@ -130,7 +142,7 @@ class CardModel extends DecoratedWidgetModel
     super.deserialize(xml);
 
     // properties
-    margin = Xml.get(node: xml, tag: 'margin');
+    padding = Xml.get(node: xml, tag: 'padding');
     elevation = Xml.get(node: xml, tag: 'elevation');
     bordercolor = Xml.get(node: xml, tag: 'bordercolor');
     borderwidth = Xml.get(node: xml, tag: 'borderwidth');

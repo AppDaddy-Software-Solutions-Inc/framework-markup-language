@@ -135,13 +135,14 @@ class TableHeaderCellModel extends DecoratedWidgetModel
     }
   }
 
-  bool? get center {
-    if (_center == null) {
-      if ((this.parent != null) && (this.parent is TableHeaderModel))
-        return (this.parent as TableHeaderModel).center;
-      return null;
+  bool get center
+  {
+    if (_center == null)
+    {
+      if ((this.parent != null) && (this.parent is TableHeaderModel)) return (this.parent as TableHeaderModel).center;
+      return false;
     }
-    return _center?.get();
+    return _center?.get() ?? false;
   }
 
   /// wrap is a boolean that dictates if the widget will wrap or not.
@@ -155,13 +156,14 @@ class TableHeaderCellModel extends DecoratedWidgetModel
     }
   }
 
-  bool? get wrap {
-    if (_wrap == null) {
-      if ((this.parent != null) && (this.parent is TableHeaderModel))
-        return (this.parent as TableHeaderModel).wrap;
-      return null;
+  bool get wrap
+  {
+    if (_wrap == null)
+    {
+      if ((this.parent != null) && (this.parent is TableHeaderModel)) return (this.parent as TableHeaderModel).wrap;
+      return false;
     }
-    return _wrap?.get();
+    return _wrap?.get() ?? false;
   }
 
   /// wrap is a boolean that dictates if the widget will wrap or not.

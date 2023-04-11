@@ -76,11 +76,31 @@ class Constraints
   bool get isNotEmpty => hasVerticalConstraints || hasHorizontalConstraints;
   bool get isEmpty => !isNotEmpty;
 
-  bool get hasVerticalContractionConstraints => height != null || minHeight != null;
-  bool get hasVerticalExpansionConstraints => height != null || maxHeight != null;
+  bool get hasVerticalContractionConstraints
+  {
+    var h = height ?? minHeight ?? double.negativeInfinity;
+    return h > double.negativeInfinity;
+  }
+
+  bool get hasVerticalExpansionConstraints
+  {
+    var h = height ?? maxHeight ?? double.infinity;
+    return h < double.infinity;
+  }
+
   bool get hasVerticalConstraints => hasVerticalExpansionConstraints || hasVerticalContractionConstraints;
 
-  bool get hasHorizontalContractionConstraints => width != null || minWidth != null;
-  bool get hasHorizontalExpansionConstraints => width != null || maxWidth != null;
+  bool get hasHorizontalContractionConstraints
+  {
+    var w = width ?? minWidth ?? double.negativeInfinity;
+    return w > double.negativeInfinity;
+  }
+
+  bool get hasHorizontalExpansionConstraints
+  {
+    var w = width ?? maxWidth ?? double.infinity;
+    return w < double.infinity;
+  }
+
   bool get hasHorizontalConstraints => hasHorizontalExpansionConstraints || hasHorizontalContractionConstraints;
 }

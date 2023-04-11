@@ -120,18 +120,20 @@ class TableHeaderModel extends DecoratedWidgetModel
     }
   }
 
-  bool? get center {
-    if (_center == null) {
-      if ((this.parent != null) && (this.parent is TableModel))
-        return (this.parent as TableModel).center;
-      return null;
+  bool get center
+  {
+    if (_center == null)
+    {
+      if ((this.parent != null) && (this.parent is TableModel)) return (this.parent as TableModel).center;
+      return false;
     }
-    return _center?.get();
+    return _center?.get() ?? false;
   }
 
   /// wrap is a boolean that dictates if the widget will wrap or not.
   BooleanObservable? _wrap;
-  set wrap(dynamic v) {
+  set wrap(dynamic v)
+  {
     if (_wrap != null) {
       _wrap!.set(v);
     } else if (v != null) {
@@ -139,14 +141,14 @@ class TableHeaderModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
-
-  bool? get wrap {
-    if (_wrap == null) {
-      if ((this.parent != null) && (this.parent is TableModel))
-        return (this.parent as TableModel).wrap;
-      return null;
+  bool get wrap
+  {
+    if (_wrap == null)
+    {
+      if ((this.parent != null) && (this.parent is TableModel)) return (this.parent as TableModel).wrap;
+      return false;
     }
-    return _wrap?.get();
+    return _wrap?.get() ?? false;
   }
 
   TableHeaderModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic color}) : super(parent, id, scope: Scope(parent: parent.scope))

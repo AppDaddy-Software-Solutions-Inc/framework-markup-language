@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/checkbox/checkbox_model.dart' as CHECKBOX;
 import 'package:fml/widgets/option/option_model.dart' as OPTION;
-import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/widget/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/widget/alignment.dart';
+import 'package:fml/widgets/widget/layout_model.dart';
 
 /// Checkbox View
 ///
@@ -54,7 +55,7 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
     onLayout(constraints);
 
     //this must go after the children are determined
-    var alignment = AlignmentHelper.alignWidgetAxis(AlignmentHelper.getLayoutType(widget.model.layout), widget.model.center, AlignmentHelper.getHorizontalAlignmentType(widget.model.halign), AlignmentHelper.getVerticalAlignmentType(widget.model.valign));
+    var alignment = WidgetAlignment(LayoutModel.getLayoutType(widget.model.layout), widget.model.center, WidgetAlignment.getHorizontalAlignmentType(widget.model.halign), WidgetAlignment.getVerticalAlignmentType(widget.model.valign));
 
     _buildOptions();
 

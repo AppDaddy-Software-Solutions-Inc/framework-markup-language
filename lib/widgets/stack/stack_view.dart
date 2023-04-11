@@ -3,14 +3,14 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/positioned/positioned_view.dart';
 import 'package:fml/widgets/stack/stack_model.dart';
+import 'package:fml/widgets/widget/alignment.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
-import 'package:fml/helper/common_helpers.dart';
-import 'package:fml/widgets/widget/layout_widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/widget/layout_model.dart';
 
 class StackView extends StatefulWidget implements IWidgetView
 {
-  final LayoutWidgetModel model;
+  final LayoutModel model;
 
   StackView(this.model) : super(key: ObjectKey(model));
 
@@ -29,8 +29,8 @@ class _StackViewState extends WidgetState<StackView>
     List<Widget> children = widget.model.inflate();
     if (children.isEmpty) children.add(Container(width: 0, height: 0));
 
-    MainAxisSize horizontalAxisSize = widget.model.getHorizontalAxisSize();
-    MainAxisSize verticalAxisSize   = widget.model.getVerticalAxisSize();
+    MainAxisSize horizontalAxisSize = widget.model.horizontalAxisSize;
+    MainAxisSize verticalAxisSize   = widget.model.verticalAxisSize;
 
     // The stack sizes itself to contain all the non-positioned children,
     // which are positioned according to alignment.
@@ -63,18 +63,16 @@ class _StackViewState extends WidgetState<StackView>
     var children = _layoutChildren();
 
     // calculate the alignment
-    var alignment = AlignmentHelper.alignWidgetAxis(LayoutType.stack, widget.model.center, AlignmentHelper.getHorizontalAlignmentType(widget.model.halign), AlignmentHelper.getVerticalAlignmentType(widget.model.valign));
+    var alignment = WidgetAlignment(LayoutType.stack, widget.model.center, WidgetAlignment.getHorizontalAlignmentType(widget.model.halign), WidgetAlignment.getVerticalAlignmentType(widget.model.valign));
 
     // create the stack
     Widget view = Stack(children: children, alignment: alignment.aligned, fit: StackFit.loose);
 
     // add margins
-    // skip these if this is being managed at a higher level (BoxModel)
-    if (widget.model is StackModel) view = addMargins(view);
+    if (model is StackModel) view = addMargins(view);
 
     // apply user defined constraints
-    // skip these if this is being managed at a higher level (BoxModel)
-    if (widget.model is StackModel) view = applyConstraints(view, widget.model.constraints.model);
+    if (model is StackModel) view = applyConstraints(view, widget.model.constraints.model);
 
     return view;
   }

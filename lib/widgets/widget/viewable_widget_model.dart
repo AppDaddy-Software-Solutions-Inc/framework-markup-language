@@ -596,8 +596,11 @@ class ViewableWidgetModel extends WidgetModel
 
   void setLayoutConstraints(BoxConstraints constraints) => _constraints.setLayoutConstraints(constraints);
 
-  void onLayoutComplete()
+  void onLayoutComplete() async
   {
+    print('xxxxxxxxxxxxxxxxxx');
+    var id = this.id;
+
     if (this.context == null) return;
 
     var box = context!.findRenderObject() as RenderBox?;
@@ -612,7 +615,10 @@ class ViewableWidgetModel extends WidgetModel
       viewHeight = size.height;
       viewX      = position.dx;
       viewY      = position.dy;
-      if (parent is ViewableWidgetModel) (parent as ViewableWidgetModel).onLayoutComplete();
+      if (parent is ViewableWidgetModel)
+      {
+        (parent as ViewableWidgetModel).onLayoutComplete();
+      }
     }
   }
 

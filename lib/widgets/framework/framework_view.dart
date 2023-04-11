@@ -310,8 +310,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       var viewportWidth  = constraints.maxWidth;
 
       // set header constraints
-      model.layout = "stack";
-      model.width  = viewportWidth;
+      model.width = viewportWidth - (model.marginLeft ?? 0) - (model.marginRight ?? 0);
 
       // this is required to drive %sizing
       //model.constraints.system = constraints;
@@ -336,7 +335,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
       // set footer constraints
       model.layout = "stack";
-      model.width  = viewportWidth;
+      model.width  = viewportWidth - (model.marginLeft ?? 0) - (model.marginRight ?? 0);
 
       // this is required to drive %sizing
       //model.constraints.system = constraints;
@@ -351,7 +350,9 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
   Widget _buildBody(BoxConstraints constraints)
   {
-    var model = widget.model;
+    var model  = widget.model;
+    var header = widget.model.header;
+    var footer = widget.model.header;
 
     // build body
     var safeArea = MediaQuery.of(context).padding.top.ceil();
@@ -360,10 +361,9 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     var viewportHeight = constraints.maxHeight;
 
     // set body constraints
-    var usedHeight = (widget.model.header?.height ?? 0) + (widget.model.footer?.height ?? 0) + safeArea;
-    model.layout = widget.model.layout;
-    model.height = viewportHeight- usedHeight;
-    model.width  = viewportWidth;
+    var usedHeight = (header?.height ?? 0) + (footer?.height ?? 0) + safeArea;
+    model.height   = viewportHeight- usedHeight - (model.marginTop ?? 0) - (model.marginBottom ?? 0);
+    model.width    = viewportWidth - (model.marginLeft ?? 0) - (model.marginRight ?? 0);
 
     // build framework body
     Widget view =  widget.model.getBoxView();

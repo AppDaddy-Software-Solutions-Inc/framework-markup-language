@@ -92,7 +92,7 @@ class _RadioViewState extends WidgetState<RadioView>
     }
 
     //this must go after the children are determined
-    var alignment = WidgetAlignment(LayoutModel.getLayoutType(widget.model.layout), widget.model.center, WidgetAlignment.getHorizontalAlignmentType(widget.model.halign), WidgetAlignment.getVerticalAlignmentType(widget.model.valign));
+    var alignment = WidgetAlignment(LayoutModel.getLayoutType(widget.model.layout), widget.model.center, widget.model.halign, widget.model.valign);
 
     /* View */
     Widget view;

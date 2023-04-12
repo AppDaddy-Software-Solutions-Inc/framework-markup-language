@@ -2,7 +2,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
-import 'package:fml/widgets/constraints/constraint.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
 import 'package:fml/widgets/scroller/scroller_shadow_view.dart';
@@ -148,7 +147,7 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
 
     var layoutType = (direction == Axis.horizontal) ? LayoutType.row : LayoutType.column;
 
-    var alignment = WidgetAlignment(layoutType, false, WidgetAlignment.getHorizontalAlignmentType(widget.model.halign), WidgetAlignment.getVerticalAlignmentType(widget.model.valign));
+    var alignment = WidgetAlignment(layoutType, false, widget.model.halign, widget.model.valign);
 
     var child;
     if (direction == Axis.vertical)

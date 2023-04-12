@@ -48,7 +48,7 @@ class _ColumnViewState extends WidgetState<ColumnView>
     MainAxisSize? mainAxisSize = widget.model.verticalAxisSize;
 
     // this must go after the children are determined
-    var alignment = WidgetAlignment(LayoutType.column, widget.model.center, WidgetAlignment.getHorizontalAlignmentType(widget.model.halign), WidgetAlignment.getVerticalAlignmentType(widget.model.valign));
+    var alignment = WidgetAlignment(LayoutType.stack, widget.model.center, widget.model.halign, widget.model.valign);
 
     Widget view;
 

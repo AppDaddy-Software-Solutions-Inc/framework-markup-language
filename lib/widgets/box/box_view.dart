@@ -285,7 +285,7 @@ class _BoxViewState extends WidgetState<BoxView>
     onLayout(constraints);
 
     // this must go after the children are determined
-    var alignment = WidgetAlignment(widget.model.layoutType, widget.model.center, WidgetAlignment.getHorizontalAlignmentType(widget.model.halign), WidgetAlignment.getVerticalAlignmentType(widget.model.valign));
+    var alignment = WidgetAlignment(widget.model.layoutType, widget.model.center, widget.model.halign, widget.model.valign);
 
     // layout the children
     Widget content = widget.model.getContentView();

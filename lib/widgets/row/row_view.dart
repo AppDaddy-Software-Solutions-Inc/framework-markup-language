@@ -45,7 +45,7 @@ class _RowViewState extends WidgetState<RowView>
     if (children.isEmpty) children.add(Container());
 
     //this must go after the children are determined. Returns an alignment map.
-    var alignment = WidgetAlignment(LayoutType.row, widget.model.center, WidgetAlignment.getHorizontalAlignmentType(widget.model.halign), WidgetAlignment.getVerticalAlignmentType(widget.model.valign));
+    var alignment = WidgetAlignment(LayoutType.row, widget.model.center, widget.model.halign, widget.model.valign);
 
     // get main axis size
     MainAxisSize? mainAxisSize = widget.model.horizontalAxisSize;

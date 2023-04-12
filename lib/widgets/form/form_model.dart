@@ -277,6 +277,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     String? type,
     String? title,
     dynamic status,
+    dynamic busy,
     dynamic visible,
     dynamic autosave,
     dynamic mandatory,
@@ -287,7 +288,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
   }) : super(parent, id)
   {
     // instantiate busy observable
-    busy = false;
+    busy         = false;
 
     this.status         = status;
     this.autosave       = autosave;
@@ -339,7 +340,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     fields.addAll(getFields(children));
 
     // fill all empty fields with the datasource if specified
-    _fillEmptyFields();
+    if(data != null) _fillEmptyFields();
 
     // get forms
     forms.addAll(getForms(children));
@@ -895,10 +896,9 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
           }
         }
       }
-      //Set busy to false
-      busy = false;
     }
-
+    //Set busy to false
+    busy = false;
   }
 
   Future<List<IFormField>?> _getAlarms() async

@@ -14,7 +14,7 @@ import 'package:fml/helper/common_helpers.dart';
 class BoxModel extends LayoutModel
 {
   @override
-  LayoutType get layoutType => LayoutModel.getLayoutType(layout);
+  LayoutType get layoutType => LayoutModel.getLayoutType(layout, defaultLayout: LayoutType.column);
 
   @override
   MainAxisSize get verticalAxisSize

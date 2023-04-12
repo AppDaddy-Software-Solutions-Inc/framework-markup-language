@@ -354,7 +354,7 @@ class LayoutModel extends DecoratedWidgetModel
     }
   }
 
-  static LayoutType getLayoutType(String? layout, {LayoutType defaultLayout = LayoutType.column})
+  static LayoutType getLayoutType(String? layout, {LayoutType defaultLayout = LayoutType.none})
   {
     switch (layout?.toLowerCase().trim())
     {

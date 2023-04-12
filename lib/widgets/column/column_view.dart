@@ -22,7 +22,7 @@ class _ColumnViewState extends WidgetState<ColumnView>
   void initState()
   {
     super.initState();
-    
+
     // remove listener to the model if the model
     // is not a column model. The BoxModel will share the same model
     // and rebuild this view on model change

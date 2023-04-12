@@ -7,7 +7,6 @@ import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/system.dart';
 import 'package:fml/template/template.dart';
@@ -530,8 +529,6 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
     }
     return super.execute(caller, propertyOrFunction, arguments);
   }
-
-  Widget getBoxView({Key? key}) => getReactiveView(BoxView(this));
   Widget getView({Key? key}) => getReactiveView(FrameworkView(this));
 }
 

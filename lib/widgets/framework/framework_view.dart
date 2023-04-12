@@ -9,9 +9,11 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:fml/navigation/navigation_observer.dart';
 import 'package:fml/event/event.dart'             ;
+import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
+import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/tabview/tab_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart'    ;
@@ -305,18 +307,17 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
     if (widget.model.header != null && widget.model.header!.visible != false)
     {
-      var model = widget.model.header!;
+      var header = widget.model.header!;
 
-      var viewportWidth  = constraints.maxWidth;
+      // default model layout to stack if not supplied
+      if (LayoutModel.getLayoutType(header.layout) == LayoutType.none) header.layout = "stack";
 
       // set header constraints
-      model.width = viewportWidth - (model.marginLeft ?? 0) - (model.marginRight ?? 0);
-
-      // this is required to drive %sizing
-      //model.constraints.system = constraints;
+      var viewportWidth  = constraints.maxWidth;
+      header.width = viewportWidth;
 
       // build framework header view
-      view = model.getView();
+      view = header.getView();
     }
     else widget.model.header?.height = 0;
 
@@ -329,19 +330,17 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
     if (widget.model.footer != null && widget.model.footer!.visible != false)
     {
-      var model = widget.model.footer!;
+      var footer = widget.model.footer!;
 
-      var viewportWidth  = constraints.maxWidth;
+      // default model layout to stack if not supplied
+      if (LayoutModel.getLayoutType(footer.layout) == LayoutType.none) footer.layout = "stack";
 
       // set footer constraints
-      model.layout = "stack";
-      model.width  = viewportWidth - (model.marginLeft ?? 0) - (model.marginRight ?? 0);
-
-      // this is required to drive %sizing
-      //model.constraints.system = constraints;
+      var viewportWidth  = constraints.maxWidth;
+      footer.width = viewportWidth;
 
       // build framework footer view
-      view = model.getView();
+      view = footer.getView();
     }
     else widget.model.footer?.height = 0;
 
@@ -350,29 +349,29 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
   Widget _buildBody(BoxConstraints constraints)
   {
-    var model  = widget.model;
     var header = widget.model.header;
     var footer = widget.model.header;
+    var body   = widget.model;
 
-    // build body
-    var safeArea = MediaQuery.of(context).padding.top.ceil();
-
-    var viewportWidth  = constraints.maxWidth;
-    var viewportHeight = constraints.maxHeight;
+    // default model layout to stack if not supplied
+    if (LayoutModel.getLayoutType(body.layout) == LayoutType.none) body.layout = "stack";
 
     // set body constraints
-    var usedHeight = (header?.height ?? 0) + (footer?.height ?? 0) + safeArea;
-    model.height   = viewportHeight- usedHeight - (model.marginTop ?? 0) - (model.marginBottom ?? 0);
-    model.width    = viewportWidth - (model.marginLeft ?? 0) - (model.marginRight ?? 0);
+    var safeArea       = MediaQuery.of(context).padding.top.ceil();
+    var viewportWidth  = constraints.maxWidth;
+    var viewportHeight = constraints.maxHeight;
+    var usedHeight     = (header?.height ?? 0) + (footer?.height ?? 0) + safeArea;
+    body.height = viewportHeight- usedHeight - (body.marginTop ?? 0) - (body.marginBottom ?? 0);
+    body.width  = viewportWidth - (body.marginLeft ?? 0) - (body.marginRight ?? 0);
 
     // build framework body
-    Widget view =  widget.model.getBoxView();
+    Widget view = BoxView(body);
 
     // listen to scroll events if the body
     // is wrapped in a Scroller
-    if (model.findChildOfExactType(ScrollerModel) != null) view = NotificationListener<ScrollNotification>(onNotification: onScroll, child: view);
+    if (body.findChildOfExactType(ScrollerModel) != null) view = NotificationListener<ScrollNotification>(onNotification: onScroll, child: view);
 
-    return view;//UnconstrainedBox(child: SizedBox(child: view, width: model.width, height: model.height));
+    return UnconstrainedBox(child: SizedBox(child: view, width: body.width, height: body.height));
   }
 
   _setDeviceOrientation(String? orientation)

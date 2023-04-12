@@ -4,9 +4,9 @@ import 'package:fml/event/handler.dart';
 import 'package:fml/widgets/animation/animation_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_view.dart';
-import 'package:fml/widgets/widget/constraint.dart';
-import 'package:fml/widgets/widget/constraint_model.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
+import 'package:fml/widgets/constraints/constraint.dart';
+import 'package:fml/widgets/constraints/constraint_model.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -598,9 +598,6 @@ class ViewableWidgetModel extends WidgetModel
 
   void onLayoutComplete() async
   {
-    print('xxxxxxxxxxxxxxxxxx');
-    var id = this.id;
-
     if (this.context == null) return;
 
     var box = context!.findRenderObject() as RenderBox?;

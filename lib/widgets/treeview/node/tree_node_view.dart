@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/treeview/node/tree_node_model.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/helper/common_helpers.dart';
-import 'package:fml/widgets/widget/viewable_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class TreeNodeView extends StatefulWidget implements IWidgetView

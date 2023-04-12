@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/radio/radio_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
-import 'package:fml/widgets/widget/viewable_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
-import 'package:fml/widgets/widget/alignment.dart';
-import 'package:fml/widgets/widget/layout_model.dart';
+import 'package:fml/widgets/alignment/alignment.dart';
+import 'package:fml/widgets/layout/layout_model.dart';
 
 class RadioView extends StatefulWidget implements IWidgetView
 {

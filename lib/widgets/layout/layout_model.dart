@@ -5,9 +5,10 @@ import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observable.dart';
 import 'package:fml/observable/observables/boolean.dart';
 import 'package:fml/observable/observables/double.dart';
+import 'package:fml/observable/observables/string.dart';
 import 'package:fml/observable/scope.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/viewable_widget_model.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
 
@@ -37,6 +38,21 @@ class LayoutModel extends DecoratedWidgetModel
 
   // children with fixed height
   List<ViewableWidgetModel> get fixedHeightChildren => viewableChildren.where((child) => child.flex == null && child.pctHeight == null).toList();
+
+  /// layout style
+  StringObservable? _layout;
+  set layout(dynamic v)
+  {
+    if (_layout != null)
+    {
+      _layout!.set(v);
+    }
+    else if (v != null)
+    {
+      _layout = StringObservable(Binding.toKey(id, 'layout'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get layout => _layout?.get()?.toLowerCase().trim();
 
   /// Center attribute allows a simple boolean override for halign and valign both being center. halign and valign will override center if given.
   BooleanObservable? _center;
@@ -110,15 +126,30 @@ class LayoutModel extends DecoratedWidgetModel
     super.deserialize(xml);
 
     // properties
+    layout = Xml.get(node: xml, tag: 'layout');
     center = Xml.get(node: xml, tag: 'center');
     wrap   = Xml.get(node: xml, tag: 'wrap');
     expand = Xml.get(node: xml, tag: 'expand');
 
     // expand=true is the same as setting the width and height to 100%
+    // this is essentially a convenience setting
     if (expand)
     {
-      if (width  == null && pctWidth  == null) width  = "100%";
-      if (height == null && pctHeight == null) height = "100%";
+      // set width if not specified
+      if (width  == null && pctWidth  == null)
+      {
+        // set width if not flex or
+        // flex is not in the direction of the primary axis
+        if (flex == null || (flex != null && layoutType != LayoutType.row)) width = "100%";
+      }
+
+      // set height if not specified
+      if (height == null && pctHeight == null)
+      {
+        // set height if not flex or
+        // flex is not in the direction of the primary axis
+        if (flex == null || (flex != null && layoutType != LayoutType.column)) height = "100%";
+      }
     }
   }
 
@@ -211,12 +242,8 @@ class LayoutModel extends DecoratedWidgetModel
       double fixed = 0;
       for (var child in fixedChildren) fixed += (child.visible) ? (child.viewWidth ?? 0) : 0;
 
-      // calculate margins
-      double margins = 0;
-      for (var child in viewableChildren) margins += (child.visible) ? ((child.marginLeft ?? 0) + (child.marginRight ?? 0)) : 0;
-
       // calculate usable space (max - fixed - padding)
-      var usable = maximum - fixed - margins;
+      var usable = maximum - fixed;
 
       // set % sizing on variable children
       var free = usable;
@@ -234,7 +261,7 @@ class LayoutModel extends DecoratedWidgetModel
           free = free - size;
 
           // set the size
-          if (child.width != size) child.setWidth(size.toDouble() - (child.marginLeft ?? 0) - (child.marginRight ?? 0), notify: true);
+          if (child.width != size) child.setWidth(size.toDouble(), notify: true);
         }
       }
 
@@ -280,12 +307,8 @@ class LayoutModel extends DecoratedWidgetModel
       double fixed = 0;
       for (var child in fixedChildren) fixed += (child.visible) ? (child.viewHeight ?? 0) : 0;
 
-      // calculate padding
-      double margins = 0;
-      for (var child in viewableChildren) margins += (child.visible) ? ((child.marginTop ?? 0) + (child.marginBottom ?? 0)) : 0;
-
       // calculate usable space (max - fixed - padding)
-      var usable = maximum - fixed - margins;
+      var usable = maximum - fixed;
 
       // set % sizing on variable children
       var free = usable;

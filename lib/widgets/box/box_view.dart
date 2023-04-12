@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
-import 'package:fml/widgets/widget/alignment.dart';
+import 'package:fml/widgets/alignment/alignment.dart';
 
 /// [BOX] view
 class BoxView extends StatefulWidget implements IWidgetView
@@ -247,8 +247,6 @@ class _BoxViewState extends WidgetState<BoxView>
     // bool horizontalAxisExpanding = (horzAxisSize == MainAxisSize.max);
     // bool horizontalAxisShrinking = (horzAxisSize == MainAxisSize.min);
 
-    var id = widget.model.id;
-
     // apply model constraints
     view = applyConstraints(view, widget.model.constraints.model);
 
@@ -280,8 +278,6 @@ class _BoxViewState extends WidgetState<BoxView>
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    var id = widget.model.id;
-
     // Check if widget is visible before wasting resources on building it
     if (widget.model.visible == false) return Offstage();
 
@@ -324,12 +320,12 @@ class _BoxViewState extends WidgetState<BoxView>
     // blur the view - white10 = Blur (This creates mirrored/frosted effect overtop of something else)
     if (widget.model.color == Colors.white10) view = _getFrostedView(view, radius);
 
+    // add margins
+    view = addMargins(view);
+
     // apply constraints to allow the box to
     // shrink/expand properly
     view = _applyConstraints(view);
-
-    // add margins
-    view = addMargins(view);
 
     return view;
   }

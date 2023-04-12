@@ -3,10 +3,10 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/positioned/positioned_view.dart';
 import 'package:fml/widgets/stack/stack_model.dart';
-import 'package:fml/widgets/widget/alignment.dart';
+import 'package:fml/widgets/alignment/alignment.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
-import 'package:fml/widgets/widget/layout_model.dart';
+import 'package:fml/widgets/layout/layout_model.dart';
 
 class StackView extends StatefulWidget implements IWidgetView
 {

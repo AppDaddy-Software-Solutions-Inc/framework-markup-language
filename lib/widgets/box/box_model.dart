@@ -3,7 +3,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/column/column_view.dart';
 import 'package:fml/widgets/row/row_view.dart';
 import 'package:fml/widgets/stack/stack_view.dart';
-import 'package:fml/widgets/widget/layout_model.dart';
+import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +13,10 @@ import 'package:fml/helper/common_helpers.dart';
 
 class BoxModel extends LayoutModel
 {
+  @override
   LayoutType get layoutType => LayoutModel.getLayoutType(layout);
 
+  @override
   MainAxisSize get verticalAxisSize
   {
     switch (layoutType)
@@ -29,6 +31,7 @@ class BoxModel extends LayoutModel
     }
   }
 
+  @override
   MainAxisSize get horizontalAxisSize
   {
     switch (layoutType)
@@ -42,20 +45,6 @@ class BoxModel extends LayoutModel
         return (expand && horizontallyConstrained) ? MainAxisSize.max : MainAxisSize.min;
     }
   }
-
-  StringObservable? _layout;
-  set layout(dynamic v)
-  {
-    if (_layout != null)
-    {
-      _layout!.set(v);
-    }
-    else if (v != null)
-    {
-      _layout = StringObservable(Binding.toKey(id, 'layout'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  String? get layout => _layout?.get()?.toLowerCase().trim();
 
   // box blur
   BooleanObservable? _blur;

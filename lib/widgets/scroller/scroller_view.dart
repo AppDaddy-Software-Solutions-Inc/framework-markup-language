@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
-import 'package:fml/widgets/widget/alignment.dart';
+import 'package:fml/widgets/alignment/alignment.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/event/event.dart' ;
 import 'package:fml/widgets/widget/widget_state.dart';
-import 'package:fml/widgets/widget/layout_model.dart';
+import 'package:fml/widgets/layout/layout_model.dart';
 
 /// Scroll View
 ///

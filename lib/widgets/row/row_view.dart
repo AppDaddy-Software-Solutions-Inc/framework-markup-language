@@ -1,10 +1,10 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/widgets/row/row_model.dart';
-import 'package:fml/widgets/widget/alignment.dart';
+import 'package:fml/widgets/alignment/alignment.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/layout_model.dart';
+import 'package:fml/widgets/layout/layout_model.dart';
 
 class RowView extends StatefulWidget implements IWidgetView
 {

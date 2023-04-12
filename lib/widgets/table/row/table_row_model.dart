@@ -2,7 +2,7 @@
 import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/iFormField.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/event/handler.dart' ;
 import 'package:fml/widgets/table/table_model.dart';

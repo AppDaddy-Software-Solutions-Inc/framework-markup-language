@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/column/column_model.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
-import 'package:fml/widgets/widget/alignment.dart';
-import 'package:fml/widgets/widget/layout_model.dart';
+import 'package:fml/widgets/alignment/alignment.dart';
+import 'package:fml/widgets/layout/layout_model.dart';
 
 class ColumnView extends StatefulWidget implements IWidgetView
 {
@@ -28,8 +28,6 @@ class _ColumnViewState extends WidgetState<ColumnView>
 
     // save system constraints
     onLayout(constraints);
-
-    var id = widget.model.id;
 
     // build the child views
     List<Widget> children = widget.model.inflate();

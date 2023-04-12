@@ -6,7 +6,7 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart'     ;
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/grid/grid_view.dart' as GRID;

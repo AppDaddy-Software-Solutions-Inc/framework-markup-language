@@ -27,7 +27,7 @@ class Log
     _map["key"]     = key ?? S.newId();
     _map["type"]    = type    ?? "error";
     _map["epoch"]   = epoch   ?? DateTime.now().millisecondsSinceEpoch;
-    _map["date"]    = DateFormat("yyyy-MM-dd hh:mm:ss.sss").format(DateTime.fromMillisecondsSinceEpoch(this.epoch));
+    _map["date"]    = DateFormat("yyyy-MM-dd HH:mm:ss.sss").format(DateTime.fromMillisecondsSinceEpoch(this.epoch));
     _map["message"] = message ?? "";
     _map["caller"]  = caller;
   }

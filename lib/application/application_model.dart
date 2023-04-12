@@ -7,6 +7,7 @@ import 'package:fml/hive/database.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/hive/stash.dart';
 import 'package:fml/mirror/mirror.dart';
+import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/scope.dart';
 import 'package:fml/observable/scope_manager.dart';
 import 'package:fml/system.dart';
@@ -300,6 +301,15 @@ class ApplicationModel extends WidgetModel
     {
       // key must be supplied
       if (S.isNullOrEmpty(key)) return ok;
+
+      if (value == null) {
+        _stash.map.remove(key);
+        _stash.upsert();
+        Binding? binding = Binding.fromString('$key.value');
+        if (binding != null)
+          stash.observables.remove(stash.getObservable(binding));
+        return ok;
+      }
 
       // write application stash entry
       _stash.map[key] = value;

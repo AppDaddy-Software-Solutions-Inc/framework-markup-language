@@ -49,7 +49,7 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
   // applies margins to the view based on the widget model
   Widget addMargins(Widget view)
   {
-    if (model?.marginTop != null)
+    if (model?.marginTop != null || model?.marginBottom != null || model?.marginRight != null || model?.marginLeft != null)
     {
       var inset = EdgeInsets.only(top: model?.marginTop ?? 0, right: model?.marginRight ?? 0, bottom: model?.marginBottom ?? 0, left: model?.marginLeft ?? 0);
       view = Padding(child: view, padding: inset);

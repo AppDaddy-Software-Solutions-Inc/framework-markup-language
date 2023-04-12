@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:fml/widgets/datepicker/datepicker_model.dart' as DATEPICKER;
+import 'package:fml/widgets/datepicker/datepicker_model.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
@@ -10,7 +10,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class DatepickerView extends StatefulWidget implements IWidgetView
 {
-  final DATEPICKER.DatepickerModel model;
+  final DatepickerModel model;
   DatepickerView(this.model) : super(key: ObjectKey(model));
 
   @override
@@ -146,7 +146,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
     double? rad = S.toDouble(widget.model.radius);
     cont = TextEditingController(text: value);
 
-    var padding = widget.model.margins ?? 0;
+    var padding = widget.model.padding;
 
     // View
     Widget view;

@@ -20,9 +20,16 @@ class DatepickerModel extends FormFieldModel implements IFormField
   static const time_format_default = "HH:mm";
   static const date_format_default = "yyyy-MM-dd";
 
-  //////////////
-  /*  view    */
-  //////////////
+  // padding
+  DoubleObservable? _padding;
+  set padding(dynamic v)
+  {
+    if (_padding != null) _padding!.set(v);
+    else if (v != null) _padding = DoubleObservable(Binding.toKey(id, 'padding'), v, scope: scope, listener: onPropertyChange);
+  }
+  double get padding=> _padding?.get() ?? 4;
+  
+  // view
   BooleanObservable? _view;
 
   set view(dynamic v) {
@@ -103,9 +110,7 @@ class DatepickerModel extends FormFieldModel implements IFormField
   }
   String? get format => _format?.get() ?? "yMd";
 
-  ///////////
-  /* Value */
-  ///////////
+  // Value
   StringObservable? _value;
 
   set value(dynamic v) {
@@ -127,9 +132,7 @@ class DatepickerModel extends FormFieldModel implements IFormField
     return _value?.get();
   }
 
-  ///////////
-  /* hint */
-  ///////////
+  // hint
   StringObservable? _hint;
   set hint(dynamic v) {
     if (_hint != null) {
@@ -141,9 +144,7 @@ class DatepickerModel extends FormFieldModel implements IFormField
   }
   String? get hint => _hint?.get();
 
-  /////////////
-  /* Radius */
-  /////////////
+  // Radius
   StringObservable? _radius;
   set radius(dynamic v) {
     if (_radius != null) {
@@ -294,10 +295,7 @@ class DatepickerModel extends FormFieldModel implements IFormField
     }
   }
   double? get size => _size?.get();
-
-  /// override - pads the inner content of the input.
-  double? get margins => super.marginTop ?? 4;
-
+  
   /// The prefix icon within the input
   IconObservable? _icon;
 
@@ -367,7 +365,7 @@ class DatepickerModel extends FormFieldModel implements IFormField
     if (error        != null) this.error = error;
     if (errortext    != null) this.errortext = errortext;
     if (size         != null) this.size = size;
-    if (padding      != null) this.margins = padding;
+    if (padding      != null) this.padding = padding;
     if (icon         != null) this.icon = icon;
 
     this.alarming = false;
@@ -392,7 +390,17 @@ class DatepickerModel extends FormFieldModel implements IFormField
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml) {
+  void deserialize(XmlElement xml)
+  {
+    // legacy support for padding vs margin
+    if ((Xml.get(node: xml, tag: 'margin') ?? Xml.get(node: xml, tag: 'margins')) == null)
+    {
+      var attribute = xml.getAttributeNode("pad");
+      if (attribute == null) attribute = xml.getAttributeNode("padding");
+      if (attribute == null) attribute = xml.getAttributeNode("padd");
+      if (attribute != null) Xml.changeAttributeName(xml, attribute.localName, "margin");
+    }
+
     // deserialize
     super.deserialize(xml);
 
@@ -418,6 +426,7 @@ class DatepickerModel extends FormFieldModel implements IFormField
     errortext = Xml.get(node: xml, tag: 'errortext');
     size = Xml.get(node: xml, tag: 'size');
     icon = Xml.get(node: xml, tag: 'icon');
+    padding = Xml.get(node: xml, tag: 'padding');
   }
 
   @override

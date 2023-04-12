@@ -14,13 +14,15 @@ class PaddingModel extends ViewableWidgetModel
 
   static PaddingModel? fromXml(WidgetModel parent, XmlElement xml) {
     PaddingModel? model;
-    try {
-// build model
+    try
+    {
+      // build model
       model = PaddingModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
-    } catch(e) {
-      Log().exception(e,
-           caller: 'padding.Model');
+    }
+    catch(e)
+    {
+      Log().exception(e, caller: 'padding.Model');
       model = null;
     }
     return model;
@@ -56,16 +58,11 @@ class PaddingModel extends ViewableWidgetModel
     }
 
     var vertical = Xml.get(node: xml, tag: 'vertical') ?? Xml.get(node: xml, tag: 'ver');
+    if (vertical != null)
     {
-    marginTop=vertical;
-    marginBottom=vertical;
+      marginTop=vertical;
+      marginBottom=vertical;
     }
-  }
-
-  @override
-  dispose() {
-// Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
   }
 
   Widget getView({Key? key}) => getReactiveView(PaddingView(this));

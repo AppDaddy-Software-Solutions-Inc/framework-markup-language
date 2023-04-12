@@ -54,7 +54,7 @@ class BusyModel extends DecoratedWidgetModel
 
   double? get size
   {
-    var constraints = this.constraints.calculate();
+    var constraints = this.constraints.calculated;
 
     var s = _size?.get();
     if (s == null) return null;

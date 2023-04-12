@@ -2,6 +2,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
+import 'package:fml/widgets/constraints/constraint.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
 import 'package:fml/widgets/scroller/scroller_shadow_view.dart';
@@ -105,8 +106,16 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
   }
 
   @override
-  Widget build(BuildContext context)
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints)
   {
+    // Check if widget is visible before wasting resources on building it
+    if (!widget.model.visible) return Offstage();
+
+    // save system constraints
+    onLayout(constraints);
+
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
@@ -236,7 +245,7 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
     view = addMargins(view);
 
     // apply user defined constraints
-    view = applyConstraints(view, widget.model.constraints.model);
+    view = applyConstraints(view, widget.model.constraints.tightest);
 
     return view;
   }

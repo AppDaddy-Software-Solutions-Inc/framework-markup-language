@@ -1,3 +1,5 @@
+import 'dart:math';
+
 class Constraints
 {
   Constraints({double? width, double? minWidth, double? maxWidth, double? height, double? minHeight, double? maxHeight})
@@ -103,4 +105,31 @@ class Constraints
   }
 
   bool get hasHorizontalConstraints => hasHorizontalExpansionConstraints || hasHorizontalContractionConstraints;
+
+  static Constraints clone(Constraints constraints) => Constraints(width: constraints.width, height: constraints.height, minWidth: constraints.minWidth, maxWidth: constraints.maxWidth, minHeight: constraints.minHeight, maxHeight: constraints.maxHeight);
+  
+  static Constraints tightest(Constraints constraints1, Constraints constraints2)
+  {
+    Constraints constraints = Constraints();
+
+    constraints.width = min(constraints1.width ?? double.infinity, constraints2.width ?? double.infinity);
+    if (constraints.width == double.infinity) constraints.width = null;
+
+    constraints.minWidth = max(constraints1.minWidth ?? double.negativeInfinity, constraints2.minWidth ?? double.negativeInfinity);
+    if (constraints.minWidth == double.negativeInfinity) constraints.minWidth = null;
+
+    constraints.maxWidth = max(constraints1.maxWidth ?? double.negativeInfinity, constraints2.maxWidth ?? double.negativeInfinity);
+    if (constraints.maxWidth == double.infinity) constraints.maxWidth = null;
+
+    constraints.height = min(constraints1.height ?? double.infinity, constraints2.height ?? double.infinity);
+    if (constraints.height == double.infinity) constraints.height = null;
+
+    constraints.minHeight = max(constraints1.minHeight ?? double.negativeInfinity, constraints2.minHeight ?? double.negativeInfinity);
+    if (constraints.minHeight == double.negativeInfinity) constraints.minHeight = null;
+
+    constraints.maxHeight = max(constraints1.maxHeight ?? double.negativeInfinity, constraints2.maxHeight ?? double.negativeInfinity);
+    if (constraints.maxHeight == double.infinity) constraints.maxHeight = null;
+
+    return constraints;
+  }
 }

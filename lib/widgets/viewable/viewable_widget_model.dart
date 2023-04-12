@@ -633,12 +633,11 @@ class ConstraintSet
 
   /// constraints calculated by walking up the
   /// model tree comparing both model and flutter constraints
-  Constraints calculate() => _model.calculate();
+  Constraints get calculated => _model.calculate();
 
-  ConstraintSet(ConstraintModel model)
-  {
-    _model = model;
-  }
+  Constraints get tightest => Constraints.tightest(Constraints.tightest(model, system), calculated);
+
+  ConstraintSet(this._model);
 }
 
 

@@ -386,7 +386,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
       }
       else if (widget.model.tabbar == true && widget.model.tabbutton == false)
       {
-        var con = widget.model.constraints.calculate();
+        var con = widget.model.constraints.calculated;
 
         view = Column(children: [
           SizedBox(width: widget.model.calculateMaxWidth(), height: barheight,

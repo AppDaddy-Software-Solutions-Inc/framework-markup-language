@@ -80,7 +80,7 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
         color: Colors.black // Hardcode color to black for export a there will be no background/theming
     );
 
-    var constraints = widget.model.constraints.calculate();
+    var constraints = widget.model.constraints.calculated;
     return await painter.export(Size(
         widget.model.width ?? constraints.maxWidth ?? constraints.minWidth ?? 300,
         widget.model.height ?? constraints.maxHeight?? constraints.minHeight?? 200));
@@ -120,7 +120,7 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
   void onPointerMove(PointerMoveEvent details) {
     if (canScribble == true)
     {
-      var constraints = widget.model.constraints.calculate();
+      var constraints = widget.model.constraints.calculated;
 
       final box = context.findRenderObject() as RenderBox;
       final offset = box.globalToLocal(details.position);

@@ -18,9 +18,11 @@ import 'package:fml/helper/common_helpers.dart';
 
 enum ListTypes { replace, lifo, fifo, append, prepend }
 
-class DataSourceModel extends DecoratedWidgetModel implements IDataSource {
+class DataSourceModel extends DecoratedWidgetModel implements IDataSource
+{
   // data override
-  Data? get data {
+  Data? get data
+  {
     if (super.data == null) return null;
     if (super.data is Data)
       return super.data;

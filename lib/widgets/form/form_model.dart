@@ -21,7 +21,7 @@ import 'package:fml/helper/common_helpers.dart';
 abstract class IForm
 {
   ///
-  // Dirty 
+  // Dirty
   ///
   bool? get dirty;
   set dirty (bool? b);
@@ -591,7 +591,7 @@ class FormModel extends DecoratedWidgetModel
           {
             if (field.values != null)
             {
-              field.values!.forEach((value)
+              field.values?.forEach((value)
               {
                 XmlElement node;
                 String name = field.field ?? field.id ?? "";
@@ -753,7 +753,7 @@ class FormModel extends DecoratedWidgetModel
       String xml = framework!.element!.toXmlString(pretty: true);
 
       // Lookup Form
-      HIVE.Form? form = await HIVE.Form.find(framework!.key);
+      form = await HIVE.Form.find(framework!.key);
 
       // Update the Form
       if (form != null)
@@ -770,15 +770,17 @@ class FormModel extends DecoratedWidgetModel
       // Insert the Form
       else
       {
-        Log().info('Inserting New form');
-        form = HIVE.Form(key: framework?.key, parent: framework?.dependency, complete: completed, template: xml, data: map);
-        await form.insert();
+          Log().info('Inserting New form');
+          form = HIVE.Form(key: framework?.key,
+              parent: framework?.dependency,
+              complete: completed,
+              template: xml,
+              data: map);
+          await form.insert();
       }
-
       // Mark Clean
       clean = true;
     }
-
     return form;
   }
 

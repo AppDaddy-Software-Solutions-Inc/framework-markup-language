@@ -6,6 +6,7 @@ import 'package:fml/datasources/detectors/biometrics/biometrics_detector_model.d
 import 'package:fml/datasources/sse/model.dart';
 import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/datasources/iDataSourceListener.dart';
+import 'package:fml/datasources/stash/stash_model.dart';
 import 'package:fml/datasources/log/log_model.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/datasources/detectors/barcode/barcode_detector_model.dart';
@@ -444,7 +445,7 @@ class WidgetModel implements IDataSourceListener
 
       case "filter":
         if (parent is IDataSource)
-          model = Filter.fromXml(model, node);
+          model = Filter.fromXml(parent, node);
         break;
 
       case "flip":
@@ -595,6 +596,10 @@ class WidgetModel implements IDataSourceListener
       case "scale":
         if (parent is AnimationModel) model = ScaleTransitionModel.fromXml(parent, node);
         else model = ScaleTransitionModel.fromXml(parent, node);
+        break;
+
+      case "stash":
+        model = StashModel.fromXml(parent, node);
         break;
 
       case "transform":
@@ -1447,6 +1452,8 @@ class WidgetModel implements IDataSourceListener
       case "socket":
         return true;
       case "sse":
+        return true;
+      case 'stash':
         return true;
       case "zebra":
         return true;

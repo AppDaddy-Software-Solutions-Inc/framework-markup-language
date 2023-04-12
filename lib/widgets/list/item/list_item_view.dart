@@ -27,6 +27,6 @@ class _ListItemViewState extends WidgetState<ListItemView>
     List<Widget> children = widget.model.inflate();
     if (children.isEmpty) children.add(Container());
 
-    return Container(color: widget.model.backgroundcolor ?? Theme.of(context).colorScheme.surface, child: children.length == 1 ? children[0] : Row(children: children));
+    return Container(color: widget.model.color ?? widget.model.backgroundcolor ?? Theme.of(context).colorScheme.onInverseSurface, child: children.length == 1 ? children[0] : Row(children: children));
   }
 }

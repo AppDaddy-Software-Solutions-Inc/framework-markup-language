@@ -342,13 +342,14 @@ class System extends WidgetModel implements IEventManager
     BuildContext? context = NavigationManager().navigatorKey.currentContext;
     if (context != null)
     {
-      var snackbar = SnackBar(
-          content: Text(msg ?? ""),
-          duration: Duration(seconds: duration ?? 1),
+      SnackBar snackBar = SnackBar(
+          content: Text(msg ?? ''),
+          duration: Duration(seconds: duration ?? 4),
           behavior: SnackBarBehavior.floating,
-          elevation: 5);
-      var messenger = ScaffoldMessenger.of(context);
-      messenger.showSnackBar(snackbar);
+          elevation: 5,
+          showCloseIcon: true);
+      ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
+      messenger.showSnackBar(snackBar);
     }
   }
 

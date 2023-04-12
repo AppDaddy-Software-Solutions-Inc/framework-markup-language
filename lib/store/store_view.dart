@@ -296,8 +296,8 @@ class AppFormState extends State<AppForm>
     // missing scheme
     if (!uri.hasScheme)
     {
-      uri = Uri.parse("https://${uri.url}");
-      urlController.text = uri.url;
+      uri = Uri.parse('https://${uri.url}');
+      urlController.text = uri.toString();
     }
 
     // missing host

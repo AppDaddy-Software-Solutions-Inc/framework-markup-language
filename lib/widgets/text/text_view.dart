@@ -52,36 +52,6 @@ class _TextViewState extends WidgetState<TextView>
     super.didChangeDependencies();
   }
 
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints)
-  {
-    // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
-
-    // save system constraints
-    onLayout(constraints);
-
-    // get the theme
-    theme = Theme.of(context);
-
-    // use this to optimize
-    bool textHasChanged = (text != widget.model.value);
-    text = widget.model.value;
-
-    // build the view
-    Widget view = widget.model.raw ? _getSimpleTextView() : _getRichTextView(rebuild: textHasChanged);
-
-    // is part of a larger span?
-    if (widget.model.isSpan) return SizedBox(child: view);
-
-    // apply model constraints
-    view = applyConstraints(view, widget.model.constraints.model);
-
-    return view;
-  }
-
   void _parseText(String? value)
   {
     String? finalVal = '';
@@ -486,5 +456,38 @@ class _TextViewState extends WidgetState<TextView>
     });
 
     return textSpans;
+  }
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
+    // Check if widget is visible before wasting resources on building it
+    if (!widget.model.visible) return Offstage();
+
+    // save system constraints
+    onLayout(constraints);
+
+    // get the theme
+    theme = Theme.of(context);
+
+    // use this to optimize
+    bool textHasChanged = (text != widget.model.value);
+    text = widget.model.value;
+
+    // build the view
+    Widget view = widget.model.raw ? _getSimpleTextView() : _getRichTextView(rebuild: textHasChanged);
+
+    // is part of a larger span?
+    if (widget.model.isSpan) return SizedBox(child: view);
+
+    // add margins
+    view = addMargins(view);
+
+    // apply user defined constraints
+    view = applyConstraints(view, widget.model.constraints.model);
+
+    return view;
   }
 }

@@ -19,6 +19,17 @@ class ColumnView extends StatefulWidget implements IWidgetView
 class _ColumnViewState extends WidgetState<ColumnView>
 {
   @override
+  void initState()
+  {
+    super.initState();
+    
+    // remove listener to the model if the model
+    // is not a column model. The BoxModel will share the same model
+    // and rebuild this view on model change
+    if (widget.model is! ColumnModel) widget.model.removeListener(this);
+  }
+
+  @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)

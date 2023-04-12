@@ -19,6 +19,17 @@ class RowView extends StatefulWidget implements IWidgetView
 class _RowViewState extends WidgetState<RowView>
 {
   @override
+  void initState()
+  {
+    super.initState();
+
+    // remove listener to the model if the model
+    // is not a row model. The BoxModel will share the same model
+    // and rebuild this view on model change
+    if (widget.model is! RowModel) widget.model.removeListener(this);
+  }
+
+  @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)

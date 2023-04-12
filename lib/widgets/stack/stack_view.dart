@@ -48,6 +48,18 @@ class _StackViewState extends WidgetState<StackView>
 
     return children;
   }
+
+  @override
+  void initState()
+  {
+    super.initState();
+
+    // remove listener to the model if the model
+    // is not a stack model. The BoxModel will share the same model
+    // and rebuild this view on model change
+    if (widget.model is! StackModel) widget.model.removeListener(this);
+  }
+
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 

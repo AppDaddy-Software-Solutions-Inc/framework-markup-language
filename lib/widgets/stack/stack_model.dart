@@ -61,13 +61,12 @@ class StackModel extends LayoutModel
     // deserialize
     super.deserialize(xml);
 
-    // expand=true is the same as setting the height to 100%
-    // this is essentially a convenience setting
-    if (expand && height == null && pctHeight == null) height = "100%";
-
-    // expand=true is the same as setting the width to 100%
-    // this is essentially a convenience setting
-    if (expand && width == null && pctWidth == null) width = "100%";
+    // expand=true is the same as setting the flex to 1
+    if (expand)
+    {
+      if (flex == null && height == null && pctHeight == null && (layoutType == LayoutType.stack || layoutType == LayoutType.column)) flex = "1";
+      if (flex == null && width  == null && pctWidth  == null && (layoutType == LayoutType.stack || layoutType == LayoutType.row))    flex = "1";
+    }
 
     // sort the children
     this.children?.sort((a, b)

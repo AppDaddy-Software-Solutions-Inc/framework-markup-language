@@ -47,9 +47,8 @@ class RowModel extends LayoutModel
     // deserialize 
     super.deserialize(xml);
 
-    // expand=true is the same as setting the width to 100%
-    // this is essentially a convenience setting
-    if (expand && width == null && pctWidth == null && flex == null) width = "100%";
+    // expand=true is the same as setting the flex to 1
+    if (expand && flex == null && width  == null && pctWidth  == null) flex = "1";
   }
 
   Widget getView({Key? key}) => getReactiveView(RowView(this));

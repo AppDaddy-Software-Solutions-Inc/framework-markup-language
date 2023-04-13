@@ -48,9 +48,8 @@ class ColumnModel extends LayoutModel
     // deserialize
     super.deserialize(xml);
 
-    // expand=true is the same as setting the height to 100%
-    // this is essentially a convenience setting
-    if (expand && height == null && pctHeight == null && flex == null) height = "100%";
+    // expand=true is the same as setting the flex to 1
+    if (expand && flex == null && height == null && pctHeight == null) flex = "1";
   }
 
   Widget getView({Key? key}) => getReactiveView(ColumnView(this));

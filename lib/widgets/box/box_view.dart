@@ -161,8 +161,8 @@ class _BoxViewState extends WidgetState<BoxView>
     if (widget.model.elevation != 0)
       shadow = BoxShadow(
           color: widget.model.shadowcolor,
-          spreadRadius: widget.model.elevation,
-          blurRadius: widget.model.elevation * 2,
+          spreadRadius: widget.model.elevation ?? 1,
+          blurRadius: (widget.model.elevation ?? 1) * 2,
           offset: Offset(
               widget.model.shadowx,
               widget.model
@@ -235,29 +235,6 @@ class _BoxViewState extends WidgetState<BoxView>
         ]);
   }
 
-  Widget _applyConstraints(Widget view)
-  {
-    // determine axis sizes
-    // MainAxisSize? vertAxisSize = widget.model.body.verticalAxisSize;
-    // MainAxisSize? horzAxisSize = widget.model.body.horizontalAxisSize;
-
-    // bool verticalAxisExpanding = (vertAxisSize == MainAxisSize.max);
-    // bool verticalAxisShrinking = (vertAxisSize == MainAxisSize.min);
-    //
-    // bool horizontalAxisExpanding = (horzAxisSize == MainAxisSize.max);
-    // bool horizontalAxisShrinking = (horzAxisSize == MainAxisSize.min);
-
-    // apply model constraints
-    view = applyConstraints(view, widget.model.constraints.model);
-
-    // allow the box to shrink on any axis that is not expanding
-    // this is done by applying an UnconstrainedBox() to the view
-    // in the direction of the constrained axis
-    view = UnconstrainedBox(child: view);
-
-    return view;
-  }
-
   // applies padding around the of the box
   Widget addPadding(Widget view)
   {
@@ -323,9 +300,8 @@ class _BoxViewState extends WidgetState<BoxView>
     // add margins
     view = addMargins(view);
 
-    // apply constraints to allow the box to
-    // shrink/expand properly
-    view = _applyConstraints(view);
+    // apply constraints
+    view = applyConstraints(view, widget.model.constraints.model);
 
     return view;
   }

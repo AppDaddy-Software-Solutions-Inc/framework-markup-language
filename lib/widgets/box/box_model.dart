@@ -134,7 +134,7 @@ class BoxModel extends LayoutModel
       _borderwidth = DoubleObservable(Binding.toKey(id, 'borderwidth'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  double get borderwidth => _borderwidth?.get() ?? (border == 'none' ? 0 : 2);
+  double get borderwidth => _borderwidth?.get() ?? (border == 'none' ? 0 : 1);
 
   /// The border choice, can be `all`, `none`, `top`, `left`, `right`, `bottom`, `vertical`, or `horizontal`
   StringObservable? _border;
@@ -178,7 +178,7 @@ class BoxModel extends LayoutModel
           scope: scope, listener: onPropertyChange);
     }
   }
-  double get elevation => _elevation?.get() ?? 0;
+  double? get elevation => _elevation?.get();
 
   /// The x offset of the box FROM the shadow. 0,0 is center. This is combined with `elevation` when determining the size.
   DoubleObservable? _shadowx;
@@ -338,18 +338,11 @@ class BoxModel extends LayoutModel
     /// Build the layout
     layout = Xml.get(node: xml, tag: 'layout');
 
-    // expand=true is the same as setting the height to 100%
-    // this is essentially a convenience setting
-    if (expand && height == null && pctHeight == null)
+    // expand=true is the same as setting the flex to 1
+    if (expand)
     {
-      if (flex == null || (flex != null && (layoutType == LayoutType.stack || layoutType == LayoutType.column))) height = "100%";
-    }
-
-    // expand=true is the same as setting the width to 100%
-    // this is essentially a convenience setting
-    if (expand && width == null && pctWidth == null)
-    {
-      if (flex == null || (flex != null && (layoutType == LayoutType.stack || layoutType == LayoutType.row))) width = "100%";
+      if (flex == null && height == null && pctHeight == null && (layoutType == LayoutType.stack || layoutType == LayoutType.column)) flex = "1";
+      if (flex == null && width  == null && pctWidth  == null && (layoutType == LayoutType.stack || layoutType == LayoutType.row))    flex = "1";
     }
   }
 

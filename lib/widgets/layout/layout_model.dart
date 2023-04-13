@@ -126,40 +126,14 @@ class LayoutModel extends DecoratedWidgetModel
     super.deserialize(xml);
 
     // properties
-    layout = Xml.get(node: xml, tag: 'layout');
     center = Xml.get(node: xml, tag: 'center');
     wrap   = Xml.get(node: xml, tag: 'wrap');
     expand = Xml.get(node: xml, tag: 'expand');
-
-    // expand=true is the same as setting the width and height to 100%
-    // this is essentially a convenience setting
-    if (expand)
-    {
-      // set width if not specified
-      if (width  == null && pctWidth  == null)
-      {
-        // set width if not flex or
-        // flex is not in the direction of the primary axis
-        if (flex == null || (flex != null && layoutType != LayoutType.row)) width = "100%";
-      }
-
-      // set height if not specified
-      if (height == null && pctHeight == null)
-      {
-        // set height if not flex or
-        // flex is not in the direction of the primary axis
-        if (flex == null || (flex != null && layoutType != LayoutType.column)) height = "100%";
-      }
-    }
   }
 
   @override
   List<Widget> inflate()
   {
-    var id = this.id;
-
-    print("inflate() => model id=$id");
-
     var layout = this.layoutType;
     var variableChildren = this.variableWidthChildren;
     var fixedChildren = (layout == LayoutType.row) ? this.fixedWidthChildren : this.fixedHeightChildren;
@@ -230,8 +204,6 @@ class LayoutModel extends DecoratedWidgetModel
     var unsizedChildren = fixedWidthChildren.where((child) => child.viewWidth == null);
     if (unsizedChildren.isEmpty)
     {
-      print("onWidthChange() => id=$id child=${child?.key}");
-
       // calculate maximum space
       var maximum = calculateMaxWidth() ?? 0;
 
@@ -295,8 +267,6 @@ class LayoutModel extends DecoratedWidgetModel
     var unsizedChildren = fixedHeightChildren.where((child) => child.viewHeight == null);
     if (unsizedChildren.isEmpty)
     {
-      print("onHeightChange() => model id=$id");
-
       // calculate maximum space
       var maximum = height ?? calculateMaxHeight() ?? 0;
 

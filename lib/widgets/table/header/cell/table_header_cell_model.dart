@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
+import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:fml/widgets/table/header/table_header_model.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -10,6 +11,8 @@ import 'package:fml/helper/common_helpers.dart';
 
 class TableHeaderCellModel extends DecoratedWidgetModel
 {
+  LayoutType get layoutType => LayoutType.column;
+
   /////////////////////
   /* Position in Row */
   /////////////////////

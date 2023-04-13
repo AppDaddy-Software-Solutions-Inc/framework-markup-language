@@ -75,7 +75,7 @@ class _StackViewState extends WidgetState<StackView>
     var children = _layoutChildren();
 
     // calculate the alignment
-    var alignment = WidgetAlignment(LayoutType.stack, widget.model.center, widget.model.halign, widget.model.valign);
+    var alignment = WidgetAlignment(widget.model.layoutType, widget.model.center, widget.model.halign, widget.model.valign);
 
     // create the stack
     Widget view = Stack(children: children, alignment: alignment.aligned, fit: StackFit.loose);

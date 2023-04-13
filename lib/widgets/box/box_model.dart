@@ -337,6 +337,20 @@ class BoxModel extends LayoutModel
 
     /// Build the layout
     layout = Xml.get(node: xml, tag: 'layout');
+
+    // expand=true is the same as setting the height to 100%
+    // this is essentially a convenience setting
+    if (expand && height == null && pctHeight == null)
+    {
+      if (flex == null || (flex != null && (layoutType == LayoutType.stack || layoutType == LayoutType.column))) height = "100%";
+    }
+
+    // expand=true is the same as setting the width to 100%
+    // this is essentially a convenience setting
+    if (expand && width == null && pctWidth == null)
+    {
+      if (flex == null || (flex != null && (layoutType == LayoutType.stack || layoutType == LayoutType.row))) width = "100%";
+    }
   }
 
   Widget getView({Key? key}) => getReactiveView(BoxView(this));

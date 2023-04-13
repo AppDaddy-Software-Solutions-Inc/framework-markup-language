@@ -47,6 +47,8 @@ class ScrollerModel extends ViewableWidgetModel
   }
 
   /// Layout determines the widgets childrens layout. Can be `row`, `column`, `col`. Defaulted to `column`. Overrides direction.
+  LayoutType get layoutType => LayoutModel.getLayoutType(layout, defaultLayout: LayoutType.column);
+
   StringObservable? _layout;
   set layout(dynamic v)
   {
@@ -200,9 +202,9 @@ class ScrollerModel extends ViewableWidgetModel
     super.deserialize(xml);
 
     // properties
+    layout = Xml.get(node: xml, tag: 'layout') ?? Xml.get(node: xml, tag: 'direction');
     scrollbar = Xml.get(node: xml, tag: 'scrollbar');
     align = Xml.get(node: xml, tag: 'align');
-    layout = Xml.get(node: xml, tag: 'layout') ?? Xml.get(node: xml, tag: 'direction');
     onscrolledtoend = Xml.get(node: xml, tag: 'onscrolledtoend');
     shadowcolor = Xml.get(node: xml, tag: 'shadowcolor');
     onpulldown = Xml.get(node: xml, tag: 'onpulldown');

@@ -9,8 +9,16 @@ import 'package:fml/helper/common_helpers.dart';
 
 class StackModel extends LayoutModel
 {
+  @override
   LayoutType layoutType = LayoutType.stack;
+
+  @override
+  String? get layout => "stack";
+
+  @override
   MainAxisSize get verticalAxisSize   => (expand && verticallyConstrained)   ? MainAxisSize.max : MainAxisSize.min;
+
+  @override
   MainAxisSize get horizontalAxisSize => (expand && horizontallyConstrained) ? MainAxisSize.max : MainAxisSize.min;
 
   StackModel(WidgetModel parent, String? id) : super(parent, id);
@@ -52,6 +60,14 @@ class StackModel extends LayoutModel
   {
     // deserialize
     super.deserialize(xml);
+
+    // expand=true is the same as setting the height to 100%
+    // this is essentially a convenience setting
+    if (expand && height == null && pctHeight == null) height = "100%";
+
+    // expand=true is the same as setting the width to 100%
+    // this is essentially a convenience setting
+    if (expand && width == null && pctWidth == null) width = "100%";
 
     // sort the children
     this.children?.sort((a, b)

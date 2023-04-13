@@ -142,13 +142,11 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
       children.add(Container(height: keyboardSpacer < 36 ? keyboardSpacer : (keyboardSpacer - 36)));
     }
 
-    Axis direction = Axis.vertical;
-    if (widget.model.layout == 'row') direction = Axis.horizontal;
+    // get alignment
+    var alignment = WidgetAlignment(widget.model.layoutType, false, widget.model.halign, widget.model.valign);
 
-    var layoutType = (direction == Axis.horizontal) ? LayoutType.row : LayoutType.column;
-
-    var alignment = WidgetAlignment(layoutType, false, widget.model.halign, widget.model.valign);
-
+    // build body
+    Axis direction = widget.model.layoutType == LayoutType.row ? Axis.horizontal : Axis.vertical;
     var child;
     if (direction == Axis.vertical)
          child = Column(children: children, crossAxisAlignment: alignment.crossAlignment);

@@ -5,7 +5,6 @@ import 'package:fml/widgets/alignment/alignment.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
-import 'package:fml/widgets/layout/layout_model.dart';
 
 class TableHeaderCellView extends StatefulWidget implements IWidgetView
 {
@@ -42,7 +41,7 @@ class _TableHeaderCellViewState extends WidgetState<TableHeaderCellView>
       if (children.isEmpty) children.add(Container());
 
       //this must go after the children are determined
-      var alignment = WidgetAlignment(LayoutType.column, widget.model.center, widget.model.halign, widget.model.valign);
+      var alignment = WidgetAlignment(widget.model.layoutType, widget.model.center, widget.model.halign, widget.model.valign);
 
       //////////////
       /* Contents */

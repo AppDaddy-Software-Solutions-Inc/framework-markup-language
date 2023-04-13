@@ -6,7 +6,6 @@ import 'package:fml/widgets/option/option_model.dart' as OPTION;
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
-import 'package:fml/widgets/layout/layout_model.dart';
 
 /// Checkbox View
 ///
@@ -55,7 +54,7 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
     onLayout(constraints);
 
     //this must go after the children are determined
-    var alignment = WidgetAlignment(LayoutModel.getLayoutType(widget.model.layout), widget.model.center, widget.model.halign, widget.model.valign);
+    var alignment = WidgetAlignment(widget.model.layoutType, widget.model.center, widget.model.halign, widget.model.valign);
 
     _buildOptions();
 

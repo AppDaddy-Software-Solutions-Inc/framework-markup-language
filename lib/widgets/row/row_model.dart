@@ -13,7 +13,10 @@ class RowModel extends LayoutModel
   LayoutType layoutType = LayoutType.row;
 
   @override
-  MainAxisSize get verticalAxisSize   => MainAxisSize.max;
+  String? get layout => "row";
+
+  @override
+  MainAxisSize get verticalAxisSize => MainAxisSize.min;
 
   @override
   MainAxisSize get horizontalAxisSize => (expand && horizontallyConstrained) ? MainAxisSize.max : MainAxisSize.min;
@@ -43,6 +46,10 @@ class RowModel extends LayoutModel
   {
     // deserialize 
     super.deserialize(xml);
+
+    // expand=true is the same as setting the width to 100%
+    // this is essentially a convenience setting
+    if (expand && width == null && pctWidth == null && flex == null) width = "100%";
   }
 
   Widget getView({Key? key}) => getReactiveView(RowView(this));

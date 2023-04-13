@@ -13,10 +13,13 @@ class ColumnModel extends LayoutModel
   LayoutType layoutType = LayoutType.column;
 
   @override
+  String? get layout => "column";
+
+  @override
   MainAxisSize get verticalAxisSize   => (expand && verticallyConstrained)   ? MainAxisSize.max : MainAxisSize.min;
 
   @override
-  MainAxisSize get horizontalAxisSize => MainAxisSize.max;
+  MainAxisSize get horizontalAxisSize => MainAxisSize.min;
 
   ColumnModel(WidgetModel parent, String? id) : super(parent, id);
 
@@ -34,6 +37,20 @@ class ColumnModel extends LayoutModel
       model = null;
     }
     return model;
+  }
+
+  /// Deserializes the FML template elements, attributes and children
+  @override
+  void deserialize(XmlElement? xml)
+  {
+    if (xml == null) return;
+
+    // deserialize
+    super.deserialize(xml);
+
+    // expand=true is the same as setting the height to 100%
+    // this is essentially a convenience setting
+    if (expand && height == null && pctHeight == null && flex == null) height = "100%";
   }
 
   Widget getView({Key? key}) => getReactiveView(ColumnView(this));

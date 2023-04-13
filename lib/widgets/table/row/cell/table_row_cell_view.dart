@@ -9,7 +9,6 @@ import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart' ;
 import 'package:fml/widgets/overlay/overlay_view.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
-import 'package:fml/widgets/layout/layout_model.dart';
 
 class TableRowCellView extends StatefulWidget implements IWidgetView
 {
@@ -43,7 +42,7 @@ class _TableRowCellViewState extends WidgetState<TableRowCellView> with WidgetsB
     if (children.isEmpty) children.add(Container());
 
     //this must go after the children are determined
-    var alignment= WidgetAlignment(LayoutType.stack, widget.model.center, widget.model.halign, widget.model.valign);
+    var alignment= WidgetAlignment(widget.model.layoutType, widget.model.center, widget.model.halign, widget.model.valign);
 
     // Contents
     Widget contents;

@@ -51,6 +51,19 @@ class CardModel extends BoxModel
     return model;
   }
 
+  @override
+  void deserialize(XmlElement? xml)
+  {
+    if (xml == null) return;
+
+    /// override of expand
+    var expand = Xml.get(node: xml, tag: 'expand');
+    if (expand == null) this.expand= false;
+
+    // deserialize
+    super.deserialize(xml);
+  }
+
   Widget getView({Key? key}) => getReactiveView(BoxView(this));
 }
 

@@ -157,17 +157,9 @@ class _BoxViewState extends WidgetState<BoxView>
 
   BoxShadow? _getShadow()
   {
-    BoxShadow? shadow;
-    if (widget.model.elevation != 0)
-      shadow = BoxShadow(
-          color: widget.model.shadowcolor,
-          spreadRadius: widget.model.elevation ?? 1,
-          blurRadius: (widget.model.elevation ?? 1) * 2,
-          offset: Offset(
-              widget.model.shadowx,
-              widget.model
-                  .shadowy));
-    return shadow;
+    var elevation = (widget.model.elevation ?? 0);
+    if (elevation > 0) return BoxShadow(color: widget.model.shadowcolor, spreadRadius: elevation, blurRadius: elevation * 2,
+        offset: Offset(widget.model.shadowx, widget.model.shadowy));
   }
 
   _getBoxDecoration(BorderRadius? radius)
@@ -302,6 +294,8 @@ class _BoxViewState extends WidgetState<BoxView>
 
     // apply constraints
     view = applyConstraints(view, widget.model.constraints.model);
+
+    if (!widget.model.expand) view = UnconstrainedBox(child: view);
 
     return view;
   }

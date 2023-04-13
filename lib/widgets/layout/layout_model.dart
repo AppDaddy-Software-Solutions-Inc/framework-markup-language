@@ -27,17 +27,55 @@ class LayoutModel extends DecoratedWidgetModel
   @required
   MainAxisSize get horizontalAxisSize => throw(UnimplementedError);
 
+  List<ViewableWidgetModel> get variableChildren
+  {
+    var w = variableWidthChildren;
+    var h = variableHeightChildren;
+    w.addAll(h);
+    return w;
+  }
+
   // children with variable width
-  List<ViewableWidgetModel> get variableWidthChildren => viewableChildren.where((child) => child.flex != null || child.pctWidth != null).toList();
+  List<ViewableWidgetModel> get variableWidthChildren
+  {
+    var viewable = viewableChildren;
+    var variable = viewable.where((child) => ((layoutType == LayoutType.row && child.flex != null) || child.pctWidth != null)).toList();
+    return variable;
+  }
 
   // children with variable height
-  List<ViewableWidgetModel> get variableHeightChildren => viewableChildren.where((child) => child.flex != null || child.pctHeight != null).toList();
+  List<ViewableWidgetModel> get variableHeightChildren
+  {
+    var viewable = viewableChildren;
+    var variable = viewable.where((child) => ((layoutType == LayoutType.column && child.flex != null) || child.pctHeight != null)).toList();
+    return variable;
+  }
+
+  List<ViewableWidgetModel> get fixedChildren
+  {
+    var w = fixedWidthChildren;
+    var h = fixedHeightChildren;
+    w.addAll(h);
+    return w;
+  }
 
   // children with fixed width
-  List<ViewableWidgetModel> get fixedWidthChildren => viewableChildren.where((child) => child.flex == null && child.pctWidth == null).toList();
+  List<ViewableWidgetModel> get fixedWidthChildren
+  {
+    var viewable = viewableChildren;
+    var variable = variableWidthChildren;
+    viewable.removeWhere((child) => variable.contains(child));
+    return viewable;
+  }
 
   // children with fixed height
-  List<ViewableWidgetModel> get fixedHeightChildren => viewableChildren.where((child) => child.flex == null && child.pctHeight == null).toList();
+  List<ViewableWidgetModel> get fixedHeightChildren
+  {
+    var viewable = viewableChildren;
+    var variable = variableHeightChildren;
+    viewable.removeWhere((child) => variable.contains(child));
+    return viewable;
+  }
 
   /// layout style
   StringObservable? _layout;
@@ -134,18 +172,19 @@ class LayoutModel extends DecoratedWidgetModel
   @override
   List<Widget> inflate()
   {
-    var layout = this.layoutType;
-    var variableChildren = this.variableWidthChildren;
-    var fixedChildren = (layout == LayoutType.row) ? this.fixedWidthChildren : this.fixedHeightChildren;
+    var layout   = this.layoutType;
+    var variable = (layoutType == LayoutType.row) ? this.variableWidthChildren : this.variableHeightChildren;
+    var fixed    = (layoutType == LayoutType.row) ? this.fixedWidthChildren    : this.fixedHeightChildren;
+    var viewable = this.viewableChildren;
 
     List<Widget> views = [];
-    for (var child in viewableChildren)
+    for (var child in viewable)
     {
       var view = child.getView();
 
       // if we have variable size children (% or flex)
       // register listeners on fixed size children
-      if (variableChildren.isNotEmpty && fixedChildren.contains(child))
+      if (variable.isNotEmpty && fixed.contains(child))
       {
         switch (layout)
         {
@@ -177,10 +216,10 @@ class LayoutModel extends DecoratedWidgetModel
   {
     super.onLayoutComplete();
 
-    var fixedChildren = (layoutType == LayoutType.row) ? this.fixedWidthChildren : this.fixedHeightChildren;
+    var fixed = (layoutType == LayoutType.row) ? this.fixedWidthChildren : this.fixedHeightChildren;
 
     // we need a callback to build if we have no fixed children
-    if (fixedChildren.isEmpty)
+    if (fixed.isEmpty)
     {
       switch (layoutType)
       {
@@ -201,25 +240,25 @@ class LayoutModel extends DecoratedWidgetModel
   void onWidthChange(Observable? child)
   {
     // layout can be performed when all fixed sized children have been laid out
-    var unsizedChildren = fixedWidthChildren.where((child) => child.viewWidth == null);
-    if (unsizedChildren.isEmpty)
+    var unsized = fixedWidthChildren.where((child) => child.viewWidth == null);
+    if (unsized.isEmpty)
     {
       // calculate maximum space
       var maximum = calculateMaxWidth() ?? 0;
 
-      var variableChildren = this.variableWidthChildren;
-      var fixedChildren = this.fixedWidthChildren;
+      var variable = this.variableWidthChildren;
+      var fixed = this.fixedWidthChildren;
 
       // calculate fixed space
-      double fixed = 0;
-      for (var child in fixedChildren) fixed += (child.visible) ? (child.viewWidth ?? 0) : 0;
+      double reserved = 0;
+      for (var child in fixed) reserved += (child.visible) ? (child.viewWidth ?? 0) : 0;
 
-      // calculate usable space (max - fixed - padding)
-      var usable = maximum - fixed;
+      // calculate usable space (max - reserved)
+      var usable = maximum - reserved;
 
       // set % sizing on variable children
       var free = usable;
-      for (var child in variableChildren)
+      for (var child in variable)
       {
         if (child.visible && child.pctWidth != null)
         {
@@ -239,10 +278,10 @@ class LayoutModel extends DecoratedWidgetModel
 
       // calculate sum of all flex values
       double flexsum = 0;
-      for (var child in variableChildren) flexsum += (child.visible && child.pctWidth == null && child.flex != null && child.flex! > 0) ? child.flex! : 0;
+      for (var child in variable) flexsum += (child.visible && child.pctWidth == null && child.flex != null && child.flex! > 0) ? child.flex! : 0;
 
       // set flex sizing on flexible children
-      for (var child in variableChildren)
+      for (var child in variable)
       {
         // % takes priority over flexibility
         // and would have been laid out above
@@ -264,25 +303,25 @@ class LayoutModel extends DecoratedWidgetModel
   void onHeightChange(Observable? child)
   {
     // layout can be performed when all fixed sized children have been laid out
-    var unsizedChildren = fixedHeightChildren.where((child) => child.viewHeight == null);
-    if (unsizedChildren.isEmpty)
+    var unsized = fixedHeightChildren.where((child) => child.viewHeight == null);
+    if (unsized.isEmpty)
     {
       // calculate maximum space
       var maximum = height ?? calculateMaxHeight() ?? 0;
 
-      var variableChildren = this.variableHeightChildren;
-      var fixedChildren = this.fixedHeightChildren;
+      var variable = this.variableHeightChildren;
+      var fixed = this.fixedHeightChildren;
 
       // calculate fixed space
-      double fixed = 0;
-      for (var child in fixedChildren) fixed += (child.visible) ? (child.viewHeight ?? 0) : 0;
+      double reserved = 0;
+      for (var child in fixed) reserved += (child.visible) ? (child.viewHeight ?? 0) : 0;
 
-      // calculate usable space (max - fixed - padding)
-      var usable = maximum - fixed;
+      // calculate usable space (max - reserved)
+      var usable = maximum - reserved;
 
       // set % sizing on variable children
       var free = usable;
-      for (var child in variableChildren)
+      for (var child in variable)
       {
         if (child.visible && child.pctHeight != null)
         {
@@ -302,10 +341,10 @@ class LayoutModel extends DecoratedWidgetModel
 
       // calculate sum of all flex values
       double flexsum = 0;
-      for (var child in variableChildren) flexsum += (child.visible && child.pctHeight == null && child.flex != null && child.flex! > 0) ? child.flex! : 0;
+      for (var child in variable) flexsum += (child.visible && child.pctHeight == null && child.flex != null && child.flex! > 0) ? child.flex! : 0;
 
       // set flex sizing on flexible children
-      for (var child in variableChildren)
+      for (var child in variable)
       {
         // % takes priority over flexibility
         // and would have been laid out above

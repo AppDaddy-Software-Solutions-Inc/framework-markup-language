@@ -71,6 +71,9 @@ class _RowViewState extends WidgetState<RowView>
     // add margins
     if (model is RowModel) view = addMargins(view);
 
+    // allow row to shrink in its cross axis
+    //if (widget.model.expand) view = UnconstrainedBox(child: view, constrainedAxis: Axis.horizontal);
+
     // apply user defined constraints
     if (model is RowModel) view = applyConstraints(view, widget.model.constraints.model);
 

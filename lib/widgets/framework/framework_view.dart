@@ -350,7 +350,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   Widget _buildBody(BoxConstraints constraints)
   {
     var header = widget.model.header;
-    var footer = widget.model.header;
+    var footer = widget.model.footer;
     var body   = widget.model;
 
     // default model layout to stack if not supplied

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
@@ -242,6 +243,20 @@ class _BoxViewState extends WidgetState<BoxView>
     return view;
   }
 
+  Widget _applyConstraints(Widget view)
+  {
+    // apply model constraints
+    view = applyConstraints(view, widget.model.constraints.model);
+
+    // allow the box to shrink on any axis that is not expanding
+    // this is done by applying an UnconstrainedBox() to the view
+    // in the direction of the constrained axis
+    var layout = widget.model.layoutType;
+    if (!widget.model.expand && (layout == LayoutType.row || layout == LayoutType.column)) view = UnconstrainedBox(child: view);
+
+    return view;
+  }
+
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
@@ -293,9 +308,7 @@ class _BoxViewState extends WidgetState<BoxView>
     view = addMargins(view);
 
     // apply constraints
-    view = applyConstraints(view, widget.model.constraints.model);
-
-    if (!widget.model.expand) view = UnconstrainedBox(child: view);
+    view = _applyConstraints(view);
 
     return view;
   }

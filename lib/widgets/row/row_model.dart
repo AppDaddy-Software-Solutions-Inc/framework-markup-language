@@ -48,7 +48,7 @@ class RowModel extends LayoutModel
     super.deserialize(xml);
 
     // expand=true is the same as setting the flex to 1
-    if (expand && flex == null && width  == null && pctWidth  == null) flex = "1";
+    if (expand && flex == null && width == null && pctWidth == null) flex = "1";
   }
 
   Widget getView({Key? key}) => getReactiveView(RowView(this));

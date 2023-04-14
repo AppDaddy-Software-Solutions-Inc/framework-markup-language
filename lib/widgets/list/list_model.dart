@@ -313,7 +313,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     if (data == null) return null;
     if ((data.length < (index + 1))) return null;
     if ((items.containsKey(index))) return items[index];
-    if ((index < 0) || (data.length < index)) return null;
+    if ((index.isNegative) || (data.length < index)) return null;
 
     // build prototype
     XmlElement? prototype = S.fromPrototype(this.prototype, "${this.id}-$index");

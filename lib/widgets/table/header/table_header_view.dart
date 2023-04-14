@@ -78,7 +78,7 @@ class _TableHeaderViewState extends WidgetState<TableHeaderView>
       if (widget.model!.draggable != false) {
         double widthPlusPrevious = width! + widthTotal - (anchorWidth / 2);
         widthTotal += width;
-        if (widthPlusPrevious < 0) widthPlusPrevious = 0;
+        if (widthPlusPrevious.isNegative) widthPlusPrevious = 0;
         cells.add(UnconstrainedBox(child: SizedBox(width: width > 0 ? width : null, height: height, child: cell)));
         dragHandles.add(Positioned(left: widthPlusPrevious,
             child: UnconstrainedBox(child: SizedBox(width: anchorWidth, height: height, child: draggable))));
@@ -103,7 +103,7 @@ class _TableHeaderViewState extends WidgetState<TableHeaderView>
   {
     try
     {
-      if (details.localPosition.dx > 0 || details.localPosition.dx < 0)
+      if (details.localPosition.dx > 0 || details.localPosition.dx.isNegative)
       {
         if (tableModel != null)
         {

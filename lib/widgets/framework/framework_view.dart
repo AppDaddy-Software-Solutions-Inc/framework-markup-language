@@ -179,10 +179,10 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     if ((notification.metrics.axisDirection == AxisDirection.left) || (notification.metrics.axisDirection == AxisDirection.right)) return false;
 
     double maxHeight = widget.model.header?.height ?? widget.model.header?.constraints.model.maxHeight ?? 0;
-    if (maxHeight < 0) maxHeight = 0;
+    if (maxHeight.isNegative) maxHeight = 0;
 
     double minHeight = widget.model.header?.height ?? widget.model.header?.constraints.model.minHeight ?? 0;
-    if (minHeight < 0) minHeight = 0;
+    if (minHeight.isNegative) minHeight = 0;
 
     // Non-Resizeable Header
     if (minHeight == maxHeight) return true;

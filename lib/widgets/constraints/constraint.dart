@@ -20,7 +20,7 @@ class Constraints
   {
     if (_width == null) return null;
     if (_width == double.infinity || _width == double.negativeInfinity) return null;
-    if (_width! < 0) return null;
+    if (_width!.isNegative) return null;
     return _width;
   } 
   
@@ -30,7 +30,7 @@ class Constraints
   {
     if (_minWidth == null) return null;
     if (_minWidth == double.infinity || _minWidth == double.negativeInfinity) return null;
-    if (_minWidth! < 0) return null;
+    if (_minWidth!.isNegative) return null;
     return _minWidth;
   }
 
@@ -40,7 +40,7 @@ class Constraints
   {
     if (_maxWidth == null) return null;
     if (_maxWidth == double.infinity || _maxWidth == double.negativeInfinity) return null;
-    if (_maxWidth! < 0) return null;
+    if (_maxWidth!.isNegative) return null;
     return _maxWidth;
   }
 
@@ -51,7 +51,7 @@ class Constraints
   {
     if (_height == null) return null;
     if (_height == double.infinity || _height == double.negativeInfinity) return null;
-    if (_height! < 0) return null;
+    if (_height!.isNegative) return null;
     return _height;
   }
 
@@ -61,7 +61,7 @@ class Constraints
   {
     if (_minHeight == null) return null;
     if (_minHeight == double.infinity || _minHeight == double.negativeInfinity) return null;
-    if (_minHeight! < 0) return null;
+    if (_minHeight!.isNegative) return null;
     return _minHeight;
   }
 
@@ -71,7 +71,7 @@ class Constraints
   {
     if (_maxHeight == null) return null;
     if (_maxHeight == double.infinity || _maxHeight == double.negativeInfinity) return null;
-    if (_maxHeight! < 0) return null;
+    if (_maxHeight!.isNegative) return null;
     return _maxHeight;
   }
 

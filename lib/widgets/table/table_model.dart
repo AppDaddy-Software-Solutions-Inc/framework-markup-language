@@ -558,7 +558,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling {
     if (data == null) return null;
     if (data.length < (index + 1)) return null;
     if (rows.containsKey(index)) return rows[index];
-    if ((index < 0) || (data.length < index)) return null;
+    if ((index.isNegative) || (data.length < index)) return null;
 
     // build prototype
     XmlElement? prototype =
@@ -850,7 +850,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling {
     ////////////
     /* Shrink */
     ////////////
-    if (pad < 0) return shrinkBy(pad);
+    if (pad.isNegative) return shrinkBy(pad);
 
     if (paddingType == PaddingType.none) return;
 

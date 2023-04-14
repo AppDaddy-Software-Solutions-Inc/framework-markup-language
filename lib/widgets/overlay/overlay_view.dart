@@ -431,8 +431,8 @@ class OverlayViewState extends State<OverlayView>
       if (widget.model.modal == true)
       {
         var viewport = MediaQuery.of(context).size;
-        if (dx! < 0) dx = 0;
-        if (dy! < 0) dy = 0;
+        if (dx!.isNegative) dx = 0;
+        if (dy!.isNegative) dy = 0;
         if (dx! + (width!  + (padding * 2)) > viewport.width)  dx = viewport.width  - (width!  + (padding * 2));
         if (dy! + (height! + (padding * 2)) > viewport.height) dy = viewport.height - (height! + (padding * 2));
       }

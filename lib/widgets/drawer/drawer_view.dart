@@ -686,7 +686,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
             var calcFromBottom = opening ? screenHeight - dragUpdateDetails.globalPosition.dy : fromBottom! - dragUpdateDetails.primaryDelta!;
             // Prevent dragging past open/close range
             if (widget.model.sizeTop != null && calcFromBottom < screenHeight - widget.model.sizeTop!) calcFromBottom = screenHeight - widget.model.sizeTop!;
-            else if (calcFromBottom < 0) calcFromBottom = 0;
+            else if (calcFromBottom.isNegative) calcFromBottom = 0;
             else if (calcFromBottom > screenHeight) calcFromBottom = screenHeight;
             setState(() {
               fromBottom = calcFromBottom;
@@ -697,7 +697,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
         else if (openSheet == 'bottom' && dir == 'vertical') {
           // print((screenHeight - dragUpdateDetails.globalPosition.dy).toString() + ' from bottom');
           // Animate bottom sheet closed when near edge
-          if ((screenHeight - dragUpdateDetails.globalPosition.dy) < animateEdge && opening == false && dragUpdateDetails.primaryDelta! < 0) {
+          if ((screenHeight - dragUpdateDetails.globalPosition.dy) < animateEdge && opening == false && dragUpdateDetails.primaryDelta!.isNegative) {
             setState(() {
               animate = true;
               animatingClose = true;
@@ -720,7 +720,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
             // Prevent dragging past open/close range
             if (widget.model.sizeBottom != null && calcFromTop < screenHeight - widget.model.sizeBottom!)
               calcFromTop = screenHeight - widget.model.sizeBottom!;
-            else if (calcFromTop < 0)
+            else if (calcFromTop.isNegative)
               calcFromTop = 0;
             else if (calcFromTop > screenHeight)
               calcFromTop = screenHeight;
@@ -733,7 +733,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
         else if (openSheet == 'left' && dir == 'horizontal') {
           // print(dragUpdateDetails.globalPosition.dx.toString() + ' from left');
           // Animate left sheet closed when near edge
-          if (dragUpdateDetails.globalPosition.dx < animateEdge && opening == false && dragUpdateDetails.primaryDelta! < 0) {
+          if (dragUpdateDetails.globalPosition.dx < animateEdge && opening == false && dragUpdateDetails.primaryDelta!.isNegative) {
             setState(() {
               animate = true;
               animatingClose = true;
@@ -755,7 +755,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
             var calcFromRight = opening ? screenWidth - dragUpdateDetails.globalPosition.dx : fromRight! - dragUpdateDetails.primaryDelta!;
             // Prevent dragging past open/close range
             if (widget.model.sizeLeft != null && calcFromRight < screenWidth - widget.model.sizeLeft!) calcFromRight = screenWidth - widget.model.sizeLeft!;
-            else if (calcFromRight < 0) calcFromRight = 0;
+            else if (calcFromRight.isNegative) calcFromRight = 0;
             else if (calcFromRight > screenWidth) calcFromRight = screenWidth;
             setState(() {
               fromRight = calcFromRight;
@@ -788,7 +788,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
             var calcFromLeft = opening ? dragUpdateDetails.globalPosition.dx : fromLeft! + dragUpdateDetails.primaryDelta!;
             // Prevent dragging past open/close range
             if (widget.model.sizeRight != null && calcFromLeft < screenWidth - widget.model.sizeRight!) calcFromLeft = screenWidth - widget.model.sizeRight!;
-            else if (calcFromLeft < 0) calcFromLeft = 0;
+            else if (calcFromLeft.isNegative) calcFromLeft = 0;
             else if (calcFromLeft > screenWidth) calcFromLeft = screenWidth;
             setState(() {
               fromLeft = calcFromLeft;

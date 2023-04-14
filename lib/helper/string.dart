@@ -56,7 +56,7 @@ class S
   {
     if (list is List)
     {
-      if ((list.isEmpty) || (index < 0) || (index >= list.length))  return null;
+      if ((list.isEmpty) || (index.isNegative) || (index >= list.length))  return null;
       return list[index];
     }
     return null;

@@ -214,7 +214,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
            if (index >= _pages.length) _pages.add(page);
       else if (index < (_pages.length * -1)) _pages.insert(0, page);
       else if (index >= 0) _pages.insert(index, page);
-      else if (index < 0)  _pages.insert(_pages.length + index, page);
+      else if (index.isNegative)  _pages.insert(_pages.length + index, page);
       else Log().error('Unable to add page at index: $index name: ${args!.title}, url: ${args.url}', caller: 'delegate.dart');
     }
     else _pages.add(page);

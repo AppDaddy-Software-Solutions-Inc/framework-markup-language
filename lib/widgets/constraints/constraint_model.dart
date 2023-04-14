@@ -63,8 +63,8 @@ class ConstraintModel
     constraints.maxWidth  = model.width  ?? model.maxWidth  ?? global.maxWidth;
 
     // ensure not negative
-    if (constraints.minWidth == null || constraints.minWidth! < 0) constraints.minWidth = null;
-    if (constraints.maxWidth == null || constraints.maxWidth! < 0) constraints.maxWidth = null;
+    if (constraints.minWidth == null || constraints.minWidth!.isNegative) constraints.minWidth = null;
+    if (constraints.maxWidth == null || constraints.maxWidth!.isNegative) constraints.maxWidth = null;
 
     // ensure max > min
     if (constraints.minWidth != null && constraints.maxWidth != null && constraints.minWidth! > constraints.maxWidth!)
@@ -80,8 +80,8 @@ class ConstraintModel
     constraints.maxHeight = model.height ?? model.maxHeight ?? global.maxHeight;
 
     // ensure not negative
-    if (constraints.minHeight != null && constraints.minHeight! < 0) constraints.minHeight = null;
-    if (constraints.maxHeight != null && constraints.maxHeight! < 0) constraints.maxHeight = null;
+    if (constraints.minHeight != null && constraints.minHeight!.isNegative) constraints.minHeight = null;
+    if (constraints.maxHeight != null && constraints.maxHeight!.isNegative) constraints.maxHeight = null;
 
     // ensure max > min
     if (constraints.minHeight != null && constraints.maxHeight != null && constraints.minHeight! > constraints.maxHeight!)
@@ -116,17 +116,31 @@ class ConstraintModel
         v = s.replaceAll('%', '000000');
       }
 
-      if (_width == null) _width = DoubleObservable(Binding.toKey(id, 'width'), v, scope: scope, listener: listener);
+      if (_width == null) _width = DoubleObservable(Binding.toKey(id, 'width'), v, scope: scope, listener: listener, setter: _widthSetter);
       else if (v != null) _width!.set(v);
     }
   }
   double? get width => _width?.get();
   setWidth(double? v, {bool notify = false})
   {
-    if (_width == null) _width = DoubleObservable(Binding.toKey(id, 'width'), null, scope: scope, listener: listener);
+    if (_width == null) _width = DoubleObservable(Binding.toKey(id, 'width'), null, scope: scope, listener: listener, setter: _widthSetter);
     _width?.set(v, notify: notify);
   }
 
+  // this routine enforces the min and max width
+  // constraints from the template
+  dynamic _widthSetter(dynamic value)
+  {
+    if (S.isNumber(value))
+    {
+      double v = S.toDouble(value)!;
+      if (minWidth != null && v < minWidth!) v = minWidth!;
+      if (maxWidth != null && v > maxWidth!) v = maxWidth!;
+      if (v.isNegative) v = 0;
+      if (v != S.toDouble(value)) value = v;
+    }
+    return value;
+  }
 
   // height
   double? _heightPercentage;
@@ -148,15 +162,30 @@ class ConstraintModel
         String s = v;
         v = s.replaceAll('%', '000000');
       }
-      if (_height == null) _height = DoubleObservable(Binding.toKey(id, 'height'), v, scope: scope, listener: listener);
+      if (_height == null) _height = DoubleObservable(Binding.toKey(id, 'height'), v, scope: scope, listener: listener, setter: _heightSetter);
       else if (v != null) _height!.set(v);
     }
   }
   double? get height => _height?.get();
   setHeight(double? v, {bool notify = false})
   {
-    if (_height == null) _height = DoubleObservable(Binding.toKey(id, 'height'), null, scope: scope, listener: listener);
+    if (_height == null) _height = DoubleObservable(Binding.toKey(id, 'height'), null, scope: scope, listener: listener, setter: _heightSetter);
     _height?.set(v, notify:notify);
+  }
+
+  // this routine enforces the min and max height
+  // constraints from the template
+  dynamic _heightSetter(dynamic value)
+  {
+    if (S.isNumber(value))
+    {
+      double v = S.toDouble(value)!;
+      if (minHeight != null && v < minHeight!) v = minHeight!;
+      if (maxHeight != null && v > maxHeight!) v = maxHeight!;
+      if (v.isNegative) v = 0;
+      if (v != S.toDouble(value)) value = v;
+    }
+    return value;
   }
 
   // min width

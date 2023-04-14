@@ -61,12 +61,12 @@ class _SplitViewState extends WidgetState<SplitView>
     var size2 = (widget.model.vertical ? widget.model.calculateMaxHeight()! : widget.model.calculateMaxWidth()!) - size1;
     size1 = size1 - (_dividerWidth/2);
     size2 = size2 - (_dividerWidth/2);
-    if (size1 < 0)
+    if (size1.isNegative)
     {
       size2 = size2 + size1;
       size1 = 0;
     }
-    if (size2 < 0)
+    if (size2.isNegative)
     {
       size1 = size1 + size2;
       size2 = 0;
@@ -98,14 +98,14 @@ class _SplitViewState extends WidgetState<SplitView>
     if (widget.model.vertical)
     {
       var height = (widget.model.height ?? 0) + details.delta.dy;
-      if (height < 0) height = 0;
+      if (height.isNegative) height = 0;
       if (height > widget.model.calculateMaxHeight()!) height = widget.model.calculateMaxHeight()!;
       widget.model.height = height;
     }
     else
     {
       var width = (widget.model.width ?? 0) + details.delta.dx;
-      if (width < 0) width = 0;
+      if (width.isNegative) width = 0;
       if (width > widget.model.calculateMaxWidth()!) width = widget.model.calculateMaxWidth()!;
       widget.model.width = width;
     }

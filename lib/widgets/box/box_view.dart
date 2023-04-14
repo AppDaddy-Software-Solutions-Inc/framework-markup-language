@@ -195,7 +195,7 @@ class _BoxViewState extends WidgetState<BoxView>
     double? opacity = widget.model.opacity;
     if (opacity == null) return view;
     if (opacity > 1) opacity = 1;
-    if (opacity < 0) opacity = 0;
+    if (opacity.isNegative) opacity = 0;
     return Opacity(child: view, opacity: opacity);
   }
 
@@ -249,7 +249,11 @@ class _BoxViewState extends WidgetState<BoxView>
     // this is done by applying an UnconstrainedBox() to the view
     // in the direction of the constrained axis
     var layout = widget.model.layoutType;
-    if (!widget.model.expand && (layout == LayoutType.row || layout == LayoutType.column)) view = UnconstrainedBox(child: view);
+    if (!widget.model.expand)
+    {
+      if (layout == LayoutType.row)    view = UnconstrainedBox(child: view, constrainedAxis: Axis.horizontal);
+      if (layout == LayoutType.column) view = UnconstrainedBox(child: view, constrainedAxis: Axis.vertical);
+    }
 
     return view;
   }

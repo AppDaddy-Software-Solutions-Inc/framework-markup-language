@@ -261,7 +261,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
   }
 
   GridItemModel? getItemModel(int item) {
-    if ((item < 0) || (items.length <= item)) return null;
+    if ((item.isNegative) || (items.length <= item)) return null;
     return items[item];
   }
 

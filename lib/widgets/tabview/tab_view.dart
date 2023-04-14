@@ -134,7 +134,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
     if (widget.model.index == null) return;
 
     int i = widget.model.index! - 1;
-    if (i < 0) i = widget.model.views.length - 1;
+    if (i.isNegative) i = widget.model.views.length - 1;
     widget.model.index = i;
   }
 
@@ -151,7 +151,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
   void _showLast()
   {
     int i = widget.model.views.length - 1;
-    if (i < 0) i = 0;
+    if (i.isNegative) i = 0;
     widget.model.index = i;
   }
 
@@ -208,7 +208,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
         widget.model.deleteView(view);
 
         int i = widget.model.index! - 1;
-        if (i < 0) i = widget.model.views.length - 1;
+        if (i.isNegative) i = widget.model.views.length - 1;
         widget.model.index = i;
       }
       event.handled = true;

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/log/manager.dart';
@@ -277,7 +275,7 @@ class LayoutModel extends DecoratedWidgetModel
           if (constraints.maxWidth != null && size > constraints.maxWidth!) size = constraints.maxWidth!.toInt();
 
           // must be 0 or greater
-          if (size < 0) size = 0;
+          if (size.isNegative) size = 0;
 
           // reduce free space
           free = free - size;
@@ -311,7 +309,7 @@ class LayoutModel extends DecoratedWidgetModel
           if (constraints.maxWidth != null && size > constraints.maxWidth!) size = constraints.maxWidth!.toInt();
 
           // must be 0 or greater
-          if (size < 0) size = 0;
+          if (size.isNegative) size = 0;
 
           // set the size
           if (child.width != size) child.setWidth(size.toDouble(), notify: true);
@@ -358,7 +356,7 @@ class LayoutModel extends DecoratedWidgetModel
           if (constraints.maxHeight != null && size > constraints.maxHeight!) size = constraints.maxHeight!.toInt();
 
           // must be 0 or greater
-          if (size < 0) size = 0;
+          if (size.isNegative) size = 0;
 
           // reduce free space
           free = free - size;
@@ -392,7 +390,7 @@ class LayoutModel extends DecoratedWidgetModel
           if (constraints.maxHeight != null && size > constraints.maxHeight!) size = constraints.maxHeight!.toInt();
 
           // must be 0 or greater
-          if (size < 0) size = 0;
+          if (size.isNegative) size = 0;
 
           // set the size
           if (child.height != size) child.setHeight(size.toDouble(), notify: true);

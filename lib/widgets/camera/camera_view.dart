@@ -204,7 +204,7 @@ class CameraViewState extends WidgetState<CameraView>
       {
         // set specified camera
         int index = widget.model.index ?? -1;
-        if (index < 0)
+        if (index.isNegative)
         {
           // get the camera
           CameraLensDirection direction = S.toEnum(widget.model.direction, CameraLensDirection.values) ?? CameraLensDirection.back;

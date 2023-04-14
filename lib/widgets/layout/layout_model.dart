@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/log/manager.dart';
@@ -265,6 +267,15 @@ class LayoutModel extends DecoratedWidgetModel
           // calculate size from %
           int size = (usable * (child.pctWidth!/100)).floor();
 
+          // get user defined constraints
+          var constraints = child.constraints.model;
+
+          // must not be less than min width
+          if (constraints.minWidth != null && size < constraints.minWidth!) size = constraints.minWidth!.toInt();
+
+          // must not be greater than max width
+          if (constraints.maxWidth != null && size > constraints.maxWidth!) size = constraints.maxWidth!.toInt();
+
           // must be 0 or greater
           if (size < 0) size = 0;
 
@@ -289,6 +300,15 @@ class LayoutModel extends DecoratedWidgetModel
         {
           // calculate size from flex
           var size = ((child.flex! / flexsum) * free).floor();
+
+          // get user defined constraints
+          var constraints = child.constraints.model;
+
+          // must not be less than min width
+          if (constraints.minWidth != null && size < constraints.minWidth!) size = constraints.minWidth!.toInt();
+
+          // must not be greater than max width
+          if (constraints.maxWidth != null && size > constraints.maxWidth!) size = constraints.maxWidth!.toInt();
 
           // must be 0 or greater
           if (size < 0) size = 0;
@@ -328,6 +348,15 @@ class LayoutModel extends DecoratedWidgetModel
           // calculate size from %
           var size = (usable * (child.pctHeight!/100)).floor();
 
+          // get user defined constraints
+          var constraints = child.constraints.model;
+
+          // must not be less than min height
+          if (constraints.minHeight != null && size < constraints.minHeight!) size = constraints.minHeight!.toInt();
+
+          // must not be greater than max height
+          if (constraints.maxHeight != null && size > constraints.maxHeight!) size = constraints.maxHeight!.toInt();
+
           // must be 0 or greater
           if (size < 0) size = 0;
 
@@ -352,6 +381,15 @@ class LayoutModel extends DecoratedWidgetModel
         {
           // calculate size from flex
           var size = ((child.flex! / flexsum) * free).floor();
+
+          // get user defined constraints
+          var constraints = child.constraints.model;
+
+          // must not be less than min height
+          if (constraints.minHeight != null && size < constraints.minHeight!) size = constraints.minHeight!.toInt();
+
+          // must not be greater than max height
+          if (constraints.maxHeight != null && size > constraints.maxHeight!) size = constraints.maxHeight!.toInt();
 
           // must be 0 or greater
           if (size < 0) size = 0;

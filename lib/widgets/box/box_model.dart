@@ -247,9 +247,9 @@ class BoxModel extends LayoutModel
       // top/bottom
       else if (s.length > 3)
       {
-        paddingTop=s[1];
-        paddingRight=s[2];
-        paddingBottom=s[3];
+        paddingTop=s[0];
+        paddingRight=s[1];
+        paddingBottom=s[2];
         paddingLeft=s[4];
       }
     }
@@ -342,7 +342,8 @@ class BoxModel extends LayoutModel
     shadowx = Xml.get(node: xml, tag: 'shadowx');
 
     /// Build the layout
-    layout = Xml.get(node: xml, tag: 'layout');
+    layout  = Xml.get(node: xml, tag: 'layout');
+    padding = Xml.get(node: xml, tag: 'padding');
 
     // expand=true we set the flex to 1
     // to allow the box to size to its max

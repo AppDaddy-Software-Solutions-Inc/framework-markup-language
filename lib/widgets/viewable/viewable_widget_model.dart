@@ -329,10 +329,10 @@ class ViewableWidgetModel extends WidgetModel
       // top/bottom
       else if (s.length > 3)
       {
-        marginTop=s[1];
-        marginRight=s[2];
-        marginBottom=s[3];
-        marginLeft=s[4];
+        marginTop=s[0];
+        marginRight=s[1];
+        marginBottom=s[2];
+        marginLeft=s[3];
       }
     }
   }
@@ -585,7 +585,7 @@ class ViewableWidgetModel extends WidgetModel
     // wrap in tooltip?
     if (tipModel != null) view = TooltipView(tipModel!, view);
 
-    // wrap animations. Only animate if visible and dimesions are greater than zero
+    // wrap animations.
     if (this.animations != null)
     {
       var animations = this.animations!.reversed;

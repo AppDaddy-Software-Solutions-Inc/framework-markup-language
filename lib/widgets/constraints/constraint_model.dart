@@ -1,12 +1,10 @@
 import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:fml/helper/string.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observable.dart';
 import 'package:fml/observable/observables/double.dart';
 import 'package:fml/observable/scope.dart';
-import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';

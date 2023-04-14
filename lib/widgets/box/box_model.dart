@@ -46,6 +46,12 @@ class BoxModel extends LayoutModel
     }
   }
 
+  @override
+  double get verticalPadding  => (marginTop ?? 0)  + (marginBottom ?? 0) + (borderwidth * 2) + (paddingTop ?? 0) + (paddingBottom ?? 0);
+
+  @override
+  double get horizontalPadding => (marginLeft ?? 0) + (marginRight  ?? 0) + (borderwidth * 2) + (paddingLeft ?? 0) + (paddingRight ?? 0);
+
   // box blur
   BooleanObservable? _blur;
   set blur(dynamic v)
@@ -338,7 +344,9 @@ class BoxModel extends LayoutModel
     /// Build the layout
     layout = Xml.get(node: xml, tag: 'layout');
 
-    // expand=true is the same as setting the flex to 1
+    // expand=true we set the flex to 1
+    // to allow the box to size to its max
+    // cross axis size
     if (expand)
     {
       if (flex == null && height == null && pctHeight == null && (layoutType == LayoutType.stack || layoutType == LayoutType.column)) flex = "1";

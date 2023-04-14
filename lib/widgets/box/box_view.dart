@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
@@ -251,8 +250,8 @@ class _BoxViewState extends WidgetState<BoxView>
     // allow the box to shrink on any axis that is not expanding
     // this is done by applying an UnconstrainedBox() to the view
     // in the direction of the constrained axis
-    var layout = widget.model.layoutType;
-    if (!widget.model.expand && (layout == LayoutType.row || layout == LayoutType.column)) view = UnconstrainedBox(child: view);
+    //var layout = widget.model.layoutType;
+    //if (!widget.model.expand && (layout == LayoutType.row || layout == LayoutType.column)) view = UnconstrainedBox(child: view);
 
     return view;
   }
@@ -291,6 +290,29 @@ class _BoxViewState extends WidgetState<BoxView>
 
     // add padding
     content = addPadding(content);
+
+    var w = widget.model.calculateMaxWidth();
+    if (w == double.infinity)
+    {
+      w = null;
+    }
+    if (w != null)
+    {
+      w = w - (widget.model.borderwidth * 2) - (widget.model.marginLeft ?? 0) - (widget.model.marginRight ?? 0);
+      if (w <= 0) w = null;
+    }
+
+    var h = widget.model.calculateMaxHeight();
+    if (h == double.infinity)
+    {
+      h = null;
+    }
+
+    if (h != null)
+    {
+       h = h - (widget.model.borderwidth * 2) - (widget.model.marginTop ?? 0) - (widget.model.marginBottom ?? 0);
+       if (h <= 0) h = null;
+    }
 
     // inner box - contents
     Widget view = Container(clipBehavior: Clip.antiAlias, decoration: decoration, alignment: alignment.aligned, child: content);

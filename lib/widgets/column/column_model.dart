@@ -39,18 +39,5 @@ class ColumnModel extends LayoutModel
     return model;
   }
 
-  /// Deserializes the FML template elements, attributes and children
-  @override
-  void deserialize(XmlElement? xml)
-  {
-    if (xml == null) return;
-
-    // deserialize
-    super.deserialize(xml);
-
-    // expand=true is the same as setting the flex to 1
-    if (expand && flex == null && height == null && pctHeight == null) flex = "1";
-  }
-
   Widget getView({Key? key}) => getReactiveView(ColumnView(this));
 }

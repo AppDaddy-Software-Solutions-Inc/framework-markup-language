@@ -40,16 +40,5 @@ class RowModel extends LayoutModel
     return model;
   }
 
-  /// Deserializes the FML template elements, attributes and children
-  @override
-  void deserialize(XmlElement? xml)
-  {
-    // deserialize 
-    super.deserialize(xml);
-
-    // expand=true is the same as setting the flex to 1
-    if (expand && flex == null && width == null && pctWidth == null) flex = "1";
-  }
-
   Widget getView({Key? key}) => getReactiveView(RowView(this));
 }

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:fml/helper/string.dart';
 import 'package:fml/observable/binding.dart';
@@ -251,32 +253,22 @@ class ConstraintModel
   /// the first system non-null maxWidth value
   double? _calculateMaxWidth()
   {
-    double? width;
-    if (system.maxWidth != null) width = system.maxWidth;
-    if (width == null && this.parent is ViewableWidgetModel)
+    if (system.maxWidth != null) return system.maxWidth!;
+    if (this.parent is ViewableWidgetModel)
     {
-      ViewableWidgetModel parent = (this.parent as ViewableWidgetModel);
-      if (_widthPercentage == null)
-      {
-        var margins = (parent.marginRight ?? 0) + (parent.marginLeft ?? 0);
-        var borders = 0.0;
-        var padding = 0.0;
-        if (parent is BoxModel)
-        {
-          borders = borders + (parent.borderwidth * 2);
-          padding = padding + (parent.paddingLeft ?? 0) + (parent.paddingRight ?? 0);
-        }
+      var parent = (this.parent as ViewableWidgetModel);
+      var maxWidth = parent.calculateMaxWidth();
 
-        if (parent.width == null)
-        {
-           var max = parent.calculateMaxHeight();
-           if (max != null) width = max - margins - borders - padding;
-        }
-        else width = parent.width! - margins - borders - padding;
-      }
-      else width = parent.width ?? parent.calculateMaxWidth();
+      if (_widthPercentage != null)
+        return parent.width ?? maxWidth;
+
+      if (parent.width != null)
+        return max(parent.width! - parent.horizontalPadding,0);
+
+      if (maxWidth != null)
+        return max(maxWidth - parent.horizontalPadding,0);
     }
-    return width;
+    return null;
   }
 
   /// walks up the model tree looking for
@@ -293,32 +285,22 @@ class ConstraintModel
   /// the first system non-null maxHeight value
   double? _calculateMaxHeight()
   {
-    double? height;
-    if (system.maxHeight != null) height = system.maxHeight;
-    if (height == null && parent is ViewableWidgetModel)
+    if (system.maxHeight != null) return system.maxHeight!;
+    if (this.parent is ViewableWidgetModel)
     {
-      ViewableWidgetModel? parent = (this.parent as ViewableWidgetModel);
-      if (_heightPercentage == null)
-      {
-        var margins = (parent.marginTop ?? 0) + (parent.marginBottom ?? 0);
-        var borders = 0.0;
-        var padding = 0.0;
-        if (parent is BoxModel)
-        {
-          borders = borders + (parent.borderwidth * 2);
-          padding = padding + (parent.paddingTop ?? 0) + (parent.paddingBottom ?? 0);
-        }
+      var parent = (this.parent as ViewableWidgetModel);
+      var maxHeight = parent.calculateMaxHeight();
 
-        if (parent.height == null)
-        {
-          var max = parent.calculateMaxHeight();
-          if (max != null) height = max - margins - borders - padding;
-        }
-        else height = parent.height! - margins - borders - padding;
-      }
-      else height = parent.height ?? parent.calculateMaxHeight();
+      if (_heightPercentage != null)
+        return parent.height ?? maxHeight;
+
+      if (parent.height != null)
+        return max(parent.height! - parent.verticalPadding,0);
+
+      if (maxHeight != null)
+        return max(maxHeight - parent.verticalPadding,0);
     }
-    return height;
+    return null;
   }
 
   int? _widthAsPercentage(double percent)

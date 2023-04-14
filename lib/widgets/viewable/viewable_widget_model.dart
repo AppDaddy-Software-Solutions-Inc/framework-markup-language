@@ -31,6 +31,12 @@ class ViewableWidgetModel extends WidgetModel
   setWidth(double? v, {bool notify = false}) => _constraints.setWidth(v, notify: notify);
   setHeight(double? v, {bool notify = false}) => _constraints.setHeight(v, notify: notify);
 
+  @override
+  double get verticalPadding  => (marginTop ?? 0)  + (marginBottom ?? 0);
+
+  @override
+  double get horizontalPadding => (marginLeft ?? 0) + (marginRight  ?? 0);
+
   bool get verticallyConstrained
   {
     if (constraints.model.hasVerticalExpansionConstraints)  return true;
@@ -79,6 +85,7 @@ class ViewableWidgetModel extends WidgetModel
   // max width
   @protected
   set maxWidth(dynamic v) => _constraints.maxWidth = v;
+  double? get maxWidth => _constraints.maxWidth;
 
   // min height
   @protected

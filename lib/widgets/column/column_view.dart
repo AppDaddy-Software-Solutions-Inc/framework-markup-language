@@ -69,9 +69,6 @@ class _ColumnViewState extends WidgetState<ColumnView>
     // add margins
     if (model is ColumnModel) view = addMargins(view);
 
-    // allow column to shrink in its cross axis
-    //if (widget.model.expand) view = UnconstrainedBox(child: view, constrainedAxis: Axis.vertical);
-
     // apply user defined constraints
     if (model is ColumnModel) view = applyConstraints(view, widget.model.constraints.model);
 

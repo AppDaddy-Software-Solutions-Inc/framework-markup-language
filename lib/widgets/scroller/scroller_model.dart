@@ -27,8 +27,13 @@ class ScrollerModel extends ViewableWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
-
   String? get align => _align?.get();
+
+  @override
+  double? calculateMaxWidth()  => horizontallyConstrained ? super.calculateMaxWidth()  : double.infinity;
+
+  @override
+  double? calculateMaxHeight() => verticallyConstrained   ? super.calculateMaxHeight() : double.infinity;
 
   @override
   bool get verticallyConstrained

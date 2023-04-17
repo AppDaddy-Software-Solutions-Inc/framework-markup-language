@@ -47,6 +47,50 @@ class BoxModel extends LayoutModel
   }
 
   @override
+  int? get flex => null;
+
+  @override
+  double? get pctWidth
+  {
+    if (super.pctWidth != null) return super.pctWidth;
+    if (expand)
+    {
+      if (layoutType == LayoutType.column) return 100;
+      if (layoutType == LayoutType.stack)  return 100;
+    }
+    return null;
+  }
+
+  @override
+  double? get pctHeight
+  {
+    if (super.pctHeight != null) return super.pctHeight;
+    if (expand)
+    {
+      if (layoutType == LayoutType.row)    return 100;
+      if (layoutType == LayoutType.stack)  return 100;
+    }
+    return null;
+  }
+
+  @override
+  int? get flexWidth
+  {
+    if (layoutType == LayoutType.row   && super.flex != null) return super.flex;
+    if (layoutType == LayoutType.stack && super.flex != null) return super.flex;
+    if (expand) return 1;
+    return null;
+  }
+
+  @override
+  int? get flexHeight
+  {
+    if (layoutType == LayoutType.column && super.flex != null) return super.flex;
+    if (expand) return 1;
+    return null;
+  }
+
+  @override
   double get verticalPadding  => (marginTop ?? 0)  + (marginBottom ?? 0) + (borderwidth * 2) + (paddingTop ?? 0) + (paddingBottom ?? 0);
 
   @override
@@ -344,15 +388,6 @@ class BoxModel extends LayoutModel
     /// Build the layout
     layout  = Xml.get(node: xml, tag: 'layout');
     padding = Xml.get(node: xml, tag: 'padding');
-
-    // expand=true we set the flex to 1
-    // to allow the box to size to its max
-    // cross axis size
-    if (expand)
-    {
-      if (flex == null && height == null && pctHeight == null && (layoutType == LayoutType.stack || layoutType == LayoutType.column)) flex = "1";
-      if (flex == null && width  == null && pctWidth  == null && (layoutType == LayoutType.stack || layoutType == LayoutType.row))    flex = "1";
-    }
   }
 
   Widget getView({Key? key}) => getReactiveView(BoxView(this));

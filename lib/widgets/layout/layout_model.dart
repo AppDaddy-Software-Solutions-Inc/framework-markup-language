@@ -39,7 +39,7 @@ class LayoutModel extends DecoratedWidgetModel
   List<ViewableWidgetModel> get variableWidthChildren
   {
     var viewable = viewableChildren;
-    var variable = viewable.where((child) => ((layoutType == LayoutType.row && child.flex != null) || child.pctWidth != null)).toList();
+    var variable = viewable.where((child) => ((layoutType == LayoutType.row && child.flex != null) || child.flexWidth != null || child.pctWidth != null)).toList();
     return variable;
   }
 
@@ -47,7 +47,7 @@ class LayoutModel extends DecoratedWidgetModel
   List<ViewableWidgetModel> get variableHeightChildren
   {
     var viewable = viewableChildren;
-    var variable = viewable.where((child) => ((layoutType == LayoutType.column && child.flex != null) || child.pctHeight != null)).toList();
+    var variable = viewable.where((child) => ((layoutType == LayoutType.column && child.flex != null) || child.flexHeight != null || child.pctHeight != null)).toList();
     return variable;
   }
 
@@ -172,6 +172,8 @@ class LayoutModel extends DecoratedWidgetModel
   @override
   List<Widget> inflate()
   {
+   // return super.inflate();
+
     var layout   = this.layoutType;
     var variable = (layoutType == LayoutType.row) ? this.variableWidthChildren : this.variableHeightChildren;
     var fixed    = (layoutType == LayoutType.row) ? this.fixedWidthChildren    : this.fixedHeightChildren;
@@ -216,24 +218,24 @@ class LayoutModel extends DecoratedWidgetModel
   {
     super.onLayoutComplete();
 
-    var fixed = (layoutType == LayoutType.row) ? this.fixedWidthChildren : this.fixedHeightChildren;
-
     // we need a callback to build if we have no fixed children
-    if (fixed.isEmpty)
+    switch (layoutType)
     {
-      switch (layoutType)
-      {
-        case LayoutType.row:
-          onWidthChange(null);
-          break;
+      case LayoutType.row:
+        if (fixedWidthChildren.isEmpty) onWidthChange(null);
+        if (flexHeight != null) onHeightChange(null);
+        break;
 
-        case LayoutType.column:
-          onHeightChange(null);
-          break;
+      case LayoutType.column:
+        if (fixedHeightChildren.isEmpty) onHeightChange(null);
+        if (flexWidth != null) onWidthChange(null);
+        break;
 
-        default:
-          break;
-      }
+      case LayoutType.stack:
+      default:
+        if (flexHeight != null) onHeightChange(null);
+        if (flexWidth  != null) onWidthChange(null);
+        break;
     }
   }
 
@@ -252,6 +254,7 @@ class LayoutModel extends DecoratedWidgetModel
       // calculate fixed space
       double reserved = 0;
       for (var child in fixed) reserved += (child.visible) ? (child.viewWidth ?? 0) : 0;
+      if (layoutType != LayoutType.row) reserved = 0;
 
       // calculate usable space (max - reserved)
       var usable = maximum - reserved;
@@ -287,17 +290,24 @@ class LayoutModel extends DecoratedWidgetModel
 
       // calculate sum of all flex values
       double flexsum = 0;
-      for (var child in variable) flexsum += (child.visible && child.pctWidth == null && child.flex != null && child.flex! > 0) ? child.flex! : 0;
+      for (var child in variable)
+      if (child.visible && child.pctWidth == null)
+      {
+        var flex = child.flex ?? child.flexWidth ?? 0;
+        if (flex > 0) flexsum += flex;
+      }
 
       // set flex sizing on flexible children
       for (var child in variable)
       {
         // % takes priority over flexibility
         // and would have been laid out above
-        if (child.visible && child.pctWidth == null && child.flex != null && child.flex! > 0)
+        var flex = 0;
+        if (child.visible && child.pctWidth == null) flex = child.flex ?? child.flexWidth ?? 0;
+        if (flex > 0)
         {
           // calculate size from flex
-          var size = ((child.flex! / flexsum) * free).floor();
+          var size = ((flex / flexsum) * free).floor();
 
           // get user defined constraints
           var constraints = child.constraints.model;
@@ -333,6 +343,7 @@ class LayoutModel extends DecoratedWidgetModel
       // calculate fixed space
       double reserved = 0;
       for (var child in fixed) reserved += (child.visible) ? (child.viewHeight ?? 0) : 0;
+      if (layoutType != LayoutType.column) reserved = 0;
 
       // calculate usable space (max - reserved)
       var usable = maximum - reserved;
@@ -368,17 +379,24 @@ class LayoutModel extends DecoratedWidgetModel
 
       // calculate sum of all flex values
       double flexsum = 0;
-      for (var child in variable) flexsum += (child.visible && child.pctHeight == null && child.flex != null && child.flex! > 0) ? child.flex! : 0;
+      for (var child in variable)
+      if (child.visible && child.pctHeight == null)
+      {
+        var flex = child.flex ?? child.flexHeight ?? 0;
+        if (flex > 0) flexsum += flex;
+      }
 
       // set flex sizing on flexible children
       for (var child in variable)
       {
         // % takes priority over flexibility
         // and would have been laid out above
-        if (child.visible && child.pctHeight == null && child.flex != null && child.flex! > 0)
+        var flex = 0;
+        if (child.visible && child.pctHeight == null) flex = child.flex ?? child.flexHeight ?? 0;
+        if (flex > 0)
         {
           // calculate size from flex
-          var size = ((child.flex! / flexsum) * free).floor();
+          var size = ((flex / flexsum) * free).floor();
 
           // get user defined constraints
           var constraints = child.constraints.model;

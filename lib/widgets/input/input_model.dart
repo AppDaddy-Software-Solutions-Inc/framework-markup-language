@@ -678,6 +678,10 @@ class InputModel extends FormFieldModel implements IFormField
   @override
   dispose() {
 // Log().debug('dispose called on => <$elementName id="$id">');
+
+    controller?.dispose();
+    controller = null;
+
     super.dispose();
   }
 

@@ -107,7 +107,13 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     //////////////////////////////////////
     /* Add WidgetsBindingObserver mixin */
     //////////////////////////////////////
-    WidgetsBinding.instance.addObserver(this);
+    //WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  didChangeDependencies()
+  {
+    super.didChangeDependencies();
   }
 
   @override
@@ -116,7 +122,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     super.didUpdateWidget(oldWidget);
 
     var oldcursorPos = widget.model.controller?.selection.base.offset;
-    if (oldcursorPos != null) widget.model.controller!.value = TextEditingValue(text: widget.model.value ?? "", selection: TextSelection.fromPosition(TextPosition(offset: oldcursorPos)));
+    if (oldcursorPos != null) widget.model.controller?.value = TextEditingValue(text: widget.model.value ?? "", selection: TextSelection.fromPosition(TextPosition(offset: oldcursorPos)));
   }
 
   @override
@@ -125,14 +131,12 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     // cleanup the controller.
     // its important to set the controller to null so that it gets recreated
     // when the input rebuilds.
-    widget.model.controller?.removeListener(_onInputChange);
-    widget.model.controller?.dispose();
-    widget.model.controller = null;
+
 
     focus.dispose();
 
     // Remove WidgetsBindingObserver mixin
-    WidgetsBinding.instance.removeObserver(this);
+    //WidgetsBinding.instance.removeObserver(this);
 
     super.dispose();
   }
@@ -143,7 +147,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     // ensure we don't call setstate if the model update was entered via
     // keyboard by comparing the controller to the callback's value
     var b = Binding.fromString(property);
-    if (this.mounted && ((widget.model.controller!.text != value && b?.property == 'value') || b?.property != 'value'))
+    if (this.mounted && ((widget.model.controller?.text != value && b?.property == 'value') || b?.property != 'value'))
     {
       setState(() {
         // This places the cursor at the end of the selection when focussed.
@@ -152,8 +156,8 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
         // * the start every commit originally there was an issue with clear +
         // * form that we can't reproduce, causing a loop on selection and this
         // * line fixed it, likely a coincidence but somewhere lies a bug. - BF
-        var oldcursorPos = widget.model.controller!.selection.base.offset;
-        widget.model.controller!.value = TextEditingValue(text: widget.model.value ?? "", selection: TextSelection.fromPosition(TextPosition(offset: oldcursorPos)));
+        var oldcursorPos = widget.model.controller?.selection.base.offset;
+        if (oldcursorPos != null) widget.model.controller?.value = TextEditingValue(text: widget.model.value ?? "", selection: TextSelection.fromPosition(TextPosition(offset: oldcursorPos)));
       });
     }
   }
@@ -192,13 +196,19 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     }
 
     // Find the object which has the focus
-    final RenderObject? object = context.findRenderObject();
-    final RenderAbstractViewport? viewport = RenderAbstractViewport.of(object);
-
-    // If we are not working in a Scrollable, skip this routine
-    if (viewport == null) {
-      return;
+    RenderAbstractViewport? viewport;
+    RenderObject? object;
+    try
+    {
+      object = context.findRenderObject();
+      if (object is RenderObject) viewport = RenderAbstractViewport.of(object);
     }
+    catch(e)
+    {
+      viewport = null;
+    }
+    // If we are not working in a Scrollable, skip this routine
+    if (viewport == null) return;
 
     // Get the Scrollable state (in order to retrieve its offset)
     ScrollableState scrollableState = Scrollable.of(context);

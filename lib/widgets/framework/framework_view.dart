@@ -13,7 +13,6 @@ import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
-import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/tabview/tab_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart'    ;
@@ -310,7 +309,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       var header = widget.model.header!;
 
       // default model layout to stack if not supplied
-      if (LayoutModel.getLayoutType(header.layout) == LayoutType.none) header.layout = "stack";
+      if (widget.model.layout == null) header.layout = "stack";
 
       // set header constraints
       var viewportWidth  = constraints.maxWidth;
@@ -333,7 +332,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       var footer = widget.model.footer!;
 
       // default model layout to stack if not supplied
-      if (LayoutModel.getLayoutType(footer.layout) == LayoutType.none) footer.layout = "stack";
+      if (widget.model.layout == null) footer.layout = "stack";
 
       // set footer constraints
       var viewportWidth  = constraints.maxWidth;
@@ -354,7 +353,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     var body   = widget.model;
 
     // default model layout to stack if not supplied
-    if (LayoutModel.getLayoutType(body.layout) == LayoutType.none) body.layout = "stack";
+    if (widget.model.layout == null) body.layout = "stack";
 
     // set body constraints
     var safeArea       = MediaQuery.of(context).padding.top.ceil();

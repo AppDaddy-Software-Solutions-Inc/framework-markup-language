@@ -57,12 +57,10 @@ class BoxModel extends LayoutModel
       {
         case LayoutType.row:
           if (fixedWidth) return null;
-          if (layoutType == LayoutType.column || layoutType == LayoutType.stack) return super.flex ?? 1;
-          break;
+          return super.flex ?? 1;
         case LayoutType.column:
           if (fixedHeight) return null;
-          if (layoutType == LayoutType.row || layoutType == LayoutType.stack) return super.flex ?? 1;
-          break;
+          return super.flex ?? 1;
         case LayoutType.stack:
           return super.flex ?? 1;
         default:

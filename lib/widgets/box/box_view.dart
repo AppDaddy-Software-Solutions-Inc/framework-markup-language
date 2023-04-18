@@ -248,12 +248,7 @@ class _BoxViewState extends WidgetState<BoxView>
     // allow the box to shrink on any axis that is not expanding
     // this is done by applying an UnconstrainedBox() to the view
     // in the direction of the constrained axis
-    var layout = widget.model.layoutType;
-    if (!widget.model.expand)
-    {
-      if (layout == LayoutType.row)    view = UnconstrainedBox(child: view, constrainedAxis: Axis.horizontal);
-      if (layout == LayoutType.column) view = UnconstrainedBox(child: view, constrainedAxis: Axis.vertical);
-    }
+    if (!widget.model.expand) view = UnconstrainedBox(child: view);
 
     return view;
   }

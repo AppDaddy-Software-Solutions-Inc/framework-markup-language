@@ -156,15 +156,16 @@ class LayoutModel extends DecoratedWidgetModel
   {
     super.onLayoutComplete();
 
-    // no need to perform sizing if there are no variable width children
+    // no need to perform resizing if there are no variable width children
     if (variableWidthChildren.isNotEmpty)  _onWidthChange();
+
+    // no need to perform resizing if there are no variable height children
     if (variableHeightChildren.isNotEmpty) _onHeightChange();
   }
 
   void _onWidthChange()
   {
-    // no need to perform sizing if there are no variable width children
-    if (variableWidthChildren.isEmpty) return;
+    var id = this.id;
 
     // layout cannot be performed until all fixed width children have been laid out
     var unsized = fixedWidthChildren.where((child) => child.viewWidth == null);

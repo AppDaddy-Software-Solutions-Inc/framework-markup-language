@@ -47,7 +47,47 @@ class BoxModel extends LayoutModel
   }
 
   @override
-  int? get flex => expand ? super.flex : null;
+  int? get flex
+  {
+    // parent must be a layout model
+    if (this.parent is! LayoutModel) return null;
+
+    // doesn't flex in the horizontal
+    if (!expand) return super.flex;
+
+    // flex based on parent layout
+    switch ((this.parent as LayoutModel).layoutType)
+    {
+      // my parent is a column (main axis differs)
+      case LayoutType.column:
+
+        // specified height overrides flex
+        if (fixedHeight) return null;
+
+        // flex as specified otherwise by 1
+        return super.flex ?? 1;
+
+      // my parent is a row (main axis is the same)
+      case LayoutType.row:
+
+        // specified width overrides flex
+        if (fixedWidth) return null;
+
+        // flex as specified otherwise by 1
+        return super.flex ?? 1;
+
+      // my parent is a stack (main axis is the same)
+      case LayoutType.stack:
+
+        // flex doesn't apply if a stack
+        // this is handled by pctWidth and pctHeight
+        return null;
+
+      default:
+        break;
+    }
+    return null;
+  }
 
   @override
   double? get pctWidth

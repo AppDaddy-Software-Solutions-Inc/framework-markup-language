@@ -155,13 +155,14 @@ class ConstraintModel
         _heightPercentage = S.toDouble(v.split("%")[0]);
         v = null;
       }
-      else
-        _heightPercentage = null;
+      else _heightPercentage = null;
+
       if (v != null && v.runtimeType == String && v.contains('%'))
       {
         String s = v;
         v = s.replaceAll('%', '000000');
       }
+
       if (_height == null) _height = DoubleObservable(Binding.toKey(id, 'height'), v, scope: scope, listener: listener, setter: _heightSetter);
       else if (v != null) _height!.set(v);
     }

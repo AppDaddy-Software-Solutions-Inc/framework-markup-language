@@ -27,19 +27,11 @@ class LayoutModel extends DecoratedWidgetModel
   @required
   MainAxisSize get horizontalAxisSize => throw(UnimplementedError);
 
-  List<ViewableWidgetModel> get variableChildren
-  {
-    var w = variableWidthChildren;
-    var h = variableHeightChildren;
-    w.addAll(h);
-    return w;
-  }
-
   // children with variable width
   List<ViewableWidgetModel> get variableWidthChildren
   {
     var viewable = viewableChildren;
-    var variable = viewable.where((child) => ((layoutType == LayoutType.row && child.flex != null) || child.flexWidth != null || child.pctWidth != null)).toList();
+    var variable = viewable.where((child) => (!child.fixedWidth && ((layoutType == LayoutType.row && child.flex != null) || child.flexWidth != null || child.pctWidth != null))).toList();
     return variable;
   }
 
@@ -47,16 +39,8 @@ class LayoutModel extends DecoratedWidgetModel
   List<ViewableWidgetModel> get variableHeightChildren
   {
     var viewable = viewableChildren;
-    var variable = viewable.where((child) => ((layoutType == LayoutType.column && child.flex != null) || child.flexHeight != null || child.pctHeight != null)).toList();
+    var variable = viewable.where((child) => (!child.fixedHeight && ((layoutType == LayoutType.column && child.flex != null) || child.flexHeight != null || child.pctHeight != null))).toList();
     return variable;
-  }
-
-  List<ViewableWidgetModel> get fixedChildren
-  {
-    var w = fixedWidthChildren;
-    var h = fixedHeightChildren;
-    w.addAll(h);
-    return w;
   }
 
   // children with fixed width
@@ -170,50 +154,6 @@ class LayoutModel extends DecoratedWidgetModel
   }
 
   @override
-  List<Widget> inflate()
-  {
-   // return super.inflate();
-
-    var layout   = this.layoutType;
-    var variable = (layoutType == LayoutType.row) ? this.variableWidthChildren : this.variableHeightChildren;
-    var fixed    = (layoutType == LayoutType.row) ? this.fixedWidthChildren    : this.fixedHeightChildren;
-    var viewable = this.viewableChildren;
-
-    List<Widget> views = [];
-    for (var child in viewable)
-    {
-      var view = child.getView();
-
-      // if we have variable size children (% or flex)
-      // register listeners on fixed size children
-      if (variable.isNotEmpty && fixed.contains(child))
-      {
-        switch (layout)
-        {
-          case LayoutType.row:
-            if (child.viewWidthObservable == null) child.viewWidthObservable = DoubleObservable(Binding.toKey(child.id, 'viewwidth'), null, scope: child.scope);
-            child.viewWidthObservable!.registerListener(onWidthChange);
-            child.viewWidth = null;
-            break;
-
-          case LayoutType.column:
-            if (child.viewHeightObservable == null) child.viewHeightObservable = DoubleObservable(Binding.toKey(child.id, 'viewheight'), null, scope: child.scope);
-            child.viewHeightObservable!.registerListener(onHeightChange);
-            child.viewHeight = 0;
-            break;
-
-          default:
-            break;
-        }
-      }
-
-      // add the view
-      views.add(view);
-    }
-    return views;
-  }
-
-  @override
   void onLayoutComplete()
   {
     super.onLayoutComplete();
@@ -222,12 +162,12 @@ class LayoutModel extends DecoratedWidgetModel
     switch (layoutType)
     {
       case LayoutType.row:
-        if (fixedWidthChildren.isEmpty) onWidthChange(null);
+        onWidthChange(null);
         if (flexHeight != null) onHeightChange(null);
         break;
 
       case LayoutType.column:
-        if (fixedHeightChildren.isEmpty) onHeightChange(null);
+        onHeightChange(null);
         if (flexWidth != null) onWidthChange(null);
         break;
 
@@ -241,178 +181,182 @@ class LayoutModel extends DecoratedWidgetModel
 
   void onWidthChange(Observable? child)
   {
-    // layout can be performed when all fixed sized children have been laid out
+    // no need to perform sizing if there are no variable width children
+    if (variableWidthChildren.isEmpty) return;
+
+    // layout cannot be performed until all fixed width children have been laid out
     var unsized = fixedWidthChildren.where((child) => child.viewWidth == null);
-    if (unsized.isEmpty)
+    if (unsized.isNotEmpty) return;
+
+    // calculate maximum space
+    var maximum = calculateMaxWidth() ?? 0;
+
+    var variable = this.variableWidthChildren;
+    var fixed    = this.fixedWidthChildren;
+
+    // calculate fixed space
+    double reserved = 0;
+    for (var child in fixed) reserved += (child.visible) ? (child.viewWidth ?? 0) : 0;
+    if (layoutType != LayoutType.row) reserved = 0;
+
+    // calculate usable space (max - reserved)
+    var usable = maximum - reserved;
+
+    // set % sizing on variable children
+    var free = usable;
+    for (var child in variable)
     {
-      // calculate maximum space
-      var maximum = calculateMaxWidth() ?? 0;
-
-      var variable = this.variableWidthChildren;
-      var fixed = this.fixedWidthChildren;
-
-      // calculate fixed space
-      double reserved = 0;
-      for (var child in fixed) reserved += (child.visible) ? (child.viewWidth ?? 0) : 0;
-      if (layoutType != LayoutType.row) reserved = 0;
-
-      // calculate usable space (max - reserved)
-      var usable = maximum - reserved;
-
-      // set % sizing on variable children
-      var free = usable;
-      for (var child in variable)
+      if (child.visible && child.pctWidth != null)
       {
-        if (child.visible && child.pctWidth != null)
-        {
-          // calculate size from %
-          int size = (usable * (child.pctWidth!/100)).floor();
+        // calculate size from %
+        int size = (usable * (child.pctWidth!/100)).floor();
 
-          // get user defined constraints
-          var constraints = child.constraints.model;
+        // get user defined constraints
+        var constraints = child.constraints.model;
 
-          // must not be less than min width
-          if (constraints.minWidth != null && size < constraints.minWidth!) size = constraints.minWidth!.toInt();
+        // must not be less than min width
+        if (constraints.minWidth != null && size < constraints.minWidth!) size = constraints.minWidth!.toInt();
 
-          // must not be greater than max width
-          if (constraints.maxWidth != null && size > constraints.maxWidth!) size = constraints.maxWidth!.toInt();
+        // must not be greater than max width
+        if (constraints.maxWidth != null && size > constraints.maxWidth!) size = constraints.maxWidth!.toInt();
 
-          // must be 0 or greater
-          if (size.isNegative) size = 0;
+        // must be 0 or greater
+        if (size.isNegative) size = 0;
 
-          // reduce free space
-          free = free - size;
+        // reduce free space
+        free = free - size;
 
-          // set the size
-          if (child.width != size) child.setWidth(size.toDouble(), notify: true);
-        }
+        // set the size
+        if (child.width != size) child.setWidth(size.toDouble(), notify: true);
       }
+    }
 
-      // calculate sum of all flex values
-      double flexsum = 0;
-      for (var child in variable)
-      if (child.visible && child.pctWidth == null)
+    // calculate sum of all flex values
+    double flexsum = 0;
+    for (var child in variable)
+    if (child.visible && child.pctWidth == null)
+    {
+      var flex = child.flex ?? child.flexWidth ?? 0;
+      if (flex > 0) flexsum += flex;
+    }
+
+    // set flex sizing on flexible children
+    for (var child in variable)
+    {
+      // % takes priority over flexibility
+      // and would have been laid out above
+      var flex = 0;
+      if (child.visible && child.pctWidth == null) flex = child.flex ?? child.flexWidth ?? 0;
+      if (flex > 0)
       {
-        var flex = child.flex ?? child.flexWidth ?? 0;
-        if (flex > 0) flexsum += flex;
-      }
+        // calculate size from flex
+        var size = ((flex / flexsum) * free).floor();
 
-      // set flex sizing on flexible children
-      for (var child in variable)
-      {
-        // % takes priority over flexibility
-        // and would have been laid out above
-        var flex = 0;
-        if (child.visible && child.pctWidth == null) flex = child.flex ?? child.flexWidth ?? 0;
-        if (flex > 0)
-        {
-          // calculate size from flex
-          var size = ((flex / flexsum) * free).floor();
+        // get user defined constraints
+        var constraints = child.constraints.model;
 
-          // get user defined constraints
-          var constraints = child.constraints.model;
+        // must not be less than min width
+        if (constraints.minWidth != null && size < constraints.minWidth!) size = constraints.minWidth!.toInt();
 
-          // must not be less than min width
-          if (constraints.minWidth != null && size < constraints.minWidth!) size = constraints.minWidth!.toInt();
+        // must not be greater than max width
+        if (constraints.maxWidth != null && size > constraints.maxWidth!) size = constraints.maxWidth!.toInt();
 
-          // must not be greater than max width
-          if (constraints.maxWidth != null && size > constraints.maxWidth!) size = constraints.maxWidth!.toInt();
+        // must be 0 or greater
+        if (size.isNegative) size = 0;
 
-          // must be 0 or greater
-          if (size.isNegative) size = 0;
-
-          // set the size
-          if (child.width != size) child.setWidth(size.toDouble(), notify: true);
-        }
+        // set the size
+        if (child.width != size) child.setWidth(size.toDouble(), notify: true);
       }
     }
   }
 
   void onHeightChange(Observable? child)
   {
-    // layout can be performed when all fixed sized children have been laid out
+    // no need to perform sizing if there are no variable width children
+    if (variableHeightChildren.isEmpty) return;
+
+    // layout cannot be performed until all fixed height children have been laid out
     var unsized = fixedHeightChildren.where((child) => child.viewHeight == null);
-    if (unsized.isEmpty)
+    if (unsized.isNotEmpty) return;
+
+    // calculate maximum space
+    var maximum = height ?? calculateMaxHeight() ?? 0;
+
+    var variable = this.variableHeightChildren;
+    var fixed = this.fixedHeightChildren;
+
+    // calculate fixed space
+    double reserved = 0;
+    for (var child in fixed) reserved += (child.visible) ? (child.viewHeight ?? 0) : 0;
+    if (layoutType != LayoutType.column) reserved = 0;
+
+    // calculate usable space (max - reserved)
+    var usable = maximum - reserved;
+
+    // set % sizing on variable children
+    var free = usable;
+    for (var child in variable)
     {
-      // calculate maximum space
-      var maximum = height ?? calculateMaxHeight() ?? 0;
-
-      var variable = this.variableHeightChildren;
-      var fixed = this.fixedHeightChildren;
-
-      // calculate fixed space
-      double reserved = 0;
-      for (var child in fixed) reserved += (child.visible) ? (child.viewHeight ?? 0) : 0;
-      if (layoutType != LayoutType.column) reserved = 0;
-
-      // calculate usable space (max - reserved)
-      var usable = maximum - reserved;
-
-      // set % sizing on variable children
-      var free = usable;
-      for (var child in variable)
+      if (child.visible && child.pctHeight != null)
       {
-        if (child.visible && child.pctHeight != null)
-        {
-          // calculate size from %
-          var size = (usable * (child.pctHeight!/100)).floor();
+        // calculate size from %
+        var size = (usable * (child.pctHeight!/100)).floor();
 
-          // get user defined constraints
-          var constraints = child.constraints.model;
+        // get user defined constraints
+        var constraints = child.constraints.model;
 
-          // must not be less than min height
-          if (constraints.minHeight != null && size < constraints.minHeight!) size = constraints.minHeight!.toInt();
+        // must not be less than min height
+        if (constraints.minHeight != null && size < constraints.minHeight!) size = constraints.minHeight!.toInt();
 
-          // must not be greater than max height
-          if (constraints.maxHeight != null && size > constraints.maxHeight!) size = constraints.maxHeight!.toInt();
+        // must not be greater than max height
+        if (constraints.maxHeight != null && size > constraints.maxHeight!) size = constraints.maxHeight!.toInt();
 
-          // must be 0 or greater
-          if (size.isNegative) size = 0;
+        // must be 0 or greater
+        if (size.isNegative) size = 0;
 
-          // reduce free space
-          free = free - size;
+        // reduce free space
+        free = free - size;
 
-          // set the size
-          if (child.height != size) child.setHeight(size.toDouble(), notify: true);
-        }
+        // set the size
+        if (child.height != size) child.setHeight(size.toDouble(), notify: true);
       }
+    }
 
-      // calculate sum of all flex values
-      double flexsum = 0;
-      for (var child in variable)
-      if (child.visible && child.pctHeight == null)
+    // calculate sum of all flex values
+    double flexsum = 0;
+    for (var child in variable)
+    if (child.visible && child.pctHeight == null)
+    {
+      var flex = child.flex ?? child.flexHeight ?? 0;
+      if (flex > 0) flexsum += flex;
+    }
+
+    // set flex sizing on flexible children
+    for (var child in variable)
+    {
+      // % takes priority over flexibility
+      // and would have been laid out above
+      var flex = 0;
+      if (child.visible && child.pctHeight == null) flex = child.flex ?? child.flexHeight ?? 0;
+      if (flex > 0)
       {
-        var flex = child.flex ?? child.flexHeight ?? 0;
-        if (flex > 0) flexsum += flex;
-      }
+        // calculate size from flex
+        var size = ((flex / flexsum) * free).floor();
 
-      // set flex sizing on flexible children
-      for (var child in variable)
-      {
-        // % takes priority over flexibility
-        // and would have been laid out above
-        var flex = 0;
-        if (child.visible && child.pctHeight == null) flex = child.flex ?? child.flexHeight ?? 0;
-        if (flex > 0)
-        {
-          // calculate size from flex
-          var size = ((flex / flexsum) * free).floor();
+        // get user defined constraints
+        var constraints = child.constraints.model;
 
-          // get user defined constraints
-          var constraints = child.constraints.model;
+        // must not be less than min height
+        if (constraints.minHeight != null && size < constraints.minHeight!) size = constraints.minHeight!.toInt();
 
-          // must not be less than min height
-          if (constraints.minHeight != null && size < constraints.minHeight!) size = constraints.minHeight!.toInt();
+        // must not be greater than max height
+        if (constraints.maxHeight != null && size > constraints.maxHeight!) size = constraints.maxHeight!.toInt();
 
-          // must not be greater than max height
-          if (constraints.maxHeight != null && size > constraints.maxHeight!) size = constraints.maxHeight!.toInt();
+        // must be 0 or greater
+        if (size.isNegative) size = 0;
 
-          // must be 0 or greater
-          if (size.isNegative) size = 0;
-
-          // set the size
-          if (child.height != size) child.setHeight(size.toDouble(), notify: true);
-        }
+        // set the size
+        if (child.height != size) child.setHeight(size.toDouble(), notify: true);
       }
     }
   }

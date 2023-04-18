@@ -65,10 +65,12 @@ class ViewableWidgetModel extends WidgetModel
   }
 
   // width
+  bool fixedWidth = false;
   double? get width  => _constraints.width;
   set width(dynamic v) => _constraints.width = v;
 
   // height
+  bool fixedHeight = false;
   double? get height => _constraints.height;
   set height(dynamic v) => _constraints.height = v;
 
@@ -432,7 +434,11 @@ class ViewableWidgetModel extends WidgetModel
 
     // set constraints
     _constraints.width     = Xml.get(node: xml, tag: 'width');
+    fixedWidth = _constraints.width != null;
+
     _constraints.height    = Xml.get(node: xml, tag: 'height');
+    fixedHeight = _constraints.height != null;
+
     _constraints.minWidth  = Xml.get(node: xml, tag: 'minwidth');
     _constraints.maxWidth  = Xml.get(node: xml, tag: 'maxwidth');
     _constraints.minHeight = Xml.get(node: xml, tag: 'minheight');

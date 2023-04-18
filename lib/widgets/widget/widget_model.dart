@@ -436,7 +436,7 @@ class WidgetModel implements IDataSourceListener
         model = EditorModel.fromXml(parent, node);
         break;
 
-        // deprecated. use row/column/box with %sizing or flex
+      // deprecated. use row/column/box with %sizing or flex
       case "expand":
       case "expanded":
         model = ColumnModel.fromXml(parent, node);

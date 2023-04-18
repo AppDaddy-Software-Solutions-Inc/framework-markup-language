@@ -47,14 +47,11 @@ class BoxModel extends LayoutModel
   }
 
   @override
-  int? get flex => null;
-
-  @override
   double? get pctWidth
   {
     if (fixedWidth) return null;
     if (super.pctWidth != null) return super.pctWidth;
-    if (super.flex != null) return null;
+    if (flex != null) return null;
     if (expand)
     {
       if (layoutType == LayoutType.column) return 100;
@@ -67,8 +64,8 @@ class BoxModel extends LayoutModel
   int? get flexWidth
   {
     if (fixedWidth) return null;
-    if (layoutType == LayoutType.row   && super.flex != null) return super.flex;
-    if (layoutType == LayoutType.stack && super.flex != null) return super.flex;
+    if (layoutType == LayoutType.row   && flex != null) return flex;
+    if (layoutType == LayoutType.stack && flex != null) return flex;
     if (expand) return 1;
     return null;
   }
@@ -78,7 +75,7 @@ class BoxModel extends LayoutModel
   {
     if (fixedHeight) return null;
     if (super.pctHeight != null) return super.pctHeight;
-    if (super.flex != null) return null;
+    if (flex != null) return null;
     if (expand)
     {
       if (layoutType == LayoutType.row)    return 100;
@@ -91,7 +88,7 @@ class BoxModel extends LayoutModel
   int? get flexHeight
   {
     if (fixedHeight) return null;
-    if (layoutType == LayoutType.column && super.flex != null) return super.flex;
+    if (layoutType == LayoutType.column && flex != null) return flex;
     if (expand) return 1;
     return null;
   }

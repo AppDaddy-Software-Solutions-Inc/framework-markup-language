@@ -22,7 +22,15 @@ class StackModel extends LayoutModel
   MainAxisSize get horizontalAxisSize => (expand && horizontallyConstrained) ? MainAxisSize.max : MainAxisSize.min;
 
   @override
-  int? get flex => expand ? super.flex : null;
+  int? get flex
+  {
+    // parent must be a layout model
+    if (this.parent is! LayoutModel) return null;
+
+    // expands in both the vertical and horizontal if expand is true
+    // otherwise only of specified
+    return expand ? (super.flex ?? 1) : super.flex;
+  }
 
   @override
   double? get pctWidth

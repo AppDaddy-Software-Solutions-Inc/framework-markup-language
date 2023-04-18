@@ -22,7 +22,48 @@ class ColumnModel extends LayoutModel
   MainAxisSize get horizontalAxisSize => MainAxisSize.min;
 
   @override
-  int? get flex => expand ? super.flex : null;
+  int? get flex
+  {
+    // parent must be a layout model
+    if (this.parent is! LayoutModel) return null;
+
+    // doesn't flex in the vertical
+    if (!expand) return super.flex;
+
+    // flex based on parent layout
+    switch ((this.parent as LayoutModel).layoutType)
+    {
+      // my parent is a row (main axis differs)
+      case LayoutType.row:
+        // specified width overrides flex
+        if (fixedWidth) return null;
+
+        // flex only if specified
+        return super.flex;
+
+      // my parent is a column (main axis is the same)
+      case LayoutType.column:
+
+        // specified height overrides flex
+        if (fixedHeight) return null;
+
+        // flex as specified otherwise by 1
+        return super.flex ?? 1;
+
+      // my parent is a stack (main axis is the same)
+      case LayoutType.stack:
+
+        // specified height overrides flex
+        if (fixedHeight) return null;
+
+        // flex as specified otherwise by 1
+        return super.flex ?? 1;
+
+      default:
+        break;
+    }
+    return null;
+  }
 
   @override
   double? get pctHeight
@@ -30,15 +71,15 @@ class ColumnModel extends LayoutModel
     if (fixedHeight) return null;
     if (super.pctHeight != null) return super.pctHeight;
     if (this.parent is LayoutModel)
-      switch ((this.parent as LayoutModel).layoutType)
-      {
-        case LayoutType.stack:
-        case LayoutType.row:
-          if (expand) return 100;
-          break;
-        default:
-          break;
-      }
+    switch ((this.parent as LayoutModel).layoutType)
+    {
+      case LayoutType.stack:
+      case LayoutType.row:
+        if (expand) return 100;
+        break;
+      default:
+        break;
+    }
     return null;
   }
 

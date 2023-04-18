@@ -54,6 +54,7 @@ class BoxModel extends LayoutModel
   {
     if (fixedWidth) return null;
     if (super.pctWidth != null) return super.pctWidth;
+    if (super.flex != null) return null;
     if (expand)
     {
       if (layoutType == LayoutType.column) return 100;
@@ -77,6 +78,7 @@ class BoxModel extends LayoutModel
   {
     if (fixedHeight) return null;
     if (super.pctHeight != null) return super.pctHeight;
+    if (super.flex != null) return null;
     if (expand)
     {
       if (layoutType == LayoutType.row)    return 100;

@@ -27,7 +27,7 @@ class _ButtonViewState extends WidgetState<ButtonView>
 
     if (model.buttontype == 'elevated')
       return ElevatedButton.styleFrom(
-          minimumSize:  Size(model.constraints.model.minWidth ?? 72, (model.constraints.model.minHeight ?? 0) + 40), //add 40 to the constraint as the width is offset by 40
+          minimumSize:  Size(model.constraints.model.minWidth ?? 64, (model.constraints.model.minHeight ?? 0) + 40), //add 40 to the constraint as the width is offset by 40
           backgroundColor: model.color ?? Theme.of(context).colorScheme.primary,
           foregroundColor: Theme.of(context).colorScheme.onPrimary,
           disabledForegroundColor: Theme.of(context).colorScheme.onSurface,
@@ -78,7 +78,7 @@ class _ButtonViewState extends WidgetState<ButtonView>
 
     return ButtonStyle(
       minimumSize: MaterialStateProperty.all(
-          Size(model.constraints.model.minWidth ?? 72, (model.constraints.model.minHeight?? 0) + 36)), //add 36 to the constraint as the width is offset by 40
+          Size(model.constraints.model.minWidth ?? 64, (model.constraints.model.minHeight?? 0) + 40)), //add 40 to the constraint as the width is offset by 40
       foregroundColor: foregroundColorStyle,
       backgroundColor: backgroundColorStyle,
       // overlayColor: overlayColorStyle,
@@ -121,7 +121,7 @@ class _ButtonViewState extends WidgetState<ButtonView>
     if (children.isEmpty) children.add(Container());
 
     // Add a text child if label is set
-    if (children.isEmpty) children.add(Text(model.label ?? ""));
+    if (!S.isNullOrEmpty(model.label)) children.add(Text(model.label ?? ""));
 
     // center the body
     var body = Center(child: Row(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.center, children: children));

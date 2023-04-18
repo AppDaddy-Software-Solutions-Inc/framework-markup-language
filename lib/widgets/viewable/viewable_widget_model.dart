@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/widgets/animation/animation_model.dart';
+import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_view.dart';
 import 'package:fml/widgets/constraints/constraint.dart';
@@ -202,7 +203,24 @@ class ViewableWidgetModel extends WidgetModel
       _flex = IntegerObservable(Binding.toKey(id, 'flex'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  int? get flex => _flex?.get();
+  int? get flex
+  {
+    if (this.parent is LayoutModel)
+    switch ((this.parent as LayoutModel).layoutType)
+    {
+      case LayoutType.row:
+        if (fixedWidth) return null;
+        return _flex?.get() ?? 1;
+      case LayoutType.column:
+        if (fixedHeight) return null;
+        return _flex?.get() ?? 1;
+      case LayoutType.stack:
+        return _flex?.get() ?? 1;
+      default:
+        break;
+    }
+    return null;
+  }
 
   // used by the view to determine if it needs to wrap itself
   // in a VisibilityDetector

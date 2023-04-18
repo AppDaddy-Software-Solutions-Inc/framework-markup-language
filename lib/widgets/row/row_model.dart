@@ -21,6 +21,45 @@ class RowModel extends LayoutModel
   @override
   MainAxisSize get horizontalAxisSize => (expand && horizontallyConstrained) ? MainAxisSize.max : MainAxisSize.min;
 
+  @override
+  int? get flex
+  {
+    if (!expand) return null;
+    if (this.parent is LayoutModel)
+      switch ((this.parent as LayoutModel).layoutType)
+      {
+        case LayoutType.row:
+          if (fixedWidth) return null;
+          return super.flex ?? 1;
+        case LayoutType.column:
+          if (fixedHeight) return null;
+          return super.flex ?? 1;
+        case LayoutType.stack:
+          return super.flex ?? 1;
+        default:
+          break;
+      }
+    return null;
+  }
+
+  @override
+  double? get pctWidth
+  {
+    if (fixedWidth) return null;
+    if (super.pctWidth != null) return super.pctWidth;
+    if (this.parent is LayoutModel)
+      switch ((this.parent as LayoutModel).layoutType)
+      {
+        case LayoutType.stack:
+        case LayoutType.column:
+          if (expand) return 100;
+          break;
+        default:
+          break;
+      }
+    return null;
+  }
+
   RowModel(WidgetModel parent, String? id) : super(parent, id);
 
   static RowModel? fromXml(WidgetModel parent, XmlElement xml)
@@ -40,5 +79,13 @@ class RowModel extends LayoutModel
     return model;
   }
 
+  @override
+  void onLayoutComplete() async
+  {
+    super.onLayoutComplete();
+    var w = this.viewWidth;
+    var h = this.viewHeight;
+    int i = 0;
+  }
   Widget getView({Key? key}) => getReactiveView(RowView(this));
 }

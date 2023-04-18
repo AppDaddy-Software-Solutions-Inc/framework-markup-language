@@ -21,6 +21,33 @@ class StackModel extends LayoutModel
   @override
   MainAxisSize get horizontalAxisSize => (expand && horizontallyConstrained) ? MainAxisSize.max : MainAxisSize.min;
 
+  @override
+  int? get flex
+  {
+    if (!expand) return null;
+    if (this.parent is LayoutModel) return super.flex ?? 1;
+    return null;
+  }
+
+  @override
+  double? get pctWidth
+  {
+    if (fixedWidth) return null;
+    if (super.pctWidth != null) return super.pctWidth;
+    if (this.parent is LayoutModel && expand) return 100;
+    return null;
+  }
+
+  @override
+  double? get pctHeight
+  {
+    if (fixedHeight) return null;
+    if (super.pctHeight != null) return super.pctHeight;
+    if (this.parent is LayoutModel && expand) return 100;
+    return null;
+  }
+
+
   StackModel(WidgetModel parent, String? id) : super(parent, id);
 
   static StackModel? fromXml(WidgetModel parent, XmlElement xml)

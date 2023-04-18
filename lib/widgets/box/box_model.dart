@@ -51,9 +51,7 @@ class BoxModel extends LayoutModel
   {
     if (!expand) return null;
     if (this.parent is LayoutModel)
-    {
-      var parent = (this.parent as LayoutModel);
-      switch (parent.layoutType)
+      switch ((this.parent as LayoutModel).layoutType)
       {
         case LayoutType.row:
           if (fixedWidth) return null;
@@ -66,7 +64,6 @@ class BoxModel extends LayoutModel
         default:
           break;
       }
-    }
     return null;
   }
 
@@ -76,9 +73,7 @@ class BoxModel extends LayoutModel
     if (fixedWidth) return null;
     if (super.pctWidth != null) return super.pctWidth;
     if (this.parent is LayoutModel)
-    {
-      var parent = (this.parent as LayoutModel);
-      switch (parent.layoutType)
+      switch ((this.parent as LayoutModel).layoutType)
       {
         case LayoutType.stack:
         case LayoutType.column:
@@ -87,7 +82,6 @@ class BoxModel extends LayoutModel
         default:
           break;
       }
-    }
     return null;
   }
 
@@ -97,9 +91,7 @@ class BoxModel extends LayoutModel
     if (fixedHeight) return null;
     if (super.pctHeight != null) return super.pctHeight;
     if (this.parent is LayoutModel)
-    {
-      var parent = (this.parent as LayoutModel);
-      switch (parent.layoutType)
+      switch ((this.parent as LayoutModel).layoutType)
       {
         case LayoutType.stack:
         case LayoutType.row:
@@ -108,7 +100,6 @@ class BoxModel extends LayoutModel
         default:
           break;
       }
-    }
     return null;
   }
 

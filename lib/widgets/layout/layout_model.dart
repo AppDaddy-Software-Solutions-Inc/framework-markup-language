@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
-import 'package:fml/observable/observable.dart';
 import 'package:fml/observable/observables/boolean.dart';
-import 'package:fml/observable/observables/double.dart';
 import 'package:fml/observable/observables/string.dart';
 import 'package:fml/observable/scope.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
@@ -158,28 +156,12 @@ class LayoutModel extends DecoratedWidgetModel
   {
     super.onLayoutComplete();
 
-    // we need a callback to build if we have no fixed children
-    switch (layoutType)
-    {
-      case LayoutType.row:
-        onWidthChange(null);
-        if (flexHeight != null) onHeightChange(null);
-        break;
-
-      case LayoutType.column:
-        onHeightChange(null);
-        if (flexWidth != null) onWidthChange(null);
-        break;
-
-      case LayoutType.stack:
-      default:
-        if (flexHeight != null) onHeightChange(null);
-        if (flexWidth  != null) onWidthChange(null);
-        break;
-    }
+    // no need to perform sizing if there are no variable width children
+    if (variableWidthChildren.isNotEmpty)  _onWidthChange();
+    if (variableHeightChildren.isNotEmpty) _onHeightChange();
   }
 
-  void onWidthChange(Observable? child)
+  void _onWidthChange()
   {
     // no need to perform sizing if there are no variable width children
     if (variableWidthChildren.isEmpty) return;
@@ -270,11 +252,8 @@ class LayoutModel extends DecoratedWidgetModel
     }
   }
 
-  void onHeightChange(Observable? child)
+  void _onHeightChange()
   {
-    // no need to perform sizing if there are no variable width children
-    if (variableHeightChildren.isEmpty) return;
-
     // layout cannot be performed until all fixed height children have been laid out
     var unsized = fixedHeightChildren.where((child) => child.viewHeight == null);
     if (unsized.isNotEmpty) return;

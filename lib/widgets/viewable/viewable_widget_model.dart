@@ -204,13 +204,6 @@ class ViewableWidgetModel extends WidgetModel
   }
   int? get flex => _flex?.get();
 
-  // overridden in box model
-  int? get flexWidth  => null;
-
-  // overridden in box model
-  int? get flexHeight => null;
-
-
   // used by the view to determine if it needs to wrap itself
   // in a VisibilityDetector
   bool? _addVisibilityDetector;

@@ -47,26 +47,49 @@ class BoxModel extends LayoutModel
   }
 
   @override
-  double? get pctWidth
+  int? get flex
   {
-    if (fixedWidth) return null;
-    if (super.pctWidth != null) return super.pctWidth;
-    if (flex != null) return null;
-    if (expand)
+    if (!expand) return null;
+    if (this.parent is LayoutModel)
     {
-      if (layoutType == LayoutType.column) return 100;
-      if (layoutType == LayoutType.stack)  return 100;
+      var parent = (this.parent as LayoutModel);
+      switch (parent.layoutType)
+      {
+        case LayoutType.row:
+          if (fixedWidth) return null;
+          if (layoutType == LayoutType.column || layoutType == LayoutType.stack) return super.flex ?? 1;
+          break;
+        case LayoutType.column:
+          if (fixedHeight) return null;
+          if (layoutType == LayoutType.row || layoutType == LayoutType.stack) return super.flex ?? 1;
+          break;
+        case LayoutType.stack:
+          return super.flex ?? 1;
+        default:
+          break;
+      }
     }
     return null;
   }
 
   @override
-  int? get flexWidth
+  double? get pctWidth
   {
     if (fixedWidth) return null;
-    if (layoutType == LayoutType.row   && flex != null) return flex;
-    if (layoutType == LayoutType.stack && flex != null) return flex;
-    if (expand) return 1;
+    if (super.pctWidth != null) return super.pctWidth;
+    if (this.parent is LayoutModel)
+    {
+      var parent = (this.parent as LayoutModel);
+      switch (parent.layoutType)
+      {
+        case LayoutType.stack:
+        case LayoutType.column:
+          if (expand) return 100;
+          break;
+        default:
+          break;
+      }
+    }
     return null;
   }
 
@@ -75,21 +98,19 @@ class BoxModel extends LayoutModel
   {
     if (fixedHeight) return null;
     if (super.pctHeight != null) return super.pctHeight;
-    if (flex != null) return null;
-    if (expand)
+    if (this.parent is LayoutModel)
     {
-      if (layoutType == LayoutType.row)    return 100;
-      if (layoutType == LayoutType.stack)  return 100;
+      var parent = (this.parent as LayoutModel);
+      switch (parent.layoutType)
+      {
+        case LayoutType.stack:
+        case LayoutType.row:
+          if (expand) return 100;
+          break;
+        default:
+          break;
+      }
     }
-    return null;
-  }
-
-  @override
-  int? get flexHeight
-  {
-    if (fixedHeight) return null;
-    if (layoutType == LayoutType.column && flex != null) return flex;
-    if (expand) return 1;
     return null;
   }
 

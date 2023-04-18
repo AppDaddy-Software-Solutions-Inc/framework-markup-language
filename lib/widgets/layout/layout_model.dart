@@ -29,7 +29,7 @@ class LayoutModel extends DecoratedWidgetModel
   List<ViewableWidgetModel> get variableWidthChildren
   {
     var viewable = viewableChildren;
-    var variable = viewable.where((child) => (!child.fixedWidth && ((layoutType == LayoutType.row && child.flex != null) || child.flexWidth != null || child.pctWidth != null))).toList();
+    var variable = viewable.where((child) => (child.flex != null || child.pctWidth != null)).toList();
     return variable;
   }
 
@@ -37,7 +37,7 @@ class LayoutModel extends DecoratedWidgetModel
   List<ViewableWidgetModel> get variableHeightChildren
   {
     var viewable = viewableChildren;
-    var variable = viewable.where((child) => (!child.fixedHeight && ((layoutType == LayoutType.column && child.flex != null) || child.flexHeight != null || child.pctHeight != null))).toList();
+    var variable = viewable.where((child) => (child.flex != null || child.pctHeight != null)).toList();
     return variable;
   }
 
@@ -219,7 +219,7 @@ class LayoutModel extends DecoratedWidgetModel
     for (var child in variable)
     if (child.visible && child.pctWidth == null)
     {
-      var flex = child.flex ?? child.flexWidth ?? 0;
+      var flex = child.flex ?? 0;
       if (flex > 0) flexsum += flex;
     }
 
@@ -229,7 +229,7 @@ class LayoutModel extends DecoratedWidgetModel
       // % takes priority over flexibility
       // and would have been laid out above
       var flex = 0;
-      if (child.visible && child.pctWidth == null) flex = child.flex ?? child.flexWidth ?? 0;
+      if (child.visible && child.pctWidth == null) flex = child.flex ?? 0;
       if (flex > 0)
       {
         // calculate size from flex
@@ -307,7 +307,7 @@ class LayoutModel extends DecoratedWidgetModel
     for (var child in variable)
     if (child.visible && child.pctHeight == null)
     {
-      var flex = child.flex ?? child.flexHeight ?? 0;
+      var flex = child.flex ?? 0;
       if (flex > 0) flexsum += flex;
     }
 
@@ -317,7 +317,7 @@ class LayoutModel extends DecoratedWidgetModel
       // % takes priority over flexibility
       // and would have been laid out above
       var flex = 0;
-      if (child.visible && child.pctHeight == null) flex = child.flex ?? child.flexHeight ?? 0;
+      if (child.visible && child.pctHeight == null) flex = child.flex ?? 0;
       if (flex > 0)
       {
         // calculate size from flex

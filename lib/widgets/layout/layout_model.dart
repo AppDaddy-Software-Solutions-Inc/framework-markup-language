@@ -36,7 +36,7 @@ class LayoutModel extends DecoratedWidgetModel implements ILayout
   List<ViewableWidgetModel> get variableWidthChildren
   {
     var viewable = viewableChildren;
-    var variable = viewable.where((child) => (child.flexWidth != null || child.pctWidth != null)).toList();
+    var variable = viewable.where((child) => child.isVariableWidth).toList();
     return variable;
   }
 
@@ -44,7 +44,7 @@ class LayoutModel extends DecoratedWidgetModel implements ILayout
   List<ViewableWidgetModel> get variableHeightChildren
   {
     var viewable = viewableChildren;
-    var variable = viewable.where((child) => (child.flexHeight != null || child.pctHeight != null)).toList();
+    var variable = viewable.where((child) => child.isVariableHeight).toList();
     return variable;
   }
 

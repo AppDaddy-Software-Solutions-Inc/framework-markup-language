@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/animation/animation_model.dart';
+import 'package:fml/widgets/layout/ilayout.dart';
 import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_view.dart';
@@ -106,6 +107,20 @@ class ViewableWidgetModel extends WidgetModel
   double? get maxHeight => _constraints.maxHeight;
 
   /// VIEW LAYOUT
+
+  bool get isVariableWidth
+  {
+    if (pctWidth != null) return true;
+    if (parent is ILayout && (parent as ILayout).expandsHorizontally && _flex?.get() != null) return true;
+    return false;
+  }
+
+  bool get isVariableHeight
+  {
+    if (pctHeight != null) return true;
+    if (parent is ILayout && (parent as ILayout).expandsVertically && _flex?.get() != null) return true;
+    return false;
+  }
 
   // %width
   double? get pctWidth => _constraints.widthPercentage;

@@ -440,7 +440,7 @@ class WidgetModel implements IDataSourceListener
       case "expand":
       case "expanded":
         model = ColumnModel.fromXml(parent, node);
-        if (model is ColumnModel && model.flex == null) model.flex = "1";
+        if (model is ColumnModel && model.flexHeight == null) model.flex = "1";
         break;
 
       case "eval":

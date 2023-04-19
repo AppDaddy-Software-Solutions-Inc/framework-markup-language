@@ -6,6 +6,7 @@ import 'package:fml/observable/observables/boolean.dart';
 import 'package:fml/observable/observables/string.dart';
 import 'package:fml/observable/scope.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/layout/ilayout.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
@@ -14,7 +15,7 @@ enum LayoutType {none, row, column, stack}
 enum VerticalAlignmentType {top, bottom, center, around, between, evenly}
 enum HorizontalAlignmentType {left, right, center, around, between, evenly}
 
-class LayoutModel extends DecoratedWidgetModel
+class LayoutModel extends DecoratedWidgetModel implements ILayout
 {
   @required
   LayoutType get layoutType => throw(UnimplementedError);
@@ -25,11 +26,17 @@ class LayoutModel extends DecoratedWidgetModel
   @required
   MainAxisSize get horizontalAxisSize => throw(UnimplementedError);
 
+  @required
+  bool get expandsVertically => throw(UnimplementedError);
+
+  @required
+  bool get expandsHorizontally => throw(UnimplementedError);
+
   // children with variable width
   List<ViewableWidgetModel> get variableWidthChildren
   {
     var viewable = viewableChildren;
-    var variable = viewable.where((child) => (child.flex != null || child.pctWidth != null)).toList();
+    var variable = viewable.where((child) => (child.flexWidth != null || child.pctWidth != null)).toList();
     return variable;
   }
 
@@ -37,7 +44,7 @@ class LayoutModel extends DecoratedWidgetModel
   List<ViewableWidgetModel> get variableHeightChildren
   {
     var viewable = viewableChildren;
-    var variable = viewable.where((child) => (child.flex != null || child.pctHeight != null)).toList();
+    var variable = viewable.where((child) => (child.flexHeight != null || child.pctHeight != null)).toList();
     return variable;
   }
 
@@ -73,6 +80,54 @@ class LayoutModel extends DecoratedWidgetModel
     }
   }
   String? get layout => _layout?.get()?.toLowerCase().trim();
+
+  double? get pctWidth
+  {
+    // parent must be a row, column or box or stack
+    if (this.parent is! LayoutModel || fixedWidth) return null;
+
+    // cast parent
+    var parent = (this.parent as LayoutModel);
+
+    var pct = super.pctWidth;
+    if (pct != null) return pct;
+
+    switch (parent.layoutType)
+    {
+      // we want to expand 100% in the cross axis
+      case LayoutType.stack:
+      case LayoutType.column:
+        if (parent.expand) return 100;
+        break;
+      default:
+        break;
+    }
+    return null;
+  }
+
+  double? get pctHeight
+  {
+    // parent must be a row, column or box or stack
+    if (this.parent is! LayoutModel || fixedHeight) return null;
+
+    // cast parent
+    var parent = (this.parent as LayoutModel);
+
+    var pct = super.pctHeight;
+    if (pct != null) return pct;
+
+    switch (parent.layoutType)
+    {
+      // we want to expand 100% in the cross axis
+      case LayoutType.stack:
+      case LayoutType.row:
+        if (parent.expand) return 100;
+        break;
+      default:
+        break;
+    }
+    return null;
+  }
 
   /// Center attribute allows a simple boolean override for halign and valign both being center. halign and valign will override center if given.
   BooleanObservable? _center;
@@ -184,14 +239,17 @@ class LayoutModel extends DecoratedWidgetModel
     // calculate usable space (max - reserved)
     var usable = maximum - reserved;
 
+    //print("WIDTH-> id=$id max=$maximum usable=$usable");
+
     // set % sizing on variable children
     var free = usable;
     for (var child in variable)
     {
-      if (child.visible && child.pctWidth != null)
+      var pct = child.pctWidth ?? 0;
+      if (child.visible && pct > 0)
       {
         // calculate size from %
-        int size = (usable * (child.pctWidth!/100)).floor();
+        int size = (usable * (pct/100)).floor();
 
         // get user defined constraints
         var constraints = child.constraints.model;
@@ -208,6 +266,8 @@ class LayoutModel extends DecoratedWidgetModel
         // reduce free space
         free = free - size;
 
+        //print("WIDTH-> id=$id child=${child.id} %=$pct size=$size free=$free");
+
         // set the size
         if (child.width != size) child.setWidth(size.toDouble(), notify: true);
       }
@@ -218,7 +278,7 @@ class LayoutModel extends DecoratedWidgetModel
     for (var child in variable)
     if (child.visible && child.pctWidth == null)
     {
-      var flex = child.flex ?? 0;
+      var flex = child.flexWidth ?? 0;
       if (flex > 0) flexsum += flex;
     }
 
@@ -228,7 +288,7 @@ class LayoutModel extends DecoratedWidgetModel
       // % takes priority over flexibility
       // and would have been laid out above
       var flex = 0;
-      if (child.visible && child.pctWidth == null) flex = child.flex ?? 0;
+      if (child.visible && child.pctWidth == null) flex = child.flexWidth ?? 0;
       if (flex > 0)
       {
         // calculate size from flex
@@ -245,6 +305,8 @@ class LayoutModel extends DecoratedWidgetModel
 
         // must be 0 or greater
         if (size.isNegative) size = 0;
+
+        //print("WIDTH-> id=$id child=${child.id} flexsum=$flexsum flex=$flex size=$size");
 
         // set the size
         if (child.width != size) child.setWidth(size.toDouble(), notify: true);
@@ -273,14 +335,17 @@ class LayoutModel extends DecoratedWidgetModel
     // calculate usable space (max - reserved)
     var usable = maximum - reserved;
 
+    //print("HEIGHT-> parent=${this.parent?.id} id=$id max=$maximum usable=$usable");
+
     // set % sizing on variable children
     var free = usable;
     for (var child in variable)
     {
-      if (child.visible && child.pctHeight != null)
+      var pct = child.pctHeight ?? 0;
+      if (child.visible && pct > 0)
       {
         // calculate size from %
-        var size = (usable * (child.pctHeight!/100)).floor();
+        var size = (usable * (pct/100)).floor();
 
         // get user defined constraints
         var constraints = child.constraints.model;
@@ -297,6 +362,8 @@ class LayoutModel extends DecoratedWidgetModel
         // reduce free space
         free = free - size;
 
+        //print("HEIGHT-> id=$id child=${child.id} %=$pct size=$size free=$free");
+
         // set the size
         if (child.height != size) child.setHeight(size.toDouble(), notify: true);
       }
@@ -307,7 +374,7 @@ class LayoutModel extends DecoratedWidgetModel
     for (var child in variable)
     if (child.visible && child.pctHeight == null)
     {
-      var flex = child.flex ?? 0;
+      var flex = child.flexHeight ?? 0;
       if (flex > 0) flexsum += flex;
     }
 
@@ -317,7 +384,7 @@ class LayoutModel extends DecoratedWidgetModel
       // % takes priority over flexibility
       // and would have been laid out above
       var flex = 0;
-      if (child.visible && child.pctHeight == null) flex = child.flex ?? 0;
+      if (child.visible && child.pctHeight == null) flex = child.flexHeight ?? 0;
       if (flex > 0)
       {
         // calculate size from flex
@@ -334,6 +401,8 @@ class LayoutModel extends DecoratedWidgetModel
 
         // must be 0 or greater
         if (size.isNegative) size = 0;
+
+        //print("HEIGHT-> id=$id child=${child.id} flexsum=$flexsum flex=$flex size=$size");
 
         // set the size
         if (child.height != size) child.setHeight(size.toDouble(), notify: true);

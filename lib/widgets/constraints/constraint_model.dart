@@ -278,20 +278,13 @@ class ConstraintModel
   double get calculatedMaxWidth
   {
     if (system.maxWidth != null) return system.maxWidth!;
+    if (this.width      != null) return this.width!;
+    if (this.maxWidth   != null) return this.maxWidth!;
     if (this.parent is ViewableWidgetModel)
     {
       var parent = (this.parent as ViewableWidgetModel);
-      var maxWidth = parent.calculatedMaxWidth;
-
-      if (_widthPercentage != null)
-        return parent.width ?? maxWidth;
-
-      if (parent.width != null)
-        return max(parent.width! - parent.horizontalPadding,0);
-
-      if (maxWidth == double.infinity) return maxWidth;
-
-      return max(maxWidth - parent.horizontalPadding,0);
+      if (parent.width != null) return max(parent.width! - parent.horizontalPadding,0);
+      return parent.calculatedMaxWidth;
     }
     return double.infinity;
   }
@@ -319,20 +312,13 @@ class ConstraintModel
   double get calculatedMaxHeight
   {
     if (system.maxHeight != null) return system.maxHeight!;
+    if (this.height      != null) return this.height!;
+    if (this.maxHeight   != null) return this.maxHeight!;
     if (this.parent is ViewableWidgetModel)
     {
       var parent = (this.parent as ViewableWidgetModel);
-      var maxHeight = parent.calculatedMaxHeight;
-
-      if (_heightPercentage != null)
-        return parent.height ?? maxHeight;
-
-      if (parent.height != null)
-        return max(parent.height! - parent.verticalPadding,0);
-
-      if (maxHeight == double.infinity) return maxHeight;
-
-      return max(maxHeight - parent.verticalPadding,0);
+      if (parent.height != null) return max(parent.height! - parent.verticalPadding,0);
+      return parent.calculatedMaxHeight;
     }
     return double.infinity;
   }

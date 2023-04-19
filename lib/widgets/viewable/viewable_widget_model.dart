@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/animation/animation_model.dart';
+import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_view.dart';
 import 'package:fml/widgets/constraints/constraint.dart';
@@ -85,12 +86,6 @@ class ViewableWidgetModel extends WidgetModel
   double? get height => _constraints.height;
   set height(dynamic v) => _constraints.height = v;
 
-  // %width
-  double? get pctWidth => _constraints.widthPercentage;
-
-  // %height
-  double? get pctHeight => _constraints.heightPercentage;
-
   // min width
   @protected
   set minWidth(dynamic v) => _constraints.minWidth = v;
@@ -111,6 +106,12 @@ class ViewableWidgetModel extends WidgetModel
   double? get maxHeight => _constraints.maxHeight;
 
   /// VIEW LAYOUT
+
+  // %width
+  double? get pctWidth => _constraints.widthPercentage;
+
+  // %height
+  double? get pctHeight => _constraints.heightPercentage;
 
   // view width
   double? _viewWidth;
@@ -213,7 +214,32 @@ class ViewableWidgetModel extends WidgetModel
       _flex = IntegerObservable(Binding.toKey(id, 'flex'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  int? get flex => _flex?.get();
+
+  int? get flexWidth
+  {
+    // parent must be a row, column or box or stack
+    if (this.parent is! LayoutModel || fixedWidth) return null;
+
+    var parent = (this.parent as LayoutModel);
+
+    // we can flex only if the parent expands in the horizontal axis
+    if (parent.expandsHorizontally) return _flex?.get() ?? (parent.expand ? 1 : null);
+
+    return null;
+  }
+
+  int? get flexHeight
+  {
+    // parent must be a row, column or box or stack
+    if (this.parent is! LayoutModel || fixedHeight) return null;
+
+    var parent = (this.parent as LayoutModel);
+
+    // we can flex only if the parent expands in the vertical axis
+    if (parent.expandsVertically) return _flex?.get() ?? (parent.expand ? 1 : null);
+
+    return null;
+  }
 
   // used by the view to determine if it needs to wrap itself
   // in a VisibilityDetector

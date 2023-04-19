@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
+import 'package:fml/widgets/layout/ilayout.dart';
 import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
@@ -7,7 +8,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/stack/stack_view.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class StackModel extends LayoutModel
+class StackModel extends LayoutModel implements ILayout
 {
   @override
   LayoutType layoutType = LayoutType.stack;
@@ -22,33 +23,10 @@ class StackModel extends LayoutModel
   MainAxisSize get horizontalAxisSize => (expand && horizontallyConstrained) ? MainAxisSize.max : MainAxisSize.min;
 
   @override
-  int? get flex
-  {
-    // parent must be a layout model
-    if (this.parent is! LayoutModel) return null;
+  bool get expandsVertically => true;
 
-    // expands in both the vertical and horizontal if expand is true
-    // otherwise only of specified
-    return expand ? (super.flex ?? 1) : super.flex;
-  }
-
-  @override
-  double? get pctWidth
-  {
-    if (fixedWidth) return null;
-    if (super.pctWidth != null) return super.pctWidth;
-    if (this.parent is LayoutModel && expand) return 100;
-    return null;
-  }
-
-  @override
-  double? get pctHeight
-  {
-    if (fixedHeight) return null;
-    if (super.pctHeight != null) return super.pctHeight;
-    if (this.parent is LayoutModel && expand) return 100;
-    return null;
-  }
+  @required
+  bool get expandsHorizontally => true;
 
   StackModel(WidgetModel parent, String? id) : super(parent, id);
 

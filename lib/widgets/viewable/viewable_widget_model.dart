@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/event/handler.dart';
+import 'package:fml/system.dart';
 import 'package:fml/widgets/animation/animation_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_view.dart';
@@ -24,10 +25,20 @@ class ViewableWidgetModel extends WidgetModel
   // constraints
   late final ConstraintModel _constraints;
   late final ConstraintSet constraints;
-  double? calculateMinWidth()  => _constraints.calculateMinWidth();
-  double? calculateMaxWidth()  => _constraints.calculateMaxWidth();
-  double? calculateMinHeight() => _constraints.calculateMinHeight();
-  double? calculateMaxHeight() => _constraints.calculateMaxHeight();
+
+  double get calculatedMinHeight => _constraints.calculatedMinHeight;
+  double get calculatedMaxHeight => _constraints.calculatedMaxHeight;
+  double get calculatedMaxHeightOrDefault
+  {
+    var v = calculatedMaxHeight;
+    if (v == double.infinity) v = System().screenheight.toDouble();
+    return v;
+  }
+
+  double get calculatedMinWidth => _constraints.calculatedMinWidth;
+  double get calculatedMaxWidth => _constraints.calculatedMaxWidth;
+  double get calculatedMaxWidthOrDefault => _constraints.calculatedMaxWidthOrDefault;
+
   setWidth(double? v, {bool notify = false}) => _constraints.setWidth(v, notify: notify);
   setHeight(double? v, {bool notify = false}) => _constraints.setHeight(v, notify: notify);
 

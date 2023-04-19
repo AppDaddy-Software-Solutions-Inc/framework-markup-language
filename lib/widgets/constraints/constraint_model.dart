@@ -5,6 +5,7 @@ import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observable.dart';
 import 'package:fml/observable/observables/double.dart';
 import 'package:fml/observable/scope.dart';
+import 'package:fml/system.dart';
 import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
@@ -35,11 +36,6 @@ class ConstraintModel
   // by the layoutBuilder()
   final Constraints system = Constraints();
 
-  double? calculateMinWidth()  => _calculateMinWidth();
-  double? calculateMaxWidth()  => _calculateMaxWidth();
-  double? calculateMinHeight() => _calculateMinHeight();
-  double? calculateMaxHeight() => _calculateMaxHeight();
-
   // returns the constraints as calculated
   // by walking up the model tree and
   // examining system and local model constraints
@@ -49,10 +45,10 @@ class ConstraintModel
 
     // calculates global constraints
     Constraints global = Constraints();
-    global.minWidth  = _calculateMinWidth();
-    global.maxWidth  = _calculateMaxWidth();
-    global.minHeight = _calculateMinHeight();
-    global.maxHeight = _calculateMaxHeight();
+    global.minWidth  = calculatedMinWidth;
+    global.maxWidth  = calculatedMaxWidth;
+    global.minHeight = calculatedMinHeight;
+    global.maxHeight = calculatedMaxHeight;
 
     // constraints as specified on the model template
     Constraints model = getModelConstraints();
@@ -269,23 +265,23 @@ class ConstraintModel
 
   /// walks up the model tree looking for
   /// the first system non-null minWidth value
-  double? _calculateMinWidth()
+  double get calculatedMinWidth
   {
     double? v;
     if (system.minWidth != null) v = system.minWidth;
-    if (v == null && parent is ViewableWidgetModel) v = (parent as ViewableWidgetModel).calculateMinWidth();
-    return v;
+    if (v == null && parent is ViewableWidgetModel) v = (parent as ViewableWidgetModel).calculatedMinWidth;
+    return v ?? 0;
   }
 
   /// walks up the model tree looking for
   /// the first system non-null maxWidth value
-  double? _calculateMaxWidth()
+  double get calculatedMaxWidth
   {
     if (system.maxWidth != null) return system.maxWidth!;
     if (this.parent is ViewableWidgetModel)
     {
       var parent = (this.parent as ViewableWidgetModel);
-      var maxWidth = parent.calculateMaxWidth();
+      var maxWidth = parent.calculatedMaxWidth;
 
       if (_widthPercentage != null)
         return parent.width ?? maxWidth;
@@ -293,31 +289,40 @@ class ConstraintModel
       if (parent.width != null)
         return max(parent.width! - parent.horizontalPadding,0);
 
-      if (maxWidth != null)
-        return max(maxWidth - parent.horizontalPadding,0);
+      if (maxWidth == double.infinity) return maxWidth;
+
+      return max(maxWidth - parent.horizontalPadding,0);
     }
-    return null;
+    return double.infinity;
   }
 
-  /// walks up the model tree looking for
-  /// the first system non-null minHeight value
-  double? _calculateMinHeight()
+  // returns the max width or screen width if unconstrained
+  double get calculatedMaxWidthOrDefault
   {
-    double? v;
-    if (system.minHeight != null) v = system.minHeight;
-    if (v == null && parent is ViewableWidgetModel) v = (parent as ViewableWidgetModel).calculateMinHeight();
+    var v = calculatedMaxWidth;
+    if (v == double.infinity) v = System().screenwidth.toDouble();
     return v;
   }
 
   /// walks up the model tree looking for
+  /// the first system non-null minHeight value
+  double get calculatedMinHeight
+  {
+    double? v;
+    if (system.minHeight != null) v = system.minHeight;
+    if (v == null && parent is ViewableWidgetModel) v = (parent as ViewableWidgetModel).calculatedMinHeight;
+    return v ?? 0;
+  }
+
+  /// walks up the model tree looking for
   /// the first system non-null maxHeight value
-  double? _calculateMaxHeight()
+  double get calculatedMaxHeight
   {
     if (system.maxHeight != null) return system.maxHeight!;
     if (this.parent is ViewableWidgetModel)
     {
       var parent = (this.parent as ViewableWidgetModel);
-      var maxHeight = parent.calculateMaxHeight();
+      var maxHeight = parent.calculatedMaxHeight;
 
       if (_heightPercentage != null)
         return parent.height ?? maxHeight;
@@ -325,26 +330,19 @@ class ConstraintModel
       if (parent.height != null)
         return max(parent.height! - parent.verticalPadding,0);
 
-      if (maxHeight != null)
-        return max(maxHeight - parent.verticalPadding,0);
+      if (maxHeight == double.infinity) return maxHeight;
+
+      return max(maxHeight - parent.verticalPadding,0);
     }
-    return null;
+    return double.infinity;
   }
 
-  int? _widthAsPercentage(double percent)
+  // returns the max height or screen height if unconstrained
+  double get calculatedMaxHeightOrDefault
   {
-    var max = _calculateMaxWidth();
-    if (max != null)
-         return (max * (percent/100.0)).floor();
-    else return null;
-  }
-
-  int? _heightAsPercentage(double percent)
-  {
-    var max = _calculateMaxHeight();
-    if (max != null)
-         return (max * (percent/100.0)).floor();
-    else return null;
+    var v = calculatedMaxHeight;
+    if (v == double.infinity) v = System().screenheight.toDouble();
+    return v;
   }
 
   setLayoutConstraints(BoxConstraints constraints)
@@ -365,14 +363,11 @@ class ConstraintModel
     if (_widthPercentage != null)
     {
       // calculate the width
-      int? width = _widthAsPercentage(_widthPercentage!);
+      int? width = (calculatedMaxWidthOrDefault * (_widthPercentage!/100.0)).floor();
 
       // adjust min and max widths
-      if (width != null)
-      {
-        if (minWidth != null && minWidth! > width)  width = minWidth?.toInt();
-        if (maxWidth != null && maxWidth! < width!) width = maxWidth?.toInt();
-      }
+      if (minWidth != null && minWidth! > width)  width = minWidth?.toInt();
+      if (maxWidth != null && maxWidth! < width!) width = maxWidth?.toInt();
 
       // set the width
       if (layout != LayoutType.row) setWidth(width?.toDouble());
@@ -383,14 +378,11 @@ class ConstraintModel
     if (_heightPercentage != null)
     {
       // calculate the height
-      int? height = _heightAsPercentage(_heightPercentage!);
+      int? height = (calculatedMaxHeightOrDefault * (_heightPercentage!/100.0)).floor();
 
       // adjust min and max heights
-      if (height != null)
-      {
-        if (minHeight != null && minHeight! > height)  height = minHeight?.toInt();
-        if (maxHeight != null && maxHeight! < height!) height = maxHeight?.toInt();
-      }
+      if (minHeight != null && minHeight! > height)  height = minHeight?.toInt();
+      if (maxHeight != null && maxHeight! < height!) height = maxHeight?.toInt();
 
       // set the height
       if (layout != LayoutType.column) setHeight(height?.toDouble());

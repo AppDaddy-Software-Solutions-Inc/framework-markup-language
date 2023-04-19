@@ -52,31 +52,16 @@ class IconModel extends DecoratedWidgetModel  {
     }
   }
 
-  double? get size {
+  double? get size
+  {
     var s = _size?.get();
     if (s == null) return null;
-
-    if (_sizeIsPercent == true) {
-      var s1;
-      var s2;
-
-      var mh = calculateMaxHeight();
-      if (mh != null)
-        s1 = mh * (s / 100.0);
-      else
-        s1 = null;
-
-      var mw = calculateMaxWidth();
-      if (mw != null)
-        s2 = mw * (s / 100.0);
-      else
-        s2 = null;
-
-      if ((s1 != null) && (s2 != null)) s = (s1 > s2) ? s1 : s2;
-      if ((s1 == null) && (s2 != null)) s = s2;
-      if ((s1 != null) && (s2 == null)) s = s1;
+    if (_sizeIsPercent == true)
+    {
+      var s1 = calculatedMaxHeightOrDefault * (s / 100.0);
+      var s2 = calculatedMaxWidthOrDefault  * (s / 100.0);
+      s = (s1 > s2) ? s1 : s2;
     }
-
     return s;
   }
 

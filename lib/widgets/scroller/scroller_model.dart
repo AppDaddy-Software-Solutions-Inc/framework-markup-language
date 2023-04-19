@@ -30,10 +30,10 @@ class ScrollerModel extends ViewableWidgetModel
   String? get align => _align?.get();
 
   @override
-  double? calculateMaxWidth()  => horizontallyConstrained ? super.calculateMaxWidth()  : double.infinity;
+  double get calculatedMaxWidth => horizontallyConstrained ? super.calculatedMaxWidth  : double.infinity;
 
   @override
-  double? calculateMaxHeight() => verticallyConstrained   ? super.calculateMaxHeight() : double.infinity;
+  double get calculatedMaxHeight => verticallyConstrained ? super.calculatedMaxHeight : double.infinity;
 
   @override
   bool get verticallyConstrained

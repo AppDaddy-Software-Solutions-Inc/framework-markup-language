@@ -205,20 +205,19 @@ class _GridViewState extends WidgetState<GridView>
       return prototypeGrid;
     }
 
-    gridWidth  = widget.model.calculateMaxWidth()  ?? widget.model.width  ?? MediaQuery.of(context).size.width;
-    gridHeight = widget.model.calculateMaxHeight() ?? widget.model.height ?? MediaQuery.of(context).size.height;
+    gridWidth  = widget.model.width  ?? widget.model.calculatedMaxWidthOrDefault;
+    gridHeight = widget.model.height ?? widget.model.calculatedMaxHeightOrDefault;
 
     if (widget.model.items.isNotEmpty) 
     {
-      prototypeWidth  = widget.model.items.entries.first.value.width ?? (widget.model.calculateMaxWidth()   ?? widget.model.width  ?? widget.model.itemSize?.width ?? MediaQuery.of(context).size.width) / (sqrt(widget.model.items.length) + 1);
-      prototypeHeight = widget.model.items.entries.first.value.height ?? (widget.model.calculateMaxHeight() ?? widget.model.height ?? widget.model.itemSize?.height ?? MediaQuery.of(context).size.height) / (sqrt(widget.model.items.length) + 1);
+      prototypeWidth  = widget.model.items.entries.first.value.width  ?? widget.model.calculatedMaxWidthOrDefault  / (sqrt(widget.model.items.length) + 1);
+      prototypeHeight = widget.model.items.entries.first.value.height ?? widget.model.calculatedMaxHeightOrDefault / (sqrt(widget.model.items.length) + 1);
     }
     else 
     {
-      prototypeWidth  = (widget.model.calculateMaxWidth()  ?? widget.model.width  ?? widget.model.itemSize?.width  ?? MediaQuery.of(context).size.width) / (sqrt(widget.model.items.length) + 1);
-      prototypeHeight = (widget.model.calculateMaxHeight() ?? widget.model.height ?? widget.model.itemSize?.height ?? MediaQuery.of(context).size.height) / (sqrt(widget.model.items.length) + 1);
+      prototypeWidth  = widget.model.calculatedMaxWidthOrDefault  / (sqrt(widget.model.items.length) + 1);
+      prototypeHeight = widget.model.calculatedMaxHeightOrDefault / (sqrt(widget.model.items.length) + 1);
     }
-
 
     widget.model.direction == 'horizontal' ? direction = Axis.horizontal : direction = Axis.vertical;
 
@@ -287,12 +286,8 @@ class _GridViewState extends WidgetState<GridView>
 
 
     // Constrain the View
-    var w  = widget.model.width;
-    var h = widget.model.height;
-    if (constraints.maxHeight == double.infinity || constraints.maxHeight == double.negativeInfinity || h == null)
-      h = widget.model.calculateMaxHeight() ?? constraints.maxHeight;
-    if (constraints.maxWidth  == double.infinity || constraints.maxWidth  == double.negativeInfinity || w  == null)
-      w  = widget.model.calculateMaxWidth() ?? constraints.maxWidth;
+    var w = widget.model.width  ?? widget.model.calculatedMaxWidthOrDefault;
+    var h = widget.model.height ?? widget.model.calculatedMaxHeightOrDefault;
     view = UnconstrainedBox(child: SizedBox(height: h, width: w, child: view));
 
     children.add(view);

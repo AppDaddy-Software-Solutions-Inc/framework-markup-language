@@ -357,7 +357,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
       ////////////////
       /* Max Height */
       ////////////////
-      double? height = widget.model.calculateMaxHeight();
+      double? height = widget.model.calculatedMaxHeightOrDefault;
 
       ////////////////
       /* Split View */
@@ -367,9 +367,9 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
       if (widget.model.tabbar == true && widget.model.tabbutton == true) {
         view = Column(children: [
           Container(color: Theme.of(context).colorScheme.onInverseSurface, child:
-            Padding(padding: EdgeInsets.only(top: barpadding), child: SizedBox(width: widget.model.calculateMaxWidth(), height: barheight,
+            Padding(padding: EdgeInsets.only(top: barpadding), child: SizedBox(width: widget.model.calculatedMaxWidthOrDefault, height: barheight,
                 child: Row(children: [
-                  SizedBox(width: (widget.model.calculateMaxWidth()! - buttonWidth < 0 ? 0 : widget.model.calculateMaxWidth()! - buttonWidth),
+                  SizedBox(width: (widget.model.calculatedMaxWidthOrDefault - buttonWidth < 0 ? 0 : widget.model.calculatedMaxWidthOrDefault - buttonWidth),
                       height: barheight,
                       child: bar),
                   SizedBox(width: buttonWidth, height: barheight, child: button),
@@ -378,7 +378,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
             )
           ),
           SizedBox(
-              height: height! - barheight - barpadding,
+              height: height - barheight - barpadding,
               child: IndexedStack(
                   children: widget.model.views.values.toList(),
                   index: widget.model.index))
@@ -389,11 +389,12 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
         var con = widget.model.constraints.calculated;
 
         view = Column(children: [
-          SizedBox(width: widget.model.calculateMaxWidth(), height: barheight,
+          SizedBox(width: widget.model.calculatedMaxWidthOrDefault,
+              height: barheight,
             child: bar
           ),
           SizedBox(
-              height: height! - barheight - barpadding,
+              height: height - barheight - barpadding,
               child: ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight: con.minHeight!,

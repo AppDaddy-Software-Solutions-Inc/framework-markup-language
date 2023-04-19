@@ -48,31 +48,16 @@ class TextModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
-  double? get size {
+  double? get size
+  {
     double? s = _size?.get();
     if (s == null) return null;
-
-    if (_sizeIsPercent == true) {
-      double? s1;
-      double? s2;
-
-      double? mh = calculateMaxHeight();
-      if (mh != null)
-        s1 = mh * (s / 100.0);
-      else
-        s1 = null;
-
-      double? mw = calculateMaxWidth();
-      if (mw != null)
-        s2 = mw * (s / 100.0);
-      else
-        s2 = null;
-
-      if ((s1 != null) && (s2 != null)) s = (s1 > s2) ? s1 : s2;
-      if ((s1 == null) && (s2 != null)) s = s2;
-      if ((s1 != null) && (s2 == null)) s = s1;
+    if (_sizeIsPercent == true)
+    {
+      double? s1 = calculatedMaxHeightOrDefault * (s / 100.0);
+      double? s2 = calculatedMaxWidthOrDefault  * (s / 100.0);
+      s = (s1 > s2) ? s1 : s2;
     }
-
     return s;
   }
 

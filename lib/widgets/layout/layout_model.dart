@@ -170,7 +170,8 @@ class LayoutModel extends DecoratedWidgetModel
     if (unsized.isNotEmpty) return;
 
     // calculate maximum space
-    var maximum = calculateMaxWidth() ?? 0;
+    var maximum = calculatedMaxWidth;
+    if (maximum == double.infinity) maximum = viewWidth ?? 0;
 
     var variable = this.variableWidthChildren;
     var fixed    = this.fixedWidthChildren;
@@ -258,7 +259,8 @@ class LayoutModel extends DecoratedWidgetModel
     if (unsized.isNotEmpty) return;
 
     // calculate maximum space
-    var maximum = height ?? calculateMaxHeight() ?? 0;
+    var maximum = calculatedMaxHeight;
+    if (maximum == double.infinity) maximum = viewHeight ?? 0;
 
     var variable = this.variableHeightChildren;
     var fixed = this.fixedHeightChildren;

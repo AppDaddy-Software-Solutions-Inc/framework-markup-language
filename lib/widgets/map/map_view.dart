@@ -74,14 +74,10 @@ class _MapViewState extends WidgetState<MapView>
     if (busy == null) busy = BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
 
     // map width
-    var width = widget.model.width;
-    if (width == null) width = widget.model.calculateMaxWidth();
-    if ((width == null) || (width <= 0)) width = MediaQuery.of(context).size.width;
+    var width = widget.model.width ?? widget.model.calculatedMaxWidthOrDefault;
 
     // map height
-    var height = widget.model.height;
-    if (height == null) height = widget.model.calculateMaxHeight();
-    if ((height == null) || (height <= 0)) height = MediaQuery.of(context).size.height;
+    var height = widget.model.height ?? widget.model.calculatedMaxHeightOrDefault;
 
     // view
     dynamic view = Container(child: SizedBox(width: width, height: height, child: Stack(fit: StackFit.expand, children: [map!, busy!])));

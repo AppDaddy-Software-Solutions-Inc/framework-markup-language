@@ -662,10 +662,7 @@ class ViewableWidgetModel extends WidgetModel
       viewHeight = size.height;
       viewX      = position.dx;
       viewY      = position.dy;
-      if (parent is ViewableWidgetModel)
-      {
-        (parent as ViewableWidgetModel).onLayoutComplete();
-      }
+      if (parent is ViewableWidgetModel) (parent as ViewableWidgetModel).onLayoutComplete();
     }
   }
 

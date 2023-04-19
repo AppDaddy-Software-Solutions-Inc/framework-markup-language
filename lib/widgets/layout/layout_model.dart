@@ -83,48 +83,54 @@ class LayoutModel extends DecoratedWidgetModel implements ILayout
 
   double? get pctWidth
   {
-    // parent must be a row, column or box or stack
-    if (this.parent is! LayoutModel || fixedWidth) return null;
-
-    // cast parent
-    var parent = (this.parent as LayoutModel);
+    // fixed width?
+    if (fixedWidth) return null;
 
     var pct = super.pctWidth;
     if (pct != null) return pct;
 
-    switch (parent.layoutType)
+    // parent is a layout model?
+    if (this.parent is LayoutModel)
     {
-      // we want to expand 100% in the cross axis
-      case LayoutType.stack:
-      case LayoutType.column:
-        if (parent.expand) return 100;
-        break;
-      default:
-        break;
+      // cast parent
+      var parent = (this.parent as LayoutModel);
+      switch (parent.layoutType)
+      {
+        // we want to expand 100% in the cross axis
+        case LayoutType.stack:
+        case LayoutType.column:
+          if (parent.expand) return 100;
+          break;
+        default:
+          break;
+      }
     }
     return null;
   }
 
   double? get pctHeight
   {
-    // parent must be a row, column or box or stack
-    if (this.parent is! LayoutModel || fixedHeight) return null;
-
-    // cast parent
-    var parent = (this.parent as LayoutModel);
+    // fixed height?
+    if (fixedHeight) return null;
 
     var pct = super.pctHeight;
     if (pct != null) return pct;
 
-    switch (parent.layoutType)
+    // parent is a layout model?
+    if (this.parent is LayoutModel)
     {
-      // we want to expand 100% in the cross axis
-      case LayoutType.stack:
-      case LayoutType.row:
-        if (parent.expand) return 100;
-        break;
-      default:
-        break;
+      // cast parent
+      var parent = (this.parent as LayoutModel);
+      switch (parent.layoutType)
+      {
+        // we want to expand 100% in the cross axis
+        case LayoutType.stack:
+        case LayoutType.row:
+          if (parent.expand) return 100;
+          break;
+        default:
+          break;
+      }
     }
     return null;
   }
@@ -365,7 +371,10 @@ class LayoutModel extends DecoratedWidgetModel implements ILayout
         //print("HEIGHT-> id=$id child=${child.id} %=$pct size=$size free=$free");
 
         // set the size
-        if (child.height != size) child.setHeight(size.toDouble(), notify: true);
+        if (child.height != size)
+        {
+          child.setHeight(size.toDouble(), notify: true);
+        }
       }
     }
 
@@ -405,7 +414,10 @@ class LayoutModel extends DecoratedWidgetModel implements ILayout
         //print("HEIGHT-> id=$id child=${child.id} flexsum=$flexsum flex=$flex size=$size");
 
         // set the size
-        if (child.height != size) child.setHeight(size.toDouble(), notify: true);
+        if (child.height != size)
+        {
+          child.setHeight(size.toDouble(), notify: true);
+        }
       }
     }
   }

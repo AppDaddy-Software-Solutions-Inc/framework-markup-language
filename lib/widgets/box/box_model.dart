@@ -59,12 +59,6 @@ class BoxModel extends LayoutModel implements ILayout
   @override
   double get horizontalPadding => (marginLeft ?? 0) + (marginRight  ?? 0) + (borderwidth * 2) + (paddingLeft ?? 0) + (paddingRight ?? 0);
 
-  @override
-  int? get flexWidth => super.flexWidth ?? (expand ? 1 : null);
-
-  @override
-  int? get flexHeight => super.flexHeight ?? (expand ? 1 : null);
-
   // box blur
   BooleanObservable? _blur;
   set blur(dynamic v)

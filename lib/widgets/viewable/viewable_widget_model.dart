@@ -110,6 +110,7 @@ class ViewableWidgetModel extends WidgetModel
 
   bool get isVariableWidth
   {
+    if (fixedWidth) return false;
     if (pctWidth != null) return true;
     if (parent is ILayout && (parent as ILayout).expandsHorizontally && _flex?.get() != null) return true;
     return false;
@@ -117,6 +118,7 @@ class ViewableWidgetModel extends WidgetModel
 
   bool get isVariableHeight
   {
+    if (fixedHeight) return false;
     if (pctHeight != null) return true;
     if (parent is ILayout && (parent as ILayout).expandsVertically && _flex?.get() != null) return true;
     return false;
@@ -695,7 +697,7 @@ class ConstraintSet
 
   /// constraints calculated by walking up the
   /// model tree comparing both model and flutter constraints
-  Constraints get calculated => _model.calculate();
+  Constraints get calculated => _model.calculated;
 
   Constraints get tightest => Constraints.tightest(Constraints.tightest(model, system), calculated);
 

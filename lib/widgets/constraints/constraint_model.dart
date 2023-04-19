@@ -39,24 +39,24 @@ class ConstraintModel
   // returns the constraints as calculated
   // by walking up the model tree and
   // examining system and local model constraints
-  Constraints calculate()
+  Constraints get calculated
   {
     Constraints constraints = Constraints();
 
-    // calculates global constraints
-    Constraints global = Constraints();
-    global.minWidth  = calculatedMinWidth;
-    global.maxWidth  = calculatedMaxWidth;
-    global.minHeight = calculatedMinHeight;
-    global.maxHeight = calculatedMaxHeight;
+    // calculated constraints
+    Constraints calculated = Constraints();
+    calculated.minWidth  = calculatedMinWidth;
+    calculated.maxWidth  = calculatedMaxWidth;
+    calculated.minHeight = calculatedMinHeight;
+    calculated.maxHeight = calculatedMaxHeight;
 
     // constraints as specified on the model template
     Constraints model = getModelConstraints();
 
     // WIDTH
     constraints.width     = model.width;
-    constraints.minWidth  = model.width  ?? model.minWidth  ?? global.minWidth;
-    constraints.maxWidth  = model.width  ?? model.maxWidth  ?? global.maxWidth;
+    constraints.minWidth  = model.width  ?? model.minWidth  ?? calculated.minWidth;
+    constraints.maxWidth  = model.width  ?? model.maxWidth  ?? calculated.maxWidth;
 
     // ensure not negative
     if (constraints.minWidth == null || constraints.minWidth!.isNegative) constraints.minWidth = null;
@@ -72,8 +72,8 @@ class ConstraintModel
 
     // HEIGHT
     constraints.height    = model.height;
-    constraints.minHeight = model.height ?? model.minHeight ?? global.minHeight;
-    constraints.maxHeight = model.height ?? model.maxHeight ?? global.maxHeight;
+    constraints.minHeight = model.height ?? model.minHeight ?? calculated.minHeight;
+    constraints.maxHeight = model.height ?? model.maxHeight ?? calculated.maxHeight;
 
     // ensure not negative
     if (constraints.minHeight != null && constraints.minHeight!.isNegative) constraints.minHeight = null;

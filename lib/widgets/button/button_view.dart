@@ -43,10 +43,6 @@ class _ButtonViewState extends WidgetState<ButtonView>
         return BorderSide(style: BorderStyle.solid, color: model.color ?? Theme.of(context).colorScheme.primary, width: 2);
     }) : null;
 
-    var paddingStyle = (false && model.buttontype != 'outlined' && model.buttontype != 'elevated') ?
-    MaterialStateProperty.all(EdgeInsets.only(top: 14, bottom: 14, left: 14, right: 14)) :
-    null;
-
     var elevationStyle = model.buttontype == 'elevated' ? MaterialStateProperty.resolveWith((states)
     {
       if (states.contains(MaterialState.hovered)) return 8.0;
@@ -82,7 +78,6 @@ class _ButtonViewState extends WidgetState<ButtonView>
       foregroundColor: foregroundColorStyle,
       backgroundColor: backgroundColorStyle,
       // overlayColor: overlayColorStyle,
-      padding: paddingStyle,
       shape: buttonShape,
       side: borderSideStyle,
       elevation: elevationStyle,

@@ -165,8 +165,6 @@ class LayoutModel extends DecoratedWidgetModel
 
   void _onWidthChange()
   {
-    var id = this.id;
-
     // layout cannot be performed until all fixed width children have been laid out
     var unsized = fixedWidthChildren.where((child) => child.viewWidth == null);
     if (unsized.isNotEmpty) return;

@@ -103,13 +103,5 @@ class RowModel extends LayoutModel
     return model;
   }
 
-  @override
-  void onLayoutComplete() async
-  {
-    super.onLayoutComplete();
-    var w = this.viewWidth;
-    var h = this.viewHeight;
-    int i = 0;
-  }
   Widget getView({Key? key}) => getReactiveView(RowView(this));
 }

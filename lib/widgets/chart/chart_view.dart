@@ -53,63 +53,6 @@ class _ChartViewState extends WidgetState<ChartView>
     chartType = getChartType();
   }
 
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints)
-  {
-    // save system constraints
-    onLayout(constraints);
-
-    // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
-
-    List<Widget> children = [];
-    dynamic chart;
-
-    chartType = getChartType();
-    List<CF.Series>? series = buildSeriesList();
-
-    switch (chartType) {
-      case ChartType.BarChart:
-        chart = buildBarChart(series as List<Series<dynamic, String>>);
-        break;
-      case ChartType.NumericComboChart:
-        chart = buildNumericChart(series!);
-        break;
-      case ChartType.OrdinalComboChart:
-        chart = buildOrdinalChart(series!);
-        break;
-      case ChartType.PieChart:
-        chart = buildPieChart((series as List<CF.Series<dynamic, String>>));
-        break;
-      case ChartType.TimeSeriesChart:
-        chart = buildTimeChart(series!);
-        break;
-      default:
-        chart = Icon(Icons.add_chart);
-    }
-
-    // Prioritize chart ux interactions
-    chart = Listener(behavior: HitTestBehavior.opaque, child: chart);
-    if (chart != null) children.add(new SafeArea(child: chart));
-
-    // build the child views
-    children.addAll(widget.model.inflate());
-
-    /// Busy / Loading Indicator
-    if (busy == null)
-      busy = BUSY.BusyView(BUSY.BusyModel(widget.model,
-          visible: widget.model.busy, observable: widget.model.busyObservable));
-    children.add(Center(child: busy));
-
-    // Display children over chart
-    Widget view = Stack(children: children, fit: StackFit.loose);
-
-    // apply user defined constraints
-    return applyConstraints(view, widget.model.constraints.model);
-  }
-
   /// Identifies the chart type from the model attributes
   ///
   /// The logic needs to follow a specific ordinal flow here:
@@ -806,5 +749,70 @@ class _ChartViewState extends WidgetState<ChartView>
       default:
         return CF.BehaviorPosition.bottom;
     }
+  }
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
+    // save system constraints
+    onLayout(constraints);
+
+    // Check if widget is visible before wasting resources on building it
+    if (!widget.model.visible) return Offstage();
+
+    // Busy / Loading Indicator
+    if (busy == null) busy = BUSY.BusyView(BUSY.BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
+
+    Widget view;
+
+    // get the children
+    List<Widget> children = widget.model.inflate();
+
+    chartType = getChartType();
+    List<CF.Series>? series = buildSeriesList();
+
+    switch (chartType) {
+      case ChartType.BarChart:
+        view = buildBarChart(series as List<Series<dynamic, String>>);
+        break;
+      case ChartType.NumericComboChart:
+        view = buildNumericChart(series!);
+        break;
+      case ChartType.OrdinalComboChart:
+        view = buildOrdinalChart(series!);
+        break;
+      case ChartType.PieChart:
+        view = buildPieChart((series as List<CF.Series<dynamic, String>>));
+        break;
+      case ChartType.TimeSeriesChart:
+        view = buildTimeChart(series!);
+        break;
+      default:
+        view = Icon(Icons.add_chart);
+    }
+
+    // Prioritize chart ux interactions
+    if (view != null)
+    {
+      view = Listener(behavior: HitTestBehavior.opaque, child: view);
+      view = SafeArea(child: view);
+      children.insert(0, SafeArea(child: view));
+    }
+
+    // add busy
+    children.add(Center(child: busy));
+
+    // Display children over chart
+    view = Stack(children: children, fit: StackFit.loose);
+
+    // add margins
+    view = addMargins(view);
+
+    // apply user defined constraints
+    view = applyConstraints(view, widget.model.constraints.tightestOrDefault);
+
+    return view;
   }
 }

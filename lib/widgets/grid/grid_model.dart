@@ -7,7 +7,6 @@ import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
-import 'package:fml/widgets/layout/ilayout.dart';
 import 'package:fml/widgets/widget/widget_model.dart'     ;
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/grid/grid_view.dart' as GRID;
@@ -22,24 +21,6 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
 {
   // prototype
   String? prototype;
-
-  @override
-  bool get isVariableWidth
-  {
-    if (fixedWidth) return false;
-    if (pctWidth != null) return true;
-    if (parent is ILayout && (parent as ILayout).expandsHorizontally) return true;
-    return false;
-  }
-
-  @override
-  bool get isVariableHeight
-  {
-    if (fixedHeight) return false;
-    if (pctHeight != null) return true;
-    if (parent is ILayout && (parent as ILayout).expandsVertically) return true;
-    return false;
-  }
 
   // items
   HashMap<int,GridItemModel> items = HashMap<int,GridItemModel>();

@@ -285,6 +285,12 @@ class _GridViewState extends WidgetState<GridView>
       ); else view = ScrollConfiguration(behavior: ProperScrollBehavior(), child: view);
 
 
+    // add margins
+    view = addMargins(view);
+
+    // apply user defined constraints
+    view = applyConstraints(view, widget.model.constraints.tightestOrDefault);
+    
     children.add(view);
 
     // Initialize scroll shadows to controller after building
@@ -295,12 +301,6 @@ class _GridViewState extends WidgetState<GridView>
     }
 
     children.add(Center(child: busy));
-
-    // add margins
-    view = addMargins(view);
-
-    // apply user defined constraints
-    view = applyConstraints(view, widget.model.constraints.tightestOrDefault);
 
     view = Stack(children: children);
 

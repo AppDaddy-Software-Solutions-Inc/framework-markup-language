@@ -55,7 +55,6 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
   bool get scrollShadows => _scrollShadows?.get() ?? false;
 
-
   BooleanObservable? _scrollButtons;
   set scrollButtons (dynamic v)
   {

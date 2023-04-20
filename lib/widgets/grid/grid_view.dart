@@ -285,11 +285,6 @@ class _GridViewState extends WidgetState<GridView>
       ); else view = ScrollConfiguration(behavior: ProperScrollBehavior(), child: view);
 
 
-    // Constrain the View
-    var w = widget.model.width  ?? widget.model.calculatedMaxWidthOrDefault;
-    var h = widget.model.height ?? widget.model.calculatedMaxHeightOrDefault;
-    view = UnconstrainedBox(child: SizedBox(height: h, width: w, child: view));
-
     children.add(view);
 
     // Initialize scroll shadows to controller after building
@@ -301,7 +296,15 @@ class _GridViewState extends WidgetState<GridView>
 
     children.add(Center(child: busy));
 
-    return Stack(children: children);
+    // add margins
+    view = addMargins(view);
+
+    // apply user defined constraints
+    view = applyConstraints(view, widget.model.constraints.tightestOrDefault);
+
+    view = Stack(children: children);
+
+    return view;
   }
 
   Widget? rowBuilder(BuildContext context, int rowIndex)

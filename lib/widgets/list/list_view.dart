@@ -178,15 +178,17 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
           child: view,
       );
 
+    children.addAll([view, Center(child: busy)]);
+
     // add margins
     view = addMargins(view);
 
     // apply user defined constraints
     view = applyConstraints(view, widget.model.constraints.tightestOrDefault);
 
-    children.addAll([view, Center(child: busy)]);
+    view = Stack(children: children);
 
-    return Stack(children: children);
+    return view;
   }
 
   Widget? itemBuilder(BuildContext context, int index)

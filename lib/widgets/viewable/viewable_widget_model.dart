@@ -701,7 +701,13 @@ class ConstraintSet
   Constraints get calculated => _model.calculated;
 
   Constraints get tightest => Constraints.tightest(Constraints.tightest(model, system), calculated);
-  Constraints get tightestOrDefault => Constraints.tightest(tightest,Constraints(maxHeight: System().screenheight.toDouble(), maxWidth: System().screenwidth.toDouble()));
+  Constraints get tightestOrDefault
+  {
+    var constraints = tightest;
+    if (constraints.height == null && constraints.maxHeight == null) constraints.maxHeight = System().screenheight.toDouble();
+    if (constraints.width  == null && constraints.maxWidth  == null) constraints.maxWidth  = System().screenwidth.toDouble();
+    return constraints;
+  }
 
   ConstraintSet(this._model);
 }

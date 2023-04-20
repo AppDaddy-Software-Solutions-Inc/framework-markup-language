@@ -242,7 +242,7 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
     view = addMargins(view);
 
     // apply user defined constraints
-    view = applyConstraints(view, widget.model.constraints.tightest);
+    view = applyConstraints(view, widget.model.constraints.tightestOrDefault);
 
     return view;
   }

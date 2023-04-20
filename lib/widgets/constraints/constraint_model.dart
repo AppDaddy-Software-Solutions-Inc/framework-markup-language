@@ -289,6 +289,16 @@ class ConstraintModel
     return double.infinity;
   }
 
+  // if the widgets own constraints specify a maxWidth then that is used
+  // otherwise it gets the maxWidth from its parent walking up the model tree
+  double get calculatedMaxWidthForPercentage
+  {
+    double? maxWidth = system.maxWidth;
+    if (maxWidth == null && this.parent is ViewableWidgetModel) maxWidth = (this.parent as ViewableWidgetModel).calculatedMaxWidth;
+    if (maxWidth == null || maxWidth == double.infinity) maxWidth = System().screenwidth.toDouble();
+    return maxWidth;
+  }
+
   // returns the max width or screen width if unconstrained
   double get calculatedMaxWidthOrDefault
   {
@@ -323,6 +333,16 @@ class ConstraintModel
     return double.infinity;
   }
 
+  // if the widgets own constraints specify a maxHeight then that is used
+  // otherwise it gets the maxHeight from its parent walking up the model tree
+  double get calculatedMaxHeightForPercentage
+  {
+    double? maxHeight = system.maxHeight;
+    if (maxHeight == null && this.parent is ViewableWidgetModel) maxHeight = (this.parent as ViewableWidgetModel).calculatedMaxHeight;
+    if (maxHeight == null || maxHeight == double.infinity) maxHeight = System().screenheight.toDouble();
+    return maxHeight;
+  }
+
   // returns the max height or screen height if unconstrained
   double get calculatedMaxHeightOrDefault
   {
@@ -349,7 +369,7 @@ class ConstraintModel
     if (_widthPercentage != null)
     {
       // calculate the width
-      int? width = (calculatedMaxWidthOrDefault * (_widthPercentage!/100.0)).floor();
+      int? width = (calculatedMaxWidthForPercentage * (_widthPercentage!/100.0)).floor();
 
       // adjust min and max widths
       if (minWidth != null && minWidth! > width)  width = minWidth?.toInt();
@@ -364,7 +384,7 @@ class ConstraintModel
     if (_heightPercentage != null)
     {
       // calculate the height
-      int? height = (calculatedMaxHeightOrDefault * (_heightPercentage!/100.0)).floor();
+      int? height = (calculatedMaxHeightForPercentage * (_heightPercentage!/100.0)).floor();
 
       // adjust min and max heights
       if (minHeight != null && minHeight! > height)  height = minHeight?.toInt();

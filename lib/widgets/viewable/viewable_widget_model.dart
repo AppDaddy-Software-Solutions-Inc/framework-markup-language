@@ -37,16 +37,13 @@ class ViewableWidgetModel extends WidgetModel
 
   double get calculatedMinHeight => _constraints.calculatedMinHeight;
   double get calculatedMaxHeight => _constraints.calculatedMaxHeight;
-  double get calculatedMaxHeightOrDefault
-  {
-    var v = calculatedMaxHeight;
-    if (v == double.infinity) v = System().screenheight.toDouble();
-    return v;
-  }
+  double get calculatedMaxHeightOrDefault => _constraints.calculatedMaxHeightOrDefault;
+  double get calculatedMaxHeightForPercentage => _constraints.calculatedMaxHeightForPercentage;
 
   double get calculatedMinWidth => _constraints.calculatedMinWidth;
   double get calculatedMaxWidth => _constraints.calculatedMaxWidth;
   double get calculatedMaxWidthOrDefault => _constraints.calculatedMaxWidthOrDefault;
+  double get calculatedMaxWidthForPercentage => _constraints.calculatedMaxWidthForPercentage;
 
   setWidth(double? v, {bool notify = false}) => _constraints.setWidth(v, notify: notify);
   setHeight(double? v, {bool notify = false}) => _constraints.setHeight(v, notify: notify);

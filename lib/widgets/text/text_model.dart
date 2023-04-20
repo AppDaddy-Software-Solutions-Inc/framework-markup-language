@@ -1,4 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:math';
+
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
@@ -54,9 +56,9 @@ class TextModel extends DecoratedWidgetModel
     if (s == null) return null;
     if (_sizeIsPercent == true)
     {
-      double? s1 = calculatedMaxHeightOrDefault * (s / 100.0);
-      double? s2 = calculatedMaxWidthOrDefault  * (s / 100.0);
-      s = (s1 > s2) ? s1 : s2;
+      var width  = calculatedMaxHeightForPercentage * (s / 100.0);
+      var height = calculatedMaxWidthForPercentage  * (s / 100.0);
+      s = max(width, height);
     }
     return s;
   }

@@ -283,7 +283,7 @@ class ConstraintModel
     if (this.parent is ViewableWidgetModel)
     {
       var parent = (this.parent as ViewableWidgetModel);
-      if (parent.width != null) return max(parent.width! - parent.horizontalPadding,0);
+      if (parent.width != null && parent.width! < double.infinity) return max(parent.width! - parent.horizontalPadding,0);
       return parent.calculatedMaxWidth;
     }
     return double.infinity;
@@ -327,7 +327,7 @@ class ConstraintModel
     if (this.parent is ViewableWidgetModel)
     {
       var parent = (this.parent as ViewableWidgetModel);
-      if (parent.height != null) return max(parent.height! - parent.verticalPadding,0);
+      if (parent.height != null && parent.height != double.infinity) return max(parent.height! - parent.verticalPadding,0);
       return parent.calculatedMaxHeight;
     }
     return double.infinity;

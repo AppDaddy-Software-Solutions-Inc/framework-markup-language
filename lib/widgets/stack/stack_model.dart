@@ -22,10 +22,10 @@ class StackModel extends LayoutModel
   MainAxisSize get horizontalAxisSize => (expand && horizontallyConstrained) ? MainAxisSize.max : MainAxisSize.min;
 
   @override
-  bool get expandsVertically => true;
+  bool get expandsVertically => expand;
 
   @required
-  bool get expandsHorizontally => true;
+  bool get expandsHorizontally => expand;
 
   StackModel(WidgetModel parent, String? id) : super(parent, id);
 

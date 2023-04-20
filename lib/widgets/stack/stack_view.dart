@@ -68,6 +68,11 @@ class _StackViewState extends WidgetState<StackView>
     // apply user defined constraints
     if (model is StackModel) view = applyConstraints(view, widget.model.constraints.model);
 
+    // allow the box to shrink on any axis that is not expanding
+    // this is done by applying an UnconstrainedBox() to the view
+    // in the direction of the constrained axis
+    if (!widget.model.expand) view = UnconstrainedBox(child: view);
+
     return view;
   }
 }

@@ -92,7 +92,7 @@ class LayoutModel extends DecoratedWidgetModel
         // we want to expand 100% in the cross axis
         case LayoutType.stack:
         case LayoutType.column:
-          if (parent.expand) return 100;
+          if (parent.expand && expandsHorizontally) return 100;
           break;
         default:
           break;
@@ -119,7 +119,7 @@ class LayoutModel extends DecoratedWidgetModel
         // we want to expand 100% in the cross axis
         case LayoutType.stack:
         case LayoutType.row:
-          if (parent.expand) return 100;
+          if (parent.expand && expandsVertically) return 100;
           break;
         default:
           break;

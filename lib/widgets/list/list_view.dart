@@ -178,18 +178,11 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
           child: view,
       );
 
-    // constrain the view
-    view = applyConstraints(view, widget.model.constraints.model);
+    // add margins
+    view = addMargins(view);
 
-    // constrain the box
-    if (!widget.model.verticallyConstrained || !widget.model.horizontallyConstrained)
-    {
-      double? width  = widget.model.width;
-      double? height = widget.model.height;
-      if (!widget.model.verticallyConstrained)   height = widget.model.calculatedMaxHeightOrDefault;
-      if (!widget.model.horizontallyConstrained) width  = widget.model.calculatedMaxWidthOrDefault;
-      view = UnconstrainedBox(child: SizedBox(height: height, width: width, child: view));
-    }
+    // apply user defined constraints
+    view = applyConstraints(view, widget.model.constraints.tightestOrDefault);
 
     children.addAll([view, Center(child: busy)]);
 

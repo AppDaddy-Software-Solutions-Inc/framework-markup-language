@@ -144,17 +144,13 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
     /// Busy / Loading Indicator
     if (busy == null) busy = BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
 
-    ///////////////
-    /* Direction */
-    ///////////////
+    // Direction
     dynamic direction = Axis.vertical;
     if (widget.model.direction == 'horizontal') direction = Axis.horizontal;
 
     List<Widget> children = [];
 
-    //////////
-    /* View */
-    //////////
+    // View
     Widget view;
 
     if(widget.model.collapsed) view = SingleChildScrollView(
@@ -172,7 +168,6 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
         onRefresh: () => widget.model.onPull(context),
         child: view);
 
-
     if(widget.model.onpulldown != null || widget.model.draggable) view = ScrollConfiguration(
           behavior: ScrollConfiguration.of(context).copyWith(
             dragDevices: {
@@ -183,14 +178,18 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
           child: view,
       );
 
-    ////////////////////////
-    /* Constrain the View */
-    ////////////////////////
-    double? width  = widget.model.width;
-    double? height = widget.model.height;
-    if (constraints.maxHeight == double.infinity || constraints.maxHeight == double.negativeInfinity || height == null) height = widget.model.calculatedMaxHeightOrDefault;
-    if (constraints.maxWidth  == double.infinity || constraints.maxWidth  == double.negativeInfinity || width  == null) width  = widget.model.calculatedMaxWidthOrDefault;
-    view = UnconstrainedBox(child: SizedBox(height: height, width: width, child: view));
+    // constrain the view
+    view = applyConstraints(view, widget.model.constraints.model);
+
+    // constrain the box
+    if (!widget.model.verticallyConstrained || !widget.model.horizontallyConstrained)
+    {
+      double? width  = widget.model.width;
+      double? height = widget.model.height;
+      if (!widget.model.verticallyConstrained)   height = widget.model.calculatedMaxHeightOrDefault;
+      if (!widget.model.horizontallyConstrained) width  = widget.model.calculatedMaxWidthOrDefault;
+      view = UnconstrainedBox(child: SizedBox(height: height, width: width, child: view));
+    }
 
     children.addAll([view, Center(child: busy)]);
 

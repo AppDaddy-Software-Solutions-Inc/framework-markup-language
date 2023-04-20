@@ -245,7 +245,7 @@ class LayoutModel extends DecoratedWidgetModel implements ILayout
     // calculate usable space (max - reserved)
     var usable = maximum - reserved;
 
-    //print("WIDTH-> id=$id max=$maximum usable=$usable");
+    print("WIDTH-> id=$id max=$maximum usable=$usable");
 
     // set % sizing on variable children
     var free = usable;
@@ -272,7 +272,7 @@ class LayoutModel extends DecoratedWidgetModel implements ILayout
         // reduce free space
         free = free - size;
 
-        //print("WIDTH-> id=$id child=${child.id} %=$pct size=$size free=$free");
+        print("WIDTH-> id=$id child=${child.id} %=$pct size=$size free=$free");
 
         // set the size
         if (child.width != size) child.setWidth(size.toDouble(), notify: true);
@@ -312,7 +312,7 @@ class LayoutModel extends DecoratedWidgetModel implements ILayout
         // must be 0 or greater
         if (size.isNegative) size = 0;
 
-        //print("WIDTH-> id=$id child=${child.id} flexsum=$flexsum flex=$flex size=$size");
+        print("WIDTH-> id=$id child=${child.id} flexsum=$flexsum flex=$flex size=$size");
 
         // set the size
         if (child.width != size) child.setWidth(size.toDouble(), notify: true);
@@ -341,7 +341,7 @@ class LayoutModel extends DecoratedWidgetModel implements ILayout
     // calculate usable space (max - reserved)
     var usable = maximum - reserved;
 
-    //print("HEIGHT-> parent=${this.parent?.id} id=$id max=$maximum usable=$usable");
+    print("HEIGHT-> parent=${this.parent?.id} id=$id max=$maximum usable=$usable");
 
     // set % sizing on variable children
     var free = usable;
@@ -368,7 +368,7 @@ class LayoutModel extends DecoratedWidgetModel implements ILayout
         // reduce free space
         free = free - size;
 
-        //print("HEIGHT-> id=$id child=${child.id} %=$pct size=$size free=$free");
+        print("HEIGHT-> id=$id child=${child.id} %=$pct size=$size free=$free");
 
         // set the size
         if (child.height != size)
@@ -411,7 +411,7 @@ class LayoutModel extends DecoratedWidgetModel implements ILayout
         // must be 0 or greater
         if (size.isNegative) size = 0;
 
-        //print("HEIGHT-> id=$id child=${child.id} flexsum=$flexsum flex=$flex size=$size");
+        print("HEIGHT-> id=$id child=${child.id} flexsum=$flexsum flex=$flex size=$size");
 
         // set the size
         if (child.height != size)

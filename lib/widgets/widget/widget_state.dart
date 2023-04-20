@@ -97,7 +97,6 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
     else if (constraints.width != null && constraints.height != null)
       view = UnconstrainedBox(child: SizedBox(child: view, width: constraints.width, height: constraints.height));
 
-
     return view;
   }
 

@@ -6,6 +6,7 @@ import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/form/form_model.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/layout/ilayout.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/event/handler.dart'            ;
 import 'package:fml/widgets/list/list_view.dart';
@@ -21,6 +22,24 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
 
   // prototype
   String? prototype;
+
+  @override
+  bool get isVariableWidth
+  {
+    if (fixedWidth) return false;
+    if (pctWidth != null) return true;
+    if (parent is ILayout && (parent as ILayout).expandsHorizontally) return true;
+    return false;
+  }
+
+  @override
+  bool get isVariableHeight
+  {
+    if (fixedHeight) return false;
+    if (pctHeight != null) return true;
+    if (parent is ILayout && (parent as ILayout).expandsVertically) return true;
+    return false;
+  }
 
   BooleanObservable? _scrollShadows;
   set scrollShadows (dynamic v)
@@ -52,9 +71,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
   bool get scrollButtons => _scrollButtons?.get() ?? false;
 
 
-  ///////////
-  /* moreup */
-  ///////////
+  // moreup 
   BooleanObservable? _moreUp;
   set moreUp (dynamic v)
   {
@@ -69,9 +86,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
   bool? get moreUp => _moreUp?.get();
 
-  ///////////
-  /* moreDown */
-  ///////////
+  // moreDown 
   BooleanObservable? _moreDown;
   set moreDown (dynamic v)
   {
@@ -86,9 +101,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
   bool? get moreDown => _moreDown?.get();
 
-  ///////////
-  /* moreLeft */
-  ///////////
+  // moreLeft 
   BooleanObservable? _moreLeft;
   set moreLeft (dynamic v)
   {
@@ -103,9 +116,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
   bool? get moreLeft => _moreLeft?.get();
 
-  ///////////
-  /* moreRight */
-  ///////////
+  // moreRight 
   BooleanObservable? _moreRight;
   set moreRight (dynamic v)
   {
@@ -120,10 +131,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
   bool? get moreRight => _moreRight?.get();
 
-
-  ///////////
-  /* dirty */
-  ///////////
+  // dirty 
   BooleanObservable? get dirtyObservable => _dirty;
   BooleanObservable? _dirty;
   set dirty (dynamic v)
@@ -153,18 +161,14 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     dirty = isDirty;
   }
 
-  ///////////
-  /* Clean */
-  ///////////
+  // Clean 
   set clean (bool b)
   {
     dirty = false;
       items.forEach((index, item) => item.dirty = false);
   }
 
-  /////////////////
-  /* onccomplete */
-  /////////////////
+  // oncomplete 
   StringObservable? _oncomplete;
   set oncomplete (dynamic v)
   {
@@ -179,9 +183,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
   String? get oncomplete => _oncomplete?.get();
 
-  ///////////////
-  /* Direction */
-  ///////////////
+  // Direction 
   StringObservable? _direction;
   set direction (dynamic v)
   {
@@ -369,9 +371,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
 
     bool ok = true;
 
-    ///////////////////
-    /* Post the Form */
-    ///////////////////
+    // Post the Form
     if (dirty) for (var entry in items.entries) ok = await entry.value.complete();
 
     busy = false;
@@ -393,7 +393,6 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
   {
     await EventHandler(this).execute(_onpulldown);
   }
-
 
   Widget getView({Key? key}) => getReactiveView(ListLayoutView(this));
 }

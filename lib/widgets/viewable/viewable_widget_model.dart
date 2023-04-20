@@ -107,7 +107,7 @@ class ViewableWidgetModel extends WidgetModel
   double? get maxHeight => _constraints.maxHeight;
 
   /// VIEW LAYOUT
-
+  // this tells the layout builder that the widget is variable width
   bool get isVariableWidth
   {
     if (fixedWidth) return false;
@@ -116,6 +116,7 @@ class ViewableWidgetModel extends WidgetModel
     return false;
   }
 
+  // this tells the layout builder that the widget is variable height
   bool get isVariableHeight
   {
     if (fixedHeight) return false;

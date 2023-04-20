@@ -6,7 +6,6 @@ import 'package:fml/observable/observables/boolean.dart';
 import 'package:fml/observable/observables/string.dart';
 import 'package:fml/observable/scope.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
-import 'package:fml/widgets/layout/ilayout.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
@@ -15,7 +14,7 @@ enum LayoutType {none, row, column, stack}
 enum VerticalAlignmentType {top, bottom, center, around, between, evenly}
 enum HorizontalAlignmentType {left, right, center, around, between, evenly}
 
-class LayoutModel extends DecoratedWidgetModel implements ILayout
+class LayoutModel extends DecoratedWidgetModel
 {
   @required
   LayoutType get layoutType => throw(UnimplementedError);
@@ -26,17 +25,11 @@ class LayoutModel extends DecoratedWidgetModel implements ILayout
   @required
   MainAxisSize get horizontalAxisSize => throw(UnimplementedError);
 
-  @required
-  bool get expandsVertically => throw(UnimplementedError);
-
-  @required
-  bool get expandsHorizontally => throw(UnimplementedError);
-
   // children with variable width
   List<ViewableWidgetModel> get variableWidthChildren
   {
     var viewable = viewableChildren;
-    var variable = viewable.where((child) => child.isVariableWidth).toList();
+    var variable = viewable.where((child) => child.hasVariableWidth).toList();
     return variable;
   }
 
@@ -44,7 +37,7 @@ class LayoutModel extends DecoratedWidgetModel implements ILayout
   List<ViewableWidgetModel> get variableHeightChildren
   {
     var viewable = viewableChildren;
-    var variable = viewable.where((child) => child.isVariableHeight).toList();
+    var variable = viewable.where((child) => child.hasVariableHeight).toList();
     return variable;
   }
 
@@ -414,10 +407,7 @@ class LayoutModel extends DecoratedWidgetModel implements ILayout
         print("HEIGHT-> id=$id child=${child.id} flexsum=$flexsum flex=$flex size=$size");
 
         // set the size
-        if (child.height != size)
-        {
-          child.setHeight(size.toDouble(), notify: true);
-        }
+        if (child.height != size) child.setHeight(size.toDouble(), notify: true);
       }
     }
   }

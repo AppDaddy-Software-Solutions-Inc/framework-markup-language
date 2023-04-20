@@ -6,7 +6,6 @@ import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/form/form_model.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
-import 'package:fml/widgets/layout/ilayout.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/event/handler.dart'            ;
 import 'package:fml/widgets/list/list_view.dart';
@@ -24,22 +23,10 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
   String? prototype;
 
   @override
-  bool get isVariableWidth
-  {
-    if (fixedWidth) return false;
-    if (pctWidth != null) return true;
-    if (parent is ILayout && (parent as ILayout).expandsHorizontally) return true;
-    return false;
-  }
+  bool get expandsVertically => true;
 
   @override
-  bool get isVariableHeight
-  {
-    if (fixedHeight) return false;
-    if (pctHeight != null) return true;
-    if (parent is ILayout && (parent as ILayout).expandsVertically) return true;
-    return false;
-  }
+  bool get expandsHorizontally => true;
 
   BooleanObservable? _scrollShadows;
   set scrollShadows (dynamic v)

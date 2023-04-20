@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/layout/ilayout.dart';
 import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
@@ -8,7 +7,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/row/row_view.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class RowModel extends LayoutModel implements ILayout
+class RowModel extends LayoutModel
 {
   @override
   LayoutType layoutType = LayoutType.row;

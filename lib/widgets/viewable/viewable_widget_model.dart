@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/animation/animation_model.dart';
-import 'package:fml/widgets/layout/ilayout.dart';
 import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_view.dart';
@@ -23,6 +22,14 @@ class ViewableWidgetModel extends WidgetModel
 
   // holds animations
   List<AnimationModel>? animations;
+
+  // signifies if this widget normally expands in the vertical
+  // this gets overridden in several widgets that inherited from this class
+  bool get expandsVertically => false;
+
+  // signifies if this widget normally expands in the horizontal
+  // this gets overridden in several widgets that inherited from this class
+  bool get expandsHorizontally => false;
 
   // constraints
   late final ConstraintModel _constraints;
@@ -107,23 +114,6 @@ class ViewableWidgetModel extends WidgetModel
   double? get maxHeight => _constraints.maxHeight;
 
   /// VIEW LAYOUT
-  // this tells the layout builder that the widget is variable width
-  bool get isVariableWidth
-  {
-    if (fixedWidth) return false;
-    if (pctWidth != null) return true;
-    if (parent is ILayout && (parent as ILayout).expandsHorizontally && _flex?.get() != null) return true;
-    return false;
-  }
-
-  // this tells the layout builder that the widget is variable height
-  bool get isVariableHeight
-  {
-    if (fixedHeight) return false;
-    if (pctHeight != null) return true;
-    if (parent is ILayout && (parent as ILayout).expandsVertically && _flex?.get() != null) return true;
-    return false;
-  }
 
   // %width
   double? get pctWidth => _constraints.widthPercentage;
@@ -257,6 +247,52 @@ class ViewableWidgetModel extends WidgetModel
     if (parent.expandsVertically) return _flex?.get() ?? (parent.expand ? 1 : null);
 
     return null;
+  }
+
+  // determines if the widget if variable width
+  bool get hasVariableWidth
+  {
+    // if im fixed width then I'm not variable
+    if (fixedWidth) return false;
+
+    // if im % then I am variable
+    if (pctWidth != null) return true;
+
+    // if my parent is a layout widget and expands horizontally, examine flex values
+    if (parent is LayoutModel && (parent as LayoutModel).expandsHorizontally)
+    {
+      // if I have a flex value defined I am variable
+      if (_flex?.get() != null) return true;
+
+      // if I can expand horizontally and my parent is expanding then I am variable
+      if (expandsHorizontally && (parent as LayoutModel).expand) return true;
+    }
+
+    // not variable (fixed size)
+    return false;
+  }
+
+  // determines if the widget if variable height
+  bool get hasVariableHeight
+  {
+    // if im fixed height then I'm not variable
+    if (fixedHeight) return false;
+
+    // if im % then I am variable
+    if (pctHeight != null) return true;
+
+    // if my parent is a layout widget and expands vertically, examine flex values
+    if (parent is LayoutModel && (parent as LayoutModel).expandsVertically)
+    {
+      // if I have a flex value defined I am variable
+      if (_flex?.get() != null) return true;
+
+      // if I can expand vertically and my parent is expanding then I am variable
+      if (expandsVertically && (parent as LayoutModel).expand) return true;
+    }
+
+    // not variable (fixed size)
+    return false;
   }
 
   // used by the view to determine if it needs to wrap itself

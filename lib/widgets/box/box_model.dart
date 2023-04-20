@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/column/column_view.dart';
-import 'package:fml/widgets/layout/ilayout.dart';
 import 'package:fml/widgets/row/row_view.dart';
 import 'package:fml/widgets/stack/stack_view.dart';
 import 'package:fml/widgets/layout/layout_model.dart';
@@ -12,7 +11,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class BoxModel extends LayoutModel implements ILayout
+class BoxModel extends LayoutModel
 {
   @override
   LayoutType get layoutType => LayoutModel.getLayoutType(layout, defaultLayout: LayoutType.column);

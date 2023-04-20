@@ -16,6 +16,12 @@ import 'package:fml/helper/common_helpers.dart';
 /// Defines the properties used to build a [SCROLLER.ScrollerView]
 class ScrollerModel extends ViewableWidgetModel 
 {
+  @override
+  bool get expandsVertically => layoutType == LayoutType.column;
+
+  @override
+  bool get expandsHorizontally => layoutType == LayoutType.row;
+
   /// The cross alignment of the widgets children. Can be `top`, `bottom`, `start`, or `end`.
   StringObservable? _align;
 

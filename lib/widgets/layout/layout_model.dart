@@ -74,12 +74,13 @@ class LayoutModel extends DecoratedWidgetModel
   }
   String? get layout => _layout?.get()?.toLowerCase().trim();
 
-  double? get pctWidth
+  @override
+  double? get widthPercentage
   {
     // fixed width?
     if (fixedWidth) return null;
 
-    var pct = super.pctWidth;
+    var pct = super.widthPercentage;
     if (pct != null) return pct;
 
     // parent is a layout model?
@@ -98,6 +99,8 @@ class LayoutModel extends DecoratedWidgetModel
           break;
       }
     }
+    else if (expand && expandsHorizontally) return 100;
+
     return null;
   }
 
@@ -124,6 +127,10 @@ class LayoutModel extends DecoratedWidgetModel
         default:
           break;
       }
+    }
+    else if (expand && expandsVertically)
+    {
+        return 100;
     }
     return null;
   }
@@ -244,7 +251,7 @@ class LayoutModel extends DecoratedWidgetModel
     var free = usable;
     for (var child in variable)
     {
-      var pct = child.pctWidth ?? 0;
+      var pct = child.widthPercentage ?? 0;
       if (child.visible && pct > 0)
       {
         // calculate size from %
@@ -275,7 +282,7 @@ class LayoutModel extends DecoratedWidgetModel
     // calculate sum of all flex values
     double flexsum = 0;
     for (var child in variable)
-    if (child.visible && child.pctWidth == null)
+    if (child.visible && child.widthPercentage == null)
     {
       var flex = child.flexWidth ?? 0;
       if (flex > 0) flexsum += flex;
@@ -287,7 +294,7 @@ class LayoutModel extends DecoratedWidgetModel
       // % takes priority over flexibility
       // and would have been laid out above
       var flex = 0;
-      if (child.visible && child.pctWidth == null) flex = child.flexWidth ?? 0;
+      if (child.visible && child.widthPercentage == null) flex = child.flexWidth ?? 0;
       if (flex > 0)
       {
         // calculate size from flex

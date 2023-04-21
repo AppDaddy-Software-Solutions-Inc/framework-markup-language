@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/navigation_manager.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/column/column_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -10,8 +10,11 @@ import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/overlay/overlay_view.dart';
 import 'modal_view.dart';
 
-class ModalModel extends DecoratedWidgetModel
+class ModalModel extends ColumnModel
 {
+  @override
+  bool get expand => true;
+
   @override
   bool get inflateable => false;
 
@@ -119,9 +122,8 @@ class ModalModel extends DecoratedWidgetModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
+  void deserialize(XmlElement? xml)
   {
-
     // deserialize 
     super.deserialize(xml);
 
@@ -144,7 +146,7 @@ class ModalModel extends DecoratedWidgetModel
         
         // modal width
         String? width = arguments.length > 0 ? S.toStr(arguments[0]) : null;
-        if (width == null) width = (pctWidth != null) ? "$pctWidth%" : "${this.width}";
+        if (width == null) width = (widthPercentage != null) ? "$widthPercentage%" : "${this.width}";
 
         // modal height
         String? height = arguments.length > 1 ? S.toStr(arguments[1]) : null;

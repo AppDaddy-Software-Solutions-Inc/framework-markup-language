@@ -87,6 +87,7 @@ class ViewableWidgetModel extends WidgetModel
 
   // width
   bool fixedWidth = false;
+  double? get widthPercentage => _constraints.widthPercentage;
   double? get width  => _constraints.width;
   set width(dynamic v) => _constraints.width = v;
 
@@ -115,10 +116,7 @@ class ViewableWidgetModel extends WidgetModel
   double? get maxHeight => _constraints.maxHeight;
 
   /// VIEW LAYOUT
-
-  // %width
-  double? get pctWidth => _constraints.widthPercentage;
-
+  ///
   // %height
   double? get pctHeight => _constraints.heightPercentage;
 
@@ -257,7 +255,7 @@ class ViewableWidgetModel extends WidgetModel
     if (fixedWidth) return false;
 
     // if im % then I am variable
-    if (pctWidth != null) return true;
+    if (widthPercentage != null) return true;
 
     // if my parent is a layout widget and expands horizontally, examine flex values
     if (parent is LayoutModel && (parent as LayoutModel).expandsHorizontally)

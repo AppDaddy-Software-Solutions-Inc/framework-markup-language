@@ -29,7 +29,8 @@ class ColumnModel extends LayoutModel
 
   ColumnModel(WidgetModel parent, String? id) : super(parent, id);
 
-  static ColumnModel? fromXml(WidgetModel parent, XmlElement xml) {
+  static ColumnModel? fromXml(WidgetModel parent, XmlElement xml)
+  {
     ColumnModel? model;
     try
     {

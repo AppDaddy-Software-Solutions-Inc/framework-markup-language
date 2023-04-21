@@ -93,8 +93,7 @@ class ConstraintModel
   /// Local Constraints 
   /// 
   // width
-  double? _widthPercentage;
-  double? get widthPercentage => _widthPercentage;
+  double? widthPercentage;
   DoubleObservable? _width;
   set width(dynamic v)
   {
@@ -102,10 +101,10 @@ class ConstraintModel
     {
       if (S.isPercentage(v))
       {
-        _widthPercentage = S.toDouble(v.split("%")[0]);
+        widthPercentage = S.toDouble(v.split("%")[0]);
         v = null;
       }
-      else _widthPercentage = null;
+      else widthPercentage = null;
       if (v != null && v.runtimeType == String && v.contains('%'))
       {
         String s = v;
@@ -365,11 +364,11 @@ class ConstraintModel
     if (layoutModel != null) layout = layoutModel.layoutType;
 
     // adjust the width if defined as a percentage
-    if (width != null && width! >= 100000) _widthPercentage = (width!/1000000);
-    if (_widthPercentage != null)
+    if (width != null && width! >= 100000) widthPercentage = (width!/1000000);
+    if (widthPercentage != null)
     {
       // calculate the width
-      int? width = (calculatedMaxWidthForPercentage * (_widthPercentage!/100.0)).floor();
+      int? width = (calculatedMaxWidthForPercentage * (widthPercentage!/100.0)).floor();
 
       // adjust min and max widths
       if (minWidth != null && minWidth! > width)  width = minWidth?.toInt();

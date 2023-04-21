@@ -794,12 +794,9 @@ class _ChartViewState extends WidgetState<ChartView>
     }
 
     // Prioritize chart ux interactions
-    if (view != null)
-    {
-      view = Listener(behavior: HitTestBehavior.opaque, child: view);
-      view = SafeArea(child: view);
-      children.insert(0, SafeArea(child: view));
-    }
+    view = Listener(behavior: HitTestBehavior.opaque, child: view);
+    view = SafeArea(child: view);
+    children.insert(0, SafeArea(child: view));
 
     // add busy
     children.add(Center(child: busy));

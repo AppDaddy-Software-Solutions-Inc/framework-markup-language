@@ -368,5 +368,4 @@ class BoxModel extends LayoutModel
         return StackView(this);
     }
   }
-
 }

@@ -1,16 +1,18 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
+import 'package:fml/widgets/column/column_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/padding/padding_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class PaddingModel extends ViewableWidgetModel 
+class PaddingModel extends ColumnModel
 {
-  PaddingModel(WidgetModel parent, String? id, {Scope? scope}): super(parent, id, scope: scope);
+  @override
+  bool get expand => false;
+
+  PaddingModel(WidgetModel parent, String? id): super(parent, id);
 
   static PaddingModel? fromXml(WidgetModel parent, XmlElement xml) {
     PaddingModel? model;
@@ -30,7 +32,7 @@ class PaddingModel extends ViewableWidgetModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
+  void deserialize(XmlElement? xml)
   {
     // deserialize
     super.deserialize(xml);

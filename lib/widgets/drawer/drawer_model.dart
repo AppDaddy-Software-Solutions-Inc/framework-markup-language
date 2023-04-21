@@ -114,7 +114,7 @@ class DrawerModel extends DecoratedWidgetModel
   }
 
   // I built this to replace fromXml so that we can take in multiple <DRAWER> elements
-  // and consolidate them into a single DRAWER.Model that handles them all (important)
+  // and consolidate them into a single DrawerModel that handles them all (important)
   static DrawerModel? fromXmlList(WidgetModel parent, List<XmlElement> elements)
   {
     DrawerModel? model;
@@ -138,7 +138,7 @@ class DrawerModel extends DecoratedWidgetModel
       {
         XmlElement node = element.copy();
 
-        String? side = Xml.attribute(node: node, tag: 'size')?.trim().toLowerCase();
+        String? side = Xml.attribute(node: node, tag: 'side')?.trim().toLowerCase();
         if (side != null)
         {
           // build the drawer elements
@@ -152,29 +152,31 @@ class DrawerModel extends DecoratedWidgetModel
           });
 
           // Assign ids
-          if (side == 'left')
+          switch (side)
           {
-            idLeft     = Xml.attribute(node: node, tag: 'id');
-            handleLeft = S.toBool(Xml.attribute(node: node, tag: 'handle')) == true;
-            sizeLeft   = S.toDouble(Xml.attribute(node: node, tag: 'size'));
-          }
-          else if (side == 'right')
-          {
-            idRight     = Xml.attribute(node: node, tag: 'id');
-            handleRight = S.toBool(Xml.attribute(node: node, tag: 'handle')) == true;
-            sizeRight  = S.toDouble(Xml.attribute(node: node, tag: 'size'));
-          }
-          else if (side == 'top')
-          {
-            idTop     = Xml.attribute(node: node, tag: 'id');
-            handleTop = S.toBool(Xml.attribute(node: node, tag: 'handle')) == true;
-            sizeTop   = S.toDouble(Xml.attribute(node: node, tag: 'size'));
-          }
-          else if (side == 'bottom')
-          {
-            idBottom     = Xml.attribute(node: node, tag: 'id');
-            handleBottom = S.toBool(Xml.attribute(node: node, tag: 'handle')) == true;
-            sizeBottom   = S.toDouble(Xml.attribute(node: node, tag: 'size'));
+            case 'left':
+              idLeft     = Xml.attribute(node: node, tag: 'id');
+              handleLeft = S.toBool(Xml.attribute(node: node, tag: 'handle')) == true;
+              sizeLeft   = S.toDouble(Xml.attribute(node: node, tag: 'size'));
+              break;
+
+            case 'right':
+              idRight     = Xml.attribute(node: node, tag: 'id');
+              handleRight = S.toBool(Xml.attribute(node: node, tag: 'handle')) == true;
+              sizeRight  = S.toDouble(Xml.attribute(node: node, tag: 'size'));
+              break;
+
+            case 'top':
+              idTop     = Xml.attribute(node: node, tag: 'id');
+              handleTop = S.toBool(Xml.attribute(node: node, tag: 'handle')) == true;
+              sizeTop   = S.toDouble(Xml.attribute(node: node, tag: 'size'));
+              break;
+
+            case 'bottom':
+              idBottom     = Xml.attribute(node: node, tag: 'id');
+              handleBottom = S.toBool(Xml.attribute(node: node, tag: 'handle')) == true;
+              sizeBottom   = S.toDouble(Xml.attribute(node: node, tag: 'size'));
+              break;
           }
 
           List<XmlElement> nodes = [];

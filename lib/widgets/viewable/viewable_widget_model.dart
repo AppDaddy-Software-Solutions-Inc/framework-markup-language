@@ -17,6 +17,12 @@ import 'package:fml/widgets/widget/widget_model.dart';
 
 class ViewableWidgetModel extends WidgetModel
 {
+  // this is used like the old IViewableWidget interface
+  // it is used during the inflate process to determine if a widget
+  // should be inflated during the build. This is overridden in widgets
+  // such as modal and gallery
+  bool get inflateable => true;
+
   // model holding the tooltip
   TooltipModel? tipModel;
 
@@ -74,10 +80,8 @@ class ViewableWidgetModel extends WidgetModel
   List<ViewableWidgetModel> get viewableChildren
   {
     List<ViewableWidgetModel> list = [];
-    children?.forEach((child)
-    {
-      if (child is ViewableWidgetModel) list.add(child);
-    });
+    if (children != null)
+    for (var child in children!) if (child is ViewableWidgetModel && child.inflateable) list.add(child);
     return list;
   }
 

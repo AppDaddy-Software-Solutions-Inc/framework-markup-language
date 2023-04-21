@@ -6,7 +6,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/filepicker/filepicker_view.dart' as FILEPICKER;
-import 'package:fml/datasources/file/file.dart'   as FILE;
+import 'package:fml/datasources/file/file.dart' as FILE;
 import 'package:fml/event/handler.dart'           ;
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';

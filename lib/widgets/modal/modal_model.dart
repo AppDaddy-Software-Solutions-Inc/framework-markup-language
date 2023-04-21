@@ -12,6 +12,9 @@ import 'modal_view.dart';
 
 class ModalModel extends DecoratedWidgetModel
 {
+  @override
+  bool get inflateable => false;
+
   OverlayView? overlay;
   Size? proxysize;
 

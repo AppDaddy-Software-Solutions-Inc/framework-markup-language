@@ -398,6 +398,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   {
     late final GestureDetector detector;
 
+    // gesture detector is used to control the drawer
     if (drawer != null)
     {
       detector = GestureDetector(
@@ -420,6 +421,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     // and mobile IOS applications
     bool enableSwipeBack = isDesktop || (isMobile && System().useragent == "ios");
 
+    // gesture detector is swipe back on IOS
     if (enableSwipeBack)
     {
       detector = GestureDetector(behavior: HitTestBehavior.translucent,
@@ -434,6 +436,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       return detector;
     }
 
+    // standard gesture detector for commit
     detector = GestureDetector(behavior: HitTestBehavior.translucent,
         onTap: () =>  WidgetModel.unfocus(),
         onLongPressStart: kDebugMode ? (_) => onLongPressStart() : null,
@@ -442,6 +445,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
     return detector;
   }
+
   @override
   Widget build(BuildContext context)
   {
@@ -490,7 +494,11 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     // We need to provide the stacks children to drawer because positioned
     // widgets must be direct children but the drawer uses a builder widget
     DrawerView? drawer;
-    if (widget.model.drawer != null) drawer = DrawerView(widget.model.drawer!, view);
+    if (widget.model.drawer != null)
+    {
+      drawer = DrawerView(widget.model.drawer!, view);
+      view = Stack(children: [view,drawer]);
+    }
 
     // wrap view in gesture detector
     view = _getGestureDetector(view,drawer);

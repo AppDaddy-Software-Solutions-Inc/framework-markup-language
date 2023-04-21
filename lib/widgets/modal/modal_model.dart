@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/navigation_manager.dart';
-import 'package:fml/widgets/column/column_model.dart';
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -10,11 +10,8 @@ import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/overlay/overlay_view.dart';
 import 'modal_view.dart';
 
-class ModalModel extends ColumnModel
+class ModalModel extends BoxModel
 {
-  @override
-  bool get expand => true;
-
   @override
   bool get inflateable => false;
 

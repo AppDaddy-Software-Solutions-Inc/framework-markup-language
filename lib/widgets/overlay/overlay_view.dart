@@ -25,7 +25,13 @@ class OverlayViewState extends State<OverlayView>
   double? dx;
   double? dy;
 
-  double? width;
+  double? _width;
+  set width(double? v)
+  {
+    _width = v;
+  }
+  double? get width => _width;
+
   double? height;
 
   late double maxHeight;

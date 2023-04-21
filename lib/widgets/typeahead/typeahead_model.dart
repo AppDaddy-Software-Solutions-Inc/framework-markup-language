@@ -16,6 +16,19 @@ class TypeaheadModel extends FormFieldModel implements IFormField
 {
   bool? addempty = true;
 
+  // override padding
+  @override
+  double? get marginTop    => super.marginTop ?? 4;
+
+  @override
+  double? get marginBottom => super.marginBottom ?? 4;
+
+  @override
+  double? get marginLeft   => super.marginLeft ?? 4;
+
+  @override
+  double? get marginRight  => super.marginRight ?? 4;
+
   // bindable data
   ListObservable? _data;
   set data(dynamic v)

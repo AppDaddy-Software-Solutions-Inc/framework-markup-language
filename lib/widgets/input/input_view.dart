@@ -41,6 +41,8 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
   bool userSetErrorText = false;
   String? overrideErrorText;
   String? oldValue = "";
+  List<TextInputFormatter> formatters = [];
+  String? keyboardtype;
 
   static const Map<String, TextInputAction> keyboardInputs = {
     'next': TextInputAction.next,
@@ -408,80 +410,66 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     _commit();
   }
 
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints)
+  List<Color?> _getBorderColors()
   {
-    // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
-
-    // save system constraints
-    onLayout(constraints);
-
-    // set the border color arrays
-    Color? enabledBorderColor;
-    Color? disabledBorderColor;
-    Color? focusBorderColor;
-    Color? errorBorderColor;
-    List? bordercolors = [];
-    if (widget.model.bordercolor != null) {
-      bordercolors = widget.model.bordercolor?.split(',');
-      enabledBorderColor = ColorObservable.toColor(bordercolors![0]?.trim());
-      if (bordercolors.length > 1)
-        disabledBorderColor = ColorObservable.toColor(bordercolors[1]?.trim());
-      if (bordercolors.length > 2)
-        focusBorderColor = ColorObservable.toColor(bordercolors[2]?.trim());
-      if (bordercolors.length > 3)
-        errorBorderColor = ColorObservable.toColor(bordercolors[3]?.trim());
+    // enabled, disabled, focus, error
+    List<Color?> colors = [null,null,null,null];
+    if (widget.model.bordercolor != null)
+    {
+      var colorArray = widget.model.bordercolor?.split(',');
+      if (colorArray != null)
+      {
+        if (colorArray.length > 0) colors[0] = ColorObservable.toColor(colorArray[0].trim());
+        if (colorArray.length > 1) colors[1] = ColorObservable.toColor(colorArray[1].trim());
+        if (colorArray.length > 2) colors[2] = ColorObservable.toColor(colorArray[2].trim());
+        if (colorArray.length > 3) colors[3] = ColorObservable.toColor(colorArray[3].trim());
+      }
     }
+    return colors;
+  }
 
-    var formatter;
+  List<Color?> _getTextColors()
+  {
+    // enabled, disabled, hint, error
+    List<Color?> colors = [null,null,null,null];
+    if (widget.model.textcolor != null)
+    {
+      var colorArray = widget.model.textcolor?.split(',');
+      if (colorArray != null)
+      {
+        if (colorArray.length > 0) colors[0] = ColorObservable.toColor(colorArray[0].trim());
+        if (colorArray.length > 1) colors[1] = ColorObservable.toColor(colorArray[1].trim());
+        if (colorArray.length > 2) colors[2] = ColorObservable.toColor(colorArray[2].trim());
+        if (colorArray.length > 3) colors[3] = ColorObservable.toColor(colorArray[3].trim());
+      }
+    }
+    return colors;
+  }
+
+  String? _getFormatType()
+  {
+    String? formatter;
     List? formatterTypes = [];
-    if (widget.model.format != null) {
+    if (widget.model.format != null)
+    {
       formatterTypes = widget.model.format.split(',');
       formatter = formatterTypes![0].trim();
     }
+    return formatter?.toLowerCase();
+  }
 
-    // set the text color arrays
-    Color? enabledTextColor;
-    Color? disabledTextColor;
-    Color? hintTextColor;
-    Color? errorTextColor;
-    List? textColors = [];
-    if (widget.model.textcolor != null) {
-      textColors = widget.model.textcolor?.split(',');
-      enabledTextColor = ColorObservable.toColor(textColors![0]?.trim());
-      if (textColors.length > 1)
-        disabledTextColor = ColorObservable.toColor(textColors[1]?.trim());
-      if (textColors.length > 2)
-        hintTextColor = ColorObservable.toColor(textColors[2]?.trim());
-      if (textColors.length > 3)
-        errorTextColor = ColorObservable.toColor(textColors[3]?.trim());
-    }
+  void _setFormatting()
+  {
+    formatters.clear();
+    overrideErrorText = null;
+    keyboardtype = widget.model.keyboardtype;
 
-    // get colors
-    Color? enabledColor  = widget.model.color;
-    Color? disabledColor = widget.model.color2;
-    Color? errorColor    = widget.model.color3;
+    /* Custom Formatters */
+    //if (!S.isNullOrEmpty(model.formatter)) formatters.add(CustomFormatter(model.formatter));
 
-    double? fontsize = widget.model.size;
-    String? hint = widget.model.hint;
     int? length = widget.model.length;
-    int? lines = widget.model.lines;
 
-
-    if(!S.isNullOrEmpty(widget.model.obscure)) obscure = widget.model.obscure;
-    if (obscure == true) lines = 1;
-
-    ////////////////
-    /* Formatters */
-    ////////////////
-    List<TextInputFormatter> formatters = [];
-
-    ////////////////////
-    /* Capitalization */
-    ////////////////////
+    // capitalization
     if (widget.model.capitalization == CapitalizationTypes.upper)
       formatters.add(UpperCaseTextFormatter());
     if (widget.model.capitalization == CapitalizationTypes.lower)
@@ -489,13 +477,10 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     if (length != null)
       formatters.add(LengthLimitingTextInputFormatter(length));
 
-    /////////////////
-    /* Format type */
-    /////////////////
-    String? keyboardtype = widget.model.keyboardtype;
-
-    switch (formatter?.toLowerCase()) {
-    // not 100% sure what the purpose of the first 3 formatters are.
+    // format type
+    switch (_getFormatType())
+    {
+      // not 100% sure what the purpose of the first 3 formatters are.
       case 'numeric':
         formatters.add(TextToNumericFormatter());
         keyboardtype = "numeric";
@@ -563,41 +548,71 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
         validator = TextInputValidators().isEmailValid;
         break;
 
-
       default:
         break;
-
     }
-    if(userSetErrorText) errorText = widget.model.errortext;
 
+    if(userSetErrorText) errorText = widget.model.errortext;
 
     //using allow must not use a mask for filteringtextformatter, causes issues.
     if (widget.model.allow != null && widget.model.mask == null)
-      formatters.add(
-          FilteringTextInputFormatter.allow(RegExp(r'[' + widget.model.allow! + ']')));
+      formatters.add(FilteringTextInputFormatter.allow(RegExp(r'[' + widget.model.allow! + ']')));
     if (widget.model.deny != null)
-      formatters.add(
-          FilteringTextInputFormatter.deny(RegExp(r'[' + widget.model.deny! + ']')));
-
+      formatters.add(FilteringTextInputFormatter.deny(RegExp(r'[' + widget.model.deny! + ']')));
 
     // The mask formatter with allow
-    if (widget.model.mask != null){
+    if (widget.model.mask != null)
+    {
       if(widget.model.allow != null) formatters.add( MaskedInputFormatter(
         widget.model.mask,
         allowedCharMatcher: RegExp(r'[' + widget.model.allow! + ']+'),
       ));
-      else formatters.add( MaskedInputFormatter(
-        widget.model.mask,
-      ));
+      else formatters.add( MaskedInputFormatter(widget.model.mask));
     }
+  }
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
+    // Check if widget is visible before wasting resources on building it
+    if (!widget.model.visible) return Offstage();
+
+    // save system constraints
+    onLayout(constraints);
+
+    // set the border colors
+    var borderColors = _getBorderColors();
+    Color? enabledBorderColor  = borderColors[0];
+    Color? disabledBorderColor = borderColors[1];
+    Color? focusBorderColor    = borderColors[2];
+    Color? errorBorderColor    = borderColors[3];
+
+    // set the text color arrays
+    var textColors = _getTextColors();
+    Color? enabledTextColor    = textColors[0];
+    Color? disabledTextColor   = textColors[1];
+    Color? hintTextColor       = textColors[2];
+    Color? errorTextColor      = textColors[3];
+
+    // get colors
+    Color? enabledColor  = widget.model.color;
+    Color? disabledColor = widget.model.color2;
+    Color? errorColor    = widget.model.color3;
+
+    double? fontsize = widget.model.size;
+    String? hint = widget.model.hint;
+    int? length = widget.model.length;
+    int? lines = widget.model.lines;
+
+    if(!S.isNullOrEmpty(widget.model.obscure)) obscure = widget.model.obscure;
+    if (obscure == true) lines = 1;
+
+    // set formatting
+    _setFormatting();
 
     double pad = (widget.model.dense ? 0 : 4);
-
-    ///////////////////////
-    /* Custom Formatters */
-    ///////////////////////
-    //if (!S.isNullOrEmpty(model.formatter)) formatters.add(CustomFormatter(model.formatter));
-
     Widget view = TextField(
         controller: widget.model.controller,
         focusNode: focus,
@@ -606,7 +621,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
         expands: widget.model.expand == true,
         obscureText: obscure!,
         keyboardType: (keyboardtype != null)
-            ? (keyboardTypes[keyboardtype.toLowerCase()] ??
+            ? (keyboardTypes[keyboardtype!.toLowerCase()] ??
             TextInputType.text)
             : TextInputType.text,
         textInputAction: (widget.model.keyboardinput != null)
@@ -627,7 +642,6 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
           if (widget.onSubmitted != null) widget.onSubmitted();
           _handleSubmit(s);
         }
-
         ,
         textAlignVertical: widget.model.expand == true ? TextAlignVertical.top : TextAlignVertical.center,
         maxLength: length,
@@ -723,7 +737,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
           prefixIconConstraints: (widget.model.icon != null)
               ? BoxConstraints(maxHeight: 14, minWidth: 30)
               : null,
-          suffixIcon: (formatter?.toLowerCase() == "password" && widget.model.clear == false) ?
+          suffixIcon: (_getFormatType() == "password" && widget.model.clear == false) ?
           IconButton(
 
             icon: Icon(

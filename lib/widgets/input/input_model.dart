@@ -18,9 +18,16 @@ class InputModel extends FormFieldModel implements IFormField
   List<Suggestion> suggestions = [];
 
   // override padding
+  @override
   double? get marginTop    => super.marginTop    ?? (dense ? 0 : 4);
+
+  @override
   double? get marginBottom => super.marginBottom ?? (dense ? 0 : 4);
+
+  @override
   double? get marginLeft   => super.marginLeft   ?? (dense ? 0 : 4);
+
+  @override
   double? get marginRight  => super.marginRight  ?? (dense ? 0 : 4);
 
   /// Capitilization sets the input to uppercase or lowercase with `upper` and `lower`

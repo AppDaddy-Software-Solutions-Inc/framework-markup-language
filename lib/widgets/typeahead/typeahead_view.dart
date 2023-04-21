@@ -106,146 +106,6 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
     }
   }
 
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints)
-  {
-    ///////////////////
-    /* Build Options */
-    ///////////////////
-    _buildOptions();
-
-    // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
-
-    // save system constraints
-    onLayout(constraints);
-
-    ///////////
-    /* Busy? */
-    ///////////
-    var busy;
-
-
-    bool enabled = (widget.model.enabled != false) && (widget.model.busy != true);
-
-    TextStyle ts = TextStyle(fontSize: 14,
-        color: widget.model.color != null
-            ? (widget.model.color?.computeLuminance() ?? 1) < 0.4
-            ? Colors.white.withOpacity(0.5)
-            : Colors.black.withOpacity(0.5)
-            : Theme.of(context).colorScheme.onSurfaceVariant
-    );
-
-    Color selcol = enabled
-        ? (widget.model.color ?? Colors.transparent)
-        : ((widget.model.color)
-        ?.withOpacity(0.95)
-        .withRed((widget.model.color!.red*0.95).toInt())
-        .withGreen((widget.model.color!.green*0.95).toInt())
-        .withBlue((widget.model.color!.blue*0.95).toInt())
-        ?? Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.2));
-
-    //////////
-    /* View */
-    //////////
-    Widget view;
-
-
-      controller.text = _extractText(_selected)!;
-      //Set the selection to the front of the text when entering for typeahead.
-      controller.selection = TextSelection.fromPosition(TextPosition(offset: controller.text.length));
-
-      List<OptionModel>? suggestions;
-      view = SizedBox(
-          width: widget.model.calculatedMaxWidthOrDefault,
-          child: TypeAheadField(
-            textFieldConfiguration: TextFieldConfiguration(
-                enabled: widget.model.enabled != false,
-                focusNode: focus,
-                controller: controller,
-                textAlignVertical: TextAlignVertical.center,
-                onSubmitted: _inputSelection,
-                onChanged: widget.model.inputenabled ? _inputSelection : null,
-                style: TextStyle(
-                    color: widget.model.enabled != false ? widget.model.textcolor ?? Theme
-                        .of(context)
-                        .colorScheme
-                        .onBackground : Theme.of(context).colorScheme.surfaceVariant,
-                    fontSize: widget.model.size ?? 14),
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.only(bottom:2),
-                  isDense: true,
-
-                    hintText: widget.model.hint ?? '',
-                    hintStyle: ts,
-                    border: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    suffixIcon: Icon(Icons.arrow_drop_down, size: 25,))),
-            suggestionsCallback: (pattern) async {
-              suggestions = await getSuggestions(pattern);
-              return suggestions!;
-            },
-            itemBuilder: (context, dynamic suggestion) {
-              Widget? item;
-              if (suggestion is OptionModel) {
-                var option = _list.firstWhereOrNull(
-                        (option) => (option.value == suggestion));
-                item = option?.child;
-              }
-              if (item == null) item = Container(height: 12);
-              return Padding(
-                  padding: EdgeInsets.only(
-                      left: 12, right: 1, top: 12, bottom: 12),
-                  child: item);
-            },
-            autoFlipDirection: true,
-            suggestionsBoxDecoration:
-            SuggestionsBoxDecoration(
-                elevation: 20,
-            ),
-            suggestionsBoxVerticalOffset: 0,
-            onSuggestionSelected: (dynamic suggestion) {
-              if (suggestion is OptionModel)
-                changedDropDownItem(suggestion);
-            },
-            transitionBuilder: (context, suggestionsBox, animationController) =>
-                FadeTransition(
-                  child: suggestionsBox,
-                  opacity: CurvedAnimation(
-                      parent: animationController!, curve: Curves.fastOutSlowIn),
-                ),
-          )
-      );
-      focus.addListener(onFocusChange);
-    if (widget.model.border == 'all') {
-      view = Container(
-        padding: const EdgeInsets.fromLTRB(15, 0, 5, 0),
-        decoration: BoxDecoration(
-          color: selcol,
-          border: Border.all(
-              width: widget.model.borderwidth?.toDouble() ?? 1,
-              color: widget.model.enabled
-                  ? (widget.model.bordercolor ?? Theme.of(context).colorScheme.outline)
-                  : Theme.of(context).colorScheme.surfaceVariant),
-          borderRadius: BorderRadius.circular(widget.model.radius?.toDouble() ?? 4),
-        ),
-        child: view,
-      );
-    }
-
-    // display busy
-    if (busy != null) view = Stack(children: [view, Positioned(top: 0, bottom: 0, left: 0, right: 0, child: busy)]);
-
-    ////////////
-    /* Sized? */
-    ////////////
-    view = SizedBox(width: widget.model.width ?? 200, height: widget.model.height ?? 48, child: view);
-
-    return Padding(padding: EdgeInsets.symmetric(vertical: /*widget.model.dense ? 0 : */4), child: view);
-  }
-
   Future<List<OptionModel>> getSuggestions(String pattern) async
   {
 
@@ -348,5 +208,145 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
     if (!widget.model.inputenabled) controller.text = _extractText(_selected)!;
 
     return true;
+  }
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
+    // build options
+    _buildOptions();
+
+    // Check if widget is visible before wasting resources on building it
+    if (!widget.model.visible) return Offstage();
+
+    // save system constraints
+    onLayout(constraints);
+
+    // set text style
+    TextStyle ts = TextStyle(fontSize: 14,
+        color: widget.model.color != null
+            ? (widget.model.color?.computeLuminance() ?? 1) < 0.4
+            ? Colors.white.withOpacity(0.5)
+            : Colors.black.withOpacity(0.5)
+            : Theme.of(context).colorScheme.onSurfaceVariant
+    );
+
+    // set color
+    bool enabled = (widget.model.enabled != false) && (widget.model.busy != true);
+    Color selcol = enabled
+        ? (widget.model.color ?? Colors.transparent)
+        : ((widget.model.color)
+        ?.withOpacity(0.95)
+        .withRed((widget.model.color!.red*0.95).toInt())
+        .withGreen((widget.model.color!.green*0.95).toInt())
+        .withBlue((widget.model.color!.blue*0.95).toInt())
+        ?? Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.2));
+
+    // view
+    Widget view;
+
+    controller.text = _extractText(_selected)!;
+
+    //Set the selection to the front of the text when entering for typeahead.
+    controller.selection = TextSelection.fromPosition(TextPosition(offset: controller.text.length));
+
+    List<OptionModel>? suggestions;
+    view = SizedBox(
+        width: widget.model.calculatedMaxWidthOrDefault,
+        child: TypeAheadField(
+          textFieldConfiguration: TextFieldConfiguration(
+              enabled: widget.model.enabled != false,
+              focusNode: focus,
+              controller: controller,
+              textAlignVertical: TextAlignVertical.center,
+              onSubmitted: _inputSelection,
+              onChanged: widget.model.inputenabled ? _inputSelection : null,
+              style: TextStyle(
+                  color: widget.model.enabled != false ? widget.model.textcolor ?? Theme
+                      .of(context)
+                      .colorScheme
+                      .onBackground : Theme.of(context).colorScheme.surfaceVariant,
+                  fontSize: widget.model.size ?? 14),
+              decoration: InputDecoration(
+                  contentPadding: EdgeInsets.only(bottom:2),
+                  isDense: true,
+
+                  hintText: widget.model.hint ?? '',
+                  hintStyle: ts,
+                  border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  suffixIcon: Icon(Icons.arrow_drop_down, size: 25,))),
+          suggestionsCallback: (pattern) async {
+            suggestions = await getSuggestions(pattern);
+            return suggestions!;
+          },
+          itemBuilder: (context, dynamic suggestion) {
+            Widget? item;
+            if (suggestion is OptionModel) {
+              var option = _list.firstWhereOrNull(
+                      (option) => (option.value == suggestion));
+              item = option?.child;
+            }
+            if (item == null) item = Container(height: 12);
+            return Padding(
+                padding: EdgeInsets.only(
+                    left: 12, right: 1, top: 12, bottom: 12),
+                child: item);
+          },
+          autoFlipDirection: true,
+          suggestionsBoxDecoration:
+          SuggestionsBoxDecoration(
+            elevation: 20,
+          ),
+          suggestionsBoxVerticalOffset: 0,
+          onSuggestionSelected: (dynamic suggestion) {
+            if (suggestion is OptionModel)
+              changedDropDownItem(suggestion);
+          },
+          transitionBuilder: (context, suggestionsBox, animationController) =>
+              FadeTransition(
+                child: suggestionsBox,
+                opacity: CurvedAnimation(
+                    parent: animationController!, curve: Curves.fastOutSlowIn),
+              ),
+        )
+    );
+    focus.addListener(onFocusChange);
+    if (widget.model.border == 'all') {
+      view = Container(
+        padding: const EdgeInsets.fromLTRB(15, 0, 5, 0),
+        decoration: BoxDecoration(
+          color: selcol,
+          border: Border.all(
+              width: widget.model.borderwidth?.toDouble() ?? 1,
+              color: widget.model.enabled
+                  ? (widget.model.bordercolor ?? Theme.of(context).colorScheme.outline)
+                  : Theme.of(context).colorScheme.surfaceVariant),
+          borderRadius: BorderRadius.circular(widget.model.radius?.toDouble() ?? 4),
+        ),
+        child: view,
+      );
+    }
+
+    // display busy
+    //var busy;
+    //if (busy != null) view = Stack(children: [view, Positioned(top: 0, bottom: 0, left: 0, right: 0, child: busy)]);
+
+    // get the model constraints
+    var modelConstraints = widget.model.constraints.model;
+
+    // constrain the input to 200 pixels if not constrained by the model
+    if (!modelConstraints.hasHorizontalExpansionConstraints) modelConstraints.width  = 200;
+    if (!modelConstraints.hasVerticalExpansionConstraints)   modelConstraints.height = 48;
+
+    // add margins
+    view = addMargins(view);
+
+    // apply constraints
+    view = applyConstraints(view, modelConstraints);
+
+    return view;
   }
 }

@@ -736,18 +736,18 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
     // save system constraints
     onLayout(constraints);
 
-    var con = widget.model.constraints.calculated;
-    double h = con.maxHeight ?? MediaQuery.of(context).size.height;
-    double w = con.maxWidth  ?? MediaQuery.of(context).size.width;
+    double height = widget.model.calculatedMaxHeightOrDefault;
+    double width  = widget.model.calculatedMaxWidthOrDefault;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    if (openSheet == null) {
-      fromTop = h;
-      fromBottom = h;
-      fromLeft = w;
-      fromRight = w;
+    if (openSheet == null)
+    {
+      fromTop = height;
+      fromBottom = height;
+      fromLeft = width;
+      fromRight = width;
     }
 
     top     = widget.model.top    != null ? BoxView(widget.model.top!)    : null;
@@ -755,25 +755,29 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
     left    = widget.model.left   != null ? BoxView(widget.model.left!)   : null;
     right   = widget.model.right  != null ? BoxView(widget.model.right!)  : null;
 
-    double screenHeight = h;
-    double screenWidth = w;
+    double screenHeight = height;
+    double screenWidth  = width;
+
     // preset the original dimensions
-    if (oldHeight == null)
-      oldHeight = screenHeight;
-    if (oldWidth == null)
-      oldWidth = screenWidth;
+    if (oldHeight == null) oldHeight = screenHeight;
+    if (oldWidth == null)  oldWidth = screenWidth;
+
     // check the dimensions for changes, if it has changed, close the any open drawer
-    if (screenHeight != oldHeight) {
+    if (screenHeight != oldHeight)
+    {
       oldHeight = screenHeight;
       if (openSheet != null)
-        WidgetsBinding.instance.addPostFrameCallback((_) {
+        WidgetsBinding.instance.addPostFrameCallback((_)
+        {
           closeDrawer(openSheet);
         });
     }
-    else if (screenWidth != oldWidth) {
+    else if (screenWidth != oldWidth)
+    {
       oldWidth = screenWidth;
       if (openSheet != null)
-        WidgetsBinding.instance.addPostFrameCallback((_) {
+        WidgetsBinding.instance.addPostFrameCallback((_)
+        {
           closeDrawer(openSheet);
         });
     }
@@ -783,7 +787,8 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
     if (children.isEmpty) children.add(Container());
 
     BorderRadius drawerHandle = BorderRadius.zero;
-    if (openSheet == 'top') {
+    if (openSheet == 'top')
+    {
       visibleDrawer = top;
       drawerHandle = widget.model.rounded == false
           ? BorderRadius.zero
@@ -793,7 +798,9 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
           bottomLeft: Radius.elliptical(screenWidth*.5, (screenHeight*((widget.model.sizeTop != null) ? widget.model.sizeBottom! / screenHeight : 1))*0.05),
           bottomRight: Radius.elliptical(screenWidth*.5, (screenHeight*((widget.model.sizeBottom != null) ? widget.model.sizeTop! / screenHeight : 1))*0.05));
     }
-    else if (openSheet == 'bottom') {
+
+    else if (openSheet == 'bottom')
+    {
       visibleDrawer = bottom;
       drawerHandle = widget.model.rounded == false
           ? BorderRadius.zero
@@ -803,7 +810,9 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
           bottomLeft: Radius.elliptical(0, 0),
           bottomRight: Radius.elliptical(0, 0));
     }
-    else if (openSheet == 'left') {
+
+    else if (openSheet == 'left')
+    {
       visibleDrawer = left;
       drawerHandle = widget.model.rounded == false
           ? BorderRadius.zero
@@ -813,7 +822,9 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
           bottomLeft: Radius.elliptical(0, 0),
           bottomRight: Radius.elliptical(screenHeight*0.05, (screenWidth*((widget.model.sizeLeft != null) ? widget.model.sizeLeft! / screenHeight : 1))*.5));
     }
-    else if (openSheet == 'right') {
+
+    else if (openSheet == 'right')
+    {
       visibleDrawer = right;
       drawerHandle = widget.model.rounded == false
           ? BorderRadius.zero

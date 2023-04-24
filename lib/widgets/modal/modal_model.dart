@@ -147,7 +147,7 @@ class ModalModel extends BoxModel
 
         // modal height
         String? height = arguments.length > 1 ? S.toStr(arguments[1]) : null;
-        if (height == null) height = (pctHeight != null) ? "$pctHeight%" : "${this.height}";
+        if (height == null) height = (heightPercentage != null) ? "$heightPercentage%" : "${this.height}";
 
         // resizeable
         bool resizeable = this.resizeable;

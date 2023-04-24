@@ -104,12 +104,13 @@ class LayoutModel extends DecoratedWidgetModel
     return null;
   }
 
-  double? get pctHeight
+  @override
+  double? get heightPercentage
   {
     // fixed height?
     if (fixedHeight) return null;
 
-    var pct = super.pctHeight;
+    var pct = super.heightPercentage;
     if (pct != null) return pct;
 
     // parent is a layout model?
@@ -119,7 +120,7 @@ class LayoutModel extends DecoratedWidgetModel
       var parent = (this.parent as LayoutModel);
       switch (parent.layoutType)
       {
-        // we want to expand 100% in the cross axis
+      // we want to expand 100% in the cross axis
         case LayoutType.stack:
         case LayoutType.row:
           if (parent.expand && expandsVertically) return 100;
@@ -128,12 +129,11 @@ class LayoutModel extends DecoratedWidgetModel
           break;
       }
     }
-    else if (expand && expandsVertically)
-    {
-        return 100;
-    }
+    else if (expand && expandsVertically) return 100;
+
     return null;
   }
+
 
   /// Center attribute allows a simple boolean override for halign and valign both being center. halign and valign will override center if given.
   BooleanObservable? _center;
@@ -347,7 +347,7 @@ class LayoutModel extends DecoratedWidgetModel
     var free = usable;
     for (var child in variable)
     {
-      var pct = child.pctHeight ?? 0;
+      var pct = child.heightPercentage ?? 0;
       if (child.visible && pct > 0)
       {
         // calculate size from %
@@ -371,17 +371,14 @@ class LayoutModel extends DecoratedWidgetModel
         print("HEIGHT-> id=$id child=${child.id} %=$pct size=$size free=$free");
 
         // set the size
-        if (child.height != size)
-        {
-          child.setHeight(size.toDouble(), notify: true);
-        }
+        if (child.height != size) child.setHeight(size.toDouble(), notify: true);
       }
     }
 
     // calculate sum of all flex values
     double flexsum = 0;
     for (var child in variable)
-    if (child.visible && child.pctHeight == null)
+    if (child.visible && child.heightPercentage == null)
     {
       var flex = child.flexHeight ?? 0;
       if (flex > 0) flexsum += flex;
@@ -393,7 +390,7 @@ class LayoutModel extends DecoratedWidgetModel
       // % takes priority over flexibility
       // and would have been laid out above
       var flex = 0;
-      if (child.visible && child.pctHeight == null) flex = child.flexHeight ?? 0;
+      if (child.visible && child.heightPercentage == null) flex = child.flexHeight ?? 0;
       if (flex > 0)
       {
         // calculate size from flex

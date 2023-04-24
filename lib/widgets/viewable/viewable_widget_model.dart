@@ -15,7 +15,7 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 
-class ViewableWidgetModel extends WidgetModel
+class ViewableWidgetModel extends ConstraintModel
 {
   // this is used like the old IViewableWidget interface
   // it is used during the inflate process to determine if a widget
@@ -38,27 +38,13 @@ class ViewableWidgetModel extends WidgetModel
   bool get expandsHorizontally => false;
 
   // constraints
-  late final ConstraintModel _constraints;
   late final ConstraintSet constraints;
 
-  double get calculatedMinHeight => _constraints.calculatedMinHeight;
-  double get calculatedMaxHeight => _constraints.calculatedMaxHeight;
-  double get calculatedMaxHeightOrDefault => _constraints.calculatedMaxHeightOrDefault;
-  double get calculatedMaxHeightForPercentage => _constraints.calculatedMaxHeightForPercentage;
-
-  double get calculatedMinWidth => _constraints.calculatedMinWidth;
-  double get calculatedMaxWidth => _constraints.calculatedMaxWidth;
-  double get calculatedMaxWidthOrDefault => _constraints.calculatedMaxWidthOrDefault;
-  double get calculatedMaxWidthForPercentage => _constraints.calculatedMaxWidthForPercentage;
-
-  setWidth(double? v, {bool notify = false}) => _constraints.setWidth(v, notify: notify);
-  setHeight(double? v, {bool notify = false}) => _constraints.setHeight(v, notify: notify);
+  @override
+  double get verticalPadding  => (marginTop ?? 0)  + (marginBottom ?? 0)  + (paddingTop ?? 0) + (paddingBottom  ?? 0);
 
   @override
-  double get verticalPadding  => (marginTop ?? 0)  + (marginBottom ?? 0);
-
-  @override
-  double get horizontalPadding => (marginLeft ?? 0) + (marginRight  ?? 0);
+  double get horizontalPadding => (marginLeft ?? 0) + (marginRight  ?? 0) + (paddingLeft ?? 0) + (paddingRight  ?? 0);
 
   bool get verticallyConstrained
   {
@@ -85,40 +71,7 @@ class ViewableWidgetModel extends WidgetModel
     return list;
   }
 
-  // width
-  bool fixedWidth = false;
-  double? get widthPercentage => _constraints.widthPercentage;
-  double? get width  => _constraints.width;
-  set width(dynamic v) => _constraints.width = v;
-
-  // height
-  bool fixedHeight = false;
-  double? get height => _constraints.height;
-  set height(dynamic v) => _constraints.height = v;
-
-  // min width
-  @protected
-  set minWidth(dynamic v) => _constraints.minWidth = v;
-
-  // max width
-  @protected
-  set maxWidth(dynamic v) => _constraints.maxWidth = v;
-  double? get maxWidth => _constraints.maxWidth;
-
-  // min height
-  @protected
-  set minHeight(dynamic v) => _constraints.minHeight = v;
-  double? get minHeight => _constraints.minHeight;
-
-  // max height
-  @protected
-  set maxHeight(dynamic v) => _constraints.maxHeight = v;
-  double? get maxHeight => _constraints.maxHeight;
-
   /// VIEW LAYOUT
-  ///
-  // %height
-  double? get pctHeight => _constraints.heightPercentage;
 
   // view width
   double? _viewWidth;
@@ -278,7 +231,7 @@ class ViewableWidgetModel extends WidgetModel
     if (fixedHeight) return false;
 
     // if im % then I am variable
-    if (pctHeight != null) return true;
+    if (heightPercentage != null) return true;
 
     // if my parent is a layout widget and expands vertically, examine flex values
     if (parent is LayoutModel && (parent as LayoutModel).expandsVertically)
@@ -586,8 +539,7 @@ class ViewableWidgetModel extends WidgetModel
   ViewableWidgetModel(WidgetModel? parent, String? id, {Scope? scope}) : super(parent, id, scope: scope)
   {
     // create model constraints
-    _constraints = ConstraintModel(this.id, this.scope, parent, onPropertyChange);
-    constraints  = ConstraintSet(_constraints);
+    constraints = ConstraintSet(this);
   }
 
   /// Deserializes the FML template elements, attributes and children
@@ -598,16 +550,16 @@ class ViewableWidgetModel extends WidgetModel
     super.deserialize(xml);
 
     // set constraints
-    _constraints.width     = Xml.get(node: xml, tag: 'width');
-    fixedWidth = _constraints.width != null;
+    width = Xml.get(node: xml, tag: 'width');
+    fixedWidth = width != null;
 
-    _constraints.height    = Xml.get(node: xml, tag: 'height');
-    fixedHeight = _constraints.height != null;
+    height = Xml.get(node: xml, tag: 'height');
+    fixedHeight = height != null;
 
-    _constraints.minWidth  = Xml.get(node: xml, tag: 'minwidth');
-    _constraints.maxWidth  = Xml.get(node: xml, tag: 'maxwidth');
-    _constraints.minHeight = Xml.get(node: xml, tag: 'minheight');
-    _constraints.maxHeight = Xml.get(node: xml, tag: 'maxheight');
+    minWidth  = Xml.get(node: xml, tag: 'minwidth');
+    maxWidth  = Xml.get(node: xml, tag: 'maxwidth');
+    minHeight = Xml.get(node: xml, tag: 'minheight');
+    maxHeight = Xml.get(node: xml, tag: 'maxheight');
 
     // properties
     visible   = Xml.get(node: xml, tag: 'visible');
@@ -778,8 +730,6 @@ class ViewableWidgetModel extends WidgetModel
     viewableChildren.forEach((model) => views.add(model.getView()));
     return views;
   }
-
-  void setLayoutConstraints(BoxConstraints constraints) => _constraints.setLayoutConstraints(constraints);
 
   void onLayoutComplete() async
   {

@@ -72,7 +72,6 @@ class _ColumnViewState extends WidgetState<ColumnView>
     // apply user defined constraints
     if (model is ColumnModel) view = applyConstraints(view, widget.model.constraints.model);
 
-
     return view;
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:fml/helper/string.dart';
+import 'package:fml/helper/xml.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observable.dart';
 import 'package:fml/observable/observables/double.dart';
@@ -9,14 +10,38 @@ import 'package:fml/system.dart';
 import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:xml/xml.dart';
 import 'constraint.dart';
 
-class ConstraintModel
+class ConstraintModel extends WidgetModel
 {
-  String? id;
   Scope? scope;
   OnChangeCallback? listener;
+
   WidgetModel? parent;
+
+  ConstraintModel(WidgetModel? parent, String? id, {Scope? scope}) : super(parent, id, scope: scope);
+
+  /// Deserializes the FML template elements, attributes and children
+  @override
+  void deserialize(XmlElement xml)
+  {
+    // deserialize
+    super.deserialize(xml);
+
+    // set constraints
+    width = Xml.get(node: xml, tag: 'width');
+    fixedWidth = width != null;
+
+    height = Xml.get(node: xml, tag: 'height');
+    fixedHeight = height != null;
+
+    minWidth  = Xml.get(node: xml, tag: 'minwidth');
+    maxWidth  = Xml.get(node: xml, tag: 'maxwidth');
+    minHeight = Xml.get(node: xml, tag: 'minheight');
+    maxHeight = Xml.get(node: xml, tag: 'maxheight');
+  }
+
 
   // returns the constraints as specified
   // in the model template
@@ -90,9 +115,10 @@ class ConstraintModel
     return constraints;
   }
 
-  /// Local Constraints 
-  /// 
+  /// Local Constraints
+  ///
   // width
+  bool fixedWidth = false;
   double? widthPercentage;
   DoubleObservable? _width;
   set width(dynamic v)
@@ -138,6 +164,7 @@ class ConstraintModel
   }
 
   // height
+  bool fixedHeight = false;
   double? _heightPercentage;
   double? get heightPercentage => _heightPercentage;
   DoubleObservable? _height;
@@ -260,8 +287,6 @@ class ConstraintModel
   }
   double? get maxHeight => _maxHeight?.get();
 
-  ConstraintModel(this.id, this.scope, this.parent, this.listener);
-
   /// walks up the model tree looking for
   /// the first system non-null minWidth value
   double get calculatedMinWidth
@@ -321,7 +346,10 @@ class ConstraintModel
   double get calculatedMaxHeight
   {
     if (system.maxHeight != null) return system.maxHeight!;
-    if (this.height      != null) return this.height!;
+    if (this.height != null)
+    {
+      return max(height! - (this as ViewableWidgetModel).verticalPadding,0);
+    }
     if (this.maxHeight   != null) return this.maxHeight!;
     if (this.parent is ViewableWidgetModel)
     {

@@ -216,88 +216,6 @@ class BoxModel extends LayoutModel
   }
   double get shadowy => _shadowy?.get() ?? 4;
 
-  set padding(dynamic v)
-  {
-    // build PADDINGS array
-    if (v is String)
-    {
-      var s = v.split(',');
-
-      // all
-      if (s.length == 1)
-      {
-        paddingTop=s[0];
-        paddingRight=s[0];
-        paddingBottom=s[0];
-        paddingLeft=s[0];
-      }
-
-      // top/bottom
-      else if (s.length == 2)
-      {
-        paddingTop=s[0];
-        paddingRight=s[1];
-        paddingBottom=s[0];
-        paddingLeft=s[1];
-      }
-
-      // top/bottom
-      else if (s.length == 3)
-      {
-        paddingTop=s[0];
-        paddingRight=s[1];
-        paddingBottom=s[2];
-        paddingLeft=null;
-      }
-
-      // top/bottom
-      else if (s.length > 3)
-      {
-        paddingTop=s[0];
-        paddingRight=s[1];
-        paddingBottom=s[2];
-        paddingLeft=s[4];
-      }
-    }
-  }
-
-  // paddings top
-  DoubleObservable? _paddingTop;
-  set paddingTop(dynamic v)
-  {
-    if (_paddingTop != null) _paddingTop!.set(v);
-    else if (v != null) _paddingTop = DoubleObservable(Binding.toKey(id, 'paddingtop'), v, scope: scope, listener: onPropertyChange);
-  }
-  double? get paddingTop => _paddingTop?.get();
-
-  // paddings right
-  DoubleObservable? _paddingRight;
-  set paddingRight(dynamic v)
-  {
-    if (_paddingRight != null) _paddingRight!.set(v);
-    else if (v != null) _paddingRight = DoubleObservable(Binding.toKey(id, 'paddingright'), v, scope: scope, listener: onPropertyChange);
-  }
-  double? get paddingRight => _paddingRight?.get();
-
-  // paddings bottom
-  DoubleObservable? _paddingBottom;
-  set paddingBottom(dynamic v)
-  {
-    if (_paddingBottom != null) _paddingBottom!.set(v);
-    else if (v != null)
-      _paddingBottom = DoubleObservable(Binding.toKey(id, 'paddingbottom'), v, scope: scope, listener: onPropertyChange);
-  }
-  double? get paddingBottom => _paddingBottom?.get();
-
-  // paddings left
-  DoubleObservable? _paddingLeft;
-  set paddingLeft(dynamic v)
-  {
-    if (_paddingLeft != null) _paddingLeft!.set(v);
-    else if (v != null) _paddingLeft = DoubleObservable(Binding.toKey(id, 'paddingleft'), v, scope: scope, listener: onPropertyChange);
-  }
-  double? get paddingLeft => _paddingLeft?.get();
-
   BoxModel(WidgetModel? parent, String? id, {Scope?  scope}) : super(parent, id, scope: scope);
 
   static BoxModel? fromXml(WidgetModel parent, XmlElement xml, {String? type}) {
@@ -319,7 +237,7 @@ class BoxModel extends LayoutModel
   void deserialize(XmlElement? xml)
   {
     if (xml == null) return;
-    
+
     // deserialize 
     super.deserialize(xml);
 
@@ -340,7 +258,6 @@ class BoxModel extends LayoutModel
 
     /// Build the layout
     layout  = Xml.get(node: xml, tag: 'layout');
-    padding = Xml.get(node: xml, tag: 'padding');
   }
 
   Widget getView({Key? key}) => getReactiveView(BoxView(this));

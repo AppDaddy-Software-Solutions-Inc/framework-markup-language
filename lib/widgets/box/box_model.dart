@@ -319,16 +319,7 @@ class BoxModel extends LayoutModel
   void deserialize(XmlElement? xml)
   {
     if (xml == null) return;
-
-    // legacy support for padding vs margin
-    if ((Xml.get(node: xml, tag: 'margin') ?? Xml.get(node: xml, tag: 'margins')) == null)
-    {
-      var attribute = xml.getAttributeNode("pad");
-      if (attribute == null) attribute = xml.getAttributeNode("padding");
-      if (attribute == null) attribute = xml.getAttributeNode("padd");
-      if (attribute != null) Xml.changeAttributeName(xml, attribute.localName, "margin");
-    }
-
+    
     // deserialize 
     super.deserialize(xml);
 

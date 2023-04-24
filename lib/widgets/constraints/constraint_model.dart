@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:fml/helper/string.dart';
 import 'package:fml/helper/xml.dart';
 import 'package:fml/observable/binding.dart';
-import 'package:fml/observable/observable.dart';
 import 'package:fml/observable/observables/double.dart';
 import 'package:fml/observable/scope.dart';
 import 'package:fml/system.dart';
@@ -15,11 +14,6 @@ import 'constraint.dart';
 
 class ConstraintModel extends WidgetModel
 {
-  Scope? scope;
-  OnChangeCallback? listener;
-
-  WidgetModel? parent;
-
   ConstraintModel(WidgetModel? parent, String? id, {Scope? scope}) : super(parent, id, scope: scope);
 
   /// Deserializes the FML template elements, attributes and children
@@ -137,14 +131,14 @@ class ConstraintModel extends WidgetModel
         v = s.replaceAll('%', '000000');
       }
 
-      if (_width == null) _width = DoubleObservable(Binding.toKey(id, 'width'), v, scope: scope, listener: listener, setter: _widthSetter);
+      if (_width == null) _width = DoubleObservable(Binding.toKey(id, 'width'), v, scope: scope, listener: onPropertyChange, setter: _widthSetter);
       else if (v != null) _width!.set(v);
     }
   }
   double? get width => _width?.get();
   setWidth(double? v, {bool notify = false})
   {
-    if (_width == null) _width = DoubleObservable(Binding.toKey(id, 'width'), null, scope: scope, listener: listener, setter: _widthSetter);
+    if (_width == null) _width = DoubleObservable(Binding.toKey(id, 'width'), null, scope: scope, listener: onPropertyChange, setter: _widthSetter);
     _width?.set(v, notify: notify);
   }
 
@@ -185,14 +179,14 @@ class ConstraintModel extends WidgetModel
         v = s.replaceAll('%', '000000');
       }
 
-      if (_height == null) _height = DoubleObservable(Binding.toKey(id, 'height'), v, scope: scope, listener: listener, setter: _heightSetter);
+      if (_height == null) _height = DoubleObservable(Binding.toKey(id, 'height'), v, scope: scope, listener: onPropertyChange, setter: _heightSetter);
       else if (v != null) _height!.set(v);
     }
   }
   double? get height => _height?.get();
   setHeight(double? v, {bool notify = false})
   {
-    if (_height == null) _height = DoubleObservable(Binding.toKey(id, 'height'), null, scope: scope, listener: listener, setter: _heightSetter);
+    if (_height == null) _height = DoubleObservable(Binding.toKey(id, 'height'), null, scope: scope, listener: onPropertyChange, setter: _heightSetter);
     _height?.set(v, notify:notify);
   }
 
@@ -224,7 +218,7 @@ class ConstraintModel extends WidgetModel
         v = null;
       }
       else _minWidthPercentage = null;
-      if (_minWidth == null) _minWidth = DoubleObservable(Binding.toKey(id, 'minWidth'), v, scope: scope, listener: listener);
+      if (_minWidth == null) _minWidth = DoubleObservable(Binding.toKey(id, 'minWidth'), v, scope: scope, listener: onPropertyChange);
       else if (v != null) _minWidth!.set(v);
     }
   }
@@ -243,7 +237,7 @@ class ConstraintModel extends WidgetModel
         v = null;
       }
       else _maxWidthPercentage = null;
-      if (_maxWidth == null) _maxWidth = DoubleObservable(Binding.toKey(id, 'maxwidth'), v, scope: scope, listener: listener);
+      if (_maxWidth == null) _maxWidth = DoubleObservable(Binding.toKey(id, 'maxwidth'), v, scope: scope, listener: onPropertyChange);
       else if (v != null) _maxWidth!.set(v);
     }
   }
@@ -262,7 +256,7 @@ class ConstraintModel extends WidgetModel
         v = null;
       }
       else _minHeightPercentage = null;
-      if (_minHeight == null) _minHeight = DoubleObservable(Binding.toKey(id, 'minheight'), v, scope: scope, listener: listener);
+      if (_minHeight == null) _minHeight = DoubleObservable(Binding.toKey(id, 'minheight'), v, scope: scope, listener: onPropertyChange);
       else if (v != null) _minHeight!.set(v);
     }
   }
@@ -281,7 +275,7 @@ class ConstraintModel extends WidgetModel
         v = null;
       }
       else _maxHeightPercentage = null;
-      if (_maxHeight == null) _maxHeight = DoubleObservable(Binding.toKey(id, 'maxheight'), v, scope: scope, listener: listener);
+      if (_maxHeight == null) _maxHeight = DoubleObservable(Binding.toKey(id, 'maxheight'), v, scope: scope, listener: onPropertyChange);
       else if (v != null) _maxHeight!.set(v);
     }
   }

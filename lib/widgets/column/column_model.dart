@@ -22,10 +22,10 @@ class ColumnModel extends LayoutModel
   MainAxisSize get horizontalAxisSize => MainAxisSize.min;
 
   @override
-  bool get expandsVertically => true;
+  bool get isVerticallyExpanding => expand;
 
   @required
-  bool get expandsHorizontally => false;
+  bool get isHorizontallyExpanding => false;
 
   ColumnModel(WidgetModel parent, String? id) : super(parent, id);
 

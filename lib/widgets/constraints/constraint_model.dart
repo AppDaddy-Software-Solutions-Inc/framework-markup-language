@@ -7,6 +7,7 @@ import 'package:fml/observable/observables/double.dart';
 import 'package:fml/observable/scope.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/layout/layout_model.dart';
+import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
@@ -64,10 +65,10 @@ class ConstraintModel extends WidgetModel
 
     // calculated constraints
     Constraints calculated = Constraints();
-    calculated.minWidth  = calculatedMinWidth;
-    calculated.maxWidth  = calculatedMaxWidth;
-    calculated.minHeight = calculatedMinHeight;
-    calculated.maxHeight = calculatedMaxHeight;
+    calculated.minWidth  = myMinWidth;
+    calculated.maxWidth  = myMaxWidth;
+    calculated.minHeight = myMinHeight;
+    calculated.maxHeight = myMaxHeight;
 
     // constraints as specified on the model template
     Constraints model = getModelConstraints();
@@ -291,89 +292,100 @@ class ConstraintModel extends WidgetModel
 
   /// walks up the model tree looking for
   /// the first system non-null minWidth value
-  double get calculatedMinWidth
+  double get myMinWidth
   {
     double? v;
     if (system.minWidth != null) v = system.minWidth;
-    if (v == null && parent is ViewableWidgetModel) v = (parent as ViewableWidgetModel).calculatedMinWidth;
+    if (v == null && parent is ViewableWidgetModel) v = (parent as ViewableWidgetModel).myMinWidth;
     return v ?? 0;
+  }
+
+  static double ancestorMaxWidth(WidgetModel? widget)
+  {
+    if (widget is ViewableWidgetModel)
+    {
+      if (widget is ScrollerModel && widget.layoutType == LayoutType.row) return double.infinity;
+      if (widget.system.maxWidth  != null) return max(widget.system.maxWidth! - widget.horizontalPadding,0);
+      if (widget.width            != null) return max(widget.width!           - widget.horizontalPadding,0);
+      if (widget.maxWidth         != null) return max(widget.maxWidth!        - widget.horizontalPadding,0);
+      return ancestorMaxWidth(widget.parent);
+    }
+    else return double.infinity;
   }
 
   /// walks up the model tree looking for
   /// the first system non-null maxWidth value
-  double get calculatedMaxWidth
+  double get myMaxWidth
   {
-    if (system.maxWidth != null) return system.maxWidth!;
-    if (this.width      != null) return max(width!    - (this as ViewableWidgetModel).horizontalPadding,0);
-    if (this.maxWidth   != null) return max(maxWidth! - (this as ViewableWidgetModel).horizontalPadding,0);
-
-    if (this.parent is ViewableWidgetModel)
-    {
-      var parent = (this.parent as ViewableWidgetModel);
-      if (parent.width != null && parent.width! < double.infinity) return max(parent.width! - parent.horizontalPadding,0);
-      return parent.calculatedMaxWidth;
-    }
-    return double.infinity;
+    if (system.maxWidth  != null) return system.maxWidth!;
+    if (this.width       != null) return width!;
+    if (this.maxWidth    != null) return maxWidth!;
+    return ancestorMaxWidth(parent);
   }
 
   // if the widgets own constraints specify a maxWidth then that is used
   // otherwise it gets the maxWidth from its parent walking up the model tree
   double get calculatedMaxWidthForPercentage
   {
-    double? maxWidth = system.maxWidth;
-    if (maxWidth == null && this.parent is ViewableWidgetModel) maxWidth = (this.parent as ViewableWidgetModel).calculatedMaxWidth;
-    if (maxWidth == null || maxWidth == double.infinity) maxWidth = System().screenwidth.toDouble();
+    double maxWidth = system.maxWidth ?? ancestorMaxWidth(this.parent);
+    if (maxWidth == double.infinity) maxWidth = System().screenwidth.toDouble();
     return maxWidth;
   }
 
   // returns the max width or screen width if unconstrained
   double get calculatedMaxWidthOrDefault
   {
-    var v = calculatedMaxWidth;
+    var v = myMaxWidth;
     if (v == double.infinity) v = System().screenwidth.toDouble();
     return v;
   }
 
   /// walks up the model tree looking for
   /// the first system non-null minHeight value
-  double get calculatedMinHeight
+  double get myMinHeight
   {
     double? v;
     if (system.minHeight != null) v = system.minHeight;
-    if (v == null && parent is ViewableWidgetModel) v = (parent as ViewableWidgetModel).calculatedMinHeight;
+    if (v == null && parent is ViewableWidgetModel) v = (parent as ViewableWidgetModel).myMinHeight;
     return v ?? 0;
+  }
+
+  static double ancestorMaxHeight(WidgetModel? widget)
+  {
+    if (widget is ViewableWidgetModel)
+    {
+      if (widget is ScrollerModel && widget.layoutType == LayoutType.column) return double.infinity;
+      if (widget.system.maxHeight != null) return max(widget.system.maxHeight! - widget.verticalPadding,0);
+      if (widget.height           != null) return max(widget.height!           - widget.verticalPadding,0);
+      if (widget.maxHeight        != null) return max(widget.maxHeight!        - widget.verticalPadding,0);
+      return ancestorMaxHeight(widget.parent);
+    }
+    else return double.infinity;
   }
 
   /// walks up the model tree looking for
   /// the first system non-null maxHeight value
-  double get calculatedMaxHeight
+  double get myMaxHeight
   {
     if (system.maxHeight != null) return system.maxHeight!;
-    if (this.height      != null) return max(height!    - (this as ViewableWidgetModel).verticalPadding,0);
-    if (this.maxHeight   != null) return max(maxHeight! - (this as ViewableWidgetModel).verticalPadding,0);
-    if (this.parent is ViewableWidgetModel)
-    {
-      var parent = (this.parent as ViewableWidgetModel);
-      if (parent.height != null && parent.height != double.infinity) return max(parent.height! - parent.verticalPadding,0);
-      return parent.calculatedMaxHeight;
-    }
-    return double.infinity;
+    if (this.height      != null) return height!;
+    if (this.maxHeight   != null) return maxHeight!;
+    return ancestorMaxHeight(parent);
   }
 
   // if the widgets own constraints specify a maxHeight then that is used
   // otherwise it gets the maxHeight from its parent walking up the model tree
   double get calculatedMaxHeightForPercentage
   {
-    double? maxHeight = system.maxHeight;
-    if (maxHeight == null && this.parent is ViewableWidgetModel) maxHeight = (this.parent as ViewableWidgetModel).calculatedMaxHeight;
-    if (maxHeight == null || maxHeight == double.infinity) maxHeight = System().screenheight.toDouble();
+    double maxHeight = system.maxHeight ?? ancestorMaxHeight(this.parent);
+    if (maxHeight == double.infinity) maxHeight = System().screenheight.toDouble();
     return maxHeight;
   }
 
   // returns the max height or screen height if unconstrained
   double get calculatedMaxHeightOrDefault
   {
-    var v = calculatedMaxHeight;
+    var v = myMaxHeight;
     if (v == double.infinity) v = System().screenheight.toDouble();
     return v;
   }

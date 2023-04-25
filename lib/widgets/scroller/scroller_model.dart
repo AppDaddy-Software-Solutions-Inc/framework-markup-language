@@ -17,10 +17,10 @@ import 'package:fml/helper/common_helpers.dart';
 class ScrollerModel extends ViewableWidgetModel 
 {
   @override
-  bool get expandsVertically => layoutType == LayoutType.column;
+  bool get isVerticallyExpanding => layoutType == LayoutType.column;
 
   @override
-  bool get expandsHorizontally => layoutType == LayoutType.row;
+  bool get isHorizontallyExpanding => layoutType == LayoutType.row;
 
   /// The cross alignment of the widgets children. Can be `top`, `bottom`, `start`, or `end`.
   StringObservable? _align;
@@ -34,12 +34,6 @@ class ScrollerModel extends ViewableWidgetModel
     }
   }
   String? get align => _align?.get();
-
-  @override
-  double get calculatedMaxWidth => horizontallyConstrained ? super.calculatedMaxWidth  : double.infinity;
-
-  @override
-  double get calculatedMaxHeight => verticallyConstrained ? super.calculatedMaxHeight : double.infinity;
 
   @override
   bool get verticallyConstrained

@@ -29,7 +29,7 @@ class LayoutModel extends DecoratedWidgetModel
   List<ViewableWidgetModel> get variableWidthChildren
   {
     var viewable = viewableChildren;
-    var variable = viewable.where((child) => child.hasVariableWidth).toList();
+    var variable = viewable.where((child) => variableWidth(child)).toList();
     return variable;
   }
 
@@ -37,7 +37,7 @@ class LayoutModel extends DecoratedWidgetModel
   List<ViewableWidgetModel> get variableHeightChildren
   {
     var viewable = viewableChildren;
-    var variable = viewable.where((child) => child.hasVariableHeight).toList();
+    var variable = viewable.where((child) => variableHeight(child)).toList();
     return variable;
   }
 
@@ -93,13 +93,13 @@ class LayoutModel extends DecoratedWidgetModel
         // we want to expand 100% in the cross axis
         case LayoutType.stack:
         case LayoutType.column:
-          if (parent.expand && expandsHorizontally) return 100;
+          if (parent.expand && isHorizontallyExpanding) return 100;
           break;
         default:
           break;
       }
     }
-    else if (expand && expandsHorizontally) return 100;
+    else if (expand && isHorizontallyExpanding) return 100;
 
     return null;
   }
@@ -123,17 +123,80 @@ class LayoutModel extends DecoratedWidgetModel
       // we want to expand 100% in the cross axis
         case LayoutType.stack:
         case LayoutType.row:
-          if (parent.expand && expandsVertically) return 100;
+          if (parent.expand && isVerticallyExpanding) return 100;
           break;
         default:
           break;
       }
     }
-    else if (expand && expandsVertically) return 100;
+    else if (expand && isVerticallyExpanding) return 100;
 
     return null;
   }
 
+  // determines if the widget is variable height
+  bool variableHeight(ViewableWidgetModel child)
+  {
+    // if fixed height then not variable
+    if (child.fixedHeight) return false;
+
+    // if % then variable
+    if (child.heightPercentage != null) return true;
+
+    if (isVerticallyExpanding && child.isVerticallyExpanding)
+    {
+      // if flex value then variable
+      if (child.flex != null) return true;
+
+      // if I can expand vertically and my parent is expanding then I am variable
+      if (expand && child.isVerticallyExpanding) return true;
+    }
+
+    // not variable (fixed size)
+    return false;
+  }
+
+  // determines if the widget if variable width
+  bool variableWidth(ViewableWidgetModel child)
+  {
+    // if im fixed width then I'm not variable
+    if (child.fixedWidth) return false;
+
+    // if im % then I am variable
+    if (child.widthPercentage != null) return true;
+
+    // if my parent is a layout widget and expands horizontally, examine flex values
+    if (isHorizontallyExpanding)
+    {
+      // if I have a flex value defined I am variable
+      if (child.flex != null) return true;
+
+      // if I can expand horizontally and my parent is expanding then I am variable
+      if (expand && child.isHorizontallyExpanding) return true;
+    }
+
+    // not variable (fixed size)
+    return false;
+  }
+
+  int? flexWidth(ViewableWidgetModel child)
+  {
+    if (child.fixedWidth) return null;
+
+    // we can flex only if the parent expands in the horizontal axis
+    if (isHorizontallyExpanding) return child.flex ?? (expand ? 1 : null);
+
+    return null;
+  }
+
+  int? flexHeight(ViewableWidgetModel child)
+  {
+    if (child.fixedHeight) return null;
+
+    if (isVerticallyExpanding) return child.flex ?? (expand ? 1 : null);
+
+    return null;
+  }
 
   /// Center attribute allows a simple boolean override for halign and valign both being center. halign and valign will override center if given.
   BooleanObservable? _center;
@@ -231,7 +294,7 @@ class LayoutModel extends DecoratedWidgetModel
     if (unsized.isNotEmpty) return;
 
     // calculate maximum space
-    var maximum = calculatedMaxWidth;
+    var maximum = myMaxWidth;
     if (maximum == double.infinity) maximum = viewWidth ?? 0;
 
     var variable = this.variableWidthChildren;
@@ -284,7 +347,7 @@ class LayoutModel extends DecoratedWidgetModel
     for (var child in variable)
     if (child.visible && child.widthPercentage == null)
     {
-      var flex = child.flexWidth ?? 0;
+      var flex = flexWidth(child) ?? 0;
       if (flex > 0) flexsum += flex;
     }
 
@@ -294,7 +357,7 @@ class LayoutModel extends DecoratedWidgetModel
       // % takes priority over flexibility
       // and would have been laid out above
       var flex = 0;
-      if (child.visible && child.widthPercentage == null) flex = child.flexWidth ?? 0;
+      if (child.visible && child.widthPercentage == null) flex = flexWidth(child) ?? 0;
       if (flex > 0)
       {
         // calculate size from flex
@@ -327,7 +390,7 @@ class LayoutModel extends DecoratedWidgetModel
     if (unsized.isNotEmpty) return;
 
     // calculate maximum space
-    var maximum = calculatedMaxHeight;
+    var maximum = myMaxHeight;
     if (maximum == double.infinity) maximum = viewHeight ?? 0;
 
     var variable = this.variableHeightChildren;
@@ -346,6 +409,7 @@ class LayoutModel extends DecoratedWidgetModel
     // set % sizing on variable children
     var free = usable;
     for (var child in variable)
+    if (free > 0)
     {
       var pct = child.heightPercentage ?? 0;
       if (child.visible && pct > 0)
@@ -380,7 +444,7 @@ class LayoutModel extends DecoratedWidgetModel
     for (var child in variable)
     if (child.visible && child.heightPercentage == null)
     {
-      var flex = child.flexHeight ?? 0;
+      var flex = flexHeight(child) ?? 0;
       if (flex > 0) flexsum += flex;
     }
 
@@ -390,7 +454,7 @@ class LayoutModel extends DecoratedWidgetModel
       // % takes priority over flexibility
       // and would have been laid out above
       var flex = 0;
-      if (child.visible && child.heightPercentage == null) flex = child.flexHeight ?? 0;
+      if (child.visible && child.heightPercentage == null) flex = flexHeight(child) ?? 0;
       if (flex > 0)
       {
         // calculate size from flex

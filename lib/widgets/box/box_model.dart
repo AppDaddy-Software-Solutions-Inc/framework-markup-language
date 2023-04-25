@@ -47,10 +47,10 @@ class BoxModel extends LayoutModel
   }
 
   @override
-  bool get expandsVertically => true;
+  bool get isVerticallyExpanding => expand;
 
   @required
-  bool get expandsHorizontally => true;
+  bool get isHorizontallyExpanding => expand;
 
   @override
   double get verticalPadding  => (marginTop ?? 0)  + (marginBottom ?? 0) + (borderwidth * 2) + (paddingTop ?? 0) + (paddingBottom ?? 0);

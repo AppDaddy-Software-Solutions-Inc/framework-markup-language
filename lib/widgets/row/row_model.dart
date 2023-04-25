@@ -22,10 +22,10 @@ class RowModel extends LayoutModel
   MainAxisSize get horizontalAxisSize => (expand && horizontallyConstrained) ? MainAxisSize.max : MainAxisSize.min;
 
   @override
-  bool get expandsVertically => false;
+  bool get isVerticallyExpanding => false;
 
   @required
-  bool get expandsHorizontally => true;
+  bool get isHorizontallyExpanding => expand;
 
   RowModel(WidgetModel parent, String? id) : super(parent, id);
 

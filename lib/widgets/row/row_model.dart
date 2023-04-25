@@ -19,7 +19,16 @@ class RowModel extends LayoutModel
   MainAxisSize get verticalAxisSize => MainAxisSize.min;
 
   @override
-  MainAxisSize get horizontalAxisSize => (expand && horizontallyConstrained) ? MainAxisSize.max : MainAxisSize.min;
+  MainAxisSize get horizontalAxisSize
+  {
+    // expand and constrained by system
+    if (expand) return horizontallyConstrained ? MainAxisSize.max : MainAxisSize.min;
+
+    // not expand but constrained in model
+    if (constraints.model.hasHorizontalExpansionConstraints) return MainAxisSize.max;
+
+    return MainAxisSize.min;
+  }
 
   @override
   bool get isVerticallyExpanding => false;

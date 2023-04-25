@@ -27,7 +27,13 @@ class BoxModel extends LayoutModel
       case LayoutType.stack:
       case LayoutType.column:
       default:
-        return (expand && verticallyConstrained) ? MainAxisSize.max : MainAxisSize.min;
+        // expand and constrained by system
+        if (expand) return verticallyConstrained ? MainAxisSize.max : MainAxisSize.min;
+
+        // not expand but constrained in model
+        if (constraints.model.hasVerticalExpansionConstraints) return MainAxisSize.max;
+
+        return MainAxisSize.min;
     }
   }
 
@@ -42,7 +48,14 @@ class BoxModel extends LayoutModel
       case LayoutType.stack:
       case LayoutType.row:
       default:
-        return (expand && horizontallyConstrained) ? MainAxisSize.max : MainAxisSize.min;
+        // expand and constrained by system
+        if (expand) return horizontallyConstrained ? MainAxisSize.max : MainAxisSize.min;
+
+        // not expand but constrained in model
+        if (constraints.model.hasHorizontalExpansionConstraints) return MainAxisSize.max;
+
+        return MainAxisSize.min;
+
     }
   }
 

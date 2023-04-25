@@ -16,7 +16,16 @@ class ColumnModel extends LayoutModel
   String? get layout => "column";
 
   @override
-  MainAxisSize get verticalAxisSize => (expand && verticallyConstrained) ? MainAxisSize.max : MainAxisSize.min;
+  MainAxisSize get verticalAxisSize
+  {
+    // expand and constrained by system
+    if (expand) return verticallyConstrained ? MainAxisSize.max : MainAxisSize.min;
+
+    // not expand but constrained in model
+    if (constraints.model.hasVerticalExpansionConstraints) return MainAxisSize.max;
+
+    return MainAxisSize.min;
+  }
 
   @override
   MainAxisSize get horizontalAxisSize => MainAxisSize.min;

@@ -16,10 +16,28 @@ class StackModel extends LayoutModel
   String? get layout => "stack";
 
   @override
-  MainAxisSize get verticalAxisSize   => (expand && verticallyConstrained)   ? MainAxisSize.max : MainAxisSize.min;
+  MainAxisSize get verticalAxisSize
+  {
+    // expand and constrained by system
+    if (expand) return verticallyConstrained ? MainAxisSize.max : MainAxisSize.min;
+
+    // not expand but constrained in model
+    if (constraints.model.hasVerticalExpansionConstraints) return MainAxisSize.max;
+
+    return MainAxisSize.min;
+  }
 
   @override
-  MainAxisSize get horizontalAxisSize => (expand && horizontallyConstrained) ? MainAxisSize.max : MainAxisSize.min;
+  MainAxisSize get horizontalAxisSize
+  {
+    // expand and constrained by system
+    if (expand) return horizontallyConstrained ? MainAxisSize.max : MainAxisSize.min;
+
+    // not expand but constrained in model
+    if (constraints.model.hasHorizontalExpansionConstraints) return MainAxisSize.max;
+
+    return MainAxisSize.min;
+  }
 
   @override
   bool get isVerticallyExpanding => expand;

@@ -138,7 +138,11 @@ class ConstraintModel extends WidgetModel
   double? get width => _width?.get();
   setWidth(double? v, {bool notify = false})
   {
-    if (_width == null) _width = DoubleObservable(Binding.toKey(id, 'width'), null, scope: scope, listener: onPropertyChange, setter: _widthSetter);
+    if (_width == null)
+    {
+      _width = DoubleObservable(Binding.toKey(id, 'width'), null, scope: scope, setter: _widthSetter);
+      _width!.registerListener(onPropertyChange);
+    }
     _width?.set(v, notify: notify);
   }
 
@@ -186,7 +190,11 @@ class ConstraintModel extends WidgetModel
   double? get height => _height?.get();
   setHeight(double? v, {bool notify = false})
   {
-    if (_height == null) _height = DoubleObservable(Binding.toKey(id, 'height'), null, scope: scope, listener: onPropertyChange, setter: _heightSetter);
+    if (_height == null)
+    {
+      _height = DoubleObservable(Binding.toKey(id, 'height'), null, scope: scope, setter: _heightSetter);
+      _height!.registerListener(onPropertyChange);
+    }
     _height?.set(v, notify:notify);
   }
 
@@ -296,8 +304,9 @@ class ConstraintModel extends WidgetModel
   double get calculatedMaxWidth
   {
     if (system.maxWidth != null) return system.maxWidth!;
-    if (this.width      != null) return this.width!;
-    if (this.maxWidth   != null) return this.maxWidth!;
+    if (this.width      != null) return max(width!    - (this as ViewableWidgetModel).horizontalPadding,0);
+    if (this.maxWidth   != null) return max(maxWidth! - (this as ViewableWidgetModel).horizontalPadding,0);
+
     if (this.parent is ViewableWidgetModel)
     {
       var parent = (this.parent as ViewableWidgetModel);
@@ -340,11 +349,8 @@ class ConstraintModel extends WidgetModel
   double get calculatedMaxHeight
   {
     if (system.maxHeight != null) return system.maxHeight!;
-    if (this.height != null)
-    {
-      return max(height! - (this as ViewableWidgetModel).verticalPadding,0);
-    }
-    if (this.maxHeight   != null) return this.maxHeight!;
+    if (this.height      != null) return max(height!    - (this as ViewableWidgetModel).verticalPadding,0);
+    if (this.maxHeight   != null) return max(maxHeight! - (this as ViewableWidgetModel).verticalPadding,0);
     if (this.parent is ViewableWidgetModel)
     {
       var parent = (this.parent as ViewableWidgetModel);
@@ -397,7 +403,7 @@ class ConstraintModel extends WidgetModel
       if (maxWidth != null && maxWidth! < width!) width = maxWidth?.toInt();
 
       // set the width
-      if (layout != LayoutType.row) setWidth(width?.toDouble());
+      if (layout != LayoutType.row) setWidth(width?.toDouble(), notify: false);
     }
 
     // adjust the height if defined as a percentage
@@ -412,7 +418,7 @@ class ConstraintModel extends WidgetModel
       if (maxHeight != null && maxHeight! < height!) height = maxHeight?.toInt();
 
       // set the height
-      if (layout != LayoutType.column) setHeight(height?.toDouble());
+      if (layout != LayoutType.column) setHeight(height?.toDouble(), notify: false);
     }
   }
 }

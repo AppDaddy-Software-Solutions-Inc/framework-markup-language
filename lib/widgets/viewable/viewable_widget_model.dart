@@ -544,25 +544,6 @@ class ViewableWidgetModel extends ConstraintModel
     if (animations != null) children?.removeWhere((element) => animations!.contains(element));
   }
 
-  static double getParentVPadding(int paddings, double? padding,
-      double padding2, double padding3, double padding4) {
-    double insets = 0.0;
-    if (paddings > 0) {
-      // pad all
-      if (paddings == 1)
-        insets = (padding ?? 0) * 2;
-
-      // pad directions v,h
-      else if (paddings == 2)
-        insets = (padding ?? 0) * 2;
-
-      // pad sides top, right, bottom, left
-      else if (paddings > 2) insets = (padding ?? 0) + padding3;
-    }
-    //should add up all of the padded siblings to do this so you can have multiple padded siblings unconstrained.
-    return insets;
-  }
-
   AnimationModel? getAnimationModel(String id)
   {
     if (animations == null) return null;

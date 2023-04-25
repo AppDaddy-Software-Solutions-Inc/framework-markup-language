@@ -174,7 +174,7 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
     else scsv = SingleChildScrollView(child: child, scrollDirection: direction, controller: _scrollController);
 
     // show no scroll bar
-    // POINTERDEVICE MOUSE is not reccomended on web due to text selection difficulty, but i have added it in since we do not have text selection.
+    // POINTERDEVICE MOUSE is not recommended on web due to text selection difficulty, but i have added it in since we do not have text selection.
     if (widget.model.scrollbar !=  false)
     {
       scsv = Container(

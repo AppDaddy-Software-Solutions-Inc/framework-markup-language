@@ -300,11 +300,11 @@ class ConstraintModel extends WidgetModel
     return v ?? 0;
   }
 
-  static double ancestorMaxWidth(WidgetModel? widget)
+  static double ancestorMaxWidth(WidgetModel? widget, {bool forPercent = false})
   {
     if (widget is ViewableWidgetModel)
     {
-      if (widget is ScrollerModel && widget.layoutType == LayoutType.row) return double.infinity;
+      if (widget is ScrollerModel && widget.layoutType == LayoutType.row && !forPercent) return double.infinity;
       if (widget.system.maxWidth  != null) return max(widget.system.maxWidth! - widget.horizontalPadding,0);
       if (widget.width            != null) return max(widget.width!           - widget.horizontalPadding,0);
       if (widget.maxWidth         != null) return max(widget.maxWidth!        - widget.horizontalPadding,0);
@@ -327,7 +327,7 @@ class ConstraintModel extends WidgetModel
   // otherwise it gets the maxWidth from its parent walking up the model tree
   double get calculatedMaxWidthForPercentage
   {
-    double maxWidth = system.maxWidth ?? ancestorMaxWidth(this.parent);
+    double maxWidth = system.maxWidth ?? ancestorMaxWidth(this.parent, forPercent: true);
     if (maxWidth == double.infinity) maxWidth = System().screenwidth.toDouble();
     return maxWidth;
   }
@@ -350,15 +350,18 @@ class ConstraintModel extends WidgetModel
     return v ?? 0;
   }
 
-  static double ancestorMaxHeight(WidgetModel? widget)
+  static double ancestorMaxHeight(WidgetModel? widget, double padding, {bool forPercent = false})
   {
     if (widget is ViewableWidgetModel)
     {
-      if (widget is ScrollerModel && widget.layoutType == LayoutType.column) return double.infinity;
-      if (widget.system.maxHeight != null) return max(widget.system.maxHeight! - widget.verticalPadding,0);
-      if (widget.height           != null) return max(widget.height!           - widget.verticalPadding,0);
-      if (widget.maxHeight        != null) return max(widget.maxHeight!        - widget.verticalPadding,0);
-      return ancestorMaxHeight(widget.parent);
+      padding = padding + widget.verticalPadding;
+
+      if (widget is ScrollerModel && widget.layoutType == LayoutType.column && !forPercent) return double.infinity;
+      if (widget.system.maxHeight != null) return max(widget.system.maxHeight! - padding,0);
+      if (widget.height           != null) return max(widget.height!           - padding,0);
+      if (widget.maxHeight        != null) return max(widget.maxHeight!        - padding,0);
+
+      return ancestorMaxHeight(widget.parent, padding);
     }
     else return double.infinity;
   }
@@ -370,14 +373,14 @@ class ConstraintModel extends WidgetModel
     if (system.maxHeight != null) return system.maxHeight!;
     if (this.height      != null) return height!;
     if (this.maxHeight   != null) return maxHeight!;
-    return ancestorMaxHeight(parent);
+    return ancestorMaxHeight(parent, 0);
   }
 
   // if the widgets own constraints specify a maxHeight then that is used
   // otherwise it gets the maxHeight from its parent walking up the model tree
   double get calculatedMaxHeightForPercentage
   {
-    double maxHeight = system.maxHeight ?? ancestorMaxHeight(this.parent);
+    double maxHeight = system.maxHeight ?? ancestorMaxHeight(this.parent, 0, forPercent: true);
     if (maxHeight == double.infinity) maxHeight = System().screenheight.toDouble();
     return maxHeight;
   }

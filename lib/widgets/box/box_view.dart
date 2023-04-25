@@ -263,9 +263,6 @@ class _BoxViewState extends WidgetState<BoxView>
     // set system sizing
     onLayout(constraints);
 
-    // this must go after the children are determined
-    var alignment = WidgetAlignment(widget.model.layoutType, widget.model.center, widget.model.halign, widget.model.valign);
-
     // layout the children
     Widget content = widget.model.getContentView();
 
@@ -286,6 +283,9 @@ class _BoxViewState extends WidgetState<BoxView>
 
     // add padding
     content = addPadding(content);
+
+    // this must go after the children are determined
+    var alignment = WidgetAlignment(widget.model.layoutType, widget.model.center, widget.model.halign, widget.model.valign);
 
     // inner box - contents
     Widget view = Container(clipBehavior: Clip.antiAlias, decoration: decoration, alignment: alignment.aligned, child: content);

@@ -200,6 +200,10 @@ class WidgetAlignment
       case 'between':
         return VerticalAlignmentType.between;
 
+      case 'spaceevenly':
+      case 'evenly':
+        return VerticalAlignmentType.evenly;
+
       default: return defaultType;
     }
   }
@@ -227,6 +231,9 @@ class WidgetAlignment
       case 'between':
         return HorizontalAlignmentType.between;
 
+      case 'spaceevenly':
+      case 'evenly':
+        return HorizontalAlignmentType.evenly;
 
       default: return defaultType;
     }

@@ -35,7 +35,6 @@ class _MapViewState extends WidgetState<MapView>
   double? longitudeUpperBound;
   double? latitudeLowerBound;
   double? longitudeLowerBound;
-  FlutterMap?  map;
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
   onModelChange(WidgetModel model,{String? property, dynamic value})
@@ -51,39 +50,6 @@ class _MapViewState extends WidgetState<MapView>
       }
       setState(() {});
     }
-  }
-
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints)
-  {
-    // save system constraints
-    onLayout(constraints);
-
-    // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
-
-    // build the markers
-    _buildMarkers();
-
-    // build the map
-    map = _buildMap();
-
-    /// Busy / Loading Indicator
-    if (busy == null) busy = BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
-
-    // map width
-    var width = widget.model.width ?? widget.model.calculatedMaxWidthOrDefault;
-
-    // map height
-    var height = widget.model.height ?? widget.model.calculatedMaxHeightOrDefault;
-
-    // view
-    dynamic view = Container(child: SizedBox(width: width, height: height, child: Stack(fit: StackFit.expand, children: [map!, busy!])));
-
-    // apply user defined constraints
-    return applyConstraints(view, widget.model.constraints.model);
   }
 
   FlutterMap? _buildMap()
@@ -175,5 +141,41 @@ class _MapViewState extends WidgetState<MapView>
     if (children.length == 1) child = children.first;
     if (children.length >  1) child = Column(children: children);
     return child;
+  }
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
+    // save system constraints
+    onLayout(constraints);
+
+    // Check if widget is visible before wasting resources on building it
+    if (!widget.model.visible) return Offstage();
+
+    // get the children
+    List<Widget> children = widget.model.inflate();
+
+    // build the markers
+    _buildMarkers();
+
+    // build the map
+    var map = _buildMap();
+    if (map != null) children.insert(0, map);
+
+    /// Busy / Loading Indicator
+    if (busy == null) busy = BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
+
+    // add busy
+    children.add(Center(child: busy));
+
+    // view
+    Widget view = Stack(children: children);
+
+    // apply user defined constraints
+    view = applyConstraints(view, widget.model.constraints.tightestOrDefault);
+
+    return view;
   }
 }

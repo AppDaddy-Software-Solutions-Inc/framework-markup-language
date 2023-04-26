@@ -6,6 +6,7 @@ import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/framework/framework_view.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/tabview/tab_view.dart';
@@ -13,9 +14,18 @@ import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class TabModel extends DecoratedWidgetModel 
+class TabModel extends LayoutModel
 {
   LinkedHashMap<String, FrameworkView> views = LinkedHashMap<String, FrameworkView>();
+
+  @override
+  LayoutType get layoutType => LayoutType.column;
+
+  @override
+  bool get isVerticallyExpanding => true;
+
+  @override
+  bool get isHorizontallyExpanding => true;
 
   // index
   IntegerObservable? _index;
@@ -152,8 +162,10 @@ class TabModel extends DecoratedWidgetModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
+  void deserialize(XmlElement? xml)
   {
+    if (xml == null) return;
+
     // deserialize 
     super.deserialize(xml);
 

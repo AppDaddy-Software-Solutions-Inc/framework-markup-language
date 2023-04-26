@@ -26,10 +26,10 @@ class ConstraintModel extends WidgetModel
 
     // set constraints
     width = Xml.get(node: xml, tag: 'width');
-    fixedWidth = width != null;
+    isFixedWidth = width != null;
 
     height = Xml.get(node: xml, tag: 'height');
-    fixedHeight = height != null;
+    isFixedHeight = height != null;
 
     minWidth  = Xml.get(node: xml, tag: 'minwidth');
     maxWidth  = Xml.get(node: xml, tag: 'maxwidth');
@@ -113,7 +113,7 @@ class ConstraintModel extends WidgetModel
   /// Local Constraints
   ///
   // width
-  bool fixedWidth = false;
+  bool isFixedWidth = false;
   double? widthPercentage;
   DoubleObservable? _width;
   set width(dynamic v)
@@ -163,7 +163,7 @@ class ConstraintModel extends WidgetModel
   }
 
   // height
-  bool fixedHeight = false;
+  bool isFixedHeight = false;
   double? _heightPercentage;
   double? get heightPercentage => _heightPercentage;
   DoubleObservable? _height;

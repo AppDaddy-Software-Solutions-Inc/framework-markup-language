@@ -18,6 +18,12 @@ class MapModel extends DecoratedWidgetModel
 {
   final List<String> layers = [];
 
+  @override
+  bool get isVerticallyExpanding => true;
+
+  @override
+  bool get isHorizontallyExpanding => true;
+  
   // marker prototypes
   final HashMap<String?,List<String>> prototypes = HashMap<String?,List<String>>();
 

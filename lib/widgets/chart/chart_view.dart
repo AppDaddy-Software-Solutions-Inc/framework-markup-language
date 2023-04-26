@@ -802,7 +802,7 @@ class _ChartViewState extends WidgetState<ChartView>
     children.add(Center(child: busy));
 
     // Display children over chart
-    view = Stack(children: children, fit: StackFit.loose);
+    view = Stack(children: children);
 
     // add margins
     view = addMargins(view);

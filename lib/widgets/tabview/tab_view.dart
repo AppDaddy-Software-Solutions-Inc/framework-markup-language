@@ -26,8 +26,12 @@ class TabView extends StatefulWidget implements IWidgetView
 
 class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
 {
-  BusyView? busy;
   TabController? _tabController;
+
+  double barheight = 38.0;
+  double barpadding = 6.0;
+  double buttonWidth = 38.0;
+
 
   @override
   didChangeDependencies()
@@ -225,9 +229,6 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
     _showPrevious();
   }
 
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
   List<Tab> _buildTabs(double? height)
   {
     List<Tab> tabs = [];
@@ -330,6 +331,106 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
     return popover;
   }
 
+  Widget _tabViewWithTabBarAndButton()
+  {
+    // max height
+    double? height = widget.model.calculatedMaxHeightOrDefault;
+
+    // max width
+    double? width = widget.model.calculatedMaxWidthOrDefault;
+
+    // Build Tab Bar
+    var bar = _buildTabBar(height: barheight - barpadding);
+
+    // Build Button Bar
+    var button = _buildTabsButton(height: barheight);
+
+    Widget view = Column(children: [
+      Container(color: Theme.of(context).colorScheme.onInverseSurface, child:
+      Padding(padding: EdgeInsets.only(top: barpadding), child: SizedBox(width: width, height: barheight,
+          child: Row(children: [
+            SizedBox(width: (width - buttonWidth < 0 ? 0 : width - buttonWidth),
+                height: barheight,
+                child: bar),
+            SizedBox(width: buttonWidth, height: barheight, child: button),
+          ])))),
+
+      SizedBox(
+          height: height - barheight - barpadding,
+          child: IndexedStack(
+              children: widget.model.views.values.toList(),
+              index: widget.model.index))
+    ]);
+
+    return view;
+  }
+
+  Widget _tabViewWithTabBar()
+  {
+    // max height
+    double? height = widget.model.calculatedMaxHeightOrDefault;
+
+    // max width
+    double? width = widget.model.calculatedMaxWidthOrDefault;
+
+    // Build Tab Bar
+    var bar = _buildTabBar(height: barheight - barpadding);
+
+    var con = widget.model.constraints.calculated;
+
+    Widget view = Column(children: [
+      SizedBox(width: width,
+          height: barheight,
+          child: bar
+      ),
+      SizedBox(
+          height: height - barheight - barpadding,
+          child: ConstrainedBox(
+              constraints: BoxConstraints(
+                  minHeight: con.minHeight!,
+                  maxHeight: con.maxHeight!,
+                  minWidth: con.minWidth!,
+                  maxWidth: con.maxWidth!),
+              child: IndexedStack(
+                  children: widget.model.views.values.toList(),
+                  index: widget.model.index)))
+    ]);
+
+    return view;
+  }
+
+  Widget _tabView()
+  {
+    Widget view = IndexedStack(children: widget.model.views.values.toList(), index: widget.model.index);
+    return view;
+  }
+
+  Widget _tabViewWithTabButton()
+  {
+    // Build Button Bar
+    var button = _buildTabsButton(height: barheight);
+
+    Widget view = Stack(children: [
+      IndexedStack(
+          children: widget.model.views.values.toList(),
+          index: widget.model.index),
+      Positioned(top: 0, right: 0, child: button),
+    ]);
+
+    return view;
+  }
+
+  Widget _buildTabView()
+  {
+    if (widget.model.views.isNotEmpty) return Container();
+    if (widget.model.tabbar == true )
+         return widget.model.tabbutton == true ? _tabViewWithTabBarAndButton() : _tabViewWithTabBar();
+    else return widget.model.tabbutton == true ? _tabViewWithTabButton()       : _tabView();
+  }
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // save system constraints
@@ -338,91 +439,15 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    if (widget.model.views.isNotEmpty)
-    {
-      double barheight = 38.0;
-      double barpadding = 6.0;
-      double buttonWidth = 38.0;
+    // build the view
+    Widget view = _buildTabView();
 
-      ///////////////////
-      /* Build Tab Bar */
-      ///////////////////
-      var bar = _buildTabBar(height: barheight - barpadding);
+    // add margins
+    view = addMargins(view);
 
-      //////////////////////
-      /* Build Button Bar */
-      //////////////////////
-      var button = _buildTabsButton(height: barheight);
+    // apply user defined constraints
+    view = applyConstraints(view, widget.model.constraints.model);
 
-      ////////////////
-      /* Max Height */
-      ////////////////
-      double? height = widget.model.calculatedMaxHeightOrDefault;
-
-      ////////////////
-      /* Split View */
-      ////////////////
-      dynamic view;
-
-      if (widget.model.tabbar == true && widget.model.tabbutton == true) {
-        view = Column(children: [
-          Container(color: Theme.of(context).colorScheme.onInverseSurface, child:
-            Padding(padding: EdgeInsets.only(top: barpadding), child: SizedBox(width: widget.model.calculatedMaxWidthOrDefault, height: barheight,
-                child: Row(children: [
-                  SizedBox(width: (widget.model.calculatedMaxWidthOrDefault - buttonWidth < 0 ? 0 : widget.model.calculatedMaxWidthOrDefault - buttonWidth),
-                      height: barheight,
-                      child: bar),
-                  SizedBox(width: buttonWidth, height: barheight, child: button),
-                ]),
-              )
-            )
-          ),
-          SizedBox(
-              height: height - barheight - barpadding,
-              child: IndexedStack(
-                  children: widget.model.views.values.toList(),
-                  index: widget.model.index))
-        ]);
-      }
-      else if (widget.model.tabbar == true && widget.model.tabbutton == false)
-      {
-        var con = widget.model.constraints.calculated;
-
-        view = Column(children: [
-          SizedBox(width: widget.model.calculatedMaxWidthOrDefault,
-              height: barheight,
-            child: bar
-          ),
-          SizedBox(
-              height: height - barheight - barpadding,
-              child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: con.minHeight!,
-                maxHeight: con.maxHeight!,
-                minWidth: con.minWidth!,
-                maxWidth: con.maxWidth!),
-                  child: IndexedStack(
-                    children: widget.model.views.values.toList(),
-                    index: widget.model.index)))
-        ]);
-      }
-      else if (widget.model.tabbar == false && widget.model.tabbutton == true) {
-        view = Stack(children: [
-          IndexedStack(
-            children: widget.model.views.values.toList(),
-            index: widget.model.index),
-          Positioned(top: 0, right: 0, child: button),
-        ]);
-      }
-      else if (widget.model.tabbar == false && widget.model.tabbutton == false) {
-        view = IndexedStack(
-            children: widget.model.views.values.toList(),
-            index: widget.model.index);
-      }
-
-      // apply user defined constraints
-      return applyConstraints(view, widget.model.constraints.model);
-    }
-    else return Container();
+    return view;
   }
 }

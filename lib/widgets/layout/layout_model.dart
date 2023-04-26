@@ -29,7 +29,7 @@ class LayoutModel extends DecoratedWidgetModel
   List<ViewableWidgetModel> get variableWidthChildren
   {
     var viewable = viewableChildren;
-    var variable = viewable.where((child) => isVariableWidth(child)).toList();
+    var variable = viewable.where((child) => getPercentWidth(child) != null || getFlexWidth(child) != null).toList();
     return variable;
   }
 
@@ -37,7 +37,7 @@ class LayoutModel extends DecoratedWidgetModel
   List<ViewableWidgetModel> get variableHeightChildren
   {
     var viewable = viewableChildren;
-    var variable = viewable.where((child) => isVariableHeight(child)).toList();
+    var variable = viewable.where((child) => getPercentHeight(child) != null || getFlexHeight(child) != null).toList();
     return variable;
   }
 
@@ -151,51 +151,6 @@ class LayoutModel extends DecoratedWidgetModel
     expand = Xml.get(node: xml, tag: 'expand');
   }
 
-  // determines if the widget is variable height
-  bool isVariableHeight(ViewableWidgetModel child)
-  {
-    // if fixed height then not variable
-    if (child.isFixedHeight) return false;
-
-    // if % then variable
-    if (getPercentHeight(child) != null) return true;
-
-    if (isVerticallyExpanding && child.isVerticallyExpanding)
-    {
-      // if flex value then variable
-      if (child.flex != null) return true;
-
-      // if I can expand vertically and my parent is expanding then I am variable
-      if (expand && child.isVerticallyExpanding) return true;
-    }
-
-    // not variable (fixed size)
-    return false;
-  }
-
-  // determines if the widget if variable width
-  bool isVariableWidth(ViewableWidgetModel child)
-  {
-    // if im fixed width then I'm not variable
-    if (child.isFixedWidth) return false;
-
-    // if im % then I am variable
-    if (getPercentWidth(child) != null) return true;
-
-    // if my parent is a layout widget and expands horizontally, examine flex values
-    if (isHorizontallyExpanding)
-    {
-      // if I have a flex value defined I am variable
-      if (child.flex != null) return true;
-
-      // if I can expand horizontally and my parent is expanding then I am variable
-      if (expand && child.isHorizontallyExpanding) return true;
-    }
-
-    // not variable (fixed size)
-    return false;
-  }
-
   double? getPercentWidth(ViewableWidgetModel child)
   {
     // child is fixed width?
@@ -205,15 +160,18 @@ class LayoutModel extends DecoratedWidgetModel
     if (child.widthPercentage != null) return child.widthPercentage;
 
     // we want to expand 100% in the cross axis
+    //if (this.isVerticallyExpanding && child.isHorizontallyExpanding) return 100;
+
     switch (layoutType)
         {
       case LayoutType.stack:
-      case LayoutType.column:
-        if (expand && child.isHorizontallyExpanding) return 100;
+      case LayoutType.row:
+        if (child.isVerticallyExpanding) return 100;
         break;
       default:
         break;
     }
+
     return null;
   }
 
@@ -226,15 +184,18 @@ class LayoutModel extends DecoratedWidgetModel
     if (child.heightPercentage != null) return child.heightPercentage;
 
     // we want to expand 100% in the cross axis
+    // if (this.isHorizontallyExpanding && child.isVerticallyExpanding) return 100;
+
     switch (layoutType)
         {
       case LayoutType.stack:
-      case LayoutType.row:
-        if (expand && child.isVerticallyExpanding) return 100;
+      case LayoutType.column:
+        if (child.isHorizontallyExpanding) return 100;
         break;
       default:
         break;
     }
+
     return null;
   }
 
@@ -242,8 +203,8 @@ class LayoutModel extends DecoratedWidgetModel
   {
     if (child.isFixedWidth) return null;
 
-    // we can flex only if the parent expands in the horizontal axis
-    if (isHorizontallyExpanding) return child.flex ?? (expand ? 1 : null);
+    // flex only if both me and my child are horizontally expanding
+    if (this.isHorizontallyExpanding && child.isHorizontallyExpanding) return child.flex ?? 1;
 
     return null;
   }
@@ -252,7 +213,8 @@ class LayoutModel extends DecoratedWidgetModel
   {
     if (child.isFixedHeight) return null;
 
-    if (isVerticallyExpanding) return child.flex ?? (expand ? 1 : null);
+    // flex only if both me and my child are vertically expanding
+    if (this.isVerticallyExpanding && child.isVerticallyExpanding) return child.flex ?? 1;
 
     return null;
   }

@@ -401,14 +401,12 @@ class ConstraintModel extends WidgetModel
     system.minHeight = constraints.minHeight;
     system.maxHeight = constraints.maxHeight;
 
-    LayoutModel? layoutModel = parent is LayoutModel ? (parent as LayoutModel) : null;
-
-    LayoutType layout = LayoutType.none;
-    if (layoutModel != null) layout = layoutModel.layoutType;
+    LayoutType parentLayout = LayoutType.none;
+    if (parent is LayoutModel) parentLayout = (parent as LayoutModel).layoutType;
 
     // adjust the width if defined as a percentage
     if (width != null && width! >= 100000) widthPercentage = (width!/1000000);
-    if (widthPercentage != null)
+    if (widthPercentage != null && parentLayout != LayoutType.row)
     {
       // calculate the width
       int? width = (calculatedMaxWidthForPercentage * (widthPercentage!/100.0)).floor();
@@ -418,12 +416,12 @@ class ConstraintModel extends WidgetModel
       if (maxWidth != null && maxWidth! < width!) width = maxWidth?.toInt();
 
       // set the width
-      if (layout != LayoutType.row) setWidth(width?.toDouble(), notify: false);
+      setWidth(width?.toDouble(), notify: false);
     }
 
     // adjust the height if defined as a percentage
     if (height != null && height! >= 100000) _heightPercentage = (height!/1000000);
-    if (_heightPercentage != null)
+    if (_heightPercentage != null && parentLayout != LayoutType.column)
     {
       // calculate the height
       int? height = (calculatedMaxHeightForPercentage * (_heightPercentage!/100.0)).floor();
@@ -433,7 +431,7 @@ class ConstraintModel extends WidgetModel
       if (maxHeight != null && maxHeight! < height!) height = maxHeight?.toInt();
 
       // set the height
-      if (layout != LayoutType.column) setHeight(height?.toDouble(), notify: false);
+      setHeight(height?.toDouble(), notify: false);
     }
   }
 }

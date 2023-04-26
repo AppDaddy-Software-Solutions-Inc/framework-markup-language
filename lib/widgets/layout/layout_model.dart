@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/log/manager.dart';
@@ -159,14 +161,12 @@ class LayoutModel extends DecoratedWidgetModel
     // child has percent width specified
     if (child.widthPercentage != null) return child.widthPercentage;
 
-    // we want to expand 100% in the cross axis
-    //if (this.isVerticallyExpanding && child.isHorizontallyExpanding) return 100;
-
+    // we want to allow the child to expand 100% in its cross axis
     switch (layoutType)
-        {
+    {
       case LayoutType.stack:
-      case LayoutType.row:
-        if (child.isVerticallyExpanding) return 100;
+      case LayoutType.column:
+      if (expand && child.isHorizontallyExpanding) return 100;
         break;
       default:
         break;
@@ -183,25 +183,23 @@ class LayoutModel extends DecoratedWidgetModel
     // child has percent height specified
     if (child.heightPercentage != null) return child.heightPercentage;
 
-    // we want to expand 100% in the cross axis
-    // if (this.isHorizontallyExpanding && child.isVerticallyExpanding) return 100;
-
+    // we want to allow the child to expand 100% in its cross axis
     switch (layoutType)
-        {
+    {
       case LayoutType.stack:
-      case LayoutType.column:
-        if (child.isHorizontallyExpanding) return 100;
+      case LayoutType.row:
+      if (expand && child.isVerticallyExpanding) return 100;
         break;
       default:
         break;
     }
-
     return null;
   }
 
   int? getFlexWidth(ViewableWidgetModel child)
   {
-    if (child.isFixedWidth) return null;
+    // percent width is priority over flex
+    if (getPercentWidth(child) != null) return null;
 
     // flex only if both me and my child are horizontally expanding
     if (this.isHorizontallyExpanding && child.isHorizontallyExpanding) return child.flex ?? 1;
@@ -211,7 +209,8 @@ class LayoutModel extends DecoratedWidgetModel
 
   int? getFlexHeight(ViewableWidgetModel child)
   {
-    if (child.isFixedHeight) return null;
+    // percent height is priority over flex
+    if (getPercentHeight(child) != null) return null;
 
     // flex only if both me and my child are vertically expanding
     if (this.isVerticallyExpanding && child.isVerticallyExpanding) return child.flex ?? 1;
@@ -252,14 +251,15 @@ class LayoutModel extends DecoratedWidgetModel
     // calculate usable space (max - reserved)
     var usable = maximum - reserved;
 
-    print("WIDTH-> id=$id max=$maximum usable=$usable");
+    //print("WIDTH-> id=$id max=$maximum usable=$usable");
 
     // set % sizing on variable children
     var free = usable;
     for (var child in variable)
+    if (child.visible)
     {
       var pct = getPercentWidth(child) ?? 0;
-      if (child.visible && pct > 0)
+      if (pct > 0)
       {
         // calculate size from %
         int size = (usable * (pct/100)).floor();
@@ -276,10 +276,10 @@ class LayoutModel extends DecoratedWidgetModel
         // must be 0 or greater
         if (size.isNegative) size = 0;
 
-        // reduce free space
-        free = free - size;
+        // reduce free space in the main axis
+        if (layoutType == LayoutType.row) free = free - size;
 
-        print("WIDTH-> id=$id child=${child.id} %=$pct size=$size free=$free");
+        //print("WIDTH-> id=$id child=${child.id} %=$pct size=$size free=$free");
 
         // set the size
         if (child.width != size) child.setWidth(size.toDouble(), notify: true);
@@ -289,19 +289,13 @@ class LayoutModel extends DecoratedWidgetModel
     // calculate sum of all flex values
     double flexsum = 0;
     for (var child in variable)
-    if (child.visible && getPercentWidth(child) == null)
-    {
-      var flex = getFlexWidth(child) ?? 0;
-      if (flex > 0) flexsum += flex;
-    }
+    if (child.visible) flexsum += max(getFlexWidth(child) ?? 0, 0);
 
     // set flex sizing on flexible children
     for (var child in variable)
+    if (child.visible)
     {
-      // % takes priority over flexibility
-      // and would have been laid out above
-      var flex = 0;
-      if (child.visible && getPercentWidth(child) == null) flex = getFlexWidth(child) ?? 0;
+      var flex = getFlexWidth(child) ?? 0;
       if (flex > 0)
       {
         // calculate size from flex
@@ -319,7 +313,7 @@ class LayoutModel extends DecoratedWidgetModel
         // must be 0 or greater
         if (size.isNegative) size = 0;
 
-        print("WIDTH-> id=$id child=${child.id} flexsum=$flexsum flex=$flex size=$size");
+        //print("WIDTH-> id=$id child=${child.id} flexsum=$flexsum flex=$flex size=$size");
 
         // set the size
         if (child.width != size) child.setWidth(size.toDouble(), notify: true);
@@ -348,15 +342,15 @@ class LayoutModel extends DecoratedWidgetModel
     // calculate usable space (max - reserved)
     var usable = maximum - reserved;
 
-    print("HEIGHT-> parent=${this.parent?.id} id=$id max=$maximum usable=$usable");
+    //print("HEIGHT-> parent=${this.parent?.id} id=$id max=$maximum usable=$usable");
 
     // set % sizing on variable children
     var free = usable;
     for (var child in variable)
-    if (free > 0)
+    if (child.visible)
     {
       var pct = getPercentHeight(child) ?? 0;
-      if (child.visible && pct > 0)
+      if (pct > 0)
       {
         // calculate size from %
         var size = (usable * (pct/100)).floor();
@@ -373,10 +367,10 @@ class LayoutModel extends DecoratedWidgetModel
         // must be 0 or greater
         if (size.isNegative) size = 0;
 
-        // reduce free space
-        free = free - size;
+        // reduce free space in the main axis
+        if (layoutType == LayoutType.column) free = free - size;
 
-        print("HEIGHT-> id=$id child=${child.id} %=$pct size=$size free=$free");
+        //print("HEIGHT-> id=$id child=${child.id} %=$pct size=$size free=$free");
 
         // set the size
         if (child.height != size) child.setHeight(size.toDouble(), notify: true);
@@ -386,19 +380,13 @@ class LayoutModel extends DecoratedWidgetModel
     // calculate sum of all flex values
     double flexsum = 0;
     for (var child in variable)
-    if (child.visible && getPercentHeight(child) == null)
-    {
-      var flex = getFlexHeight(child) ?? 0;
-      if (flex > 0) flexsum += flex;
-    }
+    if (child.visible) flexsum += max(getFlexHeight(child) ?? 0, 0);
 
     // set flex sizing on flexible children
     for (var child in variable)
+    if (child.visible)
     {
-      // % takes priority over flexibility
-      // and would have been laid out above
-      var flex = 0;
-      if (child.visible && getPercentHeight(child) == null) flex = getFlexHeight(child) ?? 0;
+      var flex = getFlexHeight(child) ?? 0;
       if (flex > 0)
       {
         // calculate size from flex
@@ -416,7 +404,7 @@ class LayoutModel extends DecoratedWidgetModel
         // must be 0 or greater
         if (size.isNegative) size = 0;
 
-        print("HEIGHT-> id=$id child=${child.id} flexsum=$flexsum flex=$flex size=$size");
+        //print("HEIGHT-> id=$id child=${child.id} flexsum=$flexsum flex=$flex size=$size");
 
         // set the size
         if (child.height != size) child.setHeight(size.toDouble(), notify: true);

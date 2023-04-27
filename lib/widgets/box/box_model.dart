@@ -4,6 +4,7 @@ import 'package:fml/widgets/column/column_view.dart';
 import 'package:fml/widgets/row/row_view.dart';
 import 'package:fml/widgets/stack/stack_view.dart';
 import 'package:fml/widgets/layout/layout_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:flutter/material.dart';
@@ -60,10 +61,38 @@ class BoxModel extends LayoutModel
   }
 
   @override
-  bool get isVerticallyExpanding => expand;
+  bool get isVerticallyExpanding
+  {
+    var expand = this.expand;
+    if (expand) return true;
+    if (children != null)
+      for (var child in children!)
+      {
+        if (child is ViewableWidgetModel && child.visible && child.isHorizontallyExpanding)
+        {
+          expand = true;
+          break;
+        };
+      };
+    return expand;
+  }
 
   @required
-  bool get isHorizontallyExpanding => expand;
+  bool get isHorizontallyExpanding
+  {
+    var expand = this.expand;
+    if (expand) return true;
+    if (children != null)
+      for (var child in children!)
+      {
+        if (child is ViewableWidgetModel && child.visible && child.isHorizontallyExpanding)
+        {
+          expand = true;
+          break;
+        };
+      };
+    return expand;
+  }
 
   @override
   double get verticalPadding  => (marginTop ?? 0)  + (marginBottom ?? 0) + (borderwidth * 2) + (paddingTop ?? 0) + (paddingBottom ?? 0);

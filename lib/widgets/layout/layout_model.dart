@@ -31,7 +31,7 @@ class LayoutModel extends DecoratedWidgetModel
   List<ViewableWidgetModel> get variableWidthChildren
   {
     var viewable = viewableChildren;
-    var variable = viewable.where((child) => getPercentWidth(child) != null || getFlexWidth(child) != null).toList();
+    var variable = viewable.where((child) => child.isHorizontallyExpanding).toList();
     return variable;
   }
 
@@ -39,7 +39,7 @@ class LayoutModel extends DecoratedWidgetModel
   List<ViewableWidgetModel> get variableHeightChildren
   {
     var viewable = viewableChildren;
-    var variable = viewable.where((child) => getPercentHeight(child) != null || getFlexHeight(child) != null).toList();
+    var variable = viewable.where((child) => child.isVerticallyExpanding).toList();
     return variable;
   }
 
@@ -199,6 +199,9 @@ class LayoutModel extends DecoratedWidgetModel
 
   int? getFlexWidth(ViewableWidgetModel child)
   {
+    // child is fixed width?
+    if (child.isFixedWidth) return null;
+
     // percent width is priority over flex
     if (getPercentWidth(child) != null) return null;
 
@@ -210,6 +213,9 @@ class LayoutModel extends DecoratedWidgetModel
 
   int? getFlexHeight(ViewableWidgetModel child)
   {
+    // child is fixed height?
+    if (child.isFixedHeight) return null;
+
     // percent height is priority over flex
     if (getPercentHeight(child) != null) return null;
 

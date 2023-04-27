@@ -32,7 +32,21 @@ class ColumnModel extends LayoutModel
   MainAxisSize get horizontalAxisSize => MainAxisSize.min;
 
   @override
-  bool get isVerticallyExpanding => expand;
+  bool get isVerticallyExpanding
+  {
+    var expand = this.expand;
+    if (expand) return true;
+    if (children != null)
+      for (var child in children!)
+      {
+        if (child is ViewableWidgetModel && child.visible && child.isVerticallyExpanding)
+        {
+          expand = true;
+          break;
+        };
+      };
+    return expand;
+  }
 
   @required
   bool get isHorizontallyExpanding

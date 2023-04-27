@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/layout/layout_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -34,7 +35,20 @@ class ColumnModel extends LayoutModel
   bool get isVerticallyExpanding => expand;
 
   @required
-  bool get isHorizontallyExpanding => false;
+  bool get isHorizontallyExpanding
+  {
+    bool expand = false;
+    if (children != null)
+      for (var child in children!)
+      {
+        if (child is ViewableWidgetModel && child.visible && child.isHorizontallyExpanding)
+        {
+          expand = true;
+          break;
+        };
+      };
+    return expand;
+  }
 
   ColumnModel(WidgetModel parent, String? id) : super(parent, id);
 

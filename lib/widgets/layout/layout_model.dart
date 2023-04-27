@@ -153,7 +153,8 @@ class LayoutModel extends DecoratedWidgetModel
     expand = Xml.get(node: xml, tag: 'expand');
   }
 
-  double? getPercentWidth(ViewableWidgetModel child)
+  double?
+  getPercentWidth(ViewableWidgetModel child)
   {
     // child is fixed width?
     if (child.isFixedWidth) return null;
@@ -161,7 +162,7 @@ class LayoutModel extends DecoratedWidgetModel
     // child has percent width specified
     if (child.widthPercentage != null) return child.widthPercentage;
 
-    // we want to allow the child to expand 100% in its cross axis
+    // we want to allow the child to expand 100% in its cross axisu
     switch (layoutType)
     {
       case LayoutType.stack:

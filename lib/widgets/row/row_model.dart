@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/layout/layout_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -31,7 +32,20 @@ class RowModel extends LayoutModel
   }
 
   @override
-  bool get isVerticallyExpanding => false;
+  bool get isVerticallyExpanding
+  {
+    bool expand = false;
+    if (children != null)
+      for (var child in children!)
+      {
+        if (child is ViewableWidgetModel && child.visible && child.isVerticallyExpanding)
+        {
+          expand = true;
+          break;
+        };
+      };
+    return expand;
+  }
 
   @required
   bool get isHorizontallyExpanding => expand;

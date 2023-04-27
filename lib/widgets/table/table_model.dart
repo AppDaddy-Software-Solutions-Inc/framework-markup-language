@@ -23,7 +23,15 @@ import 'package:fml/helper/common_helpers.dart';
 
 enum PaddingType { none, first, last, evenly, proportionately }
 
-class TableModel extends DecoratedWidgetModel implements IForm, IScrolling {
+class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
+{
+
+  @override
+  bool get isVerticallyExpanding => true;
+
+  @override
+  bool get isHorizontallyExpanding => true;
+
   // prototype
   String? prototype;
   TableRowModel? prototypeModel;
@@ -54,8 +62,6 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling {
   }
 
   String? datasource;
-
-
 
   ////////////////////
   /* slt color */

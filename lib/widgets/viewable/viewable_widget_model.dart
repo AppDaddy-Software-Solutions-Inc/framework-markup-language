@@ -28,11 +28,11 @@ class ViewableWidgetModel extends ConstraintModel
   // holds animations
   List<AnimationModel>? animations;
 
-  // signifies if this widget normally expands in the vertical
+  // signifies if this widget naturally wishes to expand in the vertical
   // this gets overridden in several widgets that inherited from this class
   bool get isVerticallyExpanding => false;
 
-  // signifies if this widget wishes to expand in the horizontal
+  // signifies if this widget naturally wishes to expand in the horizontal
   // this gets overridden in several widgets that inherited from this class
   bool get isHorizontallyExpanding => false;
 
@@ -650,12 +650,15 @@ class ViewableWidgetModel extends ConstraintModel
     var position = box.localToGlobal(Offset.zero);
     var size = box.size;
 
+    // set the view width, height and position
     if (size.width != viewWidth || size.height != viewHeight || position.dx != viewX || position.dy != viewY)
     {
       viewWidth  = size.width;
       viewHeight = size.height;
       viewX      = position.dx;
       viewY      = position.dy;
+
+      // notify the parent
       if (parent is ViewableWidgetModel) (parent as ViewableWidgetModel).onLayoutComplete();
     }
   }

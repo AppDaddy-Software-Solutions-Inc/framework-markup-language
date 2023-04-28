@@ -22,10 +22,10 @@ class TabModel extends LayoutModel
   LayoutType get layoutType => LayoutType.column;
 
   @override
-  bool get isVerticallyExpanding => true;
+  bool get isVerticallyExpanding => !isFixedHeight;
 
   @override
-  bool get isHorizontallyExpanding => true;
+  bool get isHorizontallyExpanding => !isFixedWidth;
 
   // index
   IntegerObservable? _index;

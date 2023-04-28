@@ -63,12 +63,13 @@ class BoxModel extends LayoutModel
   @override
   bool get isVerticallyExpanding
   {
+    if (isFixedHeight) return false;
     var expand = this.expand;
     if (expand) return true;
     if (children != null)
       for (var child in children!)
       {
-        if (child is ViewableWidgetModel && child.visible && child.isHorizontallyExpanding)
+        if (child is ViewableWidgetModel && child.visible && child.isVerticallyExpanding)
         {
           expand = true;
           break;
@@ -80,6 +81,7 @@ class BoxModel extends LayoutModel
   @required
   bool get isHorizontallyExpanding
   {
+    if (isFixedWidth) return false;
     var expand = this.expand;
     if (expand) return true;
     if (children != null)

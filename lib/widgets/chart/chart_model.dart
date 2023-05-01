@@ -28,11 +28,13 @@ class ChartModel extends DecoratedWidgetModel  {
       dynamic horizontal,
       dynamic animated,
       dynamic selected,
+      dynamic legendsize,
     }) : super(parent, id) {
     this.selected         = selected;
     this.animated         = animated;
     this.horizontal       = horizontal;
     this.showlegend       = showlegend;
+    this.legendsize       = legendsize;
     this.type             = type?.trim()?.toLowerCase() ?? null;
     // instantiate busy observable
     busy = false;
@@ -86,6 +88,7 @@ class ChartModel extends DecoratedWidgetModel  {
     animated        = Xml.get(node: xml, tag: 'animated');
     horizontal      = Xml.get(node: xml, tag: 'horizontal');
     showlegend      = Xml.get(node: xml, tag: 'showlegend');
+    legendsize      = Xml.get(node: xml, tag: 'legendsize');
     type            = Xml.get(node: xml, tag: 'type');
 
     // Get Series
@@ -170,6 +173,21 @@ class ChartModel extends DecoratedWidgetModel  {
     }
   }
   String get showlegend => _showlegend?.get() ?? 'bottom';
+
+  /// Sets the font size of the legend labels
+  IntegerObservable? _legendsize;
+  set legendsize (dynamic v)
+  {
+    if (_legendsize != null)
+    {
+      _legendsize!.set(v);
+    }
+    else if (v != null)
+    {
+      _legendsize = IntegerObservable(Binding.toKey(id, 'legendsize'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  int? get legendsize => _legendsize?.get();
 
   /// Type of chart (`cartesian` or `circle`) defaults to `cartesian`
   ///

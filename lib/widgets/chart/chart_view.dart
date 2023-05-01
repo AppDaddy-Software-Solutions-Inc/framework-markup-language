@@ -695,10 +695,11 @@ class _ChartViewState extends WidgetState<ChartView>
     if (chartType != ChartType.PieChart) behaviors.add(CF.PanAndZoomBehavior());
     if (widget.model.showlegend != 'false' && chartType != ChartType.PieChart)
       behaviors.add(
-          CF.SeriesLegend(position: legendPosition(widget.model.showlegend,),
+          CF.SeriesLegend(
+              position: legendPosition(widget.model.showlegend,),
               entryTextStyle: CF.TextStyleSpec(
-              color: CF.Color.fromHex(code: '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
-    ),
+                fontSize: widget.model.legendsize,
+                color: CF.Color.fromHex(code: '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}')),
           ));
     if (widget.model.showlegend != 'false' && chartType == ChartType.PieChart)
       behaviors.add(CF.DatumLegend(

@@ -51,7 +51,7 @@ class ChartAxisModel extends WidgetModel
   }
   int get labelrotation => _labelrotation?.get() ?? 0;
 
-  /// Used to rotate long data labels so you can fit more, generally along the x axis
+  /// Sets the font size of the tick labels
   IntegerObservable? _labelsize;
   set labelsize (dynamic v)
   {

@@ -84,9 +84,6 @@ class ViewableWidgetModel extends ConstraintModel
 
     _viewY = null;
     _viewYObservable?.set(null, notify: false);
-
-    if (!isFixedHeight) setHeight(null, notify: false);
-    if (!isFixedWidth)  setWidth(null, notify: false);
   }
 
   // view width

@@ -257,6 +257,8 @@ class _BoxViewState extends WidgetState<BoxView>
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
+    var id = widget.model.id;
+
     // Check if widget is visible before wasting resources on building it
     if (widget.model.visible == false) return Offstage();
 

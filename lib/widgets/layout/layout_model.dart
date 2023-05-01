@@ -327,7 +327,7 @@ class LayoutModel extends DecoratedWidgetModel
         // set the size
         if (child.width != size)
         {
-          _touched.add(child);
+          if (!_touched.contains(child)) _touched.add(child);
           child.setWidth(size.toDouble(), notify: false);
         }
       }
@@ -367,7 +367,7 @@ class LayoutModel extends DecoratedWidgetModel
         // set the size
         if (child.width != size)
         {
-          _touched.add(child);
+          if (!_touched.contains(child)) _touched.add(child);
           child.setWidth(size.toDouble(), notify: false);
         }
       }
@@ -432,7 +432,7 @@ class LayoutModel extends DecoratedWidgetModel
         // set the size
         if (child.height != size)
         {
-          _touched.add(child);
+          if (!_touched.contains(child)) _touched.add(child);
           child.setHeight(size.toDouble(), notify: false);
         }
       }
@@ -472,7 +472,7 @@ class LayoutModel extends DecoratedWidgetModel
         // set the size
         if (child.height != size)
         {
-          _touched.add(child);
+          if (!_touched.contains(child)) _touched.add(child);
           child.setHeight(size.toDouble(), notify: false);
         }
       }

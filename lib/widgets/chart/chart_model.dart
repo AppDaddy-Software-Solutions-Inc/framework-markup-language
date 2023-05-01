@@ -7,6 +7,7 @@ import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart/series/chart_series_model.dart';
 import 'package:fml/widgets/chart/axis/chart_axis_model.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/chart/chart_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -23,7 +24,10 @@ class ChartModel extends DecoratedWidgetModel  {
 
   bool get isVerticallyExpanding   => true;
   bool get isHorizontallyExpanding => true;
-  
+
+  // parent is not a layout model or parent is laid out
+  bool get layoutComplete => parent is! LayoutModel || (parent as LayoutModel).layoutComplete;
+
   ChartModel(WidgetModel parent, String? id,
     {
       dynamic type,

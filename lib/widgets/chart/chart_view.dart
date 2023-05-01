@@ -752,8 +752,6 @@ class _ChartViewState extends WidgetState<ChartView>
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    if (widget.model.id == "breaker1") print ('Building chart ${widget.model.id} ...');
-
     // save system constraints
     onLayout(constraints);
 
@@ -762,6 +760,10 @@ class _ChartViewState extends WidgetState<ChartView>
 
     // Busy / Loading Indicator
     if (busy == null) busy = BUSY.BusyView(BUSY.BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
+
+    if (!widget.model.layoutComplete) return Container();
+
+    print ('Building chart ${widget.model.id} ...');
 
     Widget view;
 

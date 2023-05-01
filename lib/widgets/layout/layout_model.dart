@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/log/manager.dart';
@@ -18,6 +17,8 @@ enum HorizontalAlignmentType {left, right, center, around, between, evenly}
 
 class LayoutModel extends DecoratedWidgetModel
 {
+  bool layoutComplete = false;
+
   @required
   LayoutType get layoutType => throw(UnimplementedError);
 
@@ -225,20 +226,52 @@ class LayoutModel extends DecoratedWidgetModel
     return null;
   }
 
+  List<ViewableWidgetModel> _touched = [];
+
   @override
-  void onLayoutComplete()
+  List<Widget> inflate()
   {
-    super.onLayoutComplete();
+    List<Widget> views = [];
+    viewableChildren.forEach((model)
+    {
+      model.resetViewSizing();
+      views.add(model.getView());
+    });
+    return views;
+  }
 
-    // no need to perform resizing if there are no variable width children
-    if (variableWidthChildren.isNotEmpty)  _onWidthChange();
+  @override
+  void onLayoutComplete(ViewableWidgetModel? model)
+  {
+    super.onLayoutComplete(model);
 
-    // no need to perform resizing if there are no variable height children
-    if (variableHeightChildren.isNotEmpty) _onHeightChange();
+    bool canLayout = parent is! LayoutModel || (parent as LayoutModel).layoutComplete;
+    if (canLayout && !layoutComplete && viewableChildren.contains(model))
+    {
+      // all fixed width and height children have been laid out?
+      if (fixedWidthChildren.where((child) => child.viewWidth == null).isEmpty && fixedHeightChildren.where((child) => child.viewHeight == null).isEmpty)
+      {
+        layoutComplete = true;
+
+        _touched.clear();
+
+        _onWidthChange();
+        _onHeightChange();
+
+        // notify
+        _touched.forEach((child)
+        {
+          if (child is LayoutModel) child.layoutComplete = false;
+          child.notifyListeners(null, null);
+        });
+      }
+    }
   }
 
   void _onWidthChange()
   {
+    var id = this.id;
+
     // layout cannot be performed until all fixed width children have been laid out
     var unsized = fixedWidthChildren.where((child) => child.viewWidth == null);
     if (unsized.isNotEmpty) return;
@@ -265,6 +298,9 @@ class LayoutModel extends DecoratedWidgetModel
     for (var child in variable)
     if (child.visible)
     {
+      var childid = child.id;
+
+
       var pct = getPercentWidth(child) ?? 0;
       if (pct > 0)
       {
@@ -289,7 +325,11 @@ class LayoutModel extends DecoratedWidgetModel
         //print("WIDTH-> id=$id child=${child.id} %=$pct size=$size free=$free");
 
         // set the size
-        if (child.width != size) child.setWidth(size.toDouble(), notify: true);
+        if (child.width != size)
+        {
+          _touched.add(child);
+          child.setWidth(size.toDouble(), notify: false);
+        }
       }
     }
 
@@ -302,6 +342,8 @@ class LayoutModel extends DecoratedWidgetModel
     for (var child in variable)
     if (child.visible)
     {
+      var childid = child.id;
+
       var flex = getFlexWidth(child) ?? 0;
       if (flex > 0)
       {
@@ -323,13 +365,19 @@ class LayoutModel extends DecoratedWidgetModel
         //print("WIDTH-> id=$id child=${child.id} flexsum=$flexsum flex=$flex size=$size");
 
         // set the size
-        if (child.width != size) child.setWidth(size.toDouble(), notify: true);
+        if (child.width != size)
+        {
+          _touched.add(child);
+          child.setWidth(size.toDouble(), notify: false);
+        }
       }
     }
   }
 
   void _onHeightChange()
   {
+    var id = this.id;
+
     // layout cannot be performed until all fixed height children have been laid out
     var unsized = fixedHeightChildren.where((child) => child.viewHeight == null);
     if (unsized.isNotEmpty) return;
@@ -356,6 +404,8 @@ class LayoutModel extends DecoratedWidgetModel
     for (var child in variable)
     if (child.visible)
     {
+      var childid = child.id;
+
       var pct = getPercentHeight(child) ?? 0;
       if (pct > 0)
       {
@@ -380,7 +430,11 @@ class LayoutModel extends DecoratedWidgetModel
         //print("HEIGHT-> id=$id child=${child.id} %=$pct size=$size free=$free");
 
         // set the size
-        if (child.height != size) child.setHeight(size.toDouble(), notify: true);
+        if (child.height != size)
+        {
+          _touched.add(child);
+          child.setHeight(size.toDouble(), notify: false);
+        }
       }
     }
 
@@ -393,6 +447,8 @@ class LayoutModel extends DecoratedWidgetModel
     for (var child in variable)
     if (child.visible)
     {
+      var childid = child.id;
+
       var flex = getFlexHeight(child) ?? 0;
       if (flex > 0)
       {
@@ -414,7 +470,11 @@ class LayoutModel extends DecoratedWidgetModel
         //print("HEIGHT-> id=$id child=${child.id} flexsum=$flexsum flex=$flex size=$size");
 
         // set the size
-        if (child.height != size) child.setHeight(size.toDouble(), notify: true);
+        if (child.height != size)
+        {
+          _touched.add(child);
+          child.setHeight(size.toDouble(), notify: false);
+        }
       }
     }
   }

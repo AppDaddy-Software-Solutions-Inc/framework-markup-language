@@ -240,6 +240,15 @@ class LayoutModel extends DecoratedWidgetModel
     return views;
   }
 
+  /// VIEW LAYOUT
+  @override
+  resetViewSizing()
+  {
+    // mark as needing layout
+    layoutComplete = false;
+    super.resetViewSizing();
+  }
+
   @override
   void onLayoutComplete(ViewableWidgetModel? model)
   {
@@ -270,8 +279,6 @@ class LayoutModel extends DecoratedWidgetModel
 
   void _onWidthChange()
   {
-    var id = this.id;
-
     // layout cannot be performed until all fixed width children have been laid out
     var unsized = fixedWidthChildren.where((child) => child.viewWidth == null);
     if (unsized.isNotEmpty) return;
@@ -298,9 +305,6 @@ class LayoutModel extends DecoratedWidgetModel
     for (var child in variable)
     if (child.visible)
     {
-      var childid = child.id;
-
-
       var pct = getPercentWidth(child) ?? 0;
       if (pct > 0)
       {
@@ -342,8 +346,6 @@ class LayoutModel extends DecoratedWidgetModel
     for (var child in variable)
     if (child.visible)
     {
-      var childid = child.id;
-
       var flex = getFlexWidth(child) ?? 0;
       if (flex > 0)
       {
@@ -376,8 +378,6 @@ class LayoutModel extends DecoratedWidgetModel
 
   void _onHeightChange()
   {
-    var id = this.id;
-
     // layout cannot be performed until all fixed height children have been laid out
     var unsized = fixedHeightChildren.where((child) => child.viewHeight == null);
     if (unsized.isNotEmpty) return;
@@ -404,8 +404,6 @@ class LayoutModel extends DecoratedWidgetModel
     for (var child in variable)
     if (child.visible)
     {
-      var childid = child.id;
-
       var pct = getPercentHeight(child) ?? 0;
       if (pct > 0)
       {
@@ -447,8 +445,6 @@ class LayoutModel extends DecoratedWidgetModel
     for (var child in variable)
     if (child.visible)
     {
-      var childid = child.id;
-
       var flex = getFlexHeight(child) ?? 0;
       if (flex > 0)
       {

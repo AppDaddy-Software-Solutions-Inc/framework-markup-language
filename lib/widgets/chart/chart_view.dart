@@ -752,16 +752,17 @@ class _ChartViewState extends WidgetState<ChartView>
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    // save system constraints
-    onLayout(constraints);
-
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
+    // if layout is still rendering, dont display chart
+    if (!widget.model.layoutComplete) return Offstage();
+
+    // save system constraints
+    onLayout(constraints);
+    
     // Busy / Loading Indicator
     if (busy == null) busy = BUSY.BusyView(BUSY.BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
-
-    if (!widget.model.layoutComplete) return Container();
 
     print ('Building chart ${widget.model.id} ...');
 

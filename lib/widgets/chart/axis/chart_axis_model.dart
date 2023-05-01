@@ -67,6 +67,42 @@ class ChartAxisModel extends WidgetModel
   }
   String? get format => _format?.get();
 
+  /// Sets the minimum axis value to show, only intended for numeric axis
+  StringObservable? _min;
+  set min (dynamic v)
+  {
+    if (_min != null)
+    {
+      _min!.set(v);
+    }
+    else if (v != null)
+    {
+      _min = StringObservable(Binding.toKey(id, 'min'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  num? get min {
+    num? minDbl = S.toNum(_min?.get());
+    return minDbl;
+  }
+
+  /// Sets the maximum axis value to show, only intended for numeric axis
+  StringObservable? _max;
+  set max (dynamic v)
+  {
+    if (_max != null)
+    {
+      _max!.set(v);
+    }
+    else if (v != null)
+    {
+      _max = StringObservable(Binding.toKey(id, 'max'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  num? get max {
+    num? maxDbl = S.toNum(_max?.get());
+    return maxDbl;
+  }
+
   ChartAxisModel(
       WidgetModel parent,
       String?  id,
@@ -76,6 +112,8 @@ class ChartAxisModel extends WidgetModel
         dynamic labelrotation,
         dynamic title,
         dynamic format,
+        dynamic min,
+        dynamic max,
         // dynamic minimum,
         // dynamic maximum,
         // dynamic visibleminimum,
@@ -93,6 +131,8 @@ class ChartAxisModel extends WidgetModel
     this.labelrotation  = labelrotation;
     this.title          = title;
     this.format         = format;
+    this.min            = min;
+    this.max            = max;
     // this.minimum        = minimum;
     // this.maximum        = maximum;
     // this.visibleminimum = visibleminimum;
@@ -148,6 +188,8 @@ class ChartAxisModel extends WidgetModel
         labelrotation   : Xml.get(node: xml, tag: 'labelrotation'),
         format          : Xml.get(node: xml, tag: 'format'),
         type            : Xml.get(node: xml, tag: 'type'),
+        min             : Xml.get(node: xml, tag: 'min'),
+        max             : Xml.get(node: xml, tag: 'max'),
         // fontsize        : Xml.get(node: xml, tag: 'fontsize'),
         // fontcolor       : Xml.get(node: xml, tag: 'fontcolor'),
         // format          : Xml.get(node: xml, tag: 'format'),

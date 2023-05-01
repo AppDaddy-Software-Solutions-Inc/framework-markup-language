@@ -95,6 +95,14 @@ class _ChartViewState extends WidgetState<ChartView>
     }
   }
 
+  CF.NumericAxisSpec numericAxisSpec() => CF.NumericAxisSpec(
+      viewport: widget.model.yaxis?.min != null && widget.model.yaxis?.max != null
+          ? CF.NumericExtents(widget.model.yaxis!.min!, widget.model.yaxis!.max!) : null,
+      renderSpec: CF.GridlineRendererSpec(
+          lineStyle: CF.LineStyleSpec(
+            dashPattern: [4, 4],
+          )));
+
   CF.BarChart buildBarChart(List<CF.Series<dynamic, String>> series) {
     // Determine if there is any grouping and/or stacking (grouped/stacked/groupedStacked)
     CF.BarGroupingType barGroupingType;
@@ -126,11 +134,7 @@ class _ChartViewState extends WidgetState<ChartView>
       series,
       animate: widget.model.animated,
       behaviors: getBehaviors<String>(),
-      primaryMeasureAxis: CF.NumericAxisSpec(
-          renderSpec: CF.GridlineRendererSpec(
-              lineStyle: CF.LineStyleSpec(
-        dashPattern: [4, 4],
-      ))),
+      primaryMeasureAxis: numericAxisSpec(),
       domainAxis: CF.AxisSpec<String>(
         renderSpec: CF.SmallTickRendererSpec(
           axisLineStyle: CF.LineStyleSpec(
@@ -177,11 +181,7 @@ class _ChartViewState extends WidgetState<ChartView>
       series as List<Series<dynamic, num>>,
       animate: widget.model.animated,
       behaviors: getBehaviors<num>(),
-      primaryMeasureAxis: CF.NumericAxisSpec(
-          renderSpec: CF.GridlineRendererSpec(
-              lineStyle: CF.LineStyleSpec(
-        dashPattern: [4, 4],
-      ))),
+      primaryMeasureAxis: numericAxisSpec(),
       domainAxis: CF.AxisSpec<num>(
         renderSpec: CF.SmallTickRendererSpec(
           axisLineStyle: CF.LineStyleSpec(
@@ -221,11 +221,7 @@ class _ChartViewState extends WidgetState<ChartView>
       series as List<Series<dynamic, String>>,
       animate: widget.model.animated,
       behaviors: getBehaviors<String>(),
-      primaryMeasureAxis: CF.NumericAxisSpec(
-          renderSpec: CF.GridlineRendererSpec(
-              lineStyle: CF.LineStyleSpec(
-        dashPattern: [4, 4],
-      ))),
+      primaryMeasureAxis: numericAxisSpec(),
       domainAxis: CF.AxisSpec<String>(
         renderSpec: CF.SmallTickRendererSpec(
           axisLineStyle: CF.LineStyleSpec(
@@ -290,11 +286,7 @@ class _ChartViewState extends WidgetState<ChartView>
       series as List<Series<dynamic, DateTime>>,
       animate: widget.model.animated,
       customSeriesRenderers: seriesRenderers,
-      primaryMeasureAxis: CF.NumericAxisSpec(
-          renderSpec: CF.GridlineRendererSpec(
-              lineStyle: CF.LineStyleSpec(
-        dashPattern: [4, 4],
-      ))),
+      primaryMeasureAxis: numericAxisSpec(),
       behaviors: getBehaviors<DateTime>(),
       domainAxis: CF.DateTimeAxisSpec(
         renderSpec: CF.SmallTickRendererSpec(

@@ -51,6 +51,33 @@ class ChartAxisModel extends WidgetModel
   }
   int get labelrotation => _labelrotation?.get() ?? 0;
 
+  /// Used to rotate long data labels so you can fit more, generally along the x axis
+  IntegerObservable? _labelsize;
+  set labelsize (dynamic v)
+  {
+    if (_labelsize != null)
+    {
+      _labelsize!.set(v);
+    }
+    else if (v != null)
+    {
+      _labelsize = IntegerObservable(Binding.toKey(id, 'labelsize'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  int? get labelsize => _labelsize?.get();
+
+  /// axis labels visibility
+  BooleanObservable? _labelvisible;
+  set labelvisible(dynamic v) {
+    if (_labelvisible != null) {
+      _labelvisible!.set(v);
+    } else if (v != null) {
+      _labelvisible = BooleanObservable(Binding.toKey(id, 'labelvisible'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get labelvisible => _labelvisible?.get() ?? true;
+
   /// Used for X Axis Labels with a Time Series to format the DateTime with i18n spec
   /// examples: https://stackoverflow.com/a/16126580/8272202
   StringObservable? _format;
@@ -110,6 +137,8 @@ class ChartAxisModel extends WidgetModel
       {
         String? type,
         dynamic labelrotation,
+        dynamic labelvisible,
+        dynamic labelsize,
         dynamic title,
         dynamic format,
         dynamic min,
@@ -129,6 +158,8 @@ class ChartAxisModel extends WidgetModel
 
   {
     this.labelrotation  = labelrotation;
+    this.labelvisible   = labelvisible;
+    this.labelsize      = labelsize;
     this.title          = title;
     this.format         = format;
     this.min            = min;
@@ -186,6 +217,8 @@ class ChartAxisModel extends WidgetModel
         axis,
         title           : Xml.get(node: xml, tag: 'title'),
         labelrotation   : Xml.get(node: xml, tag: 'labelrotation'),
+        labelvisible    : Xml.get(node: xml, tag: 'labelvisible'),
+        labelsize       : Xml.get(node: xml, tag: 'labelsize'),
         format          : Xml.get(node: xml, tag: 'format'),
         type            : Xml.get(node: xml, tag: 'type'),
         min             : Xml.get(node: xml, tag: 'min'),

@@ -95,15 +95,79 @@ class _ChartViewState extends WidgetState<ChartView>
     }
   }
 
-  CF.NumericAxisSpec numericAxisSpec() => CF.NumericAxisSpec(
+  /// Measure/Y Axis Specifications
+  CF.NumericAxisSpec yNumericAxisSpec() => CF.NumericAxisSpec(
       viewport: widget.model.yaxis?.min != null && widget.model.yaxis?.max != null
           ? CF.NumericExtents(widget.model.yaxis!.min!, widget.model.yaxis!.max!) : null,
       renderSpec: CF.GridlineRendererSpec(
-          lineStyle: CF.LineStyleSpec(
-            dashPattern: [4, 4],
-          )));
+          axisLineStyle: CF.LineStyleSpec(
+              color: CF.ColorUtil.fromDartColor(
+                  Theme.of(context).colorScheme.onBackground)),
+          labelStyle: CF.TextStyleSpec(
+              fontSize: widget.model.yaxis?.labelsize != null ? widget.model.yaxis!.labelsize : null,
+              color: CF.ColorUtil.fromDartColor(
+                  Theme.of(context).colorScheme.onBackground)),
+          // lineStyle: CF.LineStyleSpec(
+          //   dashPattern: [4, 4])
+      ));
 
-  CF.BarChart buildBarChart(List<CF.Series<dynamic, String>> series) {
+  CF.AxisSpec<String> xStringAxisSpec() => CF.AxisSpec<String>(
+    renderSpec: CF.SmallTickRendererSpec(
+      axisLineStyle: CF.LineStyleSpec(
+          color: CF.ColorUtil.fromDartColor(
+              Theme.of(context).colorScheme.onBackground)),
+      labelStyle: CF.TextStyleSpec(
+          fontSize: widget.model.xaxis?.labelsize != null ? widget.model.xaxis!.labelsize : null,
+          color: CF.ColorUtil.fromDartColor(
+              Theme.of(context).colorScheme.onBackground)),
+      labelRotation: widget.model.xaxis!.labelrotation.abs() * -1,
+      labelOffsetFromAxisPx:
+      (sin(widget.model.xaxis!.labelrotation.abs() * (pi / 180)) * 80)
+          .ceil() +
+          (widget.model.horizontal == true
+              ? 28
+              : 8), // 80 is rough estimate of our text length
+    ),
+  );
+
+  CF.AxisSpec<num> xNumComboAxisSpec() => CF.AxisSpec<num>(
+    renderSpec: CF.SmallTickRendererSpec(
+      axisLineStyle: CF.LineStyleSpec(
+          color: CF.ColorUtil.fromDartColor(
+              Theme.of(context).colorScheme.onBackground)),
+      labelStyle: CF.TextStyleSpec(
+          fontSize: widget.model.xaxis?.labelsize != null ? widget.model.xaxis!.labelsize : null,
+          color: CF.ColorUtil.fromDartColor(
+              Theme.of(context).colorScheme.onBackground)),
+      labelRotation: widget.model.xaxis!.labelrotation.abs() * -1,
+      labelOffsetFromAxisPx:
+      (sin(widget.model.xaxis!.labelrotation.abs() * (pi / 180)) * 80)
+          .ceil() +
+          8, // 80 is rough estimate of our text length
+    ),
+  );
+
+  CF.AxisSpec<DateTime> xDateTimeAxisSpec(List<CF.TickSpec<DateTime>> ticks) {
+    return CF.DateTimeAxisSpec(
+      renderSpec: CF.SmallTickRendererSpec(
+        axisLineStyle: CF.LineStyleSpec(
+            color: CF.ColorUtil.fromDartColor(
+                Theme.of(context).colorScheme.onBackground)),
+        labelAnchor: CF.TickLabelAnchor.after,
+        labelStyle: CF.TextStyleSpec(
+            fontSize: widget.model.xaxis?.labelsize != null ? widget.model.xaxis!.labelsize : null,
+            color: CF.ColorUtil.fromDartColor(
+                Theme.of(context).colorScheme.onBackground)),
+        labelRotation: widget.model.xaxis!.labelrotation.abs() * -1,
+        labelOffsetFromAxisPx:
+        (sin(widget.model.xaxis!.labelrotation.abs() * (pi / 180)) * 80)
+            .ceil() +
+            8, // 80 is rough estimate of our text length
+      ),
+      tickProviderSpec: CF.StaticDateTimeTickProviderSpec(ticks),
+    );
+  }
+      CF.BarChart buildBarChart(List<CF.Series<dynamic, String>> series) {
     // Determine if there is any grouping and/or stacking (grouped/stacked/groupedStacked)
     CF.BarGroupingType barGroupingType;
     ChartSeriesModel seriesModel = widget.model.series[0];
@@ -134,24 +198,8 @@ class _ChartViewState extends WidgetState<ChartView>
       series,
       animate: widget.model.animated,
       behaviors: getBehaviors<String>(),
-      primaryMeasureAxis: numericAxisSpec(),
-      domainAxis: CF.AxisSpec<String>(
-        renderSpec: CF.SmallTickRendererSpec(
-          axisLineStyle: CF.LineStyleSpec(
-              color: CF.ColorUtil.fromDartColor(
-                  Theme.of(context).colorScheme.onBackground)),
-          labelStyle: CF.TextStyleSpec(
-              color: CF.ColorUtil.fromDartColor(
-                  Theme.of(context).colorScheme.onBackground)),
-          labelRotation: widget.model.xaxis!.labelrotation.abs() * -1,
-          labelOffsetFromAxisPx:
-              (sin(widget.model.xaxis!.labelrotation.abs() * (pi / 180)) * 80)
-                      .ceil() +
-                  (widget.model.horizontal == true
-                      ? 28
-                      : 8), // 80 is rough estimate of our text length
-        ),
-      ),
+      primaryMeasureAxis: yNumericAxisSpec(),
+      domainAxis: xStringAxisSpec(),
       barGroupingType: barGroupingType,
       vertical: widget.model.horizontal == true ? false : true,
       barRendererDecorator: CF.BarLabelDecorator<String>(
@@ -181,22 +229,8 @@ class _ChartViewState extends WidgetState<ChartView>
       series as List<Series<dynamic, num>>,
       animate: widget.model.animated,
       behaviors: getBehaviors<num>(),
-      primaryMeasureAxis: numericAxisSpec(),
-      domainAxis: CF.AxisSpec<num>(
-        renderSpec: CF.SmallTickRendererSpec(
-          axisLineStyle: CF.LineStyleSpec(
-              color: CF.ColorUtil.fromDartColor(
-                  Theme.of(context).colorScheme.onBackground)),
-          labelStyle: CF.TextStyleSpec(
-              color: CF.ColorUtil.fromDartColor(
-                  Theme.of(context).colorScheme.onBackground)),
-          labelRotation: widget.model.xaxis!.labelrotation.abs() * -1,
-          labelOffsetFromAxisPx:
-              (sin(widget.model.xaxis!.labelrotation.abs() * (pi / 180)) * 80)
-                      .ceil() +
-                  8, // 80 is rough estimate of our text length
-        ),
-      ),
+      primaryMeasureAxis: yNumericAxisSpec(),
+      domainAxis: xNumComboAxisSpec(),
       customSeriesRenderers: seriesRenderers,
       selectionModels: [
         CF.SelectionModelConfig(
@@ -221,22 +255,8 @@ class _ChartViewState extends WidgetState<ChartView>
       series as List<Series<dynamic, String>>,
       animate: widget.model.animated,
       behaviors: getBehaviors<String>(),
-      primaryMeasureAxis: numericAxisSpec(),
-      domainAxis: CF.AxisSpec<String>(
-        renderSpec: CF.SmallTickRendererSpec(
-          axisLineStyle: CF.LineStyleSpec(
-              color: CF.ColorUtil.fromDartColor(
-                  Theme.of(context).colorScheme.onBackground)),
-          labelStyle: CF.TextStyleSpec(
-              color: CF.ColorUtil.fromDartColor(
-                  Theme.of(context).colorScheme.onBackground)),
-          labelRotation: widget.model.xaxis!.labelrotation.abs() * -1,
-          labelOffsetFromAxisPx:
-              (sin(widget.model.xaxis!.labelrotation.abs() * (pi / 180)) * 80)
-                      .ceil() +
-                  8, // 80 is rough estimate of our text length
-        ),
-      ),
+      primaryMeasureAxis: yNumericAxisSpec(),
+      domainAxis: xStringAxisSpec(),
       customSeriesRenderers: seriesRenderers,
       selectionModels: [
         CF.SelectionModelConfig(
@@ -286,25 +306,9 @@ class _ChartViewState extends WidgetState<ChartView>
       series as List<Series<dynamic, DateTime>>,
       animate: widget.model.animated,
       customSeriesRenderers: seriesRenderers,
-      primaryMeasureAxis: numericAxisSpec(),
       behaviors: getBehaviors<DateTime>(),
-      domainAxis: CF.DateTimeAxisSpec(
-        renderSpec: CF.SmallTickRendererSpec(
-          axisLineStyle: CF.LineStyleSpec(
-              color: CF.ColorUtil.fromDartColor(
-                  Theme.of(context).colorScheme.onBackground)),
-          labelAnchor: CF.TickLabelAnchor.after,
-          labelStyle: CF.TextStyleSpec(
-              color: CF.ColorUtil.fromDartColor(
-                  Theme.of(context).colorScheme.onBackground)),
-          labelRotation: widget.model.xaxis!.labelrotation.abs() * -1,
-          labelOffsetFromAxisPx:
-              (sin(widget.model.xaxis!.labelrotation.abs() * (pi / 180)) * 80)
-                      .ceil() +
-                  8, // 80 is rough estimate of our text length
-        ),
-        tickProviderSpec: CF.StaticDateTimeTickProviderSpec(ticks),
-      ),
+      primaryMeasureAxis: yNumericAxisSpec(),
+      domainAxis: xDateTimeAxisSpec(ticks),
       selectionModels: [
         CF.SelectionModelConfig(
           type: CF.SelectionModelType.info,
@@ -765,24 +769,29 @@ class _ChartViewState extends WidgetState<ChartView>
     chartType = getChartType();
     List<CF.Series>? series = buildSeriesList();
 
-    switch (chartType) {
-      case ChartType.BarChart:
-        view = buildBarChart(series as List<Series<dynamic, String>>);
-        break;
-      case ChartType.NumericComboChart:
-        view = buildNumericChart(series!);
-        break;
-      case ChartType.OrdinalComboChart:
-        view = buildOrdinalChart(series!);
-        break;
-      case ChartType.PieChart:
-        view = buildPieChart((series as List<CF.Series<dynamic, String>>));
-        break;
-      case ChartType.TimeSeriesChart:
-        view = buildTimeChart(series!);
-        break;
-      default:
-        view = Icon(Icons.add_chart);
+    try {
+      switch (chartType) {
+        case ChartType.BarChart:
+          view = buildBarChart(series as List<Series<dynamic, String>>);
+          break;
+        case ChartType.NumericComboChart:
+          view = buildNumericChart(series!);
+          break;
+        case ChartType.OrdinalComboChart:
+          view = buildOrdinalChart(series!);
+          break;
+        case ChartType.PieChart:
+          view = buildPieChart((series as List<CF.Series<dynamic, String>>));
+          break;
+        case ChartType.TimeSeriesChart:
+          view = buildTimeChart(series!);
+          break;
+        default:
+          view = Icon(Icons.add_chart);
+      }
+    } catch(e) {
+      Log().exception(e, caller: 'chart_view builder() ');
+      view = Icon(Icons.add_chart);
     }
 
     // Prioritize chart ux interactions

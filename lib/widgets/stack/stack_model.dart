@@ -69,12 +69,21 @@ class StackModel extends LayoutModel
   {
     List<Widget> views = [];
     var children = viewableChildren;
+
+    // sort
     children.sort((a, b)
     {
       if(a.depth != null && b.depth != null) return a.depth?.compareTo(b.depth!) ?? 0;
       return 0;
     });
-    children.forEach((model) => views.add(model.getView()));
+
+    // build
+    children.forEach((model)
+    {
+      model.resetViewSizing();
+      views.add(model.getView());
+    });
+
     return views;
   }
 

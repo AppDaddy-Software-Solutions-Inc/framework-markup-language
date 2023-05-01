@@ -73,12 +73,12 @@ class BoxModel extends LayoutModel
         {
           expand = true;
           break;
-        };
-      };
+        }
+      }
     return expand;
   }
 
-  @required
+  @override
   bool get isHorizontallyExpanding
   {
     if (isFixedWidth) return false;
@@ -91,8 +91,8 @@ class BoxModel extends LayoutModel
         {
           expand = true;
           break;
-        };
-      };
+        }
+      }
     return expand;
   }
 

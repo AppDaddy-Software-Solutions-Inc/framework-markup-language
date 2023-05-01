@@ -21,6 +21,9 @@ class ChartModel extends DecoratedWidgetModel  {
   ChartAxisModel? yaxis; // = ChartAxisModel(null, null, Axis.Y, title: null, fontsize: null, fontcolor: Colors.white, type: ChartAxisModel.type_numeric);
   final List<ChartSeriesModel> series = [];
 
+  bool get isVerticallyExpanding   => true;
+  bool get isHorizontallyExpanding => true;
+  
   ChartModel(WidgetModel parent, String? id,
     {
       dynamic type,

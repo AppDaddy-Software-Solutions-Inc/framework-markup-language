@@ -411,12 +411,8 @@ class _ChartViewState extends WidgetState<ChartView>
       }
 
       // Null Series Warning
-      if (xAllNull)
-        Log().warning(
-            'id: ${series.id.toString()} name: ${series.name.toString()} X values are all null');
-      if (yAllNull)
-        Log().warning(
-            'id: ${series.id.toString()} name: ${series.name.toString()} Y values are all null');
+      //if (xAllNull) Log().warning('id: ${series.id.toString()} name: ${series.name.toString()} X values are all null');
+      //if (yAllNull) Log().warning('id: ${series.id.toString()} name: ${series.name.toString()} Y values are all null');
 
       switch (widget.model.xaxis!.type) {
         // Date/Time based X Axis
@@ -756,6 +752,8 @@ class _ChartViewState extends WidgetState<ChartView>
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
+    if (widget.model.id == "breaker1") print ('Building chart ${widget.model.id} ...');
+
     // save system constraints
     onLayout(constraints);
 

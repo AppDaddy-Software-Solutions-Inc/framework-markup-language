@@ -130,6 +130,19 @@ class ChartAxisModel extends WidgetModel
     return maxDbl;
   }
 
+  /// Truncating a numeric y axis will prevent the y axis forcing 0(zero) as the baseline
+  /// This allows the baseline to be based on the series' y data instead
+  BooleanObservable? _truncate;
+  set truncate(dynamic v) {
+    if (_truncate != null) {
+      _truncate!.set(v);
+    } else if (v != null) {
+      _truncate = BooleanObservable(Binding.toKey(id, 'truncate'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get truncate => _truncate?.get() ?? false;
+
   ChartAxisModel(
       WidgetModel parent,
       String?  id,
@@ -143,6 +156,7 @@ class ChartAxisModel extends WidgetModel
         dynamic format,
         dynamic min,
         dynamic max,
+        dynamic truncate,
         // dynamic minimum,
         // dynamic maximum,
         // dynamic visibleminimum,
@@ -164,6 +178,7 @@ class ChartAxisModel extends WidgetModel
     this.format         = format;
     this.min            = min;
     this.max            = max;
+    this.truncate       = truncate;
     // this.minimum        = minimum;
     // this.maximum        = maximum;
     // this.visibleminimum = visibleminimum;
@@ -223,6 +238,7 @@ class ChartAxisModel extends WidgetModel
         type            : Xml.get(node: xml, tag: 'type'),
         min             : Xml.get(node: xml, tag: 'min'),
         max             : Xml.get(node: xml, tag: 'max'),
+        truncate        : Xml.get(node: xml, tag: 'truncate'),
         // fontsize        : Xml.get(node: xml, tag: 'fontsize'),
         // fontcolor       : Xml.get(node: xml, tag: 'fontcolor'),
         // format          : Xml.get(node: xml, tag: 'format'),

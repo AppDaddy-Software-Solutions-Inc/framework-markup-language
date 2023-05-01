@@ -395,6 +395,7 @@ class ColorObservable extends Observable
         else if (color.length == 8 && color.startsWith('0x')) c = Color(int.parse(color.substring(2, 8), radix: 16) + 0xFF000000);
         else if (color.length == 10 && color.startsWith('0x')) c = Color(int.parse(color.substring(2, 10), radix: 16) + 0x00000000);
         else if (color.length == 17 && color.startsWith('Color(0x')) c = Color(int.parse(color.substring(8, 16), radix: 16) + 0x00000000);
+        else if (color.length == 47 && color.startsWith('MaterialColor(primary value: Color(0x')) c = Color(int.parse(color.substring(37, 45), radix: 16) + 0x00000000);
       }
     }
     catch(e)

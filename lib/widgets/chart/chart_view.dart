@@ -104,7 +104,7 @@ class _ChartViewState extends WidgetState<ChartView>
               color: CF.ColorUtil.fromDartColor(
                   Theme.of(context).colorScheme.onBackground)),
           labelStyle: CF.TextStyleSpec(
-              fontSize: widget.model.yaxis?.labelsize != null ? widget.model.yaxis!.labelsize : null,
+              fontSize: widget.model.yaxis?.labelvisible == false ? 0 : widget.model.yaxis!.labelsize,
               color: CF.ColorUtil.fromDartColor(
                   Theme.of(context).colorScheme.onBackground)),
           // lineStyle: CF.LineStyleSpec(
@@ -117,7 +117,7 @@ class _ChartViewState extends WidgetState<ChartView>
           color: CF.ColorUtil.fromDartColor(
               Theme.of(context).colorScheme.onBackground)),
       labelStyle: CF.TextStyleSpec(
-          fontSize: widget.model.xaxis?.labelsize != null ? widget.model.xaxis!.labelsize : null,
+          fontSize: widget.model.xaxis?.labelvisible == false ? 0 : widget.model.xaxis!.labelsize,
           color: CF.ColorUtil.fromDartColor(
               Theme.of(context).colorScheme.onBackground)),
       labelRotation: widget.model.xaxis!.labelrotation.abs() * -1,
@@ -136,7 +136,7 @@ class _ChartViewState extends WidgetState<ChartView>
           color: CF.ColorUtil.fromDartColor(
               Theme.of(context).colorScheme.onBackground)),
       labelStyle: CF.TextStyleSpec(
-          fontSize: widget.model.xaxis?.labelsize != null ? widget.model.xaxis!.labelsize : null,
+          fontSize: widget.model.xaxis?.labelvisible == false ? 0 : widget.model.xaxis!.labelsize,
           color: CF.ColorUtil.fromDartColor(
               Theme.of(context).colorScheme.onBackground)),
       labelRotation: widget.model.xaxis!.labelrotation.abs() * -1,
@@ -155,7 +155,7 @@ class _ChartViewState extends WidgetState<ChartView>
                 Theme.of(context).colorScheme.onBackground)),
         labelAnchor: CF.TickLabelAnchor.after,
         labelStyle: CF.TextStyleSpec(
-            fontSize: widget.model.xaxis?.labelsize != null ? widget.model.xaxis!.labelsize : null,
+            fontSize: widget.model.xaxis?.labelvisible == false ? 0 : widget.model.xaxis!.labelsize,
             color: CF.ColorUtil.fromDartColor(
                 Theme.of(context).colorScheme.onBackground)),
         labelRotation: widget.model.xaxis!.labelrotation.abs() * -1,

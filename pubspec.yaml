@@ -166,6 +166,10 @@ dependencies:
   jaguar_jwt: ^3.0.0
   # BSD-3-Clause
 
+  # Updated 2023/05/02
+  jiffy: ^5.0.0
+  # MIT
+
   # Updated 2023/03/13
   js: ^0.6.5
   # BSD-3-Clause
@@ -256,6 +260,10 @@ dependencies:
 
   # Updated 2022/12/14
   video_player: ^2.4.9
+  # BSD-3-Clause
+
+  # Updated 2023/4/3
+  video_player_win: ^2.2.2
   # BSD-3-Clause
 
   # Updated 2023/02/28

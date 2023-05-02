@@ -459,8 +459,10 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     /// https://github.com/flutter/flutter/issues/11655
     /// This hack prevents the page that is being navigated away from
     /// from rebuilding
-    if (NavigationManager().positionInStack(context) != 0)
+    var index = NavigationManager().positionInStack(context);
+    if (index != 0)
     {
+      Log().debug('Framework ${widget.model.templateName} was not built since its index ($index) != 0"/>');
       return Offstage();
     }
 

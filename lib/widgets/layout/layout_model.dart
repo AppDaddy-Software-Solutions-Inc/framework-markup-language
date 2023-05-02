@@ -228,24 +228,21 @@ class LayoutModel extends DecoratedWidgetModel
 
   List<ViewableWidgetModel> _touched = [];
 
-  @override
-  List<Widget> inflate()
-  {
-    List<Widget> views = [];
-    viewableChildren.forEach((model)
-    {
-      model.resetViewSizing();
-      views.add(model.getView());
-    });
-    return views;
-  }
-
   /// VIEW LAYOUT
   @override
   resetViewSizing()
   {
     // mark as needing layout
     layoutComplete = false;
+
+    // clear child sizing
+    viewableChildren.forEach((child)
+    {
+      if (!child.isFixedHeight) child.height = null;
+      if (!child.isFixedWidth)  child.width  = null;
+      child.setLayoutConstraints(BoxConstraints(minWidth: 0, maxWidth: double.infinity, minHeight: 0, maxHeight: double.infinity));
+    });
+
     super.resetViewSizing();
   }
 
@@ -254,12 +251,43 @@ class LayoutModel extends DecoratedWidgetModel
   {
     super.onLayoutComplete(model);
 
+    if (this.id == "ccc")
+    {
+      int i = 0;
+    }
+
+    if (this.id == "ddd")
+    {
+      int i = 0;
+    }
+
+    if (this.id == "eee")
+    {
+      int i = 0;
+    }
+
+    if (model!.id == "eee")
+    {
+      int i = 0;
+    }
+
+    var x = layoutComplete;
     bool canLayout = parent is! LayoutModel || (parent as LayoutModel).layoutComplete;
-    if (canLayout && !layoutComplete && viewableChildren.contains(model))
+    if (canLayout && !layoutComplete && (this == model || viewableChildren.contains(model)))
     {
       // all fixed width and height children have been laid out?
       if (fixedWidthChildren.where((child) => child.viewWidth == null).isEmpty && fixedHeightChildren.where((child) => child.viewHeight == null).isEmpty)
       {
+        if (this.id == "eee")
+          {
+            int i = 0;
+          }
+
+        if (model!.id == "eee")
+        {
+          int i = 0;
+        }
+
         layoutComplete = true;
 
         _touched.clear();
@@ -279,6 +307,10 @@ class LayoutModel extends DecoratedWidgetModel
 
   void _onWidthChange()
   {
+    if (this.id == "eee")
+      {
+        int i = 0;
+      }
     // layout cannot be performed until all fixed width children have been laid out
     var unsized = fixedWidthChildren.where((child) => child.viewWidth == null);
     if (unsized.isNotEmpty) return;

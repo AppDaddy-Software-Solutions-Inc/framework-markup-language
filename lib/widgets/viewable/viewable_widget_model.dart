@@ -649,9 +649,14 @@ class ViewableWidgetModel extends ConstraintModel
 
   List<Widget> inflate()
   {
+    // reset my view
+    resetViewSizing();
+
+    // process children
     List<Widget> views = [];
     viewableChildren.forEach((model)
     {
+      // reset child view
       model.resetViewSizing();
       views.add(model.getView());
     });

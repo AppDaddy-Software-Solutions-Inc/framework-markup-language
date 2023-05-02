@@ -758,13 +758,8 @@ class _ChartViewState extends WidgetState<ChartView>
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    // if layout is still rendering, dont display chart
-    if (!widget.model.layoutComplete) return Offstage();
-
     // Busy / Loading Indicator
     if (busy == null) busy = BUSY.BusyView(BUSY.BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
-
-    print ('Building chart ${widget.model.id} ...');
 
     Widget view;
 

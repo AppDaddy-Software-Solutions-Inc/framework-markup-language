@@ -1,9 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/video/IVideoPlayer.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/video/video_view.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/event/handler.dart' ;
 import 'package:flutter/material.dart';
@@ -11,7 +11,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class VideoModel extends DecoratedWidgetModel implements IViewableWidget
+class VideoModel extends DecoratedWidgetModel implements ViewableWidgetModel
 {
   IVideoPlayer? player;
 
@@ -120,15 +120,15 @@ class VideoModel extends DecoratedWidgetModel implements IViewableWidget
     var function = propertyOrFunction.toLowerCase().trim();
 
     if (player != null)
-    switch (function)
-    {
-      case "start"    : return await player!.start();
-      case "play"     : return await player!.start();
-      case "stop"     : return await player!.stop();
-      case "pause"    : return await player!.pause();
-      case "rewind"   : return await player!.seek(0);
-      case "seek"     : return await player!.seek(S.toInt(S.item(arguments, 0)) ?? 0);
-    }
+      switch (function)
+      {
+        case "start"    : return await player!.start();
+        case "play"     : return await player!.start();
+        case "stop"     : return await player!.stop();
+        case "pause"    : return await player!.pause();
+        case "rewind"   : return await player!.seek(0);
+        case "seek"     : return await player!.seek(S.toInt(S.item(arguments, 0)) ?? 0);
+      }
     return super.execute(caller, propertyOrFunction, arguments);
   }
 

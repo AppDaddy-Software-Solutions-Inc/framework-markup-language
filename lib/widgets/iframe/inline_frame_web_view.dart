@@ -1,18 +1,19 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:convert';
+import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:universal_html/html.dart' as HTML;
 import 'package:universal_html/js.dart' as JAVASCRIPT;
 import 'dart:ui' as UI;
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'inline_frame_model.dart';
 import 'inline_frame_view.dart';
 import 'package:fml/helper/common_helpers.dart';
 
 InlineFrameView getView(model) => InlineFrameView(model);
 
-class InlineFrameView extends StatefulWidget implements View
+class InlineFrameView extends StatefulWidget implements View, IWidgetView
 {
   final InlineFrameModel model;
 
@@ -22,65 +23,32 @@ class InlineFrameView extends StatefulWidget implements View
   _InlineFrameViewState createState() => _InlineFrameViewState();
 }
 
-class _InlineFrameViewState extends State<InlineFrameView>
+class _InlineFrameViewState extends WidgetState<InlineFrameView>
 {
   IFrameWidget? iframe;
 
   @override
-  Widget build(BuildContext context)
-  {
-    return LayoutBuilder(builder: builder);
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     InlineFrameModel model = widget.model;
 
-    // Set Build Constraints in the [WidgetModel]
-    widget.model.minWidth  = constraints.minWidth;
-    widget.model.maxWidth  = constraints.maxWidth;
-    widget.model.minHeight = constraints.minHeight;
-    widget.model.maxHeight = constraints.maxHeight;
+    // save system constraints
+    onLayout(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    ///////////
-    /* Child */
-    ///////////
-    List<Widget> children = [];
-    if (model.children != null)
-      model.children!.forEach((model) {
-        if (model is IViewableWidget) {
-          children.add((model as IViewableWidget).getView());
-        }
-      });
-
-    //////////
-    /* View */
-    //////////
-
     //This prevents the iframe from rebuilding and hiding the keyboard every time.
     if (iframe == null) iframe = IFrameWidget(model: model);
-    Widget? view = iframe;
+    Widget view = iframe!;
 
-    //////////////////
-    /* Constrained? */
-    //////////////////
-    if (model.hasSizing) {
-      var constraints = model.getConstraints();
-      view = ConstrainedBox(
-          child: view,
-          constraints: BoxConstraints(
-              minHeight: constraints.minHeight!,
-              maxHeight: constraints.maxHeight!,
-              minWidth: constraints.minWidth!,
-              maxWidth: constraints.maxWidth!));
-    } else
-      view = Container(
-          child: view,
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height);
+    // basic view
+    view = Container(child: view, width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.height);
+
+    // apply user defined constraints
+    view = applyConstraints(view, widget.model.constraints.model);
 
     return view;
   }

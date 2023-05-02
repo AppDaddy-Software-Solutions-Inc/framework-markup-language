@@ -1,14 +1,14 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/column/column_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
-import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/alignment/alignment.dart';
+import 'package:fml/widgets/layout/layout_model.dart';
 
 class ColumnView extends StatefulWidget implements IWidgetView
 {
-  final ColumnModel model;
+  final LayoutModel model;
 
   ColumnView(this.model) : super(key: ObjectKey(model));
 
@@ -19,89 +19,58 @@ class ColumnView extends StatefulWidget implements IWidgetView
 class _ColumnViewState extends WidgetState<ColumnView>
 {
   @override
+  void initState()
+  {
+    super.initState();
+
+    // remove listener to the model if the model
+    // is not a column model. The BoxModel will share the same model
+    // and rebuild this view on model change
+    if (widget.model is! ColumnModel) widget.model.removeListener(this);
+  }
+
+  @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    // Set Build Constraints in the [WidgetModel]
-    setConstraints(constraints);
-
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    ///////////
-    /* Child */
-    ///////////
-    List<Widget> children = [];
-    if (widget.model.children != null)
-      widget.model.children!.forEach((model) {
-        if (model is IViewableWidget) {
-          children.add((model as IViewableWidget).getView());
-        }
-      });
+    // save system constraints
+    onLayout(constraints);
+
+    // build the child views
+    List<Widget> children = widget.model.inflate();
     if (children.isEmpty) children.add(Container());
 
-    //this must go after the children are determined
-    Map<String, dynamic> align = AlignmentHelper.alignWidgetAxis(
-        children.length,
-        'column',
-        widget.model.center,
-        widget.model.halign,
-        widget.model.valign);
-    CrossAxisAlignment? crossAlignment = align['crossAlignment'];
-    MainAxisAlignment? mainAlignment = align['mainAlignment'];
-    WrapAlignment? mainWrapAlignment = align['mainWrapAlignment'];
-    WrapCrossAlignment? crossWrapAlignment = align['crossWrapAlignment'];
-    //Alignment aligned = align['aligned'];
+    // get main axis size
+    MainAxisSize? mainAxisSize = widget.model.verticalAxisSize;
 
-    // set main axis size
-    var mainAxisSize = widget.model.expand == false ? MainAxisSize.min : MainAxisSize.max;
-
-    /// safeguard - don't allow infinite size
-    if (mainAxisSize == MainAxisSize.max && constraints.maxHeight == double.infinity) mainAxisSize = MainAxisSize.min;
+    // this must go after the children are determined
+    var alignment = WidgetAlignment(widget.model.layoutType, widget.model.center, widget.model.halign, widget.model.valign);
 
     Widget view;
 
-    // paddings
-    EdgeInsets insets = EdgeInsets.only();
-    if (widget.model.paddings > 0)
-    {
-     // pad all
-     if (widget.model.paddings == 1) insets = EdgeInsets.all(widget.model.padding);
-
-     // pad directions v,h
-     else if (widget.model.paddings == 2) insets = EdgeInsets.symmetric(vertical: widget.model.padding, horizontal: widget.model.padding2);
-
-     // pad sides top, right, bottom
-     else if (widget.model.paddings == 3) insets = EdgeInsets.only(top: widget.model.padding, left: widget.model.padding2, right: widget.model.padding2, bottom: widget.model.padding3);
-
-     // pad sides top, right, bottom
-     else if (widget.model.paddings == 4) insets = EdgeInsets.only(top: widget.model.padding, right: widget.model.padding2, bottom: widget.model.padding3, left: widget.model.padding4);
-    }
+    // create view
     if (widget.model.wrap == true)
-      view = Padding( padding: insets, child: Wrap(
-          children: children,
+      view = Wrap(children: children,
           direction: Axis.vertical,
-          alignment: mainWrapAlignment!,
-          runAlignment: mainWrapAlignment,
-          crossAxisAlignment: crossWrapAlignment!));
+          alignment: alignment.mainWrapAlignment,
+          runAlignment: alignment.mainWrapAlignment,
+          crossAxisAlignment: alignment.crossWrapAlignment);
     else
-      view = Padding( padding: insets, child:Column(
+      view = Column(
           children: children,
-          mainAxisAlignment: mainAlignment!,
-          crossAxisAlignment: crossAlignment!,
-          mainAxisSize: mainAxisSize));
+          mainAxisAlignment: alignment.mainAlignment,
+          crossAxisAlignment: alignment.crossAlignment,
+          mainAxisSize: mainAxisSize);
 
-    // Constrained?
-    if (widget.model.hasSizing)
-    {
-      var constraints = widget.model.getConstraints();
-      double minWidth  = widget.model.haslHorizontalSizing ? constraints.minWidth  ?? 0.0 : 0.0;
-      double maxWidth  = widget.model.haslHorizontalSizing ? constraints.maxWidth  ?? double.infinity : double.infinity;
-      double minHeight = widget.model.hasVerticalSizing   ? constraints.minHeight ?? 0.0 : 0.0;
-      double maxHeight = widget.model.hasVerticalSizing   ? constraints.maxHeight ?? double.infinity : double.infinity;
-      view = ConstrainedBox(child: view, constraints: BoxConstraints(minHeight: minHeight, maxHeight: maxHeight, minWidth: minWidth, maxWidth: maxWidth));
-    }
+    // add margins
+    if (model is ColumnModel) view = addMargins(view);
+
+    // apply user defined constraints
+    if (model is ColumnModel) view = applyConstraints(view, widget.model.constraints.model);
 
     return view;
   }

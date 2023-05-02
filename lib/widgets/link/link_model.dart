@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart' as URL;
@@ -11,7 +10,7 @@ import 'package:fml/widgets/link/link_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class LinkModel extends DecoratedWidgetModel implements IViewableWidget
+class LinkModel extends DecoratedWidgetModel 
 {
   /////////
   /* url */
@@ -132,9 +131,7 @@ class LinkModel extends DecoratedWidgetModel implements IViewableWidget
     LinkModel? model;
     try
     {
-      /////////////////
-      /* Build Model */
-      /////////////////
+// build model
       model = LinkModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }

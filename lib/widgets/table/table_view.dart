@@ -309,10 +309,10 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     ///////////////////
     widget.model.cellpadding.clear();
 
-    // Set Build Constraints in the [WidgetModel]
-    setConstraints(constraints);
+    // save system constraints
+    onLayout(constraints);
 
-    double? viewportHeight = widget.model.height ?? widget.model.maxHeight;
+    double? viewportHeight = widget.model.height ?? widget.model.calculatedMaxHeightOrDefault;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -331,14 +331,14 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     /* Viewport Size */
     ///////////////////
     double viewportWidth  = constraints.maxWidth;
-    if (((widget.model.height ?? 0) > 0) && ((widget.model.height ?? 0) < viewportHeight!)) viewportHeight = widget.model.height;
+    if (((widget.model.height ?? 0) > 0) && ((widget.model.height ?? 0) < viewportHeight)) viewportHeight = widget.model.height;
 
     //////////////////////////////////
     /* Set Padding to Fill Viewport */
     //////////////////////////////////
     double padding = viewportWidth - contentWidth;
     widget.model.calculatePadding(padding);
-    if (padding < 0) padding = 0;
+    if (padding.isNegative) padding = 0;
 
     /////////////////
     /* Header Size */
@@ -552,7 +552,7 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
       /* Page */
       //////////
       int page = widget.model.page ?? 1;
-      if (page < 0) page = 1;
+      if (page.isNegative) page = 1;
 
       /////////////////////
       /* Page Increments */
@@ -608,7 +608,7 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     if (pagesize > 0)
     {
       int page = widget.model.page ?? 1;
-      if (page < 0) page = 1;
+      if (page.isNegative) page = 1;
 
       ///////////////
       /* Prev Page */
@@ -632,7 +632,7 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
       int pagesize = widget.model.pagesize ?? records!;
 
       int page = widget.model.page ?? 1;
-      if (page < 0) page = 1;
+      if (page.isNegative) page = 1;
 
       int pages = (pagesize > 0) ? (records! / pagesize).ceil() : 0;
 
@@ -667,7 +667,7 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
       if (pagesize > records) pagesize = records;
 
       int page = widget.model.page ?? 1;
-      if (page < 0) page = 1;
+      if (page.isNegative) page = 1;
 
       ///////////////////////
       /* Records Displayed */
@@ -744,7 +744,7 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     int pagesize = widget.model.pagesize ?? records;
 
     int page = widget.model.page ?? 1;
-    if (page < 0) page = 1;
+    if (page.isNegative) page = 1;
 
     if (index >= records) return getEmptyRowModel(index, index);
 

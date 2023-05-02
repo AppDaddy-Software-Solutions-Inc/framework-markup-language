@@ -4,7 +4,6 @@ import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'src/arrow.dart';
 import 'src/bubble.dart';
@@ -65,14 +64,7 @@ class TooltipView extends StatefulWidget implements IWidgetView
     this.position = _pos;
 
     // set tooltip content
-    List<Widget> children = [];
-    if (model.children != null)
-    model.children!.forEach((model)
-    {
-      if (model is IViewableWidget) {
-        children.add((model as IViewableWidget).getView());
-      }
-    });
+    List<Widget> children = model.inflate();
     content = children.length == 1 ? children[0] : Column(children: children, mainAxisSize: MainAxisSize.min);
   }
 
@@ -172,7 +164,7 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
           child: Center(
             child: Bubble(
               key: _widgetKey,
-              padding: widget.model.padding,
+              padding: widget.model.margins,
               child: widget.content,
             ),
           ),
@@ -241,7 +233,7 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
       top:  toolTipElementsDisplay.bubble.y,
       left: toolTipElementsDisplay.bubble.x,
       child: Bubble(
-        padding: widget.model.padding,
+        padding: widget.model.margins,
         radius: toolTipElementsDisplay.radius,
         color: widget.model.color ?? Theme.of(context).colorScheme.surfaceVariant,
         child: widget.content,

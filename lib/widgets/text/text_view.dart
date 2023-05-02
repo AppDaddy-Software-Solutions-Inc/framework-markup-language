@@ -1,8 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:fml/helper/string.dart';
-import 'package:fml/widgets/expanded/expanded_model.dart';
-import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
@@ -52,44 +50,6 @@ class _TextViewState extends WidgetState<TextView>
   {
     text = null;
     super.didChangeDependencies();
-  }
-
-  @override
-  Widget build(BuildContext context)
-  {
-    // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
-
-    // get the theme
-    theme = Theme.of(context);
-
-    // use this to optimize
-    bool textHasChanged = (text != widget.model.value);
-    text = widget.model.value;
-
-    // build the view
-    Widget view = widget.model.raw ? _getSimpleTextView() : _getRichTextView(rebuild: textHasChanged);
-
-    // is part of a larger span?
-    if (widget.model.isSpan) return SizedBox(child: view);
-
-    // constrained?
-    bool isNotExpandedChild = false;
-    if(!widget.model.hasSizing)
-    {
-      ScrollerModel? parentScroll = widget.model.findAncestorOfExactType(ScrollerModel);
-      if (parentScroll != null && parentScroll.layout.toLowerCase() == "row") return view;
-      isNotExpandedChild = widget.model.findAncestorOfExactType(ExpandedModel) == null;
-    }
-
-    // constrained?
-    if (isNotExpandedChild || widget.model.hasSizing)
-    {
-      var constr = widget.model.getConstraints();
-      view = ConstrainedBox(child: view, constraints: BoxConstraints(minWidth: constr.minWidth!, maxWidth: constr.maxWidth!));
-    }
-
-    return view;
   }
 
   void _parseText(String? value)
@@ -191,6 +151,7 @@ class _TextViewState extends WidgetState<TextView>
       case "wrap":
         textOverflow = TextOverflow.visible;
         break;
+      case "ellipsis":
       case "ellipses":
         textOverflow = TextOverflow.ellipsis;
         break;
@@ -495,5 +456,38 @@ class _TextViewState extends WidgetState<TextView>
     });
 
     return textSpans;
+  }
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
+    // Check if widget is visible before wasting resources on building it
+    if (!widget.model.visible) return Offstage();
+
+    // save system constraints
+    onLayout(constraints);
+
+    // get the theme
+    theme = Theme.of(context);
+
+    // use this to optimize
+    bool textHasChanged = (text != widget.model.value);
+    text = widget.model.value;
+
+    // build the view
+    Widget view = widget.model.raw ? _getSimpleTextView() : _getRichTextView(rebuild: textHasChanged);
+
+    // is part of a larger span?
+    if (widget.model.isSpan) return SizedBox(child: view);
+
+    // add margins
+    view = addMargins(view);
+
+    // apply user defined constraints
+    view = applyConstraints(view, widget.model.constraints.model);
+
+    return view;
   }
 }

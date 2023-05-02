@@ -4,7 +4,6 @@ import 'package:camera/camera.dart' show XFile;
 import 'package:fml/datasources/camera/model.dart' as CAMERA;
 import 'package:fml/widgets/camera/camera_view.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/event/handler.dart' ;
 import 'package:flutter/material.dart';
@@ -20,7 +19,7 @@ import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
 if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
 if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
 
-class CameraModel extends CAMERA.CameraImageModel implements IViewableWidget
+class CameraModel extends CAMERA.CameraImageModel
 {
   bool fullscreen = true;
   bool stream = false;
@@ -281,9 +280,7 @@ class CameraModel extends CAMERA.CameraImageModel implements IViewableWidget
     CameraModel? model;
     try
     {
-      /////////////////
-      /* Build Model */
-      /////////////////
+// build model
       model = CameraModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }

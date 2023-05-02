@@ -16,22 +16,18 @@ class SwitchView extends StatefulWidget implements IWidgetView
   _SwitchViewState createState() => _SwitchViewState();
 }
 
-class _SwitchViewState extends WidgetState<SwitchView> with WidgetsBindingObserver {
-  RenderBox? box;
-  Offset? position;
-
+class _SwitchViewState extends WidgetState<SwitchView> with WidgetsBindingObserver
+{
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
-  Widget builder(BuildContext context, BoxConstraints constraints) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _afterBuild(context);
-    });
-
-    setConstraints(constraints);
-
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
+
+    // save system constraints
+    onLayout(constraints);
 
     bool value = widget.model.value;
     String? label = widget.model.label;
@@ -88,14 +84,6 @@ class _SwitchViewState extends WidgetState<SwitchView> with WidgetsBindingObserv
     view = SizedBox(child: view, width: width);
 
     return view;
-  }
-
-  /// After [iFormFields] are drawn we get the global offset for scrollTo functionality
-  _afterBuild(BuildContext context) {
-    // Set the global offset position of each input
-    box = context.findRenderObject() as RenderBox?;
-    if (box != null) position = box!.localToGlobal(Offset.zero);
-    if (position != null) widget.model.offset = position;
   }
 
   onChange(bool value) async {

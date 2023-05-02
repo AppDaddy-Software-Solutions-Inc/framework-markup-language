@@ -17,7 +17,7 @@ main()
     Log().error(details.exception.toString(), caller: 'ErrorWidget() : main.dart');
     // In debug mode shows the normal redscreen  error
     if (kDebugMode) {
-      return ErrorWidget(details.exception);
+      return ErrorWidget("${details.exception}\n${details.stack.toString()}");
     }
     // In release builds, shows a more user friendly interface
     return Container(

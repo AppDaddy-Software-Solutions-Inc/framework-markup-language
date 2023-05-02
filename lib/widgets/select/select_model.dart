@@ -5,7 +5,6 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:fml/widgets/form/iFormField.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -13,7 +12,7 @@ import 'package:fml/widgets/select/select_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
+class SelectModel extends FormFieldModel implements IFormField
 {
   bool? addempty = true;
 
@@ -282,15 +281,15 @@ class SelectModel extends FormFieldModel implements IFormField, IViewableWidget
     if (hint          != null)  this.hint         = hint;
     if (editable      != null)  this.editable     = editable;
     if (enabled       != null)  this.enabled      = enabled;
-    if (inputenabled  != null) this.inputenabled  = inputenabled;
-    if (value         != null) this.value         = value;
-    if (defaultValue  != null) this.defaultValue  = defaultValue;
-    if (width         != null) this.width         = width;
-    if (onchange      != null) this.onchange      = onchange;
-    if (post          != null) this.post          = post;
-    if (typeahead     != null) this.typeahead     = typeahead;
-    if (matchtype     != null) this.matchtype     = matchtype;
-    if (label         != null) this.label         = label;
+    if (inputenabled  != null)  this.inputenabled  = inputenabled;
+    if (value         != null)  this.value         = value;
+    if (defaultValue  != null)  this.defaultValue  = defaultValue;
+    if (width         != null)  this.width = width;
+    if (onchange      != null)  this.onchange      = onchange;
+    if (post          != null)  this.post          = post;
+    if (typeahead     != null)  this.typeahead     = typeahead;
+    if (matchtype     != null)  this.matchtype     = matchtype;
+    if (label         != null)  this.label         = label;
 
     this.alarming = false;
     this.dirty    = false;

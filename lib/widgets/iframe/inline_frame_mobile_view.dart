@@ -2,15 +2,16 @@
 import 'dart:convert';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/iframe/inline_frame_model.dart' as IFRAME;
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'inline_frame_view.dart' as IFRAME;
 import 'package:fml/helper/common_helpers.dart';
 
 InlineFrameView getView(model) => InlineFrameView(model);
 
-class InlineFrameView extends StatefulWidget implements IFRAME.View
+class InlineFrameView extends StatefulWidget implements IFRAME.View, IWidgetView
 {
   final IFRAME.InlineFrameModel model;
 
@@ -20,10 +21,11 @@ class InlineFrameView extends StatefulWidget implements IFRAME.View
   _InlineFrameViewState createState() => _InlineFrameViewState();
 }
 
-class _InlineFrameViewState extends State<InlineFrameView>
+class _InlineFrameViewState extends WidgetState<InlineFrameView>
 {
   WebViewWidget? iframe;
   late WebViewController controller;
+
   @override
   void initState()
   {
@@ -32,41 +34,19 @@ class _InlineFrameViewState extends State<InlineFrameView>
   }
 
   @override
-  Widget build(BuildContext context)
-  {
-    return LayoutBuilder(builder: builder);
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     var model = widget.model;
 
-    // Set Build Constraints in the [WidgetModel]
-
-      model.minWidth  = constraints.minWidth;
-      model.maxWidth  = constraints.maxWidth;
-      model.minHeight = constraints.minHeight;
-      model.maxHeight = constraints.maxHeight;
-
+    // save system constraints
+    onLayout(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if ((model.visible == false)) return Offstage();
 
-    ///////////
-    /* Child */
-    ///////////
-    List<Widget> children = [];
-    if (model.children != null)
-      model.children!.forEach((model)
-      {
-        if (model is IViewableWidget) {
-          children.add((model as IViewableWidget).getView());
-        }
-      });
-
-    //////////
-    /* View */
-    //////////
+    // build view
     Widget? view = iframe;
     if (view == null)
     {
@@ -76,17 +56,12 @@ class _InlineFrameViewState extends State<InlineFrameView>
       view = WebViewWidget(controller: controller);
     }
 
-    //////////////////
-    /* Constrained? */
-    //////////////////
-    if (model.hasSizing)
-    {
-      var constraints = model.getConstraints();
-      view = ConstrainedBox(child: view, constraints: BoxConstraints(
-          minHeight: constraints.minHeight!, maxHeight: constraints.maxHeight!,
-          minWidth: constraints.minWidth!, maxWidth: constraints.maxWidth!));
-    }
-    else view = Container(child: view, width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.height);
+    // basic view
+    view = Container(child: view, width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.height);
+
+    // apply user defined constraints
+    view = applyConstraints(view, widget.model.constraints.model);
+
     return view;
   }
 

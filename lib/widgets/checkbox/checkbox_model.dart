@@ -5,7 +5,7 @@ import 'package:fml/system.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:fml/widgets/form/iFormField.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -17,7 +17,7 @@ import 'package:fml/helper/common_helpers.dart';
 /// Button [CheckboxModel]
 ///
 /// Defines the properties used to build a [CHECKBOX.CheckboxView]
-class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidget
+class CheckboxModel extends FormFieldModel implements IFormField
 {
   // prototype
   String? prototype;
@@ -79,6 +79,7 @@ class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidge
     }
   }
   /// By default we stack the [Check]s vertically, if set to row we display them horizontal
+  LayoutType get layoutType => LayoutModel.getLayoutType(layout, defaultLayout: LayoutType.column);
   String get layout => _layout?.get()?.toLowerCase() ?? 'column';
 
   // set answer
@@ -311,7 +312,7 @@ class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidge
     if (enabled      != null) this.enabled      = enabled;
     if (value        != null) this.value        = value;
     if (defaultValue != null) this.defaultValue = defaultValue;
-    if (width        != null) this.width        = width;
+    if (width        != null) this.width = width;
     if (layout       != null) this.layout       = layout;
     if (center       != null) this.center       = center;
     if (valign       != null) this.valign       = valign;

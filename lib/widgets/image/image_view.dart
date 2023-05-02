@@ -215,8 +215,8 @@ class _ImageViewState extends WidgetState<ImageView>
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    // Set Build Constraints in the [WidgetModel]
-    setConstraints(constraints);
+    // save system constraints
+    onLayout(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -258,18 +258,13 @@ class _ImageViewState extends WidgetState<ImageView>
     // Interactive
     if (widget.model.interactive == true) view = InteractiveViewer(child: view);
 
-    // constrained?
-    if (widget.model.hasSizing) {
-      var constraints = widget.model.getConstraints();
-      view = ConstrainedBox(
-          child: view,
-          constraints: BoxConstraints(
-              minHeight: constraints.minHeight!,
-              maxHeight: constraints.maxHeight!,
-              minWidth: constraints.minWidth!,
-              maxWidth: constraints.maxWidth!));
-    }
+    // add margins
+    view = addMargins(view);
 
+    // apply constraints
+    view = applyConstraints(view, widget.model.constraints.model);
+
+    // apply user defined constraints
     return view;
   }
 }

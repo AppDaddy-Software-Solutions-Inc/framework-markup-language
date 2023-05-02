@@ -5,7 +5,6 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:fml/widgets/form/iFormField.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -13,9 +12,22 @@ import 'package:fml/widgets/typeahead/typeahead_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class TypeaheadModel extends FormFieldModel implements IFormField, IViewableWidget
+class TypeaheadModel extends FormFieldModel implements IFormField
 {
   bool? addempty = true;
+
+  // override padding
+  @override
+  double? get marginTop    => super.marginTop ?? 4;
+
+  @override
+  double? get marginBottom => super.marginBottom ?? 4;
+
+  @override
+  double? get marginLeft   => super.marginLeft ?? 4;
+
+  @override
+  double? get marginRight  => super.marginRight ?? 4;
 
   // bindable data
   ListObservable? _data;
@@ -289,7 +301,7 @@ class TypeaheadModel extends FormFieldModel implements IFormField, IViewableWidg
     if (inputenabled  != null) this.inputenabled  = inputenabled;
     if (value         != null) this.value         = value;
     if (defaultValue  != null) this.defaultValue  = defaultValue;
-    if (width         != null) this.width         = width;
+    if (width         != null) this.width = width;
     if (onchange      != null) this.onchange      = onchange;
     if (post          != null) this.post          = post;
     if (matchtype     != null) this.matchtype     = matchtype;

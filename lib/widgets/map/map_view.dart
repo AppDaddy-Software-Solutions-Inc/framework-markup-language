@@ -5,7 +5,6 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/map/map_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/busy/busy_view.dart';
@@ -36,7 +35,6 @@ class _MapViewState extends WidgetState<MapView>
   double? longitudeUpperBound;
   double? latitudeLowerBound;
   double? longitudeLowerBound;
-  FlutterMap?  map;
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
   onModelChange(WidgetModel model,{String? property, dynamic value})
@@ -52,49 +50,6 @@ class _MapViewState extends WidgetState<MapView>
       }
       setState(() {});
     }
-  }
-
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraint)
-  {
-    // Set Build Constraints in the [WidgetModel]
-    setConstraints(constraint);
-
-    // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
-
-    // build the markers
-    _buildMarkers();
-
-    // build the map
-    map = _buildMap();
-
-    /// Busy / Loading Indicator
-    if (busy == null) busy = BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
-
-    // map width
-    var width = widget.model.width;
-    if (width == null) width = widget.model.maxWidth;
-    if ((width == null) || (width <= 0)) width = MediaQuery.of(context).size.width;
-
-    // map height
-    var height = widget.model.height;
-    if (height == null) height = widget.model.maxHeight;
-    if ((height == null) || (height <= 0)) height = MediaQuery.of(context).size.height;
-
-    // view
-    dynamic view = Container(child: SizedBox(width: width, height: height, child: Stack(fit: StackFit.expand, children: [map!, busy!])));
-
-    var constraints = widget.model.getConstraints();
-    view = ConstrainedBox(child: view, constraints: BoxConstraints(
-        minHeight: constraints.minHeight!,
-        maxHeight: constraints.maxHeight!,
-        minWidth: constraints.minWidth!,
-        maxWidth: constraints.maxWidth!));
-    
-    return view;
   }
 
   FlutterMap? _buildMap()
@@ -179,16 +134,48 @@ class _MapViewState extends WidgetState<MapView>
 
   Widget _markerBuilder(List<WidgetModel>? children)
   {
-    List<Widget> _children = [];
-    if (children != null)
-    children.forEach((model)
-    {
-      if (model is IViewableWidget) _children.add((model as IViewableWidget).getView());
-    });
+    // build the child views
+    List<Widget> children = widget.model.inflate();
 
     Widget child = FlutterLogo();
-    if (_children.length == 1) child = _children.first;
-    if (_children.length >  1) child = Column(children: _children);
+    if (children.length == 1) child = children.first;
+    if (children.length >  1) child = Column(children: children);
     return child;
+  }
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
+    // save system constraints
+    onLayout(constraints);
+
+    // Check if widget is visible before wasting resources on building it
+    if (!widget.model.visible) return Offstage();
+
+    // get the children
+    List<Widget> children = widget.model.inflate();
+
+    // build the markers
+    _buildMarkers();
+
+    // build the map
+    var map = _buildMap();
+    if (map != null) children.insert(0, map);
+
+    /// Busy / Loading Indicator
+    if (busy == null) busy = BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
+
+    // add busy
+    children.add(Center(child: busy));
+
+    // view
+    Widget view = Stack(children: children);
+
+    // apply user defined constraints
+    view = applyConstraints(view, widget.model.constraints.tightestOrDefault);
+
+    return view;
   }
 }

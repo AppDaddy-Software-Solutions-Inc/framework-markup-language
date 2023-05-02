@@ -5,7 +5,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:fml/widgets/form/iFormField.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -13,7 +13,7 @@ import 'package:fml/widgets/radio/radio_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class RadioModel extends FormFieldModel implements IFormField, IViewableWidget
+class RadioModel extends FormFieldModel implements IFormField
 {
   // prototype
   String? prototype;
@@ -47,6 +47,7 @@ class RadioModel extends FormFieldModel implements IFormField, IViewableWidget
 
 
   /// Layout determines the widgets childrens layout. Can be `row`, `column`, `col`, or `stack`. Defaulted to `column`. If set to `stack` it can take `POSITIONED` as a child.
+  LayoutType get layoutType => LayoutModel.getLayoutType(layout, defaultLayout: LayoutType.column);
   StringObservable? _layout;
   set layout(dynamic v) {
     if (_layout != null) {
@@ -158,7 +159,7 @@ class RadioModel extends FormFieldModel implements IFormField, IViewableWidget
     if (enabled      != null) this.enabled      = enabled;
     if (value        != null) this.value        = value;
     if (defaultValue != null) this.defaultValue = defaultValue;
-    if (width        != null) this.width        = width;
+    if (width        != null) this.width = width;
     if (size         != null) this.size         = size;
     if (color        != null) this.color        = color;
     if (post         != null) this.post         = post;

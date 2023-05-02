@@ -1,7 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
+import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:fml/widgets/table/header/table_header_model.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -10,6 +11,8 @@ import 'package:fml/helper/common_helpers.dart';
 
 class TableHeaderCellModel extends DecoratedWidgetModel
 {
+  LayoutType get layoutType => LayoutType.column;
+
   /////////////////////
   /* Position in Row */
   /////////////////////
@@ -135,13 +138,14 @@ class TableHeaderCellModel extends DecoratedWidgetModel
     }
   }
 
-  bool? get center {
-    if (_center == null) {
-      if ((this.parent != null) && (this.parent is TableHeaderModel))
-        return (this.parent as TableHeaderModel).center;
-      return null;
+  bool get center
+  {
+    if (_center == null)
+    {
+      if ((this.parent != null) && (this.parent is TableHeaderModel)) return (this.parent as TableHeaderModel).center;
+      return false;
     }
-    return _center?.get();
+    return _center?.get() ?? false;
   }
 
   /// wrap is a boolean that dictates if the widget will wrap or not.
@@ -155,13 +159,14 @@ class TableHeaderCellModel extends DecoratedWidgetModel
     }
   }
 
-  bool? get wrap {
-    if (_wrap == null) {
-      if ((this.parent != null) && (this.parent is TableHeaderModel))
-        return (this.parent as TableHeaderModel).wrap;
-      return null;
+  bool get wrap
+  {
+    if (_wrap == null)
+    {
+      if ((this.parent != null) && (this.parent is TableHeaderModel)) return (this.parent as TableHeaderModel).wrap;
+      return false;
     }
-    return _wrap?.get();
+    return _wrap?.get() ?? false;
   }
 
   /// wrap is a boolean that dictates if the widget will wrap or not.
@@ -193,12 +198,11 @@ class TableHeaderCellModel extends DecoratedWidgetModel
 
   bool sorted = false;
 
-  TableHeaderCellModel(WidgetModel parent, String? id,
-      {String? field, dynamic width, dynamic height, dynamic sortbydefault})
-      : super(parent, id) {
-    this.width = width;
+  TableHeaderCellModel(WidgetModel parent, String? id, {String? field, dynamic width, dynamic height, dynamic sortbydefault}) : super(parent, id)
+  {
+    if (width  != null) this.width  = width;
+    if (height != null) this.height = height;
     this.sortbydefault = sortbydefault;
-    this.height = height;
     this.sortAscending = false;
   }
 
@@ -230,8 +234,6 @@ class TableHeaderCellModel extends DecoratedWidgetModel
     // properties
     field       = Xml.get(node: xml, tag: 'field');
     sortbydefault       = Xml.get(node: xml, tag: 'sortbydefault');
-    width       = Xml.get(node: xml, tag: 'width');
-    height      = Xml.get(node: xml, tag: 'height');
     bordercolor = Xml.get(node: xml, tag: 'bordercolor');
     borderwidth = Xml.get(node: xml, tag: 'borderwidth');
 

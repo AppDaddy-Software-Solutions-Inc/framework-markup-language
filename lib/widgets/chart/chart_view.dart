@@ -11,7 +11,6 @@ import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart/chart_model.dart';
 import 'package:fml/widgets/chart/series/chart_series_model.dart';
 import 'package:fml/widgets/chart/axis/chart_axis_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/busy/busy_view.dart' as BUSY;
 import 'package:fml/widgets/busy/busy_model.dart' as BUSY;
@@ -52,82 +51,6 @@ class _ChartViewState extends WidgetState<ChartView>
   {
     super.initState();
     chartType = getChartType();
-  }
-
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints)
-  {
-    // Set Build Constraints in the [WidgetModel]
-    setConstraints(constraints);
-
-    // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
-
-    List<Widget> children = [];
-    dynamic chart;
-
-    chartType = getChartType();
-    List<CF.Series>? series = buildSeriesList();
-
-    switch (chartType) {
-      case ChartType.BarChart:
-        chart = buildBarChart(series as List<Series<dynamic, String>>);
-        break;
-      case ChartType.NumericComboChart:
-        chart = buildNumericChart(series!);
-        break;
-      case ChartType.OrdinalComboChart:
-        chart = buildOrdinalChart(series!);
-        break;
-      case ChartType.PieChart:
-        chart = buildPieChart((series as List<CF.Series<dynamic, String>>));
-        break;
-      case ChartType.TimeSeriesChart:
-        chart = buildTimeChart(series!);
-        break;
-      default:
-        chart = Icon(Icons.add_chart);
-    }
-
-    // Prioritize chart ux interactions
-    chart = Listener(behavior: HitTestBehavior.opaque, child: chart);
-    if (chart != null) children.add(new SafeArea(child: chart));
-
-    // Add children
-    if (widget.model.children != null)
-      widget.model.children!.forEach((model) {
-        if (model is IViewableWidget) {
-          children.add((model as IViewableWidget).getView());
-        }
-      });
-
-    /// Busy / Loading Indicator
-    if (busy == null)
-      busy = BUSY.BusyView(BUSY.BusyModel(widget.model,
-          visible: widget.model.busy, observable: widget.model.busyObservable));
-    children.add(Center(child: busy));
-
-    // Display children over chart
-    Widget view = Stack(children: children, fit: StackFit.loose);
-
-    //////////////////
-    /* Constrained? */
-    //////////////////
-    if (true) {
-      // Always constrain based on parent constraints
-      var constraints = widget.model.getConstraints();
-      view = ConstrainedBox(
-          child: view,
-          constraints: BoxConstraints(
-              minHeight: constraints.minHeight!,
-              maxHeight: constraints.maxHeight!,
-              minWidth: constraints.minWidth!,
-              maxWidth: constraints.maxWidth!));
-    }
-
-    return view;
   }
 
   /// Identifies the chart type from the model attributes
@@ -488,12 +411,8 @@ class _ChartViewState extends WidgetState<ChartView>
       }
 
       // Null Series Warning
-      if (xAllNull)
-        Log().warning(
-            'id: ${series.id.toString()} name: ${series.name.toString()} X values are all null');
-      if (yAllNull)
-        Log().warning(
-            'id: ${series.id.toString()} name: ${series.name.toString()} Y values are all null');
+      //if (xAllNull) Log().warning('id: ${series.id.toString()} name: ${series.name.toString()} X values are all null');
+      //if (yAllNull) Log().warning('id: ${series.id.toString()} name: ${series.name.toString()} Y values are all null');
 
       switch (widget.model.xaxis!.type) {
         // Date/Time based X Axis
@@ -826,5 +745,67 @@ class _ChartViewState extends WidgetState<ChartView>
       default:
         return CF.BehaviorPosition.bottom;
     }
+  }
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
+    // save system constraints
+    onLayout(constraints);
+
+    // Check if widget is visible before wasting resources on building it
+    if (!widget.model.visible) return Offstage();
+
+    // Busy / Loading Indicator
+    if (busy == null) busy = BUSY.BusyView(BUSY.BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
+
+    Widget view;
+
+    // get the children
+    List<Widget> children = widget.model.inflate();
+
+    chartType = getChartType();
+    List<CF.Series>? series = buildSeriesList();
+
+    switch (chartType) {
+      case ChartType.BarChart:
+        view = buildBarChart(series as List<Series<dynamic, String>>);
+        break;
+      case ChartType.NumericComboChart:
+        view = buildNumericChart(series!);
+        break;
+      case ChartType.OrdinalComboChart:
+        view = buildOrdinalChart(series!);
+        break;
+      case ChartType.PieChart:
+        view = buildPieChart((series as List<CF.Series<dynamic, String>>));
+        break;
+      case ChartType.TimeSeriesChart:
+        view = buildTimeChart(series!);
+        break;
+      default:
+        view = Icon(Icons.add_chart);
+    }
+
+    // Prioritize chart ux interactions
+    view = Listener(behavior: HitTestBehavior.opaque, child: view);
+    view = SafeArea(child: view);
+    children.insert(0, SafeArea(child: view));
+
+    // add busy
+    children.add(Center(child: busy));
+
+    // Display children over chart
+    view = Stack(children: children);
+
+    // add margins
+    view = addMargins(view);
+
+    // apply user defined constraints
+    view = applyConstraints(view, widget.model.constraints.tightestOrDefault);
+
+    return view;
   }
 }

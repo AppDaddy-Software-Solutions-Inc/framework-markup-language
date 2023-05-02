@@ -4,7 +4,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fml/helper/color.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/widget/widget_state.dart';
@@ -41,16 +40,8 @@ class _MenuItemViewState extends WidgetState<MenuItemView>
 
     if (widget.model.children != null)
     {
-      ////////////////////
-      /* Build Children */
-      ////////////////////
-      List<Widget> children = [];
-      if (widget.model.children != null)
-        widget.model.children!.forEach((model) {
-          if (model is IViewableWidget) {
-            children.add((model as IViewableWidget).getView());
-          }
-        });
+      // build the child views
+      List<Widget> children = widget.model.inflate();
       if (children.isEmpty) children.add(Container());
       Widget child = children.length == 1
           ? children[0]

@@ -9,7 +9,6 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/camera/camera_model.dart';
 import 'package:fml/widgets/camera/stream/stream.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/icon/icon_model.dart';
@@ -205,7 +204,7 @@ class CameraViewState extends WidgetState<CameraView>
       {
         // set specified camera
         int index = widget.model.index ?? -1;
-        if (index < 0)
+        if (index.isNegative)
         {
           // get the camera
           CameraLensDirection direction = S.toEnum(widget.model.direction, CameraLensDirection.values) ?? CameraLensDirection.back;
@@ -480,17 +479,12 @@ class CameraViewState extends WidgetState<CameraView>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(builder: builder);
-  }
+Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
-  Widget builder(BuildContext context, BoxConstraints constraints) {
-    // Set Build Constraints in the [WidgetModel]
-
-    widget.model.minWidth = constraints.minWidth;
-    widget.model.maxWidth = constraints.maxWidth;
-    widget.model.minHeight = constraints.minHeight;
-    widget.model.maxHeight = constraints.maxHeight;
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
+    // save system constraints
+    onLayout(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -531,19 +525,14 @@ class CameraViewState extends WidgetState<CameraView>
     //////////////////
     /* Constrained? */
     //////////////////
-    double width = MediaQuery.of(context).size.width;
+    double width  = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    if (widget.model.hasSizing) {
-      var constraints = widget.model.getConstraints();
-      view = ConstrainedBox(
-          child: view,
-          constraints: BoxConstraints(
-              minHeight: constraints.minHeight!,
-              maxHeight: constraints.maxHeight!,
-              minWidth: constraints.minWidth!,
-              maxWidth: constraints.maxWidth!));
-    } else
-      view = Container(child: view, width: width, height: height);
+
+    // basic constraints
+    view = Container(child: view, width: width, height: height);
+
+    // apply user defined constraints
+    view = applyConstraints(view, widget.model.constraints.model);
 
     // stack children
     List<Widget> children = [];
@@ -556,12 +545,8 @@ class CameraViewState extends WidgetState<CameraView>
         children.add(Offstage(child: backgroundStream as Widget?));
     }
 
-    if (widget.model.children != null)
-      widget.model.children!.forEach((model) {
-        if (model is IViewableWidget) {
-          children.add((model as IViewableWidget).getView());
-        }
-      });
+    // build the child views
+    children.addAll(widget.model.inflate());
 
     // show controls
     if (widget.model.controls != false) {

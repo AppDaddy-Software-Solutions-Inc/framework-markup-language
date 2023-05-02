@@ -1,7 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
+import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:fml/widgets/table/row/table_row_model.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -10,6 +11,8 @@ import 'package:fml/helper/common_helpers.dart';
 
 class TableRowCellModel extends DecoratedWidgetModel
 {
+  LayoutType get layoutType => LayoutType.stack;
+
   /////////////////////
   /* Position in Row */
   /////////////////////
@@ -222,13 +225,14 @@ class TableRowCellModel extends DecoratedWidgetModel
     }
   }
 
-  bool? get center {
-    if (_center == null) {
-      if ((this.parent != null) && (this.parent is TableRowModel))
-        return (this.parent as TableRowModel).center;
+  bool get center
+  {
+    if (_center == null)
+    {
+      if ((this.parent != null) && (this.parent is TableRowModel)) return (this.parent as TableRowModel).center;
       return false;
     }
-    return _center?.get();
+    return _center?.get() ?? false;
   }
 
   /// wrap is a boolean that dictates if the widget will wrap or not.
@@ -242,13 +246,14 @@ class TableRowCellModel extends DecoratedWidgetModel
     }
   }
 
-  bool? get wrap {
-    if (_wrap == null) {
-      if ((this.parent != null) && (this.parent is TableRowModel))
-        return (this.parent as TableRowModel).wrap;
+  bool get wrap
+  {
+    if (_wrap == null)
+    {
+      if ((this.parent != null) && (this.parent is TableRowModel)) return (this.parent as TableRowModel).wrap;
       return false;
     }
-    return _wrap?.get();
+    return _wrap?.get() ?? false;
   }
 
   ////////////////////
@@ -281,11 +286,11 @@ class TableRowCellModel extends DecoratedWidgetModel
   }
   double? get expandedheight => _expandedheight?.get();
 
-  TableRowCellModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic altcolor})
-      : super(parent, id) {
-    this.width = width;
+  TableRowCellModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic altcolor}) : super(parent, id)
+  {
+    if (width  != null) this.width  = width;
+    if (height != null) this.height = height;
     this.altcolor = altcolor;
-    this.height = height;
   }
 
   static TableRowCellModel? fromXml(WidgetModel parent, XmlElement xml) {

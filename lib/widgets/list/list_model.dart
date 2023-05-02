@@ -3,10 +3,9 @@ import 'dart:collection';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/form/form_model.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/form/form_model.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/event/handler.dart'            ;
 import 'package:fml/widgets/list/list_view.dart';
@@ -15,13 +14,19 @@ import 'package:fml/widgets/widget/widget_model.dart'     ;
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class ListModel extends DecoratedWidgetModel implements IViewableWidget, IForm, IScrolling
+class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
 {
   final HashMap<int,ListItemModel> items = HashMap<int,ListItemModel>();
   bool   selectable = false;
 
   // prototype
   String? prototype;
+
+  @override
+  bool get isVerticallyExpanding => !isFixedHeight;
+
+  @override
+  bool get isHorizontallyExpanding => !isFixedWidth;
 
   BooleanObservable? _scrollShadows;
   set scrollShadows (dynamic v)
@@ -36,7 +41,6 @@ class ListModel extends DecoratedWidgetModel implements IViewableWidget, IForm, 
     }
   }
   bool get scrollShadows => _scrollShadows?.get() ?? false;
-
 
   BooleanObservable? _scrollButtons;
   set scrollButtons (dynamic v)
@@ -53,9 +57,7 @@ class ListModel extends DecoratedWidgetModel implements IViewableWidget, IForm, 
   bool get scrollButtons => _scrollButtons?.get() ?? false;
 
 
-  ///////////
-  /* moreup */
-  ///////////
+  // moreup 
   BooleanObservable? _moreUp;
   set moreUp (dynamic v)
   {
@@ -70,9 +72,7 @@ class ListModel extends DecoratedWidgetModel implements IViewableWidget, IForm, 
   }
   bool? get moreUp => _moreUp?.get();
 
-  ///////////
-  /* moreDown */
-  ///////////
+  // moreDown 
   BooleanObservable? _moreDown;
   set moreDown (dynamic v)
   {
@@ -87,9 +87,7 @@ class ListModel extends DecoratedWidgetModel implements IViewableWidget, IForm, 
   }
   bool? get moreDown => _moreDown?.get();
 
-  ///////////
-  /* moreLeft */
-  ///////////
+  // moreLeft 
   BooleanObservable? _moreLeft;
   set moreLeft (dynamic v)
   {
@@ -104,9 +102,7 @@ class ListModel extends DecoratedWidgetModel implements IViewableWidget, IForm, 
   }
   bool? get moreLeft => _moreLeft?.get();
 
-  ///////////
-  /* moreRight */
-  ///////////
+  // moreRight 
   BooleanObservable? _moreRight;
   set moreRight (dynamic v)
   {
@@ -121,10 +117,7 @@ class ListModel extends DecoratedWidgetModel implements IViewableWidget, IForm, 
   }
   bool? get moreRight => _moreRight?.get();
 
-
-  ///////////
-  /* dirty */
-  ///////////
+  // dirty 
   BooleanObservable? get dirtyObservable => _dirty;
   BooleanObservable? _dirty;
   set dirty (dynamic v)
@@ -154,18 +147,14 @@ class ListModel extends DecoratedWidgetModel implements IViewableWidget, IForm, 
     dirty = isDirty;
   }
 
-  ///////////
-  /* Clean */
-  ///////////
+  // Clean 
   set clean (bool b)
   {
     dirty = false;
       items.forEach((index, item) => item.dirty = false);
   }
 
-  /////////////////
-  /* onccomplete */
-  /////////////////
+  // oncomplete 
   StringObservable? _oncomplete;
   set oncomplete (dynamic v)
   {
@@ -180,9 +169,7 @@ class ListModel extends DecoratedWidgetModel implements IViewableWidget, IForm, 
   }
   String? get oncomplete => _oncomplete?.get();
 
-  ///////////////
-  /* Direction */
-  ///////////////
+  // Direction 
   StringObservable? _direction;
   set direction (dynamic v)
   {
@@ -314,7 +301,7 @@ class ListModel extends DecoratedWidgetModel implements IViewableWidget, IForm, 
     if (data == null) return null;
     if ((data.length < (index + 1))) return null;
     if ((items.containsKey(index))) return items[index];
-    if ((index < 0) || (data.length < index)) return null;
+    if ((index.isNegative) || (data.length < index)) return null;
 
     // build prototype
     XmlElement? prototype = S.fromPrototype(this.prototype, "${this.id}-$index");
@@ -370,9 +357,7 @@ class ListModel extends DecoratedWidgetModel implements IViewableWidget, IForm, 
 
     bool ok = true;
 
-    ///////////////////
-    /* Post the Form */
-    ///////////////////
+    // Post the Form
     if (dirty) for (var entry in items.entries) ok = await entry.value.complete();
 
     busy = false;
@@ -394,7 +379,6 @@ class ListModel extends DecoratedWidgetModel implements IViewableWidget, IForm, 
   {
     await EventHandler(this).execute(_onpulldown);
   }
-
 
   Widget getView({Key? key}) => getReactiveView(ListLayoutView(this));
 }

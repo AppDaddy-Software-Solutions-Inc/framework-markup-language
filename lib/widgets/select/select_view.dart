@@ -1,12 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'package:collection/collection.dart';
 import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
-
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/select/select_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
@@ -33,8 +33,6 @@ class _SelectViewState extends WidgetState<SelectView>
   OptionModel? _selected;
   final TextEditingController controller = TextEditingController();
   FocusNode focus = FocusNode();
-  RenderBox? box;
-  Offset? position;
   String typeaheadText = '';
 
   @override
@@ -100,7 +98,7 @@ class _SelectViewState extends WidgetState<SelectView>
       for (OptionModel option in model.options)
       {
         Widget view = Text('');
-        if (option.label is IViewableWidget) view = option.label!.getView();
+        if (option.label is ViewableWidgetModel) view = option.label!.getView();
 
         var o = DropdownMenuItem(value: option, child: view);
         if (model.value == option.value) _selected = option;
@@ -115,24 +113,16 @@ class _SelectViewState extends WidgetState<SelectView>
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _afterBuild(context);
-    });
-
-    ///////////////////
-    /* Build Options */
-    ///////////////////
+    // build options
     _buildOptions();
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    // Set Build Constraints in the [WidgetModel]
-    setConstraints(constraints);
+    // save system constraints
+    onLayout(constraints);
 
-    ///////////
-    /* Busy? */
-    ///////////
+    // busy?
     var busy;
     if (widget.model.busy == true && widget.model.typeahead != true)
       busy = BusyView(BusyModel(widget.model,
@@ -174,7 +164,7 @@ class _SelectViewState extends WidgetState<SelectView>
 
         List<OptionModel>? suggestions;
         view = SizedBox(
-          width: widget.model.maxWidth,
+          width: widget.model.calculatedMaxWidthOrDefault,
               child: TypeAheadField(
                 textFieldConfiguration: TextFieldConfiguration(
                     focusNode: focus,
@@ -196,10 +186,8 @@ class _SelectViewState extends WidgetState<SelectView>
                 itemBuilder: (context, dynamic suggestion) {
                   Widget? item;
                   if (suggestion is OptionModel) {
-                      var option = _list.firstWhere(
-                          (option) => (option.value == suggestion),
-                          orElse: null);
-                          item = option.child;
+                      var option = _list.firstWhereOrNull((option) => (option.value == suggestion));
+                      item = option?.child;
                   }
                   if (item == null) item = Container(height: 12);
                   return Padding(
@@ -289,21 +277,10 @@ class _SelectViewState extends WidgetState<SelectView>
     // display busy
     if (busy != null) view = Stack(children: [view, Positioned(top: 0, bottom: 0, left: 0, right: 0, child: busy)]);
 
-    ////////////
-    /* Sized? */
-    ////////////
+    // Sized?
     view = SizedBox(width: widget.model.width ?? 200, height: widget.model.height ?? 48, child: view);
 
     return Padding(padding: EdgeInsets.symmetric(vertical: /*widget.model.dense ? 0 : */4), child: view);
-  }
-
-  /// After [iFormFields] are drawn we get the global offset for scrollTo functionality
-  _afterBuild(BuildContext context)
-  {
-    // Set the global offset position of each input
-    box = context.findRenderObject() as RenderBox?;
-    if (box != null) position = box!.localToGlobal(Offset.zero);
-    if (position != null) widget.model.offset = position;
   }
 
   Future<List<OptionModel>> getSuggestions(String pattern) async

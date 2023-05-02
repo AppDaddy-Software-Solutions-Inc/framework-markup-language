@@ -80,7 +80,7 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
         color: Colors.black // Hardcode color to black for export a there will be no background/theming
     );
 
-    var constraints = widget.model.getConstraints();
+    var constraints = widget.model.constraints.calculated;
     return await painter.export(Size(
         widget.model.width ?? constraints.maxWidth ?? constraints.minWidth ?? 300,
         widget.model.height ?? constraints.maxHeight?? constraints.minHeight?? 200));
@@ -120,7 +120,7 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
   void onPointerMove(PointerMoveEvent details) {
     if (canScribble == true)
     {
-      var constraints = widget.model.getConstraints();
+      var constraints = widget.model.constraints.calculated;
 
       final box = context.findRenderObject() as RenderBox;
       final offset = box.globalToLocal(details.position);
@@ -372,25 +372,15 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
   }
 
   @override
-  Widget build(BuildContext context)
-  {
-    return LayoutBuilder(builder: builder);
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // Check if widget is visible before wasting resources on building it
     if (((!widget.model.visible))) return Offstage();
 
-    // Set Build Constraints in the [WidgetModel]
-    widget.model.minWidth  = constraints.minWidth;
-    widget.model.maxWidth  = constraints.maxWidth;
-    widget.model.minHeight = constraints.minHeight;
-    widget.model.maxHeight = constraints.maxHeight;
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _afterBuild(context);
-    });
+    // save system constraints
+    onLayout(constraints);
 
     Widget icon = Row(mainAxisSize: MainAxisSize.min, children: [
       Icon(Icons.gesture, size: 64, color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5)),
@@ -419,27 +409,9 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
       ]),
     );
 
-    var con = widget.model.getConstraints();
-
-    view = ConstrainedBox(
-        child: view,
-        constraints: BoxConstraints(
-            minHeight: con.minHeight!,
-            maxHeight: con.maxHeight!,
-            minWidth: con.minWidth!,
-            maxWidth: con.maxWidth!));
-
-    return view;
+    // apply user defined constraints
+    return applyConstraints(view, widget.model.constraints.model);
   }
-
-  /// After [iFormFields] are drawn we get the global offset for scrollTo functionality
-  _afterBuild(BuildContext context) {
-    // Set the global offset position of each input
-    scribbleBox = context.findRenderObject() as RenderBox?;
-    if (scribbleBox != null) scribblePosition = scribbleBox!.localToGlobal(Offset.zero);
-    if (scribblePosition != null) widget.model.offset = scribblePosition;
-  }
-
 }
 
 // Supplamentary Sketching Classes

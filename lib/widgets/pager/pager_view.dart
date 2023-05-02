@@ -81,8 +81,8 @@ class _PagerViewState extends WidgetState<PagerView>
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    // Set Build Constraints in the [WidgetModel]
-    setConstraints(constraints);
+    // save system constraints
+    onLayout(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -113,8 +113,9 @@ class _PagerViewState extends WidgetState<PagerView>
       },
     ))) : Container();
 
-    if (!widget.model.hasSizing && constraints.maxWidth == double.infinity)
-      pageView = UnconstrainedBox(child: SizedBox(height: widget.model.height ?? widget.model.maxHeight, width: widget.model.width ?? widget.model.maxWidth, child: pageView));
+    var c = widget.model.constraints.calculated;
+    if (!c.isNotEmpty && constraints.maxWidth == double.infinity)
+      pageView = UnconstrainedBox(child: SizedBox(height: widget.model.height ?? widget.model.calculatedMaxHeightOrDefault, width: widget.model.width ?? widget.model.calculatedMaxWidthOrDefault, child: pageView));
 
     var view = Stack(alignment: Alignment.bottomCenter, children: [pageView, pager, Center(child: busy)]);
 

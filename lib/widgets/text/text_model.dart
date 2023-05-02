@@ -1,17 +1,18 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:math';
+
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/span/span_model.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/text/text_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class TextModel extends DecoratedWidgetModel implements IViewableWidget
+class TextModel extends DecoratedWidgetModel 
 {
   String? markup;
 
@@ -39,7 +40,7 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
   set size(dynamic v) {
     if (_size != null) {
       _size!.set(v);
-      width = v;
+      this.width = v;
     } else if (v != null) {
       if (S.isPercentage(v)) {
         _sizeIsPercent = true;
@@ -49,31 +50,16 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
           scope: scope, listener: onPropertyChange);
     }
   }
-  double? get size {
+  double? get size
+  {
     double? s = _size?.get();
     if (s == null) return null;
-
-    if (_sizeIsPercent == true) {
-      double? s1;
-      double? s2;
-
-      double? mh = maxHeight;
-      if (mh != null)
-        s1 = mh * (s / 100.0);
-      else
-        s1 = null;
-
-      double? mw = maxWidth;
-      if (mw != null)
-        s2 = mw * (s / 100.0);
-      else
-        s2 = null;
-
-      if ((s1 != null) && (s2 != null)) s = (s1 > s2) ? s1 : s2;
-      if ((s1 == null) && (s2 != null)) s = s2;
-      if ((s1 != null) && (s2 == null)) s = s1;
+    if (_sizeIsPercent == true)
+    {
+      var width  = calculatedMaxHeightForPercentage * (s / 100.0);
+      var height = calculatedMaxWidthForPercentage  * (s / 100.0);
+      s = max(width, height);
     }
-
     return s;
   }
 

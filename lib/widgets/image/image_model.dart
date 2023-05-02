@@ -1,8 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
-
-import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -10,7 +8,7 @@ import 'package:fml/widgets/image/image_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class ImageModel extends DecoratedWidgetModel implements IViewableWidget
+class ImageModel extends DecoratedWidgetModel 
 {
   //////////
   //* url */
@@ -145,10 +143,11 @@ class ImageModel extends DecoratedWidgetModel implements IViewableWidget
     dynamic interactive
    }) : super(parent, id)
   {
+    if (width  != null) this.width  = width;
+    if (height != null) this.height = height;
+
     this.rotation     = rotation;
     this.opacity      = opacity;
-    this.width        = width;
-    this.height       = height;
     this.url          = url;
     this.defaultvalue = defaultvalue;
     this.fit          = fit;

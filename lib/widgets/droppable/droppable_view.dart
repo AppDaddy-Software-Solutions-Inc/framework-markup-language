@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/droppable/droppable_model.dart';
 import 'package:fml/widgets/draggable/draggable_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
@@ -49,17 +48,8 @@ class _DroppableViewState extends WidgetState<DroppableView>
 
   Widget onBuild(context, List<dynamic> cd, List<dynamic> rd)
   {
-    ////////////////////
-    /* Build Children */
-    ////////////////////
-    List<Widget> children = [];
-    if (widget.model.children != null)
-      widget.model.children!.forEach((model)
-      {
-        if (model is IViewableWidget) {
-          children.add((model as IViewableWidget).getView());
-        }
-      });
+    // build the child views
+    List<Widget> children = widget.model.inflate();
     if (children.isEmpty) children.add(Container());
 
     return Stack(children: children);

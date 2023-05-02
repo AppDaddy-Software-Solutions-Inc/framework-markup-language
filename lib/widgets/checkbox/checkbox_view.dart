@@ -1,12 +1,11 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/checkbox/checkbox_model.dart' as CHECKBOX;
 import 'package:fml/widgets/option/option_model.dart' as OPTION;
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/alignment/alignment.dart';
 
 /// Checkbox View
 ///
@@ -23,8 +22,6 @@ class CheckboxView extends StatefulWidget implements IWidgetView
 class _CheckboxViewState extends WidgetState<CheckboxView>
 {
   List<CheckBox> _list = [];
-  RenderBox? box;
-  Offset? position;
 
   /// Builder for each checkbox [OPTION.OptionModel]
   _buildOptions() {
@@ -50,27 +47,14 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    // Set Build Constraints in the [WidgetModel]
-    setConstraints(constraints);
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _afterBuild(context);
-    });
-
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
+    // save system constraints
+    onLayout(constraints);
+
     //this must go after the children are determined
-    Map<String, dynamic> align = AlignmentHelper.alignWidgetAxis(
-        2,
-        widget.model.layout,
-        widget.model.center,
-        widget.model.halign,
-        widget.model.valign);
-    CrossAxisAlignment? crossAlignment = align['crossAlignment'];
-    MainAxisAlignment? mainAlignment = align['mainAlignment'];
-    WrapAlignment? mainWrapAlignment = align['mainWrapAlignment'];
-    WrapCrossAlignment? crossWrapAlignment = align['crossWrapAlignment'];
+    var alignment = WidgetAlignment(widget.model.layoutType, widget.model.center, widget.model.halign, widget.model.valign);
 
     _buildOptions();
 
@@ -81,15 +65,15 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
             child: Wrap(
                 children: _list,
                 direction: Axis.horizontal,
-                alignment: mainWrapAlignment!,
-                runAlignment: mainWrapAlignment,
-                crossAxisAlignment: crossWrapAlignment!));
+                alignment: alignment.mainWrapAlignment,
+                runAlignment: alignment.mainWrapAlignment,
+                crossAxisAlignment: alignment.crossWrapAlignment));
       else
         view = Center(
             child: Row(
                 mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: crossAlignment!,
-                mainAxisAlignment: mainAlignment!,
+                crossAxisAlignment: alignment.crossAlignment,
+                mainAxisAlignment: alignment.mainAlignment,
                 children: _list));
     } else {
       if (widget.model.wrap == true)
@@ -97,26 +81,18 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
             child: Wrap(
                 children: _list,
                 direction: Axis.vertical,
-                alignment: mainWrapAlignment!,
-                runAlignment: mainWrapAlignment,
-                crossAxisAlignment: crossWrapAlignment!));
+                alignment: alignment.mainWrapAlignment,
+                runAlignment: alignment.mainWrapAlignment,
+                crossAxisAlignment: alignment.crossWrapAlignment));
       else
         view = Center(
             child: Column(
-                crossAxisAlignment: crossAlignment!,
-                mainAxisAlignment: mainAlignment!,
+                crossAxisAlignment: alignment.crossAlignment,
+                mainAxisAlignment: alignment.mainAlignment,
                 children: _list));
     }
 
     return view;
-  }
-
-  /// After [iFormFields] are drawn we get the global offset for scrollTo functionality
-  _afterBuild(BuildContext context) {
-    // Set the global offset position of each input
-    box = context.findRenderObject() as RenderBox?;
-    if (box != null) position = box!.localToGlobal(Offset.zero);
-    if (position != null) widget.model.offset = position;
   }
 
   /// Function called when clicking a checkbox
@@ -179,7 +155,7 @@ class CheckBox extends StatelessWidget {
     /* Label */
     ///////////
     Widget label = Text('');
-    if (option.label is IViewableWidget) label = option.label!.getView();
+    if (option.label is ViewableWidgetModel) label = option.label!.getView();
 
     //////////
     /* View */

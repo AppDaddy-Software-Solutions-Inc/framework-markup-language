@@ -5,12 +5,12 @@ import 'package:fml/widgets/icon/icon_model.dart';
 import 'package:fml/widgets/icon/icon_view.dart';
 import 'package:fml/widgets/video/IVideoPlayer.dart';
 import 'package:fml/widgets/video/video_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_player_win/video_player_win_plugin.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 
 class VideoView extends StatefulWidget implements IWidgetView
 {
@@ -58,7 +58,7 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // Set Build Constraints in the [WidgetModel]
-    setConstraints(constraints);
+    onLayout(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -68,21 +68,6 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
 
     //if (_controller.value.isInitialized) _controller.play();
 
-    // Constrained?
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
-    if (widget.model.hasSizing) {
-      var constraints = widget.model.getConstraints();
-      view = ConstrainedBox(
-          child: view,
-          constraints: BoxConstraints(
-              minHeight: constraints.minHeight!,
-              maxHeight: constraints.maxHeight!,
-              minWidth: constraints.minWidth!,
-              maxWidth: constraints.maxWidth!));
-    }
-    else view = Container(child: view, width: width, height: height);
-
     // stack children
     List<Widget> children = [];
     children.add(view);
@@ -90,9 +75,9 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
     if (widget.model.children != null)
       widget.model.children!.forEach((model)
       {
-        if (model is IViewableWidget)
+        if (model is ViewableWidgetModel)
         {
-          children.add((model as IViewableWidget).getView());
+          children.add((model as ViewableWidgetModel).getView());
         }
       });
 
@@ -113,8 +98,16 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
       children.add(Positioned(bottom: 25, left: 0, right: 0, child: shutter));
     }
 
+    view = Stack(children: children);
+
+    // add margins
+    view = addMargins(view);
+
+    // apply user defined constraints
+    view = applyConstraints(view, widget.model.constraints.tightestOrDefault);
+
     // final view
-    return Stack(children: children);
+    return view;
   }
 
   void onVideoController()

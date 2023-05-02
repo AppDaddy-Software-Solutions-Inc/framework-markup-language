@@ -5,8 +5,7 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/form_model.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/datasources/transforms/sort.dart' as TRANSFORM;
 import 'package:fml/event/handler.dart' ;
@@ -24,7 +23,15 @@ import 'package:fml/helper/common_helpers.dart';
 
 enum PaddingType { none, first, last, evenly, proportionately }
 
-class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm, IScrolling {
+class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
+{
+
+  @override
+  bool get isVerticallyExpanding => !isFixedHeight;
+
+  @override
+  bool get isHorizontallyExpanding => !isFixedWidth;
+
   // prototype
   String? prototype;
   TableRowModel? prototypeModel;
@@ -55,8 +62,6 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
   }
 
   String? datasource;
-
-
 
   ////////////////////
   /* slt color */
@@ -452,11 +457,13 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
       : super(parent, id) {
     // instantiate busy observable
     busy = false;
+
+    if (width  != null) this.width  = width;
+    if (height != null) this.height = height;
+
     this.selected = selected;
     this.draggable = draggable;
     this.onpulldown = onpulldown;
-    this.width = width;
-    this.height = height;
     this.oncomplete = oncomplete;
     this.dirty = false;
     this.margin = margin;
@@ -502,8 +509,10 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
     onpulldown = Xml.get(node: xml, tag: 'onpulldown');
     pagesize = Xml.get(node: xml, tag: 'pagesize');
     paged = Xml.get(node: xml, tag: 'paged');
-    width = Xml.get(node: xml, tag: 'width');
-    height = Xml.get(node: xml, tag: 'height');
+
+    if (width != null)  this.width  = Xml.get(node: xml, tag: 'width');
+    if (height != null) this.height = Xml.get(node: xml, tag: 'height');
+
     center = Xml.get(node: xml, tag: 'center');
     altcolor = Xml.get(node: xml, tag: 'altcolor');
     wrap = Xml.get(node: xml, tag: 'wrap');
@@ -555,7 +564,7 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
     if (data == null) return null;
     if (data.length < (index + 1)) return null;
     if (rows.containsKey(index)) return rows[index];
-    if ((index < 0) || (data.length < index)) return null;
+    if ((index.isNegative) || (data.length < index)) return null;
 
     // build prototype
     XmlElement? prototype =
@@ -847,7 +856,7 @@ class TableModel extends DecoratedWidgetModel implements IViewableWidget, IForm,
     ////////////
     /* Shrink */
     ////////////
-    if (pad < 0) return shrinkBy(pad);
+    if (pad.isNegative) return shrinkBy(pad);
 
     if (paddingType == PaddingType.none) return;
 

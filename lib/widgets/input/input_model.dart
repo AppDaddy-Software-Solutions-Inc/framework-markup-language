@@ -4,8 +4,6 @@ import 'package:fml/event/handler.dart' ;
 import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:fml/widgets/form/iFormField.dart';
 import 'package:flutter/material.dart';
-
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/input/input_view.dart';
@@ -15,12 +13,22 @@ import 'package:fml/helper/common_helpers.dart';
 enum InputFormats {numeric, integer, text, boolean, xml}
 enum CapitalizationTypes {mixed, camel, upper, lower, sentences, words}
 
-class InputModel extends FormFieldModel implements IFormField, IViewableWidget
+class InputModel extends FormFieldModel implements IFormField
 {
   List<Suggestion> suggestions = [];
 
-  // override
-  double get padding => super.paddings == 0 ? 4 : super.padding;
+  // override padding
+  @override
+  double? get marginTop    => super.marginTop    ?? (dense ? 0 : 4);
+
+  @override
+  double? get marginBottom => super.marginBottom ?? (dense ? 0 : 4);
+
+  @override
+  double? get marginLeft   => super.marginLeft   ?? (dense ? 0 : 4);
+
+  @override
+  double? get marginRight  => super.marginRight  ?? (dense ? 0 : 4);
 
   /// Capitilization sets the input to uppercase or lowercase with `upper` and `lower`
   // TODO: maybe change this to caps or uppercase = t/f?
@@ -80,12 +88,7 @@ class InputModel extends FormFieldModel implements IFormField, IViewableWidget
           scope: scope, listener: onPropertyChange);
     }
   }
-
-  bool? get error {
-    if (_error == null) return false;
-    return _error!.get();
-  }
-
+  bool get error => _error?.get() ?? false;
 
   /// The error value of an input.
   StringObservable? _errortext;
@@ -115,11 +118,7 @@ class InputModel extends FormFieldModel implements IFormField, IViewableWidget
           scope: scope, listener: onPropertyChange);
     }
   }
-
-  bool? get dense {
-    if (_dense == null) return false;
-    return _dense!.get();
-  }
+  bool get dense => _dense?.get() ?? false;
 
   /// If the input shows the clear icon on its right.
   BooleanObservable? _clear;
@@ -131,11 +130,7 @@ class InputModel extends FormFieldModel implements IFormField, IViewableWidget
           scope: scope, listener: onPropertyChange);
     }
   }
-
-  bool? get clear {
-    if (_clear == null) return false;
-    return _clear!.get();
-  }
+  bool get clear => _clear?.get() ?? false;
 
   /// If the input will obscure its characters.
   BooleanObservable? _obscure;
@@ -150,11 +145,7 @@ class InputModel extends FormFieldModel implements IFormField, IViewableWidget
       _obscure = BooleanObservable(Binding.toKey(id, 'obscure'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  bool? get obscure
-  {
-    if (_obscure == null) return null;
-    return _obscure!.get();
-  }
+  bool get obscure => _obscure?.get() ?? false;
 
   /// True if there is an alarm sounding on a [IFormField]
   BooleanObservable? _alarming;
@@ -169,11 +160,7 @@ class InputModel extends FormFieldModel implements IFormField, IViewableWidget
       _alarming = BooleanObservable(Binding.toKey(id, 'alarming'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  bool? get alarming
-  {
-    if (_alarming == null) return null;
-    return _alarming!.get();
-  }
+  bool? get alarming => _alarming?.get() ?? false;
 
   /// the value of the input. If not set to "" initially, the value will not be settable through events.
   StringObservable? _value;
@@ -445,11 +432,7 @@ class InputModel extends FormFieldModel implements IFormField, IViewableWidget
           scope: scope, listener: onPropertyChange);
     }
   }
-
-  double? get radius {
-    if (_radius == null) return 5;
-    return _radius!.get();
-  }
+  double get radius => _radius?.get() ?? 5;
 
   /// The color of the border for input, defaults to black54. Accepts 4 colors positionally. Enabled, disabled, focused, and error colors.
   StringObservable? _bordercolor;
@@ -479,11 +462,7 @@ class InputModel extends FormFieldModel implements IFormField, IViewableWidget
           scope: scope, listener: onPropertyChange);
     }
   }
-
-  double? get borderwidth {
-    if (_borderwidth == null) return 1;
-    return _borderwidth!.get();
-  }
+  double get borderwidth => _borderwidth?.get() ?? 1;
 
   /// The border choice, can be `all`, `none`, `top`, `left`, `right`, `bottom`, `vertical`, or `horizontal`
   StringObservable? _border;
@@ -511,11 +490,7 @@ class InputModel extends FormFieldModel implements IFormField, IViewableWidget
           scope: scope, listener: onPropertyChange);
     }
   }
-
-  bool? get touched {
-    if (_touched == null) return false;
-    return _touched!.get();
-  }
+  bool? get touched =>  _touched?.get() ?? false;
 
   BooleanObservable? _wrap;
   set wrap(dynamic v) {
@@ -527,10 +502,7 @@ class InputModel extends FormFieldModel implements IFormField, IViewableWidget
     }
   }
 
-  bool? get wrap {
-    if (_wrap == null) return false;
-    return _wrap!.get();
-  }
+  bool get wrap => _wrap?.get() ?? false;
 
   BooleanObservable? _expand;
   set expand(dynamic v) {
@@ -541,11 +513,7 @@ class InputModel extends FormFieldModel implements IFormField, IViewableWidget
           scope: scope, listener: onPropertyChange);
     }
   }
-
-  bool? get expand {
-    if (_expand == null) return false;
-    return _expand!.get();
-  }
+  bool get expand => _expand?.get() ?? false;
 
   InputModel(
     WidgetModel? parent,
@@ -612,7 +580,7 @@ class InputModel extends FormFieldModel implements IFormField, IViewableWidget
     if (errortext     != null) this.errortext = errortext;
     if (lines         != null) this.lines = lines;
     if (length        != null) this.length = length;
-    if (padding       != null) this.padding = padding;
+    if (padding       != null) this.margins = padding;
     if (obscure       != null) this.obscure = obscure;
     if (clear         != null) this.clear = clear;
     if (onchange      != null) this.onchange = onchange;
@@ -661,7 +629,6 @@ class InputModel extends FormFieldModel implements IFormField, IViewableWidget
     super.deserialize(xml);
 
     // set properties
-    padding = Xml.get(node: xml, tag: 'padding');
     format = Xml.get(node: xml, tag: S.fromEnum('type'));
     if (format == InputFormats.xml)
     {
@@ -718,6 +685,10 @@ class InputModel extends FormFieldModel implements IFormField, IViewableWidget
   @override
   dispose() {
 // Log().debug('dispose called on => <$elementName id="$id">');
+
+    controller?.dispose();
+    controller = null;
+
     super.dispose();
   }
 

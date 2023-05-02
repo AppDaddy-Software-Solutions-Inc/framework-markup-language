@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/viewable_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/row/row_model.dart';
@@ -11,8 +10,11 @@ import 'package:fml/helper/common_helpers.dart';
 
 class OptionModel extends ViewableWidgetModel
 {
+  @override
+  bool get inflateable => false;
+
   // label
-  IViewableWidget? label;
+  ViewableWidgetModel? label;
 
   dynamic labelValue;
 
@@ -51,7 +53,7 @@ class OptionModel extends ViewableWidgetModel
     return _tags?.get();
   }
 
-  OptionModel(WidgetModel? parent, String? id, {dynamic data, dynamic labelValue, IViewableWidget? label, dynamic value, dynamic tags}) : super(parent, id, scope: Scope(parent: parent?.scope))
+  OptionModel(WidgetModel? parent, String? id, {dynamic data, dynamic labelValue, ViewableWidgetModel? label, dynamic value, dynamic tags}) : super(parent, id, scope: Scope(parent: parent?.scope))
   {
     this.data = data;
     if (label != null) this.label = label;

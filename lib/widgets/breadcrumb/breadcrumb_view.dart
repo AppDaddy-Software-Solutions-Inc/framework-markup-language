@@ -68,7 +68,7 @@ class _BreadcrumbViewState extends WidgetState<BreadcrumbView>
     // ^ this is an older feature and could likely be removed.
     double? shorten;
     if (widget.model.width != null)
-      shorten = ((widget.model.width! < 0) &&
+      shorten = ((widget.model.width!.isNegative) &&
               (MediaQuery.of(context).size.width + widget.model.width! > 0))
           ? widget.model.width
           : ((widget.model.width! >= 0) &&

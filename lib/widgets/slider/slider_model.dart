@@ -5,7 +5,6 @@ import 'package:fml/system.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:fml/widgets/form/iFormField.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/datasources/gps/payload.dart' as GPS;
@@ -15,17 +14,8 @@ import 'package:fml/helper/common_helpers.dart';
 
 enum InputTypes { numeric, integer, text, boolean}
 
-class SliderModel extends FormFieldModel implements IFormField, IViewableWidget
+class SliderModel extends FormFieldModel implements IFormField
 {
-  ///////////
-  /* Width */
-  ///////////
-  @override
-  double get width
-  {
-    return super.width ?? 200;
-  }
-
   ////////////////////
   /* capitalization */
   ////////////////////
@@ -211,7 +201,7 @@ class SliderModel extends FormFieldModel implements IFormField, IViewableWidget
     if (maximum      != null) this.maximum    = maximum;
     if (divisions    != null) this.divisions  = divisions;
     if (defaultValue != null) this.defaultValue = defaultValue;
-    if (width        != null) this.width      = width;
+    if (width        != null) this.width = width;
     if (color        != null) this.color      = color;
     if (onchange     != null) this.onchange   = onchange;
     if (post         != null) this.post       = post;

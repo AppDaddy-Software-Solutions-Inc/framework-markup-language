@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/list/item/list_item_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
@@ -24,18 +23,8 @@ class _ListItemViewState extends WidgetState<ListItemView>
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    //////////////////
-    /* Add Children */
-    //////////////////
-    List<Widget> children = [];
-    if (widget.model.children != null)
-      widget.model.children!.forEach((model)
-      {
-        if (model is IViewableWidget) {
-          children.add((model as IViewableWidget).getView());
-        }
-      });
-
+    // build the child views
+    List<Widget> children = widget.model.inflate();
     if (children.isEmpty) children.add(Container());
 
     return Container(color: widget.model.color ?? widget.model.backgroundcolor ?? Theme.of(context).colorScheme.onInverseSurface, child: children.length == 1 ? children[0] : Row(children: children));

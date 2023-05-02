@@ -2,7 +2,7 @@
 import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/iFormField.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/event/handler.dart' ;
 import 'package:fml/widgets/table/table_model.dart';
@@ -251,13 +251,14 @@ class TableRowModel extends DecoratedWidgetModel
     }
   }
 
-  bool? get center {
-    if (_center == null) {
-      if ((this.parent != null) && (this.parent is TableModel))
-        return (this.parent as TableModel).center;
+  bool get center
+  {
+    if (_center == null)
+    {
+      if ((this.parent != null) && (this.parent is TableModel)) return (this.parent as TableModel).center;
       return false;
     }
-    return _center?.get();
+    return _center?.get() ?? false;
   }
 
   /// wrap is a boolean that dictates if the widget will wrap or not.
@@ -271,13 +272,14 @@ class TableRowModel extends DecoratedWidgetModel
     }
   }
 
-  bool? get wrap {
-    if (_wrap == null) {
-      if ((this.parent != null) && (this.parent is TableModel))
-        return (this.parent as TableModel).wrap;
-      return null;
+  bool get wrap
+  {
+    if (_wrap == null)
+    {
+      if ((this.parent != null) && (this.parent is TableModel)) return (this.parent as TableModel).wrap;
+      return false;
     }
-    return _wrap?.get();
+    return _wrap?.get() ?? false;
   }
 
   /////////////////
@@ -326,6 +328,7 @@ class TableRowModel extends DecoratedWidgetModel
     WidgetModel parent,
     String? id, {
     dynamic data,
+    dynamic width,
     dynamic height,
     dynamic oncomplete,
     dynamic halign,
@@ -337,9 +340,11 @@ class TableRowModel extends DecoratedWidgetModel
     dynamic onclick,
   }) : super(parent, id, scope: Scope(parent: parent.scope))
   {
+    if (width  != null) this.width  = width;
+    if (height != null) this.height = height;
+
     this.data = data;
     this.altcolor = altcolor;
-    this.height = height;
     this.oncomplete = oncomplete;
     this.dirty = false;
     this.color = color;

@@ -85,12 +85,12 @@ class _MapViewState extends WidgetState<MapView>
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
-  Widget builder(BuildContext context, BoxConstraints constraint)
+  Widget builder(BuildContext context, BoxConstraints constraints)
   {
     widget.model.busy = false;
 
-    // Set Build Constraints in the [WidgetModel]
-    setConstraints(constraint);
+    // save system constraints
+    onLayout(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -109,19 +109,8 @@ class _MapViewState extends WidgetState<MapView>
     /// Busy / Loading Indicator
     if (busy == null) busy = BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
 
-    ///////////
-    /* Width */
-    ///////////
-    var width = widget.model.width;
-    if (width == null) width = widget.model.maxWidth;
-    if ((width == null) || (width <= 0)) width = MediaQuery.of(context).size.width;
-
-    ////////////
-    /* Height */
-    ////////////
-    var height = widget.model.height;
-    if (height == null) height = widget.model.maxHeight;
-    if ((height == null) || (height <= 0)) height = MediaQuery.of(context).size.height;
+    var width = widget.model.width   ?? widget.model.calculatedMaxWidthOrDefault;
+    var height = widget.model.height ?? widget.model.calculatedMaxHeightOrDefault;
 
     //////////////////
     /* Reset Button */
@@ -138,12 +127,8 @@ class _MapViewState extends WidgetState<MapView>
                     child: Stack(fit: StackFit.expand,
                         children: [map!, Positioned(top: 10, right: 10, child: reset), busy!])))));
 
-    var constraints = widget.model.getConstraints();
-    view = ConstrainedBox(child: view, constraints: BoxConstraints(
-        minHeight: constraints.minHeight!, maxHeight: constraints.maxHeight!,
-        minWidth: constraints.minWidth!, maxWidth: constraints.maxWidth!));
-    
-    return view;
+    // apply user defined constraints
+    return applyConstraints(view, widget.model.constraints.model);
   }
 
   GoogleMap? _buildGoogleMap()

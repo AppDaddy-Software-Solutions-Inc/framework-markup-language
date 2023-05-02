@@ -41,7 +41,7 @@ class File extends FileBase
   Future<Uint8List?> _read(int start, int? end) async
   {
     List<int> parts = [];
-    if (start < 0) start = 0;
+    if (start.isNegative) start = 0;
     if (end == null) end = await file.length();
 
     Stream<List<int>> stream = file.openRead(start,end);

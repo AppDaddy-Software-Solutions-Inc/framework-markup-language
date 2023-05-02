@@ -27,7 +27,7 @@ import 'package:fml/helper/common_helpers.dart';
 import 'dart:io' as io;
 
 // application build version
-final String version = '1.3.0';
+final String version = '2.0.0';
 
 // application title
 // only used in Android when viewing open applications
@@ -36,8 +36,7 @@ final String applicationTitle = "Flutter Markup Language " + version;
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://applications/<app> to use the asset applications
-
-String get defaultDomain => 'https://pad.fml.dev';
+String get defaultDomain => 'https://test.appdaddy.co';
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup

@@ -18,23 +18,16 @@ class SliderView extends StatefulWidget implements IWidgetView
 
 class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserver
 {
-  RenderBox? box;
-  Offset? position;
-
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _afterBuild(context);
-    });
-
-    // Set Build Constraints in the [WidgetModel]
-    setConstraints(constraints);
-
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
+
+    // save system constraints
+    onLayout(constraints);
 
     var min   = S.toDouble(widget.model.minimum) ?? 0;
     var max   = S.toDouble(widget.model.maximum) ?? 0;
@@ -66,18 +59,30 @@ class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserv
       }
     }
 
-    //////////
-    /* View */
-    //////////
-
-    Widget? view;
-    if (widget.model.range == false)
+    // create the view
+    Widget view;
+    if (widget.model.range)
+      view = RangeSlider(
+          values: RangeValues(S.toDouble(value1)!,
+              S.toDouble(value2)!),
+          min: min,
+          max: max,
+          divisions: !S.isNullOrEmpty(widget.model.divisions) &&
+              S.toInt(widget.model.divisions)! > 0
+              ? S.toInt(widget.model.divisions)
+              : null,
+          labels: RangeLabels(value1.toString(),
+              value2.toString()),
+          onChanged: (RangeValues values) => onRangeChange(values),
+          activeColor: ColorHelper.lighten(widget.model.color ?? Theme.of(context).colorScheme.primary, 0.05),
+          inactiveColor: Theme.of(context).colorScheme.secondaryContainer);
+    else
       view = Slider(
         value: value1,
         min: min,
         max: max,
         divisions: !S.isNullOrEmpty(widget.model.divisions) &&
-                S.toInt(widget.model.divisions)! > 0
+            S.toInt(widget.model.divisions)! > 0
             ? S.toInt(widget.model.divisions)
             : null,
         label: label,
@@ -86,43 +91,20 @@ class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserv
         inactiveColor: Theme.of(context).colorScheme.secondaryContainer,
         thumbColor: widget.model.color ?? Theme.of(context).colorScheme.primary,
       );
-    else if (widget.model.range == true) {
-      view = RangeSlider(
-        values: RangeValues(S.toDouble(value1)!,
-            S.toDouble(value2)!),
-        min: min,
-        max: max,
-        divisions: !S.isNullOrEmpty(widget.model.divisions) &&
-            S.toInt(widget.model.divisions)! > 0
-            ? S.toInt(widget.model.divisions)
-            : null,
-        labels: RangeLabels(value1.toString(),
-            value2.toString()),
-        onChanged: (RangeValues values) => onRangeChange(values),
-        activeColor: ColorHelper.lighten(widget.model.color ?? Theme.of(context).colorScheme.primary, 0.05),
-        inactiveColor: Theme.of(context).colorScheme.secondaryContainer,
-      );
-    }
 
-    ///////////
-    /* Width */
-    ///////////
-    double width = widget.model.width;
+    // get the model constraints
+    var modelConstraints = widget.model.constraints.model;
 
-    ////////////////////
-    /* Constrain Size */
-    ////////////////////
-    view = SizedBox(child: view, width: width);
+    // constrain the input to 200 pixels if not constrained by the model
+    if (!modelConstraints.hasHorizontalExpansionConstraints) modelConstraints.width = 200;
+
+    // add margins
+    view = addMargins(view);
+
+    // apply constraints
+    view = applyConstraints(view, modelConstraints);
 
     return view;
-  }
-
-  /// After [iFormFields] are drawn we get the global offset for scrollTo functionality
-  _afterBuild(BuildContext context) {
-    // Set the global offset position of each input
-   box = context.findRenderObject() as RenderBox?;
-    if (box != null) position = box!.localToGlobal(Offset.zero);
-    if (position != null) widget.model.offset = position;
   }
 
   String validate(String text) {

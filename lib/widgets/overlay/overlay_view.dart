@@ -5,8 +5,11 @@ import 'package:fml/helper/measured.dart';
 import 'package:fml/event/event.dart'   ;
 import 'package:fml/system.dart';
 import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/widgets/framework/framework_model.dart';
+import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:fml/widgets/overlay/overlay_manager_view.dart';
 import 'package:fml/widgets/overlay/overlay_model.dart';
+import 'package:fml/widgets/widget/iWidgetView.dart';
 
 class OverlayView extends StatefulWidget
 {
@@ -114,24 +117,37 @@ class OverlayViewState extends State<OverlayView>
     if (height! <= 0) height = 50;
 
     // Card
-    Widget content = UnconstrainedBox(child: ClipRect(child: SizedBox(height: height, width: width, child: widget.model.child)));
-    Widget card;
-    if (widget.model.decorate == false)
-         card = Card(child: content, margin: EdgeInsets.all(0.0), elevation: 0.0, borderOnForeground: false);
-    else card = Card(child: content, margin: EdgeInsets.all(4.0), elevation: 25.0, borderOnForeground: true, shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5.0)), side: BorderSide(color: Colors.transparent)));
+    Widget body = UnconstrainedBox(child: ClipRect(child: SizedBox(height: height, width: width, child: widget.model.child)));
+    // Widget card;
+    // if (widget.model.decorate == false)
+    //      card = Card(child: content, margin: EdgeInsets.all(0.0), elevation: 0.0, borderOnForeground: false);
+    // else card = Card(child: content, margin: EdgeInsets.all(4.0), elevation: 25.0, borderOnForeground: true, shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5.0)), side: BorderSide(color: Colors.transparent)));
+
+    // this forces the inner child view to resize
+    // somewhat of a hack to force rebuild since the
+    // old triggered a build on the inner view
+    if (widget.model.child is IWidgetView)
+    {
+      var model = (widget.model.child as IWidgetView).model;
+      if (model is LayoutModel)
+      {
+        if (model.isHorizontallyExpanding) model.setWidth(width, notify: false);
+        if (model.isVerticallyExpanding) model.setHeight(height, notify: true);
+      }
+    }
 
     // Non-Minimized View
     if (minimized == false)
     {
       // Build View
-      Widget close       = (widget.model.closeable == false)
+      Widget close = (widget.model.closeable == false)
           ? Container()
           : Padding(padding: EdgeInsets.only(left: 10), child: GestureDetector(onTap: () => onClose(),
             child: MouseRegion(cursor: SystemMouseCursors.click, onHover: (ev) => setState(() => closeHovered = true), onExit: (ev) => setState(() => closeHovered = false),
               child: UnconstrainedBox(child: SizedBox(height: 36, width: 36,
                 child: Tooltip(message: phrase.close,    child: Icon(Icons.close, size: 32, color: !closeHovered ? t.surfaceVariant : t.onBackground)))))));
 
-      Widget minimize    = ((widget.model.closeable == false)  || (widget.model.modal == true))
+      Widget minimize = ((widget.model.closeable == false)  || (widget.model.modal == true))
           ? Container()
           : Padding(padding: EdgeInsets.only(left: 10), child: GestureDetector(onTap: () => onMinimize(),
             child: MouseRegion(cursor: SystemMouseCursors.click, onHover: (ev) => setState(() => minimizeHovered = true), onExit: (ev) => setState(() => minimizeHovered = false),
@@ -170,7 +186,7 @@ class OverlayViewState extends State<OverlayView>
       // View
       Widget content = UnconstrainedBox(child: SizedBox(height: height! + (padding * 2), width: width! + (padding * 2),
           child: Stack(children: [
-            Center(child: card),
+            Center(child: body),
             Positioned(child: resizeableL, top: 0, left: 0),
             Positioned(child: resizeableR, top: 0, right: 0),
             Positioned(child: resizeableT, top: 0, left: 0),
@@ -200,7 +216,7 @@ class OverlayViewState extends State<OverlayView>
       if (manager != null) slot = manager.model.park(widget);
 
       // Build View
-      Widget scaled  = Card(margin: EdgeInsets.all(1), child: SizedBox(width: 100, height: 50, child: Padding(child: FittedBox(child: card), padding:EdgeInsets.all(5))), elevation: 5, color: t.secondary.withOpacity(0.50), borderOnForeground: false, shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(4.0)), side: BorderSide(width: 2, color: t.primary)));
+      Widget scaled  = Card(margin: EdgeInsets.all(1), child: SizedBox(width: 100, height: 50, child: Padding(child: FittedBox(child: body), padding:EdgeInsets.all(5))), elevation: 5, color: t.secondary.withOpacity(0.50), borderOnForeground: false, shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(4.0)), side: BorderSide(width: 2, color: t.primary)));
       Widget close   = (widget.model.closeable == false) ? Container() : Padding(padding: EdgeInsets.only(left: 10), child: GestureDetector(onTap: () => onClose(),  child: MouseRegion(cursor: SystemMouseCursors.click, child: UnconstrainedBox(child: SizedBox(height: 24, width: 24, child: Container(decoration: BoxDecoration(color: t.primaryContainer, shape: BoxShape.circle), child: Tooltip(message: phrase.close, child: Icon(Icons.close, size: 24, color: t.onPrimaryContainer))))))));
       Widget curtain = GestureDetector(onTap: onRestore, child: MouseRegion(cursor: SystemMouseCursors.click, child: SizedBox(width: 100, height: 50)));
       Widget view    = Stack(children: [scaled, curtain, Positioned(child: close, top: 15, right: 15)]);
@@ -290,6 +306,7 @@ class OverlayViewState extends State<OverlayView>
   onClose()
   {
     if (widget.model.closeable == false) return;
+
     OverlayManagerView? overlay = context.findAncestorWidgetOfExactType<OverlayManagerView>();
     if (overlay != null)
     {
@@ -297,6 +314,9 @@ class OverlayViewState extends State<OverlayView>
       overlay.model.overlays.remove(widget);
       overlay.model.refresh();
     }
+
+    // dispose of the model
+    if (widget.model is FrameworkModel) (widget.model as FrameworkModel).dispose();
   }
 
   onDismiss()
@@ -431,8 +451,8 @@ class OverlayViewState extends State<OverlayView>
       if (widget.model.modal == true)
       {
         var viewport = MediaQuery.of(context).size;
-        if (dx! < 0) dx = 0;
-        if (dy! < 0) dy = 0;
+        if (dx!.isNegative) dx = 0;
+        if (dy!.isNegative) dy = 0;
         if (dx! + (width!  + (padding * 2)) > viewport.width)  dx = viewport.width  - (width!  + (padding * 2));
         if (dy! + (height! + (padding * 2)) > viewport.height) dy = viewport.height - (height! + (padding * 2));
       }

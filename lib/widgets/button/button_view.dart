@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/widgets/button/button_model.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
@@ -22,173 +21,122 @@ class ButtonView extends StatefulWidget implements IWidgetView
 
 class _ButtonViewState extends WidgetState<ButtonView>
 {
+  ButtonStyle _getStyle()
+  {
+    var model = widget.model;
+
+    if (model.buttontype == 'elevated')
+      return ElevatedButton.styleFrom(
+          minimumSize:  Size(model.constraints.model.minWidth ?? 64, (model.constraints.model.minHeight ?? 0) + 40), //add 40 to the constraint as the width is offset by 40
+          backgroundColor: model.color ?? Theme.of(context).colorScheme.primary,
+          foregroundColor: Theme.of(context).colorScheme.onPrimary,
+          disabledForegroundColor: Theme.of(context).colorScheme.onSurface,
+          shadowColor: Theme.of(context).colorScheme.shadow,
+          shape: RoundedRectangleBorder(borderRadius: model.radius > 0 ? BorderRadius.all(Radius.circular(model.radius)) : BorderRadius.zero),
+          elevation: 3);
+
+
+    var borderSideStyle = model.buttontype == 'outlined' ? MaterialStateProperty.resolveWith((states)
+    {
+      if (states.contains(MaterialState.disabled))
+        return BorderSide(style: BorderStyle.solid, color: Theme.of(context).colorScheme.surfaceVariant, width: 2);
+        return BorderSide(style: BorderStyle.solid, color: model.color ?? Theme.of(context).colorScheme.primary, width: 2);
+    }) : null;
+
+    var elevationStyle = model.buttontype == 'elevated' ? MaterialStateProperty.resolveWith((states)
+    {
+      if (states.contains(MaterialState.hovered)) return 8.0;
+      if (states.contains(MaterialState.focused) || states.contains(MaterialState.pressed)) return 3.0;
+      return 5.0;
+    }) : null;
+    
+    // Button Type Styling
+    var foregroundColorStyle = (!S.isNullOrEmpty(model.color) && model.buttontype != 'elevated') ?
+    MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states)
+    {
+      if (states.contains(MaterialState.disabled)) return Theme.of(context).colorScheme.surfaceVariant;
+      return model.color ?? null;// not sure if this is the correct color scheme for text.
+    }) : null;
+
+    var backgroundColorStyle = (!S.isNullOrEmpty(model.color) && model.buttontype == 'elevated') ?
+    MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states)
+    {
+      if (states.contains(MaterialState.hovered)) return model.color!.withOpacity(0.85);
+      if (states.contains(MaterialState.focused) || states.contains(MaterialState.pressed)) return model.color!.withOpacity(0.2);
+      if (states.contains(MaterialState.disabled)) return Theme.of(context).colorScheme.shadow;
+      return model.color;
+    }) : null; // Defer to the widget
+
+    var buttonShape = MaterialStateProperty.all(
+        RoundedRectangleBorder(borderRadius: widget.model.radius > 0 ?
+        BorderRadius.all(Radius.circular(widget.model.radius)) :
+        BorderRadius.zero));
+
+    return ButtonStyle(
+      minimumSize: MaterialStateProperty.all(
+          Size(model.constraints.model.minWidth ?? 64, (model.constraints.model.minHeight?? 0) + 40)), //add 40 to the constraint as the width is offset by 40
+      foregroundColor: foregroundColorStyle,
+      backgroundColor: backgroundColorStyle,
+      // overlayColor: overlayColorStyle,
+      shape: buttonShape,
+      side: borderSideStyle,
+      elevation: elevationStyle,
+    );
+  }
+  
+  Widget _buildButton(Widget body)
+  {
+    var model = widget.model;
+    var style = _getStyle();
+    var onPressed = (model.onclick != null && model.enabled != false) ? () => model.onPress(context) : null;
+
+    switch (model.buttontype)
+    {
+      case 'outlined': return OutlinedButton(style: style, onPressed: onPressed, child: body);
+      case 'elevated': return ElevatedButton(style: style, onPressed: onPressed, child: body);
+      default: return TextButton(style: style, onPressed: onPressed, child: body);
+    }
+  }
+  
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    // Set Build Constraints in the [WidgetModel]
-    ButtonModel wm = widget.model;
-    widget.model.minWidth = constraints.minWidth;
-    widget.model.maxWidth = constraints.maxWidth;
-    widget.model.minHeight = constraints.minHeight;
-    widget.model.maxHeight = constraints.maxHeight;
+    // save system constraints
+    onLayout(constraints);
+
+    ButtonModel model = widget.model;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    //////////////////
-    /* Add Children */
-    //////////////////
-    List<Widget> children = [];
-    if ((widget.model.contents != null)) {
-      widget.model.contents!.forEach((model) {
-        if (model is IViewableWidget) {
-          children.add((model as IViewableWidget).getView());
-        }
-      });
-    }
-    if (widget.child != null) children.add(widget.child!);
-
-    Widget view;
-
-
-
-    // Button Type Styling
-    var foregroundColorStyle = (!S.isNullOrEmpty(wm.color) &&
-        wm.buttontype != 'elevated') ? MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
-        if (states.contains(MaterialState.disabled))
-          return Theme.of(context).colorScheme.surfaceVariant;
-        return wm.color ?? null;// not sure if this is the correct color scheme for text.
-      }) : null;
-
-    var backgroundColorStyle = (!S.isNullOrEmpty(wm.color) &&
-        wm.buttontype == 'elevated') ? MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
-        if (states.contains(MaterialState.hovered))
-          return wm.color!.withOpacity(0.85);
-        if (states.contains(MaterialState.focused) ||
-            states.contains(MaterialState.pressed))
-          return wm.color!.withOpacity(0.2);
-        if (states.contains(MaterialState.disabled))
-          return Theme.of(context).colorScheme.shadow;
-        return wm.color;}) : null; // Defer to the widget's default;
-
-    // var overlayColorStyle = wm.color != null ? MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
-    //     if (wm.buttontype != 'elevated' &&
-    //         states.contains(MaterialState.hovered))
-    //       return wm.color.withOpacity(0.1);
-    //     if (states.contains(MaterialState.focused) ||
-    //         states.contains(MaterialState.pressed))
-    //       return Theme.of(context).colorScheme.onPrimary.withOpacity(0.2);
-    //     return wm.color ?? null; // Defer to the widget's default.
-    //   }) : null;
-
-    var borderSideStyle = wm.buttontype == 'outlined' ? MaterialStateProperty.resolveWith((states) {
-      if (states.contains(MaterialState.disabled))
-        return BorderSide(style: BorderStyle.solid, color: Theme.of(context).colorScheme.surfaceVariant, width: 2);
-      return BorderSide(style: BorderStyle.solid, color: wm.color ?? Theme.of(context).colorScheme.primary, width: 2);
-    }) : null;
-
-    var paddingStyle = (wm.buttontype != 'outlined' &&
-        wm.buttontype != 'elevated') ? MaterialStateProperty.all(
-        EdgeInsets.only(top: 14,
-            bottom: 14,
-            left: 14,
-            right: 14)) : null;
-
-    var elevationStyle = wm.buttontype == 'elevated' ? MaterialStateProperty.resolveWith((states) {
-      if (states.contains(MaterialState.hovered))
-        return 8.0;
-      if (states.contains(MaterialState.focused) ||
-          states.contains(MaterialState.pressed))
-        return 3.0;
-      return 5.0;
-    }) : null;
-    var constr = widget.model.getConstraints();
-
-    if(constr.minWidth == null || constr.minWidth == 0.0) {constr.minWidth = (S.isNullOrEmpty(wm.label)) ? 36 : 72.0;} //if the button should size itself, the min width needs to be set if not defined.
-
-    var style = ButtonStyle(
-      minimumSize: MaterialStateProperty.all(
-          Size( constr.minWidth ?? 72, (constr.minHeight?? 0) + 36)), //add 36 to the constraint as the width is offset by 40
-      foregroundColor: foregroundColorStyle,
-      backgroundColor: backgroundColorStyle,
-      // overlayColor: overlayColorStyle,
-      padding: paddingStyle,
-      shape: MaterialStateProperty.all(RoundedRectangleBorder(
-          borderRadius: wm.radius > 0 ? BorderRadius.all(
-              Radius.circular(wm.radius)) : BorderRadius.zero)),
-      side: borderSideStyle,
-      elevation: elevationStyle,
-    );
+    // build the child views
+    List<Widget> children = widget.model.inflate();
+    if (children.isEmpty) children.add(Container());
 
     // Add a text child if label is set
-    if (!S.isNullOrEmpty(wm.label)) children.add(Text(wm.label!));
-    view = Center(child: Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [...children],));
-      
-    view = UnconstrainedBox(child: view);
+    if (!S.isNullOrEmpty(model.label)) children.add(Text(model.label ?? ""));
+
+    // center the body
+    var body = Center(child: Row(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.center, children: children));
 
     // Build the Button Types
-    if (wm.buttontype == 'outlined') {
-      view = OutlinedButton(
-          style: style,
-          onPressed: (wm.onclick != null && wm.enabled != false) ? () => wm.onPress(context) : null,
-          child: view);
-    } else if (wm.buttontype == 'elevated') {
-      // I had to override the MaterialStateProperties on ElevatedButton because the theme didn't play well with it
-      view = ElevatedButton(
-          style: ElevatedButton.styleFrom(
-              minimumSize:  Size(constr.minWidth ?? 72, (constr.minHeight?? 0) + 40), //add 40 to the constraint as the width is offset by 40
-              backgroundColor: wm.color ?? Theme.of(context).colorScheme.primary,
-              foregroundColor: Theme.of(context).colorScheme.onPrimary,
-              disabledForegroundColor: Theme.of(context).colorScheme.onSurface,
-              shadowColor: Theme.of(context).colorScheme.shadow,
-              shape: RoundedRectangleBorder(borderRadius: wm.radius > 0 ? BorderRadius.all(Radius.circular(wm.radius)) : BorderRadius.zero),
-              elevation: 3,
-          ),
-          onPressed: (wm.onclick != null && wm.enabled != false) ? () => wm.onPress(context) : null,
-          child: view);
-    } else {
-      view = TextButton(
-          style: style,
-          onPressed: (wm.onclick != null && wm.enabled != false) ? () => wm.onPress(context) : null,
-          child: view);
-    }
-
+    var view = _buildButton(body);
 
     // If onclick is null or enabled is false we fade the button
-    if (wm.onclick == null || wm.enabled == false) {
-      view = Opacity(opacity: 0.9, child: view); // Disabled
-    }
+    if (model.onclick == null || model.enabled == false) view = Opacity(opacity: 0.9, child: view); // Disabled
 
-    //unsure how to make this work with maxwidth/maxheight, as it should yet constraints always come in. What should it do? same with minwidth/minheight...
-    if (widget.model.height != null && widget.model.width != null ) {
-      view = ConstrainedBox(
-          child: Container(child:view) ,
-          constraints: BoxConstraints(
-              minHeight: constr.minHeight!,
-              maxHeight: constr.maxHeight!,
-              minWidth: constr.minWidth!,
-              maxWidth: constr.maxWidth!));
-    } else if (widget.model.width != null) {
-      view = UnconstrainedBox(
-        child: LimitedBox(
-          child: view,
-          maxWidth: constr.maxWidth!,
-        ),
-      );
-    } else if (widget.model.height != null) {
-      view = UnconstrainedBox(
-        child: LimitedBox(
-          child: view,
-          maxHeight: constr.maxHeight!,
-        ),
-      );
-    }
+    // add margins
+    view = addMargins(view);
 
+    // apply user defined constraints
+    view = applyConstraints(view, widget.model.constraints.model);
+
+    // allow button to shrink to size of its contents
+    view = UnconstrainedBox(child: view);
+
+    // apply user defined constraints
     return view;
   }
 }

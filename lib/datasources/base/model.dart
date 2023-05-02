@@ -9,7 +9,7 @@ import 'package:fml/hive/data.dart' as HIVE;
 import 'package:fml/datasources/data/model.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/event/handler.dart' ;
 import 'package:xml/xml.dart';
@@ -384,7 +384,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
       int to = data!.length - 1;
 
       if (start != null) {
-        if (start < 0)
+        if (start.isNegative)
           from = data!.length + start;
         else
           from = start;
@@ -423,7 +423,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
 
     // max records
     int maxrecords = this.maxrecords ?? 10000;
-    if (maxrecords < 0) maxrecords = 0;
+    if (maxrecords.isNegative) maxrecords = 0;
 
     // apply data transforms
     if (children != null)
@@ -617,7 +617,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
           if (data != null)
           {
             if (index > d.length) index = d.length;
-            if (index < 0) index = 0;
+            if (index.isNegative) index = 0;
             d.forEach((element) => data!.insert(index++, element));
           }
           else data = Data.from(d);
@@ -633,7 +633,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
         if (this.data != null)
         {
           if (index >= this.data!.length) index = this.data!.length - 1;
-          if (index < 0) index = 0;
+          if (index.isNegative) index = 0;
           this.data!.removeAt(index);
           notify();
         }

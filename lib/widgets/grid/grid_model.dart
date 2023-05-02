@@ -6,9 +6,7 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
-
-import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart'     ;
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/grid/grid_view.dart' as GRID;
@@ -19,10 +17,16 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class GridModel extends DecoratedWidgetModel implements IViewableWidget, IScrolling
+class GridModel extends DecoratedWidgetModel implements IScrolling
 {
   // prototype
   String? prototype;
+
+  @override
+  bool get isVerticallyExpanding => !isFixedHeight;
+
+  @override
+  bool get isHorizontallyExpanding => !isFixedWidth;
 
   // items
   HashMap<int,GridItemModel> items = HashMap<int,GridItemModel>();
@@ -203,10 +207,11 @@ class GridModel extends DecoratedWidgetModel implements IViewableWidget, IScroll
     // instantiate busy observable
     busy = false;
 
-    this.width     = width;
+    if (width  != null) this.width  = width;
+    if (height != null) this.height = height;
+
     this.draggable = draggable;
     this.onpulldown    = onpulldown;
-    this.height    = height;
     this.direction = direction;
     this.scrollShadows = scrollShadows;
     moreUp = false;
@@ -262,7 +267,7 @@ class GridModel extends DecoratedWidgetModel implements IViewableWidget, IScroll
   }
 
   GridItemModel? getItemModel(int item) {
-    if ((item < 0) || (items.length <= item)) return null;
+    if ((item.isNegative) || (items.length <= item)) return null;
     return items[item];
   }
 

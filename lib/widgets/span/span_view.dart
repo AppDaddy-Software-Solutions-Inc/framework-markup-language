@@ -147,18 +147,8 @@ class _SpanViewState extends WidgetState<SpanView>
             overflow: textOverflow,
             textAlign: textAlign));
 
-    // Constrained?
-    if (widget.model.hasSizing) {
-      var constraints = widget.model.getConstraints();
-      view = ConstrainedBox(
-          child: view,
-          constraints: BoxConstraints(
-              minHeight: constraints.minHeight!,
-              maxHeight: constraints.maxHeight!,
-              minWidth: constraints.minWidth!,
-              maxWidth: constraints.maxWidth!));
-    }
-    return view;
+    // apply user defined constraints
+    return applyConstraints(view, widget.model.constraints.model);
   }
 
   _buildSpans()

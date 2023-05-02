@@ -3,8 +3,7 @@ import 'dart:collection';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -15,10 +14,16 @@ import 'package:fml/helper/common_helpers.dart';
 
 enum MapTypes { satellite, hybrid, terrain, roadmap }
 
-class MapModel extends DecoratedWidgetModel implements IViewableWidget
+class MapModel extends DecoratedWidgetModel 
 {
   final List<String> layers = [];
 
+  @override
+  bool get isVerticallyExpanding => !isFixedHeight;
+
+  @override
+  bool get isHorizontallyExpanding => !isFixedWidth;
+  
   // marker prototypes
   final HashMap<String?,List<String>> prototypes = HashMap<String?,List<String>>();
 

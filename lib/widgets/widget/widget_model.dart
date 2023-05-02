@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:collection/collection.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/beacon/beacon_model.dart';
 import 'package:fml/datasources/detectors/biometrics/biometrics_detector_model.dart';
@@ -49,7 +50,6 @@ import 'package:fml/datasources/http/delete/model.dart';
 import 'package:fml/widgets/draggable/draggable_model.dart';
 import 'package:fml/widgets/droppable/droppable_model.dart';
 import 'package:fml/widgets/editor/editor_model.dart';
-import 'package:fml/widgets/expanded/expanded_model.dart';
 import 'package:fml/widgets/filepicker/filepicker_model.dart';
 import 'package:fml/widgets/footer/footer_model.dart';
 import 'package:fml/widgets/form/form_model.dart';
@@ -265,6 +265,14 @@ class WidgetModel implements IDataSourceListener
   }
   bool get busy => _busy?.get() ?? false;
 
+  // override this getter in widgets that inherit form this class
+  // to return the amount of vertical space allocated for padding, borders and margins
+  double get verticalPadding  => 0;
+
+  // override this getter in widgets that inherit form this class
+  // to return the amount of horizontal space allocated for padding, borders and margins
+  double get horizontalPadding => 0;
+
   WidgetModel(WidgetModel? parent, String? id, {Scope? scope})
   {
     // default id
@@ -429,9 +437,11 @@ class WidgetModel implements IDataSourceListener
         model = EditorModel.fromXml(parent, node);
         break;
 
-      case "expand": // Preferred CaFooterModel
-      case "expanded": // Expanded may be deprecated
-        model = ExpandedModel.fromXml(parent, node);
+      // deprecated. use row/column/box with %sizing or flex
+      case "expand":
+      case "expanded":
+        model = ColumnModel.fromXml(parent, node);
+        if (model is ColumnModel && model.flex == null) model.flex = "1";
         break;
 
       case "eval":
@@ -933,7 +943,9 @@ class WidgetModel implements IDataSourceListener
     if (_listeners != null) _listeners!.clear();
   }
 
-  notifyListeners(String? property, dynamic value) {
+  notifyListeners(String? property, dynamic value, {bool notify = false}) {
+    if (notify && _listeners == null) print('listeners is null');
+    if (notify && _listeners != null) print('listeners has ${_listeners!.length} members');
     if (_listeners != null)
       _listeners!.forEach((listener) {
         listener.onModelChange(this, property: property, value: value);
@@ -1045,7 +1057,7 @@ class WidgetModel implements IDataSourceListener
 
   dynamic findChildOfExactType(Type T, {String? id}) {
     if (children != null)
-      return children!.firstWhere((child) => child.runtimeType == T && (child.id == (id ?? child.id)), orElse: null);
+      return children!.firstWhereOrNull((child) => child.runtimeType == T && (child.id == (id ?? child.id)));
   }
 
   List<dynamic> findChildrenOfExactType(Type T, {String? id}) {
@@ -1460,11 +1472,4 @@ class WidgetModel implements IDataSourceListener
         return false;
     }
   }
-}
-
-class Constraints {
-  double minWidth = 0.0;
-  double maxWidth = double.infinity;
-  double minHeight = 0.0;
-  double maxHeight = double.infinity;
 }

@@ -4,7 +4,6 @@ import 'package:fml/dialog/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/widgets/form/iFormField.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
@@ -116,19 +115,14 @@ class FormViewState extends WidgetState<FormView> implements GPS.IGpsListener
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    // Set Build Constraints in the [WidgetModel]
-    setConstraints(constraints);
+    // save system constraints
+    onLayout(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if ((widget.model.children == null) || ((!widget.model.visible))) return Offstage();
 
-    List<Widget> children = [];
-    widget.model.children!.forEach((model)
-    {
-      if (model is IViewableWidget) {
-        children.add((model as IViewableWidget).getView());
-      }
-    });
+    // build child views
+    List<Widget> children = widget.model.inflate();
     if (children.isEmpty) children.add(Container());
 
     // Center
@@ -145,15 +139,7 @@ class FormViewState extends WidgetState<FormView> implements GPS.IGpsListener
 
     view = Stack(children: [willpop, Center(child: busy)]);
 
-    // Constrained
-    if (widget.model.hasSizing)
-    {
-      var constraints = widget.model.getConstraints();
-      view = ConstrainedBox(child: view, constraints: BoxConstraints(
-      minHeight: constraints.minHeight!, maxHeight: constraints.maxHeight!,
-          minWidth: constraints.minWidth!, maxWidth: constraints.maxWidth!));
-    }
-
-    return view;
+    // apply user defined constraints
+    return applyConstraints(view, widget.model.constraints.model);
   }
 }

@@ -129,7 +129,9 @@ class ApplicationModel extends WidgetModel
           _startPage = _uri.removeQuery().url;
         }
     }
-    else _queryParameters = uri.queryParameters;
+    else {
+      _queryParameters = uri.queryParameters;
+    }
 
     // base domain
     _domain = uri.removeFragment().removeQuery().replace(userInfo: null).removeEmptySegments().url;
@@ -142,27 +144,30 @@ class ApplicationModel extends WidgetModel
   }
 
   // initializes the app
+  @override
   Future<bool> initialize() async
   {
     // build stash
     stash = Scope(id: 'STASH');
     if (domain != null) _stash = await Stash.get(domain!);
-    _stash.map.entries.forEach((entry) => stash.setObservable(entry.key, entry.value));
+    for (var entry in _stash.map.entries) {
+      stash.setObservable(entry.key, entry.value);
+    }
 
     // add SYSTEM scope
-    this.scopeManager.add(System().scope!);
+    scopeManager.add(System().scope!);
 
     // add THEME scope
-    this.scopeManager.add(System.theme.scope!);
+    scopeManager.add(System.theme.scope!);
 
     // add STASH scope
-    this.scopeManager.add(stash);
+    scopeManager.add(stash);
 
     // add USER scope
-    this.scopeManager.add(_user.scope!);
+    scopeManager.add(_user.scope!);
 
     // add GLOBAL alias to this scope
-    this.scopeManager.add(scope!, alias: "GLOBAL");
+    scopeManager.add(scope!, alias: "GLOBAL");
 
     // build config
     var config = await _getConfig(true);
@@ -177,7 +182,7 @@ class ApplicationModel extends WidgetModel
       if (uri != null) template = await Template.fetchTemplate(url: uri.url, refresh: true);
 
       // deserialize the returned template
-      if (template != null) this.deserialize(template.rootElement);
+      if (template != null) deserialize(template.rootElement);
     }
 
     return true;
@@ -227,9 +232,11 @@ class ApplicationModel extends WidgetModel
         if (uri != null)
         {
           var data = await URI.toUriData(uri.url);
-          if (data != null)
-               this.icon = data.toString();
-          else this.icon = null;
+          if (data != null) {
+            this.icon = data.toString();
+          } else {
+            this.icon = null;
+          }
         }
       }
 
@@ -261,14 +268,15 @@ class ApplicationModel extends WidgetModel
     /// Initial Theme Setting
     String def = 'light';
     String cBrightness = settings('BRIGHTNESS')?.toLowerCase() ?? def;
-    if (cBrightness == 'system' || cBrightness == 'platform')
-    try
+    if (cBrightness == 'system' || cBrightness == 'platform') {
+      try
     {
       cBrightness = MediaQueryData.fromWindow(WidgetsBinding.instance.window).platformBrightness.toString().toLowerCase().split('.')[1];
     }
     catch(e)
     {
       cBrightness = def;
+    }
     }
 
     var brightness  = theme.brightness;
@@ -306,8 +314,9 @@ class ApplicationModel extends WidgetModel
         _stash.map.remove(key);
         _stash.upsert();
         Binding? binding = Binding.fromString('$key.value');
-        if (binding != null)
+        if (binding != null) {
           stash.observables.remove(stash.getObservable(binding));
+        }
         return ok;
       }
 
@@ -350,14 +359,18 @@ class ApplicationModel extends WidgetModel
   void launch(ThemeModel theme, bool notifyOnThemeChange)
   {
     // set stash values
-    _stash.map.entries.forEach((entry) => stash.setObservable(entry.key, entry.value));
+    for (var entry in _stash.map.entries) {
+      stash.setObservable(entry.key, entry.value);
+    }
 
     // start all datasources
-    if (datasources != null)
-    for (var datasource in datasources!)
-    {
-      if (datasource.autoexecute != false) datasource.start();
-      datasource.initialized = true;
+    if (datasources != null) {
+      for (var datasource in datasources!) {
+        if (datasource.autoexecute != false) {
+          datasource.start();
+        }
+        datasource.initialized = true;
+      }
     }
 
     // set the theme if supplied
@@ -367,10 +380,15 @@ class ApplicationModel extends WidgetModel
   void close()
   {
     // start all datasources
-    if (datasources != null) for (var datasource in datasources!) datasource.stop();
+    if (datasources != null) {
+      for (var datasource in datasources!) {
+        datasource.stop();
+      }
+    }
   }
 
 
+  @override
   void dispose()
   {
     // close the app

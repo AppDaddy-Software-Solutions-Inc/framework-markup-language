@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fml/system.dart';
 
-import 'package:fml/main.dart' as MAIN;
+import 'package:fml/main.dart' as main_entry;
 
 void main() {
   group('[E2E INTEGRATION TEST]', ()
   {
     test('Compile Completed', () async => print('[PRINT] Commencing Application Testing'));
     testWidgets('Application Startup Profile', (tester) async {
-    MAIN.main();
+      main_entry.main();
     await tester.pumpAndSettle();
     print('[PRINT] Pumping');
     await tester.pump(Duration(seconds: 20));

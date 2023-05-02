@@ -49,7 +49,7 @@ class _ApplicationManagerState extends State<ApplicationManager>
     event.handled = true;
 
     // build parameters
-    Map<String, String?>? parameters = Map<String, String?>();
+    Map<String, String?>? parameters = <String, String?>{};
     if (event.parameters != null) parameters.addAll(event.parameters!);
 
     // get url parameters
@@ -65,13 +65,15 @@ class _ApplicationManagerState extends State<ApplicationManager>
         (event.model!.scope != null)) {
       String? id = parameters['data'];
       IDataSource? source = event.model?.scope?.getDataSource(id);
-      if ((source != null) && (source.data != null) && (source.data?.isNotEmpty ?? false))
+      if ((source != null) && (source.data != null) && (source.data?.isNotEmpty ?? false)) {
         source.data?[0].forEach((key, value) {
           var id = Binding.toKey("${source.id}.${'data'}", key);
-          if (value is String && id != null)
+          if (value is String && id != null) {
             parameters[id] =
                 source.data![0][key];
+          }
         });
+      }
       parameters.remove('data');
     }
 
@@ -89,9 +91,11 @@ class _ApplicationManagerState extends State<ApplicationManager>
     final themeNotifier     = Provider.of<ThemeNotifier>(context, listen: false);
     String? eventColor      = event.parameters?['color'];
     String? eventBrightness = event.parameters?['brightness'] ?? System.theme.brightness;
-    if (eventColor != null)
-         themeNotifier.setTheme(eventBrightness!, eventColor);
-    else themeNotifier.setTheme(eventBrightness!);
+    if (eventColor != null) {
+      themeNotifier.setTheme(eventBrightness!, eventColor);
+    } else {
+      themeNotifier.setTheme(eventBrightness!);
+    }
   }
 
   @override
@@ -106,8 +110,8 @@ class _ApplicationManagerState extends State<ApplicationManager>
     System().screenwidth  = MediaQuery.of(context).size.width;
 
     // system shortcuts
-    if (kDebugMode)
-    view = Shortcuts(shortcuts: <LogicalKeySet, Intent>
+    if (kDebugMode) {
+      view = Shortcuts(shortcuts: <LogicalKeySet, Intent>
     {
       LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.alt, LogicalKeyboardKey.keyL): ShowLogIntent(),
       LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.alt, LogicalKeyboardKey.keyT): ShowTemplateIntent(),
@@ -120,6 +124,7 @@ class _ApplicationManagerState extends State<ApplicationManager>
           RefreshPageIntent: RefreshPageAction(),
           DebugWindowIntent: DebugWindowAction(),
         }, child: view));
+    }
 
     return view;
   }
@@ -150,7 +155,9 @@ class ShowTemplateAction extends Action<ShowTemplateIntent>
        FrameworkModel model = framework.model;
        EventManager.of(model)?.broadcastEvent(model,Event(EventTypes.showtemplate));
     }
-    else System.toast("unable to display template");
+    else {
+      System.toast("unable to display template");
+    }
   }
 }
 

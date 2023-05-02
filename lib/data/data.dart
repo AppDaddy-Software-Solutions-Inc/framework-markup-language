@@ -14,16 +14,18 @@ class Data with ListMixin<dynamic>
   Data({dynamic data})
   {
     _list = [];
-    if (data is List)
-         _list = data;
-    else if (data != null) _list.add(data);
+    if (data is List) {
+      _list = data;
+    } else if (data != null) {
+      _list.add(data);
+    }
   }
 
   @override
-  void add(dynamic value) => _list.add(value);
+  void add(dynamic element) => _list.add(element);
 
   @override
-  void addAll(Iterable<dynamic> values) => _list.addAll(values);
+  void addAll(Iterable<dynamic> iterable) => _list.addAll(iterable);
 
   @override
   void operator []=(int index, dynamic value) => _list[index] = value;
@@ -41,11 +43,15 @@ class Data with ListMixin<dynamic>
   Data clone()
   {
     Data clone = Data();
-    this.forEach((element)
+    forEach((element)
     {
-           if (element is List) clone.add(_cloneList(element));
-      else if (element is Map)  clone.add(_cloneMap(element));
-      else clone.add(element);
+           if (element is List) {
+             clone.add(_cloneList(element));
+           } else if (element is Map) {
+        clone.add(_cloneMap(element));
+      } else {
+        clone.add(element);
+      }
     });
     return clone;
   }
@@ -53,12 +59,15 @@ class Data with ListMixin<dynamic>
   List _cloneList(List list)
   {
     List clone = [];
-    list.forEach((element)
-    {
-           if (element is List) clone.add(_cloneList(element));
-      else if (element is Map)  clone.add(_cloneMap(element));
-      else clone.add(element);
-    });
+    for (var element in list) {
+           if (element is List) {
+             clone.add(_cloneList(element));
+           } else if (element is Map) {
+        clone.add(_cloneMap(element));
+      } else {
+        clone.add(element);
+      }
+    }
     return clone;
   }
 
@@ -67,9 +76,13 @@ class Data with ListMixin<dynamic>
     Map clone = {};
     map.forEach((key, value)
     {
-           if (value is List) clone[key] = _cloneList(value);
-      else if (value is Map)  clone[key] = _cloneMap(value);
-      else clone[key] = value;
+           if (value is List) {
+             clone[key] = _cloneList(value);
+           } else if (value is Map) {
+        clone[key] = _cloneMap(value);
+      } else {
+        clone[key] = value;
+      }
     });
     return clone;
   }
@@ -82,16 +95,18 @@ class Data with ListMixin<dynamic>
     if (value is Data)    data = value;
     if (value is String)
     {
-      if (value.trim().startsWith('<'))
-           data = Data.fromXml(value);
-      else data = Data.fromJson(value);
+      if (value.trim().startsWith('<')) {
+        data = Data.fromXml(value);
+      } else {
+        data = Data.fromJson(value);
+      }
     }
 
     // default
-    if (data == null) data = Data(data: data);
+    data ??= Data(data: data);
 
     // root should be supplied
-    if (root == null) root = data.findRoot(root);
+    root ??= data.findRoot(root);
 
     // select sub-list
     if (root != null)
@@ -130,14 +145,11 @@ class Data with ListMixin<dynamic>
        List<Map<String, dynamic>> list = [];
 
        // list
-       if (json is List)
-       json.forEach((element)
-       {
+       if (json is List) {
+         for (var element in json) {
          if (element is Map) list.add(element as Map<String, dynamic>);
-       });
-
-       // map
-       else if (json is Map)
+       }
+       } else if (json is Map)
        {
          list.add(json as Map<String, dynamic>);
        }
@@ -161,8 +173,8 @@ class Data with ListMixin<dynamic>
       if (dotnotation.isEmpty) return _data;
 
       // parse list
-      for (NotationSegment? property in dotnotation)
-      if (property != null)
+      for (NotationSegment? property in dotnotation) {
+        if (property != null)
       {
         if (_data is Map)
         {
@@ -191,6 +203,7 @@ class Data with ListMixin<dynamic>
           break;
         }
       }
+      }
 
       return Data(data: _data);
     }
@@ -215,7 +228,7 @@ class Data with ListMixin<dynamic>
         {
           if (node is Map)
           {
-            if (node.entries.length == 0) done = true;
+            if (node.entries.isEmpty) done = true;
             if (node.entries.length >  1) done = true;
             if (node.entries.length == 1)
             {
@@ -225,7 +238,9 @@ class Data with ListMixin<dynamic>
               if ((node is Map) && (node.entries.isNotEmpty) && (node.values.first is String)) done = true;
             }
           }
-          else done = true;
+          else {
+            done = true;
+          }
         }
         return root;
       }
@@ -244,7 +259,9 @@ class Data with ListMixin<dynamic>
             if (node.containsKey(name)) done = true;
             node = node.values.first;
           }
-          else done = true;
+          else {
+            done = true;
+          }
         }
         return root;
       }
@@ -264,33 +281,34 @@ class Data with ListMixin<dynamic>
         List<String> header = [];
         List<String> columns = [];
         if (data.isNotEmpty)
-        if (data.first is Map)
-        (data.first as Map).forEach((key, value)
+        if (data.first is Map) {
+          (data.first as Map).forEach((key, value)
         {
           columns.add(key);
           String h = key.toString();
           h.replaceAll('"', '""');
-          h = h.contains(',') ? '"' + h + '"' : h;
+          h = h.contains(',') ? '"$h"' : h;
           header.add(h);
         });
+        }
 
         // Output Header
-        buffer.write(header.join(", ") + '\n');
+        buffer.write('${header.join(", ")}\n');
 
         // Output Data
-        if (columns.isNotEmpty)
-        data.forEach((map)
-        {
+        if (columns.isNotEmpty) {
+          for (var map in data) {
           i++;
           List<String> row = [];
-          columns.forEach((column) {
+          for (var column in columns) {
             String value = map.containsKey(column) ? map[column].toString() : '';
             value.replaceAll('"', '""');
-            value = value.contains(',') ? '"' + value + '"' : value;
+            value = value.contains(',') ? '"$value"' : value;
             row.add(value);
-          });
-          buffer.write(row.join(", ") + '\n');
-        });
+          }
+          buffer.write('${row.join(", ")}\n');
+        }
+        }
 
         // eof
         string = buffer.toString();
@@ -314,7 +332,7 @@ class Data with ListMixin<dynamic>
     if (data is List<dynamic>) data = data.isNotEmpty ? data[0] : null;
 
     if (dotNotation != null)
-      for (NotationSegment? property in dotNotation)
+      for (NotationSegment? property in dotNotation) {
         if (property != null)
         {
           if (data is Map)
@@ -353,6 +371,7 @@ class Data with ListMixin<dynamic>
             break;
           }
         }
+      }
 
     // this is a very odd case. if the element contains attributes, the element value will be put into a
     // map field called "value" and its attributes will be mapped to underscore (_) names _attributename
@@ -401,24 +420,25 @@ class Data with ListMixin<dynamic>
 
   static Map<String?, dynamic> readValues(List<Binding>? bindings, dynamic data)
   {
-    Map<String?, dynamic> values = Map<String?, dynamic>();
+    Map<String?, dynamic> values = <String?, dynamic>{};
     List<String?> processed = [];
-    if (bindings != null)
-    for (Binding binding in bindings)
-    {
-      // fully qualified data binding name (datasource.data.field1.field2.field3...fieldn)
-      if ((binding.source == 'data'))
-      {
-        String? signature = binding.property + (binding.dotnotation?.signature != null ? ".${binding.dotnotation!.signature}" : "");
-        if (!processed.contains(binding.signature))
-        {
-          processed.add(binding.signature);
-          var value = readValue(data,signature) ?? "";
-          values[binding.signature] = value;
+    if (bindings != null) {
+      for (Binding binding in bindings) {
+        // fully qualified data binding name (datasource.data.field1.field2.field3...fieldn)
+        if ((binding.source == 'data')) {
+          String? signature = binding.property +
+              (binding.dotnotation?.signature != null ? ".${binding.dotnotation!
+                  .signature}" : "");
+          if (!processed.contains(binding.signature)) {
+            processed.add(binding.signature);
+            var value = readValue(data, signature) ?? "";
+            values[binding.signature] = value;
+          }
         }
       }
     }
-    return values;
+      return values;
+
   }
 
   static String? replaceValue(String? string, dynamic data)

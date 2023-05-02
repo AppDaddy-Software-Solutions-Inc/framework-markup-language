@@ -5,7 +5,7 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/datasources/iDataSourceListener.dart';
 import 'package:fml/datasources/transforms/iTransform.dart';
-import 'package:fml/hive/data.dart' as HIVE;
+import 'package:fml/hive/data.dart' as hive;
 import 'package:fml/datasources/data/model.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
@@ -24,13 +24,15 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
   Data? get data
   {
     if (super.data == null) return null;
-    if (super.data is Data)
+    if (super.data is Data) {
       return super.data;
-    else
+    } else {
       return Data(data: super.data);
+    }
   }
 
   // indicates if the broker has been started after the view has loaded
+  @override
   bool? initialized = false;
 
   // framework is being disposed
@@ -48,6 +50,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
 
   // enabled
   BooleanObservable? _enabled;
+  @override
   set enabled(dynamic v) {
     if (_enabled != null) {
       _enabled!.set(v);
@@ -56,6 +59,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
           scope: scope, listener: onPropertyChange);
     }
   }
+  @override
   bool get enabled => _enabled?.get() ?? true;
 
   // queue
@@ -153,8 +157,9 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
     } else if (v != null) {
       _status = StringObservable(Binding.toKey(id, 'status'), v, scope: scope);
     }
-    if (((v == "success") || (v == "error")) && (timetoidle > 0))
+    if (((v == "success") || (v == "error")) && (timetoidle > 0)) {
       t = Timer(Duration(seconds: timetoidle), () => status = "idle");
+    }
   }
   String? get status => _status?.get();
 
@@ -225,14 +230,20 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
     autoquery = autoquery.trim().toLowerCase();
 
     int factor = 1;
-    if (autoquery.endsWith('s')) factor = 1;
-    else if (autoquery.endsWith('m')) factor = 1 * 60;
-    else if (autoquery.endsWith('h')) factor = 1 * 60 * 60;
-    else if (autoquery.endsWith('d')) factor = 1 * 60 * 60 * 24;
-    if (autoquery.endsWith('s') || autoquery.endsWith('m') || autoquery.endsWith('h') || autoquery.endsWith('d'))
+    if (autoquery.endsWith('s')) {
+      factor = 1;
+    } else if (autoquery.endsWith('m')) {
+      factor = 1 * 60;
+    } else if (autoquery.endsWith('h')) {
+      factor = 1 * 60 * 60;
+    } else if (autoquery.endsWith('d')) {
+      factor = 1 * 60 * 60 * 24;
+    }
+    if (autoquery.endsWith('s') || autoquery.endsWith('m') || autoquery.endsWith('h') || autoquery.endsWith('d')) {
       autoquery = (autoquery.length > 1)
           ? autoquery.substring(0, autoquery.length - 1)
           : null;
+    }
 
     if (S.isNumber(autoquery)) {
       int t = S.toInt(autoquery)! * factor;
@@ -248,9 +259,9 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
     super.busy = v;
 
     if (busy != old)
-      listeners.forEach((listener) {
+      for (var listener in listeners) {
         listener.onDataSourceBusy(this, busy);
-      });
+      }
 
     // Set Status
     status = (busy == true) ? "busy" : (status ?? "idle");
@@ -339,9 +350,11 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
 
       // body is all text (cdata or text only)?
       bool isText = (body.children.firstWhereOrNull((child) => (child is XmlCDATA || child is XmlText || child is XmlComment) ? false : true) == null);
-      if (isText)
-           this.body = body.innerText.trim();
-      else this.body = body.innerXml.trim();
+      if (isText) {
+        this.body = body.innerText.trim();
+      } else {
+        this.body = body.innerXml.trim();
+      }
     }
 
     // This Line Ensures Future Bodies that Contain Bindables won't Bind
@@ -354,8 +367,9 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
     bool? runInBackground = S.toBool(Xml.get(node: xml, tag: 'background'));
     if ((runInBackground == false) &&
         (framework != null) &&
-        (framework!.indexObservable != null))
+        (framework!.indexObservable != null)) {
       framework!.indexObservable!.registerListener(onIndexChange);
+    }
   }
 
   void onIndexChange(Observable index) {
@@ -370,7 +384,9 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
   {
     // notify listeners
     var list = listeners.toList();
-    for (IDataSourceListener listener in list) await listener.onDataSourceSuccess(this, data);
+    for (IDataSourceListener listener in list) {
+      await listener.onDataSourceSuccess(this, data);
+    }
   }
 
   remove(IDataSourceListener listener)
@@ -384,10 +400,11 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
       int to = data!.length - 1;
 
       if (start != null) {
-        if (start.isNegative)
+        if (start.isNegative) {
           from = data!.length + start;
-        else
+        } else {
           from = start;
+        }
         if (end == null) to = from;
       }
 
@@ -395,8 +412,9 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
         if (end >= 0) {
           to = end;
           if (to >= data!.length) to = data!.length - 1;
-        } else
+        } else {
           to = data!.length + end;
+        }
       }
 
       if ((from <= to) &&
@@ -406,10 +424,10 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
           (to < data!.length)) {
         Data data = Data();
         int i = 0;
-        this.data!.forEach((row) {
+        for (var row in this.data!) {
           if ((i < from) || (i > to)) data.add(row);
           i++;
-        });
+        }
         this.data = data;
       }
     }
@@ -427,8 +445,9 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
 
     // apply data transforms
     if (children != null)
-      for (WidgetModel model in this.children!)
+      for (WidgetModel model in this.children!) {
         if (model is ITransform) await (model as ITransform).apply(data);
+      }
 
     // type - default is replace
     ListTypes? type = S.toEnum(this.queuetype, ListTypes.values);
@@ -436,36 +455,54 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
     // Fifo - Oldest -> Newest
     if (type == ListTypes.fifo) {
       Data temp = Data();
-      if (this.data != null) this.data!.forEach((element) => temp.add(element));
-      data.forEach((element) => temp.add(element));
-      if (temp.length > maxrecords)
+      if (this.data != null) for (var element in this.data!) {
+   temp.add(element);
+ }
+      for (var element in data) {
+        temp.add(element);
+      }
+      if (temp.length > maxrecords) {
         temp.removeRange(0, temp.length - maxrecords);
+      }
       data = temp;
     }
 
     // Lifo - Newest > Oldest
     if (type == ListTypes.lifo) {
       Data temp = Data();
-      data.forEach((element) => temp.add(element));
-      if (this.data != null) this.data!.forEach((element) => temp.add(element));
-      if (temp.length > maxrecords)
+      for (var element in data) {
+        temp.add(element);
+      }
+      if (this.data != null) for (var element in this.data!) {
+   temp.add(element);
+ }
+      if (temp.length > maxrecords) {
         temp.removeRange(temp.length - maxrecords - 1, temp.length);
+      }
       data = temp;
     }
 
     // Append
     if (type == ListTypes.append) {
       Data temp = Data();
-      if (this.data != null) this.data!.forEach((element) => temp.add(element));
-      data.forEach((element) => temp.add(element));
+      if (this.data != null) for (var element in this.data!) {
+   temp.add(element);
+ }
+      for (var element in data) {
+        temp.add(element);
+      }
       data = temp;
     }
 
     // Prepend
     if (type == ListTypes.prepend) {
       Data temp = Data();
-      data.forEach((element) => temp.add(element));
-      if (this.data != null) this.data!.forEach((element) => temp.add(element));
+      for (var element in data) {
+        temp.add(element);
+      }
+      if (this.data != null) for (var element in this.data!) {
+   temp.add(element);
+ }
       data = temp;
     }
 
@@ -488,7 +525,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
     status = "error";
 
     // set status code
-    this.statuscode = code;
+    statuscode = code;
 
     // set status message
     //statusmessage = (data == null) ? (message ?? '') : '';
@@ -498,21 +535,24 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
     Log().exception("$statusmessage [$statuscode] id: $id, object: 'DataBroker'");
 
     // fire on fail event
-    if (onFailOverride != null || !S.isNullOrEmpty(this.onfail))
+    if (onFailOverride != null || !S.isNullOrEmpty(onfail))
     {
       EventHandler handler = EventHandler(this);
       await handler.execute(onFailOverride ?? _onfail);
     }
 
     // notify listeners
-    for (IDataSourceListener listener in listeners) listener.onDataSourceException(this, Exception(statusmessage));
+    for (IDataSourceListener listener in listeners) {
+      listener.onDataSourceException(this, Exception(statusmessage));
+    }
 
     // busy
     busy = false;
 
     // requery?
-    if (((autoquery ?? 0) > 0) && (timer == null) && (!disposed))
+    if (((autoquery ?? 0) > 0) && (timer == null) && (!disposed)) {
       timer = Timer.periodic(Duration(seconds: autoquery!), onTimer);
+    }
 
     return false;
   }
@@ -525,7 +565,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
     status = "success";
 
     // set status code
-    this.statuscode = code;
+    statuscode = code;
 
     // set status message
     statusmessage = message ?? 'Ok';
@@ -540,7 +580,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
     notify();
 
     // fire on success event
-    if (onSuccessOverride != null || !S.isNullOrEmpty(this.onsuccess))
+    if (onSuccessOverride != null || !S.isNullOrEmpty(onsuccess))
     {
       EventHandler handler = EventHandler(this);
       await handler.execute(onSuccessOverride ?? _onsuccess);
@@ -548,12 +588,14 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
 
     // notify nested data sources
     if (datasources != null)
-      for (IDataSource model in this.datasources!)
+      for (IDataSource model in this.datasources!) {
         if (model is DataModel) model.onSuccess(data.clone());
+      }
 
     // requery?
-    if (((autoquery ?? 0) > 0) && (timer == null) && (!disposed))
+    if (((autoquery ?? 0) > 0) && (timer == null) && (!disposed)) {
       timer = Timer.periodic(Duration(seconds: autoquery!), onTimer);
+    }
 
     // busy
     busy = false;
@@ -567,7 +609,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
     if ((timetolive > 0) && (!refresh))
     {
       // found cached data?
-      HIVE.Data? row = await HIVE.Data.find(key!);
+      hive.Data? row = await hive.Data.find(key!);
 
       // expired?
       bool expired = true;
@@ -583,7 +625,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
   {
     if (timetolive > 0)
     {
-      HIVE.Data d = HIVE.Data(key: key, value: data, expires: DateTime.now().millisecondsSinceEpoch + timetolive);
+      hive.Data d = hive.Data(key: key, value: data, expires: DateTime.now().millisecondsSinceEpoch + timetolive);
       await d.insert();
     }
   }
@@ -603,14 +645,14 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
     {
       // clear the list
       case "clear":
-        int? start = S.toInt(S.item(arguments, 0)) ?? null;
-        int? end = S.toInt(S.item(arguments, 1)) ?? null;
+        int? start = S.toInt(S.item(arguments, 0));
+        int? end = S.toInt(S.item(arguments, 1));
         return await clear(start: start, end: end);
 
       // add to the list
       case "add":
-        String? jsonOrXml  = S.toStr(S.item(arguments, 0)) ?? null;
-        int index = S.toInt(S.item(arguments, 1)) ?? (this.data != null ? this.data!.length : 0);
+        String? jsonOrXml  = S.toStr(S.item(arguments, 0));
+        int index = S.toInt(S.item(arguments, 1)) ?? (data != null ? data!.length : 0);
         if (jsonOrXml != null)
         {
           Data? d = Data.from(jsonOrXml);
@@ -618,9 +660,13 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
           {
             if (index > d.length) index = d.length;
             if (index.isNegative) index = 0;
-            d.forEach((element) => data!.insert(index++, element));
+            for (var element in d) {
+              data!.insert(index++, element);
+            }
           }
-          else data = Data.from(d);
+          else {
+            data = Data.from(d);
+          }
 
           // notify listeners of data change
           notify();
@@ -629,12 +675,12 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
 
       // remove from the list
       case "remove":
-        int index = S.toInt(S.item(arguments, 1)) ?? (this.data != null ? this.data!.length : 0);
-        if (this.data != null)
+        int index = S.toInt(S.item(arguments, 1)) ?? (data != null ? data!.length : 0);
+        if (data != null)
         {
-          if (index >= this.data!.length) index = this.data!.length - 1;
+          if (index >= data!.length) index = data!.length - 1;
           if (index.isNegative) index = 0;
-          this.data!.removeAt(index);
+          data!.removeAt(index);
           notify();
         }
         return true;
@@ -654,10 +700,12 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
   @override
   void dispose() {
     if (timer != null) timer!.cancel();
-    if ((scope != null) && (scope != System().scope))
+    if ((scope != null) && (scope != System().scope)) {
       scope!.removeDataSource(this);
-    if ((framework != null) && (framework!.indexObservable != null))
+    }
+    if ((framework != null) && (framework!.indexObservable != null)) {
       framework!.indexObservable!.removeListener(onIndexChange);
+    }
     super.dispose();
   }
 }

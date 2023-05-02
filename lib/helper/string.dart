@@ -150,7 +150,7 @@ class S
   static bool isPercentage(dynamic s)
   {
     if   (s == null)   return false;
-    if (!(s is String)) return false;
+    if (s is! String) return false;
 
     try
     {

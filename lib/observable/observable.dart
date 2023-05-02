@@ -80,7 +80,7 @@ class Observable
     if (value is String)
     {
       // bindings?
-      if (!(this is BLOB.BlobObservable)) bindings = Binding.getBindings(value, scope: scope);
+      if (this is! BLOB.BlobObservable) bindings = Binding.getBindings(value, scope: scope);
       if (bindings != null)
       {
         // replace the "this" operator

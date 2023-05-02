@@ -1210,7 +1210,7 @@ class WidgetModel implements IDataSourceListener
         // silent
         bool silent = S.toBool(S.item(arguments, 2)) ?? true;
 
-        if (xml == null || !(xml is String)) return true;
+        if (xml == null || xml is! String) return true;
 
         // append
         await _appendXml(xml, index, silent);
@@ -1270,7 +1270,7 @@ class WidgetModel implements IDataSourceListener
         // silent
         bool silent = S.toBool(S.item(arguments, 2)) ?? true;
 
-        if (xml == null || !(xml is String)) return true;
+        if (xml == null || xml is! String) return true;
 
         // check for children then remove them
         if (this.children != null && index == null)
@@ -1310,7 +1310,7 @@ class WidgetModel implements IDataSourceListener
         // silent
         bool silent = S.toBool(S.item(arguments, 1)) ?? true;
 
-        if (xml == null || !(xml is String)) return true;
+        if (xml == null || xml is! String) return true;
 
         // check for children then remove them
         if (this.children != null)
@@ -1358,7 +1358,7 @@ class WidgetModel implements IDataSourceListener
         // silent
         bool silent = S.toBool(S.item(arguments, 1)) ?? true;
 
-        if (xml == null || !(xml is String)) return true;
+        if (xml == null || xml is! String) return true;
 
         // index should never be null
         if (index != null)

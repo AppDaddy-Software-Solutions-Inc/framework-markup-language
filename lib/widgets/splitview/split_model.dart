@@ -112,7 +112,7 @@ class SplitModel extends DecoratedWidgetModel
     dividerHandleColor  = Xml.get(node: xml, tag: 'dividerhandlecolor');
 
     // remove non view children
-    children?.removeWhere((element) => !(element is ViewModel));
+    children?.removeWhere((element) => element is! ViewModel);
   }
 
   Widget getView({Key? key}) => getReactiveView(SplitView(this));

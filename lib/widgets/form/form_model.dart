@@ -375,24 +375,26 @@ class FormModel extends DecoratedWidgetModel
   static List<IFormField> getFields(List<WidgetModel>? children)
   {
     List<IFormField> fields = [];
-    if (children != null)
+    if (children != null) {
       children.forEach((child)
       {
         if (child is IFormField) fields.add(child as IFormField);
-        if (!(child is IForm)) fields.addAll(getFields(child.children));
+        if (child is! IForm) fields.addAll(getFields(child.children));
       });
+    }
     return fields;
   }
 
   static List<IForm> getForms(List<WidgetModel>? children)
   {
     List<IForm> forms = [];
-    if (children != null)
+    if (children != null) {
       children.forEach((child)
       {
         if (child is IForm) forms.add(child as IForm);
-        if (!(child is IForm)) forms.addAll(getForms(child.children));
+        if (child is! IForm) forms.addAll(getForms(child.children));
       });
+    }
     return forms;
   }
 

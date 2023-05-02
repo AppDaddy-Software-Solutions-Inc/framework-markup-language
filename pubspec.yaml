@@ -9,9 +9,6 @@ environment:
 
 dependencies:
 
-  yaml: ^3.1.0
-  # MIT
-
   flutter:
     sdk: flutter
 
@@ -47,14 +44,6 @@ dependencies:
   # Updated 2022/05/26
   crypto: ^3.0.2
   # BSD-3-Clause
-
-  # Updated 2021/09/23
-  datetime_picker_formfield: ^2.0.0
-  # MIT
-
-  # Updated 2022/05/31
-  date_time_picker: ^2.1.0
-  # UNKNOWN
   
   # Updated 2022/05/26
   decimal: ^1.5.0
@@ -213,10 +202,6 @@ dependencies:
   photo_view: ^0.14.0
   # MIT
 
-  # Updated 2022/03/30
-  platform: ^3.1.0
-  # BSD-3-Clause
-
   # Updated 2022/05/26
   pointycastle: ^3.6.0
   # MIT
@@ -292,6 +277,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   test: ^1.21.1
+  dependency_validator: ^3.0.0
 
 dependency_overrides:
   firebase_core_platform_interface: 4.5.1

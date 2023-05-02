@@ -109,14 +109,10 @@ class _TableRowCellViewState extends WidgetState<TableRowCellView> with WidgetsB
                         : bordercolor,
                     width: borderwidth),
                 top: BorderSide(
-                    color: outerbordercolor != null
-                        ? outerbordercolor
-                        : bordercolor,
+                    color: outerbordercolor?? bordercolor,
                     width: borderwidth),
                 bottom: BorderSide(
-                    color: outerbordercolor != null
-                        ? outerbordercolor
-                        : bordercolor,
+                    color: outerbordercolor ?? bordercolor,
                     width: borderwidth))));
 
     ///////////////

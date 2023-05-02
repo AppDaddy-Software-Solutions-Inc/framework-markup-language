@@ -645,7 +645,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
         ,
         textAlignVertical: widget.model.expand == true ? TextAlignVertical.top : TextAlignVertical.center,
         maxLength: length,
-        maxLines: widget.model.expand == true ? null : obscure! ? 1 : widget.model.maxlines != null ?  widget.model.maxlines : widget.model.wrap == true ? null : lines != null ? lines : 1,
+        maxLines: widget.model.expand == true ? null : obscure! ? 1 : widget.model.maxlines ?? (widget.model.wrap == true ? null : lines ?? 1),
         minLines: widget.model.expand == true ? null : lines ?? 1,
         maxLengthEnforcement: length != null
             ? MaxLengthEnforcement.enforced

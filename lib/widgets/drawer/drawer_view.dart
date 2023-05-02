@@ -836,16 +836,17 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
     }
 
     double? containerSize(String? sheet) {
-      if (sheet == 'left')
-        return widget.model.sizeLeft != null ? widget.model.sizeLeft : screenWidth;
-      else if (sheet == 'right')
-        return widget.model.sizeRight != null ? widget.model.sizeRight : screenWidth;
-      else if (sheet == 'top')
-        return widget.model.sizeTop != null ? widget.model.sizeTop : screenHeight;
-      else if (sheet == 'bottom')
-        return widget.model.sizeBottom != null ? widget.model.sizeBottom : screenHeight;
-      else
+      if (sheet == 'left') {
+        return widget.model.sizeLeft ?? screenWidth;
+      } else if (sheet == 'right') {
+        return widget.model.sizeRight ?? screenWidth;
+      } else if (sheet == 'top') {
+        return widget.model.sizeTop ?? screenHeight;
+      } else if (sheet == 'bottom') {
+        return widget.model.sizeBottom ?? screenHeight;
+      } else {
         return screenWidth as bool? ?? 300 < screenHeight ? screenHeight : screenWidth;
+      }
     }
 
     AnimatedPositioned leftDrawer = AnimatedPositioned(curve: Curves.easeOutCubic, duration: Duration(milliseconds: animate == true ? 400 : 0), onEnd: () => finishedAnimation(), right: fromRight ?? screenWidth,

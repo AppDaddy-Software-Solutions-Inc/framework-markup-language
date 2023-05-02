@@ -328,7 +328,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
     if (raw == true) {
       String str = await csvStringFromData(this.data);
       csvBytes = utf8.encode(str);
-      Platform.fileSaveAs(csvBytes, S.newId() + '.csv');
+      Platform.fileSaveAs(csvBytes, '${S.newId()}.csv');
       return true;
     }
 
@@ -351,9 +351,9 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
           // escape "'s in string
           textLine.replaceAll('"', '""');
           // surround in quotes for newline+returns / comma handling
-          textLine = (textLine.contains(',') || textLine.contains('\n')) ? '"' + textLine+ '"' : textLine;
+          textLine = (textLine.contains(',') || textLine.contains('\n')) ? '"$textLine"' : textLine;
           // goto next column
-          csvCellText = textLine + ', ';
+          csvCellText = '$textLine, ';
         });
       }
       else {
@@ -374,7 +374,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
     }
     csvBytes = [...csvBytes, ...utf8.encode('\r\n')]; // \r\n = 5c, 72, 5c, 6e
     // Uint8List.fromList(bytes) - typed_data conversion needed for converting back to Uint8List after manipulating the list
-    if ( csvBytes.isNotEmpty) Platform.fileSaveAs(Uint8List.fromList(csvBytes), S.newId() + '.csv');
+    if ( csvBytes.isNotEmpty) Platform.fileSaveAs(Uint8List.fromList(csvBytes), '${S.newId()}.csv');
     return true;
   }
 
@@ -390,12 +390,12 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
           columns.add(key);
           String h = key.toString();
           h.replaceAll('"', '""');
-          h = h.contains(',') ? '"' + h + '"' : h;
+          h = h.contains(',') ? '"$h"' : h;
           header.add(h);
         });
 
 //      Output Header
-      str += header.join(", ") + '\n';
+      str += '${header.join(", ")}\n';
 //      Output Data
       i = 0;
       if (columns.isNotEmpty)
@@ -407,10 +407,10 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
           {
             String value = map.containsKey(column) ? map[column].toString() : '';
             value.replaceAll('"', '""');
-            value = value.contains(',') ? '"' + value + '"' : value;
+            value = value.contains(',') ? '"$value"' : value;
             row.add(value);
           });
-          str += row.join(", ") + '\n';
+          str += '${row.join(", ")}\n';
         });
       // eof
       str.replaceFirst('\n', '\r\n', str.lastIndexOf('\n')); // replaces last

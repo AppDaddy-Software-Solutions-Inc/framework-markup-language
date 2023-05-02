@@ -121,7 +121,7 @@ class Reader
         var ndefRecords = await FlutterNfcKit.readNDEFRecords();
         var ndefString = ndefRecords
             .map((r) => r.toString())
-            .reduce((value, element) => value + "\n" + element);
+            .reduce((value, element) => "$value\n$element");
         return ndefString;
       } else if (tag.standard == "ISO 14443-4 (Type B)") {
         String result1 = await FlutterNfcKit.transceive("00B0950000");
@@ -134,7 +134,7 @@ class Reader
         var ndefRecords = await FlutterNfcKit.readNDEFRecords();
         var ndefString = ndefRecords
             .map((r) => r.toString())
-            .reduce((value, element) => value + "\n" + element);
+            .reduce((value, element) => "$value\n$element");
         return ndefString;
       } else if (tag.type == NFCTagType.webusb) {
         return await FlutterNfcKit.transceive("00A4040006D27600012401");

@@ -224,9 +224,11 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   BooleanObservable? _moreLeft;
   set moreLeft(dynamic v)
   {
-    if (_moreLeft != null)
-          _moreLeft!.set(v);
-    else if (v != null) _moreLeft = BooleanObservable(Binding.toKey(id, 'moreleft'), v, scope: scope);
+    if (_moreLeft != null) {
+      _moreLeft!.set(v);
+    } else if (v != null) {
+      _moreLeft = BooleanObservable(Binding.toKey(id, 'moreleft'), v, scope: scope);
+    }
   }
   bool? get moreLeft => _moreLeft?.get();
 
@@ -586,8 +588,9 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
 
   TableHeaderCellModel? getHeaderCell(int col) {
-    if ((tableheader != null) && (col < tableheader!.cells.length))
+    if ((tableheader != null) && (col < tableheader!.cells.length)) {
       return tableheader!.cells[col];
+    }
     return null;
   }
 
@@ -637,8 +640,9 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
             casesensitive: false);
 
         await sort.apply(data);
-      } else
+      } else {
         model?.sorted = false;
+      }
       i = i + 1;
     }
 
@@ -707,7 +711,9 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     /* Post the Form */
     ///////////////////
     if (dirty)
-      for (var entry in rows.entries) ok = await entry.value.complete();
+      for (var entry in rows.entries) {
+        ok = await entry.value.complete();
+      }
 
     busy = false;
     return ok;
@@ -722,14 +728,16 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
 
   void setCellPadding(int cellindex, double padding) {
-    if ((padding >= 0) && (cellindex < cellpadding.length))
+    if ((padding >= 0) && (cellindex < cellpadding.length)) {
       cellpadding[cellindex] = padding;
+    }
   }
 
   double getCellPosition(int cellindex) {
     double offset = 0;
-    for (int i = 0; i < cellindex; i++)
+    for (int i = 0; i < cellindex; i++) {
       offset += (widths[i] ?? 0) + (cellpadding[i] ?? 0);
+    }
     return offset;
   }
 
@@ -797,7 +805,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
 
     prototypeModel!.element!.children.removeWhere((node) => nodes!.contains(node));
 
-    if ((data != null) && (data.isNotEmpty))
+    if ((data != null) && (data.isNotEmpty)) {
       data[0].forEach((key, value)
       {
         if ((key != 'xml') && (key != 'rownum')) {
@@ -820,7 +828,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
           ///////////////
           xml = prototypeModel!.cellprototype
               .toXmlString()
-              .replaceAll("{" + 'field' + "}", "{" + key + "}");
+              .replaceAll("{" + 'field' + "}", "${"{" + key}}");
           XmlDocument? c2 = Xml.tryParse(xml);
 
           //////////////////////////////
@@ -832,6 +840,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
           }
         }
       });
+    }
 
     //////////////////////////
     /* Force View to Resize */
@@ -912,8 +921,9 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     double currentWidth = getContentWidth();
     double targetWidth = currentWidth - pixels.abs();
     double percentReduction = targetWidth / currentWidth;
-    for (int i = 0; i < widths.length; i++)
+    for (int i = 0; i < widths.length; i++) {
       widths[i] = (widths[i]! * percentReduction).roundToDouble();
+    }
   }
 
   Future<bool> save() async {

@@ -124,7 +124,7 @@ class PostMaster
     }
 
     // Get Incomplete Posts 
-    List<DATABASE.Post> posts = await DATABASE.Post.query(where: "{status} == " + DATABASE.Post.statusINCOMPLETE.toString());
+    List<DATABASE.Post> posts = await DATABASE.Post.query(where: "{status} == ${DATABASE.Post.statusINCOMPLETE}");
 
     // Sort Pending by Parent 
     posts.sort();
@@ -133,7 +133,7 @@ class PostMaster
     this.pending = posts;
 
     // Get Errors Count 
-    List<DATABASE.Post> errors = await DATABASE.Post.query(where: "{status} == " + DATABASE.Post.statusERROR.toString());
+    List<DATABASE.Post> errors = await DATABASE.Post.query(where: "{status} == ${DATABASE.Post.statusERROR}");
 
     // Set Error Count 
     this.errors = errors;

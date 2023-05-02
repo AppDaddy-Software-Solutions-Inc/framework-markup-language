@@ -208,7 +208,7 @@ class _MapViewState extends WidgetState<MapView>
           ///////////////
           /* Marker Id */
           ///////////////
-          MarkerId id = MarkerId(locationIndex.toString() + ',' + location.latitude.toString() + ',' + location.longitude.toString());
+          MarkerId id = MarkerId('$locationIndex,${location.latitude},${location.longitude}');
 
           /////////////////
           /* Info Window */

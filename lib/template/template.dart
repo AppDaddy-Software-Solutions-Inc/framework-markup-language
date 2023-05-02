@@ -63,7 +63,7 @@ class Template
     // saved document
     if (isUUID(url)) return await fetchSaved(url: url);
 
-    Log().debug('Getting template ' + url);
+    Log().debug('Getting template $url');
 
     // parse the url
     var uri = URI.parse(url);
@@ -145,7 +145,7 @@ class Template
 
   static Future<XmlDocument?> fetchSaved({required String url}) async
   {
-    Log().debug('Getting saved template ' + url);
+    Log().debug('Getting saved template $url');
 
     String? template;
 

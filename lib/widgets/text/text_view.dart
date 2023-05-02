@@ -39,10 +39,12 @@ class _TextViewState extends WidgetState<TextView>
     }
 
     // wait for the library to load
-    if (!libraryLoader!.isCompleted) libraryLoader!.future.whenComplete(()
+    if (!libraryLoader!.isCompleted) {
+      libraryLoader!.future.whenComplete(()
     {
       if (mounted) setState(() {});
     });
+    }
   }
 
   @override
@@ -324,8 +326,8 @@ class _TextViewState extends WidgetState<TextView>
   {
     List<InlineSpan> textSpans = [];
 
-    if (markupTextValues.isNotEmpty)
-    markupTextValues.forEach((element)
+    if (markupTextValues.isNotEmpty) {
+      markupTextValues.forEach((element)
     {
       InlineSpan textSpan;
       FontWeight? weight;
@@ -378,7 +380,7 @@ class _TextViewState extends WidgetState<TextView>
 
       String text = element.text.replaceAll('\\n', '\n').replaceAll('\\t','\t\t\t\t');
 
-      if (widget.model.addWhitespace) text = ' ' + text;
+      if (widget.model.addWhitespace) text = ' $text';
 
       //4 ts here as dart interprets the tab character as a single space.
       if (script == "sub")
@@ -454,6 +456,7 @@ class _TextViewState extends WidgetState<TextView>
         textSpans.add(textSpan);
       }
     });
+    }
 
     return textSpans;
   }

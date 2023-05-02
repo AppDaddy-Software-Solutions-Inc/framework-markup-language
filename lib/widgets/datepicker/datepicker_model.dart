@@ -550,15 +550,13 @@ class DatepickerModel extends FormFieldModel implements IFormField
 
     if (type == "date" || type == "year" || type == "range") {
       try {
-        if (secondResult != null)
-          value = DateFormat(format).format(result!) +
-              " - " +
-              DateFormat(format).format(secondResult);
-        else {
+        if (secondResult != null) {
+          value = "${DateFormat(format).format(result!)} - ${DateFormat(format).format(secondResult)}";
+        } else {
           value = DateFormat(format, 'en_US').format(result!);
         }
       } on FormatException catch(e) {
-        Log().debug(e.toString() + 'FORMATTING ERROR!!!!!');
+        Log().debug('${e}FORMATTING ERROR!!!!!');
       }
     } else if (type == "time") {
       if (format == 'yMd') format= 'H:m';
@@ -566,7 +564,7 @@ class DatepickerModel extends FormFieldModel implements IFormField
         value = DateFormat(format).format(DateTime(now.year, now.month,
                 now.day, timeResult!.hour, timeResult.minute));
       } on FormatException catch(e) {
-        Log().debug(e.toString() + 'FORMATTING ERROR!!!!!');
+        Log().debug('${e}FORMATTING ERROR!!!!!');
         value = '';
       }
     } else {
@@ -575,7 +573,7 @@ class DatepickerModel extends FormFieldModel implements IFormField
         value = DateFormat(format).format(DateTime(result!.year, result.month,
                 result.day, timeResult!.hour, timeResult.minute));
       } on FormatException catch(e) {
-        Log().debug(e.toString() + 'FORMATTING ERROR!!!!!');
+        Log().debug('${e}FORMATTING ERROR!!!!!');
         value = '';
       }
     }

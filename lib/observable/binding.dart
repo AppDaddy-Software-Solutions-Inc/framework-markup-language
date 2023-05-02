@@ -59,8 +59,8 @@ class Binding
   static String? toKey(String? source, [String? property])
   {
     if (source == null) return null;
-    if (property == null) property = 'value';
-    return (source + '.' + property).toLowerCase();
+    property ??= 'value';
+    return ('$source.$property').toLowerCase();
   }
 
   Binding({this.scope, required this.signature, required this.source, required this.property, this.isEval, this.dotnotation, this.offset});
@@ -125,7 +125,9 @@ class Binding
       if (parts.isNotEmpty)
       {
         String? name;
-        for (String part in parts) name = (name == null) ? part : "$name.$part";
+        for (String part in parts) {
+          name = (name == null) ? part : "$name.$part";
+        }
         subproperties = DotNotation.fromString(name);
       }
 
@@ -228,16 +230,16 @@ class Binding
 
   static String? applyMap(String? xml, Map? map, {String? source, bool caseSensitive = true, String? prefix, bool encode = false})
   {
-    if ((map != null) && (xml != null))
+    if ((map != null) && (xml != null)) {
       map.forEach((key, value)
       {
-        String oldValue = "{" + (S.isNullOrEmpty(prefix) ? (S.isNullOrEmpty(source) ? '' : source! + '.') : prefix!) + key.toString() + "}";
+        String oldValue = "{${S.isNullOrEmpty(prefix) ? (S.isNullOrEmpty(source) ? '' : '${source!}.') : prefix!}$key}";
         String? newValue = (value ?? '').toString();
         if ((encode) && (Xml.hasIllegalCharacters(newValue))) newValue = Xml.encodeIllegalCharacters(newValue);
 
-        if (caseSensitive)
+        if (caseSensitive) {
           xml = xml!.replaceAll(oldValue, newValue!);
-        else {
+        } else {
           try
           {
             xml = xml!.replaceAll(RegExp(oldValue, caseSensitive: false), newValue!);
@@ -250,6 +252,7 @@ class Binding
           }
         }
       });
+    }
     return xml;
   }
 }

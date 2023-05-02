@@ -28,8 +28,8 @@ class Payload
 
     // process lines
     int i = 0;
-    if (payload.lines != null)
-    payload.lines!.forEach((line)
+    if (payload.lines != null) {
+      payload.lines!.forEach((line)
     {
       i++;
 
@@ -39,8 +39,9 @@ class Payload
       map["line"] = line.text;
 
       int j = 1;
-      line.words.forEach((word) => map["word" + (j++).toString()] = word);
+      line.words.forEach((word) => map["word${j++}"] = word);
     });
+    }
     return data;
   }
 }

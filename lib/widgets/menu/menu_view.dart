@@ -92,7 +92,7 @@ class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling
         }
       }
     } catch(e) {
-      Log().error('onScroll Error: ' + e.toString());
+      Log().error('onScroll Error: $e');
     }
   }
 

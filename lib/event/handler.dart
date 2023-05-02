@@ -219,7 +219,7 @@ class EventHandler extends Eval
     if (expression is String)
     {
       const String dummySeperator = '!~^';
-      expression = expression.replaceAll(nonQuotedSemiColons, ")" + dummySeperator);
+      expression = expression.replaceAll(nonQuotedSemiColons, ")$dummySeperator");
       events = expression.split(dummySeperator);
     }
     return events;
@@ -685,7 +685,7 @@ class EventHandler extends Eval
       String? label = S.toStr(value);
       if (label != null && label.length > 0) {
         Clipboard.setData(ClipboardData(text: label));
-        System.toast('"' + S.toStr(value)! + '" ' + phrase.copiedToClipboard);
+        System.toast('"${S.toStr(value)!}" ${phrase.copiedToClipboard}');
       }
     }
     catch(e) {}

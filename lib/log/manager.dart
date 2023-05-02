@@ -41,7 +41,7 @@ class Log
       // if (kDebugMode) DialogService().show(type: DialogType.error, title: phrase.error, description: 'Exception: $exception Routine: $caller');
 
       // print in debug mode only
-      if (kDebugMode) print('Exception: $exception' + (caller != null ? ' -> $caller' : ''));
+      if (kDebugMode) print('Exception: $exception${caller != null ? ' -> $caller' : ''}');
 
       // add the entry
       DATABASE.Log e = DATABASE.Log(type: "exception", message: '$exception', caller: caller);
@@ -49,7 +49,7 @@ class Log
     }
     catch(ex)
     {
-      print('Catch - Exception: $exception' + (caller != null ? ' -> $caller' : ''));
+      print('Catch - Exception: $exception${caller != null ? ' -> $caller' : ''}');
     }
   }
 
@@ -58,7 +58,7 @@ class Log
     try
     {
       // print in debug mode only
-      if (kDebugMode) print('Error: $message' + (caller != null ? ' -> $caller' : ''));
+      if (kDebugMode) print('Error: $message${caller != null ? ' -> $caller' : ''}');
 
       // add the entry
       DATABASE.Log e = DATABASE.Log(type: "error", message: message, caller: caller);
@@ -66,7 +66,7 @@ class Log
     }
     catch(ex)
     {
-      print('Catch - Error: $message' + (caller != null ? ' -> $caller' : ''));
+      print('Catch - Error: $message${caller != null ? ' -> $caller' : ''}');
     }
   }
 
@@ -75,7 +75,7 @@ class Log
     try
     {
       // print in debug mode only
-      if (kDebugMode) print('Warning: $message' + (caller != null ? ' -> $caller' : ''));
+      if (kDebugMode) print('Warning: $message${caller != null ? ' -> $caller' : ''}');
 
       // add the entry
       DATABASE.Log e = DATABASE.Log(type: "warning", message: message, caller: caller);
@@ -83,7 +83,7 @@ class Log
     }
     catch(ex)
     {
-      print('Catch - Warning: $message' + (caller != null ? ' -> $caller' : ''));
+      print('Catch - Warning: $message${caller != null ? ' -> $caller' : ''}');
     }
   }
 
@@ -92,7 +92,7 @@ class Log
     try
     {
       // print in debug mode only
-      if (kDebugMode) print('Info: $message' + (caller != null ? ' -> $caller' : ''));
+      if (kDebugMode) print('Info: $message${caller != null ? ' -> $caller' : ''}');
 
       // add the entry
       DATABASE.Log e = DATABASE.Log(type: "info", message: message, caller: caller);
@@ -100,7 +100,7 @@ class Log
     }
     catch(ex)
     {
-      print('Catch - Info: $message' + (caller != null ? ' -> $caller' : ''));
+      print('Catch - Info: $message${caller != null ? ' -> $caller' : ''}');
     }
   }
 
@@ -110,14 +110,14 @@ class Log
     {
       if (kDebugMode)
       {
-        print('Debug: $message' + (caller != null ? ' -> $caller' : ''));
+        print('Debug: $message${caller != null ? ' -> $caller' : ''}');
         DATABASE.Log e = DATABASE.Log(type: "debug", message: message, caller: caller);
         _addEntry(e);
       }
     }
     catch(ex)
     {
-      print('Catch - Debug: $message' + (caller != null ? ' -> $caller' : ''));
+      print('Catch - Debug: $message${caller != null ? ' -> $caller' : ''}');
     }
   }
 

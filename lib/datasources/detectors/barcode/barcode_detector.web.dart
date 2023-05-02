@@ -242,7 +242,7 @@ class BarcodeDetector implements IBarcodeDetector
     Payload payload = Payload();
     payload.barcodes.add(barcode);
 
-    String msg = 'format: ' + barcode.format! + ' barcode: ' + barcode.barcode!;
+    String msg = 'format: ${barcode.format!} barcode: ${barcode.barcode!}';
     Log().debug(msg);
     return payload;
   }

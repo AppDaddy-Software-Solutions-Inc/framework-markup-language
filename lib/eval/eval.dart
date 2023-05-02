@@ -68,7 +68,7 @@ class Eval
     catch(e)
     {
       String? msg;
-      if (variables != null) variables.forEach((key, value) => msg = (msg ?? "") + (msg == null ? "" : ",  ") + "$key=${value.toString()}");
+      if (variables != null) variables.forEach((key, value) => msg = "${msg ?? ""}${msg == null ? "" : ",  "}$key=${value.toString()}");
       Log().debug("eval($expression) [$msg] failed. Error is $e");
       result = null;
     }
@@ -563,7 +563,7 @@ class Eval
           if (split.length == 2) decimals = split[1].length;
           String format = "#,###,###,###,###,###,###";
           if (decimals > 0) {
-            format = format + '.' + List.filled(decimals, '#').join();
+            format = '$format.${List.filled(decimals, '#').join()}';
             format.padRight(decimals, '#');
           }
           f = NumberFormat(format, locale);

@@ -31,7 +31,7 @@ final String version = '2.0.0';
 
 // application title
 // only used in Android when viewing open applications
-final String applicationTitle = "Flutter Markup Language " + version;
+final String applicationTitle = "Flutter Markup Language $version";
 
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost

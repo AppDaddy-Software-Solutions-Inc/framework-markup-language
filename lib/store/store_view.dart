@@ -120,7 +120,7 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
             body: SafeArea(child: Stack(children: [Container(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.bottomRight, end: Alignment.topLeft, stops: [0.4, 1.0], colors: [/*Theme.of(context).colorScheme.inversePrimary*/Theme.of(context).colorScheme.surfaceVariant, Theme.of(context).colorScheme.surface])),),
               Center(child: Opacity(opacity: 0.03, child: Image(image: AssetImage('assets/images/fml-logo.png')))),
               Center(child: apps.isEmpty ? noAppDisplay : storeDisplay),
-              Align(alignment: Alignment.bottomLeft, child: Padding(padding: EdgeInsets.only(left: 5), child: Text(phrase.version + ' ' + version, style: TextStyle(color: Colors.black26))),),
+              Align(alignment: Alignment.bottomLeft, child: Padding(padding: EdgeInsets.only(left: 5), child: Text('${phrase.version} $version', style: TextStyle(color: Colors.black26))),),
               Center(child: BusyView(BusyModel(Store(), visible: Store().busy, observable: Store().busyObservable, modal: true)))]))
         )
     );
@@ -191,7 +191,7 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
       useRootNavigator: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(phrase.close + ' ' + phrase.application + '?'),
+          title: Text('${phrase.close} ${phrase.application}?'),
           content: SizedBox(width: MediaQuery.of(context).size.width - 60, height: 80,
             child: Column(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.end, children: [
               Row(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.end, children: [

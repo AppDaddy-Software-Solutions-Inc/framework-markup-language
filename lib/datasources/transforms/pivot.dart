@@ -148,9 +148,9 @@ class Pivot extends TransformModel implements ITransform
       }
     });
 
-    if (!columnFound) Log().exception(Exception("Column " + this.column! + " not found in data set"));
-    if (!rowFound)    Log().exception(Exception("Row "    + this.row!    + " not found in data set"));
-    if (!fieldFound)  Log().exception(Exception("Field "  + this.field!  + " not found in data set"));
+    if (!columnFound) Log().exception(Exception("Column ${this.column!} not found in data set"));
+    if (!rowFound)    Log().exception(Exception("Row ${this.row!} not found in data set"));
+    if (!fieldFound)  Log().exception(Exception("Field ${this.field!} not found in data set"));
     if ((!columnFound) || (!rowFound) || (!fieldFound)) return null;
 
     Data result = Data();

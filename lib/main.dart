@@ -23,7 +23,7 @@ main()
     return Container(
       color: Colors.white,
       alignment: Alignment.center,
-      child: Text('⚠️\n' + Phrases().somethingWentWrong,
+      child: Text('⚠️\n${Phrases().somethingWentWrong}',
         style: const TextStyle(color: Colors.black),
         textAlign: TextAlign.center,
       ),

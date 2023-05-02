@@ -117,7 +117,7 @@ success(pos)
   }
   catch(ex)
   {
-    Log().debug("Exception thrown : " + ex.toString());
+    Log().debug("Exception thrown : $ex");
   }
 }
 

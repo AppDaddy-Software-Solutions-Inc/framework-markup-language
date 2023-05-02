@@ -16,7 +16,7 @@ class MqttWeb implements IMqtt
   final String url;
   final String? username;
   final String? password;
-  final String identifier = (System.app?.user.claim('name') ?? 'unknown') + " : " + S.newId();
+  final String identifier = "${System.app?.user.claim('name') ?? 'unknown'} : ${S.newId()}";
   final int    keepalive = 60;
 
   bool connected = false;

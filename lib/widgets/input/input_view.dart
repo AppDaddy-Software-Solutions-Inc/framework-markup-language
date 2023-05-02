@@ -256,8 +256,9 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
           focus.unfocus();
         }
         return;
-      } else
+      } else {
         return;
+      }
     } catch(e) {
       return;
     }
@@ -277,8 +278,9 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     bool focused = focus.hasFocus;
 
     if (focused) {
-      if (widget.model.touched == false) // set touched to true on focus
+      if (widget.model.touched == false) {
         widget.model.touched = true;
+      }
       System().commit = _commit;
     }
     else {
@@ -389,8 +391,9 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
       return;
     }
     oldValue = text;
-      if (widget.onChangeCallback != null)
+      if (widget.onChangeCallback != null) {
         widget.onChangeCallback(widget.model, text);
+      }
       var editable = (widget.model.editable != false);
       if (!editable) {
         setState(()
@@ -404,8 +407,9 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
 
 
   void onClear() {
-    if (widget.onChangeCallback != null)
+    if (widget.onChangeCallback != null) {
       widget.onChangeCallback(widget.model, '');
+    }
     widget.model.controller!.text = '';
     _commit();
   }
@@ -470,12 +474,15 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     int? length = widget.model.length;
 
     // capitalization
-    if (widget.model.capitalization == CapitalizationTypes.upper)
+    if (widget.model.capitalization == CapitalizationTypes.upper) {
       formatters.add(UpperCaseTextFormatter());
-    if (widget.model.capitalization == CapitalizationTypes.lower)
+    }
+    if (widget.model.capitalization == CapitalizationTypes.lower) {
       formatters.add(LowerCaseTextFormatter());
-    if (length != null)
+    }
+    if (length != null) {
       formatters.add(LengthLimitingTextInputFormatter(length));
+    }
 
     // format type
     switch (_getFormatType())
@@ -555,19 +562,24 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     if(userSetErrorText) errorText = widget.model.errortext;
 
     //using allow must not use a mask for filteringtextformatter, causes issues.
-    if (widget.model.allow != null && widget.model.mask == null)
+    if (widget.model.allow != null && widget.model.mask == null) {
       formatters.add(FilteringTextInputFormatter.allow(RegExp(r'[' + widget.model.allow! + ']')));
-    if (widget.model.deny != null)
+    }
+    if (widget.model.deny != null) {
       formatters.add(FilteringTextInputFormatter.deny(RegExp(r'[' + widget.model.deny! + ']')));
+    }
 
     // The mask formatter with allow
     if (widget.model.mask != null)
     {
-      if(widget.model.allow != null) formatters.add( MaskedInputFormatter(
+      if(widget.model.allow != null) {
+        formatters.add( MaskedInputFormatter(
         widget.model.mask,
         allowedCharMatcher: RegExp(r'[' + widget.model.allow! + ']+'),
       ));
-      else formatters.add( MaskedInputFormatter(widget.model.mask));
+      } else {
+        formatters.add( MaskedInputFormatter(widget.model.mask));
+      }
     }
   }
 

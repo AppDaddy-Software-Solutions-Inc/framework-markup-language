@@ -233,7 +233,7 @@ class Platform
     }
     catch(e)
     {
-      Log().exception(e, caller: 'platform.vm.dart => bool deleteFile(' + filepath + ')');
+      Log().exception(e, caller: 'platform.vm.dart => bool deleteFile($filepath)');
       return false;
     }
   }

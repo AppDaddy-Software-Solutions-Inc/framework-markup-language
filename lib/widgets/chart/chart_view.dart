@@ -378,8 +378,7 @@ class _ChartViewState extends WidgetState<ChartView>
             xParsed = parsePlotPoint(point.x, widget.model.xaxis!.type);
           } catch(e) {
             Log().error(
-                'Unable to parse X axis plot point, chart id: ${widget.model.id.toString()} - series name: ${series.name.toString()} - ' +
-                    e.toString());
+                'Unable to parse X axis plot point, chart id: ${widget.model.id.toString()} - series name: ${series.name.toString()} - $e');
             break;
           }
           try {
@@ -388,8 +387,7 @@ class _ChartViewState extends WidgetState<ChartView>
                 : parsePlotPoint(point.y, widget.model.yaxis!.type);
           } catch(e) {
             Log().error(
-                'Unable to parse Y axis plot point, chart id: ${widget.model.id.toString()} - series name: ${series.name.toString()} - ' +
-                    e.toString());
+                'Unable to parse Y axis plot point, chart id: ${widget.model.id.toString()} - series name: ${series.name.toString()} - $e');
             break;
           }
           // Parsed Values
@@ -676,7 +674,7 @@ class _ChartViewState extends WidgetState<ChartView>
           }
       } catch(e) {
         Log().warning(
-            'Unable to set Chart Series Point selection' + e.toString());
+            'Unable to set Chart Series Point selection$e');
       }
     }
     // print('Approximate Series Clicked on [${selectedSeriesId}]: x: ${domain.toString()}, y: ${measure.toString()}'); // Only works for single series

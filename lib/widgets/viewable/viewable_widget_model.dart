@@ -71,10 +71,24 @@ class ViewableWidgetModel extends ConstraintModel
   }
 
   /// VIEW LAYOUT
+  resetViewSizing()
+  {
+    _viewWidth = null;
+    _viewWidthObservable?.set(null, notify: false);
+
+    _viewHeight = null;
+    _viewHeightObservable?.set(null, notify: false);
+
+    _viewX = null;
+    _viewXObservable?.set(null, notify: false);
+
+    _viewY = null;
+    _viewYObservable?.set(null, notify: false);
+  }
 
   // view width
   double? _viewWidth;
-  DoubleObservable? viewWidthObservable;
+  DoubleObservable? _viewWidthObservable;
   set viewWidth(double? v)
   {
     // important this gets before the observable
@@ -82,13 +96,13 @@ class ViewableWidgetModel extends ConstraintModel
 
     // we handle this slightly different for performance reasons
     // The observable is only created in deserialize if its bound
-    if (viewWidthObservable != null) viewWidthObservable!.set(v);
+    if (_viewWidthObservable != null) _viewWidthObservable!.set(v);
   }
   double? get viewWidth => _viewWidth;
 
   // view height
   double? _viewHeight;
-  DoubleObservable? viewHeightObservable;
+  DoubleObservable? _viewHeightObservable;
   set viewHeight(double? v)
   {
     // important this gets before the observable
@@ -96,7 +110,7 @@ class ViewableWidgetModel extends ConstraintModel
 
     // we handle this slightly different for performance reasons
     // The observable is only created in deserialize if its bound
-    if (viewHeightObservable != null) viewHeightObservable!.set(v);
+    if (_viewHeightObservable != null) _viewHeightObservable!.set(v);
   }
   double? get viewHeight => _viewHeight;
 
@@ -503,8 +517,8 @@ class ViewableWidgetModel extends ConstraintModel
     // we only create the observable if its bound to in the template
     // otherwise we just store the value in a simple double variable
     String? key;
-    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewwidth')))  viewWidthObservable  = DoubleObservable(key, null, scope: scope);
-    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewheight'))) viewHeightObservable = DoubleObservable(key, null, scope: scope);
+    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewwidth')))  _viewWidthObservable  = DoubleObservable(key, null, scope: scope);
+    if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewheight'))) _viewHeightObservable = DoubleObservable(key, null, scope: scope);
     if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewx')))      _viewXObservable      = DoubleObservable(key, null, scope: scope);
     if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewy')))      _viewYObservable      = DoubleObservable(key, null, scope: scope);
     
@@ -635,12 +649,21 @@ class ViewableWidgetModel extends ConstraintModel
 
   List<Widget> inflate()
   {
+    // reset my view
+    resetViewSizing();
+
+    // process children
     List<Widget> views = [];
-    viewableChildren.forEach((model) => views.add(model.getView()));
+    viewableChildren.forEach((model)
+    {
+      // reset child view
+      model.resetViewSizing();
+      views.add(model.getView());
+    });
     return views;
   }
 
-  void onLayoutComplete() async
+  void onLayoutComplete(ViewableWidgetModel? model) async
   {
     if (this.context == null) return;
 
@@ -659,7 +682,7 @@ class ViewableWidgetModel extends ConstraintModel
       viewY      = position.dy;
 
       // notify the parent
-      if (parent is ViewableWidgetModel) (parent as ViewableWidgetModel).onLayoutComplete();
+      if (parent is ViewableWidgetModel) (parent as ViewableWidgetModel).onLayoutComplete(model);
     }
   }
 

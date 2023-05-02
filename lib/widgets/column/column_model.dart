@@ -44,8 +44,8 @@ class ColumnModel extends LayoutModel
         {
           expand = true;
           break;
-        };
-      };
+        }
+      }
     return expand;
   }
 
@@ -61,8 +61,8 @@ class ColumnModel extends LayoutModel
         {
           expand = true;
           break;
-        };
-      };
+        }
+      }
     return expand;
   }
 

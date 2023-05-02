@@ -7,6 +7,7 @@ import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart/series/chart_series_model.dart';
 import 'package:fml/widgets/chart/axis/chart_axis_model.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/chart/chart_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -20,6 +21,15 @@ class ChartModel extends DecoratedWidgetModel  {
   ChartAxisModel? xaxis; // = ChartAxisModel(null, null, Axis.X, title: null, fontsize: null, fontcolor: Colors.white, type: ChartAxisModel.type_category);
   ChartAxisModel? yaxis; // = ChartAxisModel(null, null, Axis.Y, title: null, fontsize: null, fontcolor: Colors.white, type: ChartAxisModel.type_numeric);
   final List<ChartSeriesModel> series = [];
+
+  bool get isVerticallyExpanding   => true;
+  bool get isHorizontallyExpanding => true;
+
+  // parent is not a layout model or parent is laid out
+  bool get _parentLayoutComplete => parent is! LayoutModel || (parent as LayoutModel).layoutComplete;
+
+  @override
+  bool get visible => super.visible && _parentLayoutComplete;
 
   ChartModel(WidgetModel parent, String? id,
     {
@@ -36,8 +46,24 @@ class ChartModel extends DecoratedWidgetModel  {
     this.showlegend       = showlegend;
     this.legendsize       = legendsize;
     this.type             = type?.trim()?.toLowerCase() ?? null;
-    // instantiate busy observable
     busy = false;
+
+    // register a listener to parent layout complete
+    if (parent is LayoutModel) parent.layoutCompleteObservable?.registerListener(onParentLayoutComplete);
+  }
+
+  // listens to parent layout complete
+  // before displaying chart
+  void onParentLayoutComplete(Observable observable)
+  {
+    if (_parentLayoutComplete) notifyListeners(observable.key, observable.get());
+  }
+
+  @override
+  removeAllListeners()
+  {
+    super.removeAllListeners();
+    if (parent is LayoutModel) (parent as LayoutModel).layoutCompleteObservable?.removeListener(onParentLayoutComplete);
   }
 
   static ChartModel? fromTemplate(WidgetModel parent, Template template)
@@ -77,7 +103,6 @@ class ChartModel extends DecoratedWidgetModel  {
   @override
   void deserialize(XmlElement xml)
   {
-
     //* Deserialize */
     super.deserialize(xml);
 
@@ -245,5 +270,4 @@ class ChartModel extends DecoratedWidgetModel  {
   {
     return getReactiveView(ChartView(this));
   }
-
 }

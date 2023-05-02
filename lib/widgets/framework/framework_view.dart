@@ -455,6 +455,17 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
+    /// Pages on Navigator stack rebuild when a new page is pushed
+    /// https://github.com/flutter/flutter/issues/11655
+    /// This hack prevents the page that is being navigated away from
+    /// from rebuilding
+    var index = NavigationManager().positionInStack(context);
+    if (index != 0)
+    {
+      Log().debug('Framework ${widget.model.templateName} was not built since its index ($index) != 0"/>');
+      return Offstage();
+    }
+
     // model is initializing
     if (!widget.model.initialized) return Scaffold(body: Center(child: BusyView(BusyModel(null, visible: true))));
 

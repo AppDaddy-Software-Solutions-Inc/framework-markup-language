@@ -76,8 +76,7 @@ class _ApplicationManagerState extends State<ApplicationManager>
     }
 
     // open the page
-    return NavigationManager().open(parameters,
-        model: event.model, dependency: dependency, refresh: refresh);
+    return NavigationManager().open(parameters, model: event.model, dependency: dependency, refresh: refresh);
   }
 
   void onRefresh(Event event) async

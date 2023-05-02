@@ -43,8 +43,8 @@ class RowModel extends LayoutModel
         {
           expand = true;
           break;
-        };
-      };
+        }
+      }
     return expand;
   }
 
@@ -61,8 +61,8 @@ class RowModel extends LayoutModel
         {
           expand = true;
           break;
-        };
-      };
+        }
+      }
     return expand;
   }
 

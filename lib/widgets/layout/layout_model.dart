@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/log/manager.dart';
@@ -76,6 +75,21 @@ class LayoutModel extends DecoratedWidgetModel
   }
   String? get layout => _layout?.get()?.toLowerCase().trim();
 
+  /// layout complete
+  BooleanObservable? layoutCompleteObservable;
+  set layoutComplete(dynamic v)
+  {
+    if (layoutCompleteObservable != null)
+    {
+      layoutCompleteObservable!.set(v);
+    }
+    else if (v != null)
+    {
+      layoutCompleteObservable = BooleanObservable(Binding.toKey(id, 'layoutcomplete'), v, scope: scope);
+    }
+  }
+  bool get layoutComplete => layoutCompleteObservable?.get() ?? false;
+
   /// Center attribute allows a simple boolean override for halign and valign both being center. halign and valign will override center if given.
   BooleanObservable? _center;
   set center(dynamic v)
@@ -121,7 +135,10 @@ class LayoutModel extends DecoratedWidgetModel
   }
   bool get expand => _expand?.get() ?? true;
 
-  LayoutModel(WidgetModel? parent, String? id, {Scope?  scope}) : super(parent, id, scope: scope);
+  LayoutModel(WidgetModel? parent, String? id, {Scope?  scope}) : super(parent, id, scope: scope)
+  {
+    layoutComplete = false;
+  }
 
   static LayoutModel? fromXml(WidgetModel parent, XmlElement xml, {String? type})
   {
@@ -151,6 +168,9 @@ class LayoutModel extends DecoratedWidgetModel
     center = Xml.get(node: xml, tag: 'center');
     wrap   = Xml.get(node: xml, tag: 'wrap');
     expand = Xml.get(node: xml, tag: 'expand');
+
+    // set layout as incomplete
+    layoutComplete = false;
   }
 
   double?
@@ -225,16 +245,63 @@ class LayoutModel extends DecoratedWidgetModel
     return null;
   }
 
+  List<ViewableWidgetModel> resized = [];
+
+  /// VIEW LAYOUT
   @override
-  void onLayoutComplete()
+  resetViewSizing()
   {
-    super.onLayoutComplete();
+    // mark as needing layout
+    layoutComplete = false;
 
-    // no need to perform resizing if there are no variable width children
-    if (variableWidthChildren.isNotEmpty)  _onWidthChange();
+    // clear child sizing
+    viewableChildren.forEach((child)
+    {
+      if (!child.isFixedHeight) child.height = null;
+      if (!child.isFixedWidth)  child.width  = null;
+      child.setLayoutConstraints(BoxConstraints(minWidth: 0, maxWidth: double.infinity, minHeight: 0, maxHeight: double.infinity));
+    });
 
-    // no need to perform resizing if there are no variable height children
-    if (variableHeightChildren.isNotEmpty) _onHeightChange();
+    super.resetViewSizing();
+  }
+
+  @override
+  void onLayoutComplete(ViewableWidgetModel? model)
+  {
+    // notify parent
+    super.onLayoutComplete(model);
+
+    // you can only layout if parent layout model has completed sizing
+    bool canLayout = parent is! LayoutModel || (parent as LayoutModel).layoutComplete;
+    if (canLayout && !layoutComplete && (this == model || viewableChildren.contains(model)))
+    {
+      // all fixed width and height children have been laid out?
+      if (fixedWidthChildren.where((child) => child.viewWidth == null).isEmpty && fixedHeightChildren.where((child) => child.viewHeight == null).isEmpty)
+      {
+        //clear resized
+        resized.clear();
+
+        // modify child widths
+        _onWidthChange();
+
+        // modify child heights
+        _onHeightChange();
+
+        // layout complete
+        // this triggers child layouts to layout
+        layoutComplete = true;
+
+        // notify modified children
+        resized.forEach((child)
+        {
+          // mark child as needing layout
+          if (child is LayoutModel) child.layoutComplete = false;
+
+          // notify child to rebuild
+          child.notifyListeners(null, null);
+        });
+      }
+    }
   }
 
   void _onWidthChange()
@@ -289,7 +356,11 @@ class LayoutModel extends DecoratedWidgetModel
         //print("WIDTH-> id=$id child=${child.id} %=$pct size=$size free=$free");
 
         // set the size
-        if (child.width != size) child.setWidth(size.toDouble(), notify: true);
+        if (child.width != size)
+        {
+          if (!resized.contains(child)) resized.add(child);
+          child.setWidth(size.toDouble(), notify: false);
+        }
       }
     }
 
@@ -323,7 +394,11 @@ class LayoutModel extends DecoratedWidgetModel
         //print("WIDTH-> id=$id child=${child.id} flexsum=$flexsum flex=$flex size=$size");
 
         // set the size
-        if (child.width != size) child.setWidth(size.toDouble(), notify: true);
+        if (child.width != size)
+        {
+          if (!resized.contains(child)) resized.add(child);
+          child.setWidth(size.toDouble(), notify: false);
+        }
       }
     }
   }
@@ -380,7 +455,11 @@ class LayoutModel extends DecoratedWidgetModel
         //print("HEIGHT-> id=$id child=${child.id} %=$pct size=$size free=$free");
 
         // set the size
-        if (child.height != size) child.setHeight(size.toDouble(), notify: true);
+        if (child.height != size)
+        {
+          if (!resized.contains(child)) resized.add(child);
+          child.setHeight(size.toDouble(), notify: false);
+        }
       }
     }
 
@@ -414,7 +493,11 @@ class LayoutModel extends DecoratedWidgetModel
         //print("HEIGHT-> id=$id child=${child.id} flexsum=$flexsum flex=$flex size=$size");
 
         // set the size
-        if (child.height != size) child.setHeight(size.toDouble(), notify: true);
+        if (child.height != size)
+        {
+          if (!resized.contains(child)) resized.add(child);
+          child.setHeight(size.toDouble(), notify: false);
+        }
       }
     }
   }

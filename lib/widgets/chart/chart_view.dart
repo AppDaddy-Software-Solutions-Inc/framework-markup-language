@@ -410,12 +410,8 @@ class _ChartViewState extends WidgetState<ChartView>
       }
 
       // Null Series Warning
-      if (xAllNull)
-        Log().warning(
-            'id: ${series.id.toString()} name: ${series.name.toString()} X values are all null');
-      if (yAllNull)
-        Log().warning(
-            'id: ${series.id.toString()} name: ${series.name.toString()} Y values are all null');
+      //if (xAllNull) Log().warning('id: ${series.id.toString()} name: ${series.name.toString()} X values are all null');
+      //if (yAllNull) Log().warning('id: ${series.id.toString()} name: ${series.name.toString()} Y values are all null');
 
       switch (widget.model.xaxis!.type) {
         // Date/Time based X Axis

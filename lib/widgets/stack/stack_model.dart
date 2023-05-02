@@ -67,15 +67,14 @@ class StackModel extends LayoutModel
   @override
   List<Widget> inflate()
   {
-    List<Widget> views = [];
-    var children = viewableChildren;
-    children.sort((a, b)
+    // sort children by depth
+    if (children != null)
+    children!.sort((a, b)
     {
       if(a.depth != null && b.depth != null) return a.depth?.compareTo(b.depth!) ?? 0;
       return 0;
     });
-    children.forEach((model) => views.add(model.getView()));
-    return views;
+    return super.inflate();
   }
 
   /// Deserializes the FML template elements, attributes and children

@@ -47,7 +47,7 @@ class ChartModel extends DecoratedWidgetModel  {
     busy = false;
 
     // register a listener to parent layout complete
-    if (parent is LayoutModel) (parent as LayoutModel).layoutCompleteObservable?.registerListener(onParentLayoutComplete);
+    if (parent is LayoutModel) parent.layoutCompleteObservable?.registerListener(onParentLayoutComplete);
   }
 
   // listens to parent layout complete

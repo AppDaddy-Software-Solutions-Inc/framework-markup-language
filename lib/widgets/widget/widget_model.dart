@@ -942,7 +942,9 @@ class WidgetModel implements IDataSourceListener
     if (_listeners != null) _listeners!.clear();
   }
 
-  notifyListeners(String? property, dynamic value) {
+  notifyListeners(String? property, dynamic value, {bool notify = false}) {
+    if (notify && _listeners == null) print('listeners is null');
+    if (notify && _listeners != null) print('listeners has ${_listeners!.length} members');
     if (_listeners != null)
       _listeners!.forEach((listener) {
         listener.onModelChange(this, property: property, value: value);

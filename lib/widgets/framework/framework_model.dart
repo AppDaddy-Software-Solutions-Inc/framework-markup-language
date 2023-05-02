@@ -363,7 +363,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
   {
     if (xml == null) return;
 
-    Log().debug('Deserialize called on framework model => <FML name="$templateName" url="$url"/>');
+    //Log().debug('Deserialize called on framework model => <FML name="$templateName" url="$url"/>');
 
     // remember xml node
     this.element = xml;

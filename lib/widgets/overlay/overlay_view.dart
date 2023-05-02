@@ -5,6 +5,7 @@ import 'package:fml/helper/measured.dart';
 import 'package:fml/event/event.dart'   ;
 import 'package:fml/system.dart';
 import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:fml/widgets/overlay/overlay_manager_view.dart';
 import 'package:fml/widgets/overlay/overlay_model.dart';
@@ -305,6 +306,7 @@ class OverlayViewState extends State<OverlayView>
   onClose()
   {
     if (widget.model.closeable == false) return;
+
     OverlayManagerView? overlay = context.findAncestorWidgetOfExactType<OverlayManagerView>();
     if (overlay != null)
     {
@@ -312,6 +314,9 @@ class OverlayViewState extends State<OverlayView>
       overlay.model.overlays.remove(widget);
       overlay.model.refresh();
     }
+
+    // dispose of the model
+    if (widget.model is FrameworkModel) (widget.model as FrameworkModel).dispose();
   }
 
   onDismiss()

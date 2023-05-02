@@ -427,7 +427,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
   // framework level dispose can happen asynchronously
   void dispose() async
   {
-    // Log().debug('Dispose called on framework model => <FML name="$templateName" url="$url"/>');
+    Log().debug('Dispose called on framework model => <FML name="$templateName" url="$url"/>');
 
     disposed = true;
 

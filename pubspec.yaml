@@ -165,6 +165,10 @@ dependencies:
   jaguar_jwt: ^3.0.0
   # BSD-3-Clause
 
+  # Updated 2023/05/02
+  jiffy: ^5.0.0
+  # MIT
+
   # Updated 2023/03/13
   js: ^0.6.5
   # BSD-3-Clause

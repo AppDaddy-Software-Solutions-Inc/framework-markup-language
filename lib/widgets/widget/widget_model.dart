@@ -119,6 +119,7 @@ import 'package:fml/widgets/trigger/condition/trigger_condition_model.dart';
 import 'package:fml/widgets/trigger/trigger_model.dart';
 import 'package:fml/widgets/typeahead/typeahead_model.dart';
 import 'package:fml/widgets/variable/variable_model.dart';
+import 'package:fml/widgets/video/video_model.dart';
 import 'package:fml/widgets/html/html_model.dart';
 import 'package:fml/widgets/span/span_model.dart';
 import 'package:flutter/material.dart';
@@ -802,9 +803,9 @@ class WidgetModel implements IDataSourceListener
         model = VariableModel.fromXml(parent, node);
         break;
 
-      // case "video":
-      //   model = VideoModel.fromXml(parent, node);
-      //   break;
+      case "video":
+        model = VideoModel.fromXml(parent, node);
+        break;
 
       case "view":
         if (parent is SplitModel)

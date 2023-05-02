@@ -27,7 +27,7 @@ enum TimeUnit {
 }
 
 /// Time Helper Class
-class T {
+class DT {
 
   /// Given a string such as '100ms' or '10 years' this function returns a
   /// [TimeUnitDuration] object

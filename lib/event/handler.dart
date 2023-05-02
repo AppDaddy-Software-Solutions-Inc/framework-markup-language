@@ -272,7 +272,7 @@ class EventHandler extends Eval
     if (scope == null) return ok;
 
     // set the variable
-    scope.setObservable(variable.toString(), value != null ? value.toString() : null);
+    scope.setObservable(variable.toString(), value?.toString());
 
     return ok;
   }

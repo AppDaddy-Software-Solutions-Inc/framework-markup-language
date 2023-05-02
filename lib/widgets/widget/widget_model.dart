@@ -1196,7 +1196,7 @@ class WidgetModel implements IDataSourceListener
         if (scope == null) return false;
 
         // set the variable
-        scope.setObservable(property, value != null ? value.toString() : null);
+        scope.setObservable(property, value?.toString());
         return true;
 
       case 'addchild':

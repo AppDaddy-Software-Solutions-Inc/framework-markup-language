@@ -694,7 +694,7 @@ class S
     {
       prototype = prototype.replaceAll(placeholder, id);
       var document = Xml.tryParse(prototype);
-      var node = document != null ? document.rootElement : null;
+      var node = document?.rootElement;
       return node;
     }
     return null;

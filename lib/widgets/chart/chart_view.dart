@@ -706,7 +706,7 @@ class _ChartViewState extends WidgetState<ChartView>
         outsideJustification: CF.OutsideJustification.middleDrawArea,
         horizontalFirst: true,
         desiredMaxColumns: 4,
-        cellPadding: new EdgeInsets.only(right: 4.0, bottom: 4.0),
+        cellPadding: EdgeInsets.only(right: 4.0, bottom: 4.0),
       ));
     if (widget.model.xaxis!.title != null)
       behaviors.add(CF.ChartTitle(widget.model.xaxis!.title!,

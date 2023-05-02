@@ -347,7 +347,7 @@ class _SelectViewState extends WidgetState<SelectView>
   void changedDropDownItem(OptionModel? selected) async {
     if (widget.model.typeahead != true)
       FocusScope.of(context).requestFocus(
-          new FocusNode()); // added this in to remove focus from input
+          FocusNode()); // added this in to remove focus from input
     // removed this as it prevents reloading after a user submits a value
     if (selected == null) return;
     bool ok = await widget.model.answer(selected.value);

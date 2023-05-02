@@ -152,7 +152,7 @@ class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling
           Padding(padding: EdgeInsets.all(tilePadding), child: tilesList[i]));
       tileCountForRow++;
       if (tileCountForRow >= tilesPerRow) {
-        rowsList.add(new Row(
+        rowsList.add(Row(
           children: tileRows,
           mainAxisSize: MainAxisSize.min,
         ));
@@ -161,7 +161,7 @@ class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling
       }
       if (i == tilesList.length - 1 && tileRows.isNotEmpty) {
         // add partially filled row
-        rowsList.add(new Row(
+        rowsList.add(Row(
           children: tileRows,
           mainAxisSize: MainAxisSize.min,
         ));

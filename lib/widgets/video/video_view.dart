@@ -77,7 +77,7 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
       {
         if (model is ViewableWidgetModel)
         {
-          children.add((model as ViewableWidgetModel).getView());
+          children.add(model.getView());
         }
       });
 

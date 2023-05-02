@@ -322,7 +322,7 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
             children: [
               Center(child: Container(decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.onInverseSurface,
-                borderRadius: new BorderRadius.only(
+                borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(10.0),
                   topRight: const Radius.circular(10.0),
                 )),
@@ -341,7 +341,7 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
       style: ButtonStyle(
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
             RoundedRectangleBorder(
-                borderRadius: new BorderRadius.only(
+                borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(10.0),
                   topRight: saveVisible == true ? Radius.zero : Radius.circular(10.0),
                 )),
@@ -359,7 +359,7 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
       style: ButtonStyle(
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
             RoundedRectangleBorder(
-                borderRadius: new BorderRadius.only(
+                borderRadius: BorderRadius.only(
                   topRight: const Radius.circular(10.0),
                 )),
           )),

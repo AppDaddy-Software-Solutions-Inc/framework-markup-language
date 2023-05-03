@@ -83,7 +83,7 @@ class MyTheme
 }
 
 ThemeData applyCustomizations(ColorScheme base, ThemeModel m) {
-  var customizedTheme;
+  ThemeData? customizedTheme;
   try {
     customizedTheme = ThemeData.from(
       colorScheme: ColorScheme(

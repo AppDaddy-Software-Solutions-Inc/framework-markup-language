@@ -175,7 +175,7 @@ void main() {
     testWidgets('Generated ListView Widget', (tester) async
     {
       var model = ListModel.fromXml(null, XmlDocument.parse(xmlList).rootElement);
-      var view3;
+      ListLayoutView? view3;
       if (model != null) view3 = ListLayoutView(model);
 
       Widget widget = MaterialApp(home: Scaffold(body: view3));

@@ -51,11 +51,10 @@ Set<Set<Index2d>> canny(
   Image sobel = Image(image.width, image.height);
   Image edgeDirection = Image(image.width, image.height);
 
-  int Function(int x) clampX = (x) => x.clamp(0, image.width -1).toInt();
-  int Function(int y) clampY = (y) => y.clamp(0, image.height-1).toInt();
-  int Function(num p) clamp255 = (p) => p.clamp(0, 255).toInt();
-  int Function(int x,int y,Image image) getSafe
-  = (x,y,image) => getRed(image.getPixel(clampX(x), clampY(y)));
+  clampX(x) => x.clamp(0, image.width -1).toInt();
+  clampY(y) => y.clamp(0, image.height-1).toInt();
+  clamp255(p) => p.clamp(0, 255).toInt();
+  getSafe(x,y,image) => getRed(image.getPixel(clampX(x), clampY(y)));
 
   for (int y = 0; y < image.height; ++y) {
     for (int x = 0; x < image.width; ++x) {
@@ -88,7 +87,7 @@ Set<Set<Index2d>> canny(
   if (onSobel!=null) onSobel(sobel);
 
   //helper function to determine neighbours of an edge
-  Set<Index2d> Function(int x, int y) getNeighbours = (x,y) {
+  getNeighbours(x,y) {
     int direction = edgeDirection.getPixel(x, y);
     Set<Index2d> nei = {};
     switch(direction) {
@@ -110,7 +109,7 @@ Set<Set<Index2d>> canny(
         break;
     }
     return nei;
-  };
+  }
 
   //<non-maximum suppression>
   for (int y = 0; y < image.height; ++y) {
@@ -153,8 +152,8 @@ Set<Set<Index2d>> canny(
   }
 
   //hysteresis by blob analysis
-  bool Function(int x, int y) isWeak = (x,y) => getSafe(x,y,image) >= lowThreshold!;
-  bool Function(int x, int y) isStrong = (x,y) => getSafe(x,y,image) >= highThreshold!;
+  isWeak(x,y) => getSafe(x,y,image) >= lowThreshold!;
+  isStrong(x,y) => getSafe(x,y,image) >= highThreshold!;
   Set<Set<Index2d>> edges = {};
   Set<Index2d> nonEdges = {};
   int currentLabel = 2;

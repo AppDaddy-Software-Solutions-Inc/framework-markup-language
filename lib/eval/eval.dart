@@ -25,9 +25,9 @@ class Eval
   {
     if (expression == null) return null;
 
-    var result;
+    dynamic result;
     var _expression = expression;
-    var _parsed;
+    Expression? _parsed;
     var i = 0;
     var _variables = <String, dynamic>{};
     var _functions = <String?, dynamic>{};
@@ -571,7 +571,7 @@ class Eval
     String locale = 'en_US'; // TODO more formats https://pub.dev/documentation/intl/latest/intl/NumberFormat-class.html
     if (value != null) {
       try {
-        late var f;
+        late NumberFormat f;
         if (semicompact == true) {
           f = NumberFormat.compactLong(locale: locale);
         } else if (compact == true && currency != true) {

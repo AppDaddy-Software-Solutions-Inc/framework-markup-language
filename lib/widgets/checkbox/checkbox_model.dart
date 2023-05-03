@@ -223,13 +223,14 @@ class CheckboxModel extends FormFieldModel implements IFormField
   @override
   List<String>? get values {
     List<String>? list;
-    if (value != null)
+    if (value != null) {
       value.forEach((v) {
         if (!S.isNullOrEmpty(v?.toString())) {
           list ??= [];
           list!.add(v.toString());
         }
       });
+    }
     return list;
   }
 
@@ -247,9 +248,10 @@ class CheckboxModel extends FormFieldModel implements IFormField
     if (_size != null) {
       _size!.set(v);
     } else {
-      if (v != null)
+      if (v != null) {
         _size = DoubleObservable(Binding.toKey(id, 'size'), v,
             scope: scope, listener: onPropertyChange);
+      }
     }
   }
   double get size
@@ -267,9 +269,10 @@ class CheckboxModel extends FormFieldModel implements IFormField
     if (_label != null) {
       _label!.set(v);
     } else {
-      if (v != null)
+      if (v != null) {
         _label = ListObservable(Binding.toKey(id, 'label'), v,
             scope: scope, listener: onPropertyChange);
+      }
     }
   }
   List? get label => _label?.get();
@@ -361,16 +364,20 @@ class CheckboxModel extends FormFieldModel implements IFormField
 
     // checkboxes can have multiple values
     var values = Xml.getChildElements(node: xml, tag: 'value');
-    if (values != null)
-    values.forEach((element)
+    if (values != null) {
+      values.forEach((element)
     {
       String? v = Xml.getText(element);
       if (!S.isNullOrEmpty(v))
       {
-        if (_value == null) value = v;
-        else if (!_value!.contains(v)) _value!.add(v);
+        if (_value == null) {
+          value = v;
+        } else if (!_value!.contains(v)) {
+          _value!.add(v);
+        }
       }
     });
+    }
 
     /// layout attributes
     layout = Xml.get(node: xml, tag: 'layout');
@@ -412,8 +419,8 @@ class CheckboxModel extends FormFieldModel implements IFormField
 
       // build options
       int i = 0;
-      if ((list != null))
-      list.forEach((row)
+      if ((list != null)) {
+        list.forEach((row)
       {
         XmlElement? prototype = S.fromPrototype(this.prototype, "$id-$i");
         i = i + 1;
@@ -421,6 +428,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
         OptionModel? model = OptionModel.fromXml(parent, prototype, data: row);
         if (model != null) options.add(model);
       });
+      }
 
       // set data
       await setData();

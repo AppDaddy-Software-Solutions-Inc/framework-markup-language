@@ -157,7 +157,9 @@ class Bridge
         map.remove('to');
         notifyListeners(type, map);
       }
-      else Log().debug('Message Received From: $from To: $to -> Wrong Address');
+      else {
+        Log().debug('Message Received From: $from To: $to -> Wrong Address');
+      }
 
       ////////////////
       /* Return Map */
@@ -196,11 +198,14 @@ class Bridge
     if (_listeners.containsKey(type)) callbacks = _listeners[type!];
     if (_listeners.containsKey('*'))
     {
-      if (callbacks == null)
-           callbacks = _listeners['*'];
-      else callbacks.addAll(_listeners['*']!);
+      if (callbacks == null) {
+        callbacks = _listeners['*'];
+      } else {
+        callbacks.addAll(_listeners['*']!);
+      }
     }
-    if (callbacks != null)
-    callbacks.forEach((callback) => callback(parameters));
+    if (callbacks != null) {
+      callbacks.forEach((callback) => callback(parameters));
+    }
   }
 }

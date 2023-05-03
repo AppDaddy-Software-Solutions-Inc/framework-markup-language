@@ -257,11 +257,12 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
     children.add(arrow);
 
     // child
-    if (widget.model.modal)
+    if (widget.model.modal) {
       children.add(Positioned(
           top: _triggerBox.y,
           left: _triggerBox.x,
           child: view));
+    }
 
     // build overlay
     overlayEntry = OverlayEntry(builder: (context) => Stack(children: children));

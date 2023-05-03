@@ -280,7 +280,7 @@ class Data with ListMixin<dynamic>
         // Build Header
         List<String> header = [];
         List<String> columns = [];
-        if (data.isNotEmpty)
+        if (data.isNotEmpty){
         if (data.first is Map) {
           (data.first as Map).forEach((key, value)
         {
@@ -290,7 +290,7 @@ class Data with ListMixin<dynamic>
           h = h.contains(',') ? '"$h"' : h;
           header.add(h);
         });
-        }
+        }}
 
         // Output Header
         buffer.write('${header.join(", ")}\n');

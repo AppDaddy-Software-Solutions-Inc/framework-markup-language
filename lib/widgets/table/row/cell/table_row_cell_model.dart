@@ -17,8 +17,9 @@ class TableRowCellModel extends DecoratedWidgetModel
   /* Position in Row */
   /////////////////////
   int? get index {
-    if ((parent != null) && (parent is TableRowModel))
+    if ((parent != null) && (parent is TableRowModel)) {
       return (parent as TableRowModel).cells.indexOf(this);
+    }
     return null;
   }
 
@@ -211,8 +212,9 @@ class TableRowCellModel extends DecoratedWidgetModel
   @override
   String? get valign {
     if (_valign == null) {
-      if ((parent != null) && (parent is TableRowModel))
+      if ((parent != null) && (parent is TableRowModel)) {
         return (parent as TableRowModel).valign;
+      }
       return null;
     }
     return _valign?.get();
@@ -338,8 +340,9 @@ class TableRowCellModel extends DecoratedWidgetModel
 
   void onSelect() {
     if (selected == false) selected = !selected;
-    if ((parent != null) && (parent is TableRowModel))
+    if ((parent != null) && (parent is TableRowModel)) {
       (parent as TableRowModel).onSelect(this);
+    }
   }
 
   @override

@@ -139,7 +139,7 @@ class HttpModel extends DataSourceModel implements IDataSource
 
     // build headers
     var headers = Xml.getChildElements(node: xml, tag: 'header');
-    if (headers != null)
+    if (headers != null){
     for (var node in headers)
     {
       // set headers
@@ -147,6 +147,7 @@ class HttpModel extends DataSourceModel implements IDataSource
       String? key   = Xml.get(node: node, tag: 'key');
       String? value = Xml.get(node: node, tag: 'value');
       if (!S.isNullOrEmpty(key) && !S.isNullOrEmpty(value)) this.headers![key!] = value!;
+    }
     }
   }
 

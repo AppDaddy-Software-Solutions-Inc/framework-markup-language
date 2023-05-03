@@ -40,24 +40,39 @@ class WidgetAlignment
     switch (valign)
     {
       case VerticalAlignmentType.top:
-        if (halign == HorizontalAlignmentType.left)   aligned = Alignment.topLeft;
-        else if (halign == HorizontalAlignmentType.center) aligned = Alignment.topCenter;
-        else if (halign == HorizontalAlignmentType.right)  aligned = Alignment.topRight;
-        else aligned = Alignment.topLeft;
+        if (halign == HorizontalAlignmentType.left) {
+          aligned = Alignment.topLeft;
+        } else if (halign == HorizontalAlignmentType.center) {
+          aligned = Alignment.topCenter;
+        } else if (halign == HorizontalAlignmentType.right) {
+          aligned = Alignment.topRight;
+        } else {
+          aligned = Alignment.topLeft;
+        }
         break;
 
       case VerticalAlignmentType.center:
-        if (halign == HorizontalAlignmentType.center) aligned = Alignment.center;
-        else if (halign == HorizontalAlignmentType.right) aligned = Alignment.centerRight;
-        else if (halign == HorizontalAlignmentType.left) aligned = Alignment.centerLeft;
-        else aligned = Alignment.centerLeft;
+        if (halign == HorizontalAlignmentType.center) {
+          aligned = Alignment.center;
+        } else if (halign == HorizontalAlignmentType.right) {
+          aligned = Alignment.centerRight;
+        } else if (halign == HorizontalAlignmentType.left) {
+          aligned = Alignment.centerLeft;
+        } else {
+          aligned = Alignment.centerLeft;
+        }
         break;
 
       case VerticalAlignmentType.bottom:
-        if (halign == HorizontalAlignmentType.left)   aligned = Alignment.bottomLeft;
-        else if (halign == HorizontalAlignmentType.center) aligned = Alignment.bottomCenter;
-        else if (halign == HorizontalAlignmentType.right)  aligned = Alignment.bottomRight;
-        else aligned = Alignment.bottomLeft;
+        if (halign == HorizontalAlignmentType.left) {
+          aligned = Alignment.bottomLeft;
+        } else if (halign == HorizontalAlignmentType.center) {
+          aligned = Alignment.bottomCenter;
+        } else if (halign == HorizontalAlignmentType.right) {
+          aligned = Alignment.bottomRight;
+        } else {
+          aligned = Alignment.bottomLeft;
+        }
         break;
 
       default: aligned = center ? Alignment.center : Alignment.topLeft;

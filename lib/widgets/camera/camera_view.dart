@@ -116,8 +116,9 @@ class CameraViewState extends WidgetState<CameraView>
           }
 
           // initialize the camera
-          else
+          else {
             reconfigureCameras();
+          }
           break;
 
       }
@@ -211,9 +212,11 @@ class CameraViewState extends WidgetState<CameraView>
           // get the camera
           CameraLensDirection direction = S.toEnum(widget.model.direction, CameraLensDirection.values) ?? CameraLensDirection.back;
           var camera = cameras!.firstWhereOrNull((camera) => camera.lensDirection == direction);
-          if (camera != null)
-               index = cameras!.indexOf(camera);
-          else index = 0;
+          if (camera != null) {
+            index = cameras!.indexOf(camera);
+          } else {
+            index = 0;
+          }
 
           // this will fire onModelChange
           widget.model.index = index;
@@ -255,7 +258,9 @@ class CameraViewState extends WidgetState<CameraView>
             if (controller!.value.hasError) Log().debug('Camera Controller error ${controller!.value.errorDescription}', caller: 'camera/camera_view.dart => initialize()');
           });
         }
-        else Log().debug('Camera Controller is null', caller: 'camera/camera_view.dart => initialize()');
+        else {
+          Log().debug('Camera Controller is null', caller: 'camera/camera_view.dart => initialize()');
+        }
 
         // initialize the controller
         try
@@ -328,8 +333,11 @@ class CameraViewState extends WidgetState<CameraView>
         // start stream
         if (widget.model.stream)
         {
-          if (!isDesktop) controller!.startImageStream((stream) => onStream(stream, camera));
-          else Log().error('Streaming is not yet supported on desktop');
+          if (!isDesktop) {
+            controller!.startImageStream((stream) => onStream(stream, camera));
+          } else {
+            Log().error('Streaming is not yet supported on desktop');
+          }
         }
 
         // notify initilizied
@@ -397,9 +405,10 @@ class CameraViewState extends WidgetState<CameraView>
         XFile image = await controller!.takePicture();
 
         // start stream
-        if (widget.model.stream)
+        if (widget.model.stream) {
           await controller?.startImageStream(
               (stream) => onStream(stream, cameras![widget.model.index ?? 0]));
+        }
 
         // save the image
         ok = await onSnapshot(image);
@@ -493,8 +502,9 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
     // wait for controller to initialize
     try {
-      if (initialized != true || (controller == null) || (!controller!.value.isInitialized))
+      if (initialized != true || (controller == null) || (!controller!.value.isInitialized)) {
         return Container();
+      }
     } catch(e) {
       return Container();
     }
@@ -543,8 +553,9 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
     // hack to initialize background camera stream. current camera widget doesn't support streaming in web
     if ((kIsWeb) && (widget.model.stream) && (backgroundStream == null)) {
       backgroundStream = StreamView(widget.model);
-      if (backgroundStream != null)
+      if (backgroundStream != null) {
         children.add(Offstage(child: backgroundStream as Widget?));
+      }
     }
 
     // build the child views
@@ -633,7 +644,9 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
       }
 
       // blob image - created in mobile
-      else detectable = DetectableImage.fromFilePath(image.path);
+      else {
+        detectable = DetectableImage.fromFilePath(image.path);
+      }
 
       //detect
       if (detectable != null) widget.model.detectInImage(detectable);

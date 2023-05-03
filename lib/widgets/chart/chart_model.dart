@@ -232,12 +232,14 @@ class ChartModel extends DecoratedWidgetModel  {
         series.forEach((series) {
           if (series.datasource == source.id) {
             series.dataPoint.clear();
-            if (list != null)
+            if (list != null) {
               list.forEach((p) {
                 ChartDataPoint point = series.point(p);
-                if ((point.x != null) && (point.y != null))
+                if ((point.x != null) && (point.y != null)) {
                   series.dataPoint.add(point);
+                }
               });
+            }
             series.data = list;
           }
         });

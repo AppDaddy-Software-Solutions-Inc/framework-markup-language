@@ -59,7 +59,9 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
       _template = StringObservable(Binding.toKey(id, 'template'), null, scope: scope);
       _template!.set(xml);
     }
-    else _template!.set(xml);
+    else {
+      _template!.set(xml);
+    }
   }
 
   // template
@@ -247,7 +249,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
   {
     Map<String?, String> _parameters = <String?, String>{};
     List<dynamic>? variables = findDescendantsOfExactType(VariableModel);
-    if (variables != null)
+    if (variables != null) {
       variables.forEach((variable)
       {
         VariableModel v = (variable as VariableModel);
@@ -258,6 +260,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
           _parameters[name] = value;
         }
       });
+    }
     return _parameters;
   }
 
@@ -505,9 +508,11 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
     {
       var bytes = utf8.encode(element!.toXmlString());
       var uri = URI.parse(templateName);
-      if (uri != null)
-           Platform.fileSaveAs(bytes, uri.url);
-      else Platform.fileSaveAs(bytes, "template");
+      if (uri != null) {
+        Platform.fileSaveAs(bytes, uri.url);
+      } else {
+        Platform.fileSaveAs(bytes, "template");
+      }
     }
   }
 

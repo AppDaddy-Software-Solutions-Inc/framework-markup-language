@@ -132,8 +132,9 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
       var child = widget.model.findDescendantOfExactType(null, id: id);
 
       // if there is an error with this, we need to check _controller.hasClients as it must not be false when using [ScrollPosition],such as [position], [offset], [animateTo], and [jumpTo],
-      if ((child != null) && (child.context != null))
+      if ((child != null) && (child.context != null)) {
         Scrollable.ensureVisible(child.context, duration: Duration(seconds: 1), alignment: 0.2);
+      }
     }
   }
 
@@ -174,9 +175,11 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     ////////////////////////
     if (ok)
     {
-      if (row != null)
-           ok = await row.complete();
-      else ok = await widget.model.complete();
+      if (row != null) {
+        ok = await row.complete();
+      } else {
+        ok = await widget.model.complete();
+      }
     }
 
     /////////////////////
@@ -184,9 +187,11 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     /////////////////////
     if (ok)
     {
-      if (row != null)
-           ok = await row.onComplete();
-      else ok = await widget.model.onComplete(context);
+      if (row != null) {
+        ok = await row.onComplete();
+      } else {
+        ok = await widget.model.onComplete(context);
+      }
     }
 
     return ok;
@@ -395,9 +400,11 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
 
     list = ListView.custom(physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null, scrollDirection: Axis.vertical, controller: vScroller, itemExtent: widget.model.heights['row'], childrenDelegate: SliverChildBuilderDelegate((BuildContext context, int index) {return rowBuilder(context, index);},));
 
-    if(widget.model.onpulldown != null) list = RefreshIndicator(
+    if(widget.model.onpulldown != null) {
+      list = RefreshIndicator(
         onRefresh: () => widget.model.onPull(context),
         child: list);
+    }
 
     ScrollBehavior behavior = (widget.model.onpulldown != null || widget.model.draggable) ? MyCustomScrollBehavior().copyWith(
         dragDevices: {
@@ -440,7 +447,8 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
 
     scrolledTable = SingleChildScrollView(scrollDirection: Axis.horizontal, child: table, controller: hScroller);
 
-    if(widget.model.onpulldown != null || widget.model.draggable) scrolledTable = ScrollConfiguration(
+    if(widget.model.onpulldown != null || widget.model.draggable) {
+      scrolledTable = ScrollConfiguration(
       behavior: ScrollConfiguration.of(context).copyWith(
         dragDevices: {
           PointerDeviceKind.touch,
@@ -449,6 +457,7 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
       ),
       child: scrolledTable,
     );
+    }
 
     //////////
     /* View */
@@ -489,7 +498,9 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
       return Offstage(child: Row(mainAxisSize: MainAxisSize.min, children: children));
     }
 
-    else return TableHeaderView(widget.model.tableheader, widget.model.heights['header'], widget.model.widths, widget.model.cellpadding);
+    else {
+      return TableHeaderView(widget.model.tableheader, widget.model.heights['header'], widget.model.widths, widget.model.cellpadding);
+    }
   }
 
   Widget? rowBuilder(BuildContext context, int index)
@@ -531,7 +542,9 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
       return Offstage(child: UnconstrainedBox(child: Row(mainAxisSize: MainAxisSize.min, children: children)));
     }
 
-    else return TableRowView(model, index, widget.model.height ?? widget.model.heights['row'], widget.model.widths, widget.model.cellpadding);
+    else {
+      return TableRowView(model, index, widget.model.height ?? widget.model.heights['row'], widget.model.widths, widget.model.cellpadding);
+    }
   }
 
   Widget footerBuilder(double width, double? height)
@@ -615,9 +628,11 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
       ///////////////
       /* Prev Page */
       ///////////////
-      if (page > 1)
-           return MouseRegion(cursor: SystemMouseCursors.click, child: GestureDetector(child: Padding(child: Icon(Icons.navigate_before, color: Theme.of(context).colorScheme.onSecondaryContainer), padding: EdgeInsets.only(left: 5, right: 5)), onTap: () => widget.model.page = page - 1));
-      else return Padding(child: Icon(Icons.navigate_before, color: Theme.of(context).colorScheme.onSecondaryContainer.withOpacity(0.2)), padding: EdgeInsets.only(left: 5, right: 5));
+      if (page > 1) {
+        return MouseRegion(cursor: SystemMouseCursors.click, child: GestureDetector(child: Padding(child: Icon(Icons.navigate_before, color: Theme.of(context).colorScheme.onSecondaryContainer), padding: EdgeInsets.only(left: 5, right: 5)), onTap: () => widget.model.page = page - 1));
+      } else {
+        return Padding(child: Icon(Icons.navigate_before, color: Theme.of(context).colorScheme.onSecondaryContainer.withOpacity(0.2)), padding: EdgeInsets.only(left: 5, right: 5));
+      }
     }
     return Container();
   }
@@ -641,9 +656,11 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
       ///////////////
       /* Next Page */
       ///////////////
-      if (page < pages)
-           return MouseRegion(cursor: SystemMouseCursors.click, child: GestureDetector(child: Padding(child: Icon(Icons.navigate_next, color: Theme.of(context).colorScheme.onSecondaryContainer), padding: EdgeInsets.only(left: 5, right: 5)), onTap: () =>  widget.model.page = page + 1));
-      else return Padding(child: Icon(Icons.navigate_next, color: Theme.of(context).colorScheme.onSecondaryContainer.withOpacity(0.2)), padding: EdgeInsets.only(left: 5, right: 5));
+      if (page < pages) {
+        return MouseRegion(cursor: SystemMouseCursors.click, child: GestureDetector(child: Padding(child: Icon(Icons.navigate_next, color: Theme.of(context).colorScheme.onSecondaryContainer), padding: EdgeInsets.only(left: 5, right: 5)), onTap: () =>  widget.model.page = page + 1));
+      } else {
+        return Padding(child: Icon(Icons.navigate_next, color: Theme.of(context).colorScheme.onSecondaryContainer.withOpacity(0.2)), padding: EdgeInsets.only(left: 5, right: 5));
+      }
     }
     return Container();
   }
@@ -674,11 +691,12 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
       ///////////////////////
       /* Records Displayed */
       ///////////////////////
-      if (records == 0)
+      if (records == 0) {
         return Row(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Padding(padding: EdgeInsets.only(left: 10), child: Text('${phrase.no} ${phrase.records}'))
             ]);
+      }
       int start = 1;
       int end   = pagesize;
       if (page > 1)

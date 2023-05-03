@@ -149,18 +149,22 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
     // build body
     Axis direction = widget.model.layoutType == LayoutType.row ? Axis.horizontal : Axis.vertical;
     var child;
-    if (direction == Axis.vertical)
-         child = Column(children: children, crossAxisAlignment: alignment.crossAlignment);
-    else child = Row(children: children, crossAxisAlignment: alignment.crossAlignment);
+    if (direction == Axis.vertical) {
+      child = Column(children: children, crossAxisAlignment: alignment.crossAlignment);
+    } else {
+      child = Row(children: children, crossAxisAlignment: alignment.crossAlignment);
+    }
     children.add(Column(mainAxisSize: MainAxisSize.max));
 
     Widget scsv;
     ScrollBehavior behavior;
     // Check to see if pulldown is enabled, draggable is enabled, or horizontal is enabled (as web doesnt support device horizontal scrolling) and enable
     // dragging for the scroller.
-    if(widget.model.onpulldown != null || widget.model.draggable == true || direction == Axis.horizontal)
-         behavior = ScrollConfiguration.of(context).copyWith(scrollbars: widget.model.scrollbar == false ? false : true, dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse});
-    else behavior = ScrollConfiguration.of(context).copyWith(scrollbars: widget.model.scrollbar == false ? false : true);
+    if(widget.model.onpulldown != null || widget.model.draggable == true || direction == Axis.horizontal) {
+      behavior = ScrollConfiguration.of(context).copyWith(scrollbars: widget.model.scrollbar == false ? false : true, dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse});
+    } else {
+      behavior = ScrollConfiguration.of(context).copyWith(scrollbars: widget.model.scrollbar == false ? false : true);
+    }
 
     if(widget.model.onpulldown != null)
     {
@@ -172,7 +176,9 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
          scrollDirection: direction,
          controller: _scrollController));
     }
-    else scsv = SingleChildScrollView(child: child, scrollDirection: direction, controller: _scrollController);
+    else {
+      scsv = SingleChildScrollView(child: child, scrollDirection: direction, controller: _scrollController);
+    }
 
     // show no scroll bar
     // POINTERDEVICE MOUSE is not recommended on web due to text selection difficulty, but i have added it in since we do not have text selection.

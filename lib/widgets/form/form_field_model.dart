@@ -23,8 +23,9 @@ class FormFieldModel extends DecoratedWidgetModel
     if (_defaultValue != null) {
       _defaultValue!.set(v);
     } else {
-      if (v != null)
+      if (v != null) {
         _defaultValue = StringObservable(null, v, scope: scope);
+      }
     }
   }
   dynamic get defaultValue => _defaultValue?.get();
@@ -102,7 +103,9 @@ class FormFieldModel extends DecoratedWidgetModel
     if (post != null) return post!;
     if ((value == null) || value is List && value.isEmpty) return false;
     WidgetModel model = this;
-    while (model.parent != null) model = model.parent!;
+    while (model.parent != null) {
+      model = model.parent!;
+    }
     return true;
   }
 
@@ -260,7 +263,9 @@ class FormFieldModel extends DecoratedWidgetModel
       }
 
       // save succeeded. set dirty
-      else dirty = true;
+      else {
+        dirty = true;
+      }
     }
     return ok;
   }

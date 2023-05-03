@@ -85,8 +85,9 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
       var child = widget.model.findDescendantOfExactType(null, id: id);
 
       // if there is an error with this, we need to check _controller.hasClients as it must not be false when using [ScrollPosition],such as [position], [offset], [animateTo], and [jumpTo],
-      if ((child != null) && (child.context != null))
+      if ((child != null) && (child.context != null)) {
         Scrollable.ensureVisible(child.context, duration: Duration(seconds: 1), alignment: 0.2);
+      }
     }
   }
 
@@ -148,13 +149,16 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
       if (itemModel != null) {
         var listItem = ListItemView(model: itemModel, selectable: widget.model.selectable);
         var title;
-        if (!S.isNullOrEmpty(itemModel.title)) title = Text(itemModel.title!);
-        else if (S.isNullOrEmpty(itemModel.title))
+        if (!S.isNullOrEmpty(itemModel.title)) {
+          title = Text(itemModel.title!);
+        } else if (S.isNullOrEmpty(itemModel.title))
         {
           List<dynamic>? descendants = itemModel.findDescendantsOfExactType(TextModel);
           if (descendants != null && descendants.isNotEmpty) {
             int i = 0;
-            while (i < descendants.length && descendants[i].value == null) i++;
+            while (i < descendants.length && descendants[i].value == null) {
+              i++;
+            }
             title = Text(descendants[i].value, style: TextStyle(color: Theme
                 .of(context)
                 .colorScheme
@@ -195,7 +199,8 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
     // View
     Widget view;
 
-    if(widget.model.collapsed) view = SingleChildScrollView(
+    if(widget.model.collapsed) {
+      view = SingleChildScrollView(
         physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null,
         child: ExpansionPanelList.radio(
             dividerColor: Theme.of(context).colorScheme.onInverseSurface,
@@ -203,14 +208,19 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
             elevation: 2,
             expandedHeaderPadding: EdgeInsets.all(4),
             children: expansionItems(context)));
-    else view = ListView.custom(  physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null, scrollDirection: direction, controller: scroller, childrenDelegate: SliverChildBuilderDelegate((BuildContext context, int index) {return itemBuilder(context, index);}, childCount: widget.model.data?.length ?? widget.model.children?.length ?? 0));
+    } else {
+      view = ListView.custom(  physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null, scrollDirection: direction, controller: scroller, childrenDelegate: SliverChildBuilderDelegate((BuildContext context, int index) {return itemBuilder(context, index);}, childCount: widget.model.data?.length ?? widget.model.children?.length ?? 0));
+    }
 
 
-    if(widget.model.onpulldown != null) view = RefreshIndicator(
+    if(widget.model.onpulldown != null) {
+      view = RefreshIndicator(
         onRefresh: () => widget.model.onPull(context),
         child: view);
+    }
 
-    if(widget.model.onpulldown != null || widget.model.draggable) view = ScrollConfiguration(
+    if(widget.model.onpulldown != null || widget.model.draggable) {
+      view = ScrollConfiguration(
       behavior: ScrollConfiguration.of(context).copyWith(
         dragDevices: {
           PointerDeviceKind.touch,
@@ -219,6 +229,7 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
       ),
       child: view,
     );
+    }
 
     // add margins
     view = addMargins(view);

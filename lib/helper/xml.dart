@@ -16,9 +16,11 @@ class Xml {
   /// Check if a String contains characters not allowed in Xml
   static bool hasIllegalCharacters(String? s)
   {
-    if (s != null)
+    if (s != null) {
       return (s.contains("<")) || (s.contains(">")) || (s.contains("&")) || (s.contains("'")) || (s.contains("\""));
-    else return false;
+    } else {
+      return false;
+    }
   }
 
   // Olajos - Added October 23, 2001
@@ -116,15 +118,18 @@ class Xml {
   static XmlElement? firstElement({required XmlNode node})
   {
     List<XmlNode> children = node.children;
-    for (XmlNode child in children)
+    for (XmlNode child in children) {
       if (child is XmlElement) return child;
+    }
     return null;
   }
 
   // TODO review function / function name
   static XmlElement? getRoot(XmlNode parent)
   {
-    while (firstElement(node: parent) != null) parent = firstElement(node: parent)!;
+    while (firstElement(node: parent) != null) {
+      parent = firstElement(node: parent)!;
+    }
     if ((parent.parent != null) && (parent.parent is XmlElement)) return parent.parent as XmlElement?;
     return parent as XmlElement?;
   }
@@ -236,7 +241,7 @@ class Xml {
     XmlDocument document = XmlDocument();
     XmlElement root = XmlElement(XmlName(rootName));
     document.children.add(root);
-    if (map != null)
+    if (map != null) {
       map.forEach((key,value)
       {
         if (value != null)
@@ -253,6 +258,7 @@ class Xml {
           }
         }
       });
+    }
     return document;
   }
 
@@ -299,9 +305,11 @@ class Xml {
       value.replaceAll("'", "&quot;");
 
       XmlAttribute? a = node.getAttributeNode(tag);
-      if (a == null)
+      if (a == null) {
         node.attributes.add(XmlAttribute(XmlName(tag), value));
-      else  a.value = value;
+      } else {
+        a.value = value;
+      }
     }
     catch(e)
     {

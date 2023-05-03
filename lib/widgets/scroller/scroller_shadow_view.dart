@@ -77,14 +77,15 @@ class _ScrollShadowState extends State<ScrollShadow> {
   Widget build(BuildContext context)
   {
     // Remove shadows on mobile web.
-    if (System().userplatform == 'web' && (System().useragent == 'android' || System().useragent == 'ios'))
+    if (System().userplatform == 'web' && (System().useragent == 'android' || System().useragent == 'ios')) {
       return Offstage();
+    }
     Positioned shadow;
     var col =
     widget.shadowColor as bool? ?? Theme.of(context).brightness == Brightness.light
         ? Theme.of(context).colorScheme.shadow.withOpacity(0.40)
         : Theme.of(context).colorScheme.shadow;
-    if (widget.axis == Axis.vertical)
+    if (widget.axis == Axis.vertical) {
       shadow = widget.pos == 'top'
           ? Positioned(
         top: 0,
@@ -111,7 +112,7 @@ class _ScrollShadowState extends State<ScrollShadow> {
               : BoxDecoration(),
         ),
       );
-    else
+    } else {
       shadow = widget.pos == 'top'
           ? Positioned(
         left: 0,
@@ -137,6 +138,7 @@ class _ScrollShadowState extends State<ScrollShadow> {
               : BoxDecoration(),
         ),
       );
+    }
     return shadow;
   }
 }

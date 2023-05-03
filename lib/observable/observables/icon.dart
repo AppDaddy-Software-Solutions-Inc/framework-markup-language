@@ -20,10 +20,12 @@ class IconObservable extends Observable
     }
 
     // wait for the library to load
-    if (!libraryLoader!.isCompleted) libraryLoader!.future.whenComplete(()
+    if (!libraryLoader!.isCompleted) {
+      libraryLoader!.future.whenComplete(()
     {
       if (_pendingIcon != null) set(toIcon(_pendingIcon!));
     });
+    }
   }
 
   @override

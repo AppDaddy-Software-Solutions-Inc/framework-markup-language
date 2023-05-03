@@ -13,7 +13,7 @@ class ListItemView extends StatefulWidget implements IWidgetView
   ListItemView({required this.model, this.selectable}) : super(key: ObjectKey(model));
 
   @override
-  _ListItemViewState createState() => _ListItemViewState();
+  State<ListItemView> createState() => _ListItemViewState();
 }
 
 class _ListItemViewState extends WidgetState<ListItemView>

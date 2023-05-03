@@ -194,9 +194,9 @@ class ListItemModel extends DecoratedWidgetModel
     ////////////////
     /* Mark Clean */
     ////////////////
-    if ((ok) && (fields != null)) for (var field in fields!) {
+    if ((ok) && (fields != null)){ for (var field in fields!) {
    field.dirty = false;
- }
+ }}
 
     busy = false;
 

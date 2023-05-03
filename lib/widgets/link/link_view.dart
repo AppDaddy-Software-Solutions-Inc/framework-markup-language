@@ -12,7 +12,7 @@ class LinkView extends StatefulWidget implements IWidgetView
   LinkView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _LinkViewState createState() => _LinkViewState();
+  State<LinkView> createState() => _LinkViewState();
 }
 
 class _LinkViewState extends WidgetState<LinkView>

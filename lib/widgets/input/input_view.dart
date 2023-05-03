@@ -28,7 +28,7 @@ class InputView extends StatefulWidget implements IWidgetView
   InputView(this.model, {this.onChangeCallback, this.onSubmitted}) : super(key: ObjectKey(model));
 
   @override
-  _InputViewState createState() => _InputViewState();
+  State<InputView> createState() => _InputViewState();
 }
 
 class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver

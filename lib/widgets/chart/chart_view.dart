@@ -37,7 +37,7 @@ class ChartView extends StatefulWidget implements IWidgetView
   ChartView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _ChartViewState createState() => _ChartViewState();
+  State<ChartView> createState() => _ChartViewState();
 }
 
 class _ChartViewState extends WidgetState<ChartView>
@@ -286,7 +286,9 @@ class _ChartViewState extends WidgetState<ChartView>
       String? l;
       try {
         l = formatter.format(v);
-      } catch(e) {}
+      } catch(e) {
+        Log().debug('$e');
+      }
       ticks.add(charts_flutter.TickSpec<DateTime>(v, label: l));
     }
 

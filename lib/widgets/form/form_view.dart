@@ -99,7 +99,9 @@ class FormViewState extends WidgetState<FormView> implements IGpsListener
                 }
               }
             }
-          } catch(e) {}
+          } catch(e) {
+            Log().debug('$e');
+          }
           break;
         }
       }

@@ -25,7 +25,7 @@ class BreadcrumbView extends StatefulWidget implements IWidgetView
   BreadcrumbView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _BreadcrumbViewState createState() => _BreadcrumbViewState();
+  State<BreadcrumbView> createState() => _BreadcrumbViewState();
 }
 
 class _BreadcrumbViewState extends WidgetState<BreadcrumbView>

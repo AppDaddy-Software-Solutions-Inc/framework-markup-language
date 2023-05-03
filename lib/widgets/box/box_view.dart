@@ -16,7 +16,7 @@ class BoxView extends StatefulWidget implements IWidgetView
   BoxView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _BoxViewState createState() => _BoxViewState();
+  State<BoxView> createState() => _BoxViewState();
 
   /// Function to find gradient alignment
   static Alignment? toGradientAlignment(String? alignment) {

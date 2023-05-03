@@ -308,9 +308,9 @@ class CameraModel extends CameraImageModel
     togglevisible = Xml.get(node: xml, tag: 'togglevisible');
 
     // enable streaming
-    if (detectors != null) for (var detector in detectors!) {
+    if (detectors != null){ for (var detector in detectors!) {
    ((detector.source == DetectorSources.stream) || (detector.source == DetectorSources.any)) ? stream = true : null;
- }
+ }}
   }
 
   bool popDialog = true;

@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:collection/collection.dart';
+import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
@@ -23,7 +24,7 @@ class SelectView extends StatefulWidget implements IWidgetView
   SelectView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _SelectViewState createState() => _SelectViewState();
+  State<SelectView> createState() => _SelectViewState();
 }
 
 class _SelectViewState extends WidgetState<SelectView>
@@ -71,7 +72,9 @@ class _SelectViewState extends WidgetState<SelectView>
             }
             listCounter++;
           }
-        } catch(e) {}
+        } catch(e) {
+          Log().debug('$e');
+        }
         if (hasMatch == false) {
           changedDropDownItem(_list[1].value ?? _list[0].value);
         }
@@ -383,7 +386,9 @@ class _SelectViewState extends WidgetState<SelectView>
       }
 
       if (!focused) await _commit();
-    } catch(e) {}
+    } catch(e) {
+      Log().debug('$e');
+    }
   }
 
   Future<bool> _commit() async

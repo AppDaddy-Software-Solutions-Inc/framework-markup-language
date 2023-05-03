@@ -20,7 +20,7 @@ class MenuItemView extends StatefulWidget implements IWidgetView
   }
 
   @override
-  _MenuItemViewState createState() => _MenuItemViewState();
+  State<MenuItemView> createState() => _MenuItemViewState();
 }
 
 class _MenuItemViewState extends WidgetState<MenuItemView>

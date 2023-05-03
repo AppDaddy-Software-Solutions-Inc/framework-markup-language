@@ -13,7 +13,7 @@ class IconView extends StatefulWidget implements IWidgetView {
   IconView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _IconViewState createState() => _IconViewState();
+  State<IconView> createState() => _IconViewState();
 }
 
 class _IconViewState extends WidgetState<IconView> {

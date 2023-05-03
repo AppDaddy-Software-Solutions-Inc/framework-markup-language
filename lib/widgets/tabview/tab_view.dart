@@ -21,7 +21,7 @@ class TabView extends StatefulWidget implements IWidgetView
   TabView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _TabViewState createState() => _TabViewState();
+  State<TabView> createState() => _TabViewState();
 }
 
 class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin

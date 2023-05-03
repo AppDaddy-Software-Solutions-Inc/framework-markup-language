@@ -14,7 +14,7 @@ class SwitchView extends StatefulWidget implements IWidgetView
   SwitchView(this.model, {this.onChangeCallback});
 
   @override
-  _SwitchViewState createState() => _SwitchViewState();
+  State<SwitchView> createState() => _SwitchViewState();
 }
 
 class _SwitchViewState extends WidgetState<SwitchView> with WidgetsBindingObserver

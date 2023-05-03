@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
 
@@ -10,7 +11,7 @@ class Splash extends StatefulWidget
   const Splash({Key? key, this.onInitializationComplete}) : super(key: key);
 
   @override
-  _SplashState createState() => _SplashState();
+  State<Splash> createState() => _SplashState();
 }
 
 class _SplashState extends State<Splash>
@@ -55,10 +56,14 @@ class _SplashState extends State<Splash>
     dynamic gifLogo = Container();
     try {
       svgLogo = SvgPicture.asset("assets/images/splash.svg", width: width);
-    } catch(e)  {}
+    } catch(e)  {
+      Log().debug('$e');
+    }
     try {
       gifLogo = Image.asset("assets/images/splash.gif", width: width);
-    } catch(e) {}
+    } catch(e) {
+      Log().debug('$e');
+    }
     return Container(color: Colors.black, child: Stack(children: [
       Center(child: gifLogo),
       Center(child: svgLogo),

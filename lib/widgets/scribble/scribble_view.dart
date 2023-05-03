@@ -17,7 +17,7 @@ class ScribbleView extends StatefulWidget implements IWidgetView
   ScribbleView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _ScribbleViewState createState() => _ScribbleViewState();
+  State<ScribbleView> createState() => _ScribbleViewState();
 }
 
 class _ScribbleViewState extends WidgetState<ScribbleView>

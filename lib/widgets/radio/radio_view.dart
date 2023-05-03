@@ -14,7 +14,7 @@ class RadioView extends StatefulWidget implements IWidgetView
   RadioView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _RadioViewState createState() => _RadioViewState();
+  State<RadioView> createState() => _RadioViewState();
 }
 
 class _RadioViewState extends WidgetState<RadioView>

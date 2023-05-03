@@ -132,7 +132,9 @@ class _MapViewState extends WidgetState<MapView>
         }
       }
     }
-    catch(e) {}
+    catch(e) {
+      Log().debug('$e');
+    }
 
   }
 

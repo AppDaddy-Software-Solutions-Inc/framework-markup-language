@@ -17,7 +17,7 @@ class ButtonView extends StatefulWidget implements IWidgetView
   ButtonView(this.model, {this.child});
 
   @override
-  _ButtonViewState createState() => _ButtonViewState();
+  State<ButtonView> createState() => _ButtonViewState();
 }
 
 class _ButtonViewState extends WidgetState<ButtonView>

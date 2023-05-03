@@ -14,7 +14,7 @@ class SpanView extends StatefulWidget implements IWidgetView
   SpanView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _SpanViewState createState() => _SpanViewState();
+  State<SpanView> createState() => _SpanViewState();
 }
 
 class _SpanViewState extends WidgetState<SpanView>

@@ -11,7 +11,7 @@ class ScrollShadow extends StatefulWidget {
   ScrollShadow(this.scrollController, this.pos, this.axis, [this.shadowColor]);
 
   @override
-  _ScrollShadowState createState() => _ScrollShadowState();
+  State<ScrollShadow> createState() => _ScrollShadowState();
 }
 
 class _ScrollShadowState extends State<ScrollShadow> {

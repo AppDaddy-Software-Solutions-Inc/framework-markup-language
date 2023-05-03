@@ -15,7 +15,7 @@ class DatepickerView extends StatefulWidget implements IWidgetView
   DatepickerView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _DatepickerViewState createState() => _DatepickerViewState();
+  State<DatepickerView> createState() => _DatepickerViewState();
 }
 
 class _DatepickerViewState extends WidgetState<DatepickerView>

@@ -18,7 +18,7 @@ class TableHeaderView extends StatefulWidget implements IWidgetView
   TableHeaderView(this.model, this.height, this.width, this.padding);
 
   @override
-  _TableHeaderViewState createState() => _TableHeaderViewState();
+  State<TableHeaderView> createState() => _TableHeaderViewState();
 }
 //
 

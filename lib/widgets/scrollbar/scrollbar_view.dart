@@ -22,7 +22,7 @@ class ScrollbarView extends StatefulWidget
   ScrollbarView(this.direction, this.controller, this.size, this.controllerSize, {this.onchange, this.itemExtent});
 
   @override
-  _ScrollbarViewState createState() => _ScrollbarViewState();
+  State<ScrollbarView> createState() => _ScrollbarViewState();
 
   bool isVisible()
   {

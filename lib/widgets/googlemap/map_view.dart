@@ -238,7 +238,9 @@ class _MapViewState extends WidgetState<MapView>
         locationIndex++;
       }
     }
-    catch(e) {}
+    catch(e) {
+      Log().debug('$e');
+    }
 
   }
 

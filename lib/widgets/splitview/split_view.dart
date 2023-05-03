@@ -18,7 +18,7 @@ class SplitView extends StatefulWidget implements IWidgetView
   SplitView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _SplitViewState createState() => _SplitViewState();
+  State<SplitView> createState() => _SplitViewState();
 }
 
 class _SplitViewState extends WidgetState<SplitView>

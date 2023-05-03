@@ -17,7 +17,7 @@ class CenterView extends StatefulWidget implements IWidgetView
   CenterView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _CenterViewState createState() => _CenterViewState();
+  State<CenterView> createState() => _CenterViewState();
 }
 
 class _CenterViewState extends WidgetState<CenterView>

@@ -4,6 +4,7 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/transforms/iTransform.dart';
 import 'package:fml/datasources/transforms/transform_model.dart';
 import 'package:fml/eval/eval.dart' as fml_eval;
+import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
@@ -236,7 +237,9 @@ class Calc extends TransformModel implements ITransform
 
         Data.writeValue(row, target, value);
       }
-      catch(e) {}
+      catch(e) {
+        Log().debug('$e');
+      }
     }
   }
 

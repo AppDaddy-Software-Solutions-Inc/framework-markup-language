@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/helper/string.dart';
+import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/animation/animation_helper.dart';
 import 'package:fml/widgets/animation/animation_child/transform/transform_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
@@ -244,7 +245,9 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
     try {
       _controller.reset();
       widget.model.controllerValue = 0;
-    } catch (e) {}
+    } catch (e) {
+      Log().debug('$e');
+    }
   }
 
   void start() {
@@ -267,7 +270,9 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
         widget.model.onStart(context);
       }
 
-    } catch (e) {}
+    } catch (e) {
+      Log().debug('$e');
+    }
   }
 
   void stop() {
@@ -275,7 +280,9 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
       _controller.reset();
       widget.model.controllerValue = 0;
       _controller.stop();
-    } catch (e) {}
+    } catch (e) {
+      Log().debug('$e');
+    }
   }
 
   void _animationListener(AnimationStatus status) {

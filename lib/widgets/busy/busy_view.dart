@@ -17,7 +17,7 @@ class BusyView extends StatefulWidget implements IWidgetView
   BusyView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _BusyViewState createState() => _BusyViewState();
+  State<BusyView> createState() => _BusyViewState();
 }
 
 class _BusyViewState extends WidgetState<BusyView>

@@ -12,7 +12,7 @@ class PagerPageView extends StatefulWidget implements IWidgetView
   PagerPageView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _PagerPageViewState createState() => _PagerPageViewState();
+  State<PagerPageView> createState() => _PagerPageViewState();
 }
 
 class _PagerPageViewState extends WidgetState<PagerPageView>

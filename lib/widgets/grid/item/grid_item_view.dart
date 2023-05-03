@@ -12,7 +12,7 @@ class GridItemView extends StatefulWidget implements IWidgetView
   GridItemView({this.model}) : super(key: ObjectKey(model));
 
   @override
-  _GridItemViewState createState() => _GridItemViewState();
+  State<GridItemView> createState() => _GridItemViewState();
 }
 
 class _GridItemViewState extends WidgetState<GridItemView>

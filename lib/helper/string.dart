@@ -148,7 +148,9 @@ class S
       double.parse(s);
       return true;
     }
-    catch(e) {}
+    catch(e) {
+      Log().debug('$e');
+    }
     return false;
   }
 
@@ -166,7 +168,9 @@ class S
         return isNumber(s);
       }
     }
-    catch(e) {}
+    catch(e) {
+      Log().debug('$e');
+    }
     return false;
   }
 

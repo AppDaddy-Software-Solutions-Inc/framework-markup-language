@@ -18,7 +18,7 @@ class EditorView extends StatefulWidget implements IWidgetView
   EditorView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _EditorViewState createState() => _EditorViewState();
+  State<EditorView> createState() => _EditorViewState();
 }
 
 class _EditorViewState extends WidgetState<EditorView>

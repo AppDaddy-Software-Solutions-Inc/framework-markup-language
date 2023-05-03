@@ -272,7 +272,9 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
       // position 0 implies top of stack, 1 page before, ... etc
       if (page != null && _pages.contains(page)) index = (_pages.length - _pages.indexOf(page) - 1).abs();
     }
-    catch(e){}
+    catch(e){
+      Log().debug('$e');
+    }
     return index;
   }
 
@@ -284,7 +286,9 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
       var route = ModalRoute.of(context);
       if ((route?.settings != null) && (route!.settings is Page)) page = (route.settings as Page);
     }
-    catch(e){}
+    catch(e){
+      Log().debug('$e');
+    }
     return page;
   }
 

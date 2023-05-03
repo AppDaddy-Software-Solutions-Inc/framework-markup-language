@@ -18,7 +18,7 @@ class TableRowView extends StatefulWidget implements IWidgetView
   TableRowView(this.model, this.row, this.height, this.width, this.padding);
 
   @override
-  _TableRowViewState createState() => _TableRowViewState();
+  State<TableRowView> createState() => _TableRowViewState();
 }
 
 

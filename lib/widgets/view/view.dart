@@ -12,7 +12,7 @@ class View extends StatefulWidget implements IWidgetView
   View(this.model) : super(key: ObjectKey(model));
 
   @override
-  _ViewState createState() => _ViewState();
+  State<View> createState() => _ViewState();
 }
 
 class _ViewState extends WidgetState<View>

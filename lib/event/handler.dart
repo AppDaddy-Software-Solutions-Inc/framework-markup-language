@@ -690,7 +690,9 @@ class EventHandler extends Eval
         System.toast('"${S.toStr(value)!}" ${phrase.copiedToClipboard}');
       }
     }
-    catch(e) {}
+    catch(e) {
+      Log().debug('$e');
+    }
     return true;
   }
 
@@ -702,7 +704,9 @@ class EventHandler extends Eval
       parameters['brightness']  = S.toStr(brightness);
       parameters['color']  = S.toStr(color);
       EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.theme, parameters: parameters));
-    } catch(e) {}
+    } catch(e) {
+      Log().debug('$e');
+    }
     return true;
   }
 
@@ -713,7 +717,9 @@ class EventHandler extends Eval
       Map<String,String?> parameters = <String,String?>{};
       parameters['key']  = S.toStr(node);
       EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.focusnode, parameters: parameters));
-    } catch(e) {}
+    } catch(e) {
+      Log().debug('$e');
+    }
     return true;
   }
 

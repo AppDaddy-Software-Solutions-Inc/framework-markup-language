@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED
 import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
+import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
@@ -176,7 +177,9 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
     try {
         _controller!.reset();
         widget.model.controllerValue = 0;
-    } catch (e) {}
+    } catch (e) {
+      Log().debug('$e');
+    }
   }
 
   void start() {
@@ -200,7 +203,9 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
             widget.model.onStart(context);
           }
 
-    } catch (e) {}
+    } catch (e) {
+      Log().debug('$e');
+    }
   }
 
   void stop() {
@@ -209,7 +214,9 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
         _controller!.reset();
         widget.model.controllerValue = 0;
         _controller!.stop();
-    } catch (e) {}
+    } catch (e) {
+      Log().debug('$e');
+    }
   }
 
   void _animationListener(AnimationStatus status) {

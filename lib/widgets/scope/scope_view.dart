@@ -12,7 +12,7 @@ class ScopeView extends StatefulWidget implements IWidgetView
   ScopeView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _ScopeViewState createState() => _ScopeViewState();
+  State<ScopeView> createState() => _ScopeViewState();
 }
 
 class _ScopeViewState extends WidgetState<ScopeView>

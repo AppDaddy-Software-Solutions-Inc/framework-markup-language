@@ -73,9 +73,9 @@ class BarcodeDetector implements IBarcodeDetector
         result = _buildPayload(barcodes);
 
         // debug
-        if (result != null) for (var barcode in result.barcodes) {
+        if (result != null){ for (var barcode in result.barcodes) {
    Log().debug("Found barcode $barcode");
- }
+ }}
       }
 
       return result;

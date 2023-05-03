@@ -13,7 +13,7 @@ class PopoverView extends StatefulWidget implements IWidgetView
   PopoverView(this.model, {this.child});
 
   @override
-  _PopoverViewState createState() => _PopoverViewState();
+  State<PopoverView> createState() => _PopoverViewState();
 }
 
 class _PopoverViewState extends WidgetState<PopoverView>

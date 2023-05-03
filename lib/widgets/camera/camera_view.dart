@@ -313,12 +313,17 @@ class CameraViewState extends WidgetState<CameraView>
           // min zoom
           _zoom = await controller!.getMinZoomLevel();
           _minAvailableZoom = _zoom;
-        } catch(e) {}
+        } catch(e)
+        {
+          Log().debug('$e');
+        }
 
         try {
           // max zoom
           _maxAvailableZoom = await controller!.getMaxZoomLevel();
-        } catch(e) {}
+        } catch(e) {
+          Log().debug('$e');
+        }
 
         // set aspect ratio
         widget.model.scale = controller!.value.aspectRatio;
@@ -361,7 +366,9 @@ class CameraViewState extends WidgetState<CameraView>
     {
       await controller?.dispose();
     }
-    catch(e){}
+    catch(e){
+      Log().debug('$e');
+    }
 
     controller = null;
     backgroundStream = null;

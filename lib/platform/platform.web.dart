@@ -39,7 +39,9 @@ class Platform
     {
       window.document.getElementById("logo")!.style.visibility = "hidden";
     }
-    catch(e){}
+    catch(e){
+      Log().debug('$e');
+    }
   }
 
   static Future<dynamic> fileSaveAs(List<int> bytes, String filename) async

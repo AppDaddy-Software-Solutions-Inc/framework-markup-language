@@ -25,7 +25,7 @@ class ImageView extends StatefulWidget implements IWidgetView
   ImageView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _ImageViewState createState() => _ImageViewState();
+  State<ImageView> createState() => _ImageViewState();
 
   /// Get an image widget from any image type
   static dynamic getImage(String? url, bool animate, {Scope? scope, String? defaultImage, double? width, double? height, String? fit, String? filter, bool fade = true, int? fadeDuration})

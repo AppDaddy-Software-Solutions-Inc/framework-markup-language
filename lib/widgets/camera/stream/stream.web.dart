@@ -287,7 +287,9 @@ class ViewState extends WidgetState<View>
         window.requestAnimationFrame(renderFrame);
       }).catchError(onError);
       Log().debug("Camera Started");
-    } catch(e) {}
+    } catch(e) {
+      Log().debug('$e');
+    }
   }
 
   Future stop() async {
@@ -300,7 +302,9 @@ class ViewState extends WidgetState<View>
       }
       stream = null;
       Log().debug("Camera Stopped");
-    } catch(e) {}
+    } catch(e) {
+      Log().debug('$e');
+    }
   }
 
   Future pause() async {
@@ -309,7 +313,9 @@ class ViewState extends WidgetState<View>
       Log().debug("Pausing Camera");
       video.pause();
       Log().debug("Camera Paused");
-    } catch(e) {}
+    } catch(e) {
+      Log().debug('$e');
+    }
   }
 
   Future play() async {
@@ -319,8 +325,12 @@ class ViewState extends WidgetState<View>
         Log().debug("Playing Camera");
         video.play();
         Log().debug("Camera Playing");
-      } catch(e) {}
-    } catch(e) {}
+      } catch(e) {
+        Log().debug('$e');
+      }
+    } catch(e) {
+      Log().debug('$e');
+    }
   }
 
   Future snapshot() async {
@@ -364,8 +374,10 @@ class ViewState extends WidgetState<View>
         // save snapshot
         String uri = canvas2.toDataUrl('image/png', 1.0);
         await onSnapshot(rgba2, width, height, UriData.fromString(uri));
-      } catch(e) {}
-    } catch(e) {}
+      } catch(e) {
+        Log().debug('$e');
+      }
+    } catch(e) {Log().debug('$e');}
   }
 
   onError(error) {

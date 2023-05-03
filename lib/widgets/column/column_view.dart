@@ -14,7 +14,7 @@ class ColumnView extends StatefulWidget implements IWidgetView
   ColumnView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _ColumnViewState createState() => _ColumnViewState();
+  State<ColumnView> createState() => _ColumnViewState();
 }
 
 class _ColumnViewState extends WidgetState<ColumnView>

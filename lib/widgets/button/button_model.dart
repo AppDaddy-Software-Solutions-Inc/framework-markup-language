@@ -100,7 +100,9 @@ class ButtonModel extends DecoratedWidgetModel
     String? l = _label?.get();
     try {
       if ((l is String) && (l.contains(':'))) l = S.parseEmojis(l);
-    } catch(e) {}
+    } catch(e) {
+      Log().debug('$e');
+    }
     return l;
   }
 

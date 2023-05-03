@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:collection/collection.dart';
+import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
@@ -69,7 +70,9 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
             }
             listCounter++;
           }
-        } catch(e) {}
+        } catch(e) {
+          Log().debug('$e');
+        }
         if (hasMatch == false) {
           changedDropDownItem(_list[1].value ?? _list[0].value);
         }
@@ -200,7 +203,9 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
         System().commit = _commit;
       }
       if (!focused) await _commit();
-    } catch(e) {}
+    } catch(e) {
+      Log().debug('$e');
+    }
   }
 
   Future<bool> _commit() async

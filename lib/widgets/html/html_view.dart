@@ -14,7 +14,7 @@ class HtmlView extends StatefulWidget implements IWidgetView
   HtmlView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _HtmlViewState createState() => _HtmlViewState();
+  State<HtmlView> createState() => _HtmlViewState();
 }
 
 class _HtmlViewState extends WidgetState<HtmlView>

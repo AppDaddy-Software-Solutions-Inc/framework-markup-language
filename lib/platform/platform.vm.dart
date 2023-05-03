@@ -48,7 +48,9 @@ class Platform
         if (directory != null) folder = directory.path;
       }
     }
-    catch(e){}
+    catch(e){
+      Log().debug('$e');
+    }
 
     try
     {
@@ -58,7 +60,9 @@ class Platform
         folder = directory.path;
       }
     }
-    catch(e){}
+    catch(e){
+      Log().debug('$e');
+    }
 
     try
     {
@@ -68,7 +72,9 @@ class Platform
         if (directory != null) folder = directory.path;
       }
     }
-    catch(e){}
+    catch(e){
+      Log().debug('$e');
+    }
 
     if (folder != null)
     {

@@ -14,7 +14,7 @@ class RowView extends StatefulWidget implements IWidgetView
   RowView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _RowViewState createState() => _RowViewState();
+  State<RowView> createState() => _RowViewState();
 }
 
 class _RowViewState extends WidgetState<RowView>

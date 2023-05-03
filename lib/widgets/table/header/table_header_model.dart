@@ -194,7 +194,7 @@ class TableHeaderModel extends DecoratedWidgetModel
     ////////////////
     /* Prototype? */
     ////////////////
-    if ((cells.length == 1) && (cells[0].element!.toXmlString().contains("{" + 'field' + "}"))) prototype = cells[0].element!.copy();
+    if ((cells.length == 1) && (cells[0].element!.toXmlString().contains("{field}"))) prototype = cells[0].element!.copy();
   }
 
   bool onSort(TableHeaderCellModel model)

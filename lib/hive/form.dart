@@ -62,11 +62,11 @@ class Form implements Comparable
     try
     {
       // delete posting documents
-      List<Post> posts = await Post.query(where: "'{form_key}' == '" + key + "'");
+      List<Post> posts = await Post.query(where: "'{form_key}' == '$key'");
       posts.forEach((post) async => await post.delete());
 
       // delete Sub-Forms 
-      List<Form> forms = await query(where: "'{parent}' == '" + key + "'");
+      List<Form> forms = await query(where: "'{parent}' == '$key'");
       forms.forEach((form) async => await form.delete());
 
       // delete form
@@ -74,7 +74,7 @@ class Form implements Comparable
     }
     on Exception catch(e)
     {
-      Log().debug('Error deleting from table ' + tableName);
+      Log().debug('Error deleting from table $tableName');
       Log().debug(e.toString());
       exception = e;
     }

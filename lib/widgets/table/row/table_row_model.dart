@@ -416,7 +416,7 @@ class TableRowModel extends DecoratedWidgetModel
     ////////////////
     /* Prototype? */
     ////////////////
-    if ((cells.length == 1) && (cells[0].element!.toXmlString().contains("{" + 'field' + "}"))) cellprototype = cells[0].element!.copy();
+    if ((cells.length == 1) && (cells[0].element!.toXmlString().contains("{field}"))) cellprototype = cells[0].element!.copy();
   }
 
   @override

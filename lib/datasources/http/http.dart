@@ -70,7 +70,7 @@ class Http
       var msg = e.toString();
 
       // endpoint not found or unreachable
-      if ((msg.toLowerCase().startsWith('xmlhttp'))) return HttpResponse(url, statusCode: HttpStatus.notFound, statusMessage: "Not Found: " + msg);
+      if ((msg.toLowerCase().startsWith('xmlhttp'))) return HttpResponse(url, statusCode: HttpStatus.notFound, statusMessage: "Not Found: $msg");
 
       return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: msg);
     }

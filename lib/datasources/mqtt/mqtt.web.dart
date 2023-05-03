@@ -29,7 +29,7 @@ class MqttWeb implements IMqtt
     var scheme = 'ws';
     var server = uri.host;
     var port   = (uri.port == 443 || uri.port == 80) ? 61614 : uri.port;
-    var url    = scheme + '://' + server;
+    var url    = '$scheme://$server';
 
     /// Create Client
     client = MqttBrowserClient(url, identifier);

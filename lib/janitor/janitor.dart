@@ -71,7 +71,7 @@ class Janitor
 
     // cleanup completed posts
     LOG.Log().debug('Cleaning up completed posting documents', caller: "Janitor");
-    List<Post> posts = await Post.query(where: "{status} == " + Post.statusCOMPLETE.toString());
+    List<Post> posts = await Post.query(where: "{status} == ${Post.statusCOMPLETE}");
     posts.forEach((post) async
     {
       int age = post.date!;

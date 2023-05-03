@@ -300,7 +300,7 @@ class _SelectViewState extends WidgetState<SelectView>
       return s.any((tag) => match(tag!.trim().toLowerCase(), pat));
     }
     else {
-      String? str = (m.label is TextModel) ? (m.label as TextModel).value ?? null : '' + _extractText(m)!;
+      String? str = (m.label is TextModel) ? (m.label as TextModel).value ?? null : '${_extractText(m)!}';
       return str == null ? false : match(str.trim().toLowerCase(), pat);
     }
 

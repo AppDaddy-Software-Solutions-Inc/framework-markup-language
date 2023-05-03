@@ -818,7 +818,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
               .tableheader!
               .prototype!
               .toXmlString()
-              .replaceAll("{" + 'field' + "}", key);
+              .replaceAll("{field}", key);
           TableHeaderCellModel? c1 =
               TableHeaderCellModel.fromXmlString(this, xml);
           if ((c1 != null) && (c1.visible == false)) c1 = null;
@@ -828,7 +828,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
           ///////////////
           xml = prototypeModel!.cellprototype
               .toXmlString()
-              .replaceAll("{" + 'field' + "}", "${"{" + key}}");
+              .replaceAll("{field}", "{$key}");
           XmlDocument? c2 = Xml.tryParse(xml);
 
           //////////////////////////////

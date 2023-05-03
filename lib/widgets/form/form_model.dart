@@ -237,15 +237,14 @@ class FormModel extends DecoratedWidgetModel
           
           // List of Values 
           
-          if (field.value is List) field.value.forEach((v)
+          if (field.value is List) {
+            field.value.forEach((v)
           {
-            value = (value == null) ? v.toString() : value! + "," + v.toString();
+            value = (value == null) ? v.toString() : "${value!},$v";
           });
-
-          //
-          // Single Value 
-          //
-          else value = field.value.toString();
+          } else {
+            value = field.value.toString();
+          }
 
           ///
           // Set the Value 
@@ -326,9 +325,11 @@ class FormModel extends DecoratedWidgetModel
         if (field != null)
         {
           dynamic value = field.value;
-          if (value is List)
-               field.value.clear();
-          else field.value = null;
+          if (value is List) {
+            field.value.clear();
+          } else {
+            field.value = null;
+          }
         }
       }
 
@@ -343,9 +344,11 @@ class FormModel extends DecoratedWidgetModel
         IFormField field = getField(id)!;
 
           dynamic value = field.value;
-          if (value is List)
-               field.value.add(answer);
-          else field.value = answer;
+          if (value is List) {
+            field.value.add(answer);
+          } else {
+            field.value = answer;
+          }
 
         /// GeoCode for each [iFormField] which is set on answer
         field.geocode = GPS.Payload(
@@ -412,7 +415,9 @@ class FormModel extends DecoratedWidgetModel
         }
         if (!ok) break;
       }
-    else ok = false;
+    else {
+      ok = false;
+    }
     return ok;
   }
 
@@ -492,9 +497,11 @@ class FormModel extends DecoratedWidgetModel
     
     node.children.removeWhere((child)
     {
-      if ((child is XmlElement) && (child.name.local== "ANSWER"))
-           return true;
-      else return false;
+      if ((child is XmlElement) && (child.name.local== "ANSWER")) {
+        return true;
+      } else {
+        return false;
+      }
     });
 
     // Insert New Answers
@@ -508,7 +515,7 @@ class FormModel extends DecoratedWidgetModel
     try
     {
       // field is postable?
-      if ((field.postable ?? false) && (field.values != null))
+      if ((field.postable ?? false) && (field.values != null)) {
         field.values!.forEach((value)
         {
           // create new element
@@ -542,10 +549,11 @@ class FormModel extends DecoratedWidgetModel
             }
 
             // special characters in xml? wrap in CDATA
-            else if (Xml.hasIllegalCharacters(value)) node.children.add(XmlCDATA(value));
-
-            // normal text
-            else node.children.add(XmlText(value));
+            else if (Xml.hasIllegalCharacters(value)) {
+              node.children.add(XmlCDATA(value));
+            } else {
+              node.children.add(XmlText(value));
+            }
           }
           catch(e)
           {
@@ -555,6 +563,7 @@ class FormModel extends DecoratedWidgetModel
           // add to root
           root.children.add(node);
         });
+      }
     }
     catch(e)
     {
@@ -585,7 +594,7 @@ class FormModel extends DecoratedWidgetModel
       XmlElement root = XmlElement(XmlName(S.isNullOrEmpty(rootname) ? "FORM" : rootname));
       document.children.add(root);
 
-      if (fields != null)
+      if (fields != null) {
         fields.forEach((field)
         {
           // postable?
@@ -639,10 +648,11 @@ class FormModel extends DecoratedWidgetModel
                   }
 
                   // Non-XML? Wrap in CDATA
-                  else if (Xml.hasIllegalCharacters(value)) node.children.add(XmlCDATA(value));
-
-                  // Normal Text
-                  else node.children.add(XmlText(value));
+                  else if (Xml.hasIllegalCharacters(value)) {
+                    node.children.add(XmlCDATA(value));
+                  } else {
+                    node.children.add(XmlText(value));
+                  }
                 }
                 on XmlException catch(e)
                 {
@@ -689,6 +699,7 @@ class FormModel extends DecoratedWidgetModel
             }
           }
         });
+      }
 
       // Set Body
       return document.toXmlString(pretty: true);

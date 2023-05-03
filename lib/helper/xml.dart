@@ -51,7 +51,7 @@ class Xml {
   static String toAttribute(String name, String value)
   {
     String xml = "";
-    if ((!hasIllegalCharacters(name)) && (!hasIllegalCharacters(value))) xml = " " + name + "=" + '"' + value + '"';
+    if ((!hasIllegalCharacters(name)) && (!hasIllegalCharacters(value))) xml = " $name=\"$value\"";
     return xml;
   }
 
@@ -100,7 +100,7 @@ class Xml {
   /// Returns a Xml Safe String for a node value.
   static String toElementValue(String value)
   {
-    if (hasIllegalCharacters(value)) value = '<![CDATA[' + value + ']]>';
+    if (hasIllegalCharacters(value)) value = '<![CDATA[$value]]>';
     return value;
   }
 
@@ -108,8 +108,8 @@ class Xml {
   static String toElement(String name, String value)
   {
     if (hasIllegalCharacters(name)) return '';
-    if (hasIllegalCharacters(value)) value = '<![CDATA[' + value + ']]>';
-    return '<' + name + '>' + value + '</' + name + '>';
+    if (hasIllegalCharacters(value)) value = '<![CDATA[$value]]>';
+    return '<$name>$value</$name>';
   }
 
   /// Return the first [XmlElement] child from an [XmlNode]

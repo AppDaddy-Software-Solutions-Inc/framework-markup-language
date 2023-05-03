@@ -560,19 +560,22 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
 
     //using allow must not use a mask for filteringtextformatter, causes issues.
     if (widget.model.allow != null && widget.model.mask == null) {
-      formatters.add(FilteringTextInputFormatter.allow(RegExp(r'[' + widget.model.allow! + ']')));
+      String regex = "r'[${widget.model.allow!}]'";
+      formatters.add(FilteringTextInputFormatter.allow(RegExp(regex)));
     }
     if (widget.model.deny != null) {
-      formatters.add(FilteringTextInputFormatter.deny(RegExp(r'[' + widget.model.deny! + ']')));
+      String regex = "r'[${widget.model.deny!}]'";
+      formatters.add(FilteringTextInputFormatter.deny(RegExp(regex)));
     }
 
     // The mask formatter with allow
     if (widget.model.mask != null)
     {
       if(widget.model.allow != null) {
+        String regex = "r'[${widget.model.allow!}]'";
         formatters.add( MaskedInputFormatter(
         widget.model.mask,
-        allowedCharMatcher: RegExp(r'[' + widget.model.allow! + ']+'),
+        allowedCharMatcher: RegExp(regex),
       ));
       } else {
         formatters.add( MaskedInputFormatter(widget.model.mask));

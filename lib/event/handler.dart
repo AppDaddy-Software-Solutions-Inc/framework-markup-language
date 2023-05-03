@@ -426,7 +426,7 @@ class EventHandler extends Eval
 
   Future<dynamic> _firebaseLogon(String provider, List<String> scopes) async
   {
-    var user;
+    dynamic user;
     try
     {
       await _firebaseInit();

@@ -670,7 +670,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
 
   void updatedSortedBy(ascending, index) {
-    var currCol;
+    dynamic currCol;
     int i = 0;
     while ((currCol = getHeaderCell(i++)) != null) {
       if (i == index) {

@@ -20,7 +20,7 @@ class TextDetector implements ITextDetector
 {
   static final TextDetector _singleton = TextDetector._initialize();
 
-  static late var _detector;
+  static late dynamic _detector;
 
   factory TextDetector()
   {

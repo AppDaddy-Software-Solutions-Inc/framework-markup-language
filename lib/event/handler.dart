@@ -143,7 +143,9 @@ class EventHandler extends Eval
     {
       // replace non-quoted ');' with ')+' to trick parser into thinking its a binary expression
       expression = expression.replaceAll(nonQuotedSemiColons, ")+");
-      while (expression.contains(")+ ")) expression = expression.replaceAll(")+ ",")+");
+      while (expression.contains(")+ ")) {
+        expression = expression.replaceAll(")+ ",")+");
+      }
       expression = expression.replaceAll("+?", "?");
       expression = expression.replaceAll("+:", ":");
       if (expression.endsWith("+")) expression = expression.substring(0,expression.length - 1);
@@ -209,7 +211,9 @@ class EventHandler extends Eval
       s.addAll(getConditionals(parsed.consequent));
       s.addAll(getConditionals(parsed.alternate));
     }
-    else if ((parsed is BinaryExpression) || (parsed is CallExpression)) s.add(parsed.toString());
+    else if ((parsed is BinaryExpression) || (parsed is CallExpression)) {
+      s.add(parsed.toString());
+    }
     return s;
   }
 

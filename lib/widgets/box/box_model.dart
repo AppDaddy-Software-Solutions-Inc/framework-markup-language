@@ -64,7 +64,7 @@ class BoxModel extends LayoutModel
     if (isFixedHeight) return false;
     var expand = this.expand;
     if (expand) return true;
-    if (children != null)
+    if (children != null){
       for (var child in children!)
       {
         if (child is ViewableWidgetModel && child.visible && child.isVerticallyExpanding)
@@ -72,7 +72,7 @@ class BoxModel extends LayoutModel
           expand = true;
           break;
         }
-      }
+      }}
     return expand;
   }
 
@@ -82,7 +82,7 @@ class BoxModel extends LayoutModel
     if (isFixedWidth) return false;
     var expand = this.expand;
     if (expand) return true;
-    if (children != null)
+    if (children != null){
       for (var child in children!)
       {
         if (child is ViewableWidgetModel && child.visible && child.isHorizontallyExpanding)
@@ -90,7 +90,7 @@ class BoxModel extends LayoutModel
           expand = true;
           break;
         }
-      }
+      }}
     return expand;
   }
 

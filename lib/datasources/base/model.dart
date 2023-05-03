@@ -261,10 +261,10 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
     dynamic old = busy;
     super.busy = v;
 
-    if (busy != old)
+    if (busy != old){
       for (var listener in listeners) {
         listener.onDataSourceBusy(this, busy);
-      }
+      }}
 
     // Set Status
     status = (busy == true) ? "busy" : (status ?? "idle");
@@ -458,10 +458,10 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
     if (maxrecords.isNegative) maxrecords = 0;
 
     // apply data transforms
-    if (children != null)
+    if (children != null){
       for (WidgetModel model in children!) {
         if (model is ITransform) await (model as ITransform).apply(data);
-      }
+      }}
 
     // type - default is replace
     ListTypes? type = S.toEnum(queuetype, ListTypes.values);
@@ -469,9 +469,9 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
     // Fifo - Oldest -> Newest
     if (type == ListTypes.fifo) {
       Data temp = Data();
-      if (this.data != null) for (var element in this.data!) {
+      if (this.data != null){ for (var element in this.data!) {
    temp.add(element);
- }
+ }}
       for (var element in data) {
         temp.add(element);
       }
@@ -487,9 +487,9 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
       for (var element in data) {
         temp.add(element);
       }
-      if (this.data != null) for (var element in this.data!) {
+      if (this.data != null){ for (var element in this.data!) {
    temp.add(element);
- }
+ }}
       if (temp.length > maxrecords) {
         temp.removeRange(temp.length - maxrecords - 1, temp.length);
       }
@@ -499,9 +499,9 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
     // Append
     if (type == ListTypes.append) {
       Data temp = Data();
-      if (this.data != null) for (var element in this.data!) {
+      if (this.data != null){ for (var element in this.data!) {
    temp.add(element);
- }
+ }}
       for (var element in data) {
         temp.add(element);
       }
@@ -514,9 +514,9 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
       for (var element in data) {
         temp.add(element);
       }
-      if (this.data != null) for (var element in this.data!) {
+      if (this.data != null){ for (var element in this.data!) {
    temp.add(element);
- }
+ }}
       data = temp;
     }
 
@@ -601,10 +601,10 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
     }
 
     // notify nested data sources
-    if (datasources != null)
+    if (datasources != null){
       for (IDataSource model in datasources!) {
         if (model is DataModel) model.onSuccess(data.clone());
-      }
+      }}
 
     // requery?
     if (((autoquery ?? 0) > 0) && (timer == null) && (!disposed)) {

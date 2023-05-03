@@ -70,19 +70,21 @@ class Reader
           // notify
           notifyListeners(Payload(id: tag.id, message: result));
         }
-        else
+        else {
           Log().debug('NFC: result is null');
+        }
       }
         catch(e)
       {
-        if (e.toString() == '408' && e.toString() == 'Polling tag timeout')
+        if (e.toString() == '408' && e.toString() == 'Polling tag timeout') {
           Log().debug('NFC: ...Timeout');
-        else if (e.toString() == '409') {
+        } else if (e.toString() == '409') {
           Log().debug('Polling Loop Ended via result or cancel');
           stopPoll = true;
         }
-        else
+        else {
           Log().debug('NFC ERROR: $e');
+        }
       }
       polling = false;
     }
@@ -188,8 +190,11 @@ class Writer
     } on PlatformException catch(e){
       // throw a custom exception on timeout with a message.
       if (e.code == "408") throw CustomException(code: 408, message: 'Poll Timed Out');
-      if (e.code == "405") throw CustomException(code: 405, message: 'NFC Tag Not Writeable');
-      else return false;
+      if (e.code == "405") {
+        throw CustomException(code: 405, message: 'NFC Tag Not Writeable');
+      } else {
+        return false;
+      }
     }
   }
 }

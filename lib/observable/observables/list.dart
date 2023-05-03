@@ -120,7 +120,9 @@ class ListObservable extends Observable with ListMixin<dynamic>
     {
       _value.clear();
       var options = value.split(",");
-      for (String v in options) if (v.trim() != '') _value.add(v.trim());
+      for (String v in options) {
+        if (v.trim() != '') _value.add(v.trim());
+      }
       notifyListeners();
     }
   }

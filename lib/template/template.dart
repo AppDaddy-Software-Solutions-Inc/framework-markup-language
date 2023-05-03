@@ -42,7 +42,9 @@ class Template
 
       // Replace System Uuid
       String s = Binding.toKey(System.myId, 'uuid')!;
-      while (xml!.contains(s)) xml = xml.replaceFirst(s, S.newId());
+      while (xml!.contains(s)) {
+        xml = xml.replaceFirst(s, S.newId());
+      }
 
       // Convert Xml String to Xml Document
       XmlDocument document = XmlDocument.parse(xml);
@@ -216,8 +218,9 @@ class Template
               // include must always be wrapped in a parent that is ignored, often <FML>
               List<XmlElement> nodes = [];
               XmlElement? include = template.document!.rootElement;
-              for (dynamic node in include.children)
+              for (dynamic node in include.children) {
                 if (node is XmlElement) nodes.add(node.copy());
+              }
               element.parent!.children.insertAll(position, nodes);
             }
             catch(e)

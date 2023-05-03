@@ -313,12 +313,13 @@ class System extends WidgetModel implements IEventManager
       Map<String, dynamic> manifest = json.decode(await rootBundle.loadString('AssetManifest.json'));
 
       // copy assets
-      for (String key in manifest.keys)
-      if (key.startsWith("assets/applications"))
+      for (String key in manifest.keys) {
+        if (key.startsWith("assets/applications"))
       {
         var folder   = key.replaceFirst("assets/", "");
         var filepath = normalize(join(URI.rootPath,folder));
         await Platform.writeFile(filepath, await rootBundle.load(key));
+      }
       }
     }
     catch(e)

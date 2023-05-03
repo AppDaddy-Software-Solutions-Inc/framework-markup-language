@@ -658,7 +658,9 @@ class InputModel extends FormFieldModel implements IFormField
         value = xml;
       }
     }
-    else value = Xml.get(node: xml, tag: S.fromEnum('value'));
+    else {
+      value = Xml.get(node: xml, tag: S.fromEnum('value'));
+    }
     hint = Xml.get(node: xml, tag: 'hint') ?? "";
     size = Xml.get(node: xml, tag: 'size');
     weight = Xml.get(node: xml, tag: 'weight');

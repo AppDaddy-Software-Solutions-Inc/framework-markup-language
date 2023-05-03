@@ -63,7 +63,9 @@ class Http
         // return response
         return HttpResponse.factory(url, response);
       }
-      else return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: "Url $url is invalid");
+      else {
+        return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: "Url $url is invalid");
+      }
     }
     catch(e)
     {
@@ -93,7 +95,9 @@ class Http
         // return response
         return HttpResponse.factory(url, response);
       }
-      else return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: "Url $url is invalid");
+      else {
+        return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: "Url $url is invalid");
+      }
     }
     catch(e)
     {
@@ -118,7 +122,9 @@ class Http
         // return response
         return HttpResponse.factory(url, response);
       }
-      else return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: "Url $url is invalid");
+      else {
+        return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: "Url $url is invalid");
+      }
     }
     catch(e)
     {
@@ -143,7 +149,9 @@ class Http
         // return response
         return HttpResponse.factory(url, response);
       }
-      else return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: "Url $url is invalid");
+      else {
+        return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: "Url $url is invalid");
+      }
     }
     catch(e)
     {
@@ -168,7 +176,9 @@ class Http
         // return response
         return HttpResponse.factory(url, response);
       }
-      else return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: "Url $url is null or invalid");
+      else {
+        return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: "Url $url is null or invalid");
+      }
     }
     catch(e)
     {
@@ -198,14 +208,17 @@ class Http
       _headers[HttpHeaders.contentTypeHeader] = "application/xml";
       if (System.app?.jwt?.token != null) _headers[HttpHeaders.authorizationHeader] = "Bearer ${System.app!.jwt!.token}";
     }
-    else headers.forEach((key, value) => _headers[key] = value);
+    else {
+      headers.forEach((key, value) => _headers[key] = value);
+    }
     return _headers;
   }
 
   static void decodeHeaders(Response response) {
     if ((!response.headers.containsKey(HttpHeaders.authorizationHeader)) ||
-        (S.isNullOrEmpty(response.headers[HttpHeaders.authorizationHeader])))
+        (S.isNullOrEmpty(response.headers[HttpHeaders.authorizationHeader]))) {
       return;
+    }
 
     // authorization header
     String token = response.headers[HttpHeaders.authorizationHeader]!

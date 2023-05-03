@@ -119,7 +119,7 @@ class VideoModel extends DecoratedWidgetModel implements ViewableWidgetModel
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
 
-    if (player != null)
+    if (player != null) {
       switch (function)
       {
         case "start"    : return await player!.start();
@@ -129,6 +129,7 @@ class VideoModel extends DecoratedWidgetModel implements ViewableWidgetModel
         case "rewind"   : return await player!.seek(0);
         case "seek"     : return await player!.seek(S.toInt(S.item(arguments, 0)) ?? 0);
       }
+    }
     return super.execute(caller, propertyOrFunction, arguments);
   }
 

@@ -319,7 +319,9 @@ class LayoutModel extends DecoratedWidgetModel
 
     // calculate fixed space
     double reserved = 0;
-    for (var child in fixed) reserved += (child.visible) ? (child.viewWidth ?? 0) : 0;
+    for (var child in fixed) {
+      reserved += (child.visible) ? (child.viewWidth ?? 0) : 0;
+    }
     if (layoutType != LayoutType.row) reserved = 0;
 
     // calculate usable space (max - reserved)
@@ -329,8 +331,8 @@ class LayoutModel extends DecoratedWidgetModel
 
     // set % sizing on variable children
     var free = usable;
-    for (var child in variable)
-    if (child.visible)
+    for (var child in variable) {
+      if (child.visible)
     {
       var pct = getPercentWidth(child) ?? 0;
       if (pct > 0)
@@ -363,15 +365,17 @@ class LayoutModel extends DecoratedWidgetModel
         }
       }
     }
+    }
 
     // calculate sum of all flex values
     double flexsum = 0;
-    for (var child in variable)
-    if (child.visible) flexsum += max(getFlexWidth(child) ?? 0, 0);
+    for (var child in variable) {
+      if (child.visible) flexsum += max(getFlexWidth(child) ?? 0, 0);
+    }
 
     // set flex sizing on flexible children
-    for (var child in variable)
-    if (child.visible)
+    for (var child in variable) {
+      if (child.visible)
     {
       var flex = getFlexWidth(child) ?? 0;
       if (flex > 0)
@@ -401,6 +405,7 @@ class LayoutModel extends DecoratedWidgetModel
         }
       }
     }
+    }
   }
 
   void _onHeightChange()
@@ -418,7 +423,9 @@ class LayoutModel extends DecoratedWidgetModel
 
     // calculate fixed space
     double reserved = 0;
-    for (var child in fixed) reserved += (child.visible) ? (child.viewHeight ?? 0) : 0;
+    for (var child in fixed) {
+      reserved += (child.visible) ? (child.viewHeight ?? 0) : 0;
+    }
     if (layoutType != LayoutType.column) reserved = 0;
 
     // calculate usable space (max - reserved)
@@ -428,8 +435,8 @@ class LayoutModel extends DecoratedWidgetModel
 
     // set % sizing on variable children
     var free = usable;
-    for (var child in variable)
-    if (child.visible)
+    for (var child in variable) {
+      if (child.visible)
     {
       var pct = getPercentHeight(child) ?? 0;
       if (pct > 0)
@@ -462,15 +469,17 @@ class LayoutModel extends DecoratedWidgetModel
         }
       }
     }
+    }
 
     // calculate sum of all flex values
     double flexsum = 0;
-    for (var child in variable)
-    if (child.visible) flexsum += max(getFlexHeight(child) ?? 0, 0);
+    for (var child in variable) {
+      if (child.visible) flexsum += max(getFlexHeight(child) ?? 0, 0);
+    }
 
     // set flex sizing on flexible children
-    for (var child in variable)
-    if (child.visible)
+    for (var child in variable) {
+      if (child.visible)
     {
       var flex = getFlexHeight(child) ?? 0;
       if (flex > 0)
@@ -499,6 +508,7 @@ class LayoutModel extends DecoratedWidgetModel
           child.setHeight(size.toDouble(), notify: false);
         }
       }
+    }
     }
   }
 

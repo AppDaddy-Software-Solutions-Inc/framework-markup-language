@@ -125,12 +125,13 @@ class _SelectViewState extends WidgetState<SelectView>
 
     // busy?
     var busy;
-    if (widget.model.busy == true && widget.model.typeahead != true)
+    if (widget.model.busy == true && widget.model.typeahead != true) {
       busy = BusyView(BusyModel(widget.model,
           visible: true,
           size: 24,
           color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.5),
           modal: false));
+    }
 
     bool enabled = (widget.model.enabled != false) && (widget.model.busy != true);
 
@@ -201,8 +202,9 @@ class _SelectViewState extends WidgetState<SelectView>
                     SuggestionsBoxDecoration(elevation: 20),
                 suggestionsBoxVerticalOffset: 0,
                 onSuggestionSelected: (dynamic suggestion) {
-                  if (suggestion is OptionModel)
+                  if (suggestion is OptionModel) {
                     changedDropDownItem(suggestion);
+                  }
                 },
                 transitionBuilder: (context, suggestionsBox, animationController) =>
                 FadeTransition(
@@ -308,9 +310,9 @@ class _SelectViewState extends WidgetState<SelectView>
   }
 
   bool match(String tag, String pat) {
-    if (tag == '' || tag == 'null')
+    if (tag == '' || tag == 'null') {
       return false;
-    else if (S.isNullOrEmpty(widget.model.matchtype) || widget.model.matchtype!.toLowerCase() == 'contains') {
+    } else if (S.isNullOrEmpty(widget.model.matchtype) || widget.model.matchtype!.toLowerCase() == 'contains') {
       return tag.contains(pat.toLowerCase());
     }
     else if (widget.model.matchtype!.toLowerCase() == 'startswith') {
@@ -332,7 +334,7 @@ class _SelectViewState extends WidgetState<SelectView>
     if (S.isNullOrEmpty(value))
     {
       var models = (model.label as WidgetModel).findDescendantsOfExactType(TextModel);
-      if (models != null)
+      if (models != null) {
         models.forEach((text)
         {
           if (text is TextModel)
@@ -341,14 +343,16 @@ class _SelectViewState extends WidgetState<SelectView>
             if (!value.contains(v)) value += v;
           }
         });
+      }
     }
     return value;
   }
 
   void changedDropDownItem(OptionModel? selected) async {
-    if (widget.model.typeahead != true)
+    if (widget.model.typeahead != true) {
       FocusScope.of(context).requestFocus(
           FocusNode()); // added this in to remove focus from input
+    }
     // removed this as it prevents reloading after a user submits a value
     if (selected == null) return;
     bool ok = await widget.model.answer(selected.value);
@@ -373,10 +377,11 @@ class _SelectViewState extends WidgetState<SelectView>
       controller.selection = TextSelection(baseOffset: 0, extentOffset: controller.text.length);
     }
     try {
-      if (focused)
+      if (focused) {
         System().commit = _commit;
-      else
+      } else {
         System().commit = null;
+      }
 
       if (!focused) await _commit();
     } catch(e) {}

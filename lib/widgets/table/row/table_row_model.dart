@@ -141,8 +141,9 @@ class TableRowModel extends DecoratedWidgetModel
 
   Color? get selectedcolor {
     if (_selectedcolor == null) {
-      if ((parent != null) && (parent is TableModel))
+      if ((parent != null) && (parent is TableModel)) {
         return (parent as TableModel).selectedcolor;
+      }
       return null;
     }
     return _selectedcolor?.get();
@@ -164,8 +165,9 @@ class TableRowModel extends DecoratedWidgetModel
 
   Color? get selectedbordercolor {
     if (_selectedbordercolor == null) {
-      if ((parent != null) && (parent is TableModel))
+      if ((parent != null) && (parent is TableModel)) {
         return (parent as TableModel).selectedbordercolor;
+      }
       return null;
     }
     return _selectedbordercolor?.get();
@@ -187,8 +189,9 @@ class TableRowModel extends DecoratedWidgetModel
 
   Color? get bordercolor {
     if (_bordercolor == null) {
-      if ((parent != null) && (parent is TableModel))
+      if ((parent != null) && (parent is TableModel)) {
         return (parent as TableModel).bordercolor;
+      }
       return null;
     }
     return _bordercolor?.get();
@@ -210,8 +213,9 @@ class TableRowModel extends DecoratedWidgetModel
 
   double? get borderwidth {
     if (_borderwidth == null) {
-      if ((parent != null) && (parent is TableModel))
+      if ((parent != null) && (parent is TableModel)) {
         return (parent as TableModel).borderwidth;
+      }
       return null;
     }
     return _borderwidth?.get();
@@ -224,8 +228,9 @@ class TableRowModel extends DecoratedWidgetModel
   @override
   String? get halign {
     if (_halign == null) {
-      if ((parent != null) && (parent is TableModel))
+      if ((parent != null) && (parent is TableModel)) {
         return (parent as TableModel).halign;
+      }
       return null;
     }
     return _halign?.get();
@@ -236,8 +241,9 @@ class TableRowModel extends DecoratedWidgetModel
   @override
   String? get valign {
     if (_valign == null) {
-      if ((parent != null) && (parent is TableModel))
+      if ((parent != null) && (parent is TableModel)) {
         return (parent as TableModel).valign;
+      }
       return null;
     }
     return _valign?.get();
@@ -316,14 +322,14 @@ class TableRowModel extends DecoratedWidgetModel
   void onDirtyListener(Observable property)
   {
     bool isDirty = false;
-    if (fields != null)
+    if (fields != null){
       for (IFormField field in fields!) {
         if (field.dirty ?? false)
         {
           isDirty = true;
           break;
         }
-      }
+      }}
     dirty = isDirty;
   }
 
@@ -398,7 +404,9 @@ class TableRowModel extends DecoratedWidgetModel
     /* Get Cells */
     ///////////////
     List<TableRowCellModel> models = findChildrenOfExactType(TableRowCellModel).cast<TableRowCellModel>();
-    for (TableRowCellModel model in models) cells.add(model);
+    for (TableRowCellModel model in models) {
+      cells.add(model);
+    }
 
     ////////////////////////////
     /* Initialize Form Fields */
@@ -446,8 +454,9 @@ class TableRowModel extends DecoratedWidgetModel
     ////////////////
     /* Mark Clean */
     ////////////////
-    if ((ok) && (fields != null))
+    if ((ok) && (fields != null)) {
       fields!.forEach((field) => field.dirty = false);
+    }
 
     busy = false;
 
@@ -474,7 +483,7 @@ class TableRowModel extends DecoratedWidgetModel
     if (dirty == false) return true;
 
     bool ok = true;
-    if ((scope != null) && (postbrokers != null))
+    if ((scope != null) && (postbrokers != null)){
       for (String id in postbrokers!)
       {
         IDataSource? source = scope!.getDataSource(id);
@@ -484,14 +493,17 @@ class TableRowModel extends DecoratedWidgetModel
           ok = await source.start();
         }
         if (!ok) break;
-      }
-    else ok = false;
+      }}
+    else {
+      ok = false;
+    }
     return ok;
   }
 
   void onSelect(TableRowCellModel cell) {
-    if ((parent != null) && (parent is TableModel))
+    if ((parent != null) && (parent is TableModel)) {
       (parent as TableModel).onSelect(this, cell);
+    }
   }
 
   @override

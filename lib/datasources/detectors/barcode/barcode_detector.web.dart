@@ -43,7 +43,9 @@ class BarcodeDetector implements IBarcodeDetector
           if (formats.contains(BarcodeFormats.QRCODE)) result = await _qrcode(detectable.image, tryharder, invert);
         }
         //default barcode format
-        else result = await _multi(detectable.image, formats, tryharder, invert);
+        else {
+          result = await _multi(detectable.image, formats, tryharder, invert);
+        }
       }
       return result;
     }

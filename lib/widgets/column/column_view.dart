@@ -54,18 +54,19 @@ class _ColumnViewState extends WidgetState<ColumnView>
     Widget view;
 
     // create view
-    if (widget.model.wrap == true)
+    if (widget.model.wrap == true) {
       view = Wrap(children: children,
           direction: Axis.vertical,
           alignment: alignment.mainWrapAlignment,
           runAlignment: alignment.mainWrapAlignment,
           crossAxisAlignment: alignment.crossWrapAlignment);
-    else
+    } else {
       view = Column(
           children: children,
           mainAxisAlignment: alignment.mainAlignment,
           crossAxisAlignment: alignment.crossAlignment,
           mainAxisSize: mainAxisSize);
+    }
 
     // add margins
     if (model is ColumnModel) view = addMargins(view);

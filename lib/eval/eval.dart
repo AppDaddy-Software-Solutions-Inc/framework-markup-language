@@ -35,14 +35,15 @@ class Eval
     try
     {
       // setup variable substitutions
-      if (variables != null)
-      variables.forEach((key,value)
+      if (variables != null) {
+        variables.forEach((key,value)
       {
         i++;
         var _key = "___V$i";
         _variables[_key] = _isNumeric(value) ? _toNum(value) : _isBool(value) ? _toBool(value) : value;
         _expression = _expression.replaceAll(key!, _key);
       });
+      }
 
       // add variables
       _functions.addAll(_variables);
@@ -80,11 +81,17 @@ class Eval
 
     Type? expressionType;
 
-         if (expression is ConditionalExpression) expressionType = ConditionalExpression;
-    else if (expression is BinaryExpression)      expressionType = BinaryExpression;
-    else if (expression is CallExpression)        expressionType = CallExpression;
-    else if (expression is Literal)               expressionType = Literal;
-    else if (expression is Variable)              expressionType = Variable;
+         if (expression is ConditionalExpression) {
+           expressionType = ConditionalExpression;
+         } else if (expression is BinaryExpression) {
+      expressionType = BinaryExpression;
+    } else if (expression is CallExpression) {
+      expressionType = CallExpression;
+    } else if (expression is Literal) {
+      expressionType = Literal;
+    } else if (expression is Variable) {
+      expressionType = Variable;
+    }
 
     switch(expressionType)
     {
@@ -99,7 +106,9 @@ class Eval
 
       case CallExpression:
         List? args = expression.arguments;
-        for (int i = 0; i < expression.arguments.length; i++) args![i] = replaceInLiterals(expression.arguments[i], variables);
+        for (int i = 0; i < expression.arguments.length; i++) {
+          args![i] = replaceInLiterals(expression.arguments[i], variables);
+        }
         expression = CallExpression(expression.callee, args as List<Expression?>?);
         break;
 
@@ -229,25 +238,30 @@ class Eval
   static dynamic _ceil(dynamic value)
   {
     var n = S.toNum(value);
-    if (n != null)
+    if (n != null) {
       return n.ceil();
-    else return null;
+    } else {
+      return null;
+    }
   }
 
   /// Returns the nearest integer value rounding down
   static dynamic _floor(dynamic value)
   {
     var n = S.toNum(value);
-    if (n != null)
+    if (n != null) {
       return n.floor();
-    else return null;
+    } else {
+      return null;
+    }
   }
 
   /// Returns true if a String value contains [Pattern]
   static dynamic _contains(dynamic value, dynamic pat)
   {
-    if (pat == null || pat == '')
+    if (pat == null || pat == '') {
       return false;
+    }
     if (value is List)   return value.contains(_toString(pat));
     if (value is String) return value.contains(_toString(pat));
     return false;
@@ -256,8 +270,9 @@ class Eval
   /// Returns true if a String value starts with [Pattern]
   static dynamic _startsWith(dynamic value, dynamic pat)
   {
-    if (pat == null || pat == '')
+    if (pat == null || pat == '') {
       return false;
+    }
     value = _toString(value);
     pat = _toString(pat);
     if (value is String && pat is String)
@@ -270,8 +285,9 @@ class Eval
   /// Returns true if a String value ends with a [Pattern]
   static dynamic _endsWith(dynamic value, dynamic pat)
   {
-    if (pat == null || pat == '')
+    if (pat == null || pat == '') {
       return false;
+    }
     value = _toString(value);
     pat = _toString(pat);
     if (value is String && pat is String)
@@ -386,14 +402,17 @@ class Eval
     if (S.isNullOrEmpty(val)) return '';
     int start = S.toInt(startIndex) ?? 0;
     int end   = S.toInt(endIndex) ?? val.length;
-    if(end > val.length)
+    if(end > val.length) {
       end = val.length;
-    if (start < 0 && (start * -1) <= val.length)
+    }
+    if (start < 0 && (start * -1) <= val.length) {
       return val.substring(0, val.length + start);
-    if (start >= end)
+    }
+    if (start >= end) {
       return ''; // out of range
-    else
+    } else {
       return val.substring(start, end);
+    }
 
   }
 
@@ -415,8 +434,9 @@ class Eval
   {
     int? number  = S.toInt(num);
     int? divisor = S.toInt(div);
-    if ((number != null) && (divisor != null) && (divisor != 0))
+    if ((number != null) && (divisor != null) && (divisor != 0)) {
       return number%divisor;
+    }
     return null;
   }
 
@@ -552,11 +572,11 @@ class Eval
     if (value != null) {
       try {
         late var f;
-        if (semicompact == true) // semi compact and ignore currency
+        if (semicompact == true) {
           f = NumberFormat.compactLong(locale: locale);
-        else if (compact == true && currency != true) // compact and not currency
+        } else if (compact == true && currency != true) {
           f = NumberFormat.compact(locale: locale);
-        else if (compact != true && currency != true) { // not compact and not currency
+        } else if (compact != true && currency != true) { // not compact and not currency
           // We need to create a format string that maintains decimal places
           var decimals = 0;
           var split = value.toString().split('.');
@@ -567,10 +587,11 @@ class Eval
             format.padRight(decimals, '#');
           }
           f = NumberFormat(format, locale);
-        } else if (compact == true && currency == true) // compact and currency
+        } else if (compact == true && currency == true) {
           f = NumberFormat.compactSimpleCurrency(locale: locale);
-        else if (compact != true && currency == true) // not compact and currency
+        } else if (compact != true && currency == true) {
           f = NumberFormat.simpleCurrency(locale: locale);
+        }
         if (value is String) value = S.toDouble(value);
         return f.format(value);
       }

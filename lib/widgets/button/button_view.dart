@@ -26,7 +26,7 @@ class _ButtonViewState extends WidgetState<ButtonView>
   {
     var model = widget.model;
 
-    if (model.buttontype == 'elevated')
+    if (model.buttontype == 'elevated') {
       return ElevatedButton.styleFrom(
           minimumSize:  Size(model.constraints.model.minWidth ?? 64, (model.constraints.model.minHeight ?? 0) + 40), //add 40 to the constraint as the width is offset by 40
           backgroundColor: model.color ?? Theme.of(context).colorScheme.primary,
@@ -35,12 +35,14 @@ class _ButtonViewState extends WidgetState<ButtonView>
           shadowColor: Theme.of(context).colorScheme.shadow,
           shape: RoundedRectangleBorder(borderRadius: model.radius > 0 ? BorderRadius.all(Radius.circular(model.radius)) : BorderRadius.zero),
           elevation: 3);
+    }
 
 
     var borderSideStyle = model.buttontype == 'outlined' ? MaterialStateProperty.resolveWith((states)
     {
-      if (states.contains(MaterialState.disabled))
+      if (states.contains(MaterialState.disabled)) {
         return BorderSide(style: BorderStyle.solid, color: Theme.of(context).colorScheme.surfaceVariant, width: 2);
+      }
         return BorderSide(style: BorderStyle.solid, color: model.color ?? Theme.of(context).colorScheme.primary, width: 2);
     }) : null;
 

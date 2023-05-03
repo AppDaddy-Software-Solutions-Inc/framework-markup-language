@@ -126,19 +126,25 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
 
     // page in navigation history?
     var page;
-    if ((url == "/") && (_pages.isNotEmpty))
-         page = _pages.first;
-    else page = _pages.reversed.firstWhereOrNull((page) => (page.name == url));
+    if ((url == "/") && (_pages.isNotEmpty)) {
+      page = _pages.first;
+    } else {
+      page = _pages.reversed.firstWhereOrNull((page) => (page.name == url));
+    }
 
     // navigate back to the page if found in the navigation history
     if (page != null)
     {
-      while ((_pages.isNotEmpty) && (_pages.last != page)) _pages.removeLast();
+      while ((_pages.isNotEmpty) && (_pages.last != page)) {
+        _pages.removeLast();
+      }
       notifyListeners();
     }
     
     // open a new page
-    else _open(url, transition: configuration.transition);
+    else {
+      _open(url, transition: configuration.transition);
+    }
   }
 
   @override
@@ -152,9 +158,11 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
   Future<bool> popRoute()
   {
     // this only fires on mobile
-    if (_pages.length > 1)
-         return _goback(1);
-    else return _confirmAppExit();
+    if (_pages.length > 1) {
+      return _goback(1);
+    } else {
+      return _confirmAppExit();
+    }
   }
 
   Future<String?> _buildDeeplinkUrl(String? url) async
@@ -211,13 +219,21 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
 
     if (index != null)
     {
-           if (index >= _pages.length) _pages.add(page);
-      else if (index < (_pages.length * -1)) _pages.insert(0, page);
-      else if (index >= 0) _pages.insert(index, page);
-      else if (index.isNegative)  _pages.insert(_pages.length + index, page);
-      else Log().error('Unable to add page at index: $index name: ${args!.title}, url: ${args.url}', caller: 'delegate.dart');
+           if (index >= _pages.length) {
+             _pages.add(page);
+           } else if (index < (_pages.length * -1)) {
+        _pages.insert(0, page);
+      } else if (index >= 0) {
+        _pages.insert(index, page);
+      } else if (index.isNegative) {
+        _pages.insert(_pages.length + index, page);
+      } else {
+        Log().error('Unable to add page at index: $index name: ${args!.title}, url: ${args.url}', caller: 'delegate.dart');
+      }
     }
-    else _pages.add(page);
+    else {
+      _pages.add(page);
+    }
     notifyListeners();
   }
 
@@ -236,7 +252,9 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     bool ok = await Platform.goBackPages(pages);
     if (ok) return true;
 
-    for (int i = 0; i < pages; i++) _pages.removeLast();
+    for (int i = 0; i < pages; i++) {
+      _pages.removeLast();
+    }
     notifyListeners();
     return true;
   }
@@ -446,8 +464,9 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
               ],
             );
           });}
-    else
+    else {
       result = true;
+    }
     return result;
   }
 
@@ -508,7 +527,9 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
           width = size * (width / 100);
         }
       }
-      else width = S.toDouble(value);
+      else {
+        width = S.toDouble(value);
+      }
     }
     catch(e)
     {
@@ -532,7 +553,9 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
           height   = size * (height / 100);
         }
       }
-      else height = S.toDouble(value);
+      else {
+        height = S.toDouble(value);
+      }
     }
     catch(e)
     {

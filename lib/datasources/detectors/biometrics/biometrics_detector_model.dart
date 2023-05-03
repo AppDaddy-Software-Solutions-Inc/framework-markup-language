@@ -59,7 +59,9 @@ class BiometricsDetectorModel extends DetectorModel implements IDetectable
         Data data = Payload.toData(payload);
         await onDetected(data);
       }
-      else if (!streamed)  await onDetectionFailed(Data(data: [{"message" : "Biometrics detector $id failed to detect any faces in the supplied image"}]));
+      else if (!streamed) {
+        await onDetectionFailed(Data(data: [{"message" : "Biometrics detector $id failed to detect any faces in the supplied image"}]));
+      }
 
       busy = false;
     }

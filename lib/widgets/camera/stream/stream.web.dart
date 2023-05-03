@@ -95,10 +95,11 @@ class ViewState extends WidgetState<View>
     var b = Binding.fromString(property);
     if ((mounted) && (b?.property == 'enabled')) {
       Log().debug('enabled changed value');
-      if (widget.model.enabled)
+      if (widget.model.enabled) {
         start();
-      else
+      } else {
         stop();
+      }
     }
   }
 
@@ -167,7 +168,9 @@ class ViewState extends WidgetState<View>
 
           if (widget.model.debug == true) {
             var bytes = Uint8List.fromList(rgba);
-            for (int i = 0; i < bytes.length; i++) image.data[i] = bytes[i];
+            for (int i = 0; i < bytes.length; i++) {
+              image.data[i] = bytes[i];
+            }
             canvas2.width = width;
             canvas2.height = height;
             canvas2.context2D.putImageData(image, 0, 0);
@@ -247,16 +250,17 @@ class ViewState extends WidgetState<View>
       Map<String, int> srcSize, Map<String, int> dstSize) {
     var srcRatio = srcSize['width']! / srcSize['height']!;
     var dstRatio = dstSize['width']! / dstSize['height']!;
-    if (dstRatio > srcRatio)
+    if (dstRatio > srcRatio) {
       return {
         'width': dstSize['height']! * srcRatio,
         'height': dstSize['height']
       };
-    else
+    } else {
       return {
         'width': dstSize['height'],
         'height': dstSize['width']! / srcRatio
       };
+    }
   }
 
   Future start() async {
@@ -291,8 +295,9 @@ class ViewState extends WidgetState<View>
       if (stream == null) return;
       Log().debug("Stopping Camera");
       video.pause();
-      if (stream != null)
+      if (stream != null) {
         stream!.getTracks().forEach((track) => track.stop());
+      }
       stream = null;
       Log().debug("Camera Stopped");
     } catch(e) {}
@@ -339,7 +344,9 @@ class ViewState extends WidgetState<View>
 
         var rgba = image.data.toList();
         var bytes = Uint8List.fromList(rgba);
-        for (int i = 0; i < bytes.length; i++) image.data[i] = bytes[i];
+        for (int i = 0; i < bytes.length; i++) {
+          image.data[i] = bytes[i];
+        }
 
         canvas2.width = width;
         canvas2.height = height;

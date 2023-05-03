@@ -95,11 +95,12 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
   {
     Widget? newChild = widget.child;
 
-    if (widget.model.animations != null)
-    widget.model.animations!.forEach((transition)
+    if (widget.model.animations != null) {
+      widget.model.animations!.forEach((transition)
     {
       newChild = transition.getAnimatedView(newChild!, controller: _controller);
     });
+    }
     return newChild;
   }
 
@@ -123,12 +124,13 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
     // Build Children
     widget.children.clear();
     if (widget.child != null) widget.children.add(widget.child!);
-    if (widget.model.children != null)
+    if (widget.model.children != null) {
       widget.model.children!.forEach((model) {
         if (model is ViewableWidgetModel) {
           var view = model.getView();
           widget.children.add(view);
       }});
+    }
     if (widget.children.isEmpty) widget.children.add(Container());
 
     var child = widget.children.length == 1
@@ -155,10 +157,11 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
       bool? enabled = (event.parameters != null)
           ? S.toBool(event.parameters!['enabled'])
           : true;
-      if (enabled != false)
+      if (enabled != false) {
         start();
-      else
+      } else {
         stop();
+      }
       event.handled = true;
     }
   }

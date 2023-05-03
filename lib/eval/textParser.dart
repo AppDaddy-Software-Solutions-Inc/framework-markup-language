@@ -144,63 +144,88 @@ void extractStyles(String value, List<String> styleList) {
 
 
     if (value.substring(0, 9) == under) {
-      if(styles.contains("underline")) styles.remove("underline");
-      else styles.add("underline");
+      if(styles.contains("underline")) {
+        styles.remove("underline");
+      } else {
+        styles.add("underline");
+      }
 
       value = value.substring(9);
     }
 
     else if (value.substring(0, 9) == over) {
-      if(styles.contains("overline")) styles.remove("overline");
-      else styles.add("overline");
+      if(styles.contains("overline")) {
+        styles.remove("overline");
+      } else {
+        styles.add("overline");
+      }
 
       value = value.substring(9);
     }
 
     else if (value.substring(0, 9) == strike) {
-      if(styles.contains("strikethrough")) styles.remove("strikethrough");
-      else styles.add("strikethrough");
+      if(styles.contains("strikethrough")) {
+        styles.remove("strikethrough");
+      } else {
+        styles.add("strikethrough");
+      }
 
       value = value.substring(9);
     }
 
     else if (value.substring(0, 9) == sub) {
-      if(styles.contains("subscript")) styles.remove("subscript");
-      else styles.add("subscript");
+      if(styles.contains("subscript")) {
+        styles.remove("subscript");
+      } else {
+        styles.add("subscript");
+      }
 
       value = value.substring(9);
     }
 
     else if (value.substring(0, 9) == sup) {
-      if(styles.contains("superscript")) styles.remove("superscript");
-      else styles.add("superscript");
+      if(styles.contains("superscript")) {
+        styles.remove("superscript");
+      } else {
+        styles.add("superscript");
+      }
 
       value = value.substring(9);
     }
 
     else if (value.substring(0, 9) == bold) {
-      if(styles.contains("bold")) styles.remove("bold");
-      else styles.add("bold");
+      if(styles.contains("bold")) {
+        styles.remove("bold");
+      } else {
+        styles.add("bold");
+      }
 
       value = value.substring(9);
     }
 
     else if (value.substring(0, 9) == italic) {
-      if(styles.contains("italic")) styles.remove("italic");
-      else styles.add("italic");
+      if(styles.contains("italic")) {
+        styles.remove("italic");
+      } else {
+        styles.add("italic");
+      }
 
       value = value.substring(9);
     }
 
     else if (value.substring(0, 10) == code) {
-      if(styles.contains("code")) styles.remove("code");
-      else styles.add("code");
+      if(styles.contains("code")) {
+        styles.remove("code");
+      } else {
+        styles.add("code");
+      }
 
       value = value.substring(10);
     }
 
-    else
+    else {
       return;
+    }
 
   }
 }

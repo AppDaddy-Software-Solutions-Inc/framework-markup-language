@@ -54,7 +54,7 @@ class ListItemModel extends DecoratedWidgetModel
   void onDirtyListener(Observable property)
   {
     bool isDirty = false;
-    if (fields != null)
+    if (fields != null){
       for (IFormField field in fields!)
       {
         if ((field.dirty ?? false))
@@ -62,7 +62,7 @@ class ListItemModel extends DecoratedWidgetModel
           isDirty = true;
           break;
         }
-      }
+      }}
     dirty = isDirty;
   }
 
@@ -165,7 +165,7 @@ class ListItemModel extends DecoratedWidgetModel
 
     // find all descendants
     List<dynamic>? fields = findDescendantsOfExactType(null);
-    if (fields != null)
+    if (fields != null) {
       fields.forEach((field)
       {
         // form field?
@@ -179,6 +179,7 @@ class ListItemModel extends DecoratedWidgetModel
           if (field.dirtyObservable != null) field.dirtyObservable!.registerListener(onDirtyListener);
         }
       });
+    }
   }
 
   Future<bool> complete() async
@@ -207,7 +208,7 @@ class ListItemModel extends DecoratedWidgetModel
     if (dirty == false) return true;
 
     bool ok = true;
-    if ((scope != null) && (postbrokers != null))
+    if ((scope != null) && (postbrokers != null)){
       for (String id in postbrokers!)
       {
         IDataSource? source = scope!.getDataSource(id);
@@ -217,8 +218,10 @@ class ListItemModel extends DecoratedWidgetModel
           ok = await source.start();
         }
         if (!ok) break;
-      }
-    else ok = false;
+      }}
+    else {
+      ok = false;
+    }
     return ok;
   }
 

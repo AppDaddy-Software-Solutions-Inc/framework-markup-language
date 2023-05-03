@@ -107,9 +107,9 @@ class TextDetector implements ITextDetector
             if (y1 < y2Ocr && y2 > y1Ocr) {
               foundLine = true;
               // Determine where to place the element in the line
-              if (ocrLines[i].words.isEmpty)
+              if (ocrLines[i].words.isEmpty) {
                 ocrLines[i].words.add(element);
-              else {
+              } else {
                 bool foundWord = false;
                 for (int j = 0; j < ocrLines[i].words.length; j++) {
                   double x1Ocr = ocrLines[i].words[j].boundingBox.left;
@@ -121,8 +121,9 @@ class TextDetector implements ITextDetector
                     j = ocrLines[i].words.length + 1;
                   }
                 }
-                if (foundWord == false)
+                if (foundWord == false) {
                   ocrLines[i].words.add(element);
+                }
                 i = ocrLines.length + 1;
               }
             }

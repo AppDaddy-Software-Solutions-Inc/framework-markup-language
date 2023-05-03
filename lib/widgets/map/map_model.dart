@@ -129,12 +129,12 @@ class MapModel extends DecoratedWidgetModel
 
     // add layers
     var layers = Xml.getChildElements(node: xml, tag: "LAYER");
-    if (layers != null)
+    if (layers != null){
       layers.forEach((layer)
       {
         String? url = Xml.get(node: layer, tag: 'url');
         if (url != null) this.layers.add(url);
-      });
+      });}
 
     // build locations
     List<MapMarkerModel> markers = findChildrenOfExactType(MapMarkerModel).cast<MapMarkerModel>();
@@ -157,7 +157,9 @@ class MapModel extends DecoratedWidgetModel
       }
 
       // static location
-      else this.markers.add(model);
+      else {
+        this.markers.add(model);
+      }
     });
   }
 
@@ -182,7 +184,7 @@ class MapModel extends DecoratedWidgetModel
       markers.removeWhere((model) => source.id == model.datasource);
 
       // build new locations
-      if ((list != null) && (list.isNotEmpty))
+      if ((list != null) && (list.isNotEmpty)){
         for (String prototype in prototypes)
         {
           int i = 0;
@@ -194,7 +196,7 @@ class MapModel extends DecoratedWidgetModel
             var location = MapMarkerModel.fromXml(parent!, node, data: data);
             if (location != null) markers.add(location);
           });
-        }
+        }}
     }
     catch(e)
     {

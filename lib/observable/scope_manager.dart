@@ -69,8 +69,9 @@ class ScopeManager
     }
 
     // Resolve Children 
-    if (scope.children != null)
+    if (scope.children != null) {
       scope.children!.forEach((scope) => _notifyDescendants(scope, observable));
+    }
   }
 
   Observable? named(Observable? target, String? scopeId, String? observableKey)

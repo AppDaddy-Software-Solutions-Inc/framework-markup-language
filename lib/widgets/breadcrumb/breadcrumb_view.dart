@@ -53,12 +53,13 @@ class _BreadcrumbViewState extends WidgetState<BreadcrumbView>
             index == 0);
 
         int i = pages.length - (index + 1);
-        if (i > 0)
+        if (i > 0) {
           view = GestureDetector(
               onTap: () => NavigationManager().back(i), child: view);
-        else
+        } else {
           view = GestureDetector(
               onTap: () => NavigationManager().refresh(), child: view);
+        }
         children.add(view);
 
         index++;
@@ -68,7 +69,7 @@ class _BreadcrumbViewState extends WidgetState<BreadcrumbView>
     // Shortens the length of breadcrumbs from the length of the full screen when given a width < 0 or sets the width if given > 0
     // ^ this is an older feature and could likely be removed.
     double? shorten;
-    if (widget.model.width != null)
+    if (widget.model.width != null) {
       shorten = ((widget.model.width!.isNegative) &&
               (MediaQuery.of(context).size.width + widget.model.width! > 0))
           ? widget.model.width
@@ -77,8 +78,9 @@ class _BreadcrumbViewState extends WidgetState<BreadcrumbView>
                       0))
               ? (widget.model.width! - MediaQuery.of(context).size.width)
               : 0;
-    else
+    } else {
       shorten = 0;
+    }
     return Container(
         color: widget.model.backgroundcolor
                 ?.withOpacity(widget.model.opacity ?? 1.0) ??

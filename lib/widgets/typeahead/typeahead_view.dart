@@ -132,9 +132,9 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
   }
 
   bool match(String tag, String pat) {
-    if (tag == '' || tag == 'null')
+    if (tag == '' || tag == 'null') {
       return false;
-    else if (S.isNullOrEmpty(widget.model.matchtype) || widget.model.matchtype!.toLowerCase() == 'contains') {
+    } else if (S.isNullOrEmpty(widget.model.matchtype) || widget.model.matchtype!.toLowerCase() == 'contains') {
       return tag.contains(pat.toLowerCase());
     }
     else if (widget.model.matchtype!.toLowerCase() == 'startswith') {
@@ -157,7 +157,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
     if (S.isNullOrEmpty(value))
     {
       var models = (model.label as WidgetModel).findDescendantsOfExactType(TextModel);
-      if (models != null)
+      if (models != null) {
         models.forEach((text)
         {
           if (text is TextModel)
@@ -167,6 +167,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
             modelColor = text.color;
           }
         });
+      }
     }
     widget.model.textcolor ??= modelColor;
     return value;
@@ -196,8 +197,9 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
       controller.selection = TextSelection(baseOffset: 0, extentOffset: controller.text.length);
     }
     try {
-      if (focused)
+      if (focused) {
         System().commit = _commit;
+      }
       if (!focused) await _commit();
     } catch(e) {}
   }
@@ -303,8 +305,9 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
           ),
           suggestionsBoxVerticalOffset: 0,
           onSuggestionSelected: (dynamic suggestion) {
-            if (suggestion is OptionModel)
+            if (suggestion is OptionModel) {
               changedDropDownItem(suggestion);
+            }
           },
           transitionBuilder: (context, suggestionsBox, animationController) =>
               FadeTransition(

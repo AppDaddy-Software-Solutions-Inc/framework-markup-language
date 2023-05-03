@@ -27,7 +27,9 @@ class File extends FileBase
         {
             bytes = await file.readAsBytes();
         }
-        else return await _read(start!, end);
+        else {
+          return await _read(start!, end);
+        }
       }
 
       return bytes;

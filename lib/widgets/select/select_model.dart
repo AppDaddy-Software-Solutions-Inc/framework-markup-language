@@ -207,9 +207,10 @@ class SelectModel extends FormFieldModel implements IFormField
     if (_size != null) {
       _size!.set(v);
     } else {
-      if (v != null)
+      if (v != null) {
         _size = DoubleObservable(Binding.toKey(id, 'size'), v,
             scope: scope, listener: onPropertyChange);
+      }
     }
   }
   double? get size => _size?.get();
@@ -223,9 +224,10 @@ class SelectModel extends FormFieldModel implements IFormField
     if (_length != null) {
       _length!.set(v);
     } else {
-      if (v != null)
+      if (v != null) {
         _length = IntegerObservable(Binding.toKey(id, 'length'), v,
             scope: scope, listener: onPropertyChange);
+      }
     }
   }
   int? get length => _length?.get();
@@ -239,9 +241,10 @@ class SelectModel extends FormFieldModel implements IFormField
     if (_matchtype != null) {
       _matchtype!.set(v);
     } else {
-      if (v != null)
+      if (v != null) {
         matchtype = StringObservable(Binding.toKey(id, 'matchtype'), v,
             scope: scope, listener: onPropertyChange);
+      }
     }
   }
   String? get matchtype => _matchtype?.get();

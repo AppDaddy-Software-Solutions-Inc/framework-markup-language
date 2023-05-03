@@ -336,12 +336,13 @@ class CameraModel extends CameraImageModel
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
 
-    if (camera != null)
-    switch (function)
+    if (camera != null) {
+      switch (function)
     {
       case "start" : return await camera!.start();
       case "stop"  : return await camera!.stop();
       case "snapshot" : return await camera!.snapshot();
+    }
     }
     return super.execute(caller, propertyOrFunction, arguments);
   }

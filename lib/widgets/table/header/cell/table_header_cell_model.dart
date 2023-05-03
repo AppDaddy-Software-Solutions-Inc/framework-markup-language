@@ -17,8 +17,9 @@ class TableHeaderCellModel extends DecoratedWidgetModel
   /* Position in Row */
   /////////////////////
   int? get index {
-    if ((parent != null) && (parent is TableHeaderModel))
+    if ((parent != null) && (parent is TableHeaderModel)) {
       return (parent as TableHeaderModel).cells.indexOf(this);
+    }
     return null;
   }
 
@@ -46,8 +47,9 @@ class TableHeaderCellModel extends DecoratedWidgetModel
   @override
   Color? get color {
     if (_color == null) {
-      if ((parent != null) && (parent is TableHeaderModel))
+      if ((parent != null) && (parent is TableHeaderModel)) {
         return (parent as TableHeaderModel).color;
+      }
       return null;
     }
     return _color?.get();
@@ -69,8 +71,9 @@ class TableHeaderCellModel extends DecoratedWidgetModel
 
   Color? get bordercolor {
     if (_bordercolor == null) {
-      if ((parent != null) && (parent is TableHeaderModel))
+      if ((parent != null) && (parent is TableHeaderModel)) {
         return (parent as TableHeaderModel).bordercolor;
+      }
       return null;
     }
     return _bordercolor?.get();
@@ -78,8 +81,9 @@ class TableHeaderCellModel extends DecoratedWidgetModel
 
   Color? get outerbordercolor {
     Color? color;
-    if ((parent != null) && (parent is TableHeaderModel))
+    if ((parent != null) && (parent is TableHeaderModel)) {
       color = (parent as TableHeaderModel).bordercolor;
+    }
     return color;
   }
 
@@ -99,8 +103,9 @@ class TableHeaderCellModel extends DecoratedWidgetModel
 
   double? get borderwidth {
     if (_borderwidth == null) {
-      if ((parent != null) && (parent is TableHeaderModel))
+      if ((parent != null) && (parent is TableHeaderModel)) {
         return (parent as TableHeaderModel).borderwidth;
+      }
       return null;
     }
     return _borderwidth?.get();
@@ -123,8 +128,9 @@ class TableHeaderCellModel extends DecoratedWidgetModel
   @override
   String? get halign {
     if (_halign == null) {
-      if ((parent != null) && (parent is TableHeaderModel))
+      if ((parent != null) && (parent is TableHeaderModel)) {
         return (parent as TableHeaderModel).halign;
+      }
       return null;
     }
     return _halign?.get();
@@ -255,8 +261,9 @@ class TableHeaderCellModel extends DecoratedWidgetModel
   }
 
   bool onSort() {
-    if ((parent != null) && (parent is TableHeaderModel))
+    if ((parent != null) && (parent is TableHeaderModel)) {
       (parent as TableHeaderModel).onSort(this);
+    }
     return true;
   }
 

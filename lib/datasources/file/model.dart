@@ -43,13 +43,14 @@ class FileModel extends DataSourceModel implements IDataSource
     super.deserialize(xml);
 
     // get detectors
-    if (datasources != null)
-    for (IDataSource source in datasources!)
-    if (source is IDetectable)
+    if (datasources != null){
+    for (IDataSource source in datasources!) {
+      if (source is IDetectable)
     {
       detectors ??= [];
       detectors!.add(source as IDetectable);
     }
+    }}
   }
 
   Future<bool> onFile(File file) async

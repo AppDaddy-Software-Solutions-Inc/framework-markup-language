@@ -155,11 +155,12 @@ class Observable
 
   notifyListeners()
   {
-    if (listeners != null)
+    if (listeners != null){
     for (OnChangeCallback callback in listeners!)
     {
       callback(this);
     }
+  }
   }
 
   registerListener(OnChangeCallback callback)
@@ -211,28 +212,25 @@ class Observable
     return value;
   }
 
-  onObservableChange(Observable? observable)
-  {
+  onObservableChange(Observable? observable) {
     String? template = signature;
 
     // resolve all bindings
     Map<String?, dynamic>? variables;
-    if ((bindings != null) && (scope != null))
-      for (Binding binding in bindings!)
-      {
+    if ((bindings != null) && (scope != null)){
+      for (Binding binding in bindings!) {
         dynamic v;
 
         // get binding source
-        Observable? source = scope!.getObservable(binding, requestor: observable);
-        if (source != null)
-        {
+        Observable? source = scope!.getObservable(
+            binding, requestor: observable);
+        if (source != null) {
           dynamic _value = source.get();
           v = binding.translate(_value);
         }
 
         // is this an eval?
-        if (isEval)
-        {
+        if (isEval) {
           variables ??= <String?, dynamic>{};
           if ((source is BlobObservable) && (!S.isNullOrEmpty(v))) {
             variables[binding.signature] = 'blob';
@@ -242,13 +240,12 @@ class Observable
         }
 
         // simple replacement of string values
-        else
-        {
+        else {
           v = S.toStr(v) ?? "";
           template = template!.replaceAll(binding.signature, v.toString());
         }
       }
-
+  }
     // set the value
     dynamic value = (isEval) ? doEvaluation(signature, variables: variables) : template;
 

@@ -59,7 +59,9 @@ class TextDetectorModel extends DetectorModel implements IDetectable
         Data data = Payload.toData(payload);
         await onDetected(data);
       }
-      else if (!streamed) await onDetectionFailed(Data(data: [{"message" : "Text detector $id failed to detect any text in the supplied image"}]));
+      else if (!streamed) {
+        await onDetectionFailed(Data(data: [{"message" : "Text detector $id failed to detect any text in the supplied image"}]));
+      }
 
       busy = false;
     }

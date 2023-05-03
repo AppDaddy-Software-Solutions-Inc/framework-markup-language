@@ -54,7 +54,7 @@ class _SwitchViewState extends WidgetState<SwitchView> with WidgetsBindingObserv
     ///////////////
     /* Disabled? */
     ///////////////
-    if (!canSwitch)
+    if (!canSwitch) {
       view = MouseRegion(
           cursor: SystemMouseCursors.forbidden,
           child: Tooltip(
@@ -62,11 +62,12 @@ class _SwitchViewState extends WidgetState<SwitchView> with WidgetsBindingObserv
               preferBelow: false,
               verticalOffset: 12,
               child: view));
+    }
 
     ///////////////
     /* Labelled? */
     ///////////////
-    if (widget.model.label != null)
+    if (widget.model.label != null) {
       view = Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -78,6 +79,7 @@ class _SwitchViewState extends WidgetState<SwitchView> with WidgetsBindingObserv
           view
         ],
       );
+    }
 
     ////////////////////
     /* Constrain Size */

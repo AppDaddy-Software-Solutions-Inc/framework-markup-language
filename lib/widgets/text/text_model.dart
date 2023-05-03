@@ -27,8 +27,9 @@ class TextModel extends DecoratedWidgetModel
     }
     else
     {
-      if ((v != null) || (WidgetModel.isBound(this, Binding.toKey(id, 'value'))))
+      if ((v != null) || (WidgetModel.isBound(this, Binding.toKey(id, 'value')))) {
         _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange);
+      }
     }
   }
   String? get value => _value?.get();

@@ -48,19 +48,20 @@ class _TableHeaderCellViewState extends WidgetState<TableHeaderCellView>
       /* Contents */
       //////////////
       Widget contents;
-      if (widget.model.wrap == true)
+      if (widget.model.wrap == true) {
         contents = Wrap(
             children: children,
             direction: Axis.vertical,
             alignment: alignment.mainWrapAlignment,
             runAlignment: alignment.mainWrapAlignment,
             crossAxisAlignment: alignment.crossWrapAlignment);
-      else
+      } else {
         contents = Column(
             children: children,
             mainAxisAlignment: alignment.mainAlignment,
             crossAxisAlignment: alignment.crossAlignment,
             mainAxisSize: MainAxisSize.min);
+      }
 
       ///////////////
       /* Container */
@@ -88,7 +89,7 @@ class _TableHeaderCellViewState extends WidgetState<TableHeaderCellView>
               Positioned(bottom: 0, child: Icon(Icons.keyboard_arrow_down, color: t.onSecondaryContainer.withOpacity(0.35), size: size)),
           ])
         ));
-        if (widget.model.sorted == true)
+        if (widget.model.sorted == true) {
           icon = (widget.model.sortAscending == true)
               ? UnconstrainedBox(child: Container(width: 16, height: 24, alignment: Alignment.center, constraints: BoxConstraints(maxHeight: 24),
                   child: Stack(
@@ -104,6 +105,7 @@ class _TableHeaderCellViewState extends WidgetState<TableHeaderCellView>
                         Positioned(bottom: 0, child: Icon(Icons.keyboard_arrow_down, color: t.onSecondaryContainer, size: size)),
                       ])
               ));
+        }
 
         ////////////
         /* Button */

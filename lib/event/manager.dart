@@ -28,9 +28,11 @@ class EventManager
   /// Gets the nearest [EventManager] ancestor from this widget
   static IEventManager? of(WidgetModel model)
   {
-    if (model is IEventManager)
-         return model as IEventManager;
-    else return _parentOf(model);
+    if (model is IEventManager) {
+      return model as IEventManager;
+    } else {
+      return _parentOf(model);
+    }
   }
 
   /// Register a listener on an event type
@@ -68,8 +70,9 @@ class EventManager
       // Notify Listeners
       List<OnEventCallback>? callbacks;
       if (listeners.containsKey(event.type)) callbacks = listeners[event.type];
-      if (callbacks != null)
-      callbacks.forEach((callback) => !event.handled ? callback(event) : null);
+      if (callbacks != null) {
+        callbacks.forEach((callback) => !event.handled ? callback(event) : null);
+      }
 
       // Notify Child Event Managers
       if (!event.handled)
@@ -101,8 +104,10 @@ class EventManager
   List<IEventManager> _childrenOf(WidgetModel? model)
   {
     List<IEventManager> list = [];
-    if (model?.children != null)
-    for (WidgetModel child in model!.children!) list.addAll(_childrenOf(child));
+    if (model?.children != null){
+    for (WidgetModel child in model!.children!) {
+      list.addAll(_childrenOf(child));
+    }}
     return list;
   }
 }

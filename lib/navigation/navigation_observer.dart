@@ -34,7 +34,9 @@ class NavigationObserver extends NavigatorObserver
     ///////////////////
     /* Signal Change */
     ///////////////////
-    for (INavigatorObserver listener in _listeners) listener.onNavigatorChange();
+    for (INavigatorObserver listener in _listeners) {
+      listener.onNavigatorChange();
+    }
   }
 
   @override
@@ -59,7 +61,9 @@ class NavigationObserver extends NavigatorObserver
     ///////////////////
     /* Signal Change */
     ///////////////////
-    for (INavigatorObserver listener in _listeners) listener.onNavigatorChange();
+    for (INavigatorObserver listener in _listeners) {
+      listener.onNavigatorChange();
+    }
   }
 
   @override
@@ -84,7 +88,9 @@ class NavigationObserver extends NavigatorObserver
     ///////////////////
     /* Signal Change */
     ///////////////////
-    for (INavigatorObserver listener in _listeners) listener.onNavigatorChange();
+    for (INavigatorObserver listener in _listeners) {
+      listener.onNavigatorChange();
+    }
   }
 
   @override
@@ -103,7 +109,9 @@ class NavigationObserver extends NavigatorObserver
     if (_pushed != null) _pushed.onNavigatorPush(parameters: parameters);
 
     /* Signal Change */
-    for (INavigatorObserver listener in _listeners) listener.onNavigatorChange();
+    for (INavigatorObserver listener in _listeners) {
+      listener.onNavigatorChange();
+    }
   }
 
   registerListener(INavigatorObserver listener)

@@ -47,19 +47,20 @@ class _TableRowCellViewState extends WidgetState<TableRowCellView> with WidgetsB
 
     // Contents
     Widget contents;
-    if (widget.model.wrap == true)
+    if (widget.model.wrap == true) {
       contents = Wrap(
           children: children,
           direction: Axis.vertical,
           alignment: alignment.mainWrapAlignment,
           runAlignment: alignment.mainWrapAlignment,
           crossAxisAlignment: alignment.crossWrapAlignment);
-    else
+    } else {
       contents = Column(
           children: children,
           mainAxisAlignment: alignment.mainAlignment,
           crossAxisAlignment: alignment.crossAlignment,
           mainAxisSize: MainAxisSize.min);
+    }
 
 
     Color color;

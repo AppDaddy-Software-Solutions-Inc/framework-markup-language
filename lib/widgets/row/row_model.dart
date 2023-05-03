@@ -32,19 +32,18 @@ class RowModel extends LayoutModel
   }
 
   @override
-  bool get isVerticallyExpanding
-  {
+  bool get isVerticallyExpanding {
     if (isFixedHeight) return false;
     bool expand = false;
-    if (children != null)
-      for (var child in children!)
-      {
-        if (child is ViewableWidgetModel && child.visible && child.isVerticallyExpanding)
-        {
+    if (children != null){
+      for (var child in children!) {
+        if (child is ViewableWidgetModel && child.visible &&
+            child.isVerticallyExpanding) {
           expand = true;
           break;
         }
       }
+  }
     return expand;
   }
 
@@ -55,7 +54,7 @@ class RowModel extends LayoutModel
     if (isFixedWidth) return false;
     var expand = this.expand;
     if (expand) return true;
-    if (children != null)
+    if (children != null){
       for (var child in children!)
       {
         if (child is ViewableWidgetModel && child.visible && child.isHorizontallyExpanding)
@@ -63,7 +62,7 @@ class RowModel extends LayoutModel
           expand = true;
           break;
         }
-      }
+      }}
     return expand;
   }
 

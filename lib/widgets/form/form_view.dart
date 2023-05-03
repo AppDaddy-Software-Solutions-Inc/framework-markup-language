@@ -103,8 +103,9 @@ class FormViewState extends WidgetState<FormView> implements IGpsListener
           break;
         }
       }
-      if (found == false)
+      if (found == false) {
         Log().debug('Unable to find field');
+      }
     }
     catch(e)
     {

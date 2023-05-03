@@ -115,8 +115,9 @@ class _PagerViewState extends WidgetState<PagerView>
     ))) : Container();
 
     var c = widget.model.constraints.calculated;
-    if (!c.isNotEmpty && constraints.maxWidth == double.infinity)
+    if (!c.isNotEmpty && constraints.maxWidth == double.infinity) {
       pageView = UnconstrainedBox(child: SizedBox(height: widget.model.height ?? widget.model.calculatedMaxHeightOrDefault, width: widget.model.width ?? widget.model.calculatedMaxWidthOrDefault, child: pageView));
+    }
 
     var view = Stack(alignment: Alignment.bottomCenter, children: [pageView, pager, Center(child: busy)]);
 
@@ -137,15 +138,17 @@ class _PagerViewState extends WidgetState<PagerView>
       int pages = widget.model.pages.length;
 
       String to = event.parameters!['page']!;
-      if (to.toLowerCase() == "previous")
+      if (to.toLowerCase() == "previous") {
         page = page - 1;
-      else if (to.toLowerCase() == "next")
+      } else if (to.toLowerCase() == "next") {
         page = page + 1;
-      else if (to.toLowerCase() == "first")
+      } else if (to.toLowerCase() == "first") {
         page = 1;
-      else if (to.toLowerCase() == "last")
+      } else if (to.toLowerCase() == "last") {
         page = pages;
-      else if (S.isNumber(to)) page = S.toInt(to)!;
+      } else if (S.isNumber(to)) {
+        page = S.toInt(to)!;
+      }
 
       if (pages == 0) {
         event.handled = true;

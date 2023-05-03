@@ -150,7 +150,9 @@ class MapModel extends DecoratedWidgetModel
       }
 
       // static location
-      else this.locations.add(model);
+      else {
+        this.locations.add(model);
+      }
     });
   }
 
@@ -175,7 +177,7 @@ class MapModel extends DecoratedWidgetModel
       locations.removeWhere((model) => source.id == model.datasource);
 
       // build new locations
-      if ((list != null) && (list.isNotEmpty))
+      if ((list != null) && (list.isNotEmpty)){
         for (String prototype in prototypes)
         {
           int i = 0;
@@ -187,7 +189,7 @@ class MapModel extends DecoratedWidgetModel
             var location = MapLocationModel.fromXml(parent!, node, data: data);
             if (location != null) locations.add(location);
           });
-        }
+        }}
     }
     catch(e)
     {

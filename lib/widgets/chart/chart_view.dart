@@ -670,7 +670,7 @@ class _ChartViewState extends WidgetState<ChartView>
         // Get the series model by matching to the selected series id
         ChartSeriesModel? selectedSeries = widget.model.series
             .firstWhereOrNull((s) => s.id == selectedSeriesId);
-        if (selectedSeries != null && selectedDatum.isNotEmpty)
+        if (selectedSeries != null && selectedDatum.isNotEmpty){
           // Loop through the selected series datum
           for (int i = 0; i < selectedDatum[0].series.data.length; i++) {
             // Match the selected x value to the selected series, set the
@@ -682,7 +682,7 @@ class _ChartViewState extends WidgetState<ChartView>
               widget.model.selected = seriesData;
               break;
             }
-          }
+          }}
       } catch(e) {
         Log().warning(
             'Unable to set Chart Series Point selection$e');

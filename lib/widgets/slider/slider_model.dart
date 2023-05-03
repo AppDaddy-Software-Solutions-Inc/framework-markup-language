@@ -151,8 +151,9 @@ class SliderModel extends FormFieldModel implements IFormField
       //////////////////
       /* Save Success */
       //////////////////
-      else
+      else {
         dirty = true;
+      }
     }
 
     return ok;

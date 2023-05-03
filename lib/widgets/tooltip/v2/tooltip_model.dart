@@ -23,8 +23,11 @@ class TooltipModel extends ViewableWidgetModel
   ColorObservable? _color;
   set color(dynamic v)
   {
-    if (_color != null) _color!.set(v);
-    else if (v != null) _color = ColorObservable(Binding.toKey(id, 'color'), v, scope: scope, listener: onPropertyChange);
+    if (_color != null) {
+      _color!.set(v);
+    } else if (v != null) {
+      _color = ColorObservable(Binding.toKey(id, 'color'), v, scope: scope, listener: onPropertyChange);
+    }
   }
   Color? get color => _color?.get();
 
@@ -33,8 +36,11 @@ class TooltipModel extends ViewableWidgetModel
   @override
   set margins(dynamic v)
   {
-    if (_padding != null) _padding!.set(v);
-    else if (v != null) _padding = DoubleObservable(Binding.toKey(id, 'padding'), v, scope: scope, listener: onPropertyChange);
+    if (_padding != null) {
+      _padding!.set(v);
+    } else if (v != null) {
+      _padding = DoubleObservable(Binding.toKey(id, 'padding'), v, scope: scope, listener: onPropertyChange);
+    }
   }
   double get margins => _padding?.get() ?? 14.0;
 

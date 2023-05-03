@@ -168,10 +168,11 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
       bool? enabled = (event.parameters != null)
           ? S.toBool(event.parameters!['enabled'])
           : true;
-      if (enabled != false)
+      if (enabled != false) {
         start();
-      else
+      } else {
         stop();
+      }
       event.handled = true;
     }
   }

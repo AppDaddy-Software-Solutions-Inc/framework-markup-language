@@ -44,7 +44,7 @@ class Form implements Comparable
   static Form? _fromMap(dynamic map)
   {
     Form? form;
-    if (map is Map<String, dynamic>)
+    if (map is Map<String, dynamic>) {
       form = Form(
           key:      S.mapVal(map, "key"),
           parent:   S.mapVal(map, "parent"),
@@ -53,6 +53,7 @@ class Form implements Comparable
           updated:  S.mapInt(map, "updated"),
           template: S.mapVal(map, "template"),
           data:     map.containsKey("data") && map["data"] is Map<String,dynamic> ? map["data"] : null);
+    }
     return form;
   }
 

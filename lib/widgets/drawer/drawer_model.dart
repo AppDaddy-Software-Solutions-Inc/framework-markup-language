@@ -189,7 +189,9 @@ class DrawerModel extends DecoratedWidgetModel
           xml.children.add(drawer);
         }
 
-        else Log().error('Unable to parse a drawer attributes', caller: 'drawer.Model => Model.fromXmlList()');
+        else {
+          Log().error('Unable to parse a drawer attributes', caller: 'drawer.Model => Model.fromXmlList()');
+        }
       });
 
       // Create View Model

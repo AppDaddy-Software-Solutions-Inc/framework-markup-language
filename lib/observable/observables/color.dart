@@ -386,15 +386,21 @@ class ColorObservable extends Observable
       if (color != null && color != '')
       {
         // color code
-        if (colors.containsKey(color.toLowerCase())) c = colors[color.toLowerCase()];
-        else if (color.toLowerCase() == 'random') c = colors[colors.keys.elementAt(Random().nextInt(colors.length))];
-        // html colors, prefix: #
-        else if (color.length == 7 && color.startsWith('#')) c = Color(int.parse(color.substring(1, 7), radix: 16) + 0xFF000000);
-        else if (color.length == 9 && color.startsWith('#')) c = Color(int.parse(color.substring(1, 9), radix: 16) + 0x00000000);
-        // hex colors, prefix: 0x
-        else if (color.length == 8 && color.startsWith('0x')) c = Color(int.parse(color.substring(2, 8), radix: 16) + 0xFF000000);
-        else if (color.length == 10 && color.startsWith('0x')) c = Color(int.parse(color.substring(2, 10), radix: 16) + 0x00000000);
-        else if (color.length == 17 && color.startsWith('Color(0x')) c = Color(int.parse(color.substring(8, 16), radix: 16) + 0x00000000);
+        if (colors.containsKey(color.toLowerCase())) {
+          c = colors[color.toLowerCase()];
+        } else if (color.toLowerCase() == 'random') {
+          c = colors[colors.keys.elementAt(Random().nextInt(colors.length))];
+        } else if (color.length == 7 && color.startsWith('#')) {
+          c = Color(int.parse(color.substring(1, 7), radix: 16) + 0xFF000000);
+        } else if (color.length == 9 && color.startsWith('#')) {
+          c = Color(int.parse(color.substring(1, 9), radix: 16) + 0x00000000);
+        } else if (color.length == 8 && color.startsWith('0x')) {
+          c = Color(int.parse(color.substring(2, 8), radix: 16) + 0xFF000000);
+        } else if (color.length == 10 && color.startsWith('0x')) {
+          c = Color(int.parse(color.substring(2, 10), radix: 16) + 0x00000000);
+        } else if (color.length == 17 && color.startsWith('Color(0x')) {
+          c = Color(int.parse(color.substring(8, 16), radix: 16) + 0x00000000);
+        }
       }
     }
     catch(e)

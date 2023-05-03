@@ -117,12 +117,13 @@ class TreeModel extends DecoratedWidgetModel
   {
       for (TreeNodeModel? n in youngestGeneration)
       {
-        if (node == null)
+        if (node == null) {
           n!.selected = false;
-        else if (n!.id == node.id)
+        } else if (n!.id == node.id) {
           n.selected = true;
-        else
+        } else {
           n.selected = false;
+        }
       }
   }
 
@@ -156,9 +157,9 @@ class TreeModel extends DecoratedWidgetModel
 
   void recurseChildren(dynamic node) {
     for (dynamic n in node.children) {
-      if (n.children != null && n.children.length > 0)
+      if (n.children != null && n.children.length > 0) {
         recurseChildren(n);
-      else {
+      } else {
         youngestGeneration.add(n);
       }
     }

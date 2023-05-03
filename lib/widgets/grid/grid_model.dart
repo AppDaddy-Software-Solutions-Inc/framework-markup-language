@@ -393,7 +393,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
 //      Build Header
       List<String> header = [];
       List<String> columns = [];
-      if ((data != null) && (data.isNotEmpty))
+      if ((data != null) && (data.isNotEmpty)) {
         data[0].forEach((key, value) {
           columns.add(key);
           String h = key.toString();
@@ -401,12 +401,13 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
           h = h.contains(',') ? '"$h"' : h;
           header.add(h);
         });
+      }
 
 //      Output Header
       str += '${header.join(", ")}\n';
 //      Output Data
       i = 0;
-      if (columns.isNotEmpty)
+      if (columns.isNotEmpty) {
         data!.forEach((map)
         {
           i++;
@@ -420,6 +421,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
           });
           str += '${row.join(", ")}\n';
         });
+      }
       // eof
       str.replaceFirst('\n', '\r\n', str.lastIndexOf('\n')); // replaces last
     }

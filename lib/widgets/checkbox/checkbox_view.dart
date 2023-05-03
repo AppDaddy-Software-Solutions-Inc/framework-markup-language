@@ -62,7 +62,7 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
 
     Widget view;
     if (widget.model.layout == 'row') {
-      if (widget.model.wrap == true)
+      if (widget.model.wrap == true) {
         view = Center(
             child: Wrap(
                 children: _list,
@@ -70,15 +70,16 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
                 alignment: alignment.mainWrapAlignment,
                 runAlignment: alignment.mainWrapAlignment,
                 crossAxisAlignment: alignment.crossWrapAlignment));
-      else
+      } else {
         view = Center(
             child: Row(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: alignment.crossAlignment,
                 mainAxisAlignment: alignment.mainAlignment,
                 children: _list));
+      }
     } else {
-      if (widget.model.wrap == true)
+      if (widget.model.wrap == true) {
         view = Center(
             child: Wrap(
                 children: _list,
@@ -86,12 +87,13 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
                 alignment: alignment.mainWrapAlignment,
                 runAlignment: alignment.mainWrapAlignment,
                 crossAxisAlignment: alignment.crossWrapAlignment));
-      else
+      } else {
         view = Center(
             child: Column(
                 crossAxisAlignment: alignment.crossAlignment,
                 mainAxisAlignment: alignment.mainAlignment,
                 children: _list));
+      }
     }
 
     return view;

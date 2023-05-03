@@ -76,8 +76,9 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
   /// Callback function for when the model changes, used to force a rebuild with setState()
   @override
   onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    if ((cont!.text != widget.model.value) && (widget.model.isPicking != true))
+    if ((cont!.text != widget.model.value) && (widget.model.isPicking != true)) {
       widget.model.onChange(context);
+    }
     cont!.text = widget.model.value;
     if (mounted) setState(() {});
   }
@@ -102,12 +103,15 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
     if (widget.model.bordercolor != null) {
       bordercolors = widget.model.bordercolor?.split(',');
       enabledBorderColor = ColorObservable.toColor(bordercolors![0]?.trim());
-      if (bordercolors.length > 1)
+      if (bordercolors.length > 1) {
         disabledBorderColor = ColorObservable.toColor(bordercolors[1]?.trim());
-      if (bordercolors.length > 2)
+      }
+      if (bordercolors.length > 2) {
         focusBorderColor = ColorObservable.toColor(bordercolors[2]?.trim());
-      if (bordercolors.length > 3)
+      }
+      if (bordercolors.length > 3) {
         errorBorderColor = ColorObservable.toColor(bordercolors[3]?.trim());
+      }
     }
 
     // set the text color arrays
@@ -119,12 +123,15 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
     if (widget.model.textcolor != null) {
       textColors = widget.model.textcolor?.split(',');
       enabledTextColor = ColorObservable.toColor(textColors![0]?.trim());
-      if (textColors.length > 1)
+      if (textColors.length > 1) {
         disabledTextColor = ColorObservable.toColor(textColors[1]?.trim());
-      if (textColors.length > 2)
+      }
+      if (textColors.length > 2) {
         hintTextColor = ColorObservable.toColor(textColors[2]?.trim());
-      if (textColors.length > 3)
+      }
+      if (textColors.length > 3) {
         errorTextColor = ColorObservable.toColor(textColors[3]?.trim());
+      }
     }
 
     Color? enabledColor  = widget.model.color;

@@ -25,8 +25,11 @@ class DatepickerModel extends FormFieldModel implements IFormField
   @override
   set padding(dynamic v)
   {
-    if (_padding != null) _padding!.set(v);
-    else if (v != null) _padding = DoubleObservable(Binding.toKey(id, 'padding'), v, scope: scope, listener: onPropertyChange);
+    if (_padding != null) {
+      _padding!.set(v);
+    } else if (v != null) {
+      _padding = DoubleObservable(Binding.toKey(id, 'padding'), v, scope: scope, listener: onPropertyChange);
+    }
   }
   double get padding=> _padding?.get() ?? 4;
   
@@ -120,9 +123,10 @@ class DatepickerModel extends FormFieldModel implements IFormField
       _value!.set(v);
     } else {
       if ((v != null) ||
-          (WidgetModel.isBound(this, Binding.toKey(id, 'value'))))
+          (WidgetModel.isBound(this, Binding.toKey(id, 'value')))) {
         _value = StringObservable(Binding.toKey(id, 'value'), v,
             scope: scope, listener: onPropertyChange);
+      }
     }
   }
   @override

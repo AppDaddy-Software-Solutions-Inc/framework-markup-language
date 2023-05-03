@@ -97,9 +97,11 @@ class SplitModel extends DecoratedWidgetModel
     double ratio = S.toDouble(Xml.get(node: xml, tag: 'ratio')) ?? -1;
     if (ratio >= 0 && ratio <= 1)
     {
-      if (vertical)
-           height = "${ratio * 100}%";
-      else width  = "${ratio * 100}%";
+      if (vertical) {
+        height = "${ratio * 100}%";
+      } else {
+        width  = "${ratio * 100}%";
+      }
     }
 
     dividerColor  = Xml.get(node: xml, tag: 'dividercolor');

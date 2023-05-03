@@ -97,33 +97,35 @@ class _RadioViewState extends WidgetState<RadioView>
     /* View */
     Widget view;
     if (widget.model.layout == 'row') {
-      if (widget.model.wrap == true)
+      if (widget.model.wrap == true) {
         view = Wrap(
             children: options!,
             direction: Axis.horizontal,
             alignment: alignment.mainWrapAlignment,
             runAlignment: alignment.mainWrapAlignment,
             crossAxisAlignment: alignment.crossWrapAlignment);
-      else
+      } else {
         view = Row(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: alignment.crossAlignment,
             mainAxisAlignment: alignment.mainAlignment,
             children: options!);
+      }
     } else {
-      if (widget.model.wrap == true)
+      if (widget.model.wrap == true) {
         view = Wrap(
             children: options!,
             direction: Axis.vertical,
             alignment: alignment.mainWrapAlignment,
             runAlignment: alignment.mainWrapAlignment,
             crossAxisAlignment: alignment.crossWrapAlignment);
-      else
+      } else {
         view = Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: alignment.crossAlignment,
             mainAxisAlignment: alignment.mainAlignment,
             children: options!);
+      }
     }
 
     return view;

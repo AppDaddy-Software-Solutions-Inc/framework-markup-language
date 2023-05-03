@@ -331,7 +331,7 @@ class Data with ListMixin<dynamic>
 
     if (data is List<dynamic>) data = data.isNotEmpty ? data[0] : null;
 
-    if (dotNotation != null)
+    if (dotNotation != null){
       for (NotationSegment? property in dotNotation) {
         if (property != null)
         {
@@ -371,7 +371,7 @@ class Data with ListMixin<dynamic>
             break;
           }
         }
-      }
+      }}
 
     // this is a very odd case. if the element contains attributes, the element value will be put into a
     // map field called "value" and its attributes will be mapped to underscore (_) names _attributename
@@ -445,7 +445,7 @@ class Data with ListMixin<dynamic>
   {
     // replace bindings
     List<Binding>? bindings = Binding.getBindings(string);
-    if (bindings != null)
+    if (bindings != null){
       for (Binding binding in bindings)
       {
         // fully qualified data binding name (data.value.x.y.)
@@ -455,7 +455,7 @@ class Data with ListMixin<dynamic>
           String value = Xml.encodeIllegalCharacters(readValue(data,signature)) ?? "";
           string = string!.replaceAll(binding.signature, value);
         }
-      }
+      }}
     return string;
   }
 }

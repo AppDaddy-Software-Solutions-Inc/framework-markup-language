@@ -44,7 +44,9 @@ extension URI on Uri
       var uri = Uri.parse(url).removeEmptySegments();
       return uri;
     }
-    else return this;
+    else {
+      return this;
+    }
   }
 
   Uri removeEmptySegments()
@@ -62,9 +64,11 @@ extension URI on Uri
 
   Uri removeQuery()
   {
-    if (hasQuery)
-         return Uri.parse(url.split("?")[0]);
-    else return this;
+    if (hasQuery) {
+      return Uri.parse(url.split("?")[0]);
+    } else {
+      return this;
+    }
   }
 
   Uri setPage(String page)

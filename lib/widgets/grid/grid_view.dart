@@ -110,8 +110,9 @@ class _GridViewState extends WidgetState<GridView>
       var child = widget.model.findDescendantOfExactType(null, id: id);
 
       // if there is an error with this, we need to check _controller.hasClients as it must not be false when using [ScrollPosition],such as [position], [offset], [animateTo], and [jumpTo],
-      if ((child != null) && (child.context != null))
+      if ((child != null) && (child.context != null)) {
         Scrollable.ensureVisible(child.context, duration: Duration(seconds: 1), alignment: 0.2);
+      }
     }
   }
 
@@ -187,12 +188,16 @@ class _GridViewState extends WidgetState<GridView>
         var view = GridItemView(model: widget.model.items[i]);
         children.add(Expanded(child: SizedBox(width: prototypeWidth, height: prototypeHeight, child: view)));
       }
-      else children.add(Expanded(child: Container()));
+      else {
+        children.add(Expanded(child: Container()));
+      }
     }
 
-    if (direction == Axis.vertical)
-         return Row(children: children, mainAxisSize: MainAxisSize.min);
-    else return Column(children: children, mainAxisSize: MainAxisSize.min);
+    if (direction == Axis.vertical) {
+      return Row(children: children, mainAxisSize: MainAxisSize.min);
+    } else {
+      return Column(children: children, mainAxisSize: MainAxisSize.min);
+    }
   }
 
   void afterFirstLayout(BuildContext context)
@@ -280,8 +285,11 @@ class _GridViewState extends WidgetState<GridView>
     widget.model.direction == 'horizontal' ? direction = Axis.horizontal : direction = Axis.vertical;
 
     // Protect against infinity calculations when screen is smaller than the grid item in the none expanding direction
-    if (direction == Axis.vertical && gridWidth < prototypeWidth) gridWidth = prototypeWidth;
-    else if (direction == Axis.horizontal && gridHeight < prototypeHeight) gridHeight = prototypeHeight;
+    if (direction == Axis.vertical && gridWidth < prototypeWidth) {
+      gridWidth = prototypeWidth;
+    } else if (direction == Axis.horizontal && gridHeight < prototypeHeight) {
+      gridHeight = prototypeHeight;
+    }
 
     if (direction == Axis.vertical)
     {
@@ -328,11 +336,14 @@ class _GridViewState extends WidgetState<GridView>
             childCount: (widget.model.items.length / count).ceil()
         ));
 
-    if(widget.model.onpulldown != null) view = RefreshIndicator(
+    if(widget.model.onpulldown != null) {
+      view = RefreshIndicator(
         onRefresh: () => widget.model.onPull(context),
         child: view);
+    }
 
-    if(widget.model.onpulldown != null || widget.model.draggable) view = ScrollConfiguration(
+    if(widget.model.onpulldown != null || widget.model.draggable) {
+      view = ScrollConfiguration(
       behavior: ProperScrollBehavior().copyWith(
         dragDevices: {
           PointerDeviceKind.touch,
@@ -340,7 +351,10 @@ class _GridViewState extends WidgetState<GridView>
         },
       ),
       child: view,
-    ); else view = ScrollConfiguration(behavior: ProperScrollBehavior(), child: view);
+    );
+    } else {
+      view = ScrollConfiguration(behavior: ProperScrollBehavior(), child: view);
+    }
 
 
     // add margins

@@ -72,7 +72,7 @@ class Post
   static Post? _fromMap(dynamic map)
   {
     Post? post;
-    if (map is Map<String, dynamic>) 
+    if (map is Map<String, dynamic>) {
       post = Post(
           key:      S.mapVal(map, S.fromEnum(Fields.key)),
           formKey:  S.mapVal(map, S.fromEnum(Fields.form_key)),
@@ -87,6 +87,7 @@ class Post
           body:     S.mapVal(map, S.fromEnum(Fields.body)),
           info:     S.mapVal(map, S.fromEnum(Fields.info))
       );
+    }
     return post;
   }
 

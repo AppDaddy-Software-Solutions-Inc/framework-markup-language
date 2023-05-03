@@ -347,7 +347,9 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
   @override
   onConnected() async
   {
-    for (var topic in subscriptions) await mqtt?.subscribe(topic);
+    for (var topic in subscriptions) {
+      await mqtt?.subscribe(topic);
+    }
     if (!S.isNullOrEmpty(onconnected))
     {
       EventHandler handler = EventHandler(this);

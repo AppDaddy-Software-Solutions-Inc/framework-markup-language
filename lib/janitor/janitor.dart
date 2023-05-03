@@ -63,9 +63,11 @@ class Janitor
       {
         log_manager.Log().debug('Deleting form ${form.key}', caller: "Janitor");
         ok = (await form.delete() == null);
-        if (ok)
+        if (ok) {
           log_manager.Log().info('Deleting form and all associated posts. Form Key: ${form.key} - Complete: ${form.complete}', caller: 'Janitor');
-        else log_manager.Log().warning('Unable to delete form and possibly its associated posts. Form Key: $form.key, Complete: ${form.complete}', caller: 'Janitor');
+        } else {
+          log_manager.Log().warning('Unable to delete form and possibly its associated posts. Form Key: $form.key, Complete: ${form.complete}', caller: 'Janitor');
+        }
       }
     });
 
@@ -81,9 +83,11 @@ class Janitor
       {
         log_manager.Log().debug('Deleting posting document ${post.key}', caller: "Janitor");
         ok = await post.delete();
-        if (ok)
+        if (ok) {
           log_manager.Log().info('Deleting completed post. Post Key: ${post.key}', caller: 'Janitor.dart');
-        else log_manager.Log().warning('Unable to delete completed post. Post Key: ${post.key}', caller: 'Janitor.dart');
+        } else {
+          log_manager.Log().warning('Unable to delete completed post. Post Key: ${post.key}', caller: 'Janitor.dart');
+        }
       }
     });
 
@@ -100,9 +104,11 @@ class Janitor
       {
         log_manager.Log().debug('Deleting posting document ${post.key}', caller: "Janitor");
         ok = await post.delete();
-        if (ok)
+        if (ok) {
           log_manager.Log().info('Deleting incomplete post. Post Key: ${post.key}', caller: 'Janitor.dart');
-        else log_manager.Log().warning('Unable to delete uncompleted post. Post Key: ${post.key}', caller: 'Janitor.dart');
+        } else {
+          log_manager.Log().warning('Unable to delete uncompleted post. Post Key: ${post.key}', caller: 'Janitor.dart');
+        }
       }
     });
 

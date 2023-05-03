@@ -138,7 +138,9 @@ class Log
       if (filter.endsWith(wildcard))   return (value.startsWith(comparator));
       return (value.contains(comparator));
     }
-    else return (value == filter);
+    else {
+      return (value == filter);
+    }
   }
 
   Future<List> query(Map<String, String> parameters) async

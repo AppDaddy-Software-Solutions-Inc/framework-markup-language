@@ -30,7 +30,9 @@ class File extends FileBase
         {
           bytes = await _read();
         }
-        else return await _readPart(start, end);
+        else {
+          return await _readPart(start, end);
+        }
       }
 
       // camera format. read from blob

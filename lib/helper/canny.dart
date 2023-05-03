@@ -283,11 +283,15 @@ int? _otsusMethod(Image image) {
 
     //calculate mean
     double backgroundMean = 0;
-    for (int i = 0; i < currentThreshold; ++i) backgroundMean += i * histogramm[i];
+    for (int i = 0; i < currentThreshold; ++i) {
+      backgroundMean += i * histogramm[i];
+    }
     backgroundMean /= bakgroundSum;
 
     double foregroundMean = 0;
-    for (int i = currentThreshold; i < 256; ++i) foregroundMean += i * histogramm[i];
+    for (int i = currentThreshold; i < 256; ++i) {
+      foregroundMean += i * histogramm[i];
+    }
     foregroundMean /= foregroundSum;
 
     //calculate between class variance

@@ -399,7 +399,7 @@ class FormModel extends DecoratedWidgetModel
   Future<bool> _post(hive_form.Form? form, {bool? commit}) async
   {
     bool ok = true;
-    if ((scope != null) && (postbrokers != null))
+    if ((scope != null) && (postbrokers != null)){
       for (String id in postbrokers!)
       {
         IDataSource? source = scope!.getDataSource(id);
@@ -409,7 +409,7 @@ class FormModel extends DecoratedWidgetModel
           ok = await source.start(key: form!.key);
         }
         if (!ok) break;
-      }
+      }}
     else {
       ok = false;
     }

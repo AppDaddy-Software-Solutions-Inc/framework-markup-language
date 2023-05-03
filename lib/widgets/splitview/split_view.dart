@@ -50,11 +50,12 @@ class _SplitViewState extends WidgetState<SplitView>
     var _dividerColor = widget.model.dividerColor ?? Theme.of(context).colorScheme.onInverseSurface;
     
     // views
-    if (widget.views.isEmpty)
-    widget.model.children?.forEach((child)
+    if (widget.views.isEmpty) {
+      widget.model.children?.forEach((child)
     {
       if (child is ViewModel) widget.views.add(child.getView());
     });
+    }
 
 
     // calculate sizes

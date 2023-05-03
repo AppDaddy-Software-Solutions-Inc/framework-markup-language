@@ -87,9 +87,11 @@ class _MenuItemViewState extends WidgetState<MenuItemView>
       if (widget.model.image != null)
       {
         // svg image?
-        if (widget.model.image!.mimeType == "image/svg+xml")
-             image = SvgPicture.memory(widget.model.image!.contentAsBytes(), width: 48, height: 48);
-        else image = Image.memory(widget.model.image!.contentAsBytes(), width: 48, height: 48, fit: null);
+        if (widget.model.image!.mimeType == "image/svg+xml") {
+          image = SvgPicture.memory(widget.model.image!.contentAsBytes(), width: 48, height: 48);
+        } else {
+          image = Image.memory(widget.model.image!.contentAsBytes(), width: 48, height: 48, fit: null);
+        }
       }
 
       Widget? icon;
@@ -129,9 +131,11 @@ class _MenuItemViewState extends WidgetState<MenuItemView>
 
       List<Widget> btn = [];
 
-      if (image != null)
+      if (image != null) {
         btn.add(image);
-      else if (icon != null) btn.add(icon);
+      } else if (icon != null) {
+        btn.add(icon);
+      }
       btn.add(Container(height: 10));
       if (title != null) btn.add(title);
       btn.add(Container(height: 10));
@@ -163,8 +167,9 @@ class _MenuItemViewState extends WidgetState<MenuItemView>
               : null,
           shape: shape);
 
-      if (widget.model.enabled != false)
+      if (widget.model.enabled != false) {
         button = MouseRegion(cursor: SystemMouseCursors.click, child: button);
+      }
 
       Widget staticButton = Padding(
           padding: EdgeInsets.all(isMobile ? 0 : 10),

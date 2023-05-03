@@ -68,12 +68,13 @@ class StackModel extends LayoutModel
   List<Widget> inflate()
   {
     // sort children by depth
-    if (children != null)
-    children!.sort((a, b)
+    if (children != null) {
+      children!.sort((a, b)
     {
       if(a.depth != null && b.depth != null) return a.depth?.compareTo(b.depth!) ?? 0;
       return 0;
     });
+    }
     return super.inflate();
   }
 

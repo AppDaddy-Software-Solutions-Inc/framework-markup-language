@@ -371,7 +371,9 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     bool ok = true;
 
     // Post the Form
-    if (dirty) for (var entry in items.entries) ok = await entry.value.complete();
+    if (dirty) {for (var entry in items.entries) {
+      ok = await entry.value.complete();
+    }}
 
     busy = false;
     return ok;

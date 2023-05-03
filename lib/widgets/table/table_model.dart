@@ -725,11 +725,11 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     ///////////////////
     /* Post the Form */
     ///////////////////
-    if (dirty)
+    if (dirty){
       for (var entry in rows.entries) {
         ok = await entry.value.complete();
       }
-
+  }
     busy = false;
     return ok;
   }

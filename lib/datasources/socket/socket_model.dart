@@ -220,10 +220,11 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     File? file = scope!.files.containsKey(message) ? scope!.files[message] : null;
 
     // send message
-    if (file == null) ok = await _send(message, asBinary: asBinary, maxPartSize: maxPartSize);
-
-    // send file
-    else ok = await _sendFile(file, asBinary: asBinary, maxPartSize: maxPartSize);
+    if (file == null) {
+      ok = await _send(message, asBinary: asBinary, maxPartSize: maxPartSize);
+    } else {
+      ok = await _sendFile(file, asBinary: asBinary, maxPartSize: maxPartSize);
+    }
 
     busy = false;
 
@@ -266,10 +267,11 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
             String part = message.substring(start, end);
 
             // send as binary
-            if (asBinary) await socket?.send(utf8.encode(part));
-
-            // send as string
-            else await socket?.send(part);
+            if (asBinary) {
+              await socket?.send(utf8.encode(part));
+            } else {
+              await socket?.send(part);
+            }
           }
         }
       }
@@ -280,10 +282,11 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
         Log().debug('SOCKET:: Sending message (binary: $asBinary, bytes:${message.length}) to $url');
 
         // send as binary
-        if (asBinary) await socket?.send(utf8.encode(message));
-
-        // send as string
-        else await socket?.send(message);
+        if (asBinary) {
+          await socket?.send(utf8.encode(message));
+        } else {
+          await socket?.send(message);
+        }
       }
 
       ok = true;
@@ -328,10 +331,11 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
           Uint8List? bytes = await file.read(start: start, end: end);
 
           // send as binary
-          if (asBinary) await socket?.send(bytes);
-
-          // send as string
-          else await socket?.send(bytes);
+          if (asBinary) {
+            await socket?.send(bytes);
+          } else {
+            await socket?.send(bytes);
+          }
         }
       }
 
@@ -345,10 +349,11 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
         if (bytes != null)
         {
           // send as binary
-          if (asBinary) await socket?.send(bytes);
-
-          // send as string
-          else await socket?.send(utf8.decode(bytes));
+          if (asBinary) {
+            await socket?.send(bytes);
+          } else {
+            await socket?.send(utf8.decode(bytes));
+          }
         }
       }
 
@@ -410,9 +415,11 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     Data data = Data.from(message, root: root);
 
     //success or fail
-    if (code == 1000)
-         onData(data, code: code, message: message);
-    else onFail(data, code: code, message: message);
+    if (code == 1000) {
+      onData(data, code: code, message: message);
+    } else {
+      onFail(data, code: code, message: message);
+    }
 
     connected = false;
   }

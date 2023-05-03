@@ -68,12 +68,13 @@ class PagerModel extends DecoratedWidgetModel
   {
     if (_currentpage != null)
     {
-      if (pages.isNotEmpty && v > pages.length)
+      if (pages.isNotEmpty && v > pages.length) {
         _currentpage!.set(pages.length);
-      else if (v < 1 || v == null)
+      } else if (v < 1 || v == null) {
         _currentpage!.set(1);
-      else
+      } else {
         _currentpage!.set(v ?? initialpage ?? 1);
+      }
     }
     else if (v != null)
     {

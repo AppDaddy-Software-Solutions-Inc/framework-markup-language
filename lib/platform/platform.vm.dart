@@ -78,7 +78,9 @@ class Platform
       OpenFilex.open(path);
       return file;
     }
-    else System.toast("Unable to save file");
+    else {
+      System.toast("Unable to save file");
+    }
   }
 
   static dynamic fileSaveAsFromBlob(dynamic blob, String filepath)

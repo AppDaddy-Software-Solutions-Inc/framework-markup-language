@@ -38,16 +38,18 @@ class _IconViewState extends WidgetState<IconView> {
     ///////////
     Color? color = Theme.of(context).colorScheme.inverseSurface;
     if (widget.model.color != null) color = widget.model.color;
-    if (widget.model.opacity != null)
+    if (widget.model.opacity != null) {
       color = color!.withOpacity(widget.model.opacity!);
+    }
 
     // view
     Widget view = Icon(value, size: size, color: color);
 
     // rotation
-    if (widget.model.rotation != 0)
+    if (widget.model.rotation != 0) {
       view = Transform.rotate(
           angle: widget.model.rotation * math.pi / 180, child: view);
+    }
 
     return view;
   }

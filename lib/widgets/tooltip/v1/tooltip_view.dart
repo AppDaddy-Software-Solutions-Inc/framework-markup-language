@@ -29,13 +29,16 @@ class _TooltipViewState extends WidgetState<TooltipView>
     List<Widget> children = widget.model.inflate();
 
     Widget child = children.length == 1 ? children[0] : Column(children: children, mainAxisSize: MainAxisSize.min);
-    if (S.isNullOrEmpty(widget.model.label))
+    if (S.isNullOrEmpty(widget.model.label)) {
       return child;
+    }
 
     dynamic activator;
-    if (isMobile)
+    if (isMobile) {
       activator = child;
-    else activator = MouseRegion(cursor: SystemMouseCursors.click, child: child);
+    } else {
+      activator = MouseRegion(cursor: SystemMouseCursors.click, child: child);
+    }
     Widget tooltip = Tooltip(
         message: widget.model.label ?? '',
         decoration: BoxDecoration(color: widget.model.backgroundcolor ?? Theme.of(context).colorScheme.surfaceVariant, borderRadius: BorderRadius.circular(22)),

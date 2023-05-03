@@ -205,11 +205,11 @@ class WidgetModel implements IDataSourceListener
   // context
   BuildContext? get context
   {
-    if (_listeners != null)
+    if (_listeners != null){
     for (IModelListener listener in _listeners!)
     {
       if (listener is State && (listener as State).mounted == true) return (listener as State).context;
-    }
+    }}
     if (parent != null) return parent!.context;
     return applicationKey.currentContext;
   }
@@ -217,11 +217,11 @@ class WidgetModel implements IDataSourceListener
   // context
   BuildContext? get statelessContext
   {
-    if (_listeners != null)
+    if (_listeners != null){
       for (IModelListener listener in _listeners!)
       {
         if (listener is State) return (listener as State).context;
-      }
+      }}
     if (parent != null) return parent!.statelessContext;
     return null;
   }
@@ -403,8 +403,9 @@ class WidgetModel implements IDataSourceListener
 
       case "condition":
       case "case":
-        if (parent is TriggerModel)
+        if (parent is TriggerModel) {
           model = TriggerConditionModel.fromXml(parent, node);
+        }
         break;
 
       case "data":
@@ -453,14 +454,19 @@ class WidgetModel implements IDataSourceListener
         break;
 
       case "filter":
-        if (parent is IDataSource)
+        if (parent is IDataSource) {
           model = Filter.fromXml(parent, node);
+        }
         break;
 
       case "flip":
-        if (parent is IDataSource) model = Flip.fromXml(parent, node);
-        else if (parent is AnimationModel) model = FlipCardModel.fromXml(parent, node);
-        else  model = FlipCardModel.fromXml(parent, node);
+        if (parent is IDataSource) {
+          model = Flip.fromXml(parent, node);
+        } else if (parent is AnimationModel) {
+          model = FlipCardModel.fromXml(parent, node);
+        } else {
+          model = FlipCardModel.fromXml(parent, node);
+        }
         break;
 
       case "fml":
@@ -468,8 +474,9 @@ class WidgetModel implements IDataSourceListener
         break;
 
       case "footer":
-        if (parent is FrameworkModel)
+        if (parent is FrameworkModel) {
           model = FooterModel.fromXml(parent, node);
+        }
         break;
 
       case "form":
@@ -477,8 +484,9 @@ class WidgetModel implements IDataSourceListener
         break;
 
       case "format":
-        if (parent is IDataSource)
+        if (parent is IDataSource) {
           model = Format.fromXml(parent, node);
+        }
         break;
 
       case "gesture":
@@ -491,8 +499,9 @@ class WidgetModel implements IDataSourceListener
 
       case "greyscale":
       case "grayscale":
-         if (parent is IDataSource)
+         if (parent is IDataSource) {
            model = Grayscale.fromXml(parent, node);
+         }
         break;
 
       case "gps":
@@ -504,8 +513,9 @@ class WidgetModel implements IDataSourceListener
         break;
 
       case "header":
-        if (parent is FrameworkModel)
+        if (parent is FrameworkModel) {
           model = HeaderModel.fromXml(parent, node);
+        }
         break;
 
       case "http":
@@ -526,12 +536,15 @@ class WidgetModel implements IDataSourceListener
         break;
 
       case "item":
-        if (parent is MenuModel)
+        if (parent is MenuModel) {
           model = MenuItemModel.fromXml(parent, node);
-        if (parent is ListModel)
+        }
+        if (parent is ListModel) {
           model = ListItemModel.fromXml(parent, node);
-        if (parent is GridModel)
+        }
+        if (parent is GridModel) {
           model = GridItemModel.fromXml(parent, node);
+        }
         break;
 
       case "input":
@@ -583,28 +596,43 @@ class WidgetModel implements IDataSourceListener
         break;
 
         case "fade":
-         if (parent is AnimationModel) model = FadeTransitionModel.fromXml(parent, node);
-         else model =  FadeTransitionModel.fromXml(parent, node);
+         if (parent is AnimationModel) {
+           model = FadeTransitionModel.fromXml(parent, node);
+         } else {
+           model =  FadeTransitionModel.fromXml(parent, node);
+         }
          break;
 
       case "rotate":
-        if (parent is AnimationModel) model = RotateTransitionModel.fromXml(parent, node);
-          else model = RotateTransitionModel.fromXml(parent, node);
+        if (parent is AnimationModel) {
+          model = RotateTransitionModel.fromXml(parent, node);
+        } else {
+          model = RotateTransitionModel.fromXml(parent, node);
+        }
         break;
 
         case "size":
-          if (parent is AnimationModel) model = SizeTransitionModel.fromXml(parent, node);
-          else model = SizeTransitionModel.fromXml(parent, node);
+          if (parent is AnimationModel) {
+            model = SizeTransitionModel.fromXml(parent, node);
+          } else {
+            model = SizeTransitionModel.fromXml(parent, node);
+          }
           break;
 
       case "slide":
-        if (parent is AnimationModel) model = SlideTransitionModel.fromXml(parent, node,);
-        else model = SlideTransitionModel.fromXml(parent, node);
+        if (parent is AnimationModel) {
+          model = SlideTransitionModel.fromXml(parent, node,);
+        } else {
+          model = SlideTransitionModel.fromXml(parent, node);
+        }
         break;
 
       case "scale":
-        if (parent is AnimationModel) model = ScaleTransitionModel.fromXml(parent, node);
-        else model = ScaleTransitionModel.fromXml(parent, node);
+        if (parent is AnimationModel) {
+          model = ScaleTransitionModel.fromXml(parent, node);
+        } else {
+          model = ScaleTransitionModel.fromXml(parent, node);
+        }
         break;
 
       case "stash":
@@ -612,13 +640,19 @@ class WidgetModel implements IDataSourceListener
         break;
 
       case "transform":
-        if (parent is AnimationModel) model = TransformModel.fromXml(parent, node);
-        else model = TransformModel.fromXml(parent, node);
+        if (parent is AnimationModel) {
+          model = TransformModel.fromXml(parent, node);
+        } else {
+          model = TransformModel.fromXml(parent, node);
+        }
         break;
 
       case "tween":
-        if (parent is AnimationModel) model = TweenModel.fromXml(parent, node);
-        else model = TweenModel.fromXml(parent, node);
+        if (parent is AnimationModel) {
+          model = TweenModel.fromXml(parent, node);
+        } else {
+          model = TweenModel.fromXml(parent, node);
+        }
         break;
 
       case "pad": // Preferred Case.
@@ -627,8 +661,9 @@ class WidgetModel implements IDataSourceListener
         break;
 
       case "page":
-        if (parent is PagerModel)
+        if (parent is PagerModel) {
           model = PagerPageModel.fromXml(parent, node);
+        }
         break;
 
       case "pager":
@@ -658,8 +693,9 @@ class WidgetModel implements IDataSourceListener
         break;
 
       case "marker":
-        if (parent is MapModel)
+        if (parent is MapModel) {
           model = MapMarkerModel.fromXml(parent, node);
+        }
         break;
 
       case "post":
@@ -750,10 +786,12 @@ class WidgetModel implements IDataSourceListener
       case "td":
       case "tabledata":
       case "cell":
-        if (parent is TableHeaderModel)
+        if (parent is TableHeaderModel) {
           model = TableHeaderCellModel.fromXml(parent, node);
-        if (parent is TableRowModel)
+        }
+        if (parent is TableRowModel) {
           model = TableRowCellModel.fromXml(parent, node);
+        }
         break;
 
       case "tabview":
@@ -780,9 +818,11 @@ class WidgetModel implements IDataSourceListener
 
       case "tip":
       case "tooltip":
-        if (Xml.attribute(node: node, tag: "label") != null || Xml.attribute(node: node, tag: "text") != null)
-             model = v1.TooltipModel.fromXml(parent, node);
-        else model = v2.TooltipModel.fromXml(parent, node);
+        if (Xml.attribute(node: node, tag: "label") != null || Xml.attribute(node: node, tag: "text") != null) {
+          model = v1.TooltipModel.fromXml(parent, node);
+        } else {
+          model = v2.TooltipModel.fromXml(parent, node);
+        }
         break;
 
       case "treeview":
@@ -808,8 +848,9 @@ class WidgetModel implements IDataSourceListener
         break;
 
       case "view":
-        if (parent is SplitModel)
-        model = ViewModel.fromXml(parent, node);
+        if (parent is SplitModel) {
+          model = ViewModel.fromXml(parent, node);
+        }
         break;
 
       case "window":
@@ -817,14 +858,16 @@ class WidgetModel implements IDataSourceListener
         break;
 
       case "xaxis":
-        if (parent is ChartModel)
+        if (parent is ChartModel) {
           model = ChartAxisModel.fromXml(parent, node, ChartAxis.X);
+        }
         // else if (parent is SFCHART.ChartModel) model = SFCHART.ChartAxisModel.fromXml(parent, node, SFCHART.Axis.X);
         break;
 
       case "yaxis":
-        if (parent is ChartModel)
-                model = ChartAxisModel.fromXml(parent, node, ChartAxis.Y);
+        if (parent is ChartModel) {
+          model = ChartAxisModel.fromXml(parent, node, ChartAxis.Y);
+        }
         // else if (parent is SFCHART.ChartModel) model = SFCHART.ChartAxisModel.fromXml(parent, node, SFCHART.Axis.Y);
         break;
 
@@ -876,8 +919,8 @@ class WidgetModel implements IDataSourceListener
   void _deserializeDataSources(XmlElement xml)
   {
     // find and deserialize all datasources
-    for (XmlNode node in xml.children)
-    if (node is XmlElement && isDataSource(node.localName))
+    for (XmlNode node in xml.children) {
+      if (node is XmlElement && isDataSource(node.localName))
     {
       // build the data source model
       dynamic model = WidgetModel.fromXml(this, node);
@@ -887,13 +930,14 @@ class WidgetModel implements IDataSourceListener
         datasources!.add(model);
       }
     }
+    }
   }
 
   void _deserialize(XmlElement xml)
   {
     // deserialize all non-datasource children
-    for (XmlNode node in xml.children)
-    if (node is XmlElement && !isDataSource(node.localName))
+    for (XmlNode node in xml.children) {
+      if (node is XmlElement && !isDataSource(node.localName))
     {
       // build the model
       dynamic model = WidgetModel.fromXml(this, node);
@@ -903,6 +947,7 @@ class WidgetModel implements IDataSourceListener
         children!.add(model);
       }
     }
+    }
   }
 
   void dispose()
@@ -911,8 +956,10 @@ class WidgetModel implements IDataSourceListener
     removeAllListeners();
 
     // dispose of datasources
-    if (datasources != null)
-    for (var datasource in datasources!) if (datasource.parent == this) datasource.dispose();
+    if (datasources != null){
+    for (var datasource in datasources!) {
+      if (datasource.parent == this) datasource.dispose();
+    }}
     datasources?.clear();
 
     // remove model and all of its bindables from the scope
@@ -946,10 +993,11 @@ class WidgetModel implements IDataSourceListener
   notifyListeners(String? property, dynamic value, {bool notify = false}) {
     if (notify && _listeners == null) print('listeners is null');
     if (notify && _listeners != null) print('listeners has ${_listeners!.length} members');
-    if (_listeners != null)
+    if (_listeners != null) {
       _listeners!.forEach((listener) {
         listener.onModelChange(this, property: property, value: value);
       });
+    }
   }
 
   void onPropertyChange(Observable observable) {
@@ -959,7 +1007,7 @@ class WidgetModel implements IDataSourceListener
   void initialize()
   {
     // start datasources
-    if (datasources != null)
+    if (datasources != null) {
       datasources!.forEach((datasource)
       {
         // already started?
@@ -975,6 +1023,7 @@ class WidgetModel implements IDataSourceListener
           if (datasource.autoexecute == true) datasource.start();
         }
       });
+    }
   }
 
   static void unfocus() {
@@ -1011,8 +1060,9 @@ class WidgetModel implements IDataSourceListener
     if ((runtimeType == T) && (this.id == (id ?? this.id))) list.add(this);
 
     // evaluate my siblings
-    if ((includeSiblings) && (children != null))
+    if ((includeSiblings) && (children != null)) {
       children!.forEach((child) => ((child.runtimeType == T) && (child.id == (id ?? child.id))) ? list.add(child) : null);
+    }
 
     // evaluate my ancestors
     if (parent != null) list.addAll(parent!._findAncestorsOfExactType(T, id, includeSiblings));
@@ -1041,9 +1091,10 @@ class WidgetModel implements IDataSourceListener
         (this.id == (id ?? this.id))) list.add(this);
 
     // evaluate my children
-    if (children != null)
-      for (WidgetModel child in children!)
+    if (children != null){
+      for (WidgetModel child in children!) {
         list.addAll(child._findDescendantsOfExactType(T, id));
+      }}
 
     return list;
   }
@@ -1056,16 +1107,19 @@ class WidgetModel implements IDataSourceListener
   }
 
   dynamic findChildOfExactType(Type T, {String? id}) {
-    if (children != null)
+    if (children != null) {
       return children!.firstWhereOrNull((child) => child.runtimeType == T && (child.id == (id ?? child.id)));
+    }
   }
 
   List<dynamic> findChildrenOfExactType(Type T, {String? id}) {
     List<dynamic> list = [];
-    if (children != null)
-      for (WidgetModel child in children!)
-        if ((child.runtimeType == (T)) && (child.id == (id ?? child.id)))
+    if (children != null){
+      for (WidgetModel child in children!) {
+        if ((child.runtimeType == (T)) && (child.id == (id ?? child.id))) {
           list.add(child);
+      }
+        }}
     return list;
   }
 
@@ -1075,8 +1129,10 @@ class WidgetModel implements IDataSourceListener
 
   dynamic findListenerOfExactType(Type T)
   {
-    if (_listeners != null)
-    for (dynamic listener in _listeners!) if (listener.runtimeType == T) return listener;
+    if (_listeners != null){
+    for (dynamic listener in _listeners!) {
+      if (listener.runtimeType == T) return listener;
+    }}
     return null;
   }
 
@@ -1127,9 +1183,11 @@ class WidgetModel implements IDataSourceListener
           children ??= [];
 
           // position specified?
-          if (index != null && index < children!.length)
-               children!.insert(index, model);
-          else children!.add(model);
+          if (index != null && index < children!.length) {
+            children!.insert(index, model);
+          } else {
+            children!.add(model);
+          }
         }
       }
       return (model != null);
@@ -1161,7 +1219,9 @@ class WidgetModel implements IDataSourceListener
     }
 
     // successfully parsed the xml
-    else if (document is XmlDocument) nodes = document.childElements.toList();
+    else if (document is XmlDocument) {
+      nodes = document.childElements.toList();
+    }
 
     // build error node
     if (exception != null && !silent)
@@ -1405,11 +1465,17 @@ class WidgetModel implements IDataSourceListener
             node.replace(element);
             node = element;
           }
-          else Log().exception("A model of type <$n2/> cannot be cloned from a model of type <$n1/>");
+          else {
+            Log().exception("A model of type <$n2/> cannot be cloned from a model of type <$n1/>");
+          }
         }
-        else Log().exception("Model $id has no element to copy from");
+        else {
+          Log().exception("Model $id has no element to copy from");
+        }
       }
-      else Log().exception("Error attempting to clone model $id. Model not found.");
+      else {
+        Log().exception("Error attempting to clone model $id. Model not found.");
+      }
     }
     return node;
   }

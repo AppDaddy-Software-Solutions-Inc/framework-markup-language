@@ -27,13 +27,14 @@ class _GridItemViewState extends WidgetState<GridItemView>
 
     // build children
     List<Widget> children = [];
-    if (widget.model!.children != null)
-    widget.model!.children!.forEach((model)
+    if (widget.model!.children != null) {
+      widget.model!.children!.forEach((model)
     {
       if (model is ViewableWidgetModel) {
         children.add(model.getView());
       }
     });
+    }
 
     if (children.isEmpty) children.add(Container());
     return Container(child: Center(child: children.length == 1 ? children[0] : Column(children: children, mainAxisSize: MainAxisSize.min)));

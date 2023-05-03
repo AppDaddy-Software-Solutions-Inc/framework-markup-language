@@ -63,9 +63,9 @@ class Distinct extends TransformModel implements ITransform
   {
     if (data == null) return null;
 
-    if (field == null) // removes duplicates
+    if (field == null) {
       data.toSet().toList();
-    else {
+    } else {
       for (dynamic l in data) {
         if (!uniqueFields.contains(l[field])) {
           uniqueFields.add(l[field]);
@@ -83,11 +83,12 @@ class Distinct extends TransformModel implements ITransform
   String encode(String v)
   {
     List<String?>? bindings = Binding.getBindingStrings(v);
-    if (bindings != null)
+    if (bindings != null) {
       bindings.forEach((binding)
       {
         if (!binding!.contains(".")) v = v.replaceAll(binding, binding.replaceAll("{", "[[[[").replaceAll("}", "]]]]"));
       });
+    }
     return v;
   }
 

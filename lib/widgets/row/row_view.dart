@@ -55,19 +55,20 @@ class _RowViewState extends WidgetState<RowView>
     Widget view;
 
     // create view
-    if (widget.model.wrap == true)
+    if (widget.model.wrap == true) {
       view = Wrap(
               children: children,
               direction: Axis.horizontal,
               alignment: alignment.mainWrapAlignment,
               runAlignment: alignment.mainWrapAlignment,
               crossAxisAlignment: alignment.crossWrapAlignment);
-    else
+    } else {
       view = Row(
               children: children,
               crossAxisAlignment: alignment.crossAlignment,
               mainAxisAlignment: alignment.mainAlignment,
               mainAxisSize: mainAxisSize);
+    }
 
     // add margins
     if (model is RowModel) view = addMargins(view);

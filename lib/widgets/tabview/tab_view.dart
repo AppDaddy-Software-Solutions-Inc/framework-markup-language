@@ -178,7 +178,9 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
     }
 
     // Open Tab
-    else view = widget.model.views[url] as FrameworkView;
+    else {
+      view = widget.model.views[url] as FrameworkView;
+    }
 
     int i = widget.model.views.values.toList().indexOf(view);
     widget.model.index = i;
@@ -423,9 +425,11 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
   Widget _buildTabView()
   {
     if (widget.model.views.isNotEmpty) return Container();
-    if (widget.model.tabbar == true )
-         return widget.model.tabbutton == true ? _tabViewWithTabBarAndButton() : _tabViewWithTabBar();
-    else return widget.model.tabbutton == true ? _tabViewWithTabButton()       : _tabView();
+    if (widget.model.tabbar == true ) {
+      return widget.model.tabbutton == true ? _tabViewWithTabBarAndButton() : _tabViewWithTabBar();
+    } else {
+      return widget.model.tabbutton == true ? _tabViewWithTabButton()       : _tabView();
+    }
   }
 
   @override

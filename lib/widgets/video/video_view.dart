@@ -73,7 +73,7 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
     List<Widget> children = [];
     children.add(view);
 
-    if (widget.model.children != null)
+    if (widget.model.children != null) {
       widget.model.children!.forEach((model)
       {
         if (model is ViewableWidgetModel)
@@ -81,6 +81,7 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
           children.add(model.getView());
         }
       });
+    }
 
     // show controls
     if (widget.model.controls != false)

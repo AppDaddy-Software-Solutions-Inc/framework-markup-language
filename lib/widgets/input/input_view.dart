@@ -175,7 +175,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     }
   }
 
-  Future<Null> _keyboardToggled() async {
+  Future<void> _keyboardToggled() async {
     if (mounted) {
       EdgeInsets edgeInsets = MediaQuery.of(context).viewInsets;
       while (mounted && MediaQuery.of(context).viewInsets == edgeInsets) {
@@ -185,7 +185,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     return;
   }
 
-  Future<Null> _ensureVisible() async {
+  Future<void> _ensureVisible() async {
     // Wait for the keyboard to come into view
     await Future.any([
       Future.delayed(const Duration(milliseconds: 50)),
@@ -423,7 +423,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
       var colorArray = widget.model.bordercolor?.split(',');
       if (colorArray != null)
       {
-        if (colorArray.length > 0) colors[0] = ColorObservable.toColor(colorArray[0].trim());
+        if (colorArray.isNotEmpty) colors[0] = ColorObservable.toColor(colorArray[0].trim());
         if (colorArray.length > 1) colors[1] = ColorObservable.toColor(colorArray[1].trim());
         if (colorArray.length > 2) colors[2] = ColorObservable.toColor(colorArray[2].trim());
         if (colorArray.length > 3) colors[3] = ColorObservable.toColor(colorArray[3].trim());
@@ -441,7 +441,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
       var colorArray = widget.model.textcolor?.split(',');
       if (colorArray != null)
       {
-        if (colorArray.length > 0) colors[0] = ColorObservable.toColor(colorArray[0].trim());
+        if (colorArray.isNotEmpty) colors[0] = ColorObservable.toColor(colorArray[0].trim());
         if (colorArray.length > 1) colors[1] = ColorObservable.toColor(colorArray[1].trim());
         if (colorArray.length > 2) colors[2] = ColorObservable.toColor(colorArray[2].trim());
         if (colorArray.length > 3) colors[3] = ColorObservable.toColor(colorArray[3].trim());

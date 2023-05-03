@@ -47,7 +47,7 @@ class Binding
   String? get name
   {
     var k = toKey(source, property);
-    if (dotnotation != null && dotnotation!.length > 0)
+    if (dotnotation != null && dotnotation!.isNotEmpty)
     {
        String dn = "";
        dotnotation!.forEach((segment) => dn = "$dn.${segment.name}");

@@ -534,13 +534,13 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     /* Get Table Header */
     //////////////////////
     List<TableHeaderModel> headers = findChildrenOfExactType(TableHeaderModel).cast<TableHeaderModel>();
-    if (headers.length > 0) tableheader = headers.first;
+    if (headers.isNotEmpty) tableheader = headers.first;
 
     //////////////////////
     /* Get Table Footer */
     //////////////////////
     List<TableFooterModel> footers = findChildrenOfExactType(TableFooterModel).cast<TableFooterModel>();
-    if (footers.length > 0) tablefooter = footers.first;
+    if (footers.isNotEmpty) tablefooter = footers.first;
 
     // get prototype
     List<TableRowModel> rows = findChildrenOfExactType(TableRowModel).cast<TableRowModel>();

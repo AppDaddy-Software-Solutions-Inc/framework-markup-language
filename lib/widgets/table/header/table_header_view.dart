@@ -82,13 +82,16 @@ class _TableHeaderViewState extends WidgetState<TableHeaderView>
         cells.add(UnconstrainedBox(child: SizedBox(width: width > 0 ? width : null, height: height, child: cell)));
         dragHandles.add(Positioned(left: widthPlusPrevious,
             child: UnconstrainedBox(child: SizedBox(width: anchorWidth, height: height, child: draggable))));
-      } else cells.add(cell);
+      } else {
+        cells.add(cell);
+      }
       i++;
     });
 
     // We don't need the right edge handle
-    if (dragHandles.length > 0)
+    if (dragHandles.isNotEmpty) {
       dragHandles.removeLast();
+    }
 
     //////////
     /* View */
@@ -125,8 +128,9 @@ class _TableHeaderViewState extends WidgetState<TableHeaderView>
             tableModel!.setCellWidth(index + 1, (tableModel!.getCellWidth(index + 1)! + tableModel!.getCellPadding(index + 1)!) - (width - (cw + cp)));
             tableModel!.setCellPadding(index + 1, 0);
             
-            for (int i = 0; i < tableModel!.widths.length; i++)
+            for (int i = 0; i < tableModel!.widths.length; i++) {
               tableModel!.setCellWidth(i, tableModel!.getCellWidth(i)! + tableModel!.getCellPadding(i)!);
+            }
             tableModel!.notifyListeners('width', width);
           }
         }

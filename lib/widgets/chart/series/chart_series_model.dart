@@ -429,10 +429,11 @@ class ChartSeriesModel extends WidgetModel
   {
     // dynamic color = replace(_color,data); // _color.set(_color?.applyMap(map)); // run eval(s)
     dynamic color;
-    if (_color != null && _color!.bindings != null && _color!.bindings!.length > 0)
+    if (_color != null && _color!.bindings != null && _color!.bindings!.isNotEmpty) {
       color = replace(_color,data); // _color.set(_color?.applyMap(map)); // run eval(s)
-    else if (_color != null && _color!.value != null)
+    } else if (_color != null && _color!.value != null) {
       color = _color!.value;
+    }
     dynamic x     = replace(_x,data);
     dynamic y     = replace(_y,data);
     dynamic label = replace(_label,data);
@@ -441,8 +442,11 @@ class ChartSeriesModel extends WidgetModel
 
   dynamic replace(Observable? observable, dynamic data)
   {
-    if (observable == null) return null;
-    else if (observable.signature == null) return observable.value;
+    if (observable == null) {
+      return null;
+    } else if (observable.signature == null) {
+      return observable.value;
+    }
 
     // apply data to Json data
     dynamic value = Data.replaceValue(observable.signature, data);

@@ -119,7 +119,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
 
   bool suggestion(OptionModel m, String pat) {
     pat = pat.toLowerCase();
-    if (m.tags != null && m.tags!.length > 0) {
+    if (m.tags != null && m.tags!.isNotEmpty) {
       List<String?> s = m.tags!.split(',');
       return s.any((tag) => match(tag!.trim().toLowerCase(), pat));
     }

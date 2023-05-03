@@ -167,7 +167,7 @@ class Template
     if (document != null) return Template.fromDocument(name: url, xml: document, parameters: parameters);
 
     // not found - build error template
-    String xml404 = errorTemplate('Page Not Found', null, "$url");
+    String xml404 = errorTemplate('Page Not Found', null, url);
 
     // parse the error template created
     try
@@ -176,7 +176,7 @@ class Template
     }
     on  Exception catch(e)
     {
-      xml404 = errorTemplate('Error on Page', '$url', e.toString());
+      xml404 = errorTemplate('Error on Page', url, e.toString());
       document = Xml.tryParse(xml404);
     }
 

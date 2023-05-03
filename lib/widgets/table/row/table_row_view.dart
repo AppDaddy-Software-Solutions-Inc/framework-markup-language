@@ -52,9 +52,11 @@ class _TableRowViewState extends WidgetState<TableRowView>
       /* View */
       //////////
       Widget cell = CELL.TableRowCellView(model, widget.row);
-      if ((width != null) && (height != null))
-           cells.add(UnconstrainedBox(child: ClipRect(child: SizedBox(width: width, height: height, child: cell))));
-      else cells.add(cell);
+      if ((width != null) && (height != null)) {
+        cells.add(UnconstrainedBox(child: ClipRect(child: SizedBox(width: width, height: height, child: cell))));
+      } else {
+        cells.add(cell);
+      }
       i++;
     });
 
@@ -62,8 +64,9 @@ class _TableRowViewState extends WidgetState<TableRowView>
     /* View */
     //////////
     dynamic row = Row(children: cells, mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize:  MainAxisSize.min);
-    if (widget.model.onclick != null && cells.length > 0)
+    if (widget.model.onclick != null && cells.isNotEmpty) {
       row = GestureDetector(onTap: onTap, child: row);
+    }
     return row;
   }
 

@@ -147,9 +147,11 @@ class Database
     try
     {
       var box = await Hive.openBox(table);
-      if (box.containsKey(key))
+      if (box.containsKey(key)) {
         value = await box.get(key);
-      else Log().debug('Table [$table] does not contain a Key [$key]');
+      } else {
+        Log().debug('Table [$table] does not contain a Key [$key]');
+      }
     }
     catch(e)
     {
@@ -194,18 +196,22 @@ class Database
       {
         // get ordre by field and descending clause
         orderby = orderby!.trim();
-        while (orderby!.contains("  ")) orderby = orderby.replaceAll("  ", " ").trim();
+        while (orderby!.contains("  ")) {
+          orderby = orderby.replaceAll("  ", " ").trim();
+        }
         var s = orderby.trim().split(" ");
         orderby = s.first;
         bool descending = false;
-        if ((s.length > 0) && (s[1].toLowerCase() == "desc")) descending = true;
+        if ((s.isNotEmpty) && (s[1].toLowerCase() == "desc")) descending = true;
 
         // sort values
         list.sort((a, b)
         {
-          if ((a.containsKey(orderby)) && (b.containsKey(orderby)))
+          if ((a.containsKey(orderby)) && (b.containsKey(orderby))) {
             return Comparable.compare(b[orderby], a[orderby]);
-          else return 0;
+          } else {
+            return 0;
+          }
         });
 
         // sort descending?

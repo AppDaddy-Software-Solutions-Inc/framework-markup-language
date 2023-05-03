@@ -137,7 +137,7 @@ class BeaconModel extends DataSourceModel implements IDataSource, IBeaconListene
 
   void _removeExpired()
   {
-    if (firstSeen.length == 0 && lastSeen.length == 0) return;
+    if (firstSeen.isEmpty && lastSeen.isEmpty) return;
 
     // remove any items that haven't been seen in the past 15 seconds
     List<String> expired = [];
@@ -156,7 +156,7 @@ class BeaconModel extends DataSourceModel implements IDataSource, IBeaconListene
     // if no beacons found on last
     // iteration and none in this,
     // just quit
-    if (_beaconsFound == 0 && beacons.length == 0) return _removeExpired();
+    if (_beaconsFound == 0 && beacons.isEmpty) return _removeExpired();
 
     // rember last count of beacons found
     _beaconsFound = beacons.length;

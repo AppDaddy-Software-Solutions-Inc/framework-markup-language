@@ -336,7 +336,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
     // if the message didn't deserialize (length 0)
     // so create a simple map with topic and message bindables <id>.data.topic and <id>.data.message
     // otherwise the data is the deserialized message payload
-    if (data.length == 0) data.insert(0, {'topic': payload.topic , 'message' : payload.message});
+    if (data.isEmpty) data.insert(0, {'topic': payload.topic , 'message' : payload.message});
 
     // fire the onresponse
     onSuccess(data, code: HttpStatus.ok, onSuccessOverride: _onmessage);

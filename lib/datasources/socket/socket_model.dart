@@ -380,7 +380,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     // if the message didn't deserialize (length 0)
     // so create a simple map with message bindable <id>.data.message
     // otherwise the data is the deserialized message payload
-    if (data.length == 0) data.insert(0, {'message' : message});
+    if (data.isEmpty) data.insert(0, {'message' : message});
 
     // fire the onresponse
     onSuccess(data, code: HttpStatus.ok, onSuccessOverride: _onmessage);

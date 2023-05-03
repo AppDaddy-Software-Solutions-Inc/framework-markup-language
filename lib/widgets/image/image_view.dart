@@ -41,9 +41,11 @@ class ImageView extends StatefulWidget implements IWidgetView
       {
         if (defaultImage != null)
         {
-          if (defaultImage.toLowerCase().trim() == 'none')
-               return Container();
-          else return getImage(defaultImage, animate, defaultImage: null, fit: fit, width: width, height: height, filter: filter, fade: fade, fadeDuration: fadeDuration);
+          if (defaultImage.toLowerCase().trim() == 'none') {
+            return Container();
+          } else {
+            return getImage(defaultImage, animate, defaultImage: null, fit: fit, width: width, height: height, filter: filter, fade: fade, fadeDuration: fadeDuration);
+          }
         }
         return Icon(Icons.broken_image_outlined, size: 36, color: Colors.grey);
       }
@@ -83,9 +85,11 @@ class ImageView extends StatefulWidget implements IWidgetView
           if (file == null) break;
 
           // svg image?
-          if (uri.pageExtension == "svg")
-               image = SvgPicture.file(file!, fit: getFit(fit), width: width, height: height);
-          else image = Image.file(file, fit: getFit(fit));
+          if (uri.pageExtension == "svg") {
+            image = SvgPicture.file(file!, fit: getFit(fit), width: width, height: height);
+          } else {
+            image = Image.file(file, fit: getFit(fit));
+          }
           break;
 
         /// asset image
@@ -93,20 +97,24 @@ class ImageView extends StatefulWidget implements IWidgetView
           var assetpath = "${uri.scheme}/${uri.host}${uri.path}";
 
           // svg image?
-          if (uri.pageExtension == "svg")
-               image = SvgPicture.asset(assetpath, fit: getFit(fit), width: width, height: height);
-          else image = Image.asset(assetpath, fit: getFit(fit), width: width, height: height, errorBuilder: errorHandler);
+          if (uri.pageExtension == "svg") {
+            image = SvgPicture.asset(assetpath, fit: getFit(fit), width: width, height: height);
+          } else {
+            image = Image.asset(assetpath, fit: getFit(fit), width: width, height: height, errorBuilder: errorHandler);
+          }
           break;
 
         /// web image
         default:
-          if (uri.pageExtension == "svg")
-               image = SvgPicture.network(uri.url, fit: getFit(fit), width: width, height: height);
-          else
+          if (uri.pageExtension == "svg") {
+            image = SvgPicture.network(uri.url, fit: getFit(fit), width: width, height: height);
+          } else
           {
-            if (animate)
-                 image = FadeInImage.memoryNetwork(placeholder: placeholder, image: uri.url, fit: getFit(fit), width: width, height: height, fadeInDuration: Duration(milliseconds: fadeDuration ?? 300), imageErrorBuilder: errorHandler);
-            else image = Image.network(uri.url, fit: getFit(fit), width: width, height: height);
+            if (animate) {
+              image = FadeInImage.memoryNetwork(placeholder: placeholder, image: uri.url, fit: getFit(fit), width: width, height: height, fadeInDuration: Duration(milliseconds: fadeDuration ?? 300), imageErrorBuilder: errorHandler);
+            } else {
+              image = Image.network(uri.url, fit: getFit(fit), width: width, height: height);
+            }
           }
           break;
       }
@@ -234,26 +242,28 @@ class _ImageViewState extends WidgetState<ImageView>
 
     // Flip
     if (widget.model.flip != null) {
-      if (widget.model.flip!.toLowerCase() == 'vertical')
-        // view = Transform(alignment: Alignment.center, transform: Matrix4.rotationX(pi), child: view);
+      if (widget.model.flip!.toLowerCase() == 'vertical') {
         view = Transform.scale(scaleY: -1, child: view);
-      if (widget.model.flip!.toLowerCase() == 'horizontal')
-        // view = Transform(alignment: Alignment.center, transform: Matrix4.rotationY(pi), child: view);
+      }
+      if (widget.model.flip!.toLowerCase() == 'horizontal') {
         view = Transform.scale(scaleX: -1, child: view);
+      }
     }
 
     // Alpha/Opacity
     if (opacity != null) view = Opacity(opacity: opacity, child: view);
 
     // Rotation
-    if (widget.model.rotation != null)
+    if (widget.model.rotation != null) {
       view = RotationTransition(
           turns: AlwaysStoppedAnimation(widget.model.rotation! / 360),
           child: view);
+    }
 
     // Stack Children
-    if (widget.model.children != null && widget.model.children!.length > 0)
+    if (widget.model.children != null && widget.model.children!.isNotEmpty) {
       view = Stack(children: [view]);
+    }
 
     // Interactive
     if (widget.model.interactive == true) view = InteractiveViewer(child: view);

@@ -239,7 +239,7 @@ class _GridViewState extends WidgetState<GridView>
 
     // Check if grid has items before wasting resources on building it
     List<Widget> children = [];
-    if (widget.model.itemSize == null || widget.model.items.length == 0)
+    if (widget.model.itemSize == null || widget.model.items.isEmpty)
     {
       GridItemModel? prototypeModel;
       Widget prototypeGrid;

@@ -144,7 +144,7 @@ class PagerModel extends DecoratedWidgetModel
       pages.forEach((page) => this.pages.add(page));
 
 
-    if (pages.length == 0)
+    if (pages.isEmpty)
     {
       XmlDocument missingXml = XmlDocument.parse('<PAGE><CENTER><TEXT value="Missing <Page /> Element" /></CENTER></PAGE>');
       var page = PagerPageModel.fromXml(this, missingXml.rootElement);

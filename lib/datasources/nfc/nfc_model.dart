@@ -298,7 +298,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
 
     // if the message didn't deserialize (length 0)
     // is the payload url encoded?
-    if (data.length == 0 && payload.message != null)
+    if (data.isEmpty && payload.message != null)
     {
       // is a valid url query string?
       String msg = payload.message!.trim();
@@ -320,7 +320,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
     // if the message didn't deserialize (length 0)
     // create a simple map with topic and message bindables <id>.data.topic and <id>.data.message
     // otherwise the data is the deserialized message payload
-    if (data.length == 0) data.insert(0, {'id' : payload.id, 'serial': payload.id , 'payload' : payload.message});
+    if (data.isEmpty) data.insert(0, {'id' : payload.id, 'serial': payload.id , 'payload' : payload.message});
 
     // fire the onresponse
     onSuccess(data, code: 200);

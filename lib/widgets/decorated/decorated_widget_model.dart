@@ -16,12 +16,14 @@ class DecoratedWidgetModel extends ViewableWidgetModel
         if (!Observable.isEvalSignature(v))
         {
           var s = v.split(',');
-          if (s.length > 0) color  = s[0].trim();
+          if (s.isNotEmpty) color  = s[0].trim();
           if (s.length > 1) color2 = s[1].trim();
           if (s.length > 2) color3 = s[2].trim();
           if (s.length > 3) color4 = s[3].trim();
         }
-        else color = v;
+        else {
+          color = v;
+        }
       }
   }
   
@@ -29,8 +31,11 @@ class DecoratedWidgetModel extends ViewableWidgetModel
   ColorObservable? _color;
   set color(dynamic v)
   {
-    if (_color != null) _color!.set(v);
-    else if (v != null) _color = ColorObservable(Binding.toKey(id, 'color'), v, scope: scope, listener: onPropertyChange);
+    if (_color != null) {
+      _color!.set(v);
+    } else if (v != null) {
+      _color = ColorObservable(Binding.toKey(id, 'color'), v, scope: scope, listener: onPropertyChange);
+    }
   }
   Color? get color => _color?.get();
 
@@ -38,8 +43,11 @@ class DecoratedWidgetModel extends ViewableWidgetModel
   ColorObservable? _color2;
   set color2(dynamic v)
   {
-    if (_color2 != null) _color2!.set(v);
-    else if (v != null) _color2 = ColorObservable(Binding.toKey(id, 'color2'), v, scope: scope, listener: onPropertyChange);
+    if (_color2 != null) {
+      _color2!.set(v);
+    } else if (v != null) {
+      _color2 = ColorObservable(Binding.toKey(id, 'color2'), v, scope: scope, listener: onPropertyChange);
+    }
   }
   Color? get color2 => _color2?.get();
 
@@ -47,8 +55,11 @@ class DecoratedWidgetModel extends ViewableWidgetModel
   ColorObservable? _color3;
   set color3(dynamic v)
   {
-    if (_color3 != null) _color3!.set(v);
-    else if (v != null) _color3 = ColorObservable(Binding.toKey(id, 'color3'), v, scope: scope, listener: onPropertyChange);
+    if (_color3 != null) {
+      _color3!.set(v);
+    } else if (v != null) {
+      _color3 = ColorObservable(Binding.toKey(id, 'color3'), v, scope: scope, listener: onPropertyChange);
+    }
   }
   Color? get color3 => _color3?.get();
 
@@ -56,8 +67,11 @@ class DecoratedWidgetModel extends ViewableWidgetModel
   ColorObservable? _color4;
   set color4(dynamic v)
   {
-    if (_color4 != null) _color4!.set(v);
-    else if (v != null) _color4 = ColorObservable(Binding.toKey(id, 'color4'), v, scope: scope, listener: onPropertyChange);
+    if (_color4 != null) {
+      _color4!.set(v);
+    } else if (v != null) {
+      _color4 = ColorObservable(Binding.toKey(id, 'color4'), v, scope: scope, listener: onPropertyChange);
+    }
   }
   Color? get color4 => _color4?.get();
 

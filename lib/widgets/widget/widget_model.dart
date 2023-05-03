@@ -994,7 +994,7 @@ class WidgetModel implements IDataSourceListener
   dynamic findAncestorOfExactType(Type T, {String? id, bool includeSiblings = false})
   {
     List<dynamic>? list = findAncestorsOfExactType(T, id: id, includeSiblings: includeSiblings);
-    return ((list != null) && (list.length > 0)) ? list.first : null;
+    return ((list != null) && (list.isNotEmpty)) ? list.first : null;
   }
 
   List<dynamic>? findAncestorsOfExactType(Type T, {String? id, bool includeSiblings = false})
@@ -1022,7 +1022,7 @@ class WidgetModel implements IDataSourceListener
 
   dynamic findDescendantOfExactType(Type? T, {String? id}) {
     List<dynamic>? list = findDescendantsOfExactType(T, id: id);
-    return ((list != null) && (list.length > 0)) ? list.first : null;
+    return ((list != null) && (list.isNotEmpty)) ? list.first : null;
   }
 
   List<dynamic>? findDescendantsOfExactType(Type? T, {String? id}) {
@@ -1172,7 +1172,7 @@ class WidgetModel implements IDataSourceListener
     // valid fml?
     nodes.forEach((element) => _appendChild(element, index));
 
-    return exception != null && nodes.length > 0;
+    return exception != null && nodes.isNotEmpty;
   }
 
   Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
@@ -1232,7 +1232,7 @@ class WidgetModel implements IDataSourceListener
           this.children!.last.dispose();
 
           // check if the list is greater than 0, remove at the final index.
-          if (this.children!.length > 0) this.children!.removeLast();
+          if (this.children!.isNotEmpty) this.children!.removeLast();
         }
 
         else if (this.children != null && index != null)
@@ -1279,7 +1279,7 @@ class WidgetModel implements IDataSourceListener
           this.children!.last.dispose();
 
           // check if the list is greater than 0, remove at the final index.
-          if(this.children!.length > 0) this.children!.removeAt(children!.length - 1);
+          if(this.children!.isNotEmpty) this.children!.removeAt(children!.length - 1);
           print(index.toString());
         }
 

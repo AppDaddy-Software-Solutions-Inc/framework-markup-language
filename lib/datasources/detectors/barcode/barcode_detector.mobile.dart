@@ -45,7 +45,7 @@ class BarcodeDetector implements IBarcodeDetector
           }
 
         // default format
-        if (_formats.length == 0) _formats.add(ML.BarcodeFormat.all);
+        if (_formats.isEmpty) _formats.add(ML.BarcodeFormat.all);
 
         // build detector
         if (_detector == null) _detector = ML.BarcodeScanner(formats: _formats);

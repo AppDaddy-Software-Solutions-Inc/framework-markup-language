@@ -203,7 +203,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
   void onBack(Event event)
   {
     int until = int.parse(event.parameters?['until'] ?? '1');
-    if (widget.model.views.length > 0 && widget.model.index != null)
+    if (widget.model.views.isNotEmpty && widget.model.index != null)
     {
       while(until > 0) {
         until--;

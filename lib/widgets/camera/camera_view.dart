@@ -200,7 +200,7 @@ class CameraViewState extends WidgetState<CameraView>
         return;
       }
 
-      if (cameras!.length > 0)
+      if (cameras!.isNotEmpty)
       {
         // set specified camera
         int index = widget.model.index ?? -1;
@@ -377,7 +377,7 @@ class CameraViewState extends WidgetState<CameraView>
     bool ok = true;
 
     try {
-      if (cameras != null && cameras!.length > 0 && controller != null
+      if (cameras != null && cameras!.isNotEmpty && controller != null
           && controller!.value.isInitialized && widget.model.busy != true) {
         // set busy
         widget.model.busy = true;

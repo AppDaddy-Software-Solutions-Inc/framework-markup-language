@@ -166,9 +166,10 @@ class _ChartViewState extends WidgetState<ChartView>
   CF.NumericComboChart buildNumericChart(List<CF.Series> series) {
     List<CF.SeriesRendererConfig<num>> seriesRenderers = [];
     for (var s in widget.model.series) {
-      if (s.type == 'bar' && s.stack != null)
+      if (s.type == 'bar' && s.stack != null) {
         Log().warning(
             'Stacked Bar Series are only compatible with Category type X Axis and each series must be type="bar"');
+      }
       Function configFunc = getSeriesRenderer(s, widget.model.xaxis!.type)!;
       CF.SeriesRendererConfig<num> config = configFunc(s);
       seriesRenderers.add(config);
@@ -210,9 +211,10 @@ class _ChartViewState extends WidgetState<ChartView>
   CF.OrdinalComboChart buildOrdinalChart(List<CF.Series> series) {
     List<CF.SeriesRendererConfig<String>> seriesRenderers = [];
     for (var s in widget.model.series) {
-      if (s.type == 'bar' && s.stack != null)
+      if (s.type == 'bar' && s.stack != null) {
         Log().warning(
             'Stacked Bar Series are only compatible with Category type X Axis and each series must be type="bar"');
+      }
       Function configFunc = getSeriesRenderer(s, widget.model.xaxis!.type)!;
       CF.SeriesRendererConfig<String> config = configFunc(s);
       seriesRenderers.add(config);
@@ -257,9 +259,10 @@ class _ChartViewState extends WidgetState<ChartView>
     SplayTreeMap<int, DateTime> ticksMap = SplayTreeMap<int, DateTime>();
 
     for (var s in widget.model.series) {
-      if (s.type == 'bar' && s.stack != null)
+      if (s.type == 'bar' && s.stack != null) {
         Log().warning(
             'Stacked Bar Series are only compatible with Category type X Axis and each series must be type="bar"');
+      }
       Function configFunc = getSeriesRenderer(s, widget.model.xaxis!.type)!;
       CF.SeriesRendererConfig<DateTime> config = configFunc(s);
       seriesRenderers.add(config);
@@ -354,8 +357,9 @@ class _ChartViewState extends WidgetState<ChartView>
 
     ChartSeriesModel? nonBarSeries =
         widget.model.series.firstWhereOrNull((series) => series.type != 'bar');
-    if (nonBarSeries == null) // Exclusively BarSeries
+    if (nonBarSeries == null) {
       pureBar = true;
+    }
     // Loop through each series
     for (ChartSeriesModel series in widget.model.series) {
       // Auto group bar series if not specified
@@ -399,12 +403,14 @@ class _ChartViewState extends WidgetState<ChartView>
           // get label
           var label = S.isNullOrEmpty(point.label) ? null : point.label.trim();
           // Add to point list
-          if (xVal != null && (series.labelled != true || label != null))
+          if (xVal != null && (series.labelled != true || label != null)) {
             seriesData.add(ChartDataPoint(
                 x: xVal, y: yVal, color: point.color, label: label));
-          if (xVal == null)
+          }
+          if (xVal == null) {
             Log().warning(
                 'id: ${series.id.toString()} name: ${series.name.toString()} Has a null X value, only Y vals can be null, every point must have a non-null X value');
+          }
         }
       }
 
@@ -505,8 +511,9 @@ class _ChartViewState extends WidgetState<ChartView>
   /// Unique id for each series based off the FML id, fallback on the name attribute
   /// Importantly bar charts that have a group attribute must share the same render key
   String? getRendererKey(ChartSeriesModel series) {
-    if (chartType == ChartType.BarChart || chartType == ChartType.PieChart)
+    if (chartType == ChartType.BarChart || chartType == ChartType.PieChart) {
       return null;
+    }
     return (series.type == 'bar' ? series.group : null) ?? series.id;
   }
 
@@ -533,34 +540,37 @@ class _ChartViewState extends WidgetState<ChartView>
     //   type = 'category';
     switch (series.type) {
       case 'bar':
-        if (type == ChartAxisType.category)
+        if (type == ChartAxisType.category) {
           rendererConfig = buildCategoryBarRenderer;
-        else if (type == ChartAxisType.datetime ||
+        } else if (type == ChartAxisType.datetime ||
             type == ChartAxisType.date ||
-            type == ChartAxisType.time)
+            type == ChartAxisType.time) {
           rendererConfig = buildDateTimeBarRenderer;
-        else if (type == ChartAxisType.numeric)
+        } else if (type == ChartAxisType.numeric) {
           rendererConfig = buildNumericBarRenderer;
+        }
         break;
       case 'line':
-        if (type == ChartAxisType.category)
+        if (type == ChartAxisType.category) {
           rendererConfig = buildCategoryLineRenderer;
-        else if (type == ChartAxisType.datetime ||
+        } else if (type == ChartAxisType.datetime ||
             type == ChartAxisType.date ||
-            type == ChartAxisType.time)
+            type == ChartAxisType.time) {
           rendererConfig = buildDateTimeLineRenderer;
-        else if (type == ChartAxisType.numeric)
+        } else if (type == ChartAxisType.numeric) {
           rendererConfig = buildNumericLineRenderer;
+        }
         break;
       case 'point':
-        if (type == ChartAxisType.category)
+        if (type == ChartAxisType.category) {
           rendererConfig = buildCategoryPointRenderer;
-        else if (type == ChartAxisType.datetime ||
+        } else if (type == ChartAxisType.datetime ||
             type == ChartAxisType.date ||
-            type == ChartAxisType.time)
+            type == ChartAxisType.time) {
           rendererConfig = buildDateTimePointRenderer;
-        else if (type == ChartAxisType.numeric)
+        } else if (type == ChartAxisType.numeric) {
           rendererConfig = buildNumericPointRenderer;
+        }
         break;
     }
     return rendererConfig;
@@ -659,7 +669,7 @@ class _ChartViewState extends WidgetState<ChartView>
         // Get the series model by matching to the selected series id
         ChartSeriesModel? selectedSeries = widget.model.series
             .firstWhereOrNull((s) => s.id == selectedSeriesId);
-        if (selectedSeries != null && selectedDatum.length > 0)
+        if (selectedSeries != null && selectedDatum.isNotEmpty)
           // Loop through the selected series datum
           for (int i = 0; i < selectedDatum[0].series.data.length; i++) {
             // Match the selected x value to the selected series, set the
@@ -688,14 +698,15 @@ class _ChartViewState extends WidgetState<ChartView>
   List<CF.ChartBehavior<T>> getBehaviors<T>() {
     List<CF.ChartBehavior<T>> behaviors = [];
     if (chartType != ChartType.PieChart) behaviors.add(CF.PanAndZoomBehavior());
-    if (widget.model.showlegend != 'false' && chartType != ChartType.PieChart)
+    if (widget.model.showlegend != 'false' && chartType != ChartType.PieChart) {
       behaviors.add(
           CF.SeriesLegend(position: legendPosition(widget.model.showlegend,),
               entryTextStyle: CF.TextStyleSpec(
               color: CF.Color.fromHex(code: '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
     ),
           ));
-    if (widget.model.showlegend != 'false' && chartType == ChartType.PieChart)
+    }
+    if (widget.model.showlegend != 'false' && chartType == ChartType.PieChart) {
       behaviors.add(CF.DatumLegend(
         position: legendPosition(widget.model.showlegend),
         entryTextStyle: CF.TextStyleSpec(
@@ -706,7 +717,8 @@ class _ChartViewState extends WidgetState<ChartView>
         desiredMaxColumns: 4,
         cellPadding: EdgeInsets.only(right: 4.0, bottom: 4.0),
       ));
-    if (widget.model.xaxis!.title != null)
+    }
+    if (widget.model.xaxis!.title != null) {
       behaviors.add(CF.ChartTitle(widget.model.xaxis!.title!,
           titleStyleSpec: CF.TextStyleSpec(
             color: CF.Color.fromHex(code: '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
@@ -715,7 +727,8 @@ class _ChartViewState extends WidgetState<ChartView>
               ? CF.BehaviorPosition.start
               : CF.BehaviorPosition.bottom,
           titleOutsideJustification: CF.OutsideJustification.middleDrawArea));
-    if (widget.model.yaxis!.title != null)
+    }
+    if (widget.model.yaxis!.title != null) {
       behaviors.add(CF.ChartTitle(widget.model.yaxis!.title!,
           titleStyleSpec: CF.TextStyleSpec(
             color: CF.Color.fromHex(code: '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
@@ -724,6 +737,7 @@ class _ChartViewState extends WidgetState<ChartView>
               ? CF.BehaviorPosition.bottom
               : CF.BehaviorPosition.start,
           titleOutsideJustification: CF.OutsideJustification.middleDrawArea));
+    }
     return behaviors;
   }
 

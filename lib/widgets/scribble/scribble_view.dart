@@ -52,7 +52,7 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
   }
 
   Future<void> save() async {
-    if (lines.length > 0) {
+    if (lines.isNotEmpty) {
       setState(() {
         saveVisible = false;
         canScribble = false;

@@ -148,7 +148,7 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
       itemModel = widget.model.getItemModel(index++);
       if (itemModel != null) {
         var listItem = ListItemView(model: itemModel, selectable: widget.model.selectable);
-        var title;
+        Text? title;
         if (!S.isNullOrEmpty(itemModel.title)) {
           title = Text(itemModel.title!);
         } else if (S.isNullOrEmpty(itemModel.title))

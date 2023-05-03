@@ -125,7 +125,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     }
 
     // page in navigation history?
-    var page;
+    Page? page;
     if ((url == "/") && (_pages.isNotEmpty)) {
       page = _pages.first;
     } else {
@@ -448,7 +448,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
 
   Future<bool> _confirmAppExit() async
   {
-    final result;
+    final bool result;
     if (navigatorKey.currentContext != null) {
       result = await showDialog<bool>(
           context: navigatorKey.currentContext!,
@@ -467,7 +467,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
                 ),
               ],
             );
-          });}
+          }) ?? false;}
     else {
       result = true;
     }

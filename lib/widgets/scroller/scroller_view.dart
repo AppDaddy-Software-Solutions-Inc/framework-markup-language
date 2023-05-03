@@ -148,7 +148,7 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
 
     // build body
     Axis direction = widget.model.layoutType == LayoutType.row ? Axis.horizontal : Axis.vertical;
-    var child;
+    Widget child;
     if (direction == Axis.vertical) {
       child = Column(children: children, crossAxisAlignment: alignment.crossAlignment);
     } else {

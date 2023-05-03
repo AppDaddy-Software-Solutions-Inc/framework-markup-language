@@ -105,7 +105,7 @@ class _MenuItemViewState extends WidgetState<MenuItemView>
         icon = Center(child: icon);
       }
 
-      var title;
+      Text? title;
       if (widget.model.title != null)
       {
         title = Text(widget.model.title ?? '', textAlign: TextAlign.center, style: TextStyle(fontSize: (widget.model.fontsize ?? 16.0) - (isMobile ? 2 : 0), color: backgroundImage != null
@@ -115,7 +115,7 @@ class _MenuItemViewState extends WidgetState<MenuItemView>
                     Theme.of(context).primaryTextTheme.titleLarge!.fontWeight));
       }
 
-      var subtitle;
+      Text? subtitle;
       if (widget.model.subtitle != null) {
         subtitle = Text(widget.model.subtitle ?? '',
             textAlign: TextAlign.center,

@@ -127,7 +127,7 @@ class _SelectViewState extends WidgetState<SelectView>
     onLayout(constraints);
 
     // busy?
-    var busy;
+    BusyView? busy;
     if (widget.model.busy == true && widget.model.typeahead != true) {
       busy = BusyView(BusyModel(widget.model,
           visible: true,

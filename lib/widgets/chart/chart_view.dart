@@ -379,8 +379,8 @@ class _ChartViewState extends WidgetState<ChartView>
         // Parse x and y data values from the databroker string values
         if (!S.isNullOrEmpty(point.x)) {
           // y value can be null, creating a gap in the chart
-          var xParsed;
-          var yParsed;
+          dynamic xParsed;
+          dynamic yParsed;
           try {
             xParsed = parsePlotPoint(point.x, widget.model.xaxis!.type);
           } catch(e) {

@@ -571,7 +571,7 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
     // show controls
     if (widget.model.controls != false) {
       // zoom slider
-      var zoomslider;
+      Slider? zoomslider;
       if (_maxAvailableZoom > _minAvailableZoom) {
         zoomslider = Slider(
             value: _zoom,

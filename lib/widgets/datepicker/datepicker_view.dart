@@ -44,12 +44,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
       if (cont!.text != widget.model.value) cont!.text = S.toStr(widget.model.value) ?? "";
     }
   }
-
-  @override
-  didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
+  
   @override
   void didUpdateWidget(DatepickerView oldWidget)
   {

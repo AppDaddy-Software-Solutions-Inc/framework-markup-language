@@ -68,11 +68,6 @@ class SplitModel extends DecoratedWidgetModel
     if (vertical != null) _vertical = vertical;
   }
 
-  @override
-  dispose()
-  {
-    super.dispose();
-  }
 
   static SplitModel? fromXml(WidgetModel parent, XmlElement xml)
   {

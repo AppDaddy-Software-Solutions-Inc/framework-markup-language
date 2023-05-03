@@ -270,11 +270,6 @@ class FormModel extends DecoratedWidgetModel
     this.showexception  = showexception;
   }
 
-  @override
-  dispose()
-  {
-    super.dispose();
-  }
 
   static FormModel? fromXml(WidgetModel parent, XmlElement xml)
   {

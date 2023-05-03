@@ -51,12 +51,6 @@ class _ScrollbarViewState extends WidgetState<ScrollbarView>
   }
 
   @override
-  didChangeDependencies()
-  {
-    super.didChangeDependencies();
-  }
-
-  @override
   void didUpdateWidget(ScrollbarView oldWidget)
   {
     super.didUpdateWidget(oldWidget);

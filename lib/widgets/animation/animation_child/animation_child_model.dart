@@ -78,8 +78,4 @@ class AnimationChildModel extends AnimationModel {
     end = Xml.get(node: xml, tag: 'end');
   }
 
-  @override
-  dispose() {
-    super.dispose();
-  }
 }

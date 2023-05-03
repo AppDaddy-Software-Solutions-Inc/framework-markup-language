@@ -345,8 +345,6 @@ class TextModel extends DecoratedWidgetModel
   double? get lineheight => _lineheight?.get();
 
   // overrides
-  String? get halign => super.halign;
-  String? get valign => super.valign;
 
   ////////////////////
   /* overflow */

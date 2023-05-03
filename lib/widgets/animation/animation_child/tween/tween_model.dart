@@ -96,10 +96,6 @@ class TweenModel extends AnimationChildModel
     value = from ?? "";
   }
 
-  @override
-  dispose() {
-    super.dispose();
-  }
 
   @override
   Future<bool?> execute(

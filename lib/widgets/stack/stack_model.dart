@@ -92,11 +92,6 @@ class StackModel extends LayoutModel
     });
   }
 
-  @override
-  void dispose()
-  {
-    super.dispose();
-  }
 
   Widget getView({Key? key}) => getReactiveView(StackView(this));
 }

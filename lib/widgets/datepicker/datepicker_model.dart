@@ -420,10 +420,6 @@ class DatepickerModel extends FormFieldModel implements IFormField
     padding = Xml.get(node: xml, tag: 'padding');
   }
 
-  @override
-  void onPropertyChange(Observable observable) {
-    super.onPropertyChange(observable);
-  }
 
   @override
   dispose() {

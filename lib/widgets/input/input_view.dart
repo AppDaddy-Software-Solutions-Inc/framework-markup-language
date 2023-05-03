@@ -112,11 +112,6 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     //WidgetsBinding.instance.addObserver(this);
   }
 
-  @override
-  didChangeDependencies()
-  {
-    super.didChangeDependencies();
-  }
 
   @override
   void didUpdateWidget(InputView oldWidget)

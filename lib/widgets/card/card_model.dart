@@ -24,9 +24,6 @@ class CardModel extends BoxModel
   @override
   String get border => 'all';
 
-  @override
-  double get borderwidth => super.borderwidth;
-
   //overrides
   double? get margins => super.marginTop ?? 5;
   String  get halign  => super.halign  ?? "start";

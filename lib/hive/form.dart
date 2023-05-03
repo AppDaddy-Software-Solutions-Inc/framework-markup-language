@@ -115,8 +115,8 @@ class Form implements Comparable
   {
     if (other == null) return -1;
 
-    if (this.parent == null && other.parent != null) return 1;
-    if (this.parent != null && other.parent == null) return -1;
-    return (this.updated > other.updated) ? 1 : -1;
+    if (parent == null && other.parent != null) return 1;
+    if (parent != null && other.parent == null) return -1;
+    return (updated > other.updated) ? 1 : -1;
   }
 }

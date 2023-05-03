@@ -28,8 +28,8 @@ class Reader
   {
     try
     {
-      if (methodChannel == null) methodChannel = MethodChannel('co.appdaddy.fml/command');
-      if (scanChannel   == null) scanChannel   = EventChannel('co.appdaddy.fml/scan');
+      methodChannel ??= MethodChannel('co.appdaddy.fml/command');
+      scanChannel ??= EventChannel('co.appdaddy.fml/scan');
 
       scanChannel!.receiveBroadcastStream().listen(_onEvent, onError: _onError);
       _send("com.symbol.datawedge.api.CREATEPROFILE", "co.appdaddy.fml");
@@ -78,7 +78,7 @@ class Reader
 
   registerListener(IZebraListener listener)
   {
-    if (_listeners == null) _listeners = [];
+    _listeners ??= [];
     if (!_listeners!.contains(listener)) _listeners!.add(listener);
   }
 

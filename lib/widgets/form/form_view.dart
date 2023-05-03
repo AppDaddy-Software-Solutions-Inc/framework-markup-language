@@ -135,7 +135,7 @@ class FormViewState extends WidgetState<FormView> implements GPS.IGpsListener
     final willpop = WillPopScope(onWillPop: quit, child: view);
 
     /// Busy / Loading Indicator
-    if (busy == null) busy = BUSY.BusyView(BUSY.BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
+    busy ??= BUSY.BusyView(BUSY.BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
 
     view = Stack(children: [willpop, Center(child: busy)]);
 

@@ -85,7 +85,7 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
     if (widget.model.controls != false)
     {
       // shutter
-      if (shutterbutton == null) shutterbutton = IconView(shutterbuttonmodel);
+      shutterbutton ??= IconView(shutterbuttonmodel);
       var shutter = UnconstrainedBox(
           child: MouseRegion(
               cursor: SystemMouseCursors.click,

@@ -39,7 +39,7 @@ class _MapViewState extends WidgetState<MapView>
   /// Callback function for when the model changes, used to force a rebuild with setState()
   onModelChange(WidgetModel model,{String? property, dynamic value})
   {
-    if (this.mounted)
+    if (mounted)
     {
       var b = Binding.fromString(property);
       if (b?.property == 'busy') return;
@@ -165,7 +165,7 @@ class _MapViewState extends WidgetState<MapView>
     if (map != null) children.insert(0, map);
 
     /// Busy / Loading Indicator
-    if (busy == null) busy = BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
+    busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
 
     // add busy
     children.add(Center(child: busy));

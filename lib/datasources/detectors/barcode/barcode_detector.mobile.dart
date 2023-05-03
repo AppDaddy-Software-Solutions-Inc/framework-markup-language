@@ -48,7 +48,7 @@ class BarcodeDetector implements IBarcodeDetector
         if (_formats.isEmpty) _formats.add(ML.BarcodeFormat.all);
 
         // build detector
-        if (_detector == null) _detector = ML.BarcodeScanner(formats: _formats);
+        _detector ??= ML.BarcodeScanner(formats: _formats);
 
         // process
         Log().debug("Processing image ${++count}");

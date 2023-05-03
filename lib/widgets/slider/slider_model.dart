@@ -208,8 +208,8 @@ class SliderModel extends FormFieldModel implements IFormField
     if (inputtype    != null) this.inputtype  = inputtype;
     if (range        != null) this.range      = range;
 
-    this.alarming     = false;
-    this.dirty        = false;
+    alarming     = false;
+    dirty        = false;
   }
 
   static SliderModel? fromXml(WidgetModel parent, XmlElement xml, {String? type}) {

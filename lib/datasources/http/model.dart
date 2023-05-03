@@ -152,7 +152,7 @@ class HttpModel extends DataSourceModel implements IDataSource
 
   onUrlChange(Observable observable)
   {
-    if ((initialized == true) && (autoexecute == true) && (enabled != false)) start(refresh: this.refresh);
+    if ((initialized == true) && (autoexecute == true) && (enabled != false)) start(refresh: refresh);
   }
 
   Future<bool> start({bool refresh = false, String? key}) async

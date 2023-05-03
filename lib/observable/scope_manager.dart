@@ -86,7 +86,7 @@ class ScopeManager
     if ((observable == null) && (target != null) && (target.scope != null))
     {
       // Create New Unresolved 
-      if (unresolved == null) unresolved = HashMap<String?, List<Observable>>();
+      unresolved ??= HashMap<String?, List<Observable>>();
 
       // Create New Unresolved Scope 
       if (!unresolved!.containsKey(scopeId)) unresolved![scopeId] = [];

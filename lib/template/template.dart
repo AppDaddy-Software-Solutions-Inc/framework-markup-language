@@ -98,10 +98,10 @@ class Template
       }
 
       // get template from disk
-      if (template == null) template = await TemplateManager().fromDisk(url);
+      template ??= await TemplateManager().fromDisk(url);
 
       // get template from database (web)
-      if (template == null) template = await TemplateManager().fromDatabase(url);
+      template ??= await TemplateManager().fromDatabase(url);
 
       // get template from server
       if (template == null)
@@ -118,10 +118,10 @@ class Template
     else
     {
       // from assets archive
-      if (template == null) template = await TemplateManager().fromAssetsBundle(url);
+      template ??= await TemplateManager().fromAssetsBundle(url);
 
       // from disk
-      if (template == null) template = await TemplateManager().fromDisk(url);
+      template ??= await TemplateManager().fromDisk(url);
     }
 
     // nothing to process
@@ -150,7 +150,7 @@ class Template
     String? template;
 
     // get template from database (web)
-    if (template == null) template = await TemplateManager().fromDatabase(url);
+    template ??= await TemplateManager().fromDatabase(url);
 
     return Xml.tryParse(template);
   }

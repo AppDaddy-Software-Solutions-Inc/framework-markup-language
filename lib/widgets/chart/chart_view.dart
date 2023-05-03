@@ -771,7 +771,7 @@ class _ChartViewState extends WidgetState<ChartView>
     if (!widget.model.visible) return Offstage();
 
     // Busy / Loading Indicator
-    if (busy == null) busy = BUSY.BusyView(BUSY.BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
+    busy ??= BUSY.BusyView(BUSY.BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
 
     Widget view;
 

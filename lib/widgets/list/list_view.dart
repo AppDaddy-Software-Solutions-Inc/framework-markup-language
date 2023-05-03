@@ -92,7 +92,7 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
   @override
   void onScroll(Event event) async
   {
-    if (this.scroller != null) scroll(event, this.scroller);
+    if (scroller != null) scroll(event, scroller);
     event.handled = true;
   }
 
@@ -127,7 +127,7 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
   /// Callback function for when the model changes, used to force a rebuild with setState()
   onModelChange(WidgetModel model,{String? property, dynamic value})
   {
-    if (this.mounted) setState((){});
+    if (mounted) setState((){});
   }
 
   Widget? itemBuilder(BuildContext context, int index)
@@ -182,7 +182,7 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
     if (!widget.model.visible) return Offstage();
 
     /// Busy / Loading Indicator
-    if (busy == null) busy = BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
+    busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
 
     // Direction
     dynamic direction = Axis.vertical;

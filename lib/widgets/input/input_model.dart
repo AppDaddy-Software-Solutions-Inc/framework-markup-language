@@ -580,7 +580,7 @@ class InputModel extends FormFieldModel implements IFormField
     if (errortext     != null) this.errortext = errortext;
     if (lines         != null) this.lines = lines;
     if (length        != null) this.length = length;
-    if (padding       != null) this.margins = padding;
+    if (padding       != null) margins = padding;
     if (obscure       != null) this.obscure = obscure;
     if (clear         != null) this.clear = clear;
     if (onchange      != null) this.onchange = onchange;
@@ -601,8 +601,8 @@ class InputModel extends FormFieldModel implements IFormField
     if (textcolor     != null) this.textcolor = textcolor;
     if (touched       != null) this.touched = touched;
 
-    this.alarming = false;
-    this.dirty = false;
+    alarming = false;
+    dirty = false;
   }
 
   static InputModel? fromXml(WidgetModel parent, XmlElement xml, {String? type}) {
@@ -634,9 +634,9 @@ class InputModel extends FormFieldModel implements IFormField
     {
       String? xml;
       XmlElement? child;
-      if (child == null) child = Xml.getChildElement(node: element!, tag: S.fromEnum('value')!.toUpperCase());
-      if (child == null) child = Xml.getChildElement(node: element!, tag: S.fromEnum('value')!.toLowerCase());
-      if (child == null) child = Xml.getChildElement(node: element!, tag: S.fromEnum('value')!);
+      child ??= Xml.getChildElement(node: element!, tag: S.fromEnum('value')!.toUpperCase());
+      child ??= Xml.getChildElement(node: element!, tag: S.fromEnum('value')!.toLowerCase());
+      child ??= Xml.getChildElement(node: element!, tag: S.fromEnum('value')!);
       if (child != null) xml = child.innerXml;
       if (xml != null)
       {

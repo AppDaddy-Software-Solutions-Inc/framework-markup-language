@@ -146,7 +146,7 @@ class TreeNodeModel extends DecoratedWidgetModel
     super.deserialize(xml);
 
     // Set treeview
-    treeview = this.findAncestorOfExactType(TreeModel);
+    treeview = findAncestorOfExactType(TreeModel);
 
     // properties
     icon         = Xml.get(node: xml, tag: 'icon');

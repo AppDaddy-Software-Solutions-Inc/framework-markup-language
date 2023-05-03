@@ -232,8 +232,8 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     this.draggable = draggable;
     this.onpulldown = onpulldown;
     this.scrollShadows = scrollShadows;
-    this.scrollButtons = scrollButtons;
-    this.collapsed = collapsed;
+    scrollButtons = scrollButtons;
+    collapsed = collapsed;
     moreUp = false;
     moreDown = false;
     moreLeft = false;
@@ -304,7 +304,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     if ((index.isNegative) || (data.length < index)) return null;
 
     // build prototype
-    XmlElement? prototype = S.fromPrototype(this.prototype, "${this.id}-$index");
+    XmlElement? prototype = S.fromPrototype(this.prototype, "$id-$index");
 
     // build item model
     var model = ListItemModel.fromXml(this, prototype, data: data[index]);
@@ -329,8 +329,8 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
       clean = true;
 
       // clear items
-      this.items.forEach((_,item) => item.dispose());
-      this.items.clear();
+      items.forEach((_,item) => item.dispose());
+      items.clear();
 
       data = list;
       notifyListeners('list', items);
@@ -345,8 +345,8 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     // Log().debug('dispose called on => <$elementName id="$id">');
 
     // clear items
-    this.items.forEach((_,item) => item.dispose());
-    this.items.clear();
+    items.forEach((_,item) => item.dispose());
+    items.clear();
 
     super.dispose();
   }

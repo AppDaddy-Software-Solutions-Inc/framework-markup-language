@@ -92,8 +92,8 @@ class MapMarkerModel extends DecoratedWidgetModel
     this.data         = data;
     this.latitude     = latitude;
     this.longitude    = longitude;
-    this.title        = info;
-    this.description  = infoSnippet;
+    title        = info;
+    description  = infoSnippet;
     this.label        = label;
     this.marker       = marker;
     this.visible      = visible;

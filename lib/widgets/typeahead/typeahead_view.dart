@@ -167,7 +167,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
           }
         });
     }
-    if (widget.model.textcolor == null) widget.model.textcolor = modelColor;
+    widget.model.textcolor ??= modelColor;
     return value;
   }
 
@@ -289,7 +289,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
                       (option) => (option.value == suggestion));
               item = option?.child;
             }
-            if (item == null) item = Container(height: 12);
+            item ??= Container(height: 12);
             return Padding(
                 padding: EdgeInsets.only(
                     left: 12, right: 1, top: 12, bottom: 12),

@@ -205,24 +205,24 @@ class WidgetModel implements IDataSourceListener
   // context
   BuildContext? get context
   {
-    if (this._listeners != null)
-    for (IModelListener listener in this._listeners!)
+    if (_listeners != null)
+    for (IModelListener listener in _listeners!)
     {
       if (listener is State && (listener as State).mounted == true) return (listener as State).context;
     }
-    if (this.parent != null) return this.parent!.context;
+    if (parent != null) return parent!.context;
     return applicationKey.currentContext;
   }
 
   // context
   BuildContext? get statelessContext
   {
-    if (this._listeners != null)
-      for (IModelListener listener in this._listeners!)
+    if (_listeners != null)
+      for (IModelListener listener in _listeners!)
       {
         if (listener is State) return (listener as State).context;
       }
-    if (this.parent != null) return this.parent!.statelessContext;
+    if (parent != null) return parent!.statelessContext;
     return null;
   }
 
@@ -286,7 +286,7 @@ class WidgetModel implements IDataSourceListener
     this.scope = scope ?? Scope.of(this);
 
     // set the framework
-    this.framework = findAncestorOfExactType(FrameworkModel);
+    framework = findAncestorOfExactType(FrameworkModel);
 
     // register the model with the scope
     if (!S.isNullOrEmpty(id) && this.scope != null) this.scope!.registerModel(this);
@@ -858,14 +858,14 @@ class WidgetModel implements IDataSourceListener
 
     // Deserialize Children
 
-    if (this.children != null) this.children!.clear();
+    if (children != null) children!.clear();
     _deserializeDataSources(xml);
     _deserialize(xml);
 
     // register listener
-    if ((this.datasource != null) && (scope != null))
+    if ((datasource != null) && (scope != null))
     {
-      IDataSource? source = scope!.getDataSource(this.datasource);
+      IDataSource? source = scope!.getDataSource(datasource);
       if (source != null) source.register(this);
     }
 
@@ -883,8 +883,8 @@ class WidgetModel implements IDataSourceListener
       dynamic model = WidgetModel.fromXml(this, node);
       if (model is IDataSource)
       {
-        if (this.datasources == null) this.datasources = [];
-        this.datasources!.add(model);
+        datasources ??= [];
+        datasources!.add(model);
       }
     }
   }
@@ -899,8 +899,8 @@ class WidgetModel implements IDataSourceListener
       dynamic model = WidgetModel.fromXml(this, node);
       if (model is WidgetModel)
       {
-        if (this.children == null) this.children = [];
-        this.children!.add(model);
+        children ??= [];
+        children!.add(model);
       }
     }
   }
@@ -928,7 +928,7 @@ class WidgetModel implements IDataSourceListener
 
   registerListener(IModelListener listener)
   {
-    if (_listeners == null) _listeners = [];
+    _listeners ??= [];
     if (!_listeners!.contains(listener)) _listeners!.add(listener);
   }
 
@@ -1008,7 +1008,7 @@ class WidgetModel implements IDataSourceListener
     List<dynamic> list = [];
 
     // evaluate me
-    if ((this.runtimeType == T) && (this.id == (id ?? this.id))) list.add(this);
+    if ((runtimeType == T) && (this.id == (id ?? this.id))) list.add(this);
 
     // evaluate my siblings
     if ((includeSiblings) && (children != null))
@@ -1037,7 +1037,7 @@ class WidgetModel implements IDataSourceListener
     List<dynamic> list = [];
 
     // evaluate me
-    if ((this.runtimeType == (T ?? this.runtimeType)) &&
+    if ((runtimeType == (T ?? runtimeType)) &&
         (this.id == (id ?? this.id))) list.add(this);
 
     // evaluate my children
@@ -1082,13 +1082,13 @@ class WidgetModel implements IDataSourceListener
 
   Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async
   {
-    this.busy = false;
+    busy = false;
     //notifyListeners('list', list);
     return true;
   }
 
   onDataSourceException(IDataSource source, Exception exception) {
-    this.busy = false;
+    busy = false;
     //notifyListeners('error', exception);
   }
 
@@ -1110,23 +1110,23 @@ class WidgetModel implements IDataSourceListener
         if (model is IDataSource)
         {
           // add it to the datasource list
-          if (this.datasources == null) this.datasources = [];
-          this.datasources!.add(model as IDataSource);
+          datasources ??= [];
+          datasources!.add(model as IDataSource);
 
           // start brokers
-          this.initialize();
+          initialize();
         }
 
         // model is widget
         else
         {
           // add it to the child list
-          if (this.children == null) this.children = [];
+          children ??= [];
 
           // position specified?
-          if (index != null && index < this.children!.length)
-               this.children!.insert(index, model);
-          else this.children!.add(model);
+          if (index != null && index < children!.length)
+               children!.insert(index, model);
+          else children!.add(model);
         }
       }
       return (model != null);
@@ -1190,7 +1190,7 @@ class WidgetModel implements IDataSourceListener
         // we can now use dot notation to specify the property
         // rather than pass it as an attribute
         var property = S.item(arguments, 1);
-        if (property == null) property = Binding.fromString(caller)?.key ?? property;
+        property ??= Binding.fromString(caller)?.key ?? property;
 
         Scope? scope = Scope.of(this);
         if (scope == null) return false;
@@ -1226,21 +1226,21 @@ class WidgetModel implements IDataSourceListener
         int? index = S.toInt(S.item(arguments, 0));
 
         // check for children then remove them
-        if (this.children != null && index == null)
+        if (children != null && index == null)
         {
           // dispose of the last item
-          this.children!.last.dispose();
+          children!.last.dispose();
 
           // check if the list is greater than 0, remove at the final index.
-          if (this.children!.isNotEmpty) this.children!.removeLast();
+          if (children!.isNotEmpty) children!.removeLast();
         }
 
-        else if (this.children != null && index != null)
+        else if (children != null && index != null)
         {
           // check if index is in range, then dispose of the child at that index.
-          if (index >= 0 && this.children!.length > index) {
-            this.children![index].dispose();
-            this.children!.removeAt(index);
+          if (index >= 0 && children!.length > index) {
+            children![index].dispose();
+            children!.removeAt(index);
           }
           // Could add handling for negative index removing from the end?
         }
@@ -1252,8 +1252,8 @@ class WidgetModel implements IDataSourceListener
       case 'removechildren':
 
         // dispose of existing children
-        this.children?.forEach((child) => child.dispose());
-        this.children = [];
+        children?.forEach((child) => child.dispose());
+        children = [];
 
         // force parent rebuild
         parent?.notifyListeners("rebuild", "true");
@@ -1273,23 +1273,23 @@ class WidgetModel implements IDataSourceListener
         if (xml == null || xml is! String) return true;
 
         // check for children then remove them
-        if (this.children != null && index == null)
+        if (children != null && index == null)
         {
           // dispose of the last item
-          this.children!.last.dispose();
+          children!.last.dispose();
 
           // check if the list is greater than 0, remove at the final index.
-          if(this.children!.isNotEmpty) this.children!.removeAt(children!.length - 1);
+          if(children!.isNotEmpty) children!.removeAt(children!.length - 1);
           print(index.toString());
         }
 
-        else if (this.children != null && index != null)
+        else if (children != null && index != null)
         {
           // check if index is in range, then dispose of the child at that index.
-          if (index >= 0 && this.children!.length > index)
+          if (index >= 0 && children!.length > index)
           {
-            this.children![index].dispose();
-            this.children!.removeAt(index);
+            children![index].dispose();
+            children!.removeAt(index);
           }
           // Could add handling for negative index removing from the end?
         }
@@ -1313,13 +1313,13 @@ class WidgetModel implements IDataSourceListener
         if (xml == null || xml is! String) return true;
 
         // check for children then remove them
-        if (this.children != null)
+        if (children != null)
         {
-          this.children!.forEach((child)
+          children!.forEach((child)
           {
             child.dispose();
           });
-          this.children = [];
+          children = [];
         }
 
         // add elements
@@ -1339,7 +1339,7 @@ class WidgetModel implements IDataSourceListener
         if (index != null)
         {
           // dispose of this model
-          this.dispose();
+          dispose();
           parent?.children?.removeAt(index);
         }
 
@@ -1364,7 +1364,7 @@ class WidgetModel implements IDataSourceListener
         if (index != null)
         {
           // dispose of myself
-          this.dispose();
+          dispose();
 
           // remove myself from the list
           parent?.children?.removeAt(index);

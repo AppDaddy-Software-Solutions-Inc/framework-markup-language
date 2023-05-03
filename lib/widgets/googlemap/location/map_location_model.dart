@@ -93,8 +93,8 @@ class MapLocationModel extends DecoratedWidgetModel
     this.latitude     = latitude;
     this.longitude    = longitude;
     
-    this.title        = info;
-    this.description  = infoSnippet;
+    title        = info;
+    description  = infoSnippet;
     this.label        = label;
     this.marker       = marker;
     this.visible      = visible;

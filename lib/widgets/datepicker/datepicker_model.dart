@@ -368,8 +368,8 @@ class DatepickerModel extends FormFieldModel implements IFormField
     if (padding      != null) this.padding = padding;
     if (icon         != null) this.icon = icon;
 
-    this.alarming = false;
-    this.dirty = false;
+    alarming = false;
+    dirty = false;
   }
 
   static DatepickerModel? fromXml(WidgetModel parent, XmlElement xml, {String? type})

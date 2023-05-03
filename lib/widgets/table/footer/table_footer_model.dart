@@ -29,7 +29,7 @@ class TableFooterModel extends DecoratedWidgetModel
   {
     if (_bordercolor == null)
     {
-      if ((this.parent != null) && (this.parent is TableModel)) return (this.parent as TableModel).bordercolor;
+      if ((parent != null) && (parent is TableModel)) return (parent as TableModel).bordercolor;
       return null;
     }
     return _bordercolor?.get();
@@ -54,7 +54,7 @@ class TableFooterModel extends DecoratedWidgetModel
   {
     if (_borderwidth == null)
     {
-      if ((this.parent != null) && (this.parent is TableModel)) return (this.parent as TableModel).borderwidth;
+      if ((parent != null) && (parent is TableModel)) return (parent as TableModel).borderwidth;
       return null;
     }
     return _borderwidth?.get();

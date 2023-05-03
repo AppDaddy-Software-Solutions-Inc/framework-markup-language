@@ -125,9 +125,9 @@ class ListItemModel extends DecoratedWidgetModel
     this.data             = data;
     this.type             = type;
     this.backgroundcolor  = backgroundcolor;
-    this.dirty            = false;
+    dirty            = false;
     this.margin           = margin;
-    this.title            = title;
+    title            = title;
   }
 
   static ListItemModel? fromXml(WidgetModel parent, XmlElement? xml, {dynamic data})

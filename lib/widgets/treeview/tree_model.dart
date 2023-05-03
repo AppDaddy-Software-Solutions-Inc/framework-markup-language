@@ -81,8 +81,8 @@ class TreeModel extends DecoratedWidgetModel
     this.nodes.forEach((model) => model.dispose());
     this.nodes.clear();
 
-    this.youngestGeneration.forEach((model) => model?.dispose());
-    this.youngestGeneration.clear();
+    youngestGeneration.forEach((model) => model?.dispose());
+    youngestGeneration.clear();
 
     List<TreeNodeModel> nodes = findChildrenOfExactType(TreeNodeModel).cast<TreeNodeModel>();
     nodes.forEach((dynamic node)
@@ -107,8 +107,8 @@ class TreeModel extends DecoratedWidgetModel
     nodes.forEach((model) => model.dispose());
     nodes.clear();
 
-    this.youngestGeneration.forEach((model) => model?.dispose());
-    this.youngestGeneration.clear();
+    youngestGeneration.forEach((model) => model?.dispose());
+    youngestGeneration.clear();
 
     super.dispose();
   }

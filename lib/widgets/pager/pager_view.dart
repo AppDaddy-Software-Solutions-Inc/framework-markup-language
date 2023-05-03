@@ -88,7 +88,7 @@ class _PagerViewState extends WidgetState<PagerView>
     if (!widget.model.visible) return Offstage();
 
     /// Busy / Loading Indicator
-    if (busy == null) busy = BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
+    busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
 
     /////////////////
     /* Build Pages */

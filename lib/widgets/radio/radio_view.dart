@@ -35,7 +35,7 @@ class _RadioViewState extends WidgetState<RadioView>
     /* Options */
     /////////////
     if (widget.model.options.isNotEmpty) {
-      if (options == null) options = [];
+      options ??= [];
       options!.clear();
       for (OptionModel option in widget.model.options) {
         var checked = Icon(Icons.radio_button_checked,

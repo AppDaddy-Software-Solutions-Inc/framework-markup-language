@@ -222,7 +222,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
     if (value != null)
       value.forEach((v) {
         if (!S.isNullOrEmpty(v?.toString())) {
-          if (list == null) list = [];
+          list ??= [];
           list!.add(v.toString());
         }
       });
@@ -324,8 +324,8 @@ class CheckboxModel extends FormFieldModel implements IFormField
     if (onchange     != null) this.onchange     = onchange;
     if (wrap         != null) this.wrap         = wrap;
 
-    this.alarming = false;
-    this.dirty = false;
+    alarming = false;
+    dirty = false;
   }
 
   static CheckboxModel? fromXml(WidgetModel parent, XmlElement xml)
@@ -400,15 +400,15 @@ class CheckboxModel extends FormFieldModel implements IFormField
       if (prototype == null) return true;
 
       // clear options
-      this.options.forEach((option) => option.dispose());
-      this.options.clear();
+      options.forEach((option) => option.dispose());
+      options.clear();
 
       // build options
       int i = 0;
       if ((list != null))
       list.forEach((row)
       {
-        XmlElement? prototype = S.fromPrototype(this.prototype, "${this.id}-$i");
+        XmlElement? prototype = S.fromPrototype(this.prototype, "$id-$i");
         i = i + 1;
 
         OptionModel? model = OptionModel.fromXml(parent, prototype, data: row);

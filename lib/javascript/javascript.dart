@@ -141,7 +141,7 @@ class Bridge
       Map<String, dynamic> map = <String, dynamic>{};
       if (data is Map) map.addAll(data as Map<String, dynamic>);
 
-      String me        = 'DART-${this.id}';
+      String me        = 'DART-$id';
       // String id        =  ((map.containsKey('message:id'))   && (map['message:id']   is String)) ? (map['message:id']   as String) : null;
       String? type      =  ((map.containsKey('message:type')) && (map['message:type'] is String)) ? (map['message:type'] as String?) : null;
       String? from      =  ((map.containsKey('message:from')) && (map['message:from'] is String)) ? (map['message:from'] as String?) : null;

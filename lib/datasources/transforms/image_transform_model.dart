@@ -61,7 +61,7 @@ class ImageTransformModel extends TransformModel
   Future<Uint8List?> _toBytes(dynamic row) async
   {
     var v = Data.readValue(row, source);
-    if (v == null) v = source;
+    v ??= source;
 
     v = v.toString();
 

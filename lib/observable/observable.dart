@@ -164,7 +164,7 @@ class Observable
 
   registerListener(OnChangeCallback callback)
   {
-    if (listeners == null) listeners = [];
+    listeners ??= [];
     if (!listeners!.contains(callback)) listeners!.add(callback);
   }
 
@@ -179,7 +179,7 @@ class Observable
 
   registerSource(Observable source)
   {
-    if (sources == null) sources = [];
+    sources ??= [];
     if (!sources!.contains(source)) sources!.add(source);
   }
 
@@ -201,7 +201,7 @@ class Observable
     // Clear Sources
     if (sources != null)
     {
-      sources!.forEach((source) => source.removeListener(this.onObservableChange));
+      sources!.forEach((source) => source.removeListener(onObservableChange));
       sources = null;
     }
   }
@@ -296,7 +296,7 @@ class Observable
     try
     {
       result = EVALUATE.Eval.evaluate(expression, variables: variables);
-      if (result == null) result = "";
+      result ??= "";
     }
     catch(e)
     {

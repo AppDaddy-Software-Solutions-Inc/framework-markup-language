@@ -70,7 +70,7 @@ class MenuModel extends DecoratedWidgetModel
         // subtitle: ,
         icon: Icons.navigation_outlined,
       );
-      this.items.add(item);
+      items.add(item);
     });
   }
 
@@ -109,12 +109,12 @@ class MenuModel extends DecoratedWidgetModel
     if ((list != null))
     {
       // clear items
-      this.items.forEach((item) => item.dispose());
-      this.items.clear();
+      items.forEach((item) => item.dispose());
+      items.clear();
 
       list.forEach((row)
       {
-        XmlElement? prototype = S.fromPrototype(this.prototype, "${this.id}-$i");
+        XmlElement? prototype = S.fromPrototype(this.prototype, "$id-$i");
         i = i + 1;
 
         var model = MenuItemModel.fromXml(parent, prototype, data: row);
@@ -135,8 +135,8 @@ class MenuModel extends DecoratedWidgetModel
     // Log().debug('dispose called on => <$elementName id="$id">');
 
     // clear items
-    this.items.forEach((item) => item.dispose());
-    this.items.clear();
+    items.forEach((item) => item.dispose());
+    items.clear();
 
     super.dispose();
   }

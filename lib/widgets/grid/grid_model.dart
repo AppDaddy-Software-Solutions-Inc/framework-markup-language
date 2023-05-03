@@ -281,12 +281,12 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
       clean = true;
 
       // clear items
-      this.items.forEach((_,item) => item.dispose());
-      this.items.clear();
+      items.forEach((_,item) => item.dispose());
+      items.clear();
 
       // Populate grid items from datasource
       list.forEach((row) {
-        XmlElement? prototype = S.fromPrototype(this.prototype, "${this.id}-$i");
+        XmlElement? prototype = S.fromPrototype(this.prototype, "$id-$i");
         var model = GridItemModel.fromXml(parent!, prototype, data: row);
         if (model != null) items[i++] = model;
       });
@@ -299,7 +299,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
   }
 
   void sort(String? field, String? type, bool? ascending) async {
-    if ((this.data == null) ||  (this.data.isEmpty) || (field == null)) return;
+    if ((data == null) ||  (data.isEmpty) || (field == null)) return;
 
     busy = true;
 
@@ -326,7 +326,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
 //    /////////////
 //    Note csvStringFromData() does not handle large amounts of data in chunks and can overflow
     if (raw == true) {
-      String str = await csvStringFromData(this.data);
+      String str = await csvStringFromData(data);
       csvBytes = utf8.encode(str);
       Platform.fileSaveAs(csvBytes, '${S.newId()}.csv');
       return true;
@@ -430,8 +430,8 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
     // Log().debug('dispose called on => <$elementName id="$id">');
 
     // clear items
-    this.items.forEach((_,item) => item.dispose());
-    this.items.clear();
+    items.forEach((_,item) => item.dispose());
+    items.clear();
 
     super.dispose();
   }

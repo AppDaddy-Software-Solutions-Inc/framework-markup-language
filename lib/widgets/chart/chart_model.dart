@@ -70,7 +70,7 @@ class ChartModel extends DecoratedWidgetModel  {
     try
     {
       XmlElement? xml = Xml.getElement(node: template.document!.rootElement, tag: "CHART");
-      if (xml == null) xml = template.document!.rootElement;
+      xml ??= template.document!.rootElement;
       model = ChartModel.fromXml(parent, xml);
     }
     catch(e)
@@ -130,8 +130,8 @@ class ChartModel extends DecoratedWidgetModel  {
     List<ChartAxisModel> axis = findChildrenOfExactType(ChartAxisModel).cast<ChartAxisModel>();
     axis.forEach((axis)
     {
-      if (axis.axis == ChartAxis.X) this.xaxis = axis;
-      if (axis.axis == ChartAxis.Y) this.yaxis = axis;
+      if (axis.axis == ChartAxis.X) xaxis = axis;
+      if (axis.axis == ChartAxis.Y) yaxis = axis;
     });
   }
 
@@ -226,7 +226,7 @@ class ChartModel extends DecoratedWidgetModel  {
   {
     try
     {
-        this.series.forEach((series) {
+        series.forEach((series) {
           if (series.datasource == source.id) {
             series.dataPoint.clear();
             if (list != null)

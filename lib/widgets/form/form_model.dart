@@ -69,7 +69,7 @@ class FormModel extends DecoratedWidgetModel
   set status (dynamic v)
   {
     StatusCodes? status = S.toEnum(v.toString(), StatusCodes.values);
-    if (status == null) status = StatusCodes.incomplete;
+    status ??= StatusCodes.incomplete;
     v = S.fromEnum(status);
     if (_status != null)
     {
@@ -77,8 +77,8 @@ class FormModel extends DecoratedWidgetModel
     }
     else if (v != null)
     {
-      if (_status == null)    _status    = StringObservable(Binding.toKey(id, 'status'),   v, scope: scope);
-      if (_completed == null) _completed = BooleanObservable(Binding.toKey(id, 'complete'), (status == StatusCodes.complete), scope: scope);
+      _status ??= StringObservable(Binding.toKey(id, 'status'),   v, scope: scope);
+      _completed ??= BooleanObservable(Binding.toKey(id, 'complete'), (status == StatusCodes.complete), scope: scope);
     }
   }
   String? get status => _status?.get();
@@ -800,10 +800,10 @@ class FormModel extends DecoratedWidgetModel
       bool? isMandatory;
       if ((isMandatory == null) && (field.mandatory != null)) isMandatory = field.mandatory;
       if ((isMandatory == null) && (mandatory != null))  isMandatory = mandatory;
-      if (isMandatory  == null) isMandatory = false;
+      isMandatory ??= false;
       if ((isMandatory) && (!field.answered))
       {
-        if (missing == null) missing = [];
+        missing ??= [];
         missing!.add(field);
       }
     });
@@ -817,7 +817,7 @@ class FormModel extends DecoratedWidgetModel
     {
       if (field.alarming!)
       {
-        if (alarming == null) alarming = [];
+        alarming ??= [];
         alarming!.add(field);
       }
     });

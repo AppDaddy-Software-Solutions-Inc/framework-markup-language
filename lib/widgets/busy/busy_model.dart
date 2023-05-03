@@ -41,7 +41,7 @@ class BusyModel extends DecoratedWidgetModel
     if (_size != null)
     {
       _size!.set(v);
-      this.width = v;
+      width = v;
     }
     else if (v != null)
     {
@@ -107,7 +107,7 @@ class BusyModel extends DecoratedWidgetModel
   void onObservableChange(Observable observable)
   {
     var v = observable.get();
-    this.visible = v;
+    visible = v;
   }
 
   static BusyModel? fromXml(WidgetModel parent, XmlElement xml)

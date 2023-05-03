@@ -43,7 +43,7 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
   /// Callback to fire the [_TooltipViewState.build] when the [TooltipModel] changes
   onModelChange(WidgetModel model, {String? property, dynamic value})
   {
-    if (this.mounted) setState((){});
+    if (mounted) setState((){});
   }
 
   // applies margins to the view based on the widget model

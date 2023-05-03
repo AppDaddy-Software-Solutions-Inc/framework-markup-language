@@ -170,8 +170,8 @@ class RadioModel extends FormFieldModel implements IFormField
     if (valign       != null) this.valign       = valign;
     if (wrap         != null) this.wrap         = wrap;
 
-    this.alarming = false;
-    this.dirty    = false;
+    alarming = false;
+    dirty    = false;
   }
 
   static RadioModel? fromXml(WidgetModel parent, XmlElement xml)
@@ -229,8 +229,8 @@ class RadioModel extends FormFieldModel implements IFormField
       if (prototype == null) return true;
 
       // clear options
-      this.options.forEach((option) => option.dispose());
-      this.options.clear();
+      options.forEach((option) => option.dispose());
+      options.clear();
 
       // build options
       int i = 0;
@@ -239,7 +239,7 @@ class RadioModel extends FormFieldModel implements IFormField
         // build options
         list.forEach((row)
         {
-          XmlElement? prototype = S.fromPrototype(this.prototype, "${this.id}-$i");
+          XmlElement? prototype = S.fromPrototype(this.prototype, "$id-$i");
           i = i + 1;
           var model = OptionModel.fromXml(this, prototype, data: row);
           if (model != null) options.add(model);

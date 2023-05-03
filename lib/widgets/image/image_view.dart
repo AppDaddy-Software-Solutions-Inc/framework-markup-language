@@ -79,7 +79,7 @@ class ImageView extends StatefulWidget implements IWidgetView
           dynamic file = Platform.getFile(url!.replaceFirst("file:", ""));
 
           // user defined local files?
-          if (file == null) file = Platform.getFile(uri.asFilePath());
+          file ??= Platform.getFile(uri.asFilePath());
 
           // no file found
           if (file == null) break;

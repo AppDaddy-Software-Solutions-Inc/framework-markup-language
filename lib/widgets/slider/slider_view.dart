@@ -50,12 +50,12 @@ class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserv
       if (min > max) {
         min = 0;
         max = 0;
-        Log().debug('Slider min > max${widget.model.id}', caller: '${widget.model.elementName}.${this.runtimeType}');
+        Log().debug('Slider min > max${widget.model.id}', caller: '${widget.model.elementName}.$runtimeType');
       }
       if (value1 < min || value1 > max)
       {
         value1 = min;
-        Log().debug('Slider value out of range${widget.model.id}', caller: '${widget.model.elementName}.${this.runtimeType}');
+        Log().debug('Slider value out of range${widget.model.id}', caller: '${widget.model.elementName}.$runtimeType');
       }
     }
 

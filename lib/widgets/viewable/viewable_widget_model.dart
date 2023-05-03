@@ -549,7 +549,7 @@ class ViewableWidgetModel extends ConstraintModel
     {
       if (child is AnimationModel)
       {
-        if (animations == null) animations = [];
+        animations ??= [];
         animations!.add(child);
       }
     });
@@ -639,7 +639,7 @@ class ViewableWidgetModel extends ConstraintModel
     if (tipModel != null) view = TooltipView(tipModel!, view);
 
     // wrap animations.
-    if (this.animations != null)
+    if (animations != null)
     {
       var animations = this.animations!.reversed;
       animations.forEach((model) => view = model.getAnimatedView(view));
@@ -665,7 +665,7 @@ class ViewableWidgetModel extends ConstraintModel
 
   void onLayoutComplete(ViewableWidgetModel? model) async
   {
-    if (this.context == null) return;
+    if (context == null) return;
 
     var box = context!.findRenderObject() as RenderBox?;
     if (box == null) return;

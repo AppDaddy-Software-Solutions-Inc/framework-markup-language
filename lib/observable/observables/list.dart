@@ -109,7 +109,7 @@ class ListObservable extends Observable with ListMixin<dynamic>
     // list of values
     if (_value is List<Map>)
     {
-      Binding? binding = Binding.fromString(this.key);
+      Binding? binding = Binding.fromString(key);
       _value.forEach((map) => map[binding?.property] = value.toString());
       notifyListeners();
       return;

@@ -190,7 +190,7 @@ class Binding
 
         if (property != null)
         {
-          if (bindings == null) bindings = [];
+          bindings ??= [];
           bindings.add(property);
         }
       }
@@ -204,7 +204,7 @@ class Binding
       for (Match m in matches)
       {
         String? binding = m.group(0);
-        if (bindings == null) bindings = [];
+        bindings ??= [];
         bindings.add(binding);
       }
     return bindings;

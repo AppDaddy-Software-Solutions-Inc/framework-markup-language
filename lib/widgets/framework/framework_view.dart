@@ -165,7 +165,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     try
     {
       var b = Binding.fromString(property);
-      if (widget.model.initialized && this.mounted && b?.property != 'busy') setState(() {});
+      if (widget.model.initialized && mounted && b?.property != 'busy') setState(() {});
     }
     catch(e)
     {

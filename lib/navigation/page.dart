@@ -16,7 +16,7 @@ class PageConfiguration
 
   PageConfiguration({required this.url, String? title, this.transition})
   {
-    if (url != null) this.uri = Uri.tryParse(url!);
+    if (url != null) uri = Uri.tryParse(url!);
     this.title = title;
   }
 }

@@ -47,7 +47,7 @@ class HtmlModel extends DecoratedWidgetModel
     super.deserialize(xml);
 
     String? textvalue = Xml.get(node: xml, tag: 'value');
-    if (textvalue == null) textvalue = Xml.getText(xml);
+    textvalue ??= Xml.getText(xml);
 
     // properties
 

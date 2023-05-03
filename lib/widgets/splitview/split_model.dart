@@ -98,8 +98,8 @@ class SplitModel extends DecoratedWidgetModel
     if (ratio >= 0 && ratio <= 1)
     {
       if (vertical)
-           this.height = "${ratio * 100}%";
-      else this.width  = "${ratio * 100}%";
+           height = "${ratio * 100}%";
+      else width  = "${ratio * 100}%";
     }
 
     dividerColor  = Xml.get(node: xml, tag: 'dividercolor');

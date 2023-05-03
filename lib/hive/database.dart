@@ -25,7 +25,7 @@ class Database
     {
       Log().info('Initializing Database at Path: $path');
       this.path = path;
-      this.encryptionKey = encryptionKey;
+      encryptionKey = encryptionKey;
       if (path != null) Hive.init(path);
       ok = true;
     }

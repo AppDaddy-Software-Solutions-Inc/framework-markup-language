@@ -366,14 +366,14 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
     //Log().debug('Deserialize called on framework model => <FML name="$templateName" url="$url"/>');
 
     // remember xml node
-    this.element = xml;
+    element = xml;
 
     // get bindings
     bindables = Binding.getBindingKeys(xml.toXmlString());
-    if (bindables == null) bindables = [];
+    bindables ??= [];
 
     // stack index
-    this.index = -1;
+    index = -1;
 
     // deserialize 
     super.deserialize(xml);

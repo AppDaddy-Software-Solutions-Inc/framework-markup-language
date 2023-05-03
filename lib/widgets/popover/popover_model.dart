@@ -99,7 +99,7 @@ class PopoverModel extends DecoratedWidgetModel implements IModelListener
         var item = PopoverItemModel.fromXml(this, node);
         if (item != null) {
           item.registerListener(this);
-          this.items.add(item);
+          items.add(item);
         }
       }
   }

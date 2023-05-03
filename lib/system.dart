@@ -280,7 +280,7 @@ class System extends WidgetModel implements IEventManager
     _second = IntegerObservable(Binding.toKey('second'), second(), scope: scope, getter: second);
 
     // add system level log model datasource
-    if (datasources == null) datasources = [];
+    datasources ??= [];
     datasources!.add(LogModel(this, "LOG"));
 
     return true;

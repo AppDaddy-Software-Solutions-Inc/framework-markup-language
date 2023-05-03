@@ -72,7 +72,7 @@ class Receiver implements Gps
 
   registerListener(IGpsListener listener)
   {
-    if (_listeners == null) _listeners = [];
+    _listeners ??= [];
     if (!_listeners!.contains(listener))
     {
       _listeners!.add(listener);

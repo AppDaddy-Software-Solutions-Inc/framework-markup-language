@@ -29,7 +29,7 @@ class Calc extends TransformModel implements ITransform
   Calc(WidgetModel? parent, {String? id, String? operation, this.source, this.target, this.precision, String? group}) : super(parent, id)
   {
     this.operation = operation?.toLowerCase();
-    this.groups    = group?.split(",");
+    groups    = group?.split(",");
   }
 
   static Calc? fromXml(WidgetModel? parent, XmlElement xml)

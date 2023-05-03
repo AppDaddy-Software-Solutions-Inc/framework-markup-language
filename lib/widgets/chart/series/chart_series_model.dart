@@ -124,31 +124,31 @@ class ChartSeriesModel extends WidgetModel
     if (type != null) type = type?.trim().toLowerCase();
     switch (S.toEnum(type, ChartSeriesType.values)) {
       case ChartSeriesType.area:
-        this.type = S.fromEnum(ChartSeriesType.area);
+        type = S.fromEnum(ChartSeriesType.area);
         break;
 
       case ChartSeriesType.bar:
-        this.type = S.fromEnum(ChartSeriesType.bar);
+        type = S.fromEnum(ChartSeriesType.bar);
         break;
 
       case ChartSeriesType.label:
-        this.type = S.fromEnum(ChartSeriesType.label);
+        type = S.fromEnum(ChartSeriesType.label);
         break;
 
       case ChartSeriesType.line:
-        this.type = S.fromEnum(ChartSeriesType.line);
+        type = S.fromEnum(ChartSeriesType.line);
         break;
 
       case ChartSeriesType.pie:
-        this.type = S.fromEnum(ChartSeriesType.pie);
+        type = S.fromEnum(ChartSeriesType.pie);
         break;
 
       case ChartSeriesType.plot:
-        this.type = S.fromEnum(ChartSeriesType.plot);
+        type = S.fromEnum(ChartSeriesType.plot);
         break;
 
       case ChartSeriesType.waterfall:
-        this.type = S.fromEnum(ChartSeriesType.waterfall);
+        type = S.fromEnum(ChartSeriesType.waterfall);
         break;
 
       default:

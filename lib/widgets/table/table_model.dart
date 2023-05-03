@@ -467,7 +467,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     this.draggable = draggable;
     this.onpulldown = onpulldown;
     this.oncomplete = oncomplete;
-    this.dirty = false;
+    dirty = false;
     this.margin = margin;
     this.spacing = spacing;
     this.altcolor = altcolor;
@@ -512,8 +512,8 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     pagesize = Xml.get(node: xml, tag: 'pagesize');
     paged = Xml.get(node: xml, tag: 'paged');
 
-    if (width != null)  this.width  = Xml.get(node: xml, tag: 'width');
-    if (height != null) this.height = Xml.get(node: xml, tag: 'height');
+    if (width != null)  width  = Xml.get(node: xml, tag: 'width');
+    if (height != null) height = Xml.get(node: xml, tag: 'height');
 
     center = Xml.get(node: xml, tag: 'center');
     altcolor = Xml.get(node: xml, tag: 'altcolor');
@@ -552,7 +552,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
 
   TableRowModel? getEmptyRowModel() {
     // build prototype
-    XmlElement? prototype = S.fromPrototype(this.prototype, "${this.id}-${0}");
+    XmlElement? prototype = S.fromPrototype(this.prototype, "$id-${0}");
 
     // build model
     TableRowModel? model =
@@ -570,7 +570,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
 
     // build prototype
     XmlElement? prototype =
-        S.fromPrototype(this.prototype, "${this.id}-$index");
+        S.fromPrototype(this.prototype, "$id-$index");
 
     // build row model
     TableRowModel? model =
@@ -596,16 +596,16 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
 
   Future<bool> _build(IDataSource source, Data? map) async {
     if ((S.isNullOrEmpty(datasource)) || (datasource == source.id)) {
-      if (this.tableheader!.prototype != null) await _buildDynamic(map);
+      if (tableheader!.prototype != null) await _buildDynamic(map);
 
-      this.clean = true;
+      clean = true;
 
       // clear rows
-      this.rows.forEach((_,row) => row.dispose());
-      this.rows.clear();
+      rows.forEach((_,row) => row.dispose());
+      rows.clear();
 
-      this.page = 1;
-      this.data = map;
+      page = 1;
+      data = map;
     }
     notifyListeners('list', null);
     return true;
@@ -647,8 +647,8 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     }
 
     // clear rows
-    this.rows.forEach((_,row) => row.dispose());
-    this.rows.clear();
+    rows.forEach((_,row) => row.dispose());
+    rows.clear();
 
     // Notify Listeners of Change
     notifyListeners('list', null);
@@ -696,8 +696,8 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     prototypeModel?.dispose();
 
     // clear rows
-    this.rows.forEach((_,row) => row.dispose());
-    this.rows.clear();
+    rows.forEach((_,row) => row.dispose());
+    rows.clear();
 
     super.dispose();
   }
@@ -761,7 +761,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
 
   Future<bool> onSort(int index) async {
     busy = true;
-    await this.sort(index, null);
+    await sort(index, null);
     busy = false;
     return true;
   }
@@ -814,8 +814,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
           /////////////////
           /* Header Cell */
           /////////////////
-          xml = this
-              .tableheader!
+          xml = tableheader!
               .prototype!
               .toXmlString()
               .replaceAll("{field}", key);
@@ -835,8 +834,8 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
           /* Add Header and Row Cells */
           //////////////////////////////
           if ((c1 != null) && (c2 != null)) {
-            this.tableheader!.cells.add(c1);
-            this.prototypeModel!.element!.children.add(c2.rootElement.copy());
+            tableheader!.cells.add(c1);
+            prototypeModel!.element!.children.add(c2.rootElement.copy());
           }
         }
       });

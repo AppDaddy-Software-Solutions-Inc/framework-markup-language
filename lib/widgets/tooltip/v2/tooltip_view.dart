@@ -61,7 +61,7 @@ class TooltipView extends StatefulWidget implements IWidgetView
         _pos = TooltipPosition.topEnd;
         break;
     }
-    this.position = _pos;
+    position = _pos;
 
     // set tooltip content
     List<Widget> children = model.inflate();

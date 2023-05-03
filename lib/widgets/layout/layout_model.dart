@@ -226,7 +226,7 @@ class LayoutModel extends DecoratedWidgetModel
     if (getPercentWidth(child) != null) return null;
 
     // flex only if both me and my child are horizontally expanding
-    if (this.isHorizontallyExpanding && child.isHorizontallyExpanding) return child.flex ?? 1;
+    if (isHorizontallyExpanding && child.isHorizontallyExpanding) return child.flex ?? 1;
 
     return null;
   }
@@ -240,7 +240,7 @@ class LayoutModel extends DecoratedWidgetModel
     if (getPercentHeight(child) != null) return null;
 
     // flex only if both me and my child are vertically expanding
-    if (this.isVerticallyExpanding && child.isVerticallyExpanding) return child.flex ?? 1;
+    if (isVerticallyExpanding && child.isVerticallyExpanding) return child.flex ?? 1;
 
     return null;
   }
@@ -314,8 +314,8 @@ class LayoutModel extends DecoratedWidgetModel
     var maximum = myMaxWidth;
     if (maximum == double.infinity) maximum = viewWidth ?? 0;
 
-    var variable = this.variableWidthChildren;
-    var fixed    = this.fixedWidthChildren;
+    var variable = variableWidthChildren;
+    var fixed    = fixedWidthChildren;
 
     // calculate fixed space
     double reserved = 0;
@@ -413,8 +413,8 @@ class LayoutModel extends DecoratedWidgetModel
     var maximum = myMaxHeight;
     if (maximum == double.infinity) maximum = viewHeight ?? 0;
 
-    var variable = this.variableHeightChildren;
-    var fixed = this.fixedHeightChildren;
+    var variable = variableHeightChildren;
+    var fixed = fixedHeightChildren;
 
     // calculate fixed space
     double reserved = 0;

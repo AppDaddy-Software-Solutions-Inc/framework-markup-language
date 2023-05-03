@@ -79,7 +79,7 @@ class CameraViewState extends WidgetState<CameraView>
   /// Callback to fire the [CameraViewState.build] when the [CameraModel] changes
   onModelChange(WidgetModel model, {String? property, dynamic value})
   {
-    if (this.mounted)
+    if (mounted)
     {
       var b = Binding.fromString(property);
       switch (b?.property)
@@ -331,7 +331,7 @@ class CameraViewState extends WidgetState<CameraView>
         }
 
         // notify initilizied
-        widget.model.onInitialized(this.context);
+        widget.model.onInitialized(context);
 
         // camera is busy
         widget.model.busy = false;
@@ -572,8 +572,7 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
       // camera selector
       Widget selector;
       if (cameras != null && cameras!.length > 1) {
-        if (selectorbutton == null)
-          selectorbutton = IconView(IconModel(null, null,
+        selectorbutton ??= IconView(IconModel(null, null,
               icon: Icons.cameraswitch_sharp, size: 25, color: Colors.black));
         selector = UnconstrainedBox(
             child: MouseRegion(
@@ -589,8 +588,7 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
       }
 
       // shutter
-      if (shutterbutton == null)
-        shutterbutton = IconView(IconModel(null, null,
+      shutterbutton ??= IconView(IconModel(null, null,
             icon: Icons.circle, size: 65, color: Colors.white));
       var shutter = UnconstrainedBox(
           child: MouseRegion(

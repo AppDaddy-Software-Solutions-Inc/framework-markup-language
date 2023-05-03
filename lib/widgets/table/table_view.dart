@@ -204,7 +204,7 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
   @override
   void onScroll(Event event) async
   {
-    if (this.hScroller != null && this.vScroller != null) scroll(event, this.hScroller, this.vScroller);
+    if (hScroller != null && vScroller != null) scroll(event, hScroller, vScroller);
     event.handled = true;
   }
 
@@ -245,7 +245,7 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     {
       var b = Binding.fromString(property);
       if (b?.property == 'busy') return;
-      if (this.mounted) setState(() {});
+      if (mounted) setState(() {});
     }
     catch(e)
     {
@@ -424,7 +424,7 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     Widget footerOverlay3 = Container(width: viewportWidth, height: footerHeight, child: Row(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.end, crossAxisAlignment: CrossAxisAlignment.center, children:[footerPrevPage(), footerCurrPage(), footerNextPage()]));
 
     // Busy
-    if (busy == null) busy = BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
+    busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
 
     ///////////
     /* Table */
@@ -538,7 +538,7 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
 
     Color? bordercolor = widget.model.tableheader!.bordercolor ?? Colors.transparent;
     if ((widget.model.tablefooter != null) && (widget.model.tablefooter!.bordercolor != null)) bordercolor = widget.model.tablefooter!.bordercolor;
-    if (bordercolor == null) bordercolor = Theme.of(context).colorScheme.outline;
+    bordercolor ??= Theme.of(context).colorScheme.outline;
 
     return Container(width: width, height: height, decoration: BoxDecoration(color: color, border: Border.all(color: bordercolor)));
   }
@@ -576,7 +576,7 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
       /* Selected Value */
       ////////////////////
       DropdownMenuItem? selected = items.firstWhereOrNull((item) => (item.value! >= (widget.model.pagesize ?? 0)));
-      if (selected == null) selected = items.first;
+      selected ??= items.first;
 
       return Padding(padding: EdgeInsets.only(left: 10),
           child: Row(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.center,

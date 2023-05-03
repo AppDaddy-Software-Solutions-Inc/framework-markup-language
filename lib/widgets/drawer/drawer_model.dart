@@ -231,8 +231,8 @@ class DrawerModel extends DecoratedWidgetModel
     if (element != null) right = DrawerItemModel.fromXml(this, element, DrawerPositions.right);
 
     // properties
-    this.side    = Xml.get(node: xml, tag: 'side');
-    this.rounded = Xml.get(node: xml, tag: 'rounded');
+    side    = Xml.get(node: xml, tag: 'side');
+    rounded = Xml.get(node: xml, tag: 'rounded');
   }
 
   @override

@@ -77,7 +77,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
     if ((cont!.text != widget.model.value) && (widget.model.isPicking != true))
       widget.model.onChange(context);
     cont!.text = widget.model.value;
-    if (this.mounted) setState(() {});
+    if (mounted) setState(() {});
   }
 
   @override

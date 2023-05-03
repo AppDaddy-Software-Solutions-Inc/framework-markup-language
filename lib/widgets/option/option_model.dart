@@ -110,9 +110,9 @@ class OptionModel extends ViewableWidgetModel
         this.label = TextModel(this, null, value: label);
     }
 
-    if (this.label == null && this.labelValue == null) {
-      this.labelValue = Xml.get(node: xml, tag: 'value');
-      this.label = TextModel(this, null, value: this.labelValue);
+    if (this.label == null && labelValue == null) {
+      labelValue = Xml.get(node: xml, tag: 'value');
+      this.label = TextModel(this, null, value: labelValue);
     }
     // Value
     String? value = Xml.get(node: xml, tag: 'value');

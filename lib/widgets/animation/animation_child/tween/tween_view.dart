@@ -128,7 +128,7 @@ class TweenViewState extends State<TweenView>
 
   /// Callback to fire the [_AnimationViewState.build] when the [AnimationModel] changes
   onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    if (this.mounted) setState(() {});
+    if (mounted) setState(() {});
   }
 
   @override

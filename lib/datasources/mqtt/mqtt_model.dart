@@ -361,7 +361,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
       EventHandler handler = EventHandler(this);
       await handler.execute(_ondisconnected);
     }
-    onData(this.data ?? Data(), code: HttpStatus.ok, message: "Disconnected by $origin");
+    onData(data ?? Data(), code: HttpStatus.ok, message: "Disconnected by $origin");
   }
 
   @override

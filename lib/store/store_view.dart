@@ -84,7 +84,7 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
   /// Callback to fire the [_ViewState.build] when the [StoreModel] changes
   onModelChange(WidgetModel model, {String? property, dynamic value})
   {
-    if (this.mounted) setState((){});
+    if (mounted) setState((){});
   }
 
   @override

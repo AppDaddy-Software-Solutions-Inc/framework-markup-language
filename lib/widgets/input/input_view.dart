@@ -84,7 +84,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
 
     // create the controller if its not already created in the model.
     // This allows us to get around having to use GlobalKey() on the Input to preserve the controller state
-    if (widget.model.controller == null) widget.model.controller = TextEditingController();
+    widget.model.controller ??= TextEditingController();
 
     // Set Controller Text
     if (widget.model.errortext != null) userSetErrorText = true;
@@ -144,7 +144,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     // ensure we don't call setstate if the model update was entered via
     // keyboard by comparing the controller to the callback's value
     var b = Binding.fromString(property);
-    if (this.mounted && ((widget.model.controller?.text != value && b?.property == 'value') || b?.property != 'value'))
+    if (mounted && ((widget.model.controller?.text != value && b?.property == 'value') || b?.property != 'value'))
     {
       setState(() {
         // This places the cursor at the end of the selection when focussed.

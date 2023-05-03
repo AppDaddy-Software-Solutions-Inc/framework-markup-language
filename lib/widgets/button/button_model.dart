@@ -176,10 +176,10 @@ class ButtonModel extends DecoratedWidgetModel
     // constraints
     if (width     != null) this.width     = width;
     if (height    != null) this.height    = height;
-    if (minwidth  != null) this.minWidth  = minwidth;
-    if (minheight != null) this.minHeight = minheight;
-    if (maxwidth  != null) this.maxWidth  = maxwidth;
-    if (maxheight != null) this.maxHeight = maxheight;
+    if (minwidth  != null) minWidth  = minwidth;
+    if (minheight != null) minHeight = minheight;
+    if (maxwidth  != null) maxWidth  = maxwidth;
+    if (maxheight != null) maxHeight = maxheight;
 
     this.onclick    = onclick;
     this.onenter    = onenter;

@@ -236,7 +236,7 @@ class Scope
 
   void addChild(Scope child)
   {
-    if (children == null) children = [];
+    children ??= [];
     if (!children!.contains(child)) children!.add(child);
   }
 

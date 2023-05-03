@@ -373,7 +373,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
   }
 
   void onIndexChange(Observable index) {
-    this.enabled = (S.toInt(index.get()) == 0);
+    enabled = (S.toInt(index.get()) == 0);
   }
 
   register(IDataSourceListener listener) {
@@ -395,7 +395,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
   }
 
   Future<bool> clear({int? start, int? end}) async {
-    if ((this.data != null) && (data!.isNotEmpty)) {
+    if ((data != null) && (data!.isNotEmpty)) {
       int from = 0;
       int to = data!.length - 1;
 
@@ -445,12 +445,12 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
 
     // apply data transforms
     if (children != null)
-      for (WidgetModel model in this.children!) {
+      for (WidgetModel model in children!) {
         if (model is ITransform) await (model as ITransform).apply(data);
       }
 
     // type - default is replace
-    ListTypes? type = S.toEnum(this.queuetype, ListTypes.values);
+    ListTypes? type = S.toEnum(queuetype, ListTypes.values);
 
     // Fifo - Oldest -> Newest
     if (type == ListTypes.fifo) {
@@ -588,7 +588,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
 
     // notify nested data sources
     if (datasources != null)
-      for (IDataSource model in this.datasources!) {
+      for (IDataSource model in datasources!) {
         if (model is DataModel) model.onSuccess(data.clone());
       }
 
@@ -687,9 +687,9 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
 
       // reverse the list
       case "reverse":
-        if (this.data != null)
+        if (data != null)
         {
-          this.data = this.data!.reversed;
+          data = data!.reversed;
           notify();
         }
         return true;

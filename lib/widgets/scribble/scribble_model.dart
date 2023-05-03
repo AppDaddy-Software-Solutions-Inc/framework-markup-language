@@ -144,8 +144,8 @@ class ScribbleModel extends FormFieldModel implements IFormField
     if (style     != null) this.style     = style;
     if (post      != null) this.post      = post;
 
-    this.alarming = false;
-    this.dirty    = false;
+    alarming = false;
+    dirty    = false;
   }
 
   static ScribbleModel? fromXml(WidgetModel parent, XmlElement xml)

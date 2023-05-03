@@ -270,8 +270,7 @@ class ViewState extends WidgetState<View>
         }
       };
       dynamic cameras;
-      if (cameras == null)
-        cameras = await HTML.window.navigator.mediaDevices!
+      cameras ??= await HTML.window.navigator.mediaDevices!
             .getUserMedia(mediaConstraints);
       HTML.window.navigator.mediaDevices!
           .getUserMedia(mediaConstraints)

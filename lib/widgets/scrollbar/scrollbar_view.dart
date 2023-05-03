@@ -68,18 +68,20 @@ class _ScrollbarViewState extends WidgetState<ScrollbarView>
   onScrollController()
   {
     double offset = toLocal(widget.controller!.offset);
-    if ((this.offset != offset) && (mounted)) setState(()
+    if ((this.offset != offset) && (mounted)) {
+      setState(()
     {
-      this.opacity = on;
+      opacity = on;
       this.offset = offset;
       onMouseExit(null);
     });
+    }
   }
 
   /// Callback to fire the [_ScrollbarViewState.build] when the [ScrollbarModel] changes
   onModelChange(WidgetModel model, {String? property, dynamic value})
   {
-    if (this.mounted) setState((){});
+    if (mounted) setState((){});
   }
 
   double toLocal(double value)
@@ -151,7 +153,7 @@ class _ScrollbarViewState extends WidgetState<ScrollbarView>
     /////////////////
     /* Set Opacity */
     /////////////////
-    if (mounted) setState(() => this.opacity = on);
+    if (mounted) setState(() => opacity = on);
   }
 
   void onMouseExit(_)
@@ -178,7 +180,7 @@ class _ScrollbarViewState extends WidgetState<ScrollbarView>
     /////////////////
     /* Set Opacity */
     /////////////////
-    if (mounted) setState(() => this.opacity = off);
+    if (mounted) setState(() => opacity = off);
   }
 
   void onHorizontalDrag(DragUpdateDetails details)
@@ -233,9 +235,11 @@ class _ScrollbarViewState extends WidgetState<ScrollbarView>
     /* Records */
     /////////////
     double items = (widget.itemExtent != null) && (widget.itemExtent! > 0) ? (toGlobal(offset) - (widget.controller!.offset)).abs() / widget.itemExtent! : 0;
-    if (items > 10)
-         timer = Timer(Duration(milliseconds: 100), _scroll);
-    else _scroll();
+    if (items > 10) {
+      timer = Timer(Duration(milliseconds: 100), _scroll);
+    } else {
+      _scroll();
+    }
 
     if (mounted) setState((){});
   }

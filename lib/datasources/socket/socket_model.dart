@@ -235,7 +235,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     bool ok = true;
 
     // default format for message is string
-    if (asBinary == null) asBinary = false;
+    asBinary ??= false;
 
     try
     {
@@ -301,7 +301,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     bool ok = true;
 
     // default format for a file is binary
-    if (asBinary == null) asBinary = true;
+    asBinary ??= true;
 
     try
     {

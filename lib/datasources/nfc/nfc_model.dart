@@ -164,7 +164,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
     if (!S.isNullOrEmpty(message))
     {
       Log().debug('NFC WRITE: Polling for 60 seconds');
-      String stripTags = message!.replaceAll('\r', '').replaceAll('\t', '').replaceAll('\n', '').replaceAll(RegExp("\<[^\>]*\>", caseSensitive: false), '');
+      String stripTags = message!.replaceAll('\r', '').replaceAll('\t', '').replaceAll('\n', '').replaceAll(RegExp("<[^>]*>", caseSensitive: false), '');
       Writer writer = Writer(stripTags, callback: onResult);
       try {
         bool ok = await writer.write();

@@ -129,8 +129,7 @@ class MqttMobile implements IMqtt
   /// notifications of published updates to each subscribed topic.
   void _onData (List<MqttReceivedMessage<MqttMessage>> messages)
   {
-    messages.forEach((msg)
-    {
+    for (var msg in messages) {
       final MqttPublishMessage recMess = msg.payload as MqttPublishMessage;
       final message = MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
 
@@ -138,7 +137,7 @@ class MqttMobile implements IMqtt
 
       /// notify listener
       listener.onMessage(Payload(topic: msg.topic, message: message));
-    });
+    }
   }
 
   void _onDone()

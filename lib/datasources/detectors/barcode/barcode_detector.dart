@@ -48,8 +48,7 @@ class Payload
   static Data toData(Payload payload)
   {
     Data data = Data();
-    payload.barcodes.forEach((barcode)
-    {
+    for (var barcode in payload.barcodes) {
       Map<dynamic,dynamic> map = <dynamic,dynamic>{};
       map["barcode"] = barcode.barcode;
       map["display"] = barcode.display;
@@ -57,7 +56,7 @@ class Payload
       map["type"]    = barcode.type != null ? barcode.type.toString() : "";
       if (barcode.parameters != null) barcode.parameters!.forEach((key, value) => map[key] = value);
       data.add(map);
-    });
+    }
     return data;
   }
 }

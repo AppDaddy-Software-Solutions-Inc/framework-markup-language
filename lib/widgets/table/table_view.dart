@@ -475,8 +475,7 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
       /* Proxy Each Cell in the Header */
       ///////////////////////////////////
       int i = 0;
-      widget.model.tableheader!.cells.forEach((model)
-      {
+      for (var model in widget.model.tableheader!.cells) {
         Widget view = TableHeaderCellView(model);
         var width  = model.width;
         var height = model.height;
@@ -485,7 +484,7 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
 
         final int index = i++;
         children.add(MeasuredView(UnconstrainedBox(child: view), onProxyHeaderCellSize, data: index));
-      });
+      }
 
       //////////////////////
       /* Proxy the Header */

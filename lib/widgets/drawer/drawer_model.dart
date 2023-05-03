@@ -134,8 +134,7 @@ class DrawerModel extends DecoratedWidgetModel
       String? idBottom;
 
       XmlElement xml = XmlElement(XmlName.fromString('DRAWER')); // create a single drawer element
-      elements.forEach((element)
-      {
+      for (var element in elements) {
         XmlElement node = element.copy();
 
         String? side = Xml.attribute(node: node, tag: 'side')?.trim().toLowerCase();
@@ -145,11 +144,10 @@ class DrawerModel extends DecoratedWidgetModel
           XmlElement drawer = XmlElement(XmlName(side.toUpperCase())); // create a sidedrawer from template
 
           // add attributes
-          node.attributes.forEach((attribute)
-          {
+          for (var attribute in node.attributes) {
             var name = attribute.localName.toLowerCase();
             if (name != "width" && name != "height" && name != "side") drawer.attributes.add(XmlAttribute(XmlName(name), attribute.value));
-          });
+          }
 
           // Assign ids
           switch (side)
@@ -192,7 +190,7 @@ class DrawerModel extends DecoratedWidgetModel
         else {
           Log().error('Unable to parse a drawer attributes', caller: 'drawer.Model => Model.fromXmlList()');
         }
-      });
+      }
 
       // Create View Model
       model = DrawerModel(parent, Xml.get(node: xml, tag: 'id'), handleLeft: handleLeft, handleRight: handleRight, handleTop: handleTop, handleBottom: handleBottom, sizeLeft: sizeLeft, sizeRight: sizeRight, sizeTop: sizeTop, sizeBottom: sizeBottom, idLeft: idLeft, idRight: idRight, idTop: idTop, idBottom: idBottom);

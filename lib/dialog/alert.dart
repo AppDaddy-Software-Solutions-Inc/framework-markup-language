@@ -252,8 +252,7 @@ class Alert {
     List<Widget> expandedButtons = [];
     if (style.isButtonVisible) {
       if (buttons != null) {
-        buttons!.forEach(
-              (button) {
+        for (var button in buttons!) {
             var buttonWidget = Padding(
               padding: const EdgeInsets.only(left: 2, right: 2),
               child: button,
@@ -266,8 +265,7 @@ class Alert {
                 child: buttonWidget,
               ));
             }
-          },
-        );
+          }
       } else {
         Widget cancelButton = DialogButton(
           child: Text(

@@ -158,15 +158,14 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
     {
       var models = (model.label as WidgetModel).findDescendantsOfExactType(TextModel);
       if (models != null) {
-        models.forEach((text)
-        {
+        for (var text in models) {
           if (text is TextModel)
           {
             String v = S.toStr(text.value) ?? "";
             if (!value.contains(v)) value += v;
             modelColor = text.color;
           }
-        });
+        }
       }
     }
     widget.model.textcolor ??= modelColor;

@@ -55,7 +55,7 @@ class _SplashState extends State<Splash>
     dynamic gifLogo = Container();
     try {
       svgLogo = SvgPicture.asset("assets/images/splash.svg", width: width);
-    } catch(e) {}
+    } catch(e)  {}
     try {
       gifLogo = Image.asset("assets/images/splash.gif", width: width);
     } catch(e) {}

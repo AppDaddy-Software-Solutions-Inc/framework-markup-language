@@ -365,8 +365,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
     // checkboxes can have multiple values
     var values = Xml.getChildElements(node: xml, tag: 'value');
     if (values != null) {
-      values.forEach((element)
-    {
+      for (var element in values) {
       String? v = Xml.getText(element);
       if (!S.isNullOrEmpty(v))
       {
@@ -376,7 +375,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
           _value!.add(v);
         }
       }
-    });
+    }
     }
 
     /// layout attributes

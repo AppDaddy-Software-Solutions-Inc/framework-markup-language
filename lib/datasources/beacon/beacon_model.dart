@@ -141,7 +141,9 @@ class BeaconModel extends DataSourceModel implements IDataSource, IBeaconListene
 
     // remove any items that haven't been seen in the past 15 seconds
     List<String> expired = [];
-    lastSeen.entries.forEach((e) => (DateTime.now().millisecondsSinceEpoch - e.value > (1000 * 15) ?  expired.add(e.key) : null));
+    for (var e in lastSeen.entries) {
+      (DateTime.now().millisecondsSinceEpoch - e.value > (1000 * 15) ?  expired.add(e.key) : null);
+    }
     if (expired.isNotEmpty)
     {
       firstSeen.removeWhere((key, value) => expired.contains(key));

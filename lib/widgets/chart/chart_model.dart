@@ -118,15 +118,14 @@ class ChartModel extends DecoratedWidgetModel  {
     // Get Series
     this.series.clear();
     List<ChartSeriesModel> series = findChildrenOfExactType(ChartSeriesModel).cast<ChartSeriesModel>();
-      series.forEach((model)
-      {
+      for (var model in series) {
         // add the series to the list
         this.series.add(model);
 
         // register listener to the datasource
         IDataSource? source = (scope != null) ? scope!.getDataSource(model.datasource) : null;
         if (source != null) source.register(this);
-      });
+      }
 
     // Get Axis
     List<ChartAxisModel> axis = findChildrenOfExactType(ChartAxisModel).cast<ChartAxisModel>();

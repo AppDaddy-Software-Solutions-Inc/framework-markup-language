@@ -101,10 +101,9 @@ class Receiver implements Gps
   notifyListeners(Payload data)
   {
     if (_listeners != null) {
-      _listeners!.forEach((listener)
-      {
+      for (var listener in _listeners!) {
         listener.onGpsData(payload: data);
-      });
+      }
     }
   }
 }

@@ -143,20 +143,20 @@ class TextDetector implements ITextDetector
     }
 
     String body = '';
-    ocrLines.forEach((l) {
+    for (var l in ocrLines) {
       String text = '';
       List<String> words = [];
-      l.words.forEach((t) {
+      for (var t in l.words) {
         words.add(t.text.trim());
         text += ' ${t.text}';
-      });
+      }
       text.replaceAll('  ', ' ');
       text.trim();
       body += '\n$text';
       Line line = Line(text: text);
       line.words.addAll(words);
       lines.add(line);
-    });
+    }
 
     return Payload(body: body, lines: lines);
   }

@@ -29,8 +29,7 @@ class Payload
     // process lines
     int i = 0;
     if (payload.lines != null) {
-      payload.lines!.forEach((line)
-    {
+      for (var line in payload.lines!) {
       i++;
 
       Map<dynamic, dynamic> map =  <dynamic, dynamic>{};
@@ -39,8 +38,10 @@ class Payload
       map["line"] = line.text;
 
       int j = 1;
-      line.words.forEach((word) => map["word${j++}"] = word);
-    });
+      for (var word in line.words) {
+        map["word${j++}"] = word;
+      }
+    }
     }
     return data;
   }

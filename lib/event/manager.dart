@@ -71,7 +71,9 @@ class EventManager
       List<OnEventCallback>? callbacks;
       if (listeners.containsKey(event.type)) callbacks = listeners[event.type];
       if (callbacks != null) {
-        callbacks.forEach((callback) => !event.handled ? callback(event) : null);
+        for (var callback in callbacks) {
+          !event.handled ? callback(event) : null;
+        }
       }
 
       // Notify Child Event Managers

@@ -354,7 +354,9 @@ class TypeaheadModel extends FormFieldModel implements IFormField
     if (S.isBool(empty)) addempty = S.toBool(empty);
 
     // clear options
-    this.options.forEach((option) => option.dispose());
+    for (var option in this.options) {
+      option.dispose();
+    }
     this.options.clear();
 
     // Build options

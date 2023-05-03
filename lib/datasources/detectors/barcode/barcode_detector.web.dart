@@ -101,8 +101,7 @@ class BarcodeDetector implements IBarcodeDetector
     Payload? payload;
     payload = await _pdf417(bitmap, tryharder, invert);
 
-    payload.barcodes.forEach((barcode)
-    {
+    for (var barcode in payload.barcodes) {
       if (barcode.barcode!.contains('ANSI 636012'))
       {
         barcode.parameters = <String, String?>{};
@@ -192,7 +191,7 @@ class BarcodeDetector implements IBarcodeDetector
           }
         });
       }
-    });
+    }
 
     return payload;
   }

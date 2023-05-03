@@ -301,7 +301,9 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     }
 
     // build items
-    items.forEach((item) => this.items[i++] = item);
+    for (var item in items) {
+      this.items[i++] = item;
+    }
   }
 
   ListItemModel? getItemModel(int index)

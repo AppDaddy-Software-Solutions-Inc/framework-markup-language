@@ -205,7 +205,9 @@ class Bridge
       }
     }
     if (callbacks != null) {
-      callbacks.forEach((callback) => callback(parameters));
+      for (var callback in callbacks) {
+        callback(parameters);
+      }
     }
   }
 }

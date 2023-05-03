@@ -31,10 +31,10 @@ class _PopoverViewState extends WidgetState<PopoverView>
 
   Widget buildPopover() {
     List<PopupMenuEntry> itemsList = [];
-    widget.model.items.forEach((item) {
+    for (var item in widget.model.items) {
       itemsList.add(PopupMenuItem(
           child: Text(item.label!, style: TextStyle(color: Theme.of(context).colorScheme.onSecondaryContainer),), value: item.onclickObservable));
-    });
+    }
     return SizedBox(
         height: 50,
         child:

@@ -45,9 +45,9 @@ class _HtmlViewState extends WidgetState<HtmlView>
           onCssParseError: (css, messages) {
             Log().debug("css that errored: $css");
             Log().debug("error messages:");
-            messages.forEach((element) {
+            for (var element in messages) {
               Log().debug('$element');
-            });
+            }
             return null;
             },
         ));

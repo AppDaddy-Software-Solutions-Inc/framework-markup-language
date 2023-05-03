@@ -414,7 +414,9 @@ class SpanModel extends DecoratedWidgetModel
 
     // build spans
     List<TextModel> textSpans = findChildrenOfExactType(TextModel).cast<TextModel>();
-    textSpans.forEach((text) => spanTextValues.add(text));
+    for (var text in textSpans) {
+      spanTextValues.add(text);
+    }
   }
 
   @override

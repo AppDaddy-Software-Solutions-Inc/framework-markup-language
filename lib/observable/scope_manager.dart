@@ -53,7 +53,9 @@ class ScopeManager
     if (unresolved!.containsKey(scopeId))
     {
       List<Observable> targets = [];
-      unresolved![scopeId]!.forEach((observable) => targets.add(observable));
+      for (var observable in unresolved![scopeId]!) {
+        targets.add(observable);
+      }
       unresolved!.remove(scopeId);
       targets.forEach((observable) => observable.scope!.bind(observable));
     }

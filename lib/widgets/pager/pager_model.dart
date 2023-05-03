@@ -142,7 +142,9 @@ class PagerModel extends DecoratedWidgetModel
       }
 
       // build items
-      pages.forEach((page) => this.pages.add(page));
+      for (var page in pages) {
+        this.pages.add(page);
+      }
 
 
     if (pages.isEmpty)

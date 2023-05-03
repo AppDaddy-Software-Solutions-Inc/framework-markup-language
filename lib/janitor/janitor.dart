@@ -115,11 +115,10 @@ class Janitor
     // cleanup logs
     log_manager.Log().debug('Cleaning up old log files', caller: "Janitor");
     List<Log> logs = await Log.findAll();
-    logs.forEach((log)
-    {
+    for (var log in logs) {
       int keepFor = DateTime.now().subtract(Duration(days: Log.daysToSave)).toLocal().millisecondsSinceEpoch;
       if (keepFor > log.epoch) log.delete();
-    });
+    }
 
     return true;
   }

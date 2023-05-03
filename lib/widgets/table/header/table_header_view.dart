@@ -54,8 +54,7 @@ class _TableHeaderViewState extends WidgetState<TableHeaderView>
     List<Widget> cells = [];
     List<Widget> dragHandles = [];
     double widthTotal = 0;
-    widget.model!.cells.forEach((model)
-    {
+    for (var model in widget.model!.cells) {
       //////////
       /* Size */
       //////////
@@ -87,7 +86,7 @@ class _TableHeaderViewState extends WidgetState<TableHeaderView>
         cells.add(cell);
       }
       i++;
-    });
+    }
 
     // We don't need the right edge handle
     if (dragHandles.isNotEmpty) {

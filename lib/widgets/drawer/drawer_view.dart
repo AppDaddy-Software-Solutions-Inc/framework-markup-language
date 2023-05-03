@@ -36,7 +36,9 @@ class DrawerView extends StatefulWidget implements IDragListener, IWidgetView
   @override
   onDragOpen(DragStartDetails details, String dir)
   {
-    listeners.forEach((listener) => listener.onDragOpen(details, dir));
+    for (var listener in listeners) {
+      listener.onDragOpen(details, dir);
+    }
   }
 
   @override

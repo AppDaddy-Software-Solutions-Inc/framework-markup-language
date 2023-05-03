@@ -64,7 +64,9 @@ class Form implements Comparable
     {
       // delete posting documents
       List<Post> posts = await Post.query(where: "'{form_key}' == '$key'");
-      posts.forEach((post) async => await post.delete());
+      for (var post in posts) {
+        await post.delete();
+      }
 
       // delete Sub-Forms 
       List<Form> forms = await query(where: "'{parent}' == '$key'");

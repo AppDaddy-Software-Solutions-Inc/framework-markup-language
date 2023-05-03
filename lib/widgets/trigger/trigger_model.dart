@@ -49,7 +49,9 @@ class TriggerModel extends WidgetModel {
     ///////////
     cases.clear();
     List<TriggerConditionModel> conditions = findChildrenOfExactType(TriggerConditionModel).cast<TriggerConditionModel>();
-    conditions.forEach((condition) => cases.add(condition));
+    for (var condition in conditions) {
+      cases.add(condition);
+    }
   }
 
   Future<bool> trigger() async

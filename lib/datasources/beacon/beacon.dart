@@ -64,7 +64,9 @@ class Reader
 
   void _onData(RangingResult result)
   {
-    _listeners.forEach((listener) => listener.onBeaconData(result.beacons));
+    for (var listener in _listeners) {
+      listener.onBeaconData(result.beacons);
+    }
   }
 
   void _onDone()

@@ -156,8 +156,7 @@ class Log
     logs = await hive_log.Log.query(where: where, orderby: order);
 
     final List<Map<dynamic,dynamic>> list = [];
-    logs!.forEach((entry)
-    {
+    for (var entry in logs!) {
       Map<String,String?> map = <String,String?>{};
       map['type']      = entry['type'];
       map['time']      = DateTime.fromMillisecondsSinceEpoch(entry['epoch']).toIso8601String().replaceAll("T", " ");
@@ -172,7 +171,7 @@ class Log
       if (ok) ok = _filter(parameters['function'], map['function']);
 
       if (ok) list.add(map);
-    });
+    }
     list.sort((a, b) => b['time'].compareTo(a['time']));
     return list;
   }

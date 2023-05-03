@@ -685,15 +685,14 @@ class S
     var bindings  = Binding.getBindings(prototype);
     List<String?> processed = [];
     if (bindings != null) {
-      bindings.forEach((binding)
-    {
+      for (var binding in bindings) {
       if ((binding.source == 'data') && (!processed.contains(binding.signature)))
       {
         processed.add(binding.signature);
         var signature   = "{$placeholder.data.${binding.property}${(binding.dotnotation?.signature != null ? ".${binding.dotnotation!.signature}" : "")}}";
         prototype       = prototype.replaceAll(binding.signature, signature);
       }
-    });
+    }
     }
 
     // parse

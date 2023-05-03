@@ -48,7 +48,9 @@ class Log
   static Data toData(Iterable<Log> logs)
   {
     Data data = Data();
-    logs.forEach((log) => data.add(log._map));
+    for (var log in logs) {
+      data.add(log._map);
+    }
     return data;
   }
 
@@ -63,11 +65,10 @@ class Log
   {
     List<Log> list = [];
     List<Map<String, dynamic>> entries = await Database().findAll(tableName);
-    entries.forEach((entry)
-    {
+    for (var entry in entries) {
       Log? log = _fromMap(entry);
       if (log != null) list.add(log);
-    });
+    }
     return list;
   }
 
@@ -75,11 +76,10 @@ class Log
   {
     List<Log> list = [];
     List<Map<String, dynamic>> entries = await Database().query(tableName, where: where, orderby: orderby);
-    entries.forEach((entry)
-    {
+    for (var entry in entries) {
       Log? log = _fromMap(entry);
       if (log != null) list.add(log);
-    });
+    }
     return list;
   }
 }

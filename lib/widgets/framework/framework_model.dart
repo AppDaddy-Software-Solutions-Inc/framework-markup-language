@@ -250,8 +250,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
     Map<String?, String> _parameters = <String?, String>{};
     List<dynamic>? variables = findDescendantsOfExactType(VariableModel);
     if (variables != null) {
-      variables.forEach((variable)
-      {
+      for (var variable in variables) {
         VariableModel v = (variable as VariableModel);
         if (!S.isNullOrEmpty(v.returnas))
         {
@@ -259,7 +258,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
           String value = v.value ?? "";
           _parameters[name] = value;
         }
-      });
+      }
     }
     return _parameters;
   }

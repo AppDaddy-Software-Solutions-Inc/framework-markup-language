@@ -136,10 +136,10 @@ class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling
     List<MenuItemView> tilesList = []; //list of tiles
     List<Widget> tileRows = []; // row of tiles from list
     List<Row> rowsList = []; // list of rows containing tiles
-    widget.model.items.forEach((item) {
+    for (var item in widget.model.items) {
       MenuItemView tile = MenuItemView(item);
       tilesList.add(tile);
-    });
+    }
     double menuColPadding = isMobile ? 0.0 : 25.0;
     double tilePadding = isMobile ? 5.0 : 0;
     int tilesPerRow =

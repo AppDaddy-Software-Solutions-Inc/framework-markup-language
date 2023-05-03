@@ -84,10 +84,9 @@ class Distinct extends TransformModel implements ITransform
   {
     List<String?>? bindings = Binding.getBindingStrings(v);
     if (bindings != null) {
-      bindings.forEach((binding)
-      {
+      for (var binding in bindings) {
         if (!binding!.contains(".")) v = v.replaceAll(binding, binding.replaceAll("{", "[[[[").replaceAll("}", "]]]]"));
-      });
+      }
     }
     return v;
   }

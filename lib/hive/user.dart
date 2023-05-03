@@ -62,11 +62,10 @@ class User
   {
     List<User> users = [];
     List<Map<String, dynamic>> entries = await Database().query(tableName, where: where, orderby: orderby);
-    entries.forEach((entry)
-    {
+    for (var entry in entries) {
       User? user = _fromMap(entry);
       if (user != null) users.add(user);
-    });
+    }
     return users;
   }
 }

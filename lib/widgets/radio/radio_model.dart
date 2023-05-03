@@ -83,10 +83,9 @@ class RadioModel extends FormFieldModel implements IFormField
 
         if (v != null) v = v.toString();
         dynamic data;
-        options.forEach((option)
-        {
+        for (var option in options) {
           if (option.value == v) data = option.data;
-        });
+        }
         this.data = data;
       }
     else
@@ -212,7 +211,9 @@ class RadioModel extends FormFieldModel implements IFormField
     size = Xml.get(node: xml, tag: 'size');
 
     // clear options
-    this.options.forEach((option) => option.dispose());
+    for (var option in this.options) {
+      option.dispose();
+    }
     this.options.clear();
 
     // Build options
@@ -225,7 +226,9 @@ class RadioModel extends FormFieldModel implements IFormField
         options.removeAt(0);
       }
       // build options
-      options.forEach((option) => this.options.add(option));
+      for (var option in options) {
+        this.options.add(option);
+      }
 
   }
 
@@ -237,7 +240,9 @@ class RadioModel extends FormFieldModel implements IFormField
       if (prototype == null) return true;
 
       // clear options
-      options.forEach((option) => option.dispose());
+      for (var option in options) {
+        option.dispose();
+      }
       options.clear();
 
       // build options
@@ -245,13 +250,12 @@ class RadioModel extends FormFieldModel implements IFormField
       if ((list != null))
       {
         // build options
-        list.forEach((row)
-        {
+        for (var row in list) {
           XmlElement? prototype = S.fromPrototype(this.prototype, "$id-$i");
           i = i + 1;
           var model = OptionModel.fromXml(this, prototype, data: row);
           if (model != null) options.add(model);
-        });
+        }
       }
 
       // Set value to first option or null if the current value is not in option list
@@ -293,10 +297,9 @@ class RadioModel extends FormFieldModel implements IFormField
   bool containsOption()
   {
     bool contains = false;
-      options.forEach((option)
-      {
+      for (var option in options) {
         if (option.value == value) contains = true;
-      });
+      }
     return contains;
   }
 
@@ -304,11 +307,10 @@ class RadioModel extends FormFieldModel implements IFormField
   {
     // set the data
     List<dynamic> data = [];
-    options.forEach((option)
-    {
+    for (var option in options) {
       bool contains = (value == option.value);
       if ((contains) && (option.data != null)) data.add(option.data);
-    });
+    }
     this.data = data;
     return true;
   }

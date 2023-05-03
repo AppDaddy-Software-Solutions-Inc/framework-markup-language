@@ -571,7 +571,9 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     // build model
     TableRowModel? model =
         TableRowModel.fromXml(this, prototype, data: null);
-    model?.cells.forEach((cell) => cell.visible = false);
+    if(model?.cells != null){for (var cell in model!.cells) {
+      cell.visible = false;
+    }}
     return model;
   }
 

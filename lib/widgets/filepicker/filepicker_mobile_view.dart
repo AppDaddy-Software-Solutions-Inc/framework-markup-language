@@ -24,7 +24,9 @@ class FilePickerView implements FilePicker
     {
       var values = value.split(",");
       _accept = [];
-      values.forEach((v) => _accept!.add(v.replaceAll(".","").trim()));
+      for (var v in values) {
+        _accept!.add(v.replaceAll(".","").trim());
+      }
     }
   }
   List<String>? get accept => _accept;
@@ -57,7 +59,9 @@ class FilePickerView implements FilePicker
           DetectableImage detectable = DetectableImage.fromFilePath(result.files.single.path!);
 
           // detect
-          detectors.forEach((detector) => detector.detect(detectable, false));
+          for (var detector in detectors) {
+            detector.detect(detectable, false);
+          }
         }
 
         // return the file

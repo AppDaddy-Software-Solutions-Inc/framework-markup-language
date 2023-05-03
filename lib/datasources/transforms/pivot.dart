@@ -95,8 +95,7 @@ class Pivot extends TransformModel implements ITransform
     bool fieldFound  = false;
 
     Map<String, Map<String?, Map<String, double?>>> statistics = <String, Map<String?, Map<String, double?>>>{};
-    data.forEach((row)
-    {
+    for (var row in data) {
       String? _column;
       String? _row;
       String? _field;
@@ -148,7 +147,7 @@ class Pivot extends TransformModel implements ITransform
           p["max"] = (p["max"] == null) || (p["max"]! < v) ? v : p["max"];
         }
       }
-    });
+    }
 
     if (!columnFound) Log().exception(Exception("Column ${column!} not found in data set"));
     if (!rowFound)    Log().exception(Exception("Row ${row!} not found in data set"));

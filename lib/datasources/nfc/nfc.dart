@@ -111,7 +111,9 @@ class Reader
     if (_listeners != null)
     {
       var listeners = _listeners!.where((element) => true);
-      listeners.forEach((listener) => listener.onMessage(data));
+      for (var listener in listeners) {
+        listener.onMessage(data);
+      }
     }
   }
 

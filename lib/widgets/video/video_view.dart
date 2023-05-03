@@ -74,13 +74,12 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
     children.add(view);
 
     if (widget.model.children != null) {
-      widget.model.children!.forEach((model)
-      {
+      for (var model in widget.model.children!) {
         if (model is ViewableWidgetModel)
         {
           children.add(model.getView());
         }
-      });
+      }
     }
 
     // show controls

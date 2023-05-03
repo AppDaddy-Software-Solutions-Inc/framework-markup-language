@@ -82,7 +82,9 @@ class MenuModel extends DecoratedWidgetModel
     super.deserialize(xml);
 
     // clear items
-    this.items.forEach((item) => item.dispose());
+    for (var item in this.items) {
+      item.dispose();
+    }
     this.items.clear();
 
     // build items
@@ -96,7 +98,9 @@ class MenuModel extends DecoratedWidgetModel
     }
 
     // build items
-    items.forEach((item) => this.items.add(item));
+    for (var item in items) {
+      this.items.add(item);
+    }
   }
 
   @override
@@ -109,17 +113,18 @@ class MenuModel extends DecoratedWidgetModel
     if ((list != null))
     {
       // clear items
-      items.forEach((item) => item.dispose());
+      for (var item in items) {
+        item.dispose();
+      }
       items.clear();
 
-      list.forEach((row)
-      {
+      for (var row in list) {
         XmlElement? prototype = S.fromPrototype(this.prototype, "$id-$i");
         i = i + 1;
 
         var model = MenuItemModel.fromXml(parent, prototype, data: row);
         if (model != null) items.add(model);
-      });
+      }
 
       notifyListeners('list', items);
     }
@@ -135,7 +140,9 @@ class MenuModel extends DecoratedWidgetModel
     // Log().debug('dispose called on => <$elementName id="$id">');
 
     // clear items
-    items.forEach((item) => item.dispose());
+    for (var item in items) {
+      item.dispose();
+    }
     items.clear();
 
     super.dispose();

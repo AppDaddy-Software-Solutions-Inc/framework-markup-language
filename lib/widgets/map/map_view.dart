@@ -60,7 +60,9 @@ class _MapViewState extends WidgetState<MapView>
       {
         // add map layers
         List<Widget> layers = [];
-        widget.model.layers.forEach((url) => layers.add(TileLayer(urlTemplate: url, userAgentPackageName: 'fml.dev')));
+        for (var url in widget.model.layers) {
+          layers.add(TileLayer(urlTemplate: url, userAgentPackageName: 'fml.dev'));
+        }
 
         // default layer is openstreets
         if (widget.model.layers.isEmpty) layers.add(TileLayer(urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png", userAgentPackageName: 'fml.dev'));

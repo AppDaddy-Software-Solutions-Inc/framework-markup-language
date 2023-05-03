@@ -69,9 +69,9 @@ class _TextViewState extends WidgetState<TextView>
       parse.textValues.isNotEmpty
           ? markupTextValues = parse.textValues
           : markupTextValues = [];
-      markupTextValues.forEach((element) {
+      for (var element in markupTextValues) {
         finalVal = finalVal! + element.text;
-      });
+      }
     } catch(e) {
       finalVal = value;
     }
@@ -328,8 +328,7 @@ class _TextViewState extends WidgetState<TextView>
     List<InlineSpan> textSpans = [];
 
     if (markupTextValues.isNotEmpty) {
-      markupTextValues.forEach((element)
-    {
+      for (var element in markupTextValues) {
       InlineSpan textSpan;
       FontWeight? weight;
       FontStyle? style;
@@ -338,8 +337,7 @@ class _TextViewState extends WidgetState<TextView>
       Color? codeBlockBG;
       String? codeBlockFont;
 
-      element.styles.forEach((element)
-      {
+      for (var element in element.styles) {
         switch (element)
         {
           case "underline":
@@ -377,7 +375,7 @@ class _TextViewState extends WidgetState<TextView>
             script = "normal";
             break;
         }
-      });
+      }
 
       String text = element.text.replaceAll('\\n', '\n').replaceAll('\\t','\t\t\t\t');
 
@@ -456,7 +454,7 @@ class _TextViewState extends WidgetState<TextView>
         textSpan = TextSpan(text: text, style: textstyle);
         textSpans.add(textSpan);
       }
-    });
+    }
     }
 
     return textSpans;

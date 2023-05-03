@@ -130,11 +130,10 @@ class MapModel extends DecoratedWidgetModel
     // add layers
     var layers = Xml.getChildElements(node: xml, tag: "LAYER");
     if (layers != null){
-      layers.forEach((layer)
-      {
+      for (var layer in layers) {
         String? url = Xml.get(node: layer, tag: 'url');
         if (url != null) this.layers.add(url);
-      });}
+      }}
 
     // build locations
     List<MapMarkerModel> markers = findChildrenOfExactType(MapMarkerModel).cast<MapMarkerModel>();

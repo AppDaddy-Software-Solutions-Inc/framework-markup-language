@@ -271,7 +271,9 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
       items.removeAt(0);
     }
     // build items
-    items.forEach((item) => this.items[i++] = item);
+    for (var item in items) {
+      this.items[i++] = item;
+    }
   }
 
   GridItemModel? getItemModel(int item) {

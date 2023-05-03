@@ -118,7 +118,9 @@ class TabModel extends LayoutModel
   dispose()
   {
     // cleanup framework models
-    views.values.forEach((view) => deleteView(view));
+    for (var view in views.values) {
+      deleteView(view);
+    }
     super.dispose();
   }
 

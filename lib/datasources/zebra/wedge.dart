@@ -96,7 +96,9 @@ class Reader
     if (_listeners != null && data != null)
     {
       var listeners = _listeners!.where((element) => true);
-      listeners.forEach((listener) => listener.onZebraData(payload: data));
+      for (var listener in listeners) {
+        listener.onZebraData(payload: data);
+      }
     }
     if (data == null) Log().debug('Zebra Wedge Payload is null');
   }

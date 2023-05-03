@@ -78,7 +78,9 @@ class TreeModel extends DecoratedWidgetModel
     // Build Nodes and find the youngestGeneration
 
     // clear nodes
-    this.nodes.forEach((model) => model.dispose());
+    for (var model in this.nodes) {
+      model.dispose();
+    }
     this.nodes.clear();
 
     youngestGeneration.forEach((model) => model?.dispose());

@@ -196,9 +196,9 @@ void main() {
       xml.rootElement.attributes.add(XmlAttribute(XmlName('collapsed'), 'true'));
 
       List<XmlElement> items = xml.findAllElements('ITEM', namespace: "*").toList();
-      items.forEach((element) {
+      for (var element in items) {
         element.attributes.add(XmlAttribute(XmlName('title'), element.firstElementChild!.attributes.first.value));
-      });
+      }
       dynamic view = ListModel.fromXml(null, xml.rootElement);
       if(view != null) view = ListLayoutView(view);
 

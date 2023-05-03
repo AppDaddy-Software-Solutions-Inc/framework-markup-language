@@ -255,12 +255,11 @@ class LayoutModel extends DecoratedWidgetModel
     layoutComplete = false;
 
     // clear child sizing
-    viewableChildren.forEach((child)
-    {
+    for (var child in viewableChildren) {
       if (!child.isFixedHeight) child.height = null;
       if (!child.isFixedWidth)  child.width  = null;
       child.setLayoutConstraints(BoxConstraints(minWidth: 0, maxWidth: double.infinity, minHeight: 0, maxHeight: double.infinity));
-    });
+    }
 
     super.resetViewSizing();
   }

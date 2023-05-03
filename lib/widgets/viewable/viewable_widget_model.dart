@@ -669,7 +669,9 @@ class ViewableWidgetModel extends ConstraintModel
     if (animations != null)
     {
       var animations = this.animations!.reversed;
-      animations.forEach((model) => view = model.getAnimatedView(view));
+      for (var model in animations) {
+        view = model.getAnimatedView(view);
+      }
     }
     return view;
   }
@@ -681,12 +683,11 @@ class ViewableWidgetModel extends ConstraintModel
 
     // process children
     List<Widget> views = [];
-    viewableChildren.forEach((model)
-    {
+    for (var model in viewableChildren) {
       // reset child view
       model.resetViewSizing();
       views.add(model.getView());
-    });
+    }
     return views;
   }
 

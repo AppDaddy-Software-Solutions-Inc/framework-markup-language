@@ -135,7 +135,7 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
   @override
   Map<String,String>? onNavigatorPop() => null;
   @override
-  void onNavigatorPush({Map<String?, String>? parameters}) => null;
+  void onNavigatorPush({Map<String?, String>? parameters}) {}
   @override
   onNavigatorChange() => hideOverlay();
 

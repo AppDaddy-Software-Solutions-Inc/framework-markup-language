@@ -42,7 +42,7 @@ class _BreadcrumbViewState extends WidgetState<BreadcrumbView>
     List<Page> pages = NavigationManager().pages;
 
     int index = 0;
-    pages.forEach((page) {
+    for (var page in pages) {
       if (page.arguments is PageConfiguration) {
         PageConfiguration conf = (page.arguments as PageConfiguration);
         Widget view = _TextCrumb(
@@ -64,7 +64,7 @@ class _BreadcrumbViewState extends WidgetState<BreadcrumbView>
 
         index++;
       }
-    });
+    }
 
     // Shortens the length of breadcrumbs from the length of the full screen when given a width < 0 or sets the width if given > 0
     // ^ this is an older feature and could likely be removed.

@@ -202,7 +202,9 @@ class Observable
     // Clear Sources
     if (sources != null)
     {
-      sources!.forEach((source) => source.removeListener(onObservableChange));
+      for (var source in sources!) {
+        source.removeListener(onObservableChange);
+      }
       sources = null;
     }
   }

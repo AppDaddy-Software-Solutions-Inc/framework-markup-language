@@ -25,10 +25,9 @@ class ListItemModel extends DecoratedWidgetModel
     {
       List<String> values = v.split(",");
       _postbrokers = [];
-      values.forEach((e)
-      {
+      for (var e in values) {
         if (!S.isNullOrEmpty(e)) _postbrokers!.add(e.trim());
-      });
+      }
     }
   }
   List<String>? get postbrokers => _postbrokers;

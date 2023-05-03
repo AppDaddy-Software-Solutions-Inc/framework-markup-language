@@ -120,11 +120,10 @@ class Post
   {
     List<Post> posts = [];
     List<Map<String, dynamic>> entries = await Database().query(tableName, where: where, orderby: orderby);
-    entries.forEach((entry)
-    {
+    for (var entry in entries) {
       Post? post = _fromMap(entry);
       if (post != null) posts.add(post);
-    });
+    }
     return posts;
   }
 }

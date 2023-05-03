@@ -189,7 +189,9 @@ class Database
       });
 
       // add values to list
-      values.forEach((value) => value is Map ? list.add(value.cast<String, dynamic>()) : null);
+      for (var value in values) {
+        value is Map ? list.add(value.cast<String, dynamic>()) : null;
+      }
 
       // order by clause
       if (!S.isNullOrEmpty(orderby))

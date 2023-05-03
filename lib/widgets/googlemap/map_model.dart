@@ -131,8 +131,7 @@ class MapModel extends DecoratedWidgetModel
 
     // build locations
     List<MapLocationModel> locations = findChildrenOfExactType(MapLocationModel).cast<MapLocationModel>();
-    locations.forEach((model)
-    {
+    for (var model in locations) {
       // data driven prototype location
       if (!S.isNullOrEmpty(model.datasource))
       {
@@ -153,7 +152,7 @@ class MapModel extends DecoratedWidgetModel
       else {
         this.locations.add(model);
       }
-    });
+    }
   }
 
   @override

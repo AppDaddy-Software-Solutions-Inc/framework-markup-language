@@ -61,11 +61,10 @@ class Calc extends TransformModel implements ITransform
     if (groups == null) return '*';
 
     String? group;
-    groups!.forEach((f)
-    {
+    for (var f in groups!) {
       var value = Data.readValue(data, f);
       if (value != null) group = "${group ?? ""}[$value]";
-    });
+    }
     return group;
   }
 

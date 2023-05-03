@@ -40,8 +40,7 @@ class _TableRowViewState extends WidgetState<TableRowView>
     ///////////
     int i = 0;
     List<Widget> cells = [];
-    widget.model.cells.forEach((model)
-    {
+    for (var model in widget.model.cells) {
       //////////
       /* Size */
       //////////
@@ -59,7 +58,7 @@ class _TableRowViewState extends WidgetState<TableRowView>
         cells.add(cell);
       }
       i++;
-    });
+    }
 
     //////////
     /* View */

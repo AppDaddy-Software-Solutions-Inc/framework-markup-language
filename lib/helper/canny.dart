@@ -228,12 +228,12 @@ Set<Set<Index2d>> canny(
         if (w.x <image.width-1 && getNeighbours(w.x+1,w.y).contains(w)) {
           symmetricNeighbours.add(Index2d(w.x+1,w.y));
         }
-        symmetricNeighbours.forEach((neighbour) {
+        for (var neighbour in symmetricNeighbours) {
           //if edge is foreground edge and not yet labbeled
           if (isWeak(neighbour.x,neighbour.x) && labeledPixels.getPixel(neighbour.x, neighbour.y) == 0) {
             currentBlobNeighbours.add(neighbour);
           }
-        });
+        }
       }
       if (isStrongEdge) {
         edges.add(currentEdge);

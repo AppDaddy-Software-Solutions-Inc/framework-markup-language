@@ -35,10 +35,9 @@ class TableRowModel extends DecoratedWidgetModel
     {
       var values = v.split(",");
       _postbrokers = [];
-      values.forEach((e)
-      {
+      for (var e in values) {
         if (!S.isNullOrEmpty(e)) _postbrokers!.add(e.trim());
-      });
+      }
     }
   }
   List<String>? get postbrokers => _postbrokers;
@@ -414,14 +413,13 @@ class TableRowModel extends DecoratedWidgetModel
     for (TableRowCellModel _ in cells)
     {
       List<IFormField> fields = findChildrenOfExactType(IFormField).cast<IFormField>();
-      fields.forEach((field)
-      {
+      for (var field in fields) {
         if (this.fields == null) this.fields = [];
         this.fields!.add(field);
 
         // Register Listener
         if (field.dirtyObservable != null) field.dirtyObservable!.registerListener(onDirtyListener);
-      });
+      }
     }
 
     ////////////////
@@ -455,7 +453,9 @@ class TableRowModel extends DecoratedWidgetModel
     /* Mark Clean */
     ////////////////
     if ((ok) && (fields != null)) {
-      fields!.forEach((field) => field.dirty = false);
+      for (var field in fields!) {
+        field.dirty = false;
+      }
     }
 
     busy = false;

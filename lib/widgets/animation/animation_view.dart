@@ -124,11 +124,11 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
     widget.children.clear();
     if (widget.child != null) widget.children.add(widget.child!);
     if (widget.model.children != null) {
-      widget.model.children!.forEach((model) {
+      for (var model in widget.model.children!) {
         if (model is ViewableWidgetModel) {
           var view = model.getView();
           widget.children.add(view);
-      }});
+      }}
     }
     if (widget.children.isEmpty) widget.children.add(Container());
 

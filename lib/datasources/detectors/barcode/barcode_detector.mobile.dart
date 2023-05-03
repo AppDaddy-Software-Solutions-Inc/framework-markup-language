@@ -92,15 +92,14 @@ class BarcodeDetector implements IBarcodeDetector
     if (barcodes.isEmpty) return null;
 
     Payload payload = Payload();
-    barcodes.forEach((barcode)
-    {
+    for (var barcode in barcodes) {
       Barcode bc = Barcode();
       bc.type    = barcode.type.index;
       bc.format  = S.fromEnum(barcode.format);
       bc.display = barcode.displayValue;
       bc.barcode = barcode.rawValue;
       payload.barcodes.add(bc);
-    });
+    }
     return payload;
   }
 }

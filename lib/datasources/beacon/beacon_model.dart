@@ -186,8 +186,7 @@ class BeaconModel extends DataSourceModel implements IDataSource, IBeaconListene
 
     // Build the Data
     Data data = Data();
-    beacons.forEach((beacon)
-    {
+    for (var beacon in beacons) {
       // calculate age
       int age = 0;
       if (beacon.macAddress != null)
@@ -210,7 +209,7 @@ class BeaconModel extends DataSourceModel implements IDataSource, IBeaconListene
       map["distance"]   = "${beacon.accuracy}";
       map["proximity"]  = "${beacon.proximity}";
       data.add(map);
-    });
+    }
 
     // remove any items that haven't been seen in the past 15 seconds
     _removeExpired();

@@ -291,14 +291,13 @@ class LayoutModel extends DecoratedWidgetModel
         layoutComplete = true;
 
         // notify modified children
-        resized.forEach((child)
-        {
+        for (var child in resized) {
           // mark child as needing layout
           if (child is LayoutModel) child.layoutComplete = false;
 
           // notify child to rebuild
           child.notifyListeners(null, null);
-        });
+        }
       }
     }
   }

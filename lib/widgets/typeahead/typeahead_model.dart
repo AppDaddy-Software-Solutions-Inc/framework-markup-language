@@ -370,7 +370,9 @@ class TypeaheadModel extends FormFieldModel implements IFormField
     }
 
     // build options
-    options.forEach((option) => this.options.add(option));
+    for (var option in options) {
+      this.options.add(option);
+    }
 
     // Set selected option
     setData();
@@ -384,7 +386,9 @@ class TypeaheadModel extends FormFieldModel implements IFormField
       if (prototype == null) return true;
 
       // clear options
-      options.forEach((option) => option.dispose());
+      for (var option in options) {
+        option.dispose();
+      }
       options.clear();
 
       int i = 0;
@@ -398,13 +402,12 @@ class TypeaheadModel extends FormFieldModel implements IFormField
       if ((list != null) && (source != null))
       {
         // build options
-        list.forEach((row)
-        {
+        for (var row in list) {
           XmlElement? prototype = S.fromPrototype(this.prototype, "$id-$i");
           i = i + 1;
           var model = OptionModel.fromXml(this, prototype, data: row);
           if (model != null) options.add(model);
-        });
+        }
       }
 
       // sets the data
@@ -450,24 +453,22 @@ class TypeaheadModel extends FormFieldModel implements IFormField
     }
 
     dynamic data;
-    options.forEach((option)
-    {
+    for (var option in options) {
       if (option.value == value)
       {
         data = option.data;
         label = option.labelValue;
       }
-    });
+    }
     this.data = data;
   }
 
   bool _containsOption()
   {
     bool contains = false;
-    options.forEach((option)
-    {
+    for (var option in options) {
       if (option.value == value) contains = true;
-    });
+    }
     return contains;
   }
 

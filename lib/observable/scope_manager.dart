@@ -57,7 +57,9 @@ class ScopeManager
         targets.add(observable);
       }
       unresolved!.remove(scopeId);
-      targets.forEach((observable) => observable.scope!.bind(observable));
+      for (var observable in targets) {
+        observable.scope!.bind(observable);
+      }
     }
   }
 
@@ -67,12 +69,16 @@ class ScopeManager
     if (scope.unresolved.containsKey(observable.key))
     {
       List<Observable> unresolved = scope.unresolved[observable.key]!.toList(growable: false);
-      unresolved.forEach((target) => scope.bind(target));
+      for (var target in unresolved) {
+        scope.bind(target);
+      }
     }
 
     // Resolve Children 
     if (scope.children != null) {
-      scope.children!.forEach((scope) => _notifyDescendants(scope, observable));
+      for (var scope in scope.children!) {
+        _notifyDescendants(scope, observable);
+      }
     }
   }
 

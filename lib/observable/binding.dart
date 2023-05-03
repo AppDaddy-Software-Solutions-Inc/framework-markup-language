@@ -50,7 +50,9 @@ class Binding
     if (dotnotation != null && dotnotation!.isNotEmpty)
     {
        String dn = "";
-       dotnotation!.forEach((segment) => dn = "$dn.${segment.name}");
+       for (var segment in dotnotation!) {
+         dn = "$dn.${segment.name}";
+       }
        k = "$k$dn";
     }
     return k;
@@ -215,13 +217,12 @@ class Binding
     if (bindings != null)
     {
       keys = [];
-      bindings.forEach((binding)
-      {
+      for (var binding in bindings) {
         var key  = binding.key;
         var name = binding.name;
-        if (key  != null && !keys!.contains(key))  keys.add(key);
-        if (name != null && !keys!.contains(name)) keys.add(name);
-      });
+        if (key  != null && !keys.contains(key))  keys.add(key);
+        if (name != null && !keys.contains(name)) keys.add(name);
+      }
     }
     return keys;
   }

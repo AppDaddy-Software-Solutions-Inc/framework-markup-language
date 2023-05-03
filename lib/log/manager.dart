@@ -229,8 +229,7 @@ class Log
       buffer.write("<td>Caller</td>");
       buffer.write("</tr>");
 
-      logs.forEach((log)
-      {
+      for (var log in logs) {
         var color = 'black';
         if (log.type == "error" || log.type == "exception") color = '#FF0000';
         if (log.type == "warning") color = '#DAA520';
@@ -245,7 +244,7 @@ class Log
         buffer.write('<td>$message</td>');
         buffer.write('<td>$caller</td>');
         buffer.write("</tr>");
-      });
+      }
 
       buffer.write("<//table>");
       buffer.write("<//html>");

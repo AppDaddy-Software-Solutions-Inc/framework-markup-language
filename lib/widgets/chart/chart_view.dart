@@ -280,7 +280,7 @@ class _ChartViewState extends WidgetState<ChartView>
       }
     }
     // Add all the mapped x values to the ticks list
-    ticksMap.values.forEach((v) {
+    for (var v in ticksMap.values) {
       final DateFormat formatter =
           DateFormat(widget.model.xaxis!.format ?? 'yyyy/MM/dd');
       String? l;
@@ -288,7 +288,7 @@ class _ChartViewState extends WidgetState<ChartView>
         l = formatter.format(v);
       } catch(e) {}
       ticks.add(charts_flutter.TickSpec<DateTime>(v, label: l));
-    });
+    }
 
     return charts_flutter.TimeSeriesChart(
       series as List<Series<dynamic, DateTime>>,

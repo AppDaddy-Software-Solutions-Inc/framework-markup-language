@@ -79,8 +79,7 @@ class Calc extends TransformModel implements ITransform
   {
     if (source == null) return null;
     var results = HashMap<String,double>();
-    list.forEach((row)
-    {
+    for (var row in list) {
       var group = _getGroup(row);
       var value = S.toDouble(Data.readValue(row, source));
       if (group != null && value != null)
@@ -88,7 +87,7 @@ class Calc extends TransformModel implements ITransform
         if (!results.containsKey(group)) results[group] = value;
         if (value < results[group]!) results[group] = value;
       }
-    });
+    }
     return results;
   }
 
@@ -96,8 +95,7 @@ class Calc extends TransformModel implements ITransform
   {
     if (source == null) return null;
     var results = HashMap<String,double>();
-    list.forEach((row)
-    {
+    for (var row in list) {
       var group = _getGroup(row);
       var value = S.toDouble(Data.readValue(row, source));
       if (group != null && value != null)
@@ -105,7 +103,7 @@ class Calc extends TransformModel implements ITransform
         if (!results.containsKey(group)) results[group] = value;
         if (value > results[group]!) results[group] = value;
       }
-    });
+    }
     return results;
   }
 
@@ -113,8 +111,7 @@ class Calc extends TransformModel implements ITransform
   {
     if (source == null) return null;
     HashMap<String,double> results = HashMap<String,double>();
-    list.forEach((row)
-    {
+    for (var row in list) {
       var group = _getGroup(row);
       var value = Data.readValue(row, source);
       if (group != null && value != null)
@@ -122,7 +119,7 @@ class Calc extends TransformModel implements ITransform
         if (!results.containsKey(group)) results[group] = 0;
         results[group] = results[group]! + 1;
       }
-    });
+    }
     return results;
   }
 
@@ -130,8 +127,7 @@ class Calc extends TransformModel implements ITransform
   {
     if (source == null) return null;
     HashMap<String,double> results = HashMap<String,double>();
-    list.forEach((row)
-    {
+    for (var row in list) {
       var group = _getGroup(row);
       var value = S.toDouble(Data.readValue(row, source));
       if (group != null && value != null)
@@ -139,7 +135,7 @@ class Calc extends TransformModel implements ITransform
         if (!results.containsKey(group)) results[group] = 0;
         results[group] = results[group]! + value;
       }
-    });
+    }
     return results;
   }
 
@@ -152,8 +148,7 @@ class Calc extends TransformModel implements ITransform
 
     var results = HashMap<String,double?>();
     if ((sum != null) && (cnt != null)) {
-      list.forEach((point)
-    {
+      for (var point in list) {
       if ((point != null) && (point.containsKey(source)) && (point[source] != null) && (S.isNumber(point[source])))
       {
         String? group = _getGroup(point);
@@ -163,7 +158,7 @@ class Calc extends TransformModel implements ITransform
           if (precision != null && S.toInt(precision) != null) results[group] = fml_eval.Eval.evaluate("round(${results[group]}, ${precision!})");
         }
       }
-    });
+    }
     }
     return results;
   }
@@ -174,11 +169,10 @@ class Calc extends TransformModel implements ITransform
     HashMap<String,double?>? map = _calcAvg(list);
 
     if (map != null) {
-      list.forEach((row)
-      {
+      for (var row in list) {
         String? group = _getGroup(row);
         if ((_inGroup(row, group)) && (map.containsKey(group))) Data.writeValue(row, target, map[group!]);
-      });
+      }
     }
   }
 
@@ -188,11 +182,10 @@ class Calc extends TransformModel implements ITransform
     HashMap<String,double>? map = _calcSum(list);
 
     if (map != null) {
-      list.forEach((row)
-      {
+      for (var row in list) {
         String? group = _getGroup(row);
         if ((_inGroup(row, group)) && (map.containsKey(group))) Data.writeValue(row, target, map[group!]);
-      });
+      }
     }
   }
 
@@ -202,11 +195,10 @@ class Calc extends TransformModel implements ITransform
     HashMap<String,double>? map = _calcCnt(list);
 
     if (map != null) {
-      list.forEach((row)
-      {
+      for (var row in list) {
         String? group = _getGroup(row);
         if ((_inGroup(row, group)) && (map.containsKey(group))) Data.writeValue(row, target, S.toInt(map[group!]));
-      });
+      }
     }
   }
 
@@ -216,11 +208,10 @@ class Calc extends TransformModel implements ITransform
     HashMap<String,double?>? map = _calcMin(list);
 
     if (map != null) {
-      list.forEach((row)
-      {
+      for (var row in list) {
         String? group = _getGroup(row);
         if ((_inGroup(row, group)) && (map.containsKey(group))) Data.writeValue(row, target, map[group!]);
-      });
+      }
     }
   }
 
@@ -229,8 +220,7 @@ class Calc extends TransformModel implements ITransform
     if ((list== null) || (source == null)) return null;
 
     List<Binding>? bindings  = Binding.getBindings(source);
-    list.forEach((row)
-    {
+    for (var row in list) {
       try
       {
         // get variables
@@ -247,7 +237,7 @@ class Calc extends TransformModel implements ITransform
         Data.writeValue(row, target, value);
       }
       catch(e) {}
-    });
+    }
   }
 
   _max(Data? list)
@@ -256,11 +246,10 @@ class Calc extends TransformModel implements ITransform
     HashMap<String,double?>? map = _calcMax(list);
 
     if (map != null) {
-      list.forEach((row)
-      {
+      for (var row in list) {
         String? group = _getGroup(row);
         if ((_inGroup(row, group)) && (map.containsKey(group))) Data.writeValue(row, target, map[group!]);
-      });
+      }
     }
   }
 

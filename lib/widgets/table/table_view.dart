@@ -529,11 +529,10 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
       /* Proxy Each Cell in the Row */
       ////////////////////////////////
       int i = 0;
-      model.cells.forEach((m)
-      {
+      for (var m in model.cells) {
         final int index = i++;
         children.add(MeasuredView(UnconstrainedBox(child: TableRowCellView(m, null)), onProxyRowCellSize, data: index));
-      });
+      }
 
       /////////////////////
       /* Return Offstage */

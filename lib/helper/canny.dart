@@ -246,9 +246,9 @@ Set<Set<Index2d>> canny(
 
   //supress all weak edges which are neither strong nor
   //lie in the same region as a strong edge
-  nonEdges.forEach((w) {
+  for (var w in nonEdges) {
     image.setPixelRgba(w.x, w.y, 0,0,0);
-  });
+  }
 
   if (onImageResult != null) onImageResult(image);
 

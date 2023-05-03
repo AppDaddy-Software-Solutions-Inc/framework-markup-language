@@ -396,28 +396,26 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
 
     // header
     List<HeaderModel> headers = findChildrenOfExactType(HeaderModel).cast<HeaderModel>();
-    headers.forEach((header)
-    {
+    for (var header in headers) {
       if (header == headers.first)
       {
         this.header = header;
         this.header!.registerListener(this);
       }
       if (children!.contains(header)) children!.remove(header);
-    });
+    }
     removeChildrenOfExactType(HeaderModel);
 
     // footer
     List<FooterModel> footers = findChildrenOfExactType(FooterModel).cast<FooterModel>();
-    footers.forEach((footer)
-    {
+    for (var footer in footers) {
       if (footer == footers.first)
       {
         this.footer = footer;
         this.footer!.registerListener(this);
       }
       if (children!.contains(footer)) children!.remove(footer);
-    });
+    }
     removeChildrenOfExactType(FooterModel);
 
     // build drawers

@@ -358,20 +358,18 @@ class CameraModel extends CameraImageModel
   Future<bool> detectInStream(DetectableImage image) async
   {
     if (detectors == null) return true;
-    detectors!.forEach((detector)
-    {
+    for (var detector in detectors!) {
       if ((detector.source == DetectorSources.stream) || (detector.source == DetectorSources.any)) detector.detect(image, true);
-    });
+    }
     return true;
   }
 
   Future<bool> detectInImage(DetectableImage image) async
   {
     if (detectors == null) return true;
-    detectors!.forEach((detector)
-    {
+    for (var detector in detectors!) {
       if ((detector.source == DetectorSources.image) || (detector.source == DetectorSources.any)) detector.detect(image, false);
-    });
+    }
     return true;
   }
 

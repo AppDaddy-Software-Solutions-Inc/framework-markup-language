@@ -127,11 +127,10 @@ class EventHandler extends Eval
       functions[S.fromEnum(EventTypes.wait)]          = _handleEventWait;
 
       // broadcast events
-      EventTypes.values.forEach((type)
-      {
+      for (var type in EventTypes.values) {
         String? t = S.fromEnum(type);
         if (!functions.containsKey(t)) functions[t] = () => _broadcast(type);
-      });
+      }
 
       initialized = true;
     }
@@ -179,13 +178,12 @@ class EventHandler extends Eval
         var events = getConditionals(parsed);
         events.sort((a, b) => Comparable.compare(b.length, a.length));
         expression = parsed.toString();
-        events.forEach((e)
-        {
+        for (var e in events) {
           i++;
           var key = "___V$i";
           _variables[key] = e;
           expression = expression.replaceAll(e, key);
-        });
+        }
 
         // execute the expression and get events string
         expression = await Eval.evaluate(expression, variables: _variables);

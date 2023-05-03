@@ -83,7 +83,9 @@ class Scope
         if ((oldobservable != null) && (oldobservable != observable) && (observable.listeners != null))
         {
           Log().debug("Duplicate observable ${observable.key} found in scope");
-          oldobservable.listeners!.forEach((callback) => observable.registerListener(callback));
+          for (var callback in oldobservable.listeners!) {
+            observable.registerListener(callback);
+          }
           oldobservable.listeners!.clear();
         }
       }
@@ -146,8 +148,7 @@ class Scope
       bool resolved = true;
 
       // Process Each Binding
-      target.bindings!.forEach((binding)
-      {
+      for (var binding in target.bindings!) {
         String? key = binding.key;
 
         // Find Bind Source
@@ -196,7 +197,7 @@ class Scope
           if (!unresolved.containsKey(key)) unresolved[key] = [];
           if (!unresolved[key]!.contains(target)) unresolved[key]!.add(target);
         }
-      });
+      }
 
       // Trigger Observable
       if (resolved == true) target.onObservableChange(null);
@@ -211,7 +212,9 @@ class Scope
 
     // dispose of data sources
     final list = datasources.values.toList();
-    list.forEach((source) => source.dispose());
+    for (var source in list) {
+      source.dispose();
+    }
     datasources.clear();
 
     // clear models

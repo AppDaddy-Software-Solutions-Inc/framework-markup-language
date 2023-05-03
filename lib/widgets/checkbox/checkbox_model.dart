@@ -387,7 +387,9 @@ class CheckboxModel extends FormFieldModel implements IFormField
     size  = Xml.get(node: xml, tag: 'size');
 
     // clear options
-    this.options.forEach((option) => option.dispose());
+    for (var option in this.options) {
+      option.dispose();
+    }
     this.options.clear();
 
     // Build options
@@ -401,7 +403,9 @@ class CheckboxModel extends FormFieldModel implements IFormField
     }
 
     // build options
-    options.forEach((option) => this.options.add(option));
+    for (var option in options) {
+      this.options.add(option);
+    }
   }
 
 
@@ -413,7 +417,9 @@ class CheckboxModel extends FormFieldModel implements IFormField
       if (prototype == null) return true;
 
       // clear options
-      options.forEach((option) => option.dispose());
+      for (var option in options) {
+        option.dispose();
+      }
       options.clear();
 
       // build options
@@ -446,13 +452,12 @@ class CheckboxModel extends FormFieldModel implements IFormField
   {
     // set the data
     List<dynamic> data = [];
-    options.forEach((option)
-    {
+    for (var option in options) {
       bool? contains = false;
       if (value is List)   contains = value.contains(option.value);
       if (value is String) contains = (value == option.value);
       if (contains! && (option.data != null)) data.add(option.data);
-    });
+    }
     this.data = data;
     return true;
   }

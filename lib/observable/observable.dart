@@ -309,12 +309,11 @@ class Observable
   {
     Map<String?, dynamic> variables =  <String?, dynamic>{};
     if (bindings != null) {
-      bindings!.forEach((binding)
-    {
+      for (var binding in bindings!) {
       Observable? source;
       if (sources != null) source = sources!.firstWhereOrNull((observable) => observable.key == binding.key);
       variables[binding.signature] = (source != null)  ? binding.translate(source.get()) : null;
-    });
+    }
     }
     return variables;
   }

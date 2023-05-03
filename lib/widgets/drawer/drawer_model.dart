@@ -178,10 +178,9 @@ class DrawerModel extends DecoratedWidgetModel
           }
 
           List<XmlElement> nodes = [];
-          node.children.forEach((node)
-          {
+          for (var node in node.children) {
             if (node.nodeType == XmlNodeType.ELEMENT) nodes.add(node.copy() as XmlElement);
-          });
+          }
 
           drawer.children.addAll(nodes);
           xml.children.add(drawer);

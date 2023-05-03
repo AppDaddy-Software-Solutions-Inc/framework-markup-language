@@ -968,7 +968,9 @@ class WidgetModel implements IDataSourceListener
     // dispose of children
     if (children != null)
     {
-      children!.forEach((child) => child.dispose());
+      for (var child in children!) {
+        child.dispose();
+      }
       children!.clear();
     }
   }
@@ -994,9 +996,9 @@ class WidgetModel implements IDataSourceListener
     if (notify && _listeners == null) print('listeners is null');
     if (notify && _listeners != null) print('listeners has ${_listeners!.length} members');
     if (_listeners != null) {
-      _listeners!.forEach((listener) {
+      for (var listener in _listeners!) {
         listener.onModelChange(this, property: property, value: value);
-      });
+      }
     }
   }
 
@@ -1008,8 +1010,7 @@ class WidgetModel implements IDataSourceListener
   {
     // start datasources
     if (datasources != null) {
-      datasources!.forEach((datasource)
-      {
+      for (var datasource in datasources!) {
         // already started?
         if (!datasource.initialized!)
         {
@@ -1022,7 +1023,7 @@ class WidgetModel implements IDataSourceListener
           // start the datasource if autoexecute = true
           if (datasource.autoexecute == true) datasource.start();
         }
-      });
+      }
     }
   }
 
@@ -1061,7 +1062,9 @@ class WidgetModel implements IDataSourceListener
 
     // evaluate my siblings
     if ((includeSiblings) && (children != null)) {
-      children!.forEach((child) => ((child.runtimeType == T) && (child.id == (id ?? child.id))) ? list.add(child) : null);
+      for (var child in children!) {
+        ((child.runtimeType == T) && (child.id == (id ?? child.id))) ? list.add(child) : null;
+      }
     }
 
     // evaluate my ancestors
@@ -1078,8 +1081,9 @@ class WidgetModel implements IDataSourceListener
   List<dynamic>? findDescendantsOfExactType(Type? T, {String? id}) {
     List<dynamic> list = [];
     if (children == null) return null;
-    children!.forEach(
-        (child) => list.addAll(child._findDescendantsOfExactType(T, id)));
+    for (var child in children!) {
+      list.addAll(child._findDescendantsOfExactType(T, id));
+    }
     return list;
   }
 
@@ -1233,7 +1237,9 @@ class WidgetModel implements IDataSourceListener
     }
 
     // valid fml?
-    nodes.forEach((element) => _appendChild(element, index));
+    for (var element in nodes) {
+      _appendChild(element, index);
+    }
 
     return exception != null && nodes.isNotEmpty;
   }
@@ -1378,10 +1384,9 @@ class WidgetModel implements IDataSourceListener
         // check for children then remove them
         if (children != null)
         {
-          children!.forEach((child)
-          {
+          for (var child in children!) {
             child.dispose();
-          });
+          }
           children = [];
         }
 
@@ -1461,7 +1466,9 @@ class WidgetModel implements IDataSourceListener
           {
             // copy element
             var element = model.element!.copy();
-            node.attributes.forEach((attribute) => Xml.setAttribute(element, attribute.localName, attribute.value));
+            for (var attribute in node.attributes) {
+              Xml.setAttribute(element, attribute.localName, attribute.value);
+            }
             node.replace(element);
             node = element;
           }

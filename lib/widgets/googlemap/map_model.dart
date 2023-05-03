@@ -180,14 +180,13 @@ class MapModel extends DecoratedWidgetModel
         for (String prototype in prototypes)
         {
           int i = 0;
-          list.forEach((data)
-          {
+          for (var data in list) {
             XmlElement? node = S.fromPrototype(prototype, S.newId());
             i = i + 1;
 
             var location = MapLocationModel.fromXml(parent!, node, data: data);
             if (location != null) locations.add(location);
-          });
+          }
         }}
     }
     catch(e)

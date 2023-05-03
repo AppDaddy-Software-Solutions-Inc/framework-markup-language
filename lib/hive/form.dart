@@ -70,7 +70,9 @@ class Form implements Comparable
 
       // delete Sub-Forms 
       List<Form> forms = await query(where: "'{parent}' == '$key'");
-      forms.forEach((form) async => await form.delete());
+      for (var form in forms) {
+        await form.delete();
+      }
 
       // delete form
       exception = await Database().delete(tableName, key);

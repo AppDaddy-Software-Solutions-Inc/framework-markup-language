@@ -165,8 +165,7 @@ class ListItemModel extends DecoratedWidgetModel
     // find all descendants
     List<dynamic>? fields = findDescendantsOfExactType(null);
     if (fields != null) {
-      fields.forEach((field)
-      {
+      for (var field in fields) {
         // form field?
         if (field is IFormField)
         {
@@ -177,7 +176,7 @@ class ListItemModel extends DecoratedWidgetModel
           // Register Listener to Dirty Field
           if (field.dirtyObservable != null) field.dirtyObservable!.registerListener(onDirtyListener);
         }
-      });
+      }
     }
   }
 
@@ -195,7 +194,9 @@ class ListItemModel extends DecoratedWidgetModel
     ////////////////
     /* Mark Clean */
     ////////////////
-    if ((ok) && (fields != null)) fields!.forEach((field) => field.dirty = false);
+    if ((ok) && (fields != null)) for (var field in fields!) {
+   field.dirty = false;
+ }
 
     busy = false;
 

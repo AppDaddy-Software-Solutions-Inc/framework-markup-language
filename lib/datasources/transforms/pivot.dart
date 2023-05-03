@@ -178,15 +178,14 @@ class Pivot extends TransformModel implements ITransform
     // Column Totals
     Map<String, dynamic> totals   = <String, dynamic>{};
     Map<String, dynamic> averages = <String, dynamic>{};
-    result.forEach((row)
-    {
+    for (var row in result) {
       row.forEach((key, value)
       {
         if (!totals.containsKey(key)) totals[key] = null;
         double? sum = S.toDouble(value);
         if (sum != null) totals[key] = (totals[key] ?? 0) + sum;
       });
-    });
+    }
 
     totals.forEach((key, value)
     {

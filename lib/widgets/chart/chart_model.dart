@@ -129,11 +129,10 @@ class ChartModel extends DecoratedWidgetModel  {
 
     // Get Axis
     List<ChartAxisModel> axis = findChildrenOfExactType(ChartAxisModel).cast<ChartAxisModel>();
-    axis.forEach((axis)
-    {
+    for (var axis in axis) {
       if (axis.axis == ChartAxis.X) xaxis = axis;
       if (axis.axis == ChartAxis.Y) yaxis = axis;
-    });
+    }
   }
 
   /// Contains the data map from the row (point) that is selected
@@ -228,20 +227,20 @@ class ChartModel extends DecoratedWidgetModel  {
   {
     try
     {
-        series.forEach((series) {
+        for (var series in series) {
           if (series.datasource == source.id) {
             series.dataPoint.clear();
             if (list != null) {
-              list.forEach((p) {
+              for (var p in list) {
                 ChartDataPoint point = series.point(p);
                 if ((point.x != null) && (point.y != null)) {
                   series.dataPoint.add(point);
                 }
-              });
+              }
             }
             series.data = list;
           }
-        });
+        }
       notifyListeners('list', null);
     }
     catch(e)

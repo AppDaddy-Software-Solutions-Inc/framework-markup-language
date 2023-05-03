@@ -137,8 +137,7 @@ class MapModel extends DecoratedWidgetModel
 
     // build locations
     List<MapMarkerModel> markers = findChildrenOfExactType(MapMarkerModel).cast<MapMarkerModel>();
-    markers.forEach((model)
-    {
+    for (var model in markers) {
       // data driven prototype location
       if (!S.isNullOrEmpty(model.datasource))
       {
@@ -159,7 +158,7 @@ class MapModel extends DecoratedWidgetModel
       else {
         this.markers.add(model);
       }
-    });
+    }
   }
 
   @override
@@ -187,14 +186,13 @@ class MapModel extends DecoratedWidgetModel
         for (String prototype in prototypes)
         {
           int i = 0;
-          list.forEach((data)
-          {
+          for (var data in list) {
             XmlElement? node = S.fromPrototype(prototype, "$id-${S.newId()}");
             i = i + 1;
 
             var location = MapMarkerModel.fromXml(parent!, node, data: data);
             if (location != null) markers.add(location);
-          });
+          }
         }}
     }
     catch(e)

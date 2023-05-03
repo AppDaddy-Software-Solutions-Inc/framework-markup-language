@@ -13,7 +13,7 @@ class DroppableView extends StatefulWidget implements IWidgetView
   DroppableView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _DroppableViewState createState() => _DroppableViewState();
+  State<DroppableView> createState() => _DroppableViewState();
 }
 
 

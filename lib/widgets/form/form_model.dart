@@ -154,10 +154,9 @@ class FormModel extends DecoratedWidgetModel
   {
     // set form dirty
     bool isDirty = false;
-    fields.forEach((field)
-    {
+    for (var field in fields) {
       if (field.dirty == true) isDirty = true;
-    });
+    }
     dirty = isDirty;
 
     // auto save?
@@ -167,10 +166,14 @@ class FormModel extends DecoratedWidgetModel
   set clean (bool b)
   {
     // clean all fields
-    fields.forEach((field) => field.dirty = false);
+    for (var field in fields) {
+      field.dirty = false;
+    }
 
     // clean all sub-forms
-    forms.forEach((form)   => form.clean  = false);
+    for (var form in forms) {
+      form.clean  = false;
+    }
   }
 
   // gps 
@@ -227,8 +230,7 @@ class FormModel extends DecoratedWidgetModel
   {
     Map<String, String?> _map = <String, String?>{};
 
-      fields.forEach((field)
-      {
+      for (var field in fields) {
         if ((field.elementName != "attachment") && (!S.isNullOrEmpty(field.value)))
         {
           String? value;
@@ -250,7 +252,7 @@ class FormModel extends DecoratedWidgetModel
           ///
           if(field.id != null) _map[field.id!] = value;
         }
-      });
+      }
 
     return _map;
   }
@@ -356,28 +358,25 @@ class FormModel extends DecoratedWidgetModel
     clean = true;
 
     // add dirty listener to each field
-    fields.forEach((field)
-    {
+    for (var field in fields) {
       if (field.dirtyObservable != null) field.dirtyObservable!.registerListener(onDirtyListener);
-    });
+    }
 
     // add dirty listener to each sub-form
-    forms.forEach((form)
-    {
+    for (var form in forms) {
       Observable? property = form.dirtyObservable;
       if (property != null) property.registerListener(onDirtyListener);
-    });
+    }
   }
 
   static List<IFormField> getFields(List<WidgetModel>? children)
   {
     List<IFormField> fields = [];
     if (children != null) {
-      children.forEach((child)
-      {
+      for (var child in children) {
         if (child is IFormField) fields.add(child as IFormField);
         if (child is! IForm) fields.addAll(getFields(child.children));
-      });
+      }
     }
     return fields;
   }
@@ -386,11 +385,10 @@ class FormModel extends DecoratedWidgetModel
   {
     List<IForm> forms = [];
     if (children != null) {
-      children.forEach((child)
-      {
+      for (var child in children) {
         if (child is IForm) forms.add(child as IForm);
         if (child is! IForm) forms.addAll(getForms(child.children));
-      });
+      }
     }
     return forms;
   }
@@ -422,10 +420,9 @@ class FormModel extends DecoratedWidgetModel
     bool ok = true;
 
     // Clear Fields
-    fields.forEach((field)
-    {
+    for (var field in fields) {
       field.value = field.defaultValue ?? "";
-    });
+    }
 
     // Set Clean
     if (ok == true) clean = true;
@@ -499,7 +496,9 @@ class FormModel extends DecoratedWidgetModel
     });
 
     // Insert New Answers
-    fields.forEach((field) => _insertAnswers(node, field));
+    for (var field in fields) {
+      _insertAnswers(node, field);
+    }
 
     return ok;
   }
@@ -510,8 +509,7 @@ class FormModel extends DecoratedWidgetModel
     {
       // field is postable?
       if ((field.postable ?? false) && (field.values != null)) {
-        field.values!.forEach((value)
-        {
+        for (var value in field.values!) {
           // create new element
           XmlElement node = XmlElement(XmlName("ANSWER"));
 
@@ -556,7 +554,7 @@ class FormModel extends DecoratedWidgetModel
 
           // add to root
           root.children.add(node);
-        });
+        }
       }
     }
     catch(e)
@@ -589,8 +587,7 @@ class FormModel extends DecoratedWidgetModel
       document.children.add(root);
 
       if (fields != null) {
-        fields.forEach((field)
-        {
+        for (var field in fields) {
           // postable?
           if (field.postable == true)
           {
@@ -692,7 +689,7 @@ class FormModel extends DecoratedWidgetModel
               root.children.add(node);
             }
           }
-        });
+        }
       }
 
       // Set Body
@@ -794,8 +791,7 @@ class FormModel extends DecoratedWidgetModel
   Future<List<IFormField>?> _getMissing() async
   {
     List<IFormField>? missing;
-    fields.forEach((field)
-    {
+    for (var field in fields) {
       bool? isMandatory;
       if ((isMandatory == null) && (field.mandatory != null)) isMandatory = field.mandatory;
       if ((isMandatory == null) && (mandatory != null))  isMandatory = mandatory;
@@ -803,23 +799,22 @@ class FormModel extends DecoratedWidgetModel
       if ((isMandatory) && (!field.answered))
       {
         missing ??= [];
-        missing!.add(field);
+        missing.add(field);
       }
-    });
+    }
     return missing;
   }
 
   Future<List<IFormField>?> _getAlarms() async
   {
     List<IFormField>? alarming;
-    fields.forEach((field)
-    {
+    for (var field in fields) {
       if (field.alarming!)
       {
         alarming ??= [];
-        alarming!.add(field);
+        alarming.add(field);
       }
-    });
+    }
     return alarming;
   }
 

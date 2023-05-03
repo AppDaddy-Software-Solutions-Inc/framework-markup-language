@@ -106,8 +106,7 @@ class BarcodeDetector implements IBarcodeDetector
       {
         barcode.parameters = <String, String?>{};
         var lines = barcode.barcode!.split(RegExp(r'\r\n|\n\r|\n|\r|DL'));
-        lines.forEach((line)
-        {
+        for (var line in lines) {
           line = line.trim();
           String code = line.substring(0, 3);
           String value = line.substring(3).trim();
@@ -189,7 +188,7 @@ class BarcodeDetector implements IBarcodeDetector
             default:
               break;
           }
-        });
+        }
       }
     }
 

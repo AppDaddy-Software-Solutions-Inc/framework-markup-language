@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/detectors/iDetectable.dart';
+import 'package:fml/datasources/detectors/detector_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/datasources/detectors/detector_model.dart';
 import 'package:fml/observable/binding.dart';

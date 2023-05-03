@@ -199,9 +199,9 @@ class ViewState extends WidgetState<View>
       //const int HAVE_METADATA     = 1; // metadata for the video is ready
       //const int HAVE_CURRENT_DATA = 2; // data for the current playback position is available, but not enough data to play next frame/millisecond
       //const int HAVE_FUTURE_DATA  = 3; // data for the current and at least the next frame is available
-      const int HAVE_ENOUGH_DATA = 4; // enough data available to start playing
+      const int haveEnoughData = 4; // enough data available to start playing
 
-      if (video.readyState == HAVE_ENOUGH_DATA) {
+      if (video.readyState == haveEnoughData) {
         /**************************************************/
         /* scale and horizontally center the camera image */
         /**************************************************/

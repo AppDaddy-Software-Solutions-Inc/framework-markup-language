@@ -9,23 +9,23 @@ import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
 if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
 if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
 
-enum BarcodeFormats { UNKNOWN, CODE128, CODE39, CODE93, CODABAR, DATAMATRIX, EAN13, EAN8, ITF, QRCODE, UPCA, UPCE, PDF417, AZTEC, ONDL}
+enum BarcodeFormats { unknown, code128, code39, code93, codabar, datamatrix, ean13, ean8, itf, qrcode, upca, upce, pdf417, aztec, ondl}
 
 Map<int, BarcodeFormats> barcodeMap = {
-  0   : BarcodeFormats.UNKNOWN,
-  1   : BarcodeFormats.CODE128,
-  2   : BarcodeFormats.CODE39,
-  4   : BarcodeFormats.CODE93,
-  8   : BarcodeFormats.CODABAR,
-  16  : BarcodeFormats.DATAMATRIX,
-  32  : BarcodeFormats.EAN13,
-  64  : BarcodeFormats.EAN8,
-  128 : BarcodeFormats.ITF,
-  256 : BarcodeFormats.QRCODE,
-  512 : BarcodeFormats.UPCA,
-  1024: BarcodeFormats.UPCE,
-  2048: BarcodeFormats.PDF417,
-  4096: BarcodeFormats.AZTEC,
+  0   : BarcodeFormats.unknown,
+  1   : BarcodeFormats.code128,
+  2   : BarcodeFormats.code39,
+  4   : BarcodeFormats.code93,
+  8   : BarcodeFormats.codabar,
+  16  : BarcodeFormats.datamatrix,
+  32  : BarcodeFormats.ean13,
+  64  : BarcodeFormats.ean8,
+  128 : BarcodeFormats.itf,
+  256 : BarcodeFormats.qrcode,
+  512 : BarcodeFormats.upca,
+  1024: BarcodeFormats.upce,
+  2048: BarcodeFormats.pdf417,
+  4096: BarcodeFormats.aztec,
 };
 
 class Barcode

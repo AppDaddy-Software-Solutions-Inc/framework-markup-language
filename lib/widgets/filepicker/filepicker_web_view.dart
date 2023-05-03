@@ -2,7 +2,7 @@
 import 'dart:async';
 import 'package:universal_html/html.dart' as dart_html;
 import 'dart:ui';
-import 'package:fml/datasources/detectors/iDetectable.dart';
+import 'package:fml/datasources/detectors/detector_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'filepicker_view.dart';
 import 'package:fml/datasources/file/file.dart';

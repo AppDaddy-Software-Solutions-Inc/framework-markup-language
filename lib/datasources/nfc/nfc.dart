@@ -4,7 +4,7 @@ import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
 import 'package:fml/models/custom_exception.dart';
 import 'package:ndef/ndef.dart' as ndef;
 import 'package:fml/log/manager.dart';
-import 'iNfcListener.dart';
+import 'nfc_listener_interface.dart';
 import 'payload.dart';
 
 class Reader

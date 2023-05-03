@@ -125,37 +125,37 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints) {
     // Tween
-    double _from = widget.model.from;
-    double _to = widget.model.to;
-    double _begin = widget.model.begin;
-    double _end = widget.model.end;
-    Curve _curve = AnimationHelper.getCurve(widget.model.curve);
+    double from = widget.model.from;
+    double to = widget.model.to;
+    double begin = widget.model.begin;
+    double end = widget.model.end;
+    Curve curve = AnimationHelper.getCurve(widget.model.curve);
     //
-    Axis _direction = widget.model.size?.toLowerCase() == "height"
+    Axis direction = widget.model.size?.toLowerCase() == "height"
         ? Axis.vertical
         : Axis.horizontal;
     //start, end, center
-    double _align = widget.model.align?.toLowerCase() == "start"
+    double align = widget.model.align?.toLowerCase() == "start"
         ? -1
         : widget.model.align?.toLowerCase() == "end"
             ? 1
             : 0;
     Tween<double> _newTween = Tween<double>(
-      begin: _from,
-      end: _to,
+      begin: from,
+      end: to,
     );
 
-    if (_begin != 0.0 || _end != 1.0) {
-      _curve = Interval(
-        _begin,
-        _end,
+    if (begin != 0.0 || end != 1.0) {
+      curve = Interval(
+        begin,
+        end,
         // the style curve to pass.
-        curve: _curve,
+        curve: curve,
       );
     }
 
     _animation = _newTween.animate(CurvedAnimation(
-      curve: _curve,
+      curve: curve,
       parent: _controller,
     ));
     // Build View
@@ -163,8 +163,8 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
     view = SizeTransition(
       sizeFactor: _animation,
-      axis: _direction,
-      axisAlignment: _align,
+      axis: direction,
+      axisAlignment: align,
       child: widget.child,
     );
 

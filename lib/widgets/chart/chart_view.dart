@@ -19,11 +19,11 @@ import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:intl/intl.dart';
 
 enum ChartType {
-  TimeSeriesChart,
-  BarChart,
-  OrdinalComboChart,
-  NumericComboChart,
-  PieChart
+  timeSeriesChart,
+  barChart,
+  ordinalComboChart,
+  numericComboChart,
+  pieChart
 }
 
 /// Chart View
@@ -74,21 +74,21 @@ class _ChartViewState extends WidgetState<ChartView>
         widget.model.xaxis!.type == ChartAxisType.date ||
         widget.model.xaxis!.type == ChartAxisType.time) {
       // Determine if the X Axis is time based
-      return ChartType.TimeSeriesChart;
+      return ChartType.timeSeriesChart;
     }
 
     ChartSeriesModel? nonBarSeries = widget.model.series.firstWhereOrNull((series) => series.type != 'bar');
     if (nonBarSeries == null) {
       // Exclusively BarSeries, can use BarChart
-      return ChartType.BarChart;
+      return ChartType.barChart;
     } else if (widget.model.type != null &&
         (widget.model.type!.toLowerCase() == 'pie' ||
             widget.model.type!.toLowerCase() == 'circle')) {
-      return ChartType.PieChart;
+      return ChartType.pieChart;
     } else if (widget.model.xaxis!.type == ChartAxisType.category) {
-      return ChartType.OrdinalComboChart;
+      return ChartType.ordinalComboChart;
     } else if (widget.model.xaxis!.type == ChartAxisType.numeric) {
-      return ChartType.NumericComboChart;
+      return ChartType.numericComboChart;
     } else {
       Log().warning(
           'Unable to determine the type of chart required from model parameters');
@@ -514,7 +514,7 @@ class _ChartViewState extends WidgetState<ChartView>
   /// Unique id for each series based off the FML id, fallback on the name attribute
   /// Importantly bar charts that have a group attribute must share the same render key
   String? getRendererKey(ChartSeriesModel series) {
-    if (chartType == ChartType.BarChart || chartType == ChartType.PieChart) {
+    if (chartType == ChartType.barChart || chartType == ChartType.pieChart) {
       return null;
     }
     return (series.type == 'bar' ? series.group : null) ?? series.id;
@@ -700,8 +700,8 @@ class _ChartViewState extends WidgetState<ChartView>
   /// Returns additional chart behaviors based on model settings
   List<charts_flutter.ChartBehavior<T>> getBehaviors<T>() {
     List<charts_flutter.ChartBehavior<T>> behaviors = [];
-    if (chartType != ChartType.PieChart) behaviors.add(charts_flutter.PanAndZoomBehavior());
-    if (widget.model.showlegend != 'false' && chartType != ChartType.PieChart) {
+    if (chartType != ChartType.pieChart) behaviors.add(charts_flutter.PanAndZoomBehavior());
+    if (widget.model.showlegend != 'false' && chartType != ChartType.pieChart) {
       behaviors.add(
           charts_flutter.SeriesLegend(position: legendPosition(widget.model.showlegend,),
               entryTextStyle: charts_flutter.TextStyleSpec(
@@ -709,7 +709,7 @@ class _ChartViewState extends WidgetState<ChartView>
     ),
           ));
     }
-    if (widget.model.showlegend != 'false' && chartType == ChartType.PieChart) {
+    if (widget.model.showlegend != 'false' && chartType == ChartType.pieChart) {
       behaviors.add(charts_flutter.DatumLegend(
         position: legendPosition(widget.model.showlegend),
         entryTextStyle: charts_flutter.TextStyleSpec(
@@ -785,19 +785,19 @@ class _ChartViewState extends WidgetState<ChartView>
     List<charts_flutter.Series>? series = buildSeriesList();
 
     switch (chartType) {
-      case ChartType.BarChart:
+      case ChartType.barChart:
         view = buildBarChart(series as List<Series<dynamic, String>>);
         break;
-      case ChartType.NumericComboChart:
+      case ChartType.numericComboChart:
         view = buildNumericChart(series!);
         break;
-      case ChartType.OrdinalComboChart:
+      case ChartType.ordinalComboChart:
         view = buildOrdinalChart(series!);
         break;
-      case ChartType.PieChart:
+      case ChartType.pieChart:
         view = buildPieChart((series as List<charts_flutter.Series<dynamic, String>>));
         break;
-      case ChartType.TimeSeriesChart:
+      case ChartType.timeSeriesChart:
         view = buildTimeChart(series!);
         break;
       default:

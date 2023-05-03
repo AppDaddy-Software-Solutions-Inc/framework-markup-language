@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/models/custom_exception.dart';
 import 'package:fml/system.dart';
@@ -9,7 +9,7 @@ import 'package:fml/datasources/base/model.dart';
 import 'package:fml/event/handler.dart' ;
 import 'package:xml/xml.dart';
 import 'payload.dart';
-import 'iNfcListener.dart';
+import 'nfc_listener_interface.dart';
 import 'nfc.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';

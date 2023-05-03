@@ -1,5 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/datasources/detectors/iDetectable.dart';
+import 'package:fml/datasources/detectors/detector_interface.dart';
 
 import 'filepicker_mobile_view.dart'
 if (dart.library.io)   'filepicker_mobile_view.dart'

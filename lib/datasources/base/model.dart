@@ -2,9 +2,9 @@
 import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/iDataSource.dart';
-import 'package:fml/datasources/iDataSourceListener.dart';
-import 'package:fml/datasources/transforms/iTransform.dart';
+import 'package:fml/datasources/datasource_interface.dart';
+import 'package:fml/datasources/datasource_listener_interface.dart';
+import 'package:fml/datasources/transforms/transform_interface.dart';
 import 'package:fml/hive/data.dart' as hive;
 import 'package:fml/datasources/data/model.dart';
 import 'package:fml/log/manager.dart';

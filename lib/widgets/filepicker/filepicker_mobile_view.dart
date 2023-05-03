@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:cross_file/cross_file.dart';
 import 'package:file_picker/file_picker.dart' as file_picker;
-import 'package:fml/datasources/detectors/iDetectable.dart';
+import 'package:fml/datasources/detectors/detector_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:path/path.dart';
 import 'filepicker_view.dart';

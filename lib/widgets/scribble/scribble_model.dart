@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
-import 'package:fml/widgets/form/iFormField.dart';
+import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/scribble/scribble_view.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';

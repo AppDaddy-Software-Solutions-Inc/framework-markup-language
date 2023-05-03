@@ -3,7 +3,7 @@ import 'dart:collection';
 import 'package:flutter_beacon/flutter_beacon.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/base/model.dart';
-import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/integer.dart';

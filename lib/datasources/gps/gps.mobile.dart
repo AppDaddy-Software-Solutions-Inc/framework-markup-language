@@ -5,7 +5,7 @@ import 'package:fml/log/manager.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:fml/system.dart';
 import 'payload.dart';
-import 'iGpsListener.dart';
+import 'gps_litener_interface.dart';
 
 Gps getReceiver() => Receiver();
 

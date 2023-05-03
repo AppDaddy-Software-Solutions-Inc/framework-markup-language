@@ -40,9 +40,9 @@ String get defaultDomain => 'https://test.appdaddy.co';
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
-final ApplicationTypes appType = ApplicationTypes.MultiApp;
+final ApplicationTypes appType = ApplicationTypes.multiApp;
 
-enum ApplicationTypes{ SingleApp, MultiApp }
+enum ApplicationTypes{ singleApp, multiApp }
 
 // platform
 String get platform => isWeb ? "web" : isMobile ? "mobile" : "desktop";
@@ -357,7 +357,7 @@ class System extends WidgetModel implements IEventManager
   Future _initRoute() async
   {
     // set default app
-    if (isWeb || appType == ApplicationTypes.SingleApp)
+    if (isWeb || appType == ApplicationTypes.singleApp)
     {
       var domain = defaultDomain;
 

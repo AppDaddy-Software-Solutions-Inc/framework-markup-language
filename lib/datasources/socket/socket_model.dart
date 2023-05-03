@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/datasources/base/model.dart';
@@ -13,7 +13,7 @@ import 'package:fml/datasources/file/file.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
-import 'iSocketListener.dart';
+import 'socket_listener_interface.dart';
 
 class SocketModel extends DataSourceModel implements IDataSource, ISocketListener
 {

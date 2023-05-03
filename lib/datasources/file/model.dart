@@ -3,8 +3,8 @@ import 'dart:convert';
 
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/base/model.dart';
-import 'package:fml/datasources/detectors/iDetectable.dart';
-import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/datasources/detectors/detector_interface.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/datasources/file/file.dart';

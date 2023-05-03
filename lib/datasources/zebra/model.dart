@@ -75,7 +75,7 @@ class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener
     Data data = Data();
     payload.barcodes.forEach((barcode)
     {
-      Map<dynamic, dynamic> map = Map<dynamic, dynamic>();
+      Map<dynamic, dynamic> map = <dynamic, dynamic>{};
       map["type"]    = barcode.type != null ? barcode.type.toString() : "";
       map["format"]  = barcode.format;
       map["display"] = barcode.display;

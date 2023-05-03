@@ -41,7 +41,7 @@ class EventHandler extends Eval
   bool initialized = false;
 
   /// The String value mapping of all the functions
-  final Map<String?, dynamic> functions = Map<String?, dynamic>();
+  final Map<String?, dynamic> functions = <String?, dynamic>{};
 
   EventHandler(this.model);
 
@@ -149,7 +149,7 @@ class EventHandler extends Eval
       if (expression.endsWith("+")) expression = expression.substring(0,expression.length - 1);
 
       // build variable map and modify expression
-      Map<String, dynamic> _variables = Map<String, dynamic>();
+      Map<String, dynamic> _variables = <String, dynamic>{};
       int i = 0;
       variables.forEach((key,value)
       {
@@ -433,7 +433,7 @@ class EventHandler extends Eval
       var _provider = fbauth.OAuthProvider(provider);
       _provider.scopes.addAll(scopes);
 
-      Map<String,String> parameters = Map<String,String>();
+      Map<String,String> parameters = <String,String>{};
       parameters["prompt"] = 'select_account';
       _provider.setCustomParameters(parameters);
 
@@ -519,7 +519,7 @@ class EventHandler extends Eval
   /// Broadcasts the open event to be handled by individual widgets
   Future<bool> _handleEventOpen([dynamic url, dynamic modal, dynamic transition, dynamic replace, dynamic replaceall]) async
   {
-    Map<String,String?> parameters     = Map<String,String?>();
+    Map<String,String?> parameters     = <String,String?>{};
     parameters['url']        = S.toStr(url);
     parameters['modal']      = S.toStr(modal);
     parameters['transition'] = S.toStr(transition);
@@ -532,7 +532,7 @@ class EventHandler extends Eval
   /// Broadcasts the open event to be handled by individual widgets
   Future<bool> _handleEventReplace([dynamic url, dynamic transition]) async
   {
-    Map<String,String?> parameters     = Map<String,String?>();
+    Map<String,String?> parameters     = <String,String?>{};
     parameters['url']        = S.toStr(url);
     parameters['transition'] = S.toStr(transition);
     parameters['replace']    = "true";
@@ -552,7 +552,7 @@ class EventHandler extends Eval
   /// Broadcasts the close event to be handled by individual widgets
   Future<bool> _handleEventClose([dynamic p]) async
   {
-    Map<String,String?> parameters = Map<String,String?>();
+    Map<String,String?> parameters = <String,String?>{};
     // We set both parameters here and let the nearest listener choose how to handle it
     parameters['until'] = S.toStr(p); // pop until
     parameters['window'] = S.toStr(p); // close specific window
@@ -569,7 +569,7 @@ class EventHandler extends Eval
   /// Broadcasts the page event to be handled by individual widgets
   Future<bool> _handleEventPage([dynamic page]) async
   {
-    Map<String,String?> parameters = Map<String,String?>();
+    Map<String,String?> parameters = <String,String?>{};
     parameters['page']   = S.toStr(page);
     EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.page, parameters: parameters));
     return true;
@@ -578,7 +578,7 @@ class EventHandler extends Eval
   /// Broadcasts the refresh event to be handled by individual widgets
   Future<bool> _handleEventRefresh() async
   {
-    Map<String,String?> parameters = Map<String,String?>();
+    Map<String,String?> parameters = <String,String?>{};
     EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.refresh, parameters: parameters));
     return true;
   }
@@ -601,7 +601,7 @@ class EventHandler extends Eval
   /// Broadcasts the keypress event to be handled by individual widgets
   Future<bool> _handleEventKeyPress([dynamic key]) async
   {
-    Map<String,String?> parameters   = Map<String,String?>();
+    Map<String,String?> parameters   = <String,String?>{};
     parameters['key']      = S.toStr(key);
     EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.keypress, parameters: parameters));
     return true;
@@ -610,7 +610,7 @@ class EventHandler extends Eval
   /// Broadcasts the scroll event to be handled by individual widgets
   Future<bool> _handleEventScroll([dynamic direction, dynamic pixels]) async
   {
-    Map<String,String?> parameters     = Map<String,String?>();
+    Map<String,String?> parameters     = <String,String?>{};
     parameters['direction']  = S.toStr(direction);
     parameters['pixels']     = S.toStr(pixels);
     EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.scroll, parameters: parameters));
@@ -620,7 +620,7 @@ class EventHandler extends Eval
   /// Broadcasts the export event to be handled by individual widgets
   Future<bool> _handleEventExport([dynamic format, bool? israw]) async
   {
-    Map<String,String?> parameters = Map<String,String?>();
+    Map<String,String?> parameters = <String,String?>{};
     parameters['format'] = S.toStr(format);
     parameters['israw']  = S.toStr(israw);
     EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.export, parameters: parameters));
@@ -630,7 +630,7 @@ class EventHandler extends Eval
   /// Broadcasts the animate event to be handled by individual widgets
   Future<bool> _handleEventAnimate([dynamic id, dynamic enabled]) async
   {
-    Map<String,String?> parameters = Map<String,String?>();
+    Map<String,String?> parameters = <String,String?>{};
     parameters['id']      = S.toStr(id);
     parameters['enabled'] = S.toStr(enabled);
     EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.animate, parameters: parameters));
@@ -640,7 +640,7 @@ class EventHandler extends Eval
   /// Broadcasts the animate event to be handled by individual widgets
   Future<bool> _handleEventReset([dynamic id, dynamic enabled]) async
   {
-    Map<String,String?> parameters = Map<String,String?>();
+    Map<String,String?> parameters = <String,String?>{};
     parameters['id']      = S.toStr(id);
     parameters['enabled'] = S.toStr(enabled);
     EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.reset, parameters: parameters));
@@ -650,7 +650,7 @@ class EventHandler extends Eval
   /// Broadcasts the scrollto event to be handled by individual widgets
   Future<bool> _handleEventScrollTo([dynamic id]) async
   {
-    Map<String,String?> parameters     = Map<String,String?>();
+    Map<String,String?> parameters     = <String,String?>{};
     parameters['id']  = S.toStr(id);
     EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.scrollto, parameters: parameters));
     return true;
@@ -665,7 +665,7 @@ class EventHandler extends Eval
     if (trigger == null) trigger = model.findDescendantOfExactType(TriggerModel, id: id);
     if (trigger == null)
     {
-      Map<String,String?> parameters = Map<String,String?>();
+      Map<String,String?> parameters = <String,String?>{};
       parameters['id'] = S.toStr(id);
       EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.trigger, parameters: parameters));
     }
@@ -696,7 +696,7 @@ class EventHandler extends Eval
   Future<bool> _handleEventTheme([dynamic brightness, dynamic color]) async
   {
     try {
-      Map<String,String?> parameters = Map<String,String?>();
+      Map<String,String?> parameters = <String,String?>{};
       parameters['brightness']  = S.toStr(brightness);
       parameters['color']  = S.toStr(color);
       EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.theme, parameters: parameters));
@@ -708,7 +708,7 @@ class EventHandler extends Eval
   Future<bool> _handleEventFocusNode([dynamic node]) async
   {
     try {
-      Map<String,String?> parameters = Map<String,String?>();
+      Map<String,String?> parameters = <String,String?>{};
       parameters['key']  = S.toStr(node);
       EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.focusnode, parameters: parameters));
     } catch(e) {}

@@ -61,7 +61,7 @@ class FileModel extends DataSourceModel implements IDataSource
 
       // build the data
       Data data = Data();
-      Map<dynamic, dynamic> map = Map<dynamic, dynamic>();
+      Map<dynamic, dynamic> map = <dynamic, dynamic>{};
       map['file'] = file.url;
       map['name'] = file.name;
       map['type'] = file.mimeType;

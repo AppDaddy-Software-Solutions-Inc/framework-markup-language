@@ -181,7 +181,7 @@ class FormFieldModel extends DecoratedWidgetModel
     List<AlarmModel> alarms = findChildrenOfExactType(AlarmModel).cast<AlarmModel>();
     alarms.forEach((alarm)
     {
-      if (_alarms == null) _alarms = Map<String?, BooleanObservable>();
+      _alarms ??= <String?, BooleanObservable>{};
       this._alarms!.clear();
       String id = alarm.id;
       if (!S.isNullOrEmpty(alarm.value)) _alarms![id] = BooleanObservable(null, value, scope: scope, setter: (value) => touched! ? value : false, listener: _onAlarm);

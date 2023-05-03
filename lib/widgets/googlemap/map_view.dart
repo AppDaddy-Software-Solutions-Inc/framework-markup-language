@@ -170,7 +170,7 @@ class _MapViewState extends WidgetState<MapView>
           trafficEnabled: false,
           markers: Set<Marker>.of(markers.values),
           // This fixes gestures but there is an issue with mousehweel onPointerSignals triggering on both the map and a scrollable parent
-          gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[Factory<OneSequenceGestureRecognizer>(() => EagerGestureRecognizer())].toSet());
+          gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{Factory<OneSequenceGestureRecognizer>(() => EagerGestureRecognizer())});
 
         return map;
       }

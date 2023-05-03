@@ -9,7 +9,7 @@ class Form implements Comparable
 {
   static String tableName = "FORM";
 
-  Map<String, dynamic> _map = Map<String, dynamic>();
+  Map<String, dynamic> _map = <String, dynamic>{};
 
   String  get key      => _map["key"];
   String? get parent   => _map["parent"];

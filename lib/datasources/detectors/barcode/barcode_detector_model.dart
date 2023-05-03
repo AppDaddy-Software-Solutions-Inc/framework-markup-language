@@ -86,8 +86,8 @@ class BarcodeDetectorModel extends DetectorModel implements IDetectable
       BarcodeFormats? f = S.toEnum(format, BarcodeFormats.values);
       if (f != null)
       {
-        if (this.barcodeFormats == null) this.barcodeFormats = [];
-        if (!this.barcodeFormats!.contains(f)) this.barcodeFormats!.add(f);
+        if (barcodeFormats == null) barcodeFormats = [];
+        if (!barcodeFormats!.contains(f)) barcodeFormats!.add(f);
       }
     }
   }

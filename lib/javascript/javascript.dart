@@ -97,7 +97,7 @@ class Bridge
       ////////////////////////////
       /* Add Sender / Recipient */
       ////////////////////////////
-      if (parameters == null) parameters = Map<String, dynamic>();
+      parameters ??= <String, dynamic>{};
 
       String from = 'DART-$id';
       String to   = 'JS-$id';
@@ -138,7 +138,7 @@ class Bridge
       var json = event.data;
       var data = jsonDecode(json);
 
-      Map<String, dynamic> map = Map<String, dynamic>();
+      Map<String, dynamic> map = <String, dynamic>{};
       if (data is Map) map.addAll(data as Map<String, dynamic>);
 
       String me        = 'DART-${this.id}';

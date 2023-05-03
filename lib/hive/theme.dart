@@ -7,7 +7,7 @@ class ThemeData
 {
   static String tableName = "THEME";
 
-  Map<String, dynamic> _map = Map<String, dynamic>();
+  Map<String, dynamic> _map = <String, dynamic>{};
 
   String  get key                  => _map["key"];
   String? get background           => _map["background"];

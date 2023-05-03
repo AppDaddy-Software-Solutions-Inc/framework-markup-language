@@ -70,9 +70,11 @@ class Observable
 
   dynamic get()
   {
-    if (getter == null)
-         return _value;
-    else return getter!();
+    if (getter == null) {
+      return _value;
+    } else {
+      return getter!();
+    }
   }
 
   Observable(this.key, dynamic value, {this.scope, OnChangeCallback? listener, this.getter, this.setter, this.lazyEvaluation = false})
@@ -89,11 +91,12 @@ class Observable
           String id = key!.split(".").first;
 
           // replace "this" with the id in the signature
-          for(Binding binding in bindings!)
-          if (binding.source == "this")
+          for(Binding binding in bindings!) {
+            if (binding.source == "this")
           {
             var signature = binding.signature.replaceFirst("this",id);
             value = (value as String).replaceAll(binding.signature, signature);
+          }
           }
 
           // requery the bindings
@@ -230,10 +233,12 @@ class Observable
         // is this an eval?
         if (isEval)
         {
-          if (variables == null) variables = Map<String?, dynamic>();
-          if ((source is BLOB.BlobObservable) && (!S.isNullOrEmpty(v)))
-               variables[binding.signature] = 'blob';
-          else variables[binding.signature] = v;
+          variables ??= <String?, dynamic>{};
+          if ((source is BLOB.BlobObservable) && (!S.isNullOrEmpty(v))) {
+            variables[binding.signature] = 'blob';
+          } else {
+            variables[binding.signature] = v;
+          }
         }
 
         // simple replacement of string values
@@ -257,8 +262,11 @@ class Observable
   static bool isEvalSignature(String? value)
   {
     if ((value != null) && (value.trim().toLowerCase().startsWith('eval(')) && (value.trim().toLowerCase().endsWith(')'))) return true;
-    if ((value != null) && (value.startsWith('='))) return true;
-    else return false;
+    if ((value != null) && (value.startsWith('='))) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   static String? getEvalSignature(String? value)
@@ -300,14 +308,15 @@ class Observable
 
   Map<String?, dynamic> getVariables()
   {
-    Map<String?, dynamic> variables =  Map<String?, dynamic>();
-    if (bindings != null)
-    bindings!.forEach((binding)
+    Map<String?, dynamic> variables =  <String?, dynamic>{};
+    if (bindings != null) {
+      bindings!.forEach((binding)
     {
       Observable? source;
       if (sources != null) source = sources!.firstWhereOrNull((observable) => observable.key == binding.key);
       variables[binding.signature] = (source != null)  ? binding.translate(source.get()) : null;
     });
+    }
     return variables;
   }
 }

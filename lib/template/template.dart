@@ -201,7 +201,7 @@ class Template
         if (uri != null)
         {
           // parameters
-          Map<String, String> parameters = Map<String, String>();
+          Map<String, String> parameters = <String, String>{};
           parameters.addAll(uri.queryParameters);
 
           // fetch the template

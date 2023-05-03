@@ -50,7 +50,7 @@ class Payload
     Data data = Data();
     payload.barcodes.forEach((barcode)
     {
-      Map<dynamic,dynamic> map = Map<dynamic,dynamic>();
+      Map<dynamic,dynamic> map = <dynamic,dynamic>{};
       map["barcode"] = barcode.barcode;
       map["display"] = barcode.display;
       map["format"]  = barcode.format;

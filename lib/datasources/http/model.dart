@@ -143,7 +143,7 @@ class HttpModel extends DataSourceModel implements IDataSource
     for (var node in headers)
     {
       // set headers
-      if (this.headers == null) this.headers = Map<String,String>();
+      if (this.headers == null) this.headers = <String,String>{};
       String? key   = Xml.get(node: node, tag: 'key');
       String? value = Xml.get(node: node, tag: 'value');
       if (!S.isNullOrEmpty(key) && !S.isNullOrEmpty(value)) this.headers![key!] = value!;
@@ -253,9 +253,11 @@ class HttpModel extends DataSourceModel implements IDataSource
     if (response.statusCode == HttpStatus.ok) toHive(url, response.body);
 
     // process response
-    if (response.statusCode != HttpStatus.ok)
-         return await super.onFail(data, code: response.statusCode, message: msg);
-    else return await super.onSuccess(data,  code: response.statusCode, message: msg);
+    if (response.statusCode != HttpStatus.ok) {
+      return await super.onFail(data, code: response.statusCode, message: msg);
+    } else {
+      return await super.onSuccess(data,  code: response.statusCode, message: msg);
+    }
   }
 
   @override

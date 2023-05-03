@@ -156,7 +156,7 @@ class Log
     final List<Map<dynamic,dynamic>> list = [];
     logs!.forEach((entry)
     {
-      Map<String,String?> map = Map<String,String?>();
+      Map<String,String?> map = <String,String?>{};
       map['type']      = entry['type'];
       map['time']      = DateTime.fromMillisecondsSinceEpoch(entry['epoch']).toIso8601String().replaceAll("T", " ");
       map['routine']   = entry['routine'];

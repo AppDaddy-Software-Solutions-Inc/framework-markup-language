@@ -241,7 +241,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
   // return parameters
   Map<String?, String> get parameters
   {
-    Map<String?, String> _parameters = Map<String?, String>();
+    Map<String?, String> _parameters = <String?, String>{};
     List<dynamic>? variables = findDescendantsOfExactType(VariableModel);
     if (variables != null)
       variables.forEach((variable)

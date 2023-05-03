@@ -92,7 +92,7 @@ class Pivot extends TransformModel implements ITransform
     bool rowFound    = false;
     bool fieldFound  = false;
 
-    Map<String, Map<String?, Map<String, double?>>> statistics = Map<String, Map<String?, Map<String, double?>>>();
+    Map<String, Map<String?, Map<String, double?>>> statistics = <String, Map<String?, Map<String, double?>>>{};
     data.forEach((row)
     {
       String? _column;
@@ -126,10 +126,10 @@ class Pivot extends TransformModel implements ITransform
       if (_row != null)
       {
         double? v = (_field is String) ? S.toDouble(_field) : null;
-        if (!statistics.containsKey(_row)) statistics[_row] = Map<String?, Map<String, double?>>();
+        if (!statistics.containsKey(_row)) statistics[_row] = <String?, Map<String, double?>>{};
         if (!statistics[_row]!.containsKey(_column))
         {
-          statistics[_row]![_column] = Map<String, double?>();
+          statistics[_row]![_column] = <String, double?>{};
           statistics[_row]![_column]!["min"] = null;
           statistics[_row]![_column]!["max"] = null;
           statistics[_row]![_column]!["cnt"] = 0;
@@ -156,7 +156,7 @@ class Pivot extends TransformModel implements ITransform
     Data result = Data();
     statistics.forEach((key, value)
     {
-      Map<String?, dynamic> row = Map<String?, dynamic>();
+      Map<String?, dynamic> row = <String?, dynamic>{};
       row["TIME"] = key;
 
       // Sum
@@ -175,8 +175,8 @@ class Pivot extends TransformModel implements ITransform
     });
 
     // Column Totals
-    Map<String, dynamic> totals   = Map<String, dynamic>();
-    Map<String, dynamic> averages = Map<String, dynamic>();
+    Map<String, dynamic> totals   = <String, dynamic>{};
+    Map<String, dynamic> averages = <String, dynamic>{};
     result.forEach((row)
     {
       row.forEach((key, value)

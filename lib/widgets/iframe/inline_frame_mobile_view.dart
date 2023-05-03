@@ -72,7 +72,7 @@ class _InlineFrameViewState extends WidgetState<InlineFrameView>
       ////////////////////
       /* Decode Message */
       ////////////////////
-      Map<String, dynamic> map = Map<String, dynamic>();
+      Map<String, dynamic> map = <String, dynamic>{};
       var data = jsonDecode(message.message);
       if (data is Map) map.addAll(data as Map<String, dynamic>);
 

@@ -226,7 +226,7 @@ class FormModel extends DecoratedWidgetModel
 
   Map<String, String?> get map
   {
-    Map<String, String?> _map = Map<String, String?>();
+    Map<String, String?> _map = <String, String?>{};
 
       fields.forEach((field)
       {

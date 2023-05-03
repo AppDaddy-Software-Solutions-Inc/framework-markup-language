@@ -9,7 +9,7 @@ class Post
 {
   static String tableName = "POST";
 
-  Map<String, dynamic> _map = Map<String, dynamic>();
+  Map<String, dynamic> _map = <String, dynamic>{};
   
   static int statusINCOMPLETE = 1;
   static int statusCOMPLETE   = 2;
@@ -92,7 +92,7 @@ class Post
 
   Map<String?, dynamic> toMap()
   {
-    var map = new Map<String?, dynamic>();
+    var map = <String?, dynamic>{};
     map[S.fromEnum(Fields.key)]       = key;
     map[S.fromEnum(Fields.form_key)]  = formKey;
     map[S.fromEnum(Fields.status)]    = status;

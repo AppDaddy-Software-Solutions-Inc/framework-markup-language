@@ -105,7 +105,7 @@ extension URI on Uri
     if (data != null) return this;
 
     /* Get the Query Parameters */
-    Map<String, List<String>> queryParameters = Map<String, List<String>>();
+    Map<String, List<String>> queryParameters = <String, List<String>>{};
     queryParameters.addAll(queryParametersAll);
 
     if (!queryParameters.containsKey(key)) queryParameters[key] = [];

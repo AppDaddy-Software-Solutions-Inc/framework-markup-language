@@ -12,7 +12,7 @@ class Settings
 
   Future<bool> set(String key, dynamic value) async
   {
-    Map<String, dynamic> map = Map<String, dynamic>();
+    Map<String, dynamic> map = <String, dynamic>{};
     map["value"] = value;
     return (await Database().insert(tableName, key, map) == null);
   }

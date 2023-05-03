@@ -10,7 +10,7 @@ class LineRow
 
   LineRow(List<ML.TextElement> e)
   {
-    this.words = e;
+    words = e;
   }
 }
 

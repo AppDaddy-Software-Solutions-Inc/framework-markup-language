@@ -88,9 +88,9 @@ class Binding
       List<String> parts = binding.split('.');
 
       // scoped?
-      var _scope = parts[0].trim();
-      if (System.app != null && parts.length > 1 && System.app!.scopeManager.hasScope(_scope)) {
-      scope = _scope;
+      var scope0 = parts[0].trim();
+      if (System.app != null && parts.length > 1 && System.app!.scopeManager.hasScope(scope0)) {
+      scope = scope0;
       parts.removeAt(0);
       }
 

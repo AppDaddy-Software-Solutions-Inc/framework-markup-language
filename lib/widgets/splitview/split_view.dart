@@ -44,10 +44,10 @@ class _SplitViewState extends WidgetState<SplitView>
     // save system constraints
     onLayout(constraints);
 
-    var _dividerWidth = widget.model.dividerWidth ?? (System().useragent == 'desktop' || S.isNullOrEmpty(System().useragent) ? 6.0 : 12.0);
-    if (_dividerWidth % 2 != 0) _dividerWidth = _dividerWidth + 1;
+    var dividerWidth = widget.model.dividerWidth ?? (System().useragent == 'desktop' || S.isNullOrEmpty(System().useragent) ? 6.0 : 12.0);
+    if (dividerWidth % 2 != 0) dividerWidth = dividerWidth + 1;
 
-    var _dividerColor = widget.model.dividerColor ?? Theme.of(context).colorScheme.onInverseSurface;
+    var dividerColor = widget.model.dividerColor ?? Theme.of(context).colorScheme.onInverseSurface;
     
     // views
     if (widget.views.isEmpty) {
@@ -61,8 +61,8 @@ class _SplitViewState extends WidgetState<SplitView>
     // calculate sizes
     var size1 = (widget.model.vertical ? widget.model.height ?? 0 : widget.model.width  ?? 0);
     var size2 = (widget.model.vertical ? widget.model.calculatedMaxHeightOrDefault : widget.model.calculatedMaxWidthOrDefault) - size1;
-    size1 = size1 - (_dividerWidth/2);
-    size2 = size2 - (_dividerWidth/2);
+    size1 = size1 - (dividerWidth/2);
+    size2 = size2 - (dividerWidth/2);
     if (size1.isNegative)
     {
       size2 = size2 + size1;
@@ -81,8 +81,8 @@ class _SplitViewState extends WidgetState<SplitView>
 
     // handle
     Widget handle = widget.model.vertical ?
-    GestureDetector(behavior: HitTestBehavior.opaque, onVerticalDragUpdate:   _onDrag, child: Container(color: _dividerColor, child: SizedBox(width: constraints.maxWidth, height: _dividerWidth, child: MouseRegion(cursor: SystemMouseCursors.resizeUpDown,     child: Stack(children: [Positioned(top: -10, child: Icon(Icons.drag_handle, color: widget.model.dividerHandleColor))]))))) :
-    GestureDetector(behavior: HitTestBehavior.opaque, onHorizontalDragUpdate: _onDrag, child: Container(color: _dividerColor, child: SizedBox(width: _dividerWidth, height: constraints.maxHeight, child: MouseRegion(cursor: SystemMouseCursors.resizeLeftRight, child: RotationTransition(child: Icon(Icons.drag_handle, color: widget.model.dividerHandleColor), turns: AlwaysStoppedAnimation(.25))))));
+    GestureDetector(behavior: HitTestBehavior.opaque, onVerticalDragUpdate:   _onDrag, child: Container(color: dividerColor, child: SizedBox(width: constraints.maxWidth, height: dividerWidth, child: MouseRegion(cursor: SystemMouseCursors.resizeUpDown,     child: Stack(children: [Positioned(top: -10, child: Icon(Icons.drag_handle, color: widget.model.dividerHandleColor))]))))) :
+    GestureDetector(behavior: HitTestBehavior.opaque, onHorizontalDragUpdate: _onDrag, child: Container(color: dividerColor, child: SizedBox(width: dividerWidth, height: constraints.maxHeight, child: MouseRegion(cursor: SystemMouseCursors.resizeLeftRight, child: RotationTransition(child: Icon(Icons.drag_handle, color: widget.model.dividerHandleColor), turns: AlwaysStoppedAnimation(.25))))));
 
     // right/bottom pane
     var pane2 = widget.model.vertical ?

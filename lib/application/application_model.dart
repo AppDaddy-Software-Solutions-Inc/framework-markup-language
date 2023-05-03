@@ -122,11 +122,11 @@ class ApplicationModel extends WidgetModel
     String? fragment = uri.hasFragment ? uri.fragment : null;
     if (fragment != null && fragment.toLowerCase().contains(".xml"))
     {
-        var _uri = Uri.tryParse(fragment);
-        if (_uri != null)
+        var uri = Uri.tryParse(fragment);
+        if (uri != null)
         {
-          _queryParameters = _uri.hasQuery ? _uri.queryParameters : null;
-          _startPage = _uri.removeQuery().url;
+          _queryParameters = uri.hasQuery ? uri.queryParameters : null;
+          _startPage = uri.removeQuery().url;
         }
     }
     else {

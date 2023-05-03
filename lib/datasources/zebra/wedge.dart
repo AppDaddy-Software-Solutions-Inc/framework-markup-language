@@ -116,7 +116,7 @@ class Reader
     if (S.isNullOrEmpty(format)) format = "UNKNOWN";
     format = format!.trim().toUpperCase().replaceAll("LABEL-TYPE-", "");
 
-    BarcodeFormats fmt = S.toEnum(format, BarcodeFormats.values) ?? BarcodeFormats.UNKNOWN;
+    BarcodeFormats fmt = S.toEnum(format, BarcodeFormats.values) ?? BarcodeFormats.unknown;
 
     bc.type    = 0;
     bc.format  = S.fromEnum(fmt);

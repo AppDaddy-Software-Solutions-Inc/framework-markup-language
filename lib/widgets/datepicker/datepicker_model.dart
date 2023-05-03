@@ -2,7 +2,7 @@
 import 'dart:async';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
-import 'package:fml/widgets/form/iFormField.dart';
+import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -17,8 +17,8 @@ class DatepickerModel extends FormFieldModel implements IFormField
 {
   bool isPicking = false;
 
-  static const time_format_default = "HH:mm";
-  static const date_format_default = "yyyy-MM-dd";
+  static const timeFormatDefault = "HH:mm";
+  static const dateFormatDefault = "yyyy-MM-dd";
 
   // padding
   DoubleObservable? _padding;

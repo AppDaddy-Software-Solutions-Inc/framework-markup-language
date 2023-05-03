@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:fml/hive/database.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-enum Fields {key, form_key, status, title, format, method, headers, url, body, date, attempts, info}
+enum Fields {key, formKey, status, title, format, method, headers, url, body, date, attempts, info}
 
 class Post
 {
@@ -75,7 +75,7 @@ class Post
     if (map is Map<String, dynamic>) {
       post = Post(
           key:      S.mapVal(map, S.fromEnum(Fields.key)),
-          formKey:  S.mapVal(map, S.fromEnum(Fields.form_key)),
+          formKey:  S.mapVal(map, S.fromEnum(Fields.formKey)),
           status:   S.mapInt(map, S.fromEnum(Fields.status)),
           title:    S.mapVal(map, S.fromEnum(Fields.title)),
           date:     S.mapInt(map, S.fromEnum(Fields.date)),
@@ -95,7 +95,7 @@ class Post
   {
     var map = <String?, dynamic>{};
     map[S.fromEnum(Fields.key)]       = key;
-    map[S.fromEnum(Fields.form_key)]  = formKey;
+    map[S.fromEnum(Fields.formKey)]  = formKey;
     map[S.fromEnum(Fields.status)]    = status;
     map[S.fromEnum(Fields.title)]     = title;
     map[S.fromEnum(Fields.date)]      = date;

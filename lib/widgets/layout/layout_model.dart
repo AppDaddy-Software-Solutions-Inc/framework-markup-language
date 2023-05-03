@@ -268,7 +268,7 @@ class LayoutModel extends DecoratedWidgetModel
   @override
   void onLayoutComplete(ViewableWidgetModel? model)
   {
-    // notify parent
+    // notify parent   
     super.onLayoutComplete(model);
 
     // you can only layout if parent layout model has completed sizing

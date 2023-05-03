@@ -54,8 +54,7 @@ class Janitor
     log_manager.Log().debug('Cleaning up old forms', caller: "Janitor");
     List<Form> forms = await Form.query();
     bool ok = true;
-    forms.forEach((form) async
-    {
+    for (var form in forms) {
       int age = form.updated;
       int delta = now - age;
       bool expired = ((delta / millesecondsPerDay) > formRetention);
@@ -69,13 +68,12 @@ class Janitor
           log_manager.Log().warning('Unable to delete form and possibly its associated posts. Form Key: $form.key, Complete: ${form.complete}', caller: 'Janitor');
         }
       }
-    });
+    }
 
     // cleanup completed posts
     log_manager.Log().debug('Cleaning up completed posting documents', caller: "Janitor");
     List<Post> posts = await Post.query(where: "{status} == ${Post.statusCOMPLETE}");
-    posts.forEach((post) async
-    {
+    for (var post in posts) {
       int age = post.date!;
       int delta = now - age;
       bool expired = ((delta / millesecondsPerDay) > postRetention);
@@ -89,14 +87,13 @@ class Janitor
           log_manager.Log().warning('Unable to delete completed post. Post Key: ${post.key}', caller: 'Janitor.dart');
         }
       }
-    });
+    }
 
     // cleanup incomplete posts
     log_manager.Log().debug('Cleaning up old and incomplete posting documents', caller: "Janitor");
     posts = await Post.query();
     ok = true;
-    posts.forEach((post) async
-    {
+    for (var post in posts) {
       int age = post.date!;
       int delta = now - age;
       bool expired = ((delta / millesecondsPerDay) > formRetention);
@@ -110,7 +107,7 @@ class Janitor
           log_manager.Log().warning('Unable to delete uncompleted post. Post Key: ${post.key}', caller: 'Janitor.dart');
         }
       }
-    });
+    }
 
     // cleanup logs
     log_manager.Log().debug('Cleaning up old log files', caller: "Janitor");

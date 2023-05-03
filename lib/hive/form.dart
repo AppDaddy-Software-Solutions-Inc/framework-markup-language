@@ -97,11 +97,10 @@ class Form implements Comparable
   {
     List<Form> forms = [];
     List<Map<String, dynamic>> entries = await Database().query(tableName, where: where, orderby: orderby);
-    entries.forEach((entry) async
-    {
+    for (var entry in entries) {
       Form? form = _fromMap(entry);
       if (form != null) forms.add(form);
-    });
+    }
     return forms;
   }
 

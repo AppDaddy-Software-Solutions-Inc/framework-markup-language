@@ -149,8 +149,7 @@ class PostMaster
       alert = false;
 
       // Process Each Post 
-      posts.forEach((post) async
-      {
+      for (var post in posts) {
         if (await postable(post))
         {
           // Set Pending Count 
@@ -179,7 +178,7 @@ class PostMaster
             pending = pending - 1;
           }
         }
-      });
+      }
 
     return true;
   }

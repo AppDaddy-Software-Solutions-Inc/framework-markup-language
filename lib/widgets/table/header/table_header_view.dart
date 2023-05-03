@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/table/table_model.dart';
 import 'package:fml/widgets/table/header/table_header_model.dart';
 import 'package:fml/widgets/table/header/cell/table_header_cell_view.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class TableHeaderView extends StatefulWidget implements IWidgetView

@@ -61,9 +61,6 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     if (type != null) _paddingType = type;
   }
 
-  @override
-  String? datasource;
-
   ////////////////////
   /* slt color */
   ////////////////////

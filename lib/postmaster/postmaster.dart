@@ -12,7 +12,7 @@ import 'package:fml/helper/common_helpers.dart';
 
 class PostMaster
 {
-  static PostMaster _singleton = PostMaster._init();
+  static final PostMaster _singleton = PostMaster._init();
   factory PostMaster()
   {
     return _singleton;

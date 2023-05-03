@@ -9,7 +9,7 @@ import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:fml/widgets/overlay/overlay_manager_view.dart';
 import 'package:fml/widgets/overlay/overlay_model.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 
 class OverlayView extends StatefulWidget
 {

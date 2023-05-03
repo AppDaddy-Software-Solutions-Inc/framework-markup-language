@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/iframe/inline_frame_model.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'inline_frame_view.dart';

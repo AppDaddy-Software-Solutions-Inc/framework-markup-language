@@ -6,7 +6,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
 import 'package:fml/widgets/tabview/tab_model.dart';

@@ -20,11 +20,8 @@ class IOSseChannel extends StreamChannelMixin implements SseChannel
   late final Map<String, String>? headers;
   List<String> events = [];
 
-  IOSseChannel._(this.url, {String? method, String? body, Map<String, String>? headers, List<String>? events})
+  IOSseChannel._(this.url, {this.method, this.body, this.headers, List<String>? events})
   {
-    this.method = method;
-    this.headers = headers;
-    this.body = body;
     if (events != null) this.events.addAll(events);
     _transformer = SseTransformer();
     _controller = StreamController<String?>.broadcast(onListen: _onListen, onCancel: _onCancel);

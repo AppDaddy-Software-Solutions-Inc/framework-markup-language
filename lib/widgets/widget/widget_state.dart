@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/constraints/constraint.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 

@@ -8,7 +8,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/googlemap/map_model.dart';
 import 'package:fml/widgets/googlemap/location/map_location_model.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
@@ -52,7 +52,7 @@ class _MapViewState extends WidgetState<MapView>
     WidgetsBinding.instance.addPostFrameCallback((_) => Future.delayed(Duration(seconds: 1), () => busy = null));
   }
 
-  Completer<GoogleMapController> _controller = Completer();
+  final Completer<GoogleMapController> _controller = Completer();
   GoogleMapController? controller;
 
   // static final CameraPosition _kGooglePlex = CameraPosition(

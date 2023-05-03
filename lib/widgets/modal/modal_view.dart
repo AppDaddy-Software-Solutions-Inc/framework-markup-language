@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class ModalView extends StatefulWidget implements IWidgetView

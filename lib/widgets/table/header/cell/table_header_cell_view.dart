@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/table/header/cell/table_header_cell_model.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 

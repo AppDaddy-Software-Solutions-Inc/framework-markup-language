@@ -4,7 +4,7 @@ import 'package:fml/widgets/overlay/overlay_manager_view.dart';
 import 'package:fml/widgets/overlay/overlay_model.dart';
 import 'package:fml/widgets/table/row/cell/table_row_cell_model.dart';
 import 'package:fml/widgets/table/row/table_row_model.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart' ;
 import 'package:fml/widgets/overlay/overlay_view.dart';

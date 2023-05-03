@@ -16,9 +16,7 @@ FilePickerView create({String? accept}) => FilePickerView(accept: accept);
 class FilePickerView implements FilePicker {
   String? accept;
 
-  FilePickerView({String? accept}) {
-    this.accept = accept;
-  }
+  FilePickerView({this.accept});
 
   @override
   Future<File?> launchPicker(List<IDetectable>? detectors) async {

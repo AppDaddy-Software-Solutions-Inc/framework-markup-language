@@ -6,7 +6,7 @@ import 'package:fml/helper/common_helpers.dart';
 
 class ScopeManager
 {
-  HashMap<String?, List<Scope>>  _directory  = HashMap<String?,List<Scope>>();
+  final HashMap<String?, List<Scope>>  _directory  = HashMap<String?,List<Scope>>();
   HashMap<String?, List<Observable>>? unresolved;
 
   ScopeManager();

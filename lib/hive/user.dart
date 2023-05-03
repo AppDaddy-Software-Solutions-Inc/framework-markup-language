@@ -9,7 +9,7 @@ class User
 {
   static String tableName = "USER";
 
-  Map<String, dynamic> _map = <String, dynamic>{};
+  final Map<String, dynamic> _map = <String, dynamic>{};
 
   String  get key      => _map["key"];
   String? get username => _map["username"];

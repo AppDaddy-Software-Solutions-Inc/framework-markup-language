@@ -18,7 +18,7 @@ class Reader
 
   final List<IBeaconListener> _listeners = [];
 
-  Completer _initialized = Completer();
+  final Completer _initialized = Completer();
 
   factory Reader()
   {

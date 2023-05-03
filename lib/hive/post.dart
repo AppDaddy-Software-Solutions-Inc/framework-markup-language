@@ -9,7 +9,7 @@ class Post
 {
   static String tableName = "POST";
 
-  Map<String, dynamic> _map = <String, dynamic>{};
+  final Map<String, dynamic> _map = <String, dynamic>{};
   
   static int statusINCOMPLETE = 1;
   static int statusCOMPLETE   = 2;

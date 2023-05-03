@@ -13,7 +13,7 @@ class NavigationObserver extends NavigatorObserver
 {
   final List<INavigatorObserver> _listeners = [];
 
-  static NavigationObserver _singleton = NavigationObserver._init();
+  static final NavigationObserver _singleton = NavigationObserver._init();
   factory NavigationObserver()
   {
     return _singleton;

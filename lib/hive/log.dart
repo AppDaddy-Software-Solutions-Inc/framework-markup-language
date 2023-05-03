@@ -11,7 +11,7 @@ class Log
 
   static final int daysToSave = 1;
 
-  Map<String, dynamic> _map = <String, dynamic>{};
+  final Map<String, dynamic> _map = <String, dynamic>{};
 
   String  get key     => _map["key"];
   String  get type    => _map["type"];

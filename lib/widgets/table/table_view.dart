@@ -10,7 +10,7 @@ import 'package:fml/event/event.dart'        ;
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/table/table_model.dart';
 import 'package:fml/widgets/table/header/table_header_view.dart';

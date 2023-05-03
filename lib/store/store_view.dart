@@ -32,7 +32,7 @@ class StoreView extends StatefulWidget
 
 class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin implements IModelListener, INavigatorObserver
 {
-  bool _visible = false;
+  final bool _visible = false;
   late InputModel appURLInput;
   ButtonModel? storeButton;
   MenuModel menuModel = MenuModel(null, 'Application Menu');

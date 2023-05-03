@@ -15,7 +15,7 @@ class TemplateManager
   // primarily used for performance reasons
   HashMap<String, XmlDocument> templates = HashMap<String, XmlDocument>();
 
-  static TemplateManager _singleton = TemplateManager._init();
+  static final TemplateManager _singleton = TemplateManager._init();
   factory TemplateManager()
   {
     return _singleton;

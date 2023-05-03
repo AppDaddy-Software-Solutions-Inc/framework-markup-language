@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
-import 'package:fml/widgets/video/IVideoPlayer.dart';
+import 'package:fml/widgets/video/ivideo_player.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/video/video_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;

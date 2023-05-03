@@ -1,11 +1,11 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:fml/helper/string.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:google_fonts/google_fonts.dart' deferred as fonts;
-import 'package:fml/eval/textParser.dart' as parse;
+import 'package:fml/eval/text_parser.dart' as parse;
 import 'package:flutter/material.dart';
 
 class TextView extends StatefulWidget implements IWidgetView

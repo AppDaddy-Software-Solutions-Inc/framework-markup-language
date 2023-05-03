@@ -84,7 +84,7 @@ class MapMarkerModel extends DecoratedWidgetModel
      dynamic longitude,
      String? info,
      String? infoSnippet,
-     String? label,
+     this.label,
      String? marker,
      dynamic visible
   }) : super(parent, id, scope: Scope(parent: parent.scope))
@@ -94,7 +94,6 @@ class MapMarkerModel extends DecoratedWidgetModel
     this.longitude    = longitude;
     title        = info;
     description  = infoSnippet;
-    this.label        = label;
     this.marker       = marker;
     this.visible      = visible;
   }

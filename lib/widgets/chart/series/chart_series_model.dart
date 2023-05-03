@@ -40,7 +40,7 @@ class ChartSeriesModel extends WidgetModel
       dynamic label,
       dynamic labelled,
       dynamic labelType,
-      String? type,
+      this.type,
       dynamic tooltips,
       dynamic animated,
       dynamic name,
@@ -60,7 +60,6 @@ class ChartSeriesModel extends WidgetModel
     this.label = label;
     this.labelled = labelled;
     this.labelType = labelType;
-    this.type = type;
     this.tooltips = tooltips;
     this.animated = animated;
     this.name = name;

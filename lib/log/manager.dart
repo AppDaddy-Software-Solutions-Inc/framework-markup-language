@@ -12,7 +12,7 @@ class Log
 
   int size = 5000;
 
-  static Log _singleton = Log._init();
+  static final Log _singleton = Log._init();
   factory Log()
   {
     return _singleton;

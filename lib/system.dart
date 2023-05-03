@@ -66,7 +66,7 @@ class System extends WidgetModel implements IEventManager
   static final String myId = "SYSTEM";
 
   // set to true once done
-  static var _completer = Completer();
+  static final _completer = Completer();
   static get initialized => _completer.future;
 
   // this get called once by Splash

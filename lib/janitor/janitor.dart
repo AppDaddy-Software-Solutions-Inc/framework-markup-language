@@ -7,7 +7,7 @@ import 'package:fml/log/manager.dart' as log_manager;
 
 class Janitor
 {
-  static Janitor _singleton = Janitor._init();
+  static final Janitor _singleton = Janitor._init();
 
   factory Janitor() => _singleton;
   Janitor._init();

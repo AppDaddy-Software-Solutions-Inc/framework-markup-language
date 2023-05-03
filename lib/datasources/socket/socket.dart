@@ -5,7 +5,7 @@ import 'package:fml/system.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-import 'iSocketListener.dart';
+import 'socket_listener_interface.dart';
 
 class Socket
 {

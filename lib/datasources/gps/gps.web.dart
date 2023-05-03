@@ -6,7 +6,7 @@ import 'dart:async';
 import 'package:fml/log/manager.dart';
 import 'package:js/js.dart';
 import 'package:fml/system.dart';
-import 'iGpsListener.dart';
+import 'gps_litener_interface.dart';
 import 'package:geolocator/geolocator.dart';
 import 'payload.dart';
 import 'gps.dart';

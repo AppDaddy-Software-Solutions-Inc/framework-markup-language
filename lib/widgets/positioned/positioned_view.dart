@@ -15,7 +15,7 @@ class PositionedView extends StatefulWidget implements IWidgetView
   PositionedView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _PositionedViewState createState() => _PositionedViewState();
+  State<PositionedView> createState() => _PositionedViewState();
 }
 
 class _PositionedViewState extends WidgetState<PositionedView>

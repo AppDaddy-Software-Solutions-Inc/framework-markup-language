@@ -14,7 +14,7 @@ class ThemeView extends StatefulWidget implements IWidgetView
   ThemeView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _ThemeViewState createState() => _ThemeViewState();
+  State<ThemeView> createState() => _ThemeViewState();
 }
 
 class _ThemeViewState extends WidgetState<ThemeView>

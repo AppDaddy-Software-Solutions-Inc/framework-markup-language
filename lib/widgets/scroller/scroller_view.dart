@@ -23,7 +23,7 @@ class ScrollerView extends StatefulWidget implements IWidgetView
   ScrollerView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _ScrollerViewState createState() => _ScrollerViewState();
+  State<ScrollerView> createState() => _ScrollerViewState();
 }
 
 class _ScrollerViewState extends WidgetState<ScrollerView>

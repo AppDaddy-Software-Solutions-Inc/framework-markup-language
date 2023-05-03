@@ -21,7 +21,7 @@ class TypeaheadView extends StatefulWidget implements IWidgetView
   TypeaheadView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _TypeaheadViewState createState() => _TypeaheadViewState();
+  State<TypeaheadView> createState() => _TypeaheadViewState();
 }
 
 class _TypeaheadViewState extends WidgetState<TypeaheadView>

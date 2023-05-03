@@ -19,7 +19,7 @@ class MenuView extends StatefulWidget implements IWidgetView
   MenuView(this.model);
 
   @override
-  _MenuViewState createState() => _MenuViewState();
+  State<MenuView> createState() => _MenuViewState();
 }
 
 class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling

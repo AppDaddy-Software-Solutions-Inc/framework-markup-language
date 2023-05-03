@@ -14,7 +14,7 @@ class TableHeaderCellView extends StatefulWidget implements IWidgetView
   TableHeaderCellView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _TableHeaderCellViewState createState() => _TableHeaderCellViewState();
+  State<TableHeaderCellView> createState() => _TableHeaderCellViewState();
 }
 
 class _TableHeaderCellViewState extends WidgetState<TableHeaderCellView>

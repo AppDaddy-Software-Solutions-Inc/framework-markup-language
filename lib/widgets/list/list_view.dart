@@ -23,7 +23,7 @@ class ListLayoutView extends StatefulWidget implements IWidgetView
   ListLayoutView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _ListLayoutViewState createState() => _ListLayoutViewState();
+  State<ListLayoutView> createState() => _ListLayoutViewState();
 }
 
 class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEventScrolling

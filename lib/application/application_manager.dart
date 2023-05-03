@@ -20,7 +20,7 @@ class ApplicationManager extends StatefulWidget
   final Widget? child;
   ApplicationManager({Key? key, this.child}) : super(key: key);
   @override
-  _ApplicationManagerState createState() => _ApplicationManagerState();
+  State<ApplicationManager> createState() => _ApplicationManagerState();
 }
 
 class _ApplicationManagerState extends State<ApplicationManager>

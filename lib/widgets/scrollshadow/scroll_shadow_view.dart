@@ -12,7 +12,7 @@ class ScrollShadowView extends StatefulWidget implements IWidgetView
   ScrollShadowView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _ScrollShadowViewState createState() => _ScrollShadowViewState();
+  State<ScrollShadowView> createState() => _ScrollShadowViewState();
 }
 
 class _ScrollShadowViewState extends WidgetState<ScrollShadowView>

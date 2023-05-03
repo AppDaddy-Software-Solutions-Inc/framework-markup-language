@@ -22,7 +22,7 @@ class MapView extends StatefulWidget implements IWidgetView
   MapView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _MapViewState createState() => _MapViewState();
+  State<MapView> createState() => _MapViewState();
 }
 
 class _MapViewState extends WidgetState<MapView>

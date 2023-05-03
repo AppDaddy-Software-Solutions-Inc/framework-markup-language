@@ -12,7 +12,7 @@ class DraggableView extends StatefulWidget implements IWidgetView
   DraggableView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _DraggableViewState createState() => _DraggableViewState();
+  State<DraggableView> createState() => _DraggableViewState();
 }
 
 

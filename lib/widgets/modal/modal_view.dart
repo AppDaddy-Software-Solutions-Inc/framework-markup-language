@@ -13,7 +13,7 @@ class ModalView extends StatefulWidget implements IWidgetView
   ModalView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _ModalViewState createState() => _ModalViewState();
+  State<ModalView> createState() => _ModalViewState();
 }
 
 class _ModalViewState extends WidgetState<ModalView>

@@ -14,7 +14,7 @@ class SliderView extends StatefulWidget implements IWidgetView
   SliderView(this.model, {this.onChangeCallback});
 
   @override
-  _SliderViewState createState() => _SliderViewState();
+  State<SliderView> createState() => _SliderViewState();
 }
 
 class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserver

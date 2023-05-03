@@ -11,7 +11,7 @@ class TriggerView extends StatefulWidget
   TriggerView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _TriggerViewState createState() => _TriggerViewState();
+  State<TriggerView> createState() => _TriggerViewState();
 }
 
 class _TriggerViewState extends WidgetState<TriggerView>

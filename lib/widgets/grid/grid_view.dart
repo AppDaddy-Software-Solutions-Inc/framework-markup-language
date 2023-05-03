@@ -30,7 +30,7 @@ class GridView extends StatefulWidget implements IWidgetView
   GridView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _GridViewState createState() => _GridViewState();
+  State<GridView> createState() => _GridViewState();
 }
 
 class _GridViewState extends WidgetState<GridView>

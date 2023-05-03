@@ -14,7 +14,7 @@ class TooltipView extends StatefulWidget implements IWidgetView
   TooltipView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _TooltipViewState createState() => _TooltipViewState();
+  State<TooltipView> createState() => _TooltipViewState();
 }
 
 class _TooltipViewState extends WidgetState<TooltipView>

@@ -15,7 +15,7 @@ class TextView extends StatefulWidget implements IWidgetView
   TextView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _TextViewState createState() => _TextViewState();
+  State<TextView> createState() => _TextViewState();
 }
 
 class _TextViewState extends WidgetState<TextView>

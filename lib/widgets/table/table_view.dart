@@ -41,7 +41,7 @@ class TableView extends StatefulWidget implements IWidgetView
   TableView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _TableViewState createState() => _TableViewState();
+  State<TableView> createState() => _TableViewState();
 }
 
 class _TableViewState extends WidgetState<TableView> implements IEventScrolling

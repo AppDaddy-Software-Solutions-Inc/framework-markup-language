@@ -14,7 +14,7 @@ class StackView extends StatefulWidget implements IWidgetView
   StackView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _StackViewState createState() => _StackViewState();
+  State<StackView> createState() => _StackViewState();
 }
 
 class _StackViewState extends WidgetState<StackView>

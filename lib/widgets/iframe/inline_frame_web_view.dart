@@ -21,7 +21,7 @@ class InlineFrameView extends StatefulWidget implements View, IWidgetView
   InlineFrameView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _InlineFrameViewState createState() => _InlineFrameViewState();
+  State<InlineFrameView> createState() => _InlineFrameViewState();
 }
 
 class _InlineFrameViewState extends WidgetState<InlineFrameView>

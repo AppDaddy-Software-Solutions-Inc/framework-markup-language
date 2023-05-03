@@ -17,7 +17,7 @@ class CheckboxView extends StatefulWidget implements IWidgetView
   CheckboxView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _CheckboxViewState createState() => _CheckboxViewState();
+  State<CheckboxView> createState() => _CheckboxViewState();
 }
 
 class _CheckboxViewState extends WidgetState<CheckboxView>

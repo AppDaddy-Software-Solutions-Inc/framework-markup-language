@@ -14,7 +14,7 @@ class TreeNodeView extends StatefulWidget implements IWidgetView
   TreeNodeView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _TreeNodeViewState createState() => _TreeNodeViewState();
+  State<TreeNodeView> createState() => _TreeNodeViewState();
 }
 
 class _TreeNodeViewState extends WidgetState<TreeNodeView>

@@ -15,7 +15,7 @@ class PaddingView extends StatefulWidget implements IWidgetView
   PaddingView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _PaddingViewState createState() => _PaddingViewState();
+  State<PaddingView> createState() => _PaddingViewState();
 }
 
 class _PaddingViewState extends WidgetState<PaddingView>

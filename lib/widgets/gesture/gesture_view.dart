@@ -12,7 +12,7 @@ class GestureView extends StatefulWidget implements IWidgetView
   GestureView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _GestureViewState createState() => _GestureViewState();
+  State<GestureView> createState() => _GestureViewState();
 }
 
 class _GestureViewState extends WidgetState<GestureView>

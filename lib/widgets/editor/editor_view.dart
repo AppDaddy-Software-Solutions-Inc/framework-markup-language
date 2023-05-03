@@ -13,6 +13,7 @@ import 'package:highlight/languages/xml.dart';
 
 class EditorView extends StatefulWidget implements IWidgetView
 {
+  @override
   final EditorModel model;
   EditorView(this.model) : super(key: ObjectKey(model));
 
@@ -32,6 +33,7 @@ class _EditorViewState extends WidgetState<EditorView>
   }
 
   /// Callback to fire the [_EditorViewState.build] when the [EditorModel] changes
+  @override
   onModelChange(WidgetModel model, {String? property, dynamic value})
   {
     if (mounted)

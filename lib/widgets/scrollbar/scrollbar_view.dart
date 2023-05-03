@@ -79,6 +79,7 @@ class _ScrollbarViewState extends WidgetState<ScrollbarView>
   }
 
   /// Callback to fire the [_ScrollbarViewState.build] when the [ScrollbarModel] changes
+  @override
   onModelChange(WidgetModel model, {String? property, dynamic value})
   {
     if (mounted) setState((){});

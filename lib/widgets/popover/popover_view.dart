@@ -6,6 +6,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class PopoverView extends StatefulWidget implements IWidgetView
 {
+  @override
   final PopoverModel model;
   final Widget? child;
 

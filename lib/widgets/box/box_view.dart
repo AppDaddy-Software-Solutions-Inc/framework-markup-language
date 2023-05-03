@@ -10,6 +10,7 @@ import 'package:fml/widgets/alignment/alignment.dart';
 /// [BOX] view
 class BoxView extends StatefulWidget implements IWidgetView
 {
+  @override
   final BoxModel model;
 
   BoxView(this.model) : super(key: ObjectKey(model));

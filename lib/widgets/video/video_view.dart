@@ -14,6 +14,7 @@ import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 
 class VideoView extends StatefulWidget implements IWidgetView
 {
+  @override
   final VideoModel model;
 
   VideoView(this.model) : super(key: ObjectKey(model));
@@ -134,6 +135,7 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
     return await resume();
   }
 
+  @override
   Future<bool> play(String? url) async
   {
     if (_controller != null) _controller!.dispose();
@@ -151,6 +153,7 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
     return true;
   }
 
+  @override
   Future<bool> start() async
   {
     if (_controller == null) return false;
@@ -160,6 +163,7 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
     return true;
   }
 
+  @override
   Future<bool> stop() async
   {
     if (_controller == null) return false;
@@ -171,6 +175,7 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
     return true;
   }
 
+  @override
   Future<bool> pause() async
   {
     if (_controller == null) return false;
@@ -186,6 +191,7 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
     return true;
   }
 
+  @override
   Future<bool> seek(int seconds) async
   {
     if (_controller == null) return false;

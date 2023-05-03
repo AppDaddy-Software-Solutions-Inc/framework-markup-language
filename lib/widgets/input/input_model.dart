@@ -149,6 +149,7 @@ class InputModel extends FormFieldModel implements IFormField
 
   /// True if there is an alarm sounding on a [IFormField]
   BooleanObservable? _alarming;
+  @override
   set alarming(dynamic v)
   {
     if (_alarming != null)
@@ -160,10 +161,12 @@ class InputModel extends FormFieldModel implements IFormField
       _alarming = BooleanObservable(Binding.toKey(id, 'alarming'), v, scope: scope, listener: onPropertyChange);
     }
   }
+  @override
   bool? get alarming => _alarming?.get() ?? false;
 
   /// the value of the input. If not set to "" initially, the value will not be settable through events.
   StringObservable? _value;
+  @override
   set value(dynamic v)
   {
     if (_value != null)
@@ -176,6 +179,7 @@ class InputModel extends FormFieldModel implements IFormField
     }
   }
 
+  @override
   dynamic get value
   {
     if (_value == null) return defaultValue;
@@ -482,6 +486,7 @@ class InputModel extends FormFieldModel implements IFormField
 
   /// If the input has been focused at least once
   BooleanObservable? _touched;
+  @override
   set touched(dynamic v) {
     if (_touched != null) {
       _touched!.set(v);
@@ -490,6 +495,7 @@ class InputModel extends FormFieldModel implements IFormField
           scope: scope, listener: onPropertyChange);
     }
   }
+  @override
   bool? get touched =>  _touched?.get() ?? false;
 
   BooleanObservable? _wrap;
@@ -696,6 +702,7 @@ class InputModel extends FormFieldModel implements IFormField
     return await EventHandler(this).execute(_onfocuslost);
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(InputView(this));
 }
 

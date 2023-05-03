@@ -25,9 +25,13 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
 {
   /// Event Manager Host
   final EventManager manager = EventManager();
+  @override
   registerEventListener(EventTypes type, OnEventCallback callback, {int? priority}) => manager.register(type, callback, priority: priority);
+  @override
   removeEventListener(EventTypes type, OnEventCallback callback) => manager.remove(type, callback);
+  @override
   broadcastEvent(WidgetModel source, Event event) => manager.broadcast(this, event);
+  @override
   executeEvent(WidgetModel source, String event) => manager.execute(this, event);
 
   HeaderModel?  header;
@@ -471,6 +475,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
   Map<String?, String> onPop() => parameters;
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
+  @override
   onModelChange(WidgetModel model,{String? property, dynamic value})
   {
     try
@@ -526,6 +531,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
     }
     return super.execute(caller, propertyOrFunction, arguments);
   }
+  @override
   Widget getView({Key? key}) => getReactiveView(FrameworkView(this));
 }
 

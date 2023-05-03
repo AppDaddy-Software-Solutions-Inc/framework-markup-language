@@ -25,6 +25,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class CameraView extends StatefulWidget implements IWidgetView
 {
+  @override
   final CameraModel model;
 
   CameraView(this.model) : super(key: ObjectKey(model));
@@ -77,6 +78,7 @@ class CameraViewState extends WidgetState<CameraView>
   }
 
   /// Callback to fire the [CameraViewState.build] when the [CameraModel] changes
+  @override
   onModelChange(WidgetModel model, {String? property, dynamic value})
   {
     if (mounted)

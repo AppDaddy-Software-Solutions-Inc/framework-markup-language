@@ -14,6 +14,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class MenuView extends StatefulWidget implements IWidgetView
 {
+  @override
   final MenuModel model;
   MenuView(this.model);
 
@@ -97,6 +98,7 @@ class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling
   }
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
+  @override
   onModelChange(WidgetModel model, {String? property, dynamic value}) {
     if (mounted) setState(() {});
   }

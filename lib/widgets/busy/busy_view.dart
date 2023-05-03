@@ -11,6 +11,7 @@ import 'busy_model.dart';
 /// to let the user know its 'busy' working in the background
 class BusyView extends StatefulWidget implements IWidgetView
 {
+  @override
   final BusyModel model;
 
   BusyView(this.model) : super(key: ObjectKey(model));

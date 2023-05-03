@@ -8,6 +8,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class HtmlView extends StatefulWidget implements IWidgetView
 {
+  @override
   final HtmlModel model;
 
   HtmlView(this.model) : super(key: ObjectKey(model));

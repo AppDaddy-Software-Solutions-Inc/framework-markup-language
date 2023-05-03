@@ -10,6 +10,7 @@ import 'positioned_model.dart';
 class PositionedView extends StatefulWidget implements IWidgetView
 {
   final List<Widget> children = [];
+  @override
   final PositionedModel model;
   PositionedView(this.model) : super(key: ObjectKey(model));
 

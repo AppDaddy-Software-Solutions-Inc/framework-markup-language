@@ -15,6 +15,7 @@ import 'package:latlong2/latlong.dart';
 
 class MapView extends StatefulWidget implements IWidgetView
 {
+  @override
   final MapModel model;
   MapView(this.model) : super(key: ObjectKey(model));
 
@@ -37,6 +38,7 @@ class _MapViewState extends WidgetState<MapView>
   double? longitudeLowerBound;
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
+  @override
   onModelChange(WidgetModel model,{String? property, dynamic value})
   {
     if (mounted)

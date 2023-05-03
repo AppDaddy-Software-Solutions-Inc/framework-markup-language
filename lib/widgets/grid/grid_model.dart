@@ -92,6 +92,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
   ////////////
   BooleanObservable? get moreUpObservable => _moreUp;
   BooleanObservable? _moreUp;
+  @override
   set moreUp (dynamic v)
   {
     if (_moreUp != null)
@@ -103,6 +104,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
       _moreUp = BooleanObservable(Binding.toKey(id, 'moreup'), v, scope: scope);
     }
   }
+  @override
   bool? get moreUp =>  _moreUp?.get();
 
   //////////////
@@ -110,6 +112,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
   //////////////
   BooleanObservable? get moreDownObservable => _moreDown;
   BooleanObservable? _moreDown;
+  @override
   set moreDown (dynamic v)
   {
     if (_moreDown != null)
@@ -121,6 +124,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
       _moreDown = BooleanObservable(Binding.toKey(id, 'moredown'), v, scope: scope);
     }
   }
+  @override
   bool? get moreDown => _moreDown?.get();
 
   ///////////
@@ -128,6 +132,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
   ///////////
   BooleanObservable? get moreLeftObservable => _moreLeft;
   BooleanObservable? _moreLeft;
+  @override
   set moreLeft (dynamic v)
   {
     if (_moreLeft != null)
@@ -139,6 +144,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
       _moreLeft = BooleanObservable(Binding.toKey(id, 'moreleft'), v, scope: scope);
     }
   }
+  @override
   bool? get moreLeft => _moreLeft?.get();
 
   ///////////
@@ -146,6 +152,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
   ///////////
   BooleanObservable? get moreRightObservable => _moreRight;
   BooleanObservable? _moreRight;
+  @override
   set moreRight (dynamic v)
   {
     if (_moreRight != null)
@@ -157,6 +164,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
       _moreRight = BooleanObservable(Binding.toKey(id, 'moreright'), v, scope: scope);
     }
   }
+  @override
   bool? get moreRight =>_moreRight?.get();
 
   ///////////////
@@ -441,5 +449,6 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
     await EventHandler(this).execute(_onpulldown);
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(grid_view.GridView(this));
 }

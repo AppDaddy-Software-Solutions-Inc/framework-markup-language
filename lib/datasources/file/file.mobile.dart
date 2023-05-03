@@ -13,6 +13,7 @@ class File extends FileBase
 {
   File(dynamic file, String url, String name, String? mimeType, int size) : super(file, url, name, mimeType, size);
 
+  @override
   Future<Uint8List?> read({int? start, int? end}) async
   {
     try

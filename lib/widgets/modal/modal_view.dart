@@ -7,6 +7,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class ModalView extends StatefulWidget implements IWidgetView
 {
+  @override
   final ModalModel model;
 
   ModalView(this.model) : super(key: ObjectKey(model));

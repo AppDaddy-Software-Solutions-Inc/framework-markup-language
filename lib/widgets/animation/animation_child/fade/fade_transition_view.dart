@@ -138,6 +138,7 @@ class FadeTransitionViewState extends State<FadeTransitionView>
   }
 
   /// Callback to fire the [_AnimationViewState.build] when the [AnimationModel] changes
+  @override
   onModelChange(WidgetModel model, {String? property, dynamic value}) {
     if (mounted) setState(() {});
   }

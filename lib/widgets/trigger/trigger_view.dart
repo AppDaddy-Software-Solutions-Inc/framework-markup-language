@@ -17,6 +17,7 @@ class TriggerView extends StatefulWidget
 class _TriggerViewState extends WidgetState<TriggerView>
 {
   /// Callback to fire the [_TriggerViewState.build] when the [TriggerModel] changes
+  @override
   onModelChange(WidgetModel model, {String? property, dynamic value})
   {
   }

@@ -71,6 +71,7 @@ class Crop extends ImageTransformModel implements ITransform
 
   /// source
   StringObservable? _source;
+  @override
   set source (dynamic v)
   {
     if (_source != null)
@@ -82,6 +83,7 @@ class Crop extends ImageTransformModel implements ITransform
       _source = StringObservable(Binding.toKey(id, 'source'), v, scope: scope, listener: onPropertyChange);
     }
   }
+  @override
   String? get source => _source?.get();
   
   Crop(WidgetModel parent, {String? id}) : super(parent, id);
@@ -110,6 +112,7 @@ class Crop extends ImageTransformModel implements ITransform
     height = Xml.get(node: xml, tag: 'height');
   }
 
+  @override
   apply(Data? data) async
   {
     if (enabled == false) return;

@@ -36,6 +36,7 @@ class MyCustomScrollBehavior extends MaterialScrollBehavior
 
 class TableView extends StatefulWidget implements IWidgetView
 {
+  @override
   final TableModel model;
   TableView(this.model) : super(key: ObjectKey(model));
 
@@ -239,6 +240,7 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
   }
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
+  @override
   onModelChange(WidgetModel model,{String? property, dynamic value})
   {
     try

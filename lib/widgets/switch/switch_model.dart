@@ -25,6 +25,7 @@ class SwitchModel extends FormFieldModel implements IFormField
   /* value */
   ///////////
   BooleanObservable? _value;
+  @override
   set value (dynamic v)
   {
     if (_value != null)
@@ -36,9 +37,11 @@ class SwitchModel extends FormFieldModel implements IFormField
       _value = BooleanObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange);
     }
   }
+  @override
   bool get value => _value?.get() ?? defaultValue ?? false;
 
   // question was answered
+  @override
   bool get answered
   {
     if (value == true || value == false) return true;
@@ -131,6 +134,7 @@ class SwitchModel extends FormFieldModel implements IFormField
     super.dispose();
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(SwitchView(this));
 }
 

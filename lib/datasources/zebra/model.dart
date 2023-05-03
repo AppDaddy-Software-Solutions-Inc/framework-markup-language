@@ -51,6 +51,7 @@ class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener
     // properties
   }
 
+  @override
   Future<bool> start({bool refresh = false, String? key}) async
   {
     zebra.Reader().registerListener(this);
@@ -58,6 +59,7 @@ class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener
     return true;
   }
 
+  @override
   Future<bool> stop() async
   {
     zebra.Reader().removeListener(this);
@@ -65,6 +67,7 @@ class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener
     return true;
   }
 
+  @override
   onZebraData({Payload? payload})
   {
     // enabled?

@@ -30,6 +30,7 @@ class LogModel extends DataSourceModel implements IDataSource
     return model;
   }
 
+  @override
   Future<bool> start({bool refresh = false, String? key}) async
   {
     if (enabled == false) return false;

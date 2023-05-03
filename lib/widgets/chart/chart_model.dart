@@ -22,7 +22,9 @@ class ChartModel extends DecoratedWidgetModel  {
   ChartAxisModel? yaxis; // = ChartAxisModel(null, null, Axis.Y, title: null, fontsize: null, fontcolor: Colors.white, type: ChartAxisModel.type_numeric);
   final List<ChartSeriesModel> series = [];
 
+  @override
   bool get isVerticallyExpanding   => true;
+  @override
   bool get isHorizontallyExpanding => true;
 
   // parent is not a layout model or parent is laid out
@@ -222,6 +224,7 @@ class ChartModel extends DecoratedWidgetModel  {
   ///
   /// [ChartModel] overrides [WidgetModel]'s onDataSourceSuccess
   /// to populate the series data with the databroker's data
+  @override
   Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async
   {
     try
@@ -248,6 +251,7 @@ class ChartModel extends DecoratedWidgetModel  {
     return true;
   }
 
+  @override
   Widget getView({Key? key})
   {
     return getReactiveView(ChartView(this));

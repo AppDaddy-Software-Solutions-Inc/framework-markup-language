@@ -20,6 +20,7 @@ import 'package:fml/helper/common_helpers.dart';
 
 class InputView extends StatefulWidget implements IWidgetView
 {
+  @override
   final InputModel model;
   final dynamic onChangeCallback;
   final dynamic onSubmitted;
@@ -139,6 +140,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
   }
 
   /// Callback to fire the [_InputViewState.build] when the [InputModel] changes
+  @override
   onModelChange(WidgetModel model, {String? property, dynamic value})
   {
     // ensure we don't call setstate if the model update was entered via

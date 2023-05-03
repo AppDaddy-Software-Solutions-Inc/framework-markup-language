@@ -27,6 +27,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
 
   /// The value of the widget. The label becomes the value if not specified. Returns an array if multiple checked. Can also set the initial options
   ListObservable? _value;
+  @override
   set value(dynamic v) {
     if (_value != null)
     {
@@ -40,6 +41,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
       }
     }
   }
+  @override
   dynamic get value => _value?.get() ?? defaultValue;
 
   /// Center attribute allows a simple boolean override for halign and valign both being center. halign and valign will override center if given.
@@ -83,6 +85,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
   String get layout => _layout?.get()?.toLowerCase() ?? 'column';
 
   // set answer
+  @override
   Future<bool> answer(dynamic v, {bool? delete}) async
   {
     touched = true;
@@ -217,6 +220,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
   ////////////
   /* Values */
   ////////////
+  @override
   List<String>? get values {
     List<String>? list;
     if (value != null)
@@ -230,6 +234,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
   }
 
   // question was answered
+  @override
   bool get answered
   {
     if (value == null) return false;
@@ -271,6 +276,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
 
   // bindable data
   ListObservable? _data;
+  @override
   set data(dynamic v)
   {
     if (_data != null)
@@ -283,6 +289,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
       _data!.set(v);
     }
   }
+  @override
   dynamic get data => _data?.get();
 
   CheckboxModel(
@@ -464,5 +471,6 @@ class CheckboxModel extends FormFieldModel implements IFormField
     return ok;
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(CheckboxView(this));
 }

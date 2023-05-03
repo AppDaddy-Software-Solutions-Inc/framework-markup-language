@@ -59,6 +59,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
 
   // moreup 
   BooleanObservable? _moreUp;
+  @override
   set moreUp (dynamic v)
   {
     if (_moreUp != null)
@@ -70,10 +71,12 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
       _moreUp = BooleanObservable(Binding.toKey(id, 'moreup'), v, scope: scope);
     }
   }
+  @override
   bool? get moreUp => _moreUp?.get();
 
   // moreDown 
   BooleanObservable? _moreDown;
+  @override
   set moreDown (dynamic v)
   {
     if (_moreDown != null)
@@ -85,10 +88,12 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
       _moreDown = BooleanObservable(Binding.toKey(id, 'moredown'), v, scope: scope);
     }
   }
+  @override
   bool? get moreDown => _moreDown?.get();
 
   // moreLeft 
   BooleanObservable? _moreLeft;
+  @override
   set moreLeft (dynamic v)
   {
     if (_moreLeft != null)
@@ -100,10 +105,12 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
       _moreLeft = BooleanObservable(Binding.toKey(id, 'moreleft'), v, scope: scope);
     }
   }
+  @override
   bool? get moreLeft => _moreLeft?.get();
 
   // moreRight 
   BooleanObservable? _moreRight;
+  @override
   set moreRight (dynamic v)
   {
     if (_moreRight != null)
@@ -115,11 +122,14 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
       _moreRight = BooleanObservable(Binding.toKey(id, 'moreright'), v, scope: scope);
     }
   }
+  @override
   bool? get moreRight => _moreRight?.get();
 
   // dirty 
+  @override
   BooleanObservable? get dirtyObservable => _dirty;
   BooleanObservable? _dirty;
+  @override
   set dirty (dynamic v)
   {
     if (_dirty != null)
@@ -131,6 +141,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
       _dirty = BooleanObservable(Binding.toKey(id, 'dirty'), v, scope: scope);
     }
   }
+  @override
   bool get dirty => _dirty?.get() ?? false;
 
   void onDirtyListener(Observable property)
@@ -148,6 +159,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
 
   // Clean 
+  @override
   set clean (bool b)
   {
     dirty = false;
@@ -351,6 +363,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     super.dispose();
   }
 
+  @override
   Future<bool> complete() async
   {
     busy = true;
@@ -364,11 +377,13 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     return ok;
   }
 
+  @override
   Future<bool> onComplete(BuildContext context) async
   {
     return await EventHandler(this).execute(_oncomplete);
   }
 
+  @override
   Future<bool> save() async
   {
     // not implemented
@@ -380,5 +395,6 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     await EventHandler(this).execute(_onpulldown);
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(ListLayoutView(this));
 }

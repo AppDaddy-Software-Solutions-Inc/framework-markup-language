@@ -8,6 +8,7 @@ import 'package:fml/widgets/layout/layout_model.dart';
 
 class ColumnView extends StatefulWidget implements IWidgetView
 {
+  @override
   final LayoutModel model;
 
   ColumnView(this.model) : super(key: ObjectKey(model));

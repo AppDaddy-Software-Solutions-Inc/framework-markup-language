@@ -13,6 +13,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 class DrawerView extends StatefulWidget implements IDragListener, IWidgetView
 {
   final List<Widget> children = [];
+  @override
   final DrawerModel model;
   final Widget stackChildren;
   final List<IDragListener> listeners = [];
@@ -32,16 +33,19 @@ class DrawerView extends StatefulWidget implements IDragListener, IWidgetView
     if (listeners.contains(listener)) listeners.remove(listener);
   }
 
+  @override
   onDragOpen(DragStartDetails details, String dir)
   {
     listeners.forEach((listener) => listener.onDragOpen(details, dir));
   }
 
+  @override
   onDragEnd(DragEndDetails details, String dir, bool isOpen)
   {
     listeners.forEach((listener) => listener.onDragEnd(details, dir, isOpen));
   }
 
+  @override
   onDragSheet(DragUpdateDetails details, String dir, bool isOpen)
   {
     listeners.forEach((listener) => listener.onDragSheet(details, dir, isOpen));
@@ -165,6 +169,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
     }
   }
   /// Callback function for when the model changes, used to force a rebuild with setState()
+  @override
   onModelChange(WidgetModel model,{String? property, dynamic value})
   {
     if (mounted) setState((){});
@@ -204,6 +209,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
     // });
   }
 
+  @override
   onDragOpen(DragStartDetails dragStartDetails, String dir) {
     // print('drag open broadcast recieved');
     // if (animate == false) {
@@ -266,6 +272,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
     }
   }
 
+  @override
   onDragEnd(dragEndDetails, String dir, bool isOpen)
   {
     const int dragLeeway = 200; // drag leeway for completing open/closes on drag end
@@ -452,6 +459,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
     }
   }
 
+  @override
   onDragSheet(DragUpdateDetails dragUpdateDetails, String dir, bool opening) {
     if (animate == false)
     {

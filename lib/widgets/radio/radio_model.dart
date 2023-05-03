@@ -61,6 +61,7 @@ class RadioModel extends FormFieldModel implements IFormField
 
   /// True if there is an alarm sounding on a [IFormField]
   BooleanObservable? _alarming;
+  @override
   set alarming(dynamic v) {
     if (_alarming != null) {
       _alarming!.set(v);
@@ -69,10 +70,12 @@ class RadioModel extends FormFieldModel implements IFormField
           scope: scope, listener: onPropertyChange);
     }
   }
+  @override
   bool? get alarming => _alarming?.get();
 
   /// the value of the widget. The label becomes the value if not specified. If specified, the options will reflect the value.
   StringObservable? _value;
+  @override
   set value(dynamic v) {
     if (_value != null) {
 
@@ -92,6 +95,7 @@ class RadioModel extends FormFieldModel implements IFormField
     }
   }
 
+  @override
   dynamic get value {
     if (_value == null) return defaultValue;
     if ((!dirty) && (S.isNullOrEmpty(_value?.get())) && (!S.isNullOrEmpty(defaultValue))) _value!.set(defaultValue);
@@ -118,6 +122,7 @@ class RadioModel extends FormFieldModel implements IFormField
 
   // bindable data
   ListObservable? _data;
+  @override
   set data(dynamic v)
   {
     if (_data != null)
@@ -130,6 +135,7 @@ class RadioModel extends FormFieldModel implements IFormField
       _data!.set(v);
     }
   }
+  @override
   dynamic get data => _data?.get();
 
   RadioModel(
@@ -222,6 +228,7 @@ class RadioModel extends FormFieldModel implements IFormField
 
   }
 
+  @override
   Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async
   {
     try
@@ -305,5 +312,6 @@ class RadioModel extends FormFieldModel implements IFormField
     return true;
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(RadioView(this));
 }

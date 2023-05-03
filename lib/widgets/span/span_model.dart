@@ -283,7 +283,9 @@ class SpanModel extends DecoratedWidgetModel
   double? get lineheight => _lineheight?.get();
 
   // overrides
+  @override
   String get halign => super.halign ?? 'start'; //left right center justify
+  @override
   String get valign => super.valign ?? 'start';
 
   ////////////////////

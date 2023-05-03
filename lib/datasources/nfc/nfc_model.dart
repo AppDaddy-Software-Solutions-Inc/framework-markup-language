@@ -127,6 +127,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
 
   }
 
+  @override
   Future<bool> start({bool refresh = false, String? key}) async
   {
     bool ok = true;
@@ -152,6 +153,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
     return true;
   }
 
+  @override
   Future<bool> stop() async
   {
     Reader().removeListener(this);
@@ -279,6 +281,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
+  @override
   onMessage(Payload payload)
   {
     // enabled?

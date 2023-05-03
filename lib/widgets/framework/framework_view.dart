@@ -141,18 +141,22 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     super.dispose();
   }
 
+  @override
   BuildContext getNavigatorContext() => context;
 
+  @override
   Map<String?,String>? onNavigatorPop()
   {
     return widget.model.onPop();
   }
 
+  @override
   void onNavigatorPush({Map<String?, String>? parameters})
   {
     if (parameters != null) widget.model.onPush(parameters);
   }
 
+  @override
   void onNavigatorChange()
   {
     widget.model.index = NavigationManager().positionInStack(context);
@@ -160,6 +164,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   }
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
+  @override
   onModelChange(WidgetModel model,{String? property, dynamic value})
   {
     try

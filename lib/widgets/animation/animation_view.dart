@@ -14,6 +14,7 @@ import 'package:fml/helper/common_helpers.dart';
 /// Builds the View from [ANIMATION.AnimationModel] properties
 class AnimationView extends StatefulWidget implements IWidgetView
 {
+  @override
   final BaseAnimationModel.AnimationModel model;
   final List<Widget> children = [];
   final Widget? child;

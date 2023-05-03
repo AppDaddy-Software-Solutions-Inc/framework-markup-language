@@ -91,6 +91,7 @@ class TableRowModel extends DecoratedWidgetModel
   /* Color */
   ///////////
   ColorObservable? _color;
+  @override
   Color? get color
   {
     if (_color == null)
@@ -220,6 +221,7 @@ class TableRowModel extends DecoratedWidgetModel
   ///
   /// The horizontal alignment of the widgets children, overrides `center`. Can be `left`, `right`, `start`, or `end`.
   StringObservable? _halign;
+  @override
   String? get halign {
     if (_halign == null) {
       if ((parent != null) && (parent is TableModel))
@@ -231,6 +233,7 @@ class TableRowModel extends DecoratedWidgetModel
 
   /// The vertical alignment of the widgets children, overrides `center`. Can be `top`, `bottom`, `start`, or `end`.
   StringObservable? _valign;
+  @override
   String? get valign {
     if (_valign == null) {
       if ((parent != null) && (parent is TableModel))

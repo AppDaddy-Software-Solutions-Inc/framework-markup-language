@@ -8,6 +8,7 @@ import 'package:fml/widgets/layout/layout_model.dart';
 
 class RowView extends StatefulWidget implements IWidgetView
 {
+  @override
   final LayoutModel model;
 
   RowView(this.model) : super(key: ObjectKey(model));

@@ -155,6 +155,7 @@ class HttpModel extends DataSourceModel implements IDataSource
     if ((initialized == true) && (autoexecute == true) && (enabled != false)) start(refresh: refresh);
   }
 
+  @override
   Future<bool> start({bool refresh = false, String? key}) async
   {
     if (enabled == false) return false;

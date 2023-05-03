@@ -148,6 +148,7 @@ class BeaconModel extends DataSourceModel implements IDataSource, IBeaconListene
       lastSeen.removeWhere((key, value)  => expired.contains(key));
     }
   }
+  @override
   onBeaconData(List<Beacon> beacons)
   {
     // enabled?

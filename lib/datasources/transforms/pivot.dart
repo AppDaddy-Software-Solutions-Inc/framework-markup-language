@@ -28,6 +28,7 @@ class Pivot extends TransformModel implements ITransform
 
   // row
   StringObservable? _row;
+  @override
   set row (dynamic v)
   {
     if (_row != null)
@@ -40,6 +41,7 @@ class Pivot extends TransformModel implements ITransform
       _row = StringObservable(Binding.toKey(id, 'row'), v, scope: scope, listener: onPropertyChange);
     }
   }
+  @override
   String? get row => _row?.get();
 
   // Field
@@ -209,6 +211,7 @@ class Pivot extends TransformModel implements ITransform
     return result; //16 19 14 19 18 21
   }
 
+  @override
   apply(Data? data) async
   {
     if (enabled == false) return;

@@ -7,6 +7,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 class ScopeView extends StatefulWidget implements IWidgetView
 {
   final List<Widget> children = [];
+  @override
   final ScopeModel model;
   ScopeView(this.model) : super(key: ObjectKey(model));
 

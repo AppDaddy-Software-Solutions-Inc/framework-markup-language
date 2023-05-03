@@ -7,6 +7,7 @@ import 'dart:math' as math;
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class IconView extends StatefulWidget implements IWidgetView {
+  @override
   final IconModel model;
 
   IconView(this.model) : super(key: ObjectKey(model));

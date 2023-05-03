@@ -69,11 +69,15 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
     super.dispose();
   }
 
+  @override
   BuildContext getNavigatorContext() => context;
 
+  @override
   Map<String,String>? onNavigatorPop() => null;
+  @override
   onNavigatorChange() {}
 
+  @override
   void onNavigatorPush({Map<String?, String>? parameters})
   {
     // reset the theme
@@ -82,6 +86,7 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
   }
 
   /// Callback to fire the [_ViewState.build] when the [StoreModel] changes
+  @override
   onModelChange(WidgetModel model, {String? property, dynamic value})
   {
     if (mounted) setState((){});

@@ -23,6 +23,7 @@ View getView(model) => View(model);
 
 class View extends StatefulWidget implements IWidgetView, StreamView
 {
+  @override
   final CameraModel model;
 
   View(this.model) : super(key: ObjectKey(model));
@@ -89,6 +90,7 @@ class ViewState extends WidgetState<View>
   }
 
   /// Callback to fire the [_ViewState.build] when the [CameraModel] changes
+  @override
   onModelChange(WidgetModel model, {String? property, dynamic value}) {
     var b = Binding.fromString(property);
     if ((mounted) && (b?.property == 'enabled')) {

@@ -7,6 +7,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class DroppableView extends StatefulWidget implements IWidgetView
 {
+  @override
   final DroppableModel model;
 
   DroppableView(this.model) : super(key: ObjectKey(model));

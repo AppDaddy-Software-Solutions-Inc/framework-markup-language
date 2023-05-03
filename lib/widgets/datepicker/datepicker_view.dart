@@ -10,6 +10,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class DatepickerView extends StatefulWidget implements IWidgetView
 {
+  @override
   final DatepickerModel model;
   DatepickerView(this.model) : super(key: ObjectKey(model));
 
@@ -73,6 +74,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
   }
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
+  @override
   onModelChange(WidgetModel model, {String? property, dynamic value}) {
     if ((cont!.text != widget.model.value) && (widget.model.isPicking != true))
       widget.model.onChange(context);

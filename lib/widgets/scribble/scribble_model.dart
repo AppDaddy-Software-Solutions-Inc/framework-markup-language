@@ -26,6 +26,7 @@ class ScribbleModel extends FormFieldModel implements IFormField
   /* Value */
   ///////////
   StringObservable? _value;
+  @override
   set value (dynamic v)
   {
     if (_value != null)
@@ -37,12 +38,14 @@ class ScribbleModel extends FormFieldModel implements IFormField
       if ((v != null) || (WidgetModel.isBound(this, Binding.toKey(id, 'value')))) _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange);
     }
   }
+  @override
   dynamic get value => _value?.get() ?? defaultValue;
 
 
   ///////////////////
   /* Default Value */
   ///////////////////
+  @override
   dynamic get defaultValue => null;
 
   ///////////
@@ -187,6 +190,7 @@ class ScribbleModel extends FormFieldModel implements IFormField
     super.dispose();
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(ScribbleView(this));
 }
 

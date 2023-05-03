@@ -7,6 +7,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class PagerPageView extends StatefulWidget implements IWidgetView
 {
+  @override
   final PagerPageModel model;
   PagerPageView(this.model) : super(key: ObjectKey(model));
 
@@ -16,6 +17,7 @@ class PagerPageView extends StatefulWidget implements IWidgetView
 
 class _PagerPageViewState extends WidgetState<PagerPageView>
 {
+  @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)

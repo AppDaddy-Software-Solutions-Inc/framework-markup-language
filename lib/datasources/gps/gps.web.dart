@@ -72,6 +72,7 @@ class Receiver implements Gps
     if (_subscription != null) _subscription?.cancel();
   }
 
+  @override
   registerListener(IGpsListener listener)
   {
     _listeners ??= [];
@@ -83,6 +84,7 @@ class Receiver implements Gps
     listener.onGpsData(payload: last);
   }
 
+  @override
   removeListener(IGpsListener listener)
   {
     if ((_listeners != null) && (_listeners!.contains(listener)))

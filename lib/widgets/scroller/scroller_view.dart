@@ -18,6 +18,7 @@ import 'package:fml/widgets/layout/layout_model.dart';
 /// instead be contained within this scrollable widget.
 class ScrollerView extends StatefulWidget implements IWidgetView
 {
+  @override
   final ScrollerModel model;
   ScrollerView(this.model) : super(key: ObjectKey(model));
 

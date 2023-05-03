@@ -78,6 +78,7 @@ class SliderModel extends FormFieldModel implements IFormField
   /* Value */
   ///////////
   StringObservable? _value;
+  @override
   set value(dynamic v)
   {
     if (_value != null)

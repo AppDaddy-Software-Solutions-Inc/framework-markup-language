@@ -21,6 +21,7 @@ enum ListTypes { replace, lifo, fifo, append, prepend }
 class DataSourceModel extends DecoratedWidgetModel implements IDataSource
 {
   // data override
+  @override
   Data? get data
   {
     if (super.data == null) return null;
@@ -211,6 +212,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
 
   // autoexecute
   BooleanObservable? _autoexecute;
+  @override
   set autoexecute(dynamic v) {
     if (_autoexecute != null) {
       _autoexecute!.set(v);
@@ -219,6 +221,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
           BooleanObservable(Binding.toKey(id, 'autoexecute'), v, scope: scope);
     }
   }
+  @override
   bool? get autoexecute => _autoexecute?.get();
 
   // autoquery
@@ -269,6 +272,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
 
   // root
   StringObservable? _root;
+  @override
   set root(dynamic v) {
     if (_root != null) {
       _root!.set(v);
@@ -277,6 +281,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
           scope: scope, listener: onPropertyChange);
     }
   }
+  @override
   String? get root => _root?.get();
 
   // rowcount
@@ -295,8 +300,10 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
   int get rowcount => _rowcount?.get() ?? 0;
 
   // posting body
+  @override
   StringObservable? get bodyObservable => _body;
   StringObservable? _body;
+  @override
   set body(dynamic v)
   {
     if (_body != null)
@@ -308,9 +315,11 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
       _body = StringObservable(Binding.toKey(id, 'body'), v, scope: scope, listener: onPropertyChange);
     }
   }
+  @override
   String? get body => _body?.get();
 
   bool _custombody = false;
+  @override
   bool get custombody => _custombody;
 
   DataSourceModel(WidgetModel parent, String? id) : super(parent, id);
@@ -376,10 +385,12 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
     enabled = (S.toInt(index.get()) == 0);
   }
 
+  @override
   register(IDataSourceListener listener) {
     if (!listeners.contains(listener)) listeners.add(listener);
   }
 
+  @override
   Future<void> notify() async
   {
     // notify listeners
@@ -389,11 +400,13 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
     }
   }
 
+  @override
   remove(IDataSourceListener listener)
   {
     if (listeners.contains(listener)) listeners.remove(listener);
   }
 
+  @override
   Future<bool> clear({int? start, int? end}) async {
     if ((data != null) && (data!.isNotEmpty)) {
       int from = 0;
@@ -434,6 +447,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
     return true;
   }
 
+  @override
   Future<bool> onSuccess(Data data, {int? code, String? message, Observable? onSuccessOverride}) async
   {
     // set busy
@@ -631,9 +645,11 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
   }
 
   // override this function
+  @override
   Future<bool> start({bool refresh = false, String? key}) async => true;
 
   // override this function
+  @override
   Future<bool> stop() async => true;
 
   @override

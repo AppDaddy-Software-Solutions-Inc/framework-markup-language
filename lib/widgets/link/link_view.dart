@@ -7,6 +7,7 @@ import 'link_model.dart';
 
 class LinkView extends StatefulWidget implements IWidgetView
 {
+  @override
   final LinkModel model;
   LinkView(this.model) : super(key: ObjectKey(model));
 

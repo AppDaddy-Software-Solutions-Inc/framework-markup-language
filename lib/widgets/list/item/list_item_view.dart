@@ -6,6 +6,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class ListItemView extends StatefulWidget implements IWidgetView
 {
+  @override
   final ListItemModel model;
   final bool? selectable;
 

@@ -1080,6 +1080,7 @@ class WidgetModel implements IDataSourceListener
     return null;
   }
 
+  @override
   Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async
   {
     busy = false;
@@ -1087,11 +1088,13 @@ class WidgetModel implements IDataSourceListener
     return true;
   }
 
+  @override
   onDataSourceException(IDataSource source, Exception exception) {
     busy = false;
     //notifyListeners('error', exception);
   }
 
+  @override
   onDataSourceBusy(IDataSource source, bool busy)
   {
     this.busy = busy;

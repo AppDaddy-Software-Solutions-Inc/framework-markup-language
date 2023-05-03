@@ -26,7 +26,9 @@ class CardModel extends BoxModel
 
   //overrides
   double? get margins => super.marginTop ?? 5;
+  @override
   String  get halign  => super.halign  ?? "start";
+  @override
   String  get valign  => super.valign  ?? "start";
 
   CardModel(WidgetModel parent, String? id) : super(parent, id);
@@ -61,6 +63,7 @@ class CardModel extends BoxModel
     super.deserialize(xml);
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(BoxView(this));
 }
 

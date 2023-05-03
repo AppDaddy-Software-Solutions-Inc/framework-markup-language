@@ -41,6 +41,7 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
   }
 
   /// Callback to fire the [_TooltipViewState.build] when the [TooltipModel] changes
+  @override
   onModelChange(WidgetModel model, {String? property, dynamic value})
   {
     if (mounted) setState((){});

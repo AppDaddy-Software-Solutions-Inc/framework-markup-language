@@ -65,6 +65,7 @@ class MqttMobile implements IMqtt
     client.pongCallback = _onPong;
   }
 
+  @override
   Future<bool> connect() async
   {
     Log().debug('MQTT:: Connecting to $url on port ${client.port}');
@@ -150,6 +151,7 @@ class MqttMobile implements IMqtt
     Log().debug('MQTT -> Error');
   }
 
+  @override
   Future<bool> disconnect() async
   {
     Log().debug('MQTT:: Disconnecting');
@@ -168,6 +170,7 @@ class MqttMobile implements IMqtt
     listener.onDisconnected(origin);
   }
 
+  @override
   Future<bool> subscribe(String topic) async
   {
     Log().debug('MQTT:: Subscribing to topic -> $topic');
@@ -183,6 +186,7 @@ class MqttMobile implements IMqtt
     listener.onSubscribed(topic);
   }
 
+  @override
   Future<bool> unsubscribe(String topic) async
   {
     Log().debug('MQTT:: Unsubscribing from topic -> $topic');
@@ -198,6 +202,7 @@ class MqttMobile implements IMqtt
     if (topic != null) listener.onUnsubscribed(topic);
   }
 
+  @override
   Future<bool> publish(String topic, String msg) async
   {
     // connected?
@@ -226,6 +231,7 @@ class MqttMobile implements IMqtt
     Log().debug('MQTT:: Keep alive');
   }
 
+  @override
   dispose()
   {
     disconnect();

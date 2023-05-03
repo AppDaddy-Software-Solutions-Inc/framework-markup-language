@@ -11,6 +11,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 /// Builds the View from the [BREADCRUMB.BreadcrumbModel] properties
 class BreadcrumbView extends StatefulWidget implements IWidgetView
 {
+  @override
   final BreadcrumbModel model;
 
   /// Height of the breadcrumb bar
@@ -108,6 +109,7 @@ class _TextCrumb extends StatefulWidget {
   _TextCrumb(
       this.text, this.color, this.height, this.separator, this.isFirstButton);
 
+  @override
   _TextCrumbState createState() => _TextCrumbState();
 }
 

@@ -19,6 +19,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class FormView extends StatefulWidget implements IWidgetView
 {
+  @override
   final FormModel model;
   FormView(this.model) : super(key: ObjectKey(model));
 
@@ -30,6 +31,7 @@ class FormViewState extends WidgetState<FormView> implements IGpsListener
 {
   BusyView? busy;
 
+  @override
   onGpsData({Payload? payload})
   {
     // Save Current Location

@@ -61,6 +61,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     if (type != null) _paddingType = type;
   }
 
+  @override
   String? datasource;
 
   ////////////////////
@@ -136,6 +137,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   double? get borderwidth => _borderwidth?.get();
 
   // override
+  @override
   String get valign => super.valign ?? 'center';
 
   /// Center attribute allows a simple boolean override for halign and valign both being center. halign and valign will override center if given.
@@ -188,6 +190,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   /* moreup */
   ///////////
   BooleanObservable? _moreUp;
+  @override
   set moreUp(dynamic v)
   {
     if (_moreUp != null)
@@ -199,12 +202,14 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
       _moreUp = BooleanObservable(Binding.toKey(id, 'moreup'), v, scope: scope);
     }
   }
+  @override
   bool? get moreUp=> _moreUp?.get();
 
   ///////////
   /* moreDown */
   ///////////
   BooleanObservable? _moreDown;
+  @override
   set moreDown(dynamic v)
   {
     if (_moreDown != null)
@@ -216,12 +221,14 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
       _moreDown = BooleanObservable(Binding.toKey(id, 'moredown'), v, scope: scope);
     }
   }
+  @override
   bool? get moreDown => _moreDown?.get();
 
   ///////////
   /* moreLeft */
   ///////////
   BooleanObservable? _moreLeft;
+  @override
   set moreLeft(dynamic v)
   {
     if (_moreLeft != null) {
@@ -230,12 +237,14 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
       _moreLeft = BooleanObservable(Binding.toKey(id, 'moreleft'), v, scope: scope);
     }
   }
+  @override
   bool? get moreLeft => _moreLeft?.get();
 
   ///////////////
   /* moreRight */
   ///////////////
   BooleanObservable? _moreRight;
+  @override
   set moreRight(dynamic v)
   {
     if (_moreRight != null)
@@ -247,6 +256,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
       _moreRight = BooleanObservable(Binding.toKey(id, 'moreright'), v, scope: scope);
     }
   }
+  @override
   bool? get moreRight => _moreRight?.get();
 
   //////////////////
@@ -277,8 +287,10 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   ///////////
   /* dirty */
   ///////////
+  @override
   BooleanObservable? get dirtyObservable => _dirty;
   BooleanObservable? _dirty;
+  @override
   set dirty(dynamic v) {
     if (_dirty != null) {
       _dirty!.set(v);
@@ -286,6 +298,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
       _dirty = BooleanObservable(Binding.toKey(id, 'dirty'), v, scope: scope);
     }
   }
+  @override
   bool get dirty => _dirty?.get() ?? false;
 
   void onDirtyListener(Observable property) {
@@ -302,6 +315,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   ///////////
   /* Clean */
   ///////////
+  @override
   set clean(bool b) {
     dirty = false;
     rows.forEach((index, row) => row.dirty = false);
@@ -702,6 +716,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     super.dispose();
   }
 
+  @override
   Future<bool> complete() async {
     busy = true;
 
@@ -719,6 +734,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     return ok;
   }
 
+  @override
   Future<bool> onComplete(BuildContext context) async {
     return await EventHandler(this).execute(_oncomplete);
   }
@@ -925,6 +941,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     }
   }
 
+  @override
   Future<bool> save() async {
     // not implemented
     return true;
@@ -936,5 +953,6 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
 
 
+  @override
   Widget getView({Key? key}) => getReactiveView(TableView(this));
 }

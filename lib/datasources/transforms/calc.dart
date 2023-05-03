@@ -20,6 +20,7 @@ class Calc extends TransformModel implements ITransform
   static const String countlong = "count";
   static const String evaluate  = "eval";
 
+  @override
   final String? source;
   final String? target;
   final String? precision;
@@ -264,6 +265,7 @@ class Calc extends TransformModel implements ITransform
     }
   }
 
+  @override
   apply(Data? data) async
   {
     if (enabled == false) return;

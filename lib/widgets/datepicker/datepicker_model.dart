@@ -22,6 +22,7 @@ class DatepickerModel extends FormFieldModel implements IFormField
 
   // padding
   DoubleObservable? _padding;
+  @override
   set padding(dynamic v)
   {
     if (_padding != null) _padding!.set(v);
@@ -113,6 +114,7 @@ class DatepickerModel extends FormFieldModel implements IFormField
   // Value
   StringObservable? _value;
 
+  @override
   set value(dynamic v) {
     if (_value != null) {
       _value!.set(v);
@@ -123,6 +125,7 @@ class DatepickerModel extends FormFieldModel implements IFormField
             scope: scope, listener: onPropertyChange);
     }
   }
+  @override
   dynamic get value
   {
     if (_value == null) return defaultValue;
@@ -576,5 +579,6 @@ class DatepickerModel extends FormFieldModel implements IFormField
     onChange(context);
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(DatepickerView(this));
 }

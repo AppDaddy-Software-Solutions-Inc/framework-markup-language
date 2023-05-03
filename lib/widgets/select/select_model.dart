@@ -18,6 +18,7 @@ class SelectModel extends FormFieldModel implements IFormField
 
   // bindable data
   ListObservable? _data;
+  @override
   set data(dynamic v)
   {
     if (_data != null)
@@ -30,6 +31,7 @@ class SelectModel extends FormFieldModel implements IFormField
       _data!.set(v);
     }
   }
+  @override
   get data => _data?.get();
 
   //////////
@@ -177,6 +179,7 @@ class SelectModel extends FormFieldModel implements IFormField
   /* Value */
   ///////////
   StringObservable? _value;
+  @override
   set value(dynamic v) {
     if (_value != null)
     {
@@ -188,6 +191,7 @@ class SelectModel extends FormFieldModel implements IFormField
     }
     setData();
   }
+  @override
   dynamic get value
   {
     if (_value == null) return defaultValue;
@@ -453,5 +457,6 @@ class SelectModel extends FormFieldModel implements IFormField
     super.dispose();
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(SelectView(this));
 }

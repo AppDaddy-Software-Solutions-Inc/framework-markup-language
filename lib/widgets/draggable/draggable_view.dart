@@ -7,6 +7,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class DraggableView extends StatefulWidget implements IWidgetView
 {
+  @override
   final DraggableModel model;
   DraggableView(this.model) : super(key: ObjectKey(model));
 

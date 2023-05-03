@@ -9,6 +9,7 @@ import 'padding_model.dart';
 
 class PaddingView extends StatefulWidget implements IWidgetView
 {
+  @override
   final PaddingModel model;
 
   PaddingView(this.model) : super(key: ObjectKey(model));

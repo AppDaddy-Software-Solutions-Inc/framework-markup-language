@@ -10,6 +10,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 /// Builds a centered Center View from [Model] properties
 class CenterView extends StatefulWidget implements IWidgetView
 {
+  @override
   final CenterModel model;
   final List<Widget> children = [];
 

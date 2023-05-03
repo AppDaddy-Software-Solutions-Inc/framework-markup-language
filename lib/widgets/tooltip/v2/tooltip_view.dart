@@ -14,6 +14,7 @@ import 'src/tooltip_elements_display.dart';
 
 class TooltipView extends StatefulWidget implements IWidgetView
 {
+  @override
   final TooltipModel model;
   final Widget child;
   late final Widget content;
@@ -129,9 +130,13 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
   }
 
   // Nav Changes used to hide overlay
+  @override
   BuildContext getNavigatorContext() => context;
+  @override
   Map<String,String>? onNavigatorPop() => null;
+  @override
   void onNavigatorPush({Map<String?, String>? parameters}) => null;
+  @override
   onNavigatorChange() => hideOverlay();
 
   ElementBox get _screenSize => _getScreenSize();

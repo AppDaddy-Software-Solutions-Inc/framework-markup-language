@@ -291,8 +291,8 @@ class SelectModel extends FormFieldModel implements IFormField
     if (matchtype     != null)  this.matchtype     = matchtype;
     if (label         != null)  this.label         = label;
 
-    this.alarming = false;
-    this.dirty    = false;
+    alarming = false;
+    dirty    = false;
   }
 
   static SelectModel? fromXml(WidgetModel parent, XmlElement xml) {
@@ -360,13 +360,13 @@ class SelectModel extends FormFieldModel implements IFormField
       if (prototype == null) return true;
 
       // clear options
-      this.options.forEach((option) => option.dispose());
-      this.options.clear();
+      options.forEach((option) => option.dispose());
+      options.clear();
 
       int i = 0;
       if (addempty == true)
       {
-        options.add(OptionModel(this, "${this.id}-$i", value: ''));
+        options.add(OptionModel(this, "$id-$i", value: ''));
         i = i + 1;
       }
 
@@ -376,7 +376,7 @@ class SelectModel extends FormFieldModel implements IFormField
         // build options
         list.forEach((row)
         {
-          XmlElement? prototype = S.fromPrototype(this.prototype, "${this.id}-$i");
+          XmlElement? prototype = S.fromPrototype(this.prototype, "$id-$i");
           i = i + 1;
           var model = OptionModel.fromXml(this, prototype, data: row);
           if (model != null) options.add(model);
@@ -430,7 +430,7 @@ class SelectModel extends FormFieldModel implements IFormField
       if (option.value == value)
       {
         data = option.data;
-        this.label = option.labelValue;
+        label = option.labelValue;
       }
     });
     this.data = data;

@@ -318,8 +318,8 @@ class ConstraintModel extends WidgetModel
   double get myMaxWidth
   {
     if (system.maxWidth  != null) return system.maxWidth!;
-    if (this.width       != null) return width!;
-    if (this.maxWidth    != null) return maxWidth!;
+    if (width       != null) return width!;
+    if (maxWidth    != null) return maxWidth!;
     return ancestorMaxWidth(parent);
   }
 
@@ -327,7 +327,7 @@ class ConstraintModel extends WidgetModel
   // otherwise it gets the maxWidth from its parent walking up the model tree
   double get calculatedMaxWidthForPercentage
   {
-    double maxWidth = system.maxWidth ?? ancestorMaxWidth(this.parent, forPercent: true);
+    double maxWidth = system.maxWidth ?? ancestorMaxWidth(parent, forPercent: true);
     if (maxWidth == double.infinity) maxWidth = System().screenwidth.toDouble();
     return maxWidth;
   }
@@ -371,8 +371,8 @@ class ConstraintModel extends WidgetModel
   double get myMaxHeight
   {
     if (system.maxHeight != null) return system.maxHeight!;
-    if (this.height      != null) return height!;
-    if (this.maxHeight   != null) return maxHeight!;
+    if (height      != null) return height!;
+    if (maxHeight   != null) return maxHeight!;
     return ancestorMaxHeight(parent, 0);
   }
 
@@ -380,7 +380,7 @@ class ConstraintModel extends WidgetModel
   // otherwise it gets the maxHeight from its parent walking up the model tree
   double get calculatedMaxHeightForPercentage
   {
-    double maxHeight = system.maxHeight ?? ancestorMaxHeight(this.parent, 0, forPercent: true);
+    double maxHeight = system.maxHeight ?? ancestorMaxHeight(parent, 0, forPercent: true);
     if (maxHeight == double.infinity) maxHeight = System().screenheight.toDouble();
     return maxHeight;
   }

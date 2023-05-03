@@ -32,7 +32,7 @@ class Payload
 
   Map<String, String> get map
   {
-    Map<String, String> _map = Map<String,String>();
+    Map<String, String> _map = <String,String>{};
     _map['accuracy']      = accuracy      != null ? accuracy.toString()      : "0.0";
     _map['latitude']      = latitude      != null ? latitude.toString()      : "0.0";
     _map['longitude']     = longitude     != null ? longitude.toString()     : "0.0";

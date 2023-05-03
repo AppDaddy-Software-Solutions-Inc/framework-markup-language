@@ -309,7 +309,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
       if (uri != null && uri.hasQuery)
       {
         // add payload url parameters
-        Map<String, dynamic> map = Map<String, dynamic>();
+        Map<String, dynamic> map = <String, dynamic>{};
         uri.queryParameters.forEach((k, v) => map[k] = v);
         if(!map.containsKey('payload')) map['payload'] = payload.message;
         if(!map.containsKey('serial'))  map['serial'] = payload.id;

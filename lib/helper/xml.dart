@@ -60,7 +60,7 @@ class Xml {
   // TODO: Further describe this
   static Map<String,dynamic> toElementMap({required XmlElement node})
   {
-    Map<String,dynamic> map = Map<String,dynamic>();
+    Map<String,dynamic> map = <String,dynamic>{};
 
     try
     {
@@ -142,7 +142,7 @@ class Xml {
   // TODO: Further describe this
   static Map<dynamic,dynamic> toMap({required XmlElement node})
   {
-    Map<dynamic,dynamic> map = Map<dynamic,dynamic>();
+    Map<dynamic,dynamic> map = <dynamic,dynamic>{};
 
     try
     {

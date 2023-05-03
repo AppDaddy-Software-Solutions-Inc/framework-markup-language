@@ -87,8 +87,8 @@ class SwitchModel extends FormFieldModel implements IFormField
     if (onchange     != null) this.onchange   = onchange;
     if (post         != null) this.post       = post;
 
-    this.alarming     = false;
-    this.dirty        = false;
+    alarming     = false;
+    dirty        = false;
   }
 
   static SwitchModel? fromXml(WidgetModel parent, XmlElement xml, {String? type}) {

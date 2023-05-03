@@ -21,7 +21,7 @@ class File extends FileBase
     try
     {
       // already read
-      if (this.bytes != null) return bytes;
+      if (bytes != null) return bytes;
 
       // filepicker format read from file
       if (file is HTML.File)

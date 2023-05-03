@@ -112,7 +112,7 @@ class _TableHeaderViewState extends WidgetState<TableHeaderView>
         {
           int    index          = cellIndex!;
           double position       = tableModel!.getCellPosition(index);
-          RenderBox? tableObject = this.context.findRenderObject() as RenderBox?;
+          RenderBox? tableObject = context.findRenderObject() as RenderBox?;
           Offset? tableGlobalPos = tableObject?.localToGlobal(Offset.zero);
           double offset         = details.localPosition.dx + anchorWidth - (tableGlobalPos?.dx ?? 0);
           double width          = offset - position;

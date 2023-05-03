@@ -91,7 +91,7 @@ class Socket
       // connect to the socket
       if (!connected || forceReconnect)
       {
-        Log().debug('SOCKET:: Connecting to ${this.url}');
+        Log().debug('SOCKET:: Connecting to $url');
 
         lastMessage = null;
 
@@ -100,7 +100,7 @@ class Socket
 
         // connect
         connected = false;
-        _socket = WebSocketChannel.connect(this.uri!);
+        _socket = WebSocketChannel.connect(uri!);
         connected = true;
 
         Log().debug('SOCKET:: Connected');

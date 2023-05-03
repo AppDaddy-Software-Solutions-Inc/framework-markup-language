@@ -134,7 +134,7 @@ class VideoModel extends DecoratedWidgetModel implements ViewableWidgetModel
 
   Future<bool> onInitialized(BuildContext context) async
   {
-    if (this.oninitialized == null) return true;
+    if (oninitialized == null) return true;
     return await EventHandler(this).execute(_oninitialized);
   }
 

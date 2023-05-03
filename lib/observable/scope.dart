@@ -29,7 +29,7 @@ class Scope
   LinkedHashMap<String?, WidgetModel> models  = LinkedHashMap<String?, WidgetModel>();
 
   // file links
-  final Map<String, FILE.File> files = Map<String, FILE.File>();
+  final Map<String, FILE.File> files = <String, FILE.File>{};
 
   // list of observables
   HashMap<String?,Observable> observables = HashMap<String?,Observable>();

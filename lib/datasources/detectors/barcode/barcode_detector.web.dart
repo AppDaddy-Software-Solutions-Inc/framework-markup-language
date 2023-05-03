@@ -61,7 +61,7 @@ class BarcodeDetector implements IBarcodeDetector
 
     var reader = _multiFormatReader!;
 
-    Map<dynamic, Object> hints   = Map<dynamic, Object>();
+    Map<dynamic, Object> hints   = <dynamic, Object>{};
     hints[zxing.DecodeHintType.TRY_HARDER]    = (tryharder == true);
     hints[zxing.DecodeHintType.ALSO_INVERTED] = (invert == true);
     //hints[DecodeHintType.POSSIBLE_FORMATS] = BarcodeFormats.;
@@ -82,7 +82,7 @@ class BarcodeDetector implements IBarcodeDetector
     if (_pDF417Reader == null) _pDF417Reader = pdf417.PDF417Reader();
     var reader = _pDF417Reader!;
 
-    Map<dynamic, Object> hints   = Map<dynamic, Object>();
+    Map<dynamic, Object> hints   = <dynamic, Object>{};
     hints[zxing.DecodeHintType.TRY_HARDER]    = (tryharder == true);
     hints[zxing.DecodeHintType.ALSO_INVERTED] = (invert == true);
 
@@ -102,7 +102,7 @@ class BarcodeDetector implements IBarcodeDetector
     {
       if (barcode.barcode!.contains('ANSI 636012'))
       {
-        barcode.parameters = new Map<String, String?>();
+        barcode.parameters = <String, String?>{};
         var lines = barcode.barcode!.split(new RegExp(r'\r\n|\n\r|\n|\r|DL'));
         lines.forEach((line)
         {
@@ -203,7 +203,7 @@ class BarcodeDetector implements IBarcodeDetector
     if (_code39Reader == null) _code39Reader = code39.Code39Reader(false, true);
     var reader = _code39Reader!;
 
-    Map<dynamic, Object> hints   = Map<dynamic, Object>();
+    Map<dynamic, Object> hints   = <dynamic, Object>{};
     hints[zxing.DecodeHintType.TRY_HARDER]    = (tryharder == true);
     hints[zxing.DecodeHintType.ALSO_INVERTED] = (invert == true);
 
@@ -223,7 +223,7 @@ class BarcodeDetector implements IBarcodeDetector
     if (_qRCodeReader == null) _qRCodeReader = qrcode.QRCodeReader();
     var reader = _qRCodeReader!;
 
-    Map<dynamic, Object> hints   = Map<dynamic, Object>();
+    Map<dynamic, Object> hints   = <dynamic, Object>{};
     hints[zxing.DecodeHintType.TRY_HARDER]    = (tryharder == true);
     hints[zxing.DecodeHintType.ALSO_INVERTED] = (invert == true);
 

@@ -165,12 +165,12 @@ class PagerModel extends DecoratedWidgetModel
     if ((list != null))
     {
       // clear pages
-      this.pages.forEach((model) => model.dispose());
-      this.pages.clear();
+      pages.forEach((model) => model.dispose());
+      pages.clear();
 
       list.forEach((row)
       {
-        XmlElement? prototype = S.fromPrototype(this.prototype, "${this.id}-$i");
+        XmlElement? prototype = S.fromPrototype(this.prototype, "$id-$i");
         i = i + 1;
 
         var model = PagerPageModel.fromXml(parent, prototype, data: row);
@@ -191,8 +191,8 @@ class PagerModel extends DecoratedWidgetModel
     // Log().debug ('dispose called on' + elementName);
 
     // clear pages
-    this.pages.forEach((model) => model.dispose());
-    this.pages.clear();
+    pages.forEach((model) => model.dispose());
+    pages.clear();
 
     super.dispose();
   }

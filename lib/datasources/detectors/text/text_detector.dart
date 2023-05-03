@@ -33,7 +33,7 @@ class Payload
     {
       i++;
 
-      Map<dynamic, dynamic> map = Map<dynamic, dynamic>();
+      Map<dynamic, dynamic> map =  <dynamic, dynamic>{};
       data.add(map);
       map["body"] = (i == 1 ? payload.body : null);
       map["line"] = line.text;

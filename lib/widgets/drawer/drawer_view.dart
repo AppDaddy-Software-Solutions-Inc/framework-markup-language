@@ -167,7 +167,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
   /// Callback function for when the model changes, used to force a rebuild with setState()
   onModelChange(WidgetModel model,{String? property, dynamic value})
   {
-    if (this.mounted) setState((){});
+    if (mounted) setState((){});
   }
 
   preventPop() {

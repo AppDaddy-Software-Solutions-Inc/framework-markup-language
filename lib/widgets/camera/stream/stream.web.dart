@@ -50,7 +50,7 @@ class ViewState extends WidgetState<View>
   late HTML.CanvasElement canvas2;
   HTML.MediaStream? stream;
 
-  Map<String, String> devices = Map<String, String>();
+  Map<String, String> devices = <String, String>{};
 
   @override
   void initState() {
@@ -91,7 +91,7 @@ class ViewState extends WidgetState<View>
   /// Callback to fire the [_ViewState.build] when the [CameraModel] changes
   onModelChange(WidgetModel model, {String? property, dynamic value}) {
     var b = Binding.fromString(property);
-    if ((this.mounted) && (b?.property == 'enabled')) {
+    if ((mounted) && (b?.property == 'enabled')) {
       Log().debug('enabled changed value');
       if (widget.model.enabled)
         start();
@@ -290,9 +290,9 @@ class ViewState extends WidgetState<View>
       if (stream == null) return;
       Log().debug("Stopping Camera");
       video.pause();
-      if (this.stream != null)
-        this.stream!.getTracks().forEach((track) => track.stop());
-      this.stream = null;
+      if (stream != null)
+        stream!.getTracks().forEach((track) => track.stop());
+      stream = null;
       Log().debug("Camera Stopped");
     } catch(e) {}
   }

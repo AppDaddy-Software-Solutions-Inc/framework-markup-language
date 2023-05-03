@@ -100,7 +100,7 @@ class Pivot extends TransformModel implements ITransform
       String? _field;
 
       // lookup column
-      var value = Data.readValue(row,this.column);
+      var value = Data.readValue(row,column);
       if (value != null)
       {
         _column = value.toString();
@@ -116,7 +116,7 @@ class Pivot extends TransformModel implements ITransform
       }
 
       // lookup field
-      value = Data.readValue(row,this.field);
+      value = Data.readValue(row,field);
       if (value != null)
       {
         _field = value.toString();
@@ -148,9 +148,9 @@ class Pivot extends TransformModel implements ITransform
       }
     });
 
-    if (!columnFound) Log().exception(Exception("Column ${this.column!} not found in data set"));
-    if (!rowFound)    Log().exception(Exception("Row ${this.row!} not found in data set"));
-    if (!fieldFound)  Log().exception(Exception("Field ${this.field!} not found in data set"));
+    if (!columnFound) Log().exception(Exception("Column ${column!} not found in data set"));
+    if (!rowFound)    Log().exception(Exception("Row ${row!} not found in data set"));
+    if (!fieldFound)  Log().exception(Exception("Field ${field!} not found in data set"));
     if ((!columnFound) || (!rowFound) || (!fieldFound)) return null;
 
     Data result = Data();

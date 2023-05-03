@@ -34,7 +34,7 @@ class _EditorViewState extends WidgetState<EditorView>
   /// Callback to fire the [_EditorViewState.build] when the [EditorModel] changes
   onModelChange(WidgetModel model, {String? property, dynamic value})
   {
-    if (this.mounted)
+    if (mounted)
     {
       // value changes as user edits the text
       // we don't want to do a set state after every keystroke

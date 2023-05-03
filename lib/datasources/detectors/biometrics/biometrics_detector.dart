@@ -27,7 +27,7 @@ class Payload
     Data data = Data();
     payload.biometrics.forEach((biometric)
     {
-      Map<dynamic,dynamic> map = Map<dynamic,dynamic>();
+      Map<dynamic,dynamic> map = <dynamic,dynamic>{};
       map["smile"] = (biometric.smile != null ? biometric.smile.toString() : '0');
       data.add(map);
     });

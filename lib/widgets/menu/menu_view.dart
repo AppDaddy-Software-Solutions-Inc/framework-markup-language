@@ -70,7 +70,7 @@ class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling
   @override
   void onScroll(Event event) async
   {
-    if (this.vScroller != null) scroll(event, this.vScroller);
+    if (vScroller != null) scroll(event, vScroller);
     event.handled = true;
   }
 
@@ -98,7 +98,7 @@ class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
   onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    if (this.mounted) setState(() {});
+    if (mounted) setState(() {});
   }
 
   @override

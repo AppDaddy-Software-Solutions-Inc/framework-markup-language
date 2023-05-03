@@ -188,7 +188,7 @@ class MapModel extends DecoratedWidgetModel
           int i = 0;
           list.forEach((data)
           {
-            XmlElement? node = S.fromPrototype(prototype, "${this.id}-${S.newId()}");
+            XmlElement? node = S.fromPrototype(prototype, "$id-${S.newId()}");
             i = i + 1;
 
             var location = MapMarkerModel.fromXml(parent!, node, data: data);

@@ -230,8 +230,8 @@ class Alert {
         },
         child: MouseRegion(cursor: SystemMouseCursors.click, child: Container(
           alignment: FractionalOffset.topRight,
-          child: this.closeIcon != null
-              ? Container(child: this.closeIcon)
+          child: closeIcon != null
+              ? Container(child: closeIcon)
               : Container(
             width: 20,
             height: 20,

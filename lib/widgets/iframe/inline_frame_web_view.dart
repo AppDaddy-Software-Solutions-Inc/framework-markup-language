@@ -118,7 +118,7 @@ class IFrameWidget extends StatelessWidget {
       ////////////////////
       /* Decode Message */
       ////////////////////
-      Map<String?, dynamic> map = Map<String?, dynamic>();
+      Map<String?, dynamic> map = <String?, dynamic>{};
       if (event.data is Map) {
         (event.data as Map).forEach((key, value) {
           String? k = S.toStr(key);
@@ -133,7 +133,7 @@ class IFrameWidget extends StatelessWidget {
       /////////////
       /* Set Map */
       /////////////
-      this.model.data = map;
+      model.data = map;
 
     }
     catch(e)

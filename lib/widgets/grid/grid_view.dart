@@ -138,7 +138,7 @@ class _GridViewState extends WidgetState<GridView>
 
   void onScroll(Event event) async
   {
-    if (this.scroller != null) scroll(event, this.scroller);
+    if (scroller != null) scroll(event, scroller);
     event.handled = true;
   }
 
@@ -248,7 +248,7 @@ class _GridViewState extends WidgetState<GridView>
         // build prototype
         XmlElement? prototype = S.fromPrototype(widget.model.prototype, "${widget.model.id}-0");
         // build model
-        prototypeModel = GridItemModel.fromXml(this.widget.model, prototype);
+        prototypeModel = GridItemModel.fromXml(widget.model, prototype);
         prototypeGrid = Offstage(child: MeasuredView(UnconstrainedBox(
             child: GridItemView(model: prototypeModel)),
             onMeasuredItem));

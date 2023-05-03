@@ -253,7 +253,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
         // determine number of parts to send
         int parts = (size/maxPartSize).ceil();
 
-        Log().debug('SOCKET:: Sending message (binary:  $asBinary, parts: $parts) to ${this.url}');
+        Log().debug('SOCKET:: Sending message (binary:  $asBinary, parts: $parts) to $url');
 
         // send each file part as an single message
         for (int i = 0; i < parts; i++)
@@ -277,7 +277,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
       // send file as a single message
       else
       {
-        Log().debug('SOCKET:: Sending message (binary: $asBinary, bytes:${message.length}) to ${this.url}');
+        Log().debug('SOCKET:: Sending message (binary: $asBinary, bytes:${message.length}) to $url');
 
         // send as binary
         if (asBinary) await socket?.send(utf8.encode(message));
@@ -316,7 +316,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
         // determine number of parts to send
         int parts = (size/maxPartSize).ceil();
 
-        Log().debug('SOCKET:: Sending file (binary:  $asBinary, parts: $parts) to ${this.url}');
+        Log().debug('SOCKET:: Sending file (binary:  $asBinary, parts: $parts) to $url');
 
         // send each file part as an single message
         for (int i = 0; i < parts; i++)
@@ -340,7 +340,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
       {
         Uint8List? bytes = await file.read();
 
-        Log().debug('SOCKET:: Sending file (binary: $asBinary, bytes:${bytes?.length}) to ${this.url}');
+        Log().debug('SOCKET:: Sending file (binary: $asBinary, bytes:${bytes?.length}) to $url');
 
         if (bytes != null)
         {
@@ -438,7 +438,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     {
       case "send":
       case "write":
-        String? message     = S.toStr(S.item(arguments, 0)) ?? this.body;
+        String? message     = S.toStr(S.item(arguments, 0)) ?? body;
         bool?   asBinary    = S.toBool(S.item(arguments, 1));
         int?    maxPartSize = S.toInt(S.item(arguments, 2));
         if (!S.isNullOrEmpty(message)) send(message!, asBinary: asBinary, maxPartSize: maxPartSize);

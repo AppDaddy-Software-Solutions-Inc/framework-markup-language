@@ -164,18 +164,20 @@ class BeaconModel extends DataSourceModel implements IDataSource, IBeaconListene
     Log().debug('BEACON Scanner -> Found ${beacons.length} beacons');
 
     // remove beacons that dont match our criteria
-    if (this.major != null || this.minor != null || this.distance != null)
-    beacons.removeWhere((element)
+    if (major != null || minor != null || distance != null) {
+      beacons.removeWhere((element)
     {
-      if (this.major    != null && element.major != this.major) return true;
-      if (this.minor    != null && element.minor != this.minor) return true;
-      if (this.distance != null && element.accuracy > this.distance!) return true;
+      if (major    != null && element.major != major) return true;
+      if (minor    != null && element.minor != minor) return true;
+      if (distance != null && element.accuracy > distance!) return true;
       return false;
     });
+    }
 
     // sort by distance
-    if (beacons.length > 1)
-    beacons.sort((a, b) => Comparable.compare(a.accuracy, b.accuracy));
+    if (beacons.length > 1) {
+      beacons.sort((a, b) => Comparable.compare(a.accuracy, b.accuracy));
+    }
 
     Log().debug('BEACON Scanner -> ${beacons.length} beacons matching your criteria');
 
@@ -193,7 +195,7 @@ class BeaconModel extends DataSourceModel implements IDataSource, IBeaconListene
         age = lastSeen[beacon.macAddress!]! - firstSeen[beacon.macAddress!]!;
       }
 
-      Map<dynamic, dynamic> map = Map<dynamic, dynamic>();
+      Map<dynamic, dynamic> map = <dynamic, dynamic>{};
       map["id"]         = beacon.proximityUUID;
       map["epoch"]      = "${DateTime.now().millisecondsSinceEpoch}";
       map["age"]        = "$age";

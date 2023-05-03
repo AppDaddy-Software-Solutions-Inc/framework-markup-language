@@ -37,7 +37,7 @@ class Stash
   static Future<Stash> get(String key) async
   {
     Map<String, dynamic>? entry = await Database().find(tableName, key);
-    return Stash(key, entry ?? Map<String, dynamic>());
+    return Stash(key, entry ?? <String, dynamic>{});
   }
 
   static Future<Stash> getStash() async

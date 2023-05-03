@@ -273,7 +273,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
   Future<bool> open(Map<String, String?>? parameters, {bool? refresh = false, WidgetModel? model, String? dependency}) async
   {
     bool ok = true;
-    if (parameters == null) parameters = Map<String, String>();
+    parameters ??= <String, String>{};
 
     String url         = S.mapVal(parameters,'url',defaultValue: "");
     bool?   modal      = S.mapBoo(parameters,'modal', defaultValue: false);

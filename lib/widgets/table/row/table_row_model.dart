@@ -95,7 +95,7 @@ class TableRowModel extends DecoratedWidgetModel
   {
     if (_color == null)
     {
-      if ((this.parent != null) && (this.parent is TableModel)) return (this.parent as TableModel).color;
+      if ((parent != null) && (parent is TableModel)) return (parent as TableModel).color;
       return null;
     }
     return _color?.get();
@@ -118,7 +118,7 @@ class TableRowModel extends DecoratedWidgetModel
   {
     if (_altcolor == null)
     {
-      if ((this.parent != null) && (this.parent is TableModel)) return (this.parent as TableModel).altcolor;
+      if ((parent != null) && (parent is TableModel)) return (parent as TableModel).altcolor;
       return null;
     }
     return _altcolor?.get();
@@ -140,8 +140,8 @@ class TableRowModel extends DecoratedWidgetModel
 
   Color? get selectedcolor {
     if (_selectedcolor == null) {
-      if ((this.parent != null) && (this.parent is TableModel))
-        return (this.parent as TableModel).selectedcolor;
+      if ((parent != null) && (parent is TableModel))
+        return (parent as TableModel).selectedcolor;
       return null;
     }
     return _selectedcolor?.get();
@@ -163,8 +163,8 @@ class TableRowModel extends DecoratedWidgetModel
 
   Color? get selectedbordercolor {
     if (_selectedbordercolor == null) {
-      if ((this.parent != null) && (this.parent is TableModel))
-        return (this.parent as TableModel).selectedbordercolor;
+      if ((parent != null) && (parent is TableModel))
+        return (parent as TableModel).selectedbordercolor;
       return null;
     }
     return _selectedbordercolor?.get();
@@ -186,8 +186,8 @@ class TableRowModel extends DecoratedWidgetModel
 
   Color? get bordercolor {
     if (_bordercolor == null) {
-      if ((this.parent != null) && (this.parent is TableModel))
-        return (this.parent as TableModel).bordercolor;
+      if ((parent != null) && (parent is TableModel))
+        return (parent as TableModel).bordercolor;
       return null;
     }
     return _bordercolor?.get();
@@ -209,8 +209,8 @@ class TableRowModel extends DecoratedWidgetModel
 
   double? get borderwidth {
     if (_borderwidth == null) {
-      if ((this.parent != null) && (this.parent is TableModel))
-        return (this.parent as TableModel).borderwidth;
+      if ((parent != null) && (parent is TableModel))
+        return (parent as TableModel).borderwidth;
       return null;
     }
     return _borderwidth?.get();
@@ -222,8 +222,8 @@ class TableRowModel extends DecoratedWidgetModel
   StringObservable? _halign;
   String? get halign {
     if (_halign == null) {
-      if ((this.parent != null) && (this.parent is TableModel))
-        return (this.parent as TableModel).halign;
+      if ((parent != null) && (parent is TableModel))
+        return (parent as TableModel).halign;
       return null;
     }
     return _halign?.get();
@@ -233,8 +233,8 @@ class TableRowModel extends DecoratedWidgetModel
   StringObservable? _valign;
   String? get valign {
     if (_valign == null) {
-      if ((this.parent != null) && (this.parent is TableModel))
-        return (this.parent as TableModel).valign;
+      if ((parent != null) && (parent is TableModel))
+        return (parent as TableModel).valign;
       return null;
     }
     return _valign?.get();
@@ -255,7 +255,7 @@ class TableRowModel extends DecoratedWidgetModel
   {
     if (_center == null)
     {
-      if ((this.parent != null) && (this.parent is TableModel)) return (this.parent as TableModel).center;
+      if ((parent != null) && (parent is TableModel)) return (parent as TableModel).center;
       return false;
     }
     return _center?.get() ?? false;
@@ -276,7 +276,7 @@ class TableRowModel extends DecoratedWidgetModel
   {
     if (_wrap == null)
     {
-      if ((this.parent != null) && (this.parent is TableModel)) return (this.parent as TableModel).wrap;
+      if ((parent != null) && (parent is TableModel)) return (parent as TableModel).wrap;
       return false;
     }
     return _wrap?.get() ?? false;
@@ -346,7 +346,7 @@ class TableRowModel extends DecoratedWidgetModel
     this.data = data;
     this.altcolor = altcolor;
     this.oncomplete = oncomplete;
-    this.dirty = false;
+    dirty = false;
     this.color = color;
     this.halign = halign;
     this.center = center;
@@ -395,12 +395,12 @@ class TableRowModel extends DecoratedWidgetModel
     /* Get Cells */
     ///////////////
     List<TableRowCellModel> models = findChildrenOfExactType(TableRowCellModel).cast<TableRowCellModel>();
-    for (TableRowCellModel model in models) this.cells.add(model);
+    for (TableRowCellModel model in models) cells.add(model);
 
     ////////////////////////////
     /* Initialize Form Fields */
     ////////////////////////////
-    for (TableRowCellModel _ in this.cells)
+    for (TableRowCellModel _ in cells)
     {
       List<IFormField> fields = findChildrenOfExactType(IFormField).cast<IFormField>();
       fields.forEach((field)

@@ -29,8 +29,8 @@ class Eval
     var _expression = expression;
     var _parsed;
     var i = 0;
-    var _variables = Map<String, dynamic>();
-    var _functions = Map<String?, dynamic>();
+    var _variables = <String, dynamic>{};
+    var _functions = <String?, dynamic>{};
 
     try
     {

@@ -9,7 +9,7 @@ class Jwt
 {
   bool valid = false;
   final String token;
-  final Map<String, String> claims = Map<String, String>();
+  final Map<String, String> claims = <String, String>{};
 
   Jwt(this.token, {bool validateAge = false, bool validateSignature = false})
   {

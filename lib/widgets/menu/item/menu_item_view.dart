@@ -15,7 +15,7 @@ class MenuItemView extends StatefulWidget implements IWidgetView
   MenuItemView(this.model) : super(key: ObjectKey(model));
 
   String? getTitle() {
-    return this.model.title;
+    return model.title;
   }
 
   @override

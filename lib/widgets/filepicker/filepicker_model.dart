@@ -102,7 +102,7 @@ class FilepickerModel extends FILE.FileModel implements IDataSource
       FILE.File? file = await filepicker.launchPicker(detectors);
       if (file != null)
       {
-        if ((this.file != null) && (this.scope != null) && (this.scope!.files.containsValue(this.file))) this.scope!.files.remove(this.file);
+        if ((this.file != null) && (scope != null) && (scope!.files.containsValue(this.file))) scope!.files.remove(this.file);
         this.file = file;
         await onFile(file);
       }

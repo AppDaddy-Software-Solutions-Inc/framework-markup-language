@@ -264,7 +264,7 @@ class FormModel extends DecoratedWidgetModel
     this.status         = status;
     this.autosave       = autosave;
     this.mandatory      = mandatory;
-    this.dirty          = false;
+    dirty          = false;
     this.geocode        = geocode;
     this.oncomplete     = oncomplete;
     this.showexception  = showexception;
@@ -755,7 +755,7 @@ class FormModel extends DecoratedWidgetModel
     if (ok)
     {
       // Serialize the Form
-      await serialize(this.element, fields);
+      await serialize(element, fields);
 
       // Serialize Outer Xml
       String xml = framework!.element!.toXmlString(pretty: true);
@@ -799,7 +799,7 @@ class FormModel extends DecoratedWidgetModel
     {
       bool? isMandatory;
       if ((isMandatory == null) && (field.mandatory != null)) isMandatory = field.mandatory;
-      if ((isMandatory == null) && (this.mandatory != null))  isMandatory = this.mandatory;
+      if ((isMandatory == null) && (mandatory != null))  isMandatory = mandatory;
       if (isMandatory  == null) isMandatory = false;
       if ((isMandatory) && (!field.answered))
       {

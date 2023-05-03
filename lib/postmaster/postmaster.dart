@@ -146,7 +146,7 @@ class PostMaster
       if (pending > 0) System.toast(phrase.postmasterPhrase002.replaceAll("{jobs}", pending.toString()));
 
       // Clear Alert 
-      this.alert = false;
+      alert = false;
 
       // Process Each Post 
       posts.forEach((post) async
@@ -168,7 +168,7 @@ class PostMaster
             // bool ok   = (await post.update() == null);
 
             // Set Alert 
-            this.alert = true;
+            alert = true;
           }
 
           // Ok 

@@ -85,7 +85,7 @@ class StackModel extends LayoutModel
     super.deserialize(xml);
 
     // sort the children
-    this.children?.sort((a, b)
+    children?.sort((a, b)
     {
       if(a.depth != null && b.depth != null) return a.depth?.compareTo(b.depth!) ?? 0;
       return 0;

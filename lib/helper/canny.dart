@@ -90,7 +90,7 @@ Set<Set<Index2d>> canny(
   //helper function to determine neighbours of an edge
   Set<Index2d> Function(int x, int y) getNeighbours = (x,y) {
     int direction = edgeDirection.getPixel(x, y);
-    Set<Index2d> nei = Set();
+    Set<Index2d> nei = {};
     switch(direction) {
       case 0:
         if (y > 0) nei.add(Index2d(x,y-1));
@@ -155,8 +155,8 @@ Set<Set<Index2d>> canny(
   //hysteresis by blob analysis
   bool Function(int x, int y) isWeak = (x,y) => getSafe(x,y,image) >= lowThreshold!;
   bool Function(int x, int y) isStrong = (x,y) => getSafe(x,y,image) >= highThreshold!;
-  Set<Set<Index2d>> edges = Set();
-  Set<Index2d> nonEdges = Set();
+  Set<Set<Index2d>> edges = {};
+  Set<Index2d> nonEdges = {};
   int currentLabel = 2;
   ListQueue<Index2d> currentBlobNeighbours = ListQueue();
   Image labeledPixels = Image(image.width, image.height);
@@ -187,7 +187,7 @@ Set<Set<Index2d>> canny(
       //pixel is an unlabeled foreground edge
       currentBlobNeighbours.addLast(Index2d(x, y));
       bool isStrongEdge = false;
-      Set<Index2d> currentEdge = Set();
+      Set<Index2d> currentEdge = {};
       while (currentBlobNeighbours.isNotEmpty) {
         Index2d w = currentBlobNeighbours.removeLast();
         currentEdge.add(w);
@@ -202,7 +202,7 @@ Set<Set<Index2d>> canny(
         //edge direction!
         //if a neighbour is a foreground pixel and
         //not already labelled put it in Queue
-        Set<Index2d> symmetricNeighbours = Set();
+        Set<Index2d> symmetricNeighbours = {};
         symmetricNeighbours.addAll(getNeighbours(w.x,w.y));
         if (w.x > 0 && w.y > 0 && getNeighbours(w.x-1,w.y-1).contains(w)) {
           symmetricNeighbours.add(Index2d(w.x-1,w.y-1));

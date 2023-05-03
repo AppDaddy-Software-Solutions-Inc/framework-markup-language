@@ -43,7 +43,7 @@ class ChartModel extends DecoratedWidgetModel  {
     this.animated         = animated;
     this.horizontal       = horizontal;
     this.showlegend       = showlegend;
-    this.type             = type?.trim()?.toLowerCase() ?? null;
+    this.type             = type?.trim()?.toLowerCase();
     busy = false;
 
     // register a listener to parent layout complete

@@ -55,7 +55,7 @@ class _ButtonViewState extends WidgetState<ButtonView>
     MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states)
     {
       if (states.contains(MaterialState.disabled)) return Theme.of(context).colorScheme.surfaceVariant;
-      return model.color ?? null;// not sure if this is the correct color scheme for text.
+      return model.color;// not sure if this is the correct color scheme for text.
     }) : null;
 
     var backgroundColorStyle = (!S.isNullOrEmpty(model.color) && model.buttontype == 'elevated') ?

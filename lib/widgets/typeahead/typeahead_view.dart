@@ -124,7 +124,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
       return s.any((tag) => match(tag!.trim().toLowerCase(), pat));
     }
     else {
-      String? str = (m.label is TextModel) ? (m.label as TextModel).value ?? null : '${_extractText(m)!}';
+      String? str = (m.label is TextModel) ? (m.label as TextModel).value : _extractText(m)!;
       return str == null ? false : match(str.trim().toLowerCase(), pat);
     }
 

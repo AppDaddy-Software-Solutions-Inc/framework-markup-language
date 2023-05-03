@@ -469,8 +469,8 @@ class EventHandler extends Eval
   {
     Log().debug("Framework onSound()");
 
-    file      = S.toStr(file)      ?? null;
-    url       = S.toStr(url)       ?? null;
+    file      = S.toStr(file);
+    url       = S.toStr(url);
     duration  = S.toInt(duration)  ?? 0;
 
     try

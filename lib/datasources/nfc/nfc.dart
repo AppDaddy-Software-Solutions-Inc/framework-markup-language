@@ -65,7 +65,7 @@ class Reader
               '\nTransceive Result:\n$result');
 
           // format result
-          if (result.indexOf("text=") >= 0) result = result.substring(result.indexOf('text=')+5);
+          if (result.contains("text=")) result = result.substring(result.indexOf('text=')+5);
 
           // notify
           notifyListeners(Payload(id: tag.id, message: result));

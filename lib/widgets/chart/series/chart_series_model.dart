@@ -121,7 +121,7 @@ class ChartSeriesModel extends WidgetModel
     if ((datasource != null) && (scope != null) && (scope!.datasources.containsKey(datasource))) scope!.datasources[datasource!]!.remove(this);
 
     // Setup the Series type and some internal properties for supporting it
-    if (type != null) type = type?.trim().toLowerCase() ?? null;
+    if (type != null) type = type?.trim().toLowerCase();
     switch (S.toEnum(type, ChartSeriesType.values)) {
       case ChartSeriesType.area:
         this.type = S.fromEnum(ChartSeriesType.area);

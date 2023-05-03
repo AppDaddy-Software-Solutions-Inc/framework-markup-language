@@ -296,7 +296,7 @@ class Eval
   /// Returns a defaultValue if the value is null or '' otherwise returns the null-safe value
   static dynamic _nvl(dynamic value, dynamic defaultValue)
   {
-    value = value?.toString() ?? null;
+    value = value?.toString();
     return S.isNullOrEmpty(value) ? defaultValue : value;
   }
 

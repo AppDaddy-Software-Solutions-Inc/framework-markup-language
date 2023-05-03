@@ -105,7 +105,7 @@ class ChartAxisModel extends WidgetModel
     // this.zoomfactor     = zoomfactor;
     // this.zoomposition   = zoomposition;
 
-    if (S.isNullOrEmpty(type)) type = type?.trim().toLowerCase() ?? null;
+    if (S.isNullOrEmpty(type)) type = type?.trim().toLowerCase();
     try {
       switch (S.toEnum(type, ChartAxisType.values))
       {

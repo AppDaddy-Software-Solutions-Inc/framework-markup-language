@@ -158,7 +158,7 @@ class _MenuItemViewState extends WidgetState<MenuItemView>
               ? (widget.model.onTap ?? onTap)
               : null,
           onLongPress: widget.model.enabled != false
-              ? (widget.model.onLongPress ?? null)
+              ? (widget.model.onLongPress)
               : null,
           shape: shape);
 

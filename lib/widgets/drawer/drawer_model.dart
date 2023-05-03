@@ -83,34 +83,22 @@ class DrawerModel extends DecoratedWidgetModel
     dynamic side,
     dynamic rounded,
     dynamic handle,
-    dynamic handleLeft,
-    dynamic handleRight,
-    dynamic handleTop,
-    dynamic handleBottom,
-    dynamic sizeLeft,
-    dynamic sizeRight,
-    dynamic sizeTop,
-    dynamic sizeBottom,
-    dynamic idLeft,
-    dynamic idRight,
-    dynamic idTop,
-    dynamic idBottom,
+    this.handleLeft,
+    this.handleRight,
+    this.handleTop,
+    this.handleBottom,
+    this.sizeLeft,
+    this.sizeRight,
+    this.sizeTop,
+    this.sizeBottom,
+    this.idLeft,
+    this.idRight,
+    this.idTop,
+    this.idBottom,
   }) : super(parent, id) {
     this.side = side;
     this.rounded = rounded;
     this.handle = handle;
-    this.handleLeft = handleLeft;
-    this.handleRight = handleRight;
-    this.handleTop = handleTop;
-    this.handleBottom = handleBottom;
-    this.sizeLeft = sizeLeft;
-    this.sizeRight = sizeRight;
-    this.sizeTop = sizeTop;
-    this.sizeBottom = sizeBottom;
-    this.idLeft = idLeft;
-    this.idRight = idRight;
-    this.idTop = idTop;
-    this.idBottom = idBottom;
   }
 
   // I built this to replace fromXml so that we can take in multiple <DRAWER> elements

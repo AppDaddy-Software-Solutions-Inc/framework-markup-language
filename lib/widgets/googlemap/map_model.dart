@@ -82,20 +82,17 @@ class MapModel extends DecoratedWidgetModel
   MapModel(
     WidgetModel parent,
     String? id, {
-    dynamic style,
+    this.style,
     dynamic zoom,
-    dynamic mapType,
+    this.mapType,
     dynamic visible,
     dynamic showAll,
   }) : super(parent, id)
   {
     // instantiate busy observable
     busy = false;
-
-    this.style = style;
     this.zoom = zoom;
     this.visible = visible;
-    this.mapType = mapType;
     this.showAll = (showAll ?? true);
   }
 

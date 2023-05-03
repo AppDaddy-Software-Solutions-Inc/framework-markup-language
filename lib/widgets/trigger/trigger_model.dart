@@ -11,9 +11,7 @@ class TriggerModel extends WidgetModel {
   String? type = 'multi';
   final List<TriggerConditionModel> cases = [];
 
-  TriggerModel(WidgetModel parent, {String? id, dynamic type}) : super(parent, id){
-    this.type = type;
-  }
+  TriggerModel(WidgetModel parent, {String? id, this.type}) : super(parent, id);
 
   static TriggerModel? fromXml(WidgetModel parent, XmlElement e)
   {

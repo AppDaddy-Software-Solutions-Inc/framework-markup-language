@@ -41,16 +41,16 @@ class ListObservable extends Observable with ListMixin<dynamic>
   }
 
   @override
-  add(dynamic value)
+  add(dynamic element)
   {
-    _value.add(value);
+    _value.add(element);
     notifyListeners();
   }
 
   @override
-  bool remove(dynamic value)
+  bool remove(dynamic element)
   {
-    if (_value.contains(value)) _value.remove(value);
+    if (_value.contains(element)) _value.remove(element);
     notifyListeners();
     return true;
   }
@@ -79,7 +79,7 @@ class ListObservable extends Observable with ListMixin<dynamic>
   }
 
   @override
-  set(dynamic value, {bool notify = true})
+  set(dynamic v, {bool notify = true})
   {
     // null value
     if (value == null)
@@ -101,7 +101,7 @@ class ListObservable extends Observable with ListMixin<dynamic>
     // list of values
     if (value is List)
     {
-      _value = value;
+      _value = v;
       notifyListeners();
       return;
     }
@@ -121,9 +121,9 @@ class ListObservable extends Observable with ListMixin<dynamic>
     if (value is String)
     {
       _value.clear();
-      var options = value.split(",");
-      for (String v in options) {
-        if (v.trim() != '') _value.add(v.trim());
+      var options = v.split(",");
+      for (String option in options) {
+        if (option.trim() != '') _value.add(option.trim());
       }
       notifyListeners();
     }

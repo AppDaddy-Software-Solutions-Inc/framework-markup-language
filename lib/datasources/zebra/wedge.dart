@@ -12,7 +12,7 @@ abstract class IZebraListener
 
 class Reader
 {
-  static final Reader _singleton = new Reader._initialize();
+  static final Reader _singleton = Reader._initialize();
 
   MethodChannel? methodChannel;
   EventChannel?  scanChannel;

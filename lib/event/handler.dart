@@ -661,8 +661,8 @@ class EventHandler extends Eval
   {
 
     TriggerModel? trigger;
-    if (trigger == null) trigger = model.findAncestorOfExactType(TriggerModel, id: id, includeSiblings: true);
-    if (trigger == null) trigger = model.findDescendantOfExactType(TriggerModel, id: id);
+    trigger ??= model.findAncestorOfExactType(TriggerModel, id: id, includeSiblings: true);
+    trigger ??= model.findDescendantOfExactType(TriggerModel, id: id);
     if (trigger == null)
     {
       Map<String,String?> parameters = <String,String?>{};

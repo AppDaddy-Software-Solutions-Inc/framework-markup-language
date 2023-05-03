@@ -8,7 +8,7 @@ TextDetector getDetector() => TextDetector();
 
 class TextDetector implements ITextDetector
 {
-  static final TextDetector _singleton = new TextDetector._initialize();
+  static final TextDetector _singleton = TextDetector._initialize();
 
   factory TextDetector()
   {

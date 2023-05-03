@@ -33,7 +33,7 @@ class BarcodeDetector implements IBarcodeDetector
       if (detectable.image != null)
       {
         //set barcode format
-        if (formats == null) formats = [];
+        formats ??= [];
         if (formats.length == 1)
         {
           if (formats.contains(BarcodeFormats.CODE39)) result = await _code39(detectable.image, tryharder, invert);
@@ -57,7 +57,7 @@ class BarcodeDetector implements IBarcodeDetector
   static dynamic _multiFormatReader;
   static Future<Payload> _multi(dynamic bitmap, List<BarcodeFormats>? formats, bool? tryharder, bool? invert) async
   {
-    if (_multiFormatReader == null) _multiFormatReader = zxing.MultiFormatReader();
+    _multiFormatReader ??= zxing.MultiFormatReader();
 
     var reader = _multiFormatReader!;
 
@@ -79,7 +79,7 @@ class BarcodeDetector implements IBarcodeDetector
   {
     await pdf417.loadLibrary();
 
-    if (_pDF417Reader == null) _pDF417Reader = pdf417.PDF417Reader();
+    _pDF417Reader ??= pdf417.PDF417Reader();
     var reader = _pDF417Reader!;
 
     Map<dynamic, Object> hints   = <dynamic, Object>{};
@@ -103,7 +103,7 @@ class BarcodeDetector implements IBarcodeDetector
       if (barcode.barcode!.contains('ANSI 636012'))
       {
         barcode.parameters = <String, String?>{};
-        var lines = barcode.barcode!.split(new RegExp(r'\r\n|\n\r|\n|\r|DL'));
+        var lines = barcode.barcode!.split(RegExp(r'\r\n|\n\r|\n|\r|DL'));
         lines.forEach((line)
         {
           line = line.trim();
@@ -200,7 +200,7 @@ class BarcodeDetector implements IBarcodeDetector
   {
     await code39.loadLibrary();
 
-    if (_code39Reader == null) _code39Reader = code39.Code39Reader(false, true);
+    _code39Reader ??= code39.Code39Reader(false, true);
     var reader = _code39Reader!;
 
     Map<dynamic, Object> hints   = <dynamic, Object>{};
@@ -220,7 +220,7 @@ class BarcodeDetector implements IBarcodeDetector
     // load deferred library
     await qrcode.loadLibrary();
 
-    if (_qRCodeReader == null) _qRCodeReader = qrcode.QRCodeReader();
+    _qRCodeReader ??= qrcode.QRCodeReader();
     var reader = _qRCodeReader!;
 
     Map<dynamic, Object> hints   = <dynamic, Object>{};

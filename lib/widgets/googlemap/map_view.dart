@@ -103,11 +103,10 @@ class _MapViewState extends WidgetState<MapView>
     ///////////////////
     /* Build the Map */
     ///////////////////
-    if (map == null)
-    map = _buildGoogleMap();
+    map ??= _buildGoogleMap();
 
     /// Busy / Loading Indicator
-    if (busy == null) busy = BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
+    busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
 
     var width = widget.model.width   ?? widget.model.calculatedMaxWidthOrDefault;
     var height = widget.model.height ?? widget.model.calculatedMaxHeightOrDefault;

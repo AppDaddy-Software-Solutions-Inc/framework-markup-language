@@ -34,7 +34,7 @@ class IOSseChannel extends StreamChannelMixin implements SseChannel
 
   _onListen() async
   {
-    var request = new Request(method ?? "GET", url);
+    var request = Request(method ?? "GET", url);
 
     request.headers["cache-control"] = "no-cache";
     request.headers["accept"] = "text/event-stream";

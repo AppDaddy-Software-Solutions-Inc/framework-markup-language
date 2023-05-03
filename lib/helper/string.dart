@@ -283,11 +283,7 @@ class S
 
     try
     {
-      if (result == null)
-      {
-        //tryparse returns null if it fails so this was never caught.
-        result = DateTime.parse(datetime!);
-      }
+      result ??= DateTime.parse(datetime!);
     }
     on FormatException catch(e)
     {

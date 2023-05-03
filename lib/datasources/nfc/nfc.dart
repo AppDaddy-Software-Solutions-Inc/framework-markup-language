@@ -9,7 +9,7 @@ import 'payload.dart';
 
 class Reader
 {
-  static final Reader _singleton = new Reader._initialize();
+  static final Reader _singleton = Reader._initialize();
   bool stop = false;
 
   List<INfcListener>? _listeners;
@@ -90,7 +90,7 @@ class Reader
 
   registerListener(INfcListener listener)
   {
-    if (_listeners == null) _listeners = [];
+    _listeners ??= [];
     if (!_listeners!.contains(listener)) _listeners!.add(listener);
     read();
   }

@@ -214,7 +214,7 @@ class Xml {
       for (XmlNode node in nodes)
       {
         Map<dynamic,dynamic> map = toMap(node: node as XmlElement);
-        if (list == null) list = [];
+        list ??= [];
         list.add(map);
       }
     }
@@ -263,8 +263,8 @@ class Xml {
     try
     {
       v = node.getAttribute(tag.toLowerCase());
-      if (v == null) v = node.getAttribute(tag.toUpperCase());
-      if (v == null) v = node.getAttribute(tag);
+      v ??= node.getAttribute(tag.toUpperCase());
+      v ??= node.getAttribute(tag);
     }
     catch(e) {
       v = null;
@@ -294,7 +294,7 @@ class Xml {
   {
     try
     {
-      if (value == null) value = "";
+      value ??= "";
       value.replaceAll('"', "&quot;");
       value.replaceAll("'", "&quot;");
 
@@ -335,8 +335,8 @@ class Xml {
     try
     {
       XmlElement? child = getChildElement(node: node, tag: tag.toUpperCase());
-      if (child == null) child = getChildElement(node: node, tag: tag.toLowerCase());
-      if (child == null) child = getChildElement(node: node, tag: tag);
+      child ??= getChildElement(node: node, tag: tag.toLowerCase());
+      child ??= getChildElement(node: node, tag: tag);
       if (child != null) v = getText(child);
     }
     catch(e) {
@@ -368,8 +368,8 @@ class Xml {
     String? v;
     try
     {
-      if (v == null) v = attribute(node: node!, tag: tag!);
-      if (v == null) v = element(node: node!, tag: tag!);
+      v ??= attribute(node: node!, tag: tag!);
+      v ??= element(node: node!, tag: tag!);
     }
     catch(e)
     {

@@ -47,7 +47,7 @@ class Log
 
   static Data toData(Iterable<Log> logs)
   {
-    Data data = new Data();
+    Data data = Data();
     logs.forEach((log) => data.add(log._map));
     return data;
   }

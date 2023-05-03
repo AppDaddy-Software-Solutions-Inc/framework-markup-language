@@ -73,7 +73,7 @@ class Platform
     if (folder != null)
     {
       String path = join(folder,filepath);
-      File file = new File(path);
+      File file = File(path);
       await file.writeAsBytes(bytes);
       OpenFilex.open(path);
       return file;

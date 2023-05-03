@@ -759,8 +759,8 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
     double screenWidth  = width;
 
     // preset the original dimensions
-    if (oldHeight == null) oldHeight = screenHeight;
-    if (oldWidth == null)  oldWidth = screenWidth;
+    oldHeight ??= screenHeight;
+    oldWidth ??= screenWidth;
 
     // check the dimensions for changes, if it has changed, close the any open drawer
     if (screenHeight != oldHeight)

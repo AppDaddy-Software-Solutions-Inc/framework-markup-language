@@ -115,8 +115,7 @@ class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling
     //var background = BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor);
 
     /// Busy / Loading Indicator
-    if (busy == null)
-      busy = BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
+    busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
 
     //////////
     /* View */

@@ -41,7 +41,7 @@ class _InlineFrameViewState extends WidgetState<InlineFrameView>
     if (!widget.model.visible) return Offstage();
 
     //This prevents the iframe from rebuilding and hiding the keyboard every time.
-    if (iframe == null) iframe = IFrameWidget(model: model);
+    iframe ??= IFrameWidget(model: model);
     Widget view = iframe!;
 
     // basic view

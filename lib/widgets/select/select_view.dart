@@ -189,7 +189,7 @@ class _SelectViewState extends WidgetState<SelectView>
                       var option = _list.firstWhereOrNull((option) => (option.value == suggestion));
                       item = option?.child;
                   }
-                  if (item == null) item = Container(height: 12);
+                  item ??= Container(height: 12);
                   return Padding(
                       padding: EdgeInsets.only(
                           left: 12, right: 1, top: 12, bottom: 12),

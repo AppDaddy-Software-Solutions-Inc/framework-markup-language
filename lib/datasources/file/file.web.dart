@@ -85,7 +85,7 @@ class File extends FileBase
   {
     Uint8List? bytes;
 
-    final completer = new Completer();
+    final completer = Completer();
 
     if ((start == null) || (start < 0)) start = 0;
     if ((end == null)   || (end   > file.size)) end = file.size;

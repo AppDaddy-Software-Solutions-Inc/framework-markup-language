@@ -47,7 +47,7 @@ class FileModel extends DataSourceModel implements IDataSource
     for (IDataSource source in datasources!)
     if (source is IDetectable)
     {
-      if (detectors == null) detectors = [];
+      detectors ??= [];
       detectors!.add(source as IDetectable);
     }
   }

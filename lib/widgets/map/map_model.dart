@@ -73,7 +73,7 @@ class MapModel extends DecoratedWidgetModel
     if (_zoom == null) return scale;
 
     scale = _zoom?.get();
-    if (scale == null) scale = 1;
+    scale ??= 1;
     if ((scale < 1))   scale = 1;
     if ((scale > 20))  scale = 20;
     return scale;

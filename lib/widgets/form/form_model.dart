@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/gps/payload.dart' as GPS;
+import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/event/handler.dart' ;
@@ -12,7 +12,7 @@ import 'package:fml/system.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
-import 'package:fml/hive/form.dart' as HIVE;
+import 'package:fml/hive/form.dart' as hive_form;
 import 'package:fml/widgets/form/form_view.dart';
 import 'package:fml/widgets/input/input_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -346,7 +346,7 @@ class FormModel extends DecoratedWidgetModel
           }
 
         /// GeoCode for each [iFormField] which is set on answer
-        field.geocode = GPS.Payload(
+        field.geocode = Payload(
             latitude: S.toDouble(Xml.attribute(node: node, tag: 'latitude')),
             longitude: S.toDouble(Xml.attribute(node: node, tag: 'longitude')),
             altitude: S.toDouble(Xml.attribute(node: node, tag: 'altitude')),
@@ -396,7 +396,7 @@ class FormModel extends DecoratedWidgetModel
     return forms;
   }
 
-  Future<bool> _post(HIVE.Form? form, {bool? commit}) async
+  Future<bool> _post(hive_form.Form? form, {bool? commit}) async
   {
     bool ok = true;
     if ((scope != null) && (postbrokers != null))
@@ -453,7 +453,7 @@ class FormModel extends DecoratedWidgetModel
     }
 
     // Save the Form
-    HIVE.Form? form = await save();
+    hive_form.Form? form = await save();
 
     // Post the Form
     if (ok) ok = await _post(form);
@@ -744,9 +744,9 @@ class FormModel extends DecoratedWidgetModel
     return null;
   }
 
-  Future<HIVE.Form?> save() async
+  Future<hive_form.Form?> save() async
   {
-    HIVE.Form? form;
+    hive_form.Form? form;
 
     // Validate the Data
     bool ok = (await validate() == null);
@@ -761,7 +761,7 @@ class FormModel extends DecoratedWidgetModel
       String xml = framework!.element!.toXmlString(pretty: true);
 
       // Lookup Form
-      form = await HIVE.Form.find(framework!.key);
+      form = await hive_form.Form.find(framework!.key);
 
       // Update the Form
       if (form != null)
@@ -779,7 +779,7 @@ class FormModel extends DecoratedWidgetModel
       else
       {
           Log().info('Inserting New form');
-          form = HIVE.Form(key: framework?.key,
+          form = hive_form.Form(key: framework?.key,
               parent: framework?.dependency,
               complete: completed,
               template: xml,

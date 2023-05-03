@@ -7,7 +7,7 @@ import 'package:fml/datasources/detectors/iDetectable.dart';
 import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
-import 'package:fml/datasources/file/file.dart' as FILE;
+import 'package:fml/datasources/file/file.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helper/common_helpers.dart';
 
@@ -52,7 +52,7 @@ class FileModel extends DataSourceModel implements IDataSource
     }
   }
 
-  Future<bool> onFile(FILE.File file) async
+  Future<bool> onFile(File file) async
   {
       busy = true;
 

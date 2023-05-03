@@ -4,7 +4,7 @@ import 'package:fml/datasources/base/model.dart';
 import 'package:fml/datasources/iDataSource.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
-import 'package:fml/datasources/zebra/wedge.dart' as ZEBRA;
+import 'package:fml/datasources/zebra/wedge.dart' as zebra;
 import 'package:fml/datasources/detectors/barcode/barcode_detector.dart';
 import 'package:fml/datasources/zebra/wedge.dart';
 import 'package:xml/xml.dart';
@@ -36,7 +36,7 @@ class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener
   @override
   void dispose()
   {
-    ZEBRA.Reader().removeListener(this);
+    zebra.Reader().removeListener(this);
     super.dispose();
   }
 
@@ -53,14 +53,14 @@ class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener
 
   Future<bool> start({bool refresh = false, String? key}) async
   {
-    ZEBRA.Reader().registerListener(this);
-    ZEBRA.Reader.startScan();
+    zebra.Reader().registerListener(this);
+    zebra.Reader.startScan();
     return true;
   }
 
   Future<bool> stop() async
   {
-    ZEBRA.Reader().removeListener(this);
+    zebra.Reader().removeListener(this);
     super.stop();
     return true;
   }

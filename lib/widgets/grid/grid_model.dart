@@ -9,9 +9,9 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart'     ;
 import 'package:fml/widgets/text/text_model.dart';
-import 'package:fml/widgets/grid/grid_view.dart' as GRID;
+import 'package:fml/widgets/grid/grid_view.dart' as grid_view;
 import 'package:fml/widgets/grid/item/grid_item_model.dart';
-import 'package:fml/datasources/transforms/sort.dart' as TRANSFORM;
+import 'package:fml/datasources/transforms/sort.dart' as sort_transform;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -303,7 +303,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
 
     busy = true;
 
-    TRANSFORM.Sort sort = TRANSFORM.Sort(null, field: field, type: type, ascending: ascending);
+    sort_transform.Sort sort = sort_transform.Sort(null, field: field, type: type, ascending: ascending);
     await sort.apply(data);
 
     busy = false;
@@ -441,5 +441,5 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
     await EventHandler(this).execute(_onpulldown);
   }
 
-  Widget getView({Key? key}) => getReactiveView(GRID.GridView(this));
+  Widget getView({Key? key}) => getReactiveView(grid_view.GridView(this));
 }

@@ -3,7 +3,7 @@ import 'dart:collection';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/transforms/iTransform.dart';
 import 'package:fml/datasources/transforms/transform_model.dart';
-import 'package:fml/eval/eval.dart' as EVALUATE;
+import 'package:fml/eval/eval.dart' as fml_eval;
 import 'package:fml/observable/binding.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
@@ -160,7 +160,7 @@ class Calc extends TransformModel implements ITransform
         if ((group != null) && (sum.containsKey(group)) && (cnt.containsKey(group)) && (cnt[group] != 0))
         {
           results[group] = sum[group]! / cnt[group]!;
-          if (precision != null && S.toInt(precision) != null) results[group] = EVALUATE.Eval.evaluate("round(${results[group]}, ${precision!})");
+          if (precision != null && S.toInt(precision) != null) results[group] = fml_eval.Eval.evaluate("round(${results[group]}, ${precision!})");
         }
       }
     });
@@ -239,9 +239,9 @@ class Calc extends TransformModel implements ITransform
         // evaluate
         dynamic value;
         if (precision != null && S.toInt(precision) != null) {
-          value = EVALUATE.Eval.evaluate("round(${source!}, ${precision!})", variables: variables);
+          value = fml_eval.Eval.evaluate("round(${source!}, ${precision!})", variables: variables);
         } else {
-          value = EVALUATE.Eval.evaluate(source, variables: variables);
+          value = fml_eval.Eval.evaluate(source, variables: variables);
         }
 
         Data.writeValue(row, target, value);

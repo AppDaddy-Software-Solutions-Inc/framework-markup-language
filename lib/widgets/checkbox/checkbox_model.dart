@@ -10,7 +10,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/checkbox/checkbox_view.dart';
-import 'package:fml/datasources/gps/payload.dart' as GPS;
+import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
@@ -104,7 +104,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
         var oldGeocode = geocode;
 
         // set geocode
-        geocode = GPS.Payload(
+        geocode = Payload(
             latitude: System().currentLocation?.latitude,
             longitude: System().currentLocation?.longitude,
             altitude: System().currentLocation?.altitude,
@@ -139,7 +139,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
       var oldGeocode = geocode;
 
       // set geocode
-      geocode = GPS.Payload(
+      geocode = Payload(
           latitude: System().currentLocation?.latitude,
           longitude: System().currentLocation?.longitude,
           altitude: System().currentLocation?.altitude,
@@ -177,7 +177,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
       /* Old GeoCode */
       /////////////////
       var oldGeocode = geocode;
-      geocode = GPS.Payload(
+      geocode = Payload(
           latitude: System().currentLocation?.latitude,
           longitude: System().currentLocation?.longitude,
           altitude: System().currentLocation?.altitude,

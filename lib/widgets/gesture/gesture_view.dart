@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/widget/widget_state.dart';
-import 'gesture_model.dart' as LINK;
+import 'gesture_model.dart';
 
 class GestureView extends StatefulWidget implements IWidgetView
 {
-  final LINK.GestureModel model;
+  final GestureModel model;
   GestureView(this.model) : super(key: ObjectKey(model));
 
   @override

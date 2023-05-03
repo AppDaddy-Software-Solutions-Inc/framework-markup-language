@@ -6,14 +6,14 @@ import 'package:fml/widgets/widget/widget_model.dart'    ;
 import 'package:fml/event/event.dart'             ;
 import 'package:fml/widgets/framework/framework_model.dart' ;
 import 'package:fml/widgets/box/box_view.dart';
-import 'package:fml/widgets/drawer/drawer_model.dart' as DRAWER;
+import 'package:fml/widgets/drawer/drawer_model.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class DrawerView extends StatefulWidget implements IDragListener, IWidgetView
 {
   final List<Widget> children = [];
-  final DRAWER.DrawerModel model;
+  final DrawerModel model;
   final Widget stackChildren;
   final List<IDragListener> listeners = [];
 

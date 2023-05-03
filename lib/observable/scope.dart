@@ -6,7 +6,7 @@ import 'package:fml/observable/observable.dart';
 import 'package:fml/observable/observables/string.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:fml/datasources/file/file.dart' as FILE;
+import 'package:fml/datasources/file/file.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'binding.dart';
 
@@ -29,7 +29,7 @@ class Scope
   LinkedHashMap<String?, WidgetModel> models  = LinkedHashMap<String?, WidgetModel>();
 
   // file links
-  final Map<String, FILE.File> files = <String, FILE.File>{};
+  final Map<String, File> files = <String, File>{};
 
   // list of observables
   HashMap<String?,Observable> observables = HashMap<String?,Observable>();

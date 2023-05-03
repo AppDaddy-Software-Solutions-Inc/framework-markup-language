@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
-import 'package:universal_html/html.dart' as HTML;
+import 'package:universal_html/html.dart';
 import 'dart:typed_data';
 import 'package:fml/data/data.dart';
 import 'package:fml/log/manager.dart';
@@ -9,10 +9,10 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'dart:ui' as ui;
-import 'package:fml/datasources/file/file.dart' as FILE;
-import 'package:fml/widgets/camera/camera_model.dart' as CAMERA;
+import 'package:fml/datasources/file/file.dart';
+import 'package:fml/widgets/camera/camera_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:fml/widgets/camera/stream/stream.dart' as STREAM;
+import 'package:fml/widgets/camera/stream/stream.dart';
 import 'package:fml/helper/common_helpers.dart';
 
 import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
@@ -21,9 +21,9 @@ if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image
 
 View getView(model) => View(model);
 
-class View extends StatefulWidget implements IWidgetView, STREAM.StreamView
+class View extends StatefulWidget implements IWidgetView, StreamView
 {
-  final CAMERA.CameraModel model;
+  final CameraModel model;
 
   View(this.model) : super(key: ObjectKey(model));
 
@@ -45,10 +45,10 @@ class ViewState extends WidgetState<View>
   num lastFrame = 0;
 
   Widget? videoWidget;
-  late HTML.VideoElement video;
-  late HTML.CanvasElement canvas;
-  late HTML.CanvasElement canvas2;
-  HTML.MediaStream? stream;
+  late VideoElement video;
+  late CanvasElement canvas;
+  late CanvasElement canvas2;
+  MediaStream? stream;
 
   Map<String, String> devices = <String, String>{};
 
@@ -65,7 +65,7 @@ class ViewState extends WidgetState<View>
     /************************/
     /* Create Video Element */
     /************************/
-    video = HTML.VideoElement();
+    video = VideoElement();
     video.muted = true;
     video.autoplay = false;
     video.setAttribute('playsinline', 'true');
@@ -73,8 +73,8 @@ class ViewState extends WidgetState<View>
     /*************************/
     /* Create Canvas Element */
     /*************************/
-    canvas = HTML.CanvasElement();
-    canvas2 = HTML.CanvasElement();
+    canvas = CanvasElement();
+    canvas2 = CanvasElement();
 
     /*********************/
     /* Register a webcam */
@@ -143,7 +143,7 @@ class ViewState extends WidgetState<View>
           /*************************/
           /* Get Image RGBA Bitmap */
           /*************************/
-          HTML.ImageData image =
+          ImageData image =
               canvas.context2D.getImageData(left, top, width, height);
           List<int> rgba = image.data.toList();
 
@@ -169,7 +169,7 @@ class ViewState extends WidgetState<View>
             canvas2.width = width;
             canvas2.height = height;
             canvas2.context2D.putImageData(image, 0, 0);
-            HTML.Blob blob = await canvas2.toBlob('image/png', 1.0);
+            Blob blob = await canvas2.toBlob('image/png', 1.0);
             await Platform.fileSaveAsFromBlob(blob, "${S.newId()}-.png");
           }
 
@@ -238,7 +238,7 @@ class ViewState extends WidgetState<View>
     }
 
     // Request another frame
-    if (abort != true) HTML.window.requestAnimationFrame(renderFrame);
+    if (abort != true) window.requestAnimationFrame(renderFrame);
   }
 
   Map<String, dynamic> calculateSize(
@@ -270,15 +270,15 @@ class ViewState extends WidgetState<View>
         }
       };
       dynamic cameras;
-      cameras ??= await HTML.window.navigator.mediaDevices!
+      cameras ??= await window.navigator.mediaDevices!
             .getUserMedia(mediaConstraints);
-      HTML.window.navigator.mediaDevices!
+      window.navigator.mediaDevices!
           .getUserMedia(mediaConstraints)
-          .then((HTML.MediaStream stream) {
+          .then((MediaStream stream) {
         this.stream = stream;
         video.srcObject = stream;
         if (widget.model.enabled) video.play();
-        HTML.window.requestAnimationFrame(renderFrame);
+        window.requestAnimationFrame(renderFrame);
       }).catchError(onError);
       Log().debug("Camera Started");
     } catch(e) {}
@@ -332,7 +332,7 @@ class ViewState extends WidgetState<View>
         /*************************/
         /* Get Image RGBA Bitmap */
         /*************************/
-        HTML.ImageData image =
+        ImageData image =
             canvas.context2D.getImageData(left, top, width, height);
 
         var rgba = image.data.toList();
@@ -344,11 +344,11 @@ class ViewState extends WidgetState<View>
         canvas2.context2D.putImageData(image, 0, 0);
 
         if (widget.model.debug == true) {
-          HTML.Blob blob = await canvas2.toBlob('image/png', 1.0);
+          Blob blob = await canvas2.toBlob('image/png', 1.0);
           await Platform.fileSaveAsFromBlob(blob, "${S.newId()}-.png");
         }
 
-        HTML.ImageData image2 =
+        ImageData image2 =
             canvas2.context2D.getImageData(0, 0, width, height);
         var rgba2 = image2.data.toList();
 
@@ -395,12 +395,12 @@ class ViewState extends WidgetState<View>
     }
 
     // save file
-    HTML.Blob blob = HTML.Blob(bytes);
-    final url = HTML.Url.createObjectUrlFromBlob(blob);
+    Blob blob = Blob(bytes);
+    final url = Url.createObjectUrlFromBlob(blob);
 
     String name = "${S.newId()}.pdf";
 
-    var file = FILE.File(blob, url, name, await S.mimetype(name), bytes.length);
+    var file = File(blob, url, name, await S.mimetype(name), bytes.length);
     widget.model.onFile(file);
   }
 }

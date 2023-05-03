@@ -2,7 +2,7 @@
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:hive/hive.dart';
-import 'package:fml/eval/eval.dart' as EVALUATE;
+import 'package:fml/eval/eval.dart' as fml_eval;
 import 'package:fml/helper/common_helpers.dart';
 
 class Database
@@ -183,7 +183,7 @@ class Database
         if (!S.isNullOrEmpty(where))
         {
           String? sql = Binding.applyMap(where, map, caseSensitive: false);
-          ok = S.toBool(EVALUATE.Eval.evaluate(sql));
+          ok = S.toBool(fml_eval.Eval.evaluate(sql));
         }
         return ok!;
       });

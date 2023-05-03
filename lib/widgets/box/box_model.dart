@@ -45,9 +45,7 @@ class BoxModel extends LayoutModel
     {
       case LayoutType.row:
         return MainAxisSize.max;
-
       case LayoutType.stack:
-      case LayoutType.row:
       default:
         // expand and constrained by system
         if (expand) return horizontallyConstrained ? MainAxisSize.max : MainAxisSize.min;

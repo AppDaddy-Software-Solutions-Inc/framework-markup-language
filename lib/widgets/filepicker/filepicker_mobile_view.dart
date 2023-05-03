@@ -1,11 +1,11 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:cross_file/cross_file.dart';
-import 'package:file_picker/file_picker.dart' as FILEPICKER;
+import 'package:file_picker/file_picker.dart' as file_picker;
 import 'package:fml/datasources/detectors/iDetectable.dart';
 import 'package:fml/log/manager.dart';
 import 'package:path/path.dart';
-import 'filepicker_view.dart' as ABSTRACT;
-import 'package:fml/datasources/file/file.dart' as FILE;
+import 'filepicker_view.dart';
+import 'package:fml/datasources/file/file.dart';
 import 'package:fml/helper/common_helpers.dart';
 
 import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
@@ -14,7 +14,7 @@ if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image
 
 FilePickerView create({String? accept}) => FilePickerView(accept: accept);
 
-class FilePickerView implements ABSTRACT.FilePicker
+class FilePickerView implements FilePicker
 {
   // allowed file extensions
   List<String>? _accept;
@@ -35,11 +35,11 @@ class FilePickerView implements ABSTRACT.FilePicker
     this.accept = accept;
   }
 
-  Future<FILE.File?> launchPicker(List<IDetectable>? detectors) async
+  Future<File?> launchPicker(List<IDetectable>? detectors) async
   {
     try
     {
-      FILEPICKER.FilePickerResult? result = await FILEPICKER.FilePicker.platform.pickFiles(withReadStream: true, type: (accept == null) || (accept!.isEmpty) ? FILEPICKER.FileType.any : FILEPICKER.FileType.custom, allowedExtensions: accept);
+      file_picker.FilePickerResult? result = await file_picker.FilePicker.platform.pickFiles(withReadStream: true, type: (accept == null) || (accept!.isEmpty) ? file_picker.FileType.any : file_picker.FileType.custom, allowedExtensions: accept);
       if (result != null)
       {
         // set file
@@ -60,7 +60,7 @@ class FilePickerView implements ABSTRACT.FilePicker
         }
 
         // return the file
-        return FILE.File(file, url, name, type, size);
+        return File(file, url, name, type, size);
       }
     }
     catch(e)

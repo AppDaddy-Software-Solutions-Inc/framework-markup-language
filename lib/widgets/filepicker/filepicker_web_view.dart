@@ -1,11 +1,11 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
-import 'package:universal_html/html.dart' as HTML;
+import 'package:universal_html/html.dart' as dart_html;
 import 'dart:ui';
 import 'package:fml/datasources/detectors/iDetectable.dart';
 import 'package:fml/log/manager.dart';
-import 'filepicker_view.dart' as ABSTRACT;
-import 'package:fml/datasources/file/file.dart' as FILE;
+import 'filepicker_view.dart';
+import 'package:fml/datasources/file/file.dart';
 
 import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
 if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
@@ -13,25 +13,25 @@ if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image
 
 FilePickerView create({String? accept}) => FilePickerView(accept: accept);
 
-class FilePickerView implements ABSTRACT.FilePicker {
+class FilePickerView implements FilePicker {
   String? accept;
 
   FilePickerView({String? accept}) {
     this.accept = accept;
   }
 
-  Future<FILE.File?> launchPicker(List<IDetectable>? detectors) async {
+  Future<File?> launchPicker(List<IDetectable>? detectors) async {
     final completer = Completer();
     bool hasSelectedFile = false;
 
     /// End the completer and return null on selector window close
-    void cancelledButtonListener(HTML.Event e) {
+    void cancelledButtonListener(dart_html.Event e) {
       /// We want to delay this to give time for the completer to finish
       /// If it did not finish by selecting a file then we pass this check
       /// and we know the file selector was closed with selection
       Future.delayed(Duration(milliseconds: 500)).then((value) {
         if (hasSelectedFile == false) {
-          HTML.window.removeEventListener('focus', cancelledButtonListener);
+          dart_html.window.removeEventListener('focus', cancelledButtonListener);
           completer.complete(null);
           return;
         }
@@ -39,14 +39,14 @@ class FilePickerView implements ABSTRACT.FilePicker {
     }
 
     /// Listen to filepicker focus for cancel/close/x buttons
-    HTML.window.addEventListener('focus', cancelledButtonListener);
+    dart_html.window.addEventListener('focus', cancelledButtonListener);
 
     try {
       /////////////////
       /* File Picker */
       /////////////////
-      HTML.InputElement picker =
-          HTML.FileUploadInputElement() as HTML.InputElement;
+      dart_html.InputElement picker =
+      dart_html.FileUploadInputElement() as dart_html.InputElement;
       picker.multiple = false;
       picker.accept = accept;
 
@@ -61,11 +61,11 @@ class FilePickerView implements ABSTRACT.FilePicker {
 
           // set file
           var blob = picker.files![0];
-          String url = HTML.Url.createObjectUrlFromBlob(blob);
+          String url = dart_html.Url.createObjectUrlFromBlob(blob);
           String? type = blob.type.toLowerCase();
           String? name = blob.name;
           int? size = blob.size;
-          var file = FILE.File(blob, url, name, type, size);
+          var file = File(blob, url, name, type, size);
 
           // process detectors
           if ((detectors != null) && (type.startsWith("image")))

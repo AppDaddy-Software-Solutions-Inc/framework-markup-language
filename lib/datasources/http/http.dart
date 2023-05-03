@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:fml/system.dart';
 import 'package:fml/token/token.dart';
 import 'package:http/http.dart';
-import 'package:http/http.dart' as HTTP;
+import 'package:http/http.dart' as dart_http;
 import 'package:fml/helper/common_helpers.dart';
 
 int defaultTimeout = 60;
@@ -27,7 +27,7 @@ class HttpResponse {
 
   HttpResponse(this.url, {this.body, this.bytes, this.contentType, this.statusCode, this.statusMessage});
 
-  factory HttpResponse.factory(String url, HTTP.Response response)
+  factory HttpResponse.factory(String url, dart_http.Response response)
   {
     // content type
     String? contentType;
@@ -55,7 +55,7 @@ class Http
       if (uri != null)
       {
         // execute request
-        Response response = await HTTP.get(uri, headers: encodeHeaders(headers)).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : defaultTimeout)));
+        Response response = await dart_http.get(uri, headers: encodeHeaders(headers)).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : defaultTimeout)));
 
         // decode headers
         decodeHeaders(response);
@@ -85,7 +85,7 @@ class Http
       if (uri != null)
       {
         // execute request
-        Response response = await HTTP.post(uri, headers: encodeHeaders(headers), body: body).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : defaultTimeout)));
+        Response response = await dart_http.post(uri, headers: encodeHeaders(headers), body: body).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : defaultTimeout)));
 
         // decode headers
         decodeHeaders(response);
@@ -110,7 +110,7 @@ class Http
       if (uri != null)
       {
         // execute request
-        Response response = await HTTP.put(uri, headers: encodeHeaders(headers), body: body).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : defaultTimeout)));
+        Response response = await dart_http.put(uri, headers: encodeHeaders(headers), body: body).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : defaultTimeout)));
 
         // decode headers
         decodeHeaders(response);
@@ -135,7 +135,7 @@ class Http
       if (uri != null)
       {
         // execute request
-        Response response = await HTTP.patch(uri, headers: encodeHeaders(headers), body: body).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : defaultTimeout)));
+        Response response = await dart_http.patch(uri, headers: encodeHeaders(headers), body: body).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : defaultTimeout)));
 
         // decode headers
         decodeHeaders(response);
@@ -160,7 +160,7 @@ class Http
       if (uri != null)
       {
         // execute request
-        Response response = await HTTP.delete(uri, headers: encodeHeaders(headers)).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : defaultTimeout)));
+        Response response = await dart_http.delete(uri, headers: encodeHeaders(headers)).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : defaultTimeout)));
 
         // decode headers
         decodeHeaders(response);
@@ -218,13 +218,13 @@ class Http
   }
 }
 
-class MultipartRequest extends HTTP.MultipartRequest {
+class MultipartRequest extends dart_http.MultipartRequest {
   MultipartRequest(String method, Uri url, {this.onProgress})
       : super(method, url);
 
   final void Function(int bytes, int totalBytes)? onProgress;
 
-  HTTP.ByteStream finalize() {
+  dart_http.ByteStream finalize() {
     final byteStream = super.finalize();
     if (onProgress == null) return byteStream;
 
@@ -238,6 +238,6 @@ class MultipartRequest extends HTTP.MultipartRequest {
       sink.add(data);
     });
     final stream = byteStream.transform(t);
-    return HTTP.ByteStream(stream);
+    return dart_http.ByteStream(stream);
   }
 }

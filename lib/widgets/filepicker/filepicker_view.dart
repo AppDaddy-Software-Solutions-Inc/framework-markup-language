@@ -5,10 +5,10 @@ import 'filepicker_mobile_view.dart'
 if (dart.library.io)   'filepicker_mobile_view.dart'
 if (dart.library.html) 'filepicker_web_view.dart';
 
-import 'package:fml/datasources/file/file.dart' as FILE;
+import 'package:fml/datasources/file/file.dart';
 
 abstract class FilePicker
 {
   factory FilePicker(String? accept) => create(accept: accept);
-  Future<FILE.File?> launchPicker(List<IDetectable>? detectors);
+  Future<File?> launchPicker(List<IDetectable>? detectors);
 }

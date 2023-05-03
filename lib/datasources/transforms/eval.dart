@@ -2,7 +2,7 @@
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/transforms/iTransform.dart';
 import 'package:fml/datasources/transforms/transform_model.dart';
-import 'package:fml/eval/eval.dart' as EVALUATE;
+import 'package:fml/eval/eval.dart' as fml_eval;
 import 'package:fml/observable/binding.dart';
 
 import 'package:xml/xml.dart';
@@ -48,7 +48,7 @@ class Eval extends TransformModel implements ITransform
       Map<String?, dynamic> variables = Data.readValues(bindings, row);
 
       // evaluate
-      var value = EVALUATE.Eval.evaluate(source, variables: variables);
+      var value = fml_eval.Eval.evaluate(source, variables: variables);
 
       // save to the data set
       Data.writeValue(row, target, value);

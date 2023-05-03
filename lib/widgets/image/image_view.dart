@@ -10,7 +10,7 @@ import 'package:fml/observable/scope.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/image/image_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
-import 'package:image/image.dart' as IMAGE;
+import 'package:image/image.dart' as image_pack;
 import 'package:fml/helper/common_helpers.dart';
 
 /// [IMAGE] view
@@ -168,47 +168,47 @@ class ImageView extends StatefulWidget implements IWidgetView
 
   /// Apply a filter to the image
   static void applyFilter(Uint8List img, String filter) {
-    IMAGE.Image? filtered = IMAGE.decodePng(img);
+    image_pack.Image? filtered = image_pack.decodePng(img);
     switch (filter) {
       case 'sobel':
-        IMAGE.sobel(filtered!, amount: 1.0);
+        image_pack.sobel(filtered!, amount: 1.0);
         break;
       case 'quantize':
-        IMAGE.quantize(filtered!, numberOfColors: 4);
+        image_pack.quantize(filtered!, numberOfColors: 4);
         break;
       case 'remap':
-        IMAGE.remapColors(filtered!,
-            red: IMAGE.Channel.luminance,
-            green: IMAGE.Channel.luminance,
-            blue: IMAGE.Channel.luminance);
+        image_pack.remapColors(filtered!,
+            red: image_pack.Channel.luminance,
+            green: image_pack.Channel.luminance,
+            blue: image_pack.Channel.luminance);
         break;
       case 'normalize':
-        IMAGE.normalize(filtered!, 85, 170);
+        image_pack.normalize(filtered!, 85, 170);
         break;
       case 'greyscale':
       case 'grayscale':
-        IMAGE.grayscale(filtered!);
+      image_pack.grayscale(filtered!);
         break;
       case 'mirror':
-        IMAGE.flipHorizontal(filtered!);
+        image_pack.flipHorizontal(filtered!);
         break;
       case 'contrast':
-        IMAGE.contrast(filtered, 200);
+        image_pack.contrast(filtered, 200);
         break;
       case 'white':
-        IMAGE.adjustColor(filtered!, whites: 130);
+        image_pack.adjustColor(filtered!, whites: 130);
         break;
       case 'black':
-        IMAGE.adjustColor(filtered!, blacks: 130);
+        image_pack.adjustColor(filtered!, blacks: 130);
         break;
       case 'mid':
-        IMAGE.adjustColor(filtered!, mids: 130);
+        image_pack.adjustColor(filtered!, mids: 130);
         break;
       case 'reverse':
-        IMAGE.adjustColor(filtered!, blacks: 255, whites: 0);
+        image_pack.adjustColor(filtered!, blacks: 255, whites: 0);
         break;
       case 'convolution':
-        IMAGE.convolution(filtered!, [0, -1, 0, -1, 5, -1, 0, -1, 0]);
+        image_pack.convolution(filtered!, [0, -1, 0, -1, 5, -1, 0, -1, 0]);
         break;
       default:
         break;

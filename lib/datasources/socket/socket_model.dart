@@ -9,7 +9,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/datasources/base/model.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/datasources/socket/socket.dart';
-import 'package:fml/datasources/file/file.dart' as FILE;
+import 'package:fml/datasources/file/file.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
@@ -217,7 +217,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     if (!ok) return ok;
 
     // message is a file pointer?
-    FILE.File? file = scope!.files.containsKey(message) ? scope!.files[message] : null;
+    File? file = scope!.files.containsKey(message) ? scope!.files[message] : null;
 
     // send message
     if (file == null) ok = await _send(message, asBinary: asBinary, maxPartSize: maxPartSize);
@@ -296,7 +296,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     return ok;
   }
 
-  Future<bool> _sendFile(FILE.File file, {bool? asBinary, int? maxPartSize}) async
+  Future<bool> _sendFile(File file, {bool? asBinary, int? maxPartSize}) async
   {
     bool ok = true;
 

@@ -12,9 +12,9 @@ import 'package:fml/widgets/chart/chart_model.dart';
 import 'package:fml/widgets/chart/series/chart_series_model.dart';
 import 'package:fml/widgets/chart/axis/chart_axis_model.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
-import 'package:fml/widgets/busy/busy_view.dart' as BUSY;
-import 'package:fml/widgets/busy/busy_model.dart' as BUSY;
-import 'package:community_charts_flutter/community_charts_flutter.dart' as CF;
+import 'package:fml/widgets/busy/busy_view.dart';
+import 'package:fml/widgets/busy/busy_model.dart';
+import 'package:community_charts_flutter/community_charts_flutter.dart' as charts_flutter;
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:intl/intl.dart';
 
@@ -43,7 +43,7 @@ class _ChartViewState extends WidgetState<ChartView>
 {
   Future<Template>? template;
   Future<ChartModel>? chartViewModel;
-  BUSY.BusyView? busy;
+  BusyView? busy;
   ChartType? chartType;
 
   @override
@@ -95,9 +95,9 @@ class _ChartViewState extends WidgetState<ChartView>
     }
   }
 
-  CF.BarChart buildBarChart(List<CF.Series<dynamic, String>> series) {
+  charts_flutter.BarChart buildBarChart(List<charts_flutter.Series<dynamic, String>> series) {
     // Determine if there is any grouping and/or stacking (grouped/stacked/groupedStacked)
-    CF.BarGroupingType barGroupingType;
+    charts_flutter.BarGroupingType barGroupingType;
     ChartSeriesModel seriesModel = widget.model.series[0];
     // Based on the series if the series have both a group and stack, or neither,
     // but are only a single series set bargrouping to groupedStacked
@@ -106,38 +106,38 @@ class _ChartViewState extends WidgetState<ChartView>
         (seriesModel.group == null &&
             seriesModel.stack == null &&
             series.length == 1)) {
-      barGroupingType = CF.BarGroupingType.groupedStacked;
+      barGroupingType = charts_flutter.BarGroupingType.groupedStacked;
     } else if (seriesModel.group != null) {
-      barGroupingType = CF.BarGroupingType.grouped;
+      barGroupingType = charts_flutter.BarGroupingType.grouped;
     } else if (seriesModel.stack != null) {
-      barGroupingType = CF.BarGroupingType.stacked;
+      barGroupingType = charts_flutter.BarGroupingType.stacked;
     } else {
-      barGroupingType = CF.BarGroupingType.grouped;
+      barGroupingType = charts_flutter.BarGroupingType.grouped;
     }
 
-    List<CF.SeriesRendererConfig<String>> seriesRenderers = [];
+    List<charts_flutter.SeriesRendererConfig<String>> seriesRenderers = [];
     for (var s in widget.model.series) {
       Function configFunc = getSeriesRenderer(s, widget.model.xaxis!.type)!;
-      CF.SeriesRendererConfig<String> config = configFunc(s);
+      charts_flutter.SeriesRendererConfig<String> config = configFunc(s);
       seriesRenderers.add(config);
     }
 
-    return CF.BarChart(
+    return charts_flutter.BarChart(
       series,
       animate: widget.model.animated,
       behaviors: getBehaviors<String>(),
-      primaryMeasureAxis: CF.NumericAxisSpec(
-          renderSpec: CF.GridlineRendererSpec(
-              lineStyle: CF.LineStyleSpec(
+      primaryMeasureAxis: charts_flutter.NumericAxisSpec(
+          renderSpec: charts_flutter.GridlineRendererSpec(
+              lineStyle: charts_flutter.LineStyleSpec(
         dashPattern: [4, 4],
       ))),
-      domainAxis: CF.AxisSpec<String>(
-        renderSpec: CF.SmallTickRendererSpec(
-          axisLineStyle: CF.LineStyleSpec(
-              color: CF.ColorUtil.fromDartColor(
+      domainAxis: charts_flutter.AxisSpec<String>(
+        renderSpec: charts_flutter.SmallTickRendererSpec(
+          axisLineStyle: charts_flutter.LineStyleSpec(
+              color: charts_flutter.ColorUtil.fromDartColor(
                   Theme.of(context).colorScheme.onBackground)),
-          labelStyle: CF.TextStyleSpec(
-              color: CF.ColorUtil.fromDartColor(
+          labelStyle: charts_flutter.TextStyleSpec(
+              color: charts_flutter.ColorUtil.fromDartColor(
                   Theme.of(context).colorScheme.onBackground)),
           labelRotation: widget.model.xaxis!.labelrotation.abs() * -1,
           labelOffsetFromAxisPx:
@@ -150,46 +150,46 @@ class _ChartViewState extends WidgetState<ChartView>
       ),
       barGroupingType: barGroupingType,
       vertical: widget.model.horizontal == true ? false : true,
-      barRendererDecorator: CF.BarLabelDecorator<String>(
-          labelPosition: CF.BarLabelPosition.inside,
-          labelAnchor: CF.BarLabelAnchor.middle),
+      barRendererDecorator: charts_flutter.BarLabelDecorator<String>(
+          labelPosition: charts_flutter.BarLabelPosition.inside,
+          labelAnchor: charts_flutter.BarLabelAnchor.middle),
       customSeriesRenderers: seriesRenderers,
       selectionModels: [
-        CF.SelectionModelConfig(
-          type: CF.SelectionModelType.info,
+        charts_flutter.SelectionModelConfig(
+          type: charts_flutter.SelectionModelType.info,
           changedListener: _onSelectionChanged,
         )
       ],
     );
   }
 
-  CF.NumericComboChart buildNumericChart(List<CF.Series> series) {
-    List<CF.SeriesRendererConfig<num>> seriesRenderers = [];
+  charts_flutter.NumericComboChart buildNumericChart(List<charts_flutter.Series> series) {
+    List<charts_flutter.SeriesRendererConfig<num>> seriesRenderers = [];
     for (var s in widget.model.series) {
       if (s.type == 'bar' && s.stack != null) {
         Log().warning(
             'Stacked Bar Series are only compatible with Category type X Axis and each series must be type="bar"');
       }
       Function configFunc = getSeriesRenderer(s, widget.model.xaxis!.type)!;
-      CF.SeriesRendererConfig<num> config = configFunc(s);
+      charts_flutter.SeriesRendererConfig<num> config = configFunc(s);
       seriesRenderers.add(config);
     }
-    return CF.NumericComboChart(
+    return charts_flutter.NumericComboChart(
       series as List<Series<dynamic, num>>,
       animate: widget.model.animated,
       behaviors: getBehaviors<num>(),
-      primaryMeasureAxis: CF.NumericAxisSpec(
-          renderSpec: CF.GridlineRendererSpec(
-              lineStyle: CF.LineStyleSpec(
+      primaryMeasureAxis: charts_flutter.NumericAxisSpec(
+          renderSpec: charts_flutter.GridlineRendererSpec(
+              lineStyle: charts_flutter.LineStyleSpec(
         dashPattern: [4, 4],
       ))),
-      domainAxis: CF.AxisSpec<num>(
-        renderSpec: CF.SmallTickRendererSpec(
-          axisLineStyle: CF.LineStyleSpec(
-              color: CF.ColorUtil.fromDartColor(
+      domainAxis: charts_flutter.AxisSpec<num>(
+        renderSpec: charts_flutter.SmallTickRendererSpec(
+          axisLineStyle: charts_flutter.LineStyleSpec(
+              color: charts_flutter.ColorUtil.fromDartColor(
                   Theme.of(context).colorScheme.onBackground)),
-          labelStyle: CF.TextStyleSpec(
-              color: CF.ColorUtil.fromDartColor(
+          labelStyle: charts_flutter.TextStyleSpec(
+              color: charts_flutter.ColorUtil.fromDartColor(
                   Theme.of(context).colorScheme.onBackground)),
           labelRotation: widget.model.xaxis!.labelrotation.abs() * -1,
           labelOffsetFromAxisPx:
@@ -200,41 +200,41 @@ class _ChartViewState extends WidgetState<ChartView>
       ),
       customSeriesRenderers: seriesRenderers,
       selectionModels: [
-        CF.SelectionModelConfig(
-          type: CF.SelectionModelType.info,
+        charts_flutter.SelectionModelConfig(
+          type: charts_flutter.SelectionModelType.info,
           changedListener: _onSelectionChanged,
         )
       ],
     );
   }
 
-  CF.OrdinalComboChart buildOrdinalChart(List<CF.Series> series) {
-    List<CF.SeriesRendererConfig<String>> seriesRenderers = [];
+  charts_flutter.OrdinalComboChart buildOrdinalChart(List<charts_flutter.Series> series) {
+    List<charts_flutter.SeriesRendererConfig<String>> seriesRenderers = [];
     for (var s in widget.model.series) {
       if (s.type == 'bar' && s.stack != null) {
         Log().warning(
             'Stacked Bar Series are only compatible with Category type X Axis and each series must be type="bar"');
       }
       Function configFunc = getSeriesRenderer(s, widget.model.xaxis!.type)!;
-      CF.SeriesRendererConfig<String> config = configFunc(s);
+      charts_flutter.SeriesRendererConfig<String> config = configFunc(s);
       seriesRenderers.add(config);
     }
-    return CF.OrdinalComboChart(
+    return charts_flutter.OrdinalComboChart(
       series as List<Series<dynamic, String>>,
       animate: widget.model.animated,
       behaviors: getBehaviors<String>(),
-      primaryMeasureAxis: CF.NumericAxisSpec(
-          renderSpec: CF.GridlineRendererSpec(
-              lineStyle: CF.LineStyleSpec(
+      primaryMeasureAxis: charts_flutter.NumericAxisSpec(
+          renderSpec: charts_flutter.GridlineRendererSpec(
+              lineStyle: charts_flutter.LineStyleSpec(
         dashPattern: [4, 4],
       ))),
-      domainAxis: CF.AxisSpec<String>(
-        renderSpec: CF.SmallTickRendererSpec(
-          axisLineStyle: CF.LineStyleSpec(
-              color: CF.ColorUtil.fromDartColor(
+      domainAxis: charts_flutter.AxisSpec<String>(
+        renderSpec: charts_flutter.SmallTickRendererSpec(
+          axisLineStyle: charts_flutter.LineStyleSpec(
+              color: charts_flutter.ColorUtil.fromDartColor(
                   Theme.of(context).colorScheme.onBackground)),
-          labelStyle: CF.TextStyleSpec(
-              color: CF.ColorUtil.fromDartColor(
+          labelStyle: charts_flutter.TextStyleSpec(
+              color: charts_flutter.ColorUtil.fromDartColor(
                   Theme.of(context).colorScheme.onBackground)),
           labelRotation: widget.model.xaxis!.labelrotation.abs() * -1,
           labelOffsetFromAxisPx:
@@ -245,17 +245,17 @@ class _ChartViewState extends WidgetState<ChartView>
       ),
       customSeriesRenderers: seriesRenderers,
       selectionModels: [
-        CF.SelectionModelConfig(
-          type: CF.SelectionModelType.info,
+        charts_flutter.SelectionModelConfig(
+          type: charts_flutter.SelectionModelType.info,
           changedListener: _onSelectionChanged,
         )
       ],
     );
   }
 
-  CF.TimeSeriesChart buildTimeChart(List<CF.Series> series) {
-    List<CF.SeriesRendererConfig<DateTime>> seriesRenderers = [];
-    List<CF.TickSpec<DateTime>> ticks = [];
+  charts_flutter.TimeSeriesChart buildTimeChart(List<charts_flutter.Series> series) {
+    List<charts_flutter.SeriesRendererConfig<DateTime>> seriesRenderers = [];
+    List<charts_flutter.TickSpec<DateTime>> ticks = [];
     SplayTreeMap<int, DateTime> ticksMap = SplayTreeMap<int, DateTime>();
 
     for (var s in widget.model.series) {
@@ -264,7 +264,7 @@ class _ChartViewState extends WidgetState<ChartView>
             'Stacked Bar Series are only compatible with Category type X Axis and each series must be type="bar"');
       }
       Function configFunc = getSeriesRenderer(s, widget.model.xaxis!.type)!;
-      CF.SeriesRendererConfig<DateTime> config = configFunc(s);
+      charts_flutter.SeriesRendererConfig<DateTime> config = configFunc(s);
       seriesRenderers.add(config);
       // Map all the x values for the ticks
       for (ChartDataPoint x in s.dataPoint) {
@@ -286,27 +286,27 @@ class _ChartViewState extends WidgetState<ChartView>
       try {
         l = formatter.format(v);
       } catch(e) {}
-      ticks.add(CF.TickSpec<DateTime>(v, label: l));
+      ticks.add(charts_flutter.TickSpec<DateTime>(v, label: l));
     });
 
-    return CF.TimeSeriesChart(
+    return charts_flutter.TimeSeriesChart(
       series as List<Series<dynamic, DateTime>>,
       animate: widget.model.animated,
       customSeriesRenderers: seriesRenderers,
-      primaryMeasureAxis: CF.NumericAxisSpec(
-          renderSpec: CF.GridlineRendererSpec(
-              lineStyle: CF.LineStyleSpec(
+      primaryMeasureAxis: charts_flutter.NumericAxisSpec(
+          renderSpec: charts_flutter.GridlineRendererSpec(
+              lineStyle: charts_flutter.LineStyleSpec(
         dashPattern: [4, 4],
       ))),
       behaviors: getBehaviors<DateTime>(),
-      domainAxis: CF.DateTimeAxisSpec(
-        renderSpec: CF.SmallTickRendererSpec(
-          axisLineStyle: CF.LineStyleSpec(
-              color: CF.ColorUtil.fromDartColor(
+      domainAxis: charts_flutter.DateTimeAxisSpec(
+        renderSpec: charts_flutter.SmallTickRendererSpec(
+          axisLineStyle: charts_flutter.LineStyleSpec(
+              color: charts_flutter.ColorUtil.fromDartColor(
                   Theme.of(context).colorScheme.onBackground)),
-          labelAnchor: CF.TickLabelAnchor.after,
-          labelStyle: CF.TextStyleSpec(
-              color: CF.ColorUtil.fromDartColor(
+          labelAnchor: charts_flutter.TickLabelAnchor.after,
+          labelStyle: charts_flutter.TextStyleSpec(
+              color: charts_flutter.ColorUtil.fromDartColor(
                   Theme.of(context).colorScheme.onBackground)),
           labelRotation: widget.model.xaxis!.labelrotation.abs() * -1,
           labelOffsetFromAxisPx:
@@ -314,28 +314,28 @@ class _ChartViewState extends WidgetState<ChartView>
                       .ceil() +
                   8, // 80 is rough estimate of our text length
         ),
-        tickProviderSpec: CF.StaticDateTimeTickProviderSpec(ticks),
+        tickProviderSpec: charts_flutter.StaticDateTimeTickProviderSpec(ticks),
       ),
       selectionModels: [
-        CF.SelectionModelConfig(
-          type: CF.SelectionModelType.info,
+        charts_flutter.SelectionModelConfig(
+          type: charts_flutter.SelectionModelType.info,
           changedListener: _onSelectionChanged,
         )
       ],
     );
   }
 
-  CF.PieChart buildPieChart(List<CF.Series<dynamic, String>> series) {
-    return CF.PieChart<String>(
+  charts_flutter.PieChart buildPieChart(List<charts_flutter.Series<dynamic, String>> series) {
+    return charts_flutter.PieChart<String>(
       series,
       animate: widget.model.animated,
       behaviors: getBehaviors<String>(),
-      defaultRenderer: CF.ArcRendererConfig(arcRendererDecorators: [
-        CF.ArcLabelDecorator(labelPosition: CF.ArcLabelPosition.auto)
+      defaultRenderer: charts_flutter.ArcRendererConfig(arcRendererDecorators: [
+        charts_flutter.ArcLabelDecorator(labelPosition: charts_flutter.ArcLabelPosition.auto)
       ]),
       selectionModels: [
-        CF.SelectionModelConfig(
-          type: CF.SelectionModelType.info,
+        charts_flutter.SelectionModelConfig(
+          type: charts_flutter.SelectionModelType.info,
           changedListener: _onSelectionChanged,
         )
       ],
@@ -343,11 +343,11 @@ class _ChartViewState extends WidgetState<ChartView>
   }
 
   /// Series Builder
-  List<CF.Series>? buildSeriesList() {
+  List<charts_flutter.Series>? buildSeriesList() {
     // Setup a list of series for each X Axis type
-    List<CF.Series<dynamic, DateTime>> timeSeriesList = [];
-    List<CF.Series<dynamic, num>> numericSeriesList = [];
-    List<CF.Series<dynamic, String>> categorySeriesList = [];
+    List<charts_flutter.Series<dynamic, DateTime>> timeSeriesList = [];
+    List<charts_flutter.Series<dynamic, num>> numericSeriesList = [];
+    List<charts_flutter.Series<dynamic, String>> categorySeriesList = [];
     if (widget.model.xaxis == null || widget.model.yaxis == null) {
       Log().error(
           'Unable to build series list because of a null axis, x: ${widget.model.xaxis.toString()} y: ${widget.model.yaxis.toString()}');
@@ -423,14 +423,14 @@ class _ChartViewState extends WidgetState<ChartView>
         case ChartAxisType.datetime:
         case ChartAxisType.date:
         case ChartAxisType.time:
-          timeSeriesList.add(CF.Series(
+          timeSeriesList.add(charts_flutter.Series(
               id: series.id,
               displayName: series.name ?? series.id,
               // seriesCategory: series.stack,
-              areaColorFn: (dynamic plot, _) => CF.ColorUtil.fromDartColor(
+              areaColorFn: (dynamic plot, _) => charts_flutter.ColorUtil.fromDartColor(
                   (plot.color ?? series.color)?.withOpacity(0.1) ??
                       Colors.black12),
-              colorFn: (dynamic plot, _) => CF.ColorUtil.fromDartColor(
+              colorFn: (dynamic plot, _) => charts_flutter.ColorUtil.fromDartColor(
                   plot.color ??
                       series.color ??
                       (ColorObservable.niceColors.length > _!
@@ -441,18 +441,18 @@ class _ChartViewState extends WidgetState<ChartView>
               labelAccessorFn: (dynamic plot, _) =>
                   '${plot.label ?? (plot.y > 0 ? plot.y : '')}', // Unavailable outside of pie/bar charts
               data: seriesData)
-            ..setAttribute(CF.rendererIdKey, getRendererKey(series)));
+            ..setAttribute(charts_flutter.rendererIdKey, getRendererKey(series)));
           break;
         // Numeric based X axis
         case ChartAxisType.numeric:
-          numericSeriesList.add(CF.Series(
+          numericSeriesList.add(charts_flutter.Series(
               id: series.id,
               displayName: series.name ?? series.id,
               // seriesCategory: series.stack,
-              areaColorFn: (dynamic plot, _) => CF.ColorUtil.fromDartColor(
+              areaColorFn: (dynamic plot, _) => charts_flutter.ColorUtil.fromDartColor(
                   (plot.color ?? series.color)?.withOpacity(0.1) ??
                       Colors.black12),
-              colorFn: (dynamic plot, _) => CF.ColorUtil.fromDartColor(
+              colorFn: (dynamic plot, _) => charts_flutter.ColorUtil.fromDartColor(
                   plot.color ??
                       series.color ??
                       (ColorObservable.niceColors.length > _!
@@ -463,18 +463,18 @@ class _ChartViewState extends WidgetState<ChartView>
               labelAccessorFn: (dynamic plot, _) =>
                   '${plot.label ?? (plot.y > 0 ? plot.y : '')}', // Unavailable outside of pie/bar charts
               data: seriesData)
-            ..setAttribute(CF.rendererIdKey, getRendererKey(series)));
+            ..setAttribute(charts_flutter.rendererIdKey, getRendererKey(series)));
           break;
         // Category/String based X axis
         case ChartAxisType.category:
-          categorySeriesList.add(CF.Series(
+          categorySeriesList.add(charts_flutter.Series(
               id: series.id,
               displayName: series.name ?? series.id,
               seriesCategory: series.stack,
-              areaColorFn: (dynamic plot, _) => CF.ColorUtil.fromDartColor(
+              areaColorFn: (dynamic plot, _) => charts_flutter.ColorUtil.fromDartColor(
                   (plot.color ?? series.color)?.withOpacity(0.1) ??
                       Colors.black12),
-              colorFn: (dynamic plot, _) => CF.ColorUtil.fromDartColor(
+              colorFn: (dynamic plot, _) => charts_flutter.ColorUtil.fromDartColor(
                   plot.color ??
                       series.color ??
                       (ColorObservable.niceColors.length > _!
@@ -485,7 +485,7 @@ class _ChartViewState extends WidgetState<ChartView>
               labelAccessorFn: (dynamic plot, _) =>
                   '${plot.label ?? (plot.y > 0 ? plot.y : '')}', // Unavailable outside of pie/bar charts
               data: seriesData)
-            ..setAttribute(CF.rendererIdKey, getRendererKey(series)));
+            ..setAttribute(charts_flutter.rendererIdKey, getRendererKey(series)));
           break;
         default:
           Log().warning(
@@ -576,28 +576,28 @@ class _ChartViewState extends WidgetState<ChartView>
     return rendererConfig;
   }
 
-  CF.SeriesRendererConfig<String> buildCategoryBarRenderer(
+  charts_flutter.SeriesRendererConfig<String> buildCategoryBarRenderer(
       ChartSeriesModel series) {
-    return CF.BarRendererConfig(
+    return charts_flutter.BarRendererConfig(
       customRendererId: series.group ?? series.id,
     );
   }
 
-  CF.SeriesRendererConfig<DateTime> buildDateTimeBarRenderer(
+  charts_flutter.SeriesRendererConfig<DateTime> buildDateTimeBarRenderer(
       ChartSeriesModel series) {
-    return CF.BarRendererConfig(customRendererId: series.group ?? series.id);
+    return charts_flutter.BarRendererConfig(customRendererId: series.group ?? series.id);
   }
 
-  CF.SeriesRendererConfig<num> buildNumericBarRenderer(
+  charts_flutter.SeriesRendererConfig<num> buildNumericBarRenderer(
       ChartSeriesModel series) {
-    return CF.BarRendererConfig(
+    return charts_flutter.BarRendererConfig(
       customRendererId: series.group ?? series.id,
     );
   }
 
-  CF.SeriesRendererConfig<String> buildCategoryLineRenderer(
+  charts_flutter.SeriesRendererConfig<String> buildCategoryLineRenderer(
       ChartSeriesModel series) {
-    return CF.LineRendererConfig(
+    return charts_flutter.LineRendererConfig(
         customRendererId: series.id,
         includeLine: series.showline,
         includePoints: series.showpoints,
@@ -606,9 +606,9 @@ class _ChartViewState extends WidgetState<ChartView>
         strokeWidthPx: series.stroke ?? 2);
   }
 
-  CF.SeriesRendererConfig<DateTime> buildDateTimeLineRenderer(
+  charts_flutter.SeriesRendererConfig<DateTime> buildDateTimeLineRenderer(
       ChartSeriesModel series) {
-    return CF.LineRendererConfig(
+    return charts_flutter.LineRendererConfig(
         customRendererId: series.id,
         includeLine: series.showline,
         includePoints: series.showpoints,
@@ -617,9 +617,9 @@ class _ChartViewState extends WidgetState<ChartView>
         strokeWidthPx: series.stroke ?? 2);
   }
 
-  CF.SeriesRendererConfig<num> buildNumericLineRenderer(
+  charts_flutter.SeriesRendererConfig<num> buildNumericLineRenderer(
       ChartSeriesModel series) {
-    return CF.LineRendererConfig(
+    return charts_flutter.LineRendererConfig(
         customRendererId: series.id,
         includeLine: series.showline,
         includePoints: series.showpoints,
@@ -628,32 +628,32 @@ class _ChartViewState extends WidgetState<ChartView>
         strokeWidthPx: series.stroke ?? 2);
   }
 
-  CF.SeriesRendererConfig<String> buildCategoryPointRenderer(
+  charts_flutter.SeriesRendererConfig<String> buildCategoryPointRenderer(
       ChartSeriesModel series) {
-    return CF.PointRendererConfig(
+    return charts_flutter.PointRendererConfig(
         customRendererId: series.id,
         radiusPx: series.radius,
         strokeWidthPx: series.stroke ?? 0);
   }
 
-  CF.SeriesRendererConfig<DateTime> buildDateTimePointRenderer(
+  charts_flutter.SeriesRendererConfig<DateTime> buildDateTimePointRenderer(
       ChartSeriesModel series) {
-    return CF.PointRendererConfig(
+    return charts_flutter.PointRendererConfig(
         customRendererId: series.id,
         radiusPx: series.radius,
         strokeWidthPx: series.stroke ?? 0);
   }
 
-  CF.SeriesRendererConfig<num> buildNumericPointRenderer(
+  charts_flutter.SeriesRendererConfig<num> buildNumericPointRenderer(
       ChartSeriesModel series) {
-    return CF.PointRendererConfig(
+    return charts_flutter.PointRendererConfig(
         customRendererId: series.id,
         radiusPx: series.radius,
         strokeWidthPx: series.stroke ?? 0);
   }
 
   /// Event called when a point selection changes
-  _onSelectionChanged(CF.SelectionModel model) {
+  _onSelectionChanged(charts_flutter.SelectionModel model) {
     final selectedDatum = model.selectedDatum;
 
     dynamic domain;
@@ -695,67 +695,67 @@ class _ChartViewState extends WidgetState<ChartView>
   }
 
   /// Returns additional chart behaviors based on model settings
-  List<CF.ChartBehavior<T>> getBehaviors<T>() {
-    List<CF.ChartBehavior<T>> behaviors = [];
-    if (chartType != ChartType.PieChart) behaviors.add(CF.PanAndZoomBehavior());
+  List<charts_flutter.ChartBehavior<T>> getBehaviors<T>() {
+    List<charts_flutter.ChartBehavior<T>> behaviors = [];
+    if (chartType != ChartType.PieChart) behaviors.add(charts_flutter.PanAndZoomBehavior());
     if (widget.model.showlegend != 'false' && chartType != ChartType.PieChart) {
       behaviors.add(
-          CF.SeriesLegend(position: legendPosition(widget.model.showlegend,),
-              entryTextStyle: CF.TextStyleSpec(
-              color: CF.Color.fromHex(code: '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
+          charts_flutter.SeriesLegend(position: legendPosition(widget.model.showlegend,),
+              entryTextStyle: charts_flutter.TextStyleSpec(
+              color: charts_flutter.Color.fromHex(code: '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
     ),
           ));
     }
     if (widget.model.showlegend != 'false' && chartType == ChartType.PieChart) {
-      behaviors.add(CF.DatumLegend(
+      behaviors.add(charts_flutter.DatumLegend(
         position: legendPosition(widget.model.showlegend),
-        entryTextStyle: CF.TextStyleSpec(
-          color: CF.Color.fromHex(code: '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
+        entryTextStyle: charts_flutter.TextStyleSpec(
+          color: charts_flutter.Color.fromHex(code: '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
         ),
-        outsideJustification: CF.OutsideJustification.middleDrawArea,
+        outsideJustification: charts_flutter.OutsideJustification.middleDrawArea,
         horizontalFirst: true,
         desiredMaxColumns: 4,
         cellPadding: EdgeInsets.only(right: 4.0, bottom: 4.0),
       ));
     }
     if (widget.model.xaxis!.title != null) {
-      behaviors.add(CF.ChartTitle(widget.model.xaxis!.title!,
-          titleStyleSpec: CF.TextStyleSpec(
-            color: CF.Color.fromHex(code: '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
+      behaviors.add(charts_flutter.ChartTitle(widget.model.xaxis!.title!,
+          titleStyleSpec: charts_flutter.TextStyleSpec(
+            color: charts_flutter.Color.fromHex(code: '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
           ),
           behaviorPosition: widget.model.horizontal == true
-              ? CF.BehaviorPosition.start
-              : CF.BehaviorPosition.bottom,
-          titleOutsideJustification: CF.OutsideJustification.middleDrawArea));
+              ? charts_flutter.BehaviorPosition.start
+              : charts_flutter.BehaviorPosition.bottom,
+          titleOutsideJustification: charts_flutter.OutsideJustification.middleDrawArea));
     }
     if (widget.model.yaxis!.title != null) {
-      behaviors.add(CF.ChartTitle(widget.model.yaxis!.title!,
-          titleStyleSpec: CF.TextStyleSpec(
-            color: CF.Color.fromHex(code: '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
+      behaviors.add(charts_flutter.ChartTitle(widget.model.yaxis!.title!,
+          titleStyleSpec: charts_flutter.TextStyleSpec(
+            color: charts_flutter.Color.fromHex(code: '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
           ),
           behaviorPosition: widget.model.horizontal == true
-              ? CF.BehaviorPosition.bottom
-              : CF.BehaviorPosition.start,
-          titleOutsideJustification: CF.OutsideJustification.middleDrawArea));
+              ? charts_flutter.BehaviorPosition.bottom
+              : charts_flutter.BehaviorPosition.start,
+          titleOutsideJustification: charts_flutter.OutsideJustification.middleDrawArea));
     }
     return behaviors;
   }
 
   // Gets the legend position based on the model string
-  CF.BehaviorPosition legendPosition(String? pos) {
+  charts_flutter.BehaviorPosition legendPosition(String? pos) {
     switch (pos) {
       case 'left':
       case 'start':
-        return CF.BehaviorPosition.start;
+        return charts_flutter.BehaviorPosition.start;
       case 'right':
       case 'end':
-        return CF.BehaviorPosition.end;
+        return charts_flutter.BehaviorPosition.end;
       case 'top':
-        return CF.BehaviorPosition.top;
+        return charts_flutter.BehaviorPosition.top;
       case 'bottom':
       case 'true':
       default:
-        return CF.BehaviorPosition.bottom;
+        return charts_flutter.BehaviorPosition.bottom;
     }
   }
 
@@ -771,7 +771,7 @@ class _ChartViewState extends WidgetState<ChartView>
     if (!widget.model.visible) return Offstage();
 
     // Busy / Loading Indicator
-    busy ??= BUSY.BusyView(BUSY.BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
+    busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
 
     Widget view;
 
@@ -779,7 +779,7 @@ class _ChartViewState extends WidgetState<ChartView>
     List<Widget> children = widget.model.inflate();
 
     chartType = getChartType();
-    List<CF.Series>? series = buildSeriesList();
+    List<charts_flutter.Series>? series = buildSeriesList();
 
     switch (chartType) {
       case ChartType.BarChart:
@@ -792,7 +792,7 @@ class _ChartViewState extends WidgetState<ChartView>
         view = buildOrdinalChart(series!);
         break;
       case ChartType.PieChart:
-        view = buildPieChart((series as List<CF.Series<dynamic, String>>));
+        view = buildPieChart((series as List<charts_flutter.Series<dynamic, String>>));
         break;
       case ChartType.TimeSeriesChart:
         view = buildTimeChart(series!);

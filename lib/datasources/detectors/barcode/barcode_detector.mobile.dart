@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart' as ML;
+import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart' as google_barcode;
 import 'barcode_detector.dart';
 import 'package:fml/helper/common_helpers.dart';
 
@@ -10,7 +10,7 @@ class BarcodeDetector implements IBarcodeDetector
 {
   static final BarcodeDetector _singleton = BarcodeDetector._initialize();
 
-  static ML.BarcodeScanner? _detector;
+  static google_barcode.BarcodeScanner? _detector;
 
   BarcodeDetector._initialize();
   factory BarcodeDetector() => _singleton;
@@ -22,33 +22,33 @@ class BarcodeDetector implements IBarcodeDetector
     {
       Payload? result;
 
-      if (detectable?.image is ML.InputImage)
+      if (detectable?.image is google_barcode.InputImage)
       {
         // set barcode formats
-        List<ML.BarcodeFormat> _formats = [];
+        List<google_barcode.BarcodeFormat> _formats = [];
         if (formats != null)
           for (BarcodeFormats format in formats)
           {
-                 if ((format == BarcodeFormats.AZTEC)      && (!_formats.contains(ML.BarcodeFormat.aztec)))      _formats.add(ML.BarcodeFormat.aztec);
-            else if ((format == BarcodeFormats.CODE39)     && (!_formats.contains(ML.BarcodeFormat.code39)))     _formats.add(ML.BarcodeFormat.code39);
-            else if ((format == BarcodeFormats.CODE93)     && (!_formats.contains(ML.BarcodeFormat.code93)))     _formats.add(ML.BarcodeFormat.code93);
-            else if ((format == BarcodeFormats.CODABAR)    && (!_formats.contains(ML.BarcodeFormat.codabar)))    _formats.add(ML.BarcodeFormat.codabar);
-            else if ((format == BarcodeFormats.CODE128)    && (!_formats.contains(ML.BarcodeFormat.code128)))    _formats.add(ML.BarcodeFormat.code128);
-            else if ((format == BarcodeFormats.DATAMATRIX) && (!_formats.contains(ML.BarcodeFormat.dataMatrix))) _formats.add(ML.BarcodeFormat.dataMatrix);
-            else if ((format == BarcodeFormats.EAN8)       && (!_formats.contains(ML.BarcodeFormat.ean8)))       _formats.add(ML.BarcodeFormat.ean8);
-            else if ((format == BarcodeFormats.EAN13)      && (!_formats.contains(ML.BarcodeFormat.ean13)))      _formats.add(ML.BarcodeFormat.ean13);
-            else if ((format == BarcodeFormats.ITF)        && (!_formats.contains(ML.BarcodeFormat.itf)))        _formats.add(ML.BarcodeFormat.itf);
-            else if ((format == BarcodeFormats.PDF417)     && (!_formats.contains(ML.BarcodeFormat.pdf417)))     _formats.add(ML.BarcodeFormat.pdf417);
-            else if ((format == BarcodeFormats.QRCODE)     && (!_formats.contains(ML.BarcodeFormat.qrCode)))     _formats.add(ML.BarcodeFormat.qrCode);
-            else if ((format == BarcodeFormats.UPCA)       && (!_formats.contains(ML.BarcodeFormat.upca)))       _formats.add(ML.BarcodeFormat.upca);
-            else if ((format == BarcodeFormats.UPCE)       && (!_formats.contains(ML.BarcodeFormat.upce)))       _formats.add(ML.BarcodeFormat.upce);
+                 if ((format == BarcodeFormats.AZTEC)      && (!_formats.contains(google_barcode.BarcodeFormat.aztec)))      _formats.add(google_barcode.BarcodeFormat.aztec);
+            else if ((format == BarcodeFormats.CODE39)     && (!_formats.contains(google_barcode.BarcodeFormat.code39)))     _formats.add(google_barcode.BarcodeFormat.code39);
+            else if ((format == BarcodeFormats.CODE93)     && (!_formats.contains(google_barcode.BarcodeFormat.code93)))     _formats.add(google_barcode.BarcodeFormat.code93);
+            else if ((format == BarcodeFormats.CODABAR)    && (!_formats.contains(google_barcode.BarcodeFormat.codabar)))    _formats.add(google_barcode.BarcodeFormat.codabar);
+            else if ((format == BarcodeFormats.CODE128)    && (!_formats.contains(google_barcode.BarcodeFormat.code128)))    _formats.add(google_barcode.BarcodeFormat.code128);
+            else if ((format == BarcodeFormats.DATAMATRIX) && (!_formats.contains(google_barcode.BarcodeFormat.dataMatrix))) _formats.add(google_barcode.BarcodeFormat.dataMatrix);
+            else if ((format == BarcodeFormats.EAN8)       && (!_formats.contains(google_barcode.BarcodeFormat.ean8)))       _formats.add(google_barcode.BarcodeFormat.ean8);
+            else if ((format == BarcodeFormats.EAN13)      && (!_formats.contains(google_barcode.BarcodeFormat.ean13)))      _formats.add(google_barcode.BarcodeFormat.ean13);
+            else if ((format == BarcodeFormats.ITF)        && (!_formats.contains(google_barcode.BarcodeFormat.itf)))        _formats.add(google_barcode.BarcodeFormat.itf);
+            else if ((format == BarcodeFormats.PDF417)     && (!_formats.contains(google_barcode.BarcodeFormat.pdf417)))     _formats.add(google_barcode.BarcodeFormat.pdf417);
+            else if ((format == BarcodeFormats.QRCODE)     && (!_formats.contains(google_barcode.BarcodeFormat.qrCode)))     _formats.add(google_barcode.BarcodeFormat.qrCode);
+            else if ((format == BarcodeFormats.UPCA)       && (!_formats.contains(google_barcode.BarcodeFormat.upca)))       _formats.add(google_barcode.BarcodeFormat.upca);
+            else if ((format == BarcodeFormats.UPCE)       && (!_formats.contains(google_barcode.BarcodeFormat.upce)))       _formats.add(google_barcode.BarcodeFormat.upce);
           }
 
         // default format
-        if (_formats.isEmpty) _formats.add(ML.BarcodeFormat.all);
+        if (_formats.isEmpty) _formats.add(google_barcode.BarcodeFormat.all);
 
         // build detector
-        _detector ??= ML.BarcodeScanner(formats: _formats);
+        _detector ??= google_barcode.BarcodeScanner(formats: _formats);
 
         // process
         Log().debug("Processing image ${++count}");
@@ -70,7 +70,7 @@ class BarcodeDetector implements IBarcodeDetector
     }
   }
 
-  Payload? _buildPayload(List<ML.Barcode> barcodes)
+  Payload? _buildPayload(List<google_barcode.Barcode> barcodes)
   {
     if (barcodes.isEmpty) return null;
 

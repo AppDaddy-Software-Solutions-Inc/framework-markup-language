@@ -1,8 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
-import 'package:fml/widgets/checkbox/checkbox_model.dart' as CHECKBOX;
-import 'package:fml/widgets/option/option_model.dart' as OPTION;
+import 'package:fml/widgets/checkbox/checkbox_model.dart';
+import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
@@ -12,7 +12,7 @@ import 'package:fml/widgets/alignment/alignment.dart';
 /// Builds the Checkbox View from [Model] properties
 class CheckboxView extends StatefulWidget implements IWidgetView
 {
-  final CHECKBOX.CheckboxModel model;
+  final CheckboxModel model;
   CheckboxView(this.model) : super(key: ObjectKey(model));
 
   @override
@@ -29,7 +29,7 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
     _list = [];
 
     if ((model.options.isNotEmpty)) {
-      for (OPTION.OptionModel option in model.options) {
+      for (OptionModel option in model.options) {
         String? value = option.value;
         bool checked = ((model.value != null) && (model.value.contains(value)));
         var o = CheckBox(
@@ -96,17 +96,17 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
   }
 
   /// Function called when clicking a checkbox
-  Future<void> onChecked(OPTION.OptionModel option, bool checked) async {
+  Future<void> onChecked(OptionModel option, bool checked) async {
     await widget.model.onCheck(option, checked);
   }
 }
 
 class CheckBox extends StatelessWidget {
-  final CHECKBOX.CheckboxModel model;
-  final OPTION.OptionModel option;
+  final CheckboxModel model;
+  final OptionModel option;
 
   final bool checked;
-  final void Function(OPTION.OptionModel, bool) onChecked;
+  final void Function(OptionModel, bool) onChecked;
 
   final BuildContext context;
 

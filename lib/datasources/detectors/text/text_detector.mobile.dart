@@ -1,14 +1,14 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:ui';
 import 'package:fml/log/manager.dart';
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart' as ML;
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'text_detector.dart';
 
 class LineRow
 {
-  List<ML.TextElement> words = [];
+  List<TextElement> words = [];
 
-  LineRow(List<ML.TextElement> e)
+  LineRow(List<TextElement> e)
   {
     words = e;
   }
@@ -35,7 +35,7 @@ class TextDetector implements ITextDetector
       {
         Payload? result;
 
-        if (detectable?.image is ML.InputImage)
+        if (detectable?.image is InputImage)
         {
           var image = detectable.image;
 
@@ -55,7 +55,7 @@ class TextDetector implements ITextDetector
       }
   }
 
-  Payload payload(ML.RecognizedText vtext)
+  Payload payload(RecognizedText vtext)
   {
     List<Line> lines = [];
     // BASIC LINE DETECTION
@@ -77,11 +77,11 @@ class TextDetector implements ITextDetector
     List<LineRow> ocrLines = [];
 
     // Go through all the blocks
-    for (ML.TextBlock block in vtext.blocks) {
+    for (TextBlock block in vtext.blocks) {
       // Go through all lines
-      for (ML.TextLine line in block.lines) {
+      for (TextLine line in block.lines) {
         // Go through all elements(words)
-        for (ML.TextElement element in line.elements) {
+        for (TextElement element in line.elements) {
           // String text = element.text;
           Rect box = element.boundingBox;
           // Offset topLeft = box.topLeft;

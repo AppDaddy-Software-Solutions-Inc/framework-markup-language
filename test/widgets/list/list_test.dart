@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/list/list_model.dart' as LIST;
-import 'package:fml/widgets/list/list_view.dart' as LIST;
+import 'package:fml/widgets/list/list_model.dart';
+import 'package:fml/widgets/list/list_view.dart';
 
 void main() {
   group('List Widget', () {
@@ -174,9 +174,9 @@ void main() {
 
     testWidgets('Generated ListView Widget', (tester) async
     {
-      var model = LIST.ListModel.fromXml(null, XmlDocument.parse(xmlList).rootElement);
+      var model = ListModel.fromXml(null, XmlDocument.parse(xmlList).rootElement);
       var view3;
-      if (model != null) view3 = LIST.ListLayoutView(model);
+      if (model != null) view3 = ListLayoutView(model);
 
       Widget widget = MaterialApp(home: Scaffold(body: view3));
       await tester.pumpWidget(widget);
@@ -199,8 +199,8 @@ void main() {
       items.forEach((element) {
         element.attributes.add(XmlAttribute(XmlName('title'), element.firstElementChild!.attributes.first.value));
       });
-      dynamic view = LIST.ListModel.fromXml(null, xml.rootElement);
-      if(view != null) view = LIST.ListLayoutView(view);
+      dynamic view = ListModel.fromXml(null, xml.rootElement);
+      if(view != null) view = ListLayoutView(view);
 
       Widget widget = MaterialApp(home: Scaffold(body: view));
       await tester.pumpWidget(widget);

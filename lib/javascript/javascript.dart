@@ -1,9 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:collection';
 import 'dart:convert';
-import 'package:universal_html/html.dart' as HTML;
-import 'package:universal_html/js.dart' as JAVASCRIPT;
-import 'dart:ui' as UI;
+import 'package:universal_html/html.dart' as universal_html;
+import 'package:universal_html/js.dart' as universal_js;
+import 'dart:ui' as dart_ui;
 import 'package:fml/log/manager.dart';
 import 'package:fml/helper/common_helpers.dart';
 
@@ -14,7 +14,7 @@ class Bridge
   final jsonEncoder = JsonEncoder();
   final String script;
 
-  JAVASCRIPT.JsObject? _connector;
+  universal_js.JsObject? _connector;
 
   final HashMap<String, List<OnMessageCallback>> _listeners = HashMap<String, List<OnMessageCallback>>();
   final id = S.newId();
@@ -24,15 +24,15 @@ class Bridge
     /////////////////////////////////////
     /* Contructor Callback from Script */
     /////////////////////////////////////
-    JAVASCRIPT.context["flutter"] = (content)
+    universal_js.context["flutter"] = (content)
     {
       _connector = content;
 
       //////////////////
       /* Add Listener */
       //////////////////
-      HTML.window.removeEventListener('message', _receive);
-      HTML.window.addEventListener('message', _receive);
+      universal_html.window.removeEventListener('message', _receive);
+      universal_html.window.addEventListener('message', _receive);
 
       return id;
     };
@@ -41,9 +41,9 @@ class Bridge
     /* Register HTML iFrame */
     //////////////////////////
     // ignore: undefined_prefixed_name
-    UI.platformViewRegistry.registerViewFactory(id, (int viewId)
+    dart_ui.platformViewRegistry.registerViewFactory(id, (int viewId)
     {
-      final HTML.IFrameElement _frame = HTML.IFrameElement();
+      final universal_html.IFrameElement _frame = universal_html.IFrameElement();
       _frame.id     = id;
       _frame.width  = '100%';
       _frame.height = '100%';
@@ -117,7 +117,7 @@ class Bridge
       //////////////////
       /* Send Message */
       //////////////////
-      HTML.window.postMessage(json, "*");
+      universal_html.window.postMessage(json, "*");
     }
     catch(e)
     {

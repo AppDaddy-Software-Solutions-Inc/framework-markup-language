@@ -3,8 +3,8 @@ import 'package:collection/collection.dart';
 import 'package:fml/log/manager.dart';
 import 'binding.dart';
 import 'scope.dart';
-import 'package:fml/eval/eval.dart'       as EVALUATE;
-import 'package:fml/observable/blob.dart' as BLOB;
+import 'package:fml/eval/eval.dart'       as fml_eval;
+import 'package:fml/observable/blob.dart';
 import 'package:fml/helper/common_helpers.dart';
 
 typedef Getter = dynamic Function();
@@ -82,7 +82,7 @@ class Observable
     if (value is String)
     {
       // bindings?
-      if (this is! BLOB.BlobObservable) bindings = Binding.getBindings(value, scope: scope);
+      if (this is! BlobObservable) bindings = Binding.getBindings(value, scope: scope);
       if (bindings != null)
       {
         // replace the "this" operator
@@ -234,7 +234,7 @@ class Observable
         if (isEval)
         {
           variables ??= <String?, dynamic>{};
-          if ((source is BLOB.BlobObservable) && (!S.isNullOrEmpty(v))) {
+          if ((source is BlobObservable) && (!S.isNullOrEmpty(v))) {
             variables[binding.signature] = 'blob';
           } else {
             variables[binding.signature] = v;
@@ -295,7 +295,7 @@ class Observable
     dynamic result;
     try
     {
-      result = EVALUATE.Eval.evaluate(expression, variables: variables);
+      result = fml_eval.Eval.evaluate(expression, variables: variables);
       result ??= "";
     }
     catch(e)

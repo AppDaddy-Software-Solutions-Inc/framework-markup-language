@@ -1,19 +1,19 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:convert';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/iframe/inline_frame_model.dart' as IFRAME;
+import 'package:fml/widgets/iframe/inline_frame_model.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'inline_frame_view.dart' as IFRAME;
+import 'inline_frame_view.dart';
 import 'package:fml/helper/common_helpers.dart';
 
 InlineFrameView getView(model) => InlineFrameView(model);
 
-class InlineFrameView extends StatefulWidget implements IFRAME.View, IWidgetView
+class InlineFrameView extends StatefulWidget implements View, IWidgetView
 {
-  final IFRAME.InlineFrameModel model;
+  final InlineFrameModel model;
 
   InlineFrameView(this.model) : super(key: ObjectKey(model));
 

@@ -7,7 +7,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/form_model.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:fml/datasources/transforms/sort.dart' as TRANSFORM;
+import 'package:fml/datasources/transforms/sort.dart' as sort_transform;
 import 'package:fml/event/handler.dart' ;
 import 'package:fml/widgets/table/table_view.dart';
 import 'package:fml/widgets/table/header/table_header_model.dart';
@@ -633,7 +633,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
         }
 
 
-        TRANSFORM.Sort sort = TRANSFORM.Sort(null,
+        sort_transform.Sort sort = sort_transform.Sort(null,
             field: model?.sort,
             type: model?.sortType,
             ascending: model?.sortAscending,

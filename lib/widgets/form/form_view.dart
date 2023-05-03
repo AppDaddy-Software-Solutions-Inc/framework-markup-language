@@ -8,29 +8,29 @@ import 'package:fml/widgets/widget/iWidgetView.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
-import 'package:fml/widgets/busy/busy_view.dart' as BUSY;
-import 'package:fml/widgets/busy/busy_model.dart' as BUSY;
-import 'package:fml/datasources/gps/payload.dart'       as GPS;
-import 'package:fml/datasources/gps/iGpsListener.dart'  as GPS;
-import 'package:fml/widgets/form/form_model.dart' as FORM;
-import 'package:fml/widgets/pager/page/pager_page_model.dart' as PAGE;
-import 'package:fml/widgets/pager/pager_model.dart' as PAGER;
+import 'package:fml/widgets/busy/busy_view.dart';
+import 'package:fml/widgets/busy/busy_model.dart';
+import 'package:fml/datasources/gps/payload.dart';
+import 'package:fml/datasources/gps/iGpsListener.dart';
+import 'package:fml/widgets/form/form_model.dart';
+import 'package:fml/widgets/pager/page/pager_page_model.dart';
+import 'package:fml/widgets/pager/pager_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class FormView extends StatefulWidget implements IWidgetView
 {
-  final FORM.FormModel model;
+  final FormModel model;
   FormView(this.model) : super(key: ObjectKey(model));
 
   @override
   FormViewState createState() => FormViewState();
 }
 
-class FormViewState extends WidgetState<FormView> implements GPS.IGpsListener
+class FormViewState extends WidgetState<FormView> implements IGpsListener
 {
-  BUSY.BusyView? busy;
+  BusyView? busy;
 
-  onGpsData({GPS.Payload? payload})
+  onGpsData({Payload? payload})
   {
     // Save Current Location
     if (payload != null) System().currentLocation = payload;
@@ -80,11 +80,11 @@ class FormViewState extends WidgetState<FormView> implements GPS.IGpsListener
         {
           found = true;
           try {
-            List<dynamic>? pagers = (field as WidgetModel).findAncestorsOfExactType(PAGE.PagerPageModel);
+            List<dynamic>? pagers = (field as WidgetModel).findAncestorsOfExactType(PagerPageModel);
             if (pagers != null) {
               Log().debug('found ${pagers.length} page(s)');
-              for (PAGE.PagerPageModel page in pagers as Iterable<PAGE.PagerPageModel>) { // ensure we can handle pagers within pagers, probably a bit extreme
-                PAGER.PagerModel pageParent = page.parent as PAGER.PagerModel; // (parent as PAGER.PagerModel).View();
+              for (PagerPageModel page in pagers as Iterable<PagerPageModel>) { // ensure we can handle pagers within pagers, probably a bit extreme
+                PagerModel pageParent = page.parent as PagerModel; // (parent as PAGER.PagerModel).View();
                 int? index;
                 for (int i = 0; i < pageParent.pages.length; i++) {
                   if (pageParent.pages[i] == page) {
@@ -135,7 +135,7 @@ class FormViewState extends WidgetState<FormView> implements GPS.IGpsListener
     final willpop = WillPopScope(onWillPop: quit, child: view);
 
     /// Busy / Loading Indicator
-    busy ??= BUSY.BusyView(BUSY.BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
+    busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
 
     view = Stack(children: [willpop, Center(child: busy)]);
 

@@ -6,7 +6,7 @@ import 'package:fml/system.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/datasources/http/http.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:fml/hive/form.dart' as DATABASE;
+import 'package:fml/hive/form.dart';
 import 'package:fml/helper/common_helpers.dart';
 
 class TemplateManager
@@ -41,7 +41,7 @@ class TemplateManager
     try
     {
       // lookup from local hive
-      DATABASE.Form? form = await DATABASE.Form.find(key);
+      Form? form = await Form.find(key);
       if (form != null) template = form.template;
     }
     catch(e)

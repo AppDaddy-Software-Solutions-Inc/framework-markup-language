@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/datasources/gps/payload.dart' as GPS;
+import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/alarm/alarm_model.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
@@ -107,7 +107,7 @@ class FormFieldModel extends DecoratedWidgetModel
   }
 
   /// GeoCode for each [iFormField] which is set on answer
-  GPS.Payload? geocode;
+  Payload? geocode;
 
   //field is editable
   BooleanObservable? _editable;
@@ -241,7 +241,7 @@ class FormFieldModel extends DecoratedWidgetModel
       var oldGeocode = geocode;
 
       // set geocode
-      geocode = GPS.Payload(
+      geocode = Payload(
           latitude: System().currentLocation?.latitude,
           longitude: System().currentLocation?.longitude,
           altitude: System().currentLocation?.altitude,

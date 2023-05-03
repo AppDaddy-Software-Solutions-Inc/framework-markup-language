@@ -19,8 +19,8 @@ import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:path/path.dart';
 import 'dart:async';
 import 'package:fml/hive/database.dart';
-import 'package:fml/datasources/gps/gps.dart' as GPS;
-import 'package:fml/datasources/gps/payload.dart' as GPS;
+import 'package:fml/datasources/gps/gps.dart';
+import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/application/application_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
@@ -161,8 +161,8 @@ class System extends WidgetModel implements IEventManager
   int second() => (_second != null) ? DateTime.now().second : 0;
 
   // GPS
-  GPS.Gps gps = GPS.Gps();
-  GPS.Payload? currentLocation;
+  Gps gps = Gps();
+  Payload? currentLocation;
 
   late String baseUrl;
 

@@ -142,7 +142,7 @@ class CustomFormatter extends TextInputFormatter {
     var formatters = format.split(';');
     for (String fmt in formatters) {
       if (!S.isNullOrEmpty(fmt)) {
-        fmt = fmt.replaceAll('()', '${'(' + '\'' + v}\')');
+        fmt = fmt.replaceAll('()', '(\'$v\')');
         fmt = fmt.trim();
         v = Eval.evaluate(fmt);
         if (v == null) {

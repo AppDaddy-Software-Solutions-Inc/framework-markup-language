@@ -273,14 +273,11 @@ class WidgetModel implements IDataSourceListener
   // to return the amount of horizontal space allocated for padding, borders and margins
   double get horizontalPadding => 0;
 
-  WidgetModel(WidgetModel? parent, String? id, {Scope? scope})
+  WidgetModel(this.parent, String? id, {Scope? scope})
   {
     // default id
     if (S.isNullOrEmpty(id)) id = S.newId();
     this.id = id!;
-
-    // set the parent
-    this.parent = parent;
 
     // set the scope
     this.scope = scope ?? Scope.of(this);

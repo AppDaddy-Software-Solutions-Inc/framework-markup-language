@@ -8,6 +8,7 @@ import 'package:fml/widgets/layout/layout_model.dart';
 
 class StackView extends StatefulWidget implements IWidgetView
 {
+  @override
   final LayoutModel model;
 
   StackView(this.model) : super(key: ObjectKey(model));

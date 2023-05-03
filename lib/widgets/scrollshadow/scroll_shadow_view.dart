@@ -6,6 +6,7 @@ import 'scroll_shadow_model.dart';
 
 class ScrollShadowView extends StatefulWidget implements IWidgetView
 {
+  @override
   final ScrollShadowModel model;
 
   ScrollShadowView(this.model) : super(key: ObjectKey(model));

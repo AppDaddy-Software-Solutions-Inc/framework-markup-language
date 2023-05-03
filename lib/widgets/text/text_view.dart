@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 
 class TextView extends StatefulWidget implements IWidgetView
 {
+  @override
   final TextModel model;
   TextView(this.model) : super(key: ObjectKey(model));
 

@@ -8,6 +8,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class SpanView extends StatefulWidget implements IWidgetView
 {
+  @override
   final SpanModel model;
 
   SpanView(this.model) : super(key: ObjectKey(model));

@@ -65,6 +65,7 @@ class InlineFrameModel extends DecoratedWidgetModel
     super.dispose();
   }
 
+  @override
   Widget getView({Key? key})
   {
     var view = View(this);

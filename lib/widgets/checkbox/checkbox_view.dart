@@ -12,6 +12,7 @@ import 'package:fml/widgets/alignment/alignment.dart';
 /// Builds the Checkbox View from [Model] properties
 class CheckboxView extends StatefulWidget implements IWidgetView
 {
+  @override
   final CheckboxModel model;
   CheckboxView(this.model) : super(key: ObjectKey(model));
 
@@ -43,6 +44,7 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
     }
   }
 
+  @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)

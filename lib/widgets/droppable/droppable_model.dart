@@ -99,5 +99,6 @@ class DroppableModel extends DecoratedWidgetModel
     super.dispose();
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(DroppableView(this));
 }

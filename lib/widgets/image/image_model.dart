@@ -198,5 +198,6 @@ class ImageModel extends DecoratedWidgetModel
     super.dispose();
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(ImageView(this));
 }

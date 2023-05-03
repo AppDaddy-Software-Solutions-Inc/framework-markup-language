@@ -36,6 +36,7 @@ class TriggerModel extends WidgetModel {
     return trigger;
   }
 
+  @override
   void deserialize(XmlElement e)
   {
     /////////////////
@@ -71,6 +72,7 @@ class TriggerModel extends WidgetModel {
     return true;
   }
 
+  @override
   Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
   {
     if (scope == null) return null;

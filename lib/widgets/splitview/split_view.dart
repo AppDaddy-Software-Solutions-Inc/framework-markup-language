@@ -11,6 +11,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class SplitView extends StatefulWidget implements IWidgetView
 {
+  @override
   final SplitModel model;
   final List<Widget> views = [];
 

@@ -7,6 +7,7 @@ import 'gesture_model.dart';
 
 class GestureView extends StatefulWidget implements IWidgetView
 {
+  @override
   final GestureModel model;
   GestureView(this.model) : super(key: ObjectKey(model));
 

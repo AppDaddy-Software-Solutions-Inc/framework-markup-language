@@ -17,6 +17,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class SelectView extends StatefulWidget implements IWidgetView
 {
+  @override
   final SelectModel model;
 
   SelectView(this.model) : super(key: ObjectKey(model));

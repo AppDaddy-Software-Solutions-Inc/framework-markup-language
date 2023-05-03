@@ -20,6 +20,7 @@ class FilePickerView implements FilePicker {
     this.accept = accept;
   }
 
+  @override
   Future<File?> launchPicker(List<IDetectable>? detectors) async {
     final completer = Completer();
     bool hasSelectedFile = false;

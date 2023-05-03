@@ -17,6 +17,7 @@ class TextDetector implements ITextDetector
 
   TextDetector._initialize();
 
+  @override
   Future<Payload?> detect(DetectableImage image) async
   {
     // not implemented

@@ -84,5 +84,6 @@ class TooltipModel extends DecoratedWidgetModel
     super.dispose();
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(TooltipView(this));
 }

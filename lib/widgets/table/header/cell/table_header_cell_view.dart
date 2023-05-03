@@ -8,6 +8,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class TableHeaderCellView extends StatefulWidget implements IWidgetView
 {
+  @override
   final TableHeaderCellModel model;
 
   TableHeaderCellView(this.model) : super(key: ObjectKey(model));

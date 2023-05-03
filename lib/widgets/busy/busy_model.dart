@@ -143,5 +143,6 @@ class BusyModel extends DecoratedWidgetModel
     this.expand = expand;
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(BusyView(this));
 }

@@ -17,6 +17,7 @@ import 'package:fml/helper/common_helpers.dart';
 
 class MapView extends StatefulWidget implements IWidgetView
 {
+  @override
   final MapModel model;
   MapView(this.model) : super(key: ObjectKey(model));
 

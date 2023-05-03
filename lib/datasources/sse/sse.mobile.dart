@@ -63,6 +63,7 @@ class IOSseChannel extends StreamChannelMixin implements SseChannel
     _controller.close();
   }
 
+  @override
   void close()
   {
     if (!_controller.isClosed) _controller.close();

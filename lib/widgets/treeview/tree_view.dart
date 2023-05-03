@@ -9,6 +9,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class TreeView extends StatefulWidget implements IWidgetView
 {
+  @override
   final TreeModel model;
   TreeView(this.model) : super(key: ObjectKey(model));
 

@@ -13,6 +13,7 @@ InlineFrameView getView(model) => InlineFrameView(model);
 
 class InlineFrameView extends StatefulWidget implements View, IWidgetView
 {
+  @override
   final InlineFrameModel model;
 
   InlineFrameView(this.model) : super(key: ObjectKey(model));

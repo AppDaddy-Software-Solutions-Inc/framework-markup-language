@@ -12,6 +12,7 @@ import 'package:perfect_freehand/perfect_freehand.dart';
 
 class ScribbleView extends StatefulWidget implements IWidgetView
 {
+  @override
   final ScribbleModel model;
   ScribbleView(this.model) : super(key: ObjectKey(model));
 

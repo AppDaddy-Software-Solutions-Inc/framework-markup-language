@@ -8,6 +8,7 @@ import 'package:fml/widgets/text/text_view.dart';
 
 class SwitchView extends StatefulWidget implements IWidgetView
 {
+  @override
   final SwitchModel model;
   final dynamic onChangeCallback;
   SwitchView(this.model, {this.onChangeCallback});

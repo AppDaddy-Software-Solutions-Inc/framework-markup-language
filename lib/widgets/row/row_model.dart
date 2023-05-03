@@ -48,6 +48,7 @@ class RowModel extends LayoutModel
     return expand;
   }
 
+  @override
   @required
   bool get isHorizontallyExpanding
   {
@@ -85,5 +86,6 @@ class RowModel extends LayoutModel
     return model;
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(RowView(this));
 }

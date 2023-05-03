@@ -824,6 +824,7 @@ class FormModel extends DecoratedWidgetModel
     return alarming;
   }
 
+  @override
   Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
   {
     if (scope == null) return null;
@@ -852,5 +853,6 @@ class FormModel extends DecoratedWidgetModel
     return super.onDataSourceSuccess(source, list);
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(FormView(this));
 }

@@ -15,6 +15,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class TypeaheadView extends StatefulWidget implements IWidgetView
 {
+  @override
   final TypeaheadModel model;
 
   TypeaheadView(this.model) : super(key: ObjectKey(model));

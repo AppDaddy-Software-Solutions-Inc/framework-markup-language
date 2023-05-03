@@ -151,6 +151,7 @@ class Sort extends TransformModel implements ITransform
     });
   }
 
+  @override
   Future<void> apply(Data? data) async
   {
     if (enabled == false) return;

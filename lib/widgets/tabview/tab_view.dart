@@ -15,6 +15,7 @@ import 'package:fml/helper/common_helpers.dart';
 
 class TabView extends StatefulWidget implements IWidgetView
 {
+  @override
   final TabModel model;
 
   TabView(this.model) : super(key: ObjectKey(model));

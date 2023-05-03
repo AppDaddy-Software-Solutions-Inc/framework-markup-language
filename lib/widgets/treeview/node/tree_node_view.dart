@@ -8,6 +8,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class TreeNodeView extends StatefulWidget implements IWidgetView
 {
+  @override
   final TreeNodeModel model;
 
   TreeNodeView(this.model) : super(key: ObjectKey(model));

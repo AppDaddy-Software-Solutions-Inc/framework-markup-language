@@ -28,6 +28,7 @@ class Grayscale extends ImageTransformModel implements ITransform
     super.deserialize(xml);
   }
 
+  @override
   apply(Data? data) async
   {
     if (enabled == false) return;

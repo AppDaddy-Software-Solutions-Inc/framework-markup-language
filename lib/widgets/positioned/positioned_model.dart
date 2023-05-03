@@ -158,6 +158,7 @@ class PositionedModel extends DecoratedWidgetModel
   /* depth */
   ////////////
   DoubleObservable? _depth;
+  @override
   set depth (dynamic v)
   {
     if (_depth != null)
@@ -235,5 +236,6 @@ class PositionedModel extends DecoratedWidgetModel
     super.dispose();
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(PositionedView(this));
 }

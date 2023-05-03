@@ -48,6 +48,7 @@ class Flip extends ImageTransformModel implements ITransform
     axis = Xml.get(node: xml, tag: 'axis');
   }
 
+  @override
   apply(Data? data) async
   {
     if (enabled == false) return;

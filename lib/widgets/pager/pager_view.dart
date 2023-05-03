@@ -14,6 +14,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class PagerView extends StatefulWidget implements IWidgetView
 {
+  @override
   final PagerModel model;
   PagerView(this.model) : super(key: ObjectKey(model));
 
@@ -214,6 +215,7 @@ class DotsIndicator extends AnimatedWidget {
     );
   }
 
+  @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,

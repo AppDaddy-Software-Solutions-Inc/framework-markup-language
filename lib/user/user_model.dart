@@ -55,6 +55,7 @@ class UserModel extends WidgetModel
   }
 
   // initializes the app
+  @override
   Future<bool> initialize() async
   {
     // wait for the system to initialize

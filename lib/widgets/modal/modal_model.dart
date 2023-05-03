@@ -176,5 +176,6 @@ class ModalModel extends BoxModel
   }
 
   /// Returns the [MODAL] View
+  @override
   Widget getView({Key? key}) => getReactiveView(ModalView(this));
 }

@@ -234,6 +234,7 @@ class ScrollerModel extends ViewableWidgetModel
   }
 
 
+  @override
   Widget getView({Key? key}) => getReactiveView(ScrollerView(this));
 }
 

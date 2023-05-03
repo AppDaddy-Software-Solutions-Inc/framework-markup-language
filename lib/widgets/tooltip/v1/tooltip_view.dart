@@ -9,6 +9,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 class TooltipView extends StatefulWidget implements IWidgetView
 {
   final List<Widget> children = [];
+  @override
   final TooltipModel model;
   TooltipView(this.model) : super(key: ObjectKey(model));
 

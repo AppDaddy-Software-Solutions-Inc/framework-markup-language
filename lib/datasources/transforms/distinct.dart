@@ -98,6 +98,7 @@ class Distinct extends TransformModel implements ITransform
     return v;
   }
 
+  @override
   apply(Data? data) async
   {
     if (enabled == false) return;

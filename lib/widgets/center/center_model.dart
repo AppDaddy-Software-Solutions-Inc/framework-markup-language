@@ -42,5 +42,6 @@ class CenterModel extends DecoratedWidgetModel
     // flex = Xml.get(node: xml, tag: 'flex);
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(CenterView(this));
 }

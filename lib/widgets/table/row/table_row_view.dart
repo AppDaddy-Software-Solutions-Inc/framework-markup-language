@@ -8,6 +8,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class TableRowView extends StatefulWidget implements IWidgetView
 {
+  @override
   final TableRowModel model;
   final double? height;
   final Map<int, double>? width;

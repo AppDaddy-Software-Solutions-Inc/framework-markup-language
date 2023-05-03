@@ -25,6 +25,7 @@ import 'package:fml/helper/common_helpers.dart';
 
 class GridView extends StatefulWidget implements IWidgetView
 {
+  @override
   final GridModel model;
   GridView(this.model) : super(key: ObjectKey(model));
 

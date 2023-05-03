@@ -6,6 +6,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class View extends StatefulWidget implements IWidgetView
 {
+  @override
   final ViewModel model;
 
   View(this.model) : super(key: ObjectKey(model));

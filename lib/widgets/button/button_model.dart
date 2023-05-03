@@ -274,6 +274,7 @@ class ButtonModel extends DecoratedWidgetModel
     return await EventHandler(this).execute(_onexit);
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(ButtonView(this));
 }
 

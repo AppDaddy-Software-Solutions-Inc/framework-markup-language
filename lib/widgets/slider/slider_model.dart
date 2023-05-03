@@ -103,6 +103,7 @@ class SliderModel extends FormFieldModel implements IFormField
   ////////////
   /* Answer */
   ////////////
+  @override
   Future<bool> answer(dynamic v, {bool range = false}) async
   {
     bool ok = true;
@@ -257,6 +258,7 @@ class SliderModel extends FormFieldModel implements IFormField
     super.dispose();
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(SliderView(this));
 }
 

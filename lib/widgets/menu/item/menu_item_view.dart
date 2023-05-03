@@ -10,6 +10,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class MenuItemView extends StatefulWidget implements IWidgetView
 {
+  @override
   final MenuItemModel model;
 
   MenuItemView(this.model) : super(key: ObjectKey(model));

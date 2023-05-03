@@ -413,5 +413,6 @@ class CameraModel extends CameraImageModel
     }
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(CameraView(this));
 }

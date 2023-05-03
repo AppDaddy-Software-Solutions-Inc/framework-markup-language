@@ -302,6 +302,7 @@ class BoxModel extends LayoutModel
     layout  = Xml.get(node: xml, tag: 'layout');
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(BoxView(this));
   Widget getContentView({Key? key})
   {

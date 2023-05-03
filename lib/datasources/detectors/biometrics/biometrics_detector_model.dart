@@ -45,6 +45,7 @@ class BiometricsDetectorModel extends DetectorModel implements IDetectable
     super.dispose();
   }
 
+  @override
   void detect(DetectableImage image, bool streamed) async
   {
     if (!busy)

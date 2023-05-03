@@ -22,6 +22,7 @@ class BarcodeDetector implements IBarcodeDetector
 
   factory BarcodeDetector() => _singleton;
 
+  @override
   Future<Payload?> detect(DetectableImage detectable, List<BarcodeFormats>? formats, bool? tryharder, bool? invert) async
   {
     try

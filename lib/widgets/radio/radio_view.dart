@@ -9,6 +9,7 @@ import 'package:fml/widgets/alignment/alignment.dart';
 
 class RadioView extends StatefulWidget implements IWidgetView
 {
+  @override
   final RadioModel model;
   RadioView(this.model) : super(key: ObjectKey(model));
 

@@ -64,6 +64,7 @@ class Resize extends ImageTransformModel implements ITransform
     height  = Xml.get(node: xml, tag: 'height');
   }
 
+  @override
   apply(Data? data) async
   {
     if (enabled == false) return;

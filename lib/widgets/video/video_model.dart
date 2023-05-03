@@ -143,5 +143,6 @@ class VideoModel extends DecoratedWidgetModel implements ViewableWidgetModel
     if (player != null && url != null) player!.play(url!);
   }
 
+  @override
   Widget getView({Key? key}) => VideoView(this);
 }

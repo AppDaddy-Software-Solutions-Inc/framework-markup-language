@@ -30,6 +30,7 @@ class TooltipModel extends ViewableWidgetModel
 
   // padding
   DoubleObservable? _padding;
+  @override
   set margins(dynamic v)
   {
     if (_padding != null) _padding!.set(v);

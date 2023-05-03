@@ -191,5 +191,6 @@ class LinkModel extends DecoratedWidgetModel
     return await EventHandler(this).execute(_ondoubletap);
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(LinkView(this));
 }

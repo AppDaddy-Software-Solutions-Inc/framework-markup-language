@@ -224,6 +224,7 @@ class MultipartRequest extends dart_http.MultipartRequest {
 
   final void Function(int bytes, int totalBytes)? onProgress;
 
+  @override
   dart_http.ByteStream finalize() {
     final byteStream = super.finalize();
     if (onProgress == null) return byteStream;

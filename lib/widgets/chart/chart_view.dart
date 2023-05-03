@@ -32,6 +32,7 @@ enum ChartType {
 /// [EXCERPT.Model] properties
 class ChartView extends StatefulWidget implements IWidgetView
 {
+  @override
   final ChartModel model;
   ChartView(this.model) : super(key: ObjectKey(model));
 

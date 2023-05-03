@@ -111,5 +111,6 @@ class FadeTransitionModel extends AnimationChildModel
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
+  @override
   Widget getAnimatedView(Widget child, {AnimationController? controller}) => FadeTransitionView(this, child, controller);
 }

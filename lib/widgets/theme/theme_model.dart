@@ -384,5 +384,6 @@ class ThemeModel extends DecoratedWidgetModel
     super.dispose();
   }
 
+  @override
   Widget getView({Key? key}) => ThemeView(this);
 }

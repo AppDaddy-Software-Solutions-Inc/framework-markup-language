@@ -7,6 +7,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class ThemeView extends StatefulWidget implements IWidgetView
 {
+  @override
   final ThemeModel model;
   final List<Widget> children = [];
 

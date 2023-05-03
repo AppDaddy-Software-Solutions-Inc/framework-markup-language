@@ -93,5 +93,6 @@ class StackModel extends LayoutModel
   }
 
 
+  @override
   Widget getView({Key? key}) => getReactiveView(StackView(this));
 }

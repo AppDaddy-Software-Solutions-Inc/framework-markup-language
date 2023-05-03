@@ -8,6 +8,7 @@ import 'package:fml/helper/common_helpers.dart';
 
 class SliderView extends StatefulWidget implements IWidgetView
 {
+  @override
   final SliderModel model;
   final dynamic onChangeCallback;
   SliderView(this.model, {this.onChangeCallback});

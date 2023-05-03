@@ -29,6 +29,7 @@ class TextDetector implements ITextDetector
 
   TextDetector._initialize();
 
+  @override
   Future<Payload?> detect(dynamic detectable) async
   {
       try

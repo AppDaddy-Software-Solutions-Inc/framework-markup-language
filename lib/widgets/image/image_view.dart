@@ -16,6 +16,7 @@ import 'package:fml/helper/common_helpers.dart';
 /// [IMAGE] view
 class ImageView extends StatefulWidget implements IWidgetView
 {
+  @override
   final ImageModel model;
 
   // this is just an empty pixel

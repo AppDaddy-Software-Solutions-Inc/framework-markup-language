@@ -110,6 +110,7 @@ class SplitModel extends DecoratedWidgetModel
     children?.removeWhere((element) => element is! ViewModel);
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(SplitView(this));
 }
 

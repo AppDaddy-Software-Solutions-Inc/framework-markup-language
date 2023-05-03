@@ -43,6 +43,7 @@ class TableHeaderCellModel extends DecoratedWidgetModel
   /* Color */
   ///////////
   ColorObservable? _color;
+  @override
   Color? get color {
     if (_color == null) {
       if ((parent != null) && (parent is TableHeaderModel))
@@ -109,6 +110,7 @@ class TableHeaderCellModel extends DecoratedWidgetModel
   ///
   /// The horizontal alignment of the widgets children, overrides `center`. Can be `left`, `right`, `start`, or `end`.
   StringObservable? _halign;
+  @override
   set halign(dynamic v) {
     if (_halign != null) {
       _halign!.set(v);
@@ -118,6 +120,7 @@ class TableHeaderCellModel extends DecoratedWidgetModel
     }
   }
 
+  @override
   String? get halign {
     if (_halign == null) {
       if ((parent != null) && (parent is TableHeaderModel))

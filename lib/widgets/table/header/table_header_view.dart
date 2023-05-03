@@ -9,6 +9,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class TableHeaderView extends StatefulWidget implements IWidgetView
 {
+  @override
   final TableHeaderModel? model;
   final double? height;
   final Map<int, double>? width;

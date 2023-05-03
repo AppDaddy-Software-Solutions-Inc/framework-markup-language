@@ -7,6 +7,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class GridItemView extends StatefulWidget implements IWidgetView
 {
+  @override
   final GridItemModel? model;
   GridItemView({this.model}) : super(key: ObjectKey(model));
 

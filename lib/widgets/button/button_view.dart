@@ -10,6 +10,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 /// Builds the Button View from [ButtonModel] properties
 class ButtonView extends StatefulWidget implements IWidgetView
 {
+  @override
   final ButtonModel model;
   final Widget? child;
 

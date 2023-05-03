@@ -212,5 +212,6 @@ class MapModel extends DecoratedWidgetModel
     super.dispose();
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(MapView(this));
 }

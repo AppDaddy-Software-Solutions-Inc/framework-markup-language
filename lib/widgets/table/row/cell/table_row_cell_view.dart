@@ -12,6 +12,7 @@ import 'package:fml/widgets/alignment/alignment.dart';
 
 class TableRowCellView extends StatefulWidget implements IWidgetView
 {
+  @override
   final TableRowCellModel model;
   final int? row;
 

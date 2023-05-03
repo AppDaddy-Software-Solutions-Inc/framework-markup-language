@@ -187,6 +187,7 @@ class TabModel extends LayoutModel
     }
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(TabView(this));
 }
 

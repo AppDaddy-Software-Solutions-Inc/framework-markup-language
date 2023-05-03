@@ -261,5 +261,6 @@ class DrawerModel extends DecoratedWidgetModel
     }
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(DrawerView(this, Container()));
 }

@@ -51,8 +51,8 @@ class Cryptography
     final CBCBlockCipher cbcCipher = CBCBlockCipher(AESEngine());
     final ParametersWithIV<KeyParameter> ivParams = ParametersWithIV<KeyParameter>(KeyParameter(key), iv);
 
-    final PaddedBlockCipherParameters<ParametersWithIV<KeyParameter>, Null>
-    paddingParams = PaddedBlockCipherParameters<ParametersWithIV<KeyParameter>, Null>(ivParams, null);
+    final PaddedBlockCipherParameters<ParametersWithIV<KeyParameter>, CipherParameters?>
+    paddingParams = PaddedBlockCipherParameters<ParametersWithIV<KeyParameter>, CipherParameters?>(ivParams, null);
 
     final PaddedBlockCipherImpl cipher = PaddedBlockCipherImpl(PKCS7Padding(), cbcCipher);
     cipher.init(false, paddingParams);

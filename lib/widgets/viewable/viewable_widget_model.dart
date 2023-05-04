@@ -681,13 +681,14 @@ class ViewableWidgetModel extends ConstraintModel
 
     // process children
     List<Widget> views = [];
-    for (var model in viewableChildren) {
+    for (var model in viewableChildren)
+    {
       // reset child view
       model.resetViewSizing();
 
       var view = model.getView();
       if (view != null) views.add(view);
-    });
+    }
     return views;
   }
 

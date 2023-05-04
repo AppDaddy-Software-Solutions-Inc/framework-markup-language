@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/log/manager.dart';
@@ -7,7 +6,6 @@ import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/boolean.dart';
 import 'package:fml/observable/observables/string.dart';
 import 'package:fml/observable/scope.dart';
-import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
@@ -173,8 +171,9 @@ class LayoutModel extends DecoratedWidgetModel {
     switch (layoutType) {
       case LayoutType.stack:
       case LayoutType.column:
-        if (isHorizontallyExpanding && child.isHorizontallyExpanding)
+        if (isHorizontallyExpanding && child.isHorizontallyExpanding) {
           return 100;
+        }
         break;
       default:
         break;
@@ -210,8 +209,9 @@ class LayoutModel extends DecoratedWidgetModel {
     if (getPercentWidth(child) != null) return null;
 
     // flex only if both me and my child are horizontally expanding
-    if (isHorizontallyExpanding && child.isHorizontallyExpanding)
+    if (isHorizontallyExpanding && child.isHorizontallyExpanding) {
       return child.flex ?? 1;
+    }
 
     return null;
   }
@@ -224,8 +224,9 @@ class LayoutModel extends DecoratedWidgetModel {
     if (getPercentHeight(child) != null) return null;
 
     // flex only if both me and my child are vertically expanding
-    if (isVerticallyExpanding && child.isVerticallyExpanding)
+    if (isVerticallyExpanding && child.isVerticallyExpanding) {
       return child.flex ?? 1;
+    }
 
     return null;
   }
@@ -338,9 +339,10 @@ class LayoutModel extends DecoratedWidgetModel {
     // find highest level layout to perform rebuild
     if (layout1 != layout2) {
       var ancestors = this.ancestors;
-      if (ancestors != null)
+      if (ancestors != null) {
         layout = ancestors.reversed
             .firstWhere((model) => model == layout1 || model == layout2);
+      }
     }
 
     // rebuild the layout
@@ -349,38 +351,38 @@ class LayoutModel extends DecoratedWidgetModel {
   }
 
   _performLayout() {
-    print('Performing layout on ${id}');
+    print('Performing layout on $id');
 
     List<ViewableWidgetModel> resized = [];
 
     // modify child widths
     var resizedWidth = _onWidthChange();
-    resizedWidth.forEach((model) {
+    for (var model in resizedWidth) {
       if (!resized.contains(model)) {
         resized.add(model);
       }
-    });
+    }
 
     // modify child heights
     var resizedHeight = _onHeightChange();
-    resizedHeight.forEach((model) {
+    for (var model in resizedHeight) {
       if (!resized.contains(model)) {
         resized.add(model);
       }
-    });
+    }
 
     // layout complete
     // this allows children layouts to complete
     layoutComplete = true;
 
     // notify modified children
-    resized.forEach((child) {
+    for (var child in resized) {
       // mark child as needing layout
       if (child is LayoutModel) child.layoutComplete = false;
 
       // notify child to rebuild
       child.rebuild();
-    });
+    }
   }
 
   @override
@@ -482,12 +484,14 @@ class LayoutModel extends DecoratedWidgetModel {
           var constraints = child.constraints.model;
 
           // must not be less than min width
-          if (constraints.minWidth != null && size < constraints.minWidth!)
+          if (constraints.minWidth != null && size < constraints.minWidth!) {
             size = constraints.minWidth!.toInt();
+          }
 
           // must not be greater than max width
-          if (constraints.maxWidth != null && size > constraints.maxWidth!)
+          if (constraints.maxWidth != null && size > constraints.maxWidth!) {
             size = constraints.maxWidth!.toInt();
+          }
 
           // must be 0 or greater
           if (size.isNegative) size = 0;
@@ -524,12 +528,14 @@ class LayoutModel extends DecoratedWidgetModel {
           var constraints = child.constraints.model;
 
           // must not be less than min width
-          if (constraints.minWidth != null && size < constraints.minWidth!)
+          if (constraints.minWidth != null && size < constraints.minWidth!) {
             size = constraints.minWidth!.toInt();
+          }
 
           // must not be greater than max width
-          if (constraints.maxWidth != null && size > constraints.maxWidth!)
+          if (constraints.maxWidth != null && size > constraints.maxWidth!) {
             size = constraints.maxWidth!.toInt();
+          }
 
           // must be 0 or greater
           if (size.isNegative) size = 0;
@@ -588,12 +594,14 @@ class LayoutModel extends DecoratedWidgetModel {
           var constraints = child.constraints.model;
 
           // must not be less than min height
-          if (constraints.minHeight != null && size < constraints.minHeight!)
+          if (constraints.minHeight != null && size < constraints.minHeight!) {
             size = constraints.minHeight!.toInt();
+          }
 
           // must not be greater than max height
-          if (constraints.maxHeight != null && size > constraints.maxHeight!)
+          if (constraints.maxHeight != null && size > constraints.maxHeight!) {
             size = constraints.maxHeight!.toInt();
+          }
 
           // must be 0 or greater
           if (size.isNegative) size = 0;
@@ -630,12 +638,14 @@ class LayoutModel extends DecoratedWidgetModel {
           var constraints = child.constraints.model;
 
           // must not be less than min height
-          if (constraints.minHeight != null && size < constraints.minHeight!)
+          if (constraints.minHeight != null && size < constraints.minHeight!) {
             size = constraints.minHeight!.toInt();
+          }
 
           // must not be greater than max height
-          if (constraints.maxHeight != null && size > constraints.maxHeight!)
+          if (constraints.maxHeight != null && size > constraints.maxHeight!) {
             size = constraints.maxHeight!.toInt();
+          }
 
           // must be 0 or greater
           if (size.isNegative) size = 0;

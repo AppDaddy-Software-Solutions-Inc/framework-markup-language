@@ -203,8 +203,9 @@ class WidgetModel implements IDataSourceListener {
   BuildContext? get context {
     if (_listeners != null) {
       for (IModelListener listener in _listeners!) {
-        if (listener is State && (listener as State).mounted == true)
+        if (listener is State && (listener as State).mounted == true) {
           return (listener as State).context;
+        }
       }
     }
     if (parent != null) return parent!.context;
@@ -284,8 +285,9 @@ class WidgetModel implements IDataSourceListener {
     framework = findAncestorOfExactType(FrameworkModel);
 
     // register the model with the scope
-    if (!S.isNullOrEmpty(id) && this.scope != null)
+    if (!S.isNullOrEmpty(id) && this.scope != null) {
       this.scope!.registerModel(this);
+    }
   }
 
   static WidgetModel? fromXml(WidgetModel parent, XmlElement node) {
@@ -732,8 +734,9 @@ class WidgetModel implements IDataSourceListener {
         break;
 
       case "series":
-        if (parent is ChartModel)
+        if (parent is ChartModel) {
           model = ChartSeriesModel.fromXml(parent, node);
+        }
         // else if (parent is SFCHART.ChartModel) model = SFCHART.ChartSeriesModel.fromXml(parent, node);
         break;
 
@@ -897,8 +900,9 @@ class WidgetModel implements IDataSourceListener {
     state = Xml.get(node: xml, tag: 'state');
 
     // register as datasource
-    if ((this is IDataSource) && (scope != null))
+    if ((this is IDataSource) && (scope != null)) {
       scope!.registerDataSource(this as IDataSource);
+    }
 
     // Deserialize Children
 
@@ -988,8 +992,9 @@ class WidgetModel implements IDataSourceListener {
 
   notifyListeners(String? property, dynamic value, {bool notify = false}) {
     if (notify && _listeners == null) print('listeners is null');
-    if (notify && _listeners != null)
+    if (notify && _listeners != null) {
       print('listeners has ${_listeners!.length} members');
+    }
     if (_listeners != null) {
       for (var listener in _listeners!) {
         listener.onModelChange(this, property: property, value: value);
@@ -1011,8 +1016,9 @@ class WidgetModel implements IDataSourceListener {
           datasource.initialized = true;
 
           // announce data for late binding
-          if ((datasource.data != null) && (datasource.data!.isNotEmpty))
+          if ((datasource.data != null) && (datasource.data!.isNotEmpty)) {
             datasource.notify();
+          }
 
           // start the datasource if autoexecute = true
           if (datasource.autoexecute == true) datasource.start();
@@ -1055,7 +1061,7 @@ class WidgetModel implements IDataSourceListener {
     List<dynamic> list = [];
 
     // evaluate me
-    if ((this.runtimeType == (T ?? this.runtimeType)) &&
+    if ((runtimeType == (T ?? runtimeType)) &&
         (this.id == (id ?? this.id))) list.add(this);
 
     // evaluate my siblings
@@ -1068,8 +1074,9 @@ class WidgetModel implements IDataSourceListener {
     }
 
     // evaluate my ancestors
-    if (parent != null)
+    if (parent != null) {
       list.addAll(parent!._findAncestorsOfExactType(T, id, includeSiblings));
+    }
 
     return list;
   }
@@ -1094,7 +1101,7 @@ class WidgetModel implements IDataSourceListener {
     List<dynamic> list = [];
 
     // evaluate me
-    if ((this.runtimeType == (T ?? this.runtimeType)) &&
+    if ((runtimeType == (T ?? runtimeType)) &&
         (this.id == (id ?? this.id))) list.add(this);
 
     // evaluate my children
@@ -1134,8 +1141,9 @@ class WidgetModel implements IDataSourceListener {
   }
 
   void removeChildrenOfExactType(Type T) {
-    if (children != null)
+    if (children != null) {
       children!.removeWhere((child) => (child.runtimeType == (T)));
+    }
   }
 
   dynamic findListenerOfExactType(Type T) {

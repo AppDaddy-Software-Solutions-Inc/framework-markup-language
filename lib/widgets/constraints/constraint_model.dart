@@ -25,12 +25,8 @@ class ConstraintModel extends WidgetModel
     super.deserialize(xml);
 
     // set constraints
-    width = Xml.get(node: xml, tag: 'width');
-    isFixedWidth = width != null;
-
-    height = Xml.get(node: xml, tag: 'height');
-    isFixedHeight = height != null;
-
+    width     = Xml.get(node: xml, tag: 'width');
+    height    = Xml.get(node: xml, tag: 'height');
     minWidth  = Xml.get(node: xml, tag: 'minwidth');
     maxWidth  = Xml.get(node: xml, tag: 'maxwidth');
     minHeight = Xml.get(node: xml, tag: 'minheight');
@@ -113,7 +109,6 @@ class ConstraintModel extends WidgetModel
   /// Local Constraints
   ///
   // width
-  bool isFixedWidth = false;
   double? widthPercentage;
   DoubleObservable? _width;
   set width(dynamic v)
@@ -137,14 +132,25 @@ class ConstraintModel extends WidgetModel
     }
   }
   double? get width => _width?.get();
-  setWidth(double? v, {bool notify = false})
+
+  // this routine set the width silently and resets the
+  // fixedWidth property
+  bool _fixedWidth  = false;
+  bool get isFixedWidth => _fixedWidth;
+  setWidth(double? v)
   {
+    // remember setting
+    var fixed = _fixedWidth;
+
     if (_width == null)
     {
       _width = DoubleObservable(Binding.toKey(id, 'width'), null, scope: scope, setter: _widthSetter);
       _width!.registerListener(onPropertyChange);
     }
-    _width?.set(v, notify: notify);
+    _width?.set(v, notify: false);
+
+    // set it back
+    _fixedWidth = fixed;
   }
 
   // this routine enforces the min and max width
@@ -159,11 +165,11 @@ class ConstraintModel extends WidgetModel
       if (v.isNegative) v = 0;
       if (v != S.toDouble(value)) value = v;
     }
+    if (!S.isNullOrEmpty(value)) _fixedWidth = true;
     return value;
   }
 
   // height
-  bool isFixedHeight = false;
   double? _heightPercentage;
   double? get heightPercentage => _heightPercentage;
   DoubleObservable? _height;
@@ -189,14 +195,24 @@ class ConstraintModel extends WidgetModel
     }
   }
   double? get height => _height?.get();
-  setHeight(double? v, {bool notify = false})
+
+  // this routine set the height silently and resets the
+  // fixedHeight property
+  bool _fixedHeight = false;
+  bool get isFixedHeight => _fixedHeight;
+  setHeight(double? v)
   {
+    // remember setting
+    var fixed = _fixedHeight;
     if (_height == null)
     {
       _height = DoubleObservable(Binding.toKey(id, 'height'), null, scope: scope, setter: _heightSetter);
       _height!.registerListener(onPropertyChange);
     }
-    _height?.set(v, notify:notify);
+    _height?.set(v, notify:false);
+
+    // set it back
+    _fixedHeight = fixed;
   }
 
   // this routine enforces the min and max height
@@ -211,6 +227,7 @@ class ConstraintModel extends WidgetModel
       if (v.isNegative) v = 0;
       if (v != S.toDouble(value)) value = v;
     }
+    if (!S.isNullOrEmpty(value)) _fixedHeight = true;
     return value;
   }
 
@@ -416,7 +433,7 @@ class ConstraintModel extends WidgetModel
       if (maxWidth != null && maxWidth! < width!) width = maxWidth?.toInt();
 
       // set the width
-      setWidth(width?.toDouble(), notify: false);
+      setWidth(width?.toDouble());
     }
 
     // adjust the height if defined as a percentage
@@ -431,7 +448,7 @@ class ConstraintModel extends WidgetModel
       if (maxHeight != null && maxHeight! < height!) height = maxHeight?.toInt();
 
       // set the height
-      setHeight(height?.toDouble(), notify: false);
+      setHeight(height?.toDouble());
     }
   }
 }

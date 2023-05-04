@@ -42,7 +42,7 @@ class StackModel extends LayoutModel
   @override
   bool get isVerticallyExpanding => expand && !isFixedHeight;
 
-  @required
+  @override
   bool get isHorizontallyExpanding => expand && !isFixedWidth;
 
   StackModel(WidgetModel parent, String? id) : super(parent, id);

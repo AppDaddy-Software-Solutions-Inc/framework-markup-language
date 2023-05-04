@@ -312,13 +312,13 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       if (widget.model.layout == null) header.layout = "stack";
 
       // set header constraints
-      var viewportWidth  = constraints.maxWidth;
-      header.width = viewportWidth;
+      var width = constraints.maxWidth;
+      header.setWidth(width);
 
       // build framework header view
       view = header.getView();
     }
-    else widget.model.header?.height = 0;
+    else widget.model.header?.setHeight(0);
 
     return view;
   }
@@ -335,13 +335,13 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       if (widget.model.layout == null) footer.layout = "stack";
 
       // set footer constraints
-      var viewportWidth  = constraints.maxWidth;
-      footer.width = viewportWidth;
+      var width = constraints.maxWidth;
+      footer.setWidth(width);
 
       // build framework footer view
       view = footer.getView();
     }
-    else widget.model.footer?.height = 0;
+    else widget.model.footer?.setHeight(0);
 
     return view;
   }
@@ -360,8 +360,12 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     var viewportWidth  = constraints.maxWidth;
     var viewportHeight = constraints.maxHeight;
     var usedHeight     = (header?.height ?? 0) + (footer?.height ?? 0) + safeArea;
-    body.height = viewportHeight- usedHeight - (body.marginTop ?? 0) - (body.marginBottom ?? 0);
-    body.width  = viewportWidth - (body.marginLeft ?? 0) - (body.marginRight ?? 0);
+
+    var height = viewportHeight- usedHeight - (body.marginTop ?? 0) - (body.marginBottom ?? 0);
+    body.setHeight(height);
+
+    var width = viewportWidth - (body.marginLeft ?? 0) - (body.marginRight ?? 0);
+    body.setWidth(width);
 
     // build framework body
     Widget view = BoxView(body);

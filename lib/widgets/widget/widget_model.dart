@@ -943,6 +943,8 @@ class WidgetModel implements IDataSourceListener
     if (_listeners != null) _listeners!.clear();
   }
 
+ rebuild() => notifyListeners("rebuild", true);
+
   notifyListeners(String? property, dynamic value, {bool notify = false}) {
     if (notify && _listeners == null) print('listeners is null');
     if (notify && _listeners != null) print('listeners has ${_listeners!.length} members');
@@ -997,18 +999,20 @@ class WidgetModel implements IDataSourceListener
     return ((list != null) && (list.length > 0)) ? list.first : null;
   }
 
-  List<dynamic>? findAncestorsOfExactType(Type T, {String? id, bool includeSiblings = false})
+  List<dynamic>? get ancestors => findAncestorsOfExactType(null);
+
+  List<dynamic>? findAncestorsOfExactType(Type? T, {String? id, bool includeSiblings = false})
   {
     if (parent == null) return null;
     return parent!._findAncestorsOfExactType(T, id, includeSiblings);
   }
 
-  List<dynamic> _findAncestorsOfExactType(Type T, String? id, bool includeSiblings)
+  List<dynamic> _findAncestorsOfExactType(Type? T, String? id, bool includeSiblings)
   {
     List<dynamic> list = [];
 
     // evaluate me
-    if ((this.runtimeType == T) && (this.id == (id ?? this.id))) list.add(this);
+    if ((this.runtimeType == (T ?? this.runtimeType)) && (this.id == (id ?? this.id))) list.add(this);
 
     // evaluate my siblings
     if ((includeSiblings) && (children != null))
@@ -1020,7 +1024,10 @@ class WidgetModel implements IDataSourceListener
     return list;
   }
 
-  dynamic findDescendantOfExactType(Type? T, {String? id}) {
+  List<dynamic>? get descendants => findDescendantsOfExactType(null);
+
+  dynamic findDescendantOfExactType(Type? T, {String? id})
+  {
     List<dynamic>? list = findDescendantsOfExactType(T, id: id);
     return ((list != null) && (list.length > 0)) ? list.first : null;
   }
@@ -1037,8 +1044,7 @@ class WidgetModel implements IDataSourceListener
     List<dynamic> list = [];
 
     // evaluate me
-    if ((this.runtimeType == (T ?? this.runtimeType)) &&
-        (this.id == (id ?? this.id))) list.add(this);
+    if ((this.runtimeType == (T ?? this.runtimeType)) && (this.id == (id ?? this.id))) list.add(this);
 
     // evaluate my children
     if (children != null)

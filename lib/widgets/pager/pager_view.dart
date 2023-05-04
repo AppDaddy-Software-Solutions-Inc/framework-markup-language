@@ -196,16 +196,16 @@ class DotsIndicator extends AnimatedWidget {
 
   Widget _buildDot(int index) {
     double zoom = 1.0 + (_kMaxZoom - 1.0) * (index == (controller.page ?? controller.initialPage) ? 1 : 0);
-    return new Container(
+    return Container(
       width: _kDotSpacing,
-      child: new Center(
-        child: new Material(
+      child: Center(
+        child: Material(
           color: color,
           type: MaterialType.circle,
-          child: new Container(
+          child: Container(
             width: _kDotSize * zoom,
             height: _kDotSize * zoom,
-            child: new InkWell(splashColor: color!.withOpacity(0.5),
+            child: InkWell(splashColor: color!.withOpacity(0.5),
               onTap: () => onPageSelected!(index),
             ),
           ),
@@ -215,9 +215,9 @@ class DotsIndicator extends AnimatedWidget {
   }
 
   Widget build(BuildContext context) {
-    return new Row(
+    return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: new List<Widget>.generate(itemCount!, _buildDot),
+      children: List<Widget>.generate(itemCount!, _buildDot),
     );
   }
 }

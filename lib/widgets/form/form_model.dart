@@ -62,18 +62,6 @@ class FormModel extends DecoratedWidgetModel {
 
   List<String>? get postbrokers => _postbrokers;
 
-  // datasource to fill the form
-  StringObservable? _data;
-  set data(dynamic v) {
-    if (_data != null) {
-      _data!.set(v);
-    } else if (v != null) {
-      _data = StringObservable(Binding.toKey(id, 'data'), v, scope: scope);
-    }
-  }
-
-  String? get data => _data?.get();
-
   // status
   StringObservable? _status;
   set status(dynamic v) {
@@ -357,8 +345,9 @@ class FormModel extends DecoratedWidgetModel {
 
     // add dirty listener to each field
     for (var field in fields) {
-      if (field.dirtyObservable != null)
+      if (field.dirtyObservable != null) {
         field.dirtyObservable!.registerListener(onDirtyListener);
+      }
     }
 
     // add dirty listener to each sub-form
@@ -460,8 +449,9 @@ class FormModel extends DecoratedWidgetModel {
     if (ok == true) clean = true;
 
     // fire on complete events
-    if (ok && _oncomplete != null)
+    if (ok && _oncomplete != null) {
       ok = await EventHandler(this).execute(_oncomplete);
+    }
 
     busy = false;
 
@@ -512,21 +502,25 @@ class FormModel extends DecoratedWidgetModel {
           XmlElement node = XmlElement(XmlName("ANSWER"));
 
           // id
-          if (field.id != null)
+          if (field.id != null) {
             node.attributes.add(XmlAttribute(XmlName("id"), field.id!));
+          }
 
           // field
-          if (!S.isNullOrEmpty(field.field))
+          if (!S.isNullOrEmpty(field.field)) {
             node.attributes.add(XmlAttribute(XmlName("field"), field.field!));
+          }
 
           // field type
-          if (!S.isNullOrEmpty(field.elementName))
+          if (!S.isNullOrEmpty(field.elementName)) {
             node.attributes
                 .add(XmlAttribute(XmlName('type'), field.elementName));
+          }
 
           // field meta data
-          if (!S.isNullOrEmpty(field.meta))
+          if (!S.isNullOrEmpty(field.meta)) {
             node.attributes.add(XmlAttribute(XmlName('meta'), field.meta));
+          }
 
           /// GeoCode for each [iFormField] which is set on answer
           if (field.geocode != null) field.geocode!.serialize(node);
@@ -605,17 +599,19 @@ class FormModel extends DecoratedWidgetModel {
                 }
 
                 // add field type
-                if (!S.isNullOrEmpty(field.elementName))
+                if (!S.isNullOrEmpty(field.elementName)) {
                   node.attributes
                       .add(XmlAttribute(XmlName('type'), field.elementName));
+                }
 
                 /// GeoCode for each [iFormField] which is set on answer
                 if (field.geocode != null) field.geocode!.serialize(node);
 
                 // add meta data
-                if (!S.isNullOrEmpty(field.meta))
+                if (!S.isNullOrEmpty(field.meta)) {
                   node.attributes
                       .add(XmlAttribute(XmlName('meta'), field.meta));
+                }
 
                 // value
                 try {
@@ -663,9 +659,10 @@ class FormModel extends DecoratedWidgetModel {
               }
 
               // Add Field Type
-              if (!S.isNullOrEmpty(field.elementName))
+              if (!S.isNullOrEmpty(field.elementName)) {
                 node.attributes
                     .add(XmlAttribute(XmlName('type'), field.elementName));
+              }
 
               // Add Node
               root.children.add(node);
@@ -774,8 +771,9 @@ class FormModel extends DecoratedWidgetModel {
     List<IFormField>? missing;
     for (var field in fields) {
       bool? isMandatory;
-      if ((isMandatory == null) && (field.mandatory != null))
+      if ((isMandatory == null) && (field.mandatory != null)) {
         isMandatory = field.mandatory;
+      }
       if ((isMandatory == null) && (mandatory != null)) isMandatory = mandatory;
       isMandatory ??= false;
       if ((isMandatory) && (!field.answered)) {
@@ -815,8 +813,9 @@ class FormModel extends DecoratedWidgetModel {
                 ?.elementAt(0);
 
             //data can return a jsonmap as part of the data's list if it fails to grab the binding. If this is the case, do not set the value.
-            if (sourceData != null && sourceData is! Map)
+            if (sourceData != null && sourceData is! Map) {
               field.value = sourceData.toString();
+            }
           }
         }
       }

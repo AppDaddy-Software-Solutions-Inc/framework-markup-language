@@ -1066,8 +1066,9 @@ class WidgetModel implements IDataSourceListener {
     List<dynamic> list = [];
 
     // evaluate me
-    if ((runtimeType == (T ?? runtimeType)) && (this.id == (id ?? this.id)))
+    if ((runtimeType == (T ?? runtimeType)) && (this.id == (id ?? this.id))) {
       list.add(this);
+    }
 
     // evaluate my siblings
     if ((includeSiblings) && (children != null)) {
@@ -1106,8 +1107,9 @@ class WidgetModel implements IDataSourceListener {
     List<dynamic> list = [];
 
     // evaluate me
-    if ((runtimeType == (T ?? runtimeType)) && (this.id == (id ?? this.id)))
+    if ((runtimeType == (T ?? runtimeType)) && (this.id == (id ?? this.id))) {
       list.add(this);
+    }
 
     // evaluate my children
     if (children != null) {

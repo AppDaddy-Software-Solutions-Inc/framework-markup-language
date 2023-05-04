@@ -10,8 +10,6 @@ import 'package:fml/widgets/input/input_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-import '../form/form_model.dart';
-
 enum InputFormats { numeric, integer, text, boolean, xml }
 
 enum CapitalizationTypes { mixed, camel, upper, lower, sentences, words }
@@ -128,9 +126,10 @@ class InputModel extends FormFieldModel implements IFormField {
       _value!.set(v);
     } else {
       if ((v != null) ||
-          (WidgetModel.isBound(this, Binding.toKey(id, 'value'))))
+          (WidgetModel.isBound(this, Binding.toKey(id, 'value')))) {
         _value = StringObservable(Binding.toKey(id, 'value'), v,
             scope: scope, listener: onPropertyChange);
+      }
     }
   }
 

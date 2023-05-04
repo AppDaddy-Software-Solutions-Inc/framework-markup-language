@@ -2,7 +2,7 @@
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
-import 'package:fml/widgets/form/iFormField.dart';
+import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/helper/common_helpers.dart';
@@ -64,12 +64,4 @@ class FieldModel extends FormFieldModel implements IFormField
     super.deserialize(xml);
     value = Xml.get(node: xml, tag: S.fromEnum('value'));
   }
-
-
-  @override
-  void dispose()
-  {
-    super.dispose();
-  }
-
 }

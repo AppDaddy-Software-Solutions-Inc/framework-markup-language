@@ -223,8 +223,9 @@ class System extends WidgetModel implements IEventManager {
 
       ConnectivityStatus initialConnection =
           await connection.checkConnectivity();
-      if (initialConnection == ConnectivityStatus.none)
+      if (initialConnection == ConnectivityStatus.none) {
         System.toast(Phrases().checkConnection, duration: 3);
+      }
 
       // Add connection listener
       connection.isConnected.listen((isconnected) {
@@ -373,8 +374,9 @@ class System extends WidgetModel implements IEventManager {
       // replace default for testing
       if (isWeb) {
         var uri = Uri.tryParse(baseUrl);
-        if (uri != null && !uri.host.toLowerCase().startsWith("localhost"))
+        if (uri != null && !uri.host.toLowerCase().startsWith("localhost")) {
           domain = uri.url;
+        }
       }
 
       print('Startup Domain is $domain');

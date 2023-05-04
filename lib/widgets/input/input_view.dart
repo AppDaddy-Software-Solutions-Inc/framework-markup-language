@@ -113,11 +113,12 @@ class _InputViewState extends WidgetState<InputView>
     super.didUpdateWidget(oldWidget);
 
     var oldcursorPos = widget.model.controller?.selection.base.offset;
-    if (oldcursorPos != null)
+    if (oldcursorPos != null) {
       widget.model.controller?.value = TextEditingValue(
           text: widget.model.value ?? "",
           selection:
               TextSelection.fromPosition(TextPosition(offset: oldcursorPos)));
+    }
   }
 
   @override
@@ -151,11 +152,12 @@ class _InputViewState extends WidgetState<InputView>
         // * form that we can't reproduce, causing a loop on selection and this
         // * line fixed it, likely a coincidence but somewhere lies a bug. - BF
         var oldcursorPos = widget.model.controller?.selection.base.offset;
-        if (oldcursorPos != null)
+        if (oldcursorPos != null) {
           widget.model.controller?.value = TextEditingValue(
               text: widget.model.value ?? "",
               selection: TextSelection.fromPosition(
                   TextPosition(offset: oldcursorPos)));
+        }
       });
     }
   }
@@ -403,14 +405,18 @@ class _InputViewState extends WidgetState<InputView>
     if (widget.model.bordercolor != null) {
       var colorArray = widget.model.bordercolor?.split(',');
       if (colorArray != null) {
-        if (colorArray.isNotEmpty)
+        if (colorArray.isNotEmpty) {
           colors[0] = ColorObservable.toColor(colorArray[0].trim());
-        if (colorArray.length > 1)
+        }
+        if (colorArray.length > 1) {
           colors[1] = ColorObservable.toColor(colorArray[1].trim());
-        if (colorArray.length > 2)
+        }
+        if (colorArray.length > 2) {
           colors[2] = ColorObservable.toColor(colorArray[2].trim());
-        if (colorArray.length > 3)
+        }
+        if (colorArray.length > 3) {
           colors[3] = ColorObservable.toColor(colorArray[3].trim());
+        }
       }
     }
     return colors;
@@ -422,14 +428,18 @@ class _InputViewState extends WidgetState<InputView>
     if (widget.model.textcolor != null) {
       var colorArray = widget.model.textcolor?.split(',');
       if (colorArray != null) {
-        if (colorArray.isNotEmpty)
+        if (colorArray.isNotEmpty) {
           colors[0] = ColorObservable.toColor(colorArray[0].trim());
-        if (colorArray.length > 1)
+        }
+        if (colorArray.length > 1) {
           colors[1] = ColorObservable.toColor(colorArray[1].trim());
-        if (colorArray.length > 2)
+        }
+        if (colorArray.length > 2) {
           colors[2] = ColorObservable.toColor(colorArray[2].trim());
-        if (colorArray.length > 3)
+        }
+        if (colorArray.length > 3) {
           colors[3] = ColorObservable.toColor(colorArray[3].trim());
+        }
       }
     }
     return colors;

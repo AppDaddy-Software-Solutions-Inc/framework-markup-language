@@ -76,9 +76,10 @@ class RadioModel extends FormFieldModel implements IFormField {
       this.data = data;
     } else {
       if ((v != null) ||
-          (WidgetModel.isBound(this, Binding.toKey(id, 'value'))))
+          (WidgetModel.isBound(this, Binding.toKey(id, 'value')))) {
         _value = StringObservable(Binding.toKey(id, 'value'), v,
             scope: scope, listener: onPropertyChange);
+      }
     }
   }
 
@@ -237,8 +238,9 @@ class RadioModel extends FormFieldModel implements IFormField {
       }
 
       // Set value to first option or null if the current value is not in option list
-      if (!containsOption())
+      if (!containsOption()) {
         value = options.isNotEmpty ? options[0].value : null;
+      }
 
       // set the data
       setData();

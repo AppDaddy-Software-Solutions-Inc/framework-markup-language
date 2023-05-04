@@ -268,8 +268,9 @@ class FormFieldModel extends DecoratedWidgetModel {
 
     // set the error if the trigger type is not validation based, or if validation has already been hit
     if (triggerType != "validate" || validationHasHit == true)
+    {
       error = alarmSounding;
-
+    }
     // turn off the validation state if the alarm has been dismissed to require a validation per alarm sounding
     if (validationHasHit == true && !error) validationHasHit = false;
 
@@ -360,11 +361,13 @@ class FormFieldModel extends DecoratedWidgetModel {
 
   // return the correct combination of error and errotext based on the alarm vs the error.
   String returnErrorText() {
-    if (!S.isNullOrEmpty(alarmerrortext) && alarmerror == true)
+    if (!S.isNullOrEmpty(alarmerrortext) && alarmerror == true) {
       return alarmerrortext!;
+    }
     if (!S.isNullOrEmpty(errortext) && error == true) return errortext!;
-    if (error == true || alarmerror == true)
+    if (error == true || alarmerror == true) {
       return errortext ?? alarmerrortext ?? '';
+    }
     return '';
   }
 }

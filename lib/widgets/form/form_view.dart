@@ -122,8 +122,9 @@ class FormViewState extends WidgetState<FormView> implements IGpsListener {
     onLayout(constraints);
 
     // Check if widget is visible before wasting resources on building it
-    if ((widget.model.children == null) || ((!widget.model.visible)))
+    if ((widget.model.children == null) || ((!widget.model.visible))) {
       return Offstage();
+    }
 
     // build child views
     List<Widget> children = widget.model.inflate();

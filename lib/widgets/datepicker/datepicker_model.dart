@@ -265,32 +265,6 @@ class DatepickerModel extends FormFieldModel implements IFormField
   }
   bool get clear => _clear?.get() ?? false;
 
-  /// If the input will display its error state.
-  BooleanObservable? _error;
-
-  set error(dynamic v) {
-    if (_error != null) {
-      _error!.set(v);
-    } else if (v != null) {
-      _error = BooleanObservable(Binding.toKey(id, 'error'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get error => _error?.get() ?? false;
-
-  /// The error value of an input.
-  StringObservable? _errortext;
-
-  set errortext(dynamic v) {
-    if (_errortext != null) {
-      _errortext!.set(v);
-    } else if (v != null) {
-      _errortext = StringObservable(Binding.toKey(id, 'errortext'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  String? get errortext => _errortext?.get();
-
   /// The size of the font and height of the input.
   DoubleObservable? _size;
   set size(dynamic v) {

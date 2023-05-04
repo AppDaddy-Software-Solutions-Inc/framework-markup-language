@@ -155,7 +155,10 @@ class ConstraintModel extends WidgetModel
       _widthPercentage = S.toDouble(value.split("%")[0]);
       value = null;
     }
-    else _widthPercentage = null;
+    else
+    {
+      _widthPercentage = null;
+    }
 
     if (S.isNumber(value))
     {
@@ -219,7 +222,10 @@ class ConstraintModel extends WidgetModel
       _heightPercentage = S.toDouble(value.split("%")[0]);
       value = null;
     }
-    else _heightPercentage = null;
+    else
+    {
+      _heightPercentage = null;
+    }
 
     if (S.isNumber(value))
     {
@@ -239,6 +245,7 @@ class ConstraintModel extends WidgetModel
 
   // min width
   double? _minWidthPercentage;
+  double? get minWidthPercentage => _minWidthPercentage;
   DoubleObservable? _minWidth;
   set minWidth(dynamic v)
   {
@@ -263,6 +270,7 @@ class ConstraintModel extends WidgetModel
 
   // max width
   double? _maxWidthPercentage;
+  double? get maxWidthPercentage => _maxWidthPercentage;
   DoubleObservable? _maxWidth;
   set maxWidth(dynamic v)
   {
@@ -287,6 +295,7 @@ class ConstraintModel extends WidgetModel
 
   // min height
   double? _minHeightPercentage;
+  double? get minHeightPercentage => _minHeightPercentage;
   DoubleObservable? _minHeight;
   set minHeight(dynamic v)
   {
@@ -311,6 +320,7 @@ class ConstraintModel extends WidgetModel
 
   // max height
   double? _maxHeightPercentage;
+  double? get maxHeightPercentage => _maxHeightPercentage;
   DoubleObservable? _maxHeight;
   set maxHeight(dynamic v)
   {

@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_player_win/video_player_win_plugin.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 
 class VideoView extends StatefulWidget implements IWidgetView
 {

@@ -89,6 +89,7 @@ class ViewableWidgetModel extends ConstraintModel
   }
 
   // view width
+  double? viewWidthOld;
   double? _viewWidth;
   DoubleObservable? _viewWidthObservable;
   set viewWidth(double? v)
@@ -103,6 +104,7 @@ class ViewableWidgetModel extends ConstraintModel
   double? get viewWidth => _viewWidth;
 
   // view height
+  double? viewHeightOld;
   double? _viewHeight;
   DoubleObservable? _viewHeightObservable;
   set viewHeight(double? v)
@@ -517,12 +519,8 @@ class ViewableWidgetModel extends ConstraintModel
     super.deserialize(xml);
 
     // set constraints
-    width = Xml.get(node: xml, tag: 'width');
-    isFixedWidth = width != null;
-
-    height = Xml.get(node: xml, tag: 'height');
-    isFixedHeight = height != null;
-
+    width     = Xml.get(node: xml, tag: 'width');
+    height    = Xml.get(node: xml, tag: 'height');
     minWidth  = Xml.get(node: xml, tag: 'minwidth');
     maxWidth  = Xml.get(node: xml, tag: 'maxwidth');
     minHeight = Xml.get(node: xml, tag: 'minheight');
@@ -704,10 +702,14 @@ class ViewableWidgetModel extends ConstraintModel
     // set the view width, height and position
     if (size.width != viewWidth || size.height != viewHeight || position.dx != viewX || position.dy != viewY)
     {
-      viewWidth  = size.width;
+      viewWidthOld = viewWidth;
+      viewWidth = size.width;
+
+      viewHeightOld = viewHeight;
       viewHeight = size.height;
-      viewX      = position.dx;
-      viewY      = position.dy;
+
+      viewX = position.dx;
+      viewY = position.dy;
 
       // notify the parent
       if (parent is ViewableWidgetModel) (parent as ViewableWidgetModel).onLayoutComplete(model);

@@ -139,8 +139,7 @@ abstract class IScrolling {
   bool? moreRight;
 }
 
-class WidgetModel implements IDataSourceListener
-{
+class WidgetModel implements IDataSourceListener {
   // primary identifier
   late final String id;
 
@@ -152,8 +151,10 @@ class WidgetModel implements IDataSourceListener
 
   // xml node
   XmlElement? element;
-  String  get elementName => element != null ? element!.localName.toUpperCase() : '$runtimeType';
-  String? get elementNamespace => element != null ? element!.namespacePrefix!.toLowerCase() : null;
+  String get elementName =>
+      element != null ? element!.localName.toUpperCase() : '$runtimeType';
+  String? get elementNamespace =>
+      element != null ? element!.namespacePrefix!.toLowerCase() : null;
 
   // datasource
   List<IDataSource>? datasources;
@@ -161,18 +162,16 @@ class WidgetModel implements IDataSourceListener
 
   // data element
   ListObservable? _data;
-  set data(dynamic v)
-  {
-    if (_data != null)
-    {
+  set data(dynamic v) {
+    if (_data != null) {
       _data!.set(v);
-    }
-    else if (v != null)
-    {
-      _data = ListObservable(Binding.toKey(id, 'data'), null, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _data = ListObservable(Binding.toKey(id, 'data'), null,
+          scope: scope, listener: onPropertyChange);
       _data!.set(v);
     }
   }
+
   get data => _data?.get();
 
   // listeners
@@ -180,17 +179,15 @@ class WidgetModel implements IDataSourceListener
 
   // debug
   BooleanObservable? _debug;
-  set debug(dynamic v)
-  {
-    if (_debug != null)
-    {
+  set debug(dynamic v) {
+    if (_debug != null) {
       _debug!.set(v);
-    }
-    else if (v != null)
-    {
-      _debug = BooleanObservable(Binding.toKey(id, 'debug'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _debug = BooleanObservable(Binding.toKey(id, 'debug'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+
   bool get debug => _debug?.get() ?? false;
 
   // parent model
@@ -203,25 +200,24 @@ class WidgetModel implements IDataSourceListener
   Scope? scope;
 
   // context
-  BuildContext? get context
-  {
-    if (_listeners != null){
-    for (IModelListener listener in _listeners!)
-    {
-      if (listener is State && (listener as State).mounted == true) return (listener as State).context;
-    }}
+  BuildContext? get context {
+    if (_listeners != null) {
+      for (IModelListener listener in _listeners!) {
+        if (listener is State && (listener as State).mounted == true)
+          return (listener as State).context;
+      }
+    }
     if (parent != null) return parent!.context;
     return applicationKey.currentContext;
   }
 
   // context
-  BuildContext? get statelessContext
-  {
-    if (_listeners != null){
-      for (IModelListener listener in _listeners!)
-      {
+  BuildContext? get statelessContext {
+    if (_listeners != null) {
+      for (IModelListener listener in _listeners!) {
         if (listener is State) return (listener as State).context;
-      }}
+      }
+    }
     if (parent != null) return parent!.statelessContext;
     return null;
   }
@@ -237,6 +233,7 @@ class WidgetModel implements IDataSourceListener
           scope: scope, listener: onPropertyChange);
     }
   }
+
   String? get state => _state?.get();
 
   // Depth
@@ -250,6 +247,7 @@ class WidgetModel implements IDataSourceListener
           scope: scope, listener: onPropertyChange);
     }
   }
+
   double? get depth => _depth?.get();
 
   // busy
@@ -263,18 +261,18 @@ class WidgetModel implements IDataSourceListener
           scope: scope, listener: onPropertyChange);
     }
   }
+
   bool get busy => _busy?.get() ?? false;
 
   // override this getter in widgets that inherit form this class
   // to return the amount of vertical space allocated for padding, borders and margins
-  double get verticalPadding  => 0;
+  double get verticalPadding => 0;
 
   // override this getter in widgets that inherit form this class
   // to return the amount of horizontal space allocated for padding, borders and margins
   double get horizontalPadding => 0;
 
-  WidgetModel(this.parent, String? id, {Scope? scope})
-  {
+  WidgetModel(this.parent, String? id, {Scope? scope}) {
     // default id
     if (S.isNullOrEmpty(id)) id = S.newId();
     this.id = id!;
@@ -286,11 +284,11 @@ class WidgetModel implements IDataSourceListener
     framework = findAncestorOfExactType(FrameworkModel);
 
     // register the model with the scope
-    if (!S.isNullOrEmpty(id) && this.scope != null) this.scope!.registerModel(this);
+    if (!S.isNullOrEmpty(id) && this.scope != null)
+      this.scope!.registerModel(this);
   }
 
-  static WidgetModel? fromXml(WidgetModel parent, XmlElement node)
-  {
+  static WidgetModel? fromXml(WidgetModel parent, XmlElement node) {
     // clone node?
     node = cloneNode(node, parent.scope);
 
@@ -317,7 +315,6 @@ class WidgetModel implements IDataSourceListener
         break;
 
       case "barcode":
-
         model = BarcodeDetectorModel.fromXml(parent, node);
         break;
 
@@ -467,7 +464,7 @@ class WidgetModel implements IDataSourceListener
         break;
 
       case "fml":
-          model = FrameworkModel.fromXml(parent, node);
+        model = FrameworkModel.fromXml(parent, node);
         break;
 
       case "footer":
@@ -496,9 +493,9 @@ class WidgetModel implements IDataSourceListener
 
       case "greyscale":
       case "grayscale":
-         if (parent is IDataSource) {
-           model = Grayscale.fromXml(parent, node);
-         }
+        if (parent is IDataSource) {
+          model = Grayscale.fromXml(parent, node);
+        }
         break;
 
       case "gps":
@@ -589,16 +586,19 @@ class WidgetModel implements IDataSourceListener
         break;
 
       case "option":
-        if (parent is SelectModel || parent is CheckboxModel || parent is RadioModel || parent is TypeaheadModel) model = OptionModel.fromXml(parent, node);
+        if (parent is SelectModel ||
+            parent is CheckboxModel ||
+            parent is RadioModel ||
+            parent is TypeaheadModel) model = OptionModel.fromXml(parent, node);
         break;
 
-        case "fade":
-         if (parent is AnimationModel) {
-           model = FadeTransitionModel.fromXml(parent, node);
-         } else {
-           model =  FadeTransitionModel.fromXml(parent, node);
-         }
-         break;
+      case "fade":
+        if (parent is AnimationModel) {
+          model = FadeTransitionModel.fromXml(parent, node);
+        } else {
+          model = FadeTransitionModel.fromXml(parent, node);
+        }
+        break;
 
       case "rotate":
         if (parent is AnimationModel) {
@@ -608,17 +608,20 @@ class WidgetModel implements IDataSourceListener
         }
         break;
 
-        case "size":
-          if (parent is AnimationModel) {
-            model = SizeTransitionModel.fromXml(parent, node);
-          } else {
-            model = SizeTransitionModel.fromXml(parent, node);
-          }
-          break;
+      case "size":
+        if (parent is AnimationModel) {
+          model = SizeTransitionModel.fromXml(parent, node);
+        } else {
+          model = SizeTransitionModel.fromXml(parent, node);
+        }
+        break;
 
       case "slide":
         if (parent is AnimationModel) {
-          model = SlideTransitionModel.fromXml(parent, node,);
+          model = SlideTransitionModel.fromXml(
+            parent,
+            node,
+          );
         } else {
           model = SlideTransitionModel.fromXml(parent, node);
         }
@@ -729,7 +732,8 @@ class WidgetModel implements IDataSourceListener
         break;
 
       case "series":
-        if (parent is ChartModel) model = ChartSeriesModel.fromXml(parent, node);
+        if (parent is ChartModel)
+          model = ChartSeriesModel.fromXml(parent, node);
         // else if (parent is SFCHART.ChartModel) model = SFCHART.ChartSeriesModel.fromXml(parent, node);
         break;
 
@@ -815,7 +819,8 @@ class WidgetModel implements IDataSourceListener
 
       case "tip":
       case "tooltip":
-        if (Xml.attribute(node: node, tag: "label") != null || Xml.attribute(node: node, tag: "text") != null) {
+        if (Xml.attribute(node: node, tag: "label") != null ||
+            Xml.attribute(node: node, tag: "text") != null) {
           model = v1.TooltipModel.fromXml(parent, node);
         } else {
           model = v2.TooltipModel.fromXml(parent, node);
@@ -833,7 +838,6 @@ class WidgetModel implements IDataSourceListener
       case "typeahead":
         model = TypeaheadModel.fromXml(parent, node);
         break;
-
 
       case "variable":
       case "var":
@@ -879,8 +883,7 @@ class WidgetModel implements IDataSourceListener
     return model;
   }
 
-  void deserialize(XmlElement xml)
-  {
+  void deserialize(XmlElement xml) {
     // Busy
     busy = true;
 
@@ -894,7 +897,8 @@ class WidgetModel implements IDataSourceListener
     state = Xml.get(node: xml, tag: 'state');
 
     // register as datasource
-    if ((this is IDataSource) && (scope != null)) scope!.registerDataSource(this as IDataSource);
+    if ((this is IDataSource) && (scope != null))
+      scope!.registerDataSource(this as IDataSource);
 
     // Deserialize Children
 
@@ -903,8 +907,7 @@ class WidgetModel implements IDataSourceListener
     _deserialize(xml);
 
     // register listener
-    if ((datasource != null) && (scope != null))
-    {
+    if ((datasource != null) && (scope != null)) {
       IDataSource? source = scope!.getDataSource(datasource);
       if (source != null) source.register(this);
     }
@@ -913,58 +916,51 @@ class WidgetModel implements IDataSourceListener
     busy = false;
   }
 
-  void _deserializeDataSources(XmlElement xml)
-  {
+  void _deserializeDataSources(XmlElement xml) {
     // find and deserialize all datasources
     for (XmlNode node in xml.children) {
-      if (node is XmlElement && isDataSource(node.localName))
-    {
-      // build the data source model
-      dynamic model = WidgetModel.fromXml(this, node);
-      if (model is IDataSource)
-      {
-        datasources ??= [];
-        datasources!.add(model);
+      if (node is XmlElement && isDataSource(node.localName)) {
+        // build the data source model
+        dynamic model = WidgetModel.fromXml(this, node);
+        if (model is IDataSource) {
+          datasources ??= [];
+          datasources!.add(model);
+        }
       }
-    }
     }
   }
 
-  void _deserialize(XmlElement xml)
-  {
+  void _deserialize(XmlElement xml) {
     // deserialize all non-datasource children
     for (XmlNode node in xml.children) {
-      if (node is XmlElement && !isDataSource(node.localName))
-    {
-      // build the model
-      dynamic model = WidgetModel.fromXml(this, node);
-      if (model is WidgetModel)
-      {
-        children ??= [];
-        children!.add(model);
+      if (node is XmlElement && !isDataSource(node.localName)) {
+        // build the model
+        dynamic model = WidgetModel.fromXml(this, node);
+        if (model is WidgetModel) {
+          children ??= [];
+          children!.add(model);
+        }
       }
-    }
     }
   }
 
-  void dispose()
-  {
+  void dispose() {
     // remove listeners
     removeAllListeners();
 
     // dispose of datasources
-    if (datasources != null){
-    for (var datasource in datasources!) {
-      if (datasource.parent == this) datasource.dispose();
-    }}
+    if (datasources != null) {
+      for (var datasource in datasources!) {
+        if (datasource.parent == this) datasource.dispose();
+      }
+    }
     datasources?.clear();
 
     // remove model and all of its bindables from the scope
     scope?.unregisterModel(this);
 
     // dispose of children
-    if (children != null)
-    {
+    if (children != null) {
       for (var child in children!) {
         child.dispose();
       }
@@ -972,8 +968,7 @@ class WidgetModel implements IDataSourceListener
     }
   }
 
-  registerListener(IModelListener listener)
-  {
+  registerListener(IModelListener listener) {
     _listeners ??= [];
     if (!_listeners!.contains(listener)) _listeners!.add(listener);
   }
@@ -989,9 +984,12 @@ class WidgetModel implements IDataSourceListener
     if (_listeners != null) _listeners!.clear();
   }
 
+  rebuild() => notifyListeners("rebuild", true);
+
   notifyListeners(String? property, dynamic value, {bool notify = false}) {
     if (notify && _listeners == null) print('listeners is null');
-    if (notify && _listeners != null) print('listeners has ${_listeners!.length} members');
+    if (notify && _listeners != null)
+      print('listeners has ${_listeners!.length} members');
     if (_listeners != null) {
       for (var listener in _listeners!) {
         listener.onModelChange(this, property: property, value: value);
@@ -1003,19 +1001,18 @@ class WidgetModel implements IDataSourceListener
     notifyListeners(observable.key, observable.get());
   }
 
-  void initialize()
-  {
+  void initialize() {
     // start datasources
     if (datasources != null) {
       for (var datasource in datasources!) {
         // already started?
-        if (!datasource.initialized!)
-        {
+        if (!datasource.initialized!) {
           // mark as started
           datasource.initialized = true;
 
           // announce data for late binding
-          if ((datasource.data != null) && (datasource.data!.isNotEmpty)) datasource.notify();
+          if ((datasource.data != null) && (datasource.data!.isNotEmpty))
+            datasource.notify();
 
           // start the datasource if autoexecute = true
           if (datasource.autoexecute == true) datasource.start();
@@ -1027,7 +1024,7 @@ class WidgetModel implements IDataSourceListener
   static void unfocus() {
     try {
       WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
-    } catch(e) {
+    } catch (e) {
       Log().exception(e);
     }
   }
@@ -1038,37 +1035,46 @@ class WidgetModel implements IDataSourceListener
     return model.framework!.bindables!.contains(key);
   }
 
-  dynamic findAncestorOfExactType(Type T, {String? id, bool includeSiblings = false})
-  {
-    List<dynamic>? list = findAncestorsOfExactType(T, id: id, includeSiblings: includeSiblings);
+  dynamic findAncestorOfExactType(Type T,
+      {String? id, bool includeSiblings = false}) {
+    List<dynamic>? list =
+        findAncestorsOfExactType(T, id: id, includeSiblings: includeSiblings);
     return ((list != null) && (list.isNotEmpty)) ? list.first : null;
   }
 
-  List<dynamic>? findAncestorsOfExactType(Type T, {String? id, bool includeSiblings = false})
-  {
+  List<dynamic>? get ancestors => findAncestorsOfExactType(null);
+
+  List<dynamic>? findAncestorsOfExactType(Type? T,
+      {String? id, bool includeSiblings = false}) {
     if (parent == null) return null;
     return parent!._findAncestorsOfExactType(T, id, includeSiblings);
   }
 
-  List<dynamic> _findAncestorsOfExactType(Type T, String? id, bool includeSiblings)
-  {
+  List<dynamic> _findAncestorsOfExactType(
+      Type? T, String? id, bool includeSiblings) {
     List<dynamic> list = [];
 
     // evaluate me
-    if ((runtimeType == T) && (this.id == (id ?? this.id))) list.add(this);
+    if ((this.runtimeType == (T ?? this.runtimeType)) &&
+        (this.id == (id ?? this.id))) list.add(this);
 
     // evaluate my siblings
     if ((includeSiblings) && (children != null)) {
       for (var child in children!) {
-        ((child.runtimeType == T) && (child.id == (id ?? child.id))) ? list.add(child) : null;
+        ((child.runtimeType == T) && (child.id == (id ?? child.id)))
+            ? list.add(child)
+            : null;
       }
     }
 
     // evaluate my ancestors
-    if (parent != null) list.addAll(parent!._findAncestorsOfExactType(T, id, includeSiblings));
+    if (parent != null)
+      list.addAll(parent!._findAncestorsOfExactType(T, id, includeSiblings));
 
     return list;
   }
+
+  List<dynamic>? get descendants => findDescendantsOfExactType(null);
 
   dynamic findDescendantOfExactType(Type? T, {String? id}) {
     List<dynamic>? list = findDescendantsOfExactType(T, id: id);
@@ -1088,14 +1094,15 @@ class WidgetModel implements IDataSourceListener
     List<dynamic> list = [];
 
     // evaluate me
-    if ((runtimeType == (T ?? runtimeType)) &&
+    if ((this.runtimeType == (T ?? this.runtimeType)) &&
         (this.id == (id ?? this.id))) list.add(this);
 
     // evaluate my children
-    if (children != null){
+    if (children != null) {
       for (WidgetModel child in children!) {
         list.addAll(child._findDescendantsOfExactType(T, id));
-      }}
+      }
+    }
 
     return list;
   }
@@ -1109,37 +1116,39 @@ class WidgetModel implements IDataSourceListener
 
   dynamic findChildOfExactType(Type T, {String? id}) {
     if (children != null) {
-      return children!.firstWhereOrNull((child) => child.runtimeType == T && (child.id == (id ?? child.id)));
+      return children!.firstWhereOrNull(
+          (child) => child.runtimeType == T && (child.id == (id ?? child.id)));
     }
   }
 
   List<dynamic> findChildrenOfExactType(Type T, {String? id}) {
     List<dynamic> list = [];
-    if (children != null){
+    if (children != null) {
       for (WidgetModel child in children!) {
         if ((child.runtimeType == (T)) && (child.id == (id ?? child.id))) {
           list.add(child);
+        }
       }
-        }}
+    }
     return list;
   }
 
   void removeChildrenOfExactType(Type T) {
-    if (children != null) children!.removeWhere((child) => (child.runtimeType == (T)));
+    if (children != null)
+      children!.removeWhere((child) => (child.runtimeType == (T)));
   }
 
-  dynamic findListenerOfExactType(Type T)
-  {
-    if (_listeners != null){
-    for (dynamic listener in _listeners!) {
-      if (listener.runtimeType == T) return listener;
-    }}
+  dynamic findListenerOfExactType(Type T) {
+    if (_listeners != null) {
+      for (dynamic listener in _listeners!) {
+        if (listener.runtimeType == T) return listener;
+      }
+    }
     return null;
   }
 
   @override
-  Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async
-  {
+  Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async {
     busy = false;
     //notifyListeners('list', list);
     return true;
@@ -1152,8 +1161,7 @@ class WidgetModel implements IDataSourceListener
   }
 
   @override
-  onDataSourceBusy(IDataSource source, bool busy)
-  {
+  onDataSourceBusy(IDataSource source, bool busy) {
     this.busy = busy;
     //notifyListeners('busy', this.busy);
   }
@@ -1161,41 +1169,36 @@ class WidgetModel implements IDataSourceListener
   /// This will be overridden for more complex widgets such as TABLE
   /// where children may actually be header or footer declarations that require
   /// a complete restructuring/rebuild of the parent
-  Future<bool> _appendChild(XmlElement element, int? index) async
-  {
-      WidgetModel? model = fromXml(this, element);
-      if (model != null)
-      {
-        // model is a datasource
-        if (model is IDataSource)
-        {
-          // add it to the datasource list
-          datasources ??= [];
-          datasources!.add(model as IDataSource);
+  Future<bool> _appendChild(XmlElement element, int? index) async {
+    WidgetModel? model = fromXml(this, element);
+    if (model != null) {
+      // model is a datasource
+      if (model is IDataSource) {
+        // add it to the datasource list
+        datasources ??= [];
+        datasources!.add(model as IDataSource);
 
-          // start brokers
-          initialize();
-        }
+        // start brokers
+        initialize();
+      }
 
-        // model is widget
-        else
-        {
-          // add it to the child list
-          children ??= [];
+      // model is widget
+      else {
+        // add it to the child list
+        children ??= [];
 
-          // position specified?
-          if (index != null && index < children!.length) {
-            children!.insert(index, model);
-          } else {
-            children!.add(model);
-          }
+        // position specified?
+        if (index != null && index < children!.length) {
+          children!.insert(index, model);
+        } else {
+          children!.add(model);
         }
       }
-      return (model != null);
+    }
+    return (model != null);
   }
 
-  Future<bool> _appendXml(String xml, int? index, [bool silent = true]) async
-  {
+  Future<bool> _appendXml(String xml, int? index, [bool silent = true]) async {
     List<XmlElement> nodes = [];
 
     Exception? exception;
@@ -1204,16 +1207,14 @@ class WidgetModel implements IDataSourceListener
     var document = Xml.tryParseException(xml);
 
     // failed parse
-    if (document is Exception)
-    {
+    if (document is Exception) {
       exception = document;
 
       // try parsing xml wrapped in a root tag
       // this allows the user to send a list of elements
       // and not have top wrap in a root tag
       document = Xml.tryParseException("<ROOT>$xml</ROOT>");
-      if (document is XmlDocument)
-      {
+      if (document is XmlDocument) {
         nodes = document.rootElement.childElements.toList();
         exception = null;
       }
@@ -1225,9 +1226,12 @@ class WidgetModel implements IDataSourceListener
     }
 
     // build error node
-    if (exception != null && !silent)
-    {
-      var text   = XmlElement(XmlName("TEXT"),[XmlAttribute(XmlName("size"), '18'), XmlAttribute(XmlName("color"), '#EF5858'), XmlAttribute(XmlName("value"), exception.toString())]);
+    if (exception != null && !silent) {
+      var text = XmlElement(XmlName("TEXT"), [
+        XmlAttribute(XmlName("size"), '18'),
+        XmlAttribute(XmlName("color"), '#EF5858'),
+        XmlAttribute(XmlName("value"), exception.toString())
+      ]);
       var center = XmlElement(XmlName("CENTER"));
       center.children.add(text);
       nodes.add(center);
@@ -1241,13 +1245,12 @@ class WidgetModel implements IDataSourceListener
     return exception != null && nodes.isNotEmpty;
   }
 
-  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
-  {
+  Future<bool?> execute(
+      String caller, String propertyOrFunction, List<dynamic> arguments) async {
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
 
-    switch (function)
-    {
+    switch (function) {
       case 'set':
         // value
         var value = S.item(arguments, 0);
@@ -1292,17 +1295,13 @@ class WidgetModel implements IDataSourceListener
         int? index = S.toInt(S.item(arguments, 0));
 
         // check for children then remove them
-        if (children != null && index == null)
-        {
+        if (children != null && index == null) {
           // dispose of the last item
           children!.last.dispose();
 
           // check if the list is greater than 0, remove at the final index.
           if (children!.isNotEmpty) children!.removeLast();
-        }
-
-        else if (children != null && index != null)
-        {
+        } else if (children != null && index != null) {
           // check if index is in range, then dispose of the child at that index.
           if (index >= 0 && children!.length > index) {
             children![index].dispose();
@@ -1339,21 +1338,16 @@ class WidgetModel implements IDataSourceListener
         if (xml == null || xml is! String) return true;
 
         // check for children then remove them
-        if (children != null && index == null)
-        {
+        if (children != null && index == null) {
           // dispose of the last item
           children!.last.dispose();
 
           // check if the list is greater than 0, remove at the final index.
-          if(children!.isNotEmpty) children!.removeAt(children!.length - 1);
+          if (children!.isNotEmpty) children!.removeAt(children!.length - 1);
           print(index.toString());
-        }
-
-        else if (children != null && index != null)
-        {
+        } else if (children != null && index != null) {
           // check if index is in range, then dispose of the child at that index.
-          if (index >= 0 && children!.length > index)
-          {
+          if (index >= 0 && children!.length > index) {
             children![index].dispose();
             children!.removeAt(index);
           }
@@ -1379,8 +1373,7 @@ class WidgetModel implements IDataSourceListener
         if (xml == null || xml is! String) return true;
 
         // check for children then remove them
-        if (children != null)
-        {
+        if (children != null) {
           for (var child in children!) {
             child.dispose();
           }
@@ -1398,11 +1391,12 @@ class WidgetModel implements IDataSourceListener
       case 'removewidget':
 
         // ineex
-        int? index = (parent?.children?.contains(this) ?? false) ? parent?.children?.indexOf(this) : null;
+        int? index = (parent?.children?.contains(this) ?? false)
+            ? parent?.children?.indexOf(this)
+            : null;
 
         // index should never be null
-        if (index != null)
-        {
+        if (index != null) {
           // dispose of this model
           dispose();
           parent?.children?.removeAt(index);
@@ -1418,7 +1412,9 @@ class WidgetModel implements IDataSourceListener
         var xml = S.item(arguments, 0);
 
         // get my position in my parents child list
-        int? index = (parent?.children?.contains(this) ?? false) ? parent?.children?.indexOf(this) : null;
+        int? index = (parent?.children?.contains(this) ?? false)
+            ? parent?.children?.indexOf(this)
+            : null;
 
         // silent
         bool silent = S.toBool(S.item(arguments, 1)) ?? true;
@@ -1426,8 +1422,7 @@ class WidgetModel implements IDataSourceListener
         if (xml == null || xml is! String) return true;
 
         // index should never be null
-        if (index != null)
-        {
+        if (index != null) {
           // dispose of myself
           dispose();
 
@@ -1446,21 +1441,16 @@ class WidgetModel implements IDataSourceListener
     return false;
   }
 
-  static XmlElement cloneNode(XmlElement node, Scope? scope)
-  {
-    if (Xml.hasAttribute(node: node, tag: "clone"))
-    {
+  static XmlElement cloneNode(XmlElement node, Scope? scope) {
+    if (Xml.hasAttribute(node: node, tag: "clone")) {
       var id = Xml.attribute(node: node, tag: "clone");
       var model = Scope.findWidgetModel(id, scope);
-      if (model != null)
-      {
-        if (model.element != null)
-        {
+      if (model != null) {
+        if (model.element != null) {
           var n1 = model.element!.localName.trim();
           var n2 = node.localName.trim();
 
-          if (n1.toLowerCase() == n2.toLowerCase())
-          {
+          if (n1.toLowerCase() == n2.toLowerCase()) {
             // copy element
             var element = model.element!.copy();
             for (var attribute in node.attributes) {
@@ -1468,17 +1458,16 @@ class WidgetModel implements IDataSourceListener
             }
             node.replace(element);
             node = element;
+          } else {
+            Log().exception(
+                "A model of type <$n2/> cannot be cloned from a model of type <$n1/>");
           }
-          else {
-            Log().exception("A model of type <$n2/> cannot be cloned from a model of type <$n1/>");
-          }
-        }
-        else {
+        } else {
           Log().exception("Model $id has no element to copy from");
         }
-      }
-      else {
-        Log().exception("Error attempting to clone model $id. Model not found.");
+      } else {
+        Log()
+            .exception("Error attempting to clone model $id. Model not found.");
       }
     }
     return node;
@@ -1497,10 +1486,8 @@ class WidgetModel implements IDataSourceListener
     return exclude;
   }
 
-  static bool isDataSource(String element)
-  {
-    switch (element.toLowerCase())
-    {
+  static bool isDataSource(String element) {
+    switch (element.toLowerCase()) {
       case "barcode":
         return true;
       case "beacon":

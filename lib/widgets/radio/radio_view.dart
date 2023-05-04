@@ -1,47 +1,40 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/radio/radio_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/alignment/alignment.dart';
 
 class RadioView extends StatefulWidget implements IWidgetView
 {
+  @override
   final RadioModel model;
   RadioView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _RadioViewState createState() => _RadioViewState();
+  State<RadioView> createState() => _RadioViewState();
 }
 
 class _RadioViewState extends WidgetState<RadioView>
 {
   List<Widget>? options;
-  RenderBox? box;
-  Offset? position;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _afterBuild(context);
-    });
-
-    // Set Build Constraints in the [WidgetModel]
-    setConstraints(constraints);
-
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    /////////////
-    /* Options */
-    /////////////
+    // save system constraints
+    onLayout(constraints);
+
+    // Options
     if (widget.model.options.isNotEmpty) {
-      if (options == null) options = [];
+      options ??= [];
       options!.clear();
       for (OptionModel option in widget.model.options) {
         var checked = Icon(Icons.radio_button_checked,
@@ -73,15 +66,15 @@ class _RadioViewState extends WidgetState<RadioView>
                     ? checked
                     : unchecked));
 
-        ///////////
-        /* Label */
-        ///////////
+        // Label
         Widget label = Text('');
-        if (option.label is IViewableWidget) label = option.label!.getView();
+        if (option.label is ViewableWidgetModel) 
+        {
+          var view = option.label!.getView();
+          if (view != null) label = view;
+        }
 
-        ////////////
-        /* Option */
-        ////////////
+        // Option
         var opt = Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
@@ -97,70 +90,43 @@ class _RadioViewState extends WidgetState<RadioView>
     }
 
     //this must go after the children are determined
-    Map<String, dynamic> align = AlignmentHelper.alignWidgetAxis(
-        2,
-        widget.model.layout,
-        widget.model.center,
-        widget.model.halign,
-        widget.model.valign);
-    CrossAxisAlignment? crossAlignment = align['crossAlignment'];
-    MainAxisAlignment? mainAlignment = align['mainAlignment'];
-    WrapAlignment? mainWrapAlignment = align['mainWrapAlignment'];
-    WrapCrossAlignment? crossWrapAlignment = align['crossWrapAlignment'];
-    //Alignment aligned = align['aligned'];
+    var alignment = WidgetAlignment(widget.model.layoutType, widget.model.center, widget.model.halign, widget.model.valign);
 
-    //////////
-    /* View */
-    //////////
+   // View 
     Widget view;
     if (widget.model.layout == 'row') {
-      if (widget.model.wrap == true)
+      if (widget.model.wrap == true) {
         view = Wrap(
             children: options!,
             direction: Axis.horizontal,
-            alignment: mainWrapAlignment!,
-            runAlignment: mainWrapAlignment,
-            crossAxisAlignment: crossWrapAlignment!);
-      else
+            alignment: alignment.mainWrapAlignment,
+            runAlignment: alignment.mainWrapAlignment,
+            crossAxisAlignment: alignment.crossWrapAlignment);
+      } else {
         view = Row(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: crossAlignment!,
-            mainAxisAlignment: mainAlignment!,
+            crossAxisAlignment: alignment.crossAlignment,
+            mainAxisAlignment: alignment.mainAlignment,
             children: options!);
+      }
     } else {
-      if (widget.model.wrap == true)
+      if (widget.model.wrap == true) {
         view = Wrap(
             children: options!,
             direction: Axis.vertical,
-            alignment: mainWrapAlignment!,
-            runAlignment: mainWrapAlignment,
-            crossAxisAlignment: crossWrapAlignment!);
-      else
+            alignment: alignment.mainWrapAlignment,
+            runAlignment: alignment.mainWrapAlignment,
+            crossAxisAlignment: alignment.crossWrapAlignment);
+      } else {
         view = Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: crossAlignment!,
-            mainAxisAlignment: mainAlignment!,
+            crossAxisAlignment: alignment.crossAlignment,
+            mainAxisAlignment: alignment.mainAlignment,
             children: options!);
+      }
     }
 
-    //////////////////
-    /* Constrained? */
-    //////////////////
-    // if (widget.model.constrained)
-    // {
-    //   Map<String,double> constraints = widget.model.constraints;
-    //   view = ConstrainedBox(child: view, constraints: BoxConstraints(minHeight: constraints.minHeight, maxHeight: constraints.maxHeight, minWidth: constraints.minWidth, maxWidth: constraints.maxWidth));
-    // }
-
     return view;
-  }
-
-  /// After [iFormFields] are drawn we get the global offset for scrollTo functionality
-  _afterBuild(BuildContext context) {
-    // Set the global offset position of each input
-    box = context.findRenderObject() as RenderBox?;
-    if (box != null) position = box!.localToGlobal(Offset.zero);
-    if (position != null) widget.model.offset = position;
   }
 
   void _onCheck(OptionModel option) async {

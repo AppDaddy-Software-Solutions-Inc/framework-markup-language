@@ -1,63 +1,57 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
-
 import 'package:fml/data/data.dart';
 import 'package:fml/data/dotnotation.dart';
-import 'package:fml/datasources/gps/payload.dart' as GPS;
-import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/datasources/gps/payload.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/event/handler.dart' ;
+import 'package:fml/event/handler.dart';
 import 'package:fml/phrase.dart';
-import 'package:fml/widgets/form/iFormField.dart';
+import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:validators/validators.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
-import 'package:fml/hive/form.dart' as HIVE;
+import 'package:fml/hive/form.dart' as hive_form;
 import 'package:fml/widgets/form/form_view.dart';
 import 'package:fml/widgets/input/input_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-abstract class IForm
-{
+abstract class IForm {
   ///
   // Dirty
   ///
   bool? get dirty;
-  set dirty (bool? b);
+  set dirty(bool? b);
   BooleanObservable? get dirtyObservable;
 
   ///
-  // Clean 
+  // Clean
   ///
-  set clean (bool b);
+  set clean(bool b);
 
   //
-  // Routines 
+  // Routines
   //
   Future<bool> save();
   Future<bool> complete();
   Future<bool> onComplete(BuildContext context);
 }
 
-enum StatusCodes {incomplete, complete}
+enum StatusCodes { incomplete, complete }
 
-class FormModel extends DecoratedWidgetModel implements IViewableWidget
-{
+class FormModel extends DecoratedWidgetModel {
   List<IFormField> fields = [];
 
   List<IForm> forms = [];
 
   // posting source source
   List<String>? _postbrokers;
-  set postbrokers(dynamic v)
-  {
-    if (v is String)
-    {
+  set postbrokers(dynamic v) {
+    if (v is String) {
       var values = v.split(",");
       _postbrokers = [];
       for (var e in values) {
@@ -65,112 +59,99 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
       }
     }
   }
+
   List<String>? get postbrokers => _postbrokers;
 
   // datasource to fill the form
   StringObservable? _data;
-  set data (dynamic v)
-  {
-    if (_data != null)
-    {
+  set data(dynamic v) {
+    if (_data != null) {
       _data!.set(v);
-    }
-    else if (v != null)
-    {
+    } else if (v != null) {
       _data = StringObservable(Binding.toKey(id, 'data'), v, scope: scope);
     }
   }
+
   String? get data => _data?.get();
 
   // status
   StringObservable? _status;
-  set status (dynamic v)
-  {
+  set status(dynamic v) {
     StatusCodes? status = S.toEnum(v.toString(), StatusCodes.values);
     status ??= StatusCodes.incomplete;
     v = S.fromEnum(status);
-    if (_status != null)
-    {
+    if (_status != null) {
       _status!.set(v);
-    }
-    else if (v != null)
-    {
-      _status ??= StringObservable(Binding.toKey(id, 'status'),   v, scope: scope);
-      _completed ??= BooleanObservable(Binding.toKey(id, 'complete'), (status == StatusCodes.complete), scope: scope);
+    } else if (v != null) {
+      _status ??=
+          StringObservable(Binding.toKey(id, 'status'), v, scope: scope);
+      _completed ??= BooleanObservable(
+          Binding.toKey(id, 'complete'), (status == StatusCodes.complete),
+          scope: scope);
     }
   }
+
   String? get status => _status?.get();
 
   BooleanObservable? _completed;
-  bool get completed => (S.toEnum(status, StatusCodes.values) == StatusCodes.complete);
+  bool get completed =>
+      (S.toEnum(status, StatusCodes.values) == StatusCodes.complete);
 
-  // editable 
+  // editable
   BooleanObservable? _editable;
-  set editable (dynamic v)
-  {
-    if (_editable != null)
-    {
+  set editable(dynamic v) {
+    if (_editable != null) {
       _editable!.set(v);
-    }
-    else if (v != null)
-    {
-      _editable = BooleanObservable(Binding.toKey(id, 'editable'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _editable = BooleanObservable(Binding.toKey(id, 'editable'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
+
   bool? get editable => _editable?.get();
 
-
-  // autosave 
+  // autosave
   BooleanObservable? _autosave;
-  set autosave (dynamic v)
-  {
-    if (_autosave != null)
-    {
+  set autosave(dynamic v) {
+    if (_autosave != null) {
       _autosave!.set(v);
-    }
-    else if (v != null)
-    {
-      _autosave = BooleanObservable(Binding.toKey(id, 'autosave'), v, scope: scope);
+    } else if (v != null) {
+      _autosave =
+          BooleanObservable(Binding.toKey(id, 'autosave'), v, scope: scope);
     }
   }
-  bool? get autosave
-  {
+
+  bool? get autosave {
     if ((isWeb) || (_autosave == null)) return false;
     return _autosave?.get();
   }
 
   // mandatory
   BooleanObservable? _mandatory;
-  set mandatory (dynamic v)
-  {
-    if (_mandatory != null)
-    {
+  set mandatory(dynamic v) {
+    if (_mandatory != null) {
       _mandatory!.set(v);
-    }
-    else if (v != null)
-    {
-      _mandatory = BooleanObservable(Binding.toKey(id, 'mandatory'), v, scope: scope);
+    } else if (v != null) {
+      _mandatory =
+          BooleanObservable(Binding.toKey(id, 'mandatory'), v, scope: scope);
     }
   }
+
   bool? get mandatory => _mandatory?.get();
 
-  // dirty 
+  // dirty
   BooleanObservable? _dirty;
-  set dirty (dynamic v)
-  {
-    if (_dirty != null)
-    {
+  set dirty(dynamic v) {
+    if (_dirty != null) {
       _dirty!.set(v);
-    }
-    else if (v != null)
-    {
+    } else if (v != null) {
       _dirty = BooleanObservable(Binding.toKey(id, 'dirty'), v, scope: scope);
     }
   }
+
   bool? get dirty => _dirty?.get();
 
-  void onDirtyListener(Observable property)
-  {
+  void onDirtyListener(Observable property) {
     // set form dirty
     bool isDirty = false;
     for (var field in fields) {
@@ -182,8 +163,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     if ((isDirty == true) && (autosave == true)) save();
   }
 
-  set clean (bool b)
-  {
+  set clean(bool b) {
     // clean all fields
     for (var field in fields) {
       field.dirty = false;
@@ -191,89 +171,83 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
 
     // clean all sub-forms
     for (var form in forms) {
-      form.clean  = false;
+      form.clean = false;
     }
   }
 
-  // gps 
+  // gps
   BooleanObservable? _geocode;
-  set geocode (dynamic v)
-  {
-    if (_geocode != null)
-    {
+  set geocode(dynamic v) {
+    if (_geocode != null) {
       _geocode!.set(v);
-    }
-    else if (v != null)
-    {
-      _geocode = BooleanObservable(Binding.toKey(id, 'gps'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _geocode = BooleanObservable(Binding.toKey(id, 'gps'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
-  bool? get geocode
-  {
+
+  bool? get geocode {
     if (_geocode == null) return (isMobile ? true : false);
     return _geocode?.get();
   }
 
   // on complete event
   StringObservable? _oncomplete;
-  set oncomplete (dynamic v)
-  {
-    if (_oncomplete != null)
-    {
+  set oncomplete(dynamic v) {
+    if (_oncomplete != null) {
       _oncomplete!.set(v);
-    }
-    else if (v != null)
-    {
-      _oncomplete = StringObservable(Binding.toKey(id, 'oncomplete'), v, scope: scope, lazyEval: true);
+    } else if (v != null) {
+      _oncomplete = StringObservable(Binding.toKey(id, 'oncomplete'), v,
+          scope: scope, lazyEval: true);
     }
   }
+
   String? get oncomplete => _oncomplete?.get();
 
-  
   // Show Exception
   BooleanObservable? _showexception;
-  set showexception (dynamic v)
-  {
-    if (_showexception != null)
-    {
+  set showexception(dynamic v) {
+    if (_showexception != null) {
       _showexception!.set(v);
-    }
-    else if (v != null)
-    {
-      _showexception = BooleanObservable(Binding.toKey(id, 'showexception'), v, scope: scope);
+    } else if (v != null) {
+      _showexception = BooleanObservable(Binding.toKey(id, 'showexception'), v,
+          scope: scope);
     }
   }
+
   bool get showexception => _showexception?.get() ?? true;
 
-  Map<String, String?> get map
-  {
-    Map<String, String?> _map = <String, String?>{};
+  Map<String, String?> get map {
+    Map<String, String?> myMap = <String, String?>{};
 
-      for (var field in fields) {
-        if ((field.elementName != "attachment") && (!S.isNullOrEmpty(field.value)))
-        {
-          String? value;
+    for (var field in fields) {
+      if ((field.elementName != "attachment") &&
+          (!S.isNullOrEmpty(field.value))) {
+        String? value;
 
-          
-          // List of Values 
-          
-          if (field.value is List) {
-            field.value.forEach((v)
-          {
+        // List of Values
+
+        if (field.value is List) {
+          field.value.forEach((v) {
             value = (value == null) ? v.toString() : "${value!},$v";
           });
-          } else {
-            value = field.value.toString();
-          }
-          // Set the value of the field
-          if(field.id != null) _map[field.id!] = value;
+        } else {
+          value = field.value.toString();
         }
-      }
 
-    return _map;
+        ///
+        // Set the Value
+        ///
+        if (field.id != null) myMap[field.id!] = value;
+      }
+    }
+
+    return myMap;
   }
 
-  FormModel(WidgetModel parent, String? id, {
+  FormModel(
+    WidgetModel parent,
+    String? id, {
     String? type,
     String? title,
     dynamic status,
@@ -285,34 +259,29 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     dynamic oncomplete,
     dynamic showexception,
     dynamic data,
-  }) : super(parent, id)
-  {
+  }) : super(parent, id) {
     // instantiate busy observable
-    busy         = false;
+    busy = false;
 
-    this.status         = status;
-    this.autosave       = autosave;
-    this.mandatory      = mandatory;
-    dirty               = false;
-    this.geocode        = geocode;
-    this.oncomplete     = oncomplete;
-    this.showexception  = showexception;
-    this.data           = data;
+    this.status = status;
+    this.autosave = autosave;
+    this.mandatory = mandatory;
+    dirty = false;
+    this.geocode = geocode;
+    this.oncomplete = oncomplete;
+    this.showexception = showexception;
+    this.data = data;
   }
 
-
-  static FormModel? fromXml(WidgetModel parent, XmlElement xml)
-  {
+  static FormModel? fromXml(WidgetModel parent, XmlElement xml) {
     FormModel? model;
 
-    try
-    {
-      model = FormModel(parent, Xml.get(node: xml, tag: 'id'), showexception: Xml.get(node: xml, tag: 'showexception'));
+    try {
+      model = FormModel(parent, Xml.get(node: xml, tag: 'id'),
+          showexception: Xml.get(node: xml, tag: 'showexception'));
       model.deserialize(xml);
-    }
-    catch(e)
-    {
-      Log().exception(e,  caller: 'form.Model');
+    } catch (e) {
+      Log().exception(e, caller: 'form.Model');
       model = null;
     }
     return model;
@@ -320,27 +289,24 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
-  {
-    // deserialize 
+  void deserialize(XmlElement xml) {
+    // deserialize
     super.deserialize(xml);
 
     // properties
-    status      = Xml.get(node: xml, tag: 'status');
-    autosave    = Xml.get(node: xml, tag: 'autosave');
-    mandatory   = Xml.get(node: xml, tag: 'mandatory');
-    geocode     = Xml.get(node: xml, tag: 'geocode');
-    oncomplete  = Xml.get(node: xml, tag: 'oncomplete');
+    status = Xml.get(node: xml, tag: 'status');
+    autosave = Xml.get(node: xml, tag: 'autosave');
+    mandatory = Xml.get(node: xml, tag: 'mandatory');
+    geocode = Xml.get(node: xml, tag: 'geocode');
+    oncomplete = Xml.get(node: xml, tag: 'oncomplete');
     postbrokers = Xml.attribute(node: xml, tag: 'post');
     data = Xml.attribute(node: xml, tag: 'data');
-
-
 
     // get fields
     fields.addAll(getFields(children));
 
     // fill all empty fields with the datasource if specified
-    if(data != null) _fillEmptyFields();
+    if (data != null) _fillEmptyFields();
 
     // get forms
     forms.addAll(getForms(children));
@@ -349,52 +315,50 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     var nodes = xml.findElements("ANSWER", namespace: "*");
 
     // clear answers
-      for (XmlElement node in nodes)
-      {
-        String? id = Xml.get(node: node, tag: 'id');
-        IFormField? field = getField(id);
-        if (field != null)
-        {
-          dynamic value = field.value;
-          if (value is List) {
-            field.value.clear();
-          } else {
-            field.value = null;
-          }
+    for (XmlElement node in nodes) {
+      String? id = Xml.get(node: node, tag: 'id');
+      IFormField? field = getField(id);
+      if (field != null) {
+        dynamic value = field.value;
+        if (value is List) {
+          field.value.clear();
+        } else {
+          field.value = null;
         }
       }
+    }
 
     // apply answers
-      for (XmlElement node in nodes)
-      {
-        ///
-        // Value 
-        ///
-        String? answer = Xml.getText(node);
-        String? id = Xml.get(node: node, tag: 'id');
-        IFormField field = getField(id)!;
+    for (XmlElement node in nodes) {
+      ///
+      // Value
+      ///
+      String? answer = Xml.getText(node);
+      String? id = Xml.get(node: node, tag: 'id');
+      IFormField field = getField(id)!;
 
-          dynamic value = field.value;
-          if (value is List) {
-            field.value.add(answer);
-          } else {
-            field.value = answer;
-          }
-
-        /// GeoCode for each [iFormField] which is set on answer
-        field.geocode = GPS.Payload(
-            latitude: S.toDouble(Xml.attribute(node: node, tag: 'latitude')),
-            longitude: S.toDouble(Xml.attribute(node: node, tag: 'longitude')),
-            altitude: S.toDouble(Xml.attribute(node: node, tag: 'altitude')),
-            epoch: S.toInt(Xml.attribute(node: node, tag: 'epoch')));
+      dynamic value = field.value;
+      if (value is List) {
+        field.value.add(answer);
+      } else {
+        field.value = answer;
       }
+
+      /// GeoCode for each [iFormField] which is set on answer
+      field.geocode = Payload(
+          latitude: S.toDouble(Xml.attribute(node: node, tag: 'latitude')),
+          longitude: S.toDouble(Xml.attribute(node: node, tag: 'longitude')),
+          altitude: S.toDouble(Xml.attribute(node: node, tag: 'altitude')),
+          epoch: S.toInt(Xml.attribute(node: node, tag: 'epoch')));
+    }
 
     // mark form clean
     clean = true;
 
     // add dirty listener to each field
     for (var field in fields) {
-      if (field.dirtyObservable != null) field.dirtyObservable!.registerListener(onDirtyListener);
+      if (field.dirtyObservable != null)
+        field.dirtyObservable!.registerListener(onDirtyListener);
     }
 
     // add dirty listener to each sub-form
@@ -404,8 +368,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     }
   }
 
-  static List<IFormField> getFields(List<WidgetModel>? children)
-  {
+  static List<IFormField> getFields(List<WidgetModel>? children) {
     List<IFormField> fields = [];
     if (children != null) {
       for (var child in children) {
@@ -416,8 +379,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     return fields;
   }
 
-  static List<IForm> getForms(List<WidgetModel>? children)
-  {
+  static List<IForm> getForms(List<WidgetModel>? children) {
     List<IForm> forms = [];
     if (children != null) {
       for (var child in children) {
@@ -428,18 +390,15 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     return forms;
   }
 
-  Future<bool> _post(HIVE.Form? form, {bool? commit}) async
-  {
+  Future<bool> _post(hive_form.Form? form, {bool? commit}) async {
     bool ok = true;
     if ((scope != null) && (postbrokers != null)) {
-      for (String id in postbrokers!)
-      {
+      for (String id in postbrokers!) {
         IDataSource? source = scope!.getDataSource(id);
-        if ((source != null) && (ok) && (commit != false))
-        {
-          if (source.custombody != true)
-          {
-            source.body = await buildPostingBody(fields, rootname: source.root ?? "FORM");
+        if ((source != null) && (ok) && (commit != false)) {
+          if (source.custombody != true) {
+            source.body =
+                await buildPostingBody(fields, rootname: source.root ?? "FORM");
           }
           ok = await source.start(key: form!.key);
         }
@@ -447,23 +406,19 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
           break;
         }
       }
-    }
-    else
-    {
+    } else {
       ok = false;
     }
     return ok;
   }
 
-  Future<bool> clear() async
-  {
+  Future<bool> clear() async {
     busy = true;
 
     bool ok = true;
 
     // Clear Fields
-    for (var field in fields)
-    {
+    for (var field in fields) {
       field.value = field.defaultValue ?? "";
     }
 
@@ -475,15 +430,13 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     return ok;
   }
 
-  Future<bool> complete() async
-  {
+  Future<bool> complete() async {
     busy = true;
 
     bool ok = true;
 
     // Post Sub-Forms
-    for (IForm form in forms)
-    {
+    for (IForm form in forms) {
       ok = await form.complete();
       if (!ok) break;
     }
@@ -492,54 +445,50 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     bool validated = (await validate() == null);
 
     // Save the Form and pass the validation check so validate is not called a second time. This is so the form is always saved on complete.
-    HIVE.Form? form = await save(previouslyValidated: true, validation: validated);
+    hive_form.Form? form =
+        await save(previouslyValidated: true, validation: validated);
 
-    if(!validated) {
+    if (!validated) {
       busy = false;
       return false;
     }
 
-      // Post the Form
-      if (ok) ok = await _post(form);
+    // Post the Form
+    if (ok) ok = await _post(form);
 
-      // Set Clean
-      if (ok == true) clean = true;
+    // Set Clean
+    if (ok == true) clean = true;
 
-      // fire on complete events
-      if (ok && _oncomplete != null) ok = await EventHandler(this).execute(_oncomplete);
+    // fire on complete events
+    if (ok && _oncomplete != null)
+      ok = await EventHandler(this).execute(_oncomplete);
 
-      busy = false;
+    busy = false;
 
-      // Set Complete
-      status = StatusCodes.complete;
+    // Set Complete
+    status = StatusCodes.complete;
 
-      return ok;
+    return ok;
   }
 
-  IFormField? getField(String? id)
-  {
+  IFormField? getField(String? id) {
     IFormField? model;
-    for (IFormField field in fields)
-    {
-       if (field.id == id)
-       {
-         model = field;
-         break;
-       }
+    for (IFormField field in fields) {
+      if (field.id == id) {
+        model = field;
+        break;
+      }
     }
     return model;
   }
 
-  static bool _serializeAnswers(XmlElement node, List<IFormField> fields)
-  {
+  static bool _serializeAnswers(XmlElement node, List<IFormField> fields) {
     bool ok = true;
 
-    
-    // Remove Old Answers 
-    
-    node.children.removeWhere((child)
-    {
-      if ((child is XmlElement) && (child.name.local== "ANSWER")) {
+    // Remove Old Answers
+
+    node.children.removeWhere((child) {
+      if ((child is XmlElement) && (child.name.local == "ANSWER")) {
         return true;
       } else {
         return false;
@@ -554,10 +503,8 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     return ok;
   }
 
-  static bool _insertAnswers(XmlElement root, IFormField field)
-  {
-    try
-    {
+  static bool _insertAnswers(XmlElement root, IFormField field) {
+    try {
       // field is postable?
       if ((field.postable ?? false) && (field.values != null)) {
         for (var value in field.values!) {
@@ -565,26 +512,29 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
           XmlElement node = XmlElement(XmlName("ANSWER"));
 
           // id
-          if (field.id != null) node.attributes.add(XmlAttribute(XmlName("id"), field.id!));
+          if (field.id != null)
+            node.attributes.add(XmlAttribute(XmlName("id"), field.id!));
 
           // field
-          if (!S.isNullOrEmpty(field.field)) node.attributes.add(XmlAttribute(XmlName("field"), field.field!));
+          if (!S.isNullOrEmpty(field.field))
+            node.attributes.add(XmlAttribute(XmlName("field"), field.field!));
 
           // field type
-          if (!S.isNullOrEmpty(field.elementName)) node.attributes.add(XmlAttribute(XmlName('type'), field.elementName));
+          if (!S.isNullOrEmpty(field.elementName))
+            node.attributes
+                .add(XmlAttribute(XmlName('type'), field.elementName));
 
           // field meta data
-          if (!S.isNullOrEmpty(field.meta)) node.attributes.add(XmlAttribute(XmlName('meta'), field.meta));
+          if (!S.isNullOrEmpty(field.meta))
+            node.attributes.add(XmlAttribute(XmlName('meta'), field.meta));
 
           /// GeoCode for each [iFormField] which is set on answer
           if (field.geocode != null) field.geocode!.serialize(node);
 
           // field value
-          try
-          {
+          try {
             // xml data
-            if ((field is InputModel) && (field.format == InputFormats.xml))
-            {
+            if ((field is InputModel) && (field.format == InputFormats.xml)) {
               var document = XmlDocument.parse(value);
               var e = document.rootElement;
               document.children.remove(e);
@@ -592,16 +542,12 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
             }
 
             // special characters in xml? wrap in CDATA
-            else if (Xml.hasIllegalCharacters(value))
-            {
+            else if (Xml.hasIllegalCharacters(value)) {
               node.children.add(XmlCDATA(value));
-            } else
-            {
+            } else {
               node.children.add(XmlText(value));
             }
-          }
-          catch(e)
-          {
+          } catch (e) {
             node.children.add(XmlCDATA(e.toString()));
           }
 
@@ -609,9 +555,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
           root.children.add(node);
         }
       }
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().error("Error serializing answers");
       Log().exception(e, caller: 'form.Model');
       return false;
@@ -619,8 +563,8 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     return true;
   }
 
-  static Future<String?> serialize(XmlElement? node, List<IFormField> fields) async
-  {
+  static Future<String?> serialize(
+      XmlElement? node, List<IFormField> fields) async {
     if (node == null) return null;
 
     // Serialize Answers
@@ -630,61 +574,54 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     return node.toXmlString(pretty: true);
   }
 
-  static Future<String?> buildPostingBody(List<IFormField>? fields, {String rootname = "FORM"}) async
-  {
-    try
-    {
+  static Future<String?> buildPostingBody(List<IFormField>? fields,
+      {String rootname = "FORM"}) async {
+    try {
       // build xml document
       XmlDocument document = XmlDocument();
-      XmlElement root = XmlElement(XmlName(S.isNullOrEmpty(rootname) ? "FORM" : rootname));
+      XmlElement root =
+          XmlElement(XmlName(S.isNullOrEmpty(rootname) ? "FORM" : rootname));
       document.children.add(root);
 
       if (fields != null) {
         for (var field in fields) {
           // postable?
-          if (field.postable == true)
-          {
-            if (field.values != null)
-            {
-              field.values?.forEach((value)
-              {
+          if (field.postable == true) {
+            if (field.values != null) {
+              field.values?.forEach((value) {
                 XmlElement node;
                 String name = field.field ?? field.id ?? "";
-                try
-                {
+                try {
                   // valid element name?
-                  if (!S.isNumber(name.substring(0,1)))
-                  {
+                  if (!S.isNumber(name.substring(0, 1))) {
                     node = XmlElement(XmlName(name));
-                  }
-                  else
-                  {
+                  } else {
                     node = XmlElement(XmlName("FIELD"));
                     node.attributes.add(XmlAttribute(XmlName('id'), name));
                   }
-                }
-                catch(e)
-                {
+                } catch (e) {
                   node = XmlElement(XmlName("FIELD"));
                   node.attributes.add(XmlAttribute(XmlName('id'), name));
                 }
 
                 // add field type
-                if (!S.isNullOrEmpty(field.elementName)) node.attributes.add(XmlAttribute(XmlName('type'), field.elementName));
-
+                if (!S.isNullOrEmpty(field.elementName))
+                  node.attributes
+                      .add(XmlAttribute(XmlName('type'), field.elementName));
 
                 /// GeoCode for each [iFormField] which is set on answer
                 if (field.geocode != null) field.geocode!.serialize(node);
 
                 // add meta data
-                if (!S.isNullOrEmpty(field.meta)) node.attributes.add(XmlAttribute(XmlName('meta'), field.meta));
+                if (!S.isNullOrEmpty(field.meta))
+                  node.attributes
+                      .add(XmlAttribute(XmlName('meta'), field.meta));
 
                 // value
-                try
-                {
+                try {
                   // Xml Data
-                  if ((field is InputModel) && (field.format == InputFormats.xml))
-                  {
+                  if ((field is InputModel) &&
+                      (field.format == InputFormats.xml)) {
                     var document = XmlDocument.parse(value);
                     var e = document.rootElement;
                     document.children.remove(e);
@@ -697,46 +634,38 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
                   } else {
                     node.children.add(XmlText(value));
                   }
-                }
-                on XmlException catch(e)
-                {
+                } on XmlException catch (e) {
                   node.children.add(XmlCDATA(e.message));
                 }
 
                 // Add Node
                 root.children.add(node);
               });
-            }
-
-            else
-            {
-              // Build Element 
+            } else {
+              // Build Element
               XmlElement node;
               String name = field.field ?? field.id ?? "";
-              try
-              {
+              try {
                 // Valid Element Name
-                if (!S.isNumber(name.substring(0,1)))
-                {
+                if (!S.isNumber(name.substring(0, 1))) {
                   node = XmlElement(XmlName(name));
                 }
 
-                // In-Valid Element Name 
-                else
-                {
+                // In-Valid Element Name
+                else {
                   node = XmlElement(XmlName("FIELD"));
                   node.attributes.add(XmlAttribute(XmlName('id'), name));
                 }
-              }
-              catch(e)
-              {
+              } catch (e) {
                 // In-Valid Element Name
                 node = XmlElement(XmlName("FIELD"));
                 node.attributes.add(XmlAttribute(XmlName('id'), name));
               }
 
               // Add Field Type
-              if (!S.isNullOrEmpty(field.elementName)) node.attributes.add(XmlAttribute(XmlName('type'), field.elementName));
+              if (!S.isNullOrEmpty(field.elementName))
+                node.attributes
+                    .add(XmlAttribute(XmlName('type'), field.elementName));
 
               // Add Node
               root.children.add(node);
@@ -747,26 +676,23 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
 
       // Set Body
       return document.toXmlString(pretty: true);
-    }
-
-    catch(e)
-    {
-      Log().error("Error serializing posting document. Error is ${e.toString()}");
+    } catch (e) {
+      Log().error(
+          "Error serializing posting document. Error is ${e.toString()}");
       return null;
     }
   }
 
-  Future<List<IFormField>?> validate() async
-  {
+  Future<List<IFormField>?> validate() async {
     // Force Close
     WidgetModel.unfocus();
 
     // Commit the Form
     var missing = await _getMissing();
-    if (missing?.isNotEmpty == true)
-    {
+    if (missing?.isNotEmpty == true) {
       // display toast message
-      String msg = phrase.warningMandatory.replaceAll('{#}', missing!.length.toString());
+      String msg =
+          phrase.warningMandatory.replaceAll('{#}', missing!.length.toString());
       System.toast("${phrase.warning} $msg");
 
       // scroll to the field
@@ -778,10 +704,10 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     }
 
     var alarms = await _getAlarms();
-    if (alarms?.isNotEmpty == true)
-    {
+    if (alarms?.isNotEmpty == true) {
       // display toast message
-      String msg = phrase.warningAlarms.replaceAll('{#}', alarms!.length.toString());
+      String msg =
+          phrase.warningAlarms.replaceAll('{#}', alarms!.length.toString());
       System.toast("${phrase.warning} $msg");
 
       // scroll to the field
@@ -794,20 +720,19 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     return null;
   }
 
-  Future<HIVE.Form?> save({bool previouslyValidated = false, bool validation = false}) async
-  {
-    HIVE.Form? form;
+  Future<hive_form.Form?> save(
+      {bool previouslyValidated = false, bool validation = false}) async {
+    hive_form.Form? form;
 
     bool ok = validation;
 
     // Validate the Data
-    if(!previouslyValidated) {
+    if (!previouslyValidated) {
       ok = (await validate() == null);
     }
 
     // Show Success
-    if (ok)
-    {
+    if (ok) {
       // Serialize the Form
       await serialize(element, fields);
 
@@ -815,30 +740,29 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
       String xml = framework!.element!.toXmlString(pretty: true);
 
       // Lookup Form
-      form = await HIVE.Form.find(framework!.key);
+      form = await hive_form.Form.find(framework!.key);
 
       // Update the Form
-      if (form != null)
-      {
+      if (form != null) {
         Log().info('Updating Form');
 
         form.complete = completed;
-        form.updated  = DateTime.now().millisecondsSinceEpoch;
+        form.updated = DateTime.now().millisecondsSinceEpoch;
         form.template = xml;
-        form.data     = map;
+        form.data = map;
         await form.update();
       }
 
       // Insert the Form
-      else
-      {
-          Log().info('Inserting New form');
-          form = HIVE.Form(key: framework?.key,
-              parent: framework?.dependency,
-              complete: completed,
-              template: xml,
-              data: map);
-          await form.insert();
+      else {
+        Log().info('Inserting New form');
+        form = hive_form.Form(
+            key: framework?.key,
+            parent: framework?.dependency,
+            complete: completed,
+            template: xml,
+            data: map);
+        await form.insert();
       }
       // Mark Clean
       clean = true;
@@ -846,16 +770,15 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     return form;
   }
 
-  Future<List<IFormField>?> _getMissing() async
-  {
+  Future<List<IFormField>?> _getMissing() async {
     List<IFormField>? missing;
     for (var field in fields) {
       bool? isMandatory;
-      if ((isMandatory == null) && (field.mandatory != null)) isMandatory = field.mandatory;
-      if ((isMandatory == null) && (mandatory != null))  isMandatory = mandatory;
+      if ((isMandatory == null) && (field.mandatory != null))
+        isMandatory = field.mandatory;
+      if ((isMandatory == null) && (mandatory != null)) isMandatory = mandatory;
       isMandatory ??= false;
-      if ((isMandatory) && (!field.answered))
-      {
+      if ((isMandatory) && (!field.answered)) {
         missing ??= [];
         missing.add(field);
       }
@@ -863,36 +786,37 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     return missing;
   }
 
-
-  Future<void> _fillEmptyFields() async
-  {
+  Future<void> _fillEmptyFields() async {
     //display busy
     busy = true;
     bool ok = false;
 
     if ((scope != null) && (data != null)) {
-
       //for a single datasource grab the scope
-        IDataSource? source = scope!.getDataSource(data);
-        if (source != null) {
-          // start the datasource
-          ok = await source.start();
-        }
+      IDataSource? source = scope!.getDataSource(data);
+      if (source != null) {
+        // start the datasource
+        ok = await source.start();
+      }
 
-        // if the data is null do not fill fields
+      // if the data is null do not fill fields
       if (source?.data == null || source == null) ok = false;
 
       if (ok) {
         for (var field in fields) {
           // check to see if the field is not assigned a by the developer, even if that value is null, and is not answered.
-          if ((isNull(field.value) || field.hasDefaulted == true) && field.touched == false) {
-          //create the binding string based on the fields ID.
-           String binding = '${field.id}';
+          if ((isNull(field.value) || field.hasDefaulted == true) &&
+              field.touched == false) {
+            //create the binding string based on the fields ID.
+            String binding = '${field.id}';
             //assign the signature of the source to the field and grab it from the data. Data will generally return a list, so we must grab the 0th element.
-             dynamic sourceData = Data.fromDotNotation(source!.data!, DotNotation.fromString(binding)!)?.elementAt(0);
+            dynamic sourceData = Data.fromDotNotation(
+                    source!.data!, DotNotation.fromString(binding)!)
+                ?.elementAt(0);
 
-             //data can return a jsonmap as part of the data's list if it fails to grab the binding. If this is the case, do not set the value.
-             if(sourceData != null && sourceData is! Map) field.value = sourceData.toString();
+            //data can return a jsonmap as part of the data's list if it fails to grab the binding. If this is the case, do not set the value.
+            if (sourceData != null && sourceData is! Map)
+              field.value = sourceData.toString();
           }
         }
       }
@@ -901,12 +825,10 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     busy = false;
   }
 
-  Future<List<IFormField>?> _getAlarms() async
-  {
+  Future<List<IFormField>?> _getAlarms() async {
     List<IFormField>? alarming;
     for (var field in fields) {
-      if (field.alarming!)
-      {
+      if (field.alarming!) {
         //tell the form that validation has been hit
         field.validationHasHit = true;
         //set the fields error state to sound
@@ -919,15 +841,12 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
     return alarming;
   }
 
-
-
   @override
-  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
-  {
+  Future<bool?> execute(
+      String caller, String propertyOrFunction, List<dynamic> arguments) async {
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
-    switch (function)
-    {
+    switch (function) {
       case 'complete':
         return complete();
 
@@ -944,8 +863,7 @@ class FormModel extends DecoratedWidgetModel implements IViewableWidget
   }
 
   @override
-  Future<bool> onDataSourceSuccess(IDataSource source, Data? list)
-  {
+  Future<bool> onDataSourceSuccess(IDataSource source, Data? list) {
     clean = true;
     return super.onDataSourceSuccess(source, list);
   }

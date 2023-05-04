@@ -6,8 +6,7 @@ import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/navigation_manager.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/system.dart';
 import 'package:fml/template/template.dart';
@@ -22,19 +21,22 @@ import 'package:fml/widgets/framework/framework_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IModelListener, IEventManager
+class FrameworkModel extends BoxModel implements IModelListener, IEventManager
 {
   /// Event Manager Host
   final EventManager manager = EventManager();
+  @override
   registerEventListener(EventTypes type, OnEventCallback callback, {int? priority}) => manager.register(type, callback, priority: priority);
+  @override
   removeEventListener(EventTypes type, OnEventCallback callback) => manager.remove(type, callback);
+  @override
   broadcastEvent(WidgetModel source, Event event) => manager.broadcast(this, event);
+  @override
   executeEvent(WidgetModel source, String event) => manager.execute(this, event);
 
   HeaderModel?  header;
   FooterModel?  footer;
   DrawerModel?  drawer;
-  WidgetModel?  body;
 
   List<String>? bindables;
 
@@ -57,7 +59,9 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
       _template = StringObservable(Binding.toKey(id, 'template'), null, scope: scope);
       _template!.set(xml);
     }
-    else _template!.set(xml);
+    else {
+      _template!.set(xml);
+    }
   }
 
   // template
@@ -243,20 +247,20 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
   // return parameters
   Map<String?, String> get parameters
   {
-    Map<String?, String> _parameters = Map<String?, String>();
+    Map<String?, String> myParameters = <String?, String>{};
     List<dynamic>? variables = findDescendantsOfExactType(VariableModel);
-    if (variables != null)
-      variables.forEach((variable)
-      {
+    if (variables != null) {
+      for (var variable in variables) {
         VariableModel v = (variable as VariableModel);
         if (!S.isNullOrEmpty(v.returnas))
         {
           String? name  = v.returnas;
           String value = v.value ?? "";
-          _parameters[name] = value;
+          myParameters[name] = value;
         }
-      });
-    return _parameters;
+      }
+    }
+    return myParameters;
   }
 
   FrameworkModel(WidgetModel parent, String? id, {dynamic key, dynamic dependency, dynamic version, dynamic onstart, dynamic onreturn, dynamic orientation}) : super(parent, id, scope: Scope(id: id))
@@ -361,19 +365,21 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
+  void deserialize(XmlElement? xml)
   {
-    Log().debug('Deserialize called on framework model => <FML name="$templateName" url="$url"/>');
+    if (xml == null) return;
+
+    //Log().debug('Deserialize called on framework model => <FML name="$templateName" url="$url"/>');
 
     // remember xml node
-    this.element = xml;
+    element = xml;
 
     // get bindings
     bindables = Binding.getBindingKeys(xml.toXmlString());
-    if (bindables == null) bindables = [];
+    bindables ??= [];
 
     // stack index
-    this.index = -1;
+    index = -1;
 
     // deserialize 
     super.deserialize(xml);
@@ -390,46 +396,32 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
 
     // header
     List<HeaderModel> headers = findChildrenOfExactType(HeaderModel).cast<HeaderModel>();
-      headers.forEach((header)
+    for (var header in headers) {
+      if (header == headers.first)
       {
-        if (header == headers.first)
-        {
-          this.header = header;
-          this.header!.registerListener(this);
-        }
-        if (children!.contains(header)) children!.remove(header);
-      });
-
-    // remove from view stream
+        this.header = header;
+        this.header!.registerListener(this);
+      }
+      if (children!.contains(header)) children!.remove(header);
+    }
     removeChildrenOfExactType(HeaderModel);
 
     // footer
     List<FooterModel> footers = findChildrenOfExactType(FooterModel).cast<FooterModel>();
-    footers.forEach((footer)
-    {
+    for (var footer in footers) {
       if (footer == footers.first)
       {
         this.footer = footer;
         this.footer!.registerListener(this);
       }
       if (children!.contains(footer)) children!.remove(footer);
-    });
-
-    // remove from view stream
+    }
     removeChildrenOfExactType(FooterModel);
 
     // build drawers
     List<XmlElement>? nodes;
     nodes = Xml.getChildElements(node: xml, tag: "DRAWER");
     if (nodes != null && nodes.isNotEmpty) drawer = DrawerModel.fromXmlList(this, nodes);
-
-    // sort children by depth
-    if (children != null) {
-      children?.sort((a, b) {
-        if(a.depth != null && b.depth != null)return a.depth?.compareTo(b.depth!) ?? 0;
-        return 0;
-      });
-    }
 
     // ready
     initialized = true;
@@ -439,7 +431,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
   // framework level dispose can happen asynchronously
   void dispose() async
   {
-    // Log().debug('Dispose called on framework model => <FML name="$templateName" url="$url"/>');
+    Log().debug('Dispose called on framework model => <FML name="$templateName" url="$url"/>');
 
     disposed = true;
 
@@ -483,6 +475,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
   Map<String?, String> onPop() => parameters;
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
+  @override
   onModelChange(WidgetModel model,{String? property, dynamic value})
   {
     try
@@ -512,9 +505,11 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
     {
       var bytes = utf8.encode(element!.toXmlString());
       var uri = URI.parse(templateName);
-      if (uri != null)
-           Platform.fileSaveAs(bytes, uri.url);
-      else Platform.fileSaveAs(bytes, "template");
+      if (uri != null) {
+        Platform.fileSaveAs(bytes, uri.url);
+      } else {
+        Platform.fileSaveAs(bytes, "template");
+      }
     }
   }
 
@@ -538,7 +533,7 @@ class FrameworkModel extends DecoratedWidgetModel implements IViewableWidget, IM
     }
     return super.execute(caller, propertyOrFunction, arguments);
   }
-
+  @override
   Widget getView({Key? key}) => getReactiveView(FrameworkView(this));
 }
 

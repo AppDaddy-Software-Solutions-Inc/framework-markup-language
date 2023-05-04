@@ -1,19 +1,18 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/draggable/draggable_model.dart';
-
-import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class DraggableView extends StatefulWidget implements IWidgetView
 {
+  @override
   final DraggableModel model;
   DraggableView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _DraggableViewState createState() => _DraggableViewState();
+  State<DraggableView> createState() => _DraggableViewState();
 }
 
 
@@ -49,18 +48,10 @@ class _DraggableViewState extends WidgetState<DraggableView>
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    ////////////////////
-    /* Build Children */
-    ////////////////////
-    List<Widget> children = [];
-    if (widget.model.children != null)
-    widget.model.children!.forEach((model)
-    {
-      if (model is IViewableWidget) {
-        children.add((model as IViewableWidget).getView());
-      }
-    });
+    // build the child views
+    List<Widget> children = widget.model.inflate();
     if (children.isEmpty) children.add(Container());
+
     return MouseRegion(cursor: cursor, child: Draggable(child: Stack(children: children), feedback: Transform.rotate(angle: -0.07, child: Card(elevation: 20, color: Colors.transparent, child: Stack(children: children))), childWhenDragging: Container(), data: widget.model, onDragCompleted: onDragCompleted, onDragStarted: () { setState(() => cursor = SystemMouseCursors.grabbing); widget.model.onDrag(context); }, onDragEnd: (_) => setState(() => cursor = SystemMouseCursors.grab),));
   }
 

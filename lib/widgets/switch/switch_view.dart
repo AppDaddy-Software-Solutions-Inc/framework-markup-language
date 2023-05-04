@@ -1,37 +1,34 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/switch/switch_model.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart' ;
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/text/text_view.dart';
 
 class SwitchView extends StatefulWidget implements IWidgetView
 {
+  @override
   final SwitchModel model;
   final dynamic onChangeCallback;
   SwitchView(this.model, {this.onChangeCallback});
 
   @override
-  _SwitchViewState createState() => _SwitchViewState();
+  State<SwitchView> createState() => _SwitchViewState();
 }
 
-class _SwitchViewState extends WidgetState<SwitchView> with WidgetsBindingObserver {
-  RenderBox? box;
-  Offset? position;
-
+class _SwitchViewState extends WidgetState<SwitchView> with WidgetsBindingObserver
+{
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
-  Widget builder(BuildContext context, BoxConstraints constraints) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _afterBuild(context);
-    });
-
-    setConstraints(constraints);
-
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
+
+    // save system constraints
+    onLayout(constraints);
 
     bool value = widget.model.value;
     String? label = widget.model.label;
@@ -57,7 +54,7 @@ class _SwitchViewState extends WidgetState<SwitchView> with WidgetsBindingObserv
     ///////////////
     /* Disabled? */
     ///////////////
-    if (!canSwitch)
+    if (!canSwitch) {
       view = MouseRegion(
           cursor: SystemMouseCursors.forbidden,
           child: Tooltip(
@@ -65,11 +62,12 @@ class _SwitchViewState extends WidgetState<SwitchView> with WidgetsBindingObserv
               preferBelow: false,
               verticalOffset: 12,
               child: view));
+    }
 
     ///////////////
     /* Labelled? */
     ///////////////
-    if (widget.model.label != null)
+    if (widget.model.label != null) {
       view = Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -81,6 +79,7 @@ class _SwitchViewState extends WidgetState<SwitchView> with WidgetsBindingObserv
           view
         ],
       );
+    }
 
     ////////////////////
     /* Constrain Size */
@@ -88,14 +87,6 @@ class _SwitchViewState extends WidgetState<SwitchView> with WidgetsBindingObserv
     view = SizedBox(child: view, width: width);
 
     return view;
-  }
-
-  /// After [iFormFields] are drawn we get the global offset for scrollTo functionality
-  _afterBuild(BuildContext context) {
-    // Set the global offset position of each input
-    box = context.findRenderObject() as RenderBox?;
-    if (box != null) position = box!.localToGlobal(Offset.zero);
-    if (position != null) widget.model.offset = position;
   }
 
   onChange(bool value) async {

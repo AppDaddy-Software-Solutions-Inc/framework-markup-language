@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/detectors/iDetectable.dart';
+import 'package:fml/datasources/detectors/detector_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/datasources/detectors/detector_model.dart' ;
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -45,6 +45,7 @@ class BiometricsDetectorModel extends DetectorModel implements IDetectable
     super.dispose();
   }
 
+  @override
   void detect(DetectableImage image, bool streamed) async
   {
     if (!busy)
@@ -58,7 +59,9 @@ class BiometricsDetectorModel extends DetectorModel implements IDetectable
         Data data = Payload.toData(payload);
         await onDetected(data);
       }
-      else if (!streamed)  await onDetectionFailed(Data(data: [{"message" : "Biometrics detector $id failed to detect any faces in the supplied image"}]));
+      else if (!streamed) {
+        await onDetectionFailed(Data(data: [{"message" : "Biometrics detector $id failed to detect any faces in the supplied image"}]));
+      }
 
       busy = false;
     }

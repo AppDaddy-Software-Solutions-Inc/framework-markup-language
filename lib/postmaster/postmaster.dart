@@ -1,8 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:fml/datasources/http/http.dart';
-import 'package:fml/hive/form.dart' as DATABASE;
-import 'package:fml/hive/post.dart' as DATABASE;
+import 'package:fml/hive/form.dart' as hive_pack;
+import 'package:fml/hive/post.dart' as hive_pack;
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/boolean.dart';
 import 'package:fml/observable/observables/integer.dart';
@@ -12,7 +12,7 @@ import 'package:fml/helper/common_helpers.dart';
 
 class PostMaster
 {
-  static PostMaster _singleton = PostMaster._init();
+  static final PostMaster _singleton = PostMaster._init();
   factory PostMaster()
   {
     return _singleton;
@@ -124,7 +124,7 @@ class PostMaster
     }
 
     // Get Incomplete Posts 
-    List<DATABASE.Post> posts = await DATABASE.Post.query(where: "{status} == " + DATABASE.Post.statusINCOMPLETE.toString());
+    List<hive_pack.Post> posts = await hive_pack.Post.query(where: "{status} == ${hive_pack.Post.statusINCOMPLETE}");
 
     // Sort Pending by Parent 
     posts.sort();
@@ -133,7 +133,7 @@ class PostMaster
     this.pending = posts;
 
     // Get Errors Count 
-    List<DATABASE.Post> errors = await DATABASE.Post.query(where: "{status} == " + DATABASE.Post.statusERROR.toString());
+    List<hive_pack.Post> errors = await hive_pack.Post.query(where: "{status} == ${hive_pack.Post.statusERROR}");
 
     // Set Error Count 
     this.errors = errors;
@@ -146,11 +146,10 @@ class PostMaster
       if (pending > 0) System.toast(phrase.postmasterPhrase002.replaceAll("{jobs}", pending.toString()));
 
       // Clear Alert 
-      this.alert = false;
+      alert = false;
 
       // Process Each Post 
-      posts.forEach((post) async
-      {
+      for (var post in posts) {
         if (await postable(post))
         {
           // Set Pending Count 
@@ -163,28 +162,28 @@ class PostMaster
           post.attempts = (post.attempts ?? 0) + 1;
           if (!response.ok)
           {
-            if ((post.attempts ?? 0) > maxattempts) post.status   = DATABASE.Post.statusERROR;
+            if ((post.attempts ?? 0) > maxattempts) post.status   = hive_pack.Post.statusERROR;
             post.info = response.statusMessage;
             // bool ok   = (await post.update() == null);
 
             // Set Alert 
-            this.alert = true;
+            alert = true;
           }
 
           // Ok 
           else
           {
-            post.status = DATABASE.Post.statusCOMPLETE;
+            post.status = hive_pack.Post.statusCOMPLETE;
             // bool ok = (await post.update() == null);
             pending = pending - 1;
           }
         }
-      });
+      }
 
     return true;
   }
 
-  Future<bool> postable(DATABASE.Post post) async
+  Future<bool> postable(hive_pack.Post post) async
   {
     if (!System().connected) return false;
     return await formPostable(post.formKey);
@@ -196,7 +195,7 @@ class PostMaster
     if (S.isNullOrEmpty(key)) return true;
 
     // Lookup the Form 
-    DATABASE.Form? form = await DATABASE.Form.find(key);
+    hive_pack.Form? form = await hive_pack.Form.find(key);
 
     // Form Not Found 
     if (form == null) return true;

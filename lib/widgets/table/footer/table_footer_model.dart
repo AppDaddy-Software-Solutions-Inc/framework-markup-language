@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/table/table_model.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +29,7 @@ class TableFooterModel extends DecoratedWidgetModel
   {
     if (_bordercolor == null)
     {
-      if ((this.parent != null) && (this.parent is TableModel)) return (this.parent as TableModel).bordercolor;
+      if ((parent != null) && (parent is TableModel)) return (parent as TableModel).bordercolor;
       return null;
     }
     return _bordercolor?.get();
@@ -54,7 +54,7 @@ class TableFooterModel extends DecoratedWidgetModel
   {
     if (_borderwidth == null)
     {
-      if ((this.parent != null) && (this.parent is TableModel)) return (this.parent as TableModel).borderwidth;
+      if ((parent != null) && (parent is TableModel)) return (parent as TableModel).borderwidth;
       return null;
     }
     return _borderwidth?.get();
@@ -62,8 +62,8 @@ class TableFooterModel extends DecoratedWidgetModel
 
   TableFooterModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic color}) : super(parent, id, scope: Scope(parent: parent.scope))
   {
-    this.width  = width;
-    this.height = height;
+    if (width  != null) this.width  = width;
+    if (height != null) this.height = height;
     this.color  = color;
   }
 

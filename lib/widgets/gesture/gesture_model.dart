@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -10,7 +9,7 @@ import 'package:fml/widgets/gesture/gesture_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class GestureModel extends DecoratedWidgetModel implements IViewableWidget
+class GestureModel extends DecoratedWidgetModel 
 {
   /// On click/tap call event
   StringObservable? _onclick;
@@ -184,9 +183,7 @@ class GestureModel extends DecoratedWidgetModel implements IViewableWidget
     GestureModel? model;
     try
     {
-      /////////////////
-      /* Build Model */
-      /////////////////
+// build model
       model = GestureModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
@@ -264,5 +261,6 @@ class GestureModel extends DecoratedWidgetModel implements IViewableWidget
     return await EventHandler(this).execute(_onrightclick);
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(GestureView(this));
 }

@@ -1,15 +1,14 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/tooltip/v1/tooltip_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class TooltipModel extends DecoratedWidgetModel implements IViewableWidget
+class TooltipModel extends DecoratedWidgetModel 
 {
   // background color
   ColorObservable? _backgroundcolor;
@@ -73,8 +72,8 @@ class TooltipModel extends DecoratedWidgetModel implements IViewableWidget
 
     // properties
     label = Xml.get(node: xml, tag: 'label');
-    if (label == null) label = Xml.get(node: xml, tag: 'text'); // backwards compatibility
-    if (label == null) label = Xml.get(node: xml, tag: 'value'); // backwards compatibility
+    label ??= Xml.get(node: xml, tag: 'text'); // backwards compatibility
+    label ??= Xml.get(node: xml, tag: 'value'); // backwards compatibility
     backgroundcolor = Xml.get(node: xml, tag: 'backgroundcolor');
   }
 
@@ -85,5 +84,6 @@ class TooltipModel extends DecoratedWidgetModel implements IViewableWidget
     super.dispose();
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(TooltipView(this));
 }

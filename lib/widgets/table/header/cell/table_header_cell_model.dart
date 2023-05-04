@@ -1,7 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
+import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:fml/widgets/table/header/table_header_model.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -10,12 +11,15 @@ import 'package:fml/helper/common_helpers.dart';
 
 class TableHeaderCellModel extends DecoratedWidgetModel
 {
+  LayoutType get layoutType => LayoutType.column;
+
   /////////////////////
   /* Position in Row */
   /////////////////////
   int? get index {
-    if ((parent != null) && (parent is TableHeaderModel))
+    if ((parent != null) && (parent is TableHeaderModel)) {
       return (parent as TableHeaderModel).cells.indexOf(this);
+    }
     return null;
   }
 
@@ -40,10 +44,12 @@ class TableHeaderCellModel extends DecoratedWidgetModel
   /* Color */
   ///////////
   ColorObservable? _color;
+  @override
   Color? get color {
     if (_color == null) {
-      if ((this.parent != null) && (this.parent is TableHeaderModel))
-        return (this.parent as TableHeaderModel).color;
+      if ((parent != null) && (parent is TableHeaderModel)) {
+        return (parent as TableHeaderModel).color;
+      }
       return null;
     }
     return _color?.get();
@@ -65,8 +71,9 @@ class TableHeaderCellModel extends DecoratedWidgetModel
 
   Color? get bordercolor {
     if (_bordercolor == null) {
-      if ((this.parent != null) && (this.parent is TableHeaderModel))
-        return (this.parent as TableHeaderModel).bordercolor;
+      if ((parent != null) && (parent is TableHeaderModel)) {
+        return (parent as TableHeaderModel).bordercolor;
+      }
       return null;
     }
     return _bordercolor?.get();
@@ -74,8 +81,9 @@ class TableHeaderCellModel extends DecoratedWidgetModel
 
   Color? get outerbordercolor {
     Color? color;
-    if ((this.parent != null) && (this.parent is TableHeaderModel))
-      color = (this.parent as TableHeaderModel).bordercolor;
+    if ((parent != null) && (parent is TableHeaderModel)) {
+      color = (parent as TableHeaderModel).bordercolor;
+    }
     return color;
   }
 
@@ -95,8 +103,9 @@ class TableHeaderCellModel extends DecoratedWidgetModel
 
   double? get borderwidth {
     if (_borderwidth == null) {
-      if ((this.parent != null) && (this.parent is TableHeaderModel))
-        return (this.parent as TableHeaderModel).borderwidth;
+      if ((parent != null) && (parent is TableHeaderModel)) {
+        return (parent as TableHeaderModel).borderwidth;
+      }
       return null;
     }
     return _borderwidth?.get();
@@ -106,6 +115,7 @@ class TableHeaderCellModel extends DecoratedWidgetModel
   ///
   /// The horizontal alignment of the widgets children, overrides `center`. Can be `left`, `right`, `start`, or `end`.
   StringObservable? _halign;
+  @override
   set halign(dynamic v) {
     if (_halign != null) {
       _halign!.set(v);
@@ -115,10 +125,12 @@ class TableHeaderCellModel extends DecoratedWidgetModel
     }
   }
 
+  @override
   String? get halign {
     if (_halign == null) {
-      if ((this.parent != null) && (this.parent is TableHeaderModel))
-        return (this.parent as TableHeaderModel).halign;
+      if ((parent != null) && (parent is TableHeaderModel)) {
+        return (parent as TableHeaderModel).halign;
+      }
       return null;
     }
     return _halign?.get();
@@ -135,13 +147,14 @@ class TableHeaderCellModel extends DecoratedWidgetModel
     }
   }
 
-  bool? get center {
-    if (_center == null) {
-      if ((this.parent != null) && (this.parent is TableHeaderModel))
-        return (this.parent as TableHeaderModel).center;
-      return null;
+  bool get center
+  {
+    if (_center == null)
+    {
+      if ((parent != null) && (parent is TableHeaderModel)) return (parent as TableHeaderModel).center;
+      return false;
     }
-    return _center?.get();
+    return _center?.get() ?? false;
   }
 
   /// wrap is a boolean that dictates if the widget will wrap or not.
@@ -155,13 +168,14 @@ class TableHeaderCellModel extends DecoratedWidgetModel
     }
   }
 
-  bool? get wrap {
-    if (_wrap == null) {
-      if ((this.parent != null) && (this.parent is TableHeaderModel))
-        return (this.parent as TableHeaderModel).wrap;
-      return null;
+  bool get wrap
+  {
+    if (_wrap == null)
+    {
+      if ((parent != null) && (parent is TableHeaderModel)) return (parent as TableHeaderModel).wrap;
+      return false;
     }
-    return _wrap?.get();
+    return _wrap?.get() ?? false;
   }
 
   /// wrap is a boolean that dictates if the widget will wrap or not.
@@ -193,13 +207,12 @@ class TableHeaderCellModel extends DecoratedWidgetModel
 
   bool sorted = false;
 
-  TableHeaderCellModel(WidgetModel parent, String? id,
-      {String? field, dynamic width, dynamic height, dynamic sortbydefault})
-      : super(parent, id) {
-    this.width = width;
+  TableHeaderCellModel(WidgetModel parent, String? id, {String? field, dynamic width, dynamic height, dynamic sortbydefault}) : super(parent, id)
+  {
+    if (width  != null) this.width  = width;
+    if (height != null) this.height = height;
     this.sortbydefault = sortbydefault;
-    this.height = height;
-    this.sortAscending = false;
+    sortAscending = false;
   }
 
   static TableHeaderCellModel? fromXml(WidgetModel parent, XmlElement xml) {
@@ -230,8 +243,6 @@ class TableHeaderCellModel extends DecoratedWidgetModel
     // properties
     field       = Xml.get(node: xml, tag: 'field');
     sortbydefault       = Xml.get(node: xml, tag: 'sortbydefault');
-    width       = Xml.get(node: xml, tag: 'width');
-    height      = Xml.get(node: xml, tag: 'height');
     bordercolor = Xml.get(node: xml, tag: 'bordercolor');
     borderwidth = Xml.get(node: xml, tag: 'borderwidth');
 
@@ -250,8 +261,9 @@ class TableHeaderCellModel extends DecoratedWidgetModel
   }
 
   bool onSort() {
-    if ((this.parent != null) && (this.parent is TableHeaderModel))
-      (this.parent as TableHeaderModel).onSort(this);
+    if ((parent != null) && (parent is TableHeaderModel)) {
+      (parent as TableHeaderModel).onSort(this);
+    }
     return true;
   }
 

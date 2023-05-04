@@ -1,17 +1,18 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'scroll_shadow_model.dart';
 
 class ScrollShadowView extends StatefulWidget implements IWidgetView
 {
+  @override
   final ScrollShadowModel model;
 
   ScrollShadowView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _ScrollShadowViewState createState() => _ScrollShadowViewState();
+  State<ScrollShadowView> createState() => _ScrollShadowViewState();
 }
 
 class _ScrollShadowViewState extends WidgetState<ScrollShadowView>

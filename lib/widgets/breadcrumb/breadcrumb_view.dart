@@ -3,7 +3,7 @@ import 'package:fml/navigation/navigation_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/navigation/page.dart';
 import 'package:fml/widgets/breadcrumb/breadcrumb_model.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 /// Breadcrumb View
@@ -11,6 +11,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 /// Builds the View from the [BREADCRUMB.BreadcrumbModel] properties
 class BreadcrumbView extends StatefulWidget implements IWidgetView
 {
+  @override
   final BreadcrumbModel model;
 
   /// Height of the breadcrumb bar
@@ -24,7 +25,7 @@ class BreadcrumbView extends StatefulWidget implements IWidgetView
   BreadcrumbView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _BreadcrumbViewState createState() => _BreadcrumbViewState();
+  State<BreadcrumbView> createState() => _BreadcrumbViewState();
 }
 
 class _BreadcrumbViewState extends WidgetState<BreadcrumbView>
@@ -41,7 +42,7 @@ class _BreadcrumbViewState extends WidgetState<BreadcrumbView>
     List<Page> pages = NavigationManager().pages;
 
     int index = 0;
-    pages.forEach((page) {
+    for (var page in pages) {
       if (page.arguments is PageConfiguration) {
         PageConfiguration conf = (page.arguments as PageConfiguration);
         Widget view = _TextCrumb(
@@ -52,23 +53,24 @@ class _BreadcrumbViewState extends WidgetState<BreadcrumbView>
             index == 0);
 
         int i = pages.length - (index + 1);
-        if (i > 0)
+        if (i > 0) {
           view = GestureDetector(
               onTap: () => NavigationManager().back(i), child: view);
-        else
+        } else {
           view = GestureDetector(
               onTap: () => NavigationManager().refresh(), child: view);
+        }
         children.add(view);
 
         index++;
       }
-    });
+    }
 
     // Shortens the length of breadcrumbs from the length of the full screen when given a width < 0 or sets the width if given > 0
     // ^ this is an older feature and could likely be removed.
     double? shorten;
-    if (widget.model.width != null)
-      shorten = ((widget.model.width! < 0) &&
+    if (widget.model.width != null) {
+      shorten = ((widget.model.width!.isNegative) &&
               (MediaQuery.of(context).size.width + widget.model.width! > 0))
           ? widget.model.width
           : ((widget.model.width! >= 0) &&
@@ -76,8 +78,9 @@ class _BreadcrumbViewState extends WidgetState<BreadcrumbView>
                       0))
               ? (widget.model.width! - MediaQuery.of(context).size.width)
               : 0;
-    else
+    } else {
       shorten = 0;
+    }
     return Container(
         color: widget.model.backgroundcolor
                 ?.withOpacity(widget.model.opacity ?? 1.0) ??
@@ -108,6 +111,7 @@ class _TextCrumb extends StatefulWidget {
   _TextCrumb(
       this.text, this.color, this.height, this.separator, this.isFirstButton);
 
+  @override
   _TextCrumbState createState() => _TextCrumbState();
 }
 

@@ -2,9 +2,7 @@
 import 'package:fml/event/event.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
-
-import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/treeview/tree_view.dart';
 import 'package:fml/widgets/treeview/node/tree_node_model.dart';
@@ -12,7 +10,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class TreeModel extends DecoratedWidgetModel implements IViewableWidget
+class TreeModel extends DecoratedWidgetModel 
 {
   // Icon
   IconObservable? _icon;
@@ -80,18 +78,21 @@ class TreeModel extends DecoratedWidgetModel implements IViewableWidget
     // Build Nodes and find the youngestGeneration
 
     // clear nodes
-    this.nodes.forEach((model) => model.dispose());
+    for (var model in this.nodes) {
+      model.dispose();
+    }
     this.nodes.clear();
 
-    this.youngestGeneration.forEach((model) => model?.dispose());
-    this.youngestGeneration.clear();
+    for (var model in youngestGeneration) {
+      model?.dispose();
+    }
+    youngestGeneration.clear();
 
     List<TreeNodeModel> nodes = findChildrenOfExactType(TreeNodeModel).cast<TreeNodeModel>();
-    nodes.forEach((dynamic node)
-    {
+    for (var node in nodes) {
      this.nodes.add(node);
      recurseChildren(node);
-    });
+    }
 
     if ((datasource != null) && (this.nodes.isNotEmpty))
     {
@@ -106,11 +107,15 @@ class TreeModel extends DecoratedWidgetModel implements IViewableWidget
     // Log().debug('dispose called on => <$elementName id="$id">');
 
     // clear nodes
-    nodes.forEach((model) => model.dispose());
+    for (var model in nodes) {
+      model.dispose();
+    }
     nodes.clear();
 
-    this.youngestGeneration.forEach((model) => model?.dispose());
-    this.youngestGeneration.clear();
+    for (var model in youngestGeneration) {
+      model?.dispose();
+    }
+    youngestGeneration.clear();
 
     super.dispose();
   }
@@ -119,12 +124,13 @@ class TreeModel extends DecoratedWidgetModel implements IViewableWidget
   {
       for (TreeNodeModel? n in youngestGeneration)
       {
-        if (node == null)
+        if (node == null) {
           n!.selected = false;
-        else if (n!.id == node.id)
+        } else if (n!.id == node.id) {
           n.selected = true;
-        else
+        } else {
           n.selected = false;
+        }
       }
   }
 
@@ -158,9 +164,9 @@ class TreeModel extends DecoratedWidgetModel implements IViewableWidget
 
   void recurseChildren(dynamic node) {
     for (dynamic n in node.children) {
-      if (n.children != null && n.children.length > 0)
+      if (n.children != null && n.children.length > 0) {
         recurseChildren(n);
-      else {
+      } else {
         youngestGeneration.add(n);
       }
     }

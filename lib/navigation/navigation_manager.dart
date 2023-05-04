@@ -44,7 +44,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
 
     // get home page
     String? homePage = System.app?.homePage ?? "store";
-    if (!isWeb && appType == ApplicationTypes.MultiApp) homePage = "store";
+    if (!isWeb && appType == ApplicationTypes.multiApp) homePage = "store";
 
     // get start page
     String startPage = System.app?.startPage ?? homePage;
@@ -125,20 +125,26 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     }
 
     // page in navigation history?
-    var page;
-    if ((url == "/") && (_pages.isNotEmpty))
-         page = _pages.first;
-    else page = _pages.reversed.firstWhereOrNull((page) => (page.name == url));
+    Page? page;
+    if ((url == "/") && (_pages.isNotEmpty)) {
+      page = _pages.first;
+    } else {
+      page = _pages.reversed.firstWhereOrNull((page) => (page.name == url));
+    }
 
     // navigate back to the page if found in the navigation history
     if (page != null)
     {
-      while ((_pages.isNotEmpty) && (_pages.last != page)) _pages.removeLast();
+      while ((_pages.isNotEmpty) && (_pages.last != page)) {
+        _pages.removeLast();
+      }
       notifyListeners();
     }
     
     // open a new page
-    else _open(url, transition: configuration.transition);
+    else {
+      _open(url, transition: configuration.transition);
+    }
   }
 
   @override
@@ -152,9 +158,11 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
   Future<bool> popRoute()
   {
     // this only fires on mobile
-    if (_pages.length > 1)
-         return _goback(1);
-    else return _confirmAppExit();
+    if (_pages.length > 1) {
+      return _goback(1);
+    } else {
+      return _confirmAppExit();
+    }
   }
 
   Future<String?> _buildDeeplinkUrl(String? url) async
@@ -211,13 +219,21 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
 
     if (index != null)
     {
-           if (index >= _pages.length) _pages.add(page);
-      else if (index < (_pages.length * -1)) _pages.insert(0, page);
-      else if (index >= 0) _pages.insert(index, page);
-      else if (index < 0)  _pages.insert(_pages.length + index, page);
-      else Log().error('Unable to add page at index: $index name: ${args!.title}, url: ${args.url}', caller: 'delegate.dart');
+           if (index >= _pages.length) {
+             _pages.add(page);
+           } else if (index < (_pages.length * -1)) {
+        _pages.insert(0, page);
+      } else if (index >= 0) {
+        _pages.insert(index, page);
+      } else if (index.isNegative) {
+        _pages.insert(_pages.length + index, page);
+      } else {
+        Log().error('Unable to add page at index: $index name: ${args!.title}, url: ${args.url}', caller: 'delegate.dart');
+      }
     }
-    else _pages.add(page);
+    else {
+      _pages.add(page);
+    }
     notifyListeners();
   }
 
@@ -236,7 +252,9 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     bool ok = await Platform.goBackPages(pages);
     if (ok) return true;
 
-    for (int i = 0; i < pages; i++) _pages.removeLast();
+    for (int i = 0; i < pages; i++) {
+      _pages.removeLast();
+    }
     notifyListeners();
     return true;
   }
@@ -254,7 +272,9 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
       // position 0 implies top of stack, 1 page before, ... etc
       if (page != null && _pages.contains(page)) index = (_pages.length - _pages.indexOf(page) - 1).abs();
     }
-    catch(e){}
+    catch(e){
+      Log().debug('$e');
+    }
     return index;
   }
 
@@ -266,14 +286,16 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
       var route = ModalRoute.of(context);
       if ((route?.settings != null) && (route!.settings is Page)) page = (route.settings as Page);
     }
-    catch(e){}
+    catch(e){
+      Log().debug('$e');
+    }
     return page;
   }
 
   Future<bool> open(Map<String, String?>? parameters, {bool? refresh = false, WidgetModel? model, String? dependency}) async
   {
     bool ok = true;
-    if (parameters == null) parameters = Map<String, String>();
+    parameters ??= <String, String>{};
 
     String url         = S.mapVal(parameters,'url',defaultValue: "");
     bool?   modal      = S.mapBoo(parameters,'modal', defaultValue: false);
@@ -310,9 +332,15 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     // open new page in modal window?
     if (modal == true)
     {
-      FrameworkModel model = FrameworkModel.fromUrl(System.app!, url, refresh: refresh ?? false, dependency: dependency);
-      FrameworkView  view  = FrameworkView(model);
-      return openModal(view, NavigationManager().navigatorKey.currentContext, modal: false, width: width, height: height) != null;
+      if (model != null)
+      {
+        var framework = model.findParentOfExactType(FrameworkModel);
+        if (framework != null)
+        {
+          var view = FrameworkView(FrameworkModel.fromUrl(framework, url, refresh: refresh ?? false, dependency: dependency));
+          return openModal(view, model.context, modal: false, width: width, height: height) != null;
+        }
+      }
     }
 
     /* replace */
@@ -420,7 +448,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
 
   Future<bool> _confirmAppExit() async
   {
-    final result;
+    final bool result;
     if (navigatorKey.currentContext != null) {
       result = await showDialog<bool>(
           context: navigatorKey.currentContext!,
@@ -439,16 +467,17 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
                 ),
               ],
             );
-          });}
-    else
+          }) ?? false;}
+    else {
       result = true;
+    }
     return result;
   }
 
   OverlayView? openModal(Widget view, BuildContext? context, {bool modal = true, bool resizeable = true, bool closeable = true, bool draggable = true, String? width, String? height})
   {
     OverlayView? overlay;
-    OverlayManagerView? manager = context != null ? context.findAncestorWidgetOfExactType<OverlayManagerView>() : null;
+    OverlayManagerView? manager = context?.findAncestorWidgetOfExactType<OverlayManagerView>();
     if (manager != null)
     {
       overlay = OverlayView(OverlayModel(child: view, modal: modal, resizeable: resizeable, closeable: closeable, draggable: draggable, width: _toWidth(width), height: _toHeight(height)));
@@ -462,7 +491,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
   {
     if ((overlay == null) || (overlay.model.closeable == false)) return true;
     overlay.model.close();
-    OverlayManagerView? manager = context != null ? context.findAncestorWidgetOfExactType<OverlayManagerView>() : null;
+    OverlayManagerView? manager = context?.findAncestorWidgetOfExactType<OverlayManagerView>();
     if (manager != null) manager.model.refresh();
     return true;
   }
@@ -502,7 +531,9 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
           width = size * (width / 100);
         }
       }
-      else width = S.toDouble(value);
+      else {
+        width = S.toDouble(value);
+      }
     }
     catch(e)
     {
@@ -526,7 +557,9 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
           height   = size * (height / 100);
         }
       }
-      else height = S.toDouble(value);
+      else {
+        height = S.toDouble(value);
+      }
     }
     catch(e)
     {

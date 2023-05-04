@@ -40,7 +40,7 @@ class ChartSeriesModel extends WidgetModel
       dynamic label,
       dynamic labelled,
       dynamic labelType,
-      String? type,
+      this.type,
       dynamic tooltips,
       dynamic animated,
       dynamic name,
@@ -60,7 +60,6 @@ class ChartSeriesModel extends WidgetModel
     this.label = label;
     this.labelled = labelled;
     this.labelType = labelType;
-    this.type = type;
     this.tooltips = tooltips;
     this.animated = animated;
     this.name = name;
@@ -121,34 +120,34 @@ class ChartSeriesModel extends WidgetModel
     if ((datasource != null) && (scope != null) && (scope!.datasources.containsKey(datasource))) scope!.datasources[datasource!]!.remove(this);
 
     // Setup the Series type and some internal properties for supporting it
-    if (type != null) type = type?.trim().toLowerCase() ?? null;
+    if (type != null) type = type?.trim().toLowerCase();
     switch (S.toEnum(type, ChartSeriesType.values)) {
       case ChartSeriesType.area:
-        this.type = S.fromEnum(ChartSeriesType.area);
+        type = S.fromEnum(ChartSeriesType.area);
         break;
 
       case ChartSeriesType.bar:
-        this.type = S.fromEnum(ChartSeriesType.bar);
+        type = S.fromEnum(ChartSeriesType.bar);
         break;
 
       case ChartSeriesType.label:
-        this.type = S.fromEnum(ChartSeriesType.label);
+        type = S.fromEnum(ChartSeriesType.label);
         break;
 
       case ChartSeriesType.line:
-        this.type = S.fromEnum(ChartSeriesType.line);
+        type = S.fromEnum(ChartSeriesType.line);
         break;
 
       case ChartSeriesType.pie:
-        this.type = S.fromEnum(ChartSeriesType.pie);
+        type = S.fromEnum(ChartSeriesType.pie);
         break;
 
       case ChartSeriesType.plot:
-        this.type = S.fromEnum(ChartSeriesType.plot);
+        type = S.fromEnum(ChartSeriesType.plot);
         break;
 
       case ChartSeriesType.waterfall:
-        this.type = S.fromEnum(ChartSeriesType.waterfall);
+        type = S.fromEnum(ChartSeriesType.waterfall);
         break;
 
       default:
@@ -429,10 +428,11 @@ class ChartSeriesModel extends WidgetModel
   {
     // dynamic color = replace(_color,data); // _color.set(_color?.applyMap(map)); // run eval(s)
     dynamic color;
-    if (_color != null && _color!.bindings != null && _color!.bindings!.length > 0)
+    if (_color != null && _color!.bindings != null && _color!.bindings!.isNotEmpty) {
       color = replace(_color,data); // _color.set(_color?.applyMap(map)); // run eval(s)
-    else if (_color != null && _color!.value != null)
+    } else if (_color != null && _color!.value != null) {
       color = _color!.value;
+    }
     dynamic x     = replace(_x,data);
     dynamic y     = replace(_y,data);
     dynamic label = replace(_label,data);
@@ -441,8 +441,11 @@ class ChartSeriesModel extends WidgetModel
 
   dynamic replace(Observable? observable, dynamic data)
   {
-    if (observable == null) return null;
-    else if (observable.signature == null) return observable.value;
+    if (observable == null) {
+      return null;
+    } else if (observable.signature == null) {
+      return observable.value;
+    }
 
     // apply data to Json data
     dynamic value = Data.replaceValue(observable.signature, data);

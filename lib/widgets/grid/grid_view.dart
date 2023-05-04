@@ -8,7 +8,7 @@ import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/event/event.dart' ;
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/scrollshadow/scroll_shadow_view.dart';
@@ -25,11 +25,12 @@ import 'package:fml/helper/common_helpers.dart';
 
 class GridView extends StatefulWidget implements IWidgetView
 {
+  @override
   final GridModel model;
   GridView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _GridViewState createState() => _GridViewState();
+  State<GridView> createState() => _GridViewState();
 }
 
 class _GridViewState extends WidgetState<GridView>
@@ -109,8 +110,9 @@ class _GridViewState extends WidgetState<GridView>
       var child = widget.model.findDescendantOfExactType(null, id: id);
 
       // if there is an error with this, we need to check _controller.hasClients as it must not be false when using [ScrollPosition],such as [position], [offset], [animateTo], and [jumpTo],
-      if ((child != null) && (child.context != null))
+      if ((child != null) && (child.context != null)) {
         Scrollable.ensureVisible(child.context, duration: Duration(seconds: 1), alignment: 0.2);
+      }
     }
   }
 
@@ -138,7 +140,7 @@ class _GridViewState extends WidgetState<GridView>
 
   void onScroll(Event event) async
   {
-    if (this.scroller != null) scroll(event, this.scroller);
+    if (scroller != null) scroll(event, scroller);
     event.handled = true;
   }
 
@@ -169,144 +171,6 @@ class _GridViewState extends WidgetState<GridView>
     }
   }
 
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints)
-  {
-    // Set Build Constraints in the [WidgetModel]
-    setConstraints(constraints);
-
-    // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
-
-    // Check if grid has items before wasting resources on building it
-    List<Widget> children = [];
-    if (widget.model.itemSize == null || widget.model.items.length == 0)
-    {
-      GridItemModel? prototypeModel;
-      Widget prototypeGrid;
-      try
-      {
-        // build prototype
-        XmlElement? prototype = S.fromPrototype(widget.model.prototype, "${widget.model.id}-0");
-        // build model
-        prototypeModel = GridItemModel.fromXml(this.widget.model, prototype);
-        prototypeGrid = Offstage(child: MeasuredView(UnconstrainedBox(
-            child: GridItemView(model: prototypeModel)),
-            onMeasuredItem));
-      }
-      catch(e)
-      {
-        prototypeModel = widget.model.items.isNotEmpty ? widget.model.items.values.first : null;
-        prototypeGrid = Text('Error Prototyping GridModel');
-      }
-
-      return prototypeGrid;
-    }
-
-    gridWidth = widget.model.maxWidth ?? widget.model.width ?? MediaQuery.of(context).size.width;
-    gridHeight = widget.model.maxHeight ?? widget.model.height ?? MediaQuery.of(context).size.height;
-
-    if (widget.model.items.isNotEmpty) {
-      prototypeWidth  = widget.model.items.entries.first.value.width ?? (widget.model.maxWidth ?? widget.model.width ?? widget.model.itemSize?.width ?? MediaQuery.of(context).size.width) / (sqrt(widget.model.items.length) + 1);
-      prototypeHeight = widget.model.items.entries.first.value.height ?? (widget.model.maxHeight ?? widget.model.height ?? widget.model.itemSize?.height ?? MediaQuery.of(context).size.height) / (sqrt(widget.model.items.length) + 1);
-    }
-    else {
-      prototypeWidth  = (widget.model.maxWidth ?? widget.model.width ?? widget.model.itemSize?.width ?? MediaQuery.of(context).size.width) / (sqrt(widget.model.items.length) + 1);
-      prototypeHeight = (widget.model.maxHeight ?? widget.model.height ?? widget.model.itemSize?.height ?? MediaQuery.of(context).size.height) / (sqrt(widget.model.items.length) + 1);
-    }
-
-
-    widget.model.direction == 'horizontal' ? direction = Axis.horizontal : direction = Axis.vertical;
-
-    // Protect against infinity calculations when screen is smaller than the grid item in the none expanding direction
-    if (direction == Axis.vertical && gridWidth < prototypeWidth) gridWidth = prototypeWidth;
-    else if (direction == Axis.horizontal && gridHeight < prototypeHeight) gridHeight = prototypeHeight;
-
-    if (direction == Axis.vertical)
-    {
-      double cellWidth = prototypeWidth;
-      if (cellWidth == 0) cellWidth = 160;
-      count = (gridWidth / cellWidth).floor();
-    }
-    else
-    {
-      double cellHeight = prototypeHeight;
-      if (cellHeight == 0) cellHeight = 160;
-      count = (gridHeight / cellHeight).floor();
-    }
-
-    /// Busy / Loading Indicator
-    if (busy == null) busy = BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
-
-    var iconUp = IconModel(null, null, icon: 'keyboard_arrow_up');
-    var scrollUpModel = ButtonModel(null, null, label: 'up', buttontype: "icon", color: Theme.of(context).highlightColor.withOpacity(0.3), onclick: "scroll('up', 360)", children: [iconUp]/*, visible: widget.model.moreUp*/);
-    widget.model.moreUpObservable!.registerListener((observable) { scrollUpModel.visible = observable.get(); });
-
-    var iconDown = IconModel(null, null, icon: 'keyboard_arrow_down');
-    var scrollDownModel = ButtonModel(null, null, label: 'down', buttontype: "icon", color: Theme.of(context).highlightColor.withOpacity(0.3), onclick: "scroll('down', 360)", children: [iconDown]/*, visible: widget.model.moreDown*/);
-    widget.model.moreDownObservable!.registerListener((observable) { scrollDownModel.visible = observable.get(); });
-
-    var iconLeft = IconModel(null, null, icon: 'keyboard_arrow_left');
-    var scrollLeftModel = ButtonModel(null, null, label: 'left', buttontype: "icon", color: Theme.of(context).highlightColor.withOpacity(0.3), onclick: "scroll('left', 360)", children: [iconLeft]/*, visible: widget.model.moreLeft*/);
-    widget.model.moreLeftObservable!.registerListener((observable) { scrollLeftModel.visible = observable.get(); });
-
-    var iconRight = IconModel(null, null, icon: 'keyboard_arrow_right');
-    var scrollRightModel = ButtonModel(null, null, label: 'right', buttontype: "icon", color: Theme.of(context).highlightColor.withOpacity(0.3), onclick: "scroll('right', 360)", children: [iconRight]/*, visible: widget.model.moreRight*/);
-    widget.model.moreRightObservable!.registerListener((observable) { scrollRightModel.visible = observable.get(); });
-
-    //////////
-    /* View */
-    //////////
-
-    // Build the Grid Rows
-    Widget view = ListView.custom(scrollDirection: direction,
-        physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null,
-        controller: scroller,
-        childrenDelegate: SliverChildBuilderDelegate(
-            (BuildContext context, int rowIndex) => rowBuilder(context, rowIndex),
-            childCount: (widget.model.items.length / count).ceil()
-        ));
-
-      if(widget.model.onpulldown != null) view = RefreshIndicator(
-          onRefresh: () => widget.model.onPull(context),
-          child: view);
-
-      if(widget.model.onpulldown != null || widget.model.draggable) view = ScrollConfiguration(
-        behavior: ProperScrollBehavior().copyWith(
-          dragDevices: {
-            PointerDeviceKind.touch,
-            PointerDeviceKind.mouse,
-          },
-        ),
-        child: view,
-      ); else view = ScrollConfiguration(behavior: ProperScrollBehavior(), child: view);
-
-
-    // Constrain the View
-    var w  = widget.model.width;
-    var h = widget.model.height;
-    if (constraints.maxHeight == double.infinity || constraints.maxHeight == double.negativeInfinity || h == null)
-      h = widget.model.maxHeight ?? constraints.maxHeight;
-    if (constraints.maxWidth  == double.infinity || constraints.maxWidth  == double.negativeInfinity || w  == null)
-      w  = widget.model.maxWidth ?? constraints.maxWidth;
-    view = UnconstrainedBox(child: SizedBox(height: h, width: w, child: view));
-
-    children.add(view);
-
-    // Initialize scroll shadows to controller after building
-    if (widget.model.scrollShadows == true)
-    {
-      scrollShadow = ScrollShadowModel(widget.model);
-      children.add(ScrollShadowView(scrollShadow));
-    }
-
-    children.add(Center(child: busy));
-
-    return Stack(children: children);
-  }
-
   Widget? rowBuilder(BuildContext context, int rowIndex)
   {
 
@@ -324,12 +188,16 @@ class _GridViewState extends WidgetState<GridView>
         var view = GridItemView(model: widget.model.items[i]);
         children.add(Expanded(child: SizedBox(width: prototypeWidth, height: prototypeHeight, child: view)));
       }
-      else children.add(Expanded(child: Container()));
+      else {
+        children.add(Expanded(child: Container()));
+      }
     }
 
-    if (direction == Axis.vertical)
-         return Row(children: children, mainAxisSize: MainAxisSize.min);
-    else return Column(children: children, mainAxisSize: MainAxisSize.min);
+    if (direction == Axis.vertical) {
+      return Row(children: children, mainAxisSize: MainAxisSize.min);
+    } else {
+      return Column(children: children, mainAxisSize: MainAxisSize.min);
+    }
   }
 
   void afterFirstLayout(BuildContext context)
@@ -364,4 +232,150 @@ class _GridViewState extends WidgetState<GridView>
     return true;
   }
 
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
+    // save system constraints
+    onLayout(constraints);
+
+    // Check if widget is visible before wasting resources on building it
+    if (!widget.model.visible) return Offstage();
+
+    // Check if grid has items before wasting resources on building it
+    List<Widget> children = [];
+    if (widget.model.itemSize == null || widget.model.items.isEmpty)
+    {
+      GridItemModel? prototypeModel;
+      Widget prototypeGrid;
+      try
+      {
+        // build prototype
+        XmlElement? prototype = S.fromPrototype(widget.model.prototype, "${widget.model.id}-0");
+        // build model
+        prototypeModel = GridItemModel.fromXml(widget.model, prototype);
+        prototypeGrid = Offstage(child: MeasuredView(UnconstrainedBox(
+            child: GridItemView(model: prototypeModel)),
+            onMeasuredItem));
+      }
+      catch(e)
+      {
+        prototypeModel = widget.model.items.isNotEmpty ? widget.model.items.values.first : null;
+        prototypeGrid = Text('Error Prototyping GridModel');
+      }
+
+      return prototypeGrid;
+    }
+
+    gridWidth  = widget.model.width  ?? widget.model.calculatedMaxWidthOrDefault;
+    gridHeight = widget.model.height ?? widget.model.calculatedMaxHeightOrDefault;
+
+    if (widget.model.items.isNotEmpty)
+    {
+      prototypeWidth  = widget.model.items.entries.first.value.width  ?? widget.model.calculatedMaxWidthOrDefault  / (sqrt(widget.model.items.length) + 1);
+      prototypeHeight = widget.model.items.entries.first.value.height ?? widget.model.calculatedMaxHeightOrDefault / (sqrt(widget.model.items.length) + 1);
+    }
+    else
+    {
+      prototypeWidth  = widget.model.calculatedMaxWidthOrDefault  / (sqrt(widget.model.items.length) + 1);
+      prototypeHeight = widget.model.calculatedMaxHeightOrDefault / (sqrt(widget.model.items.length) + 1);
+    }
+
+    widget.model.direction == 'horizontal' ? direction = Axis.horizontal : direction = Axis.vertical;
+
+    // Protect against infinity calculations when screen is smaller than the grid item in the none expanding direction
+    if (direction == Axis.vertical && gridWidth < prototypeWidth) {
+      gridWidth = prototypeWidth;
+    } else if (direction == Axis.horizontal && gridHeight < prototypeHeight) {
+      gridHeight = prototypeHeight;
+    }
+
+    if (direction == Axis.vertical)
+    {
+      double cellWidth = prototypeWidth;
+      if (cellWidth == 0) cellWidth = 160;
+      count = (gridWidth / cellWidth).floor();
+    }
+    else
+    {
+      double cellHeight = prototypeHeight;
+      if (cellHeight == 0) cellHeight = 160;
+      count = (gridHeight / cellHeight).floor();
+    }
+
+    /// Busy / Loading Indicator
+    busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
+
+    var iconUp = IconModel(null, null, icon: 'keyboard_arrow_up');
+    var scrollUpModel = ButtonModel(null, null, label: 'up', buttontype: "icon", color: Theme.of(context).highlightColor.withOpacity(0.3), onclick: "scroll('up', 360)", children: [iconUp]/*, visible: widget.model.moreUp*/);
+    widget.model.moreUpObservable!.registerListener((observable) { scrollUpModel.visible = observable.get(); });
+
+    var iconDown = IconModel(null, null, icon: 'keyboard_arrow_down');
+    var scrollDownModel = ButtonModel(null, null, label: 'down', buttontype: "icon", color: Theme.of(context).highlightColor.withOpacity(0.3), onclick: "scroll('down', 360)", children: [iconDown]/*, visible: widget.model.moreDown*/);
+    widget.model.moreDownObservable!.registerListener((observable) { scrollDownModel.visible = observable.get(); });
+
+    var iconLeft = IconModel(null, null, icon: 'keyboard_arrow_left');
+    var scrollLeftModel = ButtonModel(null, null, label: 'left', buttontype: "icon", color: Theme.of(context).highlightColor.withOpacity(0.3), onclick: "scroll('left', 360)", children: [iconLeft]/*, visible: widget.model.moreLeft*/);
+    widget.model.moreLeftObservable!.registerListener((observable) { scrollLeftModel.visible = observable.get(); });
+
+    var iconRight = IconModel(null, null, icon: 'keyboard_arrow_right');
+    var scrollRightModel = ButtonModel(null, null, label: 'right', buttontype: "icon", color: Theme.of(context).highlightColor.withOpacity(0.3), onclick: "scroll('right', 360)", children: [iconRight]/*, visible: widget.model.moreRight*/);
+    widget.model.moreRightObservable!.registerListener((observable) { scrollRightModel.visible = observable.get(); });
+
+    //////////
+    /* View */
+    //////////
+
+    // Build the Grid Rows
+    Widget view = ListView.custom(scrollDirection: direction,
+        physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null,
+        controller: scroller,
+        childrenDelegate: SliverChildBuilderDelegate(
+                (BuildContext context, int rowIndex) => rowBuilder(context, rowIndex),
+            childCount: (widget.model.items.length / count).ceil()
+        ));
+
+    if(widget.model.onpulldown != null) {
+      view = RefreshIndicator(
+        onRefresh: () => widget.model.onPull(context),
+        child: view);
+    }
+
+    if(widget.model.onpulldown != null || widget.model.draggable) {
+      view = ScrollConfiguration(
+      behavior: ProperScrollBehavior().copyWith(
+        dragDevices: {
+          PointerDeviceKind.touch,
+          PointerDeviceKind.mouse,
+        },
+      ),
+      child: view,
+    );
+    } else {
+      view = ScrollConfiguration(behavior: ProperScrollBehavior(), child: view);
+    }
+
+
+    // add margins
+    view = addMargins(view);
+
+    // apply user defined constraints
+    view = applyConstraints(view, widget.model.constraints.tightestOrDefault);
+
+    children.add(view);
+
+    // Initialize scroll shadows to controller after building
+    if (widget.model.scrollShadows == true)
+    {
+      scrollShadow = ScrollShadowModel(widget.model);
+      children.add(ScrollShadowView(scrollShadow));
+    }
+
+    children.add(Center(child: busy));
+
+    view = Stack(children: children);
+
+    return view;
+  }
 }

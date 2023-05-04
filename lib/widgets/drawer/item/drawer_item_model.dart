@@ -1,14 +1,14 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/drawer/drawer_view.dart' as DRAWER;
+import 'package:fml/widgets/drawer/drawer_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
-import 'package:fml/widgets/box/box_model.dart' as BOX;
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helper/common_helpers.dart';
 
 enum DrawerPositions {top, bottom, left, right}
 
-class DrawerItemModel extends BOX.BoxModel
+class DrawerItemModel extends BoxModel
 {
   final DrawerPositions position;
 
@@ -39,13 +39,13 @@ class DrawerItemModel extends BOX.BoxModel
     switch (function)
     {
       case "open" :
-        DRAWER.DrawerViewState? drawer = this.parent?.findListenerOfExactType(DRAWER.DrawerViewState);
-        if (drawer != null) return await drawer.openDrawer(S.fromEnum(this.position));
+        DrawerViewState? drawer = parent?.findListenerOfExactType(DrawerViewState);
+        if (drawer != null) return await drawer.openDrawer(S.fromEnum(position));
         break;
 
       case "close" :
-        DRAWER.DrawerViewState? drawer = this.parent?.findListenerOfExactType(DRAWER.DrawerViewState);
-        if (drawer != null) return await drawer.closeDrawer(S.fromEnum(this.position));
+        DrawerViewState? drawer = parent?.findListenerOfExactType(DrawerViewState);
+        if (drawer != null) return await drawer.closeDrawer(S.fromEnum(position));
         break;
 
     }

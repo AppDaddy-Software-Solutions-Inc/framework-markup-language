@@ -1,18 +1,16 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
-import 'package:fml/widgets/form/iFormField.dart';
+import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
-
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/switch/switch_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class SwitchModel extends FormFieldModel implements IFormField, IViewableWidget
+class SwitchModel extends FormFieldModel implements IFormField
 {
   ///////////
   /* Width */
@@ -27,6 +25,7 @@ class SwitchModel extends FormFieldModel implements IFormField, IViewableWidget
   /* value */
   ///////////
   BooleanObservable? _value;
+  @override
   set value (dynamic v)
   {
     if (_value != null)
@@ -38,9 +37,11 @@ class SwitchModel extends FormFieldModel implements IFormField, IViewableWidget
       _value = BooleanObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange);
     }
   }
+  @override
   bool get value => _value?.get() ?? defaultValue ?? false;
 
   // question was answered
+  @override
   bool get answered
   {
     if (value == true || value == false) return true;
@@ -83,14 +84,14 @@ class SwitchModel extends FormFieldModel implements IFormField, IViewableWidget
     if (enabled      != null) this.enabled    = enabled;
     if (value        != null) this.value      = value;
     if (defaultValue != null) this.defaultValue = defaultValue;
-    if (width        != null) this.width      = width;
+    if (width        != null) this.width = width;
     if (label         != null) this.label       = label;
     if (color        != null) this.color      = color;
     if (onchange     != null) this.onchange   = onchange;
     if (post         != null) this.post       = post;
 
-    this.alarming     = false;
-    this.dirty        = false;
+    alarming     = false;
+    dirty        = false;
   }
 
   static SwitchModel? fromXml(WidgetModel parent, XmlElement xml, {String? type}) {
@@ -133,6 +134,7 @@ class SwitchModel extends FormFieldModel implements IFormField, IViewableWidget
     super.dispose();
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(SwitchView(this));
 }
 

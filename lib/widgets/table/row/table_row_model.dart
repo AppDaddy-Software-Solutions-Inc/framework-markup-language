@@ -1,8 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/form/iFormField.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
+import 'package:fml/widgets/form/form_field_interface.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/event/handler.dart' ;
 import 'package:fml/widgets/table/table_model.dart';
@@ -35,10 +35,9 @@ class TableRowModel extends DecoratedWidgetModel
     {
       var values = v.split(",");
       _postbrokers = [];
-      values.forEach((e)
-      {
+      for (var e in values) {
         if (!S.isNullOrEmpty(e)) _postbrokers!.add(e.trim());
-      });
+      }
     }
   }
   List<String>? get postbrokers => _postbrokers;
@@ -91,11 +90,12 @@ class TableRowModel extends DecoratedWidgetModel
   /* Color */
   ///////////
   ColorObservable? _color;
+  @override
   Color? get color
   {
     if (_color == null)
     {
-      if ((this.parent != null) && (this.parent is TableModel)) return (this.parent as TableModel).color;
+      if ((parent != null) && (parent is TableModel)) return (parent as TableModel).color;
       return null;
     }
     return _color?.get();
@@ -118,7 +118,7 @@ class TableRowModel extends DecoratedWidgetModel
   {
     if (_altcolor == null)
     {
-      if ((this.parent != null) && (this.parent is TableModel)) return (this.parent as TableModel).altcolor;
+      if ((parent != null) && (parent is TableModel)) return (parent as TableModel).altcolor;
       return null;
     }
     return _altcolor?.get();
@@ -140,8 +140,9 @@ class TableRowModel extends DecoratedWidgetModel
 
   Color? get selectedcolor {
     if (_selectedcolor == null) {
-      if ((this.parent != null) && (this.parent is TableModel))
-        return (this.parent as TableModel).selectedcolor;
+      if ((parent != null) && (parent is TableModel)) {
+        return (parent as TableModel).selectedcolor;
+      }
       return null;
     }
     return _selectedcolor?.get();
@@ -163,8 +164,9 @@ class TableRowModel extends DecoratedWidgetModel
 
   Color? get selectedbordercolor {
     if (_selectedbordercolor == null) {
-      if ((this.parent != null) && (this.parent is TableModel))
-        return (this.parent as TableModel).selectedbordercolor;
+      if ((parent != null) && (parent is TableModel)) {
+        return (parent as TableModel).selectedbordercolor;
+      }
       return null;
     }
     return _selectedbordercolor?.get();
@@ -186,8 +188,9 @@ class TableRowModel extends DecoratedWidgetModel
 
   Color? get bordercolor {
     if (_bordercolor == null) {
-      if ((this.parent != null) && (this.parent is TableModel))
-        return (this.parent as TableModel).bordercolor;
+      if ((parent != null) && (parent is TableModel)) {
+        return (parent as TableModel).bordercolor;
+      }
       return null;
     }
     return _bordercolor?.get();
@@ -209,8 +212,9 @@ class TableRowModel extends DecoratedWidgetModel
 
   double? get borderwidth {
     if (_borderwidth == null) {
-      if ((this.parent != null) && (this.parent is TableModel))
-        return (this.parent as TableModel).borderwidth;
+      if ((parent != null) && (parent is TableModel)) {
+        return (parent as TableModel).borderwidth;
+      }
       return null;
     }
     return _borderwidth?.get();
@@ -220,10 +224,12 @@ class TableRowModel extends DecoratedWidgetModel
   ///
   /// The horizontal alignment of the widgets children, overrides `center`. Can be `left`, `right`, `start`, or `end`.
   StringObservable? _halign;
+  @override
   String? get halign {
     if (_halign == null) {
-      if ((this.parent != null) && (this.parent is TableModel))
-        return (this.parent as TableModel).halign;
+      if ((parent != null) && (parent is TableModel)) {
+        return (parent as TableModel).halign;
+      }
       return null;
     }
     return _halign?.get();
@@ -231,10 +237,12 @@ class TableRowModel extends DecoratedWidgetModel
 
   /// The vertical alignment of the widgets children, overrides `center`. Can be `top`, `bottom`, `start`, or `end`.
   StringObservable? _valign;
+  @override
   String? get valign {
     if (_valign == null) {
-      if ((this.parent != null) && (this.parent is TableModel))
-        return (this.parent as TableModel).valign;
+      if ((parent != null) && (parent is TableModel)) {
+        return (parent as TableModel).valign;
+      }
       return null;
     }
     return _valign?.get();
@@ -251,13 +259,14 @@ class TableRowModel extends DecoratedWidgetModel
     }
   }
 
-  bool? get center {
-    if (_center == null) {
-      if ((this.parent != null) && (this.parent is TableModel))
-        return (this.parent as TableModel).center;
+  bool get center
+  {
+    if (_center == null)
+    {
+      if ((parent != null) && (parent is TableModel)) return (parent as TableModel).center;
       return false;
     }
-    return _center?.get();
+    return _center?.get() ?? false;
   }
 
   /// wrap is a boolean that dictates if the widget will wrap or not.
@@ -271,13 +280,14 @@ class TableRowModel extends DecoratedWidgetModel
     }
   }
 
-  bool? get wrap {
-    if (_wrap == null) {
-      if ((this.parent != null) && (this.parent is TableModel))
-        return (this.parent as TableModel).wrap;
-      return null;
+  bool get wrap
+  {
+    if (_wrap == null)
+    {
+      if ((parent != null) && (parent is TableModel)) return (parent as TableModel).wrap;
+      return false;
     }
-    return _wrap?.get();
+    return _wrap?.get() ?? false;
   }
 
   /////////////////
@@ -311,14 +321,14 @@ class TableRowModel extends DecoratedWidgetModel
   void onDirtyListener(Observable property)
   {
     bool isDirty = false;
-    if (fields != null)
+    if (fields != null){
       for (IFormField field in fields!) {
         if (field.dirty ?? false)
         {
           isDirty = true;
           break;
         }
-      }
+      }}
     dirty = isDirty;
   }
 
@@ -326,6 +336,7 @@ class TableRowModel extends DecoratedWidgetModel
     WidgetModel parent,
     String? id, {
     dynamic data,
+    dynamic width,
     dynamic height,
     dynamic oncomplete,
     dynamic halign,
@@ -337,11 +348,13 @@ class TableRowModel extends DecoratedWidgetModel
     dynamic onclick,
   }) : super(parent, id, scope: Scope(parent: parent.scope))
   {
+    if (width  != null) this.width  = width;
+    if (height != null) this.height = height;
+
     this.data = data;
     this.altcolor = altcolor;
-    this.height = height;
     this.oncomplete = oncomplete;
-    this.dirty = false;
+    dirty = false;
     this.color = color;
     this.halign = halign;
     this.center = center;
@@ -390,28 +403,29 @@ class TableRowModel extends DecoratedWidgetModel
     /* Get Cells */
     ///////////////
     List<TableRowCellModel> models = findChildrenOfExactType(TableRowCellModel).cast<TableRowCellModel>();
-    for (TableRowCellModel model in models) this.cells.add(model);
+    for (TableRowCellModel model in models) {
+      cells.add(model);
+    }
 
     ////////////////////////////
     /* Initialize Form Fields */
     ////////////////////////////
-    for (TableRowCellModel _ in this.cells)
+    for (TableRowCellModel _ in cells)
     {
       List<IFormField> fields = findChildrenOfExactType(IFormField).cast<IFormField>();
-      fields.forEach((field)
-      {
+      for (var field in fields) {
         if (this.fields == null) this.fields = [];
         this.fields!.add(field);
 
         // Register Listener
         if (field.dirtyObservable != null) field.dirtyObservable!.registerListener(onDirtyListener);
-      });
+      }
     }
 
     ////////////////
     /* Prototype? */
     ////////////////
-    if ((cells.length == 1) && (cells[0].element!.toXmlString().contains("{" + 'field' + "}"))) cellprototype = cells[0].element!.copy();
+    if ((cells.length == 1) && (cells[0].element!.toXmlString().contains("{field}"))) cellprototype = cells[0].element!.copy();
   }
 
   @override
@@ -438,8 +452,11 @@ class TableRowModel extends DecoratedWidgetModel
     ////////////////
     /* Mark Clean */
     ////////////////
-    if ((ok) && (fields != null))
-      fields!.forEach((field) => field.dirty = false);
+    if ((ok) && (fields != null)) {
+      for (var field in fields!) {
+        field.dirty = false;
+      }
+    }
 
     busy = false;
 
@@ -466,7 +483,7 @@ class TableRowModel extends DecoratedWidgetModel
     if (dirty == false) return true;
 
     bool ok = true;
-    if ((scope != null) && (postbrokers != null))
+    if ((scope != null) && (postbrokers != null)){
       for (String id in postbrokers!)
       {
         IDataSource? source = scope!.getDataSource(id);
@@ -476,14 +493,17 @@ class TableRowModel extends DecoratedWidgetModel
           ok = await source.start();
         }
         if (!ok) break;
-      }
-    else ok = false;
+      }}
+    else {
+      ok = false;
+    }
     return ok;
   }
 
   void onSelect(TableRowCellModel cell) {
-    if ((parent != null) && (parent is TableModel))
+    if ((parent != null) && (parent is TableModel)) {
       (parent as TableModel).onSelect(this, cell);
+    }
   }
 
   @override

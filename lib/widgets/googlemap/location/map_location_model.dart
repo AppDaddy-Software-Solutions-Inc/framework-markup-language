@@ -5,7 +5,7 @@ import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/double.dart';
 import 'package:fml/observable/observables/string.dart';
 import 'package:fml/observable/scope.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/helper/common_helpers.dart';
@@ -84,7 +84,7 @@ class MapLocationModel extends DecoratedWidgetModel
      dynamic longitude,
      String? info,
      String? infoSnippet,
-     String? label,
+     this.label,
      String? marker,
      dynamic visible
   }) : super(parent, id, scope: Scope(parent: parent.scope))
@@ -93,9 +93,8 @@ class MapLocationModel extends DecoratedWidgetModel
     this.latitude     = latitude;
     this.longitude    = longitude;
     
-    this.title        = info;
-    this.description  = infoSnippet;
-    this.label        = label;
+    title        = info;
+    description  = infoSnippet;
     this.marker       = marker;
     this.visible      = visible;
   }

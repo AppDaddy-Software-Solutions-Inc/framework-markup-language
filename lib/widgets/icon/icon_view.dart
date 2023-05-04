@@ -1,27 +1,29 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/icon/icon_model.dart';
 import 'dart:math' as math;
 
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class IconView extends StatefulWidget implements IWidgetView {
+  @override
   final IconModel model;
 
   IconView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _IconViewState createState() => _IconViewState();
+  State<IconView> createState() => _IconViewState();
 }
 
 class _IconViewState extends WidgetState<IconView> {
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
-  Widget builder(BuildContext context, BoxConstraints constraints) {
-    // Set Build Constraints in the [WidgetModel]
-    setConstraints(constraints);
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
+    // save system constraints
+    onLayout(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -36,16 +38,18 @@ class _IconViewState extends WidgetState<IconView> {
     ///////////
     Color? color = Theme.of(context).colorScheme.inverseSurface;
     if (widget.model.color != null) color = widget.model.color;
-    if (widget.model.opacity != null)
+    if (widget.model.opacity != null) {
       color = color!.withOpacity(widget.model.opacity!);
+    }
 
     // view
     Widget view = Icon(value, size: size, color: color);
 
     // rotation
-    if (widget.model.rotation != 0)
+    if (widget.model.rotation != 0) {
       view = Transform.rotate(
           angle: widget.model.rotation * math.pi / 180, child: view);
+    }
 
     return view;
   }

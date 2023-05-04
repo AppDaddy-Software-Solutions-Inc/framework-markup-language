@@ -53,8 +53,7 @@ class OverlayManagerViewState extends State<OverlayManagerView>
   {
     List<Widget> children  = [];
     children.add(widget.model.child);
-    widget.model.overlays.forEach((overlay)
-    {
+    for (var overlay in widget.model.overlays) {
       if (overlay != null)
       {
         Widget view = overlay;
@@ -65,7 +64,7 @@ class OverlayManagerViewState extends State<OverlayManagerView>
         }
         children.add(view);
       }
-    });
+    }
     return Stack(children: children, fit: StackFit.passthrough);
   }
 

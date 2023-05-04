@@ -1,86 +1,55 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:convert';
-import 'package:universal_html/html.dart' as HTML;
-import 'package:universal_html/js.dart' as JAVASCRIPT;
-import 'dart:ui' as UI;
+import 'package:fml/widgets/widget/iwidget_view.dart';
+import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:universal_html/html.dart' as universal_html;
+import 'package:universal_html/js.dart' as universal_js;
+import 'dart:ui' as dart_ui;
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
 import 'inline_frame_model.dart';
 import 'inline_frame_view.dart';
 import 'package:fml/helper/common_helpers.dart';
 
 InlineFrameView getView(model) => InlineFrameView(model);
 
-class InlineFrameView extends StatefulWidget implements View
+class InlineFrameView extends StatefulWidget implements View, IWidgetView
 {
+  @override
   final InlineFrameModel model;
 
   InlineFrameView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _InlineFrameViewState createState() => _InlineFrameViewState();
+  State<InlineFrameView> createState() => _InlineFrameViewState();
 }
 
-class _InlineFrameViewState extends State<InlineFrameView>
+class _InlineFrameViewState extends WidgetState<InlineFrameView>
 {
   IFrameWidget? iframe;
 
   @override
-  Widget build(BuildContext context)
-  {
-    return LayoutBuilder(builder: builder);
-  }
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
     InlineFrameModel model = widget.model;
 
-    // Set Build Constraints in the [WidgetModel]
-    widget.model.minWidth  = constraints.minWidth;
-    widget.model.maxWidth  = constraints.maxWidth;
-    widget.model.minHeight = constraints.minHeight;
-    widget.model.maxHeight = constraints.maxHeight;
+    // save system constraints
+    onLayout(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    ///////////
-    /* Child */
-    ///////////
-    List<Widget> children = [];
-    if (model.children != null)
-      model.children!.forEach((model) {
-        if (model is IViewableWidget) {
-          children.add((model as IViewableWidget).getView());
-        }
-      });
-
-    //////////
-    /* View */
-    //////////
-
     //This prevents the iframe from rebuilding and hiding the keyboard every time.
-    if (iframe == null) iframe = IFrameWidget(model: model);
-    Widget? view = iframe;
+    iframe ??= IFrameWidget(model: model);
+    Widget view = iframe!;
 
-    //////////////////
-    /* Constrained? */
-    //////////////////
-    if (model.hasSizing) {
-      var constraints = model.getConstraints();
-      view = ConstrainedBox(
-          child: view,
-          constraints: BoxConstraints(
-              minHeight: constraints.minHeight!,
-              maxHeight: constraints.maxHeight!,
-              minWidth: constraints.minWidth!,
-              maxWidth: constraints.maxWidth!));
-    } else
-      view = Container(
-          child: view,
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height);
+    // basic view
+    view = Container(child: view, width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.height);
+
+    // apply user defined constraints
+    view = applyConstraints(view, widget.model.constraints.model);
 
     return view;
   }
@@ -92,7 +61,7 @@ class IFrameWidget extends StatelessWidget {
   final String id = S.newId();
 
   late final Widget iFrame;
-  late final HTML.IFrameElement iframe;
+  late final universal_html.IFrameElement iframe;
   final jsonEncoder = JsonEncoder();
 
   IFrameWidget({required this.model});
@@ -100,7 +69,7 @@ class IFrameWidget extends StatelessWidget {
   void dispose()
   {
     Log().debug('disposing of iframe ...');
-    HTML.window.removeEventListener('message', receive);
+    universal_html.window.removeEventListener('message', receive);
     iframe.remove();
   }
 
@@ -114,7 +83,7 @@ class IFrameWidget extends StatelessWidget {
     ///////////////////////////
     /* Create IFrame Element */
     ///////////////////////////
-    iframe = HTML.IFrameElement()
+    iframe = universal_html.IFrameElement()
       ..style.border = 'none'
       // ..style.boxShadow = '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.19)'
       // ..style.borderRadius = '5px'
@@ -125,13 +94,13 @@ class IFrameWidget extends StatelessWidget {
     /////////////////////////////////////
     /* Contructor Callback from Script */
     /////////////////////////////////////
-    JAVASCRIPT.context["flutter"] = (content)
+    universal_js.context["flutter"] = (content)
     {
       //////////////////
       /* Add Listener */
       //////////////////
-      HTML.window.removeEventListener('message', receive);
-      HTML.window.addEventListener('message', receive);
+      universal_html.window.removeEventListener('message', receive);
+      universal_html.window.addEventListener('message', receive);
 
       return id;
     };
@@ -140,7 +109,7 @@ class IFrameWidget extends StatelessWidget {
     /* Register IFrame */
     /////////////////////
     // ignore: undefined_prefixed_name
-    UI.platformViewRegistry.registerViewFactory(id, (int viewId) => iframe);
+    dart_ui.platformViewRegistry.registerViewFactory(id, (int viewId) => iframe);
 
     return iFrame;
   }
@@ -150,7 +119,7 @@ class IFrameWidget extends StatelessWidget {
       ////////////////////
       /* Decode Message */
       ////////////////////
-      Map<String?, dynamic> map = Map<String?, dynamic>();
+      Map<String?, dynamic> map = <String?, dynamic>{};
       if (event.data is Map) {
         (event.data as Map).forEach((key, value) {
           String? k = S.toStr(key);
@@ -165,7 +134,7 @@ class IFrameWidget extends StatelessWidget {
       /////////////
       /* Set Map */
       /////////////
-      this.model.data = map;
+      model.data = map;
 
     }
     catch(e)

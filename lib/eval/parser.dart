@@ -137,7 +137,8 @@ class ExpressionParser {
       .trim();
 
   Parser<Expression> get binaryExpression =>
-      token.separatedBy(binaryOperation).map((l) {
+      token.separatedBy(binaryOperation).map((l)
+      {
         var first = l[0];
         var stack = <dynamic>[first];
 

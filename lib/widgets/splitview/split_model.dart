@@ -2,16 +2,14 @@
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/view/view_model.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
-
-import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/splitview/split_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class SplitModel extends DecoratedWidgetModel implements IViewableWidget
+class SplitModel extends DecoratedWidgetModel 
 {
   /// vertical or horizontal splitter?
   bool? _vertical;
@@ -62,17 +60,14 @@ class SplitModel extends DecoratedWidgetModel implements IViewableWidget
   }
   Color? get dividerHandleColor => _dividerHandleColor?.get();
 
-  SplitModel(WidgetModel parent, String? id, {dynamic width, bool? vertical}) : super(parent, id)
+  SplitModel(WidgetModel parent, String? id, {dynamic width, dynamic height, bool? vertical}) : super(parent, id)
   {
-    if (width != null) this.width = width;
+    if (width  != null) this.width  = width;
+    if (height != null) this.height = height;
+
     if (vertical != null) _vertical = vertical;
   }
 
-  @override
-  dispose()
-  {
-    super.dispose();
-  }
 
   static SplitModel? fromXml(WidgetModel parent, XmlElement xml)
   {
@@ -102,9 +97,11 @@ class SplitModel extends DecoratedWidgetModel implements IViewableWidget
     double ratio = S.toDouble(Xml.get(node: xml, tag: 'ratio')) ?? -1;
     if (ratio >= 0 && ratio <= 1)
     {
-      if (vertical)
-           height = "${ratio * 100}%";
-      else width  = "${ratio * 100}%";
+      if (vertical) {
+        height = "${ratio * 100}%";
+      } else {
+        width  = "${ratio * 100}%";
+      }
     }
 
     dividerColor  = Xml.get(node: xml, tag: 'dividercolor');
@@ -112,9 +109,10 @@ class SplitModel extends DecoratedWidgetModel implements IViewableWidget
     dividerHandleColor  = Xml.get(node: xml, tag: 'dividerhandlecolor');
 
     // remove non view children
-    children?.removeWhere((element) => !(element is ViewModel));
+    children?.removeWhere((element) => element is! ViewModel);
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(SplitView(this));
 }
 

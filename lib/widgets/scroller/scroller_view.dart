@@ -2,14 +2,13 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
-import 'package:fml/system.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
-
-import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/alignment/alignment.dart';
+import 'package:fml/widgets/scroller/scroller_shadow_view.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/event/event.dart' ;
-import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:fml/widgets/layout/layout_model.dart';
 
 /// Scroll View
 ///
@@ -19,11 +18,12 @@ import 'package:fml/widgets/widget/widget_state.dart';
 /// instead be contained within this scrollable widget.
 class ScrollerView extends StatefulWidget implements IWidgetView
 {
+  @override
   final ScrollerModel model;
   ScrollerView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _ScrollerViewState createState() => _ScrollerViewState();
+  State<ScrollerView> createState() => _ScrollerViewState();
 }
 
 class _ScrollerViewState extends WidgetState<ScrollerView>
@@ -106,19 +106,21 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
   }
 
   @override
-  Widget build(BuildContext context)
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    // Build Children
-    List<Widget> children = [];
-    if (widget.model.children != null)
-      widget.model.children!.forEach((model) {
-        if (model is IViewableWidget) {
-                    children.add((model as IViewableWidget).getView());
-        }
-      });
+    // save system constraints
+    onLayout(constraints);
+
+    // Check if widget is visible before wasting resources on building it
+    if (!widget.model.visible) return Offstage();
+
+    // build the child views
+    List<Widget> children = widget.model.inflate();
     if (children.isEmpty) children.add(Container());
 
     if (_tryToScrollBeyond == 1)
@@ -135,33 +137,34 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
     if (_viewSize != null) _viewSize = _scrollController.position.viewportDimension;
 
     // Flex: on my phone there is a 36px padding on the keyboard so I've subtracted it here
-    if (widget.model.direction != 'horizontal')
+    if (widget.model.layout != 'row')
     {
       double keyboardSpacer = MediaQuery.of(context).viewInsets.bottom;
       children.add(Container(height: keyboardSpacer < 36 ? keyboardSpacer : (keyboardSpacer - 36)));
     }
 
-    Axis direction = Axis.vertical;
-    if (widget.model.layout == 'row' || widget.model.direction == 'horizontal') direction = Axis.horizontal;
+    // get alignment
+    var alignment = WidgetAlignment(widget.model.layoutType, false, widget.model.halign, widget.model.valign);
 
-    var layoutType = (direction == Axis.horizontal) ? 'row' : 'column';
-
-    Map<String, dynamic> align = AlignmentHelper.alignWidgetAxis(children.length, layoutType, false, widget.model.align, widget.model.align);
-    CrossAxisAlignment? crossAlignment = align['crossAlignment'];
-
-    var child;
-    if (direction == Axis.vertical)
-         child = Column(children: children, crossAxisAlignment: crossAlignment!);
-    else child = Row(children: children, crossAxisAlignment: crossAlignment!);
+    // build body
+    Axis direction = widget.model.layoutType == LayoutType.row ? Axis.horizontal : Axis.vertical;
+    Widget child;
+    if (direction == Axis.vertical) {
+      child = Column(children: children, crossAxisAlignment: alignment.crossAlignment);
+    } else {
+      child = Row(children: children, crossAxisAlignment: alignment.crossAlignment);
+    }
     children.add(Column(mainAxisSize: MainAxisSize.max));
 
     Widget scsv;
     ScrollBehavior behavior;
     // Check to see if pulldown is enabled, draggable is enabled, or horizontal is enabled (as web doesnt support device horizontal scrolling) and enable
     // dragging for the scroller.
-    if(widget.model.onpulldown != null || widget.model.draggable == true || direction == Axis.horizontal)
-         behavior = ScrollConfiguration.of(context).copyWith(scrollbars: widget.model.scrollbar == false ? false : true, dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse});
-    else behavior = ScrollConfiguration.of(context).copyWith(scrollbars: widget.model.scrollbar == false ? false : true);
+    if(widget.model.onpulldown != null || widget.model.draggable == true || direction == Axis.horizontal) {
+      behavior = ScrollConfiguration.of(context).copyWith(scrollbars: widget.model.scrollbar == false ? false : true, dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse});
+    } else {
+      behavior = ScrollConfiguration.of(context).copyWith(scrollbars: widget.model.scrollbar == false ? false : true);
+    }
 
     if(widget.model.onpulldown != null)
     {
@@ -173,10 +176,12 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
          scrollDirection: direction,
          controller: _scrollController));
     }
-    else scsv = SingleChildScrollView(child: child, scrollDirection: direction, controller: _scrollController);
+    else {
+      scsv = SingleChildScrollView(child: child, scrollDirection: direction, controller: _scrollController);
+    }
 
     // show no scroll bar
-    // POINTERDEVICE MOUSE is not reccomended on web due to text selection difficulty, but i have added it in since we do not have text selection.
+    // POINTERDEVICE MOUSE is not recommended on web due to text selection difficulty, but i have added it in since we do not have text selection.
     if (widget.model.scrollbar !=  false)
     {
       scsv = Container(
@@ -239,152 +244,13 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
         ),
       );
     }
-    var constr = widget.model.getConstraints();
 
-    return view = ConstrainedBox(
-        child: view,
-        constraints: BoxConstraints(
-            minHeight: constr.minHeight!,
-            maxHeight: constr.maxHeight!,
-            minWidth: constr.minWidth!,
-            maxWidth: constr.maxWidth!));
-  }
-}
+    // add margins
+    view = addMargins(view);
 
-/// [ScrollShadow] builds the [ScrollerView] "scroll for more" shadows on the top and bottom
-class ScrollShadow extends StatefulWidget {
-  final ScrollController scrollController;
-  final String pos;
-  final Axis axis;
-  final Color? shadowColor;
-  ScrollShadow(this.scrollController, this.pos, this.axis, [this.shadowColor]);
+    // apply user defined constraints
+    view = applyConstraints(view, widget.model.constraints.tightestOrDefault);
 
-  @override
-  _ScrollShadowState createState() => _ScrollShadowState();
-}
-
-class _ScrollShadowState extends State<ScrollShadow> {
-  bool _needShadowOnTop = false;
-  bool _needShadowOnBottom = false;
-
-  @override
-  void initState() {
-    widget.scrollController.addListener(_updateShadowsVisibility);
-    super.initState();
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => _updateShadowsVisibility());
-  }
-
-  @override
-  didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
-  @override
-  void dispose() {
-    widget.scrollController.removeListener(_updateShadowsVisibility);
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // Remove shadows on mobile web.
-    if (System().userplatform == 'web' && (System().useragent == 'android' || System().useragent == 'ios'))
-      return Offstage();
-    Positioned shadow;
-    var col =
-        widget.shadowColor as bool? ?? Theme.of(context).brightness == Brightness.light
-            ? Theme.of(context).colorScheme.shadow.withOpacity(0.40)
-            : Theme.of(context).colorScheme.shadow;
-    if (widget.axis == Axis.vertical)
-      shadow = widget.pos == 'top'
-          ? Positioned(
-              top: 0,
-              child: Container(
-                height: 0,
-                width: MediaQuery.of(context).size.width,
-                decoration: _needShadowOnTop
-                    ? BoxDecoration(boxShadow: [
-                        BoxShadow(color: col, spreadRadius: 3, blurRadius: 8)
-                      ])
-                    : BoxDecoration(),
-              ),
-            )
-          // Shadow on bottom
-          : Positioned(
-              bottom: 0,
-              child: Container(
-                height: 0,
-                width: MediaQuery.of(context).size.width,
-                decoration: _needShadowOnBottom
-                    ? BoxDecoration(boxShadow: [
-                        BoxShadow(color: col, spreadRadius: 6, blurRadius: 10)
-                      ])
-                    : BoxDecoration(),
-              ),
-            );
-    else
-      shadow = widget.pos == 'top'
-          ? Positioned(
-              left: 0,
-              child: Container(
-                width: 0,
-                height: MediaQuery.of(context).size.height,
-                decoration: _needShadowOnTop
-                    ? BoxDecoration(boxShadow: [
-                        BoxShadow(color: col, spreadRadius: 3, blurRadius: 8)
-                      ])
-                    : BoxDecoration(),
-              ),
-            )
-          : Positioned(
-              right: 0,
-              child: Container(
-                width: 0,
-                height: MediaQuery.of(context).size.height,
-                decoration: _needShadowOnBottom
-                    ? BoxDecoration(boxShadow: [
-                        BoxShadow(color: col, spreadRadius: 3, blurRadius: 8)
-                      ])
-                    : BoxDecoration(),
-              ),
-            );
-    return shadow;
-  }
-
-  void _updateShadowsVisibility() {
-    bool top;
-    bool bottom;
-    if (!widget.scrollController.hasClients) {
-      if (widget.scrollController.initialScrollOffset > 0) {
-        top = true;
-        bottom = true;
-      } else {
-        top = false;
-        bottom = true;
-      }
-    } else if (widget.scrollController.position.atEdge) {
-      if (widget.scrollController.position.pixels ==
-          widget.scrollController.position.minScrollExtent) {
-        top = false;
-      } else {
-        top = true;
-      }
-      if (widget.scrollController.position.pixels ==
-          widget.scrollController.position.maxScrollExtent) {
-        bottom = false;
-      } else {
-        bottom = true;
-      }
-    } else {
-      top = bottom = true;
-    }
-    if (_needShadowOnTop != top || _needShadowOnBottom != bottom) {
-      // Calling setState only rebuilds this widget, not child unless it was changed
-      setState(() {
-        _needShadowOnTop = top;
-        _needShadowOnBottom = bottom;
-      });
-    }
+    return view;
   }
 }

@@ -1,9 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:math';
+
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
-
-import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -13,7 +13,7 @@ import 'package:fml/helper/common_helpers.dart';
 /// Busy Model
 ///
 /// Defines the properties of a [BUSY.BusyView]
-class BusyModel extends DecoratedWidgetModel implements IViewableWidget
+class BusyModel extends DecoratedWidgetModel 
 {
   // visible
   BooleanObservable? _visible;
@@ -32,7 +32,6 @@ class BusyModel extends DecoratedWidgetModel implements IViewableWidget
   }
   @override
   bool get visible => _visible?.get() ?? false;
-
 
   /// Size of the widget sets the width and height
   bool _sizeIsPercent = false;
@@ -59,27 +58,12 @@ class BusyModel extends DecoratedWidgetModel implements IViewableWidget
   {
     var s = _size?.get();
     if (s == null) return null;
-
     if (_sizeIsPercent == true)
     {
-      var s1;
-      var s2;
-
-      var mh = maxHeight;
-      if (mh != null)
-        s1 = mh * (s/100.0);
-      else s1 = null;
-
-      var mw = maxWidth;
-      if (mw != null)
-        s2 = mw * (s/100.0);
-      else s2 = null;
-
-      if ((s1 != null) && (s2 != null)) s = (s1 > s2) ? s1 : s2;
-      if ((s1 == null) && (s2 != null)) s = s2;
-      if ((s1 != null) && (s2 == null)) s = s1;
+      var width  = calculatedMaxHeightForPercentage * (s / 100.0);
+      var height = calculatedMaxWidthForPercentage  * (s / 100.0);
+      s = max(width, height);
     }
-
     return s;
   }
 
@@ -109,8 +93,6 @@ class BusyModel extends DecoratedWidgetModel implements IViewableWidget
   }
   bool get expand => _expand?.get() ?? true;
 
-
-
   BusyModel(WidgetModel? parent, {String? id, dynamic visible, dynamic expand, dynamic size, dynamic color, dynamic modal, Observable? observable}) : super(parent, id)
   {
     //this.visible = (visible == true) ? true : false; // TODO this causes issues with binding as we are not setting it to widget.model's observable
@@ -124,12 +106,9 @@ class BusyModel extends DecoratedWidgetModel implements IViewableWidget
 
   void onObservableChange(Observable observable)
   {
-
-      var v = observable.get();
-      this.visible = v;
-
+    var v = observable.get();
+    visible = v;
   }
-
 
   static BusyModel? fromXml(WidgetModel parent, XmlElement xml)
   {
@@ -147,13 +126,10 @@ class BusyModel extends DecoratedWidgetModel implements IViewableWidget
     return model;
   }
 
-
-
   /// Deserializes the FML template elements, attributes and children
   @override
   void deserialize(XmlElement xml)
   {
-
     // deserialize 
     super.deserialize(xml);
 
@@ -167,5 +143,6 @@ class BusyModel extends DecoratedWidgetModel implements IViewableWidget
     this.expand = expand;
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(BusyView(this));
 }

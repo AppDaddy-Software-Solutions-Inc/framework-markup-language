@@ -3,8 +3,8 @@ import 'package:collection/collection.dart';
 import 'package:fml/log/manager.dart';
 import 'binding.dart';
 import 'scope.dart';
-import 'package:fml/eval/eval.dart'       as EVALUATE;
-import 'package:fml/observable/blob.dart' as BLOB;
+import 'package:fml/eval/eval.dart'       as fml_eval;
+import 'package:fml/observable/blob.dart';
 import 'package:fml/helper/common_helpers.dart';
 
 typedef Getter = dynamic Function();
@@ -34,9 +34,9 @@ class Observable
   final bool lazyEvaluation;
   bool _isEval = false;
   bool get isEval => _isEval && lazyEvaluation == false;
-  set isEval(bool v)
+  set isEval(bool value)
   {
-      _isEval = v;
+      _isEval = value;
   }
 
   dynamic twoway;
@@ -53,26 +53,28 @@ class Observable
     return to(_value);
   }
 
-  set(dynamic v, {bool notify = true})
+  set(dynamic value, {bool notify = true})
   {
     if (setter != null)
     {
-      v = setter!(v);
+      value = setter!(value);
     }
-    v = to(v);
-    if (v is Exception) return;
-    if (v != _value)
+    value = to(value);
+    if (value is Exception) return;
+    if (value != _value)
     {
-      _value = v;
+      _value = value;
       if (notify != false) notifyListeners();
     }
   }
 
   dynamic get()
   {
-    if (getter == null)
-         return _value;
-    else return getter!();
+    if (getter == null) {
+      return _value;
+    } else {
+      return getter!();
+    }
   }
 
   Observable(this.key, dynamic value, {this.scope, OnChangeCallback? listener, this.getter, this.setter, this.lazyEvaluation = false})
@@ -80,7 +82,7 @@ class Observable
     if (value is String)
     {
       // bindings?
-      if (!(this is BLOB.BlobObservable)) bindings = Binding.getBindings(value, scope: scope);
+      if (this is! BlobObservable) bindings = Binding.getBindings(value, scope: scope);
       if (bindings != null)
       {
         // replace the "this" operator
@@ -89,11 +91,12 @@ class Observable
           String id = key!.split(".").first;
 
           // replace "this" with the id in the signature
-          for(Binding binding in bindings!)
-          if (binding.source == "this")
+          for(Binding binding in bindings!) {
+            if (binding.source == "this")
           {
             var signature = binding.signature.replaceFirst("this",id);
             value = (value as String).replaceAll(binding.signature, signature);
+          }
           }
 
           // requery the bindings
@@ -152,11 +155,12 @@ class Observable
 
   notifyListeners()
   {
-    if (listeners != null)
+    if (listeners != null){
     for (OnChangeCallback callback in listeners!)
     {
       callback(this);
     }
+  }
   }
 
   registerListener(OnChangeCallback callback)
@@ -176,7 +180,7 @@ class Observable
 
   registerSource(Observable source)
   {
-    if (sources == null) sources = [];
+    sources ??= [];
     if (!sources!.contains(source)) sources!.add(source);
   }
 
@@ -198,7 +202,9 @@ class Observable
     // Clear Sources
     if (sources != null)
     {
-      sources!.forEach((source) => source.removeListener(this.onObservableChange));
+      for (var source in sources!) {
+        source.removeListener(onObservableChange);
+      }
       sources = null;
     }
   }
@@ -208,42 +214,40 @@ class Observable
     return value;
   }
 
-  onObservableChange(Observable? observable)
-  {
+  onObservableChange(Observable? observable) {
     String? template = signature;
 
     // resolve all bindings
     Map<String?, dynamic>? variables;
-    if ((bindings != null) && (scope != null))
-      for (Binding binding in bindings!)
-      {
+    if ((bindings != null) && (scope != null)){
+      for (Binding binding in bindings!) {
         dynamic v;
 
         // get binding source
-        Observable? source = scope!.getObservable(binding, requestor: observable);
-        if (source != null)
-        {
-          dynamic _value = source.get();
-          v = binding.translate(_value);
+        Observable? source = scope!.getObservable(
+            binding, requestor: observable);
+        if (source != null) {
+          dynamic myValue = source.get();
+          v = binding.translate(myValue);
         }
 
         // is this an eval?
-        if (isEval)
-        {
-          if (variables == null) variables = Map<String?, dynamic>();
-          if ((source is BLOB.BlobObservable) && (!S.isNullOrEmpty(v)))
-               variables[binding.signature] = 'blob';
-          else variables[binding.signature] = v;
+        if (isEval) {
+          variables ??= <String?, dynamic>{};
+          if ((source is BlobObservable) && (!S.isNullOrEmpty(v))) {
+            variables[binding.signature] = 'blob';
+          } else {
+            variables[binding.signature] = v;
+          }
         }
 
         // simple replacement of string values
-        else
-        {
+        else {
           v = S.toStr(v) ?? "";
           template = template!.replaceAll(binding.signature, v.toString());
         }
       }
-
+  }
     // set the value
     dynamic value = (isEval) ? doEvaluation(signature, variables: variables) : template;
 
@@ -257,8 +261,11 @@ class Observable
   static bool isEvalSignature(String? value)
   {
     if ((value != null) && (value.trim().toLowerCase().startsWith('eval(')) && (value.trim().toLowerCase().endsWith(')'))) return true;
-    if ((value != null) && (value.startsWith('='))) return true;
-    else return false;
+    if ((value != null) && (value.startsWith('='))) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   static String? getEvalSignature(String? value)
@@ -287,8 +294,8 @@ class Observable
     dynamic result;
     try
     {
-      result = EVALUATE.Eval.evaluate(expression, variables: variables);
-      if (result == null) result = "";
+      result = fml_eval.Eval.evaluate(expression, variables: variables);
+      result ??= "";
     }
     catch(e)
     {
@@ -300,14 +307,14 @@ class Observable
 
   Map<String?, dynamic> getVariables()
   {
-    Map<String?, dynamic> variables =  Map<String?, dynamic>();
-    if (bindings != null)
-    bindings!.forEach((binding)
-    {
+    Map<String?, dynamic> variables =  <String?, dynamic>{};
+    if (bindings != null) {
+      for (var binding in bindings!) {
       Observable? source;
       if (sources != null) source = sources!.firstWhereOrNull((observable) => observable.key == binding.key);
       variables[binding.signature] = (source != null)  ? binding.translate(source.get()) : null;
-    });
+    }
+    }
     return variables;
   }
 }

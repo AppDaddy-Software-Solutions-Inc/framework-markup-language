@@ -7,7 +7,7 @@ import 'package:fml/splash/splash.dart';
 import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:fml/theme/theme.dart' as THEMER;
+import 'package:fml/theme/theme.dart' as fml_theme;
 import 'package:fml/theme/themenotifier.dart';
 import 'package:fml/phrase.dart';
 
@@ -17,13 +17,13 @@ main()
     Log().error(details.exception.toString(), caller: 'ErrorWidget() : main.dart');
     // In debug mode shows the normal redscreen  error
     if (kDebugMode) {
-      return ErrorWidget(details.exception);
+      return ErrorWidget("${details.exception}\n${details.stack.toString()}");
     }
     // In release builds, shows a more user friendly interface
     return Container(
       color: Colors.white,
       alignment: Alignment.center,
-      child: Text('⚠️\n' + Phrases().somethingWentWrong,
+      child: Text('⚠️\n${Phrases().somethingWentWrong}',
         style: const TextStyle(color: Colors.black),
         textAlign: TextAlign.center,
       ),
@@ -49,12 +49,12 @@ void runMainApp()
         try
         {
           var font = System.theme.font;
-          return ThemeNotifier(THEMER.MyTheme().deriveTheme(System.theme.colorscheme, googleFont: font));
+          return ThemeNotifier(fml_theme.MyTheme().deriveTheme(System.theme.colorscheme, googleFont: font));
         }
         catch(e)
         {
           Log().debug('Init Theme Error: $e \n(Configured fonts from https://fonts.google.com/ are case sensitive)');
-          return ThemeNotifier(THEMER.MyTheme().deriveTheme(System.theme.colorscheme));
+          return ThemeNotifier(fml_theme.MyTheme().deriveTheme(System.theme.colorscheme));
         }
       },
       child: Application(key: applicationKey = GlobalKey())));

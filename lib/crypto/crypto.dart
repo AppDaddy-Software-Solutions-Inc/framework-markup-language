@@ -48,19 +48,19 @@ class Cryptography
     Uint8List key           = Uint8List.fromList(utf8.encode(secretkey!));
     Uint8List iv            = Uint8List.fromList(utf8.encode(vector!));
 
-    final CBCBlockCipher cbcCipher = new CBCBlockCipher(new AESEngine());
-    final ParametersWithIV<KeyParameter> ivParams = ParametersWithIV<KeyParameter>(new KeyParameter(key), iv);
+    final CBCBlockCipher cbcCipher = CBCBlockCipher(AESEngine());
+    final ParametersWithIV<KeyParameter> ivParams = ParametersWithIV<KeyParameter>(KeyParameter(key), iv);
 
-    final PaddedBlockCipherParameters<ParametersWithIV<KeyParameter>, Null>
-    paddingParams = PaddedBlockCipherParameters<ParametersWithIV<KeyParameter>, Null>(ivParams, null);
+    final PaddedBlockCipherParameters<ParametersWithIV<KeyParameter>, CipherParameters?>
+    paddingParams = PaddedBlockCipherParameters<ParametersWithIV<KeyParameter>, CipherParameters?>(ivParams, null);
 
-    final PaddedBlockCipherImpl cipher = PaddedBlockCipherImpl(new PKCS7Padding(), cbcCipher);
+    final PaddedBlockCipherImpl cipher = PaddedBlockCipherImpl(PKCS7Padding(), cbcCipher);
     cipher.init(false, paddingParams);
 
     try
     {
       Uint8List clearText = cipher.process(encryptedText);
-      decrypted = new String.fromCharCodes(clearText);
+      decrypted = String.fromCharCodes(clearText);
     }
     catch(e)
     {

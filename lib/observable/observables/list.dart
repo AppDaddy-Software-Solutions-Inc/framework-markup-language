@@ -41,16 +41,16 @@ class ListObservable extends Observable with ListMixin<dynamic>
   }
 
   @override
-  add(dynamic value)
+  add(dynamic element)
   {
-    _value.add(value);
+    _value.add(element);
     notifyListeners();
   }
 
   @override
-  bool remove(dynamic value)
+  bool remove(dynamic element)
   {
-    if (_value.contains(value)) _value.remove(value);
+    if (_value.contains(element)) _value.remove(element);
     notifyListeners();
     return true;
   }
@@ -109,8 +109,10 @@ class ListObservable extends Observable with ListMixin<dynamic>
     // list of values
     if (_value is List<Map>)
     {
-      Binding? binding = Binding.fromString(this.key);
-      _value.forEach((map) => map[binding?.property] = value.toString());
+      Binding? binding = Binding.fromString(key);
+      for (var map in _value) {
+        map[binding?.property] = value.toString();
+      }
       notifyListeners();
       return;
     }
@@ -120,7 +122,9 @@ class ListObservable extends Observable with ListMixin<dynamic>
     {
       _value.clear();
       var options = value.split(",");
-      for (String v in options) if (v.trim() != '') _value.add(v.trim());
+      for (String v in options) {
+        if (v.trim() != '') _value.add(v.trim());
+      }
       notifyListeners();
     }
   }

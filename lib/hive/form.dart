@@ -9,7 +9,7 @@ class Form implements Comparable
 {
   static String tableName = "FORM";
 
-  Map<String, dynamic> _map = Map<String, dynamic>();
+  final Map<String, dynamic> _map = <String, dynamic>{};
 
   String  get key      => _map["key"];
   String? get parent   => _map["parent"];
@@ -44,7 +44,7 @@ class Form implements Comparable
   static Form? _fromMap(dynamic map)
   {
     Form? form;
-    if (map is Map<String, dynamic>)
+    if (map is Map<String, dynamic>) {
       form = Form(
           key:      S.mapVal(map, "key"),
           parent:   S.mapVal(map, "parent"),
@@ -53,6 +53,7 @@ class Form implements Comparable
           updated:  S.mapInt(map, "updated"),
           template: S.mapVal(map, "template"),
           data:     map.containsKey("data") && map["data"] is Map<String,dynamic> ? map["data"] : null);
+    }
     return form;
   }
 
@@ -62,19 +63,23 @@ class Form implements Comparable
     try
     {
       // delete posting documents
-      List<Post> posts = await Post.query(where: "'{form_key}' == '" + key + "'");
-      posts.forEach((post) async => await post.delete());
+      List<Post> posts = await Post.query(where: "'{form_key}' == '$key'");
+      for (var post in posts) {
+        await post.delete();
+      }
 
       // delete Sub-Forms 
-      List<Form> forms = await query(where: "'{parent}' == '" + key + "'");
-      forms.forEach((form) async => await form.delete());
+      List<Form> forms = await query(where: "'{parent}' == '$key'");
+      for (var form in forms) {
+        await form.delete();
+      }
 
       // delete form
       exception = await Database().delete(tableName, key);
     }
     on Exception catch(e)
     {
-      Log().debug('Error deleting from table ' + tableName);
+      Log().debug('Error deleting from table $tableName');
       Log().debug(e.toString());
       exception = e;
     }
@@ -92,11 +97,10 @@ class Form implements Comparable
   {
     List<Form> forms = [];
     List<Map<String, dynamic>> entries = await Database().query(tableName, where: where, orderby: orderby);
-    entries.forEach((entry) async
-    {
+    for (var entry in entries) {
       Form? form = _fromMap(entry);
       if (form != null) forms.add(form);
-    });
+    }
     return forms;
   }
 
@@ -115,8 +119,8 @@ class Form implements Comparable
   {
     if (other == null) return -1;
 
-    if (this.parent == null && other.parent != null) return 1;
-    if (this.parent != null && other.parent == null) return -1;
-    return (this.updated > other.updated) ? 1 : -1;
+    if (parent == null && other.parent != null) return 1;
+    if (parent != null && other.parent == null) return -1;
+    return (updated > other.updated) ? 1 : -1;
   }
 }

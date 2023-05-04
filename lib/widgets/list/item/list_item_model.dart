@@ -1,9 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/form/iFormField.dart';
+import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/form/form_model.dart';
@@ -25,10 +25,9 @@ class ListItemModel extends DecoratedWidgetModel
     {
       List<String> values = v.split(",");
       _postbrokers = [];
-      values.forEach((e)
-      {
+      for (var e in values) {
         if (!S.isNullOrEmpty(e)) _postbrokers!.add(e.trim());
-      });
+      }
     }
   }
   List<String>? get postbrokers => _postbrokers;
@@ -54,7 +53,7 @@ class ListItemModel extends DecoratedWidgetModel
   void onDirtyListener(Observable property)
   {
     bool isDirty = false;
-    if (fields != null)
+    if (fields != null){
       for (IFormField field in fields!)
       {
         if ((field.dirty ?? false))
@@ -62,7 +61,7 @@ class ListItemModel extends DecoratedWidgetModel
           isDirty = true;
           break;
         }
-      }
+      }}
     dirty = isDirty;
   }
 
@@ -120,14 +119,13 @@ class ListItemModel extends DecoratedWidgetModel
 
   bool selected = false;
 
-  ListItemModel(WidgetModel parent, String?  id, {dynamic data, String?  type, dynamic backgroundcolor, dynamic margin}) : super(parent, id, scope: Scope(parent: parent.scope))
+  ListItemModel(WidgetModel parent, String?  id, {dynamic data, this.type, dynamic backgroundcolor, dynamic margin}) : super(parent, id, scope: Scope(parent: parent.scope))
   {
     this.data             = data;
-    this.type             = type;
     this.backgroundcolor  = backgroundcolor;
-    this.dirty            = false;
+    dirty            = false;
     this.margin           = margin;
-    this.title            = title;
+    title            = title;
   }
 
   static ListItemModel? fromXml(WidgetModel parent, XmlElement? xml, {dynamic data})
@@ -165,9 +163,8 @@ class ListItemModel extends DecoratedWidgetModel
 
     // find all descendants
     List<dynamic>? fields = findDescendantsOfExactType(null);
-    if (fields != null)
-      fields.forEach((field)
-      {
+    if (fields != null) {
+      for (var field in fields) {
         // form field?
         if (field is IFormField)
         {
@@ -178,7 +175,8 @@ class ListItemModel extends DecoratedWidgetModel
           // Register Listener to Dirty Field
           if (field.dirtyObservable != null) field.dirtyObservable!.registerListener(onDirtyListener);
         }
-      });
+      }
+    }
   }
 
   Future<bool> complete() async
@@ -195,7 +193,9 @@ class ListItemModel extends DecoratedWidgetModel
     ////////////////
     /* Mark Clean */
     ////////////////
-    if ((ok) && (fields != null)) fields!.forEach((field) => field.dirty = false);
+    if ((ok) && (fields != null)){ for (var field in fields!) {
+   field.dirty = false;
+ }}
 
     busy = false;
 
@@ -207,7 +207,7 @@ class ListItemModel extends DecoratedWidgetModel
     if (dirty == false) return true;
 
     bool ok = true;
-    if ((scope != null) && (postbrokers != null))
+    if ((scope != null) && (postbrokers != null)){
       for (String id in postbrokers!)
       {
         IDataSource? source = scope!.getDataSource(id);
@@ -217,8 +217,10 @@ class ListItemModel extends DecoratedWidgetModel
           ok = await source.start();
         }
         if (!ok) break;
-      }
-    else ok = false;
+      }}
+    else {
+      ok = false;
+    }
     return ok;
   }
 

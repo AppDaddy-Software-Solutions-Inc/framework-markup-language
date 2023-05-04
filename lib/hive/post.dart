@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:fml/hive/database.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-enum Fields {key, form_key, status, title, format, method, headers, url, body, date, attempts, info}
+enum Fields {key, formKey, status, title, format, method, headers, url, body, date, attempts, info}
 
 class Post
 {
   static String tableName = "POST";
 
-  Map<String, dynamic> _map = Map<String, dynamic>();
+  final Map<String, dynamic> _map = <String, dynamic>{};
   
   static int statusINCOMPLETE = 1;
   static int statusCOMPLETE   = 2;
@@ -72,10 +72,10 @@ class Post
   static Post? _fromMap(dynamic map)
   {
     Post? post;
-    if (map is Map<String, dynamic>) 
+    if (map is Map<String, dynamic>) {
       post = Post(
           key:      S.mapVal(map, S.fromEnum(Fields.key)),
-          formKey:  S.mapVal(map, S.fromEnum(Fields.form_key)),
+          formKey:  S.mapVal(map, S.fromEnum(Fields.formKey)),
           status:   S.mapInt(map, S.fromEnum(Fields.status)),
           title:    S.mapVal(map, S.fromEnum(Fields.title)),
           date:     S.mapInt(map, S.fromEnum(Fields.date)),
@@ -87,14 +87,15 @@ class Post
           body:     S.mapVal(map, S.fromEnum(Fields.body)),
           info:     S.mapVal(map, S.fromEnum(Fields.info))
       );
+    }
     return post;
   }
 
   Map<String?, dynamic> toMap()
   {
-    var map = new Map<String?, dynamic>();
+    var map = <String?, dynamic>{};
     map[S.fromEnum(Fields.key)]       = key;
-    map[S.fromEnum(Fields.form_key)]  = formKey;
+    map[S.fromEnum(Fields.formKey)]  = formKey;
     map[S.fromEnum(Fields.status)]    = status;
     map[S.fromEnum(Fields.title)]     = title;
     map[S.fromEnum(Fields.date)]      = date;
@@ -119,11 +120,10 @@ class Post
   {
     List<Post> posts = [];
     List<Map<String, dynamic>> entries = await Database().query(tableName, where: where, orderby: orderby);
-    entries.forEach((entry)
-    {
+    for (var entry in entries) {
       Post? post = _fromMap(entry);
       if (post != null) posts.add(post);
-    });
+    }
     return posts;
   }
 }

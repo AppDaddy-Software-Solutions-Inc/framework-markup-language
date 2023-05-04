@@ -9,7 +9,7 @@ class User
 {
   static String tableName = "USER";
 
-  Map<String, dynamic> _map = Map<String, dynamic>();
+  final Map<String, dynamic> _map = <String, dynamic>{};
 
   String  get key      => _map["key"];
   String? get username => _map["username"];
@@ -26,7 +26,8 @@ class User
     _map["rights"]   = rights;
 
     // user defined values
-    if (map != null) map.forEach((key, value)
+    if (map != null) {
+      map.forEach((key, value)
     {
       if (key != "key" &&
           key != "username" &&
@@ -34,6 +35,7 @@ class User
           key != "langauge" &&
           key != "rights") _map[key] = value;
     });
+    }
   }
 
   Future<bool> insert() async => (await Database().insert(tableName, key, _map) == null);
@@ -60,11 +62,10 @@ class User
   {
     List<User> users = [];
     List<Map<String, dynamic>> entries = await Database().query(tableName, where: where, orderby: orderby);
-    entries.forEach((entry)
-    {
+    for (var entry in entries) {
       User? user = _fromMap(entry);
       if (user != null) users.add(user);
-    });
+    }
     return users;
   }
 }

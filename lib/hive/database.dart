@@ -2,7 +2,7 @@
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:hive/hive.dart';
-import 'package:fml/eval/eval.dart' as EVALUATE;
+import 'package:fml/eval/eval.dart' as fml_eval;
 import 'package:fml/helper/common_helpers.dart';
 
 class Database
@@ -25,7 +25,7 @@ class Database
     {
       Log().info('Initializing Database at Path: $path');
       this.path = path;
-      this.encryptionKey = encryptionKey;
+      encryptionKey = encryptionKey;
       if (path != null) Hive.init(path);
       ok = true;
     }
@@ -147,9 +147,11 @@ class Database
     try
     {
       var box = await Hive.openBox(table);
-      if (box.containsKey(key))
+      if (box.containsKey(key)) {
         value = await box.get(key);
-      else Log().debug('Table [$table] does not contain a Key [$key]');
+      } else {
+        Log().debug('Table [$table] does not contain a Key [$key]');
+      }
     }
     catch(e)
     {
@@ -181,31 +183,37 @@ class Database
         if (!S.isNullOrEmpty(where))
         {
           String? sql = Binding.applyMap(where, map, caseSensitive: false);
-          ok = S.toBool(EVALUATE.Eval.evaluate(sql));
+          ok = S.toBool(fml_eval.Eval.evaluate(sql));
         }
         return ok!;
       });
 
       // add values to list
-      values.forEach((value) => value is Map ? list.add(value.cast<String, dynamic>()) : null);
+      for (var value in values) {
+        value is Map ? list.add(value.cast<String, dynamic>()) : null;
+      }
 
       // order by clause
       if (!S.isNullOrEmpty(orderby))
       {
         // get ordre by field and descending clause
         orderby = orderby!.trim();
-        while (orderby!.contains("  ")) orderby = orderby.replaceAll("  ", " ").trim();
+        while (orderby!.contains("  ")) {
+          orderby = orderby.replaceAll("  ", " ").trim();
+        }
         var s = orderby.trim().split(" ");
         orderby = s.first;
         bool descending = false;
-        if ((s.length > 0) && (s[1].toLowerCase() == "desc")) descending = true;
+        if ((s.isNotEmpty) && (s[1].toLowerCase() == "desc")) descending = true;
 
         // sort values
         list.sort((a, b)
         {
-          if ((a.containsKey(orderby)) && (b.containsKey(orderby)))
+          if ((a.containsKey(orderby)) && (b.containsKey(orderby))) {
             return Comparable.compare(b[orderby], a[orderby]);
-          else return 0;
+          } else {
+            return 0;
+          }
         });
 
         // sort descending?

@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/event/event.dart' ;
 import 'package:fml/widgets/busy/busy_view.dart';
@@ -14,11 +14,12 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class PagerView extends StatefulWidget implements IWidgetView
 {
+  @override
   final PagerModel model;
   PagerView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _PagerViewState createState() => _PagerViewState();
+  State<PagerView> createState() => _PagerViewState();
 }
 
 class _PagerViewState extends WidgetState<PagerView>
@@ -81,14 +82,14 @@ class _PagerViewState extends WidgetState<PagerView>
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    // Set Build Constraints in the [WidgetModel]
-    setConstraints(constraints);
+    // save system constraints
+    onLayout(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
     /// Busy / Loading Indicator
-    if (busy == null) busy = BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
+    busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
 
     /////////////////
     /* Build Pages */
@@ -113,8 +114,10 @@ class _PagerViewState extends WidgetState<PagerView>
       },
     ))) : Container();
 
-    if (!widget.model.hasSizing && constraints.maxWidth == double.infinity)
-      pageView = UnconstrainedBox(child: SizedBox(height: widget.model.height ?? widget.model.maxHeight, width: widget.model.width ?? widget.model.maxWidth, child: pageView));
+    var c = widget.model.constraints.calculated;
+    if (!c.isNotEmpty && constraints.maxWidth == double.infinity) {
+      pageView = UnconstrainedBox(child: SizedBox(height: widget.model.height ?? widget.model.calculatedMaxHeightOrDefault, width: widget.model.width ?? widget.model.calculatedMaxWidthOrDefault, child: pageView));
+    }
 
     var view = Stack(alignment: Alignment.bottomCenter, children: [pageView, pager, Center(child: busy)]);
 
@@ -135,15 +138,17 @@ class _PagerViewState extends WidgetState<PagerView>
       int pages = widget.model.pages.length;
 
       String to = event.parameters!['page']!;
-      if (to.toLowerCase() == "previous")
+      if (to.toLowerCase() == "previous") {
         page = page - 1;
-      else if (to.toLowerCase() == "next")
+      } else if (to.toLowerCase() == "next") {
         page = page + 1;
-      else if (to.toLowerCase() == "first")
+      } else if (to.toLowerCase() == "first") {
         page = 1;
-      else if (to.toLowerCase() == "last")
+      } else if (to.toLowerCase() == "last") {
         page = pages;
-      else if (S.isNumber(to)) page = S.toInt(to)!;
+      } else if (S.isNumber(to)) {
+        page = S.toInt(to)!;
+      }
 
       if (pages == 0) {
         event.handled = true;
@@ -195,16 +200,16 @@ class DotsIndicator extends AnimatedWidget {
 
   Widget _buildDot(int index) {
     double zoom = 1.0 + (_kMaxZoom - 1.0) * (index == (controller.page ?? controller.initialPage) ? 1 : 0);
-    return new Container(
+    return Container(
       width: _kDotSpacing,
-      child: new Center(
-        child: new Material(
+      child: Center(
+        child: Material(
           color: color,
           type: MaterialType.circle,
-          child: new Container(
+          child: Container(
             width: _kDotSize * zoom,
             height: _kDotSize * zoom,
-            child: new InkWell(splashColor: color!.withOpacity(0.5),
+            child: InkWell(splashColor: color!.withOpacity(0.5),
               onTap: () => onPageSelected!(index),
             ),
           ),
@@ -213,10 +218,11 @@ class DotsIndicator extends AnimatedWidget {
     );
   }
 
+  @override
   Widget build(BuildContext context) {
-    return new Row(
+    return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: new List<Widget>.generate(itemCount!, _buildDot),
+      children: List<Widget>.generate(itemCount!, _buildDot),
     );
   }
 }

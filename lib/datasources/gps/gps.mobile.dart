@@ -5,7 +5,7 @@ import 'package:fml/log/manager.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:fml/system.dart';
 import 'payload.dart';
-import 'iGpsListener.dart';
+import 'gps_litener_interface.dart';
 
 Gps getReceiver() => Receiver();
 
@@ -70,9 +70,10 @@ class Receiver implements Gps
     if (_subscription != null) _subscription?.cancel();
   }
 
+  @override
   registerListener(IGpsListener listener)
   {
-    if (_listeners == null) _listeners = [];
+    _listeners ??= [];
     if (!_listeners!.contains(listener))
     {
       _listeners!.add(listener);
@@ -81,6 +82,7 @@ class Receiver implements Gps
     listener.onGpsData(payload: last);
   }
 
+  @override
   removeListener(IGpsListener listener)
   {
     if ((_listeners != null) && (_listeners!.contains(listener)))

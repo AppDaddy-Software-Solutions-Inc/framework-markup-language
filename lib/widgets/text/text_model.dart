@@ -1,17 +1,18 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:math';
+
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/span/span_model.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/text/text_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class TextModel extends DecoratedWidgetModel implements IViewableWidget
+class TextModel extends DecoratedWidgetModel 
 {
   String? markup;
 
@@ -26,8 +27,9 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
     }
     else
     {
-      if ((v != null) || (WidgetModel.isBound(this, Binding.toKey(id, 'value'))))
+      if ((v != null) || (WidgetModel.isBound(this, Binding.toKey(id, 'value')))) {
         _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange);
+      }
     }
   }
   String? get value => _value?.get();
@@ -49,31 +51,16 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
           scope: scope, listener: onPropertyChange);
     }
   }
-  double? get size {
+  double? get size
+  {
     double? s = _size?.get();
     if (s == null) return null;
-
-    if (_sizeIsPercent == true) {
-      double? s1;
-      double? s2;
-
-      double? mh = maxHeight;
-      if (mh != null)
-        s1 = mh * (s / 100.0);
-      else
-        s1 = null;
-
-      double? mw = maxWidth;
-      if (mw != null)
-        s2 = mw * (s / 100.0);
-      else
-        s2 = null;
-
-      if ((s1 != null) && (s2 != null)) s = (s1 > s2) ? s1 : s2;
-      if ((s1 == null) && (s2 != null)) s = s2;
-      if ((s1 != null) && (s2 == null)) s = s1;
+    if (_sizeIsPercent == true)
+    {
+      var width  = calculatedMaxHeightForPercentage * (s / 100.0);
+      var height = calculatedMaxWidthForPercentage  * (s / 100.0);
+      s = max(width, height);
     }
-
     return s;
   }
 
@@ -359,8 +346,6 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
   double? get lineheight => _lineheight?.get();
 
   // overrides
-  String? get halign => super.halign;
-  String? get valign => super.valign;
 
   ////////////////////
   /* overflow */
@@ -458,9 +443,8 @@ class TextModel extends DecoratedWidgetModel implements IViewableWidget
     super.deserialize(xml);
 
     String? textvalue = Xml.get(node: xml, tag: 'value');
-    if (textvalue == null)
-      textvalue = Xml.get(node: xml, tag: 'label');
-    if (textvalue == null) textvalue = Xml.getText(xml);
+    textvalue ??= Xml.get(node: xml, tag: 'label');
+    textvalue ??= Xml.getText(xml);
 
     // properties
     value = textvalue;

@@ -11,7 +11,7 @@ class Log
 
   static final int daysToSave = 1;
 
-  Map<String, dynamic> _map = Map<String, dynamic>();
+  final Map<String, dynamic> _map = <String, dynamic>{};
 
   String  get key     => _map["key"];
   String  get type    => _map["type"];
@@ -47,8 +47,10 @@ class Log
 
   static Data toData(Iterable<Log> logs)
   {
-    Data data = new Data();
-    logs.forEach((log) => data.add(log._map));
+    Data data = Data();
+    for (var log in logs) {
+      data.add(log._map);
+    }
     return data;
   }
 
@@ -63,11 +65,10 @@ class Log
   {
     List<Log> list = [];
     List<Map<String, dynamic>> entries = await Database().findAll(tableName);
-    entries.forEach((entry)
-    {
+    for (var entry in entries) {
       Log? log = _fromMap(entry);
       if (log != null) list.add(log);
-    });
+    }
     return list;
   }
 
@@ -75,11 +76,10 @@ class Log
   {
     List<Log> list = [];
     List<Map<String, dynamic>> entries = await Database().query(tableName, where: where, orderby: orderby);
-    entries.forEach((entry)
-    {
+    for (var entry in entries) {
       Log? log = _fromMap(entry);
       if (log != null) list.add(log);
-    });
+    }
     return list;
   }
 }

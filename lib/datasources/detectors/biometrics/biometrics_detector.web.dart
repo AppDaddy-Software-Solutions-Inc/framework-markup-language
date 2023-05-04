@@ -18,6 +18,7 @@ class BiometricsDetector implements IBiometricsDetector
     return _singleton;
   }
 
+  @override
   Future<Payload?> detect(DetectableImage image) async
   {
     // not implemented

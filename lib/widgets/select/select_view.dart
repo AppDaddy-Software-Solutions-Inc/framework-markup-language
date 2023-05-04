@@ -1,12 +1,13 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'package:collection/collection.dart';
+import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
-
-import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/select/select_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
@@ -17,12 +18,13 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class SelectView extends StatefulWidget implements IWidgetView
 {
+  @override
   final SelectModel model;
 
   SelectView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _SelectViewState createState() => _SelectViewState();
+  State<SelectView> createState() => _SelectViewState();
 }
 
 class _SelectViewState extends WidgetState<SelectView>
@@ -33,8 +35,6 @@ class _SelectViewState extends WidgetState<SelectView>
   OptionModel? _selected;
   final TextEditingController controller = TextEditingController();
   FocusNode focus = FocusNode();
-  RenderBox? box;
-  Offset? position;
   String typeaheadText = '';
 
   @override
@@ -53,10 +53,15 @@ class _SelectViewState extends WidgetState<SelectView>
         // create a new item in dropdown
         TextModel itemLabel = TextModel(null, null, value: res);
         OptionModel newOption = OptionModel(null, null, label: itemLabel, value: res);
-        _input = DropdownMenuItem(value: newOption, child: newOption.label!.getView());
+
+        var child = newOption.label!.getView() ?? Container();
+        _input = DropdownMenuItem(value: newOption, child: child);
+
         changedDropDownItem(_input.value);
         _inputInitialized = true;
-      } else {
+      }
+      else
+      {
         bool hasMatch = false;
         int listCounter = 0;
         try {
@@ -72,7 +77,9 @@ class _SelectViewState extends WidgetState<SelectView>
             }
             listCounter++;
           }
-        } catch(e) {}
+        } catch(e) {
+          Log().debug('$e');
+        }
         if (hasMatch == false) {
           changedDropDownItem(_list[1].value ?? _list[0].value);
         }
@@ -100,7 +107,11 @@ class _SelectViewState extends WidgetState<SelectView>
       for (OptionModel option in model.options)
       {
         Widget view = Text('');
-        if (option.label is IViewableWidget) view = option.label!.getView();
+        if (option.label is ViewableWidgetModel)
+        {
+          var myView = option.label!.getView();
+          if (myView != null) view = myView;
+        }
 
         var o = DropdownMenuItem(value: option, child: view);
         if (model.value == option.value) _selected = option;
@@ -118,31 +129,24 @@ class _SelectViewState extends WidgetState<SelectView>
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _afterBuild(context);
-    });
-
-    ///////////////////
-    /* Build Options */
-    ///////////////////
+    // build options
     _buildOptions();
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    // Set Build Constraints in the [WidgetModel]
-    setConstraints(constraints);
+    // save system constraints
+    onLayout(constraints);
 
-    ///////////
-    /* Busy? */
-    ///////////
-    var busy;
-    if (widget.model.busy == true && widget.model.typeahead != true)
+    // busy?
+    BusyView? busy;
+    if (widget.model.busy == true && widget.model.typeahead != true) {
       busy = BusyView(BusyModel(widget.model,
           visible: true,
           size: 24,
           color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.5),
           modal: false));
+    }
 
     bool enabled = (widget.model.enabled != false) && (widget.model.busy != true);
 
@@ -177,7 +181,7 @@ class _SelectViewState extends WidgetState<SelectView>
 
         List<OptionModel>? suggestions;
         view = SizedBox(
-          width: widget.model.maxWidth,
+          width: widget.model.calculatedMaxWidthOrDefault,
               child: TypeAheadField(
                 textFieldConfiguration: TextFieldConfiguration(
                     focusNode: focus,
@@ -199,12 +203,10 @@ class _SelectViewState extends WidgetState<SelectView>
                 itemBuilder: (context, dynamic suggestion) {
                   Widget? item;
                   if (suggestion is OptionModel) {
-                      var option = _list.firstWhere(
-                          (option) => (option.value == suggestion),
-                          orElse: null);
-                          item = option.child;
+                      var option = _list.firstWhereOrNull((option) => (option.value == suggestion));
+                      item = option?.child;
                   }
-                  if (item == null) item = Container(height: 12);
+                  item ??= Container(height: 12);
                   return Padding(
                       padding: EdgeInsets.only(
                           left: 12, right: 1, top: 12, bottom: 12),
@@ -215,8 +217,9 @@ class _SelectViewState extends WidgetState<SelectView>
                     SuggestionsBoxDecoration(elevation: 20),
                 suggestionsBoxVerticalOffset: 0,
                 onSuggestionSelected: (dynamic suggestion) {
-                  if (suggestion is OptionModel)
+                  if (suggestion is OptionModel) {
                     changedDropDownItem(suggestion);
+                  }
                 },
                 transitionBuilder: (context, suggestionsBox, animationController) =>
                 FadeTransition(
@@ -229,6 +232,14 @@ class _SelectViewState extends WidgetState<SelectView>
       focus.addListener(onFocusChange);
     } else {
       OptionModel? dValue = (_selected != null && _selected?.value != null && _selected?.value == '') ? null : _selected;
+
+      Widget child = Text('');
+      if (_selected != null && _selected!.label != null)
+      {
+        var myView = _selected!.label!.getView();
+        if (myView != null) child = myView;
+      }
+
       view = widget.model.editable != false
           ? MouseRegion(
               cursor: SystemMouseCursors.click,
@@ -269,9 +280,7 @@ class _SelectViewState extends WidgetState<SelectView>
                     .surfaceVariant
                     .withOpacity(0.15),
               ))
-          : (_selected != null) && (_selected!.label != null)
-              ? _selected!.label!.getView()
-              : Text('');
+          : child;
     }
     if (widget.model.border == 'all') {
       view = Container(
@@ -292,21 +301,10 @@ class _SelectViewState extends WidgetState<SelectView>
     // display busy
     if (busy != null) view = Stack(children: [view, Positioned(top: 0, bottom: 0, left: 0, right: 0, child: busy)]);
 
-    ////////////
-    /* Sized? */
-    ////////////
+    // Sized?
     view = SizedBox(width: widget.model.width ?? 200, height: widget.model.height ?? 48, child: view);
 
     return Padding(padding: EdgeInsets.symmetric(vertical: /*widget.model.dense ? 0 : */4), child: view);
-  }
-
-  /// After [iFormFields] are drawn we get the global offset for scrollTo functionality
-  _afterBuild(BuildContext context)
-  {
-    // Set the global offset position of each input
-    box = context.findRenderObject() as RenderBox?;
-    if (box != null) position = box!.localToGlobal(Offset.zero);
-    if (position != null) widget.model.offset = position;
   }
 
   Future<List<OptionModel>> getSuggestions(String pattern) async
@@ -321,21 +319,21 @@ class _SelectViewState extends WidgetState<SelectView>
 
   bool suggestion(OptionModel m, String pat) {
     pat = pat.toLowerCase();
-    if (m.tags != null && m.tags!.length > 0) {
+    if (m.tags != null && m.tags!.isNotEmpty) {
       List<String?> s = m.tags!.split(',');
       return s.any((tag) => match(tag!.trim().toLowerCase(), pat));
     }
     else {
-      String? str = (m.label is TextModel) ? (m.label as TextModel).value ?? null : '' + _extractText(m)!;
+      String? str = (m.label is TextModel) ? (m.label as TextModel).value : _extractText(m)!;
       return str == null ? false : match(str.trim().toLowerCase(), pat);
     }
 
   }
 
   bool match(String tag, String pat) {
-    if (tag == '' || tag == 'null')
+    if (tag == '' || tag == 'null') {
       return false;
-    else if (S.isNullOrEmpty(widget.model.matchtype) || widget.model.matchtype!.toLowerCase() == 'contains') {
+    } else if (S.isNullOrEmpty(widget.model.matchtype) || widget.model.matchtype!.toLowerCase() == 'contains') {
       return tag.contains(pat.toLowerCase());
     }
     else if (widget.model.matchtype!.toLowerCase() == 'startswith') {
@@ -357,23 +355,24 @@ class _SelectViewState extends WidgetState<SelectView>
     if (S.isNullOrEmpty(value))
     {
       var models = (model.label as WidgetModel).findDescendantsOfExactType(TextModel);
-      if (models != null)
-        models.forEach((text)
-        {
+      if (models != null) {
+        for (var text in models) {
           if (text is TextModel)
           {
             String v = S.toStr(text.value) ?? "";
             if (!value.contains(v)) value += v;
           }
-        });
+        }
+      }
     }
     return value;
   }
 
   void changedDropDownItem(OptionModel? selected) async {
-    if (widget.model.typeahead != true)
+    if (widget.model.typeahead != true) {
       FocusScope.of(context).requestFocus(
-          new FocusNode()); // added this in to remove focus from input
+          FocusNode()); // added this in to remove focus from input
+    }
     // removed this as it prevents reloading after a user submits a value
     if (selected == null) return;
     bool ok = await widget.model.answer(selected.value);
@@ -398,13 +397,16 @@ class _SelectViewState extends WidgetState<SelectView>
       controller.selection = TextSelection(baseOffset: 0, extentOffset: controller.text.length);
     }
     try {
-      if (focused)
+      if (focused) {
         System().commit = _commit;
-      else
+      } else {
         System().commit = null;
+      }
 
       if (!focused) await _commit();
-    } catch(e) {}
+    } catch(e) {
+      Log().debug('$e');
+    }
   }
 
   Future<bool> _commit() async

@@ -5,7 +5,7 @@ import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart'        ;
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart'       ;
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
@@ -18,11 +18,12 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class ListLayoutView extends StatefulWidget implements IWidgetView
 {
+  @override
   final ListModel model;
   ListLayoutView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _ListLayoutViewState createState() => _ListLayoutViewState();
+  State<ListLayoutView> createState() => _ListLayoutViewState();
 }
 
 class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEventScrolling
@@ -84,15 +85,16 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
       var child = widget.model.findDescendantOfExactType(null, id: id);
 
       // if there is an error with this, we need to check _controller.hasClients as it must not be false when using [ScrollPosition],such as [position], [offset], [animateTo], and [jumpTo],
-      if ((child != null) && (child.context != null))
+      if ((child != null) && (child.context != null)) {
         Scrollable.ensureVisible(child.context, duration: Duration(seconds: 1), alignment: 0.2);
+      }
     }
   }
 
   @override
   void onScroll(Event event) async
   {
-    if (this.scroller != null) scroll(event, this.scroller);
+    if (scroller != null) scroll(event, scroller);
     event.handled = true;
   }
 
@@ -125,81 +127,10 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
     }
   }
   /// Callback function for when the model changes, used to force a rebuild with setState()
+  @override
   onModelChange(WidgetModel model,{String? property, dynamic value})
   {
-    if (this.mounted) setState((){});
-  }
-
-  @override
-  Widget build(BuildContext context)
-  {
-return LayoutBuilder(builder: builder);
-  }
-
-  Widget builder(BuildContext context, BoxConstraints constraints)
-  {
-    // Set Build Constraints in the [WidgetModel]
-      widget.model.minWidth  = constraints.minWidth;
-      widget.model.maxWidth  = constraints.maxWidth;
-      widget.model.minHeight = constraints.minHeight;
-      widget.model.maxHeight = constraints.maxHeight;
-
-    // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
-
-    /// Busy / Loading Indicator
-    if (busy == null) busy = BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
-
-    ///////////////
-    /* Direction */
-    ///////////////
-    dynamic direction = Axis.vertical;
-    if (widget.model.direction == 'horizontal') direction = Axis.horizontal;
-
-    List<Widget> children = [];
-
-    //////////
-    /* View */
-    //////////
-    Widget view;
-
-    if(widget.model.collapsed) view = SingleChildScrollView(
-        physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null,
-        child: ExpansionPanelList.radio(
-          dividerColor: Theme.of(context).colorScheme.onInverseSurface,
-          initialOpenPanelValue: 0,
-          elevation: 2,
-          expandedHeaderPadding: EdgeInsets.all(4),
-          children: expansionItems(context)));
-      else view = ListView.custom(  physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null, scrollDirection: direction, controller: scroller, childrenDelegate: SliverChildBuilderDelegate((BuildContext context, int index) {return itemBuilder(context, index);}, childCount: widget.model.data?.length ?? widget.model.children?.length ?? 0));
-
-
-    if(widget.model.onpulldown != null) view = RefreshIndicator(
-        onRefresh: () => widget.model.onPull(context),
-        child: view);
-
-
-    if(widget.model.onpulldown != null || widget.model.draggable) view = ScrollConfiguration(
-          behavior: ScrollConfiguration.of(context).copyWith(
-            dragDevices: {
-              PointerDeviceKind.touch,
-              PointerDeviceKind.mouse,
-            },
-          ),
-          child: view,
-      );
-        ////////////////////////
-    /* Constrain the View */
-    ////////////////////////
-    double? width  = widget.model.width;
-    double? height = widget.model.height;
-    if (constraints.maxHeight == double.infinity || constraints.maxHeight == double.negativeInfinity || height == null) height = widget.model.maxHeight ?? constraints.maxHeight;
-    if (constraints.maxWidth  == double.infinity || constraints.maxWidth  == double.negativeInfinity || width  == null) width  = widget.model.maxWidth  ?? constraints.maxWidth;
-    view = UnconstrainedBox(child: SizedBox(height: height, width: width, child: view));
-
-    children.addAll([view, Center(child: busy)]);
-
-    return Stack(children: children);
+    if (mounted) setState((){});
   }
 
   Widget? itemBuilder(BuildContext context, int index)
@@ -217,14 +148,17 @@ return LayoutBuilder(builder: builder);
       itemModel = widget.model.getItemModel(index++);
       if (itemModel != null) {
         var listItem = ListItemView(model: itemModel, selectable: widget.model.selectable);
-        var title;
-        if (!S.isNullOrEmpty(itemModel.title)) title = Text(itemModel.title!);
-        else if (S.isNullOrEmpty(itemModel.title))
+        Text? title;
+        if (!S.isNullOrEmpty(itemModel.title)) {
+          title = Text(itemModel.title!);
+        } else if (S.isNullOrEmpty(itemModel.title))
         {
           List<dynamic>? descendants = itemModel.findDescendantsOfExactType(TextModel);
           if (descendants != null && descendants.isNotEmpty) {
             int i = 0;
-            while (i < descendants.length && descendants[i].value == null) i++;
+            while (i < descendants.length && descendants[i].value == null) {
+              i++;
+            }
             title = Text(descendants[i].value, style: TextStyle(color: Theme
                 .of(context)
                 .colorScheme
@@ -242,4 +176,75 @@ return LayoutBuilder(builder: builder);
     return items;
   }
 
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
+    // save system constraints
+    onLayout(constraints);
+
+    // Check if widget is visible before wasting resources on building it
+    if (!widget.model.visible) return Offstage();
+
+    /// Busy / Loading Indicator
+    busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
+
+    // Direction
+    dynamic direction = Axis.vertical;
+    if (widget.model.direction == 'horizontal') direction = Axis.horizontal;
+
+    List<Widget> children = [];
+
+    // View
+    Widget view;
+
+    if(widget.model.collapsed) {
+      view = SingleChildScrollView(
+        physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null,
+        child: ExpansionPanelList.radio(
+            dividerColor: Theme.of(context).colorScheme.onInverseSurface,
+            initialOpenPanelValue: 0,
+            elevation: 2,
+            expandedHeaderPadding: EdgeInsets.all(4),
+            children: expansionItems(context)));
+    } else {
+      view = ListView.custom(  physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null, scrollDirection: direction, controller: scroller, childrenDelegate: SliverChildBuilderDelegate((BuildContext context, int index) {return itemBuilder(context, index);}, childCount: widget.model.data?.length ?? widget.model.children?.length ?? 0));
+    }
+
+
+    if(widget.model.onpulldown != null) {
+      view = RefreshIndicator(
+        onRefresh: () => widget.model.onPull(context),
+        child: view);
+    }
+
+    if(widget.model.onpulldown != null || widget.model.draggable) {
+      view = ScrollConfiguration(
+      behavior: ScrollConfiguration.of(context).copyWith(
+        dragDevices: {
+          PointerDeviceKind.touch,
+          PointerDeviceKind.mouse,
+        },
+      ),
+      child: view,
+    );
+    }
+
+    // add margins
+    view = addMargins(view);
+
+    // apply user defined constraints
+    view = applyConstraints(view, widget.model.constraints.tightestOrDefault);
+
+    // add list
+    children.add(view);
+
+    // add busy
+    children.add(Center(child: busy));
+
+    view = Stack(children: children);
+
+    return view;
+  }
 }

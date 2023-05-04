@@ -1,23 +1,23 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
-import 'package:fml/widgets/form/iFormField.dart';
+import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/checkbox/checkbox_view.dart';
-import 'package:fml/datasources/gps/payload.dart' as GPS;
+import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
 /// Button [CheckboxModel]
 ///
 /// Defines the properties used to build a [CHECKBOX.CheckboxView]
-class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidget
+class CheckboxModel extends FormFieldModel implements IFormField
 {
   // prototype
   String? prototype;
@@ -27,6 +27,7 @@ class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidge
 
   /// The value of the widget. The label becomes the value if not specified. Returns an array if multiple checked. Can also set the initial options
   ListObservable? _value;
+  @override
   set value(dynamic v) {
     if (_value != null)
     {
@@ -40,6 +41,7 @@ class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidge
       }
     }
   }
+  @override
   dynamic get value => _value?.get() ?? defaultValue;
 
   /// Center attribute allows a simple boolean override for halign and valign both being center. halign and valign will override center if given.
@@ -79,9 +81,11 @@ class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidge
     }
   }
   /// By default we stack the [Check]s vertically, if set to row we display them horizontal
+  LayoutType get layoutType => LayoutModel.getLayoutType(layout, defaultLayout: LayoutType.column);
   String get layout => _layout?.get()?.toLowerCase() ?? 'column';
 
   // set answer
+  @override
   Future<bool> answer(dynamic v, {bool? delete}) async
   {
     touched = true;
@@ -103,7 +107,7 @@ class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidge
         var oldGeocode = geocode;
 
         // set geocode
-        geocode = GPS.Payload(
+        geocode = Payload(
             latitude: System().currentLocation?.latitude,
             longitude: System().currentLocation?.longitude,
             altitude: System().currentLocation?.altitude,
@@ -138,7 +142,7 @@ class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidge
       var oldGeocode = geocode;
 
       // set geocode
-      geocode = GPS.Payload(
+      geocode = Payload(
           latitude: System().currentLocation?.latitude,
           longitude: System().currentLocation?.longitude,
           altitude: System().currentLocation?.altitude,
@@ -176,7 +180,7 @@ class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidge
       /* Old GeoCode */
       /////////////////
       var oldGeocode = geocode;
-      geocode = GPS.Payload(
+      geocode = Payload(
           latitude: System().currentLocation?.latitude,
           longitude: System().currentLocation?.longitude,
           altitude: System().currentLocation?.altitude,
@@ -216,19 +220,22 @@ class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidge
   ////////////
   /* Values */
   ////////////
+  @override
   List<String>? get values {
     List<String>? list;
-    if (value != null)
+    if (value != null) {
       value.forEach((v) {
         if (!S.isNullOrEmpty(v?.toString())) {
-          if (list == null) list = [];
+          list ??= [];
           list!.add(v.toString());
         }
       });
+    }
     return list;
   }
 
   // question was answered
+  @override
   bool get answered
   {
     if (value == null) return false;
@@ -241,9 +248,10 @@ class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidge
     if (_size != null) {
       _size!.set(v);
     } else {
-      if (v != null)
+      if (v != null) {
         _size = DoubleObservable(Binding.toKey(id, 'size'), v,
             scope: scope, listener: onPropertyChange);
+      }
     }
   }
   double get size
@@ -261,15 +269,17 @@ class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidge
     if (_label != null) {
       _label!.set(v);
     } else {
-      if (v != null)
+      if (v != null) {
         _label = ListObservable(Binding.toKey(id, 'label'), v,
             scope: scope, listener: onPropertyChange);
+      }
     }
   }
   List? get label => _label?.get();
 
   // bindable data
   ListObservable? _data;
+  @override
   set data(dynamic v)
   {
     if (_data != null)
@@ -282,6 +292,7 @@ class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidge
       _data!.set(v);
     }
   }
+  @override
   dynamic get data => _data?.get();
 
   CheckboxModel(
@@ -323,8 +334,8 @@ class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidge
     if (onchange     != null) this.onchange     = onchange;
     if (wrap         != null) this.wrap         = wrap;
 
-    this.alarming = false;
-    this.dirty = false;
+    alarming = false;
+    dirty = false;
   }
 
   static CheckboxModel? fromXml(WidgetModel parent, XmlElement xml)
@@ -353,16 +364,19 @@ class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidge
 
     // checkboxes can have multiple values
     var values = Xml.getChildElements(node: xml, tag: 'value');
-    if (values != null)
-    values.forEach((element)
-    {
+    if (values != null) {
+      for (var element in values) {
       String? v = Xml.getText(element);
       if (!S.isNullOrEmpty(v))
       {
-        if (_value == null) value = v;
-        else if (!_value!.contains(v)) _value!.add(v);
+        if (_value == null) {
+          value = v;
+        } else if (!_value!.contains(v)) {
+          _value!.add(v);
+        }
       }
-    });
+    }
+    }
 
     /// layout attributes
     layout = Xml.get(node: xml, tag: 'layout');
@@ -373,7 +387,9 @@ class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidge
     size  = Xml.get(node: xml, tag: 'size');
 
     // clear options
-    this.options.forEach((option) => option.dispose());
+    for (var option in this.options) {
+      option.dispose();
+    }
     this.options.clear();
 
     // Build options
@@ -387,7 +403,9 @@ class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidge
     }
 
     // build options
-    options.forEach((option) => this.options.add(option));
+    for (var option in options) {
+      this.options.add(option);
+    }
   }
 
 
@@ -399,20 +417,23 @@ class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidge
       if (prototype == null) return true;
 
       // clear options
-      this.options.forEach((option) => option.dispose());
-      this.options.clear();
+      for (var option in options) {
+        option.dispose();
+      }
+      options.clear();
 
       // build options
       int i = 0;
-      if ((list != null))
-      list.forEach((row)
+      if ((list != null)) {
+        list.forEach((row)
       {
-        XmlElement? prototype = S.fromPrototype(this.prototype, "${this.id}-$i");
+        XmlElement? prototype = S.fromPrototype(this.prototype, "$id-$i");
         i = i + 1;
 
         OptionModel? model = OptionModel.fromXml(parent, prototype, data: row);
         if (model != null) options.add(model);
       });
+      }
 
       // set data
       await setData();
@@ -431,13 +452,12 @@ class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidge
   {
     // set the data
     List<dynamic> data = [];
-    options.forEach((option)
-    {
+    for (var option in options) {
       bool? contains = false;
       if (value is List)   contains = value.contains(option.value);
       if (value is String) contains = (value == option.value);
       if (contains! && (option.data != null)) data.add(option.data);
-    });
+    }
     this.data = data;
     return true;
   }
@@ -463,5 +483,6 @@ class CheckboxModel extends FormFieldModel implements IFormField, IViewableWidge
     return ok;
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(CheckboxView(this));
 }

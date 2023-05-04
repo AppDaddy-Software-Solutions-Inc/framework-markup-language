@@ -1,8 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:fml/event/handler.dart' ;
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -11,7 +10,7 @@ import 'package:fml/widgets/droppable/droppable_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class DroppableModel extends DecoratedWidgetModel implements IViewableWidget
+class DroppableModel extends DecoratedWidgetModel 
 {
   List<String>? accept;
 
@@ -32,10 +31,9 @@ class DroppableModel extends DecoratedWidgetModel implements IViewableWidget
   }
   String? get ondrop => _ondrop?.get();
 
-  DroppableModel(WidgetModel parent, String?  id, {dynamic ondrop, dynamic accept}) : super(parent, id)
+  DroppableModel(WidgetModel parent, String?  id, {dynamic ondrop, this.accept}) : super(parent, id)
   {
     this.ondrop = ondrop;
-    this.accept = accept;
   }
 
   static DroppableModel? fromXml(WidgetModel parent, XmlElement xml)
@@ -43,9 +41,7 @@ class DroppableModel extends DecoratedWidgetModel implements IViewableWidget
     DroppableModel? model;
     try
     {
-      /////////////////
-      /* Build Model */
-      /////////////////
+// build model
       model = DroppableModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
@@ -102,5 +98,6 @@ class DroppableModel extends DecoratedWidgetModel implements IViewableWidget
     super.dispose();
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(DroppableView(this));
 }

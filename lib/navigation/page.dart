@@ -14,9 +14,8 @@ class PageConfiguration
     return text.toLowerCase().split('/').last.split('.xml').first;
   }
 
-  PageConfiguration({required this.url, String? title, this.transition})
+  PageConfiguration({required this.url, this.title, this.transition})
   {
-    if (url != null) this.uri = Uri.tryParse(url!);
-    this.title = title;
+    if (url != null) uri = Uri.tryParse(url!);
   }
 }

@@ -19,15 +19,15 @@ import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:path/path.dart';
 import 'dart:async';
 import 'package:fml/hive/database.dart';
-import 'package:fml/datasources/gps/gps.dart' as GPS;
-import 'package:fml/datasources/gps/payload.dart' as GPS;
+import 'package:fml/datasources/gps/gps.dart';
+import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/application/application_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'dart:io' as io;
 
 // application build version
-final String version = '1.3.0';
+final String version = '2.0.0';
 
 // application title
 // only used in Android when viewing open applications
@@ -41,15 +41,19 @@ String get defaultDomain => 'https://test.appdaddy.co';
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
-final ApplicationTypes appType = ApplicationTypes.MultiApp;
+final ApplicationTypes appType = ApplicationTypes.multiApp;
 
-enum ApplicationTypes{ SingleApp, MultiApp }
+enum ApplicationTypes { singleApp, multiApp }
 
 // platform
-String get platform => isWeb ? "web" : isMobile ? "mobile" : "desktop";
-bool get isWeb      => kIsWeb;
-bool get isMobile   => !isWeb && (io.Platform.isAndroid || io.Platform.isIOS);
-bool get isDesktop  => !isWeb && !isMobile;
+String get platform => isWeb
+    ? "web"
+    : isMobile
+        ? "mobile"
+        : "desktop";
+bool get isWeb => kIsWeb;
+bool get isMobile => !isWeb && (io.Platform.isAndroid || io.Platform.isIOS);
+bool get isDesktop => !isWeb && !isMobile;
 
 // This variable is used throughout the code to determine if debug messages
 // and their corresponding actions should be performed.
@@ -62,12 +66,11 @@ typedef CommitCallback = Future<bool> Function();
 // used in context lookup
 var applicationKey = GlobalKey();
 
-class System extends WidgetModel implements IEventManager
-{
+class System extends WidgetModel implements IEventManager {
   static final String myId = "SYSTEM";
 
   // set to true once done
-  static var _completer = Completer();
+  static final _completer = Completer();
   static get initialized => _completer.future;
 
   // this get called once by Splash
@@ -75,7 +78,9 @@ class System extends WidgetModel implements IEventManager
 
   static final System _singleton = System._initialize();
   factory System() => _singleton;
-  System._initialize() : super(null, myId, scope: Scope(id: myId)) {_initialize();}
+  System._initialize() : super(null, myId, scope: Scope(id: myId)) {
+    _initialize();
+  }
 
   // current application
   static ApplicationModel? _app;
@@ -124,11 +129,11 @@ class System extends WidgetModel implements IEventManager
 
   late IntegerObservable _screenheight;
   int get screenheight => _screenheight.get() ?? 0;
-  set screenheight (dynamic v) => _screenheight.set(v);
+  set screenheight(dynamic v) => _screenheight.set(v);
 
   late IntegerObservable _screenwidth;
   int get screenwidth => _screenwidth.get() ?? 0;
-  set screenwidth (dynamic v) => _screenwidth.set(v);
+  set screenwidth(dynamic v) => _screenwidth.set(v);
 
   // current domain
   late BooleanObservable? _mouse;
@@ -147,7 +152,7 @@ class System extends WidgetModel implements IEventManager
   int year() => (_year != null) ? DateTime.now().year : 0;
 
   IntegerObservable? _month;
-  int month() => (_month != null) ? DateTime.now().month: 0;
+  int month() => (_month != null) ? DateTime.now().month : 0;
 
   IntegerObservable? _day;
   int day() => (_day != null) ? DateTime.now().day : 0;
@@ -162,13 +167,12 @@ class System extends WidgetModel implements IEventManager
   int second() => (_second != null) ? DateTime.now().second : 0;
 
   // GPS
-  GPS.Gps gps = GPS.Gps();
-  GPS.Payload? currentLocation;
+  Gps gps = Gps();
+  Payload? currentLocation;
 
   late String baseUrl;
 
-  _initialize() async
-  {
+  _initialize() async {
     print('Initializing FML Engine V$version on ${Uri.base}...');
 
     // base URL changes (fragment is dropped) if
@@ -208,25 +212,22 @@ class System extends WidgetModel implements IEventManager
     _completer.complete(true);
   }
 
-  onMouseDetected()
-  {
+  onMouseDetected() {
     _mouse?.set(true);
     RendererBinding.instance.mouseTracker.removeListener(onMouseDetected);
   }
 
-  Future _initConnectivity() async
-  {
-    try
-    {
-
+  Future _initConnectivity() async {
+    try {
       connection = Connectivity();
 
-      ConnectivityStatus initialConnection = await connection.checkConnectivity();
-      if (initialConnection == ConnectivityStatus.none) System.toast(Phrases().checkConnection, duration: 3);
+      ConnectivityStatus initialConnection =
+          await connection.checkConnectivity();
+      if (initialConnection == ConnectivityStatus.none)
+        System.toast(Phrases().checkConnection, duration: 3);
 
       // Add connection listener
-      connection.isConnected.listen((isconnected)
-      {
+      connection.isConnected.listen((isconnected) {
         Log().info("Connection status changed to $isconnected");
         _connected?.set(isconnected);
       });
@@ -235,62 +236,78 @@ class System extends WidgetModel implements IEventManager
       // but it still needs to run synchronous so we give it a second
       await Future.delayed(Duration(seconds: 1));
       Log().debug('initConnectivity status: $connected');
-    }
-    catch(e)
-    {
+    } catch (e) {
       _connected?.set(false);
       Log().debug('Error initializing connectivity');
     }
   }
 
-  Future<bool> _initBindables() async
-  {
+  Future<bool> _initBindables() async {
     // platform root path
-    URI.rootPath  = await Platform.path ?? "";
-    _rootpath = StringObservable(Binding.toKey('rootpath'), URI.rootPath, scope: scope);
+    URI.rootPath = await Platform.path ?? "";
+    _rootpath =
+        StringObservable(Binding.toKey('rootpath'), URI.rootPath, scope: scope);
 
     // connected
-    _connected = BooleanObservable(Binding.toKey('connected'), null, scope: scope);
+    _connected =
+        BooleanObservable(Binding.toKey('connected'), null, scope: scope);
 
     // active application settings
     _domain = StringObservable(Binding.toKey('domain'), null, scope: scope);
     _scheme = StringObservable(Binding.toKey('scheme'), null, scope: scope);
-    _host   = StringObservable(Binding.toKey('host'),   null, scope: scope);
+    _host = StringObservable(Binding.toKey('host'), null, scope: scope);
 
     // create the theme
     _theme = ThemeModel(this, "THEME");
 
     // device settings
-    _mouse        = BooleanObservable(Binding.toKey('mouse'), RendererBinding.instance.mouseTracker.mouseIsConnected, scope: scope);
-    _screenheight = IntegerObservable(Binding.toKey('screenheight'), WidgetsBinding.instance.window.physicalSize.height, scope: scope);
-    _screenwidth  = IntegerObservable(Binding.toKey('screenwidth'),  WidgetsBinding.instance.window.physicalSize.width, scope: scope);
-    _userplatform = StringObservable(Binding.toKey('platform'), platform, scope: scope);
-    _useragent    = StringObservable(Binding.toKey('useragent'), Platform.useragent, scope: scope);
-    _version      = StringObservable(Binding.toKey('version'), version, scope: scope);
-    _uuid         = StringObservable(Binding.toKey('uuid'), S.newId(), scope: scope, getter: S.newId);
+    _mouse = BooleanObservable(Binding.toKey('mouse'),
+        RendererBinding.instance.mouseTracker.mouseIsConnected,
+        scope: scope);
+    _screenheight = IntegerObservable(Binding.toKey('screenheight'),
+        WidgetsBinding.instance.window.physicalSize.height,
+        scope: scope);
+    _screenwidth = IntegerObservable(Binding.toKey('screenwidth'),
+        WidgetsBinding.instance.window.physicalSize.width,
+        scope: scope);
+    _userplatform =
+        StringObservable(Binding.toKey('platform'), platform, scope: scope);
+    _useragent = StringObservable(
+        Binding.toKey('useragent'), Platform.useragent,
+        scope: scope);
+    _version =
+        StringObservable(Binding.toKey('version'), version, scope: scope);
+    _uuid = StringObservable(Binding.toKey('uuid'), S.newId(),
+        scope: scope, getter: S.newId);
     // this satisfies/eliminates the compiler warning
     if (_uuid == null) print(_uuid);
 
     // system dates
-    _epoch  = IntegerObservable(Binding.toKey('epoch'), epoch(), scope: scope, getter: epoch);
-    _year   = IntegerObservable(Binding.toKey('year'), year(), scope: scope, getter: year);
-    _month  = IntegerObservable(Binding.toKey('month'), month(), scope: scope, getter: month);
-    _day    = IntegerObservable(Binding.toKey('day'), day(), scope: scope, getter: day);
-    _hour   = IntegerObservable(Binding.toKey('hour'), hour(), scope: scope, getter: hour);
-    _minute = IntegerObservable(Binding.toKey('minute'), minute(), scope: scope, getter: minute);
-    _second = IntegerObservable(Binding.toKey('second'), second(), scope: scope, getter: second);
+    _epoch = IntegerObservable(Binding.toKey('epoch'), epoch(),
+        scope: scope, getter: epoch);
+    _year = IntegerObservable(Binding.toKey('year'), year(),
+        scope: scope, getter: year);
+    _month = IntegerObservable(Binding.toKey('month'), month(),
+        scope: scope, getter: month);
+    _day = IntegerObservable(Binding.toKey('day'), day(),
+        scope: scope, getter: day);
+    _hour = IntegerObservable(Binding.toKey('hour'), hour(),
+        scope: scope, getter: hour);
+    _minute = IntegerObservable(Binding.toKey('minute'), minute(),
+        scope: scope, getter: minute);
+    _second = IntegerObservable(Binding.toKey('second'), second(),
+        scope: scope, getter: second);
 
     // add system level log model datasource
-    if (datasources == null) datasources = [];
+    datasources ??= [];
     datasources!.add(LogModel(this, "LOG"));
 
     return true;
   }
 
-  Future<bool> _initDatabase() async
-  {
+  Future<bool> _initDatabase() async {
     // create the hive folder
-    var folder = normalize(join(URI.rootPath,"hive"));
+    var folder = normalize(join(URI.rootPath, "hive"));
     String? hiveFolder = await Platform.createFolder(folder);
 
     // initialize hive
@@ -299,31 +316,28 @@ class System extends WidgetModel implements IEventManager
     return true;
   }
 
-  Future<bool> _initFolders() async
-  {
+  Future<bool> _initFolders() async {
     bool ok = true;
 
     if (isWeb) return ok;
-    try
-    {
+    try {
       // create applications folder
-      String? folderpath = normalize(join(URI.rootPath,"applications"));
+      String? folderpath = normalize(join(URI.rootPath, "applications"));
       folderpath = await Platform.createFolder(folderpath);
 
       // read asset manifest
-      Map<String, dynamic> manifest = json.decode(await rootBundle.loadString('AssetManifest.json'));
+      Map<String, dynamic> manifest =
+          json.decode(await rootBundle.loadString('AssetManifest.json'));
 
       // copy assets
-      for (String key in manifest.keys)
-      if (key.startsWith("assets/applications"))
-      {
-        var folder   = key.replaceFirst("assets/", "");
-        var filepath = normalize(join(URI.rootPath,folder));
-        await Platform.writeFile(filepath, await rootBundle.load(key));
+      for (String key in manifest.keys) {
+        if (key.startsWith("assets/applications")) {
+          var folder = key.replaceFirst("assets/", "");
+          var filepath = normalize(join(URI.rootPath, folder));
+          await Platform.writeFile(filepath, await rootBundle.load(key));
+        }
       }
-    }
-    catch(e)
-    {
+    } catch (e) {
       print("Error building application assets. Error is $e");
       ok = false;
     }
@@ -332,17 +346,14 @@ class System extends WidgetModel implements IEventManager
 
   // hack to fix focus/unfocus commits
   CommitCallback? commit;
-  Future<bool> onCommit() async
-  {
+  Future<bool> onCommit() async {
     if (commit != null) return await commit!();
     return true;
   }
 
-  static toast(String? msg, {int? duration})
-  {
+  static toast(String? msg, {int? duration}) {
     BuildContext? context = NavigationManager().navigatorKey.currentContext;
-    if (context != null)
-    {
+    if (context != null) {
       SnackBar snackBar = SnackBar(
           content: Text(msg ?? ''),
           duration: Duration(seconds: duration ?? 4),
@@ -354,18 +365,16 @@ class System extends WidgetModel implements IEventManager
     }
   }
 
-  Future _initRoute() async
-  {
+  Future _initRoute() async {
     // set default app
-    if (isWeb || appType == ApplicationTypes.SingleApp)
-    {
+    if (isWeb || appType == ApplicationTypes.singleApp) {
       var domain = defaultDomain;
 
       // replace default for testing
-      if (isWeb)
-      {
+      if (isWeb) {
         var uri = Uri.tryParse(baseUrl);
-        if (uri != null && !uri.host.toLowerCase().startsWith("localhost")) domain = uri.url;
+        if (uri != null && !uri.host.toLowerCase().startsWith("localhost"))
+          domain = uri.url;
       }
 
       print('Startup Domain is $domain');
@@ -381,25 +390,23 @@ class System extends WidgetModel implements IEventManager
     }
   }
 
-  void setApplicationTitle(String? title) async
-  {
+  void setApplicationTitle(String? title) async {
     title = title ?? app?.settings("APPLICATION_NAME");
-    if (!S.isNullOrEmpty(title))
-    {
+    if (!S.isNullOrEmpty(title)) {
       // print('setting title to $title');
-      SystemChrome.setApplicationSwitcherDescription(ApplicationSwitcherDescription(label: title, primaryColor: Colors.blue.value));
+      SystemChrome.setApplicationSwitcherDescription(
+          ApplicationSwitcherDescription(
+              label: title, primaryColor: Colors.blue.value));
     }
   }
 
   static String get title => Platform.title;
 
   // launches the application
-  launchApplication(ApplicationModel app, bool notifyOnThemeChange)
-  {
+  launchApplication(ApplicationModel app, bool notifyOnThemeChange) {
     // Close the old application if one
     // is running
-    if (_app != null)
-    {
+    if (_app != null) {
       Log().info("Closing Application ${_app!.url}");
 
       // set the default domain on the Url utilities
@@ -439,8 +446,17 @@ class System extends WidgetModel implements IEventManager
 
   /// Event Manager Host
   final EventManager manager = EventManager();
-  registerEventListener(EventTypes type, OnEventCallback callback, {int? priority}) => manager.register(type, callback, priority: priority);
-  removeEventListener(EventTypes type, OnEventCallback callback) => manager.remove(type, callback);
-  broadcastEvent(WidgetModel source, Event event) => manager.broadcast(this, event);
-  executeEvent(WidgetModel source, String event) => manager.execute(this, event);
+  @override
+  registerEventListener(EventTypes type, OnEventCallback callback,
+          {int? priority}) =>
+      manager.register(type, callback, priority: priority);
+  @override
+  removeEventListener(EventTypes type, OnEventCallback callback) =>
+      manager.remove(type, callback);
+  @override
+  broadcastEvent(WidgetModel source, Event event) =>
+      manager.broadcast(this, event);
+  @override
+  executeEvent(WidgetModel source, String event) =>
+      manager.execute(this, event);
 }

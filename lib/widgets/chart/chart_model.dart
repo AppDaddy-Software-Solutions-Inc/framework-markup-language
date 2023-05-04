@@ -1,14 +1,13 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart' hide Axis;
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart/series/chart_series_model.dart';
 import 'package:fml/widgets/chart/axis/chart_axis_model.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
-
-import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/chart/chart_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -18,10 +17,21 @@ import 'package:xml/xml.dart';
 /// Chart [ChartModel]
 ///
 /// Defines the properties used to build a Chart
-class ChartModel extends DecoratedWidgetModel implements IViewableWidget {
+class ChartModel extends DecoratedWidgetModel  {
   ChartAxisModel? xaxis; // = ChartAxisModel(null, null, Axis.X, title: null, fontsize: null, fontcolor: Colors.white, type: ChartAxisModel.type_category);
   ChartAxisModel? yaxis; // = ChartAxisModel(null, null, Axis.Y, title: null, fontsize: null, fontcolor: Colors.white, type: ChartAxisModel.type_numeric);
   final List<ChartSeriesModel> series = [];
+
+  @override
+  bool get isVerticallyExpanding   => true;
+  @override
+  bool get isHorizontallyExpanding => true;
+
+  // parent is not a layout model or parent is laid out
+  bool get _parentLayoutComplete => parent is! LayoutModel || (parent as LayoutModel).layoutComplete;
+
+  @override
+  bool get visible => super.visible && _parentLayoutComplete;
 
   ChartModel(WidgetModel parent, String? id,
     {
@@ -35,9 +45,25 @@ class ChartModel extends DecoratedWidgetModel implements IViewableWidget {
     this.animated         = animated;
     this.horizontal       = horizontal;
     this.showlegend       = showlegend;
-    this.type             = type?.trim()?.toLowerCase() ?? null;
-    // instantiate busy observable
+    this.type             = type?.trim()?.toLowerCase();
     busy = false;
+
+    // register a listener to parent layout complete
+    if (parent is LayoutModel) parent.layoutCompleteObservable?.registerListener(onParentLayoutComplete);
+  }
+
+  // listens to parent layout complete
+  // before displaying chart
+  void onParentLayoutComplete(Observable observable)
+  {
+    if (_parentLayoutComplete) notifyListeners(observable.key, observable.get());
+  }
+
+  @override
+  removeAllListeners()
+  {
+    super.removeAllListeners();
+    if (parent is LayoutModel) (parent as LayoutModel).layoutCompleteObservable?.removeListener(onParentLayoutComplete);
   }
 
   static ChartModel? fromTemplate(WidgetModel parent, Template template)
@@ -46,7 +72,7 @@ class ChartModel extends DecoratedWidgetModel implements IViewableWidget {
     try
     {
       XmlElement? xml = Xml.getElement(node: template.document!.rootElement, tag: "CHART");
-      if (xml == null) xml = template.document!.rootElement;
+      xml ??= template.document!.rootElement;
       model = ChartModel.fromXml(parent, xml);
     }
     catch(e)
@@ -77,7 +103,6 @@ class ChartModel extends DecoratedWidgetModel implements IViewableWidget {
   @override
   void deserialize(XmlElement xml)
   {
-
     //* Deserialize */
     super.deserialize(xml);
 
@@ -93,23 +118,21 @@ class ChartModel extends DecoratedWidgetModel implements IViewableWidget {
     // Get Series
     this.series.clear();
     List<ChartSeriesModel> series = findChildrenOfExactType(ChartSeriesModel).cast<ChartSeriesModel>();
-      series.forEach((model)
-      {
+      for (var model in series) {
         // add the series to the list
         this.series.add(model);
 
         // register listener to the datasource
         IDataSource? source = (scope != null) ? scope!.getDataSource(model.datasource) : null;
         if (source != null) source.register(this);
-      });
+      }
 
     // Get Axis
     List<ChartAxisModel> axis = findChildrenOfExactType(ChartAxisModel).cast<ChartAxisModel>();
-    axis.forEach((axis)
-    {
-      if (axis.axis == ChartAxis.X) this.xaxis = axis;
-      if (axis.axis == ChartAxis.Y) this.yaxis = axis;
-    });
+    for (var axis in axis) {
+      if (axis.axis == ChartAxis.X) xaxis = axis;
+      if (axis.axis == ChartAxis.Y) yaxis = axis;
+    }
   }
 
   /// Contains the data map from the row (point) that is selected
@@ -199,22 +222,25 @@ class ChartModel extends DecoratedWidgetModel implements IViewableWidget {
   ///
   /// [ChartModel] overrides [WidgetModel]'s onDataSourceSuccess
   /// to populate the series data with the databroker's data
+  @override
   Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async
   {
     try
     {
-        this.series.forEach((series) {
+        for (var series in series) {
           if (series.datasource == source.id) {
             series.dataPoint.clear();
-            if (list != null)
-              list.forEach((p) {
+            if (list != null) {
+              for (var p in list) {
                 ChartDataPoint point = series.point(p);
-                if ((point.x != null) && (point.y != null))
+                if ((point.x != null) && (point.y != null)) {
                   series.dataPoint.add(point);
-              });
+                }
+              }
+            }
             series.data = list;
           }
-        });
+        }
       notifyListeners('list', null);
     }
     catch(e)
@@ -225,9 +251,9 @@ class ChartModel extends DecoratedWidgetModel implements IViewableWidget {
     return true;
   }
 
+  @override
   Widget getView({Key? key})
   {
     return getReactiveView(ChartView(this));
   }
-
 }

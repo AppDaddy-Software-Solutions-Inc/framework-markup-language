@@ -1,19 +1,20 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/treeview/node/tree_node_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class TreeNodeView extends StatefulWidget implements IWidgetView
 {
+  @override
   final TreeNodeModel model;
 
   TreeNodeView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _TreeNodeViewState createState() => _TreeNodeViewState();
+  State<TreeNodeView> createState() => _TreeNodeViewState();
 }
 
 class _TreeNodeViewState extends WidgetState<TreeNodeView>
@@ -24,21 +25,24 @@ class _TreeNodeViewState extends WidgetState<TreeNodeView>
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    //////////////
-    /* Children */
-    //////////////
+    // build children
     List<Widget> children = [];
     List<Widget> nodes    = [];
     if (widget.model.children != null)
-      widget.model.children!.forEach((model)
+    {
+      for (var model in widget.model.children!)
       {
-        if (model is TreeNodeModel) {
+        if (model is TreeNodeModel)
+        {
           nodes.add(TreeNodeView(model));
         }
-        else if (model is IViewableWidget) {
-          children.add((model as IViewableWidget).getView());
+        else if (model is ViewableWidgetModel)
+        {
+          var view = model.getView();
+          if (view != null) children.add(view);
         }
-      });
+      }
+    }
 
     //////////
     /* Icon */
@@ -50,15 +54,22 @@ class _TreeNodeViewState extends WidgetState<TreeNodeView>
       //////////
       if (widget.model.expanded!)
       {
-        if (widget.model.expandedicon != null) children.insert(0, Padding(padding: EdgeInsets.only(right: 0), child: Icon(widget.model.expandedicon, color: widget.model.color ?? Theme.of(context).colorScheme.onPrimaryContainer)));
-        else if (widget.model.icon != null && widget.model.children != null) children.insert(0, Padding(padding: EdgeInsets.only(right: 0), child: Icon(widget.model.icon, color: widget.model.color)));
-        else children.insert(0, Padding(padding: EdgeInsets.only(top: 10, bottom: 10, right: 24), child: Container()));
+        if (widget.model.expandedicon != null) {
+          children.insert(0, Padding(padding: EdgeInsets.only(right: 0), child: Icon(widget.model.expandedicon, color: widget.model.color ?? Theme.of(context).colorScheme.onPrimaryContainer)));
+        } else if (widget.model.icon != null && widget.model.children != null) {
+          children.insert(0, Padding(padding: EdgeInsets.only(right: 0), child: Icon(widget.model.icon, color: widget.model.color)));
+        } else {
+          children.insert(0, Padding(padding: EdgeInsets.only(top: 10, bottom: 10, right: 24), child: Container()));
+        }
       }
       else
       {
-        if (widget.model.icon != null && widget.model.children != null) children.insert(0, Padding(padding: EdgeInsets.only(right: 0), child: Icon(widget.model.icon, color: widget.model.color ?? Theme.of(context).colorScheme.onPrimaryContainer)));
-        else children.insert(0, Padding(padding: EdgeInsets.only(top: widget.model.selected! ? 4 : 10, bottom: widget.model.selected! ? 4 : 10, right: widget.model.selected! ? 4 : 16, left: 8),
+        if (widget.model.icon != null && widget.model.children != null) {
+          children.insert(0, Padding(padding: EdgeInsets.only(right: 0), child: Icon(widget.model.icon, color: widget.model.color ?? Theme.of(context).colorScheme.onPrimaryContainer)));
+        } else {
+          children.insert(0, Padding(padding: EdgeInsets.only(top: widget.model.selected! ? 4 : 10, bottom: widget.model.selected! ? 4 : 10, right: widget.model.selected! ? 4 : 16, left: 8),
             child: widget.model.selected! ?  Icon(Icons.horizontal_rule, size: 12, color: Theme.of(context).colorScheme.primary) : Container()));
+        }
       }
 
       //////////
@@ -78,20 +89,24 @@ class _TreeNodeViewState extends WidgetState<TreeNodeView>
     Widget view = Row(crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.start, children: children, mainAxisSize: MainAxisSize.min);
     if (nodes.isNotEmpty)
     {
-      if (S.isNullOrEmpty(widget.model.onclick) && widget.model.children == null)
+      if (S.isNullOrEmpty(widget.model.onclick) && widget.model.children == null) {
         view = Opacity(opacity: 0.5, child: view); // Disable treeview nav links without onclick properties
-      else view = MouseRegion(cursor: SystemMouseCursors.click, child: GestureDetector(child: view, onTap: () => onTap()));
+      } else {
+        view = MouseRegion(cursor: SystemMouseCursors.click, child: GestureDetector(child: view, onTap: () => onTap()));
+      }
       if (widget.model.expanded!)
       {
         Widget child = Padding(padding: EdgeInsets.only(left: 17), child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: nodes));
         view = Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [view, child]);
       }
     }
-    else if (widget.model.onclick != null && widget.model.onclick != '')
+    else if (widget.model.onclick != null && widget.model.onclick != '') {
       view = MouseRegion(cursor: SystemMouseCursors.click, child: GestureDetector(child: view, onTap: () => onClick()));
+    }
 
-    if (S.isNullOrEmpty(widget.model.onclick) && widget.model.children == null)
+    if (S.isNullOrEmpty(widget.model.onclick) && widget.model.children == null) {
       view = Opacity(opacity: 0.5, child: view); // Disable treeview nav links without onclick properties
+    }
     return view;
   }
 

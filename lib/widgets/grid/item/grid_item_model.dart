@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -32,10 +32,9 @@ class GridItemModel extends DecoratedWidgetModel
   }
   bool get dirty => _dirty?.get() ?? false;
 
-  GridItemModel(WidgetModel parent, String?  id, {dynamic data, String?  type, dynamic backgroundcolor}) : super(parent, id, scope: Scope(parent: parent.scope))
+  GridItemModel(WidgetModel parent, String?  id, {dynamic data, this.type, dynamic backgroundcolor}) : super(parent, id, scope: Scope(parent: parent.scope))
   {
     this.data = data;
-    this.type = type;
   }
 
   static GridItemModel? fromXml(WidgetModel parent, XmlElement? xml, {dynamic data})

@@ -4,22 +4,22 @@ import 'package:fml/widgets/overlay/overlay_manager_view.dart';
 import 'package:fml/widgets/overlay/overlay_model.dart';
 import 'package:fml/widgets/table/row/cell/table_row_cell_model.dart';
 import 'package:fml/widgets/table/row/table_row_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart' ;
 import 'package:fml/widgets/overlay/overlay_view.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/widgets/alignment/alignment.dart';
 
 class TableRowCellView extends StatefulWidget implements IWidgetView
 {
+  @override
   final TableRowCellModel model;
   final int? row;
 
   TableRowCellView(this.model, this.row);
 
   @override
-  _TableRowCellViewState createState() => _TableRowCellViewState();
+  State<TableRowCellView> createState() => _TableRowCellViewState();
 }
 
 class _TableRowCellViewState extends WidgetState<TableRowCellView> with WidgetsBindingObserver
@@ -35,46 +35,32 @@ class _TableRowCellViewState extends WidgetState<TableRowCellView> with WidgetsB
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    // Set Build Constraints in the [WidgetModel]
-    setConstraints(constraints);
+    // save system constraints
+    onLayout(constraints);
 
-    //////////////
-    /* Children */
-    //////////////
-    List<Widget> children = [];
-    if (widget.model.visible) {
-      if (widget.model.children != null)
-        widget.model.children!.forEach((model) {
-          if (model is IViewableWidget) {
-            children.add((model as IViewableWidget).getView());
-          }
-        });
-    }
+    // build the child views
+    List<Widget> children = widget.model.inflate();
     if (children.isEmpty) children.add(Container());
 
     //this must go after the children are determined
-    Map<String, dynamic> align = AlignmentHelper.alignWidgetAxis(2, 'col',
-        widget.model.center, widget.model.halign, widget.model.valign);
-    CrossAxisAlignment? crossAlignment = align['crossAlignment'];
-    MainAxisAlignment? mainAlignment = align['mainAlignment'];
-    WrapAlignment? mainWrapAlignment = align['mainWrapAlignment'];
-    WrapCrossAlignment? crossWrapAlignment = align['crossWrapAlignment'];
+    var alignment= WidgetAlignment(widget.model.layoutType, widget.model.center, widget.model.halign, widget.model.valign);
 
     // Contents
     Widget contents;
-    if (widget.model.wrap == true)
+    if (widget.model.wrap == true) {
       contents = Wrap(
           children: children,
           direction: Axis.vertical,
-          alignment: mainWrapAlignment!,
-          runAlignment: mainWrapAlignment,
-          crossAxisAlignment: crossWrapAlignment!);
-    else
+          alignment: alignment.mainWrapAlignment,
+          runAlignment: alignment.mainWrapAlignment,
+          crossAxisAlignment: alignment.crossWrapAlignment);
+    } else {
       contents = Column(
           children: children,
-          mainAxisAlignment: mainAlignment!,
-          crossAxisAlignment: crossAlignment!,
+          mainAxisAlignment: alignment.mainAlignment,
+          crossAxisAlignment: alignment.crossAlignment,
           mainAxisSize: MainAxisSize.min);
+    }
 
 
     Color color;
@@ -125,14 +111,10 @@ class _TableRowCellViewState extends WidgetState<TableRowCellView> with WidgetsB
                         : bordercolor,
                     width: borderwidth),
                 top: BorderSide(
-                    color: outerbordercolor != null
-                        ? outerbordercolor
-                        : bordercolor,
+                    color: outerbordercolor?? bordercolor,
                     width: borderwidth),
                 bottom: BorderSide(
-                    color: outerbordercolor != null
-                        ? outerbordercolor
-                        : bordercolor,
+                    color: outerbordercolor ?? bordercolor,
                     width: borderwidth))));
 
     ///////////////

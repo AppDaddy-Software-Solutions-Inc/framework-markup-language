@@ -1,5 +1,4 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'dart:ui';
 import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/widgets/form/form_model.dart';
@@ -28,9 +27,6 @@ abstract class IFormField
   dynamic get meta;
   set meta (dynamic v);
 
-  // Offset input global position (implemented for scrolling to fields)
-  Offset? offset;
-
   // field is required
   bool? get mandatory;
   set mandatory (dynamic v);
@@ -42,10 +38,6 @@ abstract class IFormField
   bool? get dirty;
   set dirty (dynamic b);
   BooleanObservable? get dirtyObservable;
-
-  // dirtyObservable width
-  double? get width;
-  set width (dynamic v);
 
   // fielf is editable
   bool? get editable;

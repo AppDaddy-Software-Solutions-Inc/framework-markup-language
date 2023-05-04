@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/center/center_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
@@ -11,13 +10,14 @@ import 'package:fml/widgets/widget/widget_state.dart';
 /// Builds a centered Center View from [Model] properties
 class CenterView extends StatefulWidget implements IWidgetView
 {
+  @override
   final CenterModel model;
   final List<Widget> children = [];
 
   CenterView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _CenterViewState createState() => _CenterViewState();
+  State<CenterView> createState() => _CenterViewState();
 }
 
 class _CenterViewState extends WidgetState<CenterView>
@@ -27,40 +27,23 @@ class _CenterViewState extends WidgetState<CenterView>
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    // Set Build Constraints in the [WidgetModel]
-    setConstraints(constraints);
+    // save system constraints
+    onLayout(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
     widget.children.clear();
-    if (widget.model.children != null)
-      widget.model.children!.forEach((model)
-      {
-        if (model is IViewableWidget) {
-          widget.children.add((model as IViewableWidget).getView());
-        }
-      });
-    if (widget.children.isEmpty) widget.children.add(Container());
 
-    ////////////
-    /* Center */
-    ////////////
+    // build the child views
+    widget.children.addAll(widget.model.inflate());
+
+    // center
     dynamic view = Center(child: widget.children.length == 1
       ? widget.children[0]
       : Column(children: widget.children, crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.max));
 
-    /////////////////
-    /* Constrained */
-    /////////////////
-    if (widget.model.hasSizing)
-    {
-      var constraints = widget.model.getConstraints();
-      view = ConstrainedBox(child: view, constraints: BoxConstraints(
-      minHeight: constraints.minHeight!, maxHeight: constraints.maxHeight!,
-          minWidth: constraints.minWidth!, maxWidth: constraints.maxWidth!));
-    }
-
-    return view;
+    // apply user defined constraints
+    return applyConstraints(view, widget.model.constraints.model);
   }
 }

@@ -1,11 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:typed_data';
+import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/double.dart';
 import 'package:fml/observable/observables/string.dart';
 import 'package:fml/observable/scope.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/helper/common_helpers.dart';
@@ -84,7 +85,7 @@ class MapMarkerModel extends DecoratedWidgetModel
      dynamic longitude,
      String? info,
      String? infoSnippet,
-     String? label,
+     this.label,
      String? marker,
      dynamic visible
   }) : super(parent, id, scope: Scope(parent: parent.scope))
@@ -92,9 +93,8 @@ class MapMarkerModel extends DecoratedWidgetModel
     this.data         = data;
     this.latitude     = latitude;
     this.longitude    = longitude;
-    this.title        = info;
-    this.description  = infoSnippet;
-    this.label        = label;
+    title        = info;
+    description  = infoSnippet;
     this.marker       = marker;
     this.visible      = visible;
   }
@@ -131,8 +131,6 @@ class MapMarkerModel extends DecoratedWidgetModel
     description = Xml.get(node: xml, tag: 'infoSnippet');
     label       = Xml.get(node: xml, tag: 'label');
     marker      = Xml.get(node: xml, tag: 'marker');
-    width       = Xml.get(node: xml, tag: 'width');
-    height      = Xml.get(node: xml, tag: 'height');
 
     // remove datasource listener. The parent map will take care of this.
     if ((datasource != null) && (scope != null) && (scope!.datasources.containsKey(datasource))) scope!.datasources[datasource!]!.remove(this);
@@ -145,4 +143,7 @@ class MapMarkerModel extends DecoratedWidgetModel
     super.dispose();
     scope?.dispose();
   }
+
+  @override
+  Widget? getView() => null;
 }

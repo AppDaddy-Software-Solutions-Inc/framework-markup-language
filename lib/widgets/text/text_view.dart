@@ -1,22 +1,21 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:fml/helper/string.dart';
-import 'package:fml/widgets/expanded/expanded_model.dart';
-import 'package:fml/widgets/scroller/scroller_model.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:google_fonts/google_fonts.dart' deferred as fonts;
-import 'package:fml/eval/textParser.dart' as parse;
+import 'package:fml/eval/text_parser.dart' as parse;
 import 'package:flutter/material.dart';
 
 class TextView extends StatefulWidget implements IWidgetView
 {
+  @override
   final TextModel model;
   TextView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _TextViewState createState() => _TextViewState();
+  State<TextView> createState() => _TextViewState();
 }
 
 class _TextViewState extends WidgetState<TextView>
@@ -41,10 +40,12 @@ class _TextViewState extends WidgetState<TextView>
     }
 
     // wait for the library to load
-    if (!libraryLoader!.isCompleted) libraryLoader!.future.whenComplete(()
+    if (!libraryLoader!.isCompleted) {
+      libraryLoader!.future.whenComplete(()
     {
       if (mounted) setState(() {});
     });
+    }
   }
 
   @override
@@ -52,44 +53,6 @@ class _TextViewState extends WidgetState<TextView>
   {
     text = null;
     super.didChangeDependencies();
-  }
-
-  @override
-  Widget build(BuildContext context)
-  {
-    // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
-
-    // get the theme
-    theme = Theme.of(context);
-
-    // use this to optimize
-    bool textHasChanged = (text != widget.model.value);
-    text = widget.model.value;
-
-    // build the view
-    Widget view = widget.model.raw ? _getSimpleTextView() : _getRichTextView(rebuild: textHasChanged);
-
-    // is part of a larger span?
-    if (widget.model.isSpan) return SizedBox(child: view);
-
-    // constrained?
-    bool isNotExpandedChild = false;
-    if(!widget.model.hasSizing)
-    {
-      ScrollerModel? parentScroll = widget.model.findAncestorOfExactType(ScrollerModel);
-      if (parentScroll != null && parentScroll.layout.toLowerCase() == "row") return view;
-      isNotExpandedChild = widget.model.findAncestorOfExactType(ExpandedModel) == null;
-    }
-
-    // constrained?
-    if (isNotExpandedChild || widget.model.hasSizing)
-    {
-      var constr = widget.model.getConstraints();
-      view = ConstrainedBox(child: view, constraints: BoxConstraints(minWidth: constr.minWidth!, maxWidth: constr.maxWidth!));
-    }
-
-    return view;
   }
 
   void _parseText(String? value)
@@ -106,9 +69,9 @@ class _TextViewState extends WidgetState<TextView>
       parse.textValues.isNotEmpty
           ? markupTextValues = parse.textValues
           : markupTextValues = [];
-      markupTextValues.forEach((element) {
+      for (var element in markupTextValues) {
         finalVal = finalVal! + element.text;
-      });
+      }
     } catch(e) {
       finalVal = value;
     }
@@ -191,6 +154,7 @@ class _TextViewState extends WidgetState<TextView>
       case "wrap":
         textOverflow = TextOverflow.visible;
         break;
+      case "ellipsis":
       case "ellipses":
         textOverflow = TextOverflow.ellipsis;
         break;
@@ -363,9 +327,8 @@ class _TextViewState extends WidgetState<TextView>
   {
     List<InlineSpan> textSpans = [];
 
-    if (markupTextValues.isNotEmpty)
-    markupTextValues.forEach((element)
-    {
+    if (markupTextValues.isNotEmpty) {
+      for (var element in markupTextValues) {
       InlineSpan textSpan;
       FontWeight? weight;
       FontStyle? style;
@@ -374,8 +337,7 @@ class _TextViewState extends WidgetState<TextView>
       Color? codeBlockBG;
       String? codeBlockFont;
 
-      element.styles.forEach((element)
-      {
+      for (var element in element.styles) {
         switch (element)
         {
           case "underline":
@@ -413,11 +375,11 @@ class _TextViewState extends WidgetState<TextView>
             script = "normal";
             break;
         }
-      });
+      }
 
       String text = element.text.replaceAll('\\n', '\n').replaceAll('\\t','\t\t\t\t');
 
-      if (widget.model.addWhitespace) text = ' ' + text;
+      if (widget.model.addWhitespace) text = ' $text';
 
       //4 ts here as dart interprets the tab character as a single space.
       if (script == "sub")
@@ -492,8 +454,42 @@ class _TextViewState extends WidgetState<TextView>
         textSpan = TextSpan(text: text, style: textstyle);
         textSpans.add(textSpan);
       }
-    });
+    }
+    }
 
     return textSpans;
+  }
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
+    // Check if widget is visible before wasting resources on building it
+    if (!widget.model.visible) return Offstage();
+
+    // save system constraints
+    onLayout(constraints);
+
+    // get the theme
+    theme = Theme.of(context);
+
+    // use this to optimize
+    bool textHasChanged = (text != widget.model.value);
+    text = widget.model.value;
+
+    // build the view
+    Widget view = widget.model.raw ? _getSimpleTextView() : _getRichTextView(rebuild: textHasChanged);
+
+    // is part of a larger span?
+    if (widget.model.isSpan) return SizedBox(child: view);
+
+    // add margins
+    view = addMargins(view);
+
+    // apply user defined constraints
+    view = applyConstraints(view, widget.model.constraints.model);
+
+    return view;
   }
 }

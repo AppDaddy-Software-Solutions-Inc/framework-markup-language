@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:fml/system.dart';
 import 'package:fml/token/token.dart';
 import 'package:http/http.dart';
-import 'package:http/http.dart' as HTTP;
+import 'package:http/http.dart' as dart_http;
 import 'package:fml/helper/common_helpers.dart';
 
 int defaultTimeout = 60;
@@ -27,7 +27,7 @@ class HttpResponse {
 
   HttpResponse(this.url, {this.body, this.bytes, this.contentType, this.statusCode, this.statusMessage});
 
-  factory HttpResponse.factory(String url, HTTP.Response response)
+  factory HttpResponse.factory(String url, dart_http.Response response)
   {
     // content type
     String? contentType;
@@ -55,7 +55,7 @@ class Http
       if (uri != null)
       {
         // execute request
-        Response response = await HTTP.get(uri, headers: encodeHeaders(headers)).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : defaultTimeout)));
+        Response response = await dart_http.get(uri, headers: encodeHeaders(headers)).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : defaultTimeout)));
 
         // decode headers
         decodeHeaders(response);
@@ -63,14 +63,16 @@ class Http
         // return response
         return HttpResponse.factory(url, response);
       }
-      else return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: "Url $url is invalid");
+      else {
+        return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: "Url $url is invalid");
+      }
     }
     catch(e)
     {
       var msg = e.toString();
 
       // endpoint not found or unreachable
-      if ((msg.toLowerCase().startsWith('xmlhttp'))) return HttpResponse(url, statusCode: HttpStatus.notFound, statusMessage: "Not Found: " + msg);
+      if ((msg.toLowerCase().startsWith('xmlhttp'))) return HttpResponse(url, statusCode: HttpStatus.notFound, statusMessage: "Not Found: $msg");
 
       return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: msg);
     }
@@ -85,7 +87,7 @@ class Http
       if (uri != null)
       {
         // execute request
-        Response response = await HTTP.post(uri, headers: encodeHeaders(headers), body: body).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : defaultTimeout)));
+        Response response = await dart_http.post(uri, headers: encodeHeaders(headers), body: body).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : defaultTimeout)));
 
         // decode headers
         decodeHeaders(response);
@@ -93,7 +95,9 @@ class Http
         // return response
         return HttpResponse.factory(url, response);
       }
-      else return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: "Url $url is invalid");
+      else {
+        return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: "Url $url is invalid");
+      }
     }
     catch(e)
     {
@@ -110,7 +114,7 @@ class Http
       if (uri != null)
       {
         // execute request
-        Response response = await HTTP.put(uri, headers: encodeHeaders(headers), body: body).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : defaultTimeout)));
+        Response response = await dart_http.put(uri, headers: encodeHeaders(headers), body: body).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : defaultTimeout)));
 
         // decode headers
         decodeHeaders(response);
@@ -118,7 +122,9 @@ class Http
         // return response
         return HttpResponse.factory(url, response);
       }
-      else return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: "Url $url is invalid");
+      else {
+        return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: "Url $url is invalid");
+      }
     }
     catch(e)
     {
@@ -135,7 +141,7 @@ class Http
       if (uri != null)
       {
         // execute request
-        Response response = await HTTP.patch(uri, headers: encodeHeaders(headers), body: body).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : defaultTimeout)));
+        Response response = await dart_http.patch(uri, headers: encodeHeaders(headers), body: body).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : defaultTimeout)));
 
         // decode headers
         decodeHeaders(response);
@@ -143,7 +149,9 @@ class Http
         // return response
         return HttpResponse.factory(url, response);
       }
-      else return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: "Url $url is invalid");
+      else {
+        return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: "Url $url is invalid");
+      }
     }
     catch(e)
     {
@@ -160,7 +168,7 @@ class Http
       if (uri != null)
       {
         // execute request
-        Response response = await HTTP.delete(uri, headers: encodeHeaders(headers)).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : defaultTimeout)));
+        Response response = await dart_http.delete(uri, headers: encodeHeaders(headers)).timeout(Duration(seconds: (((timeout != null) && (timeout > 0)) ? timeout : defaultTimeout)));
 
         // decode headers
         decodeHeaders(response);
@@ -168,7 +176,9 @@ class Http
         // return response
         return HttpResponse.factory(url, response);
       }
-      else return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: "Url $url is null or invalid");
+      else {
+        return HttpResponse(url, statusCode: HttpStatus.internalServerError, statusMessage: "Url $url is null or invalid");
+      }
     }
     catch(e)
     {
@@ -190,22 +200,25 @@ class Http
 
   static Map<String, String> encodeHeaders(Map<String, String>? headers)
   {
-    Map<String, String> _headers = {};
+    Map<String, String> myHeaders = {};
     if (headers == null)
     {
-      _headers[HttpHeaders.ageHeader] = '0';
-      _headers[HttpHeaders.contentEncodingHeader] = 'utf8';
-      _headers[HttpHeaders.contentTypeHeader] = "application/xml";
-      if (System.app?.jwt?.token != null) _headers[HttpHeaders.authorizationHeader] = "Bearer ${System.app!.jwt!.token}";
+      myHeaders[HttpHeaders.ageHeader] = '0';
+      myHeaders[HttpHeaders.contentEncodingHeader] = 'utf8';
+      myHeaders[HttpHeaders.contentTypeHeader] = "application/xml";
+      if (System.app?.jwt?.token != null) myHeaders[HttpHeaders.authorizationHeader] = "Bearer ${System.app!.jwt!.token}";
     }
-    else headers.forEach((key, value) => _headers[key] = value);
-    return _headers;
+    else {
+      headers.forEach((key, value) => myHeaders[key] = value);
+    }
+    return myHeaders;
   }
 
   static void decodeHeaders(Response response) {
     if ((!response.headers.containsKey(HttpHeaders.authorizationHeader)) ||
-        (S.isNullOrEmpty(response.headers[HttpHeaders.authorizationHeader])))
+        (S.isNullOrEmpty(response.headers[HttpHeaders.authorizationHeader]))) {
       return;
+    }
 
     // authorization header
     String token = response.headers[HttpHeaders.authorizationHeader]!
@@ -218,17 +231,18 @@ class Http
   }
 }
 
-class MultipartRequest extends HTTP.MultipartRequest {
+class MultipartRequest extends dart_http.MultipartRequest {
   MultipartRequest(String method, Uri url, {this.onProgress})
       : super(method, url);
 
   final void Function(int bytes, int totalBytes)? onProgress;
 
-  HTTP.ByteStream finalize() {
+  @override
+  dart_http.ByteStream finalize() {
     final byteStream = super.finalize();
     if (onProgress == null) return byteStream;
 
-    final total = this.contentLength;
+    final total = contentLength;
     int bytes = 0;
 
     final t = StreamTransformer.fromHandlers(
@@ -238,6 +252,6 @@ class MultipartRequest extends HTTP.MultipartRequest {
       sink.add(data);
     });
     final stream = byteStream.transform(t);
-    return HTTP.ByteStream(stream);
+    return dart_http.ByteStream(stream);
   }
 }

@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/datasources/base/model.dart';
@@ -30,6 +30,7 @@ class LogModel extends DataSourceModel implements IDataSource
     return model;
   }
 
+  @override
   Future<bool> start({bool refresh = false, String? key}) async
   {
     if (enabled == false) return false;

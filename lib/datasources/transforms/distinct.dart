@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/transforms/iTransform.dart';
+import 'package:fml/datasources/transforms/transform_interface.dart';
 import 'package:fml/datasources/transforms/transform_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
@@ -63,9 +63,9 @@ class Distinct extends TransformModel implements ITransform
   {
     if (data == null) return null;
 
-    if (field == null) // removes duplicates
+    if (field == null) {
       data.toSet().toList();
-    else {
+    } else {
       for (dynamic l in data) {
         if (!uniqueFields.contains(l[field])) {
           uniqueFields.add(l[field]);
@@ -83,11 +83,11 @@ class Distinct extends TransformModel implements ITransform
   String encode(String v)
   {
     List<String?>? bindings = Binding.getBindingStrings(v);
-    if (bindings != null)
-      bindings.forEach((binding)
-      {
+    if (bindings != null) {
+      for (var binding in bindings) {
         if (!binding!.contains(".")) v = v.replaceAll(binding, binding.replaceAll("{", "[[[[").replaceAll("}", "]]]]"));
-      });
+      }
+    }
     return v;
   }
 
@@ -98,6 +98,7 @@ class Distinct extends TransformModel implements ITransform
     return v;
   }
 
+  @override
   apply(Data? data) async
   {
     if (enabled == false) return;

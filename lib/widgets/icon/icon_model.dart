@@ -1,15 +1,16 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:math';
+
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/icon/icon_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class IconModel extends DecoratedWidgetModel implements IViewableWidget {
+class IconModel extends DecoratedWidgetModel  {
   @override
   double get width {
     return 24;
@@ -35,45 +36,34 @@ class IconModel extends DecoratedWidgetModel implements IViewableWidget {
   //////////
   bool _sizeIsPercent = false;
   DoubleObservable? _size;
-  set size(dynamic v) {
-    if (_size != null) {
+  set size(dynamic v)
+  {
+    if (_size != null)
+    {
       _size!.set(v);
       width = v;
-    } else if (v != null) {
-      if (S.isPercentage(v)) {
+    }
+    else if (v != null)
+    {
+      if (S.isPercentage(v))
+      {
         _sizeIsPercent = true;
         v = v.split("%")[0];
       }
-      _size = DoubleObservable(Binding.toKey(id, 'size'), v,
-          scope: scope, listener: onPropertyChange);
+      _size = DoubleObservable(Binding.toKey(id, 'size'), v, scope: scope, listener: onPropertyChange);
     }
   }
 
-  double? get size {
+  double? get size
+  {
     var s = _size?.get();
     if (s == null) return null;
-
-    if (_sizeIsPercent == true) {
-      var s1;
-      var s2;
-
-      var mh = maxHeight;
-      if (mh != null)
-        s1 = mh * (s / 100.0);
-      else
-        s1 = null;
-
-      var mw = maxWidth;
-      if (mw != null)
-        s2 = mw * (s / 100.0);
-      else
-        s2 = null;
-
-      if ((s1 != null) && (s2 != null)) s = (s1 > s2) ? s1 : s2;
-      if ((s1 == null) && (s2 != null)) s = s2;
-      if ((s1 != null) && (s2 == null)) s = s1;
+    if (_sizeIsPercent == true)
+    {
+      var width  = calculatedMaxHeightForPercentage * (s / 100.0);
+      var height = calculatedMaxWidthForPercentage  * (s / 100.0);
+      s = max(width, height);
     }
-
     return s;
   }
 
@@ -137,5 +127,6 @@ class IconModel extends DecoratedWidgetModel implements IViewableWidget {
     super.dispose();
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(IconView(this));
 }

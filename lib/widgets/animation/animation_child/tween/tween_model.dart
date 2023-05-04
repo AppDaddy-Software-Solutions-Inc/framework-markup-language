@@ -96,10 +96,6 @@ class TweenModel extends AnimationChildModel
     value = from ?? "";
   }
 
-  @override
-  dispose() {
-    super.dispose();
-  }
 
   @override
   Future<bool?> execute(
@@ -129,5 +125,6 @@ class TweenModel extends AnimationChildModel
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
+  @override
   Widget getAnimatedView(Widget child, {AnimationController? controller}) => TweenView(this, child, controller);
 }

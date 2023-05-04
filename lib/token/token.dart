@@ -9,7 +9,7 @@ class Jwt
 {
   bool valid = false;
   final String token;
-  final Map<String, String> claims = Map<String, String>();
+  final Map<String, String> claims = <String, String>{};
 
   Jwt(this.token, {bool validateAge = false, bool validateSignature = false})
   {
@@ -43,9 +43,9 @@ class Jwt
   {
     // we could have done this quite simply ourselves, however, for the sake of time, use package
     // future todo - encode ourselves
-    final _claims = JwtClaim(subject: subject, issuer: issuer, audience: audience, otherClaims: claims, maxAge: Duration(minutes: shelflife));
-    String token = issueJwtHS256(_claims, key);
-    return new Jwt(token);
+    final myClaims = JwtClaim(subject: subject, issuer: issuer, audience: audience, otherClaims: claims, maxAge: Duration(minutes: shelflife));
+    String token = issueJwtHS256(myClaims, key);
+    return Jwt(token);
   }
 
   factory Jwt.decode(String token, {bool validateSignature = false, validateAge = false})

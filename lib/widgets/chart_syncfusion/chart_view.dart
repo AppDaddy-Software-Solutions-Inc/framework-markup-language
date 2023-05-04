@@ -489,9 +489,9 @@ class _ChartViewState extends State<ChartView> implements IModelListener
   {
     // Set Build Constraints in the [WidgetModel]
       widget.model.minwidth  = constraints.minWidth;
-      widget.model.maxwidth  = constraints.maxWidth;
+      widget.model.constraints.calcMaxWidth()  = constraints.maxWidth;
       widget.model.minheight = constraints.minHeight;
-      widget.model.maxheight = constraints.maxHeight;
+      widget.model.constraints.calcMaxHeight() = constraints.maxHeight;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();

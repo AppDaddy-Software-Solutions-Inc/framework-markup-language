@@ -1,14 +1,15 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart'         ;
-import 'package:fml/widgets/table/row/table_row_model.dart' as ROW;
-import 'package:fml/widgets/table/row/cell/table_row_cell_view.dart' as CELL;
+import 'package:fml/widgets/table/row/table_row_model.dart';
+import 'package:fml/widgets/table/row/cell/table_row_cell_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class TableRowView extends StatefulWidget implements IWidgetView
 {
-  final ROW.TableRowModel model;
+  @override
+  final TableRowModel model;
   final double? height;
   final Map<int, double>? width;
   final int? row;
@@ -17,7 +18,7 @@ class TableRowView extends StatefulWidget implements IWidgetView
   TableRowView(this.model, this.row, this.height, this.width, this.padding);
 
   @override
-  _TableRowViewState createState() => _TableRowViewState();
+  State<TableRowView> createState() => _TableRowViewState();
 }
 
 
@@ -28,8 +29,8 @@ class _TableRowViewState extends WidgetState<TableRowView>
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    // Set Build Constraints in the [WidgetModel]
-    setConstraints(constraints);
+    // save system constraints
+    onLayout(constraints);
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -39,8 +40,7 @@ class _TableRowViewState extends WidgetState<TableRowView>
     ///////////
     int i = 0;
     List<Widget> cells = [];
-    widget.model.cells.forEach((model)
-    {
+    for (var model in widget.model.cells) {
       //////////
       /* Size */
       //////////
@@ -51,19 +51,22 @@ class _TableRowViewState extends WidgetState<TableRowView>
       //////////
       /* View */
       //////////
-      Widget cell = CELL.TableRowCellView(model, widget.row);
-      if ((width != null) && (height != null))
-           cells.add(UnconstrainedBox(child: ClipRect(child: SizedBox(width: width, height: height, child: cell))));
-      else cells.add(cell);
+      Widget cell = TableRowCellView(model, widget.row);
+      if ((width != null) && (height != null)) {
+        cells.add(UnconstrainedBox(child: ClipRect(child: SizedBox(width: width, height: height, child: cell))));
+      } else {
+        cells.add(cell);
+      }
       i++;
-    });
+    }
 
     //////////
     /* View */
     //////////
     dynamic row = Row(children: cells, mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize:  MainAxisSize.min);
-    if (widget.model.onclick != null && cells.length > 0)
+    if (widget.model.onclick != null && cells.isNotEmpty) {
       row = GestureDetector(onTap: onTap, child: row);
+    }
     return row;
   }
 

@@ -8,15 +8,14 @@ import 'package:fml/observable/observables/double.dart';
 import 'package:fml/observable/observables/integer.dart';
 import 'package:fml/observable/observables/string.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_view.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
-import 'package:fml/widgets/widget/viewable_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/helper/common_helpers.dart';
 
 enum OpenMethods {tap, longpress, hover, manual}
 
-class TooltipModel extends ViewableWidgetModel implements IWidgetView
+class TooltipModel extends ViewableWidgetModel
 {
   OpenMethods? openMethod;
 
@@ -24,19 +23,26 @@ class TooltipModel extends ViewableWidgetModel implements IWidgetView
   ColorObservable? _color;
   set color(dynamic v)
   {
-    if (_color != null) _color!.set(v);
-    else if (v != null) _color = ColorObservable(Binding.toKey(id, 'color'), v, scope: scope, listener: onPropertyChange);
+    if (_color != null) {
+      _color!.set(v);
+    } else if (v != null) {
+      _color = ColorObservable(Binding.toKey(id, 'color'), v, scope: scope, listener: onPropertyChange);
+    }
   }
   Color? get color => _color?.get();
 
   // padding
   DoubleObservable? _padding;
-  set padding(dynamic v)
+  @override
+  set margins(dynamic v)
   {
-    if (_padding != null) _padding!.set(v);
-    else if (v != null) _padding = DoubleObservable(Binding.toKey(id, 'padding'), v, scope: scope, listener: onPropertyChange);
+    if (_padding != null) {
+      _padding!.set(v);
+    } else if (v != null) {
+      _padding = DoubleObservable(Binding.toKey(id, 'padding'), v, scope: scope, listener: onPropertyChange);
+    }
   }
-  double get padding => _padding?.get() ?? 14.0;
+  double get margins => _padding?.get() ?? 14.0;
 
   StringObservable? _position;
   set position(dynamic v)
@@ -156,8 +162,6 @@ class TooltipModel extends ViewableWidgetModel implements IWidgetView
 
     // properties
     color    = Xml.attribute(node: xml, tag: 'color');
-    padding  = Xml.attribute(node: xml, tag: 'pad');
-    if (_padding == null) padding  = Xml.attribute(node: xml, tag: 'padding');
     radius   = Xml.attribute(node: xml, tag: 'radius');
     position = Xml.attribute(node: xml, tag: 'position');
     modal    = Xml.attribute(node: xml, tag: 'modal');

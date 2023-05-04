@@ -10,7 +10,7 @@ class GalleryScreen extends StatefulWidget
   GalleryScreen(this.files, this.startFile);
 
   @override
-  _GalleryScreenState createState() => _GalleryScreenState();
+  State<GalleryScreen> createState() => _GalleryScreenState();
 }
 
 class _GalleryScreenState extends State<GalleryScreen>

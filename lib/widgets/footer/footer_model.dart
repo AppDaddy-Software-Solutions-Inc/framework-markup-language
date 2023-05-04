@@ -1,17 +1,17 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
-import 'package:fml/widgets/footer/footer_view.dart';
-import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class FooterModel extends DecoratedWidgetModel implements IViewableWidget
+class FooterModel extends BoxModel 
 {
-  // override
-  double get height => super.height ?? 50;
+  @override
+  String? get layout => super.layout ?? "stack";
+
+  @override
+  double get height => super.height ?? maxHeight ?? minHeight ?? 50;
 
   FooterModel(WidgetModel parent, String? id) : super(parent, id);
 
@@ -31,21 +31,4 @@ class FooterModel extends DecoratedWidgetModel implements IViewableWidget
     }
     return model;
   }
-
-  /// Deserializes the FML template elements, attributes and children
-  @override
-  void deserialize(XmlElement xml)
-  {
-    // deserialize 
-    super.deserialize(xml);
-  }
-
-  @override
-  dispose()
-  {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
-  }
-
-  Widget getView({Key? key}) => getReactiveView(FooterView(this));
 }

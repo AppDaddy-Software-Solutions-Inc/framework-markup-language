@@ -114,5 +114,6 @@ class RotateTransitionModel extends AnimationChildModel
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
+  @override
   Widget getAnimatedView(Widget child, {AnimationController? controller}) => RotateTransitionView(this, child, controller);
 }

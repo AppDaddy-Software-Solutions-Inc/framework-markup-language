@@ -5,8 +5,7 @@ import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/framework/framework_view.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/tabview/tab_view.dart';
@@ -14,9 +13,18 @@ import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class TabModel extends DecoratedWidgetModel implements IViewableWidget
+class TabModel extends LayoutModel
 {
   LinkedHashMap<String, FrameworkView> views = LinkedHashMap<String, FrameworkView>();
+
+  @override
+  LayoutType get layoutType => LayoutType.column;
+
+  @override
+  bool get isVerticallyExpanding => !isFixedHeight;
+
+  @override
+  bool get isHorizontallyExpanding => !isFixedWidth;
 
   // index
   IntegerObservable? _index;
@@ -24,9 +32,11 @@ class TabModel extends DecoratedWidgetModel implements IViewableWidget
   {
     int? i = S.toInt(v);
     if (i != null && (i >= views.length || i < 0)) v = null;
-    if (_index != null)
-         _index!.set(v);
-    else _index = IntegerObservable(Binding.toKey(id, 'index'), v, scope: scope);
+    if (_index != null) {
+      _index!.set(v);
+    } else {
+      _index = IntegerObservable(Binding.toKey(id, 'index'), v, scope: scope);
+    }
     onIndexChange(_index!);
   }
   int? get index => _index?.get();
@@ -108,7 +118,9 @@ class TabModel extends DecoratedWidgetModel implements IViewableWidget
   dispose()
   {
     // cleanup framework models
-    views.values.forEach((view) => deleteView(view));
+    for (var view in views.values) {
+      deleteView(view);
+    }
     super.dispose();
   }
 
@@ -126,10 +138,11 @@ class TabModel extends DecoratedWidgetModel implements IViewableWidget
     List viewKeys = views.keys.toList();
     List viewList = views.values.toList();
     for (int i = 0; i < viewList.length; i++) {
-      if (i == index)
+      if (i == index) {
         except[viewKeys[i]] = viewList[i];
-      else
+      } else {
         views[viewKeys[i]]?.model.dispose();
+      }
     }
     views = except;
   }
@@ -153,8 +166,10 @@ class TabModel extends DecoratedWidgetModel implements IViewableWidget
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
+  void deserialize(XmlElement? xml)
   {
+    if (xml == null) return;
+
     // deserialize 
     super.deserialize(xml);
 
@@ -168,15 +183,16 @@ class TabModel extends DecoratedWidgetModel implements IViewableWidget
     //////////////////
     int i = 0;
     dynamic nodes = xml.findElements("TAB", namespace: "*");
-    if (nodes != null)
+    if (nodes != null){
     for (XmlElement node in nodes)
     {
       FrameworkModel? model = FrameworkModel.fromXml(this, node);
       if (model != null) views[Xml.attribute(node: node, tag: "id") ?? i.toString()] = model.getView() as FrameworkView;
       i++;
-    }
+    }}
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(TabView(this));
 }
 

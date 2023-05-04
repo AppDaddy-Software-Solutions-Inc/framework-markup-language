@@ -1,8 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'      ;
 import 'package:fml/widgets/span/span_view.dart';
@@ -11,7 +10,7 @@ import 'package:fml/system.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class SpanModel extends DecoratedWidgetModel implements IViewableWidget
+class SpanModel extends DecoratedWidgetModel 
 {
   //TODO: make text spans pass properties to text
 
@@ -284,7 +283,9 @@ class SpanModel extends DecoratedWidgetModel implements IViewableWidget
   double? get lineheight => _lineheight?.get();
 
   // overrides
+  @override
   String get halign => super.halign ?? 'start'; //left right center justify
+  @override
   String get valign => super.valign ?? 'start';
 
   ////////////////////
@@ -332,6 +333,8 @@ class SpanModel extends DecoratedWidgetModel implements IViewableWidget
         dynamic halign,
         dynamic style,
       }) : super(parent, id) {
+
+
     if (color != null) this.color = color;
     if (elevation != null) this.elevation = elevation;
     if (shadowcolor != null) this.shadowcolor = shadowcolor;
@@ -341,7 +344,6 @@ class SpanModel extends DecoratedWidgetModel implements IViewableWidget
     if (weight != null) this.weight = weight;
     if (bold != null) this.bold = bold;
     if (italic != null) this.italic = italic;
-    if (width != null) this.width = width;
     if (theme != null) this.theme = theme;
     if (decoration != null) this.decoration = decoration;
     if (decorationcolor != null) this.decorationcolor = decorationcolor;
@@ -382,8 +384,8 @@ class SpanModel extends DecoratedWidgetModel implements IViewableWidget
     super.deserialize(xml);
 
     String? textvalue = Xml.get(node: xml, tag: 'value');
-    if (textvalue == null) textvalue = Xml.get(node: xml, tag: 'label');
-    if (textvalue == null) textvalue = Xml.getText(xml);
+    textvalue ??= Xml.get(node: xml, tag: 'label');
+    textvalue ??= Xml.getText(xml);
 
     // properties
     shadowcolor = Xml.get(node: xml, tag: 'shadowcolor');
@@ -412,7 +414,9 @@ class SpanModel extends DecoratedWidgetModel implements IViewableWidget
 
     // build spans
     List<TextModel> textSpans = findChildrenOfExactType(TextModel).cast<TextModel>();
-    textSpans.forEach((text) => this.spanTextValues.add(text));
+    for (var text in textSpans) {
+      spanTextValues.add(text);
+    }
   }
 
   @override

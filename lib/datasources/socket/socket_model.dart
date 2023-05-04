@@ -3,17 +3,17 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/datasources/base/model.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/datasources/socket/socket.dart';
-import 'package:fml/datasources/file/file.dart' as FILE;
+import 'package:fml/datasources/file/file.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
-import 'iSocketListener.dart';
+import 'socket_listener_interface.dart';
 
 class SocketModel extends DataSourceModel implements IDataSource, ISocketListener
 {
@@ -217,13 +217,14 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     if (!ok) return ok;
 
     // message is a file pointer?
-    FILE.File? file = scope!.files.containsKey(message) ? scope!.files[message] : null;
+    File? file = scope!.files.containsKey(message) ? scope!.files[message] : null;
 
     // send message
-    if (file == null) ok = await _send(message, asBinary: asBinary, maxPartSize: maxPartSize);
-
-    // send file
-    else ok = await _sendFile(file, asBinary: asBinary, maxPartSize: maxPartSize);
+    if (file == null) {
+      ok = await _send(message, asBinary: asBinary, maxPartSize: maxPartSize);
+    } else {
+      ok = await _sendFile(file, asBinary: asBinary, maxPartSize: maxPartSize);
+    }
 
     busy = false;
 
@@ -235,7 +236,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     bool ok = true;
 
     // default format for message is string
-    if (asBinary == null) asBinary = false;
+    asBinary ??= false;
 
     try
     {
@@ -253,7 +254,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
         // determine number of parts to send
         int parts = (size/maxPartSize).ceil();
 
-        Log().debug('SOCKET:: Sending message (binary:  $asBinary, parts: $parts) to ${this.url}');
+        Log().debug('SOCKET:: Sending message (binary:  $asBinary, parts: $parts) to $url');
 
         // send each file part as an single message
         for (int i = 0; i < parts; i++)
@@ -266,10 +267,11 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
             String part = message.substring(start, end);
 
             // send as binary
-            if (asBinary) await socket?.send(utf8.encode(part));
-
-            // send as string
-            else await socket?.send(part);
+            if (asBinary) {
+              await socket?.send(utf8.encode(part));
+            } else {
+              await socket?.send(part);
+            }
           }
         }
       }
@@ -277,13 +279,14 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
       // send file as a single message
       else
       {
-        Log().debug('SOCKET:: Sending message (binary: $asBinary, bytes:${message.length}) to ${this.url}');
+        Log().debug('SOCKET:: Sending message (binary: $asBinary, bytes:${message.length}) to $url');
 
         // send as binary
-        if (asBinary) await socket?.send(utf8.encode(message));
-
-        // send as string
-        else await socket?.send(message);
+        if (asBinary) {
+          await socket?.send(utf8.encode(message));
+        } else {
+          await socket?.send(message);
+        }
       }
 
       ok = true;
@@ -296,12 +299,12 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     return ok;
   }
 
-  Future<bool> _sendFile(FILE.File file, {bool? asBinary, int? maxPartSize}) async
+  Future<bool> _sendFile(File file, {bool? asBinary, int? maxPartSize}) async
   {
     bool ok = true;
 
     // default format for a file is binary
-    if (asBinary == null) asBinary = true;
+    asBinary ??= true;
 
     try
     {
@@ -316,7 +319,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
         // determine number of parts to send
         int parts = (size/maxPartSize).ceil();
 
-        Log().debug('SOCKET:: Sending file (binary:  $asBinary, parts: $parts) to ${this.url}');
+        Log().debug('SOCKET:: Sending file (binary:  $asBinary, parts: $parts) to $url');
 
         // send each file part as an single message
         for (int i = 0; i < parts; i++)
@@ -328,10 +331,11 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
           Uint8List? bytes = await file.read(start: start, end: end);
 
           // send as binary
-          if (asBinary) await socket?.send(bytes);
-
-          // send as string
-          else await socket?.send(bytes);
+          if (asBinary) {
+            await socket?.send(bytes);
+          } else {
+            await socket?.send(bytes);
+          }
         }
       }
 
@@ -340,15 +344,16 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
       {
         Uint8List? bytes = await file.read();
 
-        Log().debug('SOCKET:: Sending file (binary: $asBinary, bytes:${bytes?.length}) to ${this.url}');
+        Log().debug('SOCKET:: Sending file (binary: $asBinary, bytes:${bytes?.length}) to $url');
 
         if (bytes != null)
         {
           // send as binary
-          if (asBinary) await socket?.send(bytes);
-
-          // send as string
-          else await socket?.send(utf8.decode(bytes));
+          if (asBinary) {
+            await socket?.send(bytes);
+          } else {
+            await socket?.send(utf8.decode(bytes));
+          }
         }
       }
 
@@ -380,7 +385,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     // if the message didn't deserialize (length 0)
     // so create a simple map with message bindable <id>.data.message
     // otherwise the data is the deserialized message payload
-    if (data.length == 0) data.insert(0, {'message' : message});
+    if (data.isEmpty) data.insert(0, {'message' : message});
 
     // fire the onresponse
     onSuccess(data, code: HttpStatus.ok, onSuccessOverride: _onmessage);
@@ -410,9 +415,11 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     Data data = Data.from(message, root: root);
 
     //success or fail
-    if (code == 1000)
-         onData(data, code: code, message: message);
-    else onFail(data, code: code, message: message);
+    if (code == 1000) {
+      onData(data, code: code, message: message);
+    } else {
+      onFail(data, code: code, message: message);
+    }
 
     connected = false;
   }
@@ -438,7 +445,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     {
       case "send":
       case "write":
-        String? message     = S.toStr(S.item(arguments, 0)) ?? this.body;
+        String? message     = S.toStr(S.item(arguments, 0)) ?? body;
         bool?   asBinary    = S.toBool(S.item(arguments, 1));
         int?    maxPartSize = S.toInt(S.item(arguments, 2));
         if (!S.isNullOrEmpty(message)) send(message!, asBinary: asBinary, maxPartSize: maxPartSize);

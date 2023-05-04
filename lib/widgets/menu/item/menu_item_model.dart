@@ -2,7 +2,7 @@
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/event/event.dart' ;
@@ -253,8 +253,8 @@ class MenuItemModel extends DecoratedWidgetModel
     dynamic iconposition,
     dynamic backgroundimage,
     dynamic backgroundcolor,
-    dynamic onLongPress,
-    dynamic onTap,
+    this.onLongPress,
+    this.onTap,
     dynamic radius,
     dynamic enabled,
     String? image
@@ -273,8 +273,6 @@ class MenuItemModel extends DecoratedWidgetModel
     this.fontsize         = fontsize;
     this.backgroundimage  = backgroundimage;
     this.backgroundcolor  = backgroundcolor;
-    this.onLongPress      = onLongPress;
-    this.onTap            = onTap;
     this.radius           = radius;
     this.enabled          = enabled;
     if (image != null) this.image = S.toDataUri(image);
@@ -332,7 +330,9 @@ class MenuItemModel extends DecoratedWidgetModel
         Uri? uri = URI.parse(url!);
         bc = uri?.queryParameters['breadcrumb'];
       }
-      catch(e) {}
+      catch(e) {
+        Log().debug('$e');
+      }
       return EventManager.of(this)?.broadcastEvent(this, Event(EventTypes.open, bubbles: true, parameters: {'url': url, 'breadcrumb': bc ?? title}));
     }
     if (onclick == null) return true;

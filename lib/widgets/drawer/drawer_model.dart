@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/iViewableWidget.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/drawer/drawer_view.dart';
 import 'package:fml/widgets/drawer/item/drawer_item_model.dart';
@@ -10,7 +9,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class DrawerModel extends DecoratedWidgetModel implements IViewableWidget
+class DrawerModel extends DecoratedWidgetModel 
 {
   //////////
   /* Side */
@@ -84,38 +83,26 @@ class DrawerModel extends DecoratedWidgetModel implements IViewableWidget
     dynamic side,
     dynamic rounded,
     dynamic handle,
-    dynamic handleLeft,
-    dynamic handleRight,
-    dynamic handleTop,
-    dynamic handleBottom,
-    dynamic sizeLeft,
-    dynamic sizeRight,
-    dynamic sizeTop,
-    dynamic sizeBottom,
-    dynamic idLeft,
-    dynamic idRight,
-    dynamic idTop,
-    dynamic idBottom,
+    this.handleLeft,
+    this.handleRight,
+    this.handleTop,
+    this.handleBottom,
+    this.sizeLeft,
+    this.sizeRight,
+    this.sizeTop,
+    this.sizeBottom,
+    this.idLeft,
+    this.idRight,
+    this.idTop,
+    this.idBottom,
   }) : super(parent, id) {
     this.side = side;
     this.rounded = rounded;
     this.handle = handle;
-    this.handleLeft = handleLeft;
-    this.handleRight = handleRight;
-    this.handleTop = handleTop;
-    this.handleBottom = handleBottom;
-    this.sizeLeft = sizeLeft;
-    this.sizeRight = sizeRight;
-    this.sizeTop = sizeTop;
-    this.sizeBottom = sizeBottom;
-    this.idLeft = idLeft;
-    this.idRight = idRight;
-    this.idTop = idTop;
-    this.idBottom = idBottom;
   }
 
   // I built this to replace fromXml so that we can take in multiple <DRAWER> elements
-  // and consolidate them into a single DRAWER.Model that handles them all (important)
+  // and consolidate them into a single DrawerModel that handles them all (important)
   static DrawerModel? fromXmlList(WidgetModel parent, List<XmlElement> elements)
   {
     DrawerModel? model;
@@ -135,66 +122,62 @@ class DrawerModel extends DecoratedWidgetModel implements IViewableWidget
       String? idBottom;
 
       XmlElement xml = XmlElement(XmlName.fromString('DRAWER')); // create a single drawer element
-      elements.forEach((e)
-      {
-        XmlElement x = e.copy();
-        String? side = x.getAttribute('side') ?? null; // determine side from each drawer in template
-        String? size = x.getAttribute('size') ?? null;
-        String? id   = x.getAttribute('id') ?? null;
-        bool? handle = S.toBool(x.getAttribute('handle'));
-        if (!S.isNullOrEmpty(side))
+      for (var element in elements) {
+        XmlElement node = element.copy();
+
+        String? side = Xml.attribute(node: node, tag: 'side')?.trim().toLowerCase();
+        if (side != null)
         {
-          XmlElement drawer = XmlElement(XmlName(side?.toUpperCase() ?? 'left'.toUpperCase())); // create a sidedrawer from template
+          // build the drawer elements
+          XmlElement drawer = XmlElement(XmlName(side.toUpperCase())); // create a sidedrawer from template
 
-            drawer.attributes.add(XmlAttribute(XmlName.fromString('id'), id!));
+          // add attributes
+          for (var attribute in node.attributes) {
+            var name = attribute.localName.toLowerCase();
+            if (name != "width" && name != "height" && name != "side") drawer.attributes.add(XmlAttribute(XmlName(name), attribute.value));
+          }
 
-            // Assign ids
-            if (side == 'left')
-            {
-              idLeft = id;
-              if (handle == true) handleLeft = true;
-            }
-            else if (side == 'right')
-            {
-              idRight = id;
-              if (handle == true) handleRight = true;
-            }
-            else if (side == 'top')
-            {
-              idTop = id;
-              if (handle == true) handleTop = true;
-            }
-            else if (side == 'bottom')
-            {
-              idBottom = id;
-              if (handle == true) handleBottom = true;
-            }
+          // Assign ids
+          switch (side)
+          {
+            case 'left':
+              idLeft     = Xml.attribute(node: node, tag: 'id');
+              handleLeft = S.toBool(Xml.attribute(node: node, tag: 'handle')) == true;
+              sizeLeft   = S.toDouble(Xml.attribute(node: node, tag: 'size'));
+              break;
 
-            // Assign sides
-            if (!S.isNullOrEmpty(size))
-            {
-              drawer.attributes.add(XmlAttribute(XmlName.fromString('size'), size!));
-                   if (side == 'left')   sizeLeft = S.toDouble(size);
-              else if (side == 'right')  sizeRight = S.toDouble(size);
-              else if (side == 'top')    sizeTop = S.toDouble(size);
-              else if (side == 'bottom') sizeBottom = S.toDouble(size);
-            }
+            case 'right':
+              idRight     = Xml.attribute(node: node, tag: 'id');
+              handleRight = S.toBool(Xml.attribute(node: node, tag: 'handle')) == true;
+              sizeRight  = S.toDouble(Xml.attribute(node: node, tag: 'size'));
+              break;
 
+            case 'top':
+              idTop     = Xml.attribute(node: node, tag: 'id');
+              handleTop = S.toBool(Xml.attribute(node: node, tag: 'handle')) == true;
+              sizeTop   = S.toDouble(Xml.attribute(node: node, tag: 'size'));
+              break;
+
+            case 'bottom':
+              idBottom     = Xml.attribute(node: node, tag: 'id');
+              handleBottom = S.toBool(Xml.attribute(node: node, tag: 'handle')) == true;
+              sizeBottom   = S.toDouble(Xml.attribute(node: node, tag: 'size'));
+              break;
+          }
 
           List<XmlElement> nodes = [];
-          x.children.forEach((node)
-          {
+          for (var node in node.children) {
             if (node.nodeType == XmlNodeType.ELEMENT) nodes.add(node.copy() as XmlElement);
-          });
+          }
 
           drawer.children.addAll(nodes);
           xml.children.add(drawer);
         }
-        else
-        {
+
+        else {
           Log().error('Unable to parse a drawer attributes', caller: 'drawer.Model => Model.fromXmlList()');
         }
-      });
+      }
 
       // Create View Model
       model = DrawerModel(parent, Xml.get(node: xml, tag: 'id'), handleLeft: handleLeft, handleRight: handleRight, handleTop: handleTop, handleBottom: handleBottom, sizeLeft: sizeLeft, sizeRight: sizeRight, sizeTop: sizeTop, sizeBottom: sizeBottom, idLeft: idLeft, idRight: idRight, idTop: idTop, idBottom: idBottom);
@@ -219,9 +202,8 @@ class DrawerModel extends DecoratedWidgetModel implements IViewableWidget
     // deserialize 
     super.deserialize(xml);
 
-    ///////////////////
-    /* Build Drawers */
-    ///////////////////
+    /// Build Drawers
+
     // This grabs the deserializes xml generated from fromXmlList()
     element = Xml.getChildElement(node: xml, tag: "TOP");
     if (element != null) top = DrawerItemModel.fromXml(this, element, DrawerPositions.top);
@@ -236,8 +218,8 @@ class DrawerModel extends DecoratedWidgetModel implements IViewableWidget
     if (element != null) right = DrawerItemModel.fromXml(this, element, DrawerPositions.right);
 
     // properties
-    this.side    = Xml.get(node: xml, tag: 'side');
-    this.rounded = Xml.get(node: xml, tag: 'rounded');
+    side    = Xml.get(node: xml, tag: 'side');
+    rounded = Xml.get(node: xml, tag: 'rounded');
   }
 
   @override
@@ -266,5 +248,6 @@ class DrawerModel extends DecoratedWidgetModel implements IViewableWidget
     }
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(DrawerView(this, Container()));
 }

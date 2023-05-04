@@ -5,6 +5,7 @@ import 'package:community_charts_flutter/community_charts_flutter.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helper/time.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/template/template.dart';
@@ -99,7 +100,7 @@ class _ChartViewState extends WidgetState<ChartView>
   CF.NumericAxisSpec yNumericAxisSpec() => CF.NumericAxisSpec(
       tickProviderSpec: CF.BasicNumericTickProviderSpec(zeroBound: false, dataIsInWholeNumbers: false),
       viewport: widget.model.yaxis?.min != null && widget.model.yaxis?.max != null
-          ? CF.NumericExtents(widget.model.yaxis!.min!, widget.model.yaxis!.max!) : null,
+          ? CF.NumericExtents(S.toNum(widget.model.yaxis!.min!)!, S.toNum(widget.model.yaxis!.max!)!) : null,
       renderSpec: CF.GridlineRendererSpec(
           axisLineStyle: CF.LineStyleSpec(
               color: CF.ColorUtil.fromDartColor(
@@ -116,7 +117,7 @@ class _ChartViewState extends WidgetState<ChartView>
   CF.NumericAxisSpec xNumComboAxisSpec() => CF.NumericAxisSpec(
       tickProviderSpec: CF.BasicNumericTickProviderSpec(dataIsInWholeNumbers: false),
       viewport: widget.model.yaxis?.min != null && widget.model.yaxis?.max != null
-          ? CF.NumericExtents(widget.model.yaxis!.min!, widget.model.yaxis!.max!) : null,
+          ? CF.NumericExtents(S.toNum(widget.model.yaxis!.min!)!, S.toNum(widget.model.yaxis!.max!)!) : null,
       renderSpec: CF.SmallTickRendererSpec(
         axisLineStyle: CF.LineStyleSpec(
             color: CF.ColorUtil.fromDartColor(
@@ -172,6 +173,47 @@ class _ChartViewState extends WidgetState<ChartView>
       tickProviderSpec: CF.StaticDateTimeTickProviderSpec(ticks),
     );
   }
+
+  List<CF.TickSpec<DateTime>> dateTimeTickBuilder(
+      List<DateTime> tickData, {String? interval, String? format}) {
+    // Axis Ticks
+    List<CF.TickSpec<DateTime>> ticks = [];
+    // Utilize a TUD to define our interval
+    TimeUnitDuration tud = DT.getTUDurationFromString(interval ?? '0');
+
+    // Check if we need to draw interval ticks/ have enough data to display the interval
+    if (tud.amount == 0 || tickData.length < 2) {
+      for (DateTime v in tickData) {
+        ticks.add(CF.TickSpec(v, label: format != null
+                    ? DT.formatDateTime(v, format)
+                    : null));
+      }
+      return ticks;
+    }
+
+    // Build the interval ticks with min/max and every interval between
+    DateTime firstTick = tickData.first;
+    DateTime lastTick = tickData.last;
+    // ensure min is <= max
+    if (DT.isAfter(firstTick, lastTick)) {
+      firstTick = lastTick;
+    }
+    // Establish the axis bounds based on the min/max and the interval
+    firstTick = DT.floor(firstTick, tud.timeUnit);
+    lastTick = DT.ceil(lastTick, tud.timeUnit);
+    // Set the first tick to min DateTime
+    DateTime tick = firstTick;
+    // Add all the interval ticks starting at min
+    while(DT.isBefore(tick, lastTick)) {
+      ticks.add(CF.TickSpec(tick, label: format != null ? DT.formatDateTime(tick, format) : null));
+      tick = DT.add(tick, tud);
+    }
+    // Add the last (max) DateTime tick
+    ticks.add(CF.TickSpec(lastTick, label: format != null ? DT.formatDateTime(lastTick, format) : null));
+
+    return ticks;
+  }
+
   CF.BarChart buildBarChart(List<CF.Series<dynamic, String>> series) {
     // Determine if there is any grouping and/or stacking (grouped/stacked/groupedStacked)
     CF.BarGroupingType barGroupingType;
@@ -275,11 +317,12 @@ class _ChartViewState extends WidgetState<ChartView>
     List<CF.TickSpec<DateTime>> ticks = [];
     SplayTreeMap<int, DateTime> ticksMap = SplayTreeMap<int, DateTime>();
 
+    // get x values for all series to determine min and max values
     for (var s in widget.model.series) {
       if (s.type == 'bar' && s.stack != null)
         Log().warning(
             'Stacked Bar Series are only compatible with Category type X Axis and each series must be type="bar"');
-      Function configFunc = getSeriesRenderer(s, widget.model.xaxis!.type)!;
+      Function configFunc = getSeriesRenderer(s, widget.model.xaxis?.type ?? ChartAxisType.datetime);
       CF.SeriesRendererConfig<DateTime> config = configFunc(s);
       seriesRenderers.add(config);
       // Map all the x values for the ticks
@@ -287,6 +330,14 @@ class _ChartViewState extends WidgetState<ChartView>
         DateTime? xDateTime = S.toDate(x.x);
         if (xDateTime != null) {
           int epoch = xDateTime.toUtc().millisecondsSinceEpoch;
+          // Ignore date/time data ticks before the min datetime on the x axis
+          if (widget.model.xaxis?.min != null
+              && DT.isBefore(xDateTime, S.toDate(widget.model.xaxis!.min!)!))
+            continue;
+          // Ignore date/time data ticks after the max datetime on the x axis
+          if (widget.model.xaxis?.max != null
+              && DT.isAfter(xDateTime, S.toDate(widget.model.xaxis!.max!)!))
+            continue;
           ticksMap[epoch] = xDateTime;
         } else {
           Log().warning(
@@ -294,16 +345,9 @@ class _ChartViewState extends WidgetState<ChartView>
         }
       }
     }
-    // Add all the mapped x values to the ticks list
-    ticksMap.values.forEach((v) {
-      final DateFormat formatter =
-          DateFormat(widget.model.xaxis!.format ?? 'yyyy/MM/dd');
-      String? l;
-      try {
-        l = formatter.format(v);
-      } catch(e) {}
-      ticks.add(CF.TickSpec<DateTime>(v, label: l));
-    });
+    ticks = dateTimeTickBuilder(ticksMap.entries.map((entry) => entry.value).toList(),
+        interval: widget.model.xaxis?.interval.toString().trim(),
+        format: widget.model.xaxis?.format);
 
     return CF.TimeSeriesChart(
       series as List<Series<dynamic, DateTime>>,
@@ -397,6 +441,20 @@ class _ChartViewState extends WidgetState<ChartView>
           // Null Series Point Check
           if (xAllNull == true) xAllNull = xVal == null;
           if (yAllNull == true) yAllNull = yVal == null;
+          // Ignore date/time data points before the min datetime on the x axis
+          if ((widget.model.xaxis!.type == ChartAxisType.datetime ||
+              widget.model.xaxis!.type == ChartAxisType.date ||
+              widget.model.xaxis!.type == ChartAxisType.time) &&
+              widget.model.xaxis?.min != null && xVal != null
+              && DT.isBefore(xVal, S.toDate(widget.model.xaxis!.min!)!))
+            continue;
+          // Ignore date/time data points after the max datetime on the x axis
+          if ((widget.model.xaxis!.type == ChartAxisType.datetime ||
+              widget.model.xaxis!.type == ChartAxisType.date ||
+              widget.model.xaxis!.type == ChartAxisType.time) &&
+              widget.model.xaxis?.max != null && xVal != null
+              && DT.isAfter(xVal, S.toDate(widget.model.xaxis!.max!)!))
+            continue;
           // get label
           var label = S.isNullOrEmpty(point.label) ? null : point.label.trim();
           // Add to point list
@@ -528,7 +586,7 @@ class _ChartViewState extends WidgetState<ChartView>
 
   /// Each series needs a specific type of renderer, this method passes back a
   /// function that builds the specific type needed with the correct attributes
-  Function? getSeriesRenderer(ChartSeriesModel series, ChartAxisType type) {
+  Function getSeriesRenderer(ChartSeriesModel series, ChartAxisType? type) {
     dynamic rendererConfig;
     // if (chartType == ChartType.BarChart)
     //   type = 'category';

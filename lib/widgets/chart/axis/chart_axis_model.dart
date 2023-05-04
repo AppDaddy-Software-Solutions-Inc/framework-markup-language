@@ -36,6 +36,21 @@ class ChartAxisModel extends WidgetModel
   }
   String? get title => _title?.get();
 
+  /// The interval of an axis, displayed beside the axis
+  StringObservable? _interval;
+  set interval (dynamic v)
+  {
+    if (_interval != null)
+    {
+      _interval!.set(v);
+    }
+    else if (v != null)
+    {
+      _interval = StringObservable(Binding.toKey(id, 'interval'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get interval => _interval?.get();
+
   /// Used to rotate long data labels so you can fit more, generally along the x axis
   IntegerObservable? _labelrotation;
   set labelrotation (dynamic v)
@@ -107,9 +122,8 @@ class ChartAxisModel extends WidgetModel
       _min = StringObservable(Binding.toKey(id, 'min'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  num? get min {
-    num? minDbl = S.toNum(_min?.get());
-    return minDbl;
+  String? get min {
+    return _min?.get();
   }
 
   /// Sets the maximum axis value to show, only intended for numeric axis
@@ -125,9 +139,8 @@ class ChartAxisModel extends WidgetModel
       _max = StringObservable(Binding.toKey(id, 'max'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  num? get max {
-    num? maxDbl = S.toNum(_max?.get());
-    return maxDbl;
+  String? get max {
+    return _max?.get();
   }
 
   /// Truncating a numeric y axis will prevent the y axis forcing 0(zero) as the baseline
@@ -153,6 +166,7 @@ class ChartAxisModel extends WidgetModel
         dynamic labelvisible,
         dynamic labelsize,
         dynamic title,
+        dynamic interval,
         dynamic format,
         dynamic min,
         dynamic max,
@@ -175,6 +189,7 @@ class ChartAxisModel extends WidgetModel
     this.labelvisible   = labelvisible;
     this.labelsize      = labelsize;
     this.title          = title;
+    this.interval       = interval;
     this.format         = format;
     this.min            = min;
     this.max            = max;
@@ -231,6 +246,7 @@ class ChartAxisModel extends WidgetModel
         Xml.get(node: xml, tag: 'id'),
         axis,
         title           : Xml.get(node: xml, tag: 'title'),
+        interval        : Xml.get(node: xml, tag: 'interval'),
         labelrotation   : Xml.get(node: xml, tag: 'labelrotation'),
         labelvisible    : Xml.get(node: xml, tag: 'labelvisible'),
         labelsize       : Xml.get(node: xml, tag: 'labelsize'),

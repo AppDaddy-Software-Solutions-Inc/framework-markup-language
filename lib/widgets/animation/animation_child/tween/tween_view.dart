@@ -139,43 +139,43 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
   Widget builder(BuildContext context, BoxConstraints constraints) {
     // Tween
 
-    double begin = widget.model.begin;
-    double end = widget.model.end;
-    Curve curve = AnimationHelper.getCurve(widget.model.curve);
-    dynamic from;
-    dynamic to;
-    Tween<dynamic> newTween;
+    double _begin = widget.model.begin;
+    double _end = widget.model.end;
+    Curve _curve = AnimationHelper.getCurve(widget.model.curve);
+    dynamic _from;
+    dynamic _to;
+    Tween<dynamic> _newTween;
 
 
     // we must check from != to and begin !< end
 
     if (widget.model.type == "color") {
-      from = S.toColor(widget.model.from) ?? Colors.white;
-      to = S.toColor(widget.model.to) ?? Colors.black;
-      newTween = ColorTween(
-        begin: from,
-        end: to,
+      _from = S.toColor(widget.model.from) ?? Colors.white;
+      _to = S.toColor(widget.model.to) ?? Colors.black;
+      _newTween = ColorTween(
+        begin: _from,
+        end: _to,
       );
     } else {
-      from = S.toDouble(widget.model.from) ?? 0;
-      to = S.toDouble(widget.model.to) ?? 1;
-      newTween = Tween<double>(
-        begin: from,
-        end: to,
+      _from = S.toDouble(widget.model.from) ?? 0;
+      _to = S.toDouble(widget.model.to) ?? 1;
+      _newTween = Tween<double>(
+        begin: _from,
+        end: _to,
       );
     }
 
-    if (begin != 0.0 || end != 1.0) {
-      curve = Interval(
-        begin,
-        end,
+    if (_begin != 0.0 || _end != 1.0) {
+      _curve = Interval(
+        _begin,
+        _end,
         // the style curve to pass.
-        curve: curve,
+        curve: _curve,
       );
     }
 
-    _animation = newTween.animate(CurvedAnimation(
-      curve: curve,
+    _animation = _newTween.animate(CurvedAnimation(
+      curve: _curve,
       parent: _controller,
     ));
 

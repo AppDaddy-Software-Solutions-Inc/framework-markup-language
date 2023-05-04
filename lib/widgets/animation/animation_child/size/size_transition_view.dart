@@ -140,7 +140,7 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
         : widget.model.align?.toLowerCase() == "end"
             ? 1
             : 0;
-    Tween<double> newTween = Tween<double>(
+    Tween<double> _newTween = Tween<double>(
       begin: from,
       end: to,
     );
@@ -154,7 +154,7 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
       );
     }
 
-    _animation = newTween.animate(CurvedAnimation(
+    _animation = _newTween.animate(CurvedAnimation(
       curve: curve,
       parent: _controller,
     ));

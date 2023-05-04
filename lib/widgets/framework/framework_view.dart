@@ -384,23 +384,23 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
   _setDeviceOrientation(String? orientation)
   {
-    List<DeviceOrientation> orientation0 = [];
+    List<DeviceOrientation> _orientation = [];
 
     orientation = orientation?.toLowerCase().trim();
     switch (orientation)
     {
       case "landscape":
-        orientation0 = [DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft];
+        _orientation = [DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft];
         break;
       case "portrait":
-        orientation0 = [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown];
+        _orientation = [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown];
         break;
       case "all":
       default:
-        orientation0 = [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown, DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft];
+        _orientation = [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown, DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft];
         break;
     }
-    SystemChrome.setPreferredOrientations(orientation0);
+    SystemChrome.setPreferredOrientations(_orientation);
   }
 
   GestureDetector _getGestureDetector(Widget view, DrawerView? drawer)

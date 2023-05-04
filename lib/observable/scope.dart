@@ -37,12 +37,15 @@ class Scope
   // unresolved observables
   HashMap<String?,List<Observable>> unresolved = HashMap<String?,List<Observable>>();
 
-  Scope({this.parent, String? id})
+  Scope({Scope? parent, String? id})
   {
     this.id = id ?? S.newId();
 
+    // set parent
+    this.parent = parent;
+
     // add me as a child of my parent
-    parent?.addChild(this);
+    this.parent?.addChild(this);
 
     // add me to my applications scope manager
     System.app?.scopeManager.add(this);
@@ -124,10 +127,10 @@ class Scope
     if (id.contains("."))
     {
       var parts = id.split(".");
-      var scope0 = System.app?.scopeManager.of(parts.first.trim());
-      if (scope0 != null)
+      var _scope = System.app?.scopeManager.of(parts.first.trim());
+      if (_scope != null)
       {
-        scope = scope0;
+        scope = _scope;
         parts.removeAt(0);
       }
       id = parts.first;

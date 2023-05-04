@@ -23,46 +23,46 @@ class TooltipView extends StatefulWidget implements IWidgetView
   TooltipView(this.model, this.child) : super(key: ObjectKey(model))
   {
     // set tooltip position
-    var pos = TooltipPosition.rightCenter;
+    var _pos = TooltipPosition.rightCenter;
     switch (model.position?.toLowerCase().trim())
     {
       case 'leftstart' :
-        pos = TooltipPosition.leftStart;
+        _pos = TooltipPosition.leftStart;
         break;
 
       case 'leftcenter' :
-        pos = TooltipPosition.leftCenter;
+        _pos = TooltipPosition.leftCenter;
         break;
 
       case 'leftend' :
-        pos = TooltipPosition.leftEnd;
+        _pos = TooltipPosition.leftEnd;
         break;
 
       case 'rightstart' :
-        pos = TooltipPosition.rightStart;
+        _pos = TooltipPosition.rightStart;
         break;
 
       case 'rightcenter' :
-        pos = TooltipPosition.rightCenter;
+        _pos = TooltipPosition.rightCenter;
         break;
 
       case 'rightend' :
-        pos = TooltipPosition.rightEnd;
+        _pos = TooltipPosition.rightEnd;
         break;
 
       case 'topstart' :
-        pos = TooltipPosition.topStart;
+        _pos = TooltipPosition.topStart;
         break;
 
       case 'topcenter' :
-        pos = TooltipPosition.topCenter;
+        _pos = TooltipPosition.topCenter;
         break;
 
       case 'topend' :
-        pos = TooltipPosition.topEnd;
+        _pos = TooltipPosition.topEnd;
         break;
     }
-    position = pos;
+    position = _pos;
 
     // set tooltip content
     List<Widget> children = model.inflate();

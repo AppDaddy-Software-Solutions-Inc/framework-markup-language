@@ -200,18 +200,18 @@ class Http
 
   static Map<String, String> encodeHeaders(Map<String, String>? headers)
   {
-    Map<String, String> headers0 = {};
+    Map<String, String> _headers = {};
     if (headers == null)
     {
-      headers0[HttpHeaders.ageHeader] = '0';
-      headers0[HttpHeaders.contentEncodingHeader] = 'utf8';
-      headers0[HttpHeaders.contentTypeHeader] = "application/xml";
-      if (System.app?.jwt?.token != null) headers0[HttpHeaders.authorizationHeader] = "Bearer ${System.app!.jwt!.token}";
+      _headers[HttpHeaders.ageHeader] = '0';
+      _headers[HttpHeaders.contentEncodingHeader] = 'utf8';
+      _headers[HttpHeaders.contentTypeHeader] = "application/xml";
+      if (System.app?.jwt?.token != null) _headers[HttpHeaders.authorizationHeader] = "Bearer ${System.app!.jwt!.token}";
     }
     else {
-      headers.forEach((key, value) => headers0[key] = value);
+      headers.forEach((key, value) => _headers[key] = value);
     }
-    return headers0;
+    return _headers;
   }
 
   static void decodeHeaders(Response response) {

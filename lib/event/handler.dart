@@ -150,17 +150,17 @@ class EventHandler extends Eval
       if (expression.endsWith("+")) expression = expression.substring(0,expression.length - 1);
 
       // build variable map and modify expression
-      Map<String, dynamic> variables0 = <String, dynamic>{};
+      Map<String, dynamic> _variables = <String, dynamic>{};
       int i = 0;
       variables.forEach((key,value)
       {
         i++;
-        var key0 = "___V$i";
-        variables0[key0] = _isNumeric(value) ? _toNum(value) : _isBool(value) ? _toBool(value) : value;
-        expression = expression.replaceAll("$key", key0);
+        var _key = "___V$i";
+        _variables[_key] = _isNumeric(value) ? _toNum(value) : _isBool(value) ? _toBool(value) : value;
+        expression = expression.replaceAll("$key", _key);
       });
       variables.clear();
-      variables.addAll(variables0);
+      variables.addAll(_variables);
 
       // pre-parse the expression
       var parsed = Expression.tryParse(expression);
@@ -181,12 +181,12 @@ class EventHandler extends Eval
         for (var e in events) {
           i++;
           var key = "___V$i";
-          variables0[key] = e;
+          _variables[key] = e;
           expression = expression.replaceAll(e, key);
         }
 
         // execute the expression and get events string
-        expression = await Eval.evaluate(expression, variables: variables0);
+        expression = await Eval.evaluate(expression, variables: _variables);
       }
 
       // replace non-quoted + with ;. This might be problematic. Needs testing
@@ -318,7 +318,7 @@ class EventHandler extends Eval
   Future<bool> _handleEventWait([dynamic time]) async
   {
     try {
-      int wait = 0;
+      int _wait = 0;
       if (time == null) return true;
       time = time.toString().trim().toLowerCase();
 
@@ -342,10 +342,10 @@ class EventHandler extends Eval
 
       if (S.isNumber(time)) {
         int t = S.toInt((S.toDouble(time) ?? 1) * factor) ?? 1000;
-        if (t >= 0) wait = t;
+        if (t >= 0) _wait = t;
       }
 
-      if (wait > 0)  await Future.delayed(Duration(milliseconds : wait));
+      if (_wait > 0)  await Future.delayed(Duration(milliseconds : _wait));
     }
     catch(e) {
       Log().error('wait(${time.toString()}) event failed');
@@ -432,14 +432,14 @@ class EventHandler extends Eval
       await _firebaseInit();
       await _firebaseLogoff();
 
-      var provider0 = fbauth.OAuthProvider(provider);
-      provider0.scopes.addAll(scopes);
+      var _provider = fbauth.OAuthProvider(provider);
+      _provider.scopes.addAll(scopes);
 
       Map<String,String> parameters = <String,String>{};
       parameters["prompt"] = 'select_account';
-      provider0.setCustomParameters(parameters);
+      _provider.setCustomParameters(parameters);
 
-      var credential = await fbauth.FirebaseAuth.instance.signInWithPopup(provider0);
+      var credential = await fbauth.FirebaseAuth.instance.signInWithPopup(_provider);
       user = credential.user;
     }
     catch(e)

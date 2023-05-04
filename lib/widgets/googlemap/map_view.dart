@@ -271,8 +271,8 @@ class _MapViewState extends WidgetState<MapView>
       /////////////////////
       if (markers.length > 1)
       {
-        final LatLngBounds spot = LatLngBounds(southwest: LatLng(latitudeLowerBound!, longitudeLowerBound!), northeast: LatLng(latitudeUpperBound!, longitudeUpperBound!));
-        controller.animateCamera(CameraUpdate.newLatLngBounds(spot, 10.0));
+        final LatLngBounds _spot = LatLngBounds(southwest: LatLng(latitudeLowerBound!, longitudeLowerBound!), northeast: LatLng(latitudeUpperBound!, longitudeUpperBound!));
+        controller.animateCamera(CameraUpdate.newLatLngBounds(_spot, 10.0));
       }
     }
 
@@ -292,8 +292,8 @@ class _MapViewState extends WidgetState<MapView>
     final GoogleMapController controller = await _controller.future;
 
 
-      final CameraPosition spot = CameraPosition(target: LatLng(latitude!, longitude!), bearing: 192.8334901395799, tilt: 59.440717697143555, zoom: widget.model.zoom);
-      controller.animateCamera(CameraUpdate.newCameraPosition(spot));
+      final CameraPosition _spot = CameraPosition(target: LatLng(latitude!, longitude!), bearing: 192.8334901395799, tilt: 59.440717697143555, zoom: widget.model.zoom);
+      controller.animateCamera(CameraUpdate.newCameraPosition(_spot));
 
     //////////
     /* Busy */

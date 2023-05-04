@@ -128,37 +128,37 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
     // Tween
     double from = widget.model.from;
     double to = widget.model.to;
-    double begin = widget.model.begin;
-    double end = widget.model.end;
-    Curve curve = AnimationHelper.getCurve(widget.model.curve);
+    double _begin = widget.model.begin;
+    double _end = widget.model.end;
+    Curve _curve = AnimationHelper.getCurve(widget.model.curve);
 
     //start, end, center
-    Alignment align =
+    Alignment _align =
         AnimationHelper.getAlignment(widget.model.align?.toLowerCase());
 
-    Tween<double> newTween = Tween<double>(
+    Tween<double> _newTween = Tween<double>(
       begin: from,
       end: to,
     );
 
-    if (begin != 0.0 || end != 1.0) {
-      curve = Interval(
-        begin,
-        end,
+    if (_begin != 0.0 || _end != 1.0) {
+      _curve = Interval(
+        _begin,
+        _end,
         // the style curve to pass.
-        curve: curve,
+        curve: _curve,
       );
     }
 
-    _animation = newTween.animate(CurvedAnimation(
-      curve: curve,
+    _animation = _newTween.animate(CurvedAnimation(
+      curve: _curve,
       parent: _controller,
     ));
     // Build View
     Widget? view;
 
     view = ScaleTransition(
-      alignment: align,
+      alignment: _align,
       scale: _animation,
       child: widget.child,
     );

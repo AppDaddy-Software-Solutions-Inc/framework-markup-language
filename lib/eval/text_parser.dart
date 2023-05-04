@@ -6,7 +6,10 @@ class TextValue {
   List<String> styles = [];
   String text = "";
 
-  TextValue(this.styles, this.text);
+  TextValue(List<String> styles, String text) {
+    this.styles = styles;
+    this.text = text;
+  }
 }
 
 List<TextValue> textValues = [];

@@ -43,8 +43,8 @@ class Jwt
   {
     // we could have done this quite simply ourselves, however, for the sake of time, use package
     // future todo - encode ourselves
-    final finalClaims = JwtClaim(subject: subject, issuer: issuer, audience: audience, otherClaims: claims, maxAge: Duration(minutes: shelflife));
-    String token = issueJwtHS256(finalClaims, key);
+    final _claims = JwtClaim(subject: subject, issuer: issuer, audience: audience, otherClaims: claims, maxAge: Duration(minutes: shelflife));
+    String token = issueJwtHS256(_claims, key);
     return Jwt(token);
   }
 

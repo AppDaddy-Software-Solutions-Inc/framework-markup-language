@@ -146,25 +146,25 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
     List<String>? to = widget.model.to.split(",");
     Offset toOffset = Offset(
         S.toDouble(to.elementAt(0)) ?? 0, S.toDouble(to.elementAt(1)) ?? 0);
-    double begin = widget.model.begin;
-    double end = widget.model.end;
-    Curve curve = AnimationHelper.getCurve(widget.model.curve);
-    Tween<Offset> newTween = Tween<Offset>(
+    double _begin = widget.model.begin;
+    double _end = widget.model.end;
+    Curve _curve = AnimationHelper.getCurve(widget.model.curve);
+    Tween<Offset> _newTween = Tween<Offset>(
       begin: fromOffset,
       end: toOffset,
     );
 
-    if (begin != 0.0 || end != 1.0) {
-      curve = Interval(
-        begin,
-        end,
+    if (_begin != 0.0 || _end != 1.0) {
+      _curve = Interval(
+        _begin,
+        _end,
         // the style curve to pass.
-        curve: curve,
+        curve: _curve,
       );
     }
 
-    _animation = newTween.animate(CurvedAnimation(
-      curve: curve,
+    _animation = _newTween.animate(CurvedAnimation(
+      curve: _curve,
       parent: _controller,
     ));
 

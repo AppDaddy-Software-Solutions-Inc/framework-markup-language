@@ -26,44 +26,44 @@ class BarcodeDetector implements IBarcodeDetector
       if (detectable?.image is google_barcode.InputImage)
       {
         // set barcode formats
-        List<google_barcode.BarcodeFormat> formats0 = [];
+        List<google_barcode.BarcodeFormat> _formats = [];
         if (formats != null){
           for (BarcodeFormats format in formats)
           {
-                 if ((format == BarcodeFormats.aztec)      && (!formats0.contains(google_barcode.BarcodeFormat.aztec))) {
-                   formats0.add(google_barcode.BarcodeFormat.aztec);
-                 } else if ((format == BarcodeFormats.code39)     && (!formats0.contains(google_barcode.BarcodeFormat.code39))) {
-              formats0.add(google_barcode.BarcodeFormat.code39);
-            } else if ((format == BarcodeFormats.code93)     && (!formats0.contains(google_barcode.BarcodeFormat.code93))) {
-              formats0.add(google_barcode.BarcodeFormat.code93);
-            } else if ((format == BarcodeFormats.codabar)    && (!formats0.contains(google_barcode.BarcodeFormat.codabar))) {
-              formats0.add(google_barcode.BarcodeFormat.codabar);
-            } else if ((format == BarcodeFormats.code128)    && (!formats0.contains(google_barcode.BarcodeFormat.code128))) {
-              formats0.add(google_barcode.BarcodeFormat.code128);
-            } else if ((format == BarcodeFormats.datamatrix) && (!formats0.contains(google_barcode.BarcodeFormat.dataMatrix))) {
-              formats0.add(google_barcode.BarcodeFormat.dataMatrix);
-            } else if ((format == BarcodeFormats.ean8)       && (!formats0.contains(google_barcode.BarcodeFormat.ean8))) {
-              formats0.add(google_barcode.BarcodeFormat.ean8);
-            } else if ((format == BarcodeFormats.ean13)      && (!formats0.contains(google_barcode.BarcodeFormat.ean13))) {
-              formats0.add(google_barcode.BarcodeFormat.ean13);
-            } else if ((format == BarcodeFormats.itf)        && (!formats0.contains(google_barcode.BarcodeFormat.itf))) {
-              formats0.add(google_barcode.BarcodeFormat.itf);
-            } else if ((format == BarcodeFormats.pdf417)     && (!formats0.contains(google_barcode.BarcodeFormat.pdf417))) {
-              formats0.add(google_barcode.BarcodeFormat.pdf417);
-            } else if ((format == BarcodeFormats.qrcode)     && (!formats0.contains(google_barcode.BarcodeFormat.qrCode))) {
-              formats0.add(google_barcode.BarcodeFormat.qrCode);
-            } else if ((format == BarcodeFormats.upca)       && (!formats0.contains(google_barcode.BarcodeFormat.upca))) {
-              formats0.add(google_barcode.BarcodeFormat.upca);
-            } else if ((format == BarcodeFormats.upce)       && (!formats0.contains(google_barcode.BarcodeFormat.upce))) {
-              formats0.add(google_barcode.BarcodeFormat.upce);
+                 if ((format == BarcodeFormats.aztec)      && (!_formats.contains(google_barcode.BarcodeFormat.aztec))) {
+                   _formats.add(google_barcode.BarcodeFormat.aztec);
+                 } else if ((format == BarcodeFormats.code39)     && (!_formats.contains(google_barcode.BarcodeFormat.code39))) {
+              _formats.add(google_barcode.BarcodeFormat.code39);
+            } else if ((format == BarcodeFormats.code93)     && (!_formats.contains(google_barcode.BarcodeFormat.code93))) {
+              _formats.add(google_barcode.BarcodeFormat.code93);
+            } else if ((format == BarcodeFormats.codabar)    && (!_formats.contains(google_barcode.BarcodeFormat.codabar))) {
+              _formats.add(google_barcode.BarcodeFormat.codabar);
+            } else if ((format == BarcodeFormats.code128)    && (!_formats.contains(google_barcode.BarcodeFormat.code128))) {
+              _formats.add(google_barcode.BarcodeFormat.code128);
+            } else if ((format == BarcodeFormats.datamatrix) && (!_formats.contains(google_barcode.BarcodeFormat.dataMatrix))) {
+              _formats.add(google_barcode.BarcodeFormat.dataMatrix);
+            } else if ((format == BarcodeFormats.ean8)       && (!_formats.contains(google_barcode.BarcodeFormat.ean8))) {
+              _formats.add(google_barcode.BarcodeFormat.ean8);
+            } else if ((format == BarcodeFormats.ean13)      && (!_formats.contains(google_barcode.BarcodeFormat.ean13))) {
+              _formats.add(google_barcode.BarcodeFormat.ean13);
+            } else if ((format == BarcodeFormats.itf)        && (!_formats.contains(google_barcode.BarcodeFormat.itf))) {
+              _formats.add(google_barcode.BarcodeFormat.itf);
+            } else if ((format == BarcodeFormats.pdf417)     && (!_formats.contains(google_barcode.BarcodeFormat.pdf417))) {
+              _formats.add(google_barcode.BarcodeFormat.pdf417);
+            } else if ((format == BarcodeFormats.qrcode)     && (!_formats.contains(google_barcode.BarcodeFormat.qrCode))) {
+              _formats.add(google_barcode.BarcodeFormat.qrCode);
+            } else if ((format == BarcodeFormats.upca)       && (!_formats.contains(google_barcode.BarcodeFormat.upca))) {
+              _formats.add(google_barcode.BarcodeFormat.upca);
+            } else if ((format == BarcodeFormats.upce)       && (!_formats.contains(google_barcode.BarcodeFormat.upce))) {
+              _formats.add(google_barcode.BarcodeFormat.upce);
             }
           }}
 
         // default format
-        if (formats0.isEmpty) formats0.add(google_barcode.BarcodeFormat.all);
+        if (_formats.isEmpty) _formats.add(google_barcode.BarcodeFormat.all);
 
         // build detector
-        _detector ??= google_barcode.BarcodeScanner(formats: formats0);
+        _detector ??= google_barcode.BarcodeScanner(formats: _formats);
 
         // process
         Log().debug("Processing image ${++count}");

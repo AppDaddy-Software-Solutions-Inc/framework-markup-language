@@ -247,7 +247,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
   // return parameters
   Map<String?, String> get parameters
   {
-    Map<String?, String> parameters = <String?, String>{};
+    Map<String?, String> _parameters = <String?, String>{};
     List<dynamic>? variables = findDescendantsOfExactType(VariableModel);
     if (variables != null) {
       for (var variable in variables) {
@@ -256,11 +256,11 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
         {
           String? name  = v.returnas;
           String value = v.value ?? "";
-          parameters[name] = value;
+          _parameters[name] = value;
         }
       }
     }
-    return parameters;
+    return _parameters;
   }
 
   FrameworkModel(WidgetModel parent, String? id, {dynamic key, dynamic dependency, dynamic version, dynamic onstart, dynamic onreturn, dynamic orientation}) : super(parent, id, scope: Scope(id: id))

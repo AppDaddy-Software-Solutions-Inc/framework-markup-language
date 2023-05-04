@@ -28,8 +28,8 @@ class NavigationObserver extends NavigatorObserver
     /////////////////////////
     /* Notify Pushed Route */
     /////////////////////////
-    INavigatorObserver? pushed = listenerOf(route);
-    if (pushed != null) pushed.onNavigatorPush();
+    INavigatorObserver? _pushed = listenerOf(route);
+    if (_pushed != null) _pushed.onNavigatorPush();
 
     ///////////////////
     /* Signal Change */
@@ -44,19 +44,19 @@ class NavigationObserver extends NavigatorObserver
   {
     super.didPop(route, previousRoute);
 
-    INavigatorObserver? popped = listenerOf(route);
-    INavigatorObserver? pushed = listenerOf(previousRoute);
+    INavigatorObserver? _popped = listenerOf(route);
+    INavigatorObserver? _pushed = listenerOf(previousRoute);
 
     ////////////////////
     /* Get Parameters */
     ////////////////////
     Map<String?, String>? parameters;
-    if (popped != null) parameters = popped.onNavigatorPop();
+    if (_popped != null) parameters = _popped.onNavigatorPop();
 
     /////////////////////////
     /* Notify Pushed Route */
     /////////////////////////
-    if (pushed != null) pushed.onNavigatorPush(parameters: parameters);
+    if (_pushed != null) _pushed.onNavigatorPush(parameters: parameters);
 
     ///////////////////
     /* Signal Change */
@@ -71,19 +71,19 @@ class NavigationObserver extends NavigatorObserver
   {
     super.didRemove(route, previousRoute);
 
-    INavigatorObserver? popped = listenerOf(route);
-    INavigatorObserver? pushed = listenerOf(previousRoute);
+    INavigatorObserver? _popped = listenerOf(route);
+    INavigatorObserver? _pushed = listenerOf(previousRoute);
 
     ////////////////////
     /* Get Parameters */
     ////////////////////
     Map<String?, String>? parameters;
-    if (popped != null) parameters = popped.onNavigatorPop();
+    if (_popped != null) parameters = _popped.onNavigatorPop();
 
     /////////////////////////
     /* Notify Pushed Route */
     /////////////////////////
-    if (pushed != null) pushed.onNavigatorPush(parameters: parameters);
+    if (_pushed != null) _pushed.onNavigatorPush(parameters: parameters);
 
     ///////////////////
     /* Signal Change */
@@ -98,15 +98,15 @@ class NavigationObserver extends NavigatorObserver
   {
     super.didReplace(newRoute: newRoute, oldRoute: oldRoute);
 
-    INavigatorObserver? popped = listenerOf(oldRoute);
-    INavigatorObserver? pushed = listenerOf(newRoute);
+    INavigatorObserver? _popped = listenerOf(oldRoute);
+    INavigatorObserver? _pushed = listenerOf(newRoute);
 
     /* Get Parameters */
     Map<String?, String>? parameters;
-    if (popped != null) parameters = popped.onNavigatorPop();
+    if (_popped != null) parameters = _popped.onNavigatorPop();
 
     /* Notify Pushed Route */
-    if (pushed != null) pushed.onNavigatorPush(parameters: parameters);
+    if (_pushed != null) _pushed.onNavigatorPush(parameters: parameters);
 
     /* Signal Change */
     for (INavigatorObserver listener in _listeners) {

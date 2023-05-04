@@ -532,8 +532,8 @@ class S
   // TODO
   static int _setBit({required int bit, int? value, required bool on})
   {
-    int value0 = pow(2,bit - 1) as int;
-    return on ? (value! | value0) : (value! - (value & value0));
+    int _value = pow(2,bit - 1) as int;
+    return on ? (value! | _value) : (value! - (value & _value));
   }
 
   // TODO
@@ -542,8 +542,8 @@ class S
     if (bit   == null) return false;
     if (value == null) return false;
 
-    int value0 = pow(2,bit - 1) as int;
-    return ((value & value0) == value0);
+    int _value = pow(2,bit - 1) as int;
+    return ((value & _value) == _value);
   }
 
   // TODO

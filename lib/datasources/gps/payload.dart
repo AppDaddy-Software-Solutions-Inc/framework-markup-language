@@ -32,18 +32,18 @@ class Payload
 
   Map<String, String> get map
   {
-    Map<String, String> map = <String,String>{};
-    map['accuracy']      = accuracy      != null ? accuracy.toString()      : "0.0";
-    map['latitude']      = latitude      != null ? latitude.toString()      : "0.0";
-    map['longitude']     = longitude     != null ? longitude.toString()     : "0.0";
-    map['altitude']      = altitude      != null ? altitude.toString()      : "0.0";
-    map['speed']         = speed         != null ? speed.toString()         : "0.0";
-    map['speedaccuracy'] = speedaccuracy != null ? speedaccuracy.toString() : "0.0";
-    map['heading']       = heading       != null ? heading.toString()       : "0.0";
-    map['epoch']         = epoch         != null ? epoch.toString()         : "0";
-    map['time']          = epoch         != null ? DateTime.fromMillisecondsSinceEpoch(epoch!).toLocal().toString() : "";
-    map['user']          = user          != null ? user.toString()          : "";
-    map['epoch']         = username      != null ? username.toString()      : "";
-    return map;
+    Map<String, String> _map = <String,String>{};
+    _map['accuracy']      = accuracy      != null ? accuracy.toString()      : "0.0";
+    _map['latitude']      = latitude      != null ? latitude.toString()      : "0.0";
+    _map['longitude']     = longitude     != null ? longitude.toString()     : "0.0";
+    _map['altitude']      = altitude      != null ? altitude.toString()      : "0.0";
+    _map['speed']         = speed         != null ? speed.toString()         : "0.0";
+    _map['speedaccuracy'] = speedaccuracy != null ? speedaccuracy.toString() : "0.0";
+    _map['heading']       = heading       != null ? heading.toString()       : "0.0";
+    _map['epoch']         = epoch         != null ? epoch.toString()         : "0";
+    _map['time']          = epoch         != null ? DateTime.fromMillisecondsSinceEpoch(epoch!).toLocal().toString() : "";
+    _map['user']          = user          != null ? user.toString()          : "";
+    _map['epoch']         = username      != null ? username.toString()      : "";
+    return _map;
   }
 }

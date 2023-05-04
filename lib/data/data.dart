@@ -169,43 +169,43 @@ class Data with ListMixin<dynamic>
     {
       if (data.isEmpty) return null;
 
-      dynamic data0 = data;
-      if (dotnotation.isEmpty) return data0;
+      dynamic _data = data;
+      if (dotnotation.isEmpty) return _data;
 
       // parse list
       for (NotationSegment? property in dotnotation) {
         if (property != null)
       {
-        if (data0 is Map)
+        if (_data is Map)
         {
-          if (!data0.containsKey(property.name))
+          if (!_data.containsKey(property.name))
           {
-            data0 = null;
+            _data = null;
             break;
           }
-          data0 = data0[property.name];
+          _data = _data[property.name];
         }
 
-        else if (data0 is List)
+        else if (_data is List)
         {
-          if (data0.length < property.offset)
+          if (_data.length < property.offset)
           {
-            data0 = null;
+            _data = null;
             break;
           }
-          data0 = data0[property.offset];
-          if ((data0 is Map) && (data0.containsKey(property.name))) data0 = data0[property.name];
+          _data = _data[property.offset];
+          if ((_data is Map) && (_data.containsKey(property.name))) _data = _data[property.name];
         }
 
         else
         {
-          data0 = null;
+          _data = null;
           break;
         }
       }
       }
 
-      return Data(data: data0);
+      return Data(data: _data);
     }
     catch(e)
     {
@@ -341,13 +341,13 @@ class Data with ListMixin<dynamic>
             // to make it easier for the user, we first look for the
             // property by name, then if not found, look for it by _name
             var name  = property.name;
-            var name0 = "_$name";
-            if (!data.containsKey(name) && (!data.containsKey(name0)))
+            var _name = "_$name";
+            if (!data.containsKey(name) && (!data.containsKey(_name)))
             {
               data = null;
               break;
             }
-            data = data.containsKey(name) ? data[name] : data[name0];
+            data = data.containsKey(name) ? data[name] : data[_name];
 
             if ((data is Map)  && (property.offset > 0)) data = null;
             if ((data is List) && (property.offset > data.length)) data = null;

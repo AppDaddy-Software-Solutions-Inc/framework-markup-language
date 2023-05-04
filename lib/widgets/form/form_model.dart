@@ -228,7 +228,7 @@ class FormModel extends DecoratedWidgetModel
 
   Map<String, String?> get map
   {
-    Map<String, String?> map = <String, String?>{};
+    Map<String, String?> _map = <String, String?>{};
 
       for (var field in fields) {
         if ((field.elementName != "attachment") && (!S.isNullOrEmpty(field.value)))
@@ -250,11 +250,11 @@ class FormModel extends DecoratedWidgetModel
           ///
           // Set the Value 
           ///
-          if(field.id != null) map[field.id!] = value;
+          if(field.id != null) _map[field.id!] = value;
         }
       }
 
-    return map;
+    return _map;
   }
 
   FormModel(WidgetModel parent, String? id, {String? type, String? title, dynamic status, dynamic visible, dynamic autosave, dynamic mandatory, dynamic geocode, dynamic oncomplete, dynamic showexception}) : super(parent, id)

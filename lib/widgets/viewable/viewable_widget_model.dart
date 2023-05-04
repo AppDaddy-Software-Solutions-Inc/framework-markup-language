@@ -684,8 +684,10 @@ class ViewableWidgetModel extends ConstraintModel
     for (var model in viewableChildren) {
       // reset child view
       model.resetViewSizing();
-      views.add(model.getView());
-    }
+
+      var view = model.getView();
+      if (view != null) views.add(view);
+    });
     return views;
   }
 
@@ -716,7 +718,7 @@ class ViewableWidgetModel extends ConstraintModel
     }
   }
 
-  Widget getView() => throw("getView() Not Implemented");
+  Widget? getView() => throw("getView() Not Implemented");
 }
 
 class ConstraintSet

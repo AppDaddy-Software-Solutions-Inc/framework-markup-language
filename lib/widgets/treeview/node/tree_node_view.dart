@@ -28,13 +28,17 @@ class _TreeNodeViewState extends WidgetState<TreeNodeView>
     // build children
     List<Widget> children = [];
     List<Widget> nodes    = [];
-    if (widget.model.children != null) {
-      for (var model in widget.model.children!) {
-        if (model is TreeNodeModel) {
+    if (widget.model.children != null)
+      widget.model.children!.forEach((model)
+      {
+        if (model is TreeNodeModel)
+        {
           nodes.add(TreeNodeView(model));
         }
-        else if (model is ViewableWidgetModel) {
-          children.add(model.getView());
+        else if (model is ViewableWidgetModel)
+        {
+          var view = model.getView();
+          if (view != null) children.add(view);
         }
       }
     }

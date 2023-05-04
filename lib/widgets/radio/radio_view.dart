@@ -32,9 +32,7 @@ class _RadioViewState extends WidgetState<RadioView>
     // save system constraints
     onLayout(constraints);
 
-    /////////////
-    /* Options */
-    /////////////
+    // Options
     if (widget.model.options.isNotEmpty) {
       options ??= [];
       options!.clear();
@@ -68,15 +66,15 @@ class _RadioViewState extends WidgetState<RadioView>
                     ? checked
                     : unchecked));
 
-        ///////////
-        /* Label */
-        ///////////
+        // Label
         Widget label = Text('');
-        if (option.label is ViewableWidgetModel) label = option.label!.getView();
+        if (option.label is ViewableWidgetModel) 
+        {
+          var view = option.label!.getView();
+          if (view != null) label = view;
+        }
 
-        ////////////
-        /* Option */
-        ////////////
+        // Option
         var opt = Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
@@ -94,7 +92,7 @@ class _RadioViewState extends WidgetState<RadioView>
     //this must go after the children are determined
     var alignment = WidgetAlignment(widget.model.layoutType, widget.model.center, widget.model.halign, widget.model.valign);
 
-    /* View */
+   // View 
     Widget view;
     if (widget.model.layout == 'row') {
       if (widget.model.wrap == true) {

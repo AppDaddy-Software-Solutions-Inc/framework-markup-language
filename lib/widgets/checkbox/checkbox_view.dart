@@ -155,15 +155,15 @@ class CheckBox extends StatelessWidget {
         );
     // child: (widget.checked == true ? checkedIcon : uncheckedIcon));
 
-    ///////////
-    /* Label */
-    ///////////
+    // Label
     Widget label = Text('');
-    if (option.label is ViewableWidgetModel) label = option.label!.getView();
+    if (option.label is ViewableWidgetModel)
+    {
+      var view = option.label!.getView();
+      if (view != null) label = view;
+    }
 
-    //////////
-    /* View */
-    //////////
+    // View
     var chk = Row(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,

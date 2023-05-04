@@ -49,7 +49,10 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
         // create a new item in dropdown
         TextModel itemLabel = TextModel(null, null, value: res);
         OptionModel newOption = OptionModel(null, null, label: itemLabel, value: res);
-        _input = DropdownMenuItem(value: newOption, child: newOption.label!.getView());
+
+        var child = newOption.label!.getView() ?? Container();
+        _input = DropdownMenuItem(value: newOption, child: child);
+
         changedDropDownItem(_input.value);
         _inputInitialized = true;
       } else {
@@ -96,7 +99,11 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
       for (OptionModel option in model.options)
       {
         Widget view = Text('');
-        if (option.label is ViewableWidgetModel) view = option.label!.getView();
+        if (option.label is ViewableWidgetModel)
+        {
+          var myView = option.label!.getView();
+          if (myView != null) view = myView;
+        }
 
         var o = DropdownMenuItem(value: option, child: view);
         if (model.value == option.value) _selected = option;

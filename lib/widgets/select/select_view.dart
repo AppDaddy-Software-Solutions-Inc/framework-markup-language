@@ -51,10 +51,15 @@ class _SelectViewState extends WidgetState<SelectView>
         // create a new item in dropdown
         TextModel itemLabel = TextModel(null, null, value: res);
         OptionModel newOption = OptionModel(null, null, label: itemLabel, value: res);
-        _input = DropdownMenuItem(value: newOption, child: newOption.label!.getView());
+
+        var child = newOption.label!.getView() ?? Container();
+        _input = DropdownMenuItem(value: newOption, child: child);
+
         changedDropDownItem(_input.value);
         _inputInitialized = true;
-      } else {
+      }
+      else
+      {
         bool hasMatch = false;
         int listCounter = 0;
         try {
@@ -98,7 +103,11 @@ class _SelectViewState extends WidgetState<SelectView>
       for (OptionModel option in model.options)
       {
         Widget view = Text('');
-        if (option.label is ViewableWidgetModel) view = option.label!.getView();
+        if (option.label is ViewableWidgetModel)
+        {
+          var myView = option.label!.getView();
+          if (myView != null) view = myView;
+        }
 
         var o = DropdownMenuItem(value: option, child: view);
         if (model.value == option.value) _selected = option;
@@ -214,6 +223,14 @@ class _SelectViewState extends WidgetState<SelectView>
       focus.addListener(onFocusChange);
     } else {
       OptionModel? dValue = (_selected != null && _selected?.value != null && _selected?.value == '') ? null : _selected;
+
+      Widget child = Text('');
+      if (_selected != null && _selected!.label != null)
+      {
+        var myView = _selected!.label!.getView();
+        if (myView != null) child = myView;
+      }
+
       view = widget.model.editable != false
           ? MouseRegion(
               cursor: SystemMouseCursors.click,
@@ -254,9 +271,7 @@ class _SelectViewState extends WidgetState<SelectView>
                     .surfaceVariant
                     .withOpacity(0.15),
               ))
-          : (_selected != null) && (_selected!.label != null)
-              ? _selected!.label!.getView()
-              : Text('');
+          : child;
     }
     if (widget.model.border == 'all') {
       view = Container(

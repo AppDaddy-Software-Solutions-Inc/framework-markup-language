@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:typed_data';
+import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/double.dart';
@@ -143,4 +144,7 @@ class MapMarkerModel extends DecoratedWidgetModel
     super.dispose();
     scope?.dispose();
   }
+
+  @override
+  Widget? getView() => null;
 }

@@ -146,7 +146,7 @@ class Alert {
 
   // Alert dialog content widget
   Widget _buildDialog() {
-    final Widget _child = ConstrainedBox(
+    final Widget myChild = ConstrainedBox(
       constraints: style.constraints ??
           BoxConstraints.expand(width: double.infinity, height: double.infinity), child: Align(alignment: style.alertAlignment,
 //          child: SingleChildScrollView(
@@ -211,8 +211,8 @@ class Alert {
 //      ),
     );
     return onWillPopActive
-        ? WillPopScope(onWillPop: () async => false, child: _child)
-        : _child;
+        ? WillPopScope(onWillPop: () async => false, child: myChild)
+        : myChild;
   }
 
 // Returns the close button on the top right

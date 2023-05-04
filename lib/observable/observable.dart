@@ -227,8 +227,8 @@ class Observable
         Observable? source = scope!.getObservable(
             binding, requestor: observable);
         if (source != null) {
-          dynamic _value = source.get();
-          v = binding.translate(_value);
+          dynamic myValue = source.get();
+          v = binding.translate(myValue);
         }
 
         // is this an eval?

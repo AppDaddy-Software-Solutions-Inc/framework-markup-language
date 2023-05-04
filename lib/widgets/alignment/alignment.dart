@@ -13,18 +13,18 @@ class WidgetAlignment
   {
     center = center ?? false;
 
-    HorizontalAlignmentType _halign = WidgetAlignment.getHorizontalAlignmentType(halign) ?? (center ? HorizontalAlignmentType.center : HorizontalAlignmentType.left);
-    VerticalAlignmentType   _valign = WidgetAlignment.getVerticalAlignmentType(valign)   ?? (center ? VerticalAlignmentType.center   : VerticalAlignmentType.top);
+    HorizontalAlignmentType myHalign = WidgetAlignment.getHorizontalAlignmentType(halign) ?? (center ? HorizontalAlignmentType.center : HorizontalAlignmentType.left);
+    VerticalAlignmentType   myValign = WidgetAlignment.getVerticalAlignmentType(valign)   ?? (center ? VerticalAlignmentType.center   : VerticalAlignmentType.top);
 
     // determine the alignment for the layout type based on the axes;
     switch (modelLayoutType)
     {
       case LayoutType.row:
-        _setRowAlignment(_halign, _valign);
+        _setRowAlignment(myHalign, myValign);
         break;
 
       case LayoutType.column:
-        _setColumnAlignment(_halign, _valign);
+        _setColumnAlignment(myHalign, myValign);
         break;
 
       case LayoutType.stack:
@@ -32,7 +32,7 @@ class WidgetAlignment
         break;
     }
 
-    _setBoxAlignment(center, _halign, _valign);
+    _setBoxAlignment(center, myHalign, myValign);
   }
 
   _setBoxAlignment(bool center, HorizontalAlignmentType halign, VerticalAlignmentType valign)

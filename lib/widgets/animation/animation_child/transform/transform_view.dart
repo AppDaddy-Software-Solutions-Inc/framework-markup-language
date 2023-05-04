@@ -136,65 +136,65 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
   Widget builder(BuildContext context, BoxConstraints constraints) {
     // Tween
 
-    double _begin = widget.model.begin;
-    double _end = widget.model.end;
+    double begin = widget.model.begin;
+    double end = widget.model.end;
     // default warp is 0.0015, 0 is no warping. This could potentially be made smarter
-    double _warp = (widget.model.warp ?? 15) / 10000;
-    Curve _curve = AnimationHelper.getCurve(widget.model.curve);
+    double warp = (widget.model.warp ?? 15) / 10000;
+    Curve curve = AnimationHelper.getCurve(widget.model.curve);
 
-    List<String>? _rotateFrom = widget.model.rotateFrom?.split(",");
-    List<String>? _rotateTo = widget.model.rotateTo.split(",");
-    List<String>? _translateFrom = widget.model.translateFrom?.split(",");
-    List<String>? _translateTo = widget.model.translateTo.split(",");
+    List<String>? rotateFrom = widget.model.rotateFrom?.split(",");
+    List<String>? rotateTo = widget.model.rotateTo.split(",");
+    List<String>? translateFrom = widget.model.translateFrom?.split(",");
+    List<String>? translateTo = widget.model.translateTo.split(",");
 
     //start, end, center
-    Alignment _align =
+    Alignment align =
     AnimationHelper.getAlignment(widget.model.align?.toLowerCase());
 
 
 
-    if (_begin != 0.0 || _end != 1.0) {
-      _curve = Interval(
-        _begin,
-        _end,
+    if (begin != 0.0 || end != 1.0) {
+      curve = Interval(
+        begin,
+        end,
         // the style curve to pass.
-        curve: _curve,
+        curve: curve,
       );
     }
 
     _xAnimation = Tween<double>(
-      begin: S.toDouble(_rotateFrom?.elementAt(0)) ?? 0,
-      end: S.toDouble(_rotateTo.elementAt(0)) ?? 0,
+      begin: S.toDouble(rotateFrom?.elementAt(0)) ?? 0,
+      end: S.toDouble(rotateTo.elementAt(0)) ?? 0,
     ).animate(CurvedAnimation(
-      curve: _curve,
+      curve: curve,
       parent: _controller,
     ));
     _yAnimation = Tween<double>(
-      begin: S.toDouble(_rotateFrom?.elementAt(1)) ?? 0,
-      end: S.toDouble(_rotateTo.elementAt(1)) ?? 0,
+      begin: S.toDouble(rotateFrom?.elementAt(1)) ?? 0,
+      end: S.toDouble(rotateTo.elementAt(1)) ?? 0,
     ).animate(CurvedAnimation(
-      curve: _curve,
+      curve: curve,
       parent: _controller,
     ));
     _xTranslateAnimation = Tween<double>(
-      begin: S.toDouble(_translateFrom?.elementAt(0)) ?? 0,
-      end: S.toDouble(_translateTo.elementAt(0)) ?? 0,
+      begin: S.toDouble(translateFrom?.elementAt(0)) ?? 0,
+      end: S.toDouble(translateTo.elementAt(0)) ?? 0,
     ).animate(CurvedAnimation(
-      curve: _curve,
+      curve: curve,
       parent: _controller,
     ));
     _yTranslateAnimation = Tween<double>(
-      begin: S.toDouble(_translateFrom?.elementAt(1)) ?? 0,
-      end: S.toDouble(_translateTo.elementAt(1)) ?? 0,
+      begin: S.toDouble(translateFrom?.elementAt(1)) ?? 0,
+      end: S.toDouble(translateTo.elementAt(1)) ?? 0,
     ).animate(CurvedAnimation(
-      curve: _curve,
+      curve: curve,
       parent: _controller,
     ));
     _zTranslateAnimation = Tween<double>(
-      begin: S.toDouble(_translateFrom?.elementAt(2)) ?? 0,
-      end: S.toDouble(_translateTo.elementAt(2)) ?? 0,
+      begin: S.toDouble(translateFrom?.elementAt(2)) ?? 0,
+      end: S.toDouble(translateTo.elementAt(2)) ?? 0,
     ).animate(CurvedAnimation(
-      curve: _curve,
+      curve: curve,
       parent: _controller,
     ));
 
@@ -204,11 +204,11 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
     view = Transform(
       transform: Matrix4.identity()
-        ..setEntry(3, 2, _warp)
+        ..setEntry(3, 2, warp)
         ..rotateY(pi * _yAnimation.value * 2)
         ..rotateX(pi * _xAnimation.value * 2)
         ..translate(_xTranslateAnimation.value, _yTranslateAnimation.value, _zTranslateAnimation.value),
-      alignment: _align,
+      alignment: align,
       //origin: Offset(0, 0),
       child: widget.child,
     );

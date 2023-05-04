@@ -96,15 +96,15 @@ class Pivot extends TransformModel implements ITransform
 
     Map<String, Map<String?, Map<String, double?>>> statistics = <String, Map<String?, Map<String, double?>>>{};
     for (var row in data) {
-      String? _column;
-      String? _row;
-      String? _field;
+      String? myColumn;
+      String? myRow;
+      String? mField;
 
       // lookup column
       var value = Data.readValue(row,column);
       if (value != null)
       {
-        _column = value.toString();
+        myColumn = value.toString();
         columnFound = true;
       }
 
@@ -112,7 +112,7 @@ class Pivot extends TransformModel implements ITransform
       value = Data.readValue(row,this.row);
       if (value != null)
       {
-        _row = value.toString();
+        myRow = value.toString();
         rowFound = true;
       }
 
@@ -120,24 +120,24 @@ class Pivot extends TransformModel implements ITransform
       value = Data.readValue(row,field);
       if (value != null)
       {
-        _field = value.toString();
+        mField = value.toString();
         fieldFound = true;
       }
 
-      if (_row != null)
+      if (myRow != null)
       {
-        double? v = (_field is String) ? S.toDouble(_field) : null;
-        if (!statistics.containsKey(_row)) statistics[_row] = <String?, Map<String, double?>>{};
-        if (!statistics[_row]!.containsKey(_column))
+        double? v = (mField is String) ? S.toDouble(mField) : null;
+        if (!statistics.containsKey(myRow)) statistics[myRow] = <String?, Map<String, double?>>{};
+        if (!statistics[myRow]!.containsKey(myColumn))
         {
-          statistics[_row]![_column] = <String, double?>{};
-          statistics[_row]![_column]!["min"] = null;
-          statistics[_row]![_column]!["max"] = null;
-          statistics[_row]![_column]!["cnt"] = 0;
-          statistics[_row]![_column]!["avg"] = null;
-          statistics[_row]![_column]!["sum"] = null;
+          statistics[myRow]![myColumn] = <String, double?>{};
+          statistics[myRow]![myColumn]!["min"] = null;
+          statistics[myRow]![myColumn]!["max"] = null;
+          statistics[myRow]![myColumn]!["cnt"] = 0;
+          statistics[myRow]![myColumn]!["avg"] = null;
+          statistics[myRow]![myColumn]!["sum"] = null;
         }
-        var p = statistics[_row]![_column]!;
+        var p = statistics[myRow]![myColumn]!;
         p["cnt"] = p["cnt"]! + 1;
         if (v != null)
         {

@@ -43,12 +43,12 @@ class Bridge
     // ignore: undefined_prefixed_name
     dart_ui.platformViewRegistry.registerViewFactory(id, (int viewId)
     {
-      final universal_html.IFrameElement _frame = universal_html.IFrameElement();
-      _frame.id     = id;
-      _frame.width  = '100%';
-      _frame.height = '100%';
-      _frame.src    = script;
-      return _frame;
+      final universal_html.IFrameElement frame = universal_html.IFrameElement();
+      frame.id     = id;
+      frame.width  = '100%';
+      frame.height = '100%';
+      frame.src    = script;
+      return frame;
     });
 
   }
@@ -71,14 +71,14 @@ class Bridge
       /////////////////////////////////////////////////
       /* Only Supports String and Numeric Parameters */
       /////////////////////////////////////////////////
-      List<dynamic> _parameters = [];
-      if (parameters is String) _parameters.add(parameters);
-      if (parameters is int)    _parameters.add(int);
-      if (parameters is double) _parameters.add(double);
-      if (parameters is num)    _parameters.add(num);
-      if (parameters is List)   _parameters.addAll(parameters);
+      List<dynamic> parameters0 = [];
+      if (parameters is String) parameters0.add(parameters);
+      if (parameters is int)    parameters0.add(int);
+      if (parameters is double) parameters0.add(double);
+      if (parameters is num)    parameters0.add(num);
+      if (parameters is List)   parameters0.addAll(parameters);
 
-      if (_connector != null) _connector!.callMethod(functionName, _parameters);
+      if (_connector != null) _connector!.callMethod(functionName, parameters0);
     }
     catch(e)
     {

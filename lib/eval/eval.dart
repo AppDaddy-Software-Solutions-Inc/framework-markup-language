@@ -26,11 +26,11 @@ class Eval
     if (expression == null) return null;
 
     dynamic result;
-    var _expression = expression;
-    Expression? _parsed;
+    var myExpression = expression;
+    Expression? myParsed;
     var i = 0;
-    var _variables = <String, dynamic>{};
-    var _functions = <String?, dynamic>{};
+    var myVariables = <String, dynamic>{};
+    var myFunctions = <String?, dynamic>{};
 
     try
     {
@@ -39,32 +39,32 @@ class Eval
         variables.forEach((key,value)
       {
         i++;
-        var _key = "___V$i";
-        _variables[_key] = _isNumeric(value) ? _toNum(value) : _isBool(value) ? _toBool(value) : value;
-        _expression = _expression.replaceAll(key!, _key);
+        var mKey = "___V$i";
+        myVariables[mKey] = _isNumeric(value) ? _toNum(value) : _isBool(value) ? _toBool(value) : value;
+        myExpression = myExpression.replaceAll(key!, mKey);
       });
       }
 
       // add variables
-      _functions.addAll(_variables);
+      myFunctions.addAll(myVariables);
 
       // add functions
-      _functions.addAll(functions);
+      myFunctions.addAll(functions);
 
       // add alternate functions that dont clash
-      altFunctions?.forEach((key, value) => _functions.containsKey(key) ? null : _functions[key] = value);
+      altFunctions?.forEach((key, value) => myFunctions.containsKey(key) ? null : myFunctions[key] = value);
 
       // parse the expression
-      _parsed  = Expression.tryParse(_expression);
+      myParsed  = Expression.tryParse(myExpression);
 
       // failed parse?
-      if (_parsed == null) throw(Exception('Failed to parse $_expression'));
+      if (myParsed == null) throw(Exception('Failed to parse $myExpression'));
 
       // required to replace quoted string observables
-      _parsed = replaceInLiterals(_parsed, _variables);
+      myParsed = replaceInLiterals(myParsed, myVariables);
 
       // evaluate the expression
-      result = evaluator.eval(_parsed, _functions);
+      result = evaluator.eval(myParsed, myFunctions);
     }
     catch(e)
     {
@@ -529,19 +529,19 @@ class Eval
 
   static dynamic _join(dynamic s, [dynamic s1, dynamic s2, dynamic s3, dynamic s4, dynamic s5, dynamic s6, dynamic s7, dynamic s8, dynamic s9, dynamic s10])
   {
-    String _s = "";
-    if (_toString(s)   != null) _s += _toString(s);
-    if (_toString(s1)  != null) _s += _toString(s1);
-    if (_toString(s2)  != null) _s += _toString(s2);
-    if (_toString(s3)  != null) _s += _toString(s3);
-    if (_toString(s4)  != null) _s += _toString(s4);
-    if (_toString(s5)  != null) _s += _toString(s5);
-    if (_toString(s6)  != null) _s += _toString(s6);
-    if (_toString(s7)  != null) _s += _toString(s7);
-    if (_toString(s8)  != null) _s += _toString(s8);
-    if (_toString(s9)  != null) _s += _toString(s9);
-    if (_toString(s10) != null) _s += _toString(s10);
-    return _s;
+    String myString = "";
+    if (_toString(s)   != null) myString += _toString(s);
+    if (_toString(s1)  != null) myString += _toString(s1);
+    if (_toString(s2)  != null) myString += _toString(s2);
+    if (_toString(s3)  != null) myString += _toString(s3);
+    if (_toString(s4)  != null) myString += _toString(s4);
+    if (_toString(s5)  != null) myString += _toString(s5);
+    if (_toString(s6)  != null) myString += _toString(s6);
+    if (_toString(s7)  != null) myString += _toString(s7);
+    if (_toString(s8)  != null) myString += _toString(s8);
+    if (_toString(s9)  != null) myString += _toString(s9);
+    if (_toString(s10) != null) myString += _toString(s10);
+    return myString;
   }
 
   /// null-safe String length

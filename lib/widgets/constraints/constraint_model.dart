@@ -109,31 +109,18 @@ class ConstraintModel extends WidgetModel
   /// Local Constraints
   ///
   // width
-  double? widthPercentage;
+  double? _widthPercentage;
+  double? get widthPercentage => _widthPercentage;
   DoubleObservable? _width;
   set width(dynamic v)
   {
-    if (v != null)
+    if (_width != null)
     {
-      if (S.isPercentage(v))
-      {
-        widthPercentage = S.toDouble(v.split("%")[0]);
-        v = null;
-      }
-      else {
-        widthPercentage = null;
-      }
-      if (v != null && v.runtimeType == String && v.contains('%'))
-      {
-        String s = v;
-        v = s.replaceAll('%', '000000');
-      }
-
-      if (_width == null) {
-        _width = DoubleObservable(Binding.toKey(id, 'width'), v, scope: scope, listener: onPropertyChange, setter: _widthSetter);
-      } else if (v != null) {
-        _width!.set(v);
-      }
+      _width!.set(v);
+    }
+    else if (v != null)
+    {
+      _width = DoubleObservable(Binding.toKey(id, 'width'), v, scope: scope, listener: onPropertyChange, setter: _widthSetter);
     }
   }
   double? get width => _width?.get();
@@ -162,6 +149,14 @@ class ConstraintModel extends WidgetModel
   // constraints from the template
   dynamic _widthSetter(dynamic value)
   {
+    // value is a percentage height
+    if (S.isPercentage(value))
+    {
+      _widthPercentage = S.toDouble(value.split("%")[0]);
+      value = null;
+    }
+    else _widthPercentage = null;
+
     if (S.isNumber(value))
     {
       double v = S.toDouble(value)!;
@@ -170,7 +165,11 @@ class ConstraintModel extends WidgetModel
       if (v.isNegative) v = 0;
       if (v != S.toDouble(value)) value = v;
     }
-    if (!S.isNullOrEmpty(value)) _fixedWidth = true;
+    if (!S.isNullOrEmpty(value))
+    {
+      _fixedWidth = true;
+      if (value is String && value.toLowerCase() == 'null') _fixedWidth = false;
+    }
     return value;
   }
 
@@ -180,28 +179,13 @@ class ConstraintModel extends WidgetModel
   DoubleObservable? _height;
   set height(dynamic v)
   {
-    if (v != null)
+    if (_height != null)
     {
-      if (S.isPercentage(v))
-      {
-        _heightPercentage = S.toDouble(v.split("%")[0]);
-        v = null;
-      }
-      else {
-        _heightPercentage = null;
-      }
-
-      if (v != null && v.runtimeType == String && v.contains('%'))
-      {
-        String s = v;
-        v = s.replaceAll('%', '000000');
-      }
-
-      if (_height == null) {
-        _height = DoubleObservable(Binding.toKey(id, 'height'), v, scope: scope, listener: onPropertyChange, setter: _heightSetter);
-      } else if (v != null) {
-        _height!.set(v);
-      }
+      _height!.set(v);
+    }
+    else if (v != null)
+    {
+      _height = DoubleObservable(Binding.toKey(id, 'height'), v, scope: scope, listener: onPropertyChange, setter: _heightSetter);
     }
   }
   double? get height => _height?.get();
@@ -229,6 +213,14 @@ class ConstraintModel extends WidgetModel
   // constraints from the template
   dynamic _heightSetter(dynamic value)
   {
+    // value is a percentage height
+    if (S.isPercentage(value))
+    {
+      _heightPercentage = S.toDouble(value.split("%")[0]);
+      value = null;
+    }
+    else _heightPercentage = null;
+
     if (S.isNumber(value))
     {
       double v = S.toDouble(value)!;
@@ -237,7 +229,11 @@ class ConstraintModel extends WidgetModel
       if (v.isNegative) v = 0;
       if (v != S.toDouble(value)) value = v;
     }
-    if (!S.isNullOrEmpty(value)) _fixedHeight = true;
+    if (!S.isNullOrEmpty(value))
+    {
+      _fixedHeight = true;
+      if (value is String && value.toLowerCase() == 'null') _fixedHeight = false;
+    }
     return value;
   }
 
@@ -456,7 +452,6 @@ class ConstraintModel extends WidgetModel
     if (parent is LayoutModel) parentLayout = (parent as LayoutModel).layoutType;
 
     // adjust the width if defined as a percentage
-    if (width != null && width! >= 100000) widthPercentage = (width!/1000000);
     if (widthPercentage != null && parentLayout != LayoutType.row)
     {
       // calculate the width
@@ -471,7 +466,6 @@ class ConstraintModel extends WidgetModel
     }
 
     // adjust the height if defined as a percentage
-    if (height != null && height! >= 100000) _heightPercentage = (height!/1000000);
     if (_heightPercentage != null && parentLayout != LayoutType.column)
     {
       // calculate the height

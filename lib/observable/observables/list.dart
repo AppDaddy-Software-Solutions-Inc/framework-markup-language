@@ -41,16 +41,16 @@ class ListObservable extends Observable with ListMixin<dynamic>
   }
 
   @override
-  add(dynamic value)
+  add(dynamic element)
   {
-    _value.add(value);
+    _value.add(element);
     notifyListeners();
   }
 
   @override
-  bool remove(dynamic value)
+  bool remove(dynamic element)
   {
-    if (_value.contains(value)) _value.remove(value);
+    if (_value.contains(element)) _value.remove(element);
     notifyListeners();
     return true;
   }

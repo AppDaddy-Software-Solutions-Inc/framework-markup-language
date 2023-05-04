@@ -363,13 +363,13 @@ class ColorObservable extends Observable
   }
 
   @override
-  dynamic to(dynamic s)
+  dynamic to(dynamic value)
   {
     try
     {
-      if (s == null)   return null;
-      if (s is Color)  return s;
-      if (s is String) return toColor(s);
+      if (value == null)   return null;
+      if (value is Color)  return value;
+      if (value is String) return toColor(value);
       return Exception();
     }
     catch(e)

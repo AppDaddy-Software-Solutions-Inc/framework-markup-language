@@ -14,15 +14,15 @@ class NumericObservable extends Observable
   }
 
   @override
-  dynamic to(dynamic s)
+  dynamic to(dynamic value)
   {
     try
     {
-      if (s == null)   return null;
-      if (s is num)    return s;
-      if (s is String) {
-        if (s == '') return null;
-        return num.parse(s);
+      if (value == null)   return null;
+      if (value is num)    return value;
+      if (value is String) {
+        if (value == '') return null;
+        return num.parse(value);
       }
       return Exception();
     }

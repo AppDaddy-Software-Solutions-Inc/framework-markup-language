@@ -34,9 +34,9 @@ class Observable
   final bool lazyEvaluation;
   bool _isEval = false;
   bool get isEval => _isEval && lazyEvaluation == false;
-  set isEval(bool v)
+  set isEval(bool value)
   {
-      _isEval = v;
+      _isEval = value;
   }
 
   dynamic twoway;
@@ -53,17 +53,17 @@ class Observable
     return to(_value);
   }
 
-  set(dynamic v, {bool notify = true})
+  set(dynamic value, {bool notify = true})
   {
     if (setter != null)
     {
-      v = setter!(v);
+      value = setter!(value);
     }
-    v = to(v);
-    if (v is Exception) return;
-    if (v != _value)
+    value = to(value);
+    if (value is Exception) return;
+    if (value != _value)
     {
-      _value = v;
+      _value = value;
       if (notify != false) notifyListeners();
     }
   }

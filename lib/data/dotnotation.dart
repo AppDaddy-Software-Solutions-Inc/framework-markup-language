@@ -16,10 +16,10 @@ class DotNotation with ListMixin<NotationSegment>
   DotNotation(this.signature);
 
   @override
-  void add(NotationSegment element) => _list.add(element);
+  void add(NotationSegment property) => _list.add(property);
 
   @override
-  void addAll(Iterable<NotationSegment> iterable) => _list.addAll(iterable);
+  void addAll(Iterable<NotationSegment> properties) => _list.addAll(properties);
 
   @override
   void operator []=(int index, NotationSegment property) => _list[index] = property;

@@ -14,17 +14,17 @@ class DoubleObservable extends Observable
   }
 
   @override
-  dynamic to(dynamic value)
+  dynamic to(dynamic s)
   {
     try
     {
-      if (value == null)    return null;
-      if (value is double)  return value;
-      if (value is int)     return value.toDouble();
-      if (value is num)     return value.toDouble();
-      if (value is String) {
-        if (value == '') return null;
-        return double.parse(value);
+      if (s == null)    return null;
+      if (s is double)  return s;
+      if (s is int)     return s.toDouble();
+      if (s is num)     return s.toDouble();
+      if (s is String) {
+        if (s == '') return null;
+        return double.parse(s);
       }
       return Exception();
     }

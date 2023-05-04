@@ -14,17 +14,17 @@ class IntegerObservable extends Observable
   }
 
   @override
-  dynamic to(dynamic value)
+  dynamic to(dynamic s)
   {
     try
     {
-      if (value == null)   return null;
-      if (value is int)    return value;
-      if (value is double) return value.toInt();
-      if (value is num)    return value.toInt();
-      if (value is String) {
-        if (value == '') return null;
-        return int.parse(value);
+      if (s == null)   return null;
+      if (s is int)    return s;
+      if (s is double) return s.toInt();
+      if (s is num)    return s.toInt();
+      if (s is String) {
+        if (s == '') return null;
+        return int.parse(s);
       }
       return Exception();
     }

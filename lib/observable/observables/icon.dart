@@ -36,13 +36,13 @@ class IconObservable extends Observable
   }
 
   @override
-  dynamic to(dynamic value)
+  dynamic to(dynamic s)
   {
     try
     {
-      if (value == null)      return null;
-      if (value is IconData)  return value;
-      if (value is String)    return toIcon(value);
+      if (s == null)      return null;
+      if (s is IconData)  return s;
+      if (s is String)    return toIcon(s);
       return Exception();
     }
     catch(e)

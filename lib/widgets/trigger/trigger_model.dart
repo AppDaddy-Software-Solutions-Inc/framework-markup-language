@@ -35,12 +35,12 @@ class TriggerModel extends WidgetModel {
   }
 
   @override
-  void deserialize(XmlElement xml)
+  void deserialize(XmlElement e)
   {
     /////////////////
     /* Deserialize */
     /////////////////
-    super.deserialize(xml);
+    super.deserialize(e);
 
     ///////////
     /* Cases */

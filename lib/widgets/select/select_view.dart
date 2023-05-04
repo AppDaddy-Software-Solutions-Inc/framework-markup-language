@@ -1,11 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:collection/collection.dart';
+import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/select/select_model.dart';
@@ -17,12 +18,13 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class SelectView extends StatefulWidget implements IWidgetView
 {
+  @override
   final SelectModel model;
 
   SelectView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _SelectViewState createState() => _SelectViewState();
+  State<SelectView> createState() => _SelectViewState();
 }
 
 class _SelectViewState extends WidgetState<SelectView>
@@ -75,7 +77,9 @@ class _SelectViewState extends WidgetState<SelectView>
             }
             listCounter++;
           }
-        } catch(e) {}
+        } catch(e) {
+          Log().debug('$e');
+        }
         if (hasMatch == false) {
           changedDropDownItem(_list[1].value ?? _list[0].value);
         }
@@ -132,13 +136,14 @@ class _SelectViewState extends WidgetState<SelectView>
     onLayout(constraints);
 
     // busy?
-    var busy;
-    if (widget.model.busy == true && widget.model.typeahead != true)
+    BusyView? busy;
+    if (widget.model.busy == true && widget.model.typeahead != true) {
       busy = BusyView(BusyModel(widget.model,
           visible: true,
           size: 24,
           color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.5),
           modal: false));
+    }
 
     bool enabled = (widget.model.enabled != false) && (widget.model.busy != true);
 
@@ -198,7 +203,7 @@ class _SelectViewState extends WidgetState<SelectView>
                       var option = _list.firstWhereOrNull((option) => (option.value == suggestion));
                       item = option?.child;
                   }
-                  if (item == null) item = Container(height: 12);
+                  item ??= Container(height: 12);
                   return Padding(
                       padding: EdgeInsets.only(
                           left: 12, right: 1, top: 12, bottom: 12),
@@ -209,8 +214,9 @@ class _SelectViewState extends WidgetState<SelectView>
                     SuggestionsBoxDecoration(elevation: 20),
                 suggestionsBoxVerticalOffset: 0,
                 onSuggestionSelected: (dynamic suggestion) {
-                  if (suggestion is OptionModel)
+                  if (suggestion is OptionModel) {
                     changedDropDownItem(suggestion);
+                  }
                 },
                 transitionBuilder: (context, suggestionsBox, animationController) =>
                 FadeTransition(
@@ -310,21 +316,21 @@ class _SelectViewState extends WidgetState<SelectView>
 
   bool suggestion(OptionModel m, String pat) {
     pat = pat.toLowerCase();
-    if (m.tags != null && m.tags!.length > 0) {
+    if (m.tags != null && m.tags!.isNotEmpty) {
       List<String?> s = m.tags!.split(',');
       return s.any((tag) => match(tag!.trim().toLowerCase(), pat));
     }
     else {
-      String? str = (m.label is TextModel) ? (m.label as TextModel).value ?? null : '' + _extractText(m)!;
+      String? str = (m.label is TextModel) ? (m.label as TextModel).value : _extractText(m)!;
       return str == null ? false : match(str.trim().toLowerCase(), pat);
     }
 
   }
 
   bool match(String tag, String pat) {
-    if (tag == '' || tag == 'null')
+    if (tag == '' || tag == 'null') {
       return false;
-    else if (S.isNullOrEmpty(widget.model.matchtype) || widget.model.matchtype!.toLowerCase() == 'contains') {
+    } else if (S.isNullOrEmpty(widget.model.matchtype) || widget.model.matchtype!.toLowerCase() == 'contains') {
       return tag.contains(pat.toLowerCase());
     }
     else if (widget.model.matchtype!.toLowerCase() == 'startswith') {
@@ -346,23 +352,24 @@ class _SelectViewState extends WidgetState<SelectView>
     if (S.isNullOrEmpty(value))
     {
       var models = (model.label as WidgetModel).findDescendantsOfExactType(TextModel);
-      if (models != null)
-        models.forEach((text)
-        {
+      if (models != null) {
+        for (var text in models) {
           if (text is TextModel)
           {
             String v = S.toStr(text.value) ?? "";
             if (!value.contains(v)) value += v;
           }
-        });
+        }
+      }
     }
     return value;
   }
 
   void changedDropDownItem(OptionModel? selected) async {
-    if (widget.model.typeahead != true)
+    if (widget.model.typeahead != true) {
       FocusScope.of(context).requestFocus(
           FocusNode()); // added this in to remove focus from input
+    }
     // removed this as it prevents reloading after a user submits a value
     if (selected == null) return;
     bool ok = await widget.model.answer(selected.value);
@@ -387,13 +394,16 @@ class _SelectViewState extends WidgetState<SelectView>
       controller.selection = TextSelection(baseOffset: 0, extentOffset: controller.text.length);
     }
     try {
-      if (focused)
+      if (focused) {
         System().commit = _commit;
-      else
+      } else {
         System().commit = null;
+      }
 
       if (!focused) await _commit();
-    } catch(e) {}
+    } catch(e) {
+      Log().debug('$e');
+    }
   }
 
   Future<bool> _commit() async

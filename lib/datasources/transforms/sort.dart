@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/transforms/iTransform.dart';
+import 'package:fml/datasources/transforms/transform_interface.dart';
 import 'package:fml/datasources/transforms/transform_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
@@ -131,16 +131,26 @@ class Sort extends TransformModel implements ITransform
         // We want to add special handling for numbers when comparing a null
         // so that they are always shown last regardless of ascending or not
         if (type == num || type == int || type == double) {
-          if ((v1 == null) && (v2 == null)) result = 0;
-          else if ((v1 != null) && (v2 == null)) result = -1;
-          else if ((v1 == null) && (v2 != null)) result = 1;
-          else if ((v1 != null) && (v2 != null)) result = (ascending == true) ?  v1.compareTo(v2) : v2.compareTo(v1);
+          if ((v1 == null) && (v2 == null)) {
+            result = 0;
+          } else if ((v1 != null) && (v2 == null)) {
+            result = -1;
+          } else if ((v1 == null) && (v2 != null)) {
+            result = 1;
+          } else if ((v1 != null) && (v2 != null)) {
+            result = (ascending == true) ?  v1.compareTo(v2) : v2.compareTo(v1);
+          }
         }
         else {
-          if ((v1 == null) && (v2 == null)) result = 0;
-          else if ((v1 != null) && (v2 == null)) result = (ascending == true) ? -1 :  1;
-          else if ((v1 == null) && (v2 != null)) result = (ascending == true) ?  1 : -1;
-          else if ((v1 != null) && (v2 != null)) result = (ascending == true) ?  v1.compareTo(v2) : v2.compareTo(v1);
+          if ((v1 == null) && (v2 == null)) {
+            result = 0;
+          } else if ((v1 != null) && (v2 == null)) {
+            result = (ascending == true) ? -1 :  1;
+          } else if ((v1 == null) && (v2 != null)) {
+            result = (ascending == true) ?  1 : -1;
+          } else if ((v1 != null) && (v2 != null)) {
+            result = (ascending == true) ?  v1.compareTo(v2) : v2.compareTo(v1);
+          }
         }
       }
       catch(e)
@@ -151,6 +161,7 @@ class Sort extends TransformModel implements ITransform
     });
   }
 
+  @override
   Future<void> apply(Data? data) async
   {
     if (enabled == false) return;

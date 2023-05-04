@@ -5,7 +5,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/map/map_model.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
@@ -15,11 +15,12 @@ import 'package:latlong2/latlong.dart';
 
 class MapView extends StatefulWidget implements IWidgetView
 {
+  @override
   final MapModel model;
   MapView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _MapViewState createState() => _MapViewState();
+  State<MapView> createState() => _MapViewState();
 }
 
 class _MapViewState extends WidgetState<MapView>
@@ -37,9 +38,10 @@ class _MapViewState extends WidgetState<MapView>
   double? longitudeLowerBound;
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
+  @override
   onModelChange(WidgetModel model,{String? property, dynamic value})
   {
-    if (this.mounted)
+    if (mounted)
     {
       var b = Binding.fromString(property);
       if (b?.property == 'busy') return;
@@ -58,7 +60,9 @@ class _MapViewState extends WidgetState<MapView>
       {
         // add map layers
         List<Widget> layers = [];
-        widget.model.layers.forEach((url) => layers.add(TileLayer(urlTemplate: url, userAgentPackageName: 'fml.dev')));
+        for (var url in widget.model.layers) {
+          layers.add(TileLayer(urlTemplate: url, userAgentPackageName: 'fml.dev'));
+        }
 
         // default layer is openstreets
         if (widget.model.layers.isEmpty) layers.add(TileLayer(urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png", userAgentPackageName: 'fml.dev'));
@@ -128,7 +132,9 @@ class _MapViewState extends WidgetState<MapView>
         }
       }
     }
-    catch(e) {}
+    catch(e) {
+      Log().debug('$e');
+    }
 
   }
 
@@ -165,7 +171,7 @@ class _MapViewState extends WidgetState<MapView>
     if (map != null) children.insert(0, map);
 
     /// Busy / Loading Indicator
-    if (busy == null) busy = BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
+    busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
 
     // add busy
     children.add(Center(child: busy));

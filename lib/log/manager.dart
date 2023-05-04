@@ -1,18 +1,18 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:convert';
 import 'package:fml/data/data.dart';
-import 'package:fml/hive/log.dart' as DATABASE;
+import 'package:fml/hive/log.dart' as hive_log;
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/system.dart';
 
 class Log
 {
-  List<DATABASE.Log> queue = [];
+  List<hive_log.Log> queue = [];
   List<dynamic>? logs = [];
 
   int size = 5000;
 
-  static Log _singleton = Log._init();
+  static final Log _singleton = Log._init();
   factory Log()
   {
     return _singleton;
@@ -21,9 +21,9 @@ class Log
   Log._init();
 
   // override
-  Data get data => DATABASE.Log.toData(queue);
+  Data get data => hive_log.Log.toData(queue);
 
-  void _addEntry(DATABASE.Log e) async
+  void _addEntry(hive_log.Log e) async
   {
     // add to the queue
     if (queue.length >= size) queue.removeLast();
@@ -41,15 +41,15 @@ class Log
       // if (kDebugMode) DialogService().show(type: DialogType.error, title: phrase.error, description: 'Exception: $exception Routine: $caller');
 
       // print in debug mode only
-      if (kDebugMode) print('Exception: $exception' + (caller != null ? ' -> $caller' : ''));
+      if (kDebugMode) print('Exception: $exception${caller != null ? ' -> $caller' : ''}');
 
       // add the entry
-      DATABASE.Log e = DATABASE.Log(type: "exception", message: '$exception', caller: caller);
+      hive_log.Log e = hive_log.Log(type: "exception", message: '$exception', caller: caller);
       _addEntry(e);
     }
     catch(ex)
     {
-      print('Catch - Exception: $exception' + (caller != null ? ' -> $caller' : ''));
+      print('Catch - Exception: $exception${caller != null ? ' -> $caller' : ''}');
     }
   }
 
@@ -58,15 +58,15 @@ class Log
     try
     {
       // print in debug mode only
-      if (kDebugMode) print('Error: $message' + (caller != null ? ' -> $caller' : ''));
+      if (kDebugMode) print('Error: $message${caller != null ? ' -> $caller' : ''}');
 
       // add the entry
-      DATABASE.Log e = DATABASE.Log(type: "error", message: message, caller: caller);
+      hive_log.Log e = hive_log.Log(type: "error", message: message, caller: caller);
       _addEntry(e);
     }
     catch(ex)
     {
-      print('Catch - Error: $message' + (caller != null ? ' -> $caller' : ''));
+      print('Catch - Error: $message${caller != null ? ' -> $caller' : ''}');
     }
   }
 
@@ -75,15 +75,15 @@ class Log
     try
     {
       // print in debug mode only
-      if (kDebugMode) print('Warning: $message' + (caller != null ? ' -> $caller' : ''));
+      if (kDebugMode) print('Warning: $message${caller != null ? ' -> $caller' : ''}');
 
       // add the entry
-      DATABASE.Log e = DATABASE.Log(type: "warning", message: message, caller: caller);
+      hive_log.Log e = hive_log.Log(type: "warning", message: message, caller: caller);
       _addEntry(e);
     }
     catch(ex)
     {
-      print('Catch - Warning: $message' + (caller != null ? ' -> $caller' : ''));
+      print('Catch - Warning: $message${caller != null ? ' -> $caller' : ''}');
     }
   }
 
@@ -92,15 +92,15 @@ class Log
     try
     {
       // print in debug mode only
-      if (kDebugMode) print('Info: $message' + (caller != null ? ' -> $caller' : ''));
+      if (kDebugMode) print('Info: $message${caller != null ? ' -> $caller' : ''}');
 
       // add the entry
-      DATABASE.Log e = DATABASE.Log(type: "info", message: message, caller: caller);
+      hive_log.Log e = hive_log.Log(type: "info", message: message, caller: caller);
       _addEntry(e);
     }
     catch(ex)
     {
-      print('Catch - Info: $message' + (caller != null ? ' -> $caller' : ''));
+      print('Catch - Info: $message${caller != null ? ' -> $caller' : ''}');
     }
   }
 
@@ -110,14 +110,14 @@ class Log
     {
       if (kDebugMode)
       {
-        print('Debug: $message' + (caller != null ? ' -> $caller' : ''));
-        DATABASE.Log e = DATABASE.Log(type: "debug", message: message, caller: caller);
+        print('Debug: $message${caller != null ? ' -> $caller' : ''}');
+        hive_log.Log e = hive_log.Log(type: "debug", message: message, caller: caller);
         _addEntry(e);
       }
     }
     catch(ex)
     {
-      print('Catch - Debug: $message' + (caller != null ? ' -> $caller' : ''));
+      print('Catch - Debug: $message${caller != null ? ' -> $caller' : ''}');
     }
   }
 
@@ -138,7 +138,9 @@ class Log
       if (filter.endsWith(wildcard))   return (value.startsWith(comparator));
       return (value.contains(comparator));
     }
-    else return (value == filter);
+    else {
+      return (value == filter);
+    }
   }
 
   Future<List> query(Map<String, String> parameters) async
@@ -151,12 +153,11 @@ class Log
     if (parameters.containsKey("orderby")) order = parameters["orderby"];
 
     if (clear == "true") this.clear();
-    logs = await DATABASE.Log.query(where: where, orderby: order);
+    logs = await hive_log.Log.query(where: where, orderby: order);
 
     final List<Map<dynamic,dynamic>> list = [];
-    logs!.forEach((entry)
-    {
-      Map<String,String?> map = Map<String,String?>();
+    for (var entry in logs!) {
+      Map<String,String?> map = <String,String?>{};
       map['type']      = entry['type'];
       map['time']      = DateTime.fromMillisecondsSinceEpoch(entry['epoch']).toIso8601String().replaceAll("T", " ");
       map['routine']   = entry['routine'];
@@ -170,14 +171,14 @@ class Log
       if (ok) ok = _filter(parameters['function'], map['function']);
 
       if (ok) list.add(map);
-    });
+    }
     list.sort((a, b) => b['time'].compareTo(a['time']));
     return list;
   }
 
   clear() async
   {
-    await DATABASE.Log.deleteAll();
+    await hive_log.Log.deleteAll();
     queue.clear();
     logs!.clear();
     info("Logs cleared");
@@ -185,7 +186,7 @@ class Log
 
   export({String format = "html", bool withHistory = false}) async
   {
-    var logs = (withHistory) ? await DATABASE.Log.query(orderby: "epoch") : queue;
+    var logs = (withHistory) ? await hive_log.Log.query(orderby: "epoch") : queue;
     var filename = "log-${S.toChar(DateTime.now(),format: 'yyyy-MM-dd HHmmss')}";
 
     // export to html
@@ -199,7 +200,7 @@ class Log
     // export to csv
     else
     {
-      Data data  = DATABASE.Log.toData(logs);
+      Data data  = hive_log.Log.toData(logs);
       String csv = await Data.toCsv(data);
       List<int> bytes = utf8.encode(csv);
       Platform.fileSaveAs(bytes, "$filename.csv");
@@ -208,7 +209,7 @@ class Log
     return true;
   }
 
-  String toHtml(List<DATABASE.Log> logs)
+  String toHtml(List<hive_log.Log> logs)
   {
     final buffer = StringBuffer();
     try
@@ -228,8 +229,7 @@ class Log
       buffer.write("<td>Caller</td>");
       buffer.write("</tr>");
 
-      logs.forEach((log)
-      {
+      for (var log in logs) {
         var color = 'black';
         if (log.type == "error" || log.type == "exception") color = '#FF0000';
         if (log.type == "warning") color = '#DAA520';
@@ -244,7 +244,7 @@ class Log
         buffer.write('<td>$message</td>');
         buffer.write('<td>$caller</td>');
         buffer.write("</tr>");
-      });
+      }
 
       buffer.write("<//table>");
       buffer.write("<//html>");

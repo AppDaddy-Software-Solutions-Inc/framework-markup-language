@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import '../data/data.dart';
-import 'iDataSource.dart';
+import 'datasource_interface.dart';
 
 abstract class IDataSourceListener
 {

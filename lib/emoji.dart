@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 class Emoji {
-  static const Map<String, String> emoji = const {
+  static const Map<String, String> emoji = {
     "100": "💯",
     "1234": "🔢",
     "umbrella_with_rain_drops": "☔",

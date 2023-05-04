@@ -25,9 +25,13 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
 {
   /// Event Manager Host
   final EventManager manager = EventManager();
+  @override
   registerEventListener(EventTypes type, OnEventCallback callback, {int? priority}) => manager.register(type, callback, priority: priority);
+  @override
   removeEventListener(EventTypes type, OnEventCallback callback) => manager.remove(type, callback);
+  @override
   broadcastEvent(WidgetModel source, Event event) => manager.broadcast(this, event);
+  @override
   executeEvent(WidgetModel source, String event) => manager.execute(this, event);
 
   HeaderModel?  header;
@@ -55,7 +59,9 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
       _template = StringObservable(Binding.toKey(id, 'template'), null, scope: scope);
       _template!.set(xml);
     }
-    else _template!.set(xml);
+    else {
+      _template!.set(xml);
+    }
   }
 
   // template
@@ -241,20 +247,20 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
   // return parameters
   Map<String?, String> get parameters
   {
-    Map<String?, String> _parameters = Map<String?, String>();
+    Map<String?, String> myParameters = <String?, String>{};
     List<dynamic>? variables = findDescendantsOfExactType(VariableModel);
-    if (variables != null)
-      variables.forEach((variable)
-      {
+    if (variables != null) {
+      for (var variable in variables) {
         VariableModel v = (variable as VariableModel);
         if (!S.isNullOrEmpty(v.returnas))
         {
           String? name  = v.returnas;
           String value = v.value ?? "";
-          _parameters[name] = value;
+          myParameters[name] = value;
         }
-      });
-    return _parameters;
+      }
+    }
+    return myParameters;
   }
 
   FrameworkModel(WidgetModel parent, String? id, {dynamic key, dynamic dependency, dynamic version, dynamic onstart, dynamic onreturn, dynamic orientation}) : super(parent, id, scope: Scope(id: id))
@@ -366,14 +372,14 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
     //Log().debug('Deserialize called on framework model => <FML name="$templateName" url="$url"/>');
 
     // remember xml node
-    this.element = xml;
+    element = xml;
 
     // get bindings
     bindables = Binding.getBindingKeys(xml.toXmlString());
-    if (bindables == null) bindables = [];
+    bindables ??= [];
 
     // stack index
-    this.index = -1;
+    index = -1;
 
     // deserialize 
     super.deserialize(xml);
@@ -390,28 +396,26 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
 
     // header
     List<HeaderModel> headers = findChildrenOfExactType(HeaderModel).cast<HeaderModel>();
-    headers.forEach((header)
-    {
+    for (var header in headers) {
       if (header == headers.first)
       {
         this.header = header;
         this.header!.registerListener(this);
       }
       if (children!.contains(header)) children!.remove(header);
-    });
+    }
     removeChildrenOfExactType(HeaderModel);
 
     // footer
     List<FooterModel> footers = findChildrenOfExactType(FooterModel).cast<FooterModel>();
-    footers.forEach((footer)
-    {
+    for (var footer in footers) {
       if (footer == footers.first)
       {
         this.footer = footer;
         this.footer!.registerListener(this);
       }
       if (children!.contains(footer)) children!.remove(footer);
-    });
+    }
     removeChildrenOfExactType(FooterModel);
 
     // build drawers
@@ -471,6 +475,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
   Map<String?, String> onPop() => parameters;
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
+  @override
   onModelChange(WidgetModel model,{String? property, dynamic value})
   {
     try
@@ -500,9 +505,11 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
     {
       var bytes = utf8.encode(element!.toXmlString());
       var uri = URI.parse(templateName);
-      if (uri != null)
-           Platform.fileSaveAs(bytes, uri.url);
-      else Platform.fileSaveAs(bytes, "template");
+      if (uri != null) {
+        Platform.fileSaveAs(bytes, uri.url);
+      } else {
+        Platform.fileSaveAs(bytes, "template");
+      }
     }
   }
 
@@ -526,6 +533,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
     }
     return super.execute(caller, propertyOrFunction, arguments);
   }
+  @override
   Widget getView({Key? key}) => getReactiveView(FrameworkView(this));
 }
 

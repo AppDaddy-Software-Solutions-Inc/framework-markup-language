@@ -78,18 +78,21 @@ class TreeModel extends DecoratedWidgetModel
     // Build Nodes and find the youngestGeneration
 
     // clear nodes
-    this.nodes.forEach((model) => model.dispose());
+    for (var model in this.nodes) {
+      model.dispose();
+    }
     this.nodes.clear();
 
-    this.youngestGeneration.forEach((model) => model?.dispose());
-    this.youngestGeneration.clear();
+    for (var model in youngestGeneration) {
+      model?.dispose();
+    }
+    youngestGeneration.clear();
 
     List<TreeNodeModel> nodes = findChildrenOfExactType(TreeNodeModel).cast<TreeNodeModel>();
-    nodes.forEach((dynamic node)
-    {
+    for (var node in nodes) {
      this.nodes.add(node);
      recurseChildren(node);
-    });
+    }
 
     if ((datasource != null) && (this.nodes.isNotEmpty))
     {
@@ -104,11 +107,15 @@ class TreeModel extends DecoratedWidgetModel
     // Log().debug('dispose called on => <$elementName id="$id">');
 
     // clear nodes
-    nodes.forEach((model) => model.dispose());
+    for (var model in nodes) {
+      model.dispose();
+    }
     nodes.clear();
 
-    this.youngestGeneration.forEach((model) => model?.dispose());
-    this.youngestGeneration.clear();
+    for (var model in youngestGeneration) {
+      model?.dispose();
+    }
+    youngestGeneration.clear();
 
     super.dispose();
   }
@@ -117,12 +124,13 @@ class TreeModel extends DecoratedWidgetModel
   {
       for (TreeNodeModel? n in youngestGeneration)
       {
-        if (node == null)
+        if (node == null) {
           n!.selected = false;
-        else if (n!.id == node.id)
+        } else if (n!.id == node.id) {
           n.selected = true;
-        else
+        } else {
           n.selected = false;
+        }
       }
   }
 
@@ -156,9 +164,9 @@ class TreeModel extends DecoratedWidgetModel
 
   void recurseChildren(dynamic node) {
     for (dynamic n in node.children) {
-      if (n.children != null && n.children.length > 0)
+      if (n.children != null && n.children.length > 0) {
         recurseChildren(n);
-      else {
+      } else {
         youngestGeneration.add(n);
       }
     }

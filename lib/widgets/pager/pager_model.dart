@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/log/manager.dart';
@@ -68,12 +68,13 @@ class PagerModel extends DecoratedWidgetModel
   {
     if (_currentpage != null)
     {
-      if (pages.isNotEmpty && v > pages.length)
+      if (pages.isNotEmpty && v > pages.length) {
         _currentpage!.set(pages.length);
-      else if (v < 1 || v == null)
+      } else if (v < 1 || v == null) {
         _currentpage!.set(1);
-      else
+      } else {
         _currentpage!.set(v ?? initialpage ?? 1);
+      }
     }
     else if (v != null)
     {
@@ -141,10 +142,12 @@ class PagerModel extends DecoratedWidgetModel
       }
 
       // build items
-      pages.forEach((page) => this.pages.add(page));
+      for (var page in pages) {
+        this.pages.add(page);
+      }
 
 
-    if (pages.length == 0)
+    if (pages.isEmpty)
     {
       XmlDocument missingXml = XmlDocument.parse('<PAGE><CENTER><TEXT value="Missing <Page /> Element" /></CENTER></PAGE>');
       var page = PagerPageModel.fromXml(this, missingXml.rootElement);
@@ -165,17 +168,18 @@ class PagerModel extends DecoratedWidgetModel
     if ((list != null))
     {
       // clear pages
-      this.pages.forEach((model) => model.dispose());
-      this.pages.clear();
+      for (var model in pages) {
+        model.dispose();
+      }
+      pages.clear();
 
-      list.forEach((row)
-      {
-        XmlElement? prototype = S.fromPrototype(this.prototype, "${this.id}-$i");
+      for (var row in list) {
+        XmlElement? prototype = S.fromPrototype(this.prototype, "$id-$i");
         i = i + 1;
 
         var model = PagerPageModel.fromXml(parent, prototype, data: row);
         if (model != null) pages[i] = model;
-      });
+      }
 
       notifyListeners('list', pages);
     }
@@ -191,8 +195,10 @@ class PagerModel extends DecoratedWidgetModel
     // Log().debug ('dispose called on' + elementName);
 
     // clear pages
-    this.pages.forEach((model) => model.dispose());
-    this.pages.clear();
+    for (var model in pages) {
+      model.dispose();
+    }
+    pages.clear();
 
     super.dispose();
   }

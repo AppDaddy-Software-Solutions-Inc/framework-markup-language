@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:fml/hive/log.dart';
 import 'package:fml/hive/form.dart';
 import 'package:fml/hive/post.dart';
-import 'package:fml/log/manager.dart' as LOG;
+import 'package:fml/log/manager.dart' as log_manager;
 
 class Janitor
 {
-  static Janitor _singleton = Janitor._init();
+  static final Janitor _singleton = Janitor._init();
 
   factory Janitor() => _singleton;
   Janitor._init();
@@ -51,69 +51,71 @@ class Janitor
     int millesecondsPerDay = 1000 * 60 * 60 * 24;
 
     // cleanup expired forms
-    LOG.Log().debug('Cleaning up old forms', caller: "Janitor");
+    log_manager.Log().debug('Cleaning up old forms', caller: "Janitor");
     List<Form> forms = await Form.query();
     bool ok = true;
-    forms.forEach((form) async
-    {
+    for (var form in forms) {
       int age = form.updated;
       int delta = now - age;
       bool expired = ((delta / millesecondsPerDay) > formRetention);
       if (expired)
       {
-        LOG.Log().debug('Deleting form ${form.key}', caller: "Janitor");
+        log_manager.Log().debug('Deleting form ${form.key}', caller: "Janitor");
         ok = (await form.delete() == null);
-        if (ok)
-             LOG.Log().info('Deleting form and all associated posts. Form Key: ${form.key} - Complete: ${form.complete}', caller: 'Janitor');
-        else LOG.Log().warning('Unable to delete form and possibly its associated posts. Form Key: $form.key, Complete: ${form.complete}', caller: 'Janitor');
+        if (ok) {
+          log_manager.Log().info('Deleting form and all associated posts. Form Key: ${form.key} - Complete: ${form.complete}', caller: 'Janitor');
+        } else {
+          log_manager.Log().warning('Unable to delete form and possibly its associated posts. Form Key: $form.key, Complete: ${form.complete}', caller: 'Janitor');
+        }
       }
-    });
+    }
 
     // cleanup completed posts
-    LOG.Log().debug('Cleaning up completed posting documents', caller: "Janitor");
-    List<Post> posts = await Post.query(where: "{status} == " + Post.statusCOMPLETE.toString());
-    posts.forEach((post) async
-    {
+    log_manager.Log().debug('Cleaning up completed posting documents', caller: "Janitor");
+    List<Post> posts = await Post.query(where: "{status} == ${Post.statusCOMPLETE}");
+    for (var post in posts) {
       int age = post.date!;
       int delta = now - age;
       bool expired = ((delta / millesecondsPerDay) > postRetention);
       if (expired)
       {
-        LOG.Log().debug('Deleting posting document ${post.key}', caller: "Janitor");
+        log_manager.Log().debug('Deleting posting document ${post.key}', caller: "Janitor");
         ok = await post.delete();
-        if (ok)
-             LOG.Log().info('Deleting completed post. Post Key: ${post.key}', caller: 'Janitor.dart');
-        else LOG.Log().warning('Unable to delete completed post. Post Key: ${post.key}', caller: 'Janitor.dart');
+        if (ok) {
+          log_manager.Log().info('Deleting completed post. Post Key: ${post.key}', caller: 'Janitor.dart');
+        } else {
+          log_manager.Log().warning('Unable to delete completed post. Post Key: ${post.key}', caller: 'Janitor.dart');
+        }
       }
-    });
+    }
 
     // cleanup incomplete posts
-    LOG.Log().debug('Cleaning up old and incomplete posting documents', caller: "Janitor");
+    log_manager.Log().debug('Cleaning up old and incomplete posting documents', caller: "Janitor");
     posts = await Post.query();
     ok = true;
-    posts.forEach((post) async
-    {
+    for (var post in posts) {
       int age = post.date!;
       int delta = now - age;
       bool expired = ((delta / millesecondsPerDay) > formRetention);
       if (expired)
       {
-        LOG.Log().debug('Deleting posting document ${post.key}', caller: "Janitor");
+        log_manager.Log().debug('Deleting posting document ${post.key}', caller: "Janitor");
         ok = await post.delete();
-        if (ok)
-             LOG.Log().info('Deleting incomplete post. Post Key: ${post.key}', caller: 'Janitor.dart');
-        else LOG.Log().warning('Unable to delete uncompleted post. Post Key: ${post.key}', caller: 'Janitor.dart');
+        if (ok) {
+          log_manager.Log().info('Deleting incomplete post. Post Key: ${post.key}', caller: 'Janitor.dart');
+        } else {
+          log_manager.Log().warning('Unable to delete uncompleted post. Post Key: ${post.key}', caller: 'Janitor.dart');
+        }
       }
-    });
+    }
 
     // cleanup logs
-    LOG.Log().debug('Cleaning up old log files', caller: "Janitor");
+    log_manager.Log().debug('Cleaning up old log files', caller: "Janitor");
     List<Log> logs = await Log.findAll();
-    logs.forEach((log)
-    {
+    for (var log in logs) {
       int keepFor = DateTime.now().subtract(Duration(days: Log.daysToSave)).toLocal().millisecondsSinceEpoch;
       if (keepFor > log.epoch) log.delete();
-    });
+    }
 
     return true;
   }

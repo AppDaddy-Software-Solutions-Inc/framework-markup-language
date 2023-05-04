@@ -2,18 +2,19 @@
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/slider/slider_model.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart' ;
 import 'package:fml/helper/common_helpers.dart';
 
 class SliderView extends StatefulWidget implements IWidgetView
 {
+  @override
   final SliderModel model;
   final dynamic onChangeCallback;
   SliderView(this.model, {this.onChangeCallback});
 
   @override
-  _SliderViewState createState() => _SliderViewState();
+  State<SliderView> createState() => _SliderViewState();
 }
 
 class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserver
@@ -37,9 +38,11 @@ class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserv
 
     String? label;
 
-      if (value1 % 1 == 0)
-         label = value1.toString().split('.')[0];
-    else label = value1.toString();
+      if (value1 % 1 == 0) {
+        label = value1.toString().split('.')[0];
+      } else {
+        label = value1.toString();
+      }
 
     // if any of the above are null, all are 0 to prevent errors;
     if (max < min) {
@@ -50,18 +53,18 @@ class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserv
       if (min > max) {
         min = 0;
         max = 0;
-        Log().debug('Slider min > max' + widget.model.id.toString(), caller: (widget.model.elementName) + '.' + this.runtimeType.toString());
+        Log().debug('Slider min > max${widget.model.id}', caller: '${widget.model.elementName}.$runtimeType');
       }
       if (value1 < min || value1 > max)
       {
         value1 = min;
-        Log().debug('Slider value out of range' + widget.model.id.toString(), caller: (widget.model.elementName) + '.' + this.runtimeType.toString());
+        Log().debug('Slider value out of range${widget.model.id}', caller: '${widget.model.elementName}.$runtimeType');
       }
     }
 
     // create the view
     Widget view;
-    if (widget.model.range)
+    if (widget.model.range) {
       view = RangeSlider(
           values: RangeValues(S.toDouble(value1)!,
               S.toDouble(value2)!),
@@ -76,7 +79,7 @@ class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserv
           onChanged: (RangeValues values) => onRangeChange(values),
           activeColor: ColorHelper.lighten(widget.model.color ?? Theme.of(context).colorScheme.primary, 0.05),
           inactiveColor: Theme.of(context).colorScheme.secondaryContainer);
-    else
+    } else {
       view = Slider(
         value: value1,
         min: min,
@@ -91,6 +94,7 @@ class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserv
         inactiveColor: Theme.of(context).colorScheme.secondaryContainer,
         thumbColor: widget.model.color ?? Theme.of(context).colorScheme.primary,
       );
+    }
 
     // get the model constraints
     var modelConstraints = widget.model.constraints.model;
@@ -112,8 +116,9 @@ class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserv
   }
 
   onChange(double value) async {
-    if (widget.model.editable == false || widget.model.enabled == false)
+    if (widget.model.editable == false || widget.model.enabled == false) {
       return;
+    }
 
     ////////////////////
     /* Value Changed? */
@@ -140,13 +145,9 @@ class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserv
     List modelValues = widget.model.value?.split(',') ?? [widget.model.minimum, widget.model.maximum];
     double value1 = S.toDouble(modelValues[0]) ??  widget.model.minimum ?? 0;
     double value2 = (modelValues.length > 1 ?  S.toDouble(modelValues[1]) : value1) ??  widget.model.maximum ?? 0;
-    if (widget.model.editable == false || widget.model.enabled == false)
+    if (widget.model.editable == false || widget.model.enabled == false) {
       return;
-
-    //////////////////////////
-    /* Start Value Changed? */
-    //////////////////////////
-    else if (S.toDouble(value1) != values.start) {
+    } else if (S.toDouble(value1) != values.start) {
       ///////////////////////////
       /* Retain Rollback Value */
       ///////////////////////////

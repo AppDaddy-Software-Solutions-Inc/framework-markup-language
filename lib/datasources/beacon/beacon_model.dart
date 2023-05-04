@@ -3,7 +3,7 @@ import 'dart:collection';
 import 'package:flutter_beacon/flutter_beacon.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/base/model.dart';
-import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/integer.dart';
@@ -137,17 +137,20 @@ class BeaconModel extends DataSourceModel implements IDataSource, IBeaconListene
 
   void _removeExpired()
   {
-    if (firstSeen.length == 0 && lastSeen.length == 0) return;
+    if (firstSeen.isEmpty && lastSeen.isEmpty) return;
 
     // remove any items that haven't been seen in the past 15 seconds
     List<String> expired = [];
-    lastSeen.entries.forEach((e) => (DateTime.now().millisecondsSinceEpoch - e.value > (1000 * 15) ?  expired.add(e.key) : null));
+    for (var e in lastSeen.entries) {
+      (DateTime.now().millisecondsSinceEpoch - e.value > (1000 * 15) ?  expired.add(e.key) : null);
+    }
     if (expired.isNotEmpty)
     {
       firstSeen.removeWhere((key, value) => expired.contains(key));
       lastSeen.removeWhere((key, value)  => expired.contains(key));
     }
   }
+  @override
   onBeaconData(List<Beacon> beacons)
   {
     // enabled?
@@ -156,7 +159,7 @@ class BeaconModel extends DataSourceModel implements IDataSource, IBeaconListene
     // if no beacons found on last
     // iteration and none in this,
     // just quit
-    if (_beaconsFound == 0 && beacons.length == 0) return _removeExpired();
+    if (_beaconsFound == 0 && beacons.isEmpty) return _removeExpired();
 
     // rember last count of beacons found
     _beaconsFound = beacons.length;
@@ -164,25 +167,26 @@ class BeaconModel extends DataSourceModel implements IDataSource, IBeaconListene
     Log().debug('BEACON Scanner -> Found ${beacons.length} beacons');
 
     // remove beacons that dont match our criteria
-    if (this.major != null || this.minor != null || this.distance != null)
-    beacons.removeWhere((element)
+    if (major != null || minor != null || distance != null) {
+      beacons.removeWhere((element)
     {
-      if (this.major    != null && element.major != this.major) return true;
-      if (this.minor    != null && element.minor != this.minor) return true;
-      if (this.distance != null && element.accuracy > this.distance!) return true;
+      if (major    != null && element.major != major) return true;
+      if (minor    != null && element.minor != minor) return true;
+      if (distance != null && element.accuracy > distance!) return true;
       return false;
     });
+    }
 
     // sort by distance
-    if (beacons.length > 1)
-    beacons.sort((a, b) => Comparable.compare(a.accuracy, b.accuracy));
+    if (beacons.length > 1) {
+      beacons.sort((a, b) => Comparable.compare(a.accuracy, b.accuracy));
+    }
 
     Log().debug('BEACON Scanner -> ${beacons.length} beacons matching your criteria');
 
     // Build the Data
     Data data = Data();
-    beacons.forEach((beacon)
-    {
+    for (var beacon in beacons) {
       // calculate age
       int age = 0;
       if (beacon.macAddress != null)
@@ -193,7 +197,7 @@ class BeaconModel extends DataSourceModel implements IDataSource, IBeaconListene
         age = lastSeen[beacon.macAddress!]! - firstSeen[beacon.macAddress!]!;
       }
 
-      Map<dynamic, dynamic> map = Map<dynamic, dynamic>();
+      Map<dynamic, dynamic> map = <dynamic, dynamic>{};
       map["id"]         = beacon.proximityUUID;
       map["epoch"]      = "${DateTime.now().millisecondsSinceEpoch}";
       map["age"]        = "$age";
@@ -205,7 +209,7 @@ class BeaconModel extends DataSourceModel implements IDataSource, IBeaconListene
       map["distance"]   = "${beacon.accuracy}";
       map["proximity"]  = "${beacon.proximity}";
       data.add(map);
-    });
+    }
 
     // remove any items that haven't been seen in the past 15 seconds
     _removeExpired();

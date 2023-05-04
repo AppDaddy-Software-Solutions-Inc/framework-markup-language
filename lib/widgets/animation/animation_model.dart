@@ -286,6 +286,7 @@ class AnimationModel extends ViewableWidgetModel
     return await EventHandler(this).execute(_oncomplete);
   }
 
+  @override
   Widget getView({Key? key}) => AnimationView(this, null);
 
   Widget getAnimatedView(Widget child, {AnimationController? controller}) => AnimationView(this, child);

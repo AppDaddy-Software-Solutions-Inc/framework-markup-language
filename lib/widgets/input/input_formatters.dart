@@ -49,18 +49,21 @@ class TextToNumericFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
       TextEditingValue oldValue, TextEditingValue newValue) {
-    if (S.isNullOrEmpty(newValue.text))
+    if (S.isNullOrEmpty(newValue.text)) {
       return TextEditingValue(
           text: newValue.text, selection: newValue.selection);
-    if (newValue.text == '-' || newValue.text == '+')
+    }
+    if (newValue.text == '-' || newValue.text == '+') {
       return TextEditingValue(
           text: newValue.text, selection: newValue.selection);
-    if (S.isNumber(newValue.text))
+    }
+    if (S.isNumber(newValue.text)) {
       return TextEditingValue(
           text: newValue.text, selection: newValue.selection);
-    else
+    } else {
       return TextEditingValue(
           text: oldValue.text, selection: oldValue.selection);
+    }
   }
 }
 
@@ -68,18 +71,21 @@ class TextToIntegerFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
       TextEditingValue oldValue, TextEditingValue newValue) {
-    if (S.isNullOrEmpty(newValue.text))
+    if (S.isNullOrEmpty(newValue.text)) {
       return TextEditingValue(
           text: newValue.text, selection: newValue.selection);
-    if (newValue.text == '-' || newValue.text == '+')
+    }
+    if (newValue.text == '-' || newValue.text == '+') {
       return TextEditingValue(
           text: newValue.text, selection: newValue.selection);
-    if (S.isNumber(newValue.text))
+    }
+    if (S.isNumber(newValue.text)) {
       return TextEditingValue(
           text: S.toStr(S.toInt(newValue.text))!, selection: newValue.selection);
-    else
+    } else {
       return TextEditingValue(
           text: oldValue.text, selection: oldValue.selection);
+    }
   }
 }
 
@@ -87,15 +93,17 @@ class TextToBooleanFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
       TextEditingValue oldValue, TextEditingValue newValue) {
-    if (S.isNullOrEmpty(newValue.text))
+    if (S.isNullOrEmpty(newValue.text)) {
       return TextEditingValue(
           text: newValue.text, selection: newValue.selection);
-    if (S.isBool(newValue.text))
+    }
+    if (S.isBool(newValue.text)) {
       return TextEditingValue(
           text: S.toStr(S.toInt(newValue.text))!, selection: newValue.selection);
-    else
+    } else {
       return TextEditingValue(
           text: oldValue.text, selection: oldValue.selection);
+    }
   }
 }
 
@@ -108,12 +116,13 @@ class TextLengthFormatter extends TextInputFormatter {
       TextEditingValue oldValue, TextEditingValue newValue) {
     if (
         (length >= 0) &&
-        (newValue.text.length > length))
+        (newValue.text.length > length)) {
       return TextEditingValue(
           text: oldValue.text, selection: oldValue.selection);
-    else
+    } else {
       return TextEditingValue(
           text: newValue.text, selection: newValue.selection);
+    }
   }
 }
 
@@ -133,15 +142,16 @@ class CustomFormatter extends TextInputFormatter {
     var formatters = format.split(';');
     for (String fmt in formatters) {
       if (!S.isNullOrEmpty(fmt)) {
-        fmt = fmt.replaceAll('()', '(' + '\'' + v + '\'' + ')');
+        fmt = fmt.replaceAll('()', '(\'$v\')');
         fmt = fmt.trim();
         v = Eval.evaluate(fmt);
         if (v == null) {
           v = oldValue.text;
           s = oldValue.selection;
           break;
-        } else
+        } else {
           v = S.toStr(v);
+        }
       }
     }
     return TextEditingValue(text: v, selection: s);

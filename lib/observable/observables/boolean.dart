@@ -14,14 +14,14 @@ class BooleanObservable extends Observable
   }
 
   @override
-  dynamic to(dynamic s)
+  dynamic to(dynamic value)
   {
     try
     {
-      if (s == null) return null;
-      if (s is bool) return s;
+      if (value == null) return null;
+      if (value is bool) return value;
 
-      var b = s.toString();
+      var b = value.toString();
       b = b.trim().toLowerCase();
       if ((b == 'false') || (b == '0') || (b == 'no'))  return false;
       if ((b == 'true')  || (b == '1') || (b == 'yes')) return true;

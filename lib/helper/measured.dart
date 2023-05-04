@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-typedef void OnWidgetSizeChange(Size size, {dynamic data});
+typedef OnWidgetSizeChange = void Function(Size size, {dynamic data});
 
 class MeasureObject extends RenderProxyBox
 {

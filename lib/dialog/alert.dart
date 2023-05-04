@@ -146,7 +146,7 @@ class Alert {
 
   // Alert dialog content widget
   Widget _buildDialog() {
-    final Widget _child = ConstrainedBox(
+    final Widget myChild = ConstrainedBox(
       constraints: style.constraints ??
           BoxConstraints.expand(width: double.infinity, height: double.infinity), child: Align(alignment: style.alertAlignment,
 //          child: SingleChildScrollView(
@@ -211,8 +211,8 @@ class Alert {
 //      ),
     );
     return onWillPopActive
-        ? WillPopScope(onWillPop: () async => false, child: _child)
-        : _child;
+        ? WillPopScope(onWillPop: () async => false, child: myChild)
+        : myChild;
   }
 
 // Returns the close button on the top right
@@ -230,8 +230,8 @@ class Alert {
         },
         child: MouseRegion(cursor: SystemMouseCursors.click, child: Container(
           alignment: FractionalOffset.topRight,
-          child: this.closeIcon != null
-              ? Container(child: this.closeIcon)
+          child: closeIcon != null
+              ? Container(child: closeIcon)
               : Container(
             width: 20,
             height: 20,
@@ -252,8 +252,7 @@ class Alert {
     List<Widget> expandedButtons = [];
     if (style.isButtonVisible) {
       if (buttons != null) {
-        buttons!.forEach(
-              (button) {
+        for (var button in buttons!) {
             var buttonWidget = Padding(
               padding: const EdgeInsets.only(left: 2, right: 2),
               child: button,
@@ -266,8 +265,7 @@ class Alert {
                 child: buttonWidget,
               ));
             }
-          },
-        );
+          }
       } else {
         Widget cancelButton = DialogButton(
           child: Text(

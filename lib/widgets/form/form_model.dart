@@ -1,18 +1,18 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/gps/payload.dart' as GPS;
-import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/datasources/gps/payload.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/event/handler.dart' ;
 import 'package:fml/phrase.dart';
-import 'package:fml/widgets/form/iFormField.dart';
+import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
-import 'package:fml/hive/form.dart' as HIVE;
+import 'package:fml/hive/form.dart' as hive_form;
 import 'package:fml/widgets/form/form_view.dart';
 import 'package:fml/widgets/input/input_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -56,10 +56,9 @@ class FormModel extends DecoratedWidgetModel
     {
       var values = v.split(",");
       _postbrokers = [];
-      values.forEach((e)
-      {
+      for (var e in values) {
         if (!S.isNullOrEmpty(e)) _postbrokers!.add(e.trim());
-      });
+      }
     }
   }
   List<String>? get postbrokers => _postbrokers;
@@ -69,7 +68,7 @@ class FormModel extends DecoratedWidgetModel
   set status (dynamic v)
   {
     StatusCodes? status = S.toEnum(v.toString(), StatusCodes.values);
-    if (status == null) status = StatusCodes.incomplete;
+    status ??= StatusCodes.incomplete;
     v = S.fromEnum(status);
     if (_status != null)
     {
@@ -77,8 +76,8 @@ class FormModel extends DecoratedWidgetModel
     }
     else if (v != null)
     {
-      if (_status == null)    _status    = StringObservable(Binding.toKey(id, 'status'),   v, scope: scope);
-      if (_completed == null) _completed = BooleanObservable(Binding.toKey(id, 'complete'), (status == StatusCodes.complete), scope: scope);
+      _status ??= StringObservable(Binding.toKey(id, 'status'),   v, scope: scope);
+      _completed ??= BooleanObservable(Binding.toKey(id, 'complete'), (status == StatusCodes.complete), scope: scope);
     }
   }
   String? get status => _status?.get();
@@ -155,10 +154,9 @@ class FormModel extends DecoratedWidgetModel
   {
     // set form dirty
     bool isDirty = false;
-    fields.forEach((field)
-    {
+    for (var field in fields) {
       if (field.dirty == true) isDirty = true;
-    });
+    }
     dirty = isDirty;
 
     // auto save?
@@ -168,10 +166,14 @@ class FormModel extends DecoratedWidgetModel
   set clean (bool b)
   {
     // clean all fields
-    fields.forEach((field) => field.dirty = false);
+    for (var field in fields) {
+      field.dirty = false;
+    }
 
     // clean all sub-forms
-    forms.forEach((form)   => form.clean  = false);
+    for (var form in forms) {
+      form.clean  = false;
+    }
   }
 
   // gps 
@@ -226,10 +228,9 @@ class FormModel extends DecoratedWidgetModel
 
   Map<String, String?> get map
   {
-    Map<String, String?> _map = Map<String, String?>();
+    Map<String, String?> myMap = <String, String?>{};
 
-      fields.forEach((field)
-      {
+      for (var field in fields) {
         if ((field.elementName != "attachment") && (!S.isNullOrEmpty(field.value)))
         {
           String? value;
@@ -237,24 +238,23 @@ class FormModel extends DecoratedWidgetModel
           
           // List of Values 
           
-          if (field.value is List) field.value.forEach((v)
+          if (field.value is List) {
+            field.value.forEach((v)
           {
-            value = (value == null) ? v.toString() : value! + "," + v.toString();
+            value = (value == null) ? v.toString() : "${value!},$v";
           });
-
-          //
-          // Single Value 
-          //
-          else value = field.value.toString();
+          } else {
+            value = field.value.toString();
+          }
 
           ///
           // Set the Value 
           ///
-          if(field.id != null) _map[field.id!] = value;
+          if(field.id != null) myMap[field.id!] = value;
         }
-      });
+      }
 
-    return _map;
+    return myMap;
   }
 
   FormModel(WidgetModel parent, String? id, {String? type, String? title, dynamic status, dynamic visible, dynamic autosave, dynamic mandatory, dynamic geocode, dynamic oncomplete, dynamic showexception}) : super(parent, id)
@@ -265,17 +265,12 @@ class FormModel extends DecoratedWidgetModel
     this.status         = status;
     this.autosave       = autosave;
     this.mandatory      = mandatory;
-    this.dirty          = false;
+    dirty          = false;
     this.geocode        = geocode;
     this.oncomplete     = oncomplete;
     this.showexception  = showexception;
   }
 
-  @override
-  dispose()
-  {
-    super.dispose();
-  }
 
   static FormModel? fromXml(WidgetModel parent, XmlElement xml)
   {
@@ -326,9 +321,11 @@ class FormModel extends DecoratedWidgetModel
         if (field != null)
         {
           dynamic value = field.value;
-          if (value is List)
-               field.value.clear();
-          else field.value = null;
+          if (value is List) {
+            field.value.clear();
+          } else {
+            field.value = null;
+          }
         }
       }
 
@@ -343,12 +340,14 @@ class FormModel extends DecoratedWidgetModel
         IFormField field = getField(id)!;
 
           dynamic value = field.value;
-          if (value is List)
-               field.value.add(answer);
-          else field.value = answer;
+          if (value is List) {
+            field.value.add(answer);
+          } else {
+            field.value = answer;
+          }
 
         /// GeoCode for each [iFormField] which is set on answer
-        field.geocode = GPS.Payload(
+        field.geocode = Payload(
             latitude: S.toDouble(Xml.attribute(node: node, tag: 'latitude')),
             longitude: S.toDouble(Xml.attribute(node: node, tag: 'longitude')),
             altitude: S.toDouble(Xml.attribute(node: node, tag: 'altitude')),
@@ -359,47 +358,45 @@ class FormModel extends DecoratedWidgetModel
     clean = true;
 
     // add dirty listener to each field
-    fields.forEach((field)
-    {
+    for (var field in fields) {
       if (field.dirtyObservable != null) field.dirtyObservable!.registerListener(onDirtyListener);
-    });
+    }
 
     // add dirty listener to each sub-form
-    forms.forEach((form)
-    {
+    for (var form in forms) {
       Observable? property = form.dirtyObservable;
       if (property != null) property.registerListener(onDirtyListener);
-    });
+    }
   }
 
   static List<IFormField> getFields(List<WidgetModel>? children)
   {
     List<IFormField> fields = [];
-    if (children != null)
-      children.forEach((child)
-      {
+    if (children != null) {
+      for (var child in children) {
         if (child is IFormField) fields.add(child as IFormField);
-        if (!(child is IForm)) fields.addAll(getFields(child.children));
-      });
+        if (child is! IForm) fields.addAll(getFields(child.children));
+      }
+    }
     return fields;
   }
 
   static List<IForm> getForms(List<WidgetModel>? children)
   {
     List<IForm> forms = [];
-    if (children != null)
-      children.forEach((child)
-      {
+    if (children != null) {
+      for (var child in children) {
         if (child is IForm) forms.add(child as IForm);
-        if (!(child is IForm)) forms.addAll(getForms(child.children));
-      });
+        if (child is! IForm) forms.addAll(getForms(child.children));
+      }
+    }
     return forms;
   }
 
-  Future<bool> _post(HIVE.Form? form, {bool? commit}) async
+  Future<bool> _post(hive_form.Form? form, {bool? commit}) async
   {
     bool ok = true;
-    if ((scope != null) && (postbrokers != null))
+    if ((scope != null) && (postbrokers != null)){
       for (String id in postbrokers!)
       {
         IDataSource? source = scope!.getDataSource(id);
@@ -409,8 +406,10 @@ class FormModel extends DecoratedWidgetModel
           ok = await source.start(key: form!.key);
         }
         if (!ok) break;
-      }
-    else ok = false;
+      }}
+    else {
+      ok = false;
+    }
     return ok;
   }
 
@@ -421,10 +420,9 @@ class FormModel extends DecoratedWidgetModel
     bool ok = true;
 
     // Clear Fields
-    fields.forEach((field)
-    {
+    for (var field in fields) {
       field.value = field.defaultValue ?? "";
-    });
+    }
 
     // Set Clean
     if (ok == true) clean = true;
@@ -451,7 +449,7 @@ class FormModel extends DecoratedWidgetModel
     }
 
     // Save the Form
-    HIVE.Form? form = await save();
+    hive_form.Form? form = await save();
 
     // Post the Form
     if (ok) ok = await _post(form);
@@ -490,13 +488,17 @@ class FormModel extends DecoratedWidgetModel
     
     node.children.removeWhere((child)
     {
-      if ((child is XmlElement) && (child.name.local== "ANSWER"))
-           return true;
-      else return false;
+      if ((child is XmlElement) && (child.name.local== "ANSWER")) {
+        return true;
+      } else {
+        return false;
+      }
     });
 
     // Insert New Answers
-    fields.forEach((field) => _insertAnswers(node, field));
+    for (var field in fields) {
+      _insertAnswers(node, field);
+    }
 
     return ok;
   }
@@ -506,9 +508,8 @@ class FormModel extends DecoratedWidgetModel
     try
     {
       // field is postable?
-      if ((field.postable ?? false) && (field.values != null))
-        field.values!.forEach((value)
-        {
+      if ((field.postable ?? false) && (field.values != null)) {
+        for (var value in field.values!) {
           // create new element
           XmlElement node = XmlElement(XmlName("ANSWER"));
 
@@ -540,10 +541,11 @@ class FormModel extends DecoratedWidgetModel
             }
 
             // special characters in xml? wrap in CDATA
-            else if (Xml.hasIllegalCharacters(value)) node.children.add(XmlCDATA(value));
-
-            // normal text
-            else node.children.add(XmlText(value));
+            else if (Xml.hasIllegalCharacters(value)) {
+              node.children.add(XmlCDATA(value));
+            } else {
+              node.children.add(XmlText(value));
+            }
           }
           catch(e)
           {
@@ -552,7 +554,8 @@ class FormModel extends DecoratedWidgetModel
 
           // add to root
           root.children.add(node);
-        });
+        }
+      }
     }
     catch(e)
     {
@@ -583,9 +586,8 @@ class FormModel extends DecoratedWidgetModel
       XmlElement root = XmlElement(XmlName(S.isNullOrEmpty(rootname) ? "FORM" : rootname));
       document.children.add(root);
 
-      if (fields != null)
-        fields.forEach((field)
-        {
+      if (fields != null) {
+        for (var field in fields) {
           // postable?
           if (field.postable == true)
           {
@@ -637,10 +639,11 @@ class FormModel extends DecoratedWidgetModel
                   }
 
                   // Non-XML? Wrap in CDATA
-                  else if (Xml.hasIllegalCharacters(value)) node.children.add(XmlCDATA(value));
-
-                  // Normal Text
-                  else node.children.add(XmlText(value));
+                  else if (Xml.hasIllegalCharacters(value)) {
+                    node.children.add(XmlCDATA(value));
+                  } else {
+                    node.children.add(XmlText(value));
+                  }
                 }
                 on XmlException catch(e)
                 {
@@ -686,7 +689,8 @@ class FormModel extends DecoratedWidgetModel
               root.children.add(node);
             }
           }
-        });
+        }
+      }
 
       // Set Body
       return document.toXmlString(pretty: true);
@@ -736,9 +740,9 @@ class FormModel extends DecoratedWidgetModel
     return null;
   }
 
-  Future<HIVE.Form?> save() async
+  Future<hive_form.Form?> save() async
   {
-    HIVE.Form? form;
+    hive_form.Form? form;
 
     // Validate the Data
     bool ok = (await validate() == null);
@@ -747,13 +751,13 @@ class FormModel extends DecoratedWidgetModel
     if (ok)
     {
       // Serialize the Form
-      await serialize(this.element, fields);
+      await serialize(element, fields);
 
       // Serialize Outer Xml
       String xml = framework!.element!.toXmlString(pretty: true);
 
       // Lookup Form
-      form = await HIVE.Form.find(framework!.key);
+      form = await hive_form.Form.find(framework!.key);
 
       // Update the Form
       if (form != null)
@@ -771,7 +775,7 @@ class FormModel extends DecoratedWidgetModel
       else
       {
           Log().info('Inserting New form');
-          form = HIVE.Form(key: framework?.key,
+          form = hive_form.Form(key: framework?.key,
               parent: framework?.dependency,
               complete: completed,
               template: xml,
@@ -787,35 +791,34 @@ class FormModel extends DecoratedWidgetModel
   Future<List<IFormField>?> _getMissing() async
   {
     List<IFormField>? missing;
-    fields.forEach((field)
-    {
+    for (var field in fields) {
       bool? isMandatory;
       if ((isMandatory == null) && (field.mandatory != null)) isMandatory = field.mandatory;
-      if ((isMandatory == null) && (this.mandatory != null))  isMandatory = this.mandatory;
-      if (isMandatory  == null) isMandatory = false;
+      if ((isMandatory == null) && (mandatory != null))  isMandatory = mandatory;
+      isMandatory ??= false;
       if ((isMandatory) && (!field.answered))
       {
-        if (missing == null) missing = [];
-        missing!.add(field);
+        missing ??= [];
+        missing.add(field);
       }
-    });
+    }
     return missing;
   }
 
   Future<List<IFormField>?> _getAlarms() async
   {
     List<IFormField>? alarming;
-    fields.forEach((field)
-    {
+    for (var field in fields) {
       if (field.alarming!)
       {
-        if (alarming == null) alarming = [];
-        alarming!.add(field);
+        alarming ??= [];
+        alarming.add(field);
       }
-    });
+    }
     return alarming;
   }
 
+  @override
   Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
   {
     if (scope == null) return null;
@@ -844,5 +847,6 @@ class FormModel extends DecoratedWidgetModel
     return super.onDataSourceSuccess(source, list);
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(FormView(this));
 }

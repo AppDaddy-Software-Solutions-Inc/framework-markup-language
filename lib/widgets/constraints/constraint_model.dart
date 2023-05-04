@@ -249,9 +249,14 @@ class ConstraintModel extends WidgetModel
         _minWidthPercentage = S.toDouble(v.split("%")[0]);
         v = null;
       }
-      else _minWidthPercentage = null;
-      if (_minWidth == null) _minWidth = DoubleObservable(Binding.toKey(id, 'minWidth'), v, scope: scope, listener: onPropertyChange);
-      else if (v != null) _minWidth!.set(v);
+      else {
+        _minWidthPercentage = null;
+      }
+      if (_minWidth == null) {
+        _minWidth = DoubleObservable(Binding.toKey(id, 'minWidth'), v, scope: scope, listener: onPropertyChange);
+      } else if (v != null) {
+        _minWidth!.set(v);
+      }
     }
   }
   double? get minWidth => _minWidth?.get();
@@ -268,9 +273,14 @@ class ConstraintModel extends WidgetModel
         _maxWidthPercentage = S.toDouble(v.split("%")[0]);
         v = null;
       }
-      else _maxWidthPercentage = null;
-      if (_maxWidth == null) _maxWidth = DoubleObservable(Binding.toKey(id, 'maxwidth'), v, scope: scope, listener: onPropertyChange);
-      else if (v != null) _maxWidth!.set(v);
+      else {
+        _maxWidthPercentage = null;
+      }
+      if (_maxWidth == null) {
+        _maxWidth = DoubleObservable(Binding.toKey(id, 'maxwidth'), v, scope: scope, listener: onPropertyChange);
+      } else if (v != null) {
+        _maxWidth!.set(v);
+      }
     }
   }
   double? get maxWidth => _maxWidth?.get();
@@ -287,9 +297,14 @@ class ConstraintModel extends WidgetModel
         _minHeightPercentage = S.toDouble(v.split("%")[0]);
         v = null;
       }
-      else _minHeightPercentage = null;
-      if (_minHeight == null) _minHeight = DoubleObservable(Binding.toKey(id, 'minheight'), v, scope: scope, listener: onPropertyChange);
-      else if (v != null) _minHeight!.set(v);
+      else {
+        _minHeightPercentage = null;
+      }
+      if (_minHeight == null) {
+        _minHeight = DoubleObservable(Binding.toKey(id, 'minheight'), v, scope: scope, listener: onPropertyChange);
+      } else if (v != null) {
+        _minHeight!.set(v);
+      }
     }
   }
   double? get minHeight => _minHeight?.get();
@@ -306,9 +321,14 @@ class ConstraintModel extends WidgetModel
         _maxHeightPercentage = S.toDouble(v.split("%")[0]);
         v = null;
       }
-      else _maxHeightPercentage = null;
-      if (_maxHeight == null) _maxHeight = DoubleObservable(Binding.toKey(id, 'maxheight'), v, scope: scope, listener: onPropertyChange);
-      else if (v != null) _maxHeight!.set(v);
+      else {
+        _maxHeightPercentage = null;
+      }
+      if (_maxHeight == null) {
+        _maxHeight = DoubleObservable(Binding.toKey(id, 'maxheight'), v, scope: scope, listener: onPropertyChange);
+      } else if (v != null) {
+        _maxHeight!.set(v);
+      }
     }
   }
   double? get maxHeight => _maxHeight?.get();
@@ -333,7 +353,9 @@ class ConstraintModel extends WidgetModel
       if (widget.maxWidth         != null) return max(widget.maxWidth!        - widget.horizontalPadding,0);
       return ancestorMaxWidth(widget.parent);
     }
-    else return double.infinity;
+    else {
+      return double.infinity;
+    }
   }
 
   /// walks up the model tree looking for
@@ -341,8 +363,8 @@ class ConstraintModel extends WidgetModel
   double get myMaxWidth
   {
     if (system.maxWidth  != null) return system.maxWidth!;
-    if (this.width       != null) return width!;
-    if (this.maxWidth    != null) return maxWidth!;
+    if (width       != null) return width!;
+    if (maxWidth    != null) return maxWidth!;
     return ancestorMaxWidth(parent);
   }
 
@@ -350,7 +372,7 @@ class ConstraintModel extends WidgetModel
   // otherwise it gets the maxWidth from its parent walking up the model tree
   double get calculatedMaxWidthForPercentage
   {
-    double maxWidth = system.maxWidth ?? ancestorMaxWidth(this.parent, forPercent: true);
+    double maxWidth = system.maxWidth ?? ancestorMaxWidth(parent, forPercent: true);
     if (maxWidth == double.infinity) maxWidth = System().screenwidth.toDouble();
     return maxWidth;
   }
@@ -386,7 +408,9 @@ class ConstraintModel extends WidgetModel
 
       return ancestorMaxHeight(widget.parent, padding);
     }
-    else return double.infinity;
+    else {
+      return double.infinity;
+    }
   }
 
   /// walks up the model tree looking for
@@ -394,8 +418,8 @@ class ConstraintModel extends WidgetModel
   double get myMaxHeight
   {
     if (system.maxHeight != null) return system.maxHeight!;
-    if (this.height      != null) return height!;
-    if (this.maxHeight   != null) return maxHeight!;
+    if (height      != null) return height!;
+    if (maxHeight   != null) return maxHeight!;
     return ancestorMaxHeight(parent, 0);
   }
 
@@ -403,7 +427,7 @@ class ConstraintModel extends WidgetModel
   // otherwise it gets the maxHeight from its parent walking up the model tree
   double get calculatedMaxHeightForPercentage
   {
-    double maxHeight = system.maxHeight ?? ancestorMaxHeight(this.parent, 0, forPercent: true);
+    double maxHeight = system.maxHeight ?? ancestorMaxHeight(parent, 0, forPercent: true);
     if (maxHeight == double.infinity) maxHeight = System().screenheight.toDouble();
     return maxHeight;
   }

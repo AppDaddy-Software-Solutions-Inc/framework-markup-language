@@ -108,15 +108,21 @@ class S
   /// returns true if v is all upper case characters
   static bool isUpperCase(dynamic v)
   {
-    if (v is String && v == v.toUpperCase()) return true;
-    else return false;
+    if (v is String && v == v.toUpperCase()) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /// returns true if v is all lower case characters
   static bool isLowerCase(dynamic v)
   {
-    if (v is String && v == v.toLowerCase()) return true;
-    else return false;
+    if (v is String && v == v.toLowerCase()) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   static UriData? toDataUri(dynamic uri)
@@ -142,7 +148,9 @@ class S
       double.parse(s);
       return true;
     }
-    catch(e) {}
+    catch(e) {
+      Log().debug('$e');
+    }
     return false;
   }
 
@@ -150,7 +158,7 @@ class S
   static bool isPercentage(dynamic s)
   {
     if   (s == null)   return false;
-    if (!(s is String)) return false;
+    if (s is! String) return false;
 
     try
     {
@@ -160,7 +168,9 @@ class S
         return isNumber(s);
       }
     }
-    catch(e) {}
+    catch(e) {
+      Log().debug('$e');
+    }
     return false;
   }
 
@@ -277,11 +287,7 @@ class S
 
     try
     {
-      if (result == null)
-      {
-        //tryparse returns null if it fails so this was never caught.
-        result = DateTime.parse(datetime!);
-      }
+      result ??= DateTime.parse(datetime!);
     }
     on FormatException catch(e)
     {
@@ -302,9 +308,11 @@ class S
     String? result;
     try
     {
-      if (format is String)
-           result = DateFormat(format).format(datetime);
-      else result = datetime.toString();
+      if (format is String) {
+        result = DateFormat(format).format(datetime);
+      } else {
+        result = datetime.toString();
+      }
     }
     catch(e)
     {
@@ -337,9 +345,11 @@ class S
   static int? mapInt(Map? map, dynamic key, {int? defaultValue})
   {
     dynamic value = mapVal(map,key,defaultValue: defaultValue);
-    if (isNumber(value))
-         value = S.toInt(value);
-    else value = defaultValue;
+    if (isNumber(value)) {
+      value = S.toInt(value);
+    } else {
+      value = defaultValue;
+    }
     return value;
   }
 
@@ -347,9 +357,11 @@ class S
   static bool? mapBoo(Map? map, dynamic key, {bool? defaultValue})
   {
     dynamic value = mapVal(map,key,defaultValue: defaultValue);
-    if (isBool(value))
-         value = S.toBool(value);
-    else value = defaultValue;
+    if (isBool(value)) {
+      value = S.toBool(value);
+    } else {
+      value = defaultValue;
+    }
     return value;
   }
 
@@ -357,9 +369,11 @@ class S
   static double? mapDbl(Map map, dynamic key, {double? defaultValue})
   {
     dynamic value = mapVal(map,key,defaultValue: defaultValue);
-    if (isNumber(value))
-         value = S.toDouble(value);
-    else value = defaultValue;
+    if (isNumber(value)) {
+      value = S.toDouble(value);
+    } else {
+      value = defaultValue;
+    }
     return value;
   }
 
@@ -481,7 +495,9 @@ class S
       if (s is String)
       {
         // length must be divible by 4
-        while (s.length % 4 != 0) s = s + "=";
+        while (s.length % 4 != 0) {
+          s = s + "=";
+        }
         var bytes = Base64Codec().decode(s);
         return utf8.decode(bytes);
       }
@@ -516,8 +532,8 @@ class S
   // TODO
   static int _setBit({required int bit, int? value, required bool on})
   {
-    int _value = pow(2,bit - 1) as int;
-    return on ? (value! | _value) : (value! - (value & _value));
+    int myValue = pow(2,bit - 1) as int;
+    return on ? (value! | myValue) : (value! - (value & myValue));
   }
 
   // TODO
@@ -526,8 +542,8 @@ class S
     if (bit   == null) return false;
     if (value == null) return false;
 
-    int _value = pow(2,bit - 1) as int;
-    return ((value & _value) == _value);
+    int myValue = pow(2,bit - 1) as int;
+    return ((value & myValue) == myValue);
   }
 
   // TODO
@@ -571,29 +587,35 @@ class S
 
     if ((a is String) && (ignoreCase == true)) a = a.toLowerCase();
     if ((b is String) && (ignoreCase == true)) b = b.toLowerCase();
-    if (ascending == true)
+    if (ascending == true) {
       return a.compareTo(b);
-    else return b.compareTo(a);
+    } else {
+      return b.compareTo(a);
+    }
   }
 
   /// Trim a String from the end of another String
   static String rtrim(String s, String char)
   {
-    while (s.endsWith(char)) s = s.replaceFirst(char, "", s.lastIndexOf(char));
+    while (s.endsWith(char)) {
+      s = s.replaceFirst(char, "", s.lastIndexOf(char));
+    }
     return s;
   }
 
   /// Trim a String from the start of another String
   static String ltrim(String s, String char)
   {
-    while (s.startsWith(char)) s = s.replaceFirst(char, "");
+    while (s.startsWith(char)) {
+      s = s.replaceFirst(char, "");
+    }
     return s;
   }
 
   /// Returns a String Datetime of the current time as this format `13:37:09:480`
   static String timestamp()
   {
-    return DateTime.now().hour.toString().padLeft(2,'0') + ':' + DateTime.now().minute.toString().padLeft(2,'0') + ":" + DateTime.now().second.toString().padLeft(2,'0') + "." + DateTime.now().millisecond.toString().padLeft(3,'0');
+    return "${DateTime.now().hour.toString().padLeft(2,'0')}:${DateTime.now().minute.toString().padLeft(2,'0')}:${DateTime.now().second.toString().padLeft(2,'0')}.${DateTime.now().millisecond.toString().padLeft(3,'0')}";
   }
 
   static Future<String> mimetype(String path, {String defaultType = ""}) async
@@ -666,16 +688,16 @@ class S
     var original  = prototype;
     var bindings  = Binding.getBindings(prototype);
     List<String?> processed = [];
-    if (bindings != null)
-    bindings.forEach((binding)
-    {
+    if (bindings != null) {
+      for (var binding in bindings) {
       if ((binding.source == 'data') && (!processed.contains(binding.signature)))
       {
         processed.add(binding.signature);
-        var signature   = "{" + placeholder + "." + 'data' + "." + binding.property + (binding.dotnotation?.signature != null ? ".${binding.dotnotation!.signature}" : "") + "}";
+        var signature   = "{$placeholder.data.${binding.property}${(binding.dotnotation?.signature != null ? ".${binding.dotnotation!.signature}" : "")}}";
         prototype       = prototype.replaceAll(binding.signature, signature);
       }
-    });
+    }
+    }
 
     // parse
     if (prototype != original)
@@ -694,7 +716,7 @@ class S
     {
       prototype = prototype.replaceAll(placeholder, id);
       var document = Xml.tryParse(prototype);
-      var node = document != null ? document.rootElement : null;
+      var node = document?.rootElement;
       return node;
     }
     return null;
@@ -706,7 +728,13 @@ class S
     final List<String> reservedCharacters = ['?', ':', '"', '*', '|', '/', '\\', '<', '>', '+', '[', ']'];
     final RegExp onlyAlphanumericRegex = RegExp(r'''[^a-zA-Z0-9\s.]''');
     String returnString = filename;
-    onlyAlphanumeric ? returnString = returnString.replaceAll(onlyAlphanumericRegex, '') : reservedCharacters.forEach((c) => returnString = returnString.replaceAll(c, separator));
+    if(onlyAlphanumeric) {
+      returnString = returnString.replaceAll(onlyAlphanumericRegex, '');
+    } else {
+      for (var c in reservedCharacters) {
+        returnString = returnString.replaceAll(c, separator);
+      }
+    }
     if (!withSpaces) returnString = returnString.replaceAll(' ', separator);
     return lowercase ? returnString.toLowerCase() : returnString;
   }

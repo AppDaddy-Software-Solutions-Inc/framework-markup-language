@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/models/custom_exception.dart';
 import 'package:fml/system.dart';
@@ -9,7 +9,7 @@ import 'package:fml/datasources/base/model.dart';
 import 'package:fml/event/handler.dart' ;
 import 'package:xml/xml.dart';
 import 'payload.dart';
-import 'iNfcListener.dart';
+import 'nfc_listener_interface.dart';
 import 'nfc.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
@@ -127,6 +127,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
 
   }
 
+  @override
   Future<bool> start({bool refresh = false, String? key}) async
   {
     bool ok = true;
@@ -152,6 +153,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
     return true;
   }
 
+  @override
   Future<bool> stop() async
   {
     Reader().removeListener(this);
@@ -164,7 +166,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
     if (!S.isNullOrEmpty(message))
     {
       Log().debug('NFC WRITE: Polling for 60 seconds');
-      String stripTags = message!.replaceAll('\r', '').replaceAll('\t', '').replaceAll('\n', '').replaceAll(RegExp("\<[^\>]*\>", caseSensitive: false), '');
+      String stripTags = message!.replaceAll('\r', '').replaceAll('\t', '').replaceAll('\n', '').replaceAll(RegExp("<[^>]*>", caseSensitive: false), '');
       Writer writer = Writer(stripTags, callback: onResult);
       try {
         bool ok = await writer.write();
@@ -279,6 +281,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
+  @override
   onMessage(Payload payload)
   {
     // enabled?
@@ -298,7 +301,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
 
     // if the message didn't deserialize (length 0)
     // is the payload url encoded?
-    if (data.length == 0 && payload.message != null)
+    if (data.isEmpty && payload.message != null)
     {
       // is a valid url query string?
       String msg = payload.message!.trim();
@@ -309,7 +312,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
       if (uri != null && uri.hasQuery)
       {
         // add payload url parameters
-        Map<String, dynamic> map = Map<String, dynamic>();
+        Map<String, dynamic> map = <String, dynamic>{};
         uri.queryParameters.forEach((k, v) => map[k] = v);
         if(!map.containsKey('payload')) map['payload'] = payload.message;
         if(!map.containsKey('serial'))  map['serial'] = payload.id;
@@ -320,7 +323,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
     // if the message didn't deserialize (length 0)
     // create a simple map with topic and message bindables <id>.data.topic and <id>.data.message
     // otherwise the data is the deserialized message payload
-    if (data.length == 0) data.insert(0, {'id' : payload.id, 'serial': payload.id , 'payload' : payload.message});
+    if (data.isEmpty) data.insert(0, {'id' : payload.id, 'serial': payload.id , 'payload' : payload.message});
 
     // fire the onresponse
     onSuccess(data, code: 200);

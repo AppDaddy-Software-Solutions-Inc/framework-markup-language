@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'busy_model.dart';
 
@@ -11,12 +11,13 @@ import 'busy_model.dart';
 /// to let the user know its 'busy' working in the background
 class BusyView extends StatefulWidget implements IWidgetView
 {
+  @override
   final BusyModel model;
 
   BusyView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _BusyViewState createState() => _BusyViewState();
+  State<BusyView> createState() => _BusyViewState();
 }
 
 class _BusyViewState extends WidgetState<BusyView>
@@ -48,7 +49,7 @@ class _BusyViewState extends WidgetState<BusyView>
     Widget view = CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(color), strokeWidth: stroke);
     //Widget view = Image.asset("images/progress.gif");
     var spinner  = SizedBox(width: size + 10, height: size + 10, child: view);
-    var curtain;
+    Widget? curtain;
     if (modal)
     {
       Size s = MediaQuery.of(context).size;

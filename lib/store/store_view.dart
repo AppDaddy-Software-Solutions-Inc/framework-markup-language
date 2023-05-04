@@ -32,7 +32,7 @@ class StoreView extends StatefulWidget
 
 class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin implements IModelListener, INavigatorObserver
 {
-  bool _visible = false;
+  final bool _visible = false;
   late InputModel appURLInput;
   ButtonModel? storeButton;
   MenuModel menuModel = MenuModel(null, 'Application Menu');
@@ -69,11 +69,15 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
     super.dispose();
   }
 
+  @override
   BuildContext getNavigatorContext() => context;
 
+  @override
   Map<String,String>? onNavigatorPop() => null;
+  @override
   onNavigatorChange() {}
 
+  @override
   void onNavigatorPush({Map<String?, String>? parameters})
   {
     // reset the theme
@@ -82,9 +86,10 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
   }
 
   /// Callback to fire the [_ViewState.build] when the [StoreModel] changes
+  @override
   onModelChange(WidgetModel model, {String? property, dynamic value})
   {
-    if (this.mounted) setState((){});
+    if (mounted) setState((){});
   }
 
   @override
@@ -120,7 +125,7 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
             body: SafeArea(child: Stack(children: [Container(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.bottomRight, end: Alignment.topLeft, stops: [0.4, 1.0], colors: [/*Theme.of(context).colorScheme.inversePrimary*/Theme.of(context).colorScheme.surfaceVariant, Theme.of(context).colorScheme.surface])),),
               Center(child: Opacity(opacity: 0.03, child: Image(image: AssetImage('assets/images/fml-logo.png')))),
               Center(child: apps.isEmpty ? noAppDisplay : storeDisplay),
-              Align(alignment: Alignment.bottomLeft, child: Padding(padding: EdgeInsets.only(left: 5), child: Text(phrase.version + ' ' + version, style: TextStyle(color: Colors.black26))),),
+              Align(alignment: Alignment.bottomLeft, child: Padding(padding: EdgeInsets.only(left: 5), child: Text('${phrase.version} $version', style: TextStyle(color: Colors.black26))),),
               Center(child: BusyView(BusyModel(Store(), visible: Store().busy, observable: Store().busyObservable, modal: true)))]))
         )
     );
@@ -191,7 +196,7 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
       useRootNavigator: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(phrase.close + ' ' + phrase.application + '?'),
+          title: Text('${phrase.close} ${phrase.application}?'),
           content: SizedBox(width: MediaQuery.of(context).size.width - 60, height: 80,
             child: Column(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.end, children: [
               Row(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.end, children: [

@@ -43,5 +43,6 @@ class ScopeModel extends DecoratedWidgetModel
     super.dispose();
   }
 
+  @override
   Widget getView({Key? key}) => ScopeView(this);
 }

@@ -142,5 +142,6 @@ class FlipCardModel extends AnimationChildModel
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
+  @override
   Widget getAnimatedView(Widget child, {AnimationController? controller}) =>  FlipCardView(this, child, controller);
 }

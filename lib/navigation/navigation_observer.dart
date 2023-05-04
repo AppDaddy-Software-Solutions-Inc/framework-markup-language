@@ -13,7 +13,7 @@ class NavigationObserver extends NavigatorObserver
 {
   final List<INavigatorObserver> _listeners = [];
 
-  static NavigationObserver _singleton = NavigationObserver._init();
+  static final NavigationObserver _singleton = NavigationObserver._init();
   factory NavigationObserver()
   {
     return _singleton;
@@ -28,13 +28,15 @@ class NavigationObserver extends NavigatorObserver
     /////////////////////////
     /* Notify Pushed Route */
     /////////////////////////
-    INavigatorObserver? _pushed = listenerOf(route);
-    if (_pushed != null) _pushed.onNavigatorPush();
+    INavigatorObserver? pushed = listenerOf(route);
+    if (pushed != null) pushed.onNavigatorPush();
 
     ///////////////////
     /* Signal Change */
     ///////////////////
-    for (INavigatorObserver listener in _listeners) listener.onNavigatorChange();
+    for (INavigatorObserver listener in _listeners) {
+      listener.onNavigatorChange();
+    }
   }
 
   @override
@@ -42,24 +44,26 @@ class NavigationObserver extends NavigatorObserver
   {
     super.didPop(route, previousRoute);
 
-    INavigatorObserver? _popped = listenerOf(route);
-    INavigatorObserver? _pushed = listenerOf(previousRoute);
+    INavigatorObserver? popped = listenerOf(route);
+    INavigatorObserver? pushed = listenerOf(previousRoute);
 
     ////////////////////
     /* Get Parameters */
     ////////////////////
     Map<String?, String>? parameters;
-    if (_popped != null) parameters = _popped.onNavigatorPop();
+    if (popped != null) parameters = popped.onNavigatorPop();
 
     /////////////////////////
     /* Notify Pushed Route */
     /////////////////////////
-    if (_pushed != null) _pushed.onNavigatorPush(parameters: parameters);
+    if (pushed != null) pushed.onNavigatorPush(parameters: parameters);
 
     ///////////////////
     /* Signal Change */
     ///////////////////
-    for (INavigatorObserver listener in _listeners) listener.onNavigatorChange();
+    for (INavigatorObserver listener in _listeners) {
+      listener.onNavigatorChange();
+    }
   }
 
   @override
@@ -67,24 +71,26 @@ class NavigationObserver extends NavigatorObserver
   {
     super.didRemove(route, previousRoute);
 
-    INavigatorObserver? _popped = listenerOf(route);
-    INavigatorObserver? _pushed = listenerOf(previousRoute);
+    INavigatorObserver? popped = listenerOf(route);
+    INavigatorObserver? pushed = listenerOf(previousRoute);
 
     ////////////////////
     /* Get Parameters */
     ////////////////////
     Map<String?, String>? parameters;
-    if (_popped != null) parameters = _popped.onNavigatorPop();
+    if (popped != null) parameters = popped.onNavigatorPop();
 
     /////////////////////////
     /* Notify Pushed Route */
     /////////////////////////
-    if (_pushed != null) _pushed.onNavigatorPush(parameters: parameters);
+    if (pushed != null) pushed.onNavigatorPush(parameters: parameters);
 
     ///////////////////
     /* Signal Change */
     ///////////////////
-    for (INavigatorObserver listener in _listeners) listener.onNavigatorChange();
+    for (INavigatorObserver listener in _listeners) {
+      listener.onNavigatorChange();
+    }
   }
 
   @override
@@ -92,18 +98,20 @@ class NavigationObserver extends NavigatorObserver
   {
     super.didReplace(newRoute: newRoute, oldRoute: oldRoute);
 
-    INavigatorObserver? _popped = listenerOf(oldRoute);
-    INavigatorObserver? _pushed = listenerOf(newRoute);
+    INavigatorObserver? popped = listenerOf(oldRoute);
+    INavigatorObserver? pushed = listenerOf(newRoute);
 
     /* Get Parameters */
     Map<String?, String>? parameters;
-    if (_popped != null) parameters = _popped.onNavigatorPop();
+    if (popped != null) parameters = popped.onNavigatorPop();
 
     /* Notify Pushed Route */
-    if (_pushed != null) _pushed.onNavigatorPush(parameters: parameters);
+    if (pushed != null) pushed.onNavigatorPush(parameters: parameters);
 
     /* Signal Change */
-    for (INavigatorObserver listener in _listeners) listener.onNavigatorChange();
+    for (INavigatorObserver listener in _listeners) {
+      listener.onNavigatorChange();
+    }
   }
 
   registerListener(INavigatorObserver listener)

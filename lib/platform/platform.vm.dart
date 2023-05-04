@@ -48,7 +48,9 @@ class Platform
         if (directory != null) folder = directory.path;
       }
     }
-    catch(e){}
+    catch(e){
+      Log().debug('$e');
+    }
 
     try
     {
@@ -58,7 +60,9 @@ class Platform
         folder = directory.path;
       }
     }
-    catch(e){}
+    catch(e){
+      Log().debug('$e');
+    }
 
     try
     {
@@ -68,17 +72,21 @@ class Platform
         if (directory != null) folder = directory.path;
       }
     }
-    catch(e){}
+    catch(e){
+      Log().debug('$e');
+    }
 
     if (folder != null)
     {
       String path = join(folder,filepath);
-      File file = new File(path);
+      File file = File(path);
       await file.writeAsBytes(bytes);
       OpenFilex.open(path);
       return file;
     }
-    else System.toast("Unable to save file");
+    else {
+      System.toast("Unable to save file");
+    }
   }
 
   static dynamic fileSaveAsFromBlob(dynamic blob, String filepath)
@@ -233,7 +241,7 @@ class Platform
     }
     catch(e)
     {
-      Log().exception(e, caller: 'platform.vm.dart => bool deleteFile(' + filepath + ')');
+      Log().exception(e, caller: 'platform.vm.dart => bool deleteFile($filepath)');
       return false;
     }
   }

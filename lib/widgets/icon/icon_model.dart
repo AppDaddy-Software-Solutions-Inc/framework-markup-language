@@ -127,5 +127,6 @@ class IconModel extends DecoratedWidgetModel  {
     super.dispose();
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(IconView(this));
 }

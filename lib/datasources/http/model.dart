@@ -2,7 +2,7 @@
 import 'dart:io';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/base/model.dart';
-import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/datasources/http/http.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/phrase.dart';
@@ -139,22 +139,24 @@ class HttpModel extends DataSourceModel implements IDataSource
 
     // build headers
     var headers = Xml.getChildElements(node: xml, tag: 'header');
-    if (headers != null)
+    if (headers != null){
     for (var node in headers)
     {
       // set headers
-      if (this.headers == null) this.headers = Map<String,String>();
+      if (this.headers == null) this.headers = <String,String>{};
       String? key   = Xml.get(node: node, tag: 'key');
       String? value = Xml.get(node: node, tag: 'value');
       if (!S.isNullOrEmpty(key) && !S.isNullOrEmpty(value)) this.headers![key!] = value!;
+    }
     }
   }
 
   onUrlChange(Observable observable)
   {
-    if ((initialized == true) && (autoexecute == true) && (enabled != false)) start(refresh: this.refresh);
+    if ((initialized == true) && (autoexecute == true) && (enabled != false)) start(refresh: refresh);
   }
 
+  @override
   Future<bool> start({bool refresh = false, String? key}) async
   {
     if (enabled == false) return false;
@@ -253,9 +255,11 @@ class HttpModel extends DataSourceModel implements IDataSource
     if (response.statusCode == HttpStatus.ok) toHive(url, response.body);
 
     // process response
-    if (response.statusCode != HttpStatus.ok)
-         return await super.onFail(data, code: response.statusCode, message: msg);
-    else return await super.onSuccess(data,  code: response.statusCode, message: msg);
+    if (response.statusCode != HttpStatus.ok) {
+      return await super.onFail(data, code: response.statusCode, message: msg);
+    } else {
+      return await super.onSuccess(data,  code: response.statusCode, message: msg);
+    }
   }
 
   @override

@@ -100,5 +100,6 @@ class DraggableModel extends DecoratedWidgetModel
     return ok;
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(DraggableView(this));
 }

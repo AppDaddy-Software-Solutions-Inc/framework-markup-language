@@ -31,10 +31,9 @@ class DroppableModel extends DecoratedWidgetModel
   }
   String? get ondrop => _ondrop?.get();
 
-  DroppableModel(WidgetModel parent, String?  id, {dynamic ondrop, dynamic accept}) : super(parent, id)
+  DroppableModel(WidgetModel parent, String?  id, {dynamic ondrop, this.accept}) : super(parent, id)
   {
     this.ondrop = ondrop;
-    this.accept = accept;
   }
 
   static DroppableModel? fromXml(WidgetModel parent, XmlElement xml)
@@ -99,5 +98,6 @@ class DroppableModel extends DecoratedWidgetModel
     super.dispose();
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(DroppableView(this));
 }

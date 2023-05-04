@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:collection';
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -67,7 +67,7 @@ class MapModel extends DecoratedWidgetModel
     if (_zoom == null) return scale;
 
     scale = _zoom?.get();
-    if (scale == null) scale = 5.4;
+    scale ??= 5.4;
     if ((scale < 0))   scale = 0;
     if ((scale > 25))  scale = 25;
     return scale;
@@ -82,20 +82,17 @@ class MapModel extends DecoratedWidgetModel
   MapModel(
     WidgetModel parent,
     String? id, {
-    dynamic style,
+    this.style,
     dynamic zoom,
-    dynamic mapType,
+    this.mapType,
     dynamic visible,
     dynamic showAll,
   }) : super(parent, id)
   {
     // instantiate busy observable
     busy = false;
-
-    this.style = style;
     this.zoom = zoom;
     this.visible = visible;
-    this.mapType = mapType;
     this.showAll = (showAll ?? true);
   }
 
@@ -131,8 +128,7 @@ class MapModel extends DecoratedWidgetModel
 
     // build locations
     List<MapLocationModel> locations = findChildrenOfExactType(MapLocationModel).cast<MapLocationModel>();
-    locations.forEach((model)
-    {
+    for (var model in locations) {
       // data driven prototype location
       if (!S.isNullOrEmpty(model.datasource))
       {
@@ -150,8 +146,10 @@ class MapModel extends DecoratedWidgetModel
       }
 
       // static location
-      else this.locations.add(model);
-    });
+      else {
+        this.locations.add(model);
+      }
+    }
   }
 
   @override
@@ -175,19 +173,18 @@ class MapModel extends DecoratedWidgetModel
       locations.removeWhere((model) => source.id == model.datasource);
 
       // build new locations
-      if ((list != null) && (list.isNotEmpty))
+      if ((list != null) && (list.isNotEmpty)){
         for (String prototype in prototypes)
         {
           int i = 0;
-          list.forEach((data)
-          {
+          for (var data in list) {
             XmlElement? node = S.fromPrototype(prototype, S.newId());
             i = i + 1;
 
             var location = MapLocationModel.fromXml(parent!, node, data: data);
             if (location != null) locations.add(location);
-          });
-        }
+          }
+        }}
     }
     catch(e)
     {
@@ -205,5 +202,6 @@ class MapModel extends DecoratedWidgetModel
     super.dispose();
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(MapView(this));
 }

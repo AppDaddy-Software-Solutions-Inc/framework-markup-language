@@ -3,15 +3,15 @@ import 'dart:collection';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart'     ;
 import 'package:fml/widgets/text/text_model.dart';
-import 'package:fml/widgets/grid/grid_view.dart' as GRID;
+import 'package:fml/widgets/grid/grid_view.dart' as grid_view;
 import 'package:fml/widgets/grid/item/grid_item_model.dart';
-import 'package:fml/datasources/transforms/sort.dart' as TRANSFORM;
+import 'package:fml/datasources/transforms/sort.dart' as sort_transform;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -92,6 +92,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
   ////////////
   BooleanObservable? get moreUpObservable => _moreUp;
   BooleanObservable? _moreUp;
+  @override
   set moreUp (dynamic v)
   {
     if (_moreUp != null)
@@ -103,6 +104,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
       _moreUp = BooleanObservable(Binding.toKey(id, 'moreup'), v, scope: scope);
     }
   }
+  @override
   bool? get moreUp =>  _moreUp?.get();
 
   //////////////
@@ -110,6 +112,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
   //////////////
   BooleanObservable? get moreDownObservable => _moreDown;
   BooleanObservable? _moreDown;
+  @override
   set moreDown (dynamic v)
   {
     if (_moreDown != null)
@@ -121,6 +124,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
       _moreDown = BooleanObservable(Binding.toKey(id, 'moredown'), v, scope: scope);
     }
   }
+  @override
   bool? get moreDown => _moreDown?.get();
 
   ///////////
@@ -128,6 +132,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
   ///////////
   BooleanObservable? get moreLeftObservable => _moreLeft;
   BooleanObservable? _moreLeft;
+  @override
   set moreLeft (dynamic v)
   {
     if (_moreLeft != null)
@@ -139,6 +144,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
       _moreLeft = BooleanObservable(Binding.toKey(id, 'moreleft'), v, scope: scope);
     }
   }
+  @override
   bool? get moreLeft => _moreLeft?.get();
 
   ///////////
@@ -146,6 +152,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
   ///////////
   BooleanObservable? get moreRightObservable => _moreRight;
   BooleanObservable? _moreRight;
+  @override
   set moreRight (dynamic v)
   {
     if (_moreRight != null)
@@ -157,6 +164,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
       _moreRight = BooleanObservable(Binding.toKey(id, 'moreright'), v, scope: scope);
     }
   }
+  @override
   bool? get moreRight =>_moreRight?.get();
 
   ///////////////
@@ -263,7 +271,9 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
       items.removeAt(0);
     }
     // build items
-    items.forEach((item) => this.items[i++] = item);
+    for (var item in items) {
+      this.items[i++] = item;
+    }
   }
 
   GridItemModel? getItemModel(int item) {
@@ -281,15 +291,15 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
       clean = true;
 
       // clear items
-      this.items.forEach((_,item) => item.dispose());
-      this.items.clear();
+      items.forEach((_,item) => item.dispose());
+      items.clear();
 
       // Populate grid items from datasource
-      list.forEach((row) {
-        XmlElement? prototype = S.fromPrototype(this.prototype, "${this.id}-$i");
+      for (var row in list) {
+        XmlElement? prototype = S.fromPrototype(this.prototype, "$id-$i");
         var model = GridItemModel.fromXml(parent!, prototype, data: row);
         if (model != null) items[i++] = model;
-      });
+      }
 
       notifyListeners('list', items);
     }
@@ -299,11 +309,11 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
   }
 
   void sort(String? field, String? type, bool? ascending) async {
-    if ((this.data == null) ||  (this.data.isEmpty) || (field == null)) return;
+    if ((data == null) ||  (data.isEmpty) || (field == null)) return;
 
     busy = true;
 
-    TRANSFORM.Sort sort = TRANSFORM.Sort(null, field: field, type: type, ascending: ascending);
+    sort_transform.Sort sort = sort_transform.Sort(null, field: field, type: type, ascending: ascending);
     await sort.apply(data);
 
     busy = false;
@@ -326,9 +336,9 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
 //    /////////////
 //    Note csvStringFromData() does not handle large amounts of data in chunks and can overflow
     if (raw == true) {
-      String str = await csvStringFromData(this.data);
+      String str = await csvStringFromData(data);
       csvBytes = utf8.encode(str);
-      Platform.fileSaveAs(csvBytes, S.newId() + '.csv');
+      Platform.fileSaveAs(csvBytes, '${S.newId()}.csv');
       return true;
     }
 
@@ -343,7 +353,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
       String csvCellText = '';
       List<dynamic>? descendants = currItem!.findDescendantsOfExactType(TextModel);
       if (descendants != null && descendants.isNotEmpty) {
-        descendants.forEach((val) {
+        for (var val in descendants) {
           var textLine = '';
           // add return newline to csv for multiple text values within cell
 //          if (csvCellText != '') csvCellText += '\n';
@@ -351,10 +361,10 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
           // escape "'s in string
           textLine.replaceAll('"', '""');
           // surround in quotes for newline+returns / comma handling
-          textLine = (textLine.contains(',') || textLine.contains('\n')) ? '"' + textLine+ '"' : textLine;
+          textLine = (textLine.contains(',') || textLine.contains('\n')) ? '"$textLine"' : textLine;
           // goto next column
-          csvCellText = textLine + ', ';
-        });
+          csvCellText = '$textLine, ';
+        }
       }
       else {
         csvCellText = '';
@@ -374,7 +384,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
     }
     csvBytes = [...csvBytes, ...utf8.encode('\r\n')]; // \r\n = 5c, 72, 5c, 6e
     // Uint8List.fromList(bytes) - typed_data conversion needed for converting back to Uint8List after manipulating the list
-    if ( csvBytes.isNotEmpty) Platform.fileSaveAs(Uint8List.fromList(csvBytes), S.newId() + '.csv');
+    if ( csvBytes.isNotEmpty) Platform.fileSaveAs(Uint8List.fromList(csvBytes), '${S.newId()}.csv');
     return true;
   }
 
@@ -385,33 +395,33 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
 //      Build Header
       List<String> header = [];
       List<String> columns = [];
-      if ((data != null) && (data.isNotEmpty))
+      if ((data != null) && (data.isNotEmpty)) {
         data[0].forEach((key, value) {
           columns.add(key);
           String h = key.toString();
           h.replaceAll('"', '""');
-          h = h.contains(',') ? '"' + h + '"' : h;
+          h = h.contains(',') ? '"$h"' : h;
           header.add(h);
         });
+      }
 
 //      Output Header
-      str += header.join(", ") + '\n';
+      str += '${header.join(", ")}\n';
 //      Output Data
       i = 0;
-      if (columns.isNotEmpty)
-        data!.forEach((map)
-        {
+      if (columns.isNotEmpty) {
+        for (var map in data!) {
           i++;
           List<String> row = [];
-          columns.forEach((column)
-          {
+          for (var column in columns) {
             String value = map.containsKey(column) ? map[column].toString() : '';
             value.replaceAll('"', '""');
-            value = value.contains(',') ? '"' + value + '"' : value;
+            value = value.contains(',') ? '"$value"' : value;
             row.add(value);
-          });
-          str += row.join(", ") + '\n';
-        });
+          }
+          str += '${row.join(", ")}\n';
+        }
+      }
       // eof
       str.replaceFirst('\n', '\r\n', str.lastIndexOf('\n')); // replaces last
     }
@@ -430,8 +440,8 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
     // Log().debug('dispose called on => <$elementName id="$id">');
 
     // clear items
-    this.items.forEach((_,item) => item.dispose());
-    this.items.clear();
+    items.forEach((_,item) => item.dispose());
+    items.clear();
 
     super.dispose();
   }
@@ -441,5 +451,6 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
     await EventHandler(this).execute(_onpulldown);
   }
 
-  Widget getView({Key? key}) => getReactiveView(GRID.GridView(this));
+  @override
+  Widget getView({Key? key}) => getReactiveView(grid_view.GridView(this));
 }

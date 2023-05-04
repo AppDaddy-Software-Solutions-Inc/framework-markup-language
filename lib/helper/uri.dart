@@ -10,7 +10,7 @@ extension URI on Uri
   static String rootHost = "";
   static String rootPath = "";
 
-  String  get url    => this.toString();
+  String  get url    => toString();
   String  get domain => replace(userInfo: null).removeFragment().removePage().removeQuery().url;
   String? get page   => (pathSegments.isNotEmpty && pathSegments.last.contains(".")) ? pathSegments.last : null;
   String? get pageExtension => page?.contains(".") ?? false ? extension(page!).toLowerCase().replaceFirst(".", "").trim() : null;
@@ -26,7 +26,7 @@ extension URI on Uri
   String asFolderPath({String? domain})
   {
     var root  = domain ?? rootPath;
-    var uri  = this.removePage();
+    var uri  = removePage();
     var path = "${uri.host}/${uri.path}";
     if (uri.host != "applications") path = "applications/$path";
     path = normalize("$root/$path");
@@ -38,13 +38,15 @@ extension URI on Uri
     var root = domain ?? rootHost;
     if (!this.isAbsolute)
     {
-      var url = "$root/${this.host}/${this.path}";
+      var url = "$root/$host/$path";
       if (hasFragment) url = "$url#$fragment";
       if (hasQuery)    url = "$url?$query";
       var uri = Uri.parse(url).removeEmptySegments();
       return uri;
     }
-    else return this;
+    else {
+      return this;
+    }
   }
 
   Uri removeEmptySegments()
@@ -62,9 +64,11 @@ extension URI on Uri
 
   Uri removeQuery()
   {
-    if (hasQuery)
-         return Uri.parse(url.split("?")[0]);
-    else return this;
+    if (hasQuery) {
+      return Uri.parse(url.split("?")[0]);
+    } else {
+      return this;
+    }
   }
 
   Uri setPage(String page)
@@ -89,7 +93,7 @@ extension URI on Uri
 
     // remove empty segments
     List<String> pathSegments = this.pathSegments.toList();
-    if (this.page != null)
+    if (page != null)
     {
       pathSegments.removeLast();
 
@@ -105,7 +109,7 @@ extension URI on Uri
     if (data != null) return this;
 
     /* Get the Query Parameters */
-    Map<String, List<String>> queryParameters = Map<String, List<String>>();
+    Map<String, List<String>> queryParameters = <String, List<String>>{};
     queryParameters.addAll(queryParametersAll);
 
     if (!queryParameters.containsKey(key)) queryParameters[key] = [];

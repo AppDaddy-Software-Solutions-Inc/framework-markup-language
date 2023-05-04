@@ -17,8 +17,9 @@ class TableHeaderCellModel extends DecoratedWidgetModel
   /* Position in Row */
   /////////////////////
   int? get index {
-    if ((parent != null) && (parent is TableHeaderModel))
+    if ((parent != null) && (parent is TableHeaderModel)) {
       return (parent as TableHeaderModel).cells.indexOf(this);
+    }
     return null;
   }
 
@@ -43,10 +44,12 @@ class TableHeaderCellModel extends DecoratedWidgetModel
   /* Color */
   ///////////
   ColorObservable? _color;
+  @override
   Color? get color {
     if (_color == null) {
-      if ((this.parent != null) && (this.parent is TableHeaderModel))
-        return (this.parent as TableHeaderModel).color;
+      if ((parent != null) && (parent is TableHeaderModel)) {
+        return (parent as TableHeaderModel).color;
+      }
       return null;
     }
     return _color?.get();
@@ -68,8 +71,9 @@ class TableHeaderCellModel extends DecoratedWidgetModel
 
   Color? get bordercolor {
     if (_bordercolor == null) {
-      if ((this.parent != null) && (this.parent is TableHeaderModel))
-        return (this.parent as TableHeaderModel).bordercolor;
+      if ((parent != null) && (parent is TableHeaderModel)) {
+        return (parent as TableHeaderModel).bordercolor;
+      }
       return null;
     }
     return _bordercolor?.get();
@@ -77,8 +81,9 @@ class TableHeaderCellModel extends DecoratedWidgetModel
 
   Color? get outerbordercolor {
     Color? color;
-    if ((this.parent != null) && (this.parent is TableHeaderModel))
-      color = (this.parent as TableHeaderModel).bordercolor;
+    if ((parent != null) && (parent is TableHeaderModel)) {
+      color = (parent as TableHeaderModel).bordercolor;
+    }
     return color;
   }
 
@@ -98,8 +103,9 @@ class TableHeaderCellModel extends DecoratedWidgetModel
 
   double? get borderwidth {
     if (_borderwidth == null) {
-      if ((this.parent != null) && (this.parent is TableHeaderModel))
-        return (this.parent as TableHeaderModel).borderwidth;
+      if ((parent != null) && (parent is TableHeaderModel)) {
+        return (parent as TableHeaderModel).borderwidth;
+      }
       return null;
     }
     return _borderwidth?.get();
@@ -109,6 +115,7 @@ class TableHeaderCellModel extends DecoratedWidgetModel
   ///
   /// The horizontal alignment of the widgets children, overrides `center`. Can be `left`, `right`, `start`, or `end`.
   StringObservable? _halign;
+  @override
   set halign(dynamic v) {
     if (_halign != null) {
       _halign!.set(v);
@@ -118,10 +125,12 @@ class TableHeaderCellModel extends DecoratedWidgetModel
     }
   }
 
+  @override
   String? get halign {
     if (_halign == null) {
-      if ((this.parent != null) && (this.parent is TableHeaderModel))
-        return (this.parent as TableHeaderModel).halign;
+      if ((parent != null) && (parent is TableHeaderModel)) {
+        return (parent as TableHeaderModel).halign;
+      }
       return null;
     }
     return _halign?.get();
@@ -142,7 +151,7 @@ class TableHeaderCellModel extends DecoratedWidgetModel
   {
     if (_center == null)
     {
-      if ((this.parent != null) && (this.parent is TableHeaderModel)) return (this.parent as TableHeaderModel).center;
+      if ((parent != null) && (parent is TableHeaderModel)) return (parent as TableHeaderModel).center;
       return false;
     }
     return _center?.get() ?? false;
@@ -163,7 +172,7 @@ class TableHeaderCellModel extends DecoratedWidgetModel
   {
     if (_wrap == null)
     {
-      if ((this.parent != null) && (this.parent is TableHeaderModel)) return (this.parent as TableHeaderModel).wrap;
+      if ((parent != null) && (parent is TableHeaderModel)) return (parent as TableHeaderModel).wrap;
       return false;
     }
     return _wrap?.get() ?? false;
@@ -203,7 +212,7 @@ class TableHeaderCellModel extends DecoratedWidgetModel
     if (width  != null) this.width  = width;
     if (height != null) this.height = height;
     this.sortbydefault = sortbydefault;
-    this.sortAscending = false;
+    sortAscending = false;
   }
 
   static TableHeaderCellModel? fromXml(WidgetModel parent, XmlElement xml) {
@@ -252,8 +261,9 @@ class TableHeaderCellModel extends DecoratedWidgetModel
   }
 
   bool onSort() {
-    if ((this.parent != null) && (this.parent is TableHeaderModel))
-      (this.parent as TableHeaderModel).onSort(this);
+    if ((parent != null) && (parent is TableHeaderModel)) {
+      (parent as TableHeaderModel).onSort(this);
+    }
     return true;
   }
 

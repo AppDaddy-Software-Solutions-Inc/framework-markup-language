@@ -1,5 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/span/span_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
 
@@ -8,12 +8,13 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class SpanView extends StatefulWidget implements IWidgetView
 {
+  @override
   final SpanModel model;
 
   SpanView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _SpanViewState createState() => _SpanViewState();
+  State<SpanView> createState() => _SpanViewState();
 }
 
 class _SpanViewState extends WidgetState<SpanView>

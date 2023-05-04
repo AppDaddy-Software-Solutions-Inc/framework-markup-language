@@ -18,7 +18,7 @@ class Reader
 
   final List<IBeaconListener> _listeners = [];
 
-  Completer _initialized = Completer();
+  final Completer _initialized = Completer();
 
   factory Reader()
   {
@@ -64,7 +64,9 @@ class Reader
 
   void _onData(RangingResult result)
   {
-    _listeners.forEach((listener) => listener.onBeaconData(result.beacons));
+    for (var listener in _listeners) {
+      listener.onBeaconData(result.beacons);
+    }
   }
 
   void _onDone()

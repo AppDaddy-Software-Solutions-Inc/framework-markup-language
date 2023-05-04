@@ -2,14 +2,14 @@
 import 'dart:io';
 
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/datasources/base/model.dart';
 import 'package:xml/xml.dart';
-import 'iMqtt.dart';
-import 'iMqttListener.dart';
+import 'mqtt_interface.dart';
+import 'mqtt_listener_interface.dart';
 import 'payload.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
@@ -275,6 +275,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
     return ok;
   }
 
+  @override
   Future<bool> stop() async
   {
     mqtt?.disconnect();
@@ -316,6 +317,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
+  @override
   onMessage(Payload payload)
   {
     // enabled?
@@ -336,7 +338,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
     // if the message didn't deserialize (length 0)
     // so create a simple map with topic and message bindables <id>.data.topic and <id>.data.message
     // otherwise the data is the deserialized message payload
-    if (data.length == 0) data.insert(0, {'topic': payload.topic , 'message' : payload.message});
+    if (data.isEmpty) data.insert(0, {'topic': payload.topic , 'message' : payload.message});
 
     // fire the onresponse
     onSuccess(data, code: HttpStatus.ok, onSuccessOverride: _onmessage);
@@ -345,7 +347,9 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
   @override
   onConnected() async
   {
-    for (var topic in subscriptions) await mqtt?.subscribe(topic);
+    for (var topic in subscriptions) {
+      await mqtt?.subscribe(topic);
+    }
     if (!S.isNullOrEmpty(onconnected))
     {
       EventHandler handler = EventHandler(this);
@@ -361,7 +365,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
       EventHandler handler = EventHandler(this);
       await handler.execute(_ondisconnected);
     }
-    onData(this.data ?? Data(), code: HttpStatus.ok, message: "Disconnected by $origin");
+    onData(data ?? Data(), code: HttpStatus.ok, message: "Disconnected by $origin");
   }
 
   @override

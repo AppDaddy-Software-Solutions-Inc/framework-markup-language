@@ -10,8 +10,8 @@ class ConfigModel
   ConfigModel();
 
   String? xml;
-  Map<String, String?> settings   = Map<String,String?>();
-  Map<String, String?> parameters = Map<String,String?>();
+  Map<String, String?> settings   = <String,String?>{};
+  Map<String, String?> parameters = <String,String?>{};
 
   static Future<ConfigModel?> fromXml(WidgetModel? parent, XmlElement xml) async
   {
@@ -48,8 +48,8 @@ class ConfigModel
     if (e == null) return;
 
     // settings
-    for (dynamic node in e.children)
-    if (node is XmlElement)
+    for (dynamic node in e.children) {
+      if (node is XmlElement)
     {
       String key   = node.localName;
       String? value = Xml.get(node: node, tag: 'value');
@@ -57,17 +57,18 @@ class ConfigModel
       if (S.isNullOrEmpty(value)) value = Xml.getText(node);
       if (!S.isNullOrEmpty(key) && (key.toLowerCase() != 'parameter')) settings[key] = value;
     }
+    }
 
     // parameters
     List<XmlElement>? nodes = Xml.getChildElements(node: xml, tag: 'parameter');
-    if (nodes != null)
-    nodes.forEach((element)
-    {
+    if (nodes != null) {
+      for (var element in nodes) {
       String? key   = Xml.get(node: element, tag: 'key');
       String? value = Xml.get(node: element, tag: 'value');
       if (S.isNullOrEmpty(value)) value = Xml.getText(element);
       if (!S.isNullOrEmpty(key)) parameters[key!] = value ?? "";
-    });
+    }
+    }
   }
 
   String? get(String key)
@@ -78,7 +79,7 @@ class ConfigModel
 
   void set(String key, String value)
   {
-    if (S.isNullOrEmpty(key)) return null;
+    if (S.isNullOrEmpty(key)) return;
     settings[key] = value;
   }
 }

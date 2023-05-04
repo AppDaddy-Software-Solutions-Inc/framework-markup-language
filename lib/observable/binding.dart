@@ -47,10 +47,12 @@ class Binding
   String? get name
   {
     var k = toKey(source, property);
-    if (dotnotation != null && dotnotation!.length > 0)
+    if (dotnotation != null && dotnotation!.isNotEmpty)
     {
        String dn = "";
-       dotnotation!.forEach((segment) => dn = "$dn.${segment.name}");
+       for (var segment in dotnotation!) {
+         dn = "$dn.${segment.name}";
+       }
        k = "$k$dn";
     }
     return k;
@@ -59,8 +61,8 @@ class Binding
   static String? toKey(String? source, [String? property])
   {
     if (source == null) return null;
-    if (property == null) property = 'value';
-    return (source + '.' + property).toLowerCase();
+    property ??= 'value';
+    return ('$source.$property').toLowerCase();
   }
 
   Binding({this.scope, required this.signature, required this.source, required this.property, this.isEval, this.dotnotation, this.offset});
@@ -86,12 +88,10 @@ class Binding
       List<String> parts = binding.split('.');
 
       // scoped?
-      var _scope = parts[0].trim();
-      if (System.app != null)
-      if (parts.length > 1 && System.app!.scopeManager.hasScope(_scope))
-      {
-        scope = _scope;
-        parts.removeAt(0);
+      var myScope = parts[0].trim();
+      if (System.app != null && parts.length > 1 && System.app!.scopeManager.hasScope(myScope)) {
+      scope = myScope;
+      parts.removeAt(0);
       }
 
       // source id
@@ -125,7 +125,9 @@ class Binding
       if (parts.isNotEmpty)
       {
         String? name;
-        for (String part in parts) name = (name == null) ? part : "$name.$part";
+        for (String part in parts) {
+          name = (name == null) ? part : "$name.$part";
+        }
         subproperties = DotNotation.fromString(name);
       }
 
@@ -181,17 +183,17 @@ class Binding
     if (s == null) return null;
     List<Binding>? bindings;
     List<String?>? bindingStrings = getBindingStrings(s);
-    if (bindingStrings != null)
+    if (bindingStrings != null){
       for (String? binding in bindingStrings)
       {
         Binding? property = Binding.fromString(binding, bindingscope: scope);
 
         if (property != null)
         {
-          if (bindings == null) bindings = [];
+          bindings ??= [];
           bindings.add(property);
         }
-      }
+      }}
     return bindings;
   }
 
@@ -202,7 +204,7 @@ class Binding
       for (Match m in matches)
       {
         String? binding = m.group(0);
-        if (bindings == null) bindings = [];
+        bindings ??= [];
         bindings.add(binding);
       }
     return bindings;
@@ -215,29 +217,28 @@ class Binding
     if (bindings != null)
     {
       keys = [];
-      bindings.forEach((binding)
-      {
+      for (var binding in bindings) {
         var key  = binding.key;
         var name = binding.name;
-        if (key  != null && !keys!.contains(key))  keys.add(key);
-        if (name != null && !keys!.contains(name)) keys.add(name);
-      });
+        if (key  != null && !keys.contains(key))  keys.add(key);
+        if (name != null && !keys.contains(name)) keys.add(name);
+      }
     }
     return keys;
   }
 
   static String? applyMap(String? xml, Map? map, {String? source, bool caseSensitive = true, String? prefix, bool encode = false})
   {
-    if ((map != null) && (xml != null))
+    if ((map != null) && (xml != null)) {
       map.forEach((key, value)
       {
-        String oldValue = "{" + (S.isNullOrEmpty(prefix) ? (S.isNullOrEmpty(source) ? '' : source! + '.') : prefix!) + key.toString() + "}";
+        String oldValue = "{${S.isNullOrEmpty(prefix) ? (S.isNullOrEmpty(source) ? '' : '${source!}.') : prefix!}$key}";
         String? newValue = (value ?? '').toString();
         if ((encode) && (Xml.hasIllegalCharacters(newValue))) newValue = Xml.encodeIllegalCharacters(newValue);
 
-        if (caseSensitive)
+        if (caseSensitive) {
           xml = xml!.replaceAll(oldValue, newValue!);
-        else {
+        } else {
           try
           {
             xml = xml!.replaceAll(RegExp(oldValue, caseSensitive: false), newValue!);
@@ -250,6 +251,7 @@ class Binding
           }
         }
       });
+    }
     return xml;
   }
 }

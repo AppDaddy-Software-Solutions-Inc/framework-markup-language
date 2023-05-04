@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/transforms/iTransform.dart';
+import 'package:fml/datasources/transforms/transform_interface.dart';
 import 'package:fml/datasources/transforms/image_transform_model.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/integer.dart';
@@ -64,6 +64,7 @@ class Resize extends ImageTransformModel implements ITransform
     height  = Xml.get(node: xml, tag: 'height');
   }
 
+  @override
   apply(Data? data) async
   {
     if (enabled == false) return;

@@ -1,10 +1,10 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/base/model.dart';
-import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
-import 'package:fml/datasources/zebra/wedge.dart' as ZEBRA;
+import 'package:fml/datasources/zebra/wedge.dart' as zebra;
 import 'package:fml/datasources/detectors/barcode/barcode_detector.dart';
 import 'package:fml/datasources/zebra/wedge.dart';
 import 'package:xml/xml.dart';
@@ -36,7 +36,7 @@ class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener
   @override
   void dispose()
   {
-    ZEBRA.Reader().removeListener(this);
+    zebra.Reader().removeListener(this);
     super.dispose();
   }
 
@@ -51,20 +51,23 @@ class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener
     // properties
   }
 
+  @override
   Future<bool> start({bool refresh = false, String? key}) async
   {
-    ZEBRA.Reader().registerListener(this);
-    ZEBRA.Reader.startScan();
+    zebra.Reader().registerListener(this);
+    zebra.Reader.startScan();
     return true;
   }
 
+  @override
   Future<bool> stop() async
   {
-    ZEBRA.Reader().removeListener(this);
+    zebra.Reader().removeListener(this);
     super.stop();
     return true;
   }
 
+  @override
   onZebraData({Payload? payload})
   {
     // enabled?
@@ -73,16 +76,15 @@ class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener
     if ((payload == null) || (payload.barcodes.isEmpty)) return;
 
     Data data = Data();
-    payload.barcodes.forEach((barcode)
-    {
-      Map<dynamic, dynamic> map = Map<dynamic, dynamic>();
+    for (var barcode in payload.barcodes) {
+      Map<dynamic, dynamic> map = <dynamic, dynamic>{};
       map["type"]    = barcode.type != null ? barcode.type.toString() : "";
       map["format"]  = barcode.format;
       map["display"] = barcode.display;
       map["barcode"] = barcode.barcode != null ? barcode.barcode!.trim() : "";
       if (barcode.parameters != null) barcode.parameters!.forEach((key, value) => map[key] = value);
       data.add(map);
-    });
+    }
 
     onSuccess(data, code: 200);
   }

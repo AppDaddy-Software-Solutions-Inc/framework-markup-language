@@ -1,8 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
-import 'package:fml/widgets/checkbox/checkbox_model.dart' as CHECKBOX;
-import 'package:fml/widgets/option/option_model.dart' as OPTION;
+import 'package:fml/widgets/widget/iwidget_view.dart';
+import 'package:fml/widgets/checkbox/checkbox_model.dart';
+import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
@@ -12,11 +12,12 @@ import 'package:fml/widgets/alignment/alignment.dart';
 /// Builds the Checkbox View from [Model] properties
 class CheckboxView extends StatefulWidget implements IWidgetView
 {
-  final CHECKBOX.CheckboxModel model;
+  @override
+  final CheckboxModel model;
   CheckboxView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _CheckboxViewState createState() => _CheckboxViewState();
+  State<CheckboxView> createState() => _CheckboxViewState();
 }
 
 class _CheckboxViewState extends WidgetState<CheckboxView>
@@ -29,7 +30,7 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
     _list = [];
 
     if ((model.options.isNotEmpty)) {
-      for (OPTION.OptionModel option in model.options) {
+      for (OptionModel option in model.options) {
         String? value = option.value;
         bool checked = ((model.value != null) && (model.value.contains(value)));
         var o = CheckBox(
@@ -43,6 +44,7 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
     }
   }
 
+  @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)
@@ -60,7 +62,7 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
 
     Widget view;
     if (widget.model.layout == 'row') {
-      if (widget.model.wrap == true)
+      if (widget.model.wrap == true) {
         view = Center(
             child: Wrap(
                 children: _list,
@@ -68,15 +70,16 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
                 alignment: alignment.mainWrapAlignment,
                 runAlignment: alignment.mainWrapAlignment,
                 crossAxisAlignment: alignment.crossWrapAlignment));
-      else
+      } else {
         view = Center(
             child: Row(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: alignment.crossAlignment,
                 mainAxisAlignment: alignment.mainAlignment,
                 children: _list));
+      }
     } else {
-      if (widget.model.wrap == true)
+      if (widget.model.wrap == true) {
         view = Center(
             child: Wrap(
                 children: _list,
@@ -84,29 +87,30 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
                 alignment: alignment.mainWrapAlignment,
                 runAlignment: alignment.mainWrapAlignment,
                 crossAxisAlignment: alignment.crossWrapAlignment));
-      else
+      } else {
         view = Center(
             child: Column(
                 crossAxisAlignment: alignment.crossAlignment,
                 mainAxisAlignment: alignment.mainAlignment,
                 children: _list));
+      }
     }
 
     return view;
   }
 
   /// Function called when clicking a checkbox
-  Future<void> onChecked(OPTION.OptionModel option, bool checked) async {
+  Future<void> onChecked(OptionModel option, bool checked) async {
     await widget.model.onCheck(option, checked);
   }
 }
 
 class CheckBox extends StatelessWidget {
-  final CHECKBOX.CheckboxModel model;
-  final OPTION.OptionModel option;
+  final CheckboxModel model;
+  final OptionModel option;
 
   final bool checked;
-  final void Function(OPTION.OptionModel, bool) onChecked;
+  final void Function(OptionModel, bool) onChecked;
 
   final BuildContext context;
 

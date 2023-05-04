@@ -68,12 +68,13 @@ class StackModel extends LayoutModel
   List<Widget> inflate()
   {
     // sort children by depth
-    if (children != null)
-    children!.sort((a, b)
+    if (children != null) {
+      children!.sort((a, b)
     {
       if(a.depth != null && b.depth != null) return a.depth?.compareTo(b.depth!) ?? 0;
       return 0;
     });
+    }
     return super.inflate();
   }
 
@@ -85,18 +86,14 @@ class StackModel extends LayoutModel
     super.deserialize(xml);
 
     // sort the children
-    this.children?.sort((a, b)
+    children?.sort((a, b)
     {
       if(a.depth != null && b.depth != null) return a.depth?.compareTo(b.depth!) ?? 0;
       return 0;
     });
   }
 
-  @override
-  void dispose()
-  {
-    super.dispose();
-  }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(StackView(this));
 }

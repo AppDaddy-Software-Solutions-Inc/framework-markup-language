@@ -40,7 +40,7 @@ class Theme
   int size = 5000;
   bool debugging = false;
 
-  static Theme _singleton = Theme._init();
+  static final Theme _singleton = Theme._init();
   factory Theme()
   {
     return _singleton;

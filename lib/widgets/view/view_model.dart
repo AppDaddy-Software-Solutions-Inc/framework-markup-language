@@ -35,6 +35,7 @@ class ViewModel extends ViewableWidgetModel
     super.deserialize(xml);
   }
 
+  @override
   Widget getView({Key? key}) => View(this);
 }
 

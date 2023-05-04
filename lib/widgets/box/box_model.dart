@@ -45,9 +45,7 @@ class BoxModel extends LayoutModel
     {
       case LayoutType.row:
         return MainAxisSize.max;
-
       case LayoutType.stack:
-      case LayoutType.row:
       default:
         // expand and constrained by system
         if (expand) return horizontallyConstrained ? MainAxisSize.max : MainAxisSize.min;
@@ -66,7 +64,7 @@ class BoxModel extends LayoutModel
     if (isFixedHeight) return false;
     var expand = this.expand;
     if (expand) return true;
-    if (children != null)
+    if (children != null){
       for (var child in children!)
       {
         if (child is ViewableWidgetModel && child.visible && child.isVerticallyExpanding)
@@ -74,7 +72,7 @@ class BoxModel extends LayoutModel
           expand = true;
           break;
         }
-      }
+      }}
     return expand;
   }
 
@@ -84,7 +82,7 @@ class BoxModel extends LayoutModel
     if (isFixedWidth) return false;
     var expand = this.expand;
     if (expand) return true;
-    if (children != null)
+    if (children != null){
       for (var child in children!)
       {
         if (child is ViewableWidgetModel && child.visible && child.isHorizontallyExpanding)
@@ -92,7 +90,7 @@ class BoxModel extends LayoutModel
           expand = true;
           break;
         }
-      }
+      }}
     return expand;
   }
 
@@ -304,6 +302,7 @@ class BoxModel extends LayoutModel
     layout  = Xml.get(node: xml, tag: 'layout');
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(BoxView(this));
   Widget getContentView({Key? key})
   {

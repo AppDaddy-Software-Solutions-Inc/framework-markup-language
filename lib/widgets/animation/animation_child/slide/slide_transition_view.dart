@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/helper/string.dart';
+import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/animation/animation_helper.dart';
 import 'package:fml/widgets/animation/animation_child/slide/slide_transition_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
@@ -114,8 +115,9 @@ class SlideTransitionViewState extends State<SlideTransitionView>
   }
 
   /// Callback to fire the [_AnimationViewState.build] when the [AnimationModel] changes
+  @override
   onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    if (this.mounted) setState(() {});
+    if (mounted) setState(() {});
   }
 
   @override
@@ -144,25 +146,25 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
     List<String>? to = widget.model.to.split(",");
     Offset toOffset = Offset(
         S.toDouble(to.elementAt(0)) ?? 0, S.toDouble(to.elementAt(1)) ?? 0);
-    double _begin = widget.model.begin;
-    double _end = widget.model.end;
-    Curve _curve = AnimationHelper.getCurve(widget.model.curve);
-    Tween<Offset> _newTween = Tween<Offset>(
+    double begin = widget.model.begin;
+    double end = widget.model.end;
+    Curve curve = AnimationHelper.getCurve(widget.model.curve);
+    Tween<Offset> newTween = Tween<Offset>(
       begin: fromOffset,
       end: toOffset,
     );
 
-    if (_begin != 0.0 || _end != 1.0) {
-      _curve = Interval(
-        _begin,
-        _end,
+    if (begin != 0.0 || end != 1.0) {
+      curve = Interval(
+        begin,
+        end,
         // the style curve to pass.
-        curve: _curve,
+        curve: curve,
       );
     }
 
-    _animation = _newTween.animate(CurvedAnimation(
-      curve: _curve,
+    _animation = newTween.animate(CurvedAnimation(
+      curve: curve,
       parent: _controller,
     ));
 
@@ -187,10 +189,11 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
       bool? enabled = (event.parameters != null)
           ? S.toBool(event.parameters!['enabled'])
           : true;
-      if (enabled != false)
+      if (enabled != false) {
         start();
-      else
+      } else {
         stop();
+      }
       event.handled = true;
     }
   }
@@ -206,7 +209,9 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
     try {
       _controller.reset();
       widget.model.controllerValue = 0;
-    } catch (e) {}
+    } catch (e) {
+      Log().debug('$e');
+    }
   }
 
   void start() {
@@ -229,7 +234,9 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
         widget.model.onStart(context);
       }
 
-    } catch (e) {}
+    } catch (e) {
+      Log().debug('$e');
+    }
   }
 
   void stop() {
@@ -237,7 +244,9 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
       _controller.reset();
       widget.model.controllerValue = 0;
       _controller.stop();
-    } catch (e) {}
+    } catch (e) {
+      Log().debug('$e');
+    }
   }
 
   void _animationListener(AnimationStatus status) {

@@ -25,50 +25,51 @@ class Eval
   {
     if (expression == null) return null;
 
-    var result;
-    var _expression = expression;
-    var _parsed;
+    dynamic result;
+    var myExpression = expression;
+    Expression? myParsed;
     var i = 0;
-    var _variables = Map<String, dynamic>();
-    var _functions = Map<String?, dynamic>();
+    var myVariables = <String, dynamic>{};
+    var myFunctions = <String?, dynamic>{};
 
     try
     {
       // setup variable substitutions
-      if (variables != null)
-      variables.forEach((key,value)
+      if (variables != null) {
+        variables.forEach((key,value)
       {
         i++;
-        var _key = "___V$i";
-        _variables[_key] = _isNumeric(value) ? _toNum(value) : _isBool(value) ? _toBool(value) : value;
-        _expression = _expression.replaceAll(key!, _key);
+        var mKey = "___V$i";
+        myVariables[mKey] = _isNumeric(value) ? _toNum(value) : _isBool(value) ? _toBool(value) : value;
+        myExpression = myExpression.replaceAll(key!, mKey);
       });
+      }
 
       // add variables
-      _functions.addAll(_variables);
+      myFunctions.addAll(myVariables);
 
       // add functions
-      _functions.addAll(functions);
+      myFunctions.addAll(functions);
 
       // add alternate functions that dont clash
-      altFunctions?.forEach((key, value) => _functions.containsKey(key) ? null : _functions[key] = value);
+      altFunctions?.forEach((key, value) => myFunctions.containsKey(key) ? null : myFunctions[key] = value);
 
       // parse the expression
-      _parsed  = Expression.tryParse(_expression);
+      myParsed  = Expression.tryParse(myExpression);
 
       // failed parse?
-      if (_parsed == null) throw(Exception('Failed to parse $_expression'));
+      if (myParsed == null) throw(Exception('Failed to parse $myExpression'));
 
       // required to replace quoted string observables
-      _parsed = replaceInLiterals(_parsed, _variables);
+      myParsed = replaceInLiterals(myParsed, myVariables);
 
       // evaluate the expression
-      result = evaluator.eval(_parsed, _functions);
+      result = evaluator.eval(myParsed, myFunctions);
     }
     catch(e)
     {
       String? msg;
-      if (variables != null) variables.forEach((key, value) => msg = (msg ?? "") + (msg == null ? "" : ",  ") + "$key=${value.toString()}");
+      if (variables != null) variables.forEach((key, value) => msg = "${msg ?? ""}${msg == null ? "" : ",  "}$key=${value.toString()}");
       Log().debug("eval($expression) [$msg] failed. Error is $e");
       result = null;
     }
@@ -80,11 +81,17 @@ class Eval
 
     Type? expressionType;
 
-         if (expression is ConditionalExpression) expressionType = ConditionalExpression;
-    else if (expression is BinaryExpression)      expressionType = BinaryExpression;
-    else if (expression is CallExpression)        expressionType = CallExpression;
-    else if (expression is Literal)               expressionType = Literal;
-    else if (expression is Variable)              expressionType = Variable;
+         if (expression is ConditionalExpression) {
+           expressionType = ConditionalExpression;
+         } else if (expression is BinaryExpression) {
+      expressionType = BinaryExpression;
+    } else if (expression is CallExpression) {
+      expressionType = CallExpression;
+    } else if (expression is Literal) {
+      expressionType = Literal;
+    } else if (expression is Variable) {
+      expressionType = Variable;
+    }
 
     switch(expressionType)
     {
@@ -99,7 +106,9 @@ class Eval
 
       case CallExpression:
         List? args = expression.arguments;
-        for (int i = 0; i < expression.arguments.length; i++) args![i] = replaceInLiterals(expression.arguments[i], variables);
+        for (int i = 0; i < expression.arguments.length; i++) {
+          args![i] = replaceInLiterals(expression.arguments[i], variables);
+        }
         expression = CallExpression(expression.callee, args as List<Expression?>?);
         break;
 
@@ -229,25 +238,30 @@ class Eval
   static dynamic _ceil(dynamic value)
   {
     var n = S.toNum(value);
-    if (n != null)
+    if (n != null) {
       return n.ceil();
-    else return null;
+    } else {
+      return null;
+    }
   }
 
   /// Returns the nearest integer value rounding down
   static dynamic _floor(dynamic value)
   {
     var n = S.toNum(value);
-    if (n != null)
+    if (n != null) {
       return n.floor();
-    else return null;
+    } else {
+      return null;
+    }
   }
 
   /// Returns true if a String value contains [Pattern]
   static dynamic _contains(dynamic value, dynamic pat)
   {
-    if (pat == null || pat == '')
+    if (pat == null || pat == '') {
       return false;
+    }
     if (value is List)   return value.contains(_toString(pat));
     if (value is String) return value.contains(_toString(pat));
     return false;
@@ -256,8 +270,9 @@ class Eval
   /// Returns true if a String value starts with [Pattern]
   static dynamic _startsWith(dynamic value, dynamic pat)
   {
-    if (pat == null || pat == '')
+    if (pat == null || pat == '') {
       return false;
+    }
     value = _toString(value);
     pat = _toString(pat);
     if (value is String && pat is String)
@@ -270,8 +285,9 @@ class Eval
   /// Returns true if a String value ends with a [Pattern]
   static dynamic _endsWith(dynamic value, dynamic pat)
   {
-    if (pat == null || pat == '')
+    if (pat == null || pat == '') {
       return false;
+    }
     value = _toString(value);
     pat = _toString(pat);
     if (value is String && pat is String)
@@ -296,7 +312,7 @@ class Eval
   /// Returns a defaultValue if the value is null or '' otherwise returns the null-safe value
   static dynamic _nvl(dynamic value, dynamic defaultValue)
   {
-    value = value?.toString() ?? null;
+    value = value?.toString();
     return S.isNullOrEmpty(value) ? defaultValue : value;
   }
 
@@ -386,14 +402,17 @@ class Eval
     if (S.isNullOrEmpty(val)) return '';
     int start = S.toInt(startIndex) ?? 0;
     int end   = S.toInt(endIndex) ?? val.length;
-    if(end > val.length)
+    if(end > val.length) {
       end = val.length;
-    if (start < 0 && (start * -1) <= val.length)
+    }
+    if (start < 0 && (start * -1) <= val.length) {
       return val.substring(0, val.length + start);
-    if (start >= end)
+    }
+    if (start >= end) {
       return ''; // out of range
-    else
+    } else {
       return val.substring(start, end);
+    }
 
   }
 
@@ -415,8 +434,9 @@ class Eval
   {
     int? number  = S.toInt(num);
     int? divisor = S.toInt(div);
-    if ((number != null) && (divisor != null) && (divisor != 0))
+    if ((number != null) && (divisor != null) && (divisor != 0)) {
       return number%divisor;
+    }
     return null;
   }
 
@@ -449,7 +469,7 @@ class Eval
   /// Hash a String
   static String? _hash(dynamic s, [dynamic key])
   {
-    if (key == null) key = System.app?.settings("HASHKEY");
+    key ??= System.app?.settings("HASHKEY");
     if (key == null) return null;
     key = S.toStr(key);
     try
@@ -509,19 +529,19 @@ class Eval
 
   static dynamic _join(dynamic s, [dynamic s1, dynamic s2, dynamic s3, dynamic s4, dynamic s5, dynamic s6, dynamic s7, dynamic s8, dynamic s9, dynamic s10])
   {
-    String _s = "";
-    if (_toString(s)   != null) _s += _toString(s);
-    if (_toString(s1)  != null) _s += _toString(s1);
-    if (_toString(s2)  != null) _s += _toString(s2);
-    if (_toString(s3)  != null) _s += _toString(s3);
-    if (_toString(s4)  != null) _s += _toString(s4);
-    if (_toString(s5)  != null) _s += _toString(s5);
-    if (_toString(s6)  != null) _s += _toString(s6);
-    if (_toString(s7)  != null) _s += _toString(s7);
-    if (_toString(s8)  != null) _s += _toString(s8);
-    if (_toString(s9)  != null) _s += _toString(s9);
-    if (_toString(s10) != null) _s += _toString(s10);
-    return _s;
+    String myString = "";
+    if (_toString(s)   != null) myString += _toString(s);
+    if (_toString(s1)  != null) myString += _toString(s1);
+    if (_toString(s2)  != null) myString += _toString(s2);
+    if (_toString(s3)  != null) myString += _toString(s3);
+    if (_toString(s4)  != null) myString += _toString(s4);
+    if (_toString(s5)  != null) myString += _toString(s5);
+    if (_toString(s6)  != null) myString += _toString(s6);
+    if (_toString(s7)  != null) myString += _toString(s7);
+    if (_toString(s8)  != null) myString += _toString(s8);
+    if (_toString(s9)  != null) myString += _toString(s9);
+    if (_toString(s10) != null) myString += _toString(s10);
+    return myString;
   }
 
   /// null-safe String length
@@ -551,26 +571,27 @@ class Eval
     String locale = 'en_US'; // TODO more formats https://pub.dev/documentation/intl/latest/intl/NumberFormat-class.html
     if (value != null) {
       try {
-        late var f;
-        if (semicompact == true) // semi compact and ignore currency
+        late NumberFormat f;
+        if (semicompact == true) {
           f = NumberFormat.compactLong(locale: locale);
-        else if (compact == true && currency != true) // compact and not currency
+        } else if (compact == true && currency != true) {
           f = NumberFormat.compact(locale: locale);
-        else if (compact != true && currency != true) { // not compact and not currency
+        } else if (compact != true && currency != true) { // not compact and not currency
           // We need to create a format string that maintains decimal places
           var decimals = 0;
           var split = value.toString().split('.');
           if (split.length == 2) decimals = split[1].length;
           String format = "#,###,###,###,###,###,###";
           if (decimals > 0) {
-            format = format + '.' + List.filled(decimals, '#').join();
+            format = '$format.${List.filled(decimals, '#').join()}';
             format.padRight(decimals, '#');
           }
           f = NumberFormat(format, locale);
-        } else if (compact == true && currency == true) // compact and currency
+        } else if (compact == true && currency == true) {
           f = NumberFormat.compactSimpleCurrency(locale: locale);
-        else if (compact != true && currency == true) // not compact and currency
+        } else if (compact != true && currency == true) {
           f = NumberFormat.simpleCurrency(locale: locale);
+        }
         if (value is String) value = S.toDouble(value);
         return f.format(value);
       }

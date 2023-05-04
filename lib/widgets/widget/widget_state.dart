@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/constraints/constraint.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 
@@ -41,9 +41,10 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
   }
 
   /// Callback to fire the [_TooltipViewState.build] when the [TooltipModel] changes
+  @override
   onModelChange(WidgetModel model, {String? property, dynamic value})
   {
-    if (this.mounted) setState((){});
+    if (mounted) setState((){});
   }
 
   // applies margins to the view based on the widget model
@@ -81,21 +82,13 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
     // If a hard width is specified
     // wrap the view in an unconstrained box of the specified
     // width and honor any applicable vertical constraints
-    if (constraints.width != null && constraints.height == null)
+    if (constraints.width != null && constraints.height == null) {
       view = UnconstrainedBox(child: SizedBox(child: view, width: constraints.width), constrainedAxis: Axis.vertical);
-
-    // if a hard height is specified
-    // wrap the view in an unconstrained box of the specified
-    // height and honor any applicable horizontal constraints
-    else if (constraints.width == null && constraints.height != null)
+    } else if (constraints.width == null && constraints.height != null) {
       view = UnconstrainedBox(child: SizedBox(child: view, height: constraints.height), constrainedAxis: Axis.horizontal);
-
-
-    // If a both a hard width and height are specified
-    // wrap the view in an unconstrained box of the specified
-    // width and height and defeat any vertical and/or horizontal constraints
-    else if (constraints.width != null && constraints.height != null)
+    } else if (constraints.width != null && constraints.height != null) {
       view = UnconstrainedBox(child: SizedBox(child: view, width: constraints.width, height: constraints.height));
+    }
 
     return view;
   }

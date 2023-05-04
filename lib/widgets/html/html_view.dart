@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/html/html_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -8,12 +8,13 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class HtmlView extends StatefulWidget implements IWidgetView
 {
+  @override
   final HtmlModel model;
 
   HtmlView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _HtmlViewState createState() => _HtmlViewState();
+  State<HtmlView> createState() => _HtmlViewState();
 }
 
 class _HtmlViewState extends WidgetState<HtmlView>
@@ -44,9 +45,9 @@ class _HtmlViewState extends WidgetState<HtmlView>
           onCssParseError: (css, messages) {
             Log().debug("css that errored: $css");
             Log().debug("error messages:");
-            messages.forEach((element) {
+            for (var element in messages) {
               Log().debug('$element');
-            });
+            }
             return null;
             },
         ));

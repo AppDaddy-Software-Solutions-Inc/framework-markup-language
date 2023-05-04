@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:fml/phrase.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/scribble/scribble_model.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui';
@@ -12,11 +12,12 @@ import 'package:perfect_freehand/perfect_freehand.dart';
 
 class ScribbleView extends StatefulWidget implements IWidgetView
 {
+  @override
   final ScribbleModel model;
   ScribbleView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _ScribbleViewState createState() => _ScribbleViewState();
+  State<ScribbleView> createState() => _ScribbleViewState();
 }
 
 class _ScribbleViewState extends WidgetState<ScribbleView>
@@ -52,7 +53,7 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
   }
 
   Future<void> save() async {
-    if (lines.length > 0) {
+    if (lines.isNotEmpty) {
       setState(() {
         saveVisible = false;
         canScribble = false;

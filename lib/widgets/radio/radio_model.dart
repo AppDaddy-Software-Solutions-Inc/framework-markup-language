@@ -1,9 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
-import 'package:fml/widgets/form/iFormField.dart';
+import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:xml/xml.dart';
@@ -61,6 +61,7 @@ class RadioModel extends FormFieldModel implements IFormField
 
   /// True if there is an alarm sounding on a [IFormField]
   BooleanObservable? _alarming;
+  @override
   set alarming(dynamic v) {
     if (_alarming != null) {
       _alarming!.set(v);
@@ -69,10 +70,12 @@ class RadioModel extends FormFieldModel implements IFormField
           scope: scope, listener: onPropertyChange);
     }
   }
+  @override
   bool? get alarming => _alarming?.get();
 
   /// the value of the widget. The label becomes the value if not specified. If specified, the options will reflect the value.
   StringObservable? _value;
+  @override
   set value(dynamic v) {
     if (_value != null) {
 
@@ -80,10 +83,9 @@ class RadioModel extends FormFieldModel implements IFormField
 
         if (v != null) v = v.toString();
         dynamic data;
-        options.forEach((option)
-        {
+        for (var option in options) {
           if (option.value == v) data = option.data;
-        });
+        }
         this.data = data;
       }
     else
@@ -92,6 +94,7 @@ class RadioModel extends FormFieldModel implements IFormField
     }
   }
 
+  @override
   dynamic get value {
     if (_value == null) return defaultValue;
     if ((!dirty) && (S.isNullOrEmpty(_value?.get())) && (!S.isNullOrEmpty(defaultValue))) _value!.set(defaultValue);
@@ -104,9 +107,10 @@ class RadioModel extends FormFieldModel implements IFormField
     if (_size != null) {
       _size!.set(v);
     } else {
-      if (v != null)
+      if (v != null) {
         _size = DoubleObservable(Binding.toKey(id, 'size'), v,
             scope: scope, listener: onPropertyChange);
+      }
     }
   }
   double get size
@@ -118,6 +122,7 @@ class RadioModel extends FormFieldModel implements IFormField
 
   // bindable data
   ListObservable? _data;
+  @override
   set data(dynamic v)
   {
     if (_data != null)
@@ -130,6 +135,7 @@ class RadioModel extends FormFieldModel implements IFormField
       _data!.set(v);
     }
   }
+  @override
   dynamic get data => _data?.get();
 
   RadioModel(
@@ -170,8 +176,8 @@ class RadioModel extends FormFieldModel implements IFormField
     if (valign       != null) this.valign       = valign;
     if (wrap         != null) this.wrap         = wrap;
 
-    this.alarming = false;
-    this.dirty    = false;
+    alarming = false;
+    dirty    = false;
   }
 
   static RadioModel? fromXml(WidgetModel parent, XmlElement xml)
@@ -205,7 +211,9 @@ class RadioModel extends FormFieldModel implements IFormField
     size = Xml.get(node: xml, tag: 'size');
 
     // clear options
-    this.options.forEach((option) => option.dispose());
+    for (var option in this.options) {
+      option.dispose();
+    }
     this.options.clear();
 
     // Build options
@@ -218,10 +226,13 @@ class RadioModel extends FormFieldModel implements IFormField
         options.removeAt(0);
       }
       // build options
-      options.forEach((option) => this.options.add(option));
+      for (var option in options) {
+        this.options.add(option);
+      }
 
   }
 
+  @override
   Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async
   {
     try
@@ -229,21 +240,22 @@ class RadioModel extends FormFieldModel implements IFormField
       if (prototype == null) return true;
 
       // clear options
-      this.options.forEach((option) => option.dispose());
-      this.options.clear();
+      for (var option in options) {
+        option.dispose();
+      }
+      options.clear();
 
       // build options
       int i = 0;
       if ((list != null))
       {
         // build options
-        list.forEach((row)
-        {
-          XmlElement? prototype = S.fromPrototype(this.prototype, "${this.id}-$i");
+        for (var row in list) {
+          XmlElement? prototype = S.fromPrototype(this.prototype, "$id-$i");
           i = i + 1;
           var model = OptionModel.fromXml(this, prototype, data: row);
           if (model != null) options.add(model);
-        });
+        }
       }
 
       // Set value to first option or null if the current value is not in option list
@@ -285,10 +297,9 @@ class RadioModel extends FormFieldModel implements IFormField
   bool containsOption()
   {
     bool contains = false;
-      options.forEach((option)
-      {
+      for (var option in options) {
         if (option.value == value) contains = true;
-      });
+      }
     return contains;
   }
 
@@ -296,14 +307,14 @@ class RadioModel extends FormFieldModel implements IFormField
   {
     // set the data
     List<dynamic> data = [];
-    options.forEach((option)
-    {
+    for (var option in options) {
       bool contains = (value == option.value);
       if ((contains) && (option.data != null)) data.add(option.data);
-    });
+    }
     this.data = data;
     return true;
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(RadioView(this));
 }

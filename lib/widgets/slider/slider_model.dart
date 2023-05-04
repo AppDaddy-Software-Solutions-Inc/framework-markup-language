@@ -1,13 +1,13 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
-import 'package:fml/widgets/form/iFormField.dart';
+import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:fml/datasources/gps/payload.dart' as GPS;
+import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/widgets/slider/slider_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
@@ -78,6 +78,7 @@ class SliderModel extends FormFieldModel implements IFormField
   /* Value */
   ///////////
   StringObservable? _value;
+  @override
   set value(dynamic v)
   {
     if (_value != null)
@@ -102,6 +103,7 @@ class SliderModel extends FormFieldModel implements IFormField
   ////////////
   /* Answer */
   ////////////
+  @override
   Future<bool> answer(dynamic v, {bool range = false}) async
   {
     bool ok = true;
@@ -125,7 +127,7 @@ class SliderModel extends FormFieldModel implements IFormField
       /* Old GeoCode */
       /////////////////
       var oldGeocode = geocode;
-      geocode = GPS.Payload(
+      geocode = Payload(
           latitude: System().currentLocation?.latitude,
           longitude: System().currentLocation?.longitude,
           altitude: System().currentLocation?.altitude,
@@ -149,8 +151,9 @@ class SliderModel extends FormFieldModel implements IFormField
       //////////////////
       /* Save Success */
       //////////////////
-      else
+      else {
         dirty = true;
+      }
     }
 
     return ok;
@@ -208,8 +211,8 @@ class SliderModel extends FormFieldModel implements IFormField
     if (inputtype    != null) this.inputtype  = inputtype;
     if (range        != null) this.range      = range;
 
-    this.alarming     = false;
-    this.dirty        = false;
+    alarming     = false;
+    dirty        = false;
   }
 
   static SliderModel? fromXml(WidgetModel parent, XmlElement xml, {String? type}) {
@@ -256,6 +259,7 @@ class SliderModel extends FormFieldModel implements IFormField
     super.dispose();
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(SliderView(this));
 }
 

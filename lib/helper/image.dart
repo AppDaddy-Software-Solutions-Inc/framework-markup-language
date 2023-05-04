@@ -99,7 +99,7 @@ class ImageHelper
       var codec = await instantiateImageCodec(bytes);
       var frame = await codec.getNextFrame();
       var data  = await frame.image.toByteData(format: ImageByteFormat.rawRgba);
-      return data != null ? data.buffer.asUint8List() : null;
+      return data?.buffer.asUint8List();
     }
     catch(e)
     {

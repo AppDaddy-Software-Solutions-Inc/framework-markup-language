@@ -6,10 +6,7 @@ class TextValue {
   List<String> styles = [];
   String text = "";
 
-  TextValue(List<String> styles, String text) {
-    this.styles = styles;
-    this.text = text;
-  }
+  TextValue(this.styles, this.text);
 }
 
 List<TextValue> textValues = [];
@@ -35,20 +32,23 @@ void matchElements (String value) {
   RegExp codeC = RegExp(r"\`\`\`((?=[ \*\_\^\#\`\\])|\\)");
 
   // pad the value rather than adding extra cases for start and end of line
-  if (value.length > 2) value = " " + value + " ";
-  else return extractStyles(value, []); // There is nothing to apply markdown to
+  if (value.length > 2) {
+    value = " $value ";
+  } else {
+    return extractStyles(value, []); // There is nothing to apply markdown to
+  }
 
   while (bdO.firstMatch(value) != null && bdC.firstMatch(value) != null) // add or for start and end or add space to start and end
    {
     //value = value.replaceFirst(bdO, '###bol###');
-    value = value.replaceFirstMapped(bdO, (match) => match.group(1)! + "###bol###");
+    value = value.replaceFirstMapped(bdO, (match) => "${match.group(1)!}###bol###");
     value = value.replaceFirst(bdC, '###bol###');
   }
 
   while (itO.firstMatch(value) != null && itC.firstMatch(value) != null)
   {
     //value = value.replaceFirst(itO, '###ita###', 1);
-    value = value.replaceFirstMapped(itO, (match) => match.group(1)! + "###ita###");
+    value = value.replaceFirstMapped(itO, (match) => "${match.group(1)!}###ita###");
     value = value.replaceFirst(itC, '###ita###');
   }
 
@@ -58,37 +58,37 @@ void matchElements (String value) {
 
   while (sbO.firstMatch(value) != null && sbC.firstMatch(value) != null)
   {
-    value = value.replaceFirstMapped(sbO, (match) => match.group(1)! + "###sub###");
+    value = value.replaceFirstMapped(sbO, (match) => "${match.group(1)!}###sub###");
     value = value.replaceFirst(sbC, '###sub###');
   }
 
   while (spO.firstMatch(value) != null && spC.firstMatch(value) != null)
   {
-    value = value.replaceFirstMapped(spO, (match) => match.group(1)! + "###sup###");
+    value = value.replaceFirstMapped(spO, (match) => "${match.group(1)!}###sup###");
     value = value.replaceFirst(spC, '###sup###');
   }
 
   while (ovO.firstMatch(value) != null && ovC.firstMatch(value) != null)
   {
-    value = value.replaceFirstMapped(ovO, (match) => match.group(1)! + "###ove###");
+    value = value.replaceFirstMapped(ovO, (match) => "${match.group(1)!}###ove###");
     value = value.replaceFirst(ovC, '###ove###');
   }
 
   while (stO.firstMatch(value) != null && stC.firstMatch(value) != null)
   {
-    value = value.replaceFirstMapped(stO, (match) => match.group(1)! + "###str###");
+    value = value.replaceFirstMapped(stO, (match) => "${match.group(1)!}###str###");
     value = value.replaceFirst(stC, '###str###');
   }
 
   while (unO.firstMatch(value) != null && unC.firstMatch(value) != null)
   {
-    value = value.replaceFirstMapped(unO, (match) => match.group(1)! + "###und###");
+    value = value.replaceFirstMapped(unO, (match) => "${match.group(1)!}###und###");
     value = value.replaceFirst(unC, '###und###');
   }
 
 
   while (codeO.firstMatch(value) != null && codeC.firstMatch(value) != null) {
-    value = value.replaceFirstMapped(codeO, (match) => match.group(1)! + "###code###");
+    value = value.replaceFirstMapped(codeO, (match) => "${match.group(1)!}###code###");
     value = value.replaceFirst(codeC, '###code###');
   }
 
@@ -141,63 +141,88 @@ void extractStyles(String value, List<String> styleList) {
 
 
     if (value.substring(0, 9) == under) {
-      if(styles.contains("underline")) styles.remove("underline");
-      else styles.add("underline");
+      if(styles.contains("underline")) {
+        styles.remove("underline");
+      } else {
+        styles.add("underline");
+      }
 
       value = value.substring(9);
     }
 
     else if (value.substring(0, 9) == over) {
-      if(styles.contains("overline")) styles.remove("overline");
-      else styles.add("overline");
+      if(styles.contains("overline")) {
+        styles.remove("overline");
+      } else {
+        styles.add("overline");
+      }
 
       value = value.substring(9);
     }
 
     else if (value.substring(0, 9) == strike) {
-      if(styles.contains("strikethrough")) styles.remove("strikethrough");
-      else styles.add("strikethrough");
+      if(styles.contains("strikethrough")) {
+        styles.remove("strikethrough");
+      } else {
+        styles.add("strikethrough");
+      }
 
       value = value.substring(9);
     }
 
     else if (value.substring(0, 9) == sub) {
-      if(styles.contains("subscript")) styles.remove("subscript");
-      else styles.add("subscript");
+      if(styles.contains("subscript")) {
+        styles.remove("subscript");
+      } else {
+        styles.add("subscript");
+      }
 
       value = value.substring(9);
     }
 
     else if (value.substring(0, 9) == sup) {
-      if(styles.contains("superscript")) styles.remove("superscript");
-      else styles.add("superscript");
+      if(styles.contains("superscript")) {
+        styles.remove("superscript");
+      } else {
+        styles.add("superscript");
+      }
 
       value = value.substring(9);
     }
 
     else if (value.substring(0, 9) == bold) {
-      if(styles.contains("bold")) styles.remove("bold");
-      else styles.add("bold");
+      if(styles.contains("bold")) {
+        styles.remove("bold");
+      } else {
+        styles.add("bold");
+      }
 
       value = value.substring(9);
     }
 
     else if (value.substring(0, 9) == italic) {
-      if(styles.contains("italic")) styles.remove("italic");
-      else styles.add("italic");
+      if(styles.contains("italic")) {
+        styles.remove("italic");
+      } else {
+        styles.add("italic");
+      }
 
       value = value.substring(9);
     }
 
     else if (value.substring(0, 10) == code) {
-      if(styles.contains("code")) styles.remove("code");
-      else styles.add("code");
+      if(styles.contains("code")) {
+        styles.remove("code");
+      } else {
+        styles.add("code");
+      }
 
       value = value.substring(10);
     }
 
-    else
+    else {
       return;
+    }
 
   }
 }

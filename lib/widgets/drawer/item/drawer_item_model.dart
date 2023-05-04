@@ -39,13 +39,13 @@ class DrawerItemModel extends BoxModel
     switch (function)
     {
       case "open" :
-        DrawerViewState? drawer = this.parent?.findListenerOfExactType(DrawerViewState);
-        if (drawer != null) return await drawer.openDrawer(S.fromEnum(this.position));
+        DrawerViewState? drawer = parent?.findListenerOfExactType(DrawerViewState);
+        if (drawer != null) return await drawer.openDrawer(S.fromEnum(position));
         break;
 
       case "close" :
-        DrawerViewState? drawer = this.parent?.findListenerOfExactType(DrawerViewState);
-        if (drawer != null) return await drawer.closeDrawer(S.fromEnum(this.position));
+        DrawerViewState? drawer = parent?.findListenerOfExactType(DrawerViewState);
+        if (drawer != null) return await drawer.closeDrawer(S.fromEnum(position));
         break;
 
     }

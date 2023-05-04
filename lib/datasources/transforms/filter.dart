@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/iDataSource.dart';
-import 'package:fml/datasources/transforms/iTransform.dart';
+import 'package:fml/datasources/datasource_interface.dart';
+import 'package:fml/datasources/transforms/transform_interface.dart';
 import 'package:fml/datasources/transforms/transform_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
@@ -12,6 +12,7 @@ class Filter extends TransformModel implements ITransform
 {
   /// enabled
   BooleanObservable? _enabled;
+  @override
   set enabled(dynamic v)
   {
     if (_enabled != null)
@@ -23,6 +24,7 @@ class Filter extends TransformModel implements ITransform
       _enabled = BooleanObservable(Binding.toKey(id, 'enabled'), v, scope: scope, listener: onFilterChange);
     }
   }
+  @override
   bool get enabled => _enabled?.get() ?? true;
 
   // filter
@@ -108,6 +110,7 @@ class Filter extends TransformModel implements ITransform
     if (data != null && parent is IDataSource) (parent as IDataSource).onSuccess(data);
   }
 
+  @override
   apply(Data? data) async
   {
     // clone the data

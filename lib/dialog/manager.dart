@@ -15,7 +15,7 @@ class DialogManager
 
     int i = 0;
 
-    if (request.buttons != null)
+    if (request.buttons != null){
     for (final button in request.buttons!)
     {
       final idx = i;
@@ -26,16 +26,17 @@ class DialogManager
       });
       buttons.add(b);
       i++;
-    }
+    }}
 
     if (request.type == DialogType.modal)
     {
       dynamic closeButton = Column(crossAxisAlignment: CrossAxisAlignment.end, children: [SizedBox(width: 35, child: IconButton(onPressed: () => Navigator.of(context).pop(), icon: Icon(Icons.cancel, size: 24)))]);
-      if (request.title != null && request.title != '')
+      if (request.title != null && request.title != '') {
         closeButton = Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Expanded(child: Container(child: Text(request.title!, style: TextStyle(fontSize: 16)))),
           closeButton,
         ],);
+      }
 
 
       double paddingV = isMobile ? 64 : 128;

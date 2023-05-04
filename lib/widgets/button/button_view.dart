@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/widgets/button/button_model.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
@@ -10,13 +10,14 @@ import 'package:fml/widgets/widget/widget_state.dart';
 /// Builds the Button View from [ButtonModel] properties
 class ButtonView extends StatefulWidget implements IWidgetView
 {
+  @override
   final ButtonModel model;
   final Widget? child;
 
   ButtonView(this.model, {this.child});
 
   @override
-  _ButtonViewState createState() => _ButtonViewState();
+  State<ButtonView> createState() => _ButtonViewState();
 }
 
 class _ButtonViewState extends WidgetState<ButtonView>
@@ -25,7 +26,7 @@ class _ButtonViewState extends WidgetState<ButtonView>
   {
     var model = widget.model;
 
-    if (model.buttontype == 'elevated')
+    if (model.buttontype == 'elevated') {
       return ElevatedButton.styleFrom(
           minimumSize:  Size(model.constraints.model.minWidth ?? 64, (model.constraints.model.minHeight ?? 0) + 40), //add 40 to the constraint as the width is offset by 40
           backgroundColor: model.color ?? Theme.of(context).colorScheme.primary,
@@ -34,12 +35,14 @@ class _ButtonViewState extends WidgetState<ButtonView>
           shadowColor: Theme.of(context).colorScheme.shadow,
           shape: RoundedRectangleBorder(borderRadius: model.radius > 0 ? BorderRadius.all(Radius.circular(model.radius)) : BorderRadius.zero),
           elevation: 3);
+    }
 
 
     var borderSideStyle = model.buttontype == 'outlined' ? MaterialStateProperty.resolveWith((states)
     {
-      if (states.contains(MaterialState.disabled))
+      if (states.contains(MaterialState.disabled)) {
         return BorderSide(style: BorderStyle.solid, color: Theme.of(context).colorScheme.surfaceVariant, width: 2);
+      }
         return BorderSide(style: BorderStyle.solid, color: model.color ?? Theme.of(context).colorScheme.primary, width: 2);
     }) : null;
 
@@ -55,7 +58,7 @@ class _ButtonViewState extends WidgetState<ButtonView>
     MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states)
     {
       if (states.contains(MaterialState.disabled)) return Theme.of(context).colorScheme.surfaceVariant;
-      return model.color ?? null;// not sure if this is the correct color scheme for text.
+      return model.color;// not sure if this is the correct color scheme for text.
     }) : null;
 
     var backgroundColorStyle = (!S.isNullOrEmpty(model.color) && model.buttontype == 'elevated') ?

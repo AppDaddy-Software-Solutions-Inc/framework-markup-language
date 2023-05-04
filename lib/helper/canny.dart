@@ -51,11 +51,10 @@ Set<Set<Index2d>> canny(
   Image sobel = Image(image.width, image.height);
   Image edgeDirection = Image(image.width, image.height);
 
-  int Function(int x) clampX = (x) => x.clamp(0, image.width -1).toInt();
-  int Function(int y) clampY = (y) => y.clamp(0, image.height-1).toInt();
-  int Function(num p) clamp255 = (p) => p.clamp(0, 255).toInt();
-  int Function(int x,int y,Image image) getSafe
-  = (x,y,image) => getRed(image.getPixel(clampX(x), clampY(y)));
+  clampX(x) => x.clamp(0, image.width -1).toInt();
+  clampY(y) => y.clamp(0, image.height-1).toInt();
+  clamp255(p) => p.clamp(0, 255).toInt();
+  getSafe(x,y,image) => getRed(image.getPixel(clampX(x), clampY(y)));
 
   for (int y = 0; y < image.height; ++y) {
     for (int x = 0; x < image.width; ++x) {
@@ -88,9 +87,9 @@ Set<Set<Index2d>> canny(
   if (onSobel!=null) onSobel(sobel);
 
   //helper function to determine neighbours of an edge
-  Set<Index2d> Function(int x, int y) getNeighbours = (x,y) {
+  getNeighbours(x,y) {
     int direction = edgeDirection.getPixel(x, y);
-    Set<Index2d> nei = Set();
+    Set<Index2d> nei = {};
     switch(direction) {
       case 0:
         if (y > 0) nei.add(Index2d(x,y-1));
@@ -110,7 +109,7 @@ Set<Set<Index2d>> canny(
         break;
     }
     return nei;
-  };
+  }
 
   //<non-maximum suppression>
   for (int y = 0; y < image.height; ++y) {
@@ -153,10 +152,10 @@ Set<Set<Index2d>> canny(
   }
 
   //hysteresis by blob analysis
-  bool Function(int x, int y) isWeak = (x,y) => getSafe(x,y,image) >= lowThreshold!;
-  bool Function(int x, int y) isStrong = (x,y) => getSafe(x,y,image) >= highThreshold!;
-  Set<Set<Index2d>> edges = Set();
-  Set<Index2d> nonEdges = Set();
+  isWeak(x,y) => getSafe(x,y,image) >= lowThreshold!;
+  isStrong(x,y) => getSafe(x,y,image) >= highThreshold!;
+  Set<Set<Index2d>> edges = {};
+  Set<Index2d> nonEdges = {};
   int currentLabel = 2;
   ListQueue<Index2d> currentBlobNeighbours = ListQueue();
   Image labeledPixels = Image(image.width, image.height);
@@ -187,7 +186,7 @@ Set<Set<Index2d>> canny(
       //pixel is an unlabeled foreground edge
       currentBlobNeighbours.addLast(Index2d(x, y));
       bool isStrongEdge = false;
-      Set<Index2d> currentEdge = Set();
+      Set<Index2d> currentEdge = {};
       while (currentBlobNeighbours.isNotEmpty) {
         Index2d w = currentBlobNeighbours.removeLast();
         currentEdge.add(w);
@@ -202,7 +201,7 @@ Set<Set<Index2d>> canny(
         //edge direction!
         //if a neighbour is a foreground pixel and
         //not already labelled put it in Queue
-        Set<Index2d> symmetricNeighbours = Set();
+        Set<Index2d> symmetricNeighbours = {};
         symmetricNeighbours.addAll(getNeighbours(w.x,w.y));
         if (w.x > 0 && w.y > 0 && getNeighbours(w.x-1,w.y-1).contains(w)) {
           symmetricNeighbours.add(Index2d(w.x-1,w.y-1));
@@ -228,12 +227,12 @@ Set<Set<Index2d>> canny(
         if (w.x <image.width-1 && getNeighbours(w.x+1,w.y).contains(w)) {
           symmetricNeighbours.add(Index2d(w.x+1,w.y));
         }
-        symmetricNeighbours.forEach((neighbour) {
+        for (var neighbour in symmetricNeighbours) {
           //if edge is foreground edge and not yet labbeled
           if (isWeak(neighbour.x,neighbour.x) && labeledPixels.getPixel(neighbour.x, neighbour.y) == 0) {
             currentBlobNeighbours.add(neighbour);
           }
-        });
+        }
       }
       if (isStrongEdge) {
         edges.add(currentEdge);
@@ -246,9 +245,9 @@ Set<Set<Index2d>> canny(
 
   //supress all weak edges which are neither strong nor
   //lie in the same region as a strong edge
-  nonEdges.forEach((w) {
+  for (var w in nonEdges) {
     image.setPixelRgba(w.x, w.y, 0,0,0);
-  });
+  }
 
   if (onImageResult != null) onImageResult(image);
 
@@ -283,11 +282,15 @@ int? _otsusMethod(Image image) {
 
     //calculate mean
     double backgroundMean = 0;
-    for (int i = 0; i < currentThreshold; ++i) backgroundMean += i * histogramm[i];
+    for (int i = 0; i < currentThreshold; ++i) {
+      backgroundMean += i * histogramm[i];
+    }
     backgroundMean /= bakgroundSum;
 
     double foregroundMean = 0;
-    for (int i = currentThreshold; i < 256; ++i) foregroundMean += i * histogramm[i];
+    for (int i = currentThreshold; i < 256; ++i) {
+      foregroundMean += i * histogramm[i];
+    }
     foregroundMean /= foregroundSum;
 
     //calculate between class variance

@@ -118,66 +118,66 @@ class TimeUnitDuration {
       time = matches[1]!;
     }
     if (amt == null || time == null) {
-      this.amount = 0;
-      this.timeUnit = TimeUnit.millisecond;
+      amount = 0;
+      timeUnit = TimeUnit.millisecond;
     }
     else {
       switch (time.trim().toLowerCase()) {
         case 'ms':
         case 'millisecond':
         case 'milliseconds':
-        this.amount = amt;
-        this.timeUnit = TimeUnit.millisecond;
+        amount = amt;
+        timeUnit = TimeUnit.millisecond;
           break;
         case 's':
         case 'sec':
         case 'second':
         case 'seconds':
-        this.amount = amt;
-        this.timeUnit = TimeUnit.second;
+        amount = amt;
+        timeUnit = TimeUnit.second;
           break;
         case 'm':
         case 'min':
         case 'minute':
         case 'minutes':
-        this.amount = amt;
-        this.timeUnit = TimeUnit.minute;
+        amount = amt;
+        timeUnit = TimeUnit.minute;
           break;
         case 'h':
         case 'hr':
         case 'hour':
         case 'hours':
-        this.amount = amt;
-        this.timeUnit = TimeUnit.hour;
+        amount = amt;
+        timeUnit = TimeUnit.hour;
           break;
         case 'd':
         case 'day':
         case 'days':
-        this.amount = amt;
-        this.timeUnit = TimeUnit.day;
+        amount = amt;
+        timeUnit = TimeUnit.day;
           break;
         case 'w':
         case 'week':
         case 'weeks':
-        this.amount = amt;
-        this.timeUnit = TimeUnit.week;
+        amount = amt;
+        timeUnit = TimeUnit.week;
           break;
         case 'mo':
         case 'month':
         case 'months':
-        this.amount = amt;
-        this.timeUnit = TimeUnit.month;
+        amount = amt;
+        timeUnit = TimeUnit.month;
           break;
         case 'y':
         case 'yr':
         case 'year':
         case 'years':
-        this.amount = amt;
-        this.timeUnit = TimeUnit.year;
+        amount = amt;
+        timeUnit = TimeUnit.year;
           break;
         default:
-          this.amount = 0;
-          this.timeUnit = TimeUnit.millisecond;
+          amount = 0;
+          timeUnit = TimeUnit.millisecond;
           break;
       }
     }

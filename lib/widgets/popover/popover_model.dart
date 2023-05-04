@@ -99,7 +99,7 @@ class PopoverModel extends DecoratedWidgetModel implements IModelListener
         var item = PopoverItemModel.fromXml(this, node);
         if (item != null) {
           item.registerListener(this);
-          this.items.add(item);
+          items.add(item);
         }
       }
   }
@@ -116,10 +116,12 @@ class PopoverModel extends DecoratedWidgetModel implements IModelListener
     return await EventHandler(this).execute(onclick);
   }
 
+  @override
   onModelChange(WidgetModel model, {String? property, value}) {
     // TODO missing setState?
     onPropertyChange(StringObservable(null, null)); // Allow us to rebuild the child model when it changes
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(PopoverView(this));
 }

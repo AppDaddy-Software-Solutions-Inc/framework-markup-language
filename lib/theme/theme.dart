@@ -45,14 +45,17 @@ class MyTheme
     String? brightness = /*await Settings().get('brightness') ??*/ System.theme.brightness;
     if (brightness != null)
     {
-      if (brightness == 'system' || brightness == 'platform')
+      if (brightness == 'system' || brightness == 'platform') {
         brightnessPreference = MediaQueryData.fromWindow(WidgetsBinding.instance.window).platformBrightness;
-      else if (brightness == 'dark')
+      } else if (brightness == 'dark') {
         brightnessPreference = Brightness.dark;
-      else if (brightness == 'light')
+      } else if (brightness == 'light') {
         brightnessPreference = Brightness.light;
+      }
     }
-    else brightnessPreference = Brightness.light;
+    else {
+      brightnessPreference = Brightness.light;
+    }
     return brightnessPreference;
   }
 
@@ -80,7 +83,7 @@ class MyTheme
 }
 
 ThemeData applyCustomizations(ColorScheme base, ThemeModel m) {
-  var customizedTheme;
+  ThemeData? customizedTheme;
   try {
     customizedTheme = ThemeData.from(
       colorScheme: ColorScheme(

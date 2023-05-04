@@ -13,6 +13,7 @@ class File extends FileBase
 {
   File(dynamic file, String url, String name, String? mimeType, int size) : super(file, url, name, mimeType, size);
 
+  @override
   Future<Uint8List?> read({int? start, int? end}) async
   {
     try
@@ -26,7 +27,9 @@ class File extends FileBase
         {
             bytes = await file.readAsBytes();
         }
-        else return await _read(start!, end);
+        else {
+          return await _read(start!, end);
+        }
       }
 
       return bytes;
@@ -42,7 +45,7 @@ class File extends FileBase
   {
     List<int> parts = [];
     if (start.isNegative) start = 0;
-    if (end == null) end = await file.length();
+    end ??= await file.length();
 
     Stream<List<int>> stream = file.openRead(start,end);
     await for (dynamic part in stream)
@@ -56,6 +59,6 @@ class File extends FileBase
         Log().exception(e);
       }
     }
-    return (parts.length == 0 ? null : Uint8List.fromList(parts));
+    return (parts.isEmpty ? null : Uint8List.fromList(parts));
   }
 }

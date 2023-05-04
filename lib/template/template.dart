@@ -42,7 +42,9 @@ class Template
 
       // Replace System Uuid
       String s = Binding.toKey(System.myId, 'uuid')!;
-      while (xml!.contains(s)) xml = xml.replaceFirst(s, S.newId());
+      while (xml!.contains(s)) {
+        xml = xml.replaceFirst(s, S.newId());
+      }
 
       // Convert Xml String to Xml Document
       XmlDocument document = XmlDocument.parse(xml);
@@ -63,7 +65,7 @@ class Template
     // saved document
     if (isUUID(url)) return await fetchSaved(url: url);
 
-    Log().debug('Getting template ' + url);
+    Log().debug('Getting template $url');
 
     // parse the url
     var uri = URI.parse(url);
@@ -98,10 +100,10 @@ class Template
       }
 
       // get template from disk
-      if (template == null) template = await TemplateManager().fromDisk(url);
+      template ??= await TemplateManager().fromDisk(url);
 
       // get template from database (web)
-      if (template == null) template = await TemplateManager().fromDatabase(url);
+      template ??= await TemplateManager().fromDatabase(url);
 
       // get template from server
       if (template == null)
@@ -118,10 +120,10 @@ class Template
     else
     {
       // from assets archive
-      if (template == null) template = await TemplateManager().fromAssetsBundle(url);
+      template ??= await TemplateManager().fromAssetsBundle(url);
 
       // from disk
-      if (template == null) template = await TemplateManager().fromDisk(url);
+      template ??= await TemplateManager().fromDisk(url);
     }
 
     // nothing to process
@@ -145,12 +147,12 @@ class Template
 
   static Future<XmlDocument?> fetchSaved({required String url}) async
   {
-    Log().debug('Getting saved template ' + url);
+    Log().debug('Getting saved template $url');
 
     String? template;
 
     // get template from database (web)
-    if (template == null) template = await TemplateManager().fromDatabase(url);
+    template ??= await TemplateManager().fromDatabase(url);
 
     return Xml.tryParse(template);
   }
@@ -167,7 +169,7 @@ class Template
     if (document != null) return Template.fromDocument(name: url, xml: document, parameters: parameters);
 
     // not found - build error template
-    String xml404 = errorTemplate('Page Not Found', null, "$url");
+    String xml404 = errorTemplate('Page Not Found', null, url);
 
     // parse the error template created
     try
@@ -176,7 +178,7 @@ class Template
     }
     on  Exception catch(e)
     {
-      xml404 = errorTemplate('Error on Page', '$url', e.toString());
+      xml404 = errorTemplate('Error on Page', url, e.toString());
       document = Xml.tryParse(xml404);
     }
 
@@ -201,7 +203,7 @@ class Template
         if (uri != null)
         {
           // parameters
-          Map<String, String> parameters = Map<String, String>();
+          Map<String, String> parameters = <String, String>{};
           parameters.addAll(uri.queryParameters);
 
           // fetch the template
@@ -216,8 +218,9 @@ class Template
               // include must always be wrapped in a parent that is ignored, often <FML>
               List<XmlElement> nodes = [];
               XmlElement? include = template.document!.rootElement;
-              for (dynamic node in include.children)
+              for (dynamic node in include.children) {
                 if (node is XmlElement) nodes.add(node.copy());
+              }
               element.parent!.children.insertAll(position, nodes);
             }
             catch(e)

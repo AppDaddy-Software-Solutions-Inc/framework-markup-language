@@ -1,18 +1,19 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/widgets/popover/popover_model.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class PopoverView extends StatefulWidget implements IWidgetView
 {
+  @override
   final PopoverModel model;
   final Widget? child;
 
   PopoverView(this.model, {this.child});
 
   @override
-  _PopoverViewState createState() => _PopoverViewState();
+  State<PopoverView> createState() => _PopoverViewState();
 }
 
 class _PopoverViewState extends WidgetState<PopoverView>
@@ -30,10 +31,10 @@ class _PopoverViewState extends WidgetState<PopoverView>
 
   Widget buildPopover() {
     List<PopupMenuEntry> itemsList = [];
-    widget.model.items.forEach((item) {
+    for (var item in widget.model.items) {
       itemsList.add(PopupMenuItem(
           child: Text(item.label!, style: TextStyle(color: Theme.of(context).colorScheme.onSecondaryContainer),), value: item.onclickObservable));
-    });
+    }
     return SizedBox(
         height: 50,
         child:

@@ -142,12 +142,12 @@ class ModalModel extends BoxModel
       case "open" :
         
         // modal width
-        String? width = arguments.length > 0 ? S.toStr(arguments[0]) : null;
-        if (width == null) width = (widthPercentage != null) ? "$widthPercentage%" : "${this.width}";
+        String? width = arguments.isNotEmpty ? S.toStr(arguments[0]) : null;
+        width ??= (widthPercentage != null) ? "$widthPercentage%" : "${this.width}";
 
         // modal height
         String? height = arguments.length > 1 ? S.toStr(arguments[1]) : null;
-        if (height == null) height = (heightPercentage != null) ? "$heightPercentage%" : "${this.height}";
+        height ??= (heightPercentage != null) ? "$heightPercentage%" : "${this.height}";
 
         // resizeable
         bool resizeable = this.resizeable;
@@ -176,5 +176,6 @@ class ModalModel extends BoxModel
   }
 
   /// Returns the [MODAL] View
+  @override
   Widget getView({Key? key}) => getReactiveView(ModalView(this));
 }

@@ -9,7 +9,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/camera/camera_model.dart';
 import 'package:fml/widgets/camera/stream/stream.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/icon/icon_model.dart';
 import 'package:fml/widgets/icon/icon_view.dart';
@@ -25,6 +25,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class CameraView extends StatefulWidget implements IWidgetView
 {
+  @override
   final CameraModel model;
 
   CameraView(this.model) : super(key: ObjectKey(model));
@@ -77,9 +78,10 @@ class CameraViewState extends WidgetState<CameraView>
   }
 
   /// Callback to fire the [CameraViewState.build] when the [CameraModel] changes
+  @override
   onModelChange(WidgetModel model, {String? property, dynamic value})
   {
-    if (this.mounted)
+    if (mounted)
     {
       var b = Binding.fromString(property);
       switch (b?.property)
@@ -114,8 +116,9 @@ class CameraViewState extends WidgetState<CameraView>
           }
 
           // initialize the camera
-          else
+          else {
             reconfigureCameras();
+          }
           break;
 
       }
@@ -200,7 +203,7 @@ class CameraViewState extends WidgetState<CameraView>
         return;
       }
 
-      if (cameras!.length > 0)
+      if (cameras!.isNotEmpty)
       {
         // set specified camera
         int index = widget.model.index ?? -1;
@@ -209,9 +212,11 @@ class CameraViewState extends WidgetState<CameraView>
           // get the camera
           CameraLensDirection direction = S.toEnum(widget.model.direction, CameraLensDirection.values) ?? CameraLensDirection.back;
           var camera = cameras!.firstWhereOrNull((camera) => camera.lensDirection == direction);
-          if (camera != null)
-               index = cameras!.indexOf(camera);
-          else index = 0;
+          if (camera != null) {
+            index = cameras!.indexOf(camera);
+          } else {
+            index = 0;
+          }
 
           // this will fire onModelChange
           widget.model.index = index;
@@ -253,7 +258,9 @@ class CameraViewState extends WidgetState<CameraView>
             if (controller!.value.hasError) Log().debug('Camera Controller error ${controller!.value.errorDescription}', caller: 'camera/camera_view.dart => initialize()');
           });
         }
-        else Log().debug('Camera Controller is null', caller: 'camera/camera_view.dart => initialize()');
+        else {
+          Log().debug('Camera Controller is null', caller: 'camera/camera_view.dart => initialize()');
+        }
 
         // initialize the controller
         try
@@ -306,12 +313,17 @@ class CameraViewState extends WidgetState<CameraView>
           // min zoom
           _zoom = await controller!.getMinZoomLevel();
           _minAvailableZoom = _zoom;
-        } catch(e) {}
+        } catch(e)
+        {
+          Log().debug('$e');
+        }
 
         try {
           // max zoom
           _maxAvailableZoom = await controller!.getMaxZoomLevel();
-        } catch(e) {}
+        } catch(e) {
+          Log().debug('$e');
+        }
 
         // set aspect ratio
         widget.model.scale = controller!.value.aspectRatio;
@@ -326,12 +338,15 @@ class CameraViewState extends WidgetState<CameraView>
         // start stream
         if (widget.model.stream)
         {
-          if (!isDesktop) controller!.startImageStream((stream) => onStream(stream, camera));
-          else Log().error('Streaming is not yet supported on desktop');
+          if (!isDesktop) {
+            controller!.startImageStream((stream) => onStream(stream, camera));
+          } else {
+            Log().error('Streaming is not yet supported on desktop');
+          }
         }
 
         // notify initilizied
-        widget.model.onInitialized(this.context);
+        widget.model.onInitialized(context);
 
         // camera is busy
         widget.model.busy = false;
@@ -351,7 +366,9 @@ class CameraViewState extends WidgetState<CameraView>
     {
       await controller?.dispose();
     }
-    catch(e){}
+    catch(e){
+      Log().debug('$e');
+    }
 
     controller = null;
     backgroundStream = null;
@@ -377,7 +394,7 @@ class CameraViewState extends WidgetState<CameraView>
     bool ok = true;
 
     try {
-      if (cameras != null && cameras!.length > 0 && controller != null
+      if (cameras != null && cameras!.isNotEmpty && controller != null
           && controller!.value.isInitialized && widget.model.busy != true) {
         // set busy
         widget.model.busy = true;
@@ -395,9 +412,10 @@ class CameraViewState extends WidgetState<CameraView>
         XFile image = await controller!.takePicture();
 
         // start stream
-        if (widget.model.stream)
+        if (widget.model.stream) {
           await controller?.startImageStream(
               (stream) => onStream(stream, cameras![widget.model.index ?? 0]));
+        }
 
         // save the image
         ok = await onSnapshot(image);
@@ -491,8 +509,9 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
     // wait for controller to initialize
     try {
-      if (initialized != true || (controller == null) || (!controller!.value.isInitialized))
+      if (initialized != true || (controller == null) || (!controller!.value.isInitialized)) {
         return Container();
+      }
     } catch(e) {
       return Container();
     }
@@ -541,8 +560,9 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
     // hack to initialize background camera stream. current camera widget doesn't support streaming in web
     if ((kIsWeb) && (widget.model.stream) && (backgroundStream == null)) {
       backgroundStream = StreamView(widget.model);
-      if (backgroundStream != null)
+      if (backgroundStream != null) {
         children.add(Offstage(child: backgroundStream as Widget?));
+      }
     }
 
     // build the child views
@@ -551,7 +571,7 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
     // show controls
     if (widget.model.controls != false) {
       // zoom slider
-      var zoomslider;
+      Slider? zoomslider;
       if (_maxAvailableZoom > _minAvailableZoom) {
         zoomslider = Slider(
             value: _zoom,
@@ -572,8 +592,7 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
       // camera selector
       Widget selector;
       if (cameras != null && cameras!.length > 1) {
-        if (selectorbutton == null)
-          selectorbutton = IconView(IconModel(null, null,
+        selectorbutton ??= IconView(IconModel(null, null,
               icon: Icons.cameraswitch_sharp, size: 25, color: Colors.black));
         selector = UnconstrainedBox(
             child: MouseRegion(
@@ -589,8 +608,7 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
       }
 
       // shutter
-      if (shutterbutton == null)
-        shutterbutton = IconView(IconModel(null, null,
+      shutterbutton ??= IconView(IconModel(null, null,
             icon: Icons.circle, size: 65, color: Colors.white));
       var shutter = UnconstrainedBox(
           child: MouseRegion(
@@ -633,7 +651,9 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
       }
 
       // blob image - created in mobile
-      else detectable = DetectableImage.fromFilePath(image.path);
+      else {
+        detectable = DetectableImage.fromFilePath(image.path);
+      }
 
       //detect
       if (detectable != null) widget.model.detectInImage(detectable);

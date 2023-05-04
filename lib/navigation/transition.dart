@@ -35,7 +35,7 @@ class CustomTransitionBuilder extends PageTransitionsBuilder
       Widget child) {
 
     PageConfiguration? args = route.settings.arguments as PageConfiguration?;
-    String? transition = (args != null && args.transition != null) ? args.transition : this.platform;
+    String? transition = (args != null && args.transition != null) ? args.transition : platform;
     if (transition != null) {
       switch(transition) {
         case 'ios':

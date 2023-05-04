@@ -1,21 +1,23 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/pager/page/pager_page_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class PagerPageView extends StatefulWidget implements IWidgetView
 {
+  @override
   final PagerPageModel model;
   PagerPageView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _PagerPageViewState createState() => _PagerPageViewState();
+  State<PagerPageView> createState() => _PagerPageViewState();
 }
 
 class _PagerPageViewState extends WidgetState<PagerPageView>
 {
+  @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)

@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:collection';
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -73,7 +73,7 @@ class MapModel extends DecoratedWidgetModel
     if (_zoom == null) return scale;
 
     scale = _zoom?.get();
-    if (scale == null) scale = 1;
+    scale ??= 1;
     if ((scale < 1))   scale = 1;
     if ((scale > 20))  scale = 20;
     return scale;
@@ -129,17 +129,15 @@ class MapModel extends DecoratedWidgetModel
 
     // add layers
     var layers = Xml.getChildElements(node: xml, tag: "LAYER");
-    if (layers != null)
-      layers.forEach((layer)
-      {
+    if (layers != null){
+      for (var layer in layers) {
         String? url = Xml.get(node: layer, tag: 'url');
         if (url != null) this.layers.add(url);
-      });
+      }}
 
     // build locations
     List<MapMarkerModel> markers = findChildrenOfExactType(MapMarkerModel).cast<MapMarkerModel>();
-    markers.forEach((model)
-    {
+    for (var model in markers) {
       // data driven prototype location
       if (!S.isNullOrEmpty(model.datasource))
       {
@@ -157,8 +155,10 @@ class MapModel extends DecoratedWidgetModel
       }
 
       // static location
-      else this.markers.add(model);
-    });
+      else {
+        this.markers.add(model);
+      }
+    }
   }
 
   @override
@@ -182,19 +182,18 @@ class MapModel extends DecoratedWidgetModel
       markers.removeWhere((model) => source.id == model.datasource);
 
       // build new locations
-      if ((list != null) && (list.isNotEmpty))
+      if ((list != null) && (list.isNotEmpty)){
         for (String prototype in prototypes)
         {
           int i = 0;
-          list.forEach((data)
-          {
-            XmlElement? node = S.fromPrototype(prototype, "${this.id}-${S.newId()}");
+          for (var data in list) {
+            XmlElement? node = S.fromPrototype(prototype, "$id-${S.newId()}");
             i = i + 1;
 
             var location = MapMarkerModel.fromXml(parent!, node, data: data);
             if (location != null) markers.add(location);
-          });
-        }
+          }
+        }}
     }
     catch(e)
     {
@@ -212,5 +211,6 @@ class MapModel extends DecoratedWidgetModel
     super.dispose();
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(MapView(this));
 }

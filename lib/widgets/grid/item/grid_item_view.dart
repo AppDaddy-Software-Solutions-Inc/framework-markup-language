@@ -1,17 +1,18 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
-import 'package:fml/widgets/grid/item/grid_item_model.dart' as ITEM;
+import 'package:fml/widgets/widget/iwidget_view.dart';
+import 'package:fml/widgets/grid/item/grid_item_model.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class GridItemView extends StatefulWidget implements IWidgetView
 {
-  final ITEM.GridItemModel? model;
+  @override
+  final GridItemModel? model;
   GridItemView({this.model}) : super(key: ObjectKey(model));
 
   @override
-  _GridItemViewState createState() => _GridItemViewState();
+  State<GridItemView> createState() => _GridItemViewState();
 }
 
 class _GridItemViewState extends WidgetState<GridItemView>

@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/log/manager.dart';
@@ -264,21 +265,111 @@ class LayoutModel extends DecoratedWidgetModel
     super.resetViewSizing();
   }
 
-  _performRebuild()
+  LayoutModel _findTargetLayoutByWidth()
   {
-    LayoutModel target = this;
-    // we need to find the ancestor layout model
-    // at the lowest level possible to start the rebuild
-    var ancestors = this.ancestors;
-    if (ancestors != null)
-      ancestors.forEach((model)
-      {
-        if (model is LayoutModel) target = (model as LayoutModel);
-      });
+    LayoutModel model = this;
 
-    print('Performing layout rebuild on ${target.id}');
-    target.layoutComplete = false;
-    target.rebuild();
+    // perform search to find highest level layout model
+    // that requires rebuild
+    bool found = false;
+    while (!found)
+    {
+      // stop if parent is not a layout model
+      if (model.parent is! LayoutModel)
+      {
+        found = true;
+      }
+
+      // stop on fixed width
+      else if (model.isFixedWidth)
+      {
+        found = true;
+      }
+
+      // stop on non-row layout
+      else if (layoutType == LayoutType.row)
+      {
+        switch (model.layoutType)
+        {
+          case LayoutType.column:
+            if (model.viewWidth != null && viewWidth != null  && model.viewWidth! <= viewWidth!) found = true;
+            break;
+          default:
+            found = true;
+        }
+      }
+
+      // walk up the tree on level
+      if (!found && model.parent is LayoutModel)
+      {
+        model = model.parent as LayoutModel;
+      }
+    }
+    return  model;
+  }
+
+  LayoutModel _findTargetLayoutByHeight()
+  {
+    LayoutModel model = this;
+
+    // perform search to find highest level layout model
+    // that requires rebuild
+    bool found = false;
+    while (!found)
+    {
+      // stop if parent is not a layout model
+      if (model.parent is! LayoutModel)
+      {
+        found = true;
+      }
+
+      // stop on fixed height
+      else if (model.isFixedHeight)
+      {
+        found = true;
+      }
+
+      // stop on non-column layout
+      else if (layoutType == LayoutType.column)
+      {
+        switch (model.layoutType)
+        {
+          case LayoutType.row:
+            if (model.viewHeight != null && viewHeight != null  && model.viewHeight! <= viewHeight!) found = true;
+            break;
+          default:
+            found = true;
+        }
+      }
+
+      // walk up the tree on level
+      if (!found && model.parent is LayoutModel)
+      {
+        model = model.parent as LayoutModel;
+      }
+    }
+    return  model;
+  }
+
+  _performRebuild(bool onWidth, bool onHeight)
+  {
+    LayoutModel layout = this;
+
+    // find layout based on a width change
+    LayoutModel layout1 = onWidth  ? _findTargetLayoutByWidth()  : layout;
+
+    // find layout based on a height change
+    LayoutModel layout2 = onHeight ? _findTargetLayoutByHeight() : layout;
+
+    // find highest level layout to perform rebuild
+    if (layout1 != layout2)
+    {
+      var ancestors = this.ancestors;
+      if (ancestors != null) layout = ancestors.reversed.firstWhere((model) => model == layout1 || model == layout2);
+    }
+
+    // rebuild the layout
+    if (layout.variableWidthChildren.isNotEmpty || layout.variableHeightChildren.isNotEmpty) layout.rebuild();
   }
 
   _performLayout()
@@ -331,8 +422,6 @@ class LayoutModel extends DecoratedWidgetModel
     // model is me or one of my direct children
     if (this == model || viewableChildren.contains(model))
     {
-      print('Performing layout evalulation on ${id}');
-
       // have all the fixed sized children been sized?
       bool fixedSizeChildrenLayoutComplete = fixedWidthChildren.where((child) => child.viewWidth == null).isEmpty && fixedHeightChildren.where((child) => child.viewHeight == null).isEmpty;
 
@@ -342,6 +431,9 @@ class LayoutModel extends DecoratedWidgetModel
         // do I have variable sized children?
         bool hasVariableSizeChildren = variableWidthChildren.isNotEmpty || variableHeightChildren.isNotEmpty;
 
+        // if I'm just laying out then I'm not complete
+        if (model == this) layoutComplete = false;
+
         // if I have no variable sized children then my layout is complete
         if (!layoutComplete && !hasVariableSizeChildren) layoutComplete = true;
 
@@ -349,9 +441,17 @@ class LayoutModel extends DecoratedWidgetModel
         bool parentLayoutComplete = parent is! LayoutModel || (parent as LayoutModel).layoutComplete;
 
         // has this model changed size?
-        bool hasNewSize = false;
-        if ((model?.viewWidthOld  != null && model?.viewWidth  != null && model?.viewWidthOld  != model?.viewWidth) ||
-            (model?.viewHeightOld != null && model?.viewHeight != null && model?.viewHeightOld != model?.viewHeight)) hasNewSize = true;
+        bool hasNewWidth = false;
+        if (model?.viewWidthOld  != null && model?.viewWidth  != null && model?.viewWidthOld  != model?.viewWidth)
+        {
+          hasNewWidth = true;
+        }
+
+        bool hasNewHeight = false;
+        if (model?.viewHeightOld != null && model?.viewHeight != null && model?.viewHeightOld != model?.viewHeight)
+        {
+          hasNewHeight = true;
+        }
 
         // perform layout
         if (!layoutComplete && parentLayoutComplete)
@@ -360,10 +460,10 @@ class LayoutModel extends DecoratedWidgetModel
         }
 
         // perform rebuild if model has resized
-        else if (layoutComplete && hasNewSize)
+        else if (layoutComplete && (hasNewWidth || hasNewHeight))
         {
           // perform rebuild if necessary
-          _performRebuild();
+          _performRebuild(hasNewWidth, hasNewHeight);
         }
       }
     }
@@ -426,7 +526,7 @@ class LayoutModel extends DecoratedWidgetModel
         if (child.width != size)
         {
           if (!resized.contains(child)) resized.add(child);
-          child.setWidth(size.toDouble(), notify: false);
+          child.setWidth(size.toDouble());
         }
       }
     }
@@ -464,7 +564,7 @@ class LayoutModel extends DecoratedWidgetModel
         if (child.width != size)
         {
           if (!resized.contains(child)) resized.add(child);
-          child.setWidth(size.toDouble(), notify: false);
+          child.setWidth(size.toDouble());
         }
       }
     }
@@ -529,7 +629,7 @@ class LayoutModel extends DecoratedWidgetModel
         if (child.height != size)
         {
           if (!resized.contains(child)) resized.add(child);
-          child.setHeight(size.toDouble(), notify: false);
+          child.setHeight(size.toDouble());
         }
       }
     }
@@ -567,7 +667,7 @@ class LayoutModel extends DecoratedWidgetModel
         if (child.height != size)
         {
           if (!resized.contains(child)) resized.add(child);
-          child.setHeight(size.toDouble(), notify: false);
+          child.setHeight(size.toDouble());
         }
       }
     }

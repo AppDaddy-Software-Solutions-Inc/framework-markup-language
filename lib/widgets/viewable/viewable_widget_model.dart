@@ -494,12 +494,8 @@ class ViewableWidgetModel extends ConstraintModel
     super.deserialize(xml);
 
     // set constraints
-    width = Xml.get(node: xml, tag: 'width');
-    isFixedWidth = width != null;
-
-    height = Xml.get(node: xml, tag: 'height');
-    isFixedHeight = height != null;
-
+    width     = Xml.get(node: xml, tag: 'width');
+    height    = Xml.get(node: xml, tag: 'height');
     minWidth  = Xml.get(node: xml, tag: 'minwidth');
     maxWidth  = Xml.get(node: xml, tag: 'maxwidth');
     minHeight = Xml.get(node: xml, tag: 'minheight');

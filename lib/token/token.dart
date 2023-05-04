@@ -45,7 +45,7 @@ class Jwt
     // future todo - encode ourselves
     final _claims = JwtClaim(subject: subject, issuer: issuer, audience: audience, otherClaims: claims, maxAge: Duration(minutes: shelflife));
     String token = issueJwtHS256(_claims, key);
-    return new Jwt(token);
+    return Jwt(token);
   }
 
   factory Jwt.decode(String token, {bool validateSignature = false, validateAge = false})

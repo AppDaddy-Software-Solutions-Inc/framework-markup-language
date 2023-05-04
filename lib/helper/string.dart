@@ -634,7 +634,7 @@ class S
   }
 
   /// Convert a byte length int value to an int value, for example a byte of 00000010 -> 2
-  static int byteToInt8(int b) => new Uint8List.fromList([b]).buffer.asByteData().getInt8(0);
+  static int byteToInt8(int b) => Uint8List.fromList([b]).buffer.asByteData().getInt8(0);
 
   /// Convert two byte length int values to an int value, for example a byte of \[00000001, 00000010\] -> 258
   static int twoByteToInt16(int v1, int v2) => Uint8List.fromList([v1, v2]).buffer.asByteData().getUint16(0);

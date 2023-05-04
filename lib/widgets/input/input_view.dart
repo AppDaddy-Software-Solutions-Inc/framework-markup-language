@@ -179,7 +179,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     if (mounted) {
       EdgeInsets edgeInsets = MediaQuery.of(context).viewInsets;
       while (mounted && MediaQuery.of(context).viewInsets == edgeInsets) {
-        await new Future.delayed(const Duration(milliseconds: 10));
+        await Future.delayed(const Duration(milliseconds: 10));
       }
     }
     return;
@@ -188,7 +188,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
   Future<Null> _ensureVisible() async {
     // Wait for the keyboard to come into view
     await Future.any([
-      new Future.delayed(const Duration(milliseconds: 50)),
+      Future.delayed(const Duration(milliseconds: 50)),
       _keyboardToggled()
     ]);
 

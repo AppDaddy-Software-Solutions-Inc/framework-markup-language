@@ -16,7 +16,7 @@ class Store extends WidgetModel implements IModelListener
 
   bool initialized = false;
 
-  static Store _singleton = Store._initialize();
+  static final Store _singleton = Store._initialize();
   factory Store() => _singleton;
   Store._initialize() : super(null, "STORE")
   {

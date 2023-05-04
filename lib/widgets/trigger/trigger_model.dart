@@ -11,9 +11,7 @@ class TriggerModel extends WidgetModel {
   String? type = 'multi';
   final List<TriggerConditionModel> cases = [];
 
-  TriggerModel(WidgetModel parent, {String? id, dynamic type}) : super(parent, id){
-    this.type = type;
-  }
+  TriggerModel(WidgetModel parent, {String? id, this.type}) : super(parent, id);
 
   static TriggerModel? fromXml(WidgetModel parent, XmlElement e)
   {
@@ -36,19 +34,22 @@ class TriggerModel extends WidgetModel {
     return trigger;
   }
 
-  void deserialize(XmlElement e)
+  @override
+  void deserialize(XmlElement xml)
   {
     /////////////////
     /* Deserialize */
     /////////////////
-    super.deserialize(e);
+    super.deserialize(xml);
 
     ///////////
     /* Cases */
     ///////////
-    this.cases.clear();
+    cases.clear();
     List<TriggerConditionModel> conditions = findChildrenOfExactType(TriggerConditionModel).cast<TriggerConditionModel>();
-    conditions.forEach((condition) => this.cases.add(condition));
+    for (var condition in conditions) {
+      cases.add(condition);
+    }
   }
 
   Future<bool> trigger() async
@@ -71,6 +72,7 @@ class TriggerModel extends WidgetModel {
     return true;
   }
 
+  @override
   Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
   {
     if (scope == null) return null;

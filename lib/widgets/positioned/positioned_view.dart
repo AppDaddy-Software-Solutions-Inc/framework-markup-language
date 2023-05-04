@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/stack/stack_model.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'positioned_model.dart';
@@ -10,11 +10,12 @@ import 'positioned_model.dart';
 class PositionedView extends StatefulWidget implements IWidgetView
 {
   final List<Widget> children = [];
+  @override
   final PositionedModel model;
   PositionedView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _PositionedViewState createState() => _PositionedViewState();
+  State<PositionedView> createState() => _PositionedViewState();
 }
 
 class _PositionedViewState extends WidgetState<PositionedView>
@@ -45,7 +46,9 @@ class _PositionedViewState extends WidgetState<PositionedView>
         double fromLeft = (widget.model.calculatedMaxWidthOrDefault / 2) + widget.model.xoffset!;
         view = Positioned(top: fromTop, left: fromLeft, child: view);
       }
-      else view = Positioned(top: widget.model.top, bottom: widget.model.bottom, left: widget.model.left, right: widget.model.right, child: view);
+      else {
+        view = Positioned(top: widget.model.top, bottom: widget.model.bottom, left: widget.model.left, right: widget.model.right, child: view);
+      }
     }
 
     return view;

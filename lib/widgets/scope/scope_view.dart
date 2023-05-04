@@ -1,17 +1,18 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/scope/scope_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class ScopeView extends StatefulWidget implements IWidgetView
 {
   final List<Widget> children = [];
+  @override
   final ScopeModel model;
   ScopeView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _ScopeViewState createState() => _ScopeViewState();
+  State<ScopeView> createState() => _ScopeViewState();
 }
 
 class _ScopeViewState extends WidgetState<ScopeView>

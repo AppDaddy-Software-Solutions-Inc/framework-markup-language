@@ -19,8 +19,8 @@ import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:path/path.dart';
 import 'dart:async';
 import 'package:fml/hive/database.dart';
-import 'package:fml/datasources/gps/gps.dart' as GPS;
-import 'package:fml/datasources/gps/payload.dart' as GPS;
+import 'package:fml/datasources/gps/gps.dart';
+import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/application/application_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
@@ -31,18 +31,18 @@ final String version = '2.0.0';
 
 // application title
 // only used in Android when viewing open applications
-final String applicationTitle = "Flutter Markup Language " + version;
+final String applicationTitle = "Flutter Markup Language $version";
 
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://applications/<app> to use the asset applications
-String get defaultDomain => 'https://test.appdaddy.co';
+String get defaultDomain => 'https://pad.fml.dev';
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
-final ApplicationTypes appType = ApplicationTypes.MultiApp;
+final ApplicationTypes appType = ApplicationTypes.multiApp;
 
-enum ApplicationTypes{ SingleApp, MultiApp }
+enum ApplicationTypes{ singleApp, multiApp }
 
 // platform
 String get platform => isWeb ? "web" : isMobile ? "mobile" : "desktop";
@@ -66,7 +66,7 @@ class System extends WidgetModel implements IEventManager
   static final String myId = "SYSTEM";
 
   // set to true once done
-  static var _completer = Completer();
+  static final _completer = Completer();
   static get initialized => _completer.future;
 
   // this get called once by Splash
@@ -161,8 +161,8 @@ class System extends WidgetModel implements IEventManager
   int second() => (_second != null) ? DateTime.now().second : 0;
 
   // GPS
-  GPS.Gps gps = GPS.Gps();
-  GPS.Payload? currentLocation;
+  Gps gps = Gps();
+  Payload? currentLocation;
 
   late String baseUrl;
 
@@ -280,7 +280,7 @@ class System extends WidgetModel implements IEventManager
     _second = IntegerObservable(Binding.toKey('second'), second(), scope: scope, getter: second);
 
     // add system level log model datasource
-    if (datasources == null) datasources = [];
+    datasources ??= [];
     datasources!.add(LogModel(this, "LOG"));
 
     return true;
@@ -313,12 +313,13 @@ class System extends WidgetModel implements IEventManager
       Map<String, dynamic> manifest = json.decode(await rootBundle.loadString('AssetManifest.json'));
 
       // copy assets
-      for (String key in manifest.keys)
-      if (key.startsWith("assets/applications"))
+      for (String key in manifest.keys) {
+        if (key.startsWith("assets/applications"))
       {
         var folder   = key.replaceFirst("assets/", "");
         var filepath = normalize(join(URI.rootPath,folder));
         await Platform.writeFile(filepath, await rootBundle.load(key));
+      }
       }
     }
     catch(e)
@@ -356,7 +357,7 @@ class System extends WidgetModel implements IEventManager
   Future _initRoute() async
   {
     // set default app
-    if (isWeb || appType == ApplicationTypes.SingleApp)
+    if (isWeb || appType == ApplicationTypes.singleApp)
     {
       var domain = defaultDomain;
 
@@ -438,8 +439,12 @@ class System extends WidgetModel implements IEventManager
 
   /// Event Manager Host
   final EventManager manager = EventManager();
+  @override
   registerEventListener(EventTypes type, OnEventCallback callback, {int? priority}) => manager.register(type, callback, priority: priority);
+  @override
   removeEventListener(EventTypes type, OnEventCallback callback) => manager.remove(type, callback);
+  @override
   broadcastEvent(WidgetModel source, Event event) => manager.broadcast(this, event);
+  @override
   executeEvent(WidgetModel source, String event) => manager.execute(this, event);
 }

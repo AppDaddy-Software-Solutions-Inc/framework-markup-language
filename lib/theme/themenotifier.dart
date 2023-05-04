@@ -23,10 +23,12 @@ class ThemeNotifier with ChangeNotifier
     }
 
     // wait for the library to load
-    if (!libraryLoader!.isCompleted) libraryLoader!.future.whenComplete(()
+    if (!libraryLoader!.isCompleted) {
+      libraryLoader!.future.whenComplete(()
     {
       setTheme(System.theme.brightness ?? 'light', System.theme.colorscheme ?? 'lightblue');
     });
+    }
   }
   getTheme() => _themeData;
 

@@ -4,12 +4,12 @@ import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
 import 'package:fml/models/custom_exception.dart';
 import 'package:ndef/ndef.dart' as ndef;
 import 'package:fml/log/manager.dart';
-import 'iNfcListener.dart';
+import 'nfc_listener_interface.dart';
 import 'payload.dart';
 
 class Reader
 {
-  static final Reader _singleton = new Reader._initialize();
+  static final Reader _singleton = Reader._initialize();
   bool stop = false;
 
   List<INfcListener>? _listeners;
@@ -65,24 +65,26 @@ class Reader
               '\nTransceive Result:\n$result');
 
           // format result
-          if (result.indexOf("text=") >= 0) result = result.substring(result.indexOf('text=')+5);
+          if (result.contains("text=")) result = result.substring(result.indexOf('text=')+5);
 
           // notify
           notifyListeners(Payload(id: tag.id, message: result));
         }
-        else
+        else {
           Log().debug('NFC: result is null');
+        }
       }
         catch(e)
       {
-        if (e.toString() == '408' && e.toString() == 'Polling tag timeout')
+        if (e.toString() == '408' && e.toString() == 'Polling tag timeout') {
           Log().debug('NFC: ...Timeout');
-        else if (e.toString() == '409') {
+        } else if (e.toString() == '409') {
           Log().debug('Polling Loop Ended via result or cancel');
           stopPoll = true;
         }
-        else
+        else {
           Log().debug('NFC ERROR: $e');
+        }
       }
       polling = false;
     }
@@ -90,7 +92,7 @@ class Reader
 
   registerListener(INfcListener listener)
   {
-    if (_listeners == null) _listeners = [];
+    _listeners ??= [];
     if (!_listeners!.contains(listener)) _listeners!.add(listener);
     read();
   }
@@ -109,7 +111,9 @@ class Reader
     if (_listeners != null)
     {
       var listeners = _listeners!.where((element) => true);
-      listeners.forEach((listener) => listener.onMessage(data));
+      for (var listener in listeners) {
+        listener.onMessage(data);
+      }
     }
   }
 
@@ -121,7 +125,7 @@ class Reader
         var ndefRecords = await FlutterNfcKit.readNDEFRecords();
         var ndefString = ndefRecords
             .map((r) => r.toString())
-            .reduce((value, element) => value + "\n" + element);
+            .reduce((value, element) => "$value\n$element");
         return ndefString;
       } else if (tag.standard == "ISO 14443-4 (Type B)") {
         String result1 = await FlutterNfcKit.transceive("00B0950000");
@@ -134,7 +138,7 @@ class Reader
         var ndefRecords = await FlutterNfcKit.readNDEFRecords();
         var ndefString = ndefRecords
             .map((r) => r.toString())
-            .reduce((value, element) => value + "\n" + element);
+            .reduce((value, element) => "$value\n$element");
         return ndefString;
       } else if (tag.type == NFCTagType.webusb) {
         return await FlutterNfcKit.transceive("00A4040006D27600012401");
@@ -188,8 +192,11 @@ class Writer
     } on PlatformException catch(e){
       // throw a custom exception on timeout with a message.
       if (e.code == "408") throw CustomException(code: 408, message: 'Poll Timed Out');
-      if (e.code == "405") throw CustomException(code: 405, message: 'NFC Tag Not Writeable');
-      else return false;
+      if (e.code == "405") {
+        throw CustomException(code: 405, message: 'NFC Tag Not Writeable');
+      } else {
+        return false;
+      }
     }
   }
 }

@@ -44,6 +44,7 @@ class HtmlSseChannel extends StreamChannelMixin implements SseChannel
     _controller.add(msg);
   }
 
+  @override
   void close()
   {
     print('sse closed');

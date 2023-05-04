@@ -13,6 +13,7 @@ class BiometricsDetector implements IBiometricsDetector
   BiometricsDetector._initialize();
 
   factory BiometricsDetector() => _singleton;
+  @override
   Future<Payload?> detect(DetectableImage image) async
   {
     // not implemented

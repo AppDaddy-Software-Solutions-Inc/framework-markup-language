@@ -6,12 +6,17 @@ import 'file.dart';
 class FileBase implements File
 {
   final dynamic  file;
+  @override
   final String   url;
+  @override
   final String   name;
+  @override
   final String?  mimeType;
+  @override
   final int      size;
 
   UriData? _uri;
+  @override
   Uint8List? get bytes
   {
     if (file is UriData) return (file as UriData).contentAsBytes();
@@ -23,6 +28,7 @@ class FileBase implements File
     if (value != null) _uri = UriData.fromBytes(value, mimeType: mimeType!, parameters: {'name' : name, 'bytes' : size.toString()});
   }
 
+  @override
   String? get uri
   {
     if (file is UriData) return (file as UriData).toString();
@@ -32,5 +38,6 @@ class FileBase implements File
 
   FileBase(this.file, this.url, this.name, this.mimeType, this.size);
 
+  @override
   Future<Uint8List?> read({int? start, int? end}) async => null;
 }

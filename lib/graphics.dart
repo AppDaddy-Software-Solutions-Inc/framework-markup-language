@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class Graphics
 {
-  static const Map<String, IconData> icons = const {
+  static const Map<String, IconData> icons = {
     'abc': Icons.abc, 'abc_outlined': Icons.abc_outlined, 'abc_rounded': Icons.abc_rounded, 'abc_sharp': Icons.abc_sharp,
     'ac_unit': Icons.ac_unit, 'ac_unit_outlined': Icons.ac_unit_outlined, 'ac_unit_rounded': Icons.ac_unit_rounded, 'ac_unit_sharp': Icons.ac_unit_sharp,
     'access_alarm': Icons.access_alarm, 'access_alarm_outlined': Icons.access_alarm_outlined, 'access_alarm_rounded': Icons.access_alarm_rounded, 'access_alarm_sharp': Icons.access_alarm_sharp,

@@ -3,18 +3,19 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/column/column_view.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'padding_model.dart';
 
 class PaddingView extends StatefulWidget implements IWidgetView
 {
+  @override
   final PaddingModel model;
 
   PaddingView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _PaddingViewState createState() => _PaddingViewState();
+  State<PaddingView> createState() => _PaddingViewState();
 }
 
 class _PaddingViewState extends WidgetState<PaddingView>

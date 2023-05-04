@@ -22,9 +22,11 @@ class OptionModel extends ViewableWidgetModel
   dynamic _value;
   set value (dynamic v)
   {
-         if (_value is StringObservable) _value.set(v);
-    else if (_value is String) _value = v;
-    else if ((_value == null) && (v != null))
+         if (_value is StringObservable) {
+           _value.set(v);
+         } else if (_value is String) {
+      _value = v;
+    } else if ((_value == null) && (v != null))
     {
       _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange);
     }
@@ -95,24 +97,29 @@ class OptionModel extends ViewableWidgetModel
       XmlElement? node = Xml.getElement(node: xml, tag: 'label');
       if (node != null)
       {
-        if (Xml.hasChildElements(node))
-             this.label = RowModel.fromXml(this, node);
-        else this.label = TextModel(this, null, value: Xml.getText(node));
+        if (Xml.hasChildElements(node)) {
+          this.label = RowModel.fromXml(this, node);
+        } else {
+          this.label = TextModel(this, null, value: Xml.getText(node));
+        }
       }
     }
-    else this.label = TextModel(this, null, value: label);
+    else {
+      this.label = TextModel(this, null, value: label);
+    }
 
     // Empty?
     if (this.label == null)
     {
       label = Xml.getText(xml);
-      if (label != null)
+      if (label != null) {
         this.label = TextModel(this, null, value: label);
+      }
     }
 
-    if (this.label == null && this.labelValue == null) {
-      this.labelValue = Xml.get(node: xml, tag: 'value');
-      this.label = TextModel(this, null, value: this.labelValue);
+    if (this.label == null && labelValue == null) {
+      labelValue = Xml.get(node: xml, tag: 'value');
+      this.label = TextModel(this, null, value: labelValue);
     }
     // Value
     String? value = Xml.get(node: xml, tag: 'value');
@@ -120,7 +127,9 @@ class OptionModel extends ViewableWidgetModel
       this.value = label;
       labelValue = label;
     }
-    else this.value = value;
+    else {
+      this.value = value;
+    }
     labelValue = label;
 
     tags = Xml.get(node: xml, tag: 'tags');

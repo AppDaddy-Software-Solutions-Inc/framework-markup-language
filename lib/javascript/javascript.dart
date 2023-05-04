@@ -1,9 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:collection';
 import 'dart:convert';
-import 'package:universal_html/html.dart' as HTML;
-import 'package:universal_html/js.dart' as JAVASCRIPT;
-import 'dart:ui' as UI;
+import 'package:universal_html/html.dart' as universal_html;
+import 'package:universal_html/js.dart' as universal_js;
+import 'dart:ui' as dart_ui;
 import 'package:fml/log/manager.dart';
 import 'package:fml/helper/common_helpers.dart';
 
@@ -14,7 +14,7 @@ class Bridge
   final jsonEncoder = JsonEncoder();
   final String script;
 
-  JAVASCRIPT.JsObject? _connector;
+  universal_js.JsObject? _connector;
 
   final HashMap<String, List<OnMessageCallback>> _listeners = HashMap<String, List<OnMessageCallback>>();
   final id = S.newId();
@@ -24,15 +24,15 @@ class Bridge
     /////////////////////////////////////
     /* Contructor Callback from Script */
     /////////////////////////////////////
-    JAVASCRIPT.context["flutter"] = (content)
+    universal_js.context["flutter"] = (content)
     {
       _connector = content;
 
       //////////////////
       /* Add Listener */
       //////////////////
-      HTML.window.removeEventListener('message', _receive);
-      HTML.window.addEventListener('message', _receive);
+      universal_html.window.removeEventListener('message', _receive);
+      universal_html.window.addEventListener('message', _receive);
 
       return id;
     };
@@ -41,14 +41,14 @@ class Bridge
     /* Register HTML iFrame */
     //////////////////////////
     // ignore: undefined_prefixed_name
-    UI.platformViewRegistry.registerViewFactory(id, (int viewId)
+    dart_ui.platformViewRegistry.registerViewFactory(id, (int viewId)
     {
-      final HTML.IFrameElement _frame = HTML.IFrameElement();
-      _frame.id     = id;
-      _frame.width  = '100%';
-      _frame.height = '100%';
-      _frame.src    = script;
-      return _frame;
+      final universal_html.IFrameElement frame = universal_html.IFrameElement();
+      frame.id     = id;
+      frame.width  = '100%';
+      frame.height = '100%';
+      frame.src    = script;
+      return frame;
     });
 
   }
@@ -71,14 +71,14 @@ class Bridge
       /////////////////////////////////////////////////
       /* Only Supports String and Numeric Parameters */
       /////////////////////////////////////////////////
-      List<dynamic> _parameters = [];
-      if (parameters is String) _parameters.add(parameters);
-      if (parameters is int)    _parameters.add(int);
-      if (parameters is double) _parameters.add(double);
-      if (parameters is num)    _parameters.add(num);
-      if (parameters is List)   _parameters.addAll(parameters);
+      List<dynamic> parameters0 = [];
+      if (parameters is String) parameters0.add(parameters);
+      if (parameters is int)    parameters0.add(int);
+      if (parameters is double) parameters0.add(double);
+      if (parameters is num)    parameters0.add(num);
+      if (parameters is List)   parameters0.addAll(parameters);
 
-      if (_connector != null) _connector!.callMethod(functionName, _parameters);
+      if (_connector != null) _connector!.callMethod(functionName, parameters0);
     }
     catch(e)
     {
@@ -97,10 +97,10 @@ class Bridge
       ////////////////////////////
       /* Add Sender / Recipient */
       ////////////////////////////
-      if (parameters == null) parameters = Map<String, dynamic>();
+      parameters ??= <String, dynamic>{};
 
-      String from = 'DART-' + id;
-      String to   = 'JS-'   + id;
+      String from = 'DART-$id';
+      String to   = 'JS-$id';
 
       parameters['message:id']   = DateTime.now().millisecondsSinceEpoch;
       parameters['message:type'] = type;
@@ -117,7 +117,7 @@ class Bridge
       //////////////////
       /* Send Message */
       //////////////////
-      HTML.window.postMessage(json, "*");
+      universal_html.window.postMessage(json, "*");
     }
     catch(e)
     {
@@ -138,10 +138,10 @@ class Bridge
       var json = event.data;
       var data = jsonDecode(json);
 
-      Map<String, dynamic> map = Map<String, dynamic>();
+      Map<String, dynamic> map = <String, dynamic>{};
       if (data is Map) map.addAll(data as Map<String, dynamic>);
 
-      String me        = 'DART-' + this.id;
+      String me        = 'DART-$id';
       // String id        =  ((map.containsKey('message:id'))   && (map['message:id']   is String)) ? (map['message:id']   as String) : null;
       String? type      =  ((map.containsKey('message:type')) && (map['message:type'] is String)) ? (map['message:type'] as String?) : null;
       String? from      =  ((map.containsKey('message:from')) && (map['message:from'] is String)) ? (map['message:from'] as String?) : null;
@@ -157,7 +157,9 @@ class Bridge
         map.remove('to');
         notifyListeners(type, map);
       }
-      else Log().debug('Message Received From: $from To: $to -> Wrong Address');
+      else {
+        Log().debug('Message Received From: $from To: $to -> Wrong Address');
+      }
 
       ////////////////
       /* Return Map */
@@ -196,11 +198,16 @@ class Bridge
     if (_listeners.containsKey(type)) callbacks = _listeners[type!];
     if (_listeners.containsKey('*'))
     {
-      if (callbacks == null)
-           callbacks = _listeners['*'];
-      else callbacks.addAll(_listeners['*']!);
+      if (callbacks == null) {
+        callbacks = _listeners['*'];
+      } else {
+        callbacks.addAll(_listeners['*']!);
+      }
     }
-    if (callbacks != null)
-    callbacks.forEach((callback) => callback(parameters));
+    if (callbacks != null) {
+      for (var callback in callbacks) {
+        callback(parameters);
+      }
+    }
   }
 }

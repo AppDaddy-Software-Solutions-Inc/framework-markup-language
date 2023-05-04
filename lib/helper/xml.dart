@@ -16,9 +16,11 @@ class Xml {
   /// Check if a String contains characters not allowed in Xml
   static bool hasIllegalCharacters(String? s)
   {
-    if (s != null)
+    if (s != null) {
       return (s.contains("<")) || (s.contains(">")) || (s.contains("&")) || (s.contains("'")) || (s.contains("\""));
-    else return false;
+    } else {
+      return false;
+    }
   }
 
   // Olajos - Added October 23, 2001
@@ -51,7 +53,7 @@ class Xml {
   static String toAttribute(String name, String value)
   {
     String xml = "";
-    if ((!hasIllegalCharacters(name)) && (!hasIllegalCharacters(value))) xml = " " + name + "=" + '"' + value + '"';
+    if ((!hasIllegalCharacters(name)) && (!hasIllegalCharacters(value))) xml = " $name=\"$value\"";
     return xml;
   }
 
@@ -60,7 +62,7 @@ class Xml {
   // TODO: Further describe this
   static Map<String,dynamic> toElementMap({required XmlElement node})
   {
-    Map<String,dynamic> map = Map<String,dynamic>();
+    Map<String,dynamic> map = <String,dynamic>{};
 
     try
     {
@@ -100,7 +102,7 @@ class Xml {
   /// Returns a Xml Safe String for a node value.
   static String toElementValue(String value)
   {
-    if (hasIllegalCharacters(value)) value = '<![CDATA[' + value + ']]>';
+    if (hasIllegalCharacters(value)) value = '<![CDATA[$value]]>';
     return value;
   }
 
@@ -108,23 +110,26 @@ class Xml {
   static String toElement(String name, String value)
   {
     if (hasIllegalCharacters(name)) return '';
-    if (hasIllegalCharacters(value)) value = '<![CDATA[' + value + ']]>';
-    return '<' + name + '>' + value + '</' + name + '>';
+    if (hasIllegalCharacters(value)) value = '<![CDATA[$value]]>';
+    return '<$name>$value</$name>';
   }
 
   /// Return the first [XmlElement] child from an [XmlNode]
   static XmlElement? firstElement({required XmlNode node})
   {
     List<XmlNode> children = node.children;
-    for (XmlNode child in children)
+    for (XmlNode child in children) {
       if (child is XmlElement) return child;
+    }
     return null;
   }
 
   // TODO review function / function name
   static XmlElement? getRoot(XmlNode parent)
   {
-    while (firstElement(node: parent) != null) parent = firstElement(node: parent)!;
+    while (firstElement(node: parent) != null) {
+      parent = firstElement(node: parent)!;
+    }
     if ((parent.parent != null) && (parent.parent is XmlElement)) return parent.parent as XmlElement?;
     return parent as XmlElement?;
   }
@@ -142,7 +147,7 @@ class Xml {
   // TODO: Further describe this
   static Map<dynamic,dynamic> toMap({required XmlElement node})
   {
-    Map<dynamic,dynamic> map = Map<dynamic,dynamic>();
+    Map<dynamic,dynamic> map = <dynamic,dynamic>{};
 
     try
     {
@@ -214,7 +219,7 @@ class Xml {
       for (XmlNode node in nodes)
       {
         Map<dynamic,dynamic> map = toMap(node: node as XmlElement);
-        if (list == null) list = [];
+        list ??= [];
         list.add(map);
       }
     }
@@ -236,7 +241,7 @@ class Xml {
     XmlDocument document = XmlDocument();
     XmlElement root = XmlElement(XmlName(rootName));
     document.children.add(root);
-    if (map != null)
+    if (map != null) {
       map.forEach((key,value)
       {
         if (value != null)
@@ -253,6 +258,7 @@ class Xml {
           }
         }
       });
+    }
     return document;
   }
 
@@ -263,8 +269,8 @@ class Xml {
     try
     {
       v = node.getAttribute(tag.toLowerCase());
-      if (v == null) v = node.getAttribute(tag.toUpperCase());
-      if (v == null) v = node.getAttribute(tag);
+      v ??= node.getAttribute(tag.toUpperCase());
+      v ??= node.getAttribute(tag);
     }
     catch(e) {
       v = null;
@@ -294,14 +300,16 @@ class Xml {
   {
     try
     {
-      if (value == null) value = "";
+      value ??= "";
       value.replaceAll('"', "&quot;");
       value.replaceAll("'", "&quot;");
 
       XmlAttribute? a = node.getAttributeNode(tag);
-      if (a == null)
+      if (a == null) {
         node.attributes.add(XmlAttribute(XmlName(tag), value));
-      else  a.value = value;
+      } else {
+        a.value = value;
+      }
     }
     catch(e)
     {
@@ -335,8 +343,8 @@ class Xml {
     try
     {
       XmlElement? child = getChildElement(node: node, tag: tag.toUpperCase());
-      if (child == null) child = getChildElement(node: node, tag: tag.toLowerCase());
-      if (child == null) child = getChildElement(node: node, tag: tag);
+      child ??= getChildElement(node: node, tag: tag.toLowerCase());
+      child ??= getChildElement(node: node, tag: tag);
       if (child != null) v = getText(child);
     }
     catch(e) {
@@ -368,8 +376,8 @@ class Xml {
     String? v;
     try
     {
-      if (v == null) v = attribute(node: node!, tag: tag!);
-      if (v == null) v = element(node: node!, tag: tag!);
+      v ??= attribute(node: node!, tag: tag!);
+      v ??= element(node: node!, tag: tag!);
     }
     catch(e)
     {

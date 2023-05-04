@@ -72,8 +72,8 @@ class TooltipModel extends DecoratedWidgetModel
 
     // properties
     label = Xml.get(node: xml, tag: 'label');
-    if (label == null) label = Xml.get(node: xml, tag: 'text'); // backwards compatibility
-    if (label == null) label = Xml.get(node: xml, tag: 'value'); // backwards compatibility
+    label ??= Xml.get(node: xml, tag: 'text'); // backwards compatibility
+    label ??= Xml.get(node: xml, tag: 'value'); // backwards compatibility
     backgroundcolor = Xml.get(node: xml, tag: 'backgroundcolor');
   }
 
@@ -84,5 +84,6 @@ class TooltipModel extends DecoratedWidgetModel
     super.dispose();
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(TooltipView(this));
 }

@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/center/center_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
@@ -10,13 +10,14 @@ import 'package:fml/widgets/widget/widget_state.dart';
 /// Builds a centered Center View from [Model] properties
 class CenterView extends StatefulWidget implements IWidgetView
 {
+  @override
   final CenterModel model;
   final List<Widget> children = [];
 
   CenterView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _CenterViewState createState() => _CenterViewState();
+  State<CenterView> createState() => _CenterViewState();
 }
 
 class _CenterViewState extends WidgetState<CenterView>

@@ -1,12 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:collection';
-import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/observable.dart';
 import 'package:fml/observable/observables/string.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:fml/datasources/file/file.dart' as FILE;
+import 'package:fml/datasources/file/file.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'binding.dart';
 
@@ -29,7 +29,7 @@ class Scope
   LinkedHashMap<String?, WidgetModel> models  = LinkedHashMap<String?, WidgetModel>();
 
   // file links
-  final Map<String, FILE.File> files = Map<String, FILE.File>();
+  final Map<String, File> files = <String, File>{};
 
   // list of observables
   HashMap<String?,Observable> observables = HashMap<String?,Observable>();
@@ -37,15 +37,12 @@ class Scope
   // unresolved observables
   HashMap<String?,List<Observable>> unresolved = HashMap<String?,List<Observable>>();
 
-  Scope({Scope? parent, String? id})
+  Scope({this.parent, String? id})
   {
     this.id = id ?? S.newId();
 
-    // set parent
-    this.parent = parent;
-
     // add me as a child of my parent
-    this.parent?.addChild(this);
+    parent?.addChild(this);
 
     // add me to my applications scope manager
     System.app?.scopeManager.add(this);
@@ -83,7 +80,9 @@ class Scope
         if ((oldobservable != null) && (oldobservable != observable) && (observable.listeners != null))
         {
           Log().debug("Duplicate observable ${observable.key} found in scope");
-          oldobservable.listeners!.forEach((callback) => observable.registerListener(callback));
+          for (var callback in oldobservable.listeners!) {
+            observable.registerListener(callback);
+          }
           oldobservable.listeners!.clear();
         }
       }
@@ -125,10 +124,10 @@ class Scope
     if (id.contains("."))
     {
       var parts = id.split(".");
-      var _scope = System.app?.scopeManager.of(parts.first.trim());
-      if (_scope != null)
+      var myScope = System.app?.scopeManager.of(parts.first.trim());
+      if (myScope != null)
       {
-        scope = _scope;
+        scope = myScope;
         parts.removeAt(0);
       }
       id = parts.first;
@@ -146,15 +145,16 @@ class Scope
       bool resolved = true;
 
       // Process Each Binding
-      target.bindings!.forEach((binding)
-      {
+      for (var binding in target.bindings!) {
         String? key = binding.key;
 
         // Find Bind Source
         Observable? source;
-        if (binding.scope != null)
-             source = System.app?.scopeManager.named(target, binding.scope, binding.key);
-        else source = System.app?.scopeManager.scoped(this, binding.key);
+        if (binding.scope != null) {
+          source = System.app?.scopeManager.named(target, binding.scope, binding.key);
+        } else {
+          source = System.app?.scopeManager.scoped(this, binding.key);
+        }
 
         // resolved
         if (source != null)
@@ -194,7 +194,7 @@ class Scope
           if (!unresolved.containsKey(key)) unresolved[key] = [];
           if (!unresolved[key]!.contains(target)) unresolved[key]!.add(target);
         }
-      });
+      }
 
       // Trigger Observable
       if (resolved == true) target.onObservableChange(null);
@@ -209,7 +209,9 @@ class Scope
 
     // dispose of data sources
     final list = datasources.values.toList();
-    list.forEach((source) => source.dispose());
+    for (var source in list) {
+      source.dispose();
+    }
     datasources.clear();
 
     // clear models
@@ -236,7 +238,7 @@ class Scope
 
   void addChild(Scope child)
   {
-    if (children == null) children = [];
+    children ??= [];
     if (!children!.contains(child)) children!.add(child);
   }
 
@@ -278,14 +280,18 @@ class Scope
     }
 
     // Set the Value
-    else observable.set(value);
+    else {
+      observable.set(value);
+    }
   }
 
   Observable? getObservable(Binding binding, {Observable? requestor})
   {
-    if (binding.scope == null)
-         return System.app?.scopeManager.scoped(this, binding.key);
-    else return System.app?.scopeManager.named(requestor, binding.scope, binding.key);
+    if (binding.scope == null) {
+      return System.app?.scopeManager.scoped(this, binding.key);
+    } else {
+      return System.app?.scopeManager.named(requestor, binding.scope, binding.key);
+    }
   }
 
   Future<String?> replaceFileReferences(String? body) async

@@ -32,9 +32,11 @@ class TabModel extends LayoutModel
   {
     int? i = S.toInt(v);
     if (i != null && (i >= views.length || i < 0)) v = null;
-    if (_index != null)
-         _index!.set(v);
-    else _index = IntegerObservable(Binding.toKey(id, 'index'), v, scope: scope);
+    if (_index != null) {
+      _index!.set(v);
+    } else {
+      _index = IntegerObservable(Binding.toKey(id, 'index'), v, scope: scope);
+    }
     onIndexChange(_index!);
   }
   int? get index => _index?.get();
@@ -116,7 +118,9 @@ class TabModel extends LayoutModel
   dispose()
   {
     // cleanup framework models
-    views.values.forEach((view) => deleteView(view));
+    for (var view in views.values) {
+      deleteView(view);
+    }
     super.dispose();
   }
 
@@ -134,10 +138,11 @@ class TabModel extends LayoutModel
     List viewKeys = views.keys.toList();
     List viewList = views.values.toList();
     for (int i = 0; i < viewList.length; i++) {
-      if (i == index)
+      if (i == index) {
         except[viewKeys[i]] = viewList[i];
-      else
+      } else {
         views[viewKeys[i]]?.model.dispose();
+      }
     }
     views = except;
   }
@@ -178,15 +183,16 @@ class TabModel extends LayoutModel
     //////////////////
     int i = 0;
     dynamic nodes = xml.findElements("TAB", namespace: "*");
-    if (nodes != null)
+    if (nodes != null){
     for (XmlElement node in nodes)
     {
       FrameworkModel? model = FrameworkModel.fromXml(this, node);
       if (model != null) views[Xml.attribute(node: node, tag: "id") ?? i.toString()] = model.getView() as FrameworkView;
       i++;
-    }
+    }}
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(TabView(this));
 }
 

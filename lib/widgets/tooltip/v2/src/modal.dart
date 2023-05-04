@@ -43,7 +43,9 @@ class Modal extends StatelessWidget {
       var color = Theme.of(context).brightness == Brightness.light ? Colors.black38 : Colors.black54;
       return GestureDetector(onTap: onTap, child: Container(color: color));
     }
-    else return Container();
+    else {
+      return Container();
+    }
   }
 }
 

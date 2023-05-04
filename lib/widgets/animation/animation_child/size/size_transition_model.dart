@@ -143,5 +143,6 @@ class SizeTransitionModel extends AnimationChildModel
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
+  @override
   Widget getAnimatedView(Widget child, {AnimationController? controller}) => SizeTransitionView(this, child, controller);
 }

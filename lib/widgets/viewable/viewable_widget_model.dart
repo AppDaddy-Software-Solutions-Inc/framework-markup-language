@@ -65,8 +65,10 @@ class ViewableWidgetModel extends ConstraintModel
   List<ViewableWidgetModel> get viewableChildren
   {
     List<ViewableWidgetModel> list = [];
-    if (children != null)
-    for (var child in children!) if (child is ViewableWidgetModel && child.inflateable) list.add(child);
+    if (children != null){
+    for (var child in children!) {
+      if (child is ViewableWidgetModel && child.inflateable) list.add(child);
+    }}
     return list;
   }
 
@@ -330,8 +332,11 @@ class ViewableWidgetModel extends ConstraintModel
   DoubleObservable? _marginTop;
   set marginTop(dynamic v)
   {
-    if (_marginTop != null) _marginTop!.set(v);
-    else if (v != null) _marginTop = DoubleObservable(Binding.toKey(id, 'margintop'), v, scope: scope, listener: onPropertyChange);
+    if (_marginTop != null) {
+      _marginTop!.set(v);
+    } else if (v != null) {
+      _marginTop = DoubleObservable(Binding.toKey(id, 'margintop'), v, scope: scope, listener: onPropertyChange);
+    }
   }
   double? get marginTop => _marginTop?.get();
 
@@ -339,8 +344,11 @@ class ViewableWidgetModel extends ConstraintModel
   DoubleObservable? _marginRight;
   set marginRight(dynamic v)
   {
-    if (_marginRight != null) _marginRight!.set(v);
-    else if (v != null) _marginRight = DoubleObservable(Binding.toKey(id, 'marginright'), v, scope: scope, listener: onPropertyChange);
+    if (_marginRight != null) {
+      _marginRight!.set(v);
+    } else if (v != null) {
+      _marginRight = DoubleObservable(Binding.toKey(id, 'marginright'), v, scope: scope, listener: onPropertyChange);
+    }
   }
   double? get marginRight => _marginRight?.get();
 
@@ -348,9 +356,11 @@ class ViewableWidgetModel extends ConstraintModel
   DoubleObservable? _marginBottom;
   set marginBottom(dynamic v)
   {
-    if (_marginBottom != null) _marginBottom!.set(v);
-    else if (v != null)
+    if (_marginBottom != null) {
+      _marginBottom!.set(v);
+    } else if (v != null) {
       _marginBottom = DoubleObservable(Binding.toKey(id, 'marginbottom'), v, scope: scope, listener: onPropertyChange);
+    }
   }
   double? get marginBottom => _marginBottom?.get();
 
@@ -358,8 +368,11 @@ class ViewableWidgetModel extends ConstraintModel
   DoubleObservable? _marginLeft;
   set marginLeft(dynamic v)
   {
-    if (_marginLeft != null) _marginLeft!.set(v);
-    else if (v != null) _marginLeft = DoubleObservable(Binding.toKey(id, 'marginleft'), v, scope: scope, listener: onPropertyChange);
+    if (_marginLeft != null) {
+      _marginLeft!.set(v);
+    } else if (v != null) {
+      _marginLeft = DoubleObservable(Binding.toKey(id, 'marginleft'), v, scope: scope, listener: onPropertyChange);
+    }
   }
   double? get marginLeft => _marginLeft?.get();
 
@@ -412,8 +425,11 @@ class ViewableWidgetModel extends ConstraintModel
   DoubleObservable? _paddingTop;
   set paddingTop(dynamic v)
   {
-    if (_paddingTop != null) _paddingTop!.set(v);
-    else if (v != null) _paddingTop = DoubleObservable(Binding.toKey(id, 'paddingtop'), v, scope: scope, listener: onPropertyChange);
+    if (_paddingTop != null) {
+      _paddingTop!.set(v);
+    } else if (v != null) {
+      _paddingTop = DoubleObservable(Binding.toKey(id, 'paddingtop'), v, scope: scope, listener: onPropertyChange);
+    }
   }
   double? get paddingTop => _paddingTop?.get();
 
@@ -421,8 +437,11 @@ class ViewableWidgetModel extends ConstraintModel
   DoubleObservable? _paddingRight;
   set paddingRight(dynamic v)
   {
-    if (_paddingRight != null) _paddingRight!.set(v);
-    else if (v != null) _paddingRight = DoubleObservable(Binding.toKey(id, 'paddingright'), v, scope: scope, listener: onPropertyChange);
+    if (_paddingRight != null) {
+      _paddingRight!.set(v);
+    } else if (v != null) {
+      _paddingRight = DoubleObservable(Binding.toKey(id, 'paddingright'), v, scope: scope, listener: onPropertyChange);
+    }
   }
   double? get paddingRight => _paddingRight?.get();
 
@@ -430,9 +449,11 @@ class ViewableWidgetModel extends ConstraintModel
   DoubleObservable? _paddingBottom;
   set paddingBottom(dynamic v)
   {
-    if (_paddingBottom != null) _paddingBottom!.set(v);
-    else if (v != null)
+    if (_paddingBottom != null) {
+      _paddingBottom!.set(v);
+    } else if (v != null) {
       _paddingBottom = DoubleObservable(Binding.toKey(id, 'paddingbottom'), v, scope: scope, listener: onPropertyChange);
+    }
   }
   double? get paddingBottom => _paddingBottom?.get();
 
@@ -440,8 +461,11 @@ class ViewableWidgetModel extends ConstraintModel
   DoubleObservable? _paddingLeft;
   set paddingLeft(dynamic v)
   {
-    if (_paddingLeft != null) _paddingLeft!.set(v);
-    else if (v != null) _paddingLeft = DoubleObservable(Binding.toKey(id, 'paddingleft'), v, scope: scope, listener: onPropertyChange);
+    if (_paddingLeft != null) {
+      _paddingLeft!.set(v);
+    } else if (v != null) {
+      _paddingLeft = DoubleObservable(Binding.toKey(id, 'paddingleft'), v, scope: scope, listener: onPropertyChange);
+    }
   }
   double? get paddingLeft => _paddingLeft?.get();
 
@@ -461,8 +485,9 @@ class ViewableWidgetModel extends ConstraintModel
   static bool isVisible(DecoratedWidgetModel? widget) {
     if (widget == null) return false;
     if (widget.visible == false) return false;
-    if (widget.parent is DecoratedWidgetModel)
+    if (widget.parent is DecoratedWidgetModel) {
       return isVisible(widget.parent as DecoratedWidgetModel);
+    }
     return true;
   }
 
@@ -547,7 +572,7 @@ class ViewableWidgetModel extends ConstraintModel
     {
       if (child is AnimationModel)
       {
-        if (animations == null) animations = [];
+        animations ??= [];
         animations!.add(child);
       }
     });
@@ -582,7 +607,9 @@ class ViewableWidgetModel extends ConstraintModel
             var list = animations!.where((animation) => animation.id == id);
             if (list.isNotEmpty) animation = list.first;
           }
-          else animation = animations!.first;
+          else {
+            animation = animations!.first;
+          }
           animation?.execute(caller, propertyOrFunction, arguments);
         }
         return true;
@@ -637,10 +664,12 @@ class ViewableWidgetModel extends ConstraintModel
     if (tipModel != null) view = TooltipView(tipModel!, view);
 
     // wrap animations.
-    if (this.animations != null)
+    if (animations != null)
     {
       var animations = this.animations!.reversed;
-      animations.forEach((model) => view = model.getAnimatedView(view));
+      for (var model in animations) {
+        view = model.getAnimatedView(view);
+      }
     }
     return view;
   }
@@ -652,18 +681,20 @@ class ViewableWidgetModel extends ConstraintModel
 
     // process children
     List<Widget> views = [];
-    viewableChildren.forEach((model)
+    for (var model in viewableChildren)
     {
       // reset child view
       model.resetViewSizing();
-      views.add(model.getView());
-    });
+
+      var view = model.getView();
+      if (view != null) views.add(view);
+    }
     return views;
   }
 
   void onLayoutComplete(ViewableWidgetModel? model) async
   {
-    if (this.context == null) return;
+    if (context == null) return;
 
     var box = context!.findRenderObject() as RenderBox?;
     if (box == null) return;
@@ -688,7 +719,7 @@ class ViewableWidgetModel extends ConstraintModel
     }
   }
 
-  Widget getView() => throw("getView() Not Implemented");
+  Widget? getView() => throw("getView() Not Implemented");
 }
 
 class ConstraintSet

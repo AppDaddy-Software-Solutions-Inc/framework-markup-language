@@ -1,9 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
-import 'package:fml/widgets/form/iFormField.dart';
+import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/option/option_model.dart';
@@ -18,6 +18,7 @@ class SelectModel extends FormFieldModel implements IFormField
 
   // bindable data
   ListObservable? _data;
+  @override
   set data(dynamic v)
   {
     if (_data != null)
@@ -30,6 +31,7 @@ class SelectModel extends FormFieldModel implements IFormField
       _data!.set(v);
     }
   }
+  @override
   get data => _data?.get();
 
   //////////
@@ -177,6 +179,7 @@ class SelectModel extends FormFieldModel implements IFormField
   /* Value */
   ///////////
   StringObservable? _value;
+  @override
   set value(dynamic v) {
     if (_value != null)
     {
@@ -188,6 +191,7 @@ class SelectModel extends FormFieldModel implements IFormField
     }
     setData();
   }
+  @override
   dynamic get value
   {
     if (_value == null) return defaultValue;
@@ -203,9 +207,10 @@ class SelectModel extends FormFieldModel implements IFormField
     if (_size != null) {
       _size!.set(v);
     } else {
-      if (v != null)
+      if (v != null) {
         _size = DoubleObservable(Binding.toKey(id, 'size'), v,
             scope: scope, listener: onPropertyChange);
+      }
     }
   }
   double? get size => _size?.get();
@@ -219,9 +224,10 @@ class SelectModel extends FormFieldModel implements IFormField
     if (_length != null) {
       _length!.set(v);
     } else {
-      if (v != null)
+      if (v != null) {
         _length = IntegerObservable(Binding.toKey(id, 'length'), v,
             scope: scope, listener: onPropertyChange);
+      }
     }
   }
   int? get length => _length?.get();
@@ -235,9 +241,10 @@ class SelectModel extends FormFieldModel implements IFormField
     if (_matchtype != null) {
       _matchtype!.set(v);
     } else {
-      if (v != null)
+      if (v != null) {
         matchtype = StringObservable(Binding.toKey(id, 'matchtype'), v,
             scope: scope, listener: onPropertyChange);
+      }
     }
   }
   String? get matchtype => _matchtype?.get();
@@ -291,8 +298,8 @@ class SelectModel extends FormFieldModel implements IFormField
     if (matchtype     != null)  this.matchtype     = matchtype;
     if (label         != null)  this.label         = label;
 
-    this.alarming = false;
-    this.dirty    = false;
+    alarming = false;
+    dirty    = false;
   }
 
   static SelectModel? fromXml(WidgetModel parent, XmlElement xml) {
@@ -332,7 +339,9 @@ class SelectModel extends FormFieldModel implements IFormField
     if (S.isBool(empty)) addempty = S.toBool(empty);
 
     // clear options
-    this.options.forEach((option) => option.dispose());
+    for (var option in this.options) {
+      option.dispose();
+    }
     this.options.clear();
 
     // Build options
@@ -346,7 +355,9 @@ class SelectModel extends FormFieldModel implements IFormField
     }
 
     // build options
-    options.forEach((option) => this.options.add(option));
+    for (var option in options) {
+      this.options.add(option);
+    }
 
     // Set selected option
     setData();
@@ -360,13 +371,15 @@ class SelectModel extends FormFieldModel implements IFormField
       if (prototype == null) return true;
 
       // clear options
-      this.options.forEach((option) => option.dispose());
-      this.options.clear();
+      for (var option in options) {
+        option.dispose();
+      }
+      options.clear();
 
       int i = 0;
       if (addempty == true)
       {
-        options.add(OptionModel(this, "${this.id}-$i", value: ''));
+        options.add(OptionModel(this, "$id-$i", value: ''));
         i = i + 1;
       }
 
@@ -374,13 +387,12 @@ class SelectModel extends FormFieldModel implements IFormField
       if ((list != null) && (source != null))
       {
         // build options
-        list.forEach((row)
-        {
-          XmlElement? prototype = S.fromPrototype(this.prototype, "${this.id}-$i");
+        for (var row in list) {
+          XmlElement? prototype = S.fromPrototype(this.prototype, "$id-$i");
           i = i + 1;
           var model = OptionModel.fromXml(this, prototype, data: row);
           if (model != null) options.add(model);
-        });
+        }
       }
 
       // sets the data
@@ -425,24 +437,22 @@ class SelectModel extends FormFieldModel implements IFormField
     }
 
     dynamic data;
-    options.forEach((option)
-    {
+    for (var option in options) {
       if (option.value == value)
       {
         data = option.data;
-        this.label = option.labelValue;
+        label = option.labelValue;
       }
-    });
+    }
     this.data = data;
   }
 
   bool _containsOption()
   {
     bool contains = false;
-    options.forEach((option)
-    {
+    for (var option in options) {
       if (option.value == value) contains = true;
-    });
+    }
     return contains;
   }
 
@@ -453,5 +463,6 @@ class SelectModel extends FormFieldModel implements IFormField
     super.dispose();
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(SelectView(this));
 }

@@ -2,12 +2,12 @@
 import 'dart:collection';
 import 'dart:convert';
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/form_model.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:fml/datasources/transforms/sort.dart' as TRANSFORM;
+import 'package:fml/datasources/transforms/sort.dart' as sort_transform;
 import 'package:fml/event/handler.dart' ;
 import 'package:fml/widgets/table/table_view.dart';
 import 'package:fml/widgets/table/header/table_header_model.dart';
@@ -60,8 +60,6 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     if (t is PaddingType) type = t;
     if (type != null) _paddingType = type;
   }
-
-  String? datasource;
 
   ////////////////////
   /* slt color */
@@ -136,6 +134,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   double? get borderwidth => _borderwidth?.get();
 
   // override
+  @override
   String get valign => super.valign ?? 'center';
 
   /// Center attribute allows a simple boolean override for halign and valign both being center. halign and valign will override center if given.
@@ -188,6 +187,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   /* moreup */
   ///////////
   BooleanObservable? _moreUp;
+  @override
   set moreUp(dynamic v)
   {
     if (_moreUp != null)
@@ -199,12 +199,14 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
       _moreUp = BooleanObservable(Binding.toKey(id, 'moreup'), v, scope: scope);
     }
   }
+  @override
   bool? get moreUp=> _moreUp?.get();
 
   ///////////
   /* moreDown */
   ///////////
   BooleanObservable? _moreDown;
+  @override
   set moreDown(dynamic v)
   {
     if (_moreDown != null)
@@ -216,24 +218,30 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
       _moreDown = BooleanObservable(Binding.toKey(id, 'moredown'), v, scope: scope);
     }
   }
+  @override
   bool? get moreDown => _moreDown?.get();
 
   ///////////
   /* moreLeft */
   ///////////
   BooleanObservable? _moreLeft;
+  @override
   set moreLeft(dynamic v)
   {
-    if (_moreLeft != null)
-          _moreLeft!.set(v);
-    else if (v != null) _moreLeft = BooleanObservable(Binding.toKey(id, 'moreleft'), v, scope: scope);
+    if (_moreLeft != null) {
+      _moreLeft!.set(v);
+    } else if (v != null) {
+      _moreLeft = BooleanObservable(Binding.toKey(id, 'moreleft'), v, scope: scope);
+    }
   }
+  @override
   bool? get moreLeft => _moreLeft?.get();
 
   ///////////////
   /* moreRight */
   ///////////////
   BooleanObservable? _moreRight;
+  @override
   set moreRight(dynamic v)
   {
     if (_moreRight != null)
@@ -245,6 +253,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
       _moreRight = BooleanObservable(Binding.toKey(id, 'moreright'), v, scope: scope);
     }
   }
+  @override
   bool? get moreRight => _moreRight?.get();
 
   //////////////////
@@ -275,8 +284,10 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   ///////////
   /* dirty */
   ///////////
+  @override
   BooleanObservable? get dirtyObservable => _dirty;
   BooleanObservable? _dirty;
+  @override
   set dirty(dynamic v) {
     if (_dirty != null) {
       _dirty!.set(v);
@@ -284,6 +295,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
       _dirty = BooleanObservable(Binding.toKey(id, 'dirty'), v, scope: scope);
     }
   }
+  @override
   bool get dirty => _dirty?.get() ?? false;
 
   void onDirtyListener(Observable property) {
@@ -300,6 +312,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   ///////////
   /* Clean */
   ///////////
+  @override
   set clean(bool b) {
     dirty = false;
     rows.forEach((index, row) => row.dirty = false);
@@ -465,7 +478,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     this.draggable = draggable;
     this.onpulldown = onpulldown;
     this.oncomplete = oncomplete;
-    this.dirty = false;
+    dirty = false;
     this.margin = margin;
     this.spacing = spacing;
     this.altcolor = altcolor;
@@ -510,8 +523,8 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     pagesize = Xml.get(node: xml, tag: 'pagesize');
     paged = Xml.get(node: xml, tag: 'paged');
 
-    if (width != null)  this.width  = Xml.get(node: xml, tag: 'width');
-    if (height != null) this.height = Xml.get(node: xml, tag: 'height');
+    if (width != null)  width  = Xml.get(node: xml, tag: 'width');
+    if (height != null) height = Xml.get(node: xml, tag: 'height');
 
     center = Xml.get(node: xml, tag: 'center');
     altcolor = Xml.get(node: xml, tag: 'altcolor');
@@ -532,13 +545,13 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     /* Get Table Header */
     //////////////////////
     List<TableHeaderModel> headers = findChildrenOfExactType(TableHeaderModel).cast<TableHeaderModel>();
-    if (headers.length > 0) tableheader = headers.first;
+    if (headers.isNotEmpty) tableheader = headers.first;
 
     //////////////////////
     /* Get Table Footer */
     //////////////////////
     List<TableFooterModel> footers = findChildrenOfExactType(TableFooterModel).cast<TableFooterModel>();
-    if (footers.length > 0) tablefooter = footers.first;
+    if (footers.isNotEmpty) tablefooter = footers.first;
 
     // get prototype
     List<TableRowModel> rows = findChildrenOfExactType(TableRowModel).cast<TableRowModel>();
@@ -550,12 +563,14 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
 
   TableRowModel? getEmptyRowModel() {
     // build prototype
-    XmlElement? prototype = S.fromPrototype(this.prototype, "${this.id}-${0}");
+    XmlElement? prototype = S.fromPrototype(this.prototype, "$id-${0}");
 
     // build model
     TableRowModel? model =
         TableRowModel.fromXml(this, prototype, data: null);
-    model?.cells.forEach((cell) => cell.visible = false);
+    if(model?.cells != null){for (var cell in model!.cells) {
+      cell.visible = false;
+    }}
     return model;
   }
 
@@ -568,7 +583,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
 
     // build prototype
     XmlElement? prototype =
-        S.fromPrototype(this.prototype, "${this.id}-$index");
+        S.fromPrototype(this.prototype, "$id-$index");
 
     // build row model
     TableRowModel? model =
@@ -586,23 +601,24 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
 
   TableHeaderCellModel? getHeaderCell(int col) {
-    if ((tableheader != null) && (col < tableheader!.cells.length))
+    if ((tableheader != null) && (col < tableheader!.cells.length)) {
       return tableheader!.cells[col];
+    }
     return null;
   }
 
   Future<bool> _build(IDataSource source, Data? map) async {
     if ((S.isNullOrEmpty(datasource)) || (datasource == source.id)) {
-      if (this.tableheader!.prototype != null) await _buildDynamic(map);
+      if (tableheader!.prototype != null) await _buildDynamic(map);
 
-      this.clean = true;
+      clean = true;
 
       // clear rows
-      this.rows.forEach((_,row) => row.dispose());
-      this.rows.clear();
+      rows.forEach((_,row) => row.dispose());
+      rows.clear();
 
-      this.page = 1;
-      this.data = map;
+      page = 1;
+      data = map;
     }
     notifyListeners('list', null);
     return true;
@@ -630,21 +646,22 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
         }
 
 
-        TRANSFORM.Sort sort = TRANSFORM.Sort(null,
+        sort_transform.Sort sort = sort_transform.Sort(null,
             field: model?.sort,
             type: model?.sortType,
             ascending: model?.sortAscending,
             casesensitive: false);
 
         await sort.apply(data);
-      } else
+      } else {
         model?.sorted = false;
+      }
       i = i + 1;
     }
 
     // clear rows
-    this.rows.forEach((_,row) => row.dispose());
-    this.rows.clear();
+    rows.forEach((_,row) => row.dispose());
+    rows.clear();
 
     // Notify Listeners of Change
     notifyListeners('list', null);
@@ -653,7 +670,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
 
   void updatedSortedBy(ascending, index) {
-    var currCol;
+    dynamic currCol;
     int i = 0;
     while ((currCol = getHeaderCell(i++)) != null) {
       if (i == index) {
@@ -692,12 +709,13 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     prototypeModel?.dispose();
 
     // clear rows
-    this.rows.forEach((_,row) => row.dispose());
-    this.rows.clear();
+    rows.forEach((_,row) => row.dispose());
+    rows.clear();
 
     super.dispose();
   }
 
+  @override
   Future<bool> complete() async {
     busy = true;
 
@@ -706,13 +724,16 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     ///////////////////
     /* Post the Form */
     ///////////////////
-    if (dirty)
-      for (var entry in rows.entries) ok = await entry.value.complete();
-
+    if (dirty){
+      for (var entry in rows.entries) {
+        ok = await entry.value.complete();
+      }
+  }
     busy = false;
     return ok;
   }
 
+  @override
   Future<bool> onComplete(BuildContext context) async {
     return await EventHandler(this).execute(_oncomplete);
   }
@@ -722,14 +743,16 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
 
   void setCellPadding(int cellindex, double padding) {
-    if ((padding >= 0) && (cellindex < cellpadding.length))
+    if ((padding >= 0) && (cellindex < cellpadding.length)) {
       cellpadding[cellindex] = padding;
+    }
   }
 
   double getCellPosition(int cellindex) {
     double offset = 0;
-    for (int i = 0; i < cellindex; i++)
+    for (int i = 0; i < cellindex; i++) {
       offset += (widths[i] ?? 0) + (cellpadding[i] ?? 0);
+    }
     return offset;
   }
 
@@ -753,7 +776,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
 
   Future<bool> onSort(int index) async {
     busy = true;
-    await this.sort(index, null);
+    await sort(index, null);
     busy = false;
     return true;
   }
@@ -797,7 +820,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
 
     prototypeModel!.element!.children.removeWhere((node) => nodes!.contains(node));
 
-    if ((data != null) && (data.isNotEmpty))
+    if ((data != null) && (data.isNotEmpty)) {
       data[0].forEach((key, value)
       {
         if ((key != 'xml') && (key != 'rownum')) {
@@ -806,11 +829,10 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
           /////////////////
           /* Header Cell */
           /////////////////
-          xml = this
-              .tableheader!
+          xml = tableheader!
               .prototype!
               .toXmlString()
-              .replaceAll("{" + 'field' + "}", key);
+              .replaceAll("{field}", key);
           TableHeaderCellModel? c1 =
               TableHeaderCellModel.fromXmlString(this, xml);
           if ((c1 != null) && (c1.visible == false)) c1 = null;
@@ -820,18 +842,19 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
           ///////////////
           xml = prototypeModel!.cellprototype
               .toXmlString()
-              .replaceAll("{" + 'field' + "}", "{" + key + "}");
+              .replaceAll("{field}", "{$key}");
           XmlDocument? c2 = Xml.tryParse(xml);
 
           //////////////////////////////
           /* Add Header and Row Cells */
           //////////////////////////////
           if ((c1 != null) && (c2 != null)) {
-            this.tableheader!.cells.add(c1);
-            this.prototypeModel!.element!.children.add(c2.rootElement.copy());
+            tableheader!.cells.add(c1);
+            prototypeModel!.element!.children.add(c2.rootElement.copy());
           }
         }
       });
+    }
 
     //////////////////////////
     /* Force View to Resize */
@@ -912,10 +935,12 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     double currentWidth = getContentWidth();
     double targetWidth = currentWidth - pixels.abs();
     double percentReduction = targetWidth / currentWidth;
-    for (int i = 0; i < widths.length; i++)
+    for (int i = 0; i < widths.length; i++) {
       widths[i] = (widths[i]! * percentReduction).roundToDouble();
+    }
   }
 
+  @override
   Future<bool> save() async {
     // not implemented
     return true;
@@ -927,5 +952,6 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
 
 
+  @override
   Widget getView({Key? key}) => getReactiveView(TableView(this));
 }

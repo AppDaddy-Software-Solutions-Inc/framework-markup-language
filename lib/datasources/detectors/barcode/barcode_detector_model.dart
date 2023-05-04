@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/detectors/iDetectable.dart';
+import 'package:fml/datasources/detectors/detector_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/datasources/detectors/detector_model.dart';
 import 'package:fml/observable/binding.dart';
@@ -86,8 +86,8 @@ class BarcodeDetectorModel extends DetectorModel implements IDetectable
       BarcodeFormats? f = S.toEnum(format, BarcodeFormats.values);
       if (f != null)
       {
-        if (this.barcodeFormats == null) this.barcodeFormats = [];
-        if (!this.barcodeFormats!.contains(f)) this.barcodeFormats!.add(f);
+        barcodeFormats ??= [];
+        if (!barcodeFormats!.contains(f)) barcodeFormats!.add(f);
       }
     }
   }
@@ -99,6 +99,7 @@ class BarcodeDetectorModel extends DetectorModel implements IDetectable
     super.dispose();
   }
 
+  @override
   void detect(DetectableImage image, bool streamed) async
   {
     if (!busy)
@@ -112,7 +113,9 @@ class BarcodeDetectorModel extends DetectorModel implements IDetectable
         Data data = Payload.toData(payload);
         await onDetected(data);
       }
-      else if (!streamed) await onDetectionFailed(Data(data: [{"message" : "Barcode detector $id failed to detect any barcodes in the supplied image"}]));
+      else if (!streamed) {
+        await onDetectionFailed(Data(data: [{"message" : "Barcode detector $id failed to detect any barcodes in the supplied image"}]));
+      }
       busy = false;
     }
   }

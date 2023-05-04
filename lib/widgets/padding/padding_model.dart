@@ -67,5 +67,6 @@ class PaddingModel extends ColumnModel
     }
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(PaddingView(this));
 }

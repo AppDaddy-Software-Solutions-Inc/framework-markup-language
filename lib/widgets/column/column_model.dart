@@ -37,7 +37,7 @@ class ColumnModel extends LayoutModel
     if (isFixedHeight) return false;
     var expand = this.expand;
     if (expand) return true;
-    if (children != null)
+    if (children != null){
       for (var child in children!)
       {
         if (child is ViewableWidgetModel && child.visible && child.isVerticallyExpanding)
@@ -45,16 +45,17 @@ class ColumnModel extends LayoutModel
           expand = true;
           break;
         }
-      }
+      }}
     return expand;
   }
 
+  @override
   @required
   bool get isHorizontallyExpanding
   {
     if (isFixedWidth) return false;
     bool expand = false;
-    if (children != null)
+    if (children != null){
       for (var child in children!)
       {
         if (child is ViewableWidgetModel && child.visible && child.isHorizontallyExpanding)
@@ -62,7 +63,7 @@ class ColumnModel extends LayoutModel
           expand = true;
           break;
         }
-      }
+      }}
     return expand;
   }
 
@@ -85,5 +86,6 @@ class ColumnModel extends LayoutModel
     return model;
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(ColumnView(this));
 }

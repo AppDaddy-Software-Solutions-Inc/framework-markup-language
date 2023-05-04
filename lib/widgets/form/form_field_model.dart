@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/datasources/gps/payload.dart' as GPS;
+import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/alarm/alarm_model.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
@@ -23,8 +23,9 @@ class FormFieldModel extends DecoratedWidgetModel
     if (_defaultValue != null) {
       _defaultValue!.set(v);
     } else {
-      if (v != null)
+      if (v != null) {
         _defaultValue = StringObservable(null, v, scope: scope);
+      }
     }
   }
   dynamic get defaultValue => _defaultValue?.get();
@@ -102,12 +103,14 @@ class FormFieldModel extends DecoratedWidgetModel
     if (post != null) return post!;
     if ((value == null) || value is List && value.isEmpty) return false;
     WidgetModel model = this;
-    while (model.parent != null) model = model.parent!;
+    while (model.parent != null) {
+      model = model.parent!;
+    }
     return true;
   }
 
   /// GeoCode for each [iFormField] which is set on answer
-  GPS.Payload? geocode;
+  Payload? geocode;
 
   //field is editable
   BooleanObservable? _editable;
@@ -179,13 +182,12 @@ class FormFieldModel extends DecoratedWidgetModel
 
     // Build alarms
     List<AlarmModel> alarms = findChildrenOfExactType(AlarmModel).cast<AlarmModel>();
-    alarms.forEach((alarm)
-    {
-      if (_alarms == null) _alarms = Map<String?, BooleanObservable>();
-      this._alarms!.clear();
+    for (var alarm in alarms) {
+      _alarms ??= <String?, BooleanObservable>{};
+      _alarms!.clear();
       String id = alarm.id;
       if (!S.isNullOrEmpty(alarm.value)) _alarms![id] = BooleanObservable(null, value, scope: scope, setter: (value) => touched! ? value : false, listener: _onAlarm);
-    });
+    }
   }
 
   void _onAlarm(Observable alarm)
@@ -199,7 +201,7 @@ class FormFieldModel extends DecoratedWidgetModel
       if ((value.get() == true))
       {
         alarming = true;
-        if (id == null) id = key;
+        id ??= key;
       }
     });
 
@@ -241,7 +243,7 @@ class FormFieldModel extends DecoratedWidgetModel
       var oldGeocode = geocode;
 
       // set geocode
-      geocode = GPS.Payload(
+      geocode = Payload(
           latitude: System().currentLocation?.latitude,
           longitude: System().currentLocation?.longitude,
           altitude: System().currentLocation?.altitude,
@@ -260,7 +262,9 @@ class FormFieldModel extends DecoratedWidgetModel
       }
 
       // save succeeded. set dirty
-      else dirty = true;
+      else {
+        dirty = true;
+      }
     }
     return ok;
   }

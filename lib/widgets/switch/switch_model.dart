@@ -1,8 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
-import 'package:fml/widgets/form/iFormField.dart';
+import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -25,6 +25,7 @@ class SwitchModel extends FormFieldModel implements IFormField
   /* value */
   ///////////
   BooleanObservable? _value;
+  @override
   set value (dynamic v)
   {
     if (_value != null)
@@ -36,9 +37,11 @@ class SwitchModel extends FormFieldModel implements IFormField
       _value = BooleanObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange);
     }
   }
+  @override
   bool get value => _value?.get() ?? defaultValue ?? false;
 
   // question was answered
+  @override
   bool get answered
   {
     if (value == true || value == false) return true;
@@ -87,8 +90,8 @@ class SwitchModel extends FormFieldModel implements IFormField
     if (onchange     != null) this.onchange   = onchange;
     if (post         != null) this.post       = post;
 
-    this.alarming     = false;
-    this.dirty        = false;
+    alarming     = false;
+    dirty        = false;
   }
 
   static SwitchModel? fromXml(WidgetModel parent, XmlElement xml, {String? type}) {
@@ -131,6 +134,7 @@ class SwitchModel extends FormFieldModel implements IFormField
     super.dispose();
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(SwitchView(this));
 }
 

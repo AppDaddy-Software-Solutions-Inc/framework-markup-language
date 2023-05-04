@@ -35,16 +35,18 @@ class TableHeaderModel extends DecoratedWidgetModel
 
   Color? get bordercolor {
     if (_bordercolor == null) {
-      if ((this.parent != null) && (this.parent is TableModel))
-        return (this.parent as TableModel).bordercolor;
+      if ((parent != null) && (parent is TableModel)) {
+        return (parent as TableModel).bordercolor;
+      }
       return null;
     }
     return _bordercolor?.get();
   }
 
   Color? get headerbordercolor {
-    if ((this.parent != null) && (this.parent is TableModel))
-      return (this.parent as TableModel).bordercolor;
+    if ((parent != null) && (parent is TableModel)) {
+      return (parent as TableModel).bordercolor;
+    }
     return null;
   }
 
@@ -64,8 +66,9 @@ class TableHeaderModel extends DecoratedWidgetModel
 
   double? get borderwidth {
     if (_borderwidth == null) {
-      if ((this.parent != null) && (this.parent is TableModel))
-        return (this.parent as TableModel).borderwidth;
+      if ((parent != null) && (parent is TableModel)) {
+        return (parent as TableModel).borderwidth;
+      }
       return null;
     }
     return _borderwidth?.get();
@@ -88,11 +91,13 @@ class TableHeaderModel extends DecoratedWidgetModel
   ///
   /// The horizontal alignment of the widgets children, overrides `center`. Can be `left`, `right`, `start`, or `end`.
   StringObservable? _halign;
+  @override
   String? get halign
   {
     if (_halign == null) {
-      if ((this.parent != null) && (this.parent is TableModel))
-        return (this.parent as TableModel).halign;
+      if ((parent != null) && (parent is TableModel)) {
+        return (parent as TableModel).halign;
+      }
       return null;
     }
     return _halign?.get();
@@ -100,10 +105,12 @@ class TableHeaderModel extends DecoratedWidgetModel
 
   /// The vertical alignment of the widgets children, overrides `center`. Can be `top`, `bottom`, `start`, or `end`.
   StringObservable? _valign;
+  @override
   String? get valign {
     if (_valign == null) {
-      if ((this.parent != null) && (this.parent is TableModel))
-        return (this.parent as TableModel).valign;
+      if ((parent != null) && (parent is TableModel)) {
+        return (parent as TableModel).valign;
+      }
       return null;
     }
     return _valign?.get();
@@ -124,7 +131,7 @@ class TableHeaderModel extends DecoratedWidgetModel
   {
     if (_center == null)
     {
-      if ((this.parent != null) && (this.parent is TableModel)) return (this.parent as TableModel).center;
+      if ((parent != null) && (parent is TableModel)) return (parent as TableModel).center;
       return false;
     }
     return _center?.get() ?? false;
@@ -145,7 +152,7 @@ class TableHeaderModel extends DecoratedWidgetModel
   {
     if (_wrap == null)
     {
-      if ((this.parent != null) && (this.parent is TableModel)) return (this.parent as TableModel).wrap;
+      if ((parent != null) && (parent is TableModel)) return (parent as TableModel).wrap;
       return false;
     }
     return _wrap?.get() ?? false;
@@ -189,19 +196,22 @@ class TableHeaderModel extends DecoratedWidgetModel
     /* Get Cells */
     ///////////////
     List<TableHeaderCellModel> cells = findChildrenOfExactType(TableHeaderCellModel).cast<TableHeaderCellModel>();
-    for (TableHeaderCellModel model in cells) this.cells.add(model);
+    for (TableHeaderCellModel model in cells) {
+      this.cells.add(model);
+    }
 
     ////////////////
     /* Prototype? */
     ////////////////
-    if ((cells.length == 1) && (cells[0].element!.toXmlString().contains("{" + 'field' + "}"))) prototype = cells[0].element!.copy();
+    if ((cells.length == 1) && (cells[0].element!.toXmlString().contains("{field}"))) prototype = cells[0].element!.copy();
   }
 
   bool onSort(TableHeaderCellModel model)
   {
     int index = cells.indexOf(model);
-    if ((this.parent != null) && (this.parent is TableModel))
-      (this.parent as TableModel).onSort(index);
+    if ((parent != null) && (parent is TableModel)) {
+      (parent as TableModel).onSort(index);
+    }
     return true;
   }
 

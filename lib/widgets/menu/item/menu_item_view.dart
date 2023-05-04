@@ -4,22 +4,23 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fml/helper/color.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class MenuItemView extends StatefulWidget implements IWidgetView
 {
+  @override
   final MenuItemModel model;
 
   MenuItemView(this.model) : super(key: ObjectKey(model));
 
   String? getTitle() {
-    return this.model.title;
+    return model.title;
   }
 
   @override
-  _MenuItemViewState createState() => _MenuItemViewState();
+  State<MenuItemView> createState() => _MenuItemViewState();
 }
 
 class _MenuItemViewState extends WidgetState<MenuItemView>
@@ -86,9 +87,11 @@ class _MenuItemViewState extends WidgetState<MenuItemView>
       if (widget.model.image != null)
       {
         // svg image?
-        if (widget.model.image!.mimeType == "image/svg+xml")
-             image = SvgPicture.memory(widget.model.image!.contentAsBytes(), width: 48, height: 48);
-        else image = Image.memory(widget.model.image!.contentAsBytes(), width: 48, height: 48, fit: null);
+        if (widget.model.image!.mimeType == "image/svg+xml") {
+          image = SvgPicture.memory(widget.model.image!.contentAsBytes(), width: 48, height: 48);
+        } else {
+          image = Image.memory(widget.model.image!.contentAsBytes(), width: 48, height: 48, fit: null);
+        }
       }
 
       Widget? icon;
@@ -102,7 +105,7 @@ class _MenuItemViewState extends WidgetState<MenuItemView>
         icon = Center(child: icon);
       }
 
-      var title;
+      Text? title;
       if (widget.model.title != null)
       {
         title = Text(widget.model.title ?? '', textAlign: TextAlign.center, style: TextStyle(fontSize: (widget.model.fontsize ?? 16.0) - (isMobile ? 2 : 0), color: backgroundImage != null
@@ -112,7 +115,7 @@ class _MenuItemViewState extends WidgetState<MenuItemView>
                     Theme.of(context).primaryTextTheme.titleLarge!.fontWeight));
       }
 
-      var subtitle;
+      Text? subtitle;
       if (widget.model.subtitle != null) {
         subtitle = Text(widget.model.subtitle ?? '',
             textAlign: TextAlign.center,
@@ -128,9 +131,11 @@ class _MenuItemViewState extends WidgetState<MenuItemView>
 
       List<Widget> btn = [];
 
-      if (image != null)
+      if (image != null) {
         btn.add(image);
-      else if (icon != null) btn.add(icon);
+      } else if (icon != null) {
+        btn.add(icon);
+      }
       btn.add(Container(height: 10));
       if (title != null) btn.add(title);
       btn.add(Container(height: 10));
@@ -158,12 +163,13 @@ class _MenuItemViewState extends WidgetState<MenuItemView>
               ? (widget.model.onTap ?? onTap)
               : null,
           onLongPress: widget.model.enabled != false
-              ? (widget.model.onLongPress ?? null)
+              ? (widget.model.onLongPress)
               : null,
           shape: shape);
 
-      if (widget.model.enabled != false)
+      if (widget.model.enabled != false) {
         button = MouseRegion(cursor: SystemMouseCursors.click, child: button);
+      }
 
       Widget staticButton = Padding(
           padding: EdgeInsets.all(isMobile ? 0 : 10),

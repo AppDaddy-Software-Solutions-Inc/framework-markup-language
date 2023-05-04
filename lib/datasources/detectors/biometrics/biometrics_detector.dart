@@ -25,12 +25,11 @@ class Payload
   static Data toData(Payload payload)
   {
     Data data = Data();
-    payload.biometrics.forEach((biometric)
-    {
-      Map<dynamic,dynamic> map = Map<dynamic,dynamic>();
+    for (var biometric in payload.biometrics) {
+      Map<dynamic,dynamic> map = <dynamic,dynamic>{};
       map["smile"] = (biometric.smile != null ? biometric.smile.toString() : '0');
       data.add(map);
-    });
+    }
     return data;
   }
 }

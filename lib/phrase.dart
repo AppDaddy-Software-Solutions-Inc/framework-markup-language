@@ -463,8 +463,8 @@ class Phrases
 
   String get dontHaveAnAccount
   {
-    if (language == french) return '(FR) Don\'t have an account\?';
-    return 'Don\'t have an account\?';
+    if (language == french) return '(FR) Don\'t have an account?';
+    return 'Don\'t have an account?';
   }
 
 

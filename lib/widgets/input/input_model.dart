@@ -2,7 +2,7 @@
 import 'package:fml/log/manager.dart';
 import 'package:fml/event/handler.dart' ;
 import 'package:fml/widgets/form/form_field_model.dart';
-import 'package:fml/widgets/form/iFormField.dart';
+import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
@@ -149,6 +149,7 @@ class InputModel extends FormFieldModel implements IFormField
 
   /// True if there is an alarm sounding on a [IFormField]
   BooleanObservable? _alarming;
+  @override
   set alarming(dynamic v)
   {
     if (_alarming != null)
@@ -160,10 +161,12 @@ class InputModel extends FormFieldModel implements IFormField
       _alarming = BooleanObservable(Binding.toKey(id, 'alarming'), v, scope: scope, listener: onPropertyChange);
     }
   }
+  @override
   bool? get alarming => _alarming?.get() ?? false;
 
   /// the value of the input. If not set to "" initially, the value will not be settable through events.
   StringObservable? _value;
+  @override
   set value(dynamic v)
   {
     if (_value != null)
@@ -176,6 +179,7 @@ class InputModel extends FormFieldModel implements IFormField
     }
   }
 
+  @override
   dynamic get value
   {
     if (_value == null) return defaultValue;
@@ -482,6 +486,7 @@ class InputModel extends FormFieldModel implements IFormField
 
   /// If the input has been focused at least once
   BooleanObservable? _touched;
+  @override
   set touched(dynamic v) {
     if (_touched != null) {
       _touched!.set(v);
@@ -490,6 +495,7 @@ class InputModel extends FormFieldModel implements IFormField
           scope: scope, listener: onPropertyChange);
     }
   }
+  @override
   bool? get touched =>  _touched?.get() ?? false;
 
   BooleanObservable? _wrap;
@@ -580,7 +586,7 @@ class InputModel extends FormFieldModel implements IFormField
     if (errortext     != null) this.errortext = errortext;
     if (lines         != null) this.lines = lines;
     if (length        != null) this.length = length;
-    if (padding       != null) this.margins = padding;
+    if (padding       != null) margins = padding;
     if (obscure       != null) this.obscure = obscure;
     if (clear         != null) this.clear = clear;
     if (onchange      != null) this.onchange = onchange;
@@ -601,8 +607,8 @@ class InputModel extends FormFieldModel implements IFormField
     if (textcolor     != null) this.textcolor = textcolor;
     if (touched       != null) this.touched = touched;
 
-    this.alarming = false;
-    this.dirty = false;
+    alarming = false;
+    dirty = false;
   }
 
   static InputModel? fromXml(WidgetModel parent, XmlElement xml, {String? type}) {
@@ -634,9 +640,9 @@ class InputModel extends FormFieldModel implements IFormField
     {
       String? xml;
       XmlElement? child;
-      if (child == null) child = Xml.getChildElement(node: element!, tag: S.fromEnum('value')!.toUpperCase());
-      if (child == null) child = Xml.getChildElement(node: element!, tag: S.fromEnum('value')!.toLowerCase());
-      if (child == null) child = Xml.getChildElement(node: element!, tag: S.fromEnum('value')!);
+      child ??= Xml.getChildElement(node: element!, tag: S.fromEnum('value')!.toUpperCase());
+      child ??= Xml.getChildElement(node: element!, tag: S.fromEnum('value')!.toLowerCase());
+      child ??= Xml.getChildElement(node: element!, tag: S.fromEnum('value')!);
       if (child != null) xml = child.innerXml;
       if (xml != null)
       {
@@ -652,7 +658,9 @@ class InputModel extends FormFieldModel implements IFormField
         value = xml;
       }
     }
-    else value = Xml.get(node: xml, tag: S.fromEnum('value'));
+    else {
+      value = Xml.get(node: xml, tag: S.fromEnum('value'));
+    }
     hint = Xml.get(node: xml, tag: 'hint') ?? "";
     size = Xml.get(node: xml, tag: 'size');
     weight = Xml.get(node: xml, tag: 'weight');
@@ -696,6 +704,7 @@ class InputModel extends FormFieldModel implements IFormField
     return await EventHandler(this).execute(_onfocuslost);
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(InputView(this));
 }
 

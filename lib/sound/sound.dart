@@ -15,8 +15,9 @@ class Sound {
   }
 
   void initPlayer() {
-    if (kIsWeb) return; // Calls to Platform.isIOS fails on web
-    else if (Platform.isIOS)
+    if (kIsWeb) {
+      return; // Calls to Platform.isIOS fails on web
+    } else if (Platform.isIOS)
     {
      // if (assetPlayer.fixedPlayer != null) {
      //   assetPlayer.fixedPlayer.startHeadlessService();
@@ -31,8 +32,9 @@ class Sound {
   static playLocal(String localPath, {int? duration}) async { // dir
     try {
       await advancedPlayer.play(localPath, isLocal: true);
-      if (duration != null && duration > 0)
+      if (duration != null && duration > 0) {
         Future.delayed(Duration(seconds: duration), () => advancedPlayer.stop());
+      }
     } catch (e) { Log().exception(e, caller: 'playLocal($localPath)'); }
   }
 
@@ -42,8 +44,9 @@ class Sound {
   static playAsset(String filename, {int? duration}) async { // dir
     try {
       AudioPlayer ap = await assetPlayer.play(filename);
-      if (duration != null && duration > 0)
+      if (duration != null && duration > 0) {
         Future.delayed(Duration(seconds: duration), () => ap.stop());
+      }
     } catch(e) { Log().exception(e, caller: 'playAsset($filename)'); }
   }
 
@@ -51,8 +54,9 @@ class Sound {
   static playRemote(String remotePath, {int? duration}) async { // url
     try {
       await advancedPlayer.play(remotePath, isLocal: false);
-      if (duration != null && duration > 0)
+      if (duration != null && duration > 0) {
         Future.delayed(Duration(seconds: duration), () => advancedPlayer.stop());
+      }
     } catch(e) { Log().exception(e, caller: 'playRemote($remotePath)'); }
   }
 }

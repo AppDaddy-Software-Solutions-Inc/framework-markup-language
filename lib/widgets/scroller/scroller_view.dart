@@ -5,7 +5,7 @@ import 'package:fml/event/manager.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
 import 'package:fml/widgets/scroller/scroller_shadow_view.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/event/event.dart' ;
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/layout/layout_model.dart';
@@ -18,11 +18,12 @@ import 'package:fml/widgets/layout/layout_model.dart';
 /// instead be contained within this scrollable widget.
 class ScrollerView extends StatefulWidget implements IWidgetView
 {
+  @override
   final ScrollerModel model;
   ScrollerView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _ScrollerViewState createState() => _ScrollerViewState();
+  State<ScrollerView> createState() => _ScrollerViewState();
 }
 
 class _ScrollerViewState extends WidgetState<ScrollerView>
@@ -147,19 +148,23 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
 
     // build body
     Axis direction = widget.model.layoutType == LayoutType.row ? Axis.horizontal : Axis.vertical;
-    var child;
-    if (direction == Axis.vertical)
-         child = Column(children: children, crossAxisAlignment: alignment.crossAlignment);
-    else child = Row(children: children, crossAxisAlignment: alignment.crossAlignment);
+    Widget child;
+    if (direction == Axis.vertical) {
+      child = Column(children: children, crossAxisAlignment: alignment.crossAlignment);
+    } else {
+      child = Row(children: children, crossAxisAlignment: alignment.crossAlignment);
+    }
     children.add(Column(mainAxisSize: MainAxisSize.max));
 
     Widget scsv;
     ScrollBehavior behavior;
     // Check to see if pulldown is enabled, draggable is enabled, or horizontal is enabled (as web doesnt support device horizontal scrolling) and enable
     // dragging for the scroller.
-    if(widget.model.onpulldown != null || widget.model.draggable == true || direction == Axis.horizontal)
-         behavior = ScrollConfiguration.of(context).copyWith(scrollbars: widget.model.scrollbar == false ? false : true, dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse});
-    else behavior = ScrollConfiguration.of(context).copyWith(scrollbars: widget.model.scrollbar == false ? false : true);
+    if(widget.model.onpulldown != null || widget.model.draggable == true || direction == Axis.horizontal) {
+      behavior = ScrollConfiguration.of(context).copyWith(scrollbars: widget.model.scrollbar == false ? false : true, dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse});
+    } else {
+      behavior = ScrollConfiguration.of(context).copyWith(scrollbars: widget.model.scrollbar == false ? false : true);
+    }
 
     if(widget.model.onpulldown != null)
     {
@@ -171,7 +176,9 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
          scrollDirection: direction,
          controller: _scrollController));
     }
-    else scsv = SingleChildScrollView(child: child, scrollDirection: direction, controller: _scrollController);
+    else {
+      scsv = SingleChildScrollView(child: child, scrollDirection: direction, controller: _scrollController);
+    }
 
     // show no scroll bar
     // POINTERDEVICE MOUSE is not recommended on web due to text selection difficulty, but i have added it in since we do not have text selection.

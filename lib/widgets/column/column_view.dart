@@ -1,19 +1,20 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/column/column_model.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
 import 'package:fml/widgets/layout/layout_model.dart';
 
 class ColumnView extends StatefulWidget implements IWidgetView
 {
+  @override
   final LayoutModel model;
 
   ColumnView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _ColumnViewState createState() => _ColumnViewState();
+  State<ColumnView> createState() => _ColumnViewState();
 }
 
 class _ColumnViewState extends WidgetState<ColumnView>
@@ -53,18 +54,19 @@ class _ColumnViewState extends WidgetState<ColumnView>
     Widget view;
 
     // create view
-    if (widget.model.wrap == true)
+    if (widget.model.wrap == true) {
       view = Wrap(children: children,
           direction: Axis.vertical,
           alignment: alignment.mainWrapAlignment,
           runAlignment: alignment.mainWrapAlignment,
           crossAxisAlignment: alignment.crossWrapAlignment);
-    else
+    } else {
       view = Column(
           children: children,
           mainAxisAlignment: alignment.mainAlignment,
           crossAxisAlignment: alignment.crossAlignment,
           mainAxisSize: mainAxisSize);
+    }
 
     // add margins
     if (model is ColumnModel) view = addMargins(view);

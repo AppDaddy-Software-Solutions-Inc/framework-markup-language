@@ -1,17 +1,18 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/draggable/draggable_model.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class DraggableView extends StatefulWidget implements IWidgetView
 {
+  @override
   final DraggableModel model;
   DraggableView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _DraggableViewState createState() => _DraggableViewState();
+  State<DraggableView> createState() => _DraggableViewState();
 }
 
 

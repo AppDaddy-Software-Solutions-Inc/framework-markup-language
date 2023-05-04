@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:camera/camera.dart' show CameraLensDirection;
 import 'package:camera/camera.dart' show XFile;
-import 'package:fml/datasources/camera/model.dart' as CAMERA;
+import 'package:fml/datasources/camera/model.dart';
 import 'package:fml/widgets/camera/camera_view.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -10,8 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/datasources/detectors/detector_model.dart' ;
-import 'package:image/image.dart' as IMAGE;
-import 'package:fml/datasources/file/file.dart' as FILE;
+import 'package:image/image.dart' as image_pack;
+import 'package:fml/datasources/file/file.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
@@ -19,7 +19,7 @@ import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
 if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
 if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image.web.dart';
 
-class CameraModel extends CAMERA.CameraImageModel
+class CameraModel extends CameraImageModel
 {
   bool fullscreen = true;
   bool stream = false;
@@ -308,7 +308,9 @@ class CameraModel extends CAMERA.CameraImageModel
     togglevisible = Xml.get(node: xml, tag: 'togglevisible');
 
     // enable streaming
-    if (detectors != null) detectors!.forEach((detector) => ((detector.source == DetectorSources.stream) || (detector.source == DetectorSources.any)) ? stream = true : null);
+    if (detectors != null){ for (var detector in detectors!) {
+   ((detector.source == DetectorSources.stream) || (detector.source == DetectorSources.any)) ? stream = true : null;
+ }}
   }
 
   bool popDialog = true;
@@ -336,56 +338,55 @@ class CameraModel extends CAMERA.CameraImageModel
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
 
-    if (camera != null)
-    switch (function)
+    if (camera != null) {
+      switch (function)
     {
       case "start" : return await camera!.start();
       case "stop"  : return await camera!.stop();
       case "snapshot" : return await camera!.snapshot();
+    }
     }
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
   Future<bool> onInitialized(BuildContext context) async
   {
-    if (this.oninitialized == null) return true;
+    if (oninitialized == null) return true;
     return await EventHandler(this).execute(_oninitialized);
   }
   
   Future<bool> detectInStream(DetectableImage image) async
   {
     if (detectors == null) return true;
-    detectors!.forEach((detector)
-    {
+    for (var detector in detectors!) {
       if ((detector.source == DetectorSources.stream) || (detector.source == DetectorSources.any)) detector.detect(image, true);
-    });
+    }
     return true;
   }
 
   Future<bool> detectInImage(DetectableImage image) async
   {
     if (detectors == null) return true;
-    detectors!.forEach((detector)
-    {
+    for (var detector in detectors!) {
       if ((detector.source == DetectorSources.image) || (detector.source == DetectorSources.any)) detector.detect(image, false);
-    });
+    }
     return true;
   }
 
-  Future<FILE.File> applyTransforms(XFile file) async
+  Future<File> applyTransforms(XFile file) async
   {
     busy = true;
 
-    IMAGE.Image? image;
+    image_pack.Image? image;
 
     //  image is mirrored. this is a stop gap measure. should be a transform
     if ((direction ?? "") == S.fromEnum(CameraLensDirection.front))
     {
-      image = IMAGE.decodeJpg(await file.readAsBytes());
-      image = IMAGE.flipHorizontal(image!);
+      image = image_pack.decodeJpg(await file.readAsBytes());
+      image = image_pack.flipHorizontal(image!);
 
       // encode back to jpg
-      var bytes = IMAGE.encodeJpg(image);
+      var bytes = image_pack.encodeJpg(image);
 
       var name = basename(S.isNullOrEmpty(file.name) ? "${S.newId()}.jpg" : file.name);
       var uri  = UriData.fromBytes(bytes, mimeType: await S.mimetype(name));
@@ -395,7 +396,7 @@ class CameraModel extends CAMERA.CameraImageModel
 
       // save the image
       busy = false;
-      return FILE.File(uri, url, name, type, size);
+      return File(uri, url, name, type, size);
     }
 
     // no transformation applied
@@ -409,9 +410,10 @@ class CameraModel extends CAMERA.CameraImageModel
 
       // save the image
       busy = false;
-      return FILE.File(file, url, name, type, size);
+      return File(file, url, name, type, size);
     }
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(CameraView(this));
 }

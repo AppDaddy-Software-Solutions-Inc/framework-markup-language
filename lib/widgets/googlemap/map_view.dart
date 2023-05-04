@@ -8,7 +8,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/googlemap/map_model.dart';
 import 'package:fml/widgets/googlemap/location/map_location_model.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
@@ -17,11 +17,12 @@ import 'package:fml/helper/common_helpers.dart';
 
 class MapView extends StatefulWidget implements IWidgetView
 {
+  @override
   final MapModel model;
   MapView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _MapViewState createState() => _MapViewState();
+  State<MapView> createState() => _MapViewState();
 }
 
 class _MapViewState extends WidgetState<MapView>
@@ -51,7 +52,7 @@ class _MapViewState extends WidgetState<MapView>
     WidgetsBinding.instance.addPostFrameCallback((_) => Future.delayed(Duration(seconds: 1), () => busy = null));
   }
 
-  Completer<GoogleMapController> _controller = Completer();
+  final Completer<GoogleMapController> _controller = Completer();
   GoogleMapController? controller;
 
   // static final CameraPosition _kGooglePlex = CameraPosition(
@@ -103,11 +104,10 @@ class _MapViewState extends WidgetState<MapView>
     ///////////////////
     /* Build the Map */
     ///////////////////
-    if (map == null)
-    map = _buildGoogleMap();
+    map ??= _buildGoogleMap();
 
     /// Busy / Loading Indicator
-    if (busy == null) busy = BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
+    busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
 
     var width = widget.model.width   ?? widget.model.calculatedMaxWidthOrDefault;
     var height = widget.model.height ?? widget.model.calculatedMaxHeightOrDefault;
@@ -170,7 +170,7 @@ class _MapViewState extends WidgetState<MapView>
           trafficEnabled: false,
           markers: Set<Marker>.of(markers.values),
           // This fixes gestures but there is an issue with mousehweel onPointerSignals triggering on both the map and a scrollable parent
-          gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[Factory<OneSequenceGestureRecognizer>(() => EagerGestureRecognizer())].toSet());
+          gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{Factory<OneSequenceGestureRecognizer>(() => EagerGestureRecognizer())});
 
         return map;
       }
@@ -208,7 +208,7 @@ class _MapViewState extends WidgetState<MapView>
           ///////////////
           /* Marker Id */
           ///////////////
-          MarkerId id = MarkerId(locationIndex.toString() + ',' + location.latitude.toString() + ',' + location.longitude.toString());
+          MarkerId id = MarkerId('$locationIndex,${location.latitude},${location.longitude}');
 
           /////////////////
           /* Info Window */
@@ -238,7 +238,9 @@ class _MapViewState extends WidgetState<MapView>
         locationIndex++;
       }
     }
-    catch(e) {}
+    catch(e) {
+      Log().debug('$e');
+    }
 
   }
 
@@ -269,8 +271,8 @@ class _MapViewState extends WidgetState<MapView>
       /////////////////////
       if (markers.length > 1)
       {
-        final LatLngBounds _spot = LatLngBounds(southwest: LatLng(latitudeLowerBound!, longitudeLowerBound!), northeast: LatLng(latitudeUpperBound!, longitudeUpperBound!));
-        controller.animateCamera(CameraUpdate.newLatLngBounds(_spot, 10.0));
+        final LatLngBounds spot = LatLngBounds(southwest: LatLng(latitudeLowerBound!, longitudeLowerBound!), northeast: LatLng(latitudeUpperBound!, longitudeUpperBound!));
+        controller.animateCamera(CameraUpdate.newLatLngBounds(spot, 10.0));
       }
     }
 
@@ -290,8 +292,8 @@ class _MapViewState extends WidgetState<MapView>
     final GoogleMapController controller = await _controller.future;
 
 
-      final CameraPosition _spot = CameraPosition(target: LatLng(latitude!, longitude!), bearing: 192.8334901395799, tilt: 59.440717697143555, zoom: widget.model.zoom);
-      controller.animateCamera(CameraUpdate.newCameraPosition(_spot));
+      final CameraPosition spot = CameraPosition(target: LatLng(latitude!, longitude!), bearing: 192.8334901395799, tilt: 59.440717697143555, zoom: widget.model.zoom);
+      controller.animateCamera(CameraUpdate.newCameraPosition(spot));
 
     //////////
     /* Busy */

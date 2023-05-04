@@ -204,7 +204,7 @@ dependencies:
   # MIT
 
   # Updated 2022/05/26
-  pointycastle: ^3.6.0
+  pointycastle: ^3.7.3
   # MIT
 
   # Updated 2022/05/26

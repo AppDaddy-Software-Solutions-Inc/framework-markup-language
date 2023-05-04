@@ -100,7 +100,9 @@ class ButtonModel extends DecoratedWidgetModel
     String? l = _label?.get();
     try {
       if ((l is String) && (l.contains(':'))) l = S.parseEmojis(l);
-    } catch(e) {}
+    } catch(e) {
+      Log().debug('$e');
+    }
     return l;
   }
 
@@ -176,10 +178,10 @@ class ButtonModel extends DecoratedWidgetModel
     // constraints
     if (width     != null) this.width     = width;
     if (height    != null) this.height    = height;
-    if (minwidth  != null) this.minWidth  = minwidth;
-    if (minheight != null) this.minHeight = minheight;
-    if (maxwidth  != null) this.maxWidth  = maxwidth;
-    if (maxheight != null) this.maxHeight = maxheight;
+    if (minwidth  != null) minWidth  = minwidth;
+    if (minheight != null) minHeight = minheight;
+    if (maxwidth  != null) maxWidth  = maxwidth;
+    if (maxheight != null) maxHeight = maxheight;
 
     this.onclick    = onclick;
     this.onenter    = onenter;
@@ -274,6 +276,7 @@ class ButtonModel extends DecoratedWidgetModel
     return await EventHandler(this).execute(_onexit);
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(ButtonView(this));
 }
 

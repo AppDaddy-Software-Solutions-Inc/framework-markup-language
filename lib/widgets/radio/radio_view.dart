@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/radio/radio_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
@@ -9,11 +9,12 @@ import 'package:fml/widgets/alignment/alignment.dart';
 
 class RadioView extends StatefulWidget implements IWidgetView
 {
+  @override
   final RadioModel model;
   RadioView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _RadioViewState createState() => _RadioViewState();
+  State<RadioView> createState() => _RadioViewState();
 }
 
 class _RadioViewState extends WidgetState<RadioView>
@@ -31,11 +32,9 @@ class _RadioViewState extends WidgetState<RadioView>
     // save system constraints
     onLayout(constraints);
 
-    /////////////
-    /* Options */
-    /////////////
+    // Options
     if (widget.model.options.isNotEmpty) {
-      if (options == null) options = [];
+      options ??= [];
       options!.clear();
       for (OptionModel option in widget.model.options) {
         var checked = Icon(Icons.radio_button_checked,
@@ -67,15 +66,15 @@ class _RadioViewState extends WidgetState<RadioView>
                     ? checked
                     : unchecked));
 
-        ///////////
-        /* Label */
-        ///////////
+        // Label
         Widget label = Text('');
-        if (option.label is ViewableWidgetModel) label = option.label!.getView();
+        if (option.label is ViewableWidgetModel) 
+        {
+          var view = option.label!.getView();
+          if (view != null) label = view;
+        }
 
-        ////////////
-        /* Option */
-        ////////////
+        // Option
         var opt = Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
@@ -93,36 +92,38 @@ class _RadioViewState extends WidgetState<RadioView>
     //this must go after the children are determined
     var alignment = WidgetAlignment(widget.model.layoutType, widget.model.center, widget.model.halign, widget.model.valign);
 
-    /* View */
+   // View 
     Widget view;
     if (widget.model.layout == 'row') {
-      if (widget.model.wrap == true)
+      if (widget.model.wrap == true) {
         view = Wrap(
             children: options!,
             direction: Axis.horizontal,
             alignment: alignment.mainWrapAlignment,
             runAlignment: alignment.mainWrapAlignment,
             crossAxisAlignment: alignment.crossWrapAlignment);
-      else
+      } else {
         view = Row(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: alignment.crossAlignment,
             mainAxisAlignment: alignment.mainAlignment,
             children: options!);
+      }
     } else {
-      if (widget.model.wrap == true)
+      if (widget.model.wrap == true) {
         view = Wrap(
             children: options!,
             direction: Axis.vertical,
             alignment: alignment.mainWrapAlignment,
             runAlignment: alignment.mainWrapAlignment,
             crossAxisAlignment: alignment.crossWrapAlignment);
-      else
+      } else {
         view = Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: alignment.crossAlignment,
             mainAxisAlignment: alignment.mainAlignment,
             children: options!);
+      }
     }
 
     return view;

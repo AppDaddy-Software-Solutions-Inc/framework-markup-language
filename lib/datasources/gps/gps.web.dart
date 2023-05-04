@@ -6,7 +6,7 @@ import 'dart:async';
 import 'package:fml/log/manager.dart';
 import 'package:js/js.dart';
 import 'package:fml/system.dart';
-import 'iGpsListener.dart';
+import 'gps_litener_interface.dart';
 import 'package:geolocator/geolocator.dart';
 import 'payload.dart';
 import 'gps.dart';
@@ -72,9 +72,10 @@ class Receiver implements Gps
     if (_subscription != null) _subscription?.cancel();
   }
 
+  @override
   registerListener(IGpsListener listener)
   {
-    if (_listeners == null) _listeners = [];
+    _listeners ??= [];
     if (!_listeners!.contains(listener))
     {
       _listeners!.add(listener);
@@ -83,6 +84,7 @@ class Receiver implements Gps
     listener.onGpsData(payload: last);
   }
 
+  @override
   removeListener(IGpsListener listener)
   {
     if ((_listeners != null) && (_listeners!.contains(listener)))
@@ -98,11 +100,11 @@ class Receiver implements Gps
 
   notifyListeners(Payload data)
   {
-    if (_listeners != null)
-      _listeners!.forEach((listener)
-      {
+    if (_listeners != null) {
+      for (var listener in _listeners!) {
         listener.onGpsData(payload: data);
-      });
+      }
+    }
   }
 }
 
@@ -117,7 +119,7 @@ success(pos)
   }
   catch(ex)
   {
-    Log().debug("Exception thrown : " + ex.toString());
+    Log().debug("Exception thrown : $ex");
   }
 }
 

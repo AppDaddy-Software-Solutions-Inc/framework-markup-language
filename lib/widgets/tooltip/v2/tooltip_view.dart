@@ -4,7 +4,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'src/arrow.dart';
 import 'src/bubble.dart';
 import 'src/element_box.dart';
@@ -14,6 +14,7 @@ import 'src/tooltip_elements_display.dart';
 
 class TooltipView extends StatefulWidget implements IWidgetView
 {
+  @override
   final TooltipModel model;
   final Widget child;
   late final Widget content;
@@ -22,46 +23,46 @@ class TooltipView extends StatefulWidget implements IWidgetView
   TooltipView(this.model, this.child) : super(key: ObjectKey(model))
   {
     // set tooltip position
-    var _pos = TooltipPosition.rightCenter;
+    var myPos = TooltipPosition.rightCenter;
     switch (model.position?.toLowerCase().trim())
     {
       case 'leftstart' :
-        _pos = TooltipPosition.leftStart;
+        myPos = TooltipPosition.leftStart;
         break;
 
       case 'leftcenter' :
-        _pos = TooltipPosition.leftCenter;
+        myPos = TooltipPosition.leftCenter;
         break;
 
       case 'leftend' :
-        _pos = TooltipPosition.leftEnd;
+        myPos = TooltipPosition.leftEnd;
         break;
 
       case 'rightstart' :
-        _pos = TooltipPosition.rightStart;
+        myPos = TooltipPosition.rightStart;
         break;
 
       case 'rightcenter' :
-        _pos = TooltipPosition.rightCenter;
+        myPos = TooltipPosition.rightCenter;
         break;
 
       case 'rightend' :
-        _pos = TooltipPosition.rightEnd;
+        myPos = TooltipPosition.rightEnd;
         break;
 
       case 'topstart' :
-        _pos = TooltipPosition.topStart;
+        myPos = TooltipPosition.topStart;
         break;
 
       case 'topcenter' :
-        _pos = TooltipPosition.topCenter;
+        myPos = TooltipPosition.topCenter;
         break;
 
       case 'topend' :
-        _pos = TooltipPosition.topEnd;
+        myPos = TooltipPosition.topEnd;
         break;
     }
-    this.position = _pos;
+    position = myPos;
 
     // set tooltip content
     List<Widget> children = model.inflate();
@@ -129,9 +130,13 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
   }
 
   // Nav Changes used to hide overlay
+  @override
   BuildContext getNavigatorContext() => context;
+  @override
   Map<String,String>? onNavigatorPop() => null;
-  void onNavigatorPush({Map<String?, String>? parameters}) => null;
+  @override
+  void onNavigatorPush({Map<String?, String>? parameters}) {}
+  @override
   onNavigatorChange() => hideOverlay();
 
   ElementBox get _screenSize => _getScreenSize();
@@ -252,11 +257,12 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
     children.add(arrow);
 
     // child
-    if (widget.model.modal)
+    if (widget.model.modal) {
       children.add(Positioned(
           top: _triggerBox.y,
           left: _triggerBox.x,
           child: view));
+    }
 
     // build overlay
     overlayEntry = OverlayEntry(builder: (context) => Stack(children: children));

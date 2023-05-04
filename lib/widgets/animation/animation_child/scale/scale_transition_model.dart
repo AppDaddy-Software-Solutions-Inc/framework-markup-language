@@ -119,5 +119,6 @@ class ScaleTransitionModel extends AnimationChildModel
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
+  @override
   Widget getAnimatedView(Widget child, {AnimationController? controller}) =>  ScaleTransitionView(this, child, controller);
 }

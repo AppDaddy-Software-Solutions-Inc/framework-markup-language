@@ -8,7 +8,7 @@ TextDetector getDetector() => TextDetector();
 
 class TextDetector implements ITextDetector
 {
-  static final TextDetector _singleton = new TextDetector._initialize();
+  static final TextDetector _singleton = TextDetector._initialize();
 
   factory TextDetector()
   {
@@ -17,6 +17,7 @@ class TextDetector implements ITextDetector
 
   TextDetector._initialize();
 
+  @override
   Future<Payload?> detect(DetectableImage image) async
   {
     // not implemented

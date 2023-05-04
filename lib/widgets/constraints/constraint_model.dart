@@ -109,26 +109,18 @@ class ConstraintModel extends WidgetModel
   /// Local Constraints
   ///
   // width
-  double? widthPercentage;
+  double? _widthPercentage;
+  double? get widthPercentage => _widthPercentage;
   DoubleObservable? _width;
   set width(dynamic v)
   {
-    if (v != null)
+    if (_width != null)
     {
-      if (S.isPercentage(v))
-      {
-        widthPercentage = S.toDouble(v.split("%")[0]);
-        v = null;
-      }
-      else widthPercentage = null;
-      if (v != null && v.runtimeType == String && v.contains('%'))
-      {
-        String s = v;
-        v = s.replaceAll('%', '000000');
-      }
-
-      if (_width == null) _width = DoubleObservable(Binding.toKey(id, 'width'), v, scope: scope, listener: onPropertyChange, setter: _widthSetter);
-      else if (v != null) _width!.set(v);
+      _width!.set(v);
+    }
+    else if (v != null)
+    {
+      _width = DoubleObservable(Binding.toKey(id, 'width'), v, scope: scope, listener: onPropertyChange, setter: _widthSetter);
     }
   }
   double? get width => _width?.get();
@@ -157,6 +149,17 @@ class ConstraintModel extends WidgetModel
   // constraints from the template
   dynamic _widthSetter(dynamic value)
   {
+    // value is a percentage height
+    if (S.isPercentage(value))
+    {
+      _widthPercentage = S.toDouble(value.split("%")[0]);
+      value = null;
+    }
+    else
+    {
+      _widthPercentage = null;
+    }
+
     if (S.isNumber(value))
     {
       double v = S.toDouble(value)!;
@@ -165,7 +168,11 @@ class ConstraintModel extends WidgetModel
       if (v.isNegative) v = 0;
       if (v != S.toDouble(value)) value = v;
     }
-    if (!S.isNullOrEmpty(value)) _fixedWidth = true;
+    if (!S.isNullOrEmpty(value))
+    {
+      _fixedWidth = true;
+      if (value is String && value.toLowerCase() == 'null') _fixedWidth = false;
+    }
     return value;
   }
 
@@ -175,23 +182,13 @@ class ConstraintModel extends WidgetModel
   DoubleObservable? _height;
   set height(dynamic v)
   {
-    if (v != null)
+    if (_height != null)
     {
-      if (S.isPercentage(v))
-      {
-        _heightPercentage = S.toDouble(v.split("%")[0]);
-        v = null;
-      }
-      else _heightPercentage = null;
-
-      if (v != null && v.runtimeType == String && v.contains('%'))
-      {
-        String s = v;
-        v = s.replaceAll('%', '000000');
-      }
-
-      if (_height == null) _height = DoubleObservable(Binding.toKey(id, 'height'), v, scope: scope, listener: onPropertyChange, setter: _heightSetter);
-      else if (v != null) _height!.set(v);
+      _height!.set(v);
+    }
+    else if (v != null)
+    {
+      _height = DoubleObservable(Binding.toKey(id, 'height'), v, scope: scope, listener: onPropertyChange, setter: _heightSetter);
     }
   }
   double? get height => _height?.get();
@@ -219,6 +216,17 @@ class ConstraintModel extends WidgetModel
   // constraints from the template
   dynamic _heightSetter(dynamic value)
   {
+    // value is a percentage height
+    if (S.isPercentage(value))
+    {
+      _heightPercentage = S.toDouble(value.split("%")[0]);
+      value = null;
+    }
+    else
+    {
+      _heightPercentage = null;
+    }
+
     if (S.isNumber(value))
     {
       double v = S.toDouble(value)!;
@@ -227,12 +235,17 @@ class ConstraintModel extends WidgetModel
       if (v.isNegative) v = 0;
       if (v != S.toDouble(value)) value = v;
     }
-    if (!S.isNullOrEmpty(value)) _fixedHeight = true;
+    if (!S.isNullOrEmpty(value))
+    {
+      _fixedHeight = true;
+      if (value is String && value.toLowerCase() == 'null') _fixedHeight = false;
+    }
     return value;
   }
 
   // min width
   double? _minWidthPercentage;
+  double? get minWidthPercentage => _minWidthPercentage;
   DoubleObservable? _minWidth;
   set minWidth(dynamic v)
   {
@@ -243,15 +256,21 @@ class ConstraintModel extends WidgetModel
         _minWidthPercentage = S.toDouble(v.split("%")[0]);
         v = null;
       }
-      else _minWidthPercentage = null;
-      if (_minWidth == null) _minWidth = DoubleObservable(Binding.toKey(id, 'minWidth'), v, scope: scope, listener: onPropertyChange);
-      else if (v != null) _minWidth!.set(v);
+      else {
+        _minWidthPercentage = null;
+      }
+      if (_minWidth == null) {
+        _minWidth = DoubleObservable(Binding.toKey(id, 'minWidth'), v, scope: scope, listener: onPropertyChange);
+      } else if (v != null) {
+        _minWidth!.set(v);
+      }
     }
   }
   double? get minWidth => _minWidth?.get();
 
   // max width
   double? _maxWidthPercentage;
+  double? get maxWidthPercentage => _maxWidthPercentage;
   DoubleObservable? _maxWidth;
   set maxWidth(dynamic v)
   {
@@ -262,15 +281,21 @@ class ConstraintModel extends WidgetModel
         _maxWidthPercentage = S.toDouble(v.split("%")[0]);
         v = null;
       }
-      else _maxWidthPercentage = null;
-      if (_maxWidth == null) _maxWidth = DoubleObservable(Binding.toKey(id, 'maxwidth'), v, scope: scope, listener: onPropertyChange);
-      else if (v != null) _maxWidth!.set(v);
+      else {
+        _maxWidthPercentage = null;
+      }
+      if (_maxWidth == null) {
+        _maxWidth = DoubleObservable(Binding.toKey(id, 'maxwidth'), v, scope: scope, listener: onPropertyChange);
+      } else if (v != null) {
+        _maxWidth!.set(v);
+      }
     }
   }
   double? get maxWidth => _maxWidth?.get();
 
   // min height
   double? _minHeightPercentage;
+  double? get minHeightPercentage => _minHeightPercentage;
   DoubleObservable? _minHeight;
   set minHeight(dynamic v)
   {
@@ -281,15 +306,21 @@ class ConstraintModel extends WidgetModel
         _minHeightPercentage = S.toDouble(v.split("%")[0]);
         v = null;
       }
-      else _minHeightPercentage = null;
-      if (_minHeight == null) _minHeight = DoubleObservable(Binding.toKey(id, 'minheight'), v, scope: scope, listener: onPropertyChange);
-      else if (v != null) _minHeight!.set(v);
+      else {
+        _minHeightPercentage = null;
+      }
+      if (_minHeight == null) {
+        _minHeight = DoubleObservable(Binding.toKey(id, 'minheight'), v, scope: scope, listener: onPropertyChange);
+      } else if (v != null) {
+        _minHeight!.set(v);
+      }
     }
   }
   double? get minHeight => _minHeight?.get();
 
   // max height
   double? _maxHeightPercentage;
+  double? get maxHeightPercentage => _maxHeightPercentage;
   DoubleObservable? _maxHeight;
   set maxHeight(dynamic v)
   {
@@ -300,9 +331,14 @@ class ConstraintModel extends WidgetModel
         _maxHeightPercentage = S.toDouble(v.split("%")[0]);
         v = null;
       }
-      else _maxHeightPercentage = null;
-      if (_maxHeight == null) _maxHeight = DoubleObservable(Binding.toKey(id, 'maxheight'), v, scope: scope, listener: onPropertyChange);
-      else if (v != null) _maxHeight!.set(v);
+      else {
+        _maxHeightPercentage = null;
+      }
+      if (_maxHeight == null) {
+        _maxHeight = DoubleObservable(Binding.toKey(id, 'maxheight'), v, scope: scope, listener: onPropertyChange);
+      } else if (v != null) {
+        _maxHeight!.set(v);
+      }
     }
   }
   double? get maxHeight => _maxHeight?.get();
@@ -327,7 +363,9 @@ class ConstraintModel extends WidgetModel
       if (widget.maxWidth         != null) return max(widget.maxWidth!        - widget.horizontalPadding,0);
       return ancestorMaxWidth(widget.parent);
     }
-    else return double.infinity;
+    else {
+      return double.infinity;
+    }
   }
 
   /// walks up the model tree looking for
@@ -335,8 +373,8 @@ class ConstraintModel extends WidgetModel
   double get myMaxWidth
   {
     if (system.maxWidth  != null) return system.maxWidth!;
-    if (this.width       != null) return width!;
-    if (this.maxWidth    != null) return maxWidth!;
+    if (width       != null) return width!;
+    if (maxWidth    != null) return maxWidth!;
     return ancestorMaxWidth(parent);
   }
 
@@ -344,7 +382,7 @@ class ConstraintModel extends WidgetModel
   // otherwise it gets the maxWidth from its parent walking up the model tree
   double get calculatedMaxWidthForPercentage
   {
-    double maxWidth = system.maxWidth ?? ancestorMaxWidth(this.parent, forPercent: true);
+    double maxWidth = system.maxWidth ?? ancestorMaxWidth(parent, forPercent: true);
     if (maxWidth == double.infinity) maxWidth = System().screenwidth.toDouble();
     return maxWidth;
   }
@@ -380,7 +418,9 @@ class ConstraintModel extends WidgetModel
 
       return ancestorMaxHeight(widget.parent, padding);
     }
-    else return double.infinity;
+    else {
+      return double.infinity;
+    }
   }
 
   /// walks up the model tree looking for
@@ -388,8 +428,8 @@ class ConstraintModel extends WidgetModel
   double get myMaxHeight
   {
     if (system.maxHeight != null) return system.maxHeight!;
-    if (this.height      != null) return height!;
-    if (this.maxHeight   != null) return maxHeight!;
+    if (height      != null) return height!;
+    if (maxHeight   != null) return maxHeight!;
     return ancestorMaxHeight(parent, 0);
   }
 
@@ -397,7 +437,7 @@ class ConstraintModel extends WidgetModel
   // otherwise it gets the maxHeight from its parent walking up the model tree
   double get calculatedMaxHeightForPercentage
   {
-    double maxHeight = system.maxHeight ?? ancestorMaxHeight(this.parent, 0, forPercent: true);
+    double maxHeight = system.maxHeight ?? ancestorMaxHeight(parent, 0, forPercent: true);
     if (maxHeight == double.infinity) maxHeight = System().screenheight.toDouble();
     return maxHeight;
   }
@@ -422,7 +462,6 @@ class ConstraintModel extends WidgetModel
     if (parent is LayoutModel) parentLayout = (parent as LayoutModel).layoutType;
 
     // adjust the width if defined as a percentage
-    if (width != null && width! >= 100000) widthPercentage = (width!/1000000);
     if (widthPercentage != null && parentLayout != LayoutType.row)
     {
       // calculate the width
@@ -437,7 +476,6 @@ class ConstraintModel extends WidgetModel
     }
 
     // adjust the height if defined as a percentage
-    if (height != null && height! >= 100000) _heightPercentage = (height!/1000000);
     if (_heightPercentage != null && parentLayout != LayoutType.column)
     {
       // calculate the height

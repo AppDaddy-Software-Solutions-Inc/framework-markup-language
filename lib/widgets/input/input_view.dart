@@ -10,7 +10,7 @@ import 'package:flutter_multi_formatter/formatters/phone_input_formatter.dart';
 import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/input/input_model.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/rendering.dart';
@@ -20,6 +20,7 @@ import 'package:fml/helper/common_helpers.dart';
 
 class InputView extends StatefulWidget implements IWidgetView
 {
+  @override
   final InputModel model;
   final dynamic onChangeCallback;
   final dynamic onSubmitted;
@@ -27,7 +28,7 @@ class InputView extends StatefulWidget implements IWidgetView
   InputView(this.model, {this.onChangeCallback, this.onSubmitted}) : super(key: ObjectKey(model));
 
   @override
-  _InputViewState createState() => _InputViewState();
+  State<InputView> createState() => _InputViewState();
 }
 
 class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
@@ -84,7 +85,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
 
     // create the controller if its not already created in the model.
     // This allows us to get around having to use GlobalKey() on the Input to preserve the controller state
-    if (widget.model.controller == null) widget.model.controller = TextEditingController();
+    widget.model.controller ??= TextEditingController();
 
     // Set Controller Text
     if (widget.model.errortext != null) userSetErrorText = true;
@@ -112,11 +113,6 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     //WidgetsBinding.instance.addObserver(this);
   }
 
-  @override
-  didChangeDependencies()
-  {
-    super.didChangeDependencies();
-  }
 
   @override
   void didUpdateWidget(InputView oldWidget)
@@ -144,12 +140,13 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
   }
 
   /// Callback to fire the [_InputViewState.build] when the [InputModel] changes
+  @override
   onModelChange(WidgetModel model, {String? property, dynamic value})
   {
     // ensure we don't call setstate if the model update was entered via
     // keyboard by comparing the controller to the callback's value
     var b = Binding.fromString(property);
-    if (this.mounted && ((widget.model.controller?.text != value && b?.property == 'value') || b?.property != 'value'))
+    if (mounted && ((widget.model.controller?.text != value && b?.property == 'value') || b?.property != 'value'))
     {
       setState(() {
         // This places the cursor at the end of the selection when focussed.
@@ -175,7 +172,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     }
   }
 
-  Future<Null> _keyboardToggled() async {
+  Future<void> _keyboardToggled() async {
     if (mounted) {
       EdgeInsets edgeInsets = MediaQuery.of(context).viewInsets;
       while (mounted && MediaQuery.of(context).viewInsets == edgeInsets) {
@@ -185,7 +182,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     return;
   }
 
-  Future<Null> _ensureVisible() async {
+  Future<void> _ensureVisible() async {
     // Wait for the keyboard to come into view
     await Future.any([
       Future.delayed(const Duration(milliseconds: 50)),
@@ -256,8 +253,9 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
           focus.unfocus();
         }
         return;
-      } else
+      } else {
         return;
+      }
     } catch(e) {
       return;
     }
@@ -277,8 +275,9 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     bool focused = focus.hasFocus;
 
     if (focused) {
-      if (widget.model.touched == false) // set touched to true on focus
+      if (widget.model.touched == false) {
         widget.model.touched = true;
+      }
       System().commit = _commit;
     }
     else {
@@ -389,8 +388,9 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
       return;
     }
     oldValue = text;
-      if (widget.onChangeCallback != null)
+      if (widget.onChangeCallback != null) {
         widget.onChangeCallback(widget.model, text);
+      }
       var editable = (widget.model.editable != false);
       if (!editable) {
         setState(()
@@ -404,8 +404,9 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
 
 
   void onClear() {
-    if (widget.onChangeCallback != null)
+    if (widget.onChangeCallback != null) {
       widget.onChangeCallback(widget.model, '');
+    }
     widget.model.controller!.text = '';
     _commit();
   }
@@ -419,7 +420,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
       var colorArray = widget.model.bordercolor?.split(',');
       if (colorArray != null)
       {
-        if (colorArray.length > 0) colors[0] = ColorObservable.toColor(colorArray[0].trim());
+        if (colorArray.isNotEmpty) colors[0] = ColorObservable.toColor(colorArray[0].trim());
         if (colorArray.length > 1) colors[1] = ColorObservable.toColor(colorArray[1].trim());
         if (colorArray.length > 2) colors[2] = ColorObservable.toColor(colorArray[2].trim());
         if (colorArray.length > 3) colors[3] = ColorObservable.toColor(colorArray[3].trim());
@@ -437,7 +438,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
       var colorArray = widget.model.textcolor?.split(',');
       if (colorArray != null)
       {
-        if (colorArray.length > 0) colors[0] = ColorObservable.toColor(colorArray[0].trim());
+        if (colorArray.isNotEmpty) colors[0] = ColorObservable.toColor(colorArray[0].trim());
         if (colorArray.length > 1) colors[1] = ColorObservable.toColor(colorArray[1].trim());
         if (colorArray.length > 2) colors[2] = ColorObservable.toColor(colorArray[2].trim());
         if (colorArray.length > 3) colors[3] = ColorObservable.toColor(colorArray[3].trim());
@@ -470,12 +471,15 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     int? length = widget.model.length;
 
     // capitalization
-    if (widget.model.capitalization == CapitalizationTypes.upper)
+    if (widget.model.capitalization == CapitalizationTypes.upper) {
       formatters.add(UpperCaseTextFormatter());
-    if (widget.model.capitalization == CapitalizationTypes.lower)
+    }
+    if (widget.model.capitalization == CapitalizationTypes.lower) {
       formatters.add(LowerCaseTextFormatter());
-    if (length != null)
+    }
+    if (length != null) {
       formatters.add(LengthLimitingTextInputFormatter(length));
+    }
 
     // format type
     switch (_getFormatType())
@@ -555,19 +559,28 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     if(userSetErrorText) errorText = widget.model.errortext;
 
     //using allow must not use a mask for filteringtextformatter, causes issues.
-    if (widget.model.allow != null && widget.model.mask == null)
-      formatters.add(FilteringTextInputFormatter.allow(RegExp(r'[' + widget.model.allow! + ']')));
-    if (widget.model.deny != null)
-      formatters.add(FilteringTextInputFormatter.deny(RegExp(r'[' + widget.model.deny! + ']')));
+    if (widget.model.allow != null && widget.model.mask == null) {
+      // Not sure how to make this work with interpolation
+      formatters.add(FilteringTextInputFormatter.allow(RegExp(r'['"${widget.model.allow!}"']')));
+    }
+    if (widget.model.deny != null) {
+      // Not sure how to make this work with interpolation
+      formatters.add(FilteringTextInputFormatter.deny(RegExp(r'['"${widget.model.deny!}"']')));
+    }
 
     // The mask formatter with allow
     if (widget.model.mask != null)
     {
-      if(widget.model.allow != null) formatters.add( MaskedInputFormatter(
+      if(widget.model.allow != null) {
+        formatters.add( MaskedInputFormatter(
         widget.model.mask,
-        allowedCharMatcher: RegExp(r'[' + widget.model.allow! + ']+'),
+
+        // Not sure how to make this work with interpolation
+        allowedCharMatcher: RegExp(r'['"${widget.model.allow!}"']+'),
       ));
-      else formatters.add( MaskedInputFormatter(widget.model.mask));
+      } else {
+        formatters.add( MaskedInputFormatter(widget.model.mask));
+      }
     }
   }
 
@@ -645,7 +658,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
         ,
         textAlignVertical: widget.model.expand == true ? TextAlignVertical.top : TextAlignVertical.center,
         maxLength: length,
-        maxLines: widget.model.expand == true ? null : obscure! ? 1 : widget.model.maxlines != null ?  widget.model.maxlines : widget.model.wrap == true ? null : lines != null ? lines : 1,
+        maxLines: widget.model.expand == true ? null : obscure! ? 1 : widget.model.maxlines ?? (widget.model.wrap == true ? null : lines ?? 1),
         minLines: widget.model.expand == true ? null : lines ?? 1,
         maxLengthEnforcement: length != null
             ? MaxLengthEnforcement.enforced

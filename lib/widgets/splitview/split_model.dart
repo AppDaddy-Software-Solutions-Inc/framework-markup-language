@@ -68,11 +68,6 @@ class SplitModel extends DecoratedWidgetModel
     if (vertical != null) _vertical = vertical;
   }
 
-  @override
-  dispose()
-  {
-    super.dispose();
-  }
 
   static SplitModel? fromXml(WidgetModel parent, XmlElement xml)
   {
@@ -102,9 +97,11 @@ class SplitModel extends DecoratedWidgetModel
     double ratio = S.toDouble(Xml.get(node: xml, tag: 'ratio')) ?? -1;
     if (ratio >= 0 && ratio <= 1)
     {
-      if (vertical)
-           this.height = "${ratio * 100}%";
-      else this.width  = "${ratio * 100}%";
+      if (vertical) {
+        height = "${ratio * 100}%";
+      } else {
+        width  = "${ratio * 100}%";
+      }
     }
 
     dividerColor  = Xml.get(node: xml, tag: 'dividercolor');
@@ -112,9 +109,10 @@ class SplitModel extends DecoratedWidgetModel
     dividerHandleColor  = Xml.get(node: xml, tag: 'dividerhandlecolor');
 
     // remove non view children
-    children?.removeWhere((element) => !(element is ViewModel));
+    children?.removeWhere((element) => element is! ViewModel);
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(SplitView(this));
 }
 

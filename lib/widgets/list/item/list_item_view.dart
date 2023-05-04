@@ -1,18 +1,19 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/list/item/list_item_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class ListItemView extends StatefulWidget implements IWidgetView
 {
+  @override
   final ListItemModel model;
   final bool? selectable;
 
   ListItemView({required this.model, this.selectable}) : super(key: ObjectKey(model));
 
   @override
-  _ListItemViewState createState() => _ListItemViewState();
+  State<ListItemView> createState() => _ListItemViewState();
 }
 
 class _ListItemViewState extends WidgetState<ListItemView>

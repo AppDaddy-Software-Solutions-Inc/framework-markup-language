@@ -141,18 +141,22 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     super.dispose();
   }
 
+  @override
   BuildContext getNavigatorContext() => context;
 
+  @override
   Map<String?,String>? onNavigatorPop()
   {
     return widget.model.onPop();
   }
 
+  @override
   void onNavigatorPush({Map<String?, String>? parameters})
   {
     if (parameters != null) widget.model.onPush(parameters);
   }
 
+  @override
   void onNavigatorChange()
   {
     widget.model.index = NavigationManager().positionInStack(context);
@@ -160,12 +164,13 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   }
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
+  @override
   onModelChange(WidgetModel model,{String? property, dynamic value})
   {
     try
     {
       var b = Binding.fromString(property);
-      if (widget.model.initialized && this.mounted && b?.property != 'busy') setState(() {});
+      if (widget.model.initialized && mounted && b?.property != 'busy') setState(() {});
     }
     catch(e)
     {
@@ -318,7 +323,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       // build framework header view
       view = header.getView();
     }
-    else widget.model.header?.setHeight(0);
+    else {widget.model.header?.setHeight(0);}
 
     return view;
   }
@@ -341,7 +346,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       // build framework footer view
       view = footer.getView();
     }
-    else widget.model.footer?.setHeight(0);
+    else {widget.model.footer?.setHeight(0);}
 
     return view;
   }
@@ -379,23 +384,23 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
   _setDeviceOrientation(String? orientation)
   {
-    List<DeviceOrientation> _orientation = [];
+    List<DeviceOrientation> myOrientation = [];
 
     orientation = orientation?.toLowerCase().trim();
     switch (orientation)
     {
       case "landscape":
-        _orientation = [DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft];
+        myOrientation = [DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft];
         break;
       case "portrait":
-        _orientation = [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown];
+        myOrientation = [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown];
         break;
       case "all":
       default:
-        _orientation = [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown, DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft];
+        myOrientation = [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown, DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft];
         break;
     }
-    SystemChrome.setPreferredOrientations(_orientation);
+    SystemChrome.setPreferredOrientations(myOrientation);
   }
 
   GestureDetector _getGestureDetector(Widget view, DrawerView? drawer)

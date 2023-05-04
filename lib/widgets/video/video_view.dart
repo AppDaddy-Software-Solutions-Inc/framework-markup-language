@@ -3,17 +3,17 @@ import 'dart:async';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/icon/icon_model.dart';
 import 'package:fml/widgets/icon/icon_view.dart';
-import 'package:fml/widgets/video/IVideoPlayer.dart';
+import 'package:fml/widgets/video/ivideo_player.dart';
 import 'package:fml/widgets/video/video_model.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_player_win/video_player_win_plugin.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 
 class VideoView extends StatefulWidget implements IWidgetView
 {
+  @override
   final VideoModel model;
 
   VideoView(this.model) : super(key: ObjectKey(model));
@@ -68,24 +68,14 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
 
     //if (_controller.value.isInitialized) _controller.play();
 
-    // stack children
-    List<Widget> children = [];
-    children.add(view);
-
-    if (widget.model.children != null)
-      widget.model.children!.forEach((model)
-      {
-        if (model is ViewableWidgetModel)
-        {
-          children.add(model.getView());
-        }
-      });
+    // get the children
+    List<Widget> children = widget.model.inflate();
 
     // show controls
     if (widget.model.controls != false)
     {
       // shutter
-      if (shutterbutton == null) shutterbutton = IconView(shutterbuttonmodel);
+      shutterbutton ??= IconView(shutterbuttonmodel);
       var shutter = UnconstrainedBox(
           child: MouseRegion(
               cursor: SystemMouseCursors.click,
@@ -134,6 +124,7 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
     return await resume();
   }
 
+  @override
   Future<bool> play(String? url) async
   {
     if (_controller != null) _controller!.dispose();
@@ -151,6 +142,7 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
     return true;
   }
 
+  @override
   Future<bool> start() async
   {
     if (_controller == null) return false;
@@ -160,6 +152,7 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
     return true;
   }
 
+  @override
   Future<bool> stop() async
   {
     if (_controller == null) return false;
@@ -171,6 +164,7 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
     return true;
   }
 
+  @override
   Future<bool> pause() async
   {
     if (_controller == null) return false;
@@ -186,6 +180,7 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
     return true;
   }
 
+  @override
   Future<bool> seek(int seconds) async
   {
     if (_controller == null) return false;

@@ -1,11 +1,11 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED
 import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
+import 'package:fml/log/manager.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
-import 'package:fml/widgets/animation/animation_model.dart' as BaseAnimationModel;
+import 'package:fml/widgets/animation/animation_model.dart' as base_animation_model;
 import 'package:fml/event/event.dart';
 import 'package:fml/helper/common_helpers.dart';
 
@@ -14,7 +14,8 @@ import 'package:fml/helper/common_helpers.dart';
 /// Builds the View from [ANIMATION.AnimationModel] properties
 class AnimationView extends StatefulWidget implements IWidgetView
 {
-  final BaseAnimationModel.AnimationModel model;
+  @override
+  final base_animation_model.AnimationModel model;
   final List<Widget> children = [];
   final Widget? child;
 
@@ -94,11 +95,11 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
   {
     Widget? newChild = widget.child;
 
-    if (widget.model.animations != null)
-    widget.model.animations!.forEach((transition)
-    {
+    if (widget.model.animations != null) {
+      for (var transition in widget.model.animations!) {
       newChild = transition.getAnimatedView(newChild!, controller: _controller);
-    });
+    }
+    }
     return newChild;
   }
 
@@ -121,20 +122,17 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
 
     // Build Children
     widget.children.clear();
+
+    // add child
     if (widget.child != null) widget.children.add(widget.child!);
-    if (widget.model.children != null)
-      widget.model.children!.forEach((model) {
-        if (model is ViewableWidgetModel) {
-          var view = model.getView();
-          widget.children.add(view);
-      }});
+
+    // add additional children
+    widget.children.addAll(widget.model.inflate());
+
+    // default is empty container
     if (widget.children.isEmpty) widget.children.add(Container());
 
-    var child = widget.children.length == 1
-        ? widget.children[0]
-        : Column(
-            children: widget.children,
-            crossAxisAlignment: CrossAxisAlignment.start);
+    var child = widget.children.length == 1 ? widget.children[0] : Column(children: widget.children, crossAxisAlignment: CrossAxisAlignment.start);
 
     // Build View
     Widget? view;
@@ -154,10 +152,11 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
       bool? enabled = (event.parameters != null)
           ? S.toBool(event.parameters!['enabled'])
           : true;
-      if (enabled != false)
+      if (enabled != false) {
         start();
-      else
+      } else {
         stop();
+      }
       event.handled = true;
     }
   }
@@ -173,7 +172,9 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
     try {
         _controller!.reset();
         widget.model.controllerValue = 0;
-    } catch (e) {}
+    } catch (e) {
+      Log().debug('$e');
+    }
   }
 
   void start() {
@@ -197,7 +198,9 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
             widget.model.onStart(context);
           }
 
-    } catch (e) {}
+    } catch (e) {
+      Log().debug('$e');
+    }
   }
 
   void stop() {
@@ -206,7 +209,9 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
         _controller!.reset();
         widget.model.controllerValue = 0;
         _controller!.stop();
-    } catch (e) {}
+    } catch (e) {
+      Log().debug('$e');
+    }
   }
 
   void _animationListener(AnimationStatus status) {

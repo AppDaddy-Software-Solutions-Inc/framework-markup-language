@@ -6,7 +6,7 @@ import 'package:fml/helper/common_helpers.dart';
 
 class ScopeManager
 {
-  HashMap<String?, List<Scope>>  _directory  = HashMap<String?,List<Scope>>();
+  final HashMap<String?, List<Scope>>  _directory  = HashMap<String?,List<Scope>>();
   HashMap<String?, List<Observable>>? unresolved;
 
   ScopeManager();
@@ -53,9 +53,13 @@ class ScopeManager
     if (unresolved!.containsKey(scopeId))
     {
       List<Observable> targets = [];
-      unresolved![scopeId]!.forEach((observable) => targets.add(observable));
+      for (var observable in unresolved![scopeId]!) {
+        targets.add(observable);
+      }
       unresolved!.remove(scopeId);
-      targets.forEach((observable) => observable.scope!.bind(observable));
+      for (var observable in targets) {
+        observable.scope!.bind(observable);
+      }
     }
   }
 
@@ -65,12 +69,17 @@ class ScopeManager
     if (scope.unresolved.containsKey(observable.key))
     {
       List<Observable> unresolved = scope.unresolved[observable.key]!.toList(growable: false);
-      unresolved.forEach((target) => scope.bind(target));
+      for (var target in unresolved) {
+        scope.bind(target);
+      }
     }
 
     // Resolve Children 
-    if (scope.children != null)
-      scope.children!.forEach((scope) => _notifyDescendants(scope, observable));
+    if (scope.children != null) {
+      for (var scope in scope.children!) {
+        _notifyDescendants(scope, observable);
+      }
+    }
   }
 
   Observable? named(Observable? target, String? scopeId, String? observableKey)
@@ -86,7 +95,7 @@ class ScopeManager
     if ((observable == null) && (target != null) && (target.scope != null))
     {
       // Create New Unresolved 
-      if (unresolved == null) unresolved = HashMap<String?, List<Observable>>();
+      unresolved ??= HashMap<String?, List<Observable>>();
 
       // Create New Unresolved Scope 
       if (!unresolved!.containsKey(scopeId)) unresolved![scopeId] = [];

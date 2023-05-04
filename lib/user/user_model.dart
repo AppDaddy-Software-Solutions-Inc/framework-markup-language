@@ -55,6 +55,7 @@ class UserModel extends WidgetModel
   }
 
   // initializes the app
+  @override
   Future<bool> initialize() async
   {
     // wait for the system to initialize
@@ -97,9 +98,11 @@ class UserModel extends WidgetModel
             break;
 
           default:
-            if (_claims.containsKey(key))
-                 _claims[key]!.set(value);
-            else _claims[key] = StringObservable(Binding.toKey(key), value, scope: scope);
+            if (_claims.containsKey(key)) {
+              _claims[key]!.set(value);
+            } else {
+              _claims[key] = StringObservable(Binding.toKey(key), value, scope: scope);
+            }
         }
       });
 
@@ -113,7 +116,9 @@ class UserModel extends WidgetModel
     }
 
     // clear all claims
-    else return await logoff();
+    else {
+      return await logoff();
+    }
   }
 
   Future<bool> logoff() async

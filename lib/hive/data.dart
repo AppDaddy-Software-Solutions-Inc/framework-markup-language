@@ -8,7 +8,7 @@ class Data
 {
   static String tableName = "DATA";
 
-  Map<String, dynamic> _map = Map<String, dynamic>();
+  final Map<String, dynamic> _map = <String, dynamic>{};
 
   String  get key     => _map["key"];
   String? get value   => _map["value"];
@@ -16,7 +16,7 @@ class Data
 
   Data({String? key, String? value, int? expires})
   {
-    if (key == null) key = S.newId();
+    key ??= S.newId();
     if (key.length > 256) key = Cryptography.hash(key: _cacheHashKey, text: key);
     _map["key"]     = key;
     _map["value"]   = value ?? "";

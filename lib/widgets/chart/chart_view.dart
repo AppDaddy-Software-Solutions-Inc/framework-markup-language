@@ -12,7 +12,7 @@ import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart/chart_model.dart';
 import 'package:fml/widgets/chart/series/chart_series_model.dart';
 import 'package:fml/widgets/chart/axis/chart_axis_model.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/busy/busy_view.dart' as BUSY;
 import 'package:fml/widgets/busy/busy_model.dart' as BUSY;
 import 'package:community_charts_flutter/community_charts_flutter.dart' as CF;

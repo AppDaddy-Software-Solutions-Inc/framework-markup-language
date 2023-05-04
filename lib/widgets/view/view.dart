@@ -1,17 +1,18 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/view/view_model.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class View extends StatefulWidget implements IWidgetView
 {
+  @override
   final ViewModel model;
 
   View(this.model) : super(key: ObjectKey(model));
 
   @override
-  _ViewState createState() => _ViewState();
+  State<View> createState() => _ViewState();
 }
 
 class _ViewState extends WidgetState<View>

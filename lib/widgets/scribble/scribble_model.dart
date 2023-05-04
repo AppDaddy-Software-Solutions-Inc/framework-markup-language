@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
-import 'package:fml/widgets/form/iFormField.dart';
+import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/scribble/scribble_view.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
@@ -26,6 +26,7 @@ class ScribbleModel extends FormFieldModel implements IFormField
   /* Value */
   ///////////
   StringObservable? _value;
+  @override
   set value (dynamic v)
   {
     if (_value != null)
@@ -37,12 +38,14 @@ class ScribbleModel extends FormFieldModel implements IFormField
       if ((v != null) || (WidgetModel.isBound(this, Binding.toKey(id, 'value')))) _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange);
     }
   }
+  @override
   dynamic get value => _value?.get() ?? defaultValue;
 
 
   ///////////////////
   /* Default Value */
   ///////////////////
+  @override
   dynamic get defaultValue => null;
 
   ///////////
@@ -144,8 +147,8 @@ class ScribbleModel extends FormFieldModel implements IFormField
     if (style     != null) this.style     = style;
     if (post      != null) this.post      = post;
 
-    this.alarming = false;
-    this.dirty    = false;
+    alarming = false;
+    dirty    = false;
   }
 
   static ScribbleModel? fromXml(WidgetModel parent, XmlElement xml)
@@ -187,6 +190,7 @@ class ScribbleModel extends FormFieldModel implements IFormField
     super.dispose();
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(ScribbleView(this));
 }
 

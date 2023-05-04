@@ -1,19 +1,19 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/file/model.dart' as FILE;
-import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/datasources/file/model.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/filepicker/filepicker_view.dart' as FILEPICKER;
-import 'package:fml/datasources/file/file.dart' as FILE;
+import 'package:fml/widgets/filepicker/filepicker_view.dart' as file_picker;
+import 'package:fml/datasources/file/file.dart';
 import 'package:fml/event/handler.dart'           ;
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class FilepickerModel extends FILE.FileModel implements IDataSource
+class FilepickerModel extends FileModel implements IDataSource
 {
-  FILE.File? file;
+  File? file;
   String? allow;
 
   // onstart - fired when the picker is launched
@@ -83,13 +83,14 @@ class FilepickerModel extends FILE.FileModel implements IDataSource
     ondismissed = Xml.get(node: xml, tag: 'ondismissed');
   }
   
+  @override
   Future<bool> start({bool refresh = false, String? key}) async
   {
     bool ok = true;
 
     try
     {
-      FILEPICKER.FilePicker filepicker = FILEPICKER.FilePicker(allow);
+      file_picker.FilePicker filepicker = file_picker.FilePicker(allow);
 
       // fire on start
       if (onstart != null)
@@ -99,10 +100,10 @@ class FilepickerModel extends FILE.FileModel implements IDataSource
         if (ok == false) return ok;
       }
 
-      FILE.File? file = await filepicker.launchPicker(detectors);
+      File? file = await filepicker.launchPicker(detectors);
       if (file != null)
       {
-        if ((this.file != null) && (this.scope != null) && (this.scope!.files.containsValue(this.file))) this.scope!.files.remove(this.file);
+        if ((this.file != null) && (scope != null) && (scope!.files.containsValue(this.file))) scope!.files.remove(this.file);
         this.file = file;
         await onFile(file);
       }

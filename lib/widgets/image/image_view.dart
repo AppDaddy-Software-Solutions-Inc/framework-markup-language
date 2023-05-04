@@ -7,15 +7,16 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/scope.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/image/image_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
-import 'package:image/image.dart' as IMAGE;
+import 'package:image/image.dart' as image_pack;
 import 'package:fml/helper/common_helpers.dart';
 
 /// [IMAGE] view
 class ImageView extends StatefulWidget implements IWidgetView
 {
+  @override
   final ImageModel model;
 
   // this is just an empty pixel
@@ -24,7 +25,7 @@ class ImageView extends StatefulWidget implements IWidgetView
   ImageView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _ImageViewState createState() => _ImageViewState();
+  State<ImageView> createState() => _ImageViewState();
 
   /// Get an image widget from any image type
   static dynamic getImage(String? url, bool animate, {Scope? scope, String? defaultImage, double? width, double? height, String? fit, String? filter, bool fade = true, int? fadeDuration})
@@ -41,9 +42,11 @@ class ImageView extends StatefulWidget implements IWidgetView
       {
         if (defaultImage != null)
         {
-          if (defaultImage.toLowerCase().trim() == 'none')
-               return Container();
-          else return getImage(defaultImage, animate, defaultImage: null, fit: fit, width: width, height: height, filter: filter, fade: fade, fadeDuration: fadeDuration);
+          if (defaultImage.toLowerCase().trim() == 'none') {
+            return Container();
+          } else {
+            return getImage(defaultImage, animate, defaultImage: null, fit: fit, width: width, height: height, filter: filter, fade: fade, fadeDuration: fadeDuration);
+          }
         }
         return Icon(Icons.broken_image_outlined, size: 36, color: Colors.grey);
       }
@@ -77,15 +80,17 @@ class ImageView extends StatefulWidget implements IWidgetView
           dynamic file = Platform.getFile(url!.replaceFirst("file:", ""));
 
           // user defined local files?
-          if (file == null) file = Platform.getFile(uri.asFilePath());
+          file ??= Platform.getFile(uri.asFilePath());
 
           // no file found
           if (file == null) break;
 
           // svg image?
-          if (uri.pageExtension == "svg")
-               image = SvgPicture.file(file!, fit: getFit(fit), width: width, height: height);
-          else image = Image.file(file, fit: getFit(fit));
+          if (uri.pageExtension == "svg") {
+            image = SvgPicture.file(file!, fit: getFit(fit), width: width, height: height);
+          } else {
+            image = Image.file(file, fit: getFit(fit));
+          }
           break;
 
         /// asset image
@@ -93,20 +98,24 @@ class ImageView extends StatefulWidget implements IWidgetView
           var assetpath = "${uri.scheme}/${uri.host}${uri.path}";
 
           // svg image?
-          if (uri.pageExtension == "svg")
-               image = SvgPicture.asset(assetpath, fit: getFit(fit), width: width, height: height);
-          else image = Image.asset(assetpath, fit: getFit(fit), width: width, height: height, errorBuilder: errorHandler);
+          if (uri.pageExtension == "svg") {
+            image = SvgPicture.asset(assetpath, fit: getFit(fit), width: width, height: height);
+          } else {
+            image = Image.asset(assetpath, fit: getFit(fit), width: width, height: height, errorBuilder: errorHandler);
+          }
           break;
 
         /// web image
         default:
-          if (uri.pageExtension == "svg")
-               image = SvgPicture.network(uri.url, fit: getFit(fit), width: width, height: height);
-          else
+          if (uri.pageExtension == "svg") {
+            image = SvgPicture.network(uri.url, fit: getFit(fit), width: width, height: height);
+          } else
           {
-            if (animate)
-                 image = FadeInImage.memoryNetwork(placeholder: placeholder, image: uri.url, fit: getFit(fit), width: width, height: height, fadeInDuration: Duration(milliseconds: fadeDuration ?? 300), imageErrorBuilder: errorHandler);
-            else image = Image.network(uri.url, fit: getFit(fit), width: width, height: height);
+            if (animate) {
+              image = FadeInImage.memoryNetwork(placeholder: placeholder, image: uri.url, fit: getFit(fit), width: width, height: height, fadeInDuration: Duration(milliseconds: fadeDuration ?? 300), imageErrorBuilder: errorHandler);
+            } else {
+              image = Image.network(uri.url, fit: getFit(fit), width: width, height: height);
+            }
           }
           break;
       }
@@ -160,47 +169,47 @@ class ImageView extends StatefulWidget implements IWidgetView
 
   /// Apply a filter to the image
   static void applyFilter(Uint8List img, String filter) {
-    IMAGE.Image? filtered = IMAGE.decodePng(img);
+    image_pack.Image? filtered = image_pack.decodePng(img);
     switch (filter) {
       case 'sobel':
-        IMAGE.sobel(filtered!, amount: 1.0);
+        image_pack.sobel(filtered!, amount: 1.0);
         break;
       case 'quantize':
-        IMAGE.quantize(filtered!, numberOfColors: 4);
+        image_pack.quantize(filtered!, numberOfColors: 4);
         break;
       case 'remap':
-        IMAGE.remapColors(filtered!,
-            red: IMAGE.Channel.luminance,
-            green: IMAGE.Channel.luminance,
-            blue: IMAGE.Channel.luminance);
+        image_pack.remapColors(filtered!,
+            red: image_pack.Channel.luminance,
+            green: image_pack.Channel.luminance,
+            blue: image_pack.Channel.luminance);
         break;
       case 'normalize':
-        IMAGE.normalize(filtered!, 85, 170);
+        image_pack.normalize(filtered!, 85, 170);
         break;
       case 'greyscale':
       case 'grayscale':
-        IMAGE.grayscale(filtered!);
+      image_pack.grayscale(filtered!);
         break;
       case 'mirror':
-        IMAGE.flipHorizontal(filtered!);
+        image_pack.flipHorizontal(filtered!);
         break;
       case 'contrast':
-        IMAGE.contrast(filtered, 200);
+        image_pack.contrast(filtered, 200);
         break;
       case 'white':
-        IMAGE.adjustColor(filtered!, whites: 130);
+        image_pack.adjustColor(filtered!, whites: 130);
         break;
       case 'black':
-        IMAGE.adjustColor(filtered!, blacks: 130);
+        image_pack.adjustColor(filtered!, blacks: 130);
         break;
       case 'mid':
-        IMAGE.adjustColor(filtered!, mids: 130);
+        image_pack.adjustColor(filtered!, mids: 130);
         break;
       case 'reverse':
-        IMAGE.adjustColor(filtered!, blacks: 255, whites: 0);
+        image_pack.adjustColor(filtered!, blacks: 255, whites: 0);
         break;
       case 'convolution':
-        IMAGE.convolution(filtered!, [0, -1, 0, -1, 5, -1, 0, -1, 0]);
+        image_pack.convolution(filtered!, [0, -1, 0, -1, 5, -1, 0, -1, 0]);
         break;
       default:
         break;
@@ -234,26 +243,28 @@ class _ImageViewState extends WidgetState<ImageView>
 
     // Flip
     if (widget.model.flip != null) {
-      if (widget.model.flip!.toLowerCase() == 'vertical')
-        // view = Transform(alignment: Alignment.center, transform: Matrix4.rotationX(pi), child: view);
+      if (widget.model.flip!.toLowerCase() == 'vertical') {
         view = Transform.scale(scaleY: -1, child: view);
-      if (widget.model.flip!.toLowerCase() == 'horizontal')
-        // view = Transform(alignment: Alignment.center, transform: Matrix4.rotationY(pi), child: view);
+      }
+      if (widget.model.flip!.toLowerCase() == 'horizontal') {
         view = Transform.scale(scaleX: -1, child: view);
+      }
     }
 
     // Alpha/Opacity
     if (opacity != null) view = Opacity(opacity: opacity, child: view);
 
     // Rotation
-    if (widget.model.rotation != null)
+    if (widget.model.rotation != null) {
       view = RotationTransition(
           turns: AlwaysStoppedAnimation(widget.model.rotation! / 360),
           child: view);
+    }
 
     // Stack Children
-    if (widget.model.children != null && widget.model.children!.length > 0)
+    if (widget.model.children != null && widget.model.children!.isNotEmpty) {
       view = Stack(children: [view]);
+    }
 
     // Interactive
     if (widget.model.interactive == true) view = InteractiveViewer(child: view);

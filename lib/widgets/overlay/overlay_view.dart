@@ -9,7 +9,7 @@ import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:fml/widgets/overlay/overlay_manager_view.dart';
 import 'package:fml/widgets/overlay/overlay_model.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 
 class OverlayView extends StatefulWidget
 {
@@ -82,8 +82,8 @@ class OverlayViewState extends State<OverlayView>
 
   onMeasured(Size size, {dynamic data})
   {
-    if (height == null) height = size.height;
-    if (width == null)  width  = size.width;
+    height ??= size.height;
+    width ??= size.width;
     setState(() {});
   }
 
@@ -168,20 +168,20 @@ class OverlayViewState extends State<OverlayView>
       Widget resizeableB   = (widget.model.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeUpDown, child: resize3), onPanUpdate: onResizeB, onTapDown: onBringToFront);
 
       // Positioned
-      if (dx == null) dx = (maxWidth / 2)  - ((width!  + (padding * 2)) / 2);
-      if (dy == null) dy = (maxHeight / 2) - ((height! + (padding * 2)) / 2) + sa;
+      dx ??= (maxWidth / 2)  - ((width!  + (padding * 2)) / 2);
+      dy ??= (maxHeight / 2) - ((height! + (padding * 2)) / 2) + sa;
 
       // Original Size/Position
-      if (originalDx == null)     originalDx = dx;
-      if (originalDy == null)     originalDy = dy;
-      if (originalWidth == null)  originalWidth  = width;
-      if (originalHeight == null) originalHeight = height;
+      originalDx ??= dx;
+      originalDy ??= dy;
+      originalWidth ??= width;
+      originalHeight ??= height;
 
       // Last Size/Position
-      if (lastDx == null)     lastDx = dx;
-      if (lastDy == null)     lastDy = dy;
-      if (lastWidth == null)  lastWidth  = width;
-      if (lastHeight == null) lastHeight = height;
+      lastDx ??= dx;
+      lastDy ??= dy;
+      lastWidth ??= width;
+      lastHeight ??= height;
 
       // View
       Widget content = UnconstrainedBox(child: SizedBox(height: height! + (padding * 2), width: width! + (padding * 2),

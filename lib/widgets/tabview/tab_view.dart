@@ -6,7 +6,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
 import 'package:fml/widgets/tabview/tab_model.dart';
@@ -15,12 +15,13 @@ import 'package:fml/helper/common_helpers.dart';
 
 class TabView extends StatefulWidget implements IWidgetView
 {
+  @override
   final TabModel model;
 
   TabView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _TabViewState createState() => _TabViewState();
+  State<TabView> createState() => _TabViewState();
 }
 
 class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
@@ -177,7 +178,9 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
     }
 
     // Open Tab
-    else view = widget.model.views[url] as FrameworkView;
+    else {
+      view = widget.model.views[url] as FrameworkView;
+    }
 
     int i = widget.model.views.values.toList().indexOf(view);
     widget.model.index = i;
@@ -203,7 +206,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
   void onBack(Event event)
   {
     int until = int.parse(event.parameters?['until'] ?? '1');
-    if (widget.model.views.length > 0 && widget.model.index != null)
+    if (widget.model.views.isNotEmpty && widget.model.index != null)
     {
       while(until > 0) {
         until--;
@@ -422,9 +425,11 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
   Widget _buildTabView()
   {
     if (widget.model.views.isNotEmpty) return Container();
-    if (widget.model.tabbar == true )
-         return widget.model.tabbutton == true ? _tabViewWithTabBarAndButton() : _tabViewWithTabBar();
-    else return widget.model.tabbutton == true ? _tabViewWithTabButton()       : _tabView();
+    if (widget.model.tabbar == true ) {
+      return widget.model.tabbutton == true ? _tabViewWithTabBarAndButton() : _tabViewWithTabBar();
+    } else {
+      return widget.model.tabbutton == true ? _tabViewWithTabButton()       : _tabView();
+    }
   }
 
   @override

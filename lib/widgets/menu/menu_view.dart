@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/menu/menu_model.dart';
 import 'package:fml/widgets/menu/item/menu_item_view.dart';
@@ -14,11 +14,12 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class MenuView extends StatefulWidget implements IWidgetView
 {
+  @override
   final MenuModel model;
   MenuView(this.model);
 
   @override
-  _MenuViewState createState() => _MenuViewState();
+  State<MenuView> createState() => _MenuViewState();
 }
 
 class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling
@@ -70,7 +71,7 @@ class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling
   @override
   void onScroll(Event event) async
   {
-    if (this.vScroller != null) scroll(event, this.vScroller);
+    if (vScroller != null) scroll(event, vScroller);
     event.handled = true;
   }
 
@@ -92,13 +93,14 @@ class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling
         }
       }
     } catch(e) {
-      Log().error('onScroll Error: ' + e.toString());
+      Log().error('onScroll Error: $e');
     }
   }
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
+  @override
   onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    if (this.mounted) setState(() {});
+    if (mounted) setState(() {});
   }
 
   @override
@@ -115,8 +117,7 @@ class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling
     //var background = BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor);
 
     /// Busy / Loading Indicator
-    if (busy == null)
-      busy = BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
+    busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
 
     //////////
     /* View */
@@ -135,10 +136,10 @@ class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling
     List<MenuItemView> tilesList = []; //list of tiles
     List<Widget> tileRows = []; // row of tiles from list
     List<Row> rowsList = []; // list of rows containing tiles
-    widget.model.items.forEach((item) {
+    for (var item in widget.model.items) {
       MenuItemView tile = MenuItemView(item);
       tilesList.add(tile);
-    });
+    }
     double menuColPadding = isMobile ? 0.0 : 25.0;
     double tilePadding = isMobile ? 5.0 : 0;
     int tilesPerRow =

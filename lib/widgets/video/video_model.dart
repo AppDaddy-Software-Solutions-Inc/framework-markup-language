@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
-import 'package:fml/widgets/video/IVideoPlayer.dart';
+import 'package:fml/widgets/video/ivideo_player.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/video/video_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -119,7 +119,7 @@ class VideoModel extends DecoratedWidgetModel implements ViewableWidgetModel
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
 
-    if (player != null)
+    if (player != null) {
       switch (function)
       {
         case "start"    : return await player!.start();
@@ -129,12 +129,13 @@ class VideoModel extends DecoratedWidgetModel implements ViewableWidgetModel
         case "rewind"   : return await player!.seek(0);
         case "seek"     : return await player!.seek(S.toInt(S.item(arguments, 0)) ?? 0);
       }
+    }
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
   Future<bool> onInitialized(BuildContext context) async
   {
-    if (this.oninitialized == null) return true;
+    if (oninitialized == null) return true;
     return await EventHandler(this).execute(_oninitialized);
   }
 
@@ -143,5 +144,6 @@ class VideoModel extends DecoratedWidgetModel implements ViewableWidgetModel
     if (player != null && url != null) player!.play(url!);
   }
 
+  @override
   Widget getView({Key? key}) => VideoView(this);
 }

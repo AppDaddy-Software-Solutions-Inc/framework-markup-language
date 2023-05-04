@@ -5,7 +5,7 @@ import 'package:fml/system.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-import 'iSocketListener.dart';
+import 'socket_listener_interface.dart';
 
 class Socket
 {
@@ -17,7 +17,9 @@ class Socket
       var scheme = (System.app?.secure ?? false) ? "wss" : "ws";
       _uri = URI.parse(url)?.replace(scheme: scheme);
     }
-    else if (url is Uri) _uri = url;
+    else if (url is Uri) {
+      _uri = url;
+    }
   }
   Uri? get uri => _uri;
 
@@ -91,7 +93,7 @@ class Socket
       // connect to the socket
       if (!connected || forceReconnect)
       {
-        Log().debug('SOCKET:: Connecting to ${this.url}');
+        Log().debug('SOCKET:: Connecting to $url');
 
         lastMessage = null;
 
@@ -100,7 +102,7 @@ class Socket
 
         // connect
         connected = false;
-        _socket = WebSocketChannel.connect(this.uri!);
+        _socket = WebSocketChannel.connect(uri!);
         connected = true;
 
         Log().debug('SOCKET:: Connected');

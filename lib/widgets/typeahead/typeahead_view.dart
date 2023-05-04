@@ -1,9 +1,10 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:collection/collection.dart';
+import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/typeahead/typeahead_model.dart';
@@ -15,12 +16,13 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class TypeaheadView extends StatefulWidget implements IWidgetView
 {
+  @override
   final TypeaheadModel model;
 
   TypeaheadView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _TypeaheadViewState createState() => _TypeaheadViewState();
+  State<TypeaheadView> createState() => _TypeaheadViewState();
 }
 
 class _TypeaheadViewState extends WidgetState<TypeaheadView>
@@ -49,7 +51,10 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
         // create a new item in dropdown
         TextModel itemLabel = TextModel(null, null, value: res);
         OptionModel newOption = OptionModel(null, null, label: itemLabel, value: res);
-        _input = DropdownMenuItem(value: newOption, child: newOption.label!.getView());
+
+        var child = newOption.label!.getView() ?? Container();
+        _input = DropdownMenuItem(value: newOption, child: child);
+
         changedDropDownItem(_input.value);
         _inputInitialized = true;
       } else {
@@ -68,7 +73,9 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
             }
             listCounter++;
           }
-        } catch(e) {}
+        } catch(e) {
+          Log().debug('$e');
+        }
         if (hasMatch == false) {
           changedDropDownItem(_list[1].value ?? _list[0].value);
         }
@@ -96,7 +103,11 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
       for (OptionModel option in model.options)
       {
         Widget view = Text('');
-        if (option.label is ViewableWidgetModel) view = option.label!.getView();
+        if (option.label is ViewableWidgetModel)
+        {
+          var myView = option.label!.getView();
+          if (myView != null) view = myView;
+        }
 
         var o = DropdownMenuItem(value: option, child: view);
         if (model.value == option.value) _selected = option;
@@ -119,21 +130,21 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
 
   bool suggestion(OptionModel m, String pat) {
     pat = pat.toLowerCase();
-    if (m.tags != null && m.tags!.length > 0) {
+    if (m.tags != null && m.tags!.isNotEmpty) {
       List<String?> s = m.tags!.split(',');
       return s.any((tag) => match(tag!.trim().toLowerCase(), pat));
     }
     else {
-      String? str = (m.label is TextModel) ? (m.label as TextModel).value ?? null : '' + _extractText(m)!;
+      String? str = (m.label is TextModel) ? (m.label as TextModel).value : _extractText(m)!;
       return str == null ? false : match(str.trim().toLowerCase(), pat);
     }
 
   }
 
   bool match(String tag, String pat) {
-    if (tag == '' || tag == 'null')
+    if (tag == '' || tag == 'null') {
       return false;
-    else if (S.isNullOrEmpty(widget.model.matchtype) || widget.model.matchtype!.toLowerCase() == 'contains') {
+    } else if (S.isNullOrEmpty(widget.model.matchtype) || widget.model.matchtype!.toLowerCase() == 'contains') {
       return tag.contains(pat.toLowerCase());
     }
     else if (widget.model.matchtype!.toLowerCase() == 'startswith') {
@@ -156,18 +167,18 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
     if (S.isNullOrEmpty(value))
     {
       var models = (model.label as WidgetModel).findDescendantsOfExactType(TextModel);
-      if (models != null)
-        models.forEach((text)
-        {
+      if (models != null) {
+        for (var text in models) {
           if (text is TextModel)
           {
             String v = S.toStr(text.value) ?? "";
             if (!value.contains(v)) value += v;
             modelColor = text.color;
           }
-        });
+        }
+      }
     }
-    if (widget.model.textcolor == null) widget.model.textcolor = modelColor;
+    widget.model.textcolor ??= modelColor;
     return value;
   }
 
@@ -195,10 +206,13 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
       controller.selection = TextSelection(baseOffset: 0, extentOffset: controller.text.length);
     }
     try {
-      if (focused)
+      if (focused) {
         System().commit = _commit;
+      }
       if (!focused) await _commit();
-    } catch(e) {}
+    } catch(e) {
+      Log().debug('$e');
+    }
   }
 
   Future<bool> _commit() async
@@ -289,7 +303,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
                       (option) => (option.value == suggestion));
               item = option?.child;
             }
-            if (item == null) item = Container(height: 12);
+            item ??= Container(height: 12);
             return Padding(
                 padding: EdgeInsets.only(
                     left: 12, right: 1, top: 12, bottom: 12),
@@ -302,8 +316,9 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
           ),
           suggestionsBoxVerticalOffset: 0,
           onSuggestionSelected: (dynamic suggestion) {
-            if (suggestion is OptionModel)
+            if (suggestion is OptionModel) {
               changedDropDownItem(suggestion);
+            }
           },
           transitionBuilder: (context, suggestionsBox, animationController) =>
               FadeTransition(

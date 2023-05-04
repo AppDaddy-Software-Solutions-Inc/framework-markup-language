@@ -27,8 +27,9 @@ class TextModel extends DecoratedWidgetModel
     }
     else
     {
-      if ((v != null) || (WidgetModel.isBound(this, Binding.toKey(id, 'value'))))
+      if ((v != null) || (WidgetModel.isBound(this, Binding.toKey(id, 'value')))) {
         _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange);
+      }
     }
   }
   String? get value => _value?.get();
@@ -40,7 +41,7 @@ class TextModel extends DecoratedWidgetModel
   set size(dynamic v) {
     if (_size != null) {
       _size!.set(v);
-      this.width = v;
+      width = v;
     } else if (v != null) {
       if (S.isPercentage(v)) {
         _sizeIsPercent = true;
@@ -345,8 +346,6 @@ class TextModel extends DecoratedWidgetModel
   double? get lineheight => _lineheight?.get();
 
   // overrides
-  String? get halign => super.halign;
-  String? get valign => super.valign;
 
   ////////////////////
   /* overflow */
@@ -444,9 +443,8 @@ class TextModel extends DecoratedWidgetModel
     super.deserialize(xml);
 
     String? textvalue = Xml.get(node: xml, tag: 'value');
-    if (textvalue == null)
-      textvalue = Xml.get(node: xml, tag: 'label');
-    if (textvalue == null) textvalue = Xml.getText(xml);
+    textvalue ??= Xml.get(node: xml, tag: 'label');
+    textvalue ??= Xml.getText(xml);
 
     // properties
     value = textvalue;

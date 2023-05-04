@@ -283,7 +283,9 @@ class SpanModel extends DecoratedWidgetModel
   double? get lineheight => _lineheight?.get();
 
   // overrides
+  @override
   String get halign => super.halign ?? 'start'; //left right center justify
+  @override
   String get valign => super.valign ?? 'start';
 
   ////////////////////
@@ -382,8 +384,8 @@ class SpanModel extends DecoratedWidgetModel
     super.deserialize(xml);
 
     String? textvalue = Xml.get(node: xml, tag: 'value');
-    if (textvalue == null) textvalue = Xml.get(node: xml, tag: 'label');
-    if (textvalue == null) textvalue = Xml.getText(xml);
+    textvalue ??= Xml.get(node: xml, tag: 'label');
+    textvalue ??= Xml.getText(xml);
 
     // properties
     shadowcolor = Xml.get(node: xml, tag: 'shadowcolor');
@@ -412,7 +414,9 @@ class SpanModel extends DecoratedWidgetModel
 
     // build spans
     List<TextModel> textSpans = findChildrenOfExactType(TextModel).cast<TextModel>();
-    textSpans.forEach((text) => this.spanTextValues.add(text));
+    for (var text in textSpans) {
+      spanTextValues.add(text);
+    }
   }
 
   @override

@@ -7,7 +7,7 @@ class ThemeData
 {
   static String tableName = "THEME";
 
-  Map<String, dynamic> _map = Map<String, dynamic>();
+  final Map<String, dynamic> _map = <String, dynamic>{};
 
   String  get key                  => _map["key"];
   String? get background           => _map["background"];
@@ -101,7 +101,7 @@ class ThemeData
   static ThemeData? _fromMap(dynamic map)
   {
     ThemeData? theme;
-    if (map is Map<String, dynamic>)
+    if (map is Map<String, dynamic>) {
       theme = ThemeData(
           key: S.mapVal(map, 'key'),
           background: S.mapVal(map, 'background'),
@@ -129,6 +129,7 @@ class ThemeData
           onError: S.mapVal(map, 'onError'),
           errorContainer: S.mapVal(map, 'errorContainer'),
           onErrorContainer: S.mapVal(map, 'onErrorContainer'));
+    }
 
     return theme;
   }

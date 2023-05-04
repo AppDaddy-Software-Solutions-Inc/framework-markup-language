@@ -1,16 +1,16 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:ui';
 import 'package:fml/log/manager.dart';
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart' as ML;
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'text_detector.dart';
 
 class LineRow
 {
-  List<ML.TextElement> words = [];
+  List<TextElement> words = [];
 
-  LineRow(List<ML.TextElement> e)
+  LineRow(List<TextElement> e)
   {
-    this.words = e;
+    words = e;
   }
 }
 
@@ -18,9 +18,9 @@ TextDetector getDetector() => TextDetector();
 
 class TextDetector implements ITextDetector
 {
-  static final TextDetector _singleton = new TextDetector._initialize();
+  static final TextDetector _singleton = TextDetector._initialize();
 
-  static late var _detector;
+  static late dynamic _detector;
 
   factory TextDetector()
   {
@@ -29,13 +29,14 @@ class TextDetector implements ITextDetector
 
   TextDetector._initialize();
 
+  @override
   Future<Payload?> detect(dynamic detectable) async
   {
       try
       {
         Payload? result;
 
-        if (detectable?.image is ML.InputImage)
+        if (detectable?.image is InputImage)
         {
           var image = detectable.image;
 
@@ -55,7 +56,7 @@ class TextDetector implements ITextDetector
       }
   }
 
-  Payload payload(ML.RecognizedText vtext)
+  Payload payload(RecognizedText vtext)
   {
     List<Line> lines = [];
     // BASIC LINE DETECTION
@@ -77,11 +78,11 @@ class TextDetector implements ITextDetector
     List<LineRow> ocrLines = [];
 
     // Go through all the blocks
-    for (ML.TextBlock block in vtext.blocks) {
+    for (TextBlock block in vtext.blocks) {
       // Go through all lines
-      for (ML.TextLine line in block.lines) {
+      for (TextLine line in block.lines) {
         // Go through all elements(words)
-        for (ML.TextElement element in line.elements) {
+        for (TextElement element in line.elements) {
           // String text = element.text;
           Rect box = element.boundingBox;
           // Offset topLeft = box.topLeft;
@@ -106,9 +107,9 @@ class TextDetector implements ITextDetector
             if (y1 < y2Ocr && y2 > y1Ocr) {
               foundLine = true;
               // Determine where to place the element in the line
-              if (ocrLines[i].words.isEmpty)
+              if (ocrLines[i].words.isEmpty) {
                 ocrLines[i].words.add(element);
-              else {
+              } else {
                 bool foundWord = false;
                 for (int j = 0; j < ocrLines[i].words.length; j++) {
                   double x1Ocr = ocrLines[i].words[j].boundingBox.left;
@@ -120,8 +121,9 @@ class TextDetector implements ITextDetector
                     j = ocrLines[i].words.length + 1;
                   }
                 }
-                if (foundWord == false)
+                if (foundWord == false) {
                   ocrLines[i].words.add(element);
+                }
                 i = ocrLines.length + 1;
               }
             }
@@ -141,20 +143,20 @@ class TextDetector implements ITextDetector
     }
 
     String body = '';
-    ocrLines.forEach((l) {
+    for (var l in ocrLines) {
       String text = '';
       List<String> words = [];
-      l.words.forEach((t) {
+      for (var t in l.words) {
         words.add(t.text.trim());
         text += ' ${t.text}';
-      });
+      }
       text.replaceAll('  ', ' ');
       text.trim();
       body += '\n$text';
       Line line = Line(text: text);
       line.words.addAll(words);
       lines.add(line);
-    });
+    }
 
     return Payload(body: body, lines: lines);
   }

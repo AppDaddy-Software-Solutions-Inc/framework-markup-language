@@ -12,7 +12,7 @@ abstract class IZebraListener
 
 class Reader
 {
-  static final Reader _singleton = new Reader._initialize();
+  static final Reader _singleton = Reader._initialize();
 
   MethodChannel? methodChannel;
   EventChannel?  scanChannel;
@@ -28,8 +28,8 @@ class Reader
   {
     try
     {
-      if (methodChannel == null) methodChannel = MethodChannel('co.appdaddy.fml/command');
-      if (scanChannel   == null) scanChannel   = EventChannel('co.appdaddy.fml/scan');
+      methodChannel ??= MethodChannel('co.appdaddy.fml/command');
+      scanChannel ??= EventChannel('co.appdaddy.fml/scan');
 
       scanChannel!.receiveBroadcastStream().listen(_onEvent, onError: _onError);
       _send("com.symbol.datawedge.api.CREATEPROFILE", "co.appdaddy.fml");
@@ -78,7 +78,7 @@ class Reader
 
   registerListener(IZebraListener listener)
   {
-    if (_listeners == null) _listeners = [];
+    _listeners ??= [];
     if (!_listeners!.contains(listener)) _listeners!.add(listener);
   }
 
@@ -96,7 +96,9 @@ class Reader
     if (_listeners != null && data != null)
     {
       var listeners = _listeners!.where((element) => true);
-      listeners.forEach((listener) => listener.onZebraData(payload: data));
+      for (var listener in listeners) {
+        listener.onZebraData(payload: data);
+      }
     }
     if (data == null) Log().debug('Zebra Wedge Payload is null');
   }
@@ -114,7 +116,7 @@ class Reader
     if (S.isNullOrEmpty(format)) format = "UNKNOWN";
     format = format!.trim().toUpperCase().replaceAll("LABEL-TYPE-", "");
 
-    BarcodeFormats fmt = S.toEnum(format, BarcodeFormats.values) ?? BarcodeFormats.UNKNOWN;
+    BarcodeFormats fmt = S.toEnum(format, BarcodeFormats.values) ?? BarcodeFormats.unknown;
 
     bc.type    = 0;
     bc.format  = S.fromEnum(fmt);

@@ -116,5 +116,6 @@ class SlideTransitionModel extends AnimationChildModel
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
+  @override
   Widget getAnimatedView(Widget child, {AnimationController? controller}) => SlideTransitionView(this, child, controller);
 }

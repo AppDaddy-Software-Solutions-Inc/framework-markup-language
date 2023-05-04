@@ -3,19 +3,20 @@ import 'dart:ui';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
 
 /// [BOX] view
 class BoxView extends StatefulWidget implements IWidgetView
 {
+  @override
   final BoxModel model;
 
   BoxView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _BoxViewState createState() => _BoxViewState();
+  State<BoxView> createState() => _BoxViewState();
 
   /// Function to find gradient alignment
   static Alignment? toGradientAlignment(String? alignment) {
@@ -131,9 +132,11 @@ class _BoxViewState extends WidgetState<BoxView>
     try
     {
       cornersFromTopRightClockwise = radius.split(',');
-      if (cornersFromTopRightClockwise.length == 1) // round all the same
-           radii = List<double?>.filled(4, S.toDouble(cornersFromTopRightClockwise[0]));
-      else radii = cornersFromTopRightClockwise.map((r) => S.toDouble(r)).toList();
+      if (cornersFromTopRightClockwise.length == 1) {
+        radii = List<double?>.filled(4, S.toDouble(cornersFromTopRightClockwise[0]));
+      } else {
+        radii = cornersFromTopRightClockwise.map((r) => S.toDouble(r)).toList();
+      }
     }
     catch(e)
     {
@@ -158,8 +161,10 @@ class _BoxViewState extends WidgetState<BoxView>
   BoxShadow? _getShadow()
   {
     var elevation = (widget.model.elevation ?? 0);
-    if (elevation > 0) return BoxShadow(color: widget.model.shadowcolor, spreadRadius: elevation, blurRadius: elevation * 2,
+    if (elevation > 0) {
+      return BoxShadow(color: widget.model.shadowcolor, spreadRadius: elevation, blurRadius: elevation * 2,
         offset: Offset(widget.model.shadowx, widget.model.shadowy));
+    }
     return null;
   }
 
@@ -201,9 +206,11 @@ class _BoxViewState extends WidgetState<BoxView>
   Widget _getFrostedView(Widget child, BorderRadius? radius)
   {
      Widget view = BackdropFilter(filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8), child: child);
-     if (radius != null)
-          view = ClipRRect(borderRadius: radius, child: view);
-     else view = ClipRect(child: view);
+     if (radius != null) {
+       view = ClipRRect(borderRadius: radius, child: view);
+     } else {
+       view = ClipRect(child: view);
+     }
      return view;
   }
 

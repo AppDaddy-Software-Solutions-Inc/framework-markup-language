@@ -3,9 +3,9 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_browser_client.dart';
-import 'iMqttListener.dart';
+import 'mqtt_listener_interface.dart';
 import 'payload.dart';
-import 'iMqtt.dart';
+import 'mqtt_interface.dart';
 import 'package:fml/helper/common_helpers.dart';
 
 IMqtt? getMqtt(String url, IMqttListener listener, {String? username, String? password}) => MqttWeb(url, listener, username: username, password: password);
@@ -16,7 +16,7 @@ class MqttWeb implements IMqtt
   final String url;
   final String? username;
   final String? password;
-  final String identifier = (System.app?.user.claim('name') ?? 'unknown') + " : " + S.newId();
+  final String identifier = "${System.app?.user.claim('name') ?? 'unknown'} : ${S.newId()}";
   final int    keepalive = 60;
 
   bool connected = false;
@@ -29,7 +29,7 @@ class MqttWeb implements IMqtt
     var scheme = 'ws';
     var server = uri.host;
     var port   = (uri.port == 443 || uri.port == 80) ? 61614 : uri.port;
-    var url    = scheme + '://' + server;
+    var url    = '$scheme://$server';
 
     /// Create Client
     client = MqttBrowserClient(url, identifier);
@@ -62,6 +62,7 @@ class MqttWeb implements IMqtt
     client.pongCallback = _onPong;
   }
 
+  @override
   Future<bool> connect() async
   {
     Log().debug('MQTT:: Connecting to $url on port ${client.port}');
@@ -126,8 +127,7 @@ class MqttWeb implements IMqtt
   void _onData (List messages)
   {
     Log().debug('MQTT -> Messages received');
-    messages.forEach((msg)
-    {
+    for (var msg in messages) {
       final MqttPublishMessage recMess = msg.payload as MqttPublishMessage;
       final message = MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
 
@@ -135,7 +135,7 @@ class MqttWeb implements IMqtt
 
       /// notify listener
       listener.onMessage(Payload(topic: msg.topic, message: message));
-    });
+    }
   }
 
   void _onDone()
@@ -148,6 +148,7 @@ class MqttWeb implements IMqtt
     Log().debug('MQTT -> Error');
   }
 
+  @override
   Future<bool> disconnect() async
   {
     Log().debug('MQTT:: Disconnecting');
@@ -166,6 +167,7 @@ class MqttWeb implements IMqtt
     listener.onDisconnected(origin);
   }
 
+  @override
   Future<bool> subscribe(String topic) async
   {
     Log().debug('MQTT:: Subscribing to topic -> $topic');
@@ -181,6 +183,7 @@ class MqttWeb implements IMqtt
     listener.onSubscribed(topic);
   }
 
+  @override
   Future<bool> unsubscribe(String topic) async
   {
     Log().debug('MQTT:: Unsubscribing from topic -> $topic');
@@ -196,6 +199,7 @@ class MqttWeb implements IMqtt
     if (topic != null) listener.onUnsubscribed(topic);
   }
 
+  @override
   Future<bool> publish(String topic, String msg) async
   {
     // connected?
@@ -223,6 +227,7 @@ class MqttWeb implements IMqtt
     Log().debug('MQTT:: Keep alive');
   }
 
+  @override
   dispose()
   {
     disconnect();

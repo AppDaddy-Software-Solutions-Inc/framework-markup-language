@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/table/table_model.dart';
 import 'package:fml/widgets/table/header/table_header_model.dart';
 import 'package:fml/widgets/table/header/cell/table_header_cell_view.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class TableHeaderView extends StatefulWidget implements IWidgetView
 {
+  @override
   final TableHeaderModel? model;
   final double? height;
   final Map<int, double>? width;
@@ -17,7 +18,7 @@ class TableHeaderView extends StatefulWidget implements IWidgetView
   TableHeaderView(this.model, this.height, this.width, this.padding);
 
   @override
-  _TableHeaderViewState createState() => _TableHeaderViewState();
+  State<TableHeaderView> createState() => _TableHeaderViewState();
 }
 //
 
@@ -53,8 +54,7 @@ class _TableHeaderViewState extends WidgetState<TableHeaderView>
     List<Widget> cells = [];
     List<Widget> dragHandles = [];
     double widthTotal = 0;
-    widget.model!.cells.forEach((model)
-    {
+    for (var model in widget.model!.cells) {
       //////////
       /* Size */
       //////////
@@ -82,13 +82,16 @@ class _TableHeaderViewState extends WidgetState<TableHeaderView>
         cells.add(UnconstrainedBox(child: SizedBox(width: width > 0 ? width : null, height: height, child: cell)));
         dragHandles.add(Positioned(left: widthPlusPrevious,
             child: UnconstrainedBox(child: SizedBox(width: anchorWidth, height: height, child: draggable))));
-      } else cells.add(cell);
+      } else {
+        cells.add(cell);
+      }
       i++;
-    });
+    }
 
     // We don't need the right edge handle
-    if (dragHandles.length > 0)
+    if (dragHandles.isNotEmpty) {
       dragHandles.removeLast();
+    }
 
     //////////
     /* View */
@@ -109,7 +112,7 @@ class _TableHeaderViewState extends WidgetState<TableHeaderView>
         {
           int    index          = cellIndex!;
           double position       = tableModel!.getCellPosition(index);
-          RenderBox? tableObject = this.context.findRenderObject() as RenderBox?;
+          RenderBox? tableObject = context.findRenderObject() as RenderBox?;
           Offset? tableGlobalPos = tableObject?.localToGlobal(Offset.zero);
           double offset         = details.localPosition.dx + anchorWidth - (tableGlobalPos?.dx ?? 0);
           double width          = offset - position;
@@ -125,8 +128,9 @@ class _TableHeaderViewState extends WidgetState<TableHeaderView>
             tableModel!.setCellWidth(index + 1, (tableModel!.getCellWidth(index + 1)! + tableModel!.getCellPadding(index + 1)!) - (width - (cw + cp)));
             tableModel!.setCellPadding(index + 1, 0);
             
-            for (int i = 0; i < tableModel!.widths.length; i++)
+            for (int i = 0; i < tableModel!.widths.length; i++) {
               tableModel!.setCellWidth(i, tableModel!.getCellWidth(i)! + tableModel!.getCellPadding(i)!);
+            }
             tableModel!.notifyListeners('width', width);
           }
         }

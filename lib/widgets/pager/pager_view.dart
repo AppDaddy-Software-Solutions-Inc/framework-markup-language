@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/event/event.dart' ;
 import 'package:fml/widgets/busy/busy_view.dart';
@@ -14,11 +14,12 @@ import 'package:fml/widgets/widget/widget_state.dart';
 
 class PagerView extends StatefulWidget implements IWidgetView
 {
+  @override
   final PagerModel model;
   PagerView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _PagerViewState createState() => _PagerViewState();
+  State<PagerView> createState() => _PagerViewState();
 }
 
 class _PagerViewState extends WidgetState<PagerView>
@@ -88,7 +89,7 @@ class _PagerViewState extends WidgetState<PagerView>
     if (!widget.model.visible) return Offstage();
 
     /// Busy / Loading Indicator
-    if (busy == null) busy = BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
+    busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
 
     /////////////////
     /* Build Pages */
@@ -114,8 +115,9 @@ class _PagerViewState extends WidgetState<PagerView>
     ))) : Container();
 
     var c = widget.model.constraints.calculated;
-    if (!c.isNotEmpty && constraints.maxWidth == double.infinity)
+    if (!c.isNotEmpty && constraints.maxWidth == double.infinity) {
       pageView = UnconstrainedBox(child: SizedBox(height: widget.model.height ?? widget.model.calculatedMaxHeightOrDefault, width: widget.model.width ?? widget.model.calculatedMaxWidthOrDefault, child: pageView));
+    }
 
     var view = Stack(alignment: Alignment.bottomCenter, children: [pageView, pager, Center(child: busy)]);
 
@@ -136,15 +138,17 @@ class _PagerViewState extends WidgetState<PagerView>
       int pages = widget.model.pages.length;
 
       String to = event.parameters!['page']!;
-      if (to.toLowerCase() == "previous")
+      if (to.toLowerCase() == "previous") {
         page = page - 1;
-      else if (to.toLowerCase() == "next")
+      } else if (to.toLowerCase() == "next") {
         page = page + 1;
-      else if (to.toLowerCase() == "first")
+      } else if (to.toLowerCase() == "first") {
         page = 1;
-      else if (to.toLowerCase() == "last")
+      } else if (to.toLowerCase() == "last") {
         page = pages;
-      else if (S.isNumber(to)) page = S.toInt(to)!;
+      } else if (S.isNumber(to)) {
+        page = S.toInt(to)!;
+      }
 
       if (pages == 0) {
         event.handled = true;
@@ -214,6 +218,7 @@ class DotsIndicator extends AnimatedWidget {
     );
   }
 
+  @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,

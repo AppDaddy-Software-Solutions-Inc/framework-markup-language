@@ -1,19 +1,20 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/widgets/row/row_model.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
-import 'package:fml/widgets/widget/iWidgetView.dart';
+import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/layout/layout_model.dart';
 
 class RowView extends StatefulWidget implements IWidgetView
 {
+  @override
   final LayoutModel model;
 
   RowView(this.model) : super(key: ObjectKey(model));
 
   @override
-  _RowViewState createState() => _RowViewState();
+  State<RowView> createState() => _RowViewState();
 }
 
 class _RowViewState extends WidgetState<RowView>
@@ -54,19 +55,20 @@ class _RowViewState extends WidgetState<RowView>
     Widget view;
 
     // create view
-    if (widget.model.wrap == true)
+    if (widget.model.wrap == true) {
       view = Wrap(
               children: children,
               direction: Axis.horizontal,
               alignment: alignment.mainWrapAlignment,
               runAlignment: alignment.mainWrapAlignment,
               crossAxisAlignment: alignment.crossWrapAlignment);
-    else
+    } else {
       view = Row(
               children: children,
               crossAxisAlignment: alignment.crossAlignment,
               mainAxisAlignment: alignment.mainAlignment,
               mainAxisSize: mainAxisSize);
+    }
 
     // add margins
     if (model is RowModel) view = addMargins(view);

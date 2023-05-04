@@ -3,7 +3,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart' as URL;
+import 'package:url_launcher/url_launcher.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/event/handler.dart' ;
 import 'package:fml/widgets/link/link_view.dart';
@@ -174,7 +174,7 @@ class LinkModel extends DecoratedWidgetModel
           url!.startsWith('facetime:') || url!.startsWith('facetime-audio:'))
       {
         Uri? uri = Uri.tryParse(url!);
-        if (uri != null) URL.launchUrl(uri);
+        if (uri != null) launchUrl(uri);
       }
     }
     if (onclick == null) return true;
@@ -191,5 +191,6 @@ class LinkModel extends DecoratedWidgetModel
     return await EventHandler(this).execute(_ondoubletap);
   }
 
+  @override
   Widget getView({Key? key}) => getReactiveView(LinkView(this));
 }

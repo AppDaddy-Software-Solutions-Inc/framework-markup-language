@@ -3,11 +3,11 @@ import 'dart:convert';
 
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/base/model.dart';
-import 'package:fml/datasources/detectors/iDetectable.dart';
-import 'package:fml/datasources/iDataSource.dart';
+import 'package:fml/datasources/detectors/detector_interface.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
-import 'package:fml/datasources/file/file.dart' as FILE;
+import 'package:fml/datasources/file/file.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helper/common_helpers.dart';
 
@@ -43,16 +43,17 @@ class FileModel extends DataSourceModel implements IDataSource
     super.deserialize(xml);
 
     // get detectors
-    if (datasources != null)
-    for (IDataSource source in datasources!)
-    if (source is IDetectable)
+    if (datasources != null){
+    for (IDataSource source in datasources!) {
+      if (source is IDetectable)
     {
-      if (detectors == null) detectors = [];
+      detectors ??= [];
       detectors!.add(source as IDetectable);
     }
+    }}
   }
 
-  Future<bool> onFile(FILE.File file) async
+  Future<bool> onFile(File file) async
   {
       busy = true;
 
@@ -61,7 +62,7 @@ class FileModel extends DataSourceModel implements IDataSource
 
       // build the data
       Data data = Data();
-      Map<dynamic, dynamic> map = Map<dynamic, dynamic>();
+      Map<dynamic, dynamic> map = <dynamic, dynamic>{};
       map['file'] = file.url;
       map['name'] = file.name;
       map['type'] = file.mimeType;

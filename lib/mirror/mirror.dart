@@ -25,8 +25,8 @@ class Mirror
     Assets assets = Assets();
     await assets.load(url);
 
-    for (Asset asset in assets.list)
-    if (asset.type == "file" && !abort)
+    for (Asset asset in assets.list) {
+      if (asset.type == "file" && !abort)
     {
       var uri = URI.parse(asset.uri);
       if (uri != null && uri.pageExtension != null)
@@ -52,6 +52,7 @@ class Mirror
         // get the asset from the server
         if (downloadRequired && filepath != null && !abort) await _copyAssetFromServer(asset, filepath);
       }
+    }
     }
 
     Log().debug('Inventory Check Complete', caller: "Mirror");

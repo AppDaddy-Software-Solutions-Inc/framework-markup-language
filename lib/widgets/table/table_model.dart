@@ -27,10 +27,10 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
 {
 
   @override
-  bool get isVerticallyExpanding => !isFixedHeight;
+  bool isVerticallyExpanding({bool ignoreFixedHeight = false}) => !isFixedHeight;
 
   @override
-  bool get isHorizontallyExpanding => !isFixedWidth;
+  bool isHorizontallyExpanding({bool ignoreFixedWidth = false}) => !isFixedWidth;
 
   // prototype
   String? prototype;

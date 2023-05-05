@@ -323,7 +323,10 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       // build framework header view
       view = header.getView();
     }
-    else {widget.model.header?.setHeight(0);}
+    else
+    {
+      widget.model.header?.setHeight(0);
+    }
 
     return view;
   }
@@ -346,7 +349,10 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       // build framework footer view
       view = footer.getView();
     }
-    else {widget.model.footer?.setHeight(0);}
+    else
+    {
+      widget.model.footer?.setHeight(0);
+    }
 
     return view;
   }

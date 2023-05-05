@@ -31,7 +31,7 @@ class LayoutModel extends DecoratedWidgetModel {
   List<ViewableWidgetModel> get variableWidthChildren {
     var viewable = viewableChildren;
     var variable =
-        viewable.where((child) => child.isHorizontallyExpanding).toList();
+        viewable.where((child) => child.isHorizontallyExpanding()).toList();
     return variable;
   }
 
@@ -39,7 +39,7 @@ class LayoutModel extends DecoratedWidgetModel {
   List<ViewableWidgetModel> get variableHeightChildren {
     var viewable = viewableChildren;
     var variable =
-        viewable.where((child) => child.isVerticallyExpanding).toList();
+        viewable.where((child) => child.isVerticallyExpanding()).toList();
     return variable;
   }
 
@@ -160,7 +160,8 @@ class LayoutModel extends DecoratedWidgetModel {
     layoutComplete = false;
   }
 
-  double? getPercentWidth(ViewableWidgetModel child) {
+  double? getPercentWidth(ViewableWidgetModel child)
+  {
     // child is fixed width?
     if (child.isFixedWidth) return null;
 
@@ -171,9 +172,8 @@ class LayoutModel extends DecoratedWidgetModel {
     switch (layoutType) {
       case LayoutType.stack:
       case LayoutType.column:
-        if (isHorizontallyExpanding && child.isHorizontallyExpanding) {
-          return 100;
-        }
+        // 100% if both me and my child are horizontally expanding
+        if (isHorizontallyExpanding(ignoreFixedWidth: true) && child.isHorizontallyExpanding()) return 100;
         break;
       default:
         break;
@@ -182,7 +182,8 @@ class LayoutModel extends DecoratedWidgetModel {
     return null;
   }
 
-  double? getPercentHeight(ViewableWidgetModel child) {
+  double? getPercentHeight(ViewableWidgetModel child)
+  {
     // child is fixed height?
     if (child.isFixedHeight) return null;
 
@@ -193,7 +194,8 @@ class LayoutModel extends DecoratedWidgetModel {
     switch (layoutType) {
       case LayoutType.stack:
       case LayoutType.row:
-        if (isVerticallyExpanding && child.isVerticallyExpanding) return 100;
+        // 100% if both me and my child are vertically expanding
+        if (isVerticallyExpanding(ignoreFixedHeight: true) && child.isVerticallyExpanding()) return 100;
         break;
       default:
         break;
@@ -208,8 +210,8 @@ class LayoutModel extends DecoratedWidgetModel {
     // percent width is priority over flex
     if (getPercentWidth(child) != null) return null;
 
-    // flex only if both me and my child are horizontally expanding
-    if (isHorizontallyExpanding && child.isHorizontallyExpanding) {
+    // flex if both me and my child are horizontally expanding
+    if (isHorizontallyExpanding(ignoreFixedWidth: true) && child.isHorizontallyExpanding()) {
       return child.flex ?? 1;
     }
 
@@ -224,7 +226,8 @@ class LayoutModel extends DecoratedWidgetModel {
     if (getPercentHeight(child) != null) return null;
 
     // flex only if both me and my child are vertically expanding
-    if (isVerticallyExpanding && child.isVerticallyExpanding) {
+    //if (isVerticallyExpanding && child.isVerticallyExpanding) {
+    if (isVerticallyExpanding(ignoreFixedHeight: true) && child.isVerticallyExpanding()) {
       return child.flex ?? 1;
     }
 
@@ -239,8 +242,8 @@ class LayoutModel extends DecoratedWidgetModel {
 
     // clear child sizing
     for (var child in viewableChildren) {
-      if (!child.isFixedHeight) child.height = null;
-      if (!child.isFixedWidth) child.width = null;
+      if (!child.isFixedHeight) child.setHeight(null);
+      if (!child.isFixedWidth) child.setWidth(null);
       child.setLayoutConstraints(BoxConstraints(
           minWidth: 0,
           maxWidth: double.infinity,
@@ -407,7 +410,7 @@ class LayoutModel extends DecoratedWidgetModel {
             variableHeightChildren.isNotEmpty;
 
         // if I'm just laying out then I'm not complete
-        if (model == this) layoutComplete = false;
+        //if (model == this) layoutComplete = false;
 
         // if I have no variable sized children then my layout is complete
         if (!layoutComplete && !hasVariableSizeChildren) layoutComplete = true;

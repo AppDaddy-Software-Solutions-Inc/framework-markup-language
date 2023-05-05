@@ -32,15 +32,17 @@ class ColumnModel extends LayoutModel
   MainAxisSize get horizontalAxisSize => MainAxisSize.min;
 
   @override
-  bool get isVerticallyExpanding
+  bool isVerticallyExpanding({bool ignoreFixedHeight = false})
   {
-    if (isFixedHeight) return false;
+    if (isFixedHeight && !ignoreFixedHeight) return false;
     var expand = this.expand;
     if (expand) return true;
-    if (children != null){
+
+    if (children != null)
+    {
       for (var child in children!)
       {
-        if (child is ViewableWidgetModel && child.visible && child.isVerticallyExpanding)
+        if (child is ViewableWidgetModel && child.visible && child.isVerticallyExpanding() && child.heightPercentage == null)
         {
           expand = true;
           break;
@@ -50,15 +52,14 @@ class ColumnModel extends LayoutModel
   }
 
   @override
-  @required
-  bool get isHorizontallyExpanding
+  bool isHorizontallyExpanding({bool ignoreFixedWidth = false})
   {
-    if (isFixedWidth) return false;
+    if (isFixedWidth && !ignoreFixedWidth) return false;
     bool expand = false;
     if (children != null){
       for (var child in children!)
       {
-        if (child is ViewableWidgetModel && child.visible && child.isHorizontallyExpanding)
+        if (child is ViewableWidgetModel && child.visible && child.isHorizontallyExpanding() && child.widthPercentage == null)
         {
           expand = true;
           break;

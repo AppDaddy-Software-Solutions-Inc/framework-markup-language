@@ -131,8 +131,8 @@ class OverlayViewState extends State<OverlayView>
       var model = (widget.model.child as IWidgetView).model;
       if (model is LayoutModel)
       {
-        if (model.isHorizontallyExpanding) model.setWidth(width);
-        if (model.isVerticallyExpanding) model.setHeight(height);
+        if (model.isHorizontallyExpanding()) model.setWidth(width);
+        if (model.isVerticallyExpanding()) model.setHeight(height);
       }
     }
 

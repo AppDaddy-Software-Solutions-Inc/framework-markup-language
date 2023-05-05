@@ -31,7 +31,7 @@ class LayoutModel extends DecoratedWidgetModel {
   List<ViewableWidgetModel> get variableWidthChildren {
     var viewable = viewableChildren;
     var variable =
-        viewable.where((child) => child.isHorizontallyExpanding).toList();
+        viewable.where((child) => child.isHorizontallyExpanding()).toList();
     return variable;
   }
 
@@ -39,7 +39,7 @@ class LayoutModel extends DecoratedWidgetModel {
   List<ViewableWidgetModel> get variableHeightChildren {
     var viewable = viewableChildren;
     var variable =
-        viewable.where((child) => child.isVerticallyExpanding).toList();
+        viewable.where((child) => child.isVerticallyExpanding()).toList();
     return variable;
   }
 
@@ -171,7 +171,7 @@ class LayoutModel extends DecoratedWidgetModel {
     switch (layoutType) {
       case LayoutType.stack:
       case LayoutType.column:
-        if (isHorizontallyExpanding && child.isHorizontallyExpanding) {
+        if (isHorizontallyExpanding() && child.isHorizontallyExpanding()) {
           return 100;
         }
         break;
@@ -193,7 +193,7 @@ class LayoutModel extends DecoratedWidgetModel {
     switch (layoutType) {
       case LayoutType.stack:
       case LayoutType.row:
-        if (isVerticallyExpanding && child.isVerticallyExpanding) return 100;
+        if (isVerticallyExpanding() && child.isVerticallyExpanding()) return 100;
         break;
       default:
         break;
@@ -209,7 +209,7 @@ class LayoutModel extends DecoratedWidgetModel {
     if (getPercentWidth(child) != null) return null;
 
     // flex only if both me and my child are horizontally expanding
-    if (isHorizontallyExpanding && child.isHorizontallyExpanding) {
+    if (isHorizontallyExpanding(ignoreFixedWidth: true) && child.isHorizontallyExpanding()) {
       return child.flex ?? 1;
     }
 
@@ -224,7 +224,8 @@ class LayoutModel extends DecoratedWidgetModel {
     if (getPercentHeight(child) != null) return null;
 
     // flex only if both me and my child are vertically expanding
-    if (isVerticallyExpanding && child.isVerticallyExpanding) {
+    //if (isVerticallyExpanding && child.isVerticallyExpanding) {
+    if (isVerticallyExpanding(ignoreFixedHeight: true) && child.isVerticallyExpanding()) {
       return child.flex ?? 1;
     }
 

@@ -30,11 +30,11 @@ class ViewableWidgetModel extends ConstraintModel
 
   // signifies if this widget naturally wishes to expand in the vertical
   // this gets overridden in several widgets that inherited from this class
-  bool get isVerticallyExpanding => false;
+  bool isVerticallyExpanding({bool ignoreFixedHeight = false}) => false;
 
   // signifies if this widget naturally wishes to expand in the horizontal
   // this gets overridden in several widgets that inherited from this class
-  bool get isHorizontallyExpanding => false;
+  bool isHorizontallyExpanding({bool ignoreFixedWidth = false}) => false;
 
   // constraints
   late final ConstraintSet constraints;

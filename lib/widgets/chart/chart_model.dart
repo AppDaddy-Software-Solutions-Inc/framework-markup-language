@@ -23,9 +23,10 @@ class ChartModel extends DecoratedWidgetModel  {
   final List<ChartSeriesModel> series = [];
 
   @override
-  bool get isVerticallyExpanding   => true;
+  bool isVerticallyExpanding({bool ignoreFixedHeight = false}) => true;
+
   @override
-  bool get isHorizontallyExpanding => true;
+  bool isHorizontallyExpanding({bool ignoreFixedWidth = false}) => true;
 
   // parent is not a layout model or parent is laid out
   bool get _parentLayoutComplete => parent is! LayoutModel || (parent as LayoutModel).layoutComplete;

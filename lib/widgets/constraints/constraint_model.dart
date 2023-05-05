@@ -131,48 +131,67 @@ class ConstraintModel extends WidgetModel
   bool get isFixedWidth => _fixedWidth;
   setWidth(double? v)
   {
-    // remember setting
-    var fixed = _fixedWidth;
-
+    // create the _width observable if it
+    // hasn't already been created
     if (_width == null)
     {
       _width = DoubleObservable(Binding.toKey(id, 'width'), null, scope: scope, setter: _widthSetter);
       _width!.registerListener(onPropertyChange);
     }
+
+    // we must remember these settings since they are
+    // changed by the _widthSetter() and need to be restored
+    // after assigning _width a value
+    var fixed = _fixedWidth;
+    var pct   = _widthPercentage;
+
+    // set the width
     _width?.set(v, notify: false);
 
-    // set it back
+    // restore original settings
     _fixedWidth = fixed;
+    if (pct != null) _widthPercentage = pct;
   }
 
   // this routine enforces the min and max width
   // constraints from the template
   dynamic _widthSetter(dynamic value)
   {
-    // value is a percentage height
+    // is the value a percentage?
+    _widthPercentage = null;
     if (S.isPercentage(value))
     {
       _widthPercentage = S.toDouble(value.split("%")[0]);
       value = null;
     }
-    else
-    {
-      _widthPercentage = null;
-    }
 
+    // is the value a number?
     if (S.isNumber(value))
     {
       double v = S.toDouble(value)!;
+
+      // must be greater than minWidth
       if (minWidth != null && v < minWidth!) v = minWidth!;
+
+      // must be greater than maxWidth
       if (maxWidth != null && v > maxWidth!) v = maxWidth!;
+
+      // cannot be negative
       if (v.isNegative) v = 0;
+
       if (v != S.toDouble(value)) value = v;
     }
+
     if (!S.isNullOrEmpty(value))
     {
+      // _fixedWidth=true indicates the width was set by someone other
+      // than the parent layout (template, a binding or an eval()). See setWidth()
       _fixedWidth = true;
+
+      // null resets
       if (value is String && value.toLowerCase() == 'null') _fixedWidth = false;
     }
+
     return value;
   }
 
@@ -199,47 +218,69 @@ class ConstraintModel extends WidgetModel
   bool get isFixedHeight => _fixedHeight;
   setHeight(double? v)
   {
-    // remember setting
-    var fixed = _fixedHeight;
+    // create the _height observable if it
+    // hasn't already been created
     if (_height == null)
     {
       _height = DoubleObservable(Binding.toKey(id, 'height'), null, scope: scope, setter: _heightSetter);
       _height!.registerListener(onPropertyChange);
     }
+
+    // we must remember these settings since they are
+    // changed by the _heightSetter() and need to be restored
+    // after assigning _height a value
+    var fixed = _fixedHeight;
+    var pct   = _heightPercentage;
+
+    // set the height
     _height?.set(v, notify:false);
 
-    // set it back
+    // restore original settings
     _fixedHeight = fixed;
+    if (pct != null) _heightPercentage = pct;
   }
 
   // this routine enforces the min and max height
   // constraints from the template
   dynamic _heightSetter(dynamic value)
   {
-    // value is a percentage height
+    // is the value a percentage?
+    _heightPercentage = null;
     if (S.isPercentage(value))
     {
       _heightPercentage = S.toDouble(value.split("%")[0]);
       value = null;
     }
-    else
-    {
-      _heightPercentage = null;
-    }
 
+    // is the value a number?
     if (S.isNumber(value))
     {
       double v = S.toDouble(value)!;
+
+      // must be greater than minHeight
       if (minHeight != null && v < minHeight!) v = minHeight!;
+
+      // must be less than maxHeight
       if (maxHeight != null && v > maxHeight!) v = maxHeight!;
+
+      // cannot be negative
       if (v.isNegative) v = 0;
+
       if (v != S.toDouble(value)) value = v;
     }
+
+    // _fixedHeight is used by the parent layout
+    // when assigning proportional heights
     if (!S.isNullOrEmpty(value))
     {
+      // _fixedHeight=true indicates the height was set by someone other
+      // than the parent layout (template, a binding or an eval()). See setHeight()
       _fixedHeight = true;
+
+      // null resets
       if (value is String && value.toLowerCase() == 'null') _fixedHeight = false;
     }
+
     return value;
   }
 

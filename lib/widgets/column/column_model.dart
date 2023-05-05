@@ -37,10 +37,12 @@ class ColumnModel extends LayoutModel
     if (isFixedHeight) return false;
     var expand = this.expand;
     if (expand) return true;
-    if (children != null){
+
+    if (children != null)
+    {
       for (var child in children!)
       {
-        if (child is ViewableWidgetModel && child.visible && child.isVerticallyExpanding)
+        if (child is ViewableWidgetModel && child.visible && child.isVerticallyExpanding && child.heightPercentage == null)
         {
           expand = true;
           break;
@@ -50,7 +52,6 @@ class ColumnModel extends LayoutModel
   }
 
   @override
-  @required
   bool get isHorizontallyExpanding
   {
     if (isFixedWidth) return false;
@@ -58,7 +59,7 @@ class ColumnModel extends LayoutModel
     if (children != null){
       for (var child in children!)
       {
-        if (child is ViewableWidgetModel && child.visible && child.isHorizontallyExpanding)
+        if (child is ViewableWidgetModel && child.visible && child.isHorizontallyExpanding && child.widthPercentage == null)
         {
           expand = true;
           break;

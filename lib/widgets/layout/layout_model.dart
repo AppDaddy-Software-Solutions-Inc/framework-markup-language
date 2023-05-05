@@ -239,8 +239,8 @@ class LayoutModel extends DecoratedWidgetModel {
 
     // clear child sizing
     for (var child in viewableChildren) {
-      if (!child.isFixedHeight) child.height = null;
-      if (!child.isFixedWidth) child.width = null;
+      if (!child.isFixedHeight) child.setHeight(null);
+      if (!child.isFixedWidth) child.setWidth(null);
       child.setLayoutConstraints(BoxConstraints(
           minWidth: 0,
           maxWidth: double.infinity,
@@ -407,7 +407,7 @@ class LayoutModel extends DecoratedWidgetModel {
             variableHeightChildren.isNotEmpty;
 
         // if I'm just laying out then I'm not complete
-        if (model == this) layoutComplete = false;
+        //if (model == this) layoutComplete = false;
 
         // if I have no variable sized children then my layout is complete
         if (!layoutComplete && !hasVariableSizeChildren) layoutComplete = true;

@@ -57,7 +57,7 @@ class RowModel extends LayoutModel
     if (children != null){
       for (var child in children!)
       {
-        if (child is ViewableWidgetModel && child.visible && child.isHorizontallyExpanding)
+        if (child is ViewableWidgetModel && child.visible && child.isHorizontallyExpanding && child.widthPercentage == null)
         {
           expand = true;
           break;

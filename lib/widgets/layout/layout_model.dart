@@ -160,7 +160,8 @@ class LayoutModel extends DecoratedWidgetModel {
     layoutComplete = false;
   }
 
-  double? getPercentWidth(ViewableWidgetModel child) {
+  double? getPercentWidth(ViewableWidgetModel child)
+  {
     // child is fixed width?
     if (child.isFixedWidth) return null;
 
@@ -171,9 +172,8 @@ class LayoutModel extends DecoratedWidgetModel {
     switch (layoutType) {
       case LayoutType.stack:
       case LayoutType.column:
-        if (isHorizontallyExpanding() && child.isHorizontallyExpanding()) {
-          return 100;
-        }
+        // 100% if both me and my child are horizontally expanding
+        if (isHorizontallyExpanding(ignoreFixedWidth: true) && child.isHorizontallyExpanding()) return 100;
         break;
       default:
         break;
@@ -182,7 +182,8 @@ class LayoutModel extends DecoratedWidgetModel {
     return null;
   }
 
-  double? getPercentHeight(ViewableWidgetModel child) {
+  double? getPercentHeight(ViewableWidgetModel child)
+  {
     // child is fixed height?
     if (child.isFixedHeight) return null;
 
@@ -193,7 +194,8 @@ class LayoutModel extends DecoratedWidgetModel {
     switch (layoutType) {
       case LayoutType.stack:
       case LayoutType.row:
-        if (isVerticallyExpanding() && child.isVerticallyExpanding()) return 100;
+        // 100% if both me and my child are vertically expanding
+        if (isVerticallyExpanding(ignoreFixedHeight: true) && child.isVerticallyExpanding()) return 100;
         break;
       default:
         break;
@@ -208,7 +210,7 @@ class LayoutModel extends DecoratedWidgetModel {
     // percent width is priority over flex
     if (getPercentWidth(child) != null) return null;
 
-    // flex only if both me and my child are horizontally expanding
+    // flex if both me and my child are horizontally expanding
     if (isHorizontallyExpanding(ignoreFixedWidth: true) && child.isHorizontallyExpanding()) {
       return child.flex ?? 1;
     }

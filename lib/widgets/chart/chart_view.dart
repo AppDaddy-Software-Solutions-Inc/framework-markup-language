@@ -17,7 +17,6 @@ import 'package:fml/widgets/busy/busy_view.dart' as BUSY;
 import 'package:fml/widgets/busy/busy_model.dart' as BUSY;
 import 'package:community_charts_flutter/community_charts_flutter.dart' as CF;
 import 'package:fml/widgets/widget/widget_state.dart';
-import 'package:intl/intl.dart';
 
 enum ChartType {
   TimeSeriesChart,
@@ -101,7 +100,8 @@ class _ChartViewState extends WidgetState<ChartView>
       tickProviderSpec: CF.BasicNumericTickProviderSpec(zeroBound: false, dataIsInWholeNumbers: true, desiredTickCount: ticks),
       viewport: widget.model.yaxis?.min != null && widget.model.yaxis?.max != null
           ? CF.NumericExtents(S.toNum(widget.model.yaxis!.min!)!, S.toNum(widget.model.yaxis!.max!)!) : null,
-      renderSpec: CF.SmallTickRendererSpec(
+      renderSpec: CF.GridlineRendererSpec(
+          lineStyle: CF.LineStyleSpec(dashPattern: [4, 4]),
           labelStyle: CF.TextStyleSpec(
               fontSize: widget.model.yaxis?.labelvisible == false ? 0 : widget.model.yaxis!.labelsize,
               color: CF.ColorUtil.fromDartColor(
@@ -126,6 +126,7 @@ class _ChartViewState extends WidgetState<ChartView>
         (sin(widget.model.xaxis!.labelrotation.abs() * (pi / 180)) * 80)
             .ceil() +
             8, // 80 is rough estimate of our text length
+        labelOffsetFromTickPx: 10,
       ),
   );
 
@@ -145,6 +146,7 @@ class _ChartViewState extends WidgetState<ChartView>
           (widget.model.horizontal == true
               ? 28
               : 8), // 80 is rough estimate of our text length
+      labelOffsetFromTickPx: 10,
     ),
   );
 
@@ -163,7 +165,10 @@ class _ChartViewState extends WidgetState<ChartView>
         labelOffsetFromAxisPx:
         (sin(widget.model.xaxis!.labelrotation.abs() * (pi / 180)) * 80)
             .ceil() +
-            8, // 80 is rough estimate of our text length
+            (widget.model.horizontal == true
+                ? 28
+                : 8), // 80 is rough estimate of our text length
+        labelOffsetFromTickPx: 10,
       ),
       tickProviderSpec: CF.StaticDateTimeTickProviderSpec(ticks),
     );
@@ -244,7 +249,7 @@ class _ChartViewState extends WidgetState<ChartView>
 
     List<CF.SeriesRendererConfig<String>> seriesRenderers = [];
     for (var s in widget.model.series) {
-      Function configFunc = getSeriesRenderer(s, widget.model.xaxis!.type)!;
+      Function configFunc = getSeriesRenderer(s, widget.model.xaxis!.type);
       CF.SeriesRendererConfig<String> config = configFunc(s);
       seriesRenderers.add(config);
       // Calculate Numeric Y Axis Ticks

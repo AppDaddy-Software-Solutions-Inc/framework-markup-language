@@ -32,32 +32,32 @@ class RowModel extends LayoutModel
   }
 
   @override
-  bool get isVerticallyExpanding {
-    if (isFixedHeight) return false;
+  bool isVerticallyExpanding({bool ignoreFixedHeight = false})
+  {
+    if (isFixedHeight && !ignoreFixedHeight) return false;
     bool expand = false;
     if (children != null){
       for (var child in children!) {
         if (child is ViewableWidgetModel && child.visible &&
-            child.isVerticallyExpanding) {
+            child.isVerticallyExpanding()) {
           expand = true;
           break;
         }
       }
-  }
+    }
     return expand;
   }
 
   @override
-  @required
-  bool get isHorizontallyExpanding
+  bool isHorizontallyExpanding({bool ignoreFixedWidth = false})
   {
-    if (isFixedWidth) return false;
+    if (isFixedWidth && !ignoreFixedWidth) return false;
     var expand = this.expand;
     if (expand) return true;
     if (children != null){
       for (var child in children!)
       {
-        if (child is ViewableWidgetModel && child.visible && child.isHorizontallyExpanding)
+        if (child is ViewableWidgetModel && child.visible && child.isHorizontallyExpanding() && child.widthPercentage == null)
         {
           expand = true;
           break;

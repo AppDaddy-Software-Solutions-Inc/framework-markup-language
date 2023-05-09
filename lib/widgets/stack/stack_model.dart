@@ -40,10 +40,10 @@ class StackModel extends LayoutModel
   }
 
   @override
-  bool get isVerticallyExpanding => expand && !isFixedHeight;
+  bool isVerticallyExpanding({bool ignoreFixedHeight = false}) => expand && !isFixedHeight;
 
   @override
-  bool get isHorizontallyExpanding => expand && !isFixedWidth;
+  bool isHorizontallyExpanding({bool ignoreFixedWidth = false}) => expand && !isFixedWidth;
 
   StackModel(WidgetModel parent, String? id) : super(parent, id);
 

@@ -75,9 +75,11 @@ class ViewableWidgetModel extends ConstraintModel
   /// VIEW LAYOUT
   resetViewSizing()
   {
+    _viewWidthChanged = false;
     _viewWidth = null;
     _viewWidthObservable?.set(null, notify: false);
 
+    _viewHeightChanged = false;
     _viewHeight = null;
     _viewHeightObservable?.set(null, notify: false);
 
@@ -89,7 +91,9 @@ class ViewableWidgetModel extends ConstraintModel
   }
 
   // view width
-  double? viewWidthOld;
+  bool _viewWidthChanged = false;
+  bool get viewWidthChanged => _viewWidthChanged;
+
   double? _viewWidth;
   DoubleObservable? _viewWidthObservable;
   set viewWidth(double? v)
@@ -104,7 +108,9 @@ class ViewableWidgetModel extends ConstraintModel
   double? get viewWidth => _viewWidth;
 
   // view height
-  double? viewHeightOld;
+  bool _viewHeightChanged = false;
+  bool get viewHeightChanged => _viewHeightChanged;
+
   double? _viewHeight;
   DoubleObservable? _viewHeightObservable;
   set viewHeight(double? v)
@@ -705,10 +711,10 @@ class ViewableWidgetModel extends ConstraintModel
     // set the view width, height and position
     if (size.width != viewWidth || size.height != viewHeight || position.dx != viewX || position.dy != viewY)
     {
-      viewWidthOld = viewWidth;
+      if ((viewWidth ?? size.width) != size.width) _viewWidthChanged = true;
       viewWidth = size.width;
 
-      viewHeightOld = viewHeight;
+      if ((viewHeight ?? size.height) != size.height) _viewHeightChanged = true;
       viewHeight = size.height;
 
       viewX = position.dx;

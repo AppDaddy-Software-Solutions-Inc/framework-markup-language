@@ -17,7 +17,8 @@ enum VerticalAlignmentType { top, bottom, center, around, between, evenly }
 
 enum HorizontalAlignmentType { left, right, center, around, between, evenly }
 
-class LayoutModel extends DecoratedWidgetModel {
+class LayoutModel extends DecoratedWidgetModel
+{
   @required
   LayoutType get layoutType => throw (UnimplementedError);
 
@@ -353,24 +354,36 @@ class LayoutModel extends DecoratedWidgetModel {
         layout.variableHeightChildren.isNotEmpty) layout.rebuild();
   }
 
-  _performLayout() {
+  _performLayout()
+  {
     print('Performing layout on $id');
+
+    // do I have variable sized children?
+    bool hasVariableSizeChildren = variableWidthChildren.isNotEmpty || variableHeightChildren.isNotEmpty;
 
     List<ViewableWidgetModel> resized = [];
 
-    // modify child widths
-    var resizedWidth = _onWidthChange();
-    for (var model in resizedWidth) {
-      if (!resized.contains(model)) {
-        resized.add(model);
+    // perform layout
+    if (hasVariableSizeChildren)
+    {
+      // modify child widths
+      var resizedWidth = _onWidthChange();
+      for (var model in resizedWidth)
+      {
+        if (!resized.contains(model))
+        {
+          resized.add(model);
+        }
       }
-    }
 
-    // modify child heights
-    var resizedHeight = _onHeightChange();
-    for (var model in resizedHeight) {
-      if (!resized.contains(model)) {
-        resized.add(model);
+      // modify child heights
+      var resizedHeight = _onHeightChange();
+      for (var model in resizedHeight)
+      {
+        if (!resized.contains(model))
+        {
+          resized.add(model);
+        }
       }
     }
 
@@ -379,72 +392,13 @@ class LayoutModel extends DecoratedWidgetModel {
     layoutComplete = true;
 
     // notify modified children
-    for (var child in resized) {
+    for (var child in resized)
+    {
       // mark child as needing layout
       if (child is LayoutModel) child.layoutComplete = false;
 
       // notify child to rebuild
       child.rebuild();
-    }
-  }
-
-  @override
-  void onLayoutComplete(ViewableWidgetModel? model) {
-    // set widget size
-    super.onLayoutComplete(model);
-
-    // model is me or one of my direct children
-    if (this == model || viewableChildren.contains(model)) {
-      // have all the fixed sized children been sized?
-      bool fixedSizeChildrenLayoutComplete = fixedWidthChildren
-              .where((child) => child.viewWidth == null)
-              .isEmpty &&
-          fixedHeightChildren
-              .where((child) => child.viewHeight == null)
-              .isEmpty;
-
-      // cant continue until all fixed sized children are sized
-      if (fixedSizeChildrenLayoutComplete) {
-        // do I have variable sized children?
-        bool hasVariableSizeChildren = variableWidthChildren.isNotEmpty ||
-            variableHeightChildren.isNotEmpty;
-
-        // if I'm just laying out then I'm not complete
-        //if (model == this) layoutComplete = false;
-
-        // if I have no variable sized children then my layout is complete
-        if (!layoutComplete && !hasVariableSizeChildren) layoutComplete = true;
-
-        // has my parent layout completed?
-        bool parentLayoutComplete =
-            parent is! LayoutModel || (parent as LayoutModel).layoutComplete;
-
-        // has this model changed size?
-        bool hasNewWidth = false;
-        if (model?.viewWidthOld != null &&
-            model?.viewWidth != null &&
-            model?.viewWidthOld != model?.viewWidth) {
-          hasNewWidth = true;
-        }
-
-        bool hasNewHeight = false;
-        if (model?.viewHeightOld != null &&
-            model?.viewHeight != null &&
-            model?.viewHeightOld != model?.viewHeight) {
-          hasNewHeight = true;
-        }
-
-        // perform layout
-        if (!layoutComplete && parentLayoutComplete) {
-          _performLayout();
-        }
-
-        // perform rebuild if model has resized
-        else if (layoutComplete && (hasNewWidth || hasNewHeight)) {
-          // perform rebuild if necessary
-          _performRebuild(hasNewWidth, hasNewHeight);
-        }
-      }
     }
   }
 
@@ -682,6 +636,48 @@ class LayoutModel extends DecoratedWidgetModel {
 
       default:
         return defaultLayout;
+    }
+  }
+
+  @override
+  void onLayoutComplete(ViewableWidgetModel? model)
+  {
+    print('layout ${model?.id}');
+
+    // set widget size
+    super.onLayoutComplete(model);
+
+    // model is me or one of my direct children
+    if (this == model || viewableChildren.contains(model))
+    {
+      // rebuild
+      if (layoutComplete)
+      {
+        // has this model changed size?
+        bool widthChange  = model?.viewWidthChanged ?? false;
+        bool heightChange = model?.viewHeightChanged ?? false;
+
+        // perform rebuild if necessary
+        if (widthChange || heightChange)
+        {
+          _performRebuild(widthChange, heightChange);
+        }
+      }
+
+      // layout
+      else
+      {
+        // have all the fixed sized children been sized?
+        bool fixedSizeChildrenLayoutComplete = fixedWidthChildren.where((child) => child.viewWidth == null).isEmpty && fixedHeightChildren.where((child) => child.viewHeight == null).isEmpty;
+
+        // cant continue until all fixed sized children are sized
+        if (fixedSizeChildrenLayoutComplete)
+        {
+          // has my parent layout completed?
+          bool parentLayoutComplete = parent is! LayoutModel || (parent as LayoutModel).layoutComplete;
+          if (parentLayoutComplete) _performLayout();
+        }
+      }
     }
   }
 }

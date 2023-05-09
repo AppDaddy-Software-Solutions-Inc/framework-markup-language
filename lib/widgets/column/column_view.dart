@@ -35,11 +35,11 @@ class _ColumnViewState extends WidgetState<ColumnView>
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
-
     // save system constraints
     onLayout(constraints);
+
+    // Check if widget is visible before wasting resources on building it
+    if (!widget.model.visible) return Offstage();
 
     // build the child views
     List<Widget> children = widget.model.inflate();

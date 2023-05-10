@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/alignment/alignment.dart';
 import 'package:fml/widgets/box_layout/box_layout.dart';
 import 'package:fml/widgets/box_layout/flex_box.dart';
 import 'package:fml/widgets/column/column_model.dart';
@@ -39,7 +40,26 @@ class _BoxLayoutViewState extends WidgetState<BoxLayoutView>
   {
     var children = widget.model.inflate();
 
-    return FlexBox(model: widget.model, direction: Axis.vertical, children: children,);
+    // this must go after the children are determined
+    var alignment = WidgetAlignment(widget.model.layoutType, widget.model.center, widget.model.halign, widget.model.valign);
+
+    return FlexBox(model: widget.model,
+      direction: widget.model.layoutType == LayoutType.row ? Axis.horizontal : Axis.vertical,
+      mainAxisAlignment: alignment.mainAlignment,
+      crossAxisAlignment: alignment.crossAlignment,
+      clipBehavior: Clip.hardEdge,
+      children: children,);
+
+    // required this.direction,
+    // required this.model,
+    // this.mainAxisAlignment = MainAxisAlignment.start,
+    // this.mainAxisSize = MainAxisSize.max,
+    // this.crossAxisAlignment = CrossAxisAlignment.center,
+    // this.textDirection,
+    // this.verticalDirection = VerticalDirection.down,
+    // this.textBaseline, // NO DEFAULT: we don't know what the text's baseline should be
+    // this.clipBehavior = Clip.none,
+    // super.children,
 
     Container();
 

@@ -382,7 +382,7 @@ class _ChartViewState extends WidgetState<ChartView>
         CF.SelectionModelConfig(
           type: CF.SelectionModelType.info,
           changedListener: _onSelectionChanged,
-        )
+        ),
       ],
     );
   }
@@ -533,33 +533,30 @@ class _ChartViewState extends WidgetState<ChartView>
                     e.toString());
             break;
           }
-          // Parsed Values
-          var xVal = xParsed;
-          var yVal = yParsed;
           // Null Series Point Check
-          if (xAllNull == true) xAllNull = xVal == null;
-          if (yAllNull == true) yAllNull = yVal == null;
+          if (xAllNull == true) xAllNull = xParsed == null;
+          if (yAllNull == true) yAllNull = yParsed == null;
           // Ignore date/time data points before the min datetime on the x axis
           if ((widget.model.xaxis!.type == ChartAxisType.datetime ||
               widget.model.xaxis!.type == ChartAxisType.date ||
               widget.model.xaxis!.type == ChartAxisType.time) &&
-              widget.model.xaxis?.min != null && xVal != null
-              && DT.isBefore(xVal, S.toDate(widget.model.xaxis!.min!)!))
+              widget.model.xaxis?.min != null && xParsed != null
+              && DT.isBefore(xParsed, S.toDate(widget.model.xaxis!.min!)!))
             continue;
           // Ignore date/time data points after the max datetime on the x axis
           if ((widget.model.xaxis!.type == ChartAxisType.datetime ||
               widget.model.xaxis!.type == ChartAxisType.date ||
               widget.model.xaxis!.type == ChartAxisType.time) &&
-              widget.model.xaxis?.max != null && xVal != null
-              && DT.isAfter(xVal, S.toDate(widget.model.xaxis!.max!)!))
+              widget.model.xaxis?.max != null && xParsed != null
+              && DT.isAfter(xParsed, S.toDate(widget.model.xaxis!.max!)!))
             continue;
           // get label
           var label = S.isNullOrEmpty(point.label) ? null : point.label.trim();
           // Add to point list
-          if (xVal != null && (series.labelled != true || label != null))
+          if (xParsed != null && (series.labelled != true || label != null))
             seriesData.add(ChartDataPoint(
-                x: xVal, y: yVal, color: point.color, label: label));
-          if (xVal == null)
+                x: xParsed, y: yParsed, color: point.color, label: label));
+          if (xParsed == null)
             Log().warning(
                 'id: ${series.id.toString()} name: ${series.name.toString()} Has a null X value, only Y vals can be null, every point must have a non-null X value');
         }
@@ -824,7 +821,10 @@ class _ChartViewState extends WidgetState<ChartView>
             if (selectedDatum[0].series.data[i].x == domain) {
               Map seriesData = selectedSeries.data[i];
               // We also add the series id to the data set
-              seriesData['series'] = selectedSeriesId;
+              seriesData['_id'] = selectedSeriesId;
+              seriesData['_x'] = selectedDatum[0].series.data[i].x;
+              seriesData['_y'] = selectedDatum[0].series.data[i].y;
+              seriesData['_label'] = selectedDatum[0].series.data[i].label;
               widget.model.selected = seriesData;
               break;
             }
@@ -845,6 +845,7 @@ class _ChartViewState extends WidgetState<ChartView>
   List<CF.ChartBehavior<T>> getBehaviors<T>() {
     List<CF.ChartBehavior<T>> behaviors = [];
     if (chartType != ChartType.PieChart) behaviors.add(CF.PanAndZoomBehavior());
+    
     if (widget.model.showlegend != 'false' && chartType != ChartType.PieChart)
       behaviors.add(
           CF.SeriesLegend(
@@ -853,6 +854,7 @@ class _ChartViewState extends WidgetState<ChartView>
                 fontSize: widget.model.legendsize,
                 color: CF.Color.fromHex(code: '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}')),
           ));
+    
     if (widget.model.showlegend != 'false' && chartType == ChartType.PieChart)
       behaviors.add(CF.DatumLegend(
         position: legendPosition(widget.model.showlegend),
@@ -864,6 +866,7 @@ class _ChartViewState extends WidgetState<ChartView>
         desiredMaxColumns: 4,
         cellPadding: EdgeInsets.only(right: 4.0, bottom: 4.0),
       ));
+    
     if (widget.model.xaxis!.title != null)
       behaviors.add(CF.ChartTitle(widget.model.xaxis!.title!,
           titleStyleSpec: CF.TextStyleSpec(
@@ -873,6 +876,7 @@ class _ChartViewState extends WidgetState<ChartView>
               ? CF.BehaviorPosition.start
               : CF.BehaviorPosition.bottom,
           titleOutsideJustification: CF.OutsideJustification.middleDrawArea));
+    
     if (widget.model.yaxis!.title != null)
       behaviors.add(CF.ChartTitle(widget.model.yaxis!.title!,
           titleStyleSpec: CF.TextStyleSpec(
@@ -882,6 +886,12 @@ class _ChartViewState extends WidgetState<ChartView>
               ? CF.BehaviorPosition.bottom
               : CF.BehaviorPosition.start,
           titleOutsideJustification: CF.OutsideJustification.middleDrawArea));
+
+    // behaviors.add(CF.SelectNearest(eventTrigger: CF.SelectionTrigger.hover, selectionModelType: CF.SelectionModelType.info, selectAcrossAllDrawAreaComponents: true, selectClosestSeries: false));
+    // behaviors.add(CF.SelectNearest(eventTrigger: CF.SelectionTrigger.tap, selectionModelType: CF.SelectionModelType.info, selectAcrossAllDrawAreaComponents: true, selectClosestSeries: false));
+    behaviors.add(CF.LinePointHighlighter(showHorizontalFollowLine: CF.LinePointHighlighterFollowLineType.none, showVerticalFollowLine: CF.LinePointHighlighterFollowLineType.nearest, symbolRenderer: CF.RectSymbolRenderer(isSolid: true)));
+    behaviors.add(CF.SelectNearest(eventTrigger: CF.SelectionTrigger.tapAndDrag));
+
     return behaviors;
   }
 

@@ -241,6 +241,8 @@ class FormFieldModel extends DecoratedWidgetModel {
     // properties
     defaultValue = Xml.get(node: xml, tag: 'default');
     meta = Xml.get(node: xml, tag: 'meta');
+    error = Xml.get(node: xml, tag: 'error');
+    errortext = Xml.get(node: xml, tag: 'errortext');
     field = Xml.get(node: xml, tag: 'field');
     mandatory = Xml.get(node: xml, tag: 'mandatory');
     editable = Xml.get(node: xml, tag: 'editable');
@@ -357,6 +359,38 @@ class FormFieldModel extends DecoratedWidgetModel {
     if (alarmerror == true) return true;
     if (error == true) return true;
     return false;
+  }
+
+  //set the field color based on the error state
+  Color setFieldColor(BuildContext context) {
+    if (enabled != false) {
+      if(returnErrorState()) {
+        return Theme.of(context).colorScheme.error;
+      } else {
+        return color ?? Theme
+            .of(context)
+            .colorScheme
+            .surfaceVariant;
+      }
+    } else {
+     return color ?? Theme.of(context).colorScheme.primary.withOpacity(0.5);
+    }
+  }
+
+  //set the field color based on the error state
+  Color setBorderColor(BuildContext context) {
+    if (enabled != false) {
+      if(returnErrorState()) {
+        return Theme.of(context).colorScheme.error.withOpacity(0.5);
+      } else {
+        return color ?? Theme
+            .of(context)
+            .colorScheme
+            .surfaceVariant;
+      }
+    } else {
+      return color ?? Theme.of(context).colorScheme.primary.withOpacity(0.5);
+    }
   }
 
   // return the correct combination of error and errotext based on the alarm vs the error.

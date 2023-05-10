@@ -147,36 +147,6 @@ class SelectModel extends FormFieldModel implements IFormField
   // options
   final List<OptionModel> options = [];
 
-  ///////////////
-  /* typeahead */
-  ///////////////
-  BooleanObservable? _typeahead;
-  set typeahead(dynamic v) {
-    if (_typeahead != null) {
-      _typeahead!.set(v);
-    } else if (v != null) {
-      _typeahead = BooleanObservable(
-          Binding.toKey(id, 'typeahead'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get typeahead => _typeahead?.get() ??  false;
-
-  //////////////////
-  /* inputenabled */
-  //////////////////
-  BooleanObservable? _inputenabled;
-  set inputenabled(dynamic v) {
-    if (_inputenabled != null) {
-      _inputenabled!.set(v);
-    } else if (v != null) {
-      _inputenabled = BooleanObservable(
-          Binding.toKey(id, 'inputenabled'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get inputenabled => _inputenabled?.get() ?? false;
-
   ///////////
   /* Value */
   ///////////
@@ -256,16 +226,13 @@ class SelectModel extends FormFieldModel implements IFormField
       {dynamic visible,
         dynamic hint,
         dynamic border,
-        dynamic mandatory,
         dynamic editable,
         dynamic enabled,
-        dynamic inputenabled,
         dynamic value,
         dynamic defaultValue,
         dynamic width,
         dynamic onchange,
         dynamic post,
-        dynamic typeahead,
         dynamic bold,
         dynamic italic,
         String? postbroker,
@@ -281,7 +248,6 @@ class SelectModel extends FormFieldModel implements IFormField
     // instantiate busy observable
     busy = false;
 
-    if (mandatory     != null)  this.mandatory    = mandatory;
     if (bordercolor   != null)  this.bordercolor  = bordercolor;
     if (color         != null)  this.color        = color;
     if (radius        != null)  this.radius       = radius;
@@ -290,18 +256,13 @@ class SelectModel extends FormFieldModel implements IFormField
     if (hint          != null)  this.hint         = hint;
     if (editable      != null)  this.editable     = editable;
     if (enabled       != null)  this.enabled      = enabled;
-    if (inputenabled  != null)  this.inputenabled  = inputenabled;
     if (value         != null)  this.value         = value;
     if (defaultValue  != null)  this.defaultValue  = defaultValue;
     if (width         != null)  this.width = width;
     if (onchange      != null)  this.onchange      = onchange;
     if (post          != null)  this.post          = post;
-    if (typeahead     != null)  this.typeahead     = typeahead;
     if (matchtype     != null)  this.matchtype     = matchtype;
     if (label         != null)  this.label         = label;
-
-    alarming = false;
-    dirty    = false;
   }
 
   static SelectModel? fromXml(WidgetModel parent, XmlElement xml) {
@@ -333,8 +294,6 @@ class SelectModel extends FormFieldModel implements IFormField
     bordercolor = Xml.get(node: xml, tag: 'bordercolor');
     borderwidth = Xml.get(node: xml, tag: 'borderwidth');
     radius = Xml.get(node: xml, tag: 'radius');
-    inputenabled = Xml.get(node: xml, tag: 'inputenabled');
-    typeahead = Xml.get(node: xml, tag: 'typeahead');
     matchtype = Xml.get(node: xml, tag: 'matchtype') ?? Xml.get(node: xml, tag: 'searchtype');
 
     //check to see if value has been specified so the form does not fill it out.

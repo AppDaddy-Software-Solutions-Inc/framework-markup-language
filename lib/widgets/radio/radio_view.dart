@@ -31,25 +31,23 @@ class _RadioViewState extends WidgetState<RadioView>
 
     // save system constraints
     onLayout(constraints);
-
+    Color color = widget.model.setFieldColor(context);
     // Options
     if (widget.model.options.isNotEmpty) {
+
       options ??= [];
       options!.clear();
+
       for (OptionModel option in widget.model.options) {
+
         var checked = Icon(Icons.radio_button_checked,
             size: widget.model.size,
-            color: widget.model.enabled != false
-                ? widget.model.color ?? Theme.of(context).colorScheme.primary
-                : (widget.model.color ?? Theme.of(context).colorScheme.primary)
-                    .withOpacity(0.5));
+            color: color);
+
         var unchecked = Icon(Icons.radio_button_unchecked,
             size: widget.model.size,
-            color: widget.model.enabled != false
-                ? widget.model.color ??
-                    Theme.of(context).colorScheme.surfaceVariant
-                : (widget.model.color ?? Theme.of(context).colorScheme.primary)
-                    .withOpacity(0.5));
+            color: color);
+
         var radio = MouseRegion(
             cursor:
                 widget.model.enabled != false && widget.model.editable != false
@@ -77,6 +75,7 @@ class _RadioViewState extends WidgetState<RadioView>
         // Option
         var opt = Row(
             mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Padding(
                   padding:
@@ -125,6 +124,14 @@ class _RadioViewState extends WidgetState<RadioView>
             children: options!);
       }
     }
+
+    Text errorText = Text(widget.model.returnErrorText(), style: TextStyle(color: Theme.of(context).colorScheme.error),);
+
+    view = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [view, errorText],
+    );
 
     return view;
   }

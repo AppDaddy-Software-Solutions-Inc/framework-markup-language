@@ -294,17 +294,9 @@ class DatepickerModel extends FormFieldModel implements IFormField
     WidgetModel parent,
     String? id, {
     String? type,
-    dynamic visible,
-    dynamic mandatory,
-    dynamic enabled,
-    dynamic editable,
-    dynamic value,
-    dynamic defaultValue,
     dynamic width,
     dynamic hint,
     dynamic format,
-    dynamic post,
-    dynamic onchange,
     dynamic radius,
     dynamic bordercolor,
     dynamic borderwidth,
@@ -315,24 +307,15 @@ class DatepickerModel extends FormFieldModel implements IFormField
     dynamic style,
     dynamic dense,
     dynamic clear,
-    dynamic error,
-    dynamic errortext,
     dynamic size,
     dynamic padding,
     dynamic icon,
   }) : super(parent, id)
   {
     if (type         != null) this.type = type;
-    if (mandatory    != null) this.mandatory = mandatory;
-    if (editable     != null) this.editable = editable;
-    if (enabled      != null) this.enabled = enabled;
-    if (value        != null) this.value = value;
-    if (defaultValue != null) this.defaultValue = defaultValue;
     if (width        != null) this.width = width;
     if (hint         != null) this.hint = hint;
     if (format       != null) this.format = format;
-    if (post         != null) this.post = post;
-    if (onchange     != null) this.onchange = onchange;
     if (radius       != null) this.radius = radius;
     if (bordercolor  != null) this.bordercolor = bordercolor;
     if (borderwidth  != null) this.borderwidth = borderwidth;
@@ -343,14 +326,9 @@ class DatepickerModel extends FormFieldModel implements IFormField
     if (style        != null) this.style = style;
     if (dense        != null) this.dense = dense;
     if (clear        != null) this.clear = clear;
-    if (error        != null) this.error = error;
-    if (errortext    != null) this.errortext = errortext;
     if (size         != null) this.size = size;
     if (padding      != null) this.padding = padding;
     if (icon         != null) this.icon = icon;
-
-    alarming = false;
-    dirty = false;
   }
 
   static DatepickerModel? fromXml(WidgetModel parent, XmlElement xml, {String? type})

@@ -333,7 +333,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
       view = Container(
         padding: const EdgeInsets.fromLTRB(15, 0, 5, 0),
         decoration: BoxDecoration(
-          color: selcol,
+          color: widget.model.setFieldColor(context),
           border: Border.all(
               width: widget.model.borderwidth?.toDouble() ?? 1,
               color: widget.model.enabled
@@ -345,6 +345,14 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
       );
     }
 
+    Text errorText = Text(widget.model.returnErrorText(), style: TextStyle(color: Theme.of(context).colorScheme.error),);
+
+    view = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [view, errorText],
+    );
+
     // display busy
     //var busy;
     //if (busy != null) view = Stack(children: [view, Positioned(top: 0, bottom: 0, left: 0, right: 0, child: busy)]);
@@ -354,13 +362,16 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
 
     // constrain the input to 200 pixels if not constrained by the model
     if (!modelConstraints.hasHorizontalExpansionConstraints) modelConstraints.width  = 200;
-    if (!modelConstraints.hasVerticalExpansionConstraints)   modelConstraints.height = 48;
+    if (!modelConstraints.hasVerticalExpansionConstraints)   modelConstraints.height = widget.model.returnErrorState() ? 70 : 48;
+
 
     // add margins
     view = addMargins(view);
 
     // apply constraints
     view = applyConstraints(view, modelConstraints);
+
+
 
     return view;
   }

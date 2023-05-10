@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
-import 'package:collection/collection.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +11,6 @@ import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/select/select_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
@@ -30,62 +28,9 @@ class SelectView extends StatefulWidget implements IWidgetView
 class _SelectViewState extends WidgetState<SelectView>
 {
   List<DropdownMenuItem<OptionModel>> _list = [];
-  late DropdownMenuItem<OptionModel> _input;
-  bool _inputInitialized = false;
   OptionModel? _selected;
-  final TextEditingController controller = TextEditingController();
   FocusNode focus = FocusNode();
-  String typeaheadText = '';
 
-  @override
-  void dispose()
-  {
-    controller.dispose();
-    super.dispose();
-  }
-
-  _inputSelection(res)
-  {
-    if (widget.model.typeahead == true && res != null)
-    {
-      if (widget.model.inputenabled == true)
-      {
-        // create a new item in dropdown
-        TextModel itemLabel = TextModel(null, null, value: res);
-        OptionModel newOption = OptionModel(null, null, label: itemLabel, value: res);
-
-        var child = newOption.label!.getView() ?? Container();
-        _input = DropdownMenuItem(value: newOption, child: child);
-
-        changedDropDownItem(_input.value);
-        _inputInitialized = true;
-      }
-      else
-      {
-        bool hasMatch = false;
-        int listCounter = 0;
-        try {
-          while (hasMatch == false && listCounter < _list.length) {
-            if (_list[listCounter]
-                .value!
-                .value
-                .toString()
-                .toLowerCase()
-                .contains(res.toString().toLowerCase())) {
-              hasMatch = true;
-              changedDropDownItem(_list[listCounter].value);
-            }
-            listCounter++;
-          }
-        } catch(e) {
-          Log().debug('$e');
-        }
-        if (hasMatch == false) {
-          changedDropDownItem(_list[1].value ?? _list[0].value);
-        }
-      }
-    }
-  }
 
   _buildOptions()
   {
@@ -93,11 +38,6 @@ class _SelectViewState extends WidgetState<SelectView>
 
       _selected = null;
       _list = [];
-    if (widget.model.typeahead == true && widget.model.editable != false && widget.model.enabled && _inputInitialized == true) {
-      _list.add(_input); // custom select input
-      _selected = _input.value;
-      controller.selection = TextSelection.fromPosition(TextPosition(offset: controller.text.length));
-    }
 
     //////////////////////
     /* Add Empty Option */
@@ -140,7 +80,7 @@ class _SelectViewState extends WidgetState<SelectView>
 
     // busy?
     BusyView? busy;
-    if (widget.model.busy == true && widget.model.typeahead != true) {
+    if (widget.model.busy == true) {
       busy = BusyView(BusyModel(widget.model,
           visible: true,
           size: 24,
@@ -158,79 +98,13 @@ class _SelectViewState extends WidgetState<SelectView>
             : Theme.of(context).colorScheme.onSurfaceVariant
     );
 
-    Color selcol = enabled
-        ? (widget.model.color ?? Colors.transparent)
-        : ((widget.model.color)
-        ?.withOpacity(0.95)
-        .withRed((widget.model.color!.red*0.95).toInt())
-        .withGreen((widget.model.color!.green*0.95).toInt())
-        .withBlue((widget.model.color!.blue*0.95).toInt())
-        ?? Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.2));
+    Color selcol = widget.model.setFieldColor(context);
 
     //////////
     /* View */
     //////////
     Widget view;
 
-    if (widget.model.typeahead == true &&
-        widget.model.editable != false &&
-        enabled) {
-        controller.text = _extractText(_selected)!;
-        //Set the selection to the front of the text when entering for typeahead.
-        controller.selection = TextSelection.fromPosition(TextPosition(offset: controller.text.length));
-
-        List<OptionModel>? suggestions;
-        view = SizedBox(
-          width: widget.model.calculatedMaxWidthOrDefault,
-              child: TypeAheadField(
-                textFieldConfiguration: TextFieldConfiguration(
-                    focusNode: focus,
-                    controller: controller,
-                    onSubmitted: _inputSelection,
-                    onChanged: widget.model.inputenabled ? _inputSelection : null,
-                    style: TextStyle(
-                        fontSize: widget.model.size ?? 14),
-                    decoration: InputDecoration(
-                        hintText: widget.model.hint ?? '',
-                        hintStyle: ts,
-                        border: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        suffixIcon: Icon(Icons.arrow_drop_down))),
-                suggestionsCallback: (pattern) async {
-                  suggestions = await getSuggestions(pattern);
-                  return suggestions!;
-                },
-                itemBuilder: (context, dynamic suggestion) {
-                  Widget? item;
-                  if (suggestion is OptionModel) {
-                      var option = _list.firstWhereOrNull((option) => (option.value == suggestion));
-                      item = option?.child;
-                  }
-                  item ??= Container(height: 12);
-                  return Padding(
-                      padding: EdgeInsets.only(
-                          left: 12, right: 1, top: 12, bottom: 12),
-                      child: item);
-                },
-                autoFlipDirection: true,
-                suggestionsBoxDecoration:
-                    SuggestionsBoxDecoration(elevation: 20),
-                suggestionsBoxVerticalOffset: 0,
-                onSuggestionSelected: (dynamic suggestion) {
-                  if (suggestion is OptionModel) {
-                    changedDropDownItem(suggestion);
-                  }
-                },
-                transitionBuilder: (context, suggestionsBox, animationController) =>
-                FadeTransition(
-                  child: suggestionsBox,
-                  opacity: CurvedAnimation(
-                      parent: animationController!, curve: Curves.fastOutSlowIn),
-                ),
-              )
-      );
-      focus.addListener(onFocusChange);
-    } else {
       OptionModel? dValue = (_selected != null && _selected?.value != null && _selected?.value == '') ? null : _selected;
 
       Widget child = Text('');
@@ -281,7 +155,6 @@ class _SelectViewState extends WidgetState<SelectView>
                     .withOpacity(0.15),
               ))
           : child;
-    }
     if (widget.model.border == 'all') {
       view = Container(
         padding: const EdgeInsets.fromLTRB(15, 0, 5, 0),
@@ -304,7 +177,15 @@ class _SelectViewState extends WidgetState<SelectView>
     // Sized?
     view = SizedBox(width: widget.model.width ?? 200, height: widget.model.height ?? 48, child: view);
 
-    return Padding(padding: EdgeInsets.symmetric(vertical: /*widget.model.dense ? 0 : */4), child: view);
+     Padding(padding: EdgeInsets.symmetric(vertical: /*widget.model.dense ? 0 : */4), child: view);
+
+    Text errorText = Text(widget.model.returnErrorText(), style: TextStyle(color: Theme.of(context).colorScheme.error),);
+
+    return view = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [view, errorText],
+    );
   }
 
   Future<List<OptionModel>> getSuggestions(String pattern) async
@@ -369,10 +250,10 @@ class _SelectViewState extends WidgetState<SelectView>
   }
 
   void changedDropDownItem(OptionModel? selected) async {
-    if (widget.model.typeahead != true) {
+
       FocusScope.of(context).requestFocus(
           FocusNode()); // added this in to remove focus from input
-    }
+
     // removed this as it prevents reloading after a user submits a value
     if (selected == null) return;
     bool ok = await widget.model.answer(selected.value);
@@ -393,9 +274,6 @@ class _SelectViewState extends WidgetState<SelectView>
     /* Commit Changes on Loss of Focus */
     /////////////////////////////////////
     bool focused = focus.hasFocus;
-    if (focused && widget.model.typeahead == true) {
-      controller.selection = TextSelection(baseOffset: 0, extentOffset: controller.text.length);
-    }
     try {
       if (focused) {
         System().commit = _commit;
@@ -411,10 +289,6 @@ class _SelectViewState extends WidgetState<SelectView>
 
   Future<bool> _commit() async
   {
-    controller.text = controller.text.trim();
-    // if the value does not match the option value, clear only when input is disabled.
-    if (!widget.model.inputenabled && widget.model.typeahead) controller.text = _extractText(_selected)!;
-
   return true;
   }
 }

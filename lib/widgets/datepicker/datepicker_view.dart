@@ -427,8 +427,8 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
     // add margins
     view = addMargins(view);
 
-    // apply user defined constraints
-    view = applyConstraints(view, widget.model.constraints.model);
+    // apply constraints
+    view = applyConstraints(view, modelConstraints);
 
     return view;
   }

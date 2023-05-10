@@ -247,17 +247,6 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
             : Theme.of(context).colorScheme.onSurfaceVariant
     );
 
-    // set color
-    bool enabled = (widget.model.enabled != false) && (widget.model.busy != true);
-    Color selcol = enabled
-        ? (widget.model.color ?? Colors.transparent)
-        : ((widget.model.color)
-        ?.withOpacity(0.95)
-        .withRed((widget.model.color!.red*0.95).toInt())
-        .withGreen((widget.model.color!.green*0.95).toInt())
-        .withBlue((widget.model.color!.blue*0.95).toInt())
-        ?? Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.2));
-
     // view
     Widget view;
 

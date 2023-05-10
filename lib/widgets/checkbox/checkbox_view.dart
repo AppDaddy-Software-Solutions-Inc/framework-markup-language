@@ -66,14 +66,14 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
         view = Wrap(
                 children: _list,
                 direction: Axis.horizontal,
-                alignment: alignment.mainWrapAlignment,
+                alignment: WrapAlignment.start,
                 runAlignment: alignment.mainWrapAlignment,
                 crossAxisAlignment: alignment.crossWrapAlignment);
       } else {
         view = Row(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: alignment.crossAlignment,
-                mainAxisAlignment: alignment.mainAlignment,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: _list);
       }
     } else {
@@ -81,12 +81,12 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
         view = Wrap(
                 children: _list,
                 direction: Axis.vertical,
-                alignment: alignment.mainWrapAlignment,
+                alignment: WrapAlignment.start,
                 runAlignment: alignment.mainWrapAlignment,
                 crossAxisAlignment: alignment.crossWrapAlignment);
       } else {
         view = Column(
-                crossAxisAlignment: alignment.crossAlignment,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: alignment.mainAlignment,
                 children: _list);
       }

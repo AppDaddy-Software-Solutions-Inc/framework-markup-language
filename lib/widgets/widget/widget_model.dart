@@ -29,7 +29,6 @@ import 'package:fml/widgets/animation/animation_child/rotate/rotate_transition_m
 import 'package:fml/widgets/animation/animation_child/scale/scale_transition_model.dart';
 import 'package:fml/widgets/animation/animation_child/size/size_transition_model.dart';
 import 'package:fml/widgets/animation/animation_child/slide/slide_transition_model.dart';
-import 'package:fml/widgets/box_layout/box_layout_model.dart';
 import 'package:fml/widgets/breadcrumb/breadcrumb_model.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/button/button_model.dart';
@@ -549,7 +548,7 @@ class WidgetModel implements IDataSourceListener {
         break;
 
       case "layout":
-        model = BoxLayoutModel.fromXml(parent, node);
+        model = BoxModel.fromXml(parent, node);
         break;
 
       case "link":

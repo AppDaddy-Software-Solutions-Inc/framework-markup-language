@@ -6,7 +6,7 @@ import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/double.dart';
 import 'package:fml/observable/scope.dart';
 import 'package:fml/system.dart';
-import 'package:fml/widgets/layout/layout_model.dart';
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
@@ -127,8 +127,6 @@ class ConstraintModel extends WidgetModel
 
   // this routine set the width silently and resets the
   // fixedWidth property
-  bool _fixedWidth  = false;
-  bool get isFixedWidth => _fixedWidth;
   setWidth(double? v)
   {
     // create the _width observable if it
@@ -142,14 +140,12 @@ class ConstraintModel extends WidgetModel
     // we must remember these settings since they are
     // changed by the _widthSetter() and need to be restored
     // after assigning _width a value
-    var fixed = _fixedWidth;
-    var pct   = _widthPercentage;
+    var pct = _widthPercentage;
 
     // set the width
     _width?.set(v, notify: false);
 
     // restore original settings
-    _fixedWidth = fixed;
     if (pct != null) _widthPercentage = pct;
   }
 
@@ -182,16 +178,6 @@ class ConstraintModel extends WidgetModel
       if (v != S.toDouble(value)) value = v;
     }
 
-    if (!S.isNullOrEmpty(value))
-    {
-      // _fixedWidth=true indicates the width was set by someone other
-      // than the parent layout (template, a binding or an eval()). See setWidth()
-      _fixedWidth = true;
-
-      // null resets
-      if (value is String && value.toLowerCase() == 'null') _fixedWidth = false;
-    }
-
     return value;
   }
 
@@ -212,10 +198,6 @@ class ConstraintModel extends WidgetModel
   }
   double? get height => _height?.get();
 
-  // this routine set the height silently and resets the
-  // fixedHeight property
-  bool _fixedHeight = false;
-  bool get isFixedHeight => _fixedHeight;
   setHeight(double? v)
   {
     // create the _height observable if it
@@ -229,14 +211,12 @@ class ConstraintModel extends WidgetModel
     // we must remember these settings since they are
     // changed by the _heightSetter() and need to be restored
     // after assigning _height a value
-    var fixed = _fixedHeight;
-    var pct   = _heightPercentage;
+    var pct = _heightPercentage;
 
     // set the height
     _height?.set(v, notify:false);
 
     // restore original settings
-    _fixedHeight = fixed;
     if (pct != null) _heightPercentage = pct;
   }
 
@@ -267,18 +247,6 @@ class ConstraintModel extends WidgetModel
       if (v.isNegative) v = 0;
 
       if (v != S.toDouble(value)) value = v;
-    }
-
-    // _fixedHeight is used by the parent layout
-    // when assigning proportional heights
-    if (!S.isNullOrEmpty(value))
-    {
-      // _fixedHeight=true indicates the height was set by someone other
-      // than the parent layout (template, a binding or an eval()). See setHeight()
-      _fixedHeight = true;
-
-      // null resets
-      if (value is String && value.toLowerCase() == 'null') _fixedHeight = false;
     }
 
     return value;
@@ -500,7 +468,7 @@ class ConstraintModel extends WidgetModel
     system.maxHeight = constraints.maxHeight;
 
     LayoutType parentLayout = LayoutType.none;
-    if (parent is LayoutModel) parentLayout = (parent as LayoutModel).layoutType;
+    if (parent is BoxModel) parentLayout = (parent as BoxModel).layoutType;
 
     // adjust the width if defined as a percentage
     if (widthPercentage != null && parentLayout != LayoutType.row)

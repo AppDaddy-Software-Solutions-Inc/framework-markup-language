@@ -10,8 +10,14 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class MenuModel extends DecoratedWidgetModel 
+class MenuModel extends DecoratedWidgetModel
 {
+  @override
+  bool isVerticallyExpanding() => height == null;
+
+  @override
+  bool isHorizontallyExpanding() => width == null;
+
   static final String typeList   = "list";
   static final String typeButton = "button";
 

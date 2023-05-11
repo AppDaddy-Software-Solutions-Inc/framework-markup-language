@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/layout/layout_model.dart';
+import 'package:fml/widgets/box/box_model.dart';
 
 class WidgetAlignment
 {

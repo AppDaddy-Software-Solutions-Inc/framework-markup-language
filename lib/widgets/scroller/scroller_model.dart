@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/layout/layout_model.dart';
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:flutter/material.dart';
@@ -17,10 +17,10 @@ import 'package:fml/helper/common_helpers.dart';
 class ScrollerModel extends ViewableWidgetModel 
 {
   @override
-  bool isVerticallyExpanding({bool ignoreFixedHeight = false}) => !isFixedHeight;
+  bool isVerticallyExpanding() => height == null;
 
   @override
-  bool isHorizontallyExpanding({bool ignoreFixedWidth = false}) => !isFixedWidth;
+  bool isHorizontallyExpanding() => width == null;
 
   /// The cross alignment of the widgets children. Can be `top`, `bottom`, `start`, or `end`.
   StringObservable? _align;
@@ -38,7 +38,7 @@ class ScrollerModel extends ViewableWidgetModel
   @override
   bool get verticallyConstrained
   {
-    var layout = LayoutModel.getLayoutType(this.layout);
+    var layout = BoxModel.getLayoutType(this.layout);
     if (layout == LayoutType.column) return false;
     return super.verticallyConstrained;
   }
@@ -46,13 +46,13 @@ class ScrollerModel extends ViewableWidgetModel
   @override
   bool get horizontallyConstrained
   {
-    var layout = LayoutModel.getLayoutType(this.layout);
+    var layout = BoxModel.getLayoutType(this.layout);
     if (layout == LayoutType.row) return false;
     return super.verticallyConstrained;
   }
 
   /// Layout determines the widgets childrens layout. Can be `row`, `column`, `col`. Defaulted to `column`. Overrides direction.
-  LayoutType get layoutType => LayoutModel.getLayoutType(layout, defaultLayout: LayoutType.column);
+  LayoutType get layoutType => BoxModel.getLayoutType(layout, defaultLayout: LayoutType.column);
 
   StringObservable? _layout;
   set layout(dynamic v)

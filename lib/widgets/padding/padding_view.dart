@@ -1,8 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/column/column_view.dart';
+import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'padding_model.dart';
@@ -40,7 +39,7 @@ class _PaddingViewState extends WidgetState<PaddingView>
     if (widget.model.children == null || widget.model.children!.isEmpty) return SizedBox(width: pLeft + pRight, height: pTop + pBottom);
 
     // column view
-    Widget view = ColumnView(widget.model);
+    Widget view = BoxView(widget.model);
 
     // build the child views
     return view;

@@ -1,14 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/layout/layout_model.dart';
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/column/column_view.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class ColumnModel extends LayoutModel
+class ColumnModel extends BoxModel
 {
   @override
   LayoutType layoutType = LayoutType.column;
@@ -16,26 +14,24 @@ class ColumnModel extends LayoutModel
   @override
   String? get layout => "column";
 
+  /// Legacy - Use % height and/or % width
   @override
-  MainAxisSize get verticalAxisSize
+  set expand(dynamic expands)
   {
-    // expand and constrained by system
-    if (expand) return verticallyConstrained ? MainAxisSize.max : MainAxisSize.min;
-
-    // not expand but constrained in model
-    if (constraints.model.hasVerticalExpansionConstraints) return MainAxisSize.max;
-
-    return MainAxisSize.min;
+    expands = S.toBool(expands) ?? false;
+    if (expands)
+    {
+      if (height == null && heightPercentage == null) height = "100%";
+    }
   }
 
-  @override
-  MainAxisSize get horizontalAxisSize => MainAxisSize.min;
 
   @override
-  bool isVerticallyExpanding({bool ignoreFixedHeight = false})
+  bool isVerticallyExpanding()
   {
-    if (isFixedHeight && !ignoreFixedHeight) return false;
-    var expand = this.expand;
+    if (height == null) return false;
+
+    var expand = heightPercentage == 100;
     if (expand) return true;
 
     if (children != null)
@@ -54,7 +50,7 @@ class ColumnModel extends LayoutModel
   @override
   bool isHorizontallyExpanding({bool ignoreFixedWidth = false})
   {
-    if (isFixedWidth && !ignoreFixedWidth) return false;
+    if (width != null) return false;
     bool expand = false;
     if (children != null){
       for (var child in children!)
@@ -86,7 +82,4 @@ class ColumnModel extends LayoutModel
     }
     return model;
   }
-
-  @override
-  Widget getView({Key? key}) => getReactiveView(ColumnView(this));
 }

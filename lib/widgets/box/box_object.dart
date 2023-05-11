@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:fml/widgets/box_layout/flex_box_renderer.dart';
-import 'package:fml/widgets/layout/layout_model.dart';
+import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/box/box_renderer.dart';
 
-class FlexBox extends MultiChildRenderObjectWidget {
+class BoxObject extends MultiChildRenderObjectWidget {
   /// Creates a flex layout.
   ///
   /// The [direction] is required.
@@ -20,9 +20,9 @@ class FlexBox extends MultiChildRenderObjectWidget {
   /// directions, the [textDirection] must not be null.
   ///
 
-  final LayoutModel model;
+  final BoxModel model;
 
-  FlexBox({
+  BoxObject({
     required this.direction,
     required this.model,
     this.mainAxisAlignment = MainAxisAlignment.start,
@@ -148,7 +148,7 @@ class FlexBox extends MultiChildRenderObjectWidget {
     }
   }
 
-  /// The value to pass to [FlexBoxRenderer.textDirection].
+  /// The value to pass to [BoxRenderer.textDirection].
   ///
   /// This value is derived from the [textDirection] property and the ambient
   /// [Directionality]. The value is null if there is no need to specify the
@@ -161,7 +161,7 @@ class FlexBox extends MultiChildRenderObjectWidget {
   /// inherited widget and defaults to [VerticalDirection.down].)
   ///
   /// This method exists so that subclasses of [Flex] that create their own
-  /// render objects that are derived from [FlexBoxRenderer] can do so and still use
+  /// render objects that are derived from [BoxRenderer] can do so and still use
   /// the logic for providing a text direction only when it is necessary.
   @protected
   TextDirection? getEffectiveTextDirection(BuildContext context) {
@@ -169,8 +169,8 @@ class FlexBox extends MultiChildRenderObjectWidget {
   }
 
   @override
-  FlexBoxRenderer createRenderObject(BuildContext context) {
-    return FlexBoxRenderer(
+  BoxRenderer createRenderObject(BuildContext context) {
+    return BoxRenderer(
       model: model,
       direction: direction,
       mainAxisAlignment: mainAxisAlignment,
@@ -184,7 +184,7 @@ class FlexBox extends MultiChildRenderObjectWidget {
   }
 
   @override
-  void updateRenderObject(BuildContext context, covariant FlexBoxRenderer renderObject) {
+  void updateRenderObject(BuildContext context, covariant BoxRenderer renderObject) {
     renderObject
       ..direction = direction
       ..mainAxisAlignment = mainAxisAlignment
@@ -206,5 +206,49 @@ class FlexBox extends MultiChildRenderObjectWidget {
     properties.add(EnumProperty<TextDirection>('textDirection', textDirection, defaultValue: null));
     properties.add(EnumProperty<VerticalDirection>('verticalDirection', verticalDirection, defaultValue: VerticalDirection.down));
     properties.add(EnumProperty<TextBaseline>('textBaseline', textBaseline, defaultValue: null));
+  }
+
+  static double getMaxHeight(BoxModel model, AbstractNode? parent)
+  {
+    double height = double.negativeInfinity;
+    if (model.height != null && model.height! >= 0)
+    {
+      height = model.height!;
+    }
+
+    while (height < 0 &&  parent != null)
+    {
+      if (parent is RenderBox && parent.constraints.hasBoundedHeight)
+      {
+        height = parent.constraints.maxHeight;
+      }
+      else
+      {
+        parent = parent.parent;
+      }
+    }
+    return height;
+  }
+
+  static double getMaxWidth(BoxModel model, AbstractNode? parent)
+  {
+    double width = double.negativeInfinity;
+    if (model.width != null)
+    {
+      width = model.width!;
+    }
+
+    while (width < 0 &&  parent != null)
+    {
+      if (parent is RenderBox && parent.constraints.hasBoundedWidth)
+      {
+        width = parent.constraints.maxWidth;
+      }
+      else
+      {
+        parent = parent.parent;
+      }
+    }
+    return width;
   }
 }

@@ -2,10 +2,10 @@
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -47,7 +47,7 @@ class RadioModel extends FormFieldModel implements IFormField
 
 
   /// Layout determines the widgets childrens layout. Can be `row`, `column`, `col`, or `stack`. Defaulted to `column`. If set to `stack` it can take `POSITIONED` as a child.
-  LayoutType get layoutType => LayoutModel.getLayoutType(layout, defaultLayout: LayoutType.column);
+  LayoutType get layoutType => BoxModel.getLayoutType(layout, defaultLayout: LayoutType.column);
   StringObservable? _layout;
   set layout(dynamic v) {
     if (_layout != null) {

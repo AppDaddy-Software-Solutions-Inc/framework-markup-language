@@ -28,14 +28,6 @@ class ViewableWidgetModel extends ConstraintModel
   // holds animations
   List<AnimationModel>? animations;
 
-  // signifies if this widget naturally wishes to expand in the vertical
-  // this gets overridden in several widgets that inherited from this class
-  bool isVerticallyExpanding({bool ignoreFixedHeight = false}) => false;
-
-  // signifies if this widget naturally wishes to expand in the horizontal
-  // this gets overridden in several widgets that inherited from this class
-  bool isHorizontallyExpanding({bool ignoreFixedWidth = false}) => false;
-
   // constraints
   late final ConstraintSet constraints;
 
@@ -72,28 +64,7 @@ class ViewableWidgetModel extends ConstraintModel
     return list;
   }
 
-  /// VIEW LAYOUT
-  resetViewSizing()
-  {
-    _viewWidthChanged = false;
-    _viewWidth = null;
-    _viewWidthObservable?.set(null, notify: false);
-
-    _viewHeightChanged = false;
-    _viewHeight = null;
-    _viewHeightObservable?.set(null, notify: false);
-
-    _viewX = null;
-    _viewXObservable?.set(null, notify: false);
-
-    _viewY = null;
-    _viewYObservable?.set(null, notify: false);
-  }
-
   // view width
-  bool _viewWidthChanged = false;
-  bool get viewWidthChanged => _viewWidthChanged;
-
   double? _viewWidth;
   DoubleObservable? _viewWidthObservable;
   set viewWidth(double? v)
@@ -108,9 +79,6 @@ class ViewableWidgetModel extends ConstraintModel
   double? get viewWidth => _viewWidth;
 
   // view height
-  bool _viewHeightChanged = false;
-  bool get viewHeightChanged => _viewHeightChanged;
-
   double? _viewHeight;
   DoubleObservable? _viewHeightObservable;
   set viewHeight(double? v)
@@ -680,18 +648,14 @@ class ViewableWidgetModel extends ConstraintModel
     return view;
   }
 
+  /// this routine creates views for all
+  /// of its children
   List<Widget> inflate()
   {
-    // reset my view
-    resetViewSizing();
-
     // process children
     List<Widget> views = [];
     for (var model in viewableChildren)
     {
-      // reset child view
-      model.resetViewSizing();
-
       var view = model.getView();
       if (view != null) views.add(view);
     }
@@ -711,17 +675,10 @@ class ViewableWidgetModel extends ConstraintModel
     // set the view width, height and position
     if (size.width != viewWidth || size.height != viewHeight || position.dx != viewX || position.dy != viewY)
     {
-      if ((viewWidth ?? size.width) != size.width) _viewWidthChanged = true;
-      viewWidth = size.width;
-
-      if ((viewHeight ?? size.height) != size.height) _viewHeightChanged = true;
+      viewWidth  = size.width;
       viewHeight = size.height;
-
-      viewX = position.dx;
-      viewY = position.dy;
-
-      // notify the parent
-      if (parent is ViewableWidgetModel) (parent as ViewableWidgetModel).onLayoutComplete(model);
+      viewX      = position.dx;
+      viewY      = position.dy;
     }
   }
 

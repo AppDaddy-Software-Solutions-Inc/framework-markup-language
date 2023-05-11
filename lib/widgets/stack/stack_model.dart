@@ -1,13 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/layout/layout_model.dart';
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/stack/stack_view.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class StackModel extends LayoutModel
+class StackModel extends BoxModel
 {
   @override
   LayoutType layoutType = LayoutType.stack;
@@ -16,34 +15,10 @@ class StackModel extends LayoutModel
   String? get layout => "stack";
 
   @override
-  MainAxisSize get verticalAxisSize
-  {
-    // expand and constrained by system
-    if (expand) return verticallyConstrained ? MainAxisSize.max : MainAxisSize.min;
-
-    // not expand but constrained in model
-    if (constraints.model.hasVerticalExpansionConstraints) return MainAxisSize.max;
-
-    return MainAxisSize.min;
-  }
+  bool isVerticallyExpanding() => height == null && heightPercentage == 100;
 
   @override
-  MainAxisSize get horizontalAxisSize
-  {
-    // expand and constrained by system
-    if (expand) return horizontallyConstrained ? MainAxisSize.max : MainAxisSize.min;
-
-    // not expand but constrained in model
-    if (constraints.model.hasHorizontalExpansionConstraints) return MainAxisSize.max;
-
-    return MainAxisSize.min;
-  }
-
-  @override
-  bool isVerticallyExpanding({bool ignoreFixedHeight = false}) => expand && !isFixedHeight;
-
-  @override
-  bool isHorizontallyExpanding({bool ignoreFixedWidth = false}) => expand && !isFixedWidth;
+  bool isHorizontallyExpanding() => width == null && widthPercentage == 100;
 
   StackModel(WidgetModel parent, String? id) : super(parent, id);
 
@@ -92,8 +67,4 @@ class StackModel extends LayoutModel
       return 0;
     });
   }
-
-
-  @override
-  Widget getView({Key? key}) => getReactiveView(StackView(this));
 }

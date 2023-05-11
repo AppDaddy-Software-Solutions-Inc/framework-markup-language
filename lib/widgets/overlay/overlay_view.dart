@@ -5,8 +5,8 @@ import 'package:fml/helper/measured.dart';
 import 'package:fml/event/event.dart'   ;
 import 'package:fml/system.dart';
 import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
-import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:fml/widgets/overlay/overlay_manager_view.dart';
 import 'package:fml/widgets/overlay/overlay_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
@@ -129,7 +129,7 @@ class OverlayViewState extends State<OverlayView>
     if (widget.model.child is IWidgetView)
     {
       var model = (widget.model.child as IWidgetView).model;
-      if (model is LayoutModel)
+      if (model is BoxModel)
       {
         if (model.isHorizontallyExpanding()) model.setWidth(width);
         if (model.isVerticallyExpanding()) model.setHeight(height);

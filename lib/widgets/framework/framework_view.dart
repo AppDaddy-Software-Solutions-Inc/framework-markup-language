@@ -385,7 +385,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     // is wrapped in a Scroller
     if (body.findChildOfExactType(ScrollerModel) != null) view = NotificationListener<ScrollNotification>(onNotification: onScroll, child: view);
 
-    return UnconstrainedBox(child: SizedBox(child: view, width: body.width, height: body.height));
+    return SizedBox(child: view, width: body.width, height: body.height);
   }
 
   _setDeviceOrientation(String? orientation)

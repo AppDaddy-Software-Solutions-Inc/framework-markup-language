@@ -1,104 +1,84 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/column/column_view.dart';
-import 'package:fml/widgets/row/row_view.dart';
-import 'package:fml/widgets/stack/stack_view.dart';
-import 'package:fml/widgets/layout/layout_model.dart';
+import 'package:fml/widgets/box/box_data.dart';
+import 'package:fml/widgets/box/box_view.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/positioned/positioned_view.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:fml/widgets/box/box_view.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class BoxModel extends LayoutModel
+enum LayoutType { none, row, column, stack }
+
+enum VerticalAlignmentType { top, bottom, center, around, between, evenly }
+
+enum HorizontalAlignmentType { left, right, center, around, between, evenly }
+
+class BoxModel extends DecoratedWidgetModel
 {
-  @override
-  LayoutType get layoutType => LayoutModel.getLayoutType(layout, defaultLayout: LayoutType.column);
+  LayoutType get layoutType => getLayoutType(layout, defaultLayout: LayoutType.column);
 
-  @override
-  MainAxisSize get verticalAxisSize
+  /// Legacy - Use % height and/or % width
+  
+  set expand(dynamic expands)
   {
-    switch (layoutType)
+    expands = S.toBool(expands) ?? false;
+    if (expands)
     {
-      case LayoutType.row:
-        return MainAxisSize.max;
-
-      case LayoutType.stack:
-      case LayoutType.column:
-      default:
-        // expand and constrained by system
-        if (expand) return verticallyConstrained ? MainAxisSize.max : MainAxisSize.min;
-
-        // not expand but constrained in model
-        if (constraints.model.hasVerticalExpansionConstraints) return MainAxisSize.max;
-
-        return MainAxisSize.min;
+      if (width  == null && widthPercentage  == null) width  = "100%";
+      if (height == null && heightPercentage == null) height = "100%";
     }
   }
 
-  @override
-  MainAxisSize get horizontalAxisSize
+  /// layout
+  StringObservable? _layout;
+  set layout(dynamic v)
   {
-    switch (layoutType)
+    if (_layout != null)
     {
-      case LayoutType.row:
-        return MainAxisSize.max;
-      case LayoutType.stack:
-      default:
-        // expand and constrained by system
-        if (expand) return horizontallyConstrained ? MainAxisSize.max : MainAxisSize.min;
-
-        // not expand but constrained in model
-        if (constraints.model.hasHorizontalExpansionConstraints) return MainAxisSize.max;
-
-        return MainAxisSize.min;
-
+      _layout!.set(v);
+    }
+    else if (v != null)
+    {
+      _layout = StringObservable(Binding.toKey(id, 'layout'), v, scope: scope, listener: onPropertyChange);
     }
   }
-
-  @override
-  bool isVerticallyExpanding({bool ignoreFixedHeight = false})
-  {
-    if (isFixedHeight && !ignoreFixedHeight) return false;
-    var expand = this.expand;
-    if (expand) return true;
-    if (children != null){
-      for (var child in children!)
-      {
-        if (child is ViewableWidgetModel && child.visible && child.isVerticallyExpanding() && child.heightPercentage == null)
-        {
-          expand = true;
-          break;
-        }
-      }}
-    return expand;
-  }
-
-  @override
-  bool isHorizontallyExpanding({bool ignoreFixedWidth = false})
-  {
-    if (isFixedWidth && !ignoreFixedWidth) return false;
-    var expand = this.expand;
-    if (expand) return true;
-    if (children != null){
-      for (var child in children!)
-      {
-        if (child is ViewableWidgetModel && child.visible && child.isHorizontallyExpanding() && child.widthPercentage == null)
-        {
-          expand = true;
-          break;
-        }
-      }}
-    return expand;
-  }
+  String? get layout => _layout?.get()?.toLowerCase().trim();
 
   @override
   double get verticalPadding  => (marginTop ?? 0)  + (marginBottom ?? 0) + (borderwidth * 2) + (paddingTop ?? 0) + (paddingBottom ?? 0);
 
   @override
   double get horizontalPadding => (marginLeft ?? 0) + (marginRight  ?? 0) + (borderwidth * 2) + (paddingLeft ?? 0) + (paddingRight ?? 0);
+
+  /// Center attribute allows a simple boolean override for halign and valign both being center. halign and valign will override center if given.
+  BooleanObservable? _center;
+  set center(dynamic v) {
+    if (_center != null) {
+      _center!.set(v);
+    } else if (v != null) {
+      _center = BooleanObservable(Binding.toKey(id, 'center'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  bool get center => _center?.get() ?? false;
+
+  /// wrap determines the widget, if layout is row or col, how it will wrap.
+  BooleanObservable? _wrap;
+  set wrap(dynamic v) {
+    if (_wrap != null) {
+      _wrap!.set(v);
+    } else if (v != null) {
+      _wrap = BooleanObservable(Binding.toKey(id, 'wrap'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  bool get wrap => _wrap?.get() ?? false;
 
   // box blur
   BooleanObservable? _blur;
@@ -280,7 +260,7 @@ class BoxModel extends LayoutModel
   {
     if (xml == null) return;
 
-    // deserialize 
+    // deserialize
     super.deserialize(xml);
 
     /// Style Attributes
@@ -300,23 +280,52 @@ class BoxModel extends LayoutModel
 
     /// Build the layout
     layout  = Xml.get(node: xml, tag: 'layout');
+    center = Xml.get(node: xml, tag: 'center');
+    wrap = Xml.get(node: xml, tag: 'wrap');
+    expand = Xml.get(node: xml, tag: 'expand');
   }
 
   @override
-  Widget getView({Key? key}) => getReactiveView(BoxView(this));
-  Widget getContentView({Key? key})
+  List<Widget> inflate()
   {
-    switch (layoutType)
+    // process children
+    List<Widget> views = [];
+    for (var model in viewableChildren)
     {
-      case LayoutType.row:
-        return RowView(this);
+      var view = model.getView();
 
-      case LayoutType.column:
-        return ColumnView(this);
+      // wrap child in child data widget
+      // this is done for us in "positioned" if the child happens
+      // to be a positioned widget and the layout is "stack" (see positioned_view.dart)
+      if (view is! PositionedView)
+      {
+        view = LayoutBoxChildData(child: view!, model: model);
+      }
 
-      case LayoutType.stack:
+      if (view != null) views.add(view);
+    }
+    return views;
+  }
+
+  static LayoutType getLayoutType(String? layout,
+      {LayoutType defaultLayout = LayoutType.none}) {
+    switch (layout?.toLowerCase().trim()) {
+      case 'col':
+      case 'column':
+        return LayoutType.column;
+
+      case 'row':
+        return LayoutType.row;
+
+      case 'stack':
+        return LayoutType.stack;
+
       default:
-        return StackView(this);
+        return defaultLayout;
     }
   }
+
+  @override
+  //Widget getView({Key? key}) => getReactiveView(BoxView(this));
+  Widget getView({Key? key}) => BoxView(this);
 }

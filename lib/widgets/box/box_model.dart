@@ -22,7 +22,7 @@ class BoxModel extends DecoratedWidgetModel
   LayoutType get layoutType => getLayoutType(layout, defaultLayout: LayoutType.column);
 
   /// Legacy - Use % height and/or % width
-  
+
   set expand(dynamic expands)
   {
     expands = S.toBool(expands) ?? false;

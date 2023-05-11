@@ -250,7 +250,7 @@ class S
     {
       if (color != null)
       {
-        if (c == null) if ((colors.containsKey(color.toLowerCase()))) c = colors[color.toLowerCase()];
+        if (colors.containsKey(color.toLowerCase())) c = colors[color.toLowerCase()];
         if (c == null && color.length == 7) c = Color(int.parse(color.substring(1, 7), radix: 16) + 0xFF000000);
         if (c == null && color.length == 9) c = Color(int.parse(color.substring(1, 9), radix: 16) + 0x00000000);
       }

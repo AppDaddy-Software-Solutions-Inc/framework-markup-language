@@ -204,7 +204,7 @@ class _GridViewState extends WidgetState<GridView>
   {
 
     ScrollController? controller = scroller;
-    if (controller != null) _handleScrollNotification(ScrollUpdateNotification(metrics: FixedScrollMetrics(minScrollExtent: controller.position.minScrollExtent, maxScrollExtent: controller.position.maxScrollExtent, pixels: controller.position.pixels, viewportDimension: controller.position.viewportDimension, axisDirection: controller.position.axisDirection), context: context, scrollDelta: 0.0));
+    if (controller != null) _handleScrollNotification(ScrollUpdateNotification(metrics: FixedScrollMetrics(minScrollExtent: controller.position.minScrollExtent, maxScrollExtent: controller.position.maxScrollExtent, pixels: controller.position.pixels, viewportDimension: controller.position.viewportDimension, axisDirection: controller.position.axisDirection, devicePixelRatio: MediaQuery.of(context).devicePixelRatio), context: context, scrollDelta: 0.0));
   }
 
   onMeasuredItem(Size size, {dynamic data})

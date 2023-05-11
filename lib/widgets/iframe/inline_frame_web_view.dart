@@ -8,12 +8,12 @@ import 'dart:ui' as dart_ui;
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'inline_frame_model.dart';
-import 'inline_frame_view.dart';
+import 'inline_frame_view.dart' as widget_view;
 import 'package:fml/helper/common_helpers.dart';
 
 InlineFrameView getView(model) => InlineFrameView(model);
 
-class InlineFrameView extends StatefulWidget implements View, IWidgetView
+class InlineFrameView extends StatefulWidget implements widget_view.View, IWidgetView
 {
   @override
   final InlineFrameModel model;

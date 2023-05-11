@@ -46,7 +46,7 @@ class MyTheme
     if (brightness != null)
     {
       if (brightness == 'system' || brightness == 'platform') {
-        brightnessPreference = MediaQueryData.fromWindow(WidgetsBinding.instance.window).platformBrightness;
+        brightnessPreference = WidgetsBinding.instance.platformDispatcher.platformBrightness;
       } else if (brightness == 'dark') {
         brightnessPreference = Brightness.dark;
       } else if (brightness == 'light') {

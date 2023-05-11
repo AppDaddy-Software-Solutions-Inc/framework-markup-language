@@ -271,7 +271,7 @@ class ApplicationModel extends WidgetModel
     if (cBrightness == 'system' || cBrightness == 'platform') {
       try
     {
-      cBrightness = MediaQueryData.fromWindow(WidgetsBinding.instance.window).platformBrightness.toString().toLowerCase().split('.')[1];
+      if(context != null) cBrightness = MediaQueryData.fromView(View.of(context!)).platformBrightness.toString().toLowerCase().split('.')[1];
     }
     catch(e)
     {

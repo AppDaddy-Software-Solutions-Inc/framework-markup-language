@@ -265,12 +265,16 @@ class System extends WidgetModel implements IEventManager {
     _mouse = BooleanObservable(Binding.toKey('mouse'),
         RendererBinding.instance.mouseTracker.mouseIsConnected,
         scope: scope);
-    _screenheight = IntegerObservable(Binding.toKey('screenheight'),
-        WidgetsBinding.instance.window.physicalSize.height,
+    if(this.context != null) {
+      _screenheight = IntegerObservable(Binding.toKey('screenheight'),
+        View.of(this.context!).physicalSize.height,
         scope: scope);
-    _screenwidth = IntegerObservable(Binding.toKey('screenwidth'),
-        WidgetsBinding.instance.window.physicalSize.width,
+    }
+    if(this.context != null) {
+      _screenwidth = IntegerObservable(Binding.toKey('screenwidth'),
+        View.of(this.context!).physicalSize.width,
         scope: scope);
+    }
     _userplatform =
         StringObservable(Binding.toKey('platform'), platform, scope: scope);
     _useragent = StringObservable(

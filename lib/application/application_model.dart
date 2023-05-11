@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'dart:ui';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/config/config_model.dart';
@@ -271,7 +272,7 @@ class ApplicationModel extends WidgetModel
     if (cBrightness == 'system' || cBrightness == 'platform') {
       try
     {
-      if(context != null) cBrightness = MediaQueryData.fromView(View.of(context!)).platformBrightness.toString().toLowerCase().split('.')[1];
+      if(context != null) cBrightness = PlatformDispatcher.instance.platformBrightness.toString().toLowerCase().split('.')[1];
     }
     catch(e)
     {

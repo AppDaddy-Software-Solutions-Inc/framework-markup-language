@@ -100,8 +100,9 @@ class _ChartViewState extends WidgetState<ChartView>
       tickProviderSpec: CF.BasicNumericTickProviderSpec(zeroBound: false, dataIsInWholeNumbers: true, desiredTickCount: ticks),
       viewport: widget.model.yaxis?.min != null && widget.model.yaxis?.max != null
           ? CF.NumericExtents(S.toNum(widget.model.yaxis!.min!)!, S.toNum(widget.model.yaxis!.max!)!) : null,
-      renderSpec: CF.GridlineRendererSpec(
-          lineStyle: CF.LineStyleSpec(dashPattern: [4, 4]),
+      renderSpec: CF.SmallTickRendererSpec( // GridlineRendererSpec(
+          tickLengthPx: 4,
+          lineStyle: CF.LineStyleSpec(dashPattern: []),
           labelStyle: CF.TextStyleSpec(
               fontSize: widget.model.yaxis?.labelvisible == false ? 0 : widget.model.yaxis!.labelsize,
               color: CF.ColorUtil.fromDartColor(
@@ -799,7 +800,6 @@ class _ChartViewState extends WidgetState<ChartView>
   /// Event called when a point selection changes
   _onSelectionChanged(CF.SelectionModel model) {
     final selectedDatum = model.selectedDatum;
-
     dynamic domain;
     dynamic selectedSeriesId;
 
@@ -819,13 +819,25 @@ class _ChartViewState extends WidgetState<ChartView>
             // Match the selected x value to the selected series, set the
             //model.selected observable for binding to the data point and stop looping
             if (selectedDatum[0].series.data[i].x == domain) {
-              Map seriesData = selectedSeries.data[i];
-              // We also add the series id to the data set
-              seriesData['_id'] = selectedSeriesId;
-              seriesData['_x'] = selectedDatum[0].series.data[i].x;
-              seriesData['_y'] = selectedDatum[0].series.data[i].y;
-              seriesData['_label'] = selectedDatum[0].series.data[i].label;
-              widget.model.selected = seriesData;
+              // points ordered by closest to the selection matching the x axis
+              List<Map> closestToSelection = [];
+
+              for (var nearest in selectedDatum) {
+                Map seriesData = {};
+                // We also add the series id to the data set
+                seriesData['_id'] = selectedSeriesId;
+                seriesData['_x'] = nearest.series.data[i].x;
+                seriesData['_y'] = nearest.series.data[i].y;
+                seriesData['_label'] = nearest.series.data[i].label;
+                closestToSelection.add(seriesData);
+              }
+
+              // stop listening during build
+              widget.model.removeListener(this);
+              widget.model.selected = closestToSelection;
+              // start listening to model changes
+              widget.model.registerListener(this);
+
               break;
             }
           }
@@ -844,8 +856,8 @@ class _ChartViewState extends WidgetState<ChartView>
   /// Returns additional chart behaviors based on model settings
   List<CF.ChartBehavior<T>> getBehaviors<T>() {
     List<CF.ChartBehavior<T>> behaviors = [];
-    if (chartType != ChartType.PieChart) behaviors.add(CF.PanAndZoomBehavior());
-    
+    // if (chartType != ChartType.PieChart) behaviors.add(CF.PanAndZoomBehavior());
+
     if (widget.model.showlegend != 'false' && chartType != ChartType.PieChart)
       behaviors.add(
           CF.SeriesLegend(
@@ -854,7 +866,7 @@ class _ChartViewState extends WidgetState<ChartView>
                 fontSize: widget.model.legendsize,
                 color: CF.Color.fromHex(code: '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}')),
           ));
-    
+
     if (widget.model.showlegend != 'false' && chartType == ChartType.PieChart)
       behaviors.add(CF.DatumLegend(
         position: legendPosition(widget.model.showlegend),
@@ -866,7 +878,7 @@ class _ChartViewState extends WidgetState<ChartView>
         desiredMaxColumns: 4,
         cellPadding: EdgeInsets.only(right: 4.0, bottom: 4.0),
       ));
-    
+
     if (widget.model.xaxis!.title != null)
       behaviors.add(CF.ChartTitle(widget.model.xaxis!.title!,
           titleStyleSpec: CF.TextStyleSpec(
@@ -876,7 +888,7 @@ class _ChartViewState extends WidgetState<ChartView>
               ? CF.BehaviorPosition.start
               : CF.BehaviorPosition.bottom,
           titleOutsideJustification: CF.OutsideJustification.middleDrawArea));
-    
+
     if (widget.model.yaxis!.title != null)
       behaviors.add(CF.ChartTitle(widget.model.yaxis!.title!,
           titleStyleSpec: CF.TextStyleSpec(
@@ -887,9 +899,16 @@ class _ChartViewState extends WidgetState<ChartView>
               : CF.BehaviorPosition.start,
           titleOutsideJustification: CF.OutsideJustification.middleDrawArea));
 
-    // behaviors.add(CF.SelectNearest(eventTrigger: CF.SelectionTrigger.hover, selectionModelType: CF.SelectionModelType.info, selectAcrossAllDrawAreaComponents: true, selectClosestSeries: false));
-    // behaviors.add(CF.SelectNearest(eventTrigger: CF.SelectionTrigger.tap, selectionModelType: CF.SelectionModelType.info, selectAcrossAllDrawAreaComponents: true, selectClosestSeries: false));
-    behaviors.add(CF.LinePointHighlighter(showHorizontalFollowLine: CF.LinePointHighlighterFollowLineType.none, showVerticalFollowLine: CF.LinePointHighlighterFollowLineType.nearest, symbolRenderer: CF.RectSymbolRenderer(isSolid: true)));
+    behaviors.add(
+        CF.LinePointHighlighter(
+            drawFollowLinesAcrossChart: true,
+            dashPattern: [3,2],
+            selectionModelType: CF.SelectionModelType.info,
+            showHorizontalFollowLine:
+            CF.LinePointHighlighterFollowLineType.nearest,
+            showVerticalFollowLine:
+            CF.LinePointHighlighterFollowLineType.nearest,
+            symbolRenderer: CF.CircleSymbolRenderer(isSolid: true)));
     behaviors.add(CF.SelectNearest(eventTrigger: CF.SelectionTrigger.tapAndDrag));
 
     return behaviors;

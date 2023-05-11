@@ -156,6 +156,16 @@ class ChartModel extends DecoratedWidgetModel  {
   }
   get selected => _selected?.get();
 
+  setSelected(dynamic v)
+  {
+    if (_selected == null)
+    {
+      _selected = ListObservable(Binding.toKey(id, 'selected'), null, scope: scope);
+      _selected!.registerListener(onPropertyChange);
+    }
+    _selected?.set(v, notify:false);
+  }
+
   /// If the chart should animate it's series
   BooleanObservable? _animated;
   set animated (dynamic v)

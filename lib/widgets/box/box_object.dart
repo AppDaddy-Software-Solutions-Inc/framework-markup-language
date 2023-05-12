@@ -33,13 +33,7 @@ class BoxObject extends MultiChildRenderObjectWidget {
     this.textBaseline, // NO DEFAULT: we don't know what the text's baseline should be
     this.clipBehavior = Clip.none,
     super.children,
-  }) : assert(direction != null),
-        assert(mainAxisAlignment != null),
-        assert(mainAxisSize != null),
-        assert(crossAxisAlignment != null),
-        assert(verticalDirection != null),
-        assert(crossAxisAlignment != CrossAxisAlignment.baseline || textBaseline != null, 'textBaseline is required if you specify the crossAxisAlignment with CrossAxisAlignment.baseline'),
-        assert(clipBehavior != null);
+  });
 
   /// The direction to use as the main axis.
   ///
@@ -136,13 +130,12 @@ class BoxObject extends MultiChildRenderObjectWidget {
   /// Defaults to [Clip.none].
   final Clip clipBehavior;
 
-  bool get _needTextDirection {
-    assert(direction != null);
+  bool get _needTextDirection
+  {
     switch (direction) {
       case Axis.horizontal:
         return true; // because it affects the layout order.
       case Axis.vertical:
-        assert(crossAxisAlignment != null);
         return crossAxisAlignment == CrossAxisAlignment.start
             || crossAxisAlignment == CrossAxisAlignment.end;
     }
@@ -211,9 +204,11 @@ class BoxObject extends MultiChildRenderObjectWidget {
   static double getMaxHeight(BoxModel model, AbstractNode? parent)
   {
     double height = double.negativeInfinity;
-    if (model.height != null && model.height! >= 0)
+
+    var modelHeight = model.getBoundedHeight();
+    if (modelHeight != null)
     {
-      height = model.height!;
+      height = modelHeight;
     }
 
     while (height < 0 &&  parent != null)
@@ -233,9 +228,11 @@ class BoxObject extends MultiChildRenderObjectWidget {
   static double getMaxWidth(BoxModel model, AbstractNode? parent)
   {
     double width = double.negativeInfinity;
-    if (model.width != null)
+
+    var modelWidth = model.getBoundedWidth();
+    if (modelWidth != null)
     {
-      width = model.width!;
+      width = modelWidth;
     }
 
     while (width < 0 &&  parent != null)

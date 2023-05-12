@@ -84,27 +84,19 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
     VerticalDirection verticalDirection = VerticalDirection.down,
     TextBaseline? textBaseline,
     Clip clipBehavior = Clip.none,
-  }) : assert(direction != null),
-        assert(mainAxisAlignment != null),
-        assert(mainAxisSize != null),
-        assert(crossAxisAlignment != null),
-        assert(clipBehavior != null),
-        _direction = direction,
+  }) :  _direction = direction,
         _mainAxisAlignment = mainAxisAlignment,
         _mainAxisSize = mainAxisSize,
         _crossAxisAlignment = crossAxisAlignment,
         _textDirection = textDirection,
         _verticalDirection = verticalDirection,
         _textBaseline = textBaseline,
-        _clipBehavior = clipBehavior {
-
-  }
+        _clipBehavior = clipBehavior;
 
   /// The direction to use as the main axis.
   Axis get direction => _direction;
   Axis _direction;
   set direction(Axis value) {
-    assert(value != null);
     if (_direction != value) {
       _direction = value;
       markNeedsLayout();
@@ -123,7 +115,6 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
   MainAxisAlignment get mainAxisAlignment => _mainAxisAlignment;
   MainAxisAlignment _mainAxisAlignment;
   set mainAxisAlignment(MainAxisAlignment value) {
-    assert(value != null);
     if (_mainAxisAlignment != value) {
       _mainAxisAlignment = value;
       markNeedsLayout();
@@ -143,7 +134,6 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
   MainAxisSize get mainAxisSize => _mainAxisSize;
   MainAxisSize _mainAxisSize;
   set mainAxisSize(MainAxisSize value) {
-    assert(value != null);
     if (_mainAxisSize != value) {
       _mainAxisSize = value;
       markNeedsLayout();
@@ -162,7 +152,6 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
   CrossAxisAlignment get crossAxisAlignment => _crossAxisAlignment;
   CrossAxisAlignment _crossAxisAlignment;
   set crossAxisAlignment(CrossAxisAlignment value) {
-    assert(value != null);
     if (_crossAxisAlignment != value) {
       _crossAxisAlignment = value;
       markNeedsLayout();
@@ -239,8 +228,6 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
   }
 
   bool get _debugHasNecessaryDirections {
-    assert(direction != null);
-    assert(crossAxisAlignment != null);
     if (firstChild != null && lastChild != firstChild) {
       // i.e. there's more than one child
       switch (direction) {
@@ -248,7 +235,6 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
           assert(textDirection != null, 'Horizontal $runtimeType with multiple children has a null textDirection, so the layout order is undefined.');
           break;
         case Axis.vertical:
-          assert(verticalDirection != null, 'Vertical $runtimeType with multiple children has a null verticalDirection, so the layout order is undefined.');
           break;
       }
     }
@@ -259,7 +245,6 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
           assert(textDirection != null, 'Horizontal $runtimeType with $mainAxisAlignment has a null textDirection, so the alignment cannot be resolved.');
           break;
         case Axis.vertical:
-          assert(verticalDirection != null, 'Vertical $runtimeType with $mainAxisAlignment has a null verticalDirection, so the alignment cannot be resolved.');
           break;
       }
     }
@@ -267,7 +252,6 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
         crossAxisAlignment == CrossAxisAlignment.end) {
       switch (direction) {
         case Axis.horizontal:
-          assert(verticalDirection != null, 'Horizontal $runtimeType with $crossAxisAlignment has a null verticalDirection, so the alignment cannot be resolved.');
           break;
         case Axis.vertical:
           assert(textDirection != null, 'Vertical $runtimeType with $crossAxisAlignment has a null textDirection, so the alignment cannot be resolved.');
@@ -289,7 +273,6 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
   Clip get clipBehavior => _clipBehavior;
   Clip _clipBehavior = Clip.none;
   set clipBehavior(Clip value) {
-    assert(value != null);
     if (value != _clipBehavior) {
       _clipBehavior = value;
       markNeedsPaint();
@@ -584,7 +567,6 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
   _LayoutSizes _computeSizes({required BoxConstraints constraints, required ChildLayouter layoutChild})
   {
     assert(_debugHasNecessaryDirections);
-    assert(this.constraints != null);
 
     // size children
     var allocated = calculateChildSizes();
@@ -643,7 +625,6 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
               minChildExtent = 0.0;
               break;
           }
-          assert(minChildExtent != null);
           final BoxConstraints innerConstraints;
           if (crossAxisAlignment == CrossAxisAlignment.stretch) {
             switch (_direction) {
@@ -693,8 +674,22 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
       }
     }
 
-    if (model.layoutType == LayoutType.row    && !model.isHorizontallyExpanding()) maxMainSize = allocatedSize;
-    if (model.layoutType == LayoutType.column && !model.isVerticallyExpanding())   maxMainSize = allocatedSize;
+    // adjust to main axis size
+    switch (model.layoutType)
+    {
+      case LayoutType.row:
+        if (!model.hasFlexibleWidth)  maxMainSize  = allocatedSize;
+        if (!model.hasFlexibleHeight) maxCrossSize = allocated.height;
+        break;
+
+      case LayoutType.column:
+        if (!model.hasFlexibleHeight) maxMainSize  = allocatedSize;
+        if (!model.hasFlexibleWidth)  maxCrossSize = allocated.width;
+        break;
+
+      default:
+        break;
+    }
 
     return _LayoutSizes(mainSize: maxMainSize, crossSize: maxCrossSize, allocatedSize: allocatedSize);
   }
@@ -838,72 +833,102 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
         var idChild = childModel.id;
         print('Child id is $idChild');
 
-        bool flexible = _direction == Axis.horizontal ? childModel.isHorizontallyExpanding() : childModel.isVerticallyExpanding();
-
-        // set width
-        if (childModel.width != null)
+        // is the child flexible?
+        bool flex = true;
+        switch (_direction)
         {
-          var maxWidth = childModel.width!;
-          childConstraints = childConstraints.tighten(width: maxWidth);
-          if (_direction == Axis.horizontal) flexible = false;
+          case Axis.horizontal:
+
+            // we dont want to flex if child's width is fixed
+            if (childModel.hasBoundedWidth)
+            {
+              flex = false;
+            }
+
+            // we don't want to flex if the child is expanding in the
+            // horizontal axis and so am I
+            else if (childModel.hasExpandingWidth && !myConstraints.hasBoundedWidth)
+            {
+              flex = false;
+            }
+
+            break;
+
+          case Axis.vertical:
+
+            // we don't want to flex if child's height is fixed
+            if (childModel.hasBoundedHeight)
+            {
+              flex = false;
+            }
+
+            // we don't want to flex if the child is expanding in the
+            // vertical axis and so am I
+            else if (childModel.hasExpandingHeight && !myConstraints.hasBoundedHeight)
+            {
+              flex = false;
+            }
+
+            break;
         }
 
-        else if (childModel.widthPercentage != null)
+        // get the child's width from the model
+        // and tighten the child's width constraint
+        var childWidth = childModel.getBoundedWidth(widthParent: myMaxWidth);
+        if (childWidth != null)
         {
-          var maxWidth = ((childModel.widthPercentage!/100) * myMaxWidth);
-          childConstraints = childConstraints.tighten(width: maxWidth);
-          if (_direction == Axis.horizontal) flexible = false;
+          childConstraints = childConstraints.tighten(width: childWidth);
         }
 
-        // set height
-        if (childModel.height != null)
+        // get the child's height from the model
+        // and tighten the child's height constraint
+        var childHeight = childModel.getBoundedHeight(heightParent: myMaxHeight);
+        if (childHeight != null)
         {
-          var maxHeight = childModel.height!;
-          childConstraints = childConstraints.tighten(height: maxHeight);
-          if (_direction == Axis.vertical) flexible = false;
+          childConstraints = childConstraints.tighten(height: childHeight);
         }
 
-        else if (childModel.heightPercentage != null)
+        // If both of us are unconstrained in the horizontal axis,
+        // tighten the child's width constraint prior to layout
+        if (!myConstraints.hasBoundedWidth && childModel.hasExpandingWidth)
         {
-          var maxHeight = ((childModel.heightPercentage!/100) * myMaxHeight);
-          childConstraints = childConstraints.tighten(height: maxHeight);
-          if (_direction == Axis.vertical) flexible = false;
+          childConstraints = BoxConstraints(minWidth: childConstraints.minWidth, maxWidth: myMaxWidth, minHeight: childConstraints.minHeight, maxHeight: childConstraints.maxHeight);
         }
 
-        if (flexible)
+        // If both of us are unconstrained in the vertical axis,
+        // tighten the child's height constraint prior to layout
+        if (!myConstraints.hasBoundedHeight && childModel.hasExpandingHeight)
+        {
+          childConstraints = BoxConstraints(minWidth: childConstraints.minWidth, maxWidth: childConstraints.maxWidth, minHeight: childConstraints.minHeight, maxHeight: myMaxHeight);
+        }
+
+        // set the child's flex value
+        // for later layout
+        if (flex)
         {
           childData.flex = childModel.flex ?? 1;
         }
 
+        // calculate the child's size by
+        // performing a dry layout
         else
         {
-          if (!childConstraints.hasBoundedWidth && childModel.isHorizontallyExpanding())
-          {
-            childConstraints = BoxConstraints(minWidth: childConstraints.minWidth, maxWidth: myWidth, minHeight: childConstraints.minHeight, maxHeight: childConstraints.maxHeight);
-          }
-
-          if (!childConstraints.hasBoundedHeight && childModel.isVerticallyExpanding())
-          {
-            childConstraints = BoxConstraints(minWidth: childConstraints.minWidth, maxWidth: childConstraints.maxWidth, minHeight: childConstraints.minHeight, maxHeight: myWidth);
-          }
-
-
           childData.size = ChildLayoutHelper.layoutChild(child, childConstraints);
           childData.flex = 0;
-        }
 
-        // set dimensions
-        switch (_direction)
-        {
-          case Axis.horizontal:
-            myWidth  = myWidth + (childData.size?.width  ?? 0);
-            myHeight = max(myHeight, (childData.size?.height ?? 0));
-            break;
+          // set my dimensions
+          switch (_direction)
+          {
+            case Axis.horizontal:
+              myWidth  = myWidth + (childData.size?.width ?? 0);
+              myHeight = max(myHeight, (childData.size?.height ?? 0));
+              break;
 
-          case Axis.vertical:
-            myHeight = myHeight + (childData.size?.height  ?? 0);
-            myWidth  = max(myWidth, (childData.size?.width ?? 0));
-            break;
+            case Axis.vertical:
+              myHeight = myHeight + (childData.size?.height  ?? 0);
+              myWidth  = max(myWidth, (childData.size?.width ?? 0));
+              break;
+          }
         }
       }
       child = childAfter(child);
@@ -1084,7 +1109,6 @@ class _LayoutSizes {
 typedef _ChildSizingFunction = double Function(RenderBox child, double extent);
 
 bool? _startIsTopLeft(Axis direction, TextDirection? textDirection, VerticalDirection? verticalDirection) {
-  assert(direction != null);
   // If the relevant value of textDirection or verticalDirection is null, this returns null too.
   switch (direction) {
     case Axis.horizontal:

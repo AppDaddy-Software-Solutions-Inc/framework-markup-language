@@ -16,12 +16,6 @@ import 'package:fml/helper/common_helpers.dart';
 /// Defines the properties used to build a [SCROLLER.ScrollerView]
 class ScrollerModel extends ViewableWidgetModel 
 {
-  @override
-  bool isVerticallyExpanding() => height == null;
-
-  @override
-  bool isHorizontallyExpanding() => width == null;
-
   /// The cross alignment of the widgets children. Can be `top`, `bottom`, `start`, or `end`.
   StringObservable? _align;
 
@@ -36,19 +30,17 @@ class ScrollerModel extends ViewableWidgetModel
   String? get align => _align?.get();
 
   @override
-  bool get verticallyConstrained
+  bool get hasExpandingWidth
   {
-    var layout = BoxModel.getLayoutType(this.layout);
-    if (layout == LayoutType.column) return false;
-    return super.verticallyConstrained;
+    if (hasBoundedWidth) return false;
+    return true;
   }
 
   @override
-  bool get horizontallyConstrained
+  bool get hasExpandingHeight
   {
-    var layout = BoxModel.getLayoutType(this.layout);
-    if (layout == LayoutType.row) return false;
-    return super.verticallyConstrained;
+    if (hasBoundedHeight) return false;
+    return true;
   }
 
   /// Layout determines the widgets childrens layout. Can be `row`, `column`, `col`. Defaulted to `column`. Overrides direction.

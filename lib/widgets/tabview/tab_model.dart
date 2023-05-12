@@ -20,12 +20,6 @@ class TabModel extends BoxModel
   @override
   LayoutType get layoutType => LayoutType.column;
 
-  @override
-  bool isVerticallyExpanding() => height == null;
-
-  @override
-  bool isHorizontallyExpanding() => width == null;
-
   // index
   IntegerObservable? _index;
   set index(dynamic v)

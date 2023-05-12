@@ -22,12 +22,6 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
   // prototype
   String? prototype;
 
-  @override
-  bool isVerticallyExpanding() => height == null;
-
-  @override
-  bool isHorizontallyExpanding() => width == null;
-
   // items
   HashMap<int,GridItemModel> items = HashMap<int,GridItemModel>();
 

@@ -22,10 +22,18 @@ class ChartModel extends DecoratedWidgetModel  {
   final List<ChartSeriesModel> series = [];
 
   @override
-  bool isVerticallyExpanding() => true;
+  bool get hasExpandingWidth
+  {
+    if (hasBoundedWidth) return false;
+    return true;
+  }
 
   @override
-  bool isHorizontallyExpanding({bool ignoreFixedWidth = false}) => true;
+  bool get hasExpandingHeight
+  {
+    if (hasBoundedHeight) return false;
+    return true;
+  }
 
   ChartModel(WidgetModel parent, String? id,
     {

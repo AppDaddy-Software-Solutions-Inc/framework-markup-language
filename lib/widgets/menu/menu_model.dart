@@ -12,12 +12,6 @@ import 'package:fml/helper/common_helpers.dart';
 
 class MenuModel extends DecoratedWidgetModel
 {
-  @override
-  bool isVerticallyExpanding() => height == null;
-
-  @override
-  bool isHorizontallyExpanding() => width == null;
-
   static final String typeList   = "list";
   static final String typeButton = "button";
 
@@ -26,6 +20,20 @@ class MenuModel extends DecoratedWidgetModel
 
   // items
   List<MenuItemModel> items = [];
+
+  @override
+  bool get hasExpandingWidth
+  {
+    if (hasBoundedWidth) return false;
+    return true;
+  }
+
+  @override
+  bool get hasExpandingHeight
+  {
+    if (hasBoundedHeight) return false;
+    return true;
+  }
 
   MenuModel(WidgetModel? parent, String?  id) : super(parent, id)
   {

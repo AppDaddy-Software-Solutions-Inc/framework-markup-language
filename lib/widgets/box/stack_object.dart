@@ -140,7 +140,7 @@ class StackObject extends MultiChildRenderObjectWidget
     this.fit = StackFit.loose,
     this.clipBehavior = Clip.hardEdge,
     super.children,
-  }) : assert(clipBehavior != null);
+  });
 
   /// How to align the non-positioned and partially-positioned children in the
   /// stack.

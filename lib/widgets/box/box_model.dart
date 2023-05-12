@@ -4,7 +4,6 @@ import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/positioned/positioned_view.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -21,17 +20,31 @@ class BoxModel extends DecoratedWidgetModel
 {
   LayoutType get layoutType => getLayoutType(layout, defaultLayout: LayoutType.column);
 
-  /// Legacy - Use % height and/or % width
+  // Denotes whether box widgets (row, column) naturally expand or contract
+  final bool expandDefaultBehavior = true;
 
-  set expand(dynamic expands)
+  /// Expand, which is true by default, tells the widget if it should shrink to its children, or grow to its parents constraints. Width/Height attributes will override expand.
+  BooleanObservable? _expand;
+  set expand(dynamic v)
   {
-    expands = S.toBool(expands) ?? false;
-    if (expands)
+    if (_expand != null)
     {
-      if (width  == null && widthPercentage  == null) width  = "100%";
-      if (height == null && heightPercentage == null) height = "100%";
+      _expand!.set(v);
+    }
+    else if (v != null)
+    {
+      _expand = BooleanObservable(Binding.toKey(id, 'expand'), v, scope: scope, listener: onPropertyChange);
     }
   }
+  bool? get expand => _expand?.get();
+
+  // expands in the vertical
+  @override
+  bool get hasFlexibleWidth => expand ?? expandDefaultBehavior;
+
+  // expands in the horizontal
+  @override
+  bool get hasFlexibleHeight => expand ?? expandDefaultBehavior;
 
   /// layout
   StringObservable? _layout;

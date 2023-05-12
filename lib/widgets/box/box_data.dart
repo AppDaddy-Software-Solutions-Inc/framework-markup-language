@@ -45,29 +45,29 @@ class LayoutBoxParentData extends ContainerBoxParentData<RenderBox>
 
 class LayoutBoxChildData extends ParentDataWidget<LayoutBoxParentData>
 {
-  ViewableWidgetModel model;
+  final ViewableWidgetModel model;
 
   /// The distance by which the child's top edge is inset from the top of the stack.
-  double? top;
+  final double? top;
 
   /// The distance by which the child's right edge is inset from the right of the stack.
-  double? right;
+  final double? right;
 
   /// The distance by which the child's bottom edge is inset from the bottom of the stack.
-  double? bottom;
+  final double? bottom;
 
   /// The distance by which the child's left edge is inset from the left of the stack.
-  double? left;
+  final double? left;
 
   /// The child's width.
   ///
   /// Ignored if both left and right are non-null.
-  double? width;
+  final double? width;
 
   /// The child's height.
   ///
   /// Ignored if both top and bottom are non-null.
-  double? height;
+  final double? height;
 
   LayoutBoxChildData({
     required this.model,

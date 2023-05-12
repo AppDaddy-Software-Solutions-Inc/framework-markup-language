@@ -25,12 +25,6 @@ enum PaddingType { none, first, last, evenly, proportionately }
 
 class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
 {
-  @override
-  bool isVerticallyExpanding() => height == null;
-
-  @override
-  bool isHorizontallyExpanding() => width == null;
-
   // prototype
   String? prototype;
   TableRowModel? prototypeModel;

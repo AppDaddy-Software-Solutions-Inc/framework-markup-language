@@ -62,10 +62,7 @@ class StackRenderer extends RenderBox
     TextDirection? textDirection,
     StackFit fit = StackFit.loose,
     Clip clipBehavior = Clip.hardEdge,
-  }) : assert(alignment != null),
-        assert(fit != null),
-        assert(clipBehavior != null),
-        _alignment = alignment,
+  }) :  _alignment = alignment,
         _textDirection = textDirection,
         _fit = fit,
         _clipBehavior = clipBehavior {
@@ -113,7 +110,6 @@ class StackRenderer extends RenderBox
   AlignmentGeometry get alignment => _alignment;
   AlignmentGeometry _alignment;
   set alignment(AlignmentGeometry value) {
-    assert(value != null);
     if (_alignment == value) {
       return;
     }
@@ -143,7 +139,6 @@ class StackRenderer extends RenderBox
   StackFit get fit => _fit;
   StackFit _fit;
   set fit(StackFit value) {
-    assert(value != null);
     if (_fit != value) {
       _fit = value;
       markNeedsLayout();
@@ -156,7 +151,6 @@ class StackRenderer extends RenderBox
   Clip get clipBehavior => _clipBehavior;
   Clip _clipBehavior = Clip.hardEdge;
   set clipBehavior(Clip value) {
-    assert(value != null);
     if (value != _clipBehavior) {
       _clipBehavior = value;
       markNeedsPaint();
@@ -283,35 +277,25 @@ class StackRenderer extends RenderBox
 
     bool calcWidth  = true;
     bool calcHeight = true;
-    if (model != null)
-    {
-      // get width
-      if (model.width != null)
-      {
-        myWidth = model.width!;
-        calcWidth = false;
-        myConstraints = BoxConstraints(minWidth: myConstraints.minWidth, maxWidth: myWidth, minHeight: myConstraints.minHeight, maxHeight: myConstraints.maxHeight);
-      }
-      else if (model.widthPercentage != null)
-      {
-        myWidth = ((model.widthPercentage!/100) * BoxObject.getMaxWidth(model, this));
-        calcWidth = false;
-        myConstraints = BoxConstraints(minWidth: myConstraints.minWidth, maxWidth: myWidth, minHeight: myConstraints.minHeight, maxHeight: myConstraints.maxHeight);
-      }
 
-      // get height
-      if (model.height != null)
-      {
-        myHeight = model.height!;
-        calcHeight = false;
-        myConstraints = BoxConstraints(minWidth: myConstraints.minWidth, maxWidth: myConstraints.maxWidth, minHeight: myConstraints.minHeight, maxHeight: myHeight);
-      }
-      else if (model.heightPercentage != null)
-      {
-        myHeight = ((model.heightPercentage!/100) * BoxObject.getMaxHeight(model, this));
-        calcHeight = false;
-        myConstraints = BoxConstraints(minWidth: myConstraints.minWidth, maxWidth: myConstraints.maxWidth, minHeight: myConstraints.minHeight, maxHeight: myHeight);
-      }
+    // get my width from the model
+    // and tighten the my width constraint's if not null
+    var width = model.getBoundedWidth(widthParent: myMaxWidth);
+    if (width != null)
+    {
+      myWidth = width;
+      calcWidth = false;
+      myConstraints = BoxConstraints(minWidth: myConstraints.minWidth, maxWidth: myWidth, minHeight: myConstraints.minHeight, maxHeight: myConstraints.maxHeight);
+    }
+
+    // get my width from the model
+    // and tighten the my width constraint's if not null
+    var height = model.getBoundedHeight(heightParent: myMaxHeight);
+    if (height != null)
+    {
+      myHeight = height;
+      calcHeight = false;
+      myConstraints = BoxConstraints(minWidth: myConstraints.minWidth, maxWidth: myConstraints.maxWidth, minHeight: myConstraints.minHeight, maxHeight: myHeight);
     }
 
     // height and/or width is based on non-positioned children
@@ -330,40 +314,34 @@ class StackRenderer extends RenderBox
           var idChild = childModel.id;
           print('Child id is $idChild');
 
-          // set width
-          if (childModel.width != null)
+          // get the child's width from the model
+          // and tighten the child's width constraint
+          var childWidth = childModel.getBoundedWidth(widthParent: myMaxWidth);
+          if (childWidth != null)
           {
-            var maxWidth = childModel.width!;
-            childConstraints = childConstraints.tighten(width: maxWidth);
+            childConstraints = childConstraints.tighten(width: childWidth);
           }
 
-          else if (childModel.widthPercentage != null)
+          // get the child's height from the model
+          // and tighten the child's height constraint
+          var childHeight = childModel.getBoundedHeight(heightParent: myMaxHeight);
+          if (childHeight != null)
           {
-            var maxWidth = ((childModel.widthPercentage!/100) * myMaxWidth);
-            childConstraints = childConstraints.tighten(width: maxWidth);
+            childConstraints = childConstraints.tighten(height: childHeight);
           }
 
-          // set height
-          if (childModel.height != null)
+          // If both of us are unconstrained in the horizontal axis,
+          // tighten the child's width constraint prior to layout
+          if (!myConstraints.hasBoundedWidth && childModel.hasExpandingWidth)
           {
-            var maxHeight = childModel.height!;
-            childConstraints = childConstraints.tighten(height: maxHeight);
+            childConstraints = BoxConstraints(minWidth: childConstraints.minWidth, maxWidth: myMaxWidth, minHeight: childConstraints.minHeight, maxHeight: childConstraints.maxHeight);
           }
 
-          else if (childModel.heightPercentage != null)
+          // If both of us are unconstrained in the vertical axis,
+          // tighten the child's height constraint prior to layout
+          if (!myConstraints.hasBoundedHeight && childModel.hasExpandingHeight)
           {
-            var maxHeight = ((childModel.heightPercentage!/100) * myMaxHeight);
-            childConstraints = childConstraints.tighten(height: maxHeight);
-          }
-
-          if (!childConstraints.hasBoundedWidth && childModel.isHorizontallyExpanding())
-          {
-            childConstraints = BoxConstraints(minWidth: childConstraints.minWidth, maxWidth: myWidth, minHeight: childConstraints.minHeight, maxHeight: childConstraints.maxHeight);
-          }
-
-          if (!childConstraints.hasBoundedHeight && childModel.isVerticallyExpanding())
-          {
-            childConstraints = BoxConstraints(minWidth: childConstraints.minWidth, maxWidth: childConstraints.maxWidth, minHeight: childConstraints.minHeight, maxHeight: myWidth);
+            childConstraints = BoxConstraints(minWidth: childConstraints.minWidth, maxWidth: childConstraints.maxWidth, minHeight: childConstraints.minHeight, maxHeight: myMaxHeight);
           }
         }
 

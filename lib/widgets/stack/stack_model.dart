@@ -14,12 +14,6 @@ class StackModel extends BoxModel
   @override
   String? get layout => "stack";
 
-  @override
-  bool isVerticallyExpanding() => height == null && heightPercentage == 100;
-
-  @override
-  bool isHorizontallyExpanding() => width == null && widthPercentage == 100;
-
   StackModel(WidgetModel parent, String? id) : super(parent, id);
 
   static StackModel? fromXml(WidgetModel parent, XmlElement xml)

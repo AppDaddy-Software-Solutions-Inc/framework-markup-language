@@ -118,7 +118,7 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
     }
 
     // restrain the horizontal if unconstrained (double.infinity)
-    if (axis == Axis.vertical || axis == null)
+    if (axis == Axis.horizontal || axis == null)
     {
       // the horizontal axis is constrained if a width or max width
       // is specified since it would have already been applied above
@@ -127,7 +127,7 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
       // max width is either the calculated max width
       // or the width of the display (default). The default could very well be
       // any other arbitrary size.
-      if (!constrained) maxHeight = maxConstraints.maxWidth ?? MediaQuery.of(context).size.width;
+      if (!constrained) maxWidth = maxConstraints.maxWidth ?? MediaQuery.of(context).size.width;
     }
 
     // set constraints in order to contain the box

@@ -37,22 +37,122 @@ class ViewableWidgetModel extends ConstraintModel
   @override
   double get horizontalPadding => (marginLeft ?? 0) + (marginRight  ?? 0) + (paddingLeft ?? 0) + (paddingRight  ?? 0);
 
-  bool get verticallyConstrained
+  // indicates if the widget naturally wants to go in width
+  // override this getter where necessary
+  bool get hasBoundedWidth => width != null || widthPercentage != null;
+
+  // indicates if the widget naturally wants to go in height
+  // override this getter where necessary
+  bool get hasBoundedHeight => height != null || heightPercentage != null;
+
+  // indicates if the widget will expand infinitely in
+  // it's horizontal axis if not constrained
+  // override this getter where the widget naturally expands
+  // in it's horizontal axis
+  bool get hasExpandingWidth => false;
+
+  // indicates if the widget will expand infinitely in
+  // it's vertical axis if not constrained
+  // override this getter where the widget naturally expands
+  // in it's vertical axis
+  bool get hasExpandingHeight => false;
+
+  // return the bounded width
+  double? getBoundedWidth({double? widthParent})
   {
-    if (constraints.model.hasVerticalExpansionConstraints)  return true;
-    if (constraints.system.hasVerticalExpansionConstraints) return true;
-    if (parent is ViewableWidgetModel) return (parent as ViewableWidgetModel).verticallyConstrained;
-    return false;
+    if (!hasBoundedWidth) return null;
+    
+    double? myWidth;
+
+    // width
+    if (width != null) 
+    {
+      myWidth = width;
+    }
+
+    // percentage width based on parent
+    else if (widthPercentage != null && widthParent != null)
+    {
+      myWidth = ((widthPercentage!/100) * widthParent);
+    }
+
+    // apply model constraints
+    if (myWidth != null)
+    {
+      // must be greater than minWidth
+      if (minWidth != null && myWidth < minWidth!) 
+      {
+        myWidth = minWidth!;
+      }
+  
+      // must be greater than maxWidth
+      if (maxWidth != null && myWidth > maxWidth!) 
+      {
+        myWidth = maxWidth!;
+      }
+    }
+
+    // cannot be negative
+    if (myWidth != null && myWidth.isNegative) 
+    {
+      myWidth = 0;
+    }
+    
+    return myWidth;
   }
 
-  bool get horizontallyConstrained
+  // return the bounded height
+  double? getBoundedHeight({double? heightParent})
   {
-    if (constraints.model.hasHorizontalExpansionConstraints)  return true;
-    if (constraints.system.hasHorizontalExpansionConstraints) return true;
-    if (parent is ViewableWidgetModel) return (parent as ViewableWidgetModel).horizontallyConstrained;
-    return false;
+    if (!hasBoundedHeight) return null;
+
+    double? myHeight;
+
+    // height
+    if (height != null)
+    {
+      myHeight = height;
+    }
+
+    // percentage height based on parent
+    else if (heightPercentage != null && heightParent != null)
+    {
+      myHeight = ((heightPercentage!/100) * heightParent);
+    }
+
+    // apply model constraints
+    if (myHeight != null)
+    {
+      // must be greater than minHeight
+      if (minHeight != null && myHeight < minHeight!)
+      {
+        myHeight = minHeight!;
+      }
+
+      // must be greater than maxHeight
+      if (maxHeight != null && myHeight > maxHeight!)
+      {
+        myHeight = maxHeight!;
+      }
+    }
+
+    // cannot be negative
+    if (myHeight != null && myHeight.isNegative)
+    {
+      myHeight = 0;
+    }
+
+    return myHeight;
   }
 
+  // indicates if the widget naturally wants to go in width
+  // override this getter where necessary
+  bool get hasFlexibleWidth => false;
+
+  // indicates if the widget naturally wants to go in height
+  // override this getter where necessary
+  bool get hasFlexibleHeight => false;
+  
   // viewable children
   List<ViewableWidgetModel> get viewableChildren
   {

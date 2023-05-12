@@ -1,11 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/event/handler.dart';
-import 'package:fml/system.dart';
 import 'package:fml/widgets/animation/animation_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_view.dart';
-import 'package:fml/widgets/constraints/constraint.dart';
 import 'package:fml/widgets/constraints/constraint_model.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -16,20 +14,11 @@ import 'package:fml/widgets/widget/widget_model.dart';
 
 class ViewableWidgetModel extends ConstraintModel
 {
-  // this is used like the old IViewableWidget interface
-  // it is used during the inflate process to determine if a widget
-  // should be inflated during the build. This is overridden in widgets
-  // such as modal and gallery
-  bool get inflateable => true;
-
   // model holding the tooltip
   TooltipModel? tipModel;
 
   // holds animations
   List<AnimationModel>? animations;
-
-  // constraints
-  late final ConstraintSet constraints;
 
   @override
   double get verticalPadding  => (marginTop ?? 0)  + (marginBottom ?? 0)  + (paddingTop ?? 0) + (paddingBottom  ?? 0);
@@ -37,129 +26,13 @@ class ViewableWidgetModel extends ConstraintModel
   @override
   double get horizontalPadding => (marginLeft ?? 0) + (marginRight  ?? 0) + (paddingLeft ?? 0) + (paddingRight  ?? 0);
 
-  // indicates if the widget naturally wants to go in width
-  // override this getter where necessary
-  bool get hasBoundedWidth => width != null || widthPercentage != null;
-
-  // indicates if the widget naturally wants to go in height
-  // override this getter where necessary
-  bool get hasBoundedHeight => height != null || heightPercentage != null;
-
-  // indicates if the widget will expand infinitely in
-  // it's horizontal axis if not constrained
-  // override this getter where the widget naturally expands
-  // in it's horizontal axis
-  bool get hasExpandingWidth => false;
-
-  // indicates if the widget will expand infinitely in
-  // it's vertical axis if not constrained
-  // override this getter where the widget naturally expands
-  // in it's vertical axis
-  bool get hasExpandingHeight => false;
-
-  // return the bounded width
-  double? getBoundedWidth({double? widthParent})
-  {
-    if (!hasBoundedWidth) return null;
-    
-    double? myWidth;
-
-    // width
-    if (width != null) 
-    {
-      myWidth = width;
-    }
-
-    // percentage width based on parent
-    else if (widthPercentage != null && widthParent != null)
-    {
-      myWidth = ((widthPercentage!/100) * widthParent);
-    }
-
-    // apply model constraints
-    if (myWidth != null)
-    {
-      // must be greater than minWidth
-      if (minWidth != null && myWidth < minWidth!) 
-      {
-        myWidth = minWidth!;
-      }
-  
-      // must be greater than maxWidth
-      if (maxWidth != null && myWidth > maxWidth!) 
-      {
-        myWidth = maxWidth!;
-      }
-    }
-
-    // cannot be negative
-    if (myWidth != null && myWidth.isNegative) 
-    {
-      myWidth = 0;
-    }
-    
-    return myWidth;
-  }
-
-  // return the bounded height
-  double? getBoundedHeight({double? heightParent})
-  {
-    if (!hasBoundedHeight) return null;
-
-    double? myHeight;
-
-    // height
-    if (height != null)
-    {
-      myHeight = height;
-    }
-
-    // percentage height based on parent
-    else if (heightPercentage != null && heightParent != null)
-    {
-      myHeight = ((heightPercentage!/100) * heightParent);
-    }
-
-    // apply model constraints
-    if (myHeight != null)
-    {
-      // must be greater than minHeight
-      if (minHeight != null && myHeight < minHeight!)
-      {
-        myHeight = minHeight!;
-      }
-
-      // must be greater than maxHeight
-      if (maxHeight != null && myHeight > maxHeight!)
-      {
-        myHeight = maxHeight!;
-      }
-    }
-
-    // cannot be negative
-    if (myHeight != null && myHeight.isNegative)
-    {
-      myHeight = 0;
-    }
-
-    return myHeight;
-  }
-
-  // indicates if the widget naturally wants to go in width
-  // override this getter where necessary
-  bool get hasFlexibleWidth => false;
-
-  // indicates if the widget naturally wants to go in height
-  // override this getter where necessary
-  bool get hasFlexibleHeight => false;
-  
   // viewable children
   List<ViewableWidgetModel> get viewableChildren
   {
     List<ViewableWidgetModel> list = [];
     if (children != null){
     for (var child in children!) {
-      if (child is ViewableWidgetModel && child.inflateable) list.add(child);
+      if (child is ViewableWidgetModel) list.add(child);
     }}
     return list;
   }
@@ -251,21 +124,6 @@ class ViewableWidgetModel extends ConstraintModel
     }
   }
   String? get valign => _valign?.get();
-
-  // flex
-  IntegerObservable? _flex;
-  set flex (dynamic v)
-  {
-    if (_flex != null)
-    {
-      _flex!.set(v);
-    }
-    else if (v != null)
-    {
-      _flex = IntegerObservable(Binding.toKey(id, 'flex'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  int? get flex => _flex?.get();
 
   // used by the view to determine if it needs to wrap itself
   // in a VisibilityDetector
@@ -579,11 +437,7 @@ class ViewableWidgetModel extends ConstraintModel
 
   bool get enabled => _enabled?.get() ?? true;
 
-  ViewableWidgetModel(WidgetModel? parent, String? id, {Scope? scope}) : super(parent, id, scope: scope)
-  {
-    // create model constraints
-    constraints = ConstraintSet(this);
-  }
+  ViewableWidgetModel(WidgetModel? parent, String? id, {Scope? scope}) : super(parent, id, scope: scope);
 
   /// Deserializes the FML template elements, attributes and children
   @override
@@ -783,31 +637,6 @@ class ViewableWidgetModel extends ConstraintModel
   }
 
   Widget? getView() => throw("getView() Not Implemented");
-}
-
-class ConstraintSet
-{
-  /// holds constraints defined in the template
-  late final ConstraintModel _model;
-  Constraints get model => _model.getModelConstraints();
-  
-  // holds constraints passed in flutter layout builder
-  Constraints get system => _model.system;
-
-  /// constraints calculated by walking up the
-  /// model tree comparing both model and flutter constraints
-  Constraints get calculated => _model.calculated;
-
-  Constraints get tightest => Constraints.tightest(Constraints.tightest(model, system), calculated);
-  Constraints get tightestOrDefault
-  {
-    var constraints = tightest;
-    if (constraints.height == null && constraints.maxHeight == null) constraints.maxHeight = System().screenheight.toDouble();
-    if (constraints.width  == null && constraints.maxWidth  == null) constraints.maxWidth  = System().screenwidth.toDouble();
-    return constraints;
-  }
-
-  ConstraintSet(this._model);
 }
 
 

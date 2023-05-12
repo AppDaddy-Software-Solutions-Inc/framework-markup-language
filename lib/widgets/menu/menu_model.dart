@@ -22,14 +22,14 @@ class MenuModel extends DecoratedWidgetModel
   List<MenuItemModel> items = [];
 
   @override
-  bool get hasExpandingWidth
+  bool get canExpandInfinitelyWide
   {
     if (hasBoundedWidth) return false;
     return true;
   }
 
   @override
-  bool get hasExpandingHeight
+  bool get canExpandInfinitelyHigh
   {
     if (hasBoundedHeight) return false;
     return true;

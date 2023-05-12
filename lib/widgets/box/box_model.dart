@@ -23,6 +23,14 @@ class BoxModel extends DecoratedWidgetModel
   // Denotes whether box widgets (row, column) naturally expand or contract
   final bool expandDefaultBehavior = true;
 
+  // expands in the vertical
+  @override
+  bool get hasFlexibleWidth => expand ?? expandDefaultBehavior;
+
+  // expands in the horizontal
+  @override
+  bool get hasFlexibleHeight => expand ?? expandDefaultBehavior;
+
   /// Expand, which is true by default, tells the widget if it should shrink to its children, or grow to its parents constraints. Width/Height attributes will override expand.
   BooleanObservable? _expand;
   set expand(dynamic v)
@@ -37,14 +45,6 @@ class BoxModel extends DecoratedWidgetModel
     }
   }
   bool? get expand => _expand?.get();
-
-  // expands in the vertical
-  @override
-  bool get hasFlexibleWidth => expand ?? expandDefaultBehavior;
-
-  // expands in the horizontal
-  @override
-  bool get hasFlexibleHeight => expand ?? expandDefaultBehavior;
 
   /// layout
   StringObservable? _layout;

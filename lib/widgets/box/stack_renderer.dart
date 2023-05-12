@@ -280,7 +280,7 @@ class StackRenderer extends RenderBox
 
     // get my width from the model
     // and tighten the my width constraint's if not null
-    var width = model.getBoundedWidth(widthParent: myMaxWidth);
+    var width = model.getWidth(widthParent: myMaxWidth);
     if (width != null)
     {
       myWidth = width;
@@ -290,7 +290,7 @@ class StackRenderer extends RenderBox
 
     // get my width from the model
     // and tighten the my width constraint's if not null
-    var height = model.getBoundedHeight(heightParent: myMaxHeight);
+    var height = model.getHeight(heightParent: myMaxHeight);
     if (height != null)
     {
       myHeight = height;
@@ -316,7 +316,7 @@ class StackRenderer extends RenderBox
 
           // get the child's width from the model
           // and tighten the child's width constraint
-          var childWidth = childModel.getBoundedWidth(widthParent: myMaxWidth);
+          var childWidth = childModel.getWidth(widthParent: myMaxWidth);
           if (childWidth != null)
           {
             childConstraints = childConstraints.tighten(width: childWidth);
@@ -324,7 +324,7 @@ class StackRenderer extends RenderBox
 
           // get the child's height from the model
           // and tighten the child's height constraint
-          var childHeight = childModel.getBoundedHeight(heightParent: myMaxHeight);
+          var childHeight = childModel.getHeight(heightParent: myMaxHeight);
           if (childHeight != null)
           {
             childConstraints = childConstraints.tighten(height: childHeight);
@@ -332,14 +332,14 @@ class StackRenderer extends RenderBox
 
           // If both of us are unconstrained in the horizontal axis,
           // tighten the child's width constraint prior to layout
-          if (!myConstraints.hasBoundedWidth && childModel.hasExpandingWidth)
+          if (!myConstraints.hasBoundedWidth && childModel.canExpandInfinitelyWide)
           {
             childConstraints = BoxConstraints(minWidth: childConstraints.minWidth, maxWidth: myMaxWidth, minHeight: childConstraints.minHeight, maxHeight: childConstraints.maxHeight);
           }
 
           // If both of us are unconstrained in the vertical axis,
           // tighten the child's height constraint prior to layout
-          if (!myConstraints.hasBoundedHeight && childModel.hasExpandingHeight)
+          if (!myConstraints.hasBoundedHeight && childModel.canExpandInfinitelyHigh)
           {
             childConstraints = BoxConstraints(minWidth: childConstraints.minWidth, maxWidth: childConstraints.maxWidth, minHeight: childConstraints.minHeight, maxHeight: myMaxHeight);
           }

@@ -205,7 +205,7 @@ class BoxObject extends MultiChildRenderObjectWidget {
   {
     double height = double.negativeInfinity;
 
-    var modelHeight = model.getBoundedHeight();
+    var modelHeight = model.getHeight();
     if (modelHeight != null)
     {
       height = modelHeight;
@@ -229,7 +229,7 @@ class BoxObject extends MultiChildRenderObjectWidget {
   {
     double width = double.negativeInfinity;
 
-    var modelWidth = model.getBoundedWidth();
+    var modelWidth = model.getWidth();
     if (modelWidth != null)
     {
       width = modelWidth;

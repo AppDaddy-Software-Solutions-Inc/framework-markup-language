@@ -30,14 +30,14 @@ class ScrollerModel extends ViewableWidgetModel
   String? get align => _align?.get();
 
   @override
-  bool get hasExpandingWidth
+  bool get canExpandInfinitelyWide
   {
     if (hasBoundedWidth) return false;
     return true;
   }
 
   @override
-  bool get hasExpandingHeight
+  bool get canExpandInfinitelyHigh
   {
     if (hasBoundedHeight) return false;
     return true;

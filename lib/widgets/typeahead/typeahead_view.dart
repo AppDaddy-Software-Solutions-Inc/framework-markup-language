@@ -350,7 +350,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
     //if (busy != null) view = Stack(children: [view, Positioned(top: 0, bottom: 0, left: 0, right: 0, child: busy)]);
 
     // get the model constraints
-    var modelConstraints = widget.model.constraints.model;
+    var modelConstraints = widget.model.constraints;
 
     // constrain the input to 200 pixels if not constrained by the model
     if (!modelConstraints.hasHorizontalExpansionConstraints) modelConstraints.width  = 200;

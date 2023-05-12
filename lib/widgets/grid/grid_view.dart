@@ -361,7 +361,7 @@ class _GridViewState extends WidgetState<GridView>
     view = addMargins(view);
 
     // apply user defined constraints
-    view = applyConstraints(view, widget.model.constraints.tightestOrDefault);
+    view = applyConstraints(view, widget.model.tightestOrDefault);
 
     children.add(view);
 

@@ -585,7 +585,9 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
     RenderBox? lastFlexChild;
     while (child != null) 
     {
+
       final LayoutBoxParentData data = child.parentData! as LayoutBoxParentData;
+
       final int flex = _getFlex(child);
       if (flex > 0) 
       {
@@ -610,6 +612,10 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
       child = firstChild;
       while (child != null) 
       {
+        final LayoutBoxParentData data = child.parentData! as LayoutBoxParentData;
+        var idParent = model.id;
+        var idChild = data.model!.id;
+
         final int flex = _getFlex(child);
         if (flex > 0) 
         {
@@ -663,7 +669,12 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
                 break;
             }
           }
+
+          if (idChild == 'col1') print('_computeSizes (Before Flex layout) -> is $idParent size is $maxMainSize x  $maxCrossSize');
           final Size childSize = layoutChild(child, innerConstraints);
+          if (idChild == 'col1') print('_computeSizes (After Flex layout) -> is $idChild size is ${size.width} x  ${size.height}');
+
+
           final double childMainSize = _getMainSize(childSize);
           assert(childMainSize <= maxChildExtent);
           allocatedSize += childMainSize;
@@ -690,6 +701,9 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
       default:
         break;
     }
+
+    var idParent = model.id;
+    if (idParent == 'col1') print('_computeSizes -> is $idParent size is $maxMainSize x  $maxCrossSize');
 
     return _LayoutSizes(mainSize: maxMainSize, crossSize: maxCrossSize, allocatedSize: allocatedSize);
   }
@@ -813,7 +827,6 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
   Size calculateChildSizes()
   {
     var idParent = model.id;
-    print('Parent id is $idParent');
 
     var myConstraints = constraints;
     var myMaxHeight   = BoxObject.getMaxHeight(model, parent);
@@ -831,53 +844,20 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
         var childConstraints = myConstraints;
         var childModel = childData.model!;
 
-        var idChild = childModel.id;
-        print('Child id is $idChild');
-
         // is the child flexible?
-        switch (_direction)
-        {
-          case Axis.horizontal:
-
-            // defined width takes precedence over flex
-            if (childModel.hasBoundedWidth)
-            {
-              childData.flex = null;
-            }
-
-            // we can't flex if the child is expanding in the
-            // horizontal axis and so am I
-            else if (childModel.hasExpandingWidth && !myConstraints.hasBoundedWidth)
-            {
-              childData.flex = null;
-            }
-
-            break;
-
-          case Axis.vertical:
-
-            // defined height takes precedence over flex
-            if (childModel.hasBoundedHeight)
-            {
-              childData.flex = null;
-            }
-
-            // we can't flex if the child is expanding in the
-            // vertical axis and so am I
-            else if (childModel.hasExpandingHeight && !myConstraints.hasBoundedHeight)
-            {
-              childModel.flex = null;
-            }
-
-            break;
-        }
+        childData.flex = _direction == Axis.horizontal ? childModel.getWidthFlex() : childModel.getHeightFlex();
 
         // layout child
-        if (childData.flex == null)
+        final bool doLayout = childData.flex == null;
+
+        var idChild = childModel.id;
+        if (idParent == 'col1') print('Child $idChild is ${doLayout ? 'laying out' : 'flexing'}');
+
+        if (doLayout)
         {
           // get the child's width from the model
           // and tighten the child's width constraint
-          var childWidth = childModel.getBoundedWidth(widthParent: myMaxWidth);
+          var childWidth = childModel.getWidth(widthParent: myMaxWidth);
           if (childWidth != null)
           {
             childConstraints = childConstraints.tighten(width: childWidth);
@@ -885,7 +865,7 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
 
           // get the child's height from the model
           // and tighten the child's height constraint
-          var childHeight = childModel.getBoundedHeight(heightParent: myMaxHeight);
+          var childHeight = childModel.getHeight(heightParent: myMaxHeight);
           if (childHeight != null)
           {
             childConstraints = childConstraints.tighten(height: childHeight);
@@ -893,14 +873,14 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
 
           // If both of us are unconstrained in the horizontal axis,
           // tighten the child's width constraint prior to layout
-          if (!myConstraints.hasBoundedWidth && childModel.hasExpandingWidth)
+          if (!myConstraints.hasBoundedWidth && childModel.canExpandInfinitelyWide)
           {
             childConstraints = BoxConstraints(minWidth: childConstraints.minWidth, maxWidth: myMaxWidth, minHeight: childConstraints.minHeight, maxHeight: childConstraints.maxHeight);
           }
 
           // If both of us are unconstrained in the vertical axis,
           // tighten the child's height constraint prior to layout
-          if (!myConstraints.hasBoundedHeight && childModel.hasExpandingHeight)
+          if (!myConstraints.hasBoundedHeight && childModel.canExpandInfinitelyHigh)
           {
             childConstraints = BoxConstraints(minWidth: childConstraints.minWidth, maxWidth: childConstraints.maxWidth, minHeight: childConstraints.minHeight, maxHeight: myMaxHeight);
           }
@@ -911,7 +891,7 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
 
           // set my width and height
           switch (_direction)
-          {
+              {
             case Axis.horizontal:
               myWidth  = myWidth + (childData.size?.width ?? 0);
               myHeight = max(myHeight, (childData.size?.height ?? 0));
@@ -929,6 +909,8 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
       child = childAfter(child);
     }
 
+    if (idParent == 'col1') print('calculateChildSizes -> is $idParent size is $myWidth x  $myHeight');
+
     return Size(myWidth, myHeight);
   }
 
@@ -938,12 +920,12 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
     final BoxConstraints constraints = this.constraints;
 
     var idParent = model.id;
-    print('Parent id is $idParent');
 
     final _LayoutSizes sizes = _computeSizes(
       layoutChild: ChildLayoutHelper.layoutChild,
       constraints: constraints,
     );
+
 
     final double allocatedSize = sizes.allocatedSize;
     double actualSize = sizes.mainSize;

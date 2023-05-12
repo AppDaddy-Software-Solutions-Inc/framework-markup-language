@@ -819,7 +819,7 @@ class _ChartViewState extends WidgetState<ChartView>
     view = addMargins(view);
 
     // apply user defined constraints
-    view = applyConstraints(view, widget.model.constraints.tightestOrDefault);
+    view = applyConstraints(view, widget.model.tightestOrDefault);
 
     return view;
   }

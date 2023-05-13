@@ -26,7 +26,7 @@ class BoxObject extends MultiChildRenderObjectWidget {
     required this.direction,
     required this.model,
     this.mainAxisAlignment = MainAxisAlignment.start,
-    this.mainAxisSize = MainAxisSize.max,
+    this.mainAxisSize = MainAxisSize.min,
     this.crossAxisAlignment = CrossAxisAlignment.center,
     this.textDirection,
     this.verticalDirection = VerticalDirection.down,
@@ -199,53 +199,5 @@ class BoxObject extends MultiChildRenderObjectWidget {
     properties.add(EnumProperty<TextDirection>('textDirection', textDirection, defaultValue: null));
     properties.add(EnumProperty<VerticalDirection>('verticalDirection', verticalDirection, defaultValue: VerticalDirection.down));
     properties.add(EnumProperty<TextBaseline>('textBaseline', textBaseline, defaultValue: null));
-  }
-
-  static double getMaxHeight(BoxModel model, AbstractNode? parent)
-  {
-    double height = double.negativeInfinity;
-
-    var modelHeight = model.getHeight();
-    if (modelHeight != null)
-    {
-      height = modelHeight;
-    }
-
-    while (height < 0 &&  parent != null)
-    {
-      if (parent is RenderBox && parent.constraints.hasBoundedHeight)
-      {
-        height = parent.constraints.maxHeight;
-      }
-      else
-      {
-        parent = parent.parent;
-      }
-    }
-    return height;
-  }
-
-  static double getMaxWidth(BoxModel model, AbstractNode? parent)
-  {
-    double width = double.negativeInfinity;
-
-    var modelWidth = model.getWidth();
-    if (modelWidth != null)
-    {
-      width = modelWidth;
-    }
-
-    while (width < 0 &&  parent != null)
-    {
-      if (parent is RenderBox && parent.constraints.hasBoundedWidth)
-      {
-        width = parent.constraints.maxWidth;
-      }
-      else
-      {
-        parent = parent.parent;
-      }
-    }
-    return width;
   }
 }

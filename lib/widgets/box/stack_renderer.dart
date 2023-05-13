@@ -261,6 +261,58 @@ class StackRenderer extends RenderBox
     );
   }
 
+  double getMaxHeight()
+  {
+    double height = double.negativeInfinity;
+
+    var modelHeight = model.getHeight(heightParent: this.constraints.maxHeight);
+    if (modelHeight != null)
+    {
+      height = modelHeight;
+    }
+
+    var parent = this.parent;
+    while (height < 0 &&  parent != null)
+    {
+      if (parent is RenderBox && parent.constraints.hasBoundedHeight)
+      {
+        height = parent.constraints.maxHeight;
+      }
+      else
+      {
+        parent = parent.parent;
+      }
+    }
+
+    return height;
+  }
+
+  double getMaxWidth()
+  {
+    double width = double.negativeInfinity;
+
+    var modelWidth = model.getWidth(widthParent: this.constraints.maxWidth);
+    if (modelWidth != null)
+    {
+      width = modelWidth;
+    }
+
+    var parent = this.parent;
+    while (width < 0 &&  parent != null)
+    {
+      if (parent is RenderBox && parent.constraints.hasBoundedWidth)
+      {
+        width = parent.constraints.maxWidth;
+      }
+      else
+      {
+        parent = parent.parent;
+      }
+    }
+
+    return width;
+  }
+
   Size _computeSize({required BoxConstraints constraints, required ChildLayouter layoutChild})
   {
     _resolve();
@@ -270,8 +322,8 @@ class StackRenderer extends RenderBox
     print('Parent id is $idParent');
 
     var myConstraints = constraints;
-    var myMaxHeight   = BoxObject.getMaxHeight(model, parent);
-    var myMaxWidth    = BoxObject.getMaxWidth(model, parent);
+    var myMaxHeight   = getMaxHeight();
+    var myMaxWidth    = getMaxWidth();
     var myWidth       = myConstraints.minWidth;
     var myHeight      = myConstraints.minHeight;
 

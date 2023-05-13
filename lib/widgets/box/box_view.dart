@@ -322,6 +322,8 @@ class _BoxViewState extends WidgetState<BoxView>
     // add margins
     view = addMargins(view);
 
+    return view;
+
     view = Column(children: [view], mainAxisSize: MainAxisSize.min);
     view = Row(children: [view], mainAxisSize: MainAxisSize.min);
 

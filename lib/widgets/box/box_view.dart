@@ -278,10 +278,36 @@ class _BoxViewState extends WidgetState<BoxView>
     return view;
   }
 
-  Widget _buildOuterBox(Widget child,  BoxDecoration? decoration)
+  Widget _buildInnerContent(WidgetAlignment alignment)
   {
-    if (decoration == null) return child;
-    return DecoratedBox(decoration: decoration, child: child);
+    /// Build the Layout
+    var children = widget.model.inflate();
+
+    Widget view;
+    switch (widget.model.layoutType)
+    {
+      // stack object
+      case LayoutType.stack:
+        view = StackObject(model: widget.model,
+          fit: StackFit.passthrough,
+          clipBehavior: Clip.hardEdge,
+          children: children,);
+        break;
+
+      // box object
+      case LayoutType.row:
+      case LayoutType.column:
+      default:
+        view = BoxObject(model: widget.model,
+          direction: widget.model.layoutType == LayoutType.row ? Axis.horizontal : Axis.vertical,
+          mainAxisAlignment: alignment.mainAlignment,
+          crossAxisAlignment: alignment.crossAlignment,
+          clipBehavior: Clip.hardEdge,
+          children: children,);
+        break;
+    }
+
+    return view;
   }
 
   @override
@@ -295,65 +321,43 @@ class _BoxViewState extends WidgetState<BoxView>
     // set system sizing
     onLayout(constraints);
 
-    // this must go after the children are determined
+    // calculate the alignment
     var alignment = WidgetAlignment(widget.model.layoutType, widget.model.center, widget.model.halign, widget.model.valign);
 
-    /// Build the Layout
-    var children = widget.model.inflate();
+    // build the inner content
+    Widget view = _buildInnerContent(alignment);
 
-    Widget view;
-    switch (widget.model.layoutType)
-    {
-      case LayoutType.stack:
-        view = StackObject(model: widget.model,
-          fit: StackFit.passthrough,
-          clipBehavior: Clip.hardEdge,
-          children: children,);
-        break;
-
-      case LayoutType.row:
-      case LayoutType.column:
-      default:
-        view = BoxObject(model: widget.model,
-          direction: widget.model.layoutType == LayoutType.row ? Axis.horizontal : Axis.vertical,
-          mainAxisAlignment: alignment.mainAlignment,
-          crossAxisAlignment: alignment.crossAlignment,
-          clipBehavior: Clip.hardEdge,
-          children: children,);
-        break;
-    }
-
-    // add padding
+    // add padding around inner content
     view = addPadding(view);
 
-    // build the border
+    // get the border
     Border? border = _getBorder();
 
-    // build the border radius
+    // get the border radius
     BorderRadius? radius = _getRadius(border);
 
     // build the box decoration
     BoxDecoration? decoration = _getBoxDecoration(radius);
 
-    // build the box border decoration
+    // build the border decoration
     BoxDecoration? borderDecoration = border != null ? BoxDecoration(border: border, borderRadius: radius) : null;
 
     // blur the view
     if (widget.model.blur) view = _getBlurredView(view, borderDecoration);
 
-    // build inner box
+    // build the inner content box
     view = _buildInnerBox(view, decoration, alignment.aligned, Clip.antiAlias);
 
-    // build the outer box - border
-    view = _buildOuterBox(view, borderDecoration);
+    // build the outer border box
+    if (borderDecoration != null) view = Container(child: view, decoration: borderDecoration);
 
-    // set the box opacity
+    // set the view opacity
     if (widget.model.opacity != null) view = _getFadedView(view);
 
     // blur the view - white10 = Blur (This creates mirrored/frosted effect overtop of something else)
     if (widget.model.color == Colors.white10) view = _getFrostedView(view, radius);
 
-    // add margins
+    // add margins around the entire widget
     view = addMargins(view);
 
     return view;

@@ -9,6 +9,7 @@ class BoxData extends ContainerBoxParentData<RenderBox>
   ViewableWidgetModel? model;
 
   int? flex;
+
   FlexFit? fit;
   Size? size;
 

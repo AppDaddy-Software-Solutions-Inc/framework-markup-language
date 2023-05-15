@@ -2,8 +2,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import '../scope.dart';
-import '../observable.dart' ;
+import 'package:fml/observable/observable.dart';
+import 'package:fml/observable/scope.dart';
 
 class ColorObservable extends Observable
 {

@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:collection';
 import 'dart:math';
+import 'package:community_charts_common/src/chart/common/behavior/range_annotation.dart';
 import 'package:community_charts_flutter/community_charts_flutter.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart/chart_model.dart';
+import 'package:fml/widgets/chart/label/chart_label_model.dart';
 import 'package:fml/widgets/chart/series/chart_series_model.dart';
 import 'package:fml/widgets/chart/axis/chart_axis_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
@@ -123,11 +125,9 @@ class _ChartViewState extends WidgetState<ChartView>
             color: CF.ColorUtil.fromDartColor(
                 Theme.of(context).colorScheme.onBackground)),
         labelRotation: widget.model.xaxis!.labelrotation.abs() * -1,
-        labelOffsetFromAxisPx:
-        (sin(widget.model.xaxis!.labelrotation.abs() * (pi / 180)) * 80)
-            .ceil() +
-            8, // 80 is rough estimate of our text length
+        labelOffsetFromAxisPx: (sin(widget.model.xaxis!.labelrotation.abs() * (pi / 180)) * 80).ceil() + 8, // 80 is rough estimate of our text length
         labelOffsetFromTickPx: 10,
+        labelJustification: TickLabelJustification.inside,
       ),
   );
 
@@ -846,11 +846,214 @@ class _ChartViewState extends WidgetState<ChartView>
             'Unable to set Chart Series Point selection' + e.toString());
       }
     }
+    else { // delselect
+      // stop listening during build
+      widget.model.removeListener(this);
+      widget.model.selected = null;
+      // start listening to model changes
+      widget.model.registerListener(this);
+    }
     // print('Approximate Series Clicked on [${selectedSeriesId}]: x: ${domain.toString()}, y: ${measure.toString()}'); // Only works for single series
     // measures.forEach((key, value) {
     //   print('key: ${key.toString()}, x: ${domain.toString()}, y: ${measure.toString()}');
     // });
     // print(widget.model.selected[0]?.join(','));
+  }
+
+  /// Returns Chart Annotations (labels) from the [ChartLabelModel]
+  List<RangeAnnotationSegment<T>> getLabels<T>() {
+    List<RangeAnnotationSegment<T>> annotations = [];
+
+    for (ChartLabelModel labels in widget.model.labels) {
+
+      // Build the data labels
+      List<ChartDataLabel> labelData = [];
+
+      // Loop through each label from the dataset
+      for (ChartDataLabel label in labels.dataLabel) {
+        // Check label has a positional value
+        if (S.isNullOrEmpty(label.x) && S.isNullOrEmpty(label.x1) && S.isNullOrEmpty(label.x2) && S.isNullOrEmpty(label.y) && S.isNullOrEmpty(label.y1) && S.isNullOrEmpty(label.y2))
+          continue;
+
+        bool hasX = false;
+        bool hasY = false;
+        bool hasX2 = false;
+        bool hasY2 = false;
+
+        // Determine which labels to parse before parsing the label data
+        hasX = labels.x != null || labels.x1 != null || labels.x2 != null;
+        hasY = labels.y != null || labels.y1 != null || labels.y2 != null;
+        hasX2 = labels.x2 != null;
+        hasY2 = labels.y2 != null;
+
+        var xParsed;
+        var x1Parsed;
+        var x2Parsed;
+        var yParsed;
+        var y1Parsed;
+        var y2Parsed;
+
+        try {
+          if (hasX && !S.isNullOrEmpty(label.x))
+            xParsed = parsePlotPoint(label.x, widget.model.xaxis!.type);
+          if (hasX && !S.isNullOrEmpty(label.x1))
+            x1Parsed = parsePlotPoint(label.x1, widget.model.xaxis!.type);
+          if (hasX && hasX2 && !S.isNullOrEmpty(label.x2))
+            x2Parsed = parsePlotPoint(label.x2, widget.model.xaxis!.type);
+          if (hasY && !S.isNullOrEmpty(label.y))
+            yParsed = parsePlotPoint(label.y, widget.model.yaxis!.type);
+          if (hasY && !S.isNullOrEmpty(label.y1))
+            y1Parsed = parsePlotPoint(label.y1, widget.model.yaxis!.type);
+          if (hasY && hasY2 && !S.isNullOrEmpty(label.y2))
+            y2Parsed = parsePlotPoint(label.y2, widget.model.yaxis!.type);
+        }
+        catch(e) {
+            Log().error('Unable to parse label location: '
+                'x: ${label.x.toString()}, x1: ${label.x1.toString()}, x2: ${label.x2.toString()}, '
+                'y: ${label.y.toString()}, y1: ${label.y1.toString()}, y2: ${label.y2.toString()}, '
+                + e.toString());
+            break;
+        }
+
+        // Build the annotations (labels) and use the parameters to determine
+        // annotation type and style
+        CF.RangeAnnotationSegment<T> annotation;
+        CF.AnnotationLabelAnchor anchor;
+        CF.AnnotationLabelPosition position;
+        CF.AnnotationLabelDirection? direction;
+        CF.RangeAnnotationAxisType axis;
+
+        switch (label.anchor?.toLowerCase()) {
+          case 'center':
+          case 'middle':
+            anchor = CF.AnnotationLabelAnchor.middle;
+            break;
+          case 'start':
+            anchor = CF.AnnotationLabelAnchor.start;
+            break;
+          case 'end':
+            anchor = CF.AnnotationLabelAnchor.end;
+            break;
+          default:
+            anchor = CF.AnnotationLabelAnchor.middle;
+            break;
+        }
+
+        switch (label.position?.toLowerCase()) {
+          case 'inside':
+            position = CF.AnnotationLabelPosition.inside;
+            break;
+          case 'outside':
+            position = CF.AnnotationLabelPosition.outside;
+            break;
+          case 'margin':
+            position = CF.AnnotationLabelPosition.margin;
+            break;
+          default:
+            position = CF.AnnotationLabelPosition.auto;
+            break;
+        }
+
+
+        switch (label.direction?.toLowerCase()) {
+          case 'horizontal':
+            direction = CF.AnnotationLabelDirection.horizontal;
+            break;
+          case 'vertical':
+            direction = CF.AnnotationLabelDirection.vertical;
+            break;
+          default:
+            direction = CF.AnnotationLabelDirection.auto;
+        }
+
+        if (hasX)
+          axis = RangeAnnotationAxisType.domain;
+        else if (hasY)
+          axis = RangeAnnotationAxisType.measure;
+        else
+          continue;
+
+        if (axis == RangeAnnotationAxisType.measure)
+          annotation = CF.RangeAnnotationSegment<num>(
+            hasX ? xParsed ?? x1Parsed : yParsed ?? y1Parsed,
+            hasX ? x2Parsed ?? x1Parsed ?? xParsed : y2Parsed ?? y1Parsed ?? yParsed,
+            axis,
+            startLabel: label.startlabel ?? label.label,
+            endLabel: label.endlabel ?? '',
+            labelAnchor: anchor, // middle/start/end
+            labelPosition: position, // AnnotationLabelPosition.auto/inside/outside/margin
+            labelDirection: direction, // horizontal/vertical
+            color: CF.Color(r: label.color.red, g: label.color.green, b: label.color.blue, a: label.color.alpha),
+            labelStyleSpec: CF.TextStyleSpec(fontSize: label.labelsize ?? 12,
+                color: label.labelcolor != null
+                    ? CF.Color(r: label.labelcolor.red, g: label.labelcolor.green, b: label.labelcolor.blue, a: label.labelcolor.alpha)
+                    : CF.Color(r: Theme.of(context).colorScheme.onSurfaceVariant.red, g: Theme.of(context).colorScheme.onSurfaceVariant.green, b: Theme.of(context).colorScheme.onSurfaceVariant.blue, a: Theme.of(context).colorScheme.onSurfaceVariant.alpha))
+          ) as RangeAnnotationSegment<T>;
+        else if (axis == RangeAnnotationAxisType.domain) {
+          switch (widget.model.xaxis!.type) {
+            case ChartAxisType.date:
+            case ChartAxisType.time:
+            case ChartAxisType.datetime:
+              annotation = CF.RangeAnnotationSegment<DateTime>(
+                hasX ? xParsed ?? x1Parsed : yParsed ?? y1Parsed,
+                hasX ? x2Parsed ?? x1Parsed ?? xParsed : y2Parsed ?? y1Parsed ?? yParsed,
+                axis,
+                startLabel: label.startlabel ?? label.label,
+                endLabel: label.endlabel ?? '',
+                labelAnchor: anchor, // middle/start/end
+                labelPosition: position, // AnnotationLabelPosition.auto/inside/outside/margin
+                labelDirection: direction, // horizontal/vertical
+                color: CF.Color(r: label.color.red, g: label.color.green, b: label.color.blue, a: label.color.alpha),
+                labelStyleSpec: CF.TextStyleSpec(fontSize: label.labelsize ?? 12,
+                    color: label.labelcolor != null
+                        ? CF.Color(r: label.labelcolor.red, g: label.labelcolor.green, b: label.labelcolor.blue, a: label.labelcolor.alpha)
+                        : CF.Color(r: Theme.of(context).colorScheme.onSurfaceVariant.red, g: Theme.of(context).colorScheme.onSurfaceVariant.green, b: Theme.of(context).colorScheme.onSurfaceVariant.blue, a: Theme.of(context).colorScheme.onSurfaceVariant.alpha))
+              ) as RangeAnnotationSegment<T>;
+              break;
+            case ChartAxisType.category:
+              annotation = CF.RangeAnnotationSegment<String>(
+                hasX ? xParsed ?? x1Parsed : yParsed ?? y1Parsed,
+                hasX ? x2Parsed ?? x1Parsed ?? xParsed : y2Parsed ?? y1Parsed ?? yParsed,
+                axis,
+                startLabel: label.startlabel ?? label.label,
+                endLabel: label.endlabel ?? '',
+                labelAnchor: anchor, // middle/start/end
+                labelPosition: position, // AnnotationLabelPosition.auto/inside/outside/margin
+                labelDirection: direction, // horizontal/vertical
+                color: CF.Color(r: label.color.red, g: label.color.green, b: label.color.blue, a: label.color.alpha),
+                labelStyleSpec: CF.TextStyleSpec(fontSize: label.labelsize ?? 12,
+                    color: label.labelcolor != null
+                        ? CF.Color(r: label.labelcolor.red, g: label.labelcolor.green, b: label.labelcolor.blue, a: label.labelcolor.alpha)
+                        : CF.Color(r: Theme.of(context).colorScheme.onSurfaceVariant.red, g: Theme.of(context).colorScheme.onSurfaceVariant.green, b: Theme.of(context).colorScheme.onSurfaceVariant.blue, a: Theme.of(context).colorScheme.onSurfaceVariant.alpha))
+              ) as RangeAnnotationSegment<T>;
+              break;
+            case ChartAxisType.numeric:
+              annotation = CF.RangeAnnotationSegment<num>(
+                hasX ? xParsed ?? x1Parsed : yParsed ?? y1Parsed,
+                hasX ? x2Parsed ?? x1Parsed ?? xParsed : y2Parsed ?? y1Parsed ?? yParsed,
+                axis,
+                startLabel: label.startlabel ?? label.label,
+                endLabel: label.endlabel ?? '',
+                labelAnchor: anchor, // middle/start/end
+                labelPosition: position, // AnnotationLabelPosition.auto/inside/outside/margin
+                labelDirection: direction, // horizontal/vertical
+                color: CF.Color(r: label.color.red, g: label.color.green, b: label.color.blue, a: label.color.alpha),
+                labelStyleSpec: CF.TextStyleSpec(fontSize: label.labelsize ?? 12,
+                    color: label.labelcolor != null
+                        ? CF.Color(r: label.labelcolor.red, g: label.labelcolor.green, b: label.labelcolor.blue, a: label.labelcolor.alpha)
+                        : CF.Color(r: Theme.of(context).colorScheme.onSurfaceVariant.red, g: Theme.of(context).colorScheme.onSurfaceVariant.green, b: Theme.of(context).colorScheme.onSurfaceVariant.blue, a: Theme.of(context).colorScheme.onSurfaceVariant.alpha))
+              ) as RangeAnnotationSegment<T>;
+              break;
+            default:
+              continue;
+          }
+        }
+        else continue;
+
+        annotations.add(annotation);
+      }
+    }
+    return annotations;
   }
 
   /// Returns additional chart behaviors based on model settings
@@ -911,6 +1114,10 @@ class _ChartViewState extends WidgetState<ChartView>
             symbolRenderer: CF.CircleSymbolRenderer(isSolid: true)));
     behaviors.add(CF.SelectNearest(eventTrigger: CF.SelectionTrigger.tapAndDrag));
 
+    List<RangeAnnotationSegment<T>> labelBehaviors;
+    labelBehaviors = getLabels();
+    if (labelBehaviors.length > 0) behaviors.add(CF.RangeAnnotation<T>(labelBehaviors.cast<AnnotationSegment<Object>>()));
+
     return behaviors;
   }
 
@@ -931,6 +1138,8 @@ class _ChartViewState extends WidgetState<ChartView>
         return CF.BehaviorPosition.bottom;
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);

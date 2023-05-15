@@ -8,17 +8,42 @@ import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
+/// ChartDataPoint Object
+///
+/// Holds the plot values for each data node in the series
+class ChartDataLabel {
+  final Color color;
+  final String? anchor;
+  final String? position;
+  final String? direction;
+  final dynamic label;
+  final dynamic labelcolor;
+  final int? labelsize;
+  final dynamic startlabel;
+  final dynamic endlabel;
+  final dynamic x; final dynamic x1; final dynamic x2;
+  final dynamic y; final dynamic y1; final dynamic y2;
+
+  ChartDataLabel({
+    this.color = Colors.transparent, this.anchor, this.position, this.direction, this.label, this.labelcolor, this.labelsize, this.startlabel, this.endlabel, this.x, this.x1, this.x2, this.y, this.y1, this.y2,
+  });
+}
+
 /// Chart Labels [ChartLabelModel]
 ///
 /// Defines the properties used to build Labels on the Charts
 class ChartLabelModel extends WidgetModel
 {
 
+  List<ChartDataLabel> dataLabel = [];
+
   ChartLabelModel(
     WidgetModel parent,
     String? id, {
       dynamic color,
       dynamic anchor,
+      dynamic position,
+      dynamic direction,
       dynamic label,
       dynamic labelcolor,
       dynamic labelsize,
@@ -34,6 +59,8 @@ class ChartLabelModel extends WidgetModel
   ) : super(parent, id) {
     this.color = color;
     this.anchor = anchor;
+    this.position = position;
+    this.direction = direction;
     this.label = label;
     this.labelcolor = labelcolor;
     this.labelsize = labelsize;
@@ -76,6 +103,8 @@ class ChartLabelModel extends WidgetModel
     /////////////////
     color = Xml.get(node: xml, tag: 'color');
     anchor = Xml.get(node: xml, tag: 'anchor');
+    position = Xml.get(node: xml, tag: 'position');
+    direction = Xml.get(node: xml, tag: 'direction');
     label = Xml.get(node: xml, tag: 'label');
     labelcolor = Xml.get(node: xml, tag: 'labelcolor');
     labelsize = Xml.get(node: xml, tag: 'labelsize');
@@ -118,6 +147,30 @@ class ChartLabelModel extends WidgetModel
     }
   }
   String get anchor => _anchor?.get() ?? 'middle';
+
+  /// auto, inside, outside, margin
+  StringObservable? _position;
+  set position (dynamic v) {
+    if (_position != null) {
+      _position!.set(v);
+    }
+    else if (v != null) {
+      _position = StringObservable(Binding.toKey(id, 'position'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  String get position => _position?.get() ?? 'auto';
+
+  /// vertical / horizontal
+  StringObservable? _direction;
+  set direction (dynamic v) {
+    if (_direction != null) {
+      _direction!.set(v);
+    }
+    else if (v != null) {
+      _direction = StringObservable(Binding.toKey(id, 'direction'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get direction => _direction?.get();
   
   StringObservable? _label;
   set label (dynamic v)
@@ -275,4 +328,56 @@ class ChartLabelModel extends WidgetModel
   }
   String? get y2 => _y2?.get();
 
+  ChartDataLabel chartLabel(dynamic data)
+  {
+    dynamic color = replaceFromDataMap(_color, data) ?? Colors.transparent;
+    dynamic anchor = replaceFromDataMap(_anchor, data);
+    dynamic position = replaceFromDataMap(_position, data);
+    dynamic direction = replaceFromDataMap(_direction, data);
+    dynamic labelcolor = replaceFromDataMap(_labelcolor, data);
+    dynamic labelsize = replaceFromDataMap(_labelsize, data);
+    dynamic label = replaceFromDataMap(_label, data);
+    dynamic startlabel = replaceFromDataMap(_startlabel, data);
+    dynamic endlabel = replaceFromDataMap(_endlabel, data);
+    dynamic x = replaceFromDataMap(_x, data);
+    dynamic x1 = replaceFromDataMap(_x1, data);
+    dynamic x2 = replaceFromDataMap(_x2, data);
+    dynamic y = replaceFromDataMap(_y, data);
+    dynamic y1 = replaceFromDataMap(_y1, data);
+    dynamic y2 = replaceFromDataMap(_y2, data);
+
+    return ChartDataLabel(
+      color: color, anchor: anchor, position: position, direction: direction,
+      labelcolor: labelcolor, labelsize: labelsize,
+      label: label, startlabel: startlabel, endlabel: endlabel,
+      x: x, x1: x1, x2: x2,
+      y: y, y1: y1, y2: y2,
+    );
+  }
+
+  dynamic replaceFromDataMap(Observable? observable, dynamic data)
+  {
+    // Null value
+    if (observable == null) {
+      return null;
+    }
+    // Static value does not contain bindings or evals, no need to replace
+    // anything just return the value
+    else if (observable.signature == null || (observable.bindings == null || observable.bindings!.isEmpty)) {
+      return observable.value;
+    }
+
+    // apply data to Json data
+    dynamic value = Data.replaceValue(observable.signature, data);
+
+    // evaluate
+    if (observable.isEval == true) value = Observable.doEvaluation(value);
+
+    // set observable value
+    observable.set(value);
+
+    // return value
+    return observable.get();
+  }
+  
 }

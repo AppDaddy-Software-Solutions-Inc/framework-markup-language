@@ -4,13 +4,15 @@ import 'package:flutter/rendering.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 
 /// Parent data for use with [BoxRenderer].
-class LayoutBoxParentData extends ContainerBoxParentData<RenderBox>
+class BoxData extends ContainerBoxParentData<RenderBox>
 {
   ViewableWidgetModel? model;
 
   int? flex;
   FlexFit? fit;
   Size? size;
+
+  int runIndex = 0;
 
   /// The distance by which the child's top edge is inset from the top of the stack.
   double? top;
@@ -43,7 +45,7 @@ class LayoutBoxParentData extends ContainerBoxParentData<RenderBox>
   bool get isPositioned => top != null || right != null || bottom != null || left != null || width != null || height != null;
 }
 
-class LayoutBoxChildData extends ParentDataWidget<LayoutBoxParentData>
+class LayoutBoxChildData extends ParentDataWidget<BoxData>
 {
   final ViewableWidgetModel model;
 
@@ -83,9 +85,9 @@ class LayoutBoxChildData extends ParentDataWidget<LayoutBoxParentData>
   @override
   void applyParentData(RenderObject renderObject)
   {
-    if (renderObject.parentData is LayoutBoxParentData)
+    if (renderObject.parentData is BoxData)
     {
-      final LayoutBoxParentData parentData = renderObject.parentData! as LayoutBoxParentData;
+      final BoxData parentData = renderObject.parentData! as BoxData;
 
       bool needsLayout = false;
 

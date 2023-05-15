@@ -125,7 +125,6 @@ export 'package:flutter/animation.dart';
 ///  * The [catalog of layout widgets](https://flutter.dev/widgets/layout/).
 class StackObject extends MultiChildRenderObjectWidget
 {
-
   final BoxModel model;
 
   /// Creates a stack layout widget.
@@ -133,8 +132,8 @@ class StackObject extends MultiChildRenderObjectWidget
   /// By default, the non-positioned children of the stack are aligned by their
   /// top left corners.
   StackObject({
-    super.key,
     required this.model,
+    super.key,
     this.alignment = AlignmentDirectional.topStart,
     this.textDirection,
     this.fit = StackFit.loose,

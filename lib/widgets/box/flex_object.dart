@@ -2,9 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/box/box_renderer.dart';
+import 'package:fml/widgets/box/flex_renderer.dart';
 
-class BoxObject extends MultiChildRenderObjectWidget {
+class FlexObject extends MultiChildRenderObjectWidget {
   /// Creates a flex layout.
   ///
   /// The [direction] is required.
@@ -22,7 +22,7 @@ class BoxObject extends MultiChildRenderObjectWidget {
 
   final BoxModel model;
 
-  BoxObject({
+  FlexObject({
     required this.direction,
     required this.model,
     this.mainAxisAlignment = MainAxisAlignment.start,
@@ -162,8 +162,8 @@ class BoxObject extends MultiChildRenderObjectWidget {
   }
 
   @override
-  BoxRenderer createRenderObject(BuildContext context) {
-    return BoxRenderer(
+  FlexRenderer createRenderObject(BuildContext context) {
+    return FlexRenderer(
       model: model,
       direction: direction,
       mainAxisAlignment: mainAxisAlignment,
@@ -177,7 +177,7 @@ class BoxObject extends MultiChildRenderObjectWidget {
   }
 
   @override
-  void updateRenderObject(BuildContext context, covariant BoxRenderer renderObject) {
+  void updateRenderObject(BuildContext context, covariant FlexRenderer renderObject) {
     renderObject
       ..direction = direction
       ..mainAxisAlignment = mainAxisAlignment

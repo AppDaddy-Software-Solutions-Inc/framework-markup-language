@@ -13,11 +13,11 @@ import 'package:fml/widgets/box/box_model.dart';
 ///
 /// ## Layout algorithm
 ///
-/// _This section describes how the framework causes [BoxRenderer] to position
+/// _This section describes how the framework causes [FlexRenderer] to position
 /// its children._
 /// _See [BoxConstraints] for an introduction to box layout models._
 ///
-/// Layout for a [BoxRenderer] proceeds in six steps:
+/// Layout for a [FlexRenderer] proceeds in six steps:
 ///
 /// 1. Layout each child a null or zero flex factor with unbounded main axis
 ///    constraints and the incoming cross axis constraints. If the
@@ -36,12 +36,12 @@ import 'package:fml/widgets/box/box_model.dart';
 ///    allocated space), and children with [Flexible.fit] properties that are
 ///    [FlexFit.loose] are given loose constraints (i.e., not forced to fill the
 ///    allocated space).
-/// 4. The cross axis extent of the [BoxRenderer] is the maximum cross axis
+/// 4. The cross axis extent of the [FlexRenderer] is the maximum cross axis
 ///    extent of the children (which will always satisfy the incoming
 ///    constraints).
-/// 5. The main axis extent of the [BoxRenderer] is determined by the
+/// 5. The main axis extent of the [FlexRenderer] is determined by the
 ///    [mainAxisSize] property. If the [mainAxisSize] property is
-///    [MainAxisSize.max], then the main axis extent of the [BoxRenderer] is the
+///    [MainAxisSize.max], then the main axis extent of the [FlexRenderer] is the
 ///    max extent of the incoming main axis constraints. If the [mainAxisSize]
 ///    property is [MainAxisSize.min], then the main axis extent of the [Flex]
 ///    is the sum of the main axis extents of the children (subject to the
@@ -56,16 +56,16 @@ import 'package:fml/widgets/box/box_model.dart';
 ///
 ///  * [Flex], the widget equivalent.
 ///  * [Row] and [Column], direction-specific variants of [Flex].
-class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, LayoutBoxParentData>,
-    RenderBoxContainerDefaultsMixin<RenderBox, LayoutBoxParentData>,
+class FlexRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, BoxData>,
+    RenderBoxContainerDefaultsMixin<RenderBox, BoxData>,
     DebugOverflowIndicatorMixin
 {
   final BoxModel model;
 
   @override
   void setupParentData(RenderBox child) {
-    if (child.parentData is! LayoutBoxParentData) {
-      child.parentData = LayoutBoxParentData();
+    if (child.parentData is! BoxData) {
+      child.parentData = BoxData();
     }
   }
 
@@ -73,9 +73,9 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
   ///
   /// By default, the flex layout is horizontal and children are aligned to the
   /// start of the main axis and the center of the cross axis.
-  BoxRenderer({
-    Axis direction = Axis.horizontal,
+  FlexRenderer({
     required this.model,
+    Axis direction = Axis.horizontal,
     MainAxisAlignment mainAxisAlignment = MainAxisAlignment.start,
     MainAxisSize mainAxisSize = MainAxisSize.max,
     CrossAxisAlignment crossAxisAlignment = CrossAxisAlignment.center,
@@ -313,7 +313,7 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
         } else {
           inflexibleSpace += childSize(child, extent);
         }
-        final LayoutBoxParentData childParentData = child.parentData! as LayoutBoxParentData;
+        final BoxData childParentData = child.parentData! as BoxData;
         child = childParentData.nextSibling;
       }
       return maxFlexFractionSoFar * totalFlex + inflexibleSpace;
@@ -348,7 +348,7 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
           inflexibleSpace += mainSize;
           maxCrossSize = math.max(maxCrossSize, crossSize);
         }
-        final LayoutBoxParentData childParentData = child.parentData! as LayoutBoxParentData;
+        final BoxData childParentData = child.parentData! as BoxData;
         child = childParentData.nextSibling;
       }
 
@@ -363,7 +363,7 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
         if (flex > 0) {
           maxCrossSize = math.max(maxCrossSize, childSize(child, spacePerFlex * flex));
         }
-        final LayoutBoxParentData childParentData = child.parentData! as LayoutBoxParentData;
+        final BoxData childParentData = child.parentData! as BoxData;
         child = childParentData.nextSibling;
       }
 
@@ -416,12 +416,12 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
   }
 
   int _getFlex(RenderBox child) {
-    final LayoutBoxParentData childParentData = child.parentData! as LayoutBoxParentData;
+    final BoxData childParentData = child.parentData! as BoxData;
     return childParentData.flex ?? 0;
   }
 
   FlexFit _getFit(RenderBox child) {
-    final LayoutBoxParentData childParentData = child.parentData! as LayoutBoxParentData;
+    final BoxData childParentData = child.parentData! as BoxData;
     return childParentData.fit ?? FlexFit.tight;
   }
 
@@ -694,9 +694,9 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
     while (child != null)
     {
       // perform layout
-      if (child.parentData is LayoutBoxParentData && (child.parentData as LayoutBoxParentData).model != null)
+      if (child.parentData is BoxData && (child.parentData as BoxData).model != null)
       {
-        var childData = (child.parentData as LayoutBoxParentData);
+        var childData = (child.parentData as BoxData);
         var childConstraints = myConstraints;
         var childModel = childData.model!;
 
@@ -843,7 +843,7 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
     RenderBox? lastFlexChild;
     while (child != null)
     {
-      final LayoutBoxParentData data = child.parentData! as LayoutBoxParentData;
+      final BoxData data = child.parentData! as BoxData;
       final int flex = _getFlex(child);
       if (flex > 0)
       {
@@ -864,7 +864,7 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
       child = firstChild;
       while (child != null)
       {
-        final LayoutBoxParentData data = child.parentData! as LayoutBoxParentData;
+        final BoxData data = child.parentData! as BoxData;
         var idChild  = data.model!.id;
 
         final int flex = _getFlex(child);
@@ -1006,7 +1006,7 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
           );
           crossAxisSize = math.max(maxSizeAboveBaseline + maxSizeBelowBaseline, crossAxisSize);
         }
-        final LayoutBoxParentData childParentData = child.parentData! as LayoutBoxParentData;
+        final BoxData childParentData = child.parentData! as BoxData;
         child = childParentData.nextSibling;
       }
     }
@@ -1067,7 +1067,7 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
     RenderBox? child = firstChild;
     while (child != null)
     {
-      final LayoutBoxParentData data = child.parentData! as LayoutBoxParentData;
+      final BoxData data = child.parentData! as BoxData;
 
       final double childCrossPosition;
       switch (_crossAxisAlignment)

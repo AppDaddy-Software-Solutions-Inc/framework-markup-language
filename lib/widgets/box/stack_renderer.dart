@@ -45,8 +45,8 @@ import 'package:fml/widgets/box/box_model.dart';
 ///
 ///  * [RenderFlow]
 class StackRenderer extends RenderBox
-    with ContainerRenderObjectMixin<RenderBox, LayoutBoxParentData>,
-        RenderBoxContainerDefaultsMixin<RenderBox, LayoutBoxParentData>
+    with ContainerRenderObjectMixin<RenderBox, BoxData>,
+        RenderBoxContainerDefaultsMixin<RenderBox, BoxData>
 {
   final BoxModel model;
 
@@ -72,8 +72,8 @@ class StackRenderer extends RenderBox
 
   @override
   void setupParentData(RenderBox child) {
-    if (child.parentData is! LayoutBoxParentData) {
-      child.parentData = LayoutBoxParentData();
+    if (child.parentData is! BoxData) {
+      child.parentData = BoxData();
     }
   }
 
@@ -162,7 +162,7 @@ class StackRenderer extends RenderBox
     double extent = 0.0;
     RenderBox? child = firstChild;
     while (child != null) {
-      final LayoutBoxParentData childParentData = child.parentData! as LayoutBoxParentData;
+      final BoxData childParentData = child.parentData! as BoxData;
       if (!childParentData.isPositioned) {
         extent = math.max(extent, mainChildSizeGetter(child));
       }
@@ -200,7 +200,7 @@ class StackRenderer extends RenderBox
   /// Lays out the positioned `child` according to `alignment` within a Stack of `size`.
   ///
   /// Returns true when the child has visual overflow.
-  static bool layoutPositionedChild(RenderBox child, LayoutBoxParentData childParentData, Size size, Alignment alignment) {
+  static bool layoutPositionedChild(RenderBox child, BoxData childParentData, Size size, Alignment alignment) {
     assert(childParentData.isPositioned);
     assert(child.parentData == childParentData);
 
@@ -353,13 +353,13 @@ class StackRenderer extends RenderBox
     RenderBox? child = firstChild;
     while (child != null)
     {
-      final LayoutBoxParentData childData = child.parentData! as LayoutBoxParentData;
+      final BoxData childData = child.parentData! as BoxData;
       if (!childData.isPositioned)
       {
         var childConstraints = myConstraints;
-        if (child.parentData is LayoutBoxParentData && (child.parentData as LayoutBoxParentData).model != null)
+        if (child.parentData is BoxData && (child.parentData as BoxData).model != null)
         {
-          var childData = (child.parentData as LayoutBoxParentData);
+          var childData = (child.parentData as BoxData);
           var childModel = childData.model!;
 
           var idChild = childModel.id;
@@ -422,7 +422,7 @@ class StackRenderer extends RenderBox
     RenderBox? child = firstChild;
     while (child != null)
     {
-      final LayoutBoxParentData childParentData = child.parentData! as LayoutBoxParentData;
+      final BoxData childParentData = child.parentData! as BoxData;
 
       if (!childParentData.isPositioned) {
         childParentData.offset = _resolvedAlignment!.alongOffset(size - child.size as Offset);

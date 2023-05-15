@@ -3,8 +3,9 @@ import 'dart:ui';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/box/box_object.dart';
+import 'package:fml/widgets/box/flex_object.dart';
 import 'package:fml/widgets/box/stack_object.dart';
+import 'package:fml/widgets/box/wrap_object.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
@@ -283,6 +284,7 @@ class _BoxViewState extends WidgetState<BoxView>
     /// Build the Layout
     var children = widget.model.inflate();
 
+    // create view
     Widget view;
     switch (widget.model.layoutType)
     {
@@ -298,12 +300,29 @@ class _BoxViewState extends WidgetState<BoxView>
       case LayoutType.row:
       case LayoutType.column:
       default:
-        view = BoxObject(model: widget.model,
-          direction: widget.model.layoutType == LayoutType.row ? Axis.horizontal : Axis.vertical,
-          mainAxisAlignment: alignment.mainAlignment,
-          crossAxisAlignment: alignment.crossAlignment,
-          clipBehavior: Clip.hardEdge,
-          children: children,);
+        // wrap object
+        if (widget.model.wrap)
+        {
+          view = WrapObject(
+              model: widget.model,
+              direction: Axis.vertical,
+              alignment: alignment.mainWrapAlignment,
+              runAlignment: alignment.mainWrapAlignment,
+              crossAxisAlignment: alignment.crossWrapAlignment,
+              children: children);
+        }
+
+        // box object
+        else
+        {
+          view = FlexObject(
+              model: widget.model,
+              direction: widget.model.layoutType == LayoutType.row ? Axis.horizontal : Axis.vertical,
+              mainAxisAlignment: alignment.mainAlignment,
+              crossAxisAlignment: alignment.crossAlignment,
+              clipBehavior: Clip.hardEdge,
+              children: children);
+        }
         break;
     }
 

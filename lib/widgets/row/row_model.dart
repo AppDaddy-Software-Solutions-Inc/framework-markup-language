@@ -13,10 +13,6 @@ class RowModel extends BoxModel
   @override
   String? get layout => "row";
 
-  // expands in the horizontal
-  @override
-  bool get hasFlexibleWidth => expand ?? expandDefaultBehavior;
-
   // expands in the vertical
   @override
   bool get hasFlexibleHeight => false;

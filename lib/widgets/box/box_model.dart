@@ -21,15 +21,15 @@ class BoxModel extends DecoratedWidgetModel
   LayoutType get layoutType => getLayoutType(layout, defaultLayout: LayoutType.column);
 
   // Denotes whether box widgets (row, column) naturally expand or contract
-  final bool expandDefaultBehavior = true;
+  final bool expandDefault = true;
 
   // expands in the vertical
   @override
-  bool get hasFlexibleWidth => expand ?? expandDefaultBehavior;
+  bool get hasFlexibleWidth => expand;
 
   // expands in the horizontal
   @override
-  bool get hasFlexibleHeight => expand ?? expandDefaultBehavior;
+  bool get hasFlexibleHeight => expand;
 
   /// Expand, which is true by default, tells the widget if it should shrink to its children, or grow to its parents constraints. Width/Height attributes will override expand.
   BooleanObservable? _expand;
@@ -44,7 +44,7 @@ class BoxModel extends DecoratedWidgetModel
       _expand = BooleanObservable(Binding.toKey(id, 'expand'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  bool? get expand => _expand?.get();
+  bool get expand => _expand?.get() ?? expandDefault;
 
   /// layout
   StringObservable? _layout;

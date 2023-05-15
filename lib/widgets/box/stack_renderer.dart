@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/box/box_object.dart';
 
 /// Implements the stack layout algorithm.
 ///
@@ -265,7 +264,7 @@ class StackRenderer extends RenderBox
   {
     double height = double.negativeInfinity;
 
-    var modelHeight = model.getHeight(heightParent: this.constraints.maxHeight);
+    var modelHeight = model.getHeight(heightParent: constraints.maxHeight);
     if (modelHeight != null)
     {
       height = modelHeight;
@@ -291,7 +290,7 @@ class StackRenderer extends RenderBox
   {
     double width = double.negativeInfinity;
 
-    var modelWidth = model.getWidth(widthParent: this.constraints.maxWidth);
+    var modelWidth = model.getWidth(widthParent: constraints.maxWidth);
     if (modelWidth != null)
     {
       width = modelWidth;

@@ -26,7 +26,7 @@ class BoxObject extends MultiChildRenderObjectWidget {
     required this.direction,
     required this.model,
     this.mainAxisAlignment = MainAxisAlignment.start,
-    this.mainAxisSize = MainAxisSize.min,
+    this.mainAxisSize  = MainAxisSize.max,
     this.crossAxisAlignment = CrossAxisAlignment.center,
     this.textDirection,
     this.verticalDirection = VerticalDirection.down,

@@ -17,10 +17,6 @@ class ColumnModel extends BoxModel
   @override
   bool get hasFlexibleWidth => false;
 
-  // expands in the vertical
-  @override
-  bool get hasFlexibleHeight => expand ?? expandDefaultBehavior;
-
   ColumnModel(WidgetModel parent, String? id) : super(parent, id);
 
   static ColumnModel? fromXml(WidgetModel parent, XmlElement xml)

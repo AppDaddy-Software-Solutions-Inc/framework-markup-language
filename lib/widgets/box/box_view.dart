@@ -248,6 +248,42 @@ class _BoxViewState extends WidgetState<BoxView>
     return view;
   }
 
+  Widget _buildInnerBox(Widget child,  BoxDecoration? decoration, Alignment? alignment, Clip clip)
+  {
+    Widget? view = child;
+    if (alignment != null && widget.model.expand != false)
+    {
+      // a width factor of 1 forces the container alignment to fit the child's width
+      // rather than expand to fill its parent
+      double? widthFactor;
+      if (!widget.model.hasFlexibleWidth) widthFactor = 1;
+
+      // a height factor of 1 forces the container alignment to fit the child's height
+      // rather than expand to fill its parent
+      double? heightFactor;
+      if (!widget.model.hasFlexibleHeight) heightFactor = 1;
+
+      view = Align(alignment: alignment, child: view, widthFactor: widthFactor, heightFactor: heightFactor);
+    }
+
+    if (decoration != null)
+    {
+      if (clip != Clip.none)
+      {
+        view = ClipPath(clipper: _DecorationClipper(textDirection: Directionality.maybeOf(context), decoration: decoration), clipBehavior: clip, child: view);
+      }
+      view = DecoratedBox(decoration: decoration, child: view);
+    }
+
+    return view;
+  }
+
+  Widget _buildOuterBox(Widget child,  BoxDecoration? decoration)
+  {
+    if (decoration == null) return child;
+    return DecoratedBox(decoration: decoration, child: child);
+  }
+
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
@@ -265,11 +301,11 @@ class _BoxViewState extends WidgetState<BoxView>
     /// Build the Layout
     var children = widget.model.inflate();
 
-    Widget content;
+    Widget view;
     switch (widget.model.layoutType)
     {
       case LayoutType.stack:
-        content = StackObject(model: widget.model,
+        view = StackObject(model: widget.model,
           fit: StackFit.passthrough,
           clipBehavior: Clip.hardEdge,
           children: children,);
@@ -278,7 +314,7 @@ class _BoxViewState extends WidgetState<BoxView>
       case LayoutType.row:
       case LayoutType.column:
       default:
-        content = BoxObject(model: widget.model,
+        view = BoxObject(model: widget.model,
           direction: widget.model.layoutType == LayoutType.row ? Axis.horizontal : Axis.vertical,
           mainAxisAlignment: alignment.mainAlignment,
           crossAxisAlignment: alignment.crossAlignment,
@@ -288,9 +324,7 @@ class _BoxViewState extends WidgetState<BoxView>
     }
 
     // add padding
-    content = addPadding(content);
-
-    /// Build the Box
+    view = addPadding(view);
 
     // build the border
     Border? border = _getBorder();
@@ -305,13 +339,13 @@ class _BoxViewState extends WidgetState<BoxView>
     BoxDecoration? borderDecoration = border != null ? BoxDecoration(border: border, borderRadius: radius) : null;
 
     // blur the view
-    if (widget.model.blur) content = _getBlurredView(content, borderDecoration);
+    if (widget.model.blur) view = _getBlurredView(view, borderDecoration);
 
-    // inner box - contents
-    Widget view = Container(clipBehavior: Clip.antiAlias, decoration: decoration, alignment: alignment.aligned, child: content);
+    // build inner box
+    view = _buildInnerBox(view, decoration, alignment.aligned, Clip.antiAlias);
 
     // build the outer box - border
-    if (borderDecoration != null) view = Container(decoration: borderDecoration, child: view);
+    view = _buildOuterBox(view, borderDecoration);
 
     // set the box opacity
     if (widget.model.opacity != null) view = _getFadedView(view);
@@ -323,10 +357,27 @@ class _BoxViewState extends WidgetState<BoxView>
     view = addMargins(view);
 
     return view;
+  }
+}
 
-    view = Column(children: [view], mainAxisSize: MainAxisSize.min);
-    view = Row(children: [view], mainAxisSize: MainAxisSize.min);
+/// A clipper that uses [Decoration.getClipPath] to clip.
+class _DecorationClipper extends CustomClipper<Path>
+{
+  _DecorationClipper({TextDirection? textDirection, required this.decoration,
+  }) : textDirection = textDirection ?? TextDirection.ltr;
 
-    return view;
+  final TextDirection textDirection;
+  final Decoration decoration;
+
+  @override
+  Path getClip(Size size)
+  {
+    return decoration.getClipPath(Offset.zero & size, textDirection);
+  }
+
+  @override
+  bool shouldReclip(_DecorationClipper oldClipper)
+  {
+    return oldClipper.decoration != decoration || oldClipper.textDirection != textDirection;
   }
 }

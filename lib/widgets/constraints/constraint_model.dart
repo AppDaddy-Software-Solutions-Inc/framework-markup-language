@@ -540,7 +540,7 @@ class ConstraintModel extends WidgetModel
   double get calculatedMaxWidthOrDefault
   {
     var v = myMaxWidth;
-    if (v == null || v == double.infinity) v = System().screenwidth.toDouble();
+    if (v == double.infinity) v = System().screenwidth.toDouble();
     return v;
   }
 
@@ -548,7 +548,7 @@ class ConstraintModel extends WidgetModel
   double get calculatedMaxHeightOrDefault
   {
     var v = myMaxHeight;
-    if (v == null || v == double.infinity) v = System().screenheight.toDouble();
+    if (v == double.infinity) v = System().screenheight.toDouble();
     return v;
   }
 

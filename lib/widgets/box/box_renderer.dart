@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/box/box_object.dart';
 
 /// Displays its children in a one-dimensional array.
 ///
@@ -77,8 +76,8 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
   BoxRenderer({
     Axis direction = Axis.horizontal,
     required this.model,
-    MainAxisSize mainAxisSize = MainAxisSize.min,
     MainAxisAlignment mainAxisAlignment = MainAxisAlignment.start,
+    MainAxisSize mainAxisSize = MainAxisSize.max,
     CrossAxisAlignment crossAxisAlignment = CrossAxisAlignment.center,
     TextDirection? textDirection,
     VerticalDirection verticalDirection = VerticalDirection.down,
@@ -775,7 +774,7 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
   {
     double height = double.negativeInfinity;
 
-    var modelHeight = model.getHeight(heightParent: this.constraints.maxHeight);
+    var modelHeight = model.getHeight(heightParent: constraints.maxHeight);
     if (modelHeight != null)
     {
       height = modelHeight;
@@ -801,7 +800,7 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
   {
     double width = double.negativeInfinity;
 
-    var modelWidth = model.getWidth(widthParent: this.constraints.maxWidth);
+    var modelWidth = model.getWidth(widthParent: constraints.maxWidth);
     if (modelWidth != null)
     {
       width = modelWidth;
@@ -975,16 +974,12 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
     final BoxConstraints constraints = this.constraints;
 
     var idParent = model.id;
-
-    final _LayoutSizes sizes = _computeSizes(
-      layoutChild: ChildLayoutHelper.layoutChild,
-      constraints: constraints,
-    );
-
+    final _LayoutSizes sizes = _computeSizes(layoutChild: ChildLayoutHelper.layoutChild, constraints: constraints);
 
     final double allocatedSize = sizes.allocatedSize;
-    double actualSize = sizes.mainSize;
-    double crossSize = sizes.crossSize;
+    double mainAxisSize   = sizes.mainSize;
+    double crossAxisSize  = sizes.crossSize;
+
     double maxBaselineDistance = 0.0;
     if (crossAxisAlignment == CrossAxisAlignment.baseline) {
       RenderBox? child = firstChild;
@@ -1009,7 +1004,7 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
             child.size.height - distance,
             maxSizeBelowBaseline,
           );
-          crossSize = math.max(maxSizeAboveBaseline + maxSizeBelowBaseline, crossSize);
+          crossAxisSize = math.max(maxSizeAboveBaseline + maxSizeBelowBaseline, crossAxisSize);
         }
         final LayoutBoxParentData childParentData = child.parentData! as LayoutBoxParentData;
         child = childParentData.nextSibling;
@@ -1019,17 +1014,17 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
     // Align items along the main axis.
     switch (_direction) {
       case Axis.horizontal:
-        size = constraints.constrain(Size(actualSize, crossSize));
-        actualSize = size.width;
-        crossSize = size.height;
+        size = constraints.constrain(Size(mainAxisSize, crossAxisSize));
+        mainAxisSize = size.width;
+        crossAxisSize = size.height;
         break;
       case Axis.vertical:
-        size = constraints.constrain(Size(crossSize, actualSize));
-        actualSize = size.height;
-        crossSize = size.width;
+        size = constraints.constrain(Size(crossAxisSize, mainAxisSize));
+        mainAxisSize = size.height;
+        crossAxisSize = size.width;
         break;
     }
-    final double actualSizeDelta = actualSize - allocatedSize;
+    final double actualSizeDelta = mainAxisSize - allocatedSize;
     _overflow = math.max(0.0, -actualSizeDelta);
     final double remainingSpace = math.max(0.0, actualSizeDelta);
     late final double leadingSpace;
@@ -1068,7 +1063,7 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
     }
 
     // Position elements
-    double childMainPosition = flipMainAxis ? actualSize - leadingSpace : leadingSpace;
+    double childMainPosition = flipMainAxis ? mainAxisSize - leadingSpace : leadingSpace;
     RenderBox? child = firstChild;
     while (child != null)
     {
@@ -1082,10 +1077,10 @@ class BoxRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, L
           childCrossPosition = _startIsTopLeft(flipAxis(direction), textDirection, verticalDirection)
               == (_crossAxisAlignment == CrossAxisAlignment.start)
               ? 0.0
-              : crossSize - _getCrossSize(child.size);
+              : crossAxisSize - _getCrossSize(child.size);
           break;
         case CrossAxisAlignment.center:
-          childCrossPosition = crossSize / 2.0 - _getCrossSize(child.size) / 2.0;
+          childCrossPosition = crossAxisSize / 2.0 - _getCrossSize(child.size) / 2.0;
           break;
         case CrossAxisAlignment.stretch:
           childCrossPosition = 0.0;

@@ -13,9 +13,23 @@ class ColumnModel extends BoxModel
   @override
   String? get layout => "column";
 
-  // expands in the horizontal
+  // indicates if the widget will grow in
+  // its horizontal axis
   @override
-  bool get hasFlexibleWidth => false;
+  bool get hasFlexibleWidth
+  {
+    if (!super.hasFlexibleWidth) return false;
+    bool flexible = false;
+    for (var child in viewableChildren)
+    {
+      if (child.visible && child.hasFlexibleWidth)
+      {
+        flexible = true;
+        break;
+      }
+    }
+    return flexible;
+  }
 
   ColumnModel(WidgetModel parent, String? id) : super(parent, id);
 

@@ -13,9 +13,23 @@ class RowModel extends BoxModel
   @override
   String? get layout => "row";
 
-  // expands in the vertical
+  // indicates if the widget will grow in
+  // its vertical axis
   @override
-  bool get hasFlexibleHeight => false;
+  bool get hasFlexibleHeight
+  {
+    if (!super.hasFlexibleHeight) return false;
+    bool flexible = false;
+    for (var child in viewableChildren)
+    {
+      if (child.visible && child.hasFlexibleHeight)
+      {
+        flexible = true;
+        break;
+      }
+    }
+    return flexible;
+  }
 
   RowModel(WidgetModel parent, String? id) : super(parent, id);
 

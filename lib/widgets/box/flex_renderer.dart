@@ -733,18 +733,30 @@ class FlexRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
       // perform layout
       if (child.parentData is BoxData && (child.parentData as BoxData).model != null)
       {
-        var childData = (child.parentData as BoxData);
-        var childModel = childData.model!;
 
-        // is the child flexible?
-        childData.flex = _direction == Axis.horizontal ? childModel.getWidthFlex() : childModel.getHeightFlex();
+        var childData  = (child.parentData as BoxData);
+        var childModel = childData.model!;
+        var idChild    = childModel.id;
+
+        // assign flex value
+        childData.flex = null;
+        switch (_direction)
+        {
+          case Axis.horizontal :
+             if (constraints.hasBoundedWidth)
+             {
+               childData.flex = childModel.getWidthFlex();
+             }
+             break;
+          case Axis.vertical :
+            if (constraints.hasBoundedHeight)
+            {
+              childData.flex = childModel.getHeightFlex();
+            }
+        }
 
         // layout child
-        final bool doLayout = childData.flex == null;
-
-        var idChild = childModel.id;
-
-        if (doLayout)
+        if (childData.flex == null)
         {
           // get layout constraints
           var childConstraints = _getLayoutConstraints(child, childModel);

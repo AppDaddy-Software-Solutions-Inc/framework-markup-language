@@ -36,6 +36,21 @@ class ChartAxisModel extends WidgetModel
   }
   String? get title => _title?.get();
 
+  /// The interval of an axis, displayed beside the axis
+  StringObservable? _interval;
+  set interval (dynamic v)
+  {
+    if (_interval != null)
+    {
+      _interval!.set(v);
+    }
+    else if (v != null)
+    {
+      _interval = StringObservable(Binding.toKey(id, 'interval'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get interval => _interval?.get();
+
   /// Used to rotate long data labels so you can fit more, generally along the x axis
   IntegerObservable? _labelrotation;
   set labelrotation (dynamic v)
@@ -50,6 +65,33 @@ class ChartAxisModel extends WidgetModel
     }
   }
   int get labelrotation => _labelrotation?.get() ?? 0;
+
+  /// Sets the font size of the tick labels
+  IntegerObservable? _labelsize;
+  set labelsize (dynamic v)
+  {
+    if (_labelsize != null)
+    {
+      _labelsize!.set(v);
+    }
+    else if (v != null)
+    {
+      _labelsize = IntegerObservable(Binding.toKey(id, 'labelsize'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  int? get labelsize => _labelsize?.get();
+
+  /// axis labels visibility
+  BooleanObservable? _labelvisible;
+  set labelvisible(dynamic v) {
+    if (_labelvisible != null) {
+      _labelvisible!.set(v);
+    } else if (v != null) {
+      _labelvisible = BooleanObservable(Binding.toKey(id, 'labelvisible'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get labelvisible => _labelvisible?.get() ?? true;
 
   /// Used for X Axis Labels with a Time Series to format the DateTime with i18n spec
   /// examples: https://stackoverflow.com/a/16126580/8272202
@@ -67,6 +109,53 @@ class ChartAxisModel extends WidgetModel
   }
   String? get format => _format?.get();
 
+  /// Sets the minimum axis value to show, only intended for numeric axis
+  StringObservable? _min;
+  set min (dynamic v)
+  {
+    if (_min != null)
+    {
+      _min!.set(v);
+    }
+    else if (v != null)
+    {
+      _min = StringObservable(Binding.toKey(id, 'min'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get min {
+    return _min?.get();
+  }
+
+  /// Sets the maximum axis value to show, only intended for numeric axis
+  StringObservable? _max;
+  set max (dynamic v)
+  {
+    if (_max != null)
+    {
+      _max!.set(v);
+    }
+    else if (v != null)
+    {
+      _max = StringObservable(Binding.toKey(id, 'max'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get max {
+    return _max?.get();
+  }
+
+  /// Truncating a numeric y axis will prevent the y axis forcing 0(zero) as the baseline
+  /// This allows the baseline to be based on the series' y data instead
+  BooleanObservable? _truncate;
+  set truncate(dynamic v) {
+    if (_truncate != null) {
+      _truncate!.set(v);
+    } else if (v != null) {
+      _truncate = BooleanObservable(Binding.toKey(id, 'truncate'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get truncate => _truncate?.get() ?? false;
+
   ChartAxisModel(
       WidgetModel parent,
       String?  id,
@@ -74,8 +163,14 @@ class ChartAxisModel extends WidgetModel
       {
         String? type,
         dynamic labelrotation,
+        dynamic labelvisible,
+        dynamic labelsize,
         dynamic title,
+        dynamic interval,
         dynamic format,
+        dynamic min,
+        dynamic max,
+        dynamic truncate,
         // dynamic minimum,
         // dynamic maximum,
         // dynamic visibleminimum,
@@ -91,8 +186,14 @@ class ChartAxisModel extends WidgetModel
 
   {
     this.labelrotation  = labelrotation;
+    this.labelvisible   = labelvisible;
+    this.labelsize      = labelsize;
     this.title          = title;
+    this.interval       = interval;
     this.format         = format;
+    this.min            = min;
+    this.max            = max;
+    this.truncate       = truncate;
     // this.minimum        = minimum;
     // this.maximum        = maximum;
     // this.visibleminimum = visibleminimum;
@@ -145,9 +246,15 @@ class ChartAxisModel extends WidgetModel
         Xml.get(node: xml, tag: 'id'),
         axis,
         title           : Xml.get(node: xml, tag: 'title'),
+        interval        : Xml.get(node: xml, tag: 'interval'),
         labelrotation   : Xml.get(node: xml, tag: 'labelrotation'),
+        labelvisible    : Xml.get(node: xml, tag: 'labelvisible'),
+        labelsize       : Xml.get(node: xml, tag: 'labelsize'),
         format          : Xml.get(node: xml, tag: 'format'),
         type            : Xml.get(node: xml, tag: 'type'),
+        min             : Xml.get(node: xml, tag: 'min'),
+        max             : Xml.get(node: xml, tag: 'max'),
+        truncate        : Xml.get(node: xml, tag: 'truncate'),
         // fontsize        : Xml.get(node: xml, tag: 'fontsize'),
         // fontcolor       : Xml.get(node: xml, tag: 'fontcolor'),
         // format          : Xml.get(node: xml, tag: 'format'),

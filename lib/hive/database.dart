@@ -190,7 +190,8 @@ class Database
 
       // add values to list
       for (var value in values) {
-        value is Map ? list.add(value.cast<String, dynamic>()) : null;
+        if (value is Map)
+          list.add(value.cast<String, dynamic>());
       }
 
       // order by clause

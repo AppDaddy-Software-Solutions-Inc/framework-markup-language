@@ -670,7 +670,8 @@ class _ChartViewState extends WidgetState<ChartView>
     if (type == ChartAxisType.category) {
       return val;
     } else if (type == ChartAxisType.numeric) {
-      return num.tryParse(val!) ?? 0;
+      return S.toNum(val!) ?? 0;
+      // return num.tryParse(val!) ?? 0;
     } else if (type == ChartAxisType.date ||
         type == ChartAxisType.time ||
         type == ChartAxisType.datetime) {
@@ -861,8 +862,8 @@ class _ChartViewState extends WidgetState<ChartView>
   }
 
   /// Returns Chart Annotations (labels) from the [ChartLabelModel]
-  List<RangeAnnotationSegment<T>> getLabels<T>() {
-    List<RangeAnnotationSegment<T>> annotations = [];
+  List<RangeAnnotationSegment<dynamic>> getLabels<T>() {
+    List<RangeAnnotationSegment<dynamic>> annotations = [];
 
     for (ChartLabelModel labels in widget.model.labels) {
 
@@ -978,7 +979,8 @@ class _ChartViewState extends WidgetState<ChartView>
             hasX ? xParsed ?? x1Parsed : yParsed ?? y1Parsed,
             hasX ? x2Parsed ?? x1Parsed ?? xParsed : y2Parsed ?? y1Parsed ?? yParsed,
             axis,
-            startLabel: label.startlabel ?? label.label,
+            startLabel: label.startlabel ?? '',
+            middleLabel: label.label ?? '',
             endLabel: label.endlabel ?? '',
             labelAnchor: anchor, // middle/start/end
             labelPosition: position, // AnnotationLabelPosition.auto/inside/outside/margin
@@ -998,7 +1000,8 @@ class _ChartViewState extends WidgetState<ChartView>
                 hasX ? xParsed ?? x1Parsed : yParsed ?? y1Parsed,
                 hasX ? x2Parsed ?? x1Parsed ?? xParsed : y2Parsed ?? y1Parsed ?? yParsed,
                 axis,
-                startLabel: label.startlabel ?? label.label,
+                startLabel: label.startlabel ?? '',
+                middleLabel: label.label ?? '',
                 endLabel: label.endlabel ?? '',
                 labelAnchor: anchor, // middle/start/end
                 labelPosition: position, // AnnotationLabelPosition.auto/inside/outside/margin
@@ -1015,7 +1018,8 @@ class _ChartViewState extends WidgetState<ChartView>
                 hasX ? xParsed ?? x1Parsed : yParsed ?? y1Parsed,
                 hasX ? x2Parsed ?? x1Parsed ?? xParsed : y2Parsed ?? y1Parsed ?? yParsed,
                 axis,
-                startLabel: label.startlabel ?? label.label,
+                startLabel: label.startlabel ?? '',
+                middleLabel: label.label ?? '',
                 endLabel: label.endlabel ?? '',
                 labelAnchor: anchor, // middle/start/end
                 labelPosition: position, // AnnotationLabelPosition.auto/inside/outside/margin
@@ -1032,7 +1036,8 @@ class _ChartViewState extends WidgetState<ChartView>
                 hasX ? xParsed ?? x1Parsed : yParsed ?? y1Parsed,
                 hasX ? x2Parsed ?? x1Parsed ?? xParsed : y2Parsed ?? y1Parsed ?? yParsed,
                 axis,
-                startLabel: label.startlabel ?? label.label,
+                startLabel: label.startlabel ?? '',
+                middleLabel: label.label ?? '',
                 endLabel: label.endlabel ?? '',
                 labelAnchor: anchor, // middle/start/end
                 labelPosition: position, // AnnotationLabelPosition.auto/inside/outside/margin
@@ -1114,8 +1119,8 @@ class _ChartViewState extends WidgetState<ChartView>
             symbolRenderer: CF.CircleSymbolRenderer(isSolid: true)));
     behaviors.add(CF.SelectNearest(eventTrigger: CF.SelectionTrigger.tapAndDrag));
 
-    List<RangeAnnotationSegment<T>> labelBehaviors;
-    labelBehaviors = getLabels();
+    List<RangeAnnotationSegment<dynamic>>? labelBehaviors = [];
+    labelBehaviors = getLabels<dynamic>();
     if (labelBehaviors.length > 0) behaviors.add(CF.RangeAnnotation<T>(labelBehaviors.cast<AnnotationSegment<Object>>()));
 
     return behaviors;

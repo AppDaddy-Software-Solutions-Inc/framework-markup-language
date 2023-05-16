@@ -287,7 +287,11 @@ class ChartModel extends DecoratedWidgetModel  {
           }
         }
         for (var label in labels) {
-          if (label.datasource == source.id) {
+          if (label.datasource == null && list != null) {
+            label.dataLabel.clear();
+            label.dataLabel.add(label.chartLabel(data));
+          }
+          else if (label.datasource == source.id) {
             label.dataLabel.clear();
             if (list != null) {
               for (var l in list) {

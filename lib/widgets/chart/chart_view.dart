@@ -112,8 +112,8 @@ class _ChartViewState extends WidgetState<ChartView>
       ),
   );
 
-  charts_flutter.NumericAxisSpec xNumComboAxisSpec() => charts_flutter.NumericAxisSpec(
-      tickProviderSpec: charts_flutter.BasicNumericTickProviderSpec(dataIsInWholeNumbers: false),
+  charts_flutter.NumericAxisSpec xNumComboAxisSpec({int? ticks}) => charts_flutter.NumericAxisSpec(
+      tickProviderSpec: charts_flutter.BasicNumericTickProviderSpec(dataIsInWholeNumbers: false, desiredTickCount: ticks),
       viewport: widget.model.yaxis?.min != null && widget.model.yaxis?.max != null
           ? charts_flutter.NumericExtents(S.toNum(widget.model.yaxis!.min!)!, S.toNum(widget.model.yaxis!.max!)!) : null,
       renderSpec: charts_flutter.SmallTickRendererSpec(
@@ -215,16 +215,6 @@ class _ChartViewState extends WidgetState<ChartView>
     return ticks;
   }
 
-
-  List<charts_flutter.TickSpec<num>> numericTickBuilder(
-      SplayTreeMap<int, DateTime> ticksMap,
-      {String? interval, num? min, num? max}) {
-    // Axis Ticks
-    List<charts_flutter.TickSpec<num>> ticks = [];
-
-    return [];
-  }
-
   charts_flutter.BarChart buildBarChart(List<charts_flutter.Series<dynamic, String>> series) {
     // Determine if there is any grouping and/or stacking (grouped/stacked/groupedStacked)
     charts_flutter.BarGroupingType barGroupingType;
@@ -294,8 +284,11 @@ class _ChartViewState extends WidgetState<ChartView>
 
   charts_flutter.NumericComboChart buildNumericChart(List<charts_flutter.Series> series) {
     List<charts_flutter.SeriesRendererConfig<num>> seriesRenderers = [];
+    num xMin = double.infinity;
+    num xMax = double.negativeInfinity;
     num yMin = double.infinity;
     num yMax = double.negativeInfinity;
+    int? xTicksCount;
     int? yTicksCount;
     for (var s in widget.model.series) {
       if (s.type == 'bar' && s.stack != null) {
@@ -305,6 +298,19 @@ class _ChartViewState extends WidgetState<ChartView>
       Function configFunc = getSeriesRenderer(s, widget.model.xaxis!.type);
       charts_flutter.SeriesRendererConfig<num> config = configFunc(s);
       seriesRenderers.add(config);
+
+      // Calculate Numeric X Axis Ticks
+      if (widget.model.xaxis?.interval != null && s.dataPoint.isNotEmpty) {
+        num xSeriesMin = s.dataPoint.fold(
+            S.toNum(s.dataPoint[0].x) ?? xMin, (num previous, ChartDataPoint current) =>
+        previous < (S.toNum(current.x) ?? xMin) ? previous : (S.toNum(current.x) ?? xMin));
+        xMin = xSeriesMin < xMin ? xSeriesMin : xMin;
+
+        num xSeriesMax = s.dataPoint.fold(
+            S.toNum(s.dataPoint[0].x) ?? xMin, (num previous, ChartDataPoint current) =>
+        previous > (S.toNum(current.x) ?? xMin) ? previous : (S.toNum(current.x) ?? xMin));
+        xMax = xSeriesMax > xMax ? xSeriesMax : xMax;
+      }
       // Calculate Numeric Y Axis Ticks
       if (widget.model.yaxis?.interval != null && s.dataPoint.isNotEmpty) {
         num ySeriesMin = s.dataPoint.fold(
@@ -324,13 +330,18 @@ class _ChartViewState extends WidgetState<ChartView>
       num range = (S.toNum(widget.model.yaxis?.max) ?? yMax) - (S.toNum(widget.model.yaxis?.min) ?? yMin);
       yTicksCount = (range / (S.toNum(widget.model.yaxis?.interval) ?? 1) + 1).ceil();
     }
+    // Determine X Axis Ticks dynamically based on the value range and interval
+    if (widget.model.xaxis?.interval != null) {
+      num range = (S.toNum(widget.model.xaxis?.max) ?? xMax) - (S.toNum(widget.model.xaxis?.min) ?? xMin);
+      xTicksCount = (range / (S.toNum(widget.model.xaxis?.interval) ?? 1) + 1).ceil();
+    }
 
     return charts_flutter.NumericComboChart(
       series as List<Series<dynamic, num>>,
       animate: widget.model.animated,
       behaviors: getBehaviors<num>(),
       primaryMeasureAxis: yNumericAxisSpec(ticks: yTicksCount),
-      domainAxis: xNumComboAxisSpec(),
+      domainAxis: xNumComboAxisSpec(ticks: xTicksCount),
       customSeriesRenderers: seriesRenderers,
       selectionModels: [
         charts_flutter.SelectionModelConfig(

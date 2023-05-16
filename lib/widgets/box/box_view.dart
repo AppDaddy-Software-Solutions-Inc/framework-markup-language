@@ -249,10 +249,15 @@ class _BoxViewState extends WidgetState<BoxView>
     return view;
   }
 
-  Widget _buildInnerBox(Widget child,  BoxDecoration? decoration, Alignment? alignment, Clip clip)
+  Widget _buildInnerBox(Widget child,  BoxConstraints constraints, BoxDecoration? decoration, Alignment? alignment, Clip clip)
   {
     Widget? view = child;
-    if (alignment != null && widget.model.expand != false)
+
+    // set expand
+    var expand = widget.model.expand;
+    if (widget.model.expandHorizontally && !constraints.hasBoundedWidth)  expand = false;
+    if (widget.model.expandVertically   && !constraints.hasBoundedHeight) expand = false;
+    if (alignment != null && expand)
     {
       // a width factor of 1 forces the container alignment to fit the child's width
       // rather than expand to fill its parent
@@ -370,7 +375,7 @@ class _BoxViewState extends WidgetState<BoxView>
     if (widget.model.blur) view = _getBlurredView(view, borderDecoration);
 
     // build the inner content box
-    view = _buildInnerBox(view, decoration, alignment.aligned, Clip.antiAlias);
+    view = _buildInnerBox(view, constraints, decoration, alignment.aligned, Clip.antiAlias);
 
     // build the outer border box
     if (borderDecoration != null) view = Container(child: view, decoration: borderDecoration);

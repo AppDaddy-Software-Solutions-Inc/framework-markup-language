@@ -892,9 +892,6 @@ class _ChartViewState extends WidgetState<ChartView>
 
     for (ChartLabelModel labels in widget.model.labels) {
 
-      // Build the data labels
-      List<ChartDataLabel> labelData = [];
-
       // Loop through each label from the dataset
       for (ChartDataLabel label in labels.dataLabel) {
         // Check label has a positional value

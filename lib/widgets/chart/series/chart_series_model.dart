@@ -16,8 +16,14 @@ enum ChartSeriesType {
 ///
 /// Holds the plot values for each data node in the series
 class ChartDataPoint {
-  final Color? color; final dynamic label; final dynamic x; final dynamic y;
-  ChartDataPoint({this.x, this.y, this.color, this.label});
+  final Color? color;
+  final dynamic label;
+  final dynamic x;
+  final dynamic y;
+
+  ChartDataPoint({
+    this.x, this.y, this.color, this.label
+  });
 }
 
 /// Chart Series [ChartSeriesModel]
@@ -424,22 +430,22 @@ class ChartSeriesModel extends WidgetModel
   }
   int? get selected => _selected?.get();
 
-  ChartDataPoint point(dynamic data)
+  ChartDataPoint seriesPoint(dynamic data)
   {
     // dynamic color = replace(_color,data); // _color.set(_color?.applyMap(map)); // run eval(s)
     dynamic color;
     if (_color != null && _color!.bindings != null && _color!.bindings!.isNotEmpty) {
-      color = replace(_color,data); // _color.set(_color?.applyMap(map)); // run eval(s)
+      color = replaceFromDataMap(_color,data); // _color.set(_color?.applyMap(map)); // run eval(s)
     } else if (_color != null && _color!.value != null) {
       color = _color!.value;
     }
-    dynamic x     = replace(_x,data);
-    dynamic y     = replace(_y,data);
-    dynamic label = replace(_label,data);
+    dynamic x     = replaceFromDataMap(_x,data);
+    dynamic y     = replaceFromDataMap(_y,data);
+    dynamic label = replaceFromDataMap(_label,data);
     return ChartDataPoint(x: x, y: y, color: color, label: label);
   }
 
-  dynamic replace(Observable? observable, dynamic data)
+  dynamic replaceFromDataMap(Observable? observable, dynamic data)
   {
     if (observable == null) {
       return null;
@@ -459,4 +465,5 @@ class ChartSeriesModel extends WidgetModel
     // return value
     return observable.get();
   }
+
 }

@@ -24,6 +24,27 @@ enum TimeUnit {
     }
   }
 
+  Units asUnit() {
+    switch(this) {
+      case TimeUnit.millisecond:
+        return Units.MILLISECOND;
+      case TimeUnit.second:
+        return Units.SECOND;
+      case TimeUnit.minute:
+        return Units.MINUTE;
+      case TimeUnit.hour:
+        return Units.HOUR;
+      case TimeUnit.day:
+        return Units.DAY;
+      case TimeUnit.week:
+        return Units.WEEK;
+      case TimeUnit.month:
+        return Units.MONTH;
+      case TimeUnit.year:
+        return Units.YEAR;
+    }
+  }
+
 }
 
 /// Time Helper Class
@@ -36,11 +57,11 @@ class DT {
   }
 
   /// Formats a date/time string
-  static String formatFromString(String datetimeStr, String inputFormat, String outputFormat) =>
-      Jiffy(datetimeStr, inputFormat).format(outputFormat);
+  static String formatString(String datetime, String inputFormat, String outputFormat) =>
+      Jiffy(datetime, inputFormat).format(outputFormat);
 
   /// Formats a [DateTime] into a String
-  static String formatFromDateTime(DateTime datetime, String outputFormat) =>
+  static String formatDateTime(DateTime datetime, String outputFormat) =>
       Jiffy(datetime).format(outputFormat);
 
   /// Returns a human readable string of the time between 2 [DateTime]s
@@ -55,7 +76,6 @@ class DT {
   /// Compare if DateTime a is after DateTime b
   static bool isAfter(DateTime a, DateTime b) =>
       Jiffy(a).isAfter(b);
-
 
   /// Compare if DateTime a is before DateTime b or the same
   static bool isSameOrBefore(DateTime a, DateTime b) =>
@@ -93,6 +113,16 @@ class DT {
           years: tud.timeUnit == TimeUnit.year ? tud.amount : 0
       ).dateTime;
 
+  /// Rounds the DateTime to the closest past [TimeUnitDuration]
+  static DateTime floor(DateTime dateTime, TimeUnit tu) =>
+    Jiffy(dateTime).startOf(tu.asUnit()).dateTime;
+
+  /// Rounds the DateTime to the closest future [TimeUnitDuration]
+  static DateTime ceil(DateTime dateTime, TimeUnit tu) =>
+      Jiffy(Jiffy(dateTime).startOf(tu.asUnit()).dateTime.isBefore(dateTime)
+          ? add(dateTime, TimeUnitDuration(1, tu))
+          : dateTime)
+          .startOf(tu.asUnit()).dateTime;
 }
 
 /// Specifies a custom time unit using familiar [TimeUnit]s and an amount to
@@ -186,6 +216,11 @@ class TimeUnitDuration {
   /// Returns the [TimeUnitDuration] in milliseconds
   double asMs() {
     return amount * timeUnit.asMs();
+  }
+
+  /// Check if the [TimeUnitDuration] is 0
+  bool isZero() {
+    return amount == 0;
   }
 
   /// Returns the [TimeUnitDuration] as a string

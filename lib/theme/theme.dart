@@ -1,4 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
@@ -46,7 +48,7 @@ class MyTheme
     if (brightness != null)
     {
       if (brightness == 'system' || brightness == 'platform') {
-        brightnessPreference = MediaQueryData.fromWindow(WidgetsBinding.instance.window).platformBrightness;
+        brightnessPreference = PlatformDispatcher.instance.platformBrightness;
       } else if (brightness == 'dark') {
         brightnessPreference = Brightness.dark;
       } else if (brightness == 'light') {

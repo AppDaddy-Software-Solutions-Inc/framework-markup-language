@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'inline_frame_view.dart';
+import 'inline_frame_view.dart' as iframe;
 import 'package:fml/helper/common_helpers.dart';
 
 InlineFrameView getView(model) => InlineFrameView(model);
 
-class InlineFrameView extends StatefulWidget implements View, IWidgetView
+class InlineFrameView extends StatefulWidget implements iframe.View, IWidgetView
 {
   @override
   final InlineFrameModel model;

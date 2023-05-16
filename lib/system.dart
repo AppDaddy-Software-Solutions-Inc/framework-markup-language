@@ -262,8 +262,8 @@ class System extends WidgetModel implements IEventManager
 
     // device settings
     _mouse        = BooleanObservable(Binding.toKey('mouse'), RendererBinding.instance.mouseTracker.mouseIsConnected, scope: scope);
-    _screenheight = IntegerObservable(Binding.toKey('screenheight'), WidgetsBinding.instance.window.physicalSize.height, scope: scope);
-    _screenwidth  = IntegerObservable(Binding.toKey('screenwidth'),  WidgetsBinding.instance.window.physicalSize.width, scope: scope);
+    _screenheight = IntegerObservable(Binding.toKey('screenheight'), PlatformDispatcher.instance.views.first.physicalSize.height, scope: scope);
+    _screenwidth  = IntegerObservable(Binding.toKey('screenwidth'),  PlatformDispatcher.instance.views.first.physicalSize.width, scope: scope);
     _userplatform = StringObservable(Binding.toKey('platform'), platform, scope: scope);
     _useragent    = StringObservable(Binding.toKey('useragent'), Platform.useragent, scope: scope);
     _version      = StringObservable(Binding.toKey('version'), version, scope: scope);

@@ -16,13 +16,13 @@ class RowModel extends BoxModel
   // indicates if the widget will grow in
   // its vertical axis
   @override
-  bool get hasFlexibleHeight
+  bool get expandVertically
   {
-    if (!super.hasFlexibleHeight) return false;
+    if (!super.expandVertically) return false;
     bool flexible = false;
     for (var child in viewableChildren)
     {
-      if (child.visible && child.hasFlexibleHeight)
+      if (child.visible && child.expandVertically)
       {
         flexible = true;
         break;

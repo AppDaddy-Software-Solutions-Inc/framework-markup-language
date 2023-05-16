@@ -366,8 +366,8 @@ class StackRenderer extends RenderBox
     print('Parent id is $idParent');
 
     var myConstraints = constraints;
-    var width  = model.hasFlexibleWidth  ? myConstraints.maxWidth  : myConstraints.minWidth;
-    var height = model.hasFlexibleHeight ? myConstraints.maxHeight : myConstraints.minHeight;
+    var width  = model.expandHorizontally ? myConstraints.maxWidth  : myConstraints.minWidth;
+    var height = model.expandVertically   ? myConstraints.maxHeight : myConstraints.minHeight;
 
     // get my width from the model
     // and tighten the my width constraint's if not null

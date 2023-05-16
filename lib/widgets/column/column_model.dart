@@ -16,13 +16,13 @@ class ColumnModel extends BoxModel
   // indicates if the widget will grow in
   // its horizontal axis
   @override
-  bool get hasFlexibleWidth
+  bool get expandHorizontally
   {
-    if (!super.hasFlexibleWidth) return false;
+    if (!super.expandHorizontally) return false;
     bool flexible = false;
     for (var child in viewableChildren)
     {
-      if (child.visible && child.hasFlexibleWidth)
+      if (child.visible && child.expandHorizontally)
       {
         flexible = true;
         break;

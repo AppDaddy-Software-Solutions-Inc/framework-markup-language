@@ -257,12 +257,12 @@ class _BoxViewState extends WidgetState<BoxView>
       // a width factor of 1 forces the container alignment to fit the child's width
       // rather than expand to fill its parent
       double? widthFactor;
-      if (!widget.model.hasFlexibleWidth) widthFactor = 1;
+      if (!widget.model.expandHorizontally) widthFactor = 1;
 
-      // a height factor of 1 forces the container alignment to fit the child's height
-      // rather than expand to fill its parent
+      // a height factor of 1 forces the container to shrink to its child's height
+      // rather than expand to fill the parent
       double? heightFactor;
-      if (!widget.model.hasFlexibleHeight) heightFactor = 1;
+      if (!widget.model.expandVertically) heightFactor = 1;
 
       view = Align(alignment: alignment, child: view, widthFactor: widthFactor, heightFactor: heightFactor);
     }
@@ -291,6 +291,7 @@ class _BoxViewState extends WidgetState<BoxView>
       // stack object
       case LayoutType.stack:
         view = StackObject(model: widget.model,
+          alignment: alignment.aligned,
           fit: StackFit.passthrough,
           clipBehavior: Clip.hardEdge,
           children: children,);

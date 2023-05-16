@@ -781,6 +781,7 @@ class FlexRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
   {
     //debugging
     var idParent = model.id;
+
     var myWidth  = constraints.minWidth;
     var myHeight = constraints.minHeight;
 
@@ -793,8 +794,9 @@ class FlexRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
 
         var childData  = (child.parentData as BoxData);
         var childModel = childData.model!;
+
         //debugging
-        var idChild    = childModel.id;
+        var idChild = childModel.id;
 
         // assign flex value
         childData.flex = null;
@@ -849,6 +851,7 @@ class FlexRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
   {
     //debugging
     var idParent = model.id;
+
     assert(_debugHasNecessaryDirections);
 
     // size children
@@ -914,8 +917,9 @@ class FlexRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
       {
         var childData  = (child.parentData as BoxData);
         var childModel = childData.model!;
+
         //debugging
-        var idChild    = childData.model!.id;
+        var idChild = childData.model!.id;
 
         final int flex = _getFlex(child);
         if (flex > 0)
@@ -972,16 +976,16 @@ class FlexRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
     }
 
     // adjust to main axis size
-    switch (model.layoutType)
+    switch (_direction)
         {
-      case LayoutType.row:
-        if (!model.hasFlexibleWidth)  mainAxisSize  = width;
-        if (!model.hasFlexibleHeight) crossAxisSize = height;
+      case Axis.horizontal:
+        if (!model.expandHorizontally && !model.hasBoundedWidth)  mainAxisSize  = width;
+        if (!model.expandVertically   && !model.hasBoundedHeight) crossAxisSize = height;
         break;
 
-      case LayoutType.column:
-        if (!model.hasFlexibleHeight) mainAxisSize  = height;
-        if (!model.hasFlexibleWidth)  crossAxisSize = width;
+      case Axis.vertical:
+        if (!model.expandVertically   && !model.hasBoundedHeight) mainAxisSize  = height;
+        if (!model.expandHorizontally && !model.hasBoundedWidth)  crossAxisSize = width;
         break;
 
       default:
@@ -998,6 +1002,7 @@ class FlexRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
 
     //debugging
     var idParent = model.id;
+
     final _LayoutSizes sizes = _computeSizes(layoutChild: ChildLayoutHelper.layoutChild, constraints: constraints);
 
     final double allocatedSize = sizes.allocatedSize;

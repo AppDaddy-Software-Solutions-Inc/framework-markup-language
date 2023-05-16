@@ -39,12 +39,12 @@ class ConstraintModel extends WidgetModel
   // indicates if the widget normally wants to flex in
   // its horizontal axis
   // override where necessary
-  bool get hasFlexibleWidth => false;
+  bool get expandHorizontally => false;
 
   // indicates if the widget normally wants to flex in
   // its vertical axis
   // override where necessary
-  bool get hasFlexibleHeight => false;
+  bool get expandVertically => false;
 
   /// Deserializes the FML template elements, attributes and children
   @override
@@ -414,7 +414,7 @@ class ConstraintModel extends WidgetModel
   {
     // defined width takes precedence over flex
     if (hasBoundedWidth) return null;
-    return flex ?? (hasFlexibleWidth ? 1 : null);
+    return flex ?? (expandVertically ? 1 : null);
   }
 
   // the flex height
@@ -422,7 +422,7 @@ class ConstraintModel extends WidgetModel
   {
     // defined height takes precedence over flex
     if (hasBoundedHeight) return null;
-    return flex ?? (hasFlexibleHeight ? 1 : null);
+    return flex ?? (expandHorizontally ? 1 : null);
   }
 
   //Constraints get tightest => Constraints.tightest(Constraints.tightest(model, system), calculated);

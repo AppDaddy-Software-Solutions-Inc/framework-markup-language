@@ -1078,8 +1078,9 @@ class WidgetModel implements IDataSourceListener {
     // evaluate my siblings
     if ((includeSiblings) && (children != null)) {
       for (var child in children!) {
-        if ((child.runtimeType == T) && (child.id == (id ?? child.id)))
+        if ((child.runtimeType == T) && (child.id == (id ?? child.id))) {
           list.add(child);
+        }
       }
     }
 

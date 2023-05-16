@@ -465,8 +465,6 @@ class _TextViewState extends WidgetState<TextView>
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    print('building text ${widget.model.id}');
-
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 

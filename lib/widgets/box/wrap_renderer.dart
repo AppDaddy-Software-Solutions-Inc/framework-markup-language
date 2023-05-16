@@ -589,10 +589,7 @@ class WrapRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
       return;
     }
 
-    //debugging
-    final BoxConstraints myConstraints;
-    var myMaxHeight = myHeight ?? myParentsHeight;
-    var myMaxWidth  = myWidth  ?? myParentsWidth;
+
 
     double mainAxisLimit = 0.0;
     bool flipMainAxis = false;
@@ -600,7 +597,6 @@ class WrapRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
     switch (direction)
     {
       case Axis.horizontal:
-        myConstraints = BoxConstraints(maxWidth: constraints.maxWidth);
         mainAxisLimit = constraints.maxWidth;
         if (textDirection == TextDirection.rtl)
         {
@@ -613,7 +609,6 @@ class WrapRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
         }
         break;
       case Axis.vertical:
-        myConstraints = BoxConstraints(maxHeight: constraints.maxHeight);
         mainAxisLimit = constraints.maxHeight;
         if (verticalDirection == VerticalDirection.up)
         {

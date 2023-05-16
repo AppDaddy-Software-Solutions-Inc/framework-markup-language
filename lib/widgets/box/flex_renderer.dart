@@ -779,8 +779,6 @@ class FlexRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
 
   Size calculateChildSizes()
   {
-    //debugging
-    var idParent = model.id;
 
     var myWidth  = constraints.minWidth;
     var myHeight = constraints.minHeight;
@@ -794,9 +792,6 @@ class FlexRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
 
         var childData  = (child.parentData as BoxData);
         var childModel = childData.model!;
-
-        //debugging
-        var idChild = childModel.id;
 
         // assign flex value
         childData.flex = null;
@@ -849,8 +844,6 @@ class FlexRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
 
   _LayoutSizes _computeSizes({required BoxConstraints constraints, required ChildLayouter layoutChild})
   {
-    //debugging
-    var idParent = model.id;
 
     assert(_debugHasNecessaryDirections);
 
@@ -917,9 +910,6 @@ class FlexRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
       {
         var childData  = (child.parentData as BoxData);
         var childModel = childData.model!;
-
-        //debugging
-        var idChild = childData.model!.id;
 
         final int flex = _getFlex(child);
         if (flex > 0)
@@ -999,9 +989,6 @@ class FlexRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
   void performLayout()
   {
     final BoxConstraints constraints = this.constraints;
-
-    //debugging
-    var idParent = model.id;
 
     final _LayoutSizes sizes = _computeSizes(layoutChild: ChildLayoutHelper.layoutChild, constraints: constraints);
 

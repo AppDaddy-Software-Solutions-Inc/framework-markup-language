@@ -924,6 +924,7 @@ class _ChartViewState extends WidgetState<ChartView>
         CF.AnnotationLabelDirection? direction;
         CF.RangeAnnotationAxisType axis;
 
+        // Anchor is the placement on the cross axis
         switch (label.anchor?.toLowerCase()) {
           case 'center':
           case 'middle':
@@ -940,6 +941,7 @@ class _ChartViewState extends WidgetState<ChartView>
             break;
         }
 
+        // Position is the placement on the main axis relative to the chart
         switch (label.position?.toLowerCase()) {
           case 'inside':
             position = CF.AnnotationLabelPosition.inside;

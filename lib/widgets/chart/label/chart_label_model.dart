@@ -136,6 +136,7 @@ class ChartLabelModel extends WidgetModel
   }
   Color get color => _color?.get() ?? Colors.transparent;
 
+  /// Anchor is the placement on the cross axis
   /// start, end, middle/center
   StringObservable? _anchor;
   set anchor (dynamic v) {
@@ -148,6 +149,7 @@ class ChartLabelModel extends WidgetModel
   }
   String get anchor => _anchor?.get() ?? 'middle';
 
+  /// Position is the placement on the main axis relative to the chart
   /// auto, inside, outside, margin
   StringObservable? _position;
   set position (dynamic v) {

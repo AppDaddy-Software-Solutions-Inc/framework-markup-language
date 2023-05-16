@@ -614,6 +614,11 @@ class WidgetModel implements IDataSourceListener {
         }
         break;
 
+      case "sbox":
+      case "shrinkbox":
+        model = BoxModel.fromXml(parent, node, expandByDefault: false);
+        break;
+
       case "size":
         if (parent is AnimationModel) {
           model = SizeTransitionModel.fromXml(parent, node);

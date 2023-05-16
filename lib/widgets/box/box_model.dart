@@ -21,7 +21,7 @@ class BoxModel extends DecoratedWidgetModel
   LayoutType get layoutType => getLayoutType(layout, defaultLayout: LayoutType.column);
 
   // Denotes whether box widgets (row, column) naturally expand or contract
-  final bool expandDefault = true;
+  final bool expandByDefault;
 
   // indicates if the widget will grow in
   // its horizontal axis
@@ -46,7 +46,7 @@ class BoxModel extends DecoratedWidgetModel
       _expand = BooleanObservable(Binding.toKey(id, 'expand'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  bool get expand => _expand?.get() ?? expandDefault;
+  bool get expand => _expand?.get() ?? expandByDefault;
 
   /// layout
   StringObservable? _layout;
@@ -253,12 +253,13 @@ class BoxModel extends DecoratedWidgetModel
   }
   double get shadowy => _shadowy?.get() ?? 4;
 
-  BoxModel(WidgetModel? parent, String? id, {Scope?  scope}) : super(parent, id, scope: scope);
+  BoxModel(WidgetModel? parent, String? id,{Scope?  scope, this.expandByDefault = true}) : super(parent, id, scope: scope);
 
-  static BoxModel? fromXml(WidgetModel parent, XmlElement xml, {String? type}) {
+  static BoxModel? fromXml(WidgetModel parent, XmlElement xml, {bool expandByDefault = true})
+  {
     BoxModel? model;
     try {
-      model = BoxModel(parent, Xml.get(node: xml, tag: 'id'));
+      model = BoxModel(parent, Xml.get(node: xml, tag: 'id'), expandByDefault: expandByDefault);
       model.deserialize(xml);
     }
     catch(e)

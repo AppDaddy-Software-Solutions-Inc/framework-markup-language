@@ -112,8 +112,8 @@ class _ChartViewState extends WidgetState<ChartView>
       ),
   );
 
-  CF.NumericAxisSpec xNumComboAxisSpec() => CF.NumericAxisSpec(
-      tickProviderSpec: CF.BasicNumericTickProviderSpec(dataIsInWholeNumbers: false),
+  CF.NumericAxisSpec xNumComboAxisSpec({int? ticks}) => CF.NumericAxisSpec(
+      tickProviderSpec: CF.BasicNumericTickProviderSpec(dataIsInWholeNumbers: false, desiredTickCount: ticks),
       viewport: widget.model.yaxis?.min != null && widget.model.yaxis?.max != null
           ? CF.NumericExtents(S.toNum(widget.model.yaxis!.min!)!, S.toNum(widget.model.yaxis!.max!)!) : null,
       renderSpec: CF.SmallTickRendererSpec(
@@ -215,16 +215,6 @@ class _ChartViewState extends WidgetState<ChartView>
     return ticks;
   }
 
-
-  List<CF.TickSpec<num>> numericTickBuilder(
-      SplayTreeMap<int, DateTime> ticksMap,
-      {String? interval, num? min, num? max}) {
-    // Axis Ticks
-    List<CF.TickSpec<num>> ticks = [];
-
-    return [];
-  }
-
   CF.BarChart buildBarChart(List<CF.Series<dynamic, String>> series) {
     // Determine if there is any grouping and/or stacking (grouped/stacked/groupedStacked)
     CF.BarGroupingType barGroupingType;
@@ -294,8 +284,11 @@ class _ChartViewState extends WidgetState<ChartView>
 
   CF.NumericComboChart buildNumericChart(List<CF.Series> series) {
     List<CF.SeriesRendererConfig<num>> seriesRenderers = [];
+    num xMin = double.infinity;
+    num xMax = double.negativeInfinity;
     num yMin = double.infinity;
     num yMax = double.negativeInfinity;
+    int? xTicksCount;
     int? yTicksCount;
     for (var s in widget.model.series) {
       if (s.type == 'bar' && s.stack != null)
@@ -304,6 +297,19 @@ class _ChartViewState extends WidgetState<ChartView>
       Function configFunc = getSeriesRenderer(s, widget.model.xaxis!.type);
       CF.SeriesRendererConfig<num> config = configFunc(s);
       seriesRenderers.add(config);
+
+      // Calculate Numeric X Axis Ticks
+      if (widget.model.xaxis?.interval != null && s.dataPoint.isNotEmpty) {
+        num xSeriesMin = s.dataPoint.fold(
+            S.toNum(s.dataPoint[0].x) ?? xMin, (num previous, ChartDataPoint current) =>
+        previous < (S.toNum(current.x) ?? xMin) ? previous : (S.toNum(current.x) ?? xMin));
+        xMin = xSeriesMin < xMin ? xSeriesMin : xMin;
+
+        num xSeriesMax = s.dataPoint.fold(
+            S.toNum(s.dataPoint[0].x) ?? xMin, (num previous, ChartDataPoint current) =>
+        previous > (S.toNum(current.x) ?? xMin) ? previous : (S.toNum(current.x) ?? xMin));
+        xMax = xSeriesMax > xMax ? xSeriesMax : xMax;
+      }
       // Calculate Numeric Y Axis Ticks
       if (widget.model.yaxis?.interval != null && s.dataPoint.length > 0) {
         num ySeriesMin = s.dataPoint.fold(
@@ -323,13 +329,18 @@ class _ChartViewState extends WidgetState<ChartView>
       num range = (S.toNum(widget.model.yaxis?.max) ?? yMax) - (S.toNum(widget.model.yaxis?.min) ?? yMin);
       yTicksCount = (range / (S.toNum(widget.model.yaxis?.interval) ?? 1) + 1).ceil();
     }
+    // Determine X Axis Ticks dynamically based on the value range and interval
+    if (widget.model.xaxis?.interval != null) {
+      num range = (S.toNum(widget.model.xaxis?.max) ?? xMax) - (S.toNum(widget.model.xaxis?.min) ?? xMin);
+      xTicksCount = (range / (S.toNum(widget.model.xaxis?.interval) ?? 1) + 1).ceil();
+    }
 
     return CF.NumericComboChart(
       series as List<Series<dynamic, num>>,
       animate: widget.model.animated,
       behaviors: getBehaviors<num>(),
       primaryMeasureAxis: yNumericAxisSpec(ticks: yTicksCount),
-      domainAxis: xNumComboAxisSpec(),
+      domainAxis: xNumComboAxisSpec(ticks: xTicksCount),
       customSeriesRenderers: seriesRenderers,
       selectionModels: [
         CF.SelectionModelConfig(

@@ -5,7 +5,7 @@ import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/helper/common_helpers.dart';
-import 'package:fml/widgets/view/view.dart';
+import 'package:fml/widgets/view/view.dart' as widget_view;
 
 class ViewModel extends ViewableWidgetModel
 {
@@ -36,7 +36,7 @@ class ViewModel extends ViewableWidgetModel
   }
 
   @override
-  Widget getView({Key? key}) => View(this);
+  Widget getView({Key? key}) => widget_view.View(this);
 }
 
 

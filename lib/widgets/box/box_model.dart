@@ -25,10 +25,12 @@ class BoxModel extends DecoratedWidgetModel
 
   // indicates if the widget will grow in
   // its horizontal axis
+  @override
   bool get hasFlexibleWidth => !hasBoundedWidth && expand;
 
   // indicates if the widget will grow in
   // its vertical axis
+  @override
   bool get hasFlexibleHeight => !hasBoundedHeight && expand;
 
   /// Expand, which is true by default, tells the widget if it should shrink to its children, or grow to its parents constraints. Width/Height attributes will override expand.

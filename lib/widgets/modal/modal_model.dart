@@ -140,26 +140,22 @@ class ModalModel extends BoxModel
         
         // modal width
         String? width = arguments.isNotEmpty ? S.toStr(arguments[0]) : null;
-        width ??= (widthPercentage != null) ? "$widthPercentage%" : "${this.width}";
+        width ??= (widthPercentage != null) ? "$widthPercentage%" : "$width";
 
         // modal height
         String? height = arguments.length > 1 ? S.toStr(arguments[1]) : null;
-        height ??= (heightPercentage != null) ? "$heightPercentage%" : "${this.height}";
+        height ??= (heightPercentage != null) ? "$heightPercentage%" : "$height";
 
         // resizeable
-        bool resizeable = this.resizeable;
         if (arguments.length > 2) resizeable = S.toBool(arguments[2]) ?? true;
 
         // closeable
-        bool closeable = this.closeable;
         if (arguments.length > 3) closeable = S.toBool(arguments[3]) ?? true;
 
         // draggable
-        bool draggable = this.draggable;
         if (arguments.length > 4) draggable = S.toBool(arguments[4]) ?? true;
 
         // modal
-        bool modal = this.modal;
         if (arguments.length > 5) modal = S.toBool(arguments[5]) ?? true;
 
         overlay = NavigationManager().openModal(ModalView(this), context, modal: modal, resizeable: resizeable, closeable: closeable, draggable: draggable, width: width, height: height);

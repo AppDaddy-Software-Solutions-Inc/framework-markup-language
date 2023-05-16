@@ -1,8 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:collection';
 import 'dart:math';
-import 'package:community_charts_common/src/chart/common/behavior/range_annotation.dart';
-import 'package:community_charts_flutter/community_charts_flutter.dart';
+import 'package:community_charts_common/community_charts_common.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:fml/helper/common_helpers.dart';

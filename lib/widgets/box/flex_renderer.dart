@@ -6,7 +6,6 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:fml/helper/string.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/box/box_model.dart';
@@ -720,6 +719,64 @@ class FlexRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
     return constraints;
   }
 
+  double? get myHeight
+  {
+    double? height;
+    var modelHeight = model.getHeight(heightParent: myParentsHeight);
+    if (modelHeight != null)
+    {
+      height = modelHeight;
+    }
+    return height;
+  }
+
+  double get myParentsHeight
+  {
+    double? height;
+    var parent = this.parent;
+    while (height != null &&  parent != null)
+    {
+      if (parent is RenderBox && parent.constraints.hasBoundedHeight)
+      {
+        height = parent.constraints.maxHeight;
+      }
+      else
+      {
+        parent = parent.parent;
+      }
+    }
+    return height ?? System().screenheight.toDouble();
+  }
+
+  double? get myWidth
+  {
+    double? width;
+    var modelWidth = model.getWidth(widthParent: myParentsWidth);
+    if (modelWidth != null)
+    {
+      width = modelWidth;
+    }
+    return width;
+  }
+
+  double get myParentsWidth
+  {
+    double? width;
+    var parent = this.parent;
+    while (width != null &&  parent != null)
+    {
+      if (parent is RenderBox && parent.constraints.hasBoundedWidth)
+      {
+        width = parent.constraints.maxWidth;
+      }
+      else
+      {
+        parent = parent.parent;
+      }
+    }
+    return width ?? System().screenwidth.toDouble();
+  }
+
   Size calculateChildSizes()
   {
     var idParent = model.id;
@@ -784,64 +841,6 @@ class FlexRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
       child = childAfter(child);
     }
     return Size(myWidth, myHeight);
-  }
-
-  double? get myHeight
-  {
-    double? height;
-    var modelHeight = model.getHeight(heightParent: myParentsHeight);
-    if (modelHeight != null)
-    {
-      height = modelHeight;
-    }
-    return height;
-  }
-
-  double get myParentsHeight
-  {
-    double? height;
-    var parent = this.parent;
-    while (height != null &&  parent != null)
-    {
-      if (parent is RenderBox && parent.constraints.hasBoundedHeight)
-      {
-        height = parent.constraints.maxHeight;
-      }
-      else
-      {
-        parent = parent.parent;
-      }
-    }
-    return height ?? System().screenheight.toDouble();
-  }
-
-  double? get myWidth
-  {
-    double? width;
-    var modelWidth = model.getWidth(widthParent: myParentsWidth);
-    if (modelWidth != null)
-    {
-      width = modelWidth;
-    }
-    return width;
-  }
-
-  double get myParentsWidth
-  {
-    double? width;
-    var parent = this.parent;
-    while (width != null &&  parent != null)
-    {
-      if (parent is RenderBox && parent.constraints.hasBoundedWidth)
-      {
-        width = parent.constraints.maxWidth;
-      }
-      else
-      {
-        parent = parent.parent;
-      }
-    }
-    return width ?? System().screenwidth.toDouble();
   }
 
   _LayoutSizes _computeSizes({required BoxConstraints constraints, required ChildLayouter layoutChild})

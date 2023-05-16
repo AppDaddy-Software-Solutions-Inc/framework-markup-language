@@ -1,8 +1,10 @@
 import 'package:flutter/rendering.dart';
+import 'package:fml/system.dart';
 import 'package:fml/widgets/box/box_data.dart';
 import 'dart:math' as math;
 
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 
 class _RunMetrics {
   _RunMetrics(this.mainAxisExtent, this.crossAxisExtent, this.childCount);
@@ -477,18 +479,59 @@ class WrapRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
     }
   }
 
-  double getMaxHeight()
+  BoxConstraints _getChildLayoutConstraints(RenderBox child, ViewableWidgetModel model)
   {
-    double height = double.negativeInfinity;
+    BoxConstraints constraints = this.constraints;
 
-    var modelHeight = model.getHeight(heightParent: constraints.maxHeight);
+    // get the child's width from the model
+    // and tighten the child's width constraint
+    var width = model.getWidth(widthParent: myWidth ?? myParentsWidth);
+    if (width != null)
+    {
+      constraints = constraints.tighten(width: width);
+    }
+
+    // get the child's height from the model
+    // and tighten the child's height constraint
+    var height = model.getHeight(heightParent: myHeight ?? myParentsHeight);
+    if (height != null)
+    {
+      constraints = constraints.tighten(height: height);
+    }
+
+    // If both of us are unconstrained in the horizontal axis,
+    // tighten the child's width constraint prior to layout
+    if (!constraints.hasBoundedWidth && model.canExpandInfinitelyWide)
+    {
+      constraints = BoxConstraints(minWidth: constraints.minWidth, maxWidth: myParentsWidth, minHeight: constraints.minHeight, maxHeight: constraints.maxHeight);
+    }
+
+    // If both of us are unconstrained in the vertical axis,
+    // tighten the child's height constraint prior to layout
+    if (!constraints.hasBoundedHeight && model.canExpandInfinitelyHigh)
+    {
+      constraints = BoxConstraints(minWidth: constraints.minWidth, maxWidth: constraints.maxWidth, minHeight: constraints.minHeight, maxHeight: myParentsHeight);
+    }
+
+    return constraints;
+  }
+
+  double? get myHeight
+  {
+    double? height;
+    var modelHeight = model.getHeight(heightParent: myParentsHeight);
     if (modelHeight != null)
     {
       height = modelHeight;
     }
+    return height;
+  }
 
+  double get myParentsHeight
+  {
+    double? height;
     var parent = this.parent;
-    while (height < 0 &&  parent != null)
+    while (height != null &&  parent != null)
     {
       if (parent is RenderBox && parent.constraints.hasBoundedHeight)
       {
@@ -499,22 +542,25 @@ class WrapRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
         parent = parent.parent;
       }
     }
-
-    return height;
+    return height ?? System().screenheight.toDouble();
   }
 
-  double getMaxWidth()
+  double? get myWidth
   {
-    double width = double.negativeInfinity;
-
-    var modelWidth = model.getWidth(widthParent: constraints.maxWidth);
+    double? width;
+    var modelWidth = model.getWidth(widthParent: myParentsWidth);
     if (modelWidth != null)
     {
       width = modelWidth;
     }
+    return width;
+  }
 
+  double get myParentsWidth
+  {
+    double? width;
     var parent = this.parent;
-    while (width < 0 &&  parent != null)
+    while (width != null &&  parent != null)
     {
       if (parent is RenderBox && parent.constraints.hasBoundedWidth)
       {
@@ -525,8 +571,7 @@ class WrapRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
         parent = parent.parent;
       }
     }
-
-    return width;
+    return width ?? System().screenwidth.toDouble();
   }
 
   @override
@@ -545,8 +590,8 @@ class WrapRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
     }
 
     final BoxConstraints myConstraints;
-    var myMaxHeight = getMaxHeight();
-    var myMaxWidth  = getMaxWidth();
+    var myMaxHeight = myHeight ?? myParentsHeight;
+    var myMaxWidth  = myWidth  ?? myParentsWidth;
 
     double mainAxisLimit = 0.0;
     bool flipMainAxis = false;
@@ -591,43 +636,15 @@ class WrapRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
     while (child != null)
     {
       var childData = (child.parentData as BoxData);
-      var childConstraints = myConstraints;
       var childModel = childData.model!;
 
-      // get the child's width from the model
-      // and tighten the child's width constraint
-      var childWidth = childModel.getWidth(widthParent: myMaxWidth);
-      if (childWidth != null)
-      {
-        childConstraints = childConstraints.tighten(width: childWidth);
-      }
-
-      // get the child's height from the model
-      // and tighten the child's height constraint
-      var childHeight = childModel.getHeight(heightParent: myMaxHeight);
-      if (childHeight != null)
-      {
-        childConstraints = childConstraints.tighten(height: childHeight);
-      }
-
-      // If both of us are unconstrained in the horizontal axis,
-      // tighten the child's width constraint prior to layout
-      if (!myConstraints.hasBoundedWidth && childModel.canExpandInfinitelyWide)
-      {
-        childConstraints = BoxConstraints(minWidth: childConstraints.minWidth, maxWidth: myMaxWidth, minHeight: childConstraints.minHeight, maxHeight: childConstraints.maxHeight);
-      }
-
-      // If both of us are unconstrained in the vertical axis,
-      // tighten the child's height constraint prior to layout
-      if (!myConstraints.hasBoundedHeight && childModel.canExpandInfinitelyHigh)
-      {
-        childConstraints = BoxConstraints(minWidth: childConstraints.minWidth, maxWidth: childConstraints.maxWidth, minHeight: childConstraints.minHeight, maxHeight: myMaxHeight);
-      }
+      // get layout constraints
+      var childConstraints = _getChildLayoutConstraints(child, childModel);
 
       // Perform the layout
       child.layout(childConstraints, parentUsesSize: true);
 
-      final double childMainAxisExtent = _getMainAxisExtent(child.size);
+      final double childMainAxisExtent  = _getMainAxisExtent(child.size);
       final double childCrossAxisExtent = _getCrossAxisExtent(child.size);
       if (childCount > 0 && runMainAxisExtent + spacing + childMainAxisExtent > mainAxisLimit) {
         mainAxisExtent = math.max(mainAxisExtent, runMainAxisExtent);

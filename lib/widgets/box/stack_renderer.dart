@@ -5,8 +5,10 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:fml/system.dart';
 import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 
 /// Implements the stack layout algorithm.
 ///
@@ -260,18 +262,59 @@ class StackRenderer extends RenderBox
     );
   }
 
-  double getMaxHeight()
+  BoxConstraints _getChildLayoutConstraints(RenderBox child, ViewableWidgetModel model)
   {
-    double height = double.negativeInfinity;
+    BoxConstraints constraints = this.constraints;
 
-    var modelHeight = model.getHeight(heightParent: constraints.maxHeight);
+    // get the child's width from the model
+    // and tighten the child's width constraint
+    var width = model.getWidth(widthParent: myWidth ?? myParentsWidth);
+    if (width != null)
+    {
+      constraints = constraints.tighten(width: width);
+    }
+
+    // get the child's height from the model
+    // and tighten the child's height constraint
+    var height = model.getHeight(heightParent: myHeight ?? myParentsHeight);
+    if (height != null)
+    {
+      constraints = constraints.tighten(height: height);
+    }
+
+    // If both of us are unconstrained in the horizontal axis,
+    // tighten the child's width constraint prior to layout
+    if (!constraints.hasBoundedWidth && model.canExpandInfinitelyWide)
+    {
+      constraints = BoxConstraints(minWidth: constraints.minWidth, maxWidth: myParentsWidth, minHeight: constraints.minHeight, maxHeight: constraints.maxHeight);
+    }
+
+    // If both of us are unconstrained in the vertical axis,
+    // tighten the child's height constraint prior to layout
+    if (!constraints.hasBoundedHeight && model.canExpandInfinitelyHigh)
+    {
+      constraints = BoxConstraints(minWidth: constraints.minWidth, maxWidth: constraints.maxWidth, minHeight: constraints.minHeight, maxHeight: myParentsHeight);
+    }
+
+    return constraints;
+  }
+
+  double? get myHeight
+  {
+    double? height;
+    var modelHeight = model.getHeight(heightParent: myParentsHeight);
     if (modelHeight != null)
     {
       height = modelHeight;
     }
+    return height;
+  }
 
+  double get myParentsHeight
+  {
+    double? height;
     var parent = this.parent;
-    while (height < 0 &&  parent != null)
+    while (height != null &&  parent != null)
     {
       if (parent is RenderBox && parent.constraints.hasBoundedHeight)
       {
@@ -282,22 +325,25 @@ class StackRenderer extends RenderBox
         parent = parent.parent;
       }
     }
-
-    return height;
+    return height ?? System().screenheight.toDouble();
   }
 
-  double getMaxWidth()
+  double? get myWidth
   {
-    double width = double.negativeInfinity;
-
-    var modelWidth = model.getWidth(widthParent: constraints.maxWidth);
+    double? width;
+    var modelWidth = model.getWidth(widthParent: myParentsWidth);
     if (modelWidth != null)
     {
       width = modelWidth;
     }
+    return width;
+  }
 
+  double get myParentsWidth
+  {
+    double? width;
     var parent = this.parent;
-    while (width < 0 &&  parent != null)
+    while (width != null &&  parent != null)
     {
       if (parent is RenderBox && parent.constraints.hasBoundedWidth)
       {
@@ -308,8 +354,7 @@ class StackRenderer extends RenderBox
         parent = parent.parent;
       }
     }
-
-    return width;
+    return width ?? System().screenwidth.toDouble();
   }
 
   Size _computeSize({required BoxConstraints constraints, required ChildLayouter layoutChild})
@@ -321,32 +366,27 @@ class StackRenderer extends RenderBox
     print('Parent id is $idParent');
 
     var myConstraints = constraints;
-    var myMaxHeight   = getMaxHeight();
-    var myMaxWidth    = getMaxWidth();
-    var myWidth       = myConstraints.minWidth;
-    var myHeight      = myConstraints.minHeight;
-
-    bool calcWidth  = true;
-    bool calcHeight = true;
+    var width  = model.hasFlexibleWidth  ? myConstraints.maxWidth  : myConstraints.minWidth;
+    var height = model.hasFlexibleHeight ? myConstraints.maxHeight : myConstraints.minHeight;
 
     // get my width from the model
     // and tighten the my width constraint's if not null
-    var width = model.getWidth(widthParent: myMaxWidth);
-    if (width != null)
+    bool hardSizedWidth = false;
+    if (myWidth != null)
     {
-      myWidth = width;
-      calcWidth = false;
-      myConstraints = BoxConstraints(minWidth: myConstraints.minWidth, maxWidth: myWidth, minHeight: myConstraints.minHeight, maxHeight: myConstraints.maxHeight);
+      width = myWidth!;
+      hardSizedWidth = true;
+      myConstraints = BoxConstraints(minWidth: myConstraints.minWidth, maxWidth: width, minHeight: myConstraints.minHeight, maxHeight: myConstraints.maxHeight);
     }
 
     // get my width from the model
     // and tighten the my width constraint's if not null
-    var height = model.getHeight(heightParent: myMaxHeight);
-    if (height != null)
+    bool hardSizedHeight = false;
+    if (myHeight != null)
     {
-      myHeight = height;
-      calcHeight = false;
-      myConstraints = BoxConstraints(minWidth: myConstraints.minWidth, maxWidth: myConstraints.maxWidth, minHeight: myConstraints.minHeight, maxHeight: myHeight);
+      height = myHeight!;
+      hardSizedHeight = true;
+      myConstraints = BoxConstraints(minWidth: myConstraints.minWidth, maxWidth: myConstraints.maxWidth, minHeight: myConstraints.minHeight, maxHeight: height);
     }
 
     // height and/or width is based on non-positioned children
@@ -356,55 +396,22 @@ class StackRenderer extends RenderBox
       final BoxData childData = child.parentData! as BoxData;
       if (!childData.isPositioned)
       {
+        // get child constraints
         var childConstraints = myConstraints;
-        if (child.parentData is BoxData && (child.parentData as BoxData).model != null)
-        {
-          var childData = (child.parentData as BoxData);
-          var childModel = childData.model!;
+        if (childData.model != null) childConstraints = _getChildLayoutConstraints(child, childData.model!);
 
-          var idChild = childModel.id;
-          print('Child id is $idChild');
-
-          // get the child's width from the model
-          // and tighten the child's width constraint
-          var childWidth = childModel.getWidth(widthParent: myMaxWidth);
-          if (childWidth != null)
-          {
-            childConstraints = childConstraints.tighten(width: childWidth);
-          }
-
-          // get the child's height from the model
-          // and tighten the child's height constraint
-          var childHeight = childModel.getHeight(heightParent: myMaxHeight);
-          if (childHeight != null)
-          {
-            childConstraints = childConstraints.tighten(height: childHeight);
-          }
-
-          // If both of us are unconstrained in the horizontal axis,
-          // tighten the child's width constraint prior to layout
-          if (!myConstraints.hasBoundedWidth && childModel.canExpandInfinitelyWide)
-          {
-            childConstraints = BoxConstraints(minWidth: childConstraints.minWidth, maxWidth: myMaxWidth, minHeight: childConstraints.minHeight, maxHeight: childConstraints.maxHeight);
-          }
-
-          // If both of us are unconstrained in the vertical axis,
-          // tighten the child's height constraint prior to layout
-          if (!myConstraints.hasBoundedHeight && childModel.canExpandInfinitelyHigh)
-          {
-            childConstraints = BoxConstraints(minWidth: childConstraints.minWidth, maxWidth: childConstraints.maxWidth, minHeight: childConstraints.minHeight, maxHeight: myMaxHeight);
-          }
-        }
-
+        // layout the child
         final Size childSize = layoutChild(child, childConstraints);
-        if (calcWidth)  myWidth  = math.max(myWidth, childSize.width);
-        if (calcHeight) myHeight = math.max(myHeight, childSize.height);
+
+        // size of stack is largest unpositioned child if not hard sized
+        if (!hardSizedWidth)  width  = math.max(width,  childSize.width);
+        if (!hardSizedHeight) height = math.max(height, childSize.height);
       }
       child = childData.nextSibling;
     }
 
-    final Size size = Size(myWidth, myHeight);
-    return size;
+    // return the Stack Size
+    return Size(width, height);
   }
 
   @override

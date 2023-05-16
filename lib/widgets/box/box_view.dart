@@ -300,24 +300,28 @@ class _BoxViewState extends WidgetState<BoxView>
       case LayoutType.row:
       case LayoutType.column:
       default:
+
+        // axis direction
+        var direction = widget.model.layoutType == LayoutType.row ? Axis.horizontal : Axis.vertical;
+
         // wrap object
         if (widget.model.wrap)
         {
           view = WrapObject(
               model: widget.model,
-              direction: Axis.vertical,
+              direction: direction,
               alignment: alignment.mainWrapAlignment,
               runAlignment: alignment.mainWrapAlignment,
               crossAxisAlignment: alignment.crossWrapAlignment,
               children: children);
         }
 
-        // box object
+        // flex object (row, column)
         else
         {
           view = FlexObject(
               model: widget.model,
-              direction: widget.model.layoutType == LayoutType.row ? Axis.horizontal : Axis.vertical,
+              direction: direction,
               mainAxisAlignment: alignment.mainAlignment,
               crossAxisAlignment: alignment.crossAlignment,
               clipBehavior: Clip.hardEdge,

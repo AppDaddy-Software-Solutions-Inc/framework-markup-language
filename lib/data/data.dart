@@ -7,6 +7,8 @@ import 'package:fml/observable/binding.dart';
 import 'package:xml2json/xml2json.dart';
 import 'dart:convert';
 
+import '../helper/string.dart';
+
 class Data with ListMixin<dynamic>
 {
   List<dynamic> _list = [];
@@ -97,7 +99,8 @@ class Data with ListMixin<dynamic>
     {
       if (value.trim().startsWith('<')) {
         data = Data.fromXml(value);
-      } else {
+      } else
+      {
         data = Data.fromJson(value);
       }
     }

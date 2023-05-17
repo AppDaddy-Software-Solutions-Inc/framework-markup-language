@@ -274,8 +274,6 @@ class WidgetModel implements IDataSourceListener {
   // to return the amount of horizontal space allocated for padding, borders and margins
   double get horizontalPadding => 0;
 
-  static int _idCounter = 0;
-
   WidgetModel(this.parent, String? id, {Scope? scope}) {
 
     // build default id
@@ -283,7 +281,7 @@ class WidgetModel implements IDataSourceListener {
     {
       var prefix = elementName.toLowerCase();
       if (prefix.endsWith('model')) prefix = prefix.substring(0, prefix.lastIndexOf('model'));
-      id = S.newId(prefix: '$prefix-');
+      id = S.newId(prefix: '$prefix');
     }
 
     this.id = id!;

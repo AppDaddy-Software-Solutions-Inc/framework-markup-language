@@ -2,8 +2,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import '../scope.dart';
-import '../observable.dart' ;
+import 'package:fml/observable/observable.dart';
+import 'package:fml/observable/scope.dart';
 
 class ColorObservable extends Observable
 {
@@ -400,6 +400,10 @@ class ColorObservable extends Observable
           c = Color(int.parse(color.substring(2, 10), radix: 16) + 0x00000000);
         } else if (color.length == 17 && color.startsWith('Color(0x')) {
           c = Color(int.parse(color.substring(8, 16), radix: 16) + 0x00000000);
+        } else if (color.length == 47 && color.startsWith('MaterialColor(primary value: Color(0x')) {
+          c = Color(int.parse(color.substring(37, 45), radix: 16) + 0x00000000);
+        } else if (color.length == 53 && color.startsWith('MaterialAccentColor(primary value: Color(0x')) {
+          c = Color(int.parse(color.substring(43, 51), radix: 16) + 0x00000000);
         }
       }
     }

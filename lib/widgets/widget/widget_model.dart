@@ -37,6 +37,7 @@ import 'package:fml/widgets/card/card_model.dart';
 import 'package:fml/widgets/center/center_model.dart';
 import 'package:fml/widgets/chart/chart_model.dart';
 import 'package:fml/widgets/chart/axis/chart_axis_model.dart';
+import 'package:fml/widgets/chart/label/chart_label_model.dart';
 import 'package:fml/widgets/chart/series/chart_series_model.dart';
 
 // import 'package:fml/widgets/chart_syncfusion/chart_model.dart' as SFCHART;
@@ -552,6 +553,16 @@ class WidgetModel implements IDataSourceListener {
         model = InputModel.fromXml(parent, node);
         break;
 
+      case "layout":
+        model = BoxModel.fromXml(parent, node);
+      break;
+
+      case "label":
+        if (parent is ChartModel) {
+          model = ChartLabelModel.fromXml(parent, node);
+        }
+        break;
+
       case "link":
         model = LinkModel.fromXml(parent, node);
         break;
@@ -613,6 +624,11 @@ class WidgetModel implements IDataSourceListener {
         } else {
           model = RotateTransitionModel.fromXml(parent, node);
         }
+        break;
+
+      case "sbox":
+      case "shrinkbox":
+        model = BoxModel.fromXml(parent, node, expandByDefault: false);
         break;
 
       case "size":
@@ -1073,9 +1089,9 @@ class WidgetModel implements IDataSourceListener {
     // evaluate my siblings
     if ((includeSiblings) && (children != null)) {
       for (var child in children!) {
-        ((child.runtimeType == T) && (child.id == (id ?? child.id)))
-            ? list.add(child)
-            : null;
+        if ((child.runtimeType == T) && (child.id == (id ?? child.id))) {
+          list.add(child);
+        }
       }
     }
 

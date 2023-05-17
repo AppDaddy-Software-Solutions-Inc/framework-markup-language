@@ -5,9 +5,9 @@ import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart/series/chart_series_model.dart';
+import 'package:fml/widgets/chart/label/chart_label_model.dart';
 import 'package:fml/widgets/chart/axis/chart_axis_model.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
-import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/chart/chart_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -21,18 +21,21 @@ class ChartModel extends DecoratedWidgetModel  {
   ChartAxisModel? xaxis; // = ChartAxisModel(null, null, Axis.X, title: null, fontsize: null, fontcolor: Colors.white, type: ChartAxisModel.type_category);
   ChartAxisModel? yaxis; // = ChartAxisModel(null, null, Axis.Y, title: null, fontsize: null, fontcolor: Colors.white, type: ChartAxisModel.type_numeric);
   final List<ChartSeriesModel> series = [];
+  final List<ChartLabelModel> labels = [];
 
   @override
-  bool isVerticallyExpanding({bool ignoreFixedHeight = false}) => true;
+  bool get canExpandInfinitelyWide
+  {
+    if (hasBoundedWidth) return false;
+    return true;
+  }
 
   @override
-  bool isHorizontallyExpanding({bool ignoreFixedWidth = false}) => true;
-
-  // parent is not a layout model or parent is laid out
-  bool get _parentLayoutComplete => parent is! LayoutModel || (parent as LayoutModel).layoutComplete;
-
-  @override
-  bool get visible => super.visible && _parentLayoutComplete;
+  bool get canExpandInfinitelyHigh
+  {
+    if (hasBoundedHeight) return false;
+    return true;
+  }
 
   ChartModel(WidgetModel parent, String? id,
     {
@@ -41,30 +44,16 @@ class ChartModel extends DecoratedWidgetModel  {
       dynamic horizontal,
       dynamic animated,
       dynamic selected,
+      dynamic legendsize,
     }) : super(parent, id) {
     this.selected         = selected;
     this.animated         = animated;
     this.horizontal       = horizontal;
     this.showlegend       = showlegend;
+    this.legendsize       = legendsize;
     this.type             = type?.trim()?.toLowerCase();
+
     busy = false;
-
-    // register a listener to parent layout complete
-    if (parent is LayoutModel) parent.layoutCompleteObservable?.registerListener(onParentLayoutComplete);
-  }
-
-  // listens to parent layout complete
-  // before displaying chart
-  void onParentLayoutComplete(Observable observable)
-  {
-    if (_parentLayoutComplete) notifyListeners(observable.key, observable.get());
-  }
-
-  @override
-  removeAllListeners()
-  {
-    super.removeAllListeners();
-    if (parent is LayoutModel) (parent as LayoutModel).layoutCompleteObservable?.removeListener(onParentLayoutComplete);
   }
 
   static ChartModel? fromTemplate(WidgetModel parent, Template template)
@@ -114,9 +103,10 @@ class ChartModel extends DecoratedWidgetModel  {
     animated        = Xml.get(node: xml, tag: 'animated');
     horizontal      = Xml.get(node: xml, tag: 'horizontal');
     showlegend      = Xml.get(node: xml, tag: 'showlegend');
+    legendsize      = Xml.get(node: xml, tag: 'legendsize');
     type            = Xml.get(node: xml, tag: 'type');
 
-    // Get Series
+    // Set Series
     this.series.clear();
     List<ChartSeriesModel> series = findChildrenOfExactType(ChartSeriesModel).cast<ChartSeriesModel>();
       for (var model in series) {
@@ -128,7 +118,19 @@ class ChartModel extends DecoratedWidgetModel  {
         if (source != null) source.register(this);
       }
 
-    // Get Axis
+    // Set Labels
+    this.labels.clear();
+    List<ChartLabelModel> labels = findChildrenOfExactType(ChartLabelModel).cast<ChartLabelModel>();
+    for (var model in labels) {
+      // add the series to the list
+      this.labels.add(model);
+
+      // register listener to the datasource
+      IDataSource? source = (scope != null) ? scope!.getDataSource(model.datasource) : null;
+      if (source != null) source.register(this);
+    }
+
+    // Set Axis
     List<ChartAxisModel> axis = findChildrenOfExactType(ChartAxisModel).cast<ChartAxisModel>();
     for (var axis in axis) {
       if (axis.axis == ChartAxis.X) xaxis = axis;
@@ -151,6 +153,16 @@ class ChartModel extends DecoratedWidgetModel  {
     }
   }
   get selected => _selected?.get();
+
+  setSelected(dynamic v)
+  {
+    if (_selected == null)
+    {
+      _selected = ListObservable(Binding.toKey(id, 'selected'), null, scope: scope);
+      _selected!.registerListener(onPropertyChange);
+    }
+    _selected?.set(v, notify:false);
+  }
 
   /// If the chart should animate it's series
   BooleanObservable? _animated;
@@ -197,6 +209,21 @@ class ChartModel extends DecoratedWidgetModel  {
   }
   String get showlegend => _showlegend?.get() ?? 'bottom';
 
+  /// Sets the font size of the legend labels
+  IntegerObservable? _legendsize;
+  set legendsize (dynamic v)
+  {
+    if (_legendsize != null)
+    {
+      _legendsize!.set(v);
+    }
+    else if (v != null)
+    {
+      _legendsize = IntegerObservable(Binding.toKey(id, 'legendsize'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  int? get legendsize => _legendsize?.get();
+
   /// Type of chart (`cartesian` or `circle`) defaults to `cartesian`
   ///
   /// Charts have 2 types circle and cartesian
@@ -222,7 +249,8 @@ class ChartModel extends DecoratedWidgetModel  {
   /// Called when the databroker returns a successful result
   ///
   /// [ChartModel] overrides [WidgetModel]'s onDataSourceSuccess
-  /// to populate the series data with the databroker's data
+  /// to populate the series data from the datasource and
+  /// to populate the label data from the datasource data.
   @override
   Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async
   {
@@ -233,13 +261,28 @@ class ChartModel extends DecoratedWidgetModel  {
             series.dataPoint.clear();
             if (list != null) {
               for (var p in list) {
-                ChartDataPoint point = series.point(p);
+                ChartDataPoint point = series.seriesPoint(p);
                 if ((point.x != null) && (point.y != null)) {
                   series.dataPoint.add(point);
                 }
               }
             }
             series.data = list;
+          }
+        }
+        for (var label in labels) {
+          if (label.datasource == null && list != null) {
+            label.dataLabel.clear();
+            label.dataLabel.add(label.chartLabel(data));
+          }
+          else if (label.datasource == source.id) {
+            label.dataLabel.clear();
+            if (list != null) {
+              for (var l in list) {
+                label.dataLabel.add(label.chartLabel(l));
+              }
+            }
+            label.data = list;
           }
         }
       notifyListeners('list', null);

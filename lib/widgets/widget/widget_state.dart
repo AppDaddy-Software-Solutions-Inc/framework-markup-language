@@ -79,14 +79,28 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
       view = ConstrainedBox(child: view, constraints: box);
     }
 
-    // If a hard width is specified
+    // If a width is specified
     // wrap the view in an unconstrained box of the specified
-    // width and honor any applicable vertical constraints
-    if (constraints.width != null && constraints.height == null) {
+    // width and allow existing vertical constraints
+    if (constraints.width != null && constraints.height == null)
+    {
       view = UnconstrainedBox(child: SizedBox(child: view, width: constraints.width), constrainedAxis: Axis.vertical);
-    } else if (constraints.width == null && constraints.height != null) {
+    }
+
+    // If a height is specified
+    // wrap the view in an unconstrained box of the specified
+    // height and allow existing horizontal constraints
+    else if (constraints.width == null && constraints.height != null)
+    {
       view = UnconstrainedBox(child: SizedBox(child: view, height: constraints.height), constrainedAxis: Axis.horizontal);
-    } else if (constraints.width != null && constraints.height != null) {
+    }
+
+
+    // If both width and height are specified
+    // wrap the view in an unconstrained box of the specified
+    // width and height
+    else if (constraints.width != null && constraints.height != null)
+    {
       view = UnconstrainedBox(child: SizedBox(child: view, width: constraints.width, height: constraints.height));
     }
 
@@ -118,7 +132,7 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
     }
 
     // restrain the horizontal if unconstrained (double.infinity)
-    if (axis == Axis.vertical || axis == null)
+    if (axis == Axis.horizontal || axis == null)
     {
       // the horizontal axis is constrained if a width or max width
       // is specified since it would have already been applied above

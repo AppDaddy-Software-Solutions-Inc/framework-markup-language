@@ -1,4 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
@@ -8,8 +10,7 @@ import 'package:fml/helper/common_helpers.dart';
 
 MyTheme theme = MyTheme();
 
-class MyTheme
-{
+class MyTheme {
   static final MyTheme _singleton = MyTheme._init();
   static const String font = 'Roboto';
   static Brightness? brightnessPreference;
@@ -18,13 +19,10 @@ class MyTheme
 
   MyTheme._init();
 
-
   /// Derive theme from a color value and a https://fonts.google.com/ font
-  ThemeData deriveTheme(String? fromValue, {String googleFont = font})
-  {
+  ThemeData deriveTheme(String? fromValue, {String googleFont = font}) {
     Color? col = ColorObservable.toColor(fromValue);
     Brightness? b = getBrightness();
-
 
     return ThemeData(
         colorSchemeSeed: col ?? Colors.blueGrey,
@@ -40,20 +38,18 @@ class MyTheme
         useMaterial3: true);
   }
 
-  getBrightness()
-  {
-    String? brightness = /*await Settings().get('brightness') ??*/ System.theme.brightness;
-    if (brightness != null)
-    {
+  getBrightness() {
+    String? brightness = /*await Settings().get('brightness') ??*/
+        System.theme.brightness;
+    if (brightness != null) {
       if (brightness == 'system' || brightness == 'platform') {
-        brightnessPreference = WidgetsBinding.instance.platformDispatcher.platformBrightness;
+        brightnessPreference = PlatformDispatcher.instance.platformBrightness;
       } else if (brightness == 'dark') {
         brightnessPreference = Brightness.dark;
       } else if (brightness == 'light') {
         brightnessPreference = Brightness.light;
       }
-    }
-    else {
+    } else {
       brightnessPreference = Brightness.light;
     }
     return brightnessPreference;
@@ -95,30 +91,39 @@ ThemeData applyCustomizations(ColorScheme base, ThemeModel m) {
         surface: S.toColor(m.surface) ?? base.surface,
         onSurface: S.toColor(m.onsurface) ?? base.onSurface,
         surfaceVariant: S.toColor(m.surfacevariant) ?? base.surfaceVariant,
-        onSurfaceVariant: S.toColor(m.onsurfacevariant) ?? base.onSurfaceVariant,
+        onSurfaceVariant:
+            S.toColor(m.onsurfacevariant) ?? base.onSurfaceVariant,
         inverseSurface: S.toColor(m.inversesurface) ?? base.inverseSurface,
-        onInverseSurface: S.toColor(m.oninversesurface) ?? base.onInverseSurface,
+        onInverseSurface:
+            S.toColor(m.oninversesurface) ?? base.onInverseSurface,
         primary: S.toColor(m.primary) ?? base.primary,
         onPrimary: S.toColor(m.onprimary) ?? base.onPrimary,
-        primaryContainer: S.toColor(m.primarycontainer) ?? base.primaryContainer,
-        onPrimaryContainer: S.toColor(m.onprimarycontainer) ?? base.onPrimaryContainer,
+        primaryContainer:
+            S.toColor(m.primarycontainer) ?? base.primaryContainer,
+        onPrimaryContainer:
+            S.toColor(m.onprimarycontainer) ?? base.onPrimaryContainer,
         inversePrimary: S.toColor(m.inverseprimary) ?? base.inversePrimary,
         secondary: S.toColor(m.secondary) ?? base.secondary,
         onSecondary: S.toColor(m.onsecondary) ?? base.onSecondary,
-        secondaryContainer: S.toColor(m.secondarycontainer) ?? base.secondaryContainer,
-        onSecondaryContainer: S.toColor(m.onsecondarycontainer) ?? base.onSecondaryContainer,
-        tertiaryContainer: S.toColor(m.tertiarycontainer) ?? base.tertiaryContainer,
-        onTertiaryContainer: S.toColor(m.ontertiarycontainer) ?? base.onTertiaryContainer,
+        secondaryContainer:
+            S.toColor(m.secondarycontainer) ?? base.secondaryContainer,
+        onSecondaryContainer:
+            S.toColor(m.onsecondarycontainer) ?? base.onSecondaryContainer,
+        tertiaryContainer:
+            S.toColor(m.tertiarycontainer) ?? base.tertiaryContainer,
+        onTertiaryContainer:
+            S.toColor(m.ontertiarycontainer) ?? base.onTertiaryContainer,
         error: S.toColor(m.error) ?? base.error,
         onError: S.toColor(m.onerror) ?? base.onError,
         errorContainer: S.toColor(m.errorcontainer) ?? base.errorContainer,
-        onErrorContainer: S.toColor(m.onerrorcontainer) ?? base.onErrorContainer,
+        onErrorContainer:
+            S.toColor(m.onerrorcontainer) ?? base.onErrorContainer,
       ),
       useMaterial3: true,
     );
-  } catch(e) {
+  } catch (e) {
     Log().exception(e);
   }
-  return customizedTheme ?? ThemeData.from(colorScheme: base, useMaterial3: true);
+  return customizedTheme ??
+      ThemeData.from(colorScheme: base, useMaterial3: true);
 }
-

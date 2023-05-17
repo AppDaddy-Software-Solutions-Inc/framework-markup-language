@@ -94,7 +94,7 @@ class ListObservable extends Observable with ListMixin<dynamic>
     {
       _value = [];
       _value.add(value);
-      notifyListeners();
+      if (notify != false) notifyListeners();
       return;
     }
 
@@ -102,7 +102,7 @@ class ListObservable extends Observable with ListMixin<dynamic>
     if (value is List)
     {
       _value = value;
-      notifyListeners();
+      if (notify != false) notifyListeners();
       return;
     }
 
@@ -113,7 +113,7 @@ class ListObservable extends Observable with ListMixin<dynamic>
       for (var map in _value) {
         map[binding?.property] = value.toString();
       }
-      notifyListeners();
+      if (notify != false) notifyListeners();
       return;
     }
 
@@ -125,7 +125,7 @@ class ListObservable extends Observable with ListMixin<dynamic>
       for (String v in options) {
         if (v.trim() != '') _value.add(v.trim());
       }
-      notifyListeners();
+      if (notify != false) notifyListeners();
     }
   }
 }

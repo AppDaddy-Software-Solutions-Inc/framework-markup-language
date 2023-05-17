@@ -4,8 +4,8 @@ import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/framework/framework_view.dart';
-import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/tabview/tab_view.dart';
@@ -13,18 +13,12 @@ import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class TabModel extends LayoutModel
+class TabModel extends BoxModel
 {
   LinkedHashMap<String, FrameworkView> views = LinkedHashMap<String, FrameworkView>();
 
   @override
   LayoutType get layoutType => LayoutType.column;
-
-  @override
-  bool isVerticallyExpanding({bool ignoreFixedHeight = false}) => !isFixedHeight;
-
-  @override
-  bool isHorizontallyExpanding({bool ignoreFixedWidth = false}) => !isFixedWidth;
 
   // index
   IntegerObservable? _index;

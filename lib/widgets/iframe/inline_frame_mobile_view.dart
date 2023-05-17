@@ -11,8 +11,8 @@ import 'package:fml/helper/common_helpers.dart';
 
 InlineFrameView getView(model) => InlineFrameView(model);
 
-class InlineFrameView extends StatefulWidget implements widget_view.View, IWidgetView
-{
+class InlineFrameView extends StatefulWidget
+    implements widget_view.View, IWidgetView {
   @override
   final InlineFrameModel model;
 
@@ -22,14 +22,12 @@ class InlineFrameView extends StatefulWidget implements widget_view.View, IWidge
   State<InlineFrameView> createState() => _InlineFrameViewState();
 }
 
-class _InlineFrameViewState extends WidgetState<InlineFrameView>
-{
+class _InlineFrameViewState extends WidgetState<InlineFrameView> {
   WebViewWidget? iframe;
   late WebViewController controller;
 
   @override
-  void initState()
-  {
+  void initState() {
     controller = WebViewController();
     super.initState();
   }
@@ -37,8 +35,7 @@ class _InlineFrameViewState extends WidgetState<InlineFrameView>
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
-  Widget builder(BuildContext context, BoxConstraints constraints)
-  {
+  Widget builder(BuildContext context, BoxConstraints constraints) {
     var model = widget.model;
 
     // save system constraints
@@ -49,27 +46,32 @@ class _InlineFrameViewState extends WidgetState<InlineFrameView>
 
     // build view
     Widget? view = iframe;
-    if (view == null)
-    {
-
+    if (view == null) {
       var uri = URI.parse(widget.model.url);
-      if (uri != null) controller..setNavigationDelegate(NavigationDelegate())..setJavaScriptMode(JavaScriptMode.unrestricted)..loadRequest(uri)..addJavaScriptChannel('TOFLUTTER', onMessageReceived: onMessageReceived);
+      if (uri != null)
+        controller
+          ..setNavigationDelegate(NavigationDelegate())
+          ..setJavaScriptMode(JavaScriptMode.unrestricted)
+          ..loadRequest(uri)
+          ..addJavaScriptChannel('TOFLUTTER',
+              onMessageReceived: onMessageReceived);
       view = WebViewWidget(controller: controller);
     }
 
     // basic view
-    view = Container(child: view, width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.height);
+    view = Container(
+        child: view,
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height);
 
     // apply user defined constraints
-    view = applyConstraints(view, widget.model.constraints.model);
+    view = applyConstraints(view, widget.model.constraints);
 
     return view;
   }
 
-  void onMessageReceived(dynamic message)
-  {
-    try
-    {
+  void onMessageReceived(dynamic message) {
+    try {
       ////////////////////
       /* Decode Message */
       ////////////////////
@@ -81,9 +83,7 @@ class _InlineFrameViewState extends WidgetState<InlineFrameView>
       /* Set Map */
       /////////////
       widget.model.data = map;
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().exception(e);
     }
   }

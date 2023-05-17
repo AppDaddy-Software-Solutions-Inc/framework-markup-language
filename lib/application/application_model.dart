@@ -20,8 +20,7 @@ import 'package:provider/provider.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/theme/themenotifier.dart';
 
-class ApplicationModel extends WidgetModel
-{
+class ApplicationModel extends WidgetModel {
   static final String myId = "APPLICATION";
 
   static String tableName = "APP";
@@ -51,7 +50,7 @@ class ApplicationModel extends WidgetModel
 
   // forces pages to repaint every visit
   bool get autoRefresh => S.toBool(settings("REFRESH")) ?? false;
-  bool get singlePage  => S.toBool(settings('SINGLE_PAGE_APPLICATION')) ?? false;
+  bool get singlePage => S.toBool(settings('SINGLE_PAGE_APPLICATION')) ?? false;
 
   late String url;
 
@@ -90,20 +89,27 @@ class ApplicationModel extends WidgetModel
   String? _startPage;
   String? get startPage => _startPage;
 
-  Map<String,String>? _queryParameters;
-  Map<String,String>? get queryParameters => _queryParameters;
+  Map<String, String>? _queryParameters;
+  Map<String, String>? get queryParameters => _queryParameters;
 
   // fml version support
   int? fmlVersion;
 
-  String  get homePage         => settings("HOME_PAGE") ?? "main.xml";
-  String? get loginPage        => settings("LOGIN_PAGE");
+  String get homePage => settings("HOME_PAGE") ?? "main.xml";
+  String? get loginPage => settings("LOGIN_PAGE");
   String? get unauthorizedPage => settings("UNAUTHORIZED_PAGE");
 
-  Map<String,String?>? get configParameters => _config?.parameters;
+  Map<String, String?>? get configParameters => _config?.parameters;
 
-  ApplicationModel(WidgetModel parent, {String? key, required this.url, this.title, this.icon, this.page, this.order, String? jwt}) : super(parent, myId, scope: Scope(id: myId))
-  {
+  ApplicationModel(WidgetModel parent,
+      {String? key,
+      required this.url,
+      this.title,
+      this.icon,
+      this.page,
+      this.order,
+      String? jwt})
+      : super(parent, myId, scope: Scope(id: myId)) {
     // parse to url into its parts
     Uri? uri = Uri.tryParse(url);
     if (uri == null) return;
@@ -116,25 +122,27 @@ class ApplicationModel extends WidgetModel
     if (uri == null) return;
 
     _scheme = uri.scheme;
-    _host   = uri.host;
+    _host = uri.host;
 
     // set the start page
     String? fragment = uri.hasFragment ? uri.fragment : null;
-    if (fragment != null && fragment.toLowerCase().contains(".xml"))
-    {
-        var myUri = Uri.tryParse(fragment);
-        if (myUri != null)
-        {
-          _queryParameters = myUri.hasQuery ? myUri.queryParameters : null;
-          _startPage = myUri.removeQuery().url;
-        }
-    }
-    else {
+    if (fragment != null && fragment.toLowerCase().contains(".xml")) {
+      var myUri = Uri.tryParse(fragment);
+      if (myUri != null) {
+        _queryParameters = myUri.hasQuery ? myUri.queryParameters : null;
+        _startPage = myUri.removeQuery().url;
+      }
+    } else {
       _queryParameters = uri.queryParameters;
     }
 
     // base domain
-    _domain = uri.removeFragment().removeQuery().replace(userInfo: null).removeEmptySegments().url;
+    _domain = uri
+        .removeFragment()
+        .removeQuery()
+        .replace(userInfo: null)
+        .removeEmptySegments()
+        .url;
 
     // active user
     _user = UserModel(this, jwt: jwt);
@@ -145,8 +153,7 @@ class ApplicationModel extends WidgetModel
 
   // initializes the app
   @override
-  Future<bool> initialize() async
-  {
+  Future<bool> initialize() async {
     // build stash
     stash = Scope(id: 'STASH');
     if (domain != null) _stash = await Stash.get(domain!);
@@ -175,11 +182,11 @@ class ApplicationModel extends WidgetModel
 
     // get global template
     // get global.xml
-    if (domain != null)
-    {
+    if (domain != null) {
       var uri = Uri.tryParse(domain!)?.setPage("global.xml");
       XmlDocument? template;
-      if (uri != null) template = await Template.fetchTemplate(url: uri.url, refresh: true);
+      if (uri != null)
+        template = await Template.fetchTemplate(url: uri.url, refresh: true);
 
       // deserialize the returned template
       if (template != null) deserialize(template.rootElement);
@@ -188,49 +195,43 @@ class ApplicationModel extends WidgetModel
     return true;
   }
 
-  String? settings(String key)
-  {
+  String? settings(String key) {
     if (_config == null) return null;
     if (_config!.settings.containsKey(key)) return _config!.settings[key];
     return null;
   }
 
   // refreshes the config file settings
-  Future<bool> refresh() async
-  {
+  Future<bool> refresh() async {
     var model = await _getConfig(true);
     if (model != null) _config = model;
     return true;
   }
 
   // loads the config
-  Future<ConfigModel?> _getConfig(bool refresh) async
-  {
+  Future<ConfigModel?> _getConfig(bool refresh) async {
     ConfigModel? model;
 
     /// parse the config
-    if (config != null)
-    {
+    if (config != null) {
       var e = Xml.tryParse(config);
       if (e != null) model = await ConfigModel.fromXml(null, e.rootElement);
     }
 
     // get config from url
-    if (domain != null && (refresh || model == null)) model = await ConfigModel.fromUrl(null, domain!);
+    if (domain != null && (refresh || model == null))
+      model = await ConfigModel.fromUrl(null, domain!);
 
     // model created?
-    if (model != null)
-    {
+    if (model != null) {
       // set fml version support level
       fmlVersion = S.toVersionNumber(model.settings["FML_VERSION"]);
 
       // get the icon
       var icon = model.settings["APP_ICON"];
-      if (icon != null)
-      {
+      if (icon != null) {
         Uri? uri = URI.parse(icon, domain: domain);
-        if (uri != null)
-        {
+        if (uri != null) {
           var data = await URI.toUriData(uri.url);
           if (data != null) {
             this.icon = data.toString();
@@ -242,11 +243,9 @@ class ApplicationModel extends WidgetModel
 
       // mirror?
       var mirrorApi = model.settings["MIRROR_API"];
-      if (mirrorApi != null && !isWeb && scheme != "file")
-      {
+      if (mirrorApi != null && !isWeb && scheme != "file") {
         Uri? uri = URI.parse(mirrorApi, domain: domain);
-        if (uri != null)
-        {
+        if (uri != null) {
           mirror = Mirror(uri.url);
           mirror!.execute();
         }
@@ -263,50 +262,51 @@ class ApplicationModel extends WidgetModel
     return model;
   }
 
-  void setTheme(ThemeModel theme, bool notify)
-  {
+  void setTheme(ThemeModel theme, bool notify) {
     /// Initial Theme Setting
     String def = 'light';
     String cBrightness = settings('BRIGHTNESS')?.toLowerCase() ?? def;
     if (cBrightness == 'system' || cBrightness == 'platform') {
-      try
-    {
-      if(context != null) cBrightness = PlatformDispatcher.instance.platformBrightness.toString().toLowerCase().split('.')[1];
-    }
-    catch(e)
-    {
-      cBrightness = def;
-    }
+      try {
+        cBrightness = PlatformDispatcher.instance.platformBrightness
+            .toString()
+            .toLowerCase()
+            .split('.')[1];
+      } catch (e) {
+        cBrightness = def;
+      }
     }
 
-    var brightness  = theme.brightness;
+    var brightness = theme.brightness;
     var colorscheme = theme.colorscheme;
-    var font        = theme.font;
+    var font = theme.font;
 
     // theme values from the app
-    theme.brightness  = cBrightness;
-    theme.colorscheme = settings('PRIMARY_COLOR')?.toLowerCase() ?? 'lightblue'; // backwards compatibility
-    theme.colorscheme = settings('COLOR_SCHEME')?.toLowerCase()  ?? theme.colorscheme;
-    theme.font        = settings('FONT');
+    theme.brightness = cBrightness;
+    theme.colorscheme = settings('PRIMARY_COLOR')?.toLowerCase() ??
+        'lightblue'; // backwards compatibility
+    theme.colorscheme =
+        settings('COLOR_SCHEME')?.toLowerCase() ?? theme.colorscheme;
+    theme.font = settings('FONT');
 
     // has the theme changed?
-    bool modified = (theme.brightness != brightness || theme.colorscheme != colorscheme || theme.font != font);
-    if (modified && notify && context != null)
-    {
+    bool modified = (theme.brightness != brightness ||
+        theme.colorscheme != colorscheme ||
+        theme.font != font);
+    if (modified && notify && context != null) {
       // call the theme notifier
       final themeNotifier = Provider.of<ThemeNotifier>(context!, listen: false);
-      String brightness   = settings('BRIGHTNESS')   ?? ThemeModel.defaultBrightness;
-      String color        = settings('COLOR_SCHEME') ?? ThemeModel.defaultColor;
+      String brightness =
+          settings('BRIGHTNESS') ?? ThemeModel.defaultBrightness;
+      String color = settings('COLOR_SCHEME') ?? ThemeModel.defaultColor;
       themeNotifier.setTheme(brightness, color);
       themeNotifier.mapSystemThemeBindables();
     }
   }
 
-  Future<bool> stashValue(String key, dynamic value) async
-  {
+  Future<bool> stashValue(String key, dynamic value) async {
     bool ok = true;
-    try
-    {
+    try {
       // key must be supplied
       if (S.isNullOrEmpty(key)) return ok;
 
@@ -328,36 +328,29 @@ class ApplicationModel extends WidgetModel
 
       // set observable
       stash.setObservable(key, value);
-    }
-    catch(e)
-    {
+    } catch (e) {
       // stash failure always returns true
       ok = true;
     }
     return ok;
   }
 
-  Future<bool> clearStash() async
-  {
+  Future<bool> clearStash() async {
     bool ok = true;
-    try
-    {
+    try {
       // clear rthe stash map
       _stash.map.clear();
 
       // save to the hive
       await _stash.upsert();
-    }
-    catch(e)
-    {
+    } catch (e) {
       // stash failure always returns true
       ok = true;
     }
     return ok;
   }
 
-  void launch(ThemeModel theme, bool notifyOnThemeChange)
-  {
+  void launch(ThemeModel theme, bool notifyOnThemeChange) {
     // set stash values
     for (var entry in _stash.map.entries) {
       stash.setObservable(entry.key, entry.value);
@@ -377,8 +370,7 @@ class ApplicationModel extends WidgetModel
     setTheme(theme, notifyOnThemeChange);
   }
 
-  void close()
-  {
+  void close() {
     // start all datasources
     if (datasources != null) {
       for (var datasource in datasources!) {
@@ -387,10 +379,8 @@ class ApplicationModel extends WidgetModel
     }
   }
 
-
   @override
-  void dispose()
-  {
+  void dispose() {
     // close the app
     close();
 
@@ -398,72 +388,69 @@ class ApplicationModel extends WidgetModel
     super.dispose();
   }
 
-  Map<String, dynamic> _toMap()
-  {
+  Map<String, dynamic> _toMap() {
     Map<String, dynamic> map = {};
-    map["key"]    = _dbKey;
-    map["url"]    = url;
-    map["title"]  = title;
-    map["icon"]   = icon;
-    map["page"]   = page;
-    map["order"]  = order;
+    map["key"] = _dbKey;
+    map["url"] = url;
+    map["title"] = title;
+    map["icon"] = icon;
+    map["page"] = page;
+    map["order"] = order;
     map["config"] = _config?.xml;
-    map["jwt"]    = jwt;
+    map["jwt"] = jwt;
     return map;
   }
 
-  static Future<ApplicationModel?> _fromMap(dynamic map) async
-  {
+  static Future<ApplicationModel?> _fromMap(dynamic map) async {
     ApplicationModel? app;
-    if (map is Map<String, dynamic>)
-    {
-      app = ApplicationModel(System(), key: S.mapVal(map, "key"), url: S.mapVal(map, "url"), title: S.mapVal(map, "title"), icon: S.mapVal(map, "icon"), page: S.mapVal(map, "page"), order: S.mapInt(map, "order"), jwt: S.mapVal(map, "jwt"));
+    if (map is Map<String, dynamic>) {
+      app = ApplicationModel(System(),
+          key: S.mapVal(map, "key"),
+          url: S.mapVal(map, "url"),
+          title: S.mapVal(map, "title"),
+          icon: S.mapVal(map, "icon"),
+          page: S.mapVal(map, "page"),
+          order: S.mapInt(map, "order"),
+          jwt: S.mapVal(map, "jwt"));
       await app.initialized;
     }
     return app;
   }
 
   // inserts a new app into the local hive
-  Future<bool> insert() async
-  {
+  Future<bool> insert() async {
     var exception = await Database().insert(tableName, _dbKey, _toMap());
     return (exception == null);
   }
 
   // updates the app in the local hive
-  Future<bool> upsert() async
-  {
+  Future<bool> upsert() async {
     var exception = await Database().upsert(tableName, _dbKey, _toMap());
     return (exception == null);
   }
 
   // delete an app from the local hive
-  Future<bool> delete() async
-  {
+  Future<bool> delete() async {
     var exception = await Database().delete(tableName, _dbKey);
     return (exception == null);
   }
 
-  static Future<List<ApplicationModel>> loadAll() async
-  {
+  static Future<List<ApplicationModel>> loadAll() async {
     List<ApplicationModel> apps = [];
     List<Map<String, dynamic>> entries = await Database().query(tableName);
-    for (var entry in entries)
-    {
+    for (var entry in entries) {
       ApplicationModel? app = await _fromMap(entry);
       if (app != null) apps.add(app);
     }
     return apps;
   }
 
-  Future<bool> logon(Jwt? jwt) async
-  {
+  Future<bool> logon(Jwt? jwt) async {
     if (jwt != null) _user.logon(jwt);
     return true;
   }
 
-  Future<bool> logoff() async
-  {
+  Future<bool> logoff() async {
     _user.logoff();
     return true;
   }

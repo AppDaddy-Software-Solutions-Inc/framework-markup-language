@@ -72,7 +72,9 @@ class EventManager
       if (listeners.containsKey(event.type)) callbacks = listeners[event.type];
       if (callbacks != null) {
         for (var callback in callbacks) {
-          !event.handled ? callback(event) : null;
+          if (!event.handled) {
+            callback(event);
+          }
         }
       }
 

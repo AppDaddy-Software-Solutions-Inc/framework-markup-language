@@ -1,21 +1,50 @@
-import 'dart:math';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:fml/helper/string.dart';
 import 'package:fml/helper/xml.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/double.dart';
+import 'package:fml/observable/observables/integer.dart';
 import 'package:fml/observable/scope.dart';
 import 'package:fml/system.dart';
-import 'package:fml/widgets/layout/layout_model.dart';
-import 'package:fml/widgets/scroller/scroller_model.dart';
+import 'package:fml/widgets/constraints/constraint.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
-import 'constraint.dart';
 
 class ConstraintModel extends WidgetModel
 {
   ConstraintModel(WidgetModel? parent, String? id, {Scope? scope}) : super(parent, id, scope: scope);
+
+  final Constraints system = Constraints();
+
+  // return the model constraints
+  Constraints get constraints => Constraints(width: width, height: height, minWidth: minWidth, maxWidth: maxWidth, minHeight: minHeight, maxHeight: maxHeight);
+
+  // indicates if the widget has width defined
+  bool get hasBoundedWidth => width != null || widthPercentage != null;
+
+  // indicates if the widget has height defined
+  bool get hasBoundedHeight => height != null || heightPercentage != null;
+
+  // indicates if the widget expands infinitely in
+  // it's horizontal axis if not constrained
+  // override where necessary
+  bool get canExpandInfinitelyWide => false;
+
+  // indicates if the widget expands infinitely in
+  // it's vertical axis if not constrained
+  // override where necessary
+  bool get canExpandInfinitelyHigh => false;
+
+  // indicates if the widget normally wants to flex in
+  // its horizontal axis
+  // override where necessary
+  bool get expandHorizontally => false;
+
+  // indicates if the widget normally wants to flex in
+  // its vertical axis
+  // override where necessary
+  bool get expandVertically => false;
 
   /// Deserializes the FML template elements, attributes and children
   @override
@@ -33,81 +62,6 @@ class ConstraintModel extends WidgetModel
     maxHeight = Xml.get(node: xml, tag: 'maxheight');
   }
 
-
-  // returns the constraints as specified
-  // in the model template
-  Constraints getModelConstraints()
-  {
-    Constraints constraint = Constraints();
-    constraint.width     = width;
-    constraint.minWidth  = minWidth;
-    constraint.maxWidth  = maxWidth;
-    constraint.height    = height;
-    constraint.minHeight = minHeight;
-    constraint.maxHeight = maxHeight;
-    return constraint;
-  }
-
-  // constraints as specified
-  // by the layoutBuilder()
-  final Constraints system = Constraints();
-
-  // returns the constraints as calculated
-  // by walking up the model tree and
-  // examining system and local model constraints
-  Constraints get calculated
-  {
-    Constraints constraints = Constraints();
-
-    // calculated constraints
-    Constraints calculated = Constraints();
-    calculated.minWidth  = myMinWidth;
-    calculated.maxWidth  = myMaxWidth;
-    calculated.minHeight = myMinHeight;
-    calculated.maxHeight = myMaxHeight;
-
-    // constraints as specified on the model template
-    Constraints model = getModelConstraints();
-
-    // WIDTH
-    constraints.width     = model.width;
-    constraints.minWidth  = model.width  ?? model.minWidth  ?? calculated.minWidth;
-    constraints.maxWidth  = model.width  ?? model.maxWidth  ?? calculated.maxWidth;
-
-    // ensure not negative
-    if (constraints.minWidth == null || constraints.minWidth!.isNegative) constraints.minWidth = null;
-    if (constraints.maxWidth == null || constraints.maxWidth!.isNegative) constraints.maxWidth = null;
-
-    // ensure max > min
-    if (constraints.minWidth != null && constraints.maxWidth != null && constraints.minWidth! > constraints.maxWidth!)
-    {
-      var v = constraints.minWidth;
-      constraints.minWidth = constraints.maxWidth;
-      constraints.maxWidth = v;
-    }
-
-    // HEIGHT
-    constraints.height    = model.height;
-    constraints.minHeight = model.height ?? model.minHeight ?? calculated.minHeight;
-    constraints.maxHeight = model.height ?? model.maxHeight ?? calculated.maxHeight;
-
-    // ensure not negative
-    if (constraints.minHeight != null && constraints.minHeight!.isNegative) constraints.minHeight = null;
-    if (constraints.maxHeight != null && constraints.maxHeight!.isNegative) constraints.maxHeight = null;
-
-    // ensure max > min
-    if (constraints.minHeight != null && constraints.maxHeight != null && constraints.minHeight! > constraints.maxHeight!)
-    {
-      var v = constraints.minHeight;
-      constraints.minHeight = constraints.maxHeight;
-      constraints.maxHeight = v;
-    }
-
-    return constraints;
-  }
-
-  /// Local Constraints
-  ///
   // width
   double? _widthPercentage;
   double? get widthPercentage => _widthPercentage;
@@ -127,8 +81,6 @@ class ConstraintModel extends WidgetModel
 
   // this routine set the width silently and resets the
   // fixedWidth property
-  bool _fixedWidth  = false;
-  bool get isFixedWidth => _fixedWidth;
   setWidth(double? v)
   {
     // create the _width observable if it
@@ -142,14 +94,12 @@ class ConstraintModel extends WidgetModel
     // we must remember these settings since they are
     // changed by the _widthSetter() and need to be restored
     // after assigning _width a value
-    var fixed = _fixedWidth;
-    var pct   = _widthPercentage;
+    var pct = _widthPercentage;
 
     // set the width
     _width?.set(v, notify: false);
 
     // restore original settings
-    _fixedWidth = fixed;
     if (pct != null) _widthPercentage = pct;
   }
 
@@ -182,16 +132,6 @@ class ConstraintModel extends WidgetModel
       if (v != S.toDouble(value)) value = v;
     }
 
-    if (!S.isNullOrEmpty(value))
-    {
-      // _fixedWidth=true indicates the width was set by someone other
-      // than the parent layout (template, a binding or an eval()). See setWidth()
-      _fixedWidth = true;
-
-      // null resets
-      if (value is String && value.toLowerCase() == 'null') _fixedWidth = false;
-    }
-
     return value;
   }
 
@@ -212,10 +152,6 @@ class ConstraintModel extends WidgetModel
   }
   double? get height => _height?.get();
 
-  // this routine set the height silently and resets the
-  // fixedHeight property
-  bool _fixedHeight = false;
-  bool get isFixedHeight => _fixedHeight;
   setHeight(double? v)
   {
     // create the _height observable if it
@@ -229,14 +165,12 @@ class ConstraintModel extends WidgetModel
     // we must remember these settings since they are
     // changed by the _heightSetter() and need to be restored
     // after assigning _height a value
-    var fixed = _fixedHeight;
-    var pct   = _heightPercentage;
+    var pct = _heightPercentage;
 
     // set the height
     _height?.set(v, notify:false);
 
     // restore original settings
-    _fixedHeight = fixed;
     if (pct != null) _heightPercentage = pct;
   }
 
@@ -269,20 +203,23 @@ class ConstraintModel extends WidgetModel
       if (v != S.toDouble(value)) value = v;
     }
 
-    // _fixedHeight is used by the parent layout
-    // when assigning proportional heights
-    if (!S.isNullOrEmpty(value))
-    {
-      // _fixedHeight=true indicates the height was set by someone other
-      // than the parent layout (template, a binding or an eval()). See setHeight()
-      _fixedHeight = true;
-
-      // null resets
-      if (value is String && value.toLowerCase() == 'null') _fixedHeight = false;
-    }
-
     return value;
   }
+
+  // flex
+  IntegerObservable? _flex;
+  set flex (dynamic v)
+  {
+    if (_flex != null)
+    {
+      _flex!.set(v);
+    }
+    else if (v != null)
+    {
+      _flex = IntegerObservable(Binding.toKey(id, 'flex'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  int? get flex => _flex?.get();
 
   // min width
   double? _minWidthPercentage;
@@ -384,48 +321,219 @@ class ConstraintModel extends WidgetModel
   }
   double? get maxHeight => _maxHeight?.get();
 
+  // return the bounded width
+  double? getWidth({double? widthParent})
+  {
+    if (!hasBoundedWidth) return null;
+
+    double? myWidth;
+
+    // width
+    if (width != null)
+    {
+      myWidth = width;
+    }
+
+    // percentage width based on parent
+    else if (widthPercentage != null && widthParent != null)
+    {
+      myWidth = ((widthPercentage!/100) * widthParent);
+    }
+
+    // apply model constraints
+    if (myWidth != null)
+    {
+      // must be greater than minWidth
+      if (minWidth != null && myWidth < minWidth!)
+      {
+        myWidth = minWidth!;
+      }
+
+      // must be greater than maxWidth
+      if (maxWidth != null && myWidth > maxWidth!)
+      {
+        myWidth = maxWidth!;
+      }
+    }
+
+    // cannot be negative
+    if (myWidth != null && myWidth.isNegative)
+    {
+      myWidth = 0;
+    }
+
+    return myWidth;
+  }
+
+  // return the bounded height
+  double? getHeight({double? heightParent})
+  {
+    if (!hasBoundedHeight) return null;
+
+    double? myHeight;
+
+    // height
+    if (height != null)
+    {
+      myHeight = height;
+    }
+
+    // percentage height based on parent
+    else if (heightPercentage != null && heightParent != null)
+    {
+      myHeight = ((heightPercentage!/100) * heightParent);
+    }
+
+    // apply model constraints
+    if (myHeight != null)
+    {
+      // must be greater than minHeight
+      if (minHeight != null && myHeight < minHeight!)
+      {
+        myHeight = minHeight!;
+      }
+
+      // must be greater than maxHeight
+      if (maxHeight != null && myHeight > maxHeight!)
+      {
+        myHeight = maxHeight!;
+      }
+    }
+
+    // cannot be negative
+    if (myHeight != null && myHeight.isNegative)
+    {
+      myHeight = 0;
+    }
+
+    return myHeight;
+  }
+
+  // the flex width
+  int? getWidthFlex()
+  {
+    // defined width takes precedence over flex
+    if (hasBoundedWidth) return null;
+    return flex ?? (expandVertically ? 1 : null);
+  }
+
+  // the flex height
+  int? getHeightFlex()
+  {
+    // defined height takes precedence over flex
+    if (hasBoundedHeight) return null;
+    return flex ?? (expandHorizontally ? 1 : null);
+  }
+
+  //Constraints get tightest => Constraints.tightest(Constraints.tightest(model, system), calculated);
+  Constraints get tightest => constraints;
+  Constraints get tightestOrDefault
+  {
+    var constraints = tightest;
+    if (constraints.height == null && constraints.maxHeight == null) constraints.maxHeight = System().screenheight.toDouble();
+    if (constraints.width  == null && constraints.maxWidth  == null) constraints.maxWidth  = System().screenwidth.toDouble();
+    return constraints;
+  }
+
+  setLayoutConstraints(BoxConstraints constraints)
+  {
+    system.minWidth  = constraints.minWidth;
+    system.maxWidth  = constraints.maxWidth;
+    system.minHeight = constraints.minHeight;
+    system.maxHeight = constraints.maxHeight;
+  }
+
   /// walks up the model tree looking for
   /// the first system non-null minWidth value
   double get myMinWidth
   {
-    double? v;
-    if (system.minWidth != null) v = system.minWidth;
-    if (v == null && parent is ViewableWidgetModel) v = (parent as ViewableWidgetModel).myMinWidth;
-    return v ?? 0;
+    if (system.minWidth != null) return system.minWidth!;
+    if (parent is ViewableWidgetModel) return (parent as ViewableWidgetModel).myMinWidth;
+    return 0;
   }
-
-  static double ancestorMaxWidth(WidgetModel? widget, {bool forPercent = false})
+  /// walks up the model tree looking for
+  /// the first system non-null maxHeight value
+  double get myMaxWidth
   {
-    if (widget is ViewableWidgetModel)
-    {
-      if (widget is ScrollerModel && widget.layoutType == LayoutType.row && !forPercent) return double.infinity;
-      if (widget.system.maxWidth  != null) return max(widget.system.maxWidth! - widget.horizontalPadding,0);
-      if (widget.width            != null) return max(widget.width!           - widget.horizontalPadding,0);
-      if (widget.maxWidth         != null) return max(widget.maxWidth!        - widget.horizontalPadding,0);
-      return ancestorMaxWidth(widget.parent);
-    }
-    else {
-      return double.infinity;
-    }
+    if (system.maxWidth != null && system.maxWidth != double.infinity) return system.maxWidth!;
+    if (width           != null) return width!;
+    if (maxWidth        != null) return maxWidth!;
+    if (parent is ViewableWidgetModel) return (parent as ViewableWidgetModel).myMaxWidth;
+    return 0;
   }
 
   /// walks up the model tree looking for
-  /// the first system non-null maxWidth value
-  double get myMaxWidth
+  /// the first system non-null minHeight value
+  double get myMinHeight
   {
-    if (system.maxWidth  != null) return system.maxWidth!;
-    if (width       != null) return width!;
-    if (maxWidth    != null) return maxWidth!;
-    return ancestorMaxWidth(parent);
+    if (system.minHeight != null && system.minHeight != double.infinity) return system.minHeight!;
+    if (parent is ViewableWidgetModel) return (parent as ViewableWidgetModel).myMinHeight;
+    return 0;
   }
 
-  // if the widgets own constraints specify a maxWidth then that is used
-  // otherwise it gets the maxWidth from its parent walking up the model tree
-  double get calculatedMaxWidthForPercentage
+  /// walks up the model tree looking for
+  /// the first system non-null maxHeight value
+  double get myMaxHeight
   {
-    double maxWidth = system.maxWidth ?? ancestorMaxWidth(parent, forPercent: true);
-    if (maxWidth == double.infinity) maxWidth = System().screenwidth.toDouble();
-    return maxWidth;
+    if (system.maxHeight != null && system.maxHeight != double.infinity) return system.maxHeight!;
+    if (height           != null) return height!;
+    if (maxHeight        != null) return maxHeight!;
+    if (parent is ViewableWidgetModel) return (parent as ViewableWidgetModel).myMaxHeight;
+    return 0;
+  }
+
+  // returns the constraints as calculated
+  // by walking up the model tree and
+  // examining system and local model constraints
+  Constraints get calculated
+  {
+    Constraints constraints = Constraints();
+
+    // calculated constraints
+    Constraints calculated = Constraints();
+    calculated.minWidth  = myMinWidth;
+    calculated.maxWidth  = myMaxWidth;
+    calculated.minHeight = myMinHeight;
+    calculated.maxHeight = myMaxHeight;
+
+    // constraints as specified on the model template
+    Constraints model = this.constraints;
+
+    // WIDTH
+    constraints.width     = model.width;
+    constraints.minWidth  = model.width  ?? model.minWidth  ?? calculated.minWidth;
+    constraints.maxWidth  = model.width  ?? model.maxWidth  ?? calculated.maxWidth;
+
+    // ensure not negative
+    if (constraints.minWidth == null || constraints.minWidth!.isNegative) constraints.minWidth = null;
+    if (constraints.maxWidth == null || constraints.maxWidth!.isNegative) constraints.maxWidth = null;
+
+    // ensure max > min
+    if (constraints.minWidth != null && constraints.maxWidth != null && constraints.minWidth! > constraints.maxWidth!)
+    {
+      var v = constraints.minWidth;
+      constraints.minWidth = constraints.maxWidth;
+      constraints.maxWidth = v;
+    }
+
+    // HEIGHT
+    constraints.height    = model.height;
+    constraints.minHeight = model.height ?? model.minHeight ?? calculated.minHeight;
+    constraints.maxHeight = model.height ?? model.maxHeight ?? calculated.maxHeight;
+
+    // ensure not negative
+    if (constraints.minHeight != null && constraints.minHeight!.isNegative) constraints.minHeight = null;
+    if (constraints.maxHeight != null && constraints.maxHeight!.isNegative) constraints.maxHeight = null;
+
+    // ensure max > min
+    if (constraints.minHeight != null && constraints.maxHeight != null && constraints.minHeight! > constraints.maxHeight!)
+    {
+      var v = constraints.minHeight;
+      constraints.minHeight = constraints.maxHeight;
+      constraints.maxHeight = v;
+    }
+
+    return constraints;
   }
 
   // returns the max width or screen width if unconstrained
@@ -436,54 +544,7 @@ class ConstraintModel extends WidgetModel
     return v;
   }
 
-  /// walks up the model tree looking for
-  /// the first system non-null minHeight value
-  double get myMinHeight
-  {
-    double? v;
-    if (system.minHeight != null) v = system.minHeight;
-    if (v == null && parent is ViewableWidgetModel) v = (parent as ViewableWidgetModel).myMinHeight;
-    return v ?? 0;
-  }
-
-  static double ancestorMaxHeight(WidgetModel? widget, double padding, {bool forPercent = false})
-  {
-    if (widget is ViewableWidgetModel)
-    {
-      padding = padding + widget.verticalPadding;
-
-      if (widget is ScrollerModel && widget.layoutType == LayoutType.column && !forPercent) return double.infinity;
-      if (widget.system.maxHeight != null) return max(widget.system.maxHeight! - padding,0);
-      if (widget.height           != null) return max(widget.height!           - padding,0);
-      if (widget.maxHeight        != null) return max(widget.maxHeight!        - padding,0);
-
-      return ancestorMaxHeight(widget.parent, padding);
-    }
-    else {
-      return double.infinity;
-    }
-  }
-
-  /// walks up the model tree looking for
-  /// the first system non-null maxHeight value
-  double get myMaxHeight
-  {
-    if (system.maxHeight != null) return system.maxHeight!;
-    if (height      != null) return height!;
-    if (maxHeight   != null) return maxHeight!;
-    return ancestorMaxHeight(parent, 0);
-  }
-
-  // if the widgets own constraints specify a maxHeight then that is used
-  // otherwise it gets the maxHeight from its parent walking up the model tree
-  double get calculatedMaxHeightForPercentage
-  {
-    double maxHeight = system.maxHeight ?? ancestorMaxHeight(parent, 0, forPercent: true);
-    if (maxHeight == double.infinity) maxHeight = System().screenheight.toDouble();
-    return maxHeight;
-  }
-
-  // returns the max height or screen height if unconstrained
+  // returns the max height or screen width if unconstrained
   double get calculatedMaxHeightOrDefault
   {
     var v = myMaxHeight;
@@ -491,43 +552,23 @@ class ConstraintModel extends WidgetModel
     return v;
   }
 
-  setLayoutConstraints(BoxConstraints constraints)
+  // if the widgets own constraints specify a maxWidth then that is used
+  // otherwise it gets the maxWidth from its parent walking up the model tree
+  double get calculatedMaxWidthForPercentage
   {
-    // set the system constraints
-    system.minWidth  = constraints.minWidth;
-    system.maxWidth  = constraints.maxWidth;
-    system.minHeight = constraints.minHeight;
-    system.maxHeight = constraints.maxHeight;
+    if (system.maxWidth != null && system.maxWidth != double.infinity) return system.maxWidth!;
+    if (parent is ViewableWidgetModel) return (parent as ViewableWidgetModel).myMaxWidth;
+    if (maxWidth == null || maxWidth == double.infinity) maxWidth = System().screenwidth.toDouble();
+    return maxWidth!;
+  }
 
-    LayoutType parentLayout = LayoutType.none;
-    if (parent is LayoutModel) parentLayout = (parent as LayoutModel).layoutType;
-
-    // adjust the width if defined as a percentage
-    if (widthPercentage != null && parentLayout != LayoutType.row)
-    {
-      // calculate the width
-      int? width = (calculatedMaxWidthForPercentage * (widthPercentage!/100.0)).floor();
-
-      // adjust min and max widths
-      if (minWidth != null && minWidth! > width)  width = minWidth?.toInt();
-      if (maxWidth != null && maxWidth! < width!) width = maxWidth?.toInt();
-
-      // set the width
-      setWidth(width?.toDouble());
-    }
-
-    // adjust the height if defined as a percentage
-    if (_heightPercentage != null && parentLayout != LayoutType.column)
-    {
-      // calculate the height
-      int? height = (calculatedMaxHeightForPercentage * (_heightPercentage!/100.0)).floor();
-
-      // adjust min and max heights
-      if (minHeight != null && minHeight! > height)  height = minHeight?.toInt();
-      if (maxHeight != null && maxHeight! < height!) height = maxHeight?.toInt();
-
-      // set the height
-      setHeight(height?.toDouble());
-    }
+  // if the widgets own constraints specify a maxWidth then that is used
+  // otherwise it gets the maxWidth from its parent walking up the model tree
+  double get calculatedMaxHeightForPercentage
+  {
+    if (system.maxHeight != null && maxHeight != double.infinity) return system.maxHeight!;
+    if (parent is ViewableWidgetModel) return (parent as ViewableWidgetModel).myMaxHeight;
+    if (maxHeight == null || maxHeight == double.infinity) return System().screenheight.toDouble();
+    return maxHeight!;
   }
 }

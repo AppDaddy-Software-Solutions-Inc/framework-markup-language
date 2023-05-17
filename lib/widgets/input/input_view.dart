@@ -906,7 +906,7 @@ class _InputViewState extends WidgetState<InputView>
         ));
 
     // get the model constraints
-    var modelConstraints = widget.model.constraints.model;
+    var modelConstraints = widget.model.constraints;
 
     // constrain the input to 200 pixels if not constrained by the model
     if (!modelConstraints.hasHorizontalExpansionConstraints &&

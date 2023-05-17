@@ -1,14 +1,11 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/layout/layout_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/column/column_view.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class ColumnModel extends LayoutModel
+class ColumnModel extends BoxModel
 {
   @override
   LayoutType layoutType = LayoutType.column;
@@ -16,56 +13,22 @@ class ColumnModel extends LayoutModel
   @override
   String? get layout => "column";
 
+  // indicates if the widget will grow in
+  // its horizontal axis
   @override
-  MainAxisSize get verticalAxisSize
+  bool get expandHorizontally
   {
-    // expand and constrained by system
-    if (expand) return verticallyConstrained ? MainAxisSize.max : MainAxisSize.min;
-
-    // not expand but constrained in model
-    if (constraints.model.hasVerticalExpansionConstraints) return MainAxisSize.max;
-
-    return MainAxisSize.min;
-  }
-
-  @override
-  MainAxisSize get horizontalAxisSize => MainAxisSize.min;
-
-  @override
-  bool isVerticallyExpanding({bool ignoreFixedHeight = false})
-  {
-    if (isFixedHeight && !ignoreFixedHeight) return false;
-    var expand = this.expand;
-    if (expand) return true;
-
-    if (children != null)
+    if (!super.expandHorizontally) return false;
+    bool flexible = false;
+    for (var child in viewableChildren)
     {
-      for (var child in children!)
+      if (child.visible && child.expandHorizontally)
       {
-        if (child is ViewableWidgetModel && child.visible && child.isVerticallyExpanding() && child.heightPercentage == null)
-        {
-          expand = true;
-          break;
-        }
-      }}
-    return expand;
-  }
-
-  @override
-  bool isHorizontallyExpanding({bool ignoreFixedWidth = false})
-  {
-    if (isFixedWidth && !ignoreFixedWidth) return false;
-    bool expand = false;
-    if (children != null){
-      for (var child in children!)
-      {
-        if (child is ViewableWidgetModel && child.visible && child.isHorizontallyExpanding() && child.widthPercentage == null)
-        {
-          expand = true;
-          break;
-        }
-      }}
-    return expand;
+        flexible = true;
+        break;
+      }
+    }
+    return flexible;
   }
 
   ColumnModel(WidgetModel parent, String? id) : super(parent, id);
@@ -86,7 +49,4 @@ class ColumnModel extends LayoutModel
     }
     return model;
   }
-
-  @override
-  Widget getView({Key? key}) => getReactiveView(ColumnView(this));
 }

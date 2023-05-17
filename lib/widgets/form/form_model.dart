@@ -771,9 +771,7 @@ class FormModel extends DecoratedWidgetModel {
     List<IFormField>? missing;
     for (var field in fields) {
       bool? isMandatory;
-      if (field.mandatory != null) {
-        isMandatory = field.mandatory;
-      }
+      if ((field.mandatory != null)) isMandatory = field.mandatory;
       if ((isMandatory == null) && (mandatory != null)) isMandatory = mandatory;
       isMandatory ??= false;
       if ((isMandatory) && (!field.answered)) {

@@ -128,7 +128,7 @@ class _MapViewState extends WidgetState<MapView>
                         children: [map!, Positioned(top: 10, right: 10, child: reset), busy!])))));
 
     // apply user defined constraints
-    return applyConstraints(view, widget.model.constraints.model);
+    return applyConstraints(view, widget.model.constraints);
   }
 
   GoogleMap? _buildGoogleMap()

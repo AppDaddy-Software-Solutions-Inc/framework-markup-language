@@ -13,8 +13,8 @@ import 'package:fml/helper/common_helpers.dart';
 
 InlineFrameView getView(model) => InlineFrameView(model);
 
-class InlineFrameView extends StatefulWidget implements widget_view.View, IWidgetView
-{
+class InlineFrameView extends StatefulWidget
+    implements widget_view.View, IWidgetView {
   @override
   final InlineFrameModel model;
 
@@ -24,15 +24,13 @@ class InlineFrameView extends StatefulWidget implements widget_view.View, IWidge
   State<InlineFrameView> createState() => _InlineFrameViewState();
 }
 
-class _InlineFrameViewState extends WidgetState<InlineFrameView>
-{
+class _InlineFrameViewState extends WidgetState<InlineFrameView> {
   IFrameWidget? iframe;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
-  Widget builder(BuildContext context, BoxConstraints constraints)
-  {
+  Widget builder(BuildContext context, BoxConstraints constraints) {
     InlineFrameModel model = widget.model;
 
     // save system constraints
@@ -46,10 +44,13 @@ class _InlineFrameViewState extends WidgetState<InlineFrameView>
     Widget view = iframe!;
 
     // basic view
-    view = Container(child: view, width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.height);
+    view = Container(
+        child: view,
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height);
 
     // apply user defined constraints
-    view = applyConstraints(view, widget.model.constraints.model);
+    view = applyConstraints(view, widget.model.constraints);
 
     return view;
   }
@@ -66,8 +67,7 @@ class IFrameWidget extends StatelessWidget {
 
   IFrameWidget({required this.model});
 
-  void dispose()
-  {
+  void dispose() {
     Log().debug('disposing of iframe ...');
     universal_html.window.removeEventListener('message', receive);
     iframe.remove();
@@ -94,8 +94,7 @@ class IFrameWidget extends StatelessWidget {
     /////////////////////////////////////
     /* Contructor Callback from Script */
     /////////////////////////////////////
-    universal_js.context["flutter"] = (content)
-    {
+    universal_js.context["flutter"] = (content) {
       //////////////////
       /* Add Listener */
       //////////////////
@@ -109,7 +108,8 @@ class IFrameWidget extends StatelessWidget {
     /* Register IFrame */
     /////////////////////
     // ignore: undefined_prefixed_name
-    dart_ui.platformViewRegistry.registerViewFactory(id, (int viewId) => iframe);
+    dart_ui.platformViewRegistry
+        .registerViewFactory(id, (int viewId) => iframe);
 
     return iFrame;
   }
@@ -135,10 +135,7 @@ class IFrameWidget extends StatelessWidget {
       /* Set Map */
       /////////////
       model.data = map;
-
-    }
-    catch(e)
-    {
+    } catch (e) {
       Log().exception(e);
     }
   }

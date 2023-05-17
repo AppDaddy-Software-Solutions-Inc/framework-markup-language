@@ -1,15 +1,14 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/datepicker/datepicker_model.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
-class DatepickerView extends StatefulWidget implements IWidgetView
-{
+class DatepickerView extends StatefulWidget implements IWidgetView {
   @override
   final DatepickerModel model;
   DatepickerView(this.model) : super(key: ObjectKey(model));
@@ -18,8 +17,7 @@ class DatepickerView extends StatefulWidget implements IWidgetView
   State<DatepickerView> createState() => _DatepickerViewState();
 }
 
-class _DatepickerViewState extends WidgetState<DatepickerView>
-{
+class _DatepickerViewState extends WidgetState<DatepickerView> {
   String? format;
   String? date;
   String? oldValue;
@@ -27,8 +25,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
   FocusNode? focusNode;
 
   @override
-  void initState()
-  {
+  void initState() {
     super.initState();
 
     focusNode = FocusNode();
@@ -37,18 +34,17 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
     cont = TextEditingController();
 
     // Add Controller Listener
-    if (cont != null)
-    {
+    if (cont != null) {
       cont!.addListener(onTextEditingController);
 
       // Set initial value to the controller
-      if (cont!.text != widget.model.value) cont!.text = S.toStr(widget.model.value) ?? "";
+      if (cont!.text != widget.model.value)
+        cont!.text = S.toStr(widget.model.value) ?? "";
     }
   }
 
   @override
-  void didUpdateWidget(DatepickerView oldWidget)
-  {
+  void didUpdateWidget(DatepickerView oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     /* Add Controller Listener */
@@ -56,8 +52,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
   }
 
   @override
-  void dispose()
-  {
+  void dispose() {
     super.dispose();
 
     // Remove Controller Listener
@@ -76,7 +71,8 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
   /// Callback function for when the model changes, used to force a rebuild with setState()
   @override
   onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    if ((cont!.text != widget.model.value) && (widget.model.isPicking != true)) {
+    if ((cont!.text != widget.model.value) &&
+        (widget.model.isPicking != true)) {
       widget.model.onChange(context);
     }
     cont!.text = widget.model.value;
@@ -86,8 +82,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
-  Widget builder(BuildContext context, BoxConstraints constraints)
-  {
+  Widget builder(BuildContext context, BoxConstraints constraints) {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
@@ -134,9 +129,9 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
       }
     }
 
-    Color? enabledColor  = widget.model.color;
+    Color? enabledColor = widget.model.color;
     Color? disabledColor = widget.model.color2;
-    Color? errorColor    = widget.model.color3;
+    Color? errorColor = widget.model.color3;
 
     double? fontsize = widget.model.size;
     String? hint = widget.model.hint;
@@ -167,13 +162,8 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
         if (widget.model.editable != false) {
           widget.model.isPicking = true;
 
-          await widget.model.show(
-              context,
-              widget.model.mode,
-              widget.model.type,
-              widget.model.oldest,
-              widget.model.newest,
-              widget.model.format);
+          await widget.model.show(context, widget.model.mode, widget.model.type,
+              widget.model.oldest, widget.model.newest, widget.model.format);
           widget.model.isPicking = false;
         }
       },
@@ -246,8 +236,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
               errorBorder: (widget.model.border == "outline" ||
                       widget.model.border == "all")
                   ? OutlineInputBorder(
-                      borderRadius: BorderRadius.all(
-                          Radius.circular(rad ?? 4)),
+                      borderRadius: BorderRadius.all(Radius.circular(rad ?? 4)),
                       borderSide: BorderSide(
                           color: errorBorderColor ??
                               (Theme.of(context).brightness == Brightness.light
@@ -263,8 +252,8 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
                       : (widget.model.border == "bottom" ||
                               widget.model.border == "underline")
                           ? UnderlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                  Radius.circular(rad ?? 0)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(rad ?? 0)),
                               borderSide: BorderSide(
                                   color: errorBorderColor ??
                                       Theme.of(context).colorScheme.error,
@@ -274,8 +263,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
               focusedErrorBorder: (widget.model.border == "outline" ||
                       widget.model.border == "all")
                   ? OutlineInputBorder(
-                      borderRadius: BorderRadius.all(
-                          Radius.circular(rad ?? 4)),
+                      borderRadius: BorderRadius.all(Radius.circular(rad ?? 4)),
                       borderSide: BorderSide(
                           color: errorBorderColor ??
                               (Theme.of(context).brightness == Brightness.light
@@ -290,8 +278,8 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
                       : (widget.model.border == "bottom" ||
                               widget.model.border == "underline")
                           ? UnderlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                  Radius.circular(rad ?? 0)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(rad ?? 0)),
                               borderSide: BorderSide(
                                   color: errorBorderColor ??
                                       Theme.of(context).colorScheme.error,
@@ -308,16 +296,21 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
                         Theme.of(context).colorScheme.surfaceVariant,
               ),
               prefixIcon: Padding(
-                      padding: EdgeInsets.only(right: 10, left: widget.model.border == "all" ? 10 : 0, bottom: widget.model.border == "all" ? 9 : 0),
-                      child: Icon(widget.model.icon ?? (widget.model.type.toLowerCase() == "time" ? Icons.access_time : Icons.calendar_today))),
+                  padding: EdgeInsets.only(
+                      right: 10,
+                      left: widget.model.border == "all" ? 10 : 0,
+                      bottom: widget.model.border == "all" ? 9 : 0),
+                  child: Icon(widget.model.icon ??
+                      (widget.model.type.toLowerCase() == "time"
+                          ? Icons.access_time
+                          : Icons.calendar_today))),
               prefixIconConstraints: BoxConstraints(maxHeight: 24),
               suffixIcon: null,
               suffixIconConstraints: null,
               border: (widget.model.border == "outline" ||
                       widget.model.border == "all")
                   ? OutlineInputBorder(
-                      borderRadius: BorderRadius.all(
-                          Radius.circular(rad ?? 4)),
+                      borderRadius: BorderRadius.all(Radius.circular(rad ?? 4)),
                       borderSide: BorderSide(
                           color: enabledBorderColor ??
                               Theme.of(context).colorScheme.outline,
@@ -328,8 +321,8 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
                       : (widget.model.border == "bottom" ||
                               widget.model.border == "underline")
                           ? UnderlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                  Radius.circular(rad ?? 0)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(rad ?? 0)),
                               borderSide: BorderSide(
                                   color: enabledBorderColor ??
                                       Theme.of(context).colorScheme.outline,
@@ -339,8 +332,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
               focusedBorder: (widget.model.border == "outline" ||
                       widget.model.border == "all")
                   ? OutlineInputBorder(
-                      borderRadius: BorderRadius.all(
-                          Radius.circular(rad ?? 4)),
+                      borderRadius: BorderRadius.all(Radius.circular(rad ?? 4)),
                       borderSide: BorderSide(
                           color: focusBorderColor ??
                               Theme.of(context).colorScheme.primary,
@@ -349,8 +341,8 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
                   : (widget.model.border == "bottom" ||
                           widget.model.border == "underline")
                       ? UnderlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                              Radius.circular(rad ?? 0)),
+                          borderRadius:
+                              BorderRadius.all(Radius.circular(rad ?? 0)),
                           borderSide: BorderSide(
                               color: focusBorderColor ??
                                   Theme.of(context).colorScheme.primary,
@@ -362,8 +354,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
               enabledBorder: (widget.model.border == "outline" ||
                       widget.model.border == "all")
                   ? OutlineInputBorder(
-                      borderRadius: BorderRadius.all(
-                          Radius.circular(rad ?? 4)),
+                      borderRadius: BorderRadius.all(Radius.circular(rad ?? 4)),
                       borderSide: BorderSide(
                           color: enabledBorderColor ??
                               Theme.of(context).colorScheme.outline,
@@ -374,8 +365,8 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
                       : (widget.model.border == "bottom" ||
                               widget.model.border == "underline")
                           ? UnderlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                  Radius.circular(rad ?? 0)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(rad ?? 0)),
                               borderSide: BorderSide(
                                   color: enabledBorderColor ??
                                       Theme.of(context).colorScheme.outline,
@@ -385,8 +376,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
               disabledBorder: (widget.model.border == "outline" ||
                       widget.model.border == "all")
                   ? OutlineInputBorder(
-                      borderRadius: BorderRadius.all(
-                          Radius.circular(rad ?? 4)),
+                      borderRadius: BorderRadius.all(Radius.circular(rad ?? 4)),
                       borderSide: BorderSide(
                           color: disabledBorderColor ??
                               Theme.of(context).colorScheme.surfaceVariant,
@@ -397,8 +387,8 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
                       : (widget.model.border == "bottom" ||
                               widget.model.border == "underline")
                           ? UnderlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                  Radius.circular(rad ?? 0)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(rad ?? 0)),
                               borderSide: BorderSide(
                                   color: widget.model.editable == false
                                       ? enabledBorderColor ??
@@ -419,16 +409,17 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
     );
 
     // get the model constraints
-    var modelConstraints = widget.model.constraints.model;
+    var modelConstraints = widget.model.constraints;
 
     // constrain the input to 200 pixels if not constrained by the model
-    if (!modelConstraints.hasHorizontalExpansionConstraints) modelConstraints.width = 200;
+    if (!modelConstraints.hasHorizontalExpansionConstraints)
+      modelConstraints.width = 200;
 
     // add margins
     view = addMargins(view);
 
-    // apply constraints
-    view = applyConstraints(view, modelConstraints);
+    // apply user defined constraints
+    view = applyConstraints(view, widget.model.constraints);
 
     return view;
   }
@@ -441,8 +432,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView>
               baseOffset: 0,
               extentOffset: widget.model.value.toString().length));
 
-      if (oldValue != widget.model.value)
-      {
+      if (oldValue != widget.model.value) {
         // set answer
         bool ok = await widget.model.answer(widget.model.value);
 

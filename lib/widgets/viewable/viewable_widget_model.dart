@@ -43,7 +43,7 @@ class ViewableWidgetModel extends ConstraintModel
     // defined width takes precedence over flex
     if (hasBoundedWidth) return null;
     if (!visible) return null;
-    return flex ?? (expandHorizontally ? 1 : null);
+    return flex ?? (expandHorizontally || canExpandInfinitelyWide ? 1 : null);
   }
 
   // the flex height
@@ -52,7 +52,7 @@ class ViewableWidgetModel extends ConstraintModel
     // defined height takes precedence over flex
     if (hasBoundedHeight) return null;
     if (!visible) return null;
-    return flex ?? (expandVertically ? 1 : null);
+    return flex ?? (expandVertically || canExpandInfinitelyHigh ? 1 : null);
   }
 
   // view width

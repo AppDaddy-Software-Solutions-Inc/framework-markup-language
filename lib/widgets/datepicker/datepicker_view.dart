@@ -38,8 +38,9 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
       cont!.addListener(onTextEditingController);
 
       // Set initial value to the controller
-      if (cont!.text != widget.model.value)
+      if (cont!.text != widget.model.value) {
         cont!.text = S.toStr(widget.model.value) ?? "";
+      }
     }
   }
 
@@ -412,8 +413,9 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
     var modelConstraints = widget.model.constraints;
 
     // constrain the input to 200 pixels if not constrained by the model
-    if (!modelConstraints.hasHorizontalExpansionConstraints)
+    if (!modelConstraints.hasHorizontalExpansionConstraints) {
       modelConstraints.width = 200;
+    }
 
     // add margins
     view = addMargins(view);

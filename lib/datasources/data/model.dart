@@ -1,12 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'dart:convert';
-
-import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
-import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
-import 'package:fml/observable/observable.dart';
 import 'package:fml/observable/observables/string.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/datasources/base/model.dart';
@@ -65,19 +60,6 @@ class DataModel extends DataSourceModel implements IDataSource
       super.deserialize(xml);
       datastring = Xml.get(node: xml, tag: 'data');
     }
-
-    @override
-    void onPropertyChange(Observable observable) {
-    //super.onPropertyChange(observable);
-    final datastring = this.datastring;
-    var v;
-    if(datastring != null) {
-      v = datastring.replaceAllMapped(RegExp(r'((?<={|,).*?(?=:))|((?<=:).*?(?=}|,))'), (match) {
-        return '"${match.group(0)?.trim()}"';
-      });
-      onSuccess(Data.from(v, root: root));
-    }
-  }
 
 
 

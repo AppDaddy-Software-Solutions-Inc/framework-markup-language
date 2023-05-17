@@ -40,8 +40,9 @@ class S {
         String? m2;
         if ((m[0]?.startsWith(':') ?? false) &&
             (m[0]?.endsWith(':') ?? false) &&
-            !(m[0]?.contains(' ') ?? false))
+            !(m[0]?.contains(' ') ?? false)) {
           m2 = (m[0]!.substring(1, m[0]!.length - 1));
+        }
         if (!S.isNullOrEmpty(m2) &&
             !(m2?.contains(':') ?? false) &&
             !(m2?.contains(' ') ?? false) &&
@@ -59,8 +60,9 @@ class S {
   /// List Item
   static dynamic item(Object list, int index) {
     if (list is List) {
-      if ((list.isEmpty) || (index.isNegative) || (index >= list.length))
+      if ((list.isEmpty) || (index.isNegative) || (index >= list.length)) {
         return null;
+      }
       return list[index];
     }
     return null;
@@ -124,8 +126,9 @@ class S {
     try {
       if (uri == null) return null;
       if (uri is UriData) return uri;
-      if ((uri is String) && (uri.toLowerCase().trim().startsWith("data:")))
+      if ((uri is String) && (uri.toLowerCase().trim().startsWith("data:"))) {
         return UriData.parse(uri);
+      }
       return null;
     } catch (e) {
       return null;
@@ -226,12 +229,15 @@ class S {
     Map<String, Color> colors = ColorObservable.colors;
     try {
       if (color != null) {
-        if ((colors.containsKey(color.toLowerCase())))
+        if ((colors.containsKey(color.toLowerCase()))) {
           c = colors[color.toLowerCase()];
-        if (c == null && color.length == 7)
+        }
+        if (c == null && color.length == 7) {
           c = Color(int.parse(color.substring(1, 7), radix: 16) + 0xFF000000);
-        if (c == null && color.length == 9)
+        }
+        if (c == null && color.length == 9) {
           c = Color(int.parse(color.substring(1, 9), radix: 16) + 0x00000000);
+        }
       }
     } catch (e) {
       c = null;

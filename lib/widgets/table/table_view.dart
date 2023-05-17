@@ -165,8 +165,9 @@ class _TableViewState extends WidgetState<TableView>
 
     // Row Level Event?
     TableRowModel? row;
-    if (event.model != null)
+    if (event.model != null) {
       row = event.model!.findAncestorOfExactType(TableRowModel);
+    }
 
     // Complete the Table
     if (ok) {
@@ -199,8 +200,9 @@ class _TableViewState extends WidgetState<TableView>
 
   @override
   void onScroll(Event event) async {
-    if (hScroller != null && vScroller != null)
+    if (hScroller != null && vScroller != null) {
       scroll(event, hScroller, vScroller);
+    }
     event.handled = true;
   }
 
@@ -262,30 +264,36 @@ class _TableViewState extends WidgetState<TableView>
   _setWidth(int index, double width) {
     TableHeaderCellModel? cell = widget.model.tableheader!.cells[index];
     double? cellwidth = cell.width;
-    if (!widget.model.widths.containsKey(index))
+    if (!widget.model.widths.containsKey(index)) {
       widget.model.widths[index] = cellwidth ?? width;
-    if (width > widget.model.widths[index]!)
+    }
+    if (width > widget.model.widths[index]!) {
       widget.model.widths[index] = cellwidth ?? width;
+    }
   }
 
   onProxyHeaderCellSize(Size size, {dynamic data}) {
-    if (size.height > widget.model.heights['header']!)
+    if (size.height > widget.model.heights['header']!) {
       widget.model.heights['header'] = size.height;
+    }
     if (data is int) {
       double width = size.width;
-      if (!S.isNullOrEmpty(widget.model.tableheader!.cells[data].sort))
+      if (!S.isNullOrEmpty(widget.model.tableheader!.cells[data].sort)) {
         width += 16;
+      }
       _setWidth(data, width);
     }
   }
 
   onProxyRowCellSize(Size size, {dynamic data}) {
-    if (size.height > widget.model.heights['row']!)
+    if (size.height > widget.model.heights['row']!) {
       widget.model.heights['row'] = size.height;
+    }
     if (data is int) {
       double width = size.width;
-      if (!S.isNullOrEmpty(widget.model.tableheader!.cells[data].sort))
+      if (!S.isNullOrEmpty(widget.model.tableheader!.cells[data].sort)) {
         width += 16;
+      }
       _setWidth(data, width);
     }
   }
@@ -315,8 +323,9 @@ class _TableViewState extends WidgetState<TableView>
     // Viewport Size
     double viewportWidth = constraints.maxWidth;
     if (((widget.model.height ?? 0) > 0) &&
-        ((widget.model.height ?? 0) < viewportHeight))
+        ((widget.model.height ?? 0) < viewportHeight)) {
       viewportHeight = widget.model.height;
+    }
 
     // Set Padding to Fill Viewport
     double padding = viewportWidth - contentWidth;
@@ -354,10 +363,11 @@ class _TableViewState extends WidgetState<TableView>
       int pagesize = widget.model.pagesize ?? rows;
       if (pagesize > rows) pagesize = rows;
       double theoreticalHeight = pagesize * height;
-      if (theoreticalHeight > 0)
+      if (theoreticalHeight > 0) {
         vslider = ScrollbarView(
             Direction.vertical, vScroller, bodyHeight, theoreticalHeight,
             itemExtent: widget.model.heights['row']);
+      }
     }
 
     // Build Body
@@ -397,8 +407,9 @@ class _TableViewState extends WidgetState<TableView>
 
     // Build Horizontal Scroll Track
     Widget htrack = Container();
-    if (trackHeight > 0)
+    if (trackHeight > 0) {
       htrack = Container(width: footerWidth, height: trackHeight);
+    }
 
     // Build Footer
     Widget footer = footerBuilder(footerWidth, footerHeight);
@@ -471,8 +482,9 @@ class _TableViewState extends WidgetState<TableView>
         Widget view = TableHeaderCellView(model);
         var width = model.width;
         var height = model.height;
-        if ((width ?? 0) > 0 || (height ?? 0) > 0)
+        if ((width ?? 0) > 0 || (height ?? 0) > 0) {
           view = SizedBox(child: view, width: width, height: height);
+        }
 
         final int index = i++;
         children.add(MeasuredView(
@@ -550,8 +562,9 @@ class _TableViewState extends WidgetState<TableView>
     Color? bordercolor =
         widget.model.tableheader!.bordercolor ?? Colors.transparent;
     if ((widget.model.tablefooter != null) &&
-        (widget.model.tablefooter!.bordercolor != null))
+        (widget.model.tablefooter!.bordercolor != null)) {
       bordercolor = widget.model.tablefooter!.bordercolor;
+    }
     bordercolor ??= Theme.of(context).colorScheme.outline;
 
     return Container(
@@ -767,7 +780,7 @@ class _TableViewState extends WidgetState<TableView>
   void afterFirstLayout(BuildContext context) {
     // Initial Vertical Scroll Position
     ScrollController? controller = vScroller;
-    if (controller != null)
+    if (controller != null) {
       _handleScrollNotification(ScrollUpdateNotification(
           metrics: FixedScrollMetrics(
               minScrollExtent: controller.position.minScrollExtent,
@@ -778,10 +791,11 @@ class _TableViewState extends WidgetState<TableView>
               axisDirection: controller.position.axisDirection),
           context: context,
           scrollDelta: 0.0));
+    }
 
     // Initial Horizontal Scroll Position
     controller = hScroller;
-    if (controller != null)
+    if (controller != null) {
       _handleScrollNotification(ScrollUpdateNotification(
           metrics: FixedScrollMetrics(
               minScrollExtent: controller.position.minScrollExtent,
@@ -792,12 +806,13 @@ class _TableViewState extends WidgetState<TableView>
               axisDirection: controller.position.axisDirection),
           context: context,
           scrollDelta: 0.0));
+    }
   }
 
   void updateShadowPostframe(BuildContext context) {
     // Initial Scroll Position
     ScrollController? controller = vScroller;
-    if (controller != null && controller.hasClients)
+    if (controller != null && controller.hasClients) {
       _handleScrollNotification(ScrollUpdateNotification(
           metrics: FixedScrollMetrics(
               minScrollExtent: controller.position.minScrollExtent,
@@ -808,8 +823,9 @@ class _TableViewState extends WidgetState<TableView>
               axisDirection: controller.position.axisDirection),
           context: context,
           scrollDelta: 0.0));
+    }
     controller = hScroller;
-    if (controller != null && controller.hasClients)
+    if (controller != null && controller.hasClients) {
       _handleScrollNotification(ScrollUpdateNotification(
           metrics: FixedScrollMetrics(
               minScrollExtent: controller.position.minScrollExtent,
@@ -820,6 +836,7 @@ class _TableViewState extends WidgetState<TableView>
               axisDirection: controller.position.axisDirection),
           context: context,
           scrollDelta: 0.0));
+    }
   }
 
   bool _handleScrollNotification(ScrollNotification notification) {
@@ -861,8 +878,9 @@ class _TableViewState extends WidgetState<TableView>
     int to = from + pagesize - 1;
 
     int offset = from + index;
-    if ((offset > to) || (offset >= records))
+    if ((offset > to) || (offset >= records)) {
       return getEmptyRowModel(offset - from, index);
+    }
 
     return widget.model.getRowModel(offset);
   }

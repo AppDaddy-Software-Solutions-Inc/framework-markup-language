@@ -185,8 +185,9 @@ class ApplicationModel extends WidgetModel {
     if (domain != null) {
       var uri = Uri.tryParse(domain!)?.setPage("global.xml");
       XmlDocument? template;
-      if (uri != null)
+      if (uri != null) {
         template = await Template.fetchTemplate(url: uri.url, refresh: true);
+      }
 
       // deserialize the returned template
       if (template != null) deserialize(template.rootElement);
@@ -219,8 +220,9 @@ class ApplicationModel extends WidgetModel {
     }
 
     // get config from url
-    if (domain != null && (refresh || model == null))
+    if (domain != null && (refresh || model == null)) {
       model = await ConfigModel.fromUrl(null, domain!);
+    }
 
     // model created?
     if (model != null) {

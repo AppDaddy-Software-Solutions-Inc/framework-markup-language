@@ -136,8 +136,9 @@ class _GridViewState extends WidgetState<GridView> {
       String? ascending = event.parameters!.containsKey('ascending')
           ? event.parameters!['ascending']
           : 'true';
-      if (!S.isNullOrEmpty(field))
+      if (!S.isNullOrEmpty(field)) {
         widget.model.sort(field, type, S.toBool(ascending));
+      }
     }
   }
 
@@ -216,7 +217,7 @@ class _GridViewState extends WidgetState<GridView> {
 
   void afterFirstLayout(BuildContext context) {
     ScrollController? controller = scroller;
-    if (controller != null)
+    if (controller != null) {
       _handleScrollNotification(ScrollUpdateNotification(
           metrics: FixedScrollMetrics(
               minScrollExtent: controller.position.minScrollExtent,
@@ -227,6 +228,7 @@ class _GridViewState extends WidgetState<GridView> {
               axisDirection: controller.position.axisDirection),
           context: context,
           scrollDelta: 0.0));
+    }
   }
 
   onMeasuredItem(Size size, {dynamic data}) {

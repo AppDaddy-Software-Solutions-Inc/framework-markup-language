@@ -48,13 +48,14 @@ class _InlineFrameViewState extends WidgetState<InlineFrameView> {
     Widget? view = iframe;
     if (view == null) {
       var uri = URI.parse(widget.model.url);
-      if (uri != null)
+      if (uri != null) {
         controller
           ..setNavigationDelegate(NavigationDelegate())
           ..setJavaScriptMode(JavaScriptMode.unrestricted)
           ..loadRequest(uri)
           ..addJavaScriptChannel('TOFLUTTER',
               onMessageReceived: onMessageReceived);
+      }
       view = WebViewWidget(controller: controller);
     }
 

@@ -342,6 +342,6 @@ class BoxModel extends DecoratedWidgetModel
   }
 
   @override
-  //Widget getView({Key? key}) => getReactiveView(BoxView(this));
-  Widget getView({Key? key}) => BoxView(this);
+  Widget getView({Key? key}) => getReactiveView(BoxView(this));
+  //Widget getView({Key? key}) => BoxView(this);
 }

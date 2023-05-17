@@ -1,6 +1,4 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'dart:math';
-
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
@@ -10,76 +8,60 @@ import 'package:fml/widgets/icon/icon_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class IconModel extends DecoratedWidgetModel  {
-  @override
-  double get width {
-    return 24;
-  }
-
-  //////////
-  /* icon */
-  //////////
+class IconModel extends DecoratedWidgetModel  
+{
+  // icon
   IconObservable? _icon;
-  set icon(dynamic v) {
-    if (_icon != null) {
+  set icon(dynamic v)
+  {
+    if (_icon != null)
+    {
       _icon!.set(v);
-    } else if (v != null) {
-      _icon = IconObservable(Binding.toKey(id, 'icon'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else if (v != null)
+    {
+      _icon = IconObservable(Binding.toKey(id, 'icon'), v, scope: scope, listener: onPropertyChange);
     }
   }
-
   IconData? get icon => _icon?.get();
 
-  //////////
-  /* size */
-  //////////
-  bool _sizeIsPercent = false;
+  // size
   DoubleObservable? _size;
   set size(dynamic v)
   {
     if (_size != null)
     {
       _size!.set(v);
-      width = v;
     }
     else if (v != null)
     {
-      if (S.isPercentage(v))
-      {
-        _sizeIsPercent = true;
-        v = v.split("%")[0];
-      }
-      _size = DoubleObservable(Binding.toKey(id, 'size'), v, scope: scope, listener: onPropertyChange);
+      _size = DoubleObservable(Binding.toKey(id, 'size'), null, scope: scope, listener: onPropertyChange, getter: _sizeGetter, setter: _sizeSetter);
+      _size!.set(v);
     }
   }
+  double? get size => _size?.get() ?? 24;
 
-  double? get size
+  dynamic _sizeGetter() => width;
+  dynamic _sizeSetter(dynamic value)
   {
-    var s = _size?.get();
-    if (s == null) return null;
-    if (_sizeIsPercent == true)
-    {
-      var width  = calculatedMaxHeightForPercentage * (s / 100.0);
-      var height = calculatedMaxWidthForPercentage  * (s / 100.0);
-      s = max(width, height);
-    }
-    return s;
+    width  = value;
+    height = value;
+    return width;
   }
 
-  //////////////
-  /* rotation */
-  //////////////
+  // rotation
   DoubleObservable? _rotation;
-  set rotation(dynamic v) {
-    if (_rotation != null) {
+  set rotation(dynamic v)
+  {
+    if (_rotation != null)
+    {
       _rotation!.set(v);
-    } else if (v != null) {
-      _rotation = DoubleObservable(Binding.toKey(id, 'rotation'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else if (v != null)
+    {
+      _rotation = DoubleObservable(Binding.toKey(id, 'rotation'), v, scope: scope, listener: onPropertyChange);
     }
   }
-
   double get rotation => _rotation?.get() ?? 0.0;
 
   IconModel(WidgetModel? parent, String? id,
@@ -110,14 +92,15 @@ class IconModel extends DecoratedWidgetModel  {
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml) {
+  void deserialize(XmlElement xml) 
+  {
     // deserialize
     super.deserialize(xml);
 
     // properties
-    icon = Xml.get(node: xml, tag: 'icon');
-    size = Xml.get(node: xml, tag: 'size');
-    opacity = Xml.get(node: xml, tag: 'opacity');
+    icon     = Xml.get(node: xml, tag: 'icon');
+    size     = Xml.get(node: xml, tag: 'size');
+    opacity  = Xml.get(node: xml, tag: 'opacity');
     rotation = Xml.get(node: xml, tag: 'rotation');
   }
 

@@ -281,7 +281,7 @@ class WidgetModel implements IDataSourceListener {
     {
       var prefix = elementName.toLowerCase();
       if (prefix.endsWith('model')) prefix = prefix.substring(0, prefix.lastIndexOf('model'));
-      id = S.newId(prefix: '$prefix');
+      id = S.newId(prefix: prefix);
     }
 
     this.id = id!;

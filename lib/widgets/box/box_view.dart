@@ -298,7 +298,7 @@ class _BoxViewState extends WidgetState<BoxView>
         view = StackObject(model: widget.model,
           alignment: alignment.aligned,
           fit: StackFit.passthrough,
-          clipBehavior: Clip.hardEdge,
+          clipBehavior: Clip.antiAlias,
           children: children,);
         break;
 
@@ -319,6 +319,7 @@ class _BoxViewState extends WidgetState<BoxView>
               alignment: alignment.mainWrapAlignment,
               runAlignment: alignment.mainWrapAlignment,
               crossAxisAlignment: alignment.crossWrapAlignment,
+              clipBehavior: Clip.antiAlias,
               children: children);
         }
 
@@ -330,7 +331,7 @@ class _BoxViewState extends WidgetState<BoxView>
               direction: direction,
               mainAxisAlignment: alignment.mainAlignment,
               crossAxisAlignment: alignment.crossAlignment,
-              clipBehavior: Clip.hardEdge,
+              clipBehavior: Clip.antiAlias,
               children: children);
         }
         break;

@@ -62,7 +62,7 @@ class StackRenderer extends RenderBox
     AlignmentGeometry alignment = AlignmentDirectional.topStart,
     TextDirection? textDirection,
     StackFit fit = StackFit.loose,
-    Clip clipBehavior = Clip.hardEdge,
+    Clip clipBehavior = Clip.none,
   }) :  _alignment = alignment,
         _textDirection = textDirection,
         _fit = fit,

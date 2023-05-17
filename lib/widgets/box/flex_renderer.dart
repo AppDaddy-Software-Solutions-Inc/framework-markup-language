@@ -982,7 +982,7 @@ class FlexRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
         break;
 
       case FlexType.fixed:
-        maxWidth = constraints.hasBoundedWidth ? constraints.maxWidth : (myWidth ?? 0.0);
+        maxWidth = constraints.hasTightWidth ? constraints.maxWidth : (myWidth ?? 0);
         break;
 
       case FlexType.expanding:
@@ -998,7 +998,7 @@ class FlexRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
         break;
 
       case FlexType.fixed:
-        maxHeight = constraints.hasBoundedHeight ? constraints.maxHeight : (myHeight ?? 0.0);
+        maxHeight = constraints.hasTightHeight ? constraints.maxHeight : (myHeight ?? 0);
         break;
 
       case FlexType.expanding:
@@ -1022,11 +1022,8 @@ class FlexRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
         break;
 
       case FlexType.fixed:
-        width = constraints.hasBoundedWidth ? constraints.maxWidth : (myWidth ?? 0.0);
-        break;
-
       case FlexType.expanding:
-        width = constraints.hasBoundedWidth ? constraints.maxWidth : 0.0;
+        width = maxWidth;
         break;
     }
     if (width < constraints.minWidth) width = constraints.minWidth;
@@ -1040,11 +1037,8 @@ class FlexRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
         break;
 
       case FlexType.fixed:
-        height = constraints.hasBoundedHeight ? constraints.maxHeight : (myHeight ?? 0.0);
-        break;
-
       case FlexType.expanding:
-        height = constraints.hasBoundedHeight ? constraints.maxHeight : 0.0;
+        height = maxHeight;
         break;
     }
     if (height < constraints.minHeight) height = constraints.minHeight;

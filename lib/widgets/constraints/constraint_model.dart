@@ -74,7 +74,8 @@ class ConstraintModel extends WidgetModel
     }
     else if (v != null)
     {
-      _width = DoubleObservable(Binding.toKey(id, 'width'), v, scope: scope, listener: onPropertyChange, setter: _widthSetter);
+      _width = DoubleObservable(Binding.toKey(id, 'width'), null, scope: scope, listener: onPropertyChange, setter: _widthSetter);
+      _width!.set(v);
     }
   }
   double? get width => _width?.get();
@@ -147,7 +148,8 @@ class ConstraintModel extends WidgetModel
     }
     else if (v != null)
     {
-      _height = DoubleObservable(Binding.toKey(id, 'height'), v, scope: scope, listener: onPropertyChange, setter: _heightSetter);
+      _height = DoubleObservable(Binding.toKey(id, 'height'), null, scope: scope, listener: onPropertyChange, setter: _heightSetter);
+      _height!.set(v);
     }
   }
   double? get height => _height?.get();

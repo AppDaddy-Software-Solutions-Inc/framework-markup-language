@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 
+enum flexType {shrinking, fixed, expanding}
+
 /// Parent data for use with [BoxRenderer].
 class BoxData extends ContainerBoxParentData<RenderBox>
 {

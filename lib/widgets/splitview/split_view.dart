@@ -36,6 +36,24 @@ class _SplitViewState extends WidgetState<SplitView>
     NavigationManager().back(-1);
   }
 
+  void _onDrag(DragUpdateDetails details)
+  {
+    if (widget.model.vertical)
+    {
+      var height = (widget.model.height ?? 0) + details.delta.dy;
+      if (height.isNegative) height = 0;
+      if (height > widget.model.calculatedMaxHeightOrDefault) height = widget.model.calculatedMaxHeightOrDefault;
+      widget.model.height = height;
+    }
+    else
+    {
+      var width = (widget.model.width ?? 0) + details.delta.dx;
+      if (width.isNegative) width = 0;
+      if (width > widget.model.calculatedMaxWidthOrDefault) width = widget.model.calculatedMaxWidthOrDefault;
+      widget.model.width = width;
+    }
+  }
+
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
@@ -48,15 +66,14 @@ class _SplitViewState extends WidgetState<SplitView>
     if (myDividerWidth % 2 != 0) myDividerWidth = myDividerWidth + 1;
 
     var myDividerColor = widget.model.dividerColor ?? Theme.of(context).colorScheme.onInverseSurface;
-    
+
     // views
     if (widget.views.isEmpty) {
       widget.model.children?.forEach((child)
-    {
-      if (child is ViewModel) widget.views.add(child.getView());
-    });
+      {
+        if (child is ViewModel) widget.views.add(child.getView());
+      });
     }
-
 
     // calculate sizes
     var size1 = (widget.model.vertical ? widget.model.height ?? 0 : widget.model.width  ?? 0);
@@ -93,23 +110,5 @@ class _SplitViewState extends WidgetState<SplitView>
     return widget.model.vertical ?
     SizedBox(height: constraints.maxHeight, child: Column(children: <Widget>[pane1, handle, pane2])) :
     SizedBox(width: constraints.maxWidth,   child: Row(children: <Widget>[pane1, handle, pane2]));
-  }
-
-  void _onDrag(DragUpdateDetails details)
-  {
-    if (widget.model.vertical)
-    {
-      var height = (widget.model.height ?? 0) + details.delta.dy;
-      if (height.isNegative) height = 0;
-      if (height > widget.model.calculatedMaxHeightOrDefault) height = widget.model.calculatedMaxHeightOrDefault;
-      widget.model.height = height;
-    }
-    else
-    {
-      var width = (widget.model.width ?? 0) + details.delta.dx;
-      if (width.isNegative) width = 0;
-      if (width > widget.model.calculatedMaxWidthOrDefault) width = widget.model.calculatedMaxWidthOrDefault;
-      widget.model.width = width;
-    }
   }
 }

@@ -414,7 +414,7 @@ class ConstraintModel extends WidgetModel
   {
     // defined width takes precedence over flex
     if (hasBoundedWidth) return null;
-    return flex ?? (expandVertically ? 1 : null);
+    return flex ?? (expandHorizontally ? 1 : null);
   }
 
   // the flex height
@@ -422,7 +422,7 @@ class ConstraintModel extends WidgetModel
   {
     // defined height takes precedence over flex
     if (hasBoundedHeight) return null;
-    return flex ?? (expandHorizontally ? 1 : null);
+    return flex ?? (expandVertically ? 1 : null);
   }
 
   //Constraints get tightest => Constraints.tightest(Constraints.tightest(model, system), calculated);

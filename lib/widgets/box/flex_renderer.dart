@@ -818,8 +818,7 @@ class FlexRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
     var myWidth  = constraints.minWidth;
     var myHeight = constraints.minHeight;
 
-    double usedSpace = 0.0;
-    double freeSpace = _direction == Axis.horizontal ? constraints.maxWidth : constraints.maxHeight;
+    double maxChildExtent = _direction == Axis.horizontal ? constraints.maxWidth : constraints.maxHeight;
 
     RenderBox? child = firstChild;
     while (child != null)
@@ -839,18 +838,12 @@ class FlexRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
         // layout child
         if (childData.flex == null)
         {
-          var maxChildExtent = freeSpace;
-          if (freeSpace != double.infinity) maxChildExtent = freeSpace - usedSpace;
-
           // get layout constraints
           var childConstraints = _getChildLayoutConstraints(child, childModel, maxChildExtent);
 
           // calculate the child's size by performing
           // a dry layout
           childData.size = ChildLayoutHelper.layoutChild(child, childConstraints);
-
-          // calculate used space
-          usedSpace += _direction == Axis.horizontal ? (childData.size?.width ?? 0) : (childData.size?.height ?? 0);
 
           // set width
           myWidth = _direction == Axis.horizontal ? (myWidth + (childData.size?.width ?? 0)) : max(myWidth, (childData.size?.width ?? 0));

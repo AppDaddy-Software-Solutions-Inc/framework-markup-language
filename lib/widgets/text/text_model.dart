@@ -19,6 +19,8 @@ class TextModel extends DecoratedWidgetModel
   // value
   StringObservable? _value;
 
+  int? get flex => super.flex ?? (hasBoundedWidth ? null : 1);
+  
   set value(dynamic v)
   {
     if (_value != null)

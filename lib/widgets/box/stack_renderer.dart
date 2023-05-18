@@ -362,8 +362,6 @@ class StackRenderer extends RenderBox
     _resolve();
     assert(_resolvedAlignment != null);
 
-    var idParent = model.id;
-
     var myConstraints = constraints;
     var width  = model.expandHorizontally && constraints.hasBoundedWidth  ? myConstraints.maxWidth  : myConstraints.minWidth;
     var height = model.expandVertically   && constraints.hasBoundedHeight ? myConstraints.maxHeight : myConstraints.minHeight;
@@ -416,8 +414,6 @@ class StackRenderer extends RenderBox
   @override
   void performLayout()
   {
-    //debugging
-    var idParent = model.id;
 
     final BoxConstraints constraints = this.constraints;
     _hasVisualOverflow = false;

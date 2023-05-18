@@ -229,43 +229,6 @@ class FlexRenderer extends RenderBox
     }
   }
 
-  bool get _debugHasNecessaryDirections {
-    if (firstChild != null && lastChild != firstChild) {
-      // i.e. there's more than one child
-      switch (direction) {
-        case Axis.horizontal:
-          assert(textDirection != null,
-              'Horizontal $runtimeType with multiple children has a null textDirection, so the layout order is undefined.');
-          break;
-        case Axis.vertical:
-          break;
-      }
-    }
-    if (mainAxisAlignment == MainAxisAlignment.start ||
-        mainAxisAlignment == MainAxisAlignment.end) {
-      switch (direction) {
-        case Axis.horizontal:
-          assert(textDirection != null,
-              'Horizontal $runtimeType with $mainAxisAlignment has a null textDirection, so the alignment cannot be resolved.');
-          break;
-        case Axis.vertical:
-          break;
-      }
-    }
-    if (crossAxisAlignment == CrossAxisAlignment.start ||
-        crossAxisAlignment == CrossAxisAlignment.end) {
-      switch (direction) {
-        case Axis.horizontal:
-          break;
-        case Axis.vertical:
-          assert(textDirection != null,
-              'Vertical $runtimeType with $crossAxisAlignment has a null textDirection, so the alignment cannot be resolved.');
-          break;
-      }
-    }
-    return true;
-  }
-
   // Set during layout if overflow occurred on the main axis.
   double _overflow = 0;
   // Check whether any meaningful overflow is present. Values below an epsilon
@@ -891,8 +854,6 @@ class FlexRenderer extends RenderBox
 
   Size calculateFlexChildSizes(ChildLayouter layoutChild,
       {required double freeSpace}) {
-    //debugging
-    var idParent = model.id;
 
     var allocatedWidth = 0.0;
     var allocatedHeight = 0.0;
@@ -924,9 +885,6 @@ class FlexRenderer extends RenderBox
         if (child.parentData is BoxData &&
             (child.parentData as BoxData).model != null) {
           var childModel = (child.parentData as BoxData).model!;
-
-          //debugging
-          var idChild = childModel.id;
 
           final int flex = _getFlex(child);
           if (flex > 0) {
@@ -991,26 +949,28 @@ class FlexRenderer extends RenderBox
   }
 
   FlexType get _verticalFlex {
-    if (constraints.hasTightHeight || model.hasBoundedHeight)
+    if (constraints.hasTightHeight || model.hasBoundedHeight) {
       return FlexType.fixed;
-    if (model.expandVertically && constraints.hasBoundedHeight)
+    }
+    if (model.expandVertically && constraints.hasBoundedHeight) {
       return FlexType.expanding;
+    }
     return FlexType.shrinking;
   }
 
   FlexType get _horizontalFlex {
-    if (constraints.hasTightWidth || model.hasBoundedWidth)
+    if (constraints.hasTightWidth || model.hasBoundedWidth) {
       return FlexType.fixed;
-    if (model.expandHorizontally && constraints.hasBoundedWidth)
+    }
+    if (model.expandHorizontally && constraints.hasBoundedWidth) {
       return FlexType.expanding;
+    }
     return FlexType.shrinking;
   }
 
   _LayoutSizes _computeSizes(
       {required BoxConstraints constraints,
       required ChildLayouter layoutChild}) {
-    //debugging
-    var idParent = model.id;
 
     // size fixed children
     var fixedSize = calculateFixedChildSizes(layoutChild);

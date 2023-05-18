@@ -2,7 +2,7 @@
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/form/form_field_model.dart';
+import 'package:fml/widgets/form/decorated_input_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -12,22 +12,9 @@ import 'package:fml/widgets/typeahead/typeahead_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class TypeaheadModel extends FormFieldModel implements IFormField
+class TypeaheadModel extends DecoratedInputModel implements IFormField
 {
   bool? addempty = true;
-
-  // override padding
-  @override
-  double? get marginTop    => super.marginTop ?? 4;
-
-  @override
-  double? get marginBottom => super.marginBottom ?? 4;
-
-  @override
-  double? get marginLeft   => super.marginLeft ?? 4;
-
-  @override
-  double? get marginRight  => super.marginRight ?? 4;
 
   // bindable data
   ListObservable? _data;
@@ -46,129 +33,6 @@ class TypeaheadModel extends FormFieldModel implements IFormField
   }
   @override
   get data => _data?.get();
-
-  //////////
-  /* hint */
-  //////////
-  StringObservable? _hint;
-  set hint(dynamic v) {
-    if (_hint != null) {
-      _hint!.set(v);
-    } else if (v != null) {
-      _hint = StringObservable(Binding.toKey(id, 'hint'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  String? get hint {
-    return _hint?.get();
-  }
-
-  //////////
-  /* label */
-  //////////
-  StringObservable? _label;
-  set label(dynamic v) {
-    if (_label != null) {
-      _label!.set(v);
-    } else if (v != null) {
-      _label = StringObservable(Binding.toKey(id, 'label'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  String? get label {
-    return _label?.get();
-  }
-
-  ////////////
-  /* border */
-  ////////////
-  StringObservable? _border;
-  set border(dynamic v) {
-    if (_border != null) {
-      _border!.set(v);
-    } else if (v != null) {
-      _border = StringObservable(Binding.toKey(id, 'border'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  String? get border {
-    if (_border == null) return 'all';
-    return _border?.get();
-  }
-
-  /////////////////
-  /* borderwidth */
-  /////////////////
-  IntegerObservable? _borderwidth;
-  set borderwidth(dynamic v) {
-    if (_borderwidth != null) {
-      _borderwidth!.set(v);
-    } else if (v != null) {
-      _borderwidth = IntegerObservable(
-          Binding.toKey(id, 'borderwidth'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  int? get borderwidth {
-    return _borderwidth?.get();
-  }
-
-  //////////////////
-  /* borderradius */
-  //////////////////
-  IntegerObservable? _radius;
-  set radius(dynamic v) {
-    if (_radius != null) {
-      _radius!.set(v);
-    } else if (v != null) {
-      _radius = IntegerObservable(Binding.toKey(id, 'radius'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  int? get radius {
-    return _radius?.get();
-  }
-
-  //////////////////
-  /* Border Color */
-  //////////////////
-  ColorObservable? _bordercolor;
-  set bordercolor(dynamic v) {
-    if (_bordercolor != null) {
-      _bordercolor!.set(v);
-    } else if (v != null) {
-      _bordercolor = ColorObservable(
-          Binding.toKey(id, 'bordercolor'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  Color? get bordercolor {
-    return _bordercolor?.get();
-  }
-
-  //////////////////
-  /* Border Color */
-  //////////////////
-  ColorObservable? _textcolor;
-  set textcolor(dynamic v) {
-    if (_textcolor != null) {
-      _textcolor!.set(v);
-    } else if (v != null) {
-      _textcolor = ColorObservable(
-          Binding.toKey(id, 'textcolor'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  Color? get textcolor {
-    return _textcolor?.get();
-  }
 
   // prototype
   String? prototype;
@@ -215,23 +79,6 @@ class TypeaheadModel extends FormFieldModel implements IFormField
     return _value?.get();
   }
 
-  ///////////////
-  /* font size */
-  ///////////////
-  DoubleObservable? _size;
-  set size(dynamic v) {
-    if (_size != null) {
-      _size!.set(v);
-    } else {
-      if (v != null) {
-        _size = DoubleObservable(Binding.toKey(id, 'size'), v,
-            scope: scope, listener: onPropertyChange);
-      }
-    }
-  }
-  double? get size => _size?.get();
-
-
   ////////////
   /* length */
   ////////////
@@ -267,52 +114,23 @@ class TypeaheadModel extends FormFieldModel implements IFormField
 
 
   TypeaheadModel(WidgetModel parent, String? id,
-      {dynamic visible,
-        dynamic hint,
-        dynamic border,
-        dynamic mandatory,
-        dynamic editable,
-        dynamic enabled,
+      {
         dynamic inputenabled,
         dynamic value,
         dynamic defaultValue,
-        dynamic textColor,
-        dynamic width,
-        dynamic onchange,
-        dynamic post,
-        dynamic bold,
-        dynamic italic,
         String? postbroker,
-        dynamic bordercolor,
-        dynamic color,
-        dynamic borderwidth,
-        dynamic radius,
         dynamic matchtype,
-        dynamic label,
       })
       : super(parent, id)
   {
     // instantiate busy observable
     busy = false;
 
-    if (mandatory     != null)  this.mandatory    = mandatory;
-    if (bordercolor   != null)  this.bordercolor  = bordercolor;
-    if (color         != null)  this.color        = color;
-    if (radius        != null)  this.radius       = radius;
-    if (borderwidth   != null)  this.borderwidth  = borderwidth;
-    if (textcolor   != null)    textcolor    = textcolor;
-    if (border        != null)  this.border       = border;
-    if (hint          != null)  this.hint         = hint;
-    if (editable      != null)  this.editable     = editable;
-    if (enabled       != null)  this.enabled      = enabled;
     if (inputenabled  != null) this.inputenabled  = inputenabled;
     if (value         != null) this.value         = value;
     if (defaultValue  != null) this.defaultValue  = defaultValue;
-    if (width         != null) this.width = width;
-    if (onchange      != null) this.onchange      = onchange;
-    if (post          != null) this.post          = post;
+
     if (matchtype     != null) this.matchtype     = matchtype;
-    if (label         != null) this.label         = label;
 
     alarming = false;
     dirty    = false;

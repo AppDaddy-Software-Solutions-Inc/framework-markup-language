@@ -219,19 +219,56 @@ class FormFieldModel extends DecoratedWidgetModel {
 
   bool get hasDefaulted => _hasDefaulted?.get() ?? false;
 
+
+  /// The string of events that will be executed when focus is lost.
+  StringObservable? _onfocuslost;
+  set onfocuslost(dynamic v) {
+    if (_onfocuslost != null) {
+      _onfocuslost!.set(v);
+    } else if (v != null) {
+      _onfocuslost = StringObservable(Binding.toKey(id, 'onfocuslost'), v,
+          scope: scope, listener: onPropertyChange, lazyEval: true);
+    }
+  }
+
+  String? get onfocuslost {
+    return _onfocuslost?.get();
+  }
+
   // field offset
   Offset? offset;
 
   FormFieldModel(WidgetModel? parent, String? id,
-      {dynamic error,
+      {
+      dynamic error,
       dynamic errortext,
       dynamic validationHasHit,
-      dynamic hasDefaulted})
+      dynamic hasDefaulted,
+      dynamic editable,
+        dynamic enabled,
+        dynamic post,
+        dynamic mandatory,
+        dynamic onchange,
+        dynamic onfocuslost,
+        dynamic touched,
+      })
       : super(parent, id) {
     if (error != null) this.error = error;
     if (errortext != null) this.errortext = errortext;
+    if (editable != null) this.editable = editable;
+    if (enabled != null) this.enabled = enabled;
+    if (post != null) this.post = post;
+    if (mandatory != null) this.mandatory = mandatory;
+    if (onchange      != null)  this.onchange      = onchange;
+    if (touched != null) this.touched = touched;
+    if (onfocuslost != null) this.onfocuslost = onfocuslost;
+
+
     this.validationHasHit = false;
     this.hasDefaulted = false;
+
+    alarming = false;
+    dirty = false;
   }
 
   @override
@@ -403,5 +440,10 @@ class FormFieldModel extends DecoratedWidgetModel {
       return errortext ?? alarmerrortext ?? '';
     }
     return '';
+  }
+
+
+  Future<bool> onFocusLost(BuildContext context) async {
+    return await EventHandler(this).execute(_onfocuslost);
   }
 }

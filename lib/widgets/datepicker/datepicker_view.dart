@@ -141,8 +141,6 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
     if (!widget.model.visible) return Offstage();
 
     String? value = widget.model.value;
-    // bool editable = (widget.model.editable != false);
-    // bool enabled = (widget.model.enabled != false) && (editable);
     double? rad = S.toDouble(widget.model.radius);
     cont = TextEditingController(text: value);
 

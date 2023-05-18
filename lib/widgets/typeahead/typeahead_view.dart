@@ -324,11 +324,11 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
         decoration: BoxDecoration(
           color: widget.model.setFieldColor(context),
           border: Border.all(
-              width: widget.model.borderwidth?.toDouble() ?? 1,
+              width: widget.model.borderwidth.toDouble(),
               color: widget.model.enabled
                   ? (widget.model.bordercolor ?? Theme.of(context).colorScheme.outline)
                   : Theme.of(context).colorScheme.surfaceVariant),
-          borderRadius: BorderRadius.circular(widget.model.radius?.toDouble() ?? 4),
+          borderRadius: BorderRadius.circular(widget.model.radius.toDouble()),
         ),
         child: view,
       );

@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/form/form_field_model.dart';
+import 'package:fml/widgets/form/decorated_input_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -13,26 +13,13 @@ import 'package:fml/helper/common_helpers.dart';
 
 enum METHODS { launch }
 
-class DatepickerModel extends FormFieldModel implements IFormField
+class DatepickerModel extends DecoratedInputModel implements IFormField
 {
   bool isPicking = false;
 
   static const timeFormatDefault = "HH:mm";
   static const dateFormatDefault = "yyyy-MM-dd";
 
-  // padding
-  DoubleObservable? _padding;
-  @override
-  set padding(dynamic v)
-  {
-    if (_padding != null) {
-      _padding!.set(v);
-    } else if (v != null) {
-      _padding = DoubleObservable(Binding.toKey(id, 'padding'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  double get padding=> _padding?.get() ?? 4;
-  
   // view
   BooleanObservable? _view;
 
@@ -139,120 +126,6 @@ class DatepickerModel extends FormFieldModel implements IFormField
     return _value?.get();
   }
 
-  // hint
-  StringObservable? _hint;
-  set hint(dynamic v) {
-    if (_hint != null) {
-      _hint!.set(v);
-    } else if (v != null) {
-      _hint = StringObservable(Binding.toKey(id, 'hint'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  String? get hint => _hint?.get();
-
-  // Radius
-  StringObservable? _radius;
-  set radius(dynamic v) {
-    if (_radius != null) {
-      _radius!.set(v);
-    } else if (v != null) {
-      _radius = StringObservable(Binding.toKey(id, 'radius'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  String? get radius => _radius?.get()?.toLowerCase();
-
-  /// The color of the border for box, defaults to black54
-  StringObservable? _bordercolor;
-
-  set bordercolor(dynamic v) {
-    if (_bordercolor != null) {
-      _bordercolor!.set(v);
-    } else if (v != null) {
-      _bordercolor = StringObservable(
-          Binding.toKey(id, 'bordercolor'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  String? get bordercolor => _bordercolor?.get();
-
-  /// The width of the containers border, defaults to 2
-  DoubleObservable? _borderwidth;
-  set borderwidth(dynamic v) {
-    if (_borderwidth != null) {
-      _borderwidth!.set(v);
-    } else if (v != null) {
-      _borderwidth = DoubleObservable(
-          Binding.toKey(id, 'borderwidth'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  double get borderwidth => _borderwidth?.get() ?? 1;
-
-  /// The border choice, can be `all`, `none`, `top`, `left`, `right`, `bottom`, `vertical`, or `horizontal`
-  StringObservable? _border;
-
-  set border(dynamic v) {
-    if (_border != null) {
-      _border!.set(v);
-    } else if (v != null) {
-      _border = StringObservable(Binding.toKey(id, 'border'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  String get border => _border?.get()?.toLowerCase() ?? 'all';
-
-  StringObservable? _textcolor;
-  set textcolor(dynamic v) {
-    if (_textcolor != null) {
-      _textcolor!.set(v);
-    } else if (v != null) {
-      _textcolor = StringObservable(Binding.toKey(id, 'textcolor'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  String? get textcolor => _textcolor?.get();
-
-  /// The weight of the font
-  StringObservable? _weight;
-
-  set weight(dynamic v) {
-    if (_weight != null) {
-      _weight!.set(v);
-    } else if (v != null) {
-      _weight = StringObservable(Binding.toKey(id, 'weight'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  String? get weight => _weight?.get();
-
-  /// The style of the font. Will override weight and size.
-  StringObservable? _style;
-
-  set style(dynamic v) {
-    if (_style != null) {
-      _style!.set(v);
-    } else if (v != null) {
-      _style = StringObservable(Binding.toKey(id, 'style'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  String? get style => _style?.get();
-
-  /// If the input excludes the label above, and minimises the vertical space it takes up.
-  BooleanObservable? _dense;
-
-  set dense(dynamic v) {
-    if (_dense != null) {
-      _dense!.set(v);
-    } else if (v != null) {
-      _dense = BooleanObservable(Binding.toKey(id, 'dense'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get dense => _dense?.get() ?? false;
-
   /// If the input shows the clear icon on its right.
   BooleanObservable? _clear;
   set clear(dynamic v) {
@@ -265,70 +138,17 @@ class DatepickerModel extends FormFieldModel implements IFormField
   }
   bool get clear => _clear?.get() ?? false;
 
-  /// The size of the font and height of the input.
-  DoubleObservable? _size;
-  set size(dynamic v) {
-    if (_size != null) {
-      _size!.set(v);
-    } else if (v != null) {
-      _size = DoubleObservable(Binding.toKey(id, 'size'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  double? get size => _size?.get();
-  
-  /// The prefix icon within the input
-  IconObservable? _icon;
-
-  set icon(dynamic v) {
-    if (_icon != null) {
-      _icon!.set(v);
-    } else if (v != null) {
-      _icon = IconObservable(Binding.toKey(id, 'icon'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  IconData? get icon => _icon?.get();
-
   DatepickerModel(
     WidgetModel parent,
     String? id, {
     String? type,
-    dynamic width,
-    dynamic hint,
     dynamic format,
-    dynamic radius,
-    dynamic bordercolor,
-    dynamic borderwidth,
-    dynamic border,
-    dynamic textcolor,
-    dynamic color,
-    dynamic weight,
-    dynamic style,
-    dynamic dense,
     dynamic clear,
-    dynamic size,
-    dynamic padding,
-    dynamic icon,
   }) : super(parent, id)
   {
     if (type         != null) this.type = type;
-    if (width        != null) this.width = width;
-    if (hint         != null) this.hint = hint;
     if (format       != null) this.format = format;
-    if (radius       != null) this.radius = radius;
-    if (bordercolor  != null) this.bordercolor = bordercolor;
-    if (borderwidth  != null) this.borderwidth = borderwidth;
-    if (border       != null) this.border = border;
-    if (textcolor    != null) this.textcolor = textcolor;
-    if (color        != null) this.color = color;
-    if (weight       != null) this.weight = weight;
-    if (style        != null) this.style = style;
-    if (dense        != null) this.dense = dense;
     if (clear        != null) this.clear = clear;
-    if (size         != null) this.size = size;
-    if (padding      != null) this.padding = padding;
-    if (icon         != null) this.icon = icon;
   }
 
   static DatepickerModel? fromXml(WidgetModel parent, XmlElement xml, {String? type})

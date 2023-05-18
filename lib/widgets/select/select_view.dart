@@ -129,12 +129,9 @@ class _SelectViewState extends WidgetState<SelectView>
                 onChanged: enabled ? changedDropDownItem : null, // set this to null to disable dropdown
                 dropdownColor: Theme.of(context).colorScheme.onInverseSurface,
                 isExpanded: true,
-                borderRadius: BorderRadius.circular(
-                    widget.model.radius?.toDouble() != null
-                        ? widget.model.radius!.toDouble() <= 24
-                            ? widget.model.radius!.toDouble()
-                            : 24
-                        : 4),
+                borderRadius: BorderRadius.circular(widget.model.radius.toDouble() <= 24
+                            ? widget.model.radius.toDouble()
+                            : 24),
                 underline: widget.model.border == 'underline'
                     ? Container(height: 2, color: selcol)
                     : Container(),
@@ -161,11 +158,11 @@ class _SelectViewState extends WidgetState<SelectView>
         decoration: BoxDecoration(
           color: selcol,
           border: Border.all(
-              width: widget.model.borderwidth?.toDouble() ?? 1,
+              width: widget.model.borderwidth.toDouble(),
               color: widget.model.enabled
                   ? (widget.model.bordercolor ?? Theme.of(context).colorScheme.outline)
                   : Theme.of(context).colorScheme.surfaceVariant),
-          borderRadius: BorderRadius.circular(widget.model.radius?.toDouble() ?? 4),
+          borderRadius: BorderRadius.circular(widget.model.radius.toDouble()),
         ),
         child: view,
       );

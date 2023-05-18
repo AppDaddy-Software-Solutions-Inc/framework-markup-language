@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/event/handler.dart';
-import 'package:fml/widgets/form/form_field_model.dart';
+import 'package:fml/widgets/form/decorated_input_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -14,21 +13,8 @@ enum InputFormats { numeric, integer, text, boolean, xml }
 
 enum CapitalizationTypes { mixed, camel, upper, lower, sentences, words }
 
-class InputModel extends FormFieldModel implements IFormField {
+class InputModel extends DecoratedInputModel implements IFormField {
   List<Suggestion> suggestions = [];
-
-  // override padding
-  @override
-  double? get marginTop => super.marginTop ?? (dense ? 0 : 4);
-
-  @override
-  double? get marginBottom => super.marginBottom ?? (dense ? 0 : 4);
-
-  @override
-  double? get marginLeft => super.marginLeft ?? (dense ? 0 : 4);
-
-  @override
-  double? get marginRight => super.marginRight ?? (dense ? 0 : 4);
 
   /// Capitilization sets the input to uppercase or lowercase with `upper` and `lower`
   // TODO: maybe change this to caps or uppercase = t/f?
@@ -78,19 +64,6 @@ class InputModel extends FormFieldModel implements IFormField {
   }
 
   Suggestion? suggestion;
-
-  /// If the input excludes the label above, and minimises the vertical space it takes up.
-  BooleanObservable? _dense;
-  set dense(dynamic v) {
-    if (_dense != null) {
-      _dense!.set(v);
-    } else if (v != null) {
-      _dense = BooleanObservable(Binding.toKey(id, 'dense'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  bool get dense => _dense?.get() ?? false;
 
   /// If the input shows the clear icon on its right.
   BooleanObservable? _clear;
@@ -178,85 +151,6 @@ class InputModel extends FormFieldModel implements IFormField {
     return _format!.get();
   }
 
-  /// The hint that sits inside of the input, and floats above if not dense and filled.
-  StringObservable? _hint;
-  set hint(dynamic v) {
-    if (_hint != null) {
-      _hint!.set(v);
-    } else if (v != null) {
-      _hint = StringObservable(Binding.toKey(id, 'hint'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  String? get hint {
-    if (_hint == null) return null;
-    return _hint!.get();
-  }
-
-  /// The size of the font and height of the input.
-  DoubleObservable? _size;
-  set size(dynamic v) {
-    if (_size != null) {
-      _size!.set(v);
-    } else if (v != null) {
-      _size = DoubleObservable(Binding.toKey(id, 'size'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  double? get size {
-    if (_size == null) return null;
-    return _size!.get();
-  }
-
-  /// The color of the text. Can be an array of 3 colors seperated by commas for enabled, disabled, and error.
-  StringObservable? _textcolor;
-  set textcolor(dynamic v) {
-    if (_textcolor != null) {
-      _textcolor!.set(v);
-    } else if (v != null) {
-      _textcolor = StringObservable(Binding.toKey(id, 'textcolor'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  String? get textcolor {
-    if (_textcolor == null) return null;
-    return _textcolor!.get();
-  }
-
-  /// The weight of the font
-  StringObservable? _weight;
-  set weight(dynamic v) {
-    if (_weight != null) {
-      _weight!.set(v);
-    } else if (v != null) {
-      _weight = StringObservable(Binding.toKey(id, 'weight'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  String? get weight {
-    if (_weight == null) return null;
-    return _weight!.get();
-  }
-
-  /// The style of the font. Will override weight and size.
-  StringObservable? _style;
-  set style(dynamic v) {
-    if (_style != null) {
-      _style!.set(v);
-    } else if (v != null) {
-      _style = StringObservable(Binding.toKey(id, 'style'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  String? get style {
-    if (_style == null) return null;
-    return _style!.get();
-  }
 
   /// The number of lines of text the input will display (vertical height).
   IntegerObservable? _lines;
@@ -305,36 +199,7 @@ class InputModel extends FormFieldModel implements IFormField {
     return _length!.get();
   }
 
-  /// The string of events that will be executed when focus is lost.
-  StringObservable? _onfocuslost;
-  set onfocuslost(dynamic v) {
-    if (_onfocuslost != null) {
-      _onfocuslost!.set(v);
-    } else if (v != null) {
-      _onfocuslost = StringObservable(Binding.toKey(id, 'onfocuslost'), v,
-          scope: scope, listener: onPropertyChange, lazyEval: true);
-    }
-  }
 
-  String? get onfocuslost {
-    return _onfocuslost?.get();
-  }
-
-  /// The prefix icon within the input
-  IconObservable? _icon;
-  set icon(dynamic v) {
-    if (_icon != null) {
-      _icon!.set(v);
-    } else if (v != null) {
-      _icon = IconObservable(Binding.toKey(id, 'icon'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  IconData? get icon {
-    if (_icon == null) return null;
-    return _icon!.get();
-  }
 
   /// The keyoard type the input uses.
   StringObservable? _keyboardtype;
@@ -372,63 +237,6 @@ class InputModel extends FormFieldModel implements IFormField {
     return _keyboardinput!.get();
   }
 
-  /// The radius of the border if all.
-  DoubleObservable? _radius;
-  set radius(dynamic v) {
-    if (_radius != null) {
-      _radius!.set(v);
-    } else if (v != null) {
-      _radius = DoubleObservable(Binding.toKey(id, 'radius'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  double get radius => _radius?.get() ?? 5;
-
-  /// The color of the border for input, defaults to black54. Accepts 4 colors positionally. Enabled, disabled, focused, and error colors.
-  StringObservable? _bordercolor;
-  set bordercolor(dynamic v) {
-    if (_bordercolor != null) {
-      _bordercolor!.set(v);
-    } else if (v != null) {
-      _bordercolor = StringObservable(Binding.toKey(id, 'bordercolor'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  String? get bordercolor {
-    if (_bordercolor == null) return null;
-    return _bordercolor!.get();
-  }
-
-  /// The width of the containers border, defaults to 2
-  DoubleObservable? _borderwidth;
-  set borderwidth(dynamic v) {
-    if (_borderwidth != null) {
-      _borderwidth!.set(v);
-    } else if (v != null) {
-      _borderwidth = DoubleObservable(Binding.toKey(id, 'borderwidth'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  double get borderwidth => _borderwidth?.get() ?? 1;
-
-  /// The border choice, can be `all`, `none`, `top`, `left`, `right`, `bottom`, `vertical`, or `horizontal`
-  StringObservable? _border;
-  set border(dynamic v) {
-    if (_border != null) {
-      _border!.set(v);
-    } else if (v != null) {
-      _border = StringObservable(Binding.toKey(id, 'border'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  String? get border {
-    if (_border == null) return 'all';
-    return _border!.get()?.toLowerCase();
-  }
 
   /// If the input has been focused at least once
   BooleanObservable? _touched;
@@ -457,101 +265,47 @@ class InputModel extends FormFieldModel implements IFormField {
 
   bool get wrap => _wrap?.get() ?? false;
 
-  BooleanObservable? _expand;
-  set expand(dynamic v) {
-    if (_expand != null) {
-      _expand!.set(v);
-    } else if (v != null) {
-      _expand = BooleanObservable(Binding.toKey(id, 'expand'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
 
-  bool get expand => _expand?.get() ?? false;
 
   InputModel(
     WidgetModel? parent,
     String? id, {
     String? type,
-    dynamic visible,
-    dynamic mandatory,
     dynamic wrap,
-    dynamic editable,
-    dynamic enabled,
     dynamic value,
     dynamic defaultValue,
-    dynamic width,
-    dynamic hint,
-    dynamic size,
-    dynamic color,
-    dynamic weight,
-    dynamic expand,
-    dynamic style,
     dynamic lines,
     dynamic length,
     dynamic obscure,
+        dynamic icon,
+        dynamic hint,
     dynamic mask,
     dynamic clear,
-    dynamic onchange,
-    dynamic onfocuslost,
     dynamic halign,
-    dynamic post,
-    dynamic icon,
     dynamic allow,
     dynamic deny,
-    dynamic dense,
-    dynamic padding,
     dynamic keyboardtype,
     dynamic keyboardinput,
     dynamic format,
-    dynamic border,
     dynamic maxlines,
-    dynamic radius,
-    dynamic bordercolor,
-    dynamic borderwidth,
-    dynamic textcolor,
-    dynamic touched,
   }) : super(parent, id) {
-    if (mandatory != null) this.mandatory = mandatory;
     if (maxlines != null) this.maxlines = maxlines;
     if (wrap != null) this.wrap = wrap;
-    if (expand != null) this.expand = expand;
-    if (editable != null) this.editable = editable;
-    if (enabled != null) this.enabled = enabled;
+    if (icon != null) this.icon = icon;
+    if (hint != null) this.hint = hint;
     if (value != null) this.value = value;
     if (mask != null) this.mask = mask;
-    if (color != null) this.color = color;
     if (defaultValue != null) this.defaultValue = defaultValue;
-    if (width != null) this.width = width;
-    if (hint != null) this.hint = hint;
-    if (size != null) this.size = size;
-    if (weight != null) this.weight = weight;
-    if (style != null) this.style = style;
     if (lines != null) this.lines = lines;
     if (length != null) this.length = length;
-    if (padding != null) margins = padding;
     if (obscure != null) this.obscure = obscure;
     if (clear != null) this.clear = clear;
-    if (onchange != null) this.onchange = onchange;
-    if (onfocuslost != null) this.onfocuslost = onfocuslost;
     if (halign != null) this.halign = halign;
-    if (post != null) this.post = post;
-    if (icon != null) this.icon = icon;
-    if (dense != null) this.dense = dense;
     if (allow != null) this.allow = allow;
     if (deny != null) this.deny = deny;
     if (keyboardtype != null) this.keyboardtype = keyboardtype;
     if (keyboardinput != null) this.keyboardinput = keyboardinput;
     if (format != null) this.format = format;
-    if (border != null) this.border = border;
-    if (radius != null) this.radius = radius;
-    if (bordercolor != null) this.bordercolor = bordercolor;
-    if (borderwidth != null) this.borderwidth = borderwidth;
-    if (textcolor != null) this.textcolor = textcolor;
-    if (touched != null) this.touched = touched;
-
-    alarming = false;
-    dirty = false;
   }
 
   static InputModel? fromXml(WidgetModel parent, XmlElement xml,
@@ -638,9 +392,6 @@ class InputModel extends FormFieldModel implements IFormField {
     super.dispose();
   }
 
-  Future<bool> onFocusLost(BuildContext context) async {
-    return await EventHandler(this).execute(_onfocuslost);
-  }
 
   @override
   Widget getView({Key? key}) => getReactiveView(InputView(this));

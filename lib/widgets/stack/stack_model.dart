@@ -34,7 +34,7 @@ class StackModel extends BoxModel
   }
 
   @override
-  List<Widget> inflate()
+  List<Widget> inflate({BoxConstraints? constraints})
   {
     // sort children by depth
     if (children != null) {
@@ -44,7 +44,7 @@ class StackModel extends BoxModel
       return 0;
     });
     }
-    return super.inflate();
+    return super.inflate(constraints: constraints);
   }
 
   /// Deserializes the FML template elements, attributes and children

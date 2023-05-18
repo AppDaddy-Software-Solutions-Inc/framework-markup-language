@@ -284,10 +284,10 @@ class _BoxViewState extends WidgetState<BoxView>
     return view;
   }
 
-  Widget _buildInnerContent(WidgetAlignment alignment)
+  Widget _buildInnerContent(BoxConstraints constraints, WidgetAlignment alignment)
   {
     /// Build the Layout
-    var children = widget.model.inflate();
+    var children = widget.model.inflate(constraints: constraints);
 
     // create view
     Widget view;
@@ -355,7 +355,7 @@ class _BoxViewState extends WidgetState<BoxView>
     var alignment = WidgetAlignment(widget.model.layoutType, widget.model.center, widget.model.halign, widget.model.valign);
 
     // build the inner content
-    Widget view = _buildInnerContent(alignment);
+    Widget view = _buildInnerContent(constraints, alignment);
 
     // add padding around inner content
     view = addPadding(view);

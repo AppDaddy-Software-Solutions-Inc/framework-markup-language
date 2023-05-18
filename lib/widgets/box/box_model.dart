@@ -302,7 +302,7 @@ class BoxModel extends DecoratedWidgetModel
   }
 
   @override
-  List<Widget> inflate()
+  List<Widget> inflate({BoxConstraints? constraints})
   {
     // process children
     List<Widget> views = [];

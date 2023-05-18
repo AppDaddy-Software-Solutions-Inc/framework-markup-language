@@ -622,7 +622,7 @@ class ViewableWidgetModel extends ConstraintModel
 
   /// this routine creates views for all
   /// of its children
-  List<Widget> inflate()
+  List<Widget> inflate({BoxConstraints? constraints})
   {
     // process children
     List<Widget> views = [];

@@ -38,7 +38,7 @@ class _PaddingViewState extends WidgetState<PaddingView>
     // simple empty box
     if (widget.model.children == null || widget.model.children!.isEmpty) return SizedBox(width: pLeft + pRight, height: pTop + pBottom);
 
-    // column view
+    // box view
     Widget view = BoxView(widget.model);
 
     // build the child views

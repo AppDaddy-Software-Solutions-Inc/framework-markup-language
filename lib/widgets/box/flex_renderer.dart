@@ -228,40 +228,6 @@ class FlexRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
     }
   }
 
-  bool get _debugHasNecessaryDirections {
-    if (firstChild != null && lastChild != firstChild) {
-      // i.e. there's more than one child
-      switch (direction) {
-        case Axis.horizontal:
-          assert(textDirection != null, 'Horizontal $runtimeType with multiple children has a null textDirection, so the layout order is undefined.');
-          break;
-        case Axis.vertical:
-          break;
-      }
-    }
-    if (mainAxisAlignment == MainAxisAlignment.start ||
-        mainAxisAlignment == MainAxisAlignment.end) {
-      switch (direction) {
-        case Axis.horizontal:
-          assert(textDirection != null, 'Horizontal $runtimeType with $mainAxisAlignment has a null textDirection, so the alignment cannot be resolved.');
-          break;
-        case Axis.vertical:
-          break;
-      }
-    }
-    if (crossAxisAlignment == CrossAxisAlignment.start ||
-        crossAxisAlignment == CrossAxisAlignment.end) {
-      switch (direction) {
-        case Axis.horizontal:
-          break;
-        case Axis.vertical:
-          assert(textDirection != null, 'Vertical $runtimeType with $crossAxisAlignment has a null textDirection, so the alignment cannot be resolved.');
-          break;
-      }
-    }
-    return true;
-  }
-
   // Set during layout if overflow occurred on the main axis.
   double _overflow = 0;
   // Check whether any meaningful overflow is present. Values below an epsilon

@@ -399,51 +399,6 @@ class _InputViewState extends WidgetState<InputView>
     _commit();
   }
 
-  List<Color?> _getBorderColors() {
-    // enabled, disabled, focus, error
-    List<Color?> colors = [null, null, null, null];
-    if (widget.model.bordercolor != null) {
-      var colorArray = widget.model.bordercolor?.split(',');
-      if (colorArray != null) {
-        if (colorArray.isNotEmpty) {
-          colors[0] = ColorObservable.toColor(colorArray[0].trim());
-        }
-        if (colorArray.length > 1) {
-          colors[1] = ColorObservable.toColor(colorArray[1].trim());
-        }
-        if (colorArray.length > 2) {
-          colors[2] = ColorObservable.toColor(colorArray[2].trim());
-        }
-        if (colorArray.length > 3) {
-          colors[3] = ColorObservable.toColor(colorArray[3].trim());
-        }
-      }
-    }
-    return colors;
-  }
-
-  List<Color?> _getTextColors() {
-    // enabled, disabled, hint, error
-    List<Color?> colors = [null, null, null, null];
-    if (widget.model.textcolor != null) {
-      var colorArray = widget.model.textcolor?.split(',');
-      if (colorArray != null) {
-        if (colorArray.isNotEmpty) {
-          colors[0] = ColorObservable.toColor(colorArray[0].trim());
-        }
-        if (colorArray.length > 1) {
-          colors[1] = ColorObservable.toColor(colorArray[1].trim());
-        }
-        if (colorArray.length > 2) {
-          colors[2] = ColorObservable.toColor(colorArray[2].trim());
-        }
-        if (colorArray.length > 3) {
-          colors[3] = ColorObservable.toColor(colorArray[3].trim());
-        }
-      }
-    }
-    return colors;
-  }
 
   String? _getFormatType() {
     String? formatter;
@@ -591,18 +546,16 @@ class _InputViewState extends WidgetState<InputView>
     onLayout(constraints);
 
     // set the border colors
-    var borderColors = _getBorderColors();
-    Color? enabledBorderColor = borderColors[0];
-    Color? disabledBorderColor = borderColors[1];
-    Color? focusBorderColor = borderColors[2];
-    Color? errorBorderColor = borderColors[3];
+    Color? enabledBorderColor = widget.model.bordercolor;
+    Color? disabledBorderColor = Theme.of(context).disabledColor;
+    Color? focusBorderColor = Theme.of(context).focusColor;
+    Color? errorBorderColor = Theme.of(context).colorScheme.error;
 
     // set the text color arrays
-    var textColors = _getTextColors();
-    Color? enabledTextColor = textColors[0];
-    Color? disabledTextColor = textColors[1];
-    Color? hintTextColor = textColors[2];
-    Color? errorTextColor = textColors[3];
+    Color? enabledTextColor = widget.model.textcolor;
+    Color? disabledTextColor = Theme.of(context).disabledColor;
+    Color? hintTextColor =Theme.of(context).focusColor;
+    Color? errorTextColor = Theme.of(context).colorScheme.error;
 
     // get colors
     Color? enabledColor = widget.model.color;
@@ -640,8 +593,7 @@ class _InputViewState extends WidgetState<InputView>
         style: TextStyle(
             color: widget.model.enabled != false
                 ? enabledTextColor ?? Theme.of(context).colorScheme.onBackground
-                : disabledTextColor ??
-                    Theme.of(context).colorScheme.surfaceVariant,
+                : disabledTextColor,
             fontSize: fontsize),
         onChanged: (text) => onValue(text),
         onEditingComplete: _commit,
@@ -684,9 +636,8 @@ class _InputViewState extends WidgetState<InputView>
           labelStyle: TextStyle(
             fontSize: fontsize != null ? fontsize - 2 : 14,
             color: widget.model.enabled != false
-                ? hintTextColor ?? Theme.of(context).colorScheme.outline
-                : disabledTextColor ??
-                    Theme.of(context).colorScheme.surfaceVariant,
+                ? hintTextColor
+                : disabledTextColor,
           ),
           counterText: "",
           // widget.model.error is getting set to null somewhere.
@@ -698,7 +649,7 @@ class _InputViewState extends WidgetState<InputView>
           errorStyle: TextStyle(
             fontSize: fontsize ?? 12,
             fontWeight: FontWeight.w300,
-            color: errorTextColor ?? Theme.of(context).colorScheme.error,
+            color: errorTextColor,
           ),
           errorBorder: (widget.model.border == "outline" ||
                   widget.model.border == "all")
@@ -706,13 +657,7 @@ class _InputViewState extends WidgetState<InputView>
                   borderRadius:
                       BorderRadius.all(Radius.circular(widget.model.radius)),
                   borderSide: BorderSide(
-                      color: errorBorderColor ??
-                          (Theme.of(context).brightness == Brightness.light
-                              ? Theme.of(context)
-                                  .colorScheme
-                                  .error
-                                  .withOpacity(0.70)
-                              : Theme.of(context).colorScheme.onError),
+                      color: errorBorderColor,
                       width: widget.model.borderwidth),
                 )
               : widget.model.border == "none"
@@ -723,8 +668,7 @@ class _InputViewState extends WidgetState<InputView>
                           borderRadius: BorderRadius.all(
                               Radius.circular(widget.model.radius)),
                           borderSide: BorderSide(
-                              color: errorBorderColor ??
-                                  Theme.of(context).colorScheme.error,
+                              color: errorBorderColor,
                               width: widget.model.borderwidth),
                         )
                       : InputBorder.none,
@@ -734,10 +678,7 @@ class _InputViewState extends WidgetState<InputView>
                   borderRadius:
                       BorderRadius.all(Radius.circular(widget.model.radius)),
                   borderSide: BorderSide(
-                      color: errorBorderColor ??
-                          (Theme.of(context).brightness == Brightness.light
-                              ? Theme.of(context).colorScheme.error
-                              : Theme.of(context).colorScheme.errorContainer),
+                      color: errorBorderColor,
                       width: widget.model.borderwidth),
                 )
               : widget.model.border == "none"
@@ -748,8 +689,7 @@ class _InputViewState extends WidgetState<InputView>
                           borderRadius: BorderRadius.all(
                               Radius.circular(widget.model.radius)),
                           borderSide: BorderSide(
-                              color: errorBorderColor ??
-                                  Theme.of(context).colorScheme.error,
+                              color: errorBorderColor,
                               width: widget.model.borderwidth),
                         )
                       : InputBorder.none,
@@ -758,9 +698,8 @@ class _InputViewState extends WidgetState<InputView>
             fontSize: fontsize ?? 14,
             fontWeight: FontWeight.w300,
             color: widget.model.enabled != false
-                ? hintTextColor ?? Theme.of(context).colorScheme.outline
-                : disabledTextColor ??
-                    Theme.of(context).colorScheme.surfaceVariant,
+                ? hintTextColor
+                : disabledTextColor,
           ),
           prefixIcon: (widget.model.icon != null)
               ? Padding(
@@ -777,7 +716,7 @@ class _InputViewState extends WidgetState<InputView>
                     obscure! ? Icons.visibility : Icons.visibility_off,
                     size: 17,
                     color:
-                        hintTextColor ?? Theme.of(context).colorScheme.outline,
+                        hintTextColor,
                   ),
                   onPressed: () {
                     widget.model.obscure = !obscure!;
@@ -791,8 +730,7 @@ class _InputViewState extends WidgetState<InputView>
                       icon: Icon(
                         Icons.clear_rounded,
                         size: 17,
-                        color: hintTextColor ??
-                            Theme.of(context).colorScheme.outline,
+                        color: hintTextColor,
                       ),
                       onPressed: () {
                         onClear();
@@ -833,8 +771,7 @@ class _InputViewState extends WidgetState<InputView>
                   borderRadius:
                       BorderRadius.all(Radius.circular(widget.model.radius)),
                   borderSide: BorderSide(
-                      color: focusBorderColor ??
-                          Theme.of(context).colorScheme.primary,
+                      color: focusBorderColor,
                       width: widget.model.borderwidth),
                 )
               : (widget.model.border == "bottom" ||
@@ -843,8 +780,7 @@ class _InputViewState extends WidgetState<InputView>
                       borderRadius: BorderRadius.all(
                           Radius.circular(widget.model.radius)),
                       borderSide: BorderSide(
-                          color: focusBorderColor ??
-                              Theme.of(context).colorScheme.primary,
+                          color: focusBorderColor,
                           width: widget.model.borderwidth),
                     )
                   : widget.model.border == "none"
@@ -879,8 +815,7 @@ class _InputViewState extends WidgetState<InputView>
                   borderRadius:
                       BorderRadius.all(Radius.circular(widget.model.radius)),
                   borderSide: BorderSide(
-                      color: disabledBorderColor ??
-                          Theme.of(context).colorScheme.surfaceVariant,
+                      color: disabledBorderColor,
                       width: widget.model.borderwidth),
                 )
               : widget.model.border == "none"
@@ -896,10 +831,7 @@ class _InputViewState extends WidgetState<InputView>
                                       Theme.of(context)
                                           .colorScheme
                                           .surfaceVariant
-                                  : disabledBorderColor ??
-                                      Theme.of(context)
-                                          .colorScheme
-                                          .surfaceVariant,
+                                  : disabledBorderColor,
                               width: widget.model.borderwidth),
                         )
                       : InputBorder.none,

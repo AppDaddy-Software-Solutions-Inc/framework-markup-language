@@ -4,7 +4,6 @@ import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/datepicker/datepicker_model.dart';
 import 'package:flutter/services.dart';
-import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
@@ -91,44 +90,18 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
     onLayout(constraints);
 
     // set the border color arrays
-    Color? enabledBorderColor;
-    Color? disabledBorderColor;
-    Color? focusBorderColor;
-    Color? errorBorderColor;
-    List? bordercolors = [];
-    if (widget.model.bordercolor != null) {
-      bordercolors = widget.model.bordercolor?.split(',');
-      enabledBorderColor = ColorObservable.toColor(bordercolors![0]?.trim());
-      if (bordercolors.length > 1) {
-        disabledBorderColor = ColorObservable.toColor(bordercolors[1]?.trim());
-      }
-      if (bordercolors.length > 2) {
-        focusBorderColor = ColorObservable.toColor(bordercolors[2]?.trim());
-      }
-      if (bordercolors.length > 3) {
-        errorBorderColor = ColorObservable.toColor(bordercolors[3]?.trim());
-      }
-    }
+    // set the border colors
+    Color? enabledBorderColor = widget.model.bordercolor;
+    Color? disabledBorderColor = Theme.of(context).disabledColor;
+    Color? focusBorderColor = Theme.of(context).focusColor;
+    Color? errorBorderColor = Theme.of(context).colorScheme.error;
 
     // set the text color arrays
-    Color? enabledTextColor;
-    Color? disabledTextColor;
-    Color? hintTextColor;
-    Color? errorTextColor;
-    List? textColors = [];
-    if (widget.model.textcolor != null) {
-      textColors = widget.model.textcolor?.split(',');
-      enabledTextColor = ColorObservable.toColor(textColors![0]?.trim());
-      if (textColors.length > 1) {
-        disabledTextColor = ColorObservable.toColor(textColors[1]?.trim());
-      }
-      if (textColors.length > 2) {
-        hintTextColor = ColorObservable.toColor(textColors[2]?.trim());
-      }
-      if (textColors.length > 3) {
-        errorTextColor = ColorObservable.toColor(textColors[3]?.trim());
-      }
-    }
+    Color? enabledTextColor = widget.model.textcolor;
+    Color? disabledTextColor = Theme.of(context).disabledColor;
+    Color? hintTextColor =Theme.of(context).focusColor;
+    Color? errorTextColor = Theme.of(context).colorScheme.error;
+
 
     Color? enabledColor = widget.model.color;
     Color? disabledColor = widget.model.color2;
@@ -143,9 +116,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
     String? value = widget.model.value;
     double? rad = S.toDouble(widget.model.radius);
     cont = TextEditingController(text: value);
-
-    var padding = widget.model.padding;
-
+    double pad = (widget.model.dense ? 0 : 4);
     // View
     Widget view;
     view = GestureDetector(
@@ -181,8 +152,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
                 color: widget.model.enabled != false
                     ? enabledTextColor ??
                         Theme.of(context).colorScheme.onBackground
-                    : disabledTextColor ??
-                        Theme.of(context).colorScheme.surfaceVariant,
+                    : disabledTextColor,
                 fontSize: fontsize),
             textAlignVertical: TextAlignVertical.center,
             decoration: InputDecoration(
@@ -201,25 +171,16 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
               filled: true,
               contentPadding: ((widget.model.dense == true)
                   ? EdgeInsets.only(
-                      left: padding,
-                      top: padding + 10,
-                      right: padding,
-                      bottom: padding,
-                    )
+                  left: pad, top: pad + 10, right: pad, bottom: pad)
                   : EdgeInsets.only(
-                      left: padding + 10,
-                      top: padding + 4,
-                      right: padding,
-                      bottom: padding + 4,
-                    )),
+                  left: pad + 10, top: pad + 4, right: pad, bottom: pad + 4)),
               alignLabelWithHint: true,
               labelText: widget.model.dense ? null : hint,
               labelStyle: TextStyle(
                 fontSize: fontsize != null ? fontsize - 2 : 14,
                 color: widget.model.enabled != false
-                    ? hintTextColor ?? Theme.of(context).colorScheme.outline
-                    : disabledTextColor ??
-                        Theme.of(context).colorScheme.surfaceVariant,
+                    ? hintTextColor
+                    : disabledTextColor,
               ),
               counterText: "",
               errorText: widget.model.error == true &&
@@ -230,20 +191,14 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
               errorStyle: TextStyle(
                 fontSize: fontsize ?? 12,
                 fontWeight: FontWeight.w300,
-                color: errorTextColor ?? Theme.of(context).colorScheme.error,
+                color: errorTextColor,
               ),
               errorBorder: (widget.model.border == "outline" ||
                       widget.model.border == "all")
                   ? OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(rad ?? 4)),
                       borderSide: BorderSide(
-                          color: errorBorderColor ??
-                              (Theme.of(context).brightness == Brightness.light
-                                  ? Theme.of(context)
-                                      .colorScheme
-                                      .error
-                                      .withOpacity(0.70)
-                                  : Theme.of(context).colorScheme.onError),
+                          color: errorBorderColor,
                           width: widget.model.borderwidth),
                     )
                   : widget.model.border == "none"
@@ -254,8 +209,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
                               borderRadius:
                                   BorderRadius.all(Radius.circular(rad ?? 0)),
                               borderSide: BorderSide(
-                                  color: errorBorderColor ??
-                                      Theme.of(context).colorScheme.error,
+                                  color: errorBorderColor,
                                   width: widget.model.borderwidth),
                             )
                           : InputBorder.none,
@@ -264,12 +218,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
                   ? OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(rad ?? 4)),
                       borderSide: BorderSide(
-                          color: errorBorderColor ??
-                              (Theme.of(context).brightness == Brightness.light
-                                  ? Theme.of(context).colorScheme.error
-                                  : Theme.of(context)
-                                      .colorScheme
-                                      .errorContainer),
+                          color: errorBorderColor,
                           width: widget.model.borderwidth),
                     )
                   : widget.model.border == "none"
@@ -280,8 +229,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
                               borderRadius:
                                   BorderRadius.all(Radius.circular(rad ?? 0)),
                               borderSide: BorderSide(
-                                  color: errorBorderColor ??
-                                      Theme.of(context).colorScheme.error,
+                                  color: errorBorderColor,
                                   width: widget.model.borderwidth),
                             )
                           : InputBorder.none,
@@ -290,9 +238,8 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
                 fontSize: fontsize ?? 14,
                 fontWeight: FontWeight.w300,
                 color: widget.model.enabled != false
-                    ? hintTextColor ?? Theme.of(context).colorScheme.outline
-                    : disabledTextColor ??
-                        Theme.of(context).colorScheme.surfaceVariant,
+                    ? hintTextColor
+                    : disabledTextColor,
               ),
               prefixIcon: Padding(
                   padding: EdgeInsets.only(
@@ -333,8 +280,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
                   ? OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(rad ?? 4)),
                       borderSide: BorderSide(
-                          color: focusBorderColor ??
-                              Theme.of(context).colorScheme.primary,
+                          color: focusBorderColor,
                           width: widget.model.borderwidth),
                     )
                   : (widget.model.border == "bottom" ||
@@ -343,8 +289,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
                           borderRadius:
                               BorderRadius.all(Radius.circular(rad ?? 0)),
                           borderSide: BorderSide(
-                              color: focusBorderColor ??
-                                  Theme.of(context).colorScheme.primary,
+                              color: focusBorderColor,
                               width: widget.model.borderwidth),
                         )
                       : widget.model.border == "none"
@@ -377,8 +322,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
                   ? OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(rad ?? 4)),
                       borderSide: BorderSide(
-                          color: disabledBorderColor ??
-                              Theme.of(context).colorScheme.surfaceVariant,
+                          color: disabledBorderColor,
                           width: widget.model.borderwidth),
                     )
                   : widget.model.border == "none"
@@ -394,10 +338,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
                                           Theme.of(context)
                                               .colorScheme
                                               .surfaceVariant
-                                      : disabledBorderColor ??
-                                          Theme.of(context)
-                                              .colorScheme
-                                              .surfaceVariant,
+                                      : disabledBorderColor,
                                   width: widget.model.borderwidth),
                             )
                           : InputBorder.none,

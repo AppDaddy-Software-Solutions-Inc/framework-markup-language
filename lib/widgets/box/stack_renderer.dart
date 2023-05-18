@@ -62,7 +62,7 @@ class StackRenderer extends RenderBox
     AlignmentGeometry alignment = AlignmentDirectional.topStart,
     TextDirection? textDirection,
     StackFit fit = StackFit.loose,
-    Clip clipBehavior = Clip.hardEdge,
+    Clip clipBehavior = Clip.none,
   }) :  _alignment = alignment,
         _textDirection = textDirection,
         _fit = fit,
@@ -363,11 +363,10 @@ class StackRenderer extends RenderBox
     assert(_resolvedAlignment != null);
 
     var idParent = model.id;
-    print('Parent id is $idParent');
 
     var myConstraints = constraints;
-    var width  = model.expandHorizontally ? myConstraints.maxWidth  : myConstraints.minWidth;
-    var height = model.expandVertically   ? myConstraints.maxHeight : myConstraints.minHeight;
+    var width  = model.expandHorizontally && constraints.hasBoundedWidth  ? myConstraints.maxWidth  : myConstraints.minWidth;
+    var height = model.expandVertically   && constraints.hasBoundedHeight ? myConstraints.maxHeight : myConstraints.minHeight;
 
     // get my width from the model
     // and tighten the my width constraint's if not null
@@ -417,6 +416,9 @@ class StackRenderer extends RenderBox
   @override
   void performLayout()
   {
+    //debugging
+    var idParent = model.id;
+
     final BoxConstraints constraints = this.constraints;
     _hasVisualOverflow = false;
 

@@ -37,6 +37,24 @@ class ViewableWidgetModel extends ConstraintModel
     return list;
   }
 
+  // the flex width
+  int? get flexWidth
+  {
+    // defined width takes precedence over flex
+    if (hasBoundedWidth) return null;
+    if (!visible) return null;
+    return flex ?? (expandHorizontally || canExpandInfinitelyWide ? 1 : null);
+  }
+
+  // the flex height
+  int? flexHeight()
+  {
+    // defined height takes precedence over flex
+    if (hasBoundedHeight) return null;
+    if (!visible) return null;
+    return flex ?? (expandVertically || canExpandInfinitelyHigh ? 1 : null);
+  }
+
   // view width
   double? _viewWidth;
   DoubleObservable? _viewWidthObservable;

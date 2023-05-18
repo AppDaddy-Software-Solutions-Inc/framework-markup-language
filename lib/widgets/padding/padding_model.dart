@@ -9,6 +9,9 @@ import 'package:fml/helper/common_helpers.dart';
 
 class PaddingModel extends ColumnModel
 {
+  @override
+  bool get expand => false;
+
   PaddingModel(WidgetModel parent, String? id): super(parent, id);
 
   static PaddingModel? fromXml(WidgetModel parent, XmlElement xml) {

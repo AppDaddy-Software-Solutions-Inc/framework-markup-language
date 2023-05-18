@@ -75,6 +75,7 @@ class ConstraintModel extends WidgetModel
     else if (v != null)
     {
       _width = DoubleObservable(Binding.toKey(id, 'width'), v, scope: scope, listener: onPropertyChange, setter: _widthSetter);
+      _width!.set(v, notify: false);
     }
   }
   double? get width => _width?.get();
@@ -148,6 +149,7 @@ class ConstraintModel extends WidgetModel
     else if (v != null)
     {
       _height = DoubleObservable(Binding.toKey(id, 'height'), v, scope: scope, listener: onPropertyChange, setter: _heightSetter);
+      _height!.set(v, notify: false);
     }
   }
   double? get height => _height?.get();
@@ -407,22 +409,6 @@ class ConstraintModel extends WidgetModel
     }
 
     return myHeight;
-  }
-
-  // the flex width
-  int? getWidthFlex()
-  {
-    // defined width takes precedence over flex
-    if (hasBoundedWidth) return null;
-    return flex ?? (expandVertically ? 1 : null);
-  }
-
-  // the flex height
-  int? getHeightFlex()
-  {
-    // defined height takes precedence over flex
-    if (hasBoundedHeight) return null;
-    return flex ?? (expandHorizontally ? 1 : null);
   }
 
   //Constraints get tightest => Constraints.tightest(Constraints.tightest(model, system), calculated);

@@ -276,8 +276,15 @@ class WidgetModel implements IDataSourceListener {
   double get horizontalPadding => 0;
 
   WidgetModel(this.parent, String? id, {Scope? scope}) {
-    // default id
-    if (S.isNullOrEmpty(id)) id = S.newId();
+
+    // build default id
+    if (S.isNullOrEmpty(id))
+    {
+      var prefix = elementName.toLowerCase();
+      if (prefix.endsWith('model')) prefix = prefix.substring(0, prefix.lastIndexOf('model'));
+      id = S.newId(prefix: prefix);
+    }
+
     this.id = id!;
 
     // set the scope

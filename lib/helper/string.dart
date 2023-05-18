@@ -668,6 +668,6 @@ class S {
     return lowercase ? returnString.toLowerCase() : returnString;
   }
 
-  static String newId() =>
-      "auto${Uuid().v4().replaceAll("-", "").toLowerCase()}";
+  static String newId({String prefix = "auto"}) =>
+      "$prefix${Uuid().v4().replaceAll("-", "").toLowerCase()}";
 }

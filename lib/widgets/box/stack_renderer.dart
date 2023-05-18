@@ -418,7 +418,6 @@ class StackRenderer extends RenderBox
   {
     //debugging
     var idParent = model.id;
-    print('Perform Flex Layout -> Parent id is $idParent');
 
     final BoxConstraints constraints = this.constraints;
     _hasVisualOverflow = false;

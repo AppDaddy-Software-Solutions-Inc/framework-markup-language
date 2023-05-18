@@ -1058,10 +1058,6 @@ class FlexRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
   {
     final BoxConstraints constraints = this.constraints;
 
-    //debugging
-    var idParent = model.id;
-    print('Perform Flex Layout -> Parent id is $idParent');
-
     final _LayoutSizes sizes = _computeSizes(layoutChild: ChildLayoutHelper.layoutChild, constraints: constraints);
 
     final double allocatedSize = sizes.allocatedSize;

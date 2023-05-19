@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/layout/layout_model.dart';
+import 'package:fml/widgets/box/box_model.dart';
 
 class WidgetAlignment
 {
-  Alignment          aligned = Alignment.topLeft;
+  Alignment          aligned            = Alignment.topLeft;
   CrossAxisAlignment crossAlignment     = CrossAxisAlignment.start;
   MainAxisAlignment  mainAlignment      = MainAxisAlignment.start;
   WrapAlignment      mainWrapAlignment  = WrapAlignment.start;

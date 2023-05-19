@@ -94,7 +94,7 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
     view = addMargins(view);
 
     // apply user defined constraints
-    view = applyConstraints(view, widget.model.constraints.tightestOrDefault);
+    view = applyConstraints(view, widget.model.tightestOrDefault);
 
     // final view
     return view;

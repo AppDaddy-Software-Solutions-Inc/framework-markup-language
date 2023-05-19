@@ -1,16 +1,16 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/layout/layout_model.dart';
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/table/row/table_row_model.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class TableRowCellModel extends DecoratedWidgetModel
+class TableRowCellModel extends BoxModel
 {
+  @override
   LayoutType get layoutType => LayoutType.stack;
 
   /////////////////////
@@ -104,6 +104,7 @@ class TableRowCellModel extends DecoratedWidgetModel
   /* border color */
   //////////////////
   ColorObservable? _bordercolor;
+  @override
   set bordercolor(dynamic v) {
     if (_bordercolor != null) {
       _bordercolor!.set(v);
@@ -113,6 +114,7 @@ class TableRowCellModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
+  @override
   Color? get bordercolor
   {
     if (selected == true) return selectedbordercolor;
@@ -159,29 +161,6 @@ class TableRowCellModel extends DecoratedWidgetModel
     return color;
   }
 
-  //////////////////
-  /* border width */
-  //////////////////
-  DoubleObservable? _borderwidth;
-  set borderwidth(dynamic v) {
-    if (_borderwidth != null) {
-      _borderwidth!.set(v);
-    } else if (v != null) {
-      _borderwidth = DoubleObservable(
-          Binding.toKey(id, 'borderwidth'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  double? get borderwidth
-  {
-    if (_borderwidth == null)
-    {
-      if ((parent != null) && (parent is TableRowModel)) return (parent as TableRowModel).borderwidth;
-      return null;
-    }
-    return _borderwidth?.get();
-  }
-
   /// alignment and layout attributes
   ///
   /// The horizontal alignment of the widgets children, overrides `center`. Can be `left`, `right`, `start`, or `end`.
@@ -218,48 +197,6 @@ class TableRowCellModel extends DecoratedWidgetModel
       return null;
     }
     return _valign?.get();
-  }
-
-  /// Center attribute allows a simple boolean override for halign and valign both being center. halign and valign will override center if given.
-  BooleanObservable? _center;
-  set center(dynamic v) {
-    if (_center != null) {
-      _center!.set(v);
-    } else if (v != null) {
-      _center = BooleanObservable(Binding.toKey(id, 'center'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  bool get center
-  {
-    if (_center == null)
-    {
-      if ((parent != null) && (parent is TableRowModel)) return (parent as TableRowModel).center;
-      return false;
-    }
-    return _center?.get() ?? false;
-  }
-
-  /// wrap is a boolean that dictates if the widget will wrap or not.
-  BooleanObservable? _wrap;
-  set wrap(dynamic v) {
-    if (_wrap != null) {
-      _wrap!.set(v);
-    } else if (v != null) {
-      _wrap = BooleanObservable(Binding.toKey(id, 'wrap'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  bool get wrap
-  {
-    if (_wrap == null)
-    {
-      if ((parent != null) && (parent is TableRowModel)) return (parent as TableRowModel).wrap;
-      return false;
-    }
-    return _wrap?.get() ?? false;
   }
 
   ////////////////////
@@ -321,7 +258,7 @@ class TableRowCellModel extends DecoratedWidgetModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
+  void deserialize(XmlElement? xml)
   {
     // deserialize 
     super.deserialize(xml);

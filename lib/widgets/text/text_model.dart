@@ -14,6 +14,12 @@ import 'package:fml/helper/common_helpers.dart';
 
 class TextModel extends DecoratedWidgetModel 
 {
+  @override
+  FlexFit? get flexFit
+  {
+    return super.flexFit ?? FlexFit.loose;
+  }
+
   String? markup;
 
   // value

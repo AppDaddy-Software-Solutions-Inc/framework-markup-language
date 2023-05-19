@@ -64,7 +64,7 @@ class _BusyViewState extends WidgetState<BusyView>
     view = Container(color: Colors.transparent, child: Stack(alignment: Alignment(0.0, 0.0), children: children));
 
     // apply user defined constraints
-    return applyConstraints(view, widget.model.constraints.model);
+    return applyConstraints(view, widget.model.constraints);
   }
 }
 

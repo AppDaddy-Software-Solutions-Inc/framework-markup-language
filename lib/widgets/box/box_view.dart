@@ -3,6 +3,9 @@ import 'dart:ui';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/box/flex_object.dart';
+import 'package:fml/widgets/box/stack_object.dart';
+import 'package:fml/widgets/box/wrap_object.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
@@ -145,7 +148,7 @@ class _BoxViewState extends WidgetState<BoxView>
     }
 
     BorderRadius? containerRadius =
-        BorderRadius.only(
+    BorderRadius.only(
         topRight: Radius.circular(
             radii.asMap().containsKey(0) ? radii[0] ?? 0 : 0),
         bottomRight: Radius.circular(
@@ -163,7 +166,7 @@ class _BoxViewState extends WidgetState<BoxView>
     var elevation = (widget.model.elevation ?? 0);
     if (elevation > 0) {
       return BoxShadow(color: widget.model.shadowcolor, spreadRadius: elevation, blurRadius: elevation * 2,
-        offset: Offset(widget.model.shadowx, widget.model.shadowy));
+          offset: Offset(widget.model.shadowx, widget.model.shadowy));
     }
     return null;
   }
@@ -184,10 +187,10 @@ class _BoxViewState extends WidgetState<BoxView>
     if ((color != null) && (color2 != null))
     {
       gradient = LinearGradient(
-        begin: BoxView.toGradientAlignment(widget.model.start)!,
-        end: BoxView.toGradientAlignment(widget.model.end)!,
-        colors: getGradientColors(color, color2, color3, color4),
-        tileMode: TileMode.clamp);
+          begin: BoxView.toGradientAlignment(widget.model.start)!,
+          end: BoxView.toGradientAlignment(widget.model.end)!,
+          colors: getGradientColors(color, color2, color3, color4),
+          tileMode: TileMode.clamp);
 
       color = null;
     }
@@ -205,18 +208,18 @@ class _BoxViewState extends WidgetState<BoxView>
 
   Widget _getFrostedView(Widget child, BorderRadius? radius)
   {
-     Widget view = BackdropFilter(filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8), child: child);
-     if (radius != null) {
-       view = ClipRRect(borderRadius: radius, child: view);
-     } else {
-       view = ClipRect(child: view);
-     }
-     return view;
+    Widget view = BackdropFilter(filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8), child: child);
+    if (radius != null) {
+      view = ClipRRect(borderRadius: radius, child: view);
+    } else {
+      view = ClipRect(child: view);
+    }
+    return view;
   }
 
   Widget _getBlurredView(Widget child, Decoration? decoration)
   {
-     return Stack(
+    return Stack(
         fit: StackFit.expand,
         clipBehavior: Clip.none,
         children: <Widget>[
@@ -246,15 +249,93 @@ class _BoxViewState extends WidgetState<BoxView>
     return view;
   }
 
-  Widget _applyConstraints(Widget view)
+  Widget _buildInnerBox(Widget child,  BoxConstraints constraints, BoxDecoration? decoration, Alignment? alignment, Clip clip)
   {
-    // apply model constraints
-    view = applyConstraints(view, widget.model.constraints.model);
+    Widget? view = child;
 
-    // allow the box to shrink on any axis that is not expanding
-    // this is done by applying an UnconstrainedBox() to the view
-    // in the direction of the constrained axis
-    if (!widget.model.expand) view = UnconstrainedBox(child: view);
+    // set expand
+    var expand = widget.model.expand;
+    if (widget.model.expandHorizontally && !constraints.hasBoundedWidth)  expand = false;
+    if (widget.model.expandVertically   && !constraints.hasBoundedHeight) expand = false;
+    if (alignment != null && expand)
+    {
+      // a width factor of 1 forces the container alignment to fit the child's width
+      // rather than expand to fill its parent
+      double? widthFactor;
+      if (!widget.model.expandHorizontally) widthFactor = 1;
+
+      // a height factor of 1 forces the container to shrink to its child's height
+      // rather than expand to fill the parent
+      double? heightFactor;
+      if (!widget.model.expandVertically) heightFactor = 1;
+
+      view = Align(alignment: alignment, child: view, widthFactor: widthFactor, heightFactor: heightFactor);
+    }
+
+    if (decoration != null)
+    {
+      if (clip != Clip.none)
+      {
+        view = ClipPath(clipper: _DecorationClipper(textDirection: Directionality.maybeOf(context), decoration: decoration), clipBehavior: clip, child: view);
+      }
+      view = DecoratedBox(decoration: decoration, child: view);
+    }
+
+    return view;
+  }
+
+  Widget _buildInnerContent(BoxConstraints constraints, WidgetAlignment alignment)
+  {
+    /// Build the Layout
+    var children = widget.model.inflate(constraints: constraints);
+
+    // create view
+    Widget view;
+    switch (widget.model.layoutType)
+    {
+      // stack object
+      case LayoutType.stack:
+        view = StackObject(model: widget.model,
+          alignment: alignment.aligned,
+          fit: StackFit.passthrough,
+          clipBehavior: Clip.antiAlias,
+          children: children,);
+        break;
+
+      // box object
+      case LayoutType.row:
+      case LayoutType.column:
+      default:
+
+        // axis direction
+        var direction = widget.model.layoutType == LayoutType.row ? Axis.horizontal : Axis.vertical;
+
+        // wrap object
+        if (widget.model.wrap)
+        {
+          view = WrapObject(
+              model: widget.model,
+              direction: direction,
+              alignment: alignment.mainWrapAlignment,
+              runAlignment: alignment.mainWrapAlignment,
+              crossAxisAlignment: alignment.crossWrapAlignment,
+              clipBehavior: Clip.antiAlias,
+              children: children);
+        }
+
+        // flex object (row, column)
+        else
+        {
+          view = FlexObject(
+              model: widget.model,
+              direction: direction,
+              mainAxisAlignment: alignment.mainAlignment,
+              crossAxisAlignment: alignment.crossAlignment,
+              clipBehavior: Clip.antiAlias,
+              children: children);
+        }
+        break;
+    }
 
     return view;
   }
@@ -270,48 +351,67 @@ class _BoxViewState extends WidgetState<BoxView>
     // set system sizing
     onLayout(constraints);
 
-    // layout the children
-    Widget content = widget.model.getContentView();
+    // calculate the alignment
+    var alignment = WidgetAlignment(widget.model.layoutType, widget.model.center, widget.model.halign, widget.model.valign);
 
-    // build the border
+    // build the inner content
+    Widget view = _buildInnerContent(constraints, alignment);
+
+    // add padding around inner content
+    view = addPadding(view);
+
+    // get the border
     Border? border = _getBorder();
 
-    // build the border radius
+    // get the border radius
     BorderRadius? radius = _getRadius(border);
 
     // build the box decoration
     BoxDecoration? decoration = _getBoxDecoration(radius);
 
-    // build the box border decoration
+    // build the border decoration
     BoxDecoration? borderDecoration = border != null ? BoxDecoration(border: border, borderRadius: radius) : null;
 
     // blur the view
-    if (widget.model.blur) content = _getBlurredView(content, borderDecoration);
+    if (widget.model.blur) view = _getBlurredView(view, borderDecoration);
 
-    // add padding
-    content = addPadding(content);
+    // build the inner content box
+    view = _buildInnerBox(view, constraints, decoration, alignment.aligned, Clip.antiAlias);
 
-    // this must go after the children are determined
-    var alignment = WidgetAlignment(widget.model.layoutType, widget.model.center, widget.model.halign, widget.model.valign);
+    // build the outer border box
+    if (borderDecoration != null) view = Container(child: view, decoration: borderDecoration);
 
-    // inner box - contents
-    Widget view = Container(clipBehavior: Clip.antiAlias, decoration: decoration, alignment: alignment.aligned, child: content);
-
-    // build the outer box - border
-    if (borderDecoration != null) view = Container(decoration: borderDecoration, child: view);
-
-    // set the box opacity
+    // set the view opacity
     if (widget.model.opacity != null) view = _getFadedView(view);
 
     // blur the view - white10 = Blur (This creates mirrored/frosted effect overtop of something else)
     if (widget.model.color == Colors.white10) view = _getFrostedView(view, radius);
 
-    // add margins
+    // add margins around the entire widget
     view = addMargins(view);
 
-    // apply constraints
-    view = _applyConstraints(view);
-
     return view;
+  }
+}
+
+/// A clipper that uses [Decoration.getClipPath] to clip.
+class _DecorationClipper extends CustomClipper<Path>
+{
+  _DecorationClipper({TextDirection? textDirection, required this.decoration,
+  }) : textDirection = textDirection ?? TextDirection.ltr;
+
+  final TextDirection textDirection;
+  final Decoration decoration;
+
+  @override
+  Path getClip(Size size)
+  {
+    return decoration.getClipPath(Offset.zero & size, textDirection);
+  }
+
+  @override
+  bool shouldReclip(_DecorationClipper oldClipper)
+  {
+    return oldClipper.decoration != decoration || oldClipper.textDirection != textDirection;
   }
 }

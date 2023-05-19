@@ -378,7 +378,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
     // Build Tab Bar
     var bar = _buildTabBar(height: barheight - barpadding);
 
-    var con = widget.model.constraints.calculated;
+    var con = widget.model.calculated;
 
     Widget view = Column(children: [
       SizedBox(width: width,
@@ -450,7 +450,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
     view = addMargins(view);
 
     // apply user defined constraints
-    view = applyConstraints(view, widget.model.constraints.model);
+    view = applyConstraints(view, widget.model.constraints);
 
     return view;
   }

@@ -2,10 +2,10 @@
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -81,7 +81,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
     }
   }
   /// By default we stack the [Check]s vertically, if set to row we display them horizontal
-  LayoutType get layoutType => LayoutModel.getLayoutType(layout, defaultLayout: LayoutType.column);
+  LayoutType get layoutType => BoxModel.getLayoutType(layout, defaultLayout: LayoutType.column);
   String get layout => _layout?.get()?.toLowerCase() ?? 'column';
 
   // set answer

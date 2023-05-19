@@ -63,38 +63,42 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
     Widget view;
     if (widget.model.layout == 'row') {
       if (widget.model.wrap == true) {
-        view = Center(
-            child: Wrap(
+        view = Wrap(
                 children: _list,
                 direction: Axis.horizontal,
-                alignment: alignment.mainWrapAlignment,
+                alignment: WrapAlignment.start,
                 runAlignment: alignment.mainWrapAlignment,
-                crossAxisAlignment: alignment.crossWrapAlignment));
+                crossAxisAlignment: alignment.crossWrapAlignment);
       } else {
-        view = Center(
-            child: Row(
+        view = Row(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: alignment.crossAlignment,
-                mainAxisAlignment: alignment.mainAlignment,
-                children: _list));
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: _list);
       }
     } else {
       if (widget.model.wrap == true) {
-        view = Center(
-            child: Wrap(
+        view = Wrap(
                 children: _list,
                 direction: Axis.vertical,
-                alignment: alignment.mainWrapAlignment,
+                alignment: WrapAlignment.start,
                 runAlignment: alignment.mainWrapAlignment,
-                crossAxisAlignment: alignment.crossWrapAlignment));
+                crossAxisAlignment: alignment.crossWrapAlignment);
       } else {
-        view = Center(
-            child: Column(
-                crossAxisAlignment: alignment.crossAlignment,
+        view = Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: alignment.mainAlignment,
-                children: _list));
+                children: _list);
       }
     }
+
+    Text errorText = Text(widget.model.returnErrorText(), style: TextStyle(color: Theme.of(context).colorScheme.error),);
+
+    view = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [view, errorText],
+    );
 
     return view;
   }
@@ -144,9 +148,7 @@ class CheckBox extends StatelessWidget {
               : Colors.transparent,
           side: BorderSide(
               width: 2,
-              color: model.enabled != false && model.editable != false
-                  ? Theme.of(context).colorScheme.surfaceVariant
-                  : Theme.of(context).colorScheme.onInverseSurface),
+              color: model.setFieldColor(context)),
           visualDensity: VisualDensity(horizontal: -2, vertical: -4),
           splashRadius: 20,
           mouseCursor: model.enabled != false && model.editable != false
@@ -167,6 +169,7 @@ class CheckBox extends StatelessWidget {
     var chk = Row(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Padding(
                   padding:
@@ -174,6 +177,9 @@ class CheckBox extends StatelessWidget {
                   child: checkbox),
               label
             ]);
+
+
+
 
     return model.editable != false && model.enabled != false ? chk : Opacity(opacity: 0.7, child: chk);
   }

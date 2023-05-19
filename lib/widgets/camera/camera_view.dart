@@ -551,7 +551,7 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
     view = Container(child: view, width: width, height: height);
 
     // apply user defined constraints
-    view = applyConstraints(view, widget.model.constraints.model);
+    view = applyConstraints(view, widget.model.constraints);
 
     // stack children
     List<Widget> children = [];

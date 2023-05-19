@@ -1,9 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/stack/stack_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
-import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'positioned_model.dart';
 
@@ -37,20 +37,30 @@ class _PositionedViewState extends WidgetState<PositionedView>
     Widget view = child;
     LayoutType? layout;
     if (widget.model.parent is StackModel) layout = LayoutType.stack;
-    if (widget.model.parent is BoxModel && LayoutModel.getLayoutType((widget.model.parent as BoxModel).layout) == LayoutType.stack) layout = LayoutType.stack;
+    if (widget.model.parent is BoxModel && BoxModel.getLayoutType((widget.model.parent as BoxModel).layout) == LayoutType.stack) layout = LayoutType.stack;
     if (layout == LayoutType.stack)
     {
       if (widget.model.xoffset != null && widget.model.yoffset != null)
       {
         double fromTop = (widget.model.calculatedMaxHeightOrDefault / 2) + widget.model.yoffset!;
         double fromLeft = (widget.model.calculatedMaxWidthOrDefault / 2) + widget.model.xoffset!;
-        view = Positioned(top: fromTop, left: fromLeft, child: view);
+        view = LayoutBoxChildData(
+            model: widget.model,
+            top: fromTop,
+            left: fromLeft,
+            child: view);
       }
-      else {
-        view = Positioned(top: widget.model.top, bottom: widget.model.bottom, left: widget.model.left, right: widget.model.right, child: view);
+      else
+      {
+        view = LayoutBoxChildData(
+            model: widget.model,
+            top: widget.model.top,
+            bottom: widget.model.bottom,
+            left: widget.model.left,
+            right: widget.model.right,
+            child: view);
       }
     }
-
     return view;
   }
 }

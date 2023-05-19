@@ -1,11 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/event/handler.dart';
-import 'package:fml/system.dart';
 import 'package:fml/widgets/animation/animation_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_view.dart';
-import 'package:fml/widgets/constraints/constraint.dart';
 import 'package:fml/widgets/constraints/constraint_model.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -16,28 +14,11 @@ import 'package:fml/widgets/widget/widget_model.dart';
 
 class ViewableWidgetModel extends ConstraintModel
 {
-  // this is used like the old IViewableWidget interface
-  // it is used during the inflate process to determine if a widget
-  // should be inflated during the build. This is overridden in widgets
-  // such as modal and gallery
-  bool get inflateable => true;
-
   // model holding the tooltip
   TooltipModel? tipModel;
 
   // holds animations
   List<AnimationModel>? animations;
-
-  // signifies if this widget naturally wishes to expand in the vertical
-  // this gets overridden in several widgets that inherited from this class
-  bool isVerticallyExpanding({bool ignoreFixedHeight = false}) => false;
-
-  // signifies if this widget naturally wishes to expand in the horizontal
-  // this gets overridden in several widgets that inherited from this class
-  bool isHorizontallyExpanding({bool ignoreFixedWidth = false}) => false;
-
-  // constraints
-  late final ConstraintSet constraints;
 
   @override
   double get verticalPadding  => (marginTop ?? 0)  + (marginBottom ?? 0)  + (paddingTop ?? 0) + (paddingBottom  ?? 0);
@@ -45,51 +26,36 @@ class ViewableWidgetModel extends ConstraintModel
   @override
   double get horizontalPadding => (marginLeft ?? 0) + (marginRight  ?? 0) + (paddingLeft ?? 0) + (paddingRight  ?? 0);
 
-  bool get verticallyConstrained
-  {
-    if (constraints.model.hasVerticalExpansionConstraints)  return true;
-    if (constraints.system.hasVerticalExpansionConstraints) return true;
-    if (parent is ViewableWidgetModel) return (parent as ViewableWidgetModel).verticallyConstrained;
-    return false;
-  }
-
-  bool get horizontallyConstrained
-  {
-    if (constraints.model.hasHorizontalExpansionConstraints)  return true;
-    if (constraints.system.hasHorizontalExpansionConstraints) return true;
-    if (parent is ViewableWidgetModel) return (parent as ViewableWidgetModel).horizontallyConstrained;
-    return false;
-  }
-
   // viewable children
   List<ViewableWidgetModel> get viewableChildren
   {
     List<ViewableWidgetModel> list = [];
     if (children != null){
     for (var child in children!) {
-      if (child is ViewableWidgetModel && child.inflateable) list.add(child);
+      if (child is ViewableWidgetModel) list.add(child);
     }}
     return list;
   }
 
-  /// VIEW LAYOUT
-  resetViewSizing()
+  // the flex width
+  int? get flexWidth
   {
-    _viewWidth = null;
-    _viewWidthObservable?.set(null, notify: false);
+    // defined width takes precedence over flex
+    if (hasBoundedWidth) return null;
+    if (!visible) return null;
+    return flex ?? (expandHorizontally || canExpandInfinitelyWide ? 1 : null);
+  }
 
-    _viewHeight = null;
-    _viewHeightObservable?.set(null, notify: false);
-
-    _viewX = null;
-    _viewXObservable?.set(null, notify: false);
-
-    _viewY = null;
-    _viewYObservable?.set(null, notify: false);
+  // the flex height
+  int? flexHeight()
+  {
+    // defined height takes precedence over flex
+    if (hasBoundedHeight) return null;
+    if (!visible) return null;
+    return flex ?? (expandVertically || canExpandInfinitelyHigh ? 1 : null);
   }
 
   // view width
-  double? viewWidthOld;
   double? _viewWidth;
   DoubleObservable? _viewWidthObservable;
   set viewWidth(double? v)
@@ -104,7 +70,6 @@ class ViewableWidgetModel extends ConstraintModel
   double? get viewWidth => _viewWidth;
 
   // view height
-  double? viewHeightOld;
   double? _viewHeight;
   DoubleObservable? _viewHeightObservable;
   set viewHeight(double? v)
@@ -177,21 +142,6 @@ class ViewableWidgetModel extends ConstraintModel
     }
   }
   String? get valign => _valign?.get();
-
-  // flex
-  IntegerObservable? _flex;
-  set flex (dynamic v)
-  {
-    if (_flex != null)
-    {
-      _flex!.set(v);
-    }
-    else if (v != null)
-    {
-      _flex = IntegerObservable(Binding.toKey(id, 'flex'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  int? get flex => _flex?.get();
 
   // used by the view to determine if it needs to wrap itself
   // in a VisibilityDetector
@@ -505,11 +455,7 @@ class ViewableWidgetModel extends ConstraintModel
 
   bool get enabled => _enabled?.get() ?? true;
 
-  ViewableWidgetModel(WidgetModel? parent, String? id, {Scope? scope}) : super(parent, id, scope: scope)
-  {
-    // create model constraints
-    constraints = ConstraintSet(this);
-  }
+  ViewableWidgetModel(WidgetModel? parent, String? id, {Scope? scope}) : super(parent, id, scope: scope);
 
   /// Deserializes the FML template elements, attributes and children
   @override
@@ -532,6 +478,7 @@ class ViewableWidgetModel extends ConstraintModel
     halign    = Xml.get(node: xml, tag: 'halign');
     valign    = Xml.get(node: xml, tag: 'valign');
     flex      = Xml.get(node: xml, tag: 'flex');
+    flexfit   = Xml.get(node: xml, tag: 'flexfit');
     onscreen  = Xml.get(node: xml, tag: 'onscreen');
     offscreen = Xml.get(node: xml, tag: 'offscreen');
 
@@ -674,18 +621,14 @@ class ViewableWidgetModel extends ConstraintModel
     return view;
   }
 
-  List<Widget> inflate()
+  /// this routine creates views for all
+  /// of its children
+  List<Widget> inflate({BoxConstraints? constraints})
   {
-    // reset my view
-    resetViewSizing();
-
     // process children
     List<Widget> views = [];
     for (var model in viewableChildren)
     {
-      // reset child view
-      model.resetViewSizing();
-
       var view = model.getView();
       if (view != null) views.add(view);
     }
@@ -705,46 +648,14 @@ class ViewableWidgetModel extends ConstraintModel
     // set the view width, height and position
     if (size.width != viewWidth || size.height != viewHeight || position.dx != viewX || position.dy != viewY)
     {
-      viewWidthOld = viewWidth;
-      viewWidth = size.width;
-
-      viewHeightOld = viewHeight;
+      viewWidth  = size.width;
       viewHeight = size.height;
-
-      viewX = position.dx;
-      viewY = position.dy;
-
-      // notify the parent
-      if (parent is ViewableWidgetModel) (parent as ViewableWidgetModel).onLayoutComplete(model);
+      viewX      = position.dx;
+      viewY      = position.dy;
     }
   }
 
   Widget? getView() => throw("getView() Not Implemented");
-}
-
-class ConstraintSet
-{
-  /// holds constraints defined in the template
-  late final ConstraintModel _model;
-  Constraints get model => _model.getModelConstraints();
-  
-  // holds constraints passed in flutter layout builder
-  Constraints get system => _model.system;
-
-  /// constraints calculated by walking up the
-  /// model tree comparing both model and flutter constraints
-  Constraints get calculated => _model.calculated;
-
-  Constraints get tightest => Constraints.tightest(Constraints.tightest(model, system), calculated);
-  Constraints get tightestOrDefault
-  {
-    var constraints = tightest;
-    if (constraints.height == null && constraints.maxHeight == null) constraints.maxHeight = System().screenheight.toDouble();
-    if (constraints.width  == null && constraints.maxWidth  == null) constraints.maxWidth  = System().screenwidth.toDouble();
-    return constraints;
-  }
-
-  ConstraintSet(this._model);
 }
 
 

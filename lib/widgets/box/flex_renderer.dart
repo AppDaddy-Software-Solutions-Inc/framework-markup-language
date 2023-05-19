@@ -717,6 +717,9 @@ class FlexRenderer extends RenderBox
     var allocatedWidth = 0.0;
     var allocatedHeight = 0.0;
 
+    var myH = myHeight;
+    var myw = myWidth;
+
     double maxChildExtent = _direction == Axis.horizontal ? constraints.maxWidth : constraints.maxHeight;
     double minChildExtent = _direction == Axis.horizontal ? constraints.minWidth : constraints.minHeight;
 
@@ -975,8 +978,7 @@ class FlexRenderer extends RenderBox
   void performLayout() {
     final BoxConstraints constraints = this.constraints;
 
-    final _LayoutSizes sizes = _computeSizes(
-        layoutChild: ChildLayoutHelper.layoutChild, constraints: constraints);
+    final _LayoutSizes sizes = _computeSizes(layoutChild: ChildLayoutHelper.layoutChild, constraints: constraints);
 
     final double allocatedSize = sizes.allocatedSize;
     double mainAxisSize = sizes.mainSize;

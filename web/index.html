@@ -147,20 +147,5 @@
         });
         </script>
 
-        <!-- VSCode Webview Template File Parsing -->
-        <script>
-		window.addEventListener('message', function(event) {
-            try {
-                if (!event.origin.startsWith('vscode-webview://')) {
-                    console.log('bad origin');
-                    return;
-                }
-                console.log(`Received ${event.data} from ${event.origin}`);
-                js2fml({'data': `${event.data}`, 'from': `${event.origin}`, 'to': 'fml'});
-            } catch(err) {
-                console.log(`js2fml error`);
-            }
-		});
-		</script>
     </body>
 </html>

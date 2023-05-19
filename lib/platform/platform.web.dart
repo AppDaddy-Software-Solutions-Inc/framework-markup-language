@@ -40,12 +40,10 @@ class Platform
   {
     try
     {
-      context.callMethod('postMessage', ['FML v${System().release}', '*']);
-      // postMessage('FML v${System().release}', '*');
-      print('posted message?');
       window.document.getElementById("logo")!.style.visibility = "hidden";
     }
     catch(e){
+      print(e.toString());
       Log().debug('$e');
     }
   }
@@ -184,6 +182,12 @@ class Platform
       WidgetModel? model = System().model;
       EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.openjstemplate, parameters: {'templ8': doc}));
     };
+  }
+
+  static void fml2js({String? version}) {
+    version = version ?? '?';
+    context.callMethod('postMessage', ['FML v$version', '*']);
+    print('posted message: $version');
   }
 
 }

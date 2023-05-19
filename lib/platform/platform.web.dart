@@ -159,6 +159,23 @@ class Platform
   // The js2fml(json) function is called from js and held in the `context` map
   // for use within flutter, passing its json as a map and allowing us in
   // dart/flutter to access it. This enables fml to be used through an iframe.
+  //
+  // index.html mistened to the .js postMessages
+  // <!-- VSCode Webview Template File Parsing -->
+  // <script>
+  // window.addEventListener('message', function(event) {
+  //   try {
+  //     if (!event.origin.startsWith('vscode-webview://')) {
+  //       console.log('bad origin');
+  //       return;
+  //     }
+  //     console.log(`Received ${event.data} from ${event.origin}`);
+  //     js2fml({'data': `${event.data}`, 'from': `${event.origin}`, 'to': 'fml'});
+  //   } catch(err) {
+  //     console.log(`js2fml error`);
+  //   }
+  // });
+  // </script>
   static void js2fml() {
     JS.context['js2fml'] = (json) async {
       // The script in index.html sets the data value that we assign to doc:
@@ -168,4 +185,5 @@ class Platform
       EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.openjstemplate, parameters: {'templ8': doc}));
     };
   }
+
 }

@@ -160,7 +160,7 @@ class Platform
   // for use within flutter, passing its json as a map and allowing us in
   // dart/flutter to access it. This enables fml to be used through an iframe.
   //
-  // index.html mistened to the .js postMessages
+  // index.html listens to the .js postMessages
   // <!-- VSCode Webview Template File Parsing -->
   // <script>
   // window.addEventListener('message', function(event) {

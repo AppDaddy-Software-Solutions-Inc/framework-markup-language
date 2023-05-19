@@ -653,12 +653,18 @@ class FlexRenderer extends RenderBox
 
   double get myParentsHeight {
     double? height;
-    var parent = this.parent;
-    while (height != null && parent != null) {
-      if (parent is RenderBox && parent.constraints.hasBoundedHeight) {
-        height = parent.constraints.maxHeight;
-      } else {
-        parent = parent.parent;
+    var node = this.parent;
+    while (true)
+    {
+      if (node == null) break;
+      if (node is RenderBox && node.constraints.hasBoundedHeight)
+      {
+        height = node.constraints.maxHeight;
+        break;
+      }
+      else
+      {
+        node = node.parent;
       }
     }
     return height ?? System().screenheight.toDouble();
@@ -673,14 +679,21 @@ class FlexRenderer extends RenderBox
     return width;
   }
 
-  double get myParentsWidth {
+  double get myParentsWidth
+  {
     double? width;
-    var parent = this.parent;
-    while (width != null && parent != null) {
-      if (parent is RenderBox && parent.constraints.hasBoundedWidth) {
-        width = parent.constraints.maxWidth;
-      } else {
-        parent = parent.parent;
+    var node = this.parent;
+    while (true)
+    {
+      if (node == null) break;
+      if (node is RenderBox && node.constraints.hasBoundedWidth)
+      {
+        width = node.constraints.maxWidth;
+        break;
+      }
+      else
+      {
+        node = node.parent;
       }
     }
     return width ?? System().screenwidth.toDouble();

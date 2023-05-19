@@ -7,9 +7,6 @@ import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/splitview/split_model.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/helper/common_helpers.dart';
-import 'package:fml/widgets/text/text_model.dart';
-import 'package:fml/widgets/text/text_view.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 

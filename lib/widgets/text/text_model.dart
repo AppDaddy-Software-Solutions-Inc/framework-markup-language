@@ -14,13 +14,17 @@ import 'package:fml/helper/common_helpers.dart';
 
 class TextModel extends DecoratedWidgetModel 
 {
+  @override
+  FlexFit? get flexFit
+  {
+    return super.flexFit ?? FlexFit.loose;
+  }
+
   String? markup;
 
   // value
   StringObservable? _value;
 
-  int? get flex => super.flex ?? (hasBoundedWidth ? null : 1);
-  
   set value(dynamic v)
   {
     if (_value != null)

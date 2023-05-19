@@ -478,6 +478,7 @@ class ViewableWidgetModel extends ConstraintModel
     halign    = Xml.get(node: xml, tag: 'halign');
     valign    = Xml.get(node: xml, tag: 'valign');
     flex      = Xml.get(node: xml, tag: 'flex');
+    flexfit   = Xml.get(node: xml, tag: 'flexfit');
     onscreen  = Xml.get(node: xml, tag: 'onscreen');
     offscreen = Xml.get(node: xml, tag: 'offscreen');
 

@@ -4,6 +4,7 @@ import 'package:fml/helper/xml.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/double.dart';
 import 'package:fml/observable/observables/integer.dart';
+import 'package:fml/observable/observables/string.dart';
 import 'package:fml/observable/scope.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/constraints/constraint.dart';
@@ -222,6 +223,28 @@ class ConstraintModel extends WidgetModel
     }
   }
   int? get flex => _flex?.get();
+
+  // flex fit
+  // loose or tight are only supported types
+  StringObservable? _flexfit;
+  set flexfit (dynamic v)
+  {
+    if (_flexfit != null)
+    {
+      _flexfit!.set(v);
+    }
+    else if (v != null)
+    {
+      _flexfit = StringObservable(Binding.toKey(id, 'flexfit'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  FlexFit? get flexFit
+  {
+    String? fit = _flexfit?.get()?.toLowerCase().trim();
+    if (fit == "loose") return FlexFit.loose;
+    if (fit == "tight") return FlexFit.tight;
+    return null;
+  }
 
   // min width
   double? _minWidthPercentage;

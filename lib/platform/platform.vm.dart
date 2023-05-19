@@ -42,11 +42,8 @@ class Platform
     String? folder;
     try
     {
-      if (folder == null)
-      {
         Directory? directory = await getDownloadsDirectory();
         if (directory != null) folder = directory.path;
-      }
     }
     catch(e){
       Log().debug('$e');

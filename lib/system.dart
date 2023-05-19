@@ -36,7 +36,8 @@ final String applicationTitle = "Flutter Markup Language $version";
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://applications/<app> to use the asset applications
-String get defaultDomain => 'http://test.appdaddy.co';
+String get defaultDomain => 'https://test.appdaddy.co';
+
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
@@ -261,8 +262,8 @@ class System extends WidgetModel implements IEventManager
 
     // device settings
     _mouse        = BooleanObservable(Binding.toKey('mouse'), RendererBinding.instance.mouseTracker.mouseIsConnected, scope: scope);
-    _screenheight = IntegerObservable(Binding.toKey('screenheight'), WidgetsBinding.instance.window.physicalSize.height, scope: scope);
-    _screenwidth  = IntegerObservable(Binding.toKey('screenwidth'),  WidgetsBinding.instance.window.physicalSize.width, scope: scope);
+    _screenheight = IntegerObservable(Binding.toKey('screenheight'), PlatformDispatcher.instance.views.first.physicalSize.height, scope: scope);
+    _screenwidth  = IntegerObservable(Binding.toKey('screenwidth'),  PlatformDispatcher.instance.views.first.physicalSize.width, scope: scope);
     _userplatform = StringObservable(Binding.toKey('platform'), platform, scope: scope);
     _useragent    = StringObservable(Binding.toKey('useragent'), Platform.useragent, scope: scope);
     _version      = StringObservable(Binding.toKey('version'), version, scope: scope);

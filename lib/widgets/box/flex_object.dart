@@ -23,8 +23,8 @@ class FlexObject extends MultiChildRenderObjectWidget {
   final BoxModel model;
 
   FlexObject({
-    required this.direction,
     required this.model,
+    required this.direction,
     this.mainAxisAlignment = MainAxisAlignment.start,
     this.mainAxisSize  = MainAxisSize.max,
     this.crossAxisAlignment = CrossAxisAlignment.center,

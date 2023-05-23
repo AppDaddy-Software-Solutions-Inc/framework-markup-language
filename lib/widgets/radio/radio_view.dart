@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
+import 'package:fml/helper/string.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/radio/radio_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
@@ -31,7 +32,7 @@ class _RadioViewState extends WidgetState<RadioView>
 
     // save system constraints
     onLayout(constraints);
-    Color color = widget.model.setFieldColor(context);
+    Color color = widget.model.setErrorBorderColor(context, widget.model.color);
     // Options
     if (widget.model.options.isNotEmpty) {
 
@@ -79,7 +80,7 @@ class _RadioViewState extends WidgetState<RadioView>
             children: <Widget>[
               Padding(
                   padding:
-                  EdgeInsets.only(top: 8, bottom: 8, right: 8, left: 4),
+                  EdgeInsets.only(top: 8, bottom: 8, right: 8, left: 3),
                   child: radio),
               label
             ]);
@@ -127,15 +128,23 @@ class _RadioViewState extends WidgetState<RadioView>
 
     String? errorTextValue = widget.model.returnErrorText();
 
-    Widget? errorText = Text("     $errorTextValue", style: TextStyle(color: Theme.of(context)
-        .colorScheme.error),);
+    if(!S.isNullOrEmpty(errorTextValue)) {
+      Widget? errorText = Text(
+        "     $errorTextValue", style: TextStyle(color: Theme
+          .of(context)
+          .colorScheme
+          .error),);
 
 
-    view = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [view, errorText],
-    );
+      view = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [view, errorText],
+      );
+    }
+
+
+
 
     return view;
   }

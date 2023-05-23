@@ -335,9 +335,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
           border: Border(
             bottom: BorderSide(
                 width: widget.model.borderwidth.toDouble(),
-                color: widget.model.enabled
-                    ? (widget.model.bordercolor ?? Theme.of(context).colorScheme.outline)
-                    : Theme.of(context).colorScheme.surfaceVariant),
+                color: widget.model.setErrorBorderColor(context, widget.model.bordercolor)),
           ),),
         child: view,
       );
@@ -348,9 +346,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
           color: widget.model.setFieldColor(context),
           border: Border.all(
               width: widget.model.borderwidth.toDouble(),
-              color: widget.model.enabled
-                  ? (widget.model.bordercolor ?? Theme.of(context).colorScheme.outline)
-                  : Theme.of(context).colorScheme.surfaceVariant),
+              color: widget.model.setErrorBorderColor(context, widget.model.bordercolor)),
           borderRadius: BorderRadius.circular(widget.model.radius.toDouble()),
         ),
         child: view,

@@ -719,9 +719,7 @@ class _InputViewState extends WidgetState<InputView>
           hintStyle: TextStyle(
             fontSize: fontsize ?? 14,
             fontWeight: FontWeight.w300,
-            color: widget.model.enabled != false
-                ? hintTextColor
-                : disabledTextColor,
+            color: widget.model.setErrorHintColor(context),
           ),
           counterText: "",
           // widget.model.error is getting set to null somewhere.
@@ -745,7 +743,7 @@ class _InputViewState extends WidgetState<InputView>
           //border attributes
           border: _getBorder(enabledBorderColor, null),
           errorBorder: _getBorder(errorBorderColor, null),
-          focusedErrorBorder: _getBorder(focusBorderColor, null),
+          focusedErrorBorder: _getBorder(errorBorderColor, null),
           focusedBorder: _getBorder(focusBorderColor, null),
           enabledBorder: _getBorder(enabledBorderColor, null),
           disabledBorder: _getBorder(disabledBorderColor, enabledBorderColor),

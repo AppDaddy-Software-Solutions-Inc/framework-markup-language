@@ -229,9 +229,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
               labelText: widget.model.dense ? null : hint,
               labelStyle: TextStyle(
                 fontSize: fontsize != null ? fontsize - 2 : 14,
-                color: widget.model.enabled != false
-                    ? hintTextColor
-                    : disabledTextColor,
+                color: widget.model.setErrorHintColor(context),
               ),
               counterText: "",
               errorText: widget.model.error == true &&

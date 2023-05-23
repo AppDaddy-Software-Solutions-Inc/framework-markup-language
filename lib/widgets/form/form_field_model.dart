@@ -401,6 +401,22 @@ class FormFieldModel extends DecoratedWidgetModel {
   //set the field color based on the error state
   Color setFieldColor(BuildContext context) {
     if (enabled != false) {
+        return color ?? Theme
+            .of(context)
+            .colorScheme
+            .surfaceVariant;
+    } else {
+      return color ?? Theme
+          .of(context)
+          .colorScheme
+          .primary
+          .withOpacity(0.5);
+    }
+  }
+
+  //set the field color based on the error state
+  Color setErrorHintColor(BuildContext context) {
+    if (enabled != false) {
       if(returnErrorState()) {
         return Theme.of(context).colorScheme.error;
       } else {
@@ -410,7 +426,23 @@ class FormFieldModel extends DecoratedWidgetModel {
             .surfaceVariant;
       }
     } else {
-     return color ?? Theme.of(context).colorScheme.primary.withOpacity(0.5);
+      return color ?? Theme.of(context).colorScheme.primary.withOpacity(0.5);
+    }
+  }
+
+
+  Color setErrorBorderColor(BuildContext context, Color? borderColor) {
+    if (enabled != false) {
+      if(returnErrorState()) {
+        return Theme.of(context).colorScheme.error;
+      } else {
+        return borderColor ?? Theme
+            .of(context)
+            .colorScheme
+            .surfaceVariant;
+      }
+    } else {
+      return color ?? Theme.of(context).colorScheme.primary.withOpacity(0.5);
     }
   }
 

@@ -90,7 +90,7 @@ class _SelectViewState extends WidgetState<SelectView>
 
     bool enabled = (widget.model.enabled != false) && (widget.model.busy != true);
 
-    TextStyle ts = TextStyle(fontSize: 14,
+    TextStyle ts = TextStyle(fontSize: widget.model.size,
         color: widget.model.color != null
             ? (widget.model.color?.computeLuminance() ?? 1) < 0.4
               ? Colors.white.withOpacity(0.5)
@@ -154,7 +154,7 @@ class _SelectViewState extends WidgetState<SelectView>
           : child;
     if (widget.model.border == 'all') {
       view = Container(
-        padding: const EdgeInsets.fromLTRB(15, 0, 5, 0),
+        padding: const EdgeInsets.fromLTRB(12, 0, 8, 0),
         decoration: BoxDecoration(
           color: selcol,
           border: Border.all(
@@ -171,18 +171,36 @@ class _SelectViewState extends WidgetState<SelectView>
     // display busy
     if (busy != null) view = Stack(children: [view, Positioned(top: 0, bottom: 0, left: 0, right: 0, child: busy)]);
 
-    // Sized?
-    view = SizedBox(width: widget.model.width ?? 200, height: widget.model.height ?? 48, child: view);
+    String? errorTextValue = widget.model.returnErrorText();
 
-     Padding(padding: EdgeInsets.symmetric(vertical: /*widget.model.dense ? 0 : */4), child: view);
+    if(!S.isNullOrEmpty(errorTextValue)) {
+      Text? errorText = Text(errorTextValue, style: TextStyle(color: Theme.of(context)
+          .colorScheme.error),);
 
-    Text errorText = Text(widget.model.returnErrorText(), style: TextStyle(color: Theme.of(context).colorScheme.error),);
+      view = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [view, errorText],
+      );
+    }
 
-    return view = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [view, errorText],
-    );
+
+    // get the model constraints
+    var modelConstraints = widget.model.constraints;
+
+    // constrain the input to 200 pixels if not constrained by the model
+    if (!modelConstraints.hasHorizontalExpansionConstraints) modelConstraints.width  = 200;
+
+    // add margins
+    view = addMargins(view);
+
+    // apply constraints
+    view = applyConstraints(view, modelConstraints);
+
+
+
+    return view;
   }
 
   Future<List<OptionModel>> getSuggestions(String pattern) async

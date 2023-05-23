@@ -546,7 +546,7 @@ class _InputViewState extends WidgetState<InputView>
     onLayout(constraints);
 
     // set the border colors
-    Color? enabledBorderColor = widget.model.bordercolor;
+    Color? enabledBorderColor = widget.model.bordercolor ?? Theme.of(context).colorScheme.outline;
     Color? disabledBorderColor = Theme.of(context).disabledColor;
     Color? focusBorderColor = Theme.of(context).focusColor;
     Color? errorBorderColor = Theme.of(context).colorScheme.error;
@@ -626,11 +626,11 @@ class _InputViewState extends WidgetState<InputView>
                   ? errorColor ?? Colors.transparent
                   : enabledColor ?? Colors.transparent,
           filled: true,
-          contentPadding: ((widget.model.dense == true)
+          contentPadding: widget.model.dense == true
               ? EdgeInsets.only(
-                  left: pad, top: pad + 10, right: pad, bottom: pad)
+                  left: pad, top: pad + 10, right: pad +10, bottom: pad +10)
               : EdgeInsets.only(
-                  left: pad + 10, top: pad + 4, right: pad, bottom: pad + 4)),
+                  left: pad + 10, top: pad + 10, right: pad, bottom: pad + 10),
           alignLabelWithHint: true,
           labelText: widget.model.dense ? null : hint,
           labelStyle: TextStyle(
@@ -647,52 +647,12 @@ class _InputViewState extends WidgetState<InputView>
               ? errorText ?? ""
               : null,
           errorStyle: TextStyle(
-            fontSize: fontsize ?? 12,
+            fontSize: fontsize ?? 14,
             fontWeight: FontWeight.w300,
             color: errorTextColor,
           ),
-          errorBorder: (widget.model.border == "outline" ||
-                  widget.model.border == "all")
-              ? OutlineInputBorder(
-                  borderRadius:
-                      BorderRadius.all(Radius.circular(widget.model.radius)),
-                  borderSide: BorderSide(
-                      color: errorBorderColor,
-                      width: widget.model.borderwidth),
-                )
-              : widget.model.border == "none"
-                  ? InputBorder.none
-                  : (widget.model.border == "bottom" ||
-                          widget.model.border == "underline")
-                      ? UnderlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                              Radius.circular(widget.model.radius)),
-                          borderSide: BorderSide(
-                              color: errorBorderColor,
-                              width: widget.model.borderwidth),
-                        )
-                      : InputBorder.none,
-          focusedErrorBorder: (widget.model.border == "outline" ||
-                  widget.model.border == "all")
-              ? OutlineInputBorder(
-                  borderRadius:
-                      BorderRadius.all(Radius.circular(widget.model.radius)),
-                  borderSide: BorderSide(
-                      color: errorBorderColor,
-                      width: widget.model.borderwidth),
-                )
-              : widget.model.border == "none"
-                  ? InputBorder.none
-                  : (widget.model.border == "bottom" ||
-                          widget.model.border == "underline")
-                      ? UnderlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                              Radius.circular(widget.model.radius)),
-                          borderSide: BorderSide(
-                              color: errorBorderColor,
-                              width: widget.model.borderwidth),
-                        )
-                      : InputBorder.none,
+          errorBorder: _getBorder(errorBorderColor, null),
+          focusedErrorBorder: _getBorder(focusBorderColor, null),
           hintText: widget.model.dense ? hint : null,
           hintStyle: TextStyle(
             fontSize: fontsize ?? 14,
@@ -709,132 +669,16 @@ class _InputViewState extends WidgetState<InputView>
           prefixIconConstraints: (widget.model.icon != null)
               ? BoxConstraints(maxHeight: 14, minWidth: 30)
               : null,
-          suffixIcon: (_getFormatType() == "password" &&
-                  widget.model.clear == false)
-              ? IconButton(
-                  icon: Icon(
-                    obscure! ? Icons.visibility : Icons.visibility_off,
-                    size: 17,
-                    color:
-                        hintTextColor,
-                  ),
-                  onPressed: () {
-                    widget.model.obscure = !obscure!;
-                  },
-                )
-              : (widget.model.enabled != false &&
-                      widget.model.editable != false &&
-                      widget.model.clear)
-                  ? IconButton(
-                      padding: EdgeInsets.zero,
-                      icon: Icon(
-                        Icons.clear_rounded,
-                        size: 17,
-                        color: hintTextColor,
-                      ),
-                      onPressed: () {
-                        onClear();
-                      },
-                    )
-                  : null,
+          suffixIcon: _getSuffixIcon(hintTextColor),
           suffixIconConstraints: (widget.model.enabled != false &&
                   widget.model.editable != false &&
                   widget.model.clear)
               ? BoxConstraints(maxHeight: 20)
               : null,
-          border: (widget.model.border == "outline" ||
-                  widget.model.border == "all")
-              ? OutlineInputBorder(
-                  borderRadius:
-                      BorderRadius.all(Radius.circular(widget.model.radius)),
-                  borderSide: BorderSide(
-                      color: enabledBorderColor ??
-                          Theme.of(context).colorScheme.outline,
-                      width: widget.model.borderwidth),
-                )
-              : widget.model.border == "none"
-                  ? InputBorder.none
-                  : (widget.model.border == "bottom" ||
-                          widget.model.border == "underline")
-                      ? UnderlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                              Radius.circular(widget.model.radius)),
-                          borderSide: BorderSide(
-                              color: enabledBorderColor ??
-                                  Theme.of(context).colorScheme.outline,
-                              width: widget.model.borderwidth),
-                        )
-                      : InputBorder.none,
-          focusedBorder: (widget.model.border == "outline" ||
-                  widget.model.border == "all")
-              ? OutlineInputBorder(
-                  borderRadius:
-                      BorderRadius.all(Radius.circular(widget.model.radius)),
-                  borderSide: BorderSide(
-                      color: focusBorderColor,
-                      width: widget.model.borderwidth),
-                )
-              : (widget.model.border == "bottom" ||
-                      widget.model.border == "underline")
-                  ? UnderlineInputBorder(
-                      borderRadius: BorderRadius.all(
-                          Radius.circular(widget.model.radius)),
-                      borderSide: BorderSide(
-                          color: focusBorderColor,
-                          width: widget.model.borderwidth),
-                    )
-                  : widget.model.border == "none"
-                      ? InputBorder.none
-                      : InputBorder.none,
-          enabledBorder: (widget.model.border == "outline" ||
-                  widget.model.border == "all")
-              ? OutlineInputBorder(
-                  borderRadius:
-                      BorderRadius.all(Radius.circular(widget.model.radius)),
-                  borderSide: BorderSide(
-                      color: enabledBorderColor ??
-                          Theme.of(context).colorScheme.outline,
-                      width: widget.model.borderwidth),
-                )
-              : widget.model.border == "none"
-                  ? InputBorder.none
-                  : (widget.model.border == "bottom" ||
-                          widget.model.border == "underline")
-                      ? UnderlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                              Radius.circular(widget.model.radius)),
-                          borderSide: BorderSide(
-                              color: enabledBorderColor ??
-                                  Theme.of(context).colorScheme.outline,
-                              width: widget.model.borderwidth),
-                        )
-                      : InputBorder.none,
-          disabledBorder: (widget.model.border == "outline" ||
-                  widget.model.border == "all")
-              ? OutlineInputBorder(
-                  borderRadius:
-                      BorderRadius.all(Radius.circular(widget.model.radius)),
-                  borderSide: BorderSide(
-                      color: disabledBorderColor,
-                      width: widget.model.borderwidth),
-                )
-              : widget.model.border == "none"
-                  ? InputBorder.none
-                  : (widget.model.border == "bottom" ||
-                          widget.model.border == "underline")
-                      ? UnderlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                              Radius.circular(widget.model.radius)),
-                          borderSide: BorderSide(
-                              color: widget.model.editable == false
-                                  ? enabledBorderColor ??
-                                      Theme.of(context)
-                                          .colorScheme
-                                          .surfaceVariant
-                                  : disabledBorderColor,
-                              width: widget.model.borderwidth),
-                        )
-                      : InputBorder.none,
+          border: _getBorder(enabledBorderColor, null),
+          focusedBorder: _getBorder(focusBorderColor, null),
+          enabledBorder: _getBorder(enabledBorderColor, null),
+          disabledBorder: _getBorder(disabledBorderColor, enabledBorderColor),
         ));
 
     // get the model constraints
@@ -852,4 +696,65 @@ class _InputViewState extends WidgetState<InputView>
 
     return view;
   }
-}
+
+  _getBorder(Color mainColor, Color? secondaryColor){
+
+    secondaryColor ??= mainColor;
+
+    if(widget.model.border == "none") {
+      return InputBorder.none;
+    }
+        else if (widget.model.border == "bottom" ||
+        widget.model.border == "underline"){
+        return UnderlineInputBorder(
+      borderRadius: BorderRadius.all(
+          Radius.circular(widget.model.radius)),
+      borderSide: BorderSide(
+          color: widget.model.editable == false
+              ? secondaryColor
+              : mainColor,
+          width: widget.model.borderwidth),
+    );}
+
+    else {
+      return OutlineInputBorder(
+        borderRadius:
+        BorderRadius.all(Radius.circular(widget.model.radius)),
+        borderSide: BorderSide(
+            color: mainColor,
+            width: widget.model.borderwidth),
+      );
+    }
+
+  }
+
+  _getSuffixIcon(Color hintTextColor) {
+    if (_getFormatType() == "password" && widget.model.clear == false) {
+      return IconButton(
+        icon: Icon(
+          obscure! ? Icons.visibility : Icons.visibility_off,
+          size: 17,
+          color: hintTextColor,
+        ),
+        onPressed: () {
+          widget.model.obscure = !obscure!;
+        },
+      );
+    } else if (widget.model.enabled != false &&
+        widget.model.editable != false &&
+        widget.model.clear) {
+      return IconButton(
+        padding: EdgeInsets.zero,
+        icon: Icon(
+          Icons.clear_rounded,
+          size: 17,
+          color: hintTextColor,
+        ),
+        onPressed: () {
+          onClear();
+        },
+      );
+    } else {
+      return null;
+    }
+  }}

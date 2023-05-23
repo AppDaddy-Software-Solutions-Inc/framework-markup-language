@@ -163,6 +163,19 @@ class DecoratedInputModel extends FormFieldModel {
 
   double get borderwidth => _borderwidth?.get() ?? 1;
 
+  /// The width of the containers border, defaults to 2
+  DoubleObservable? _width;
+  set width(dynamic v) {
+    if (_width != null) {
+      _width!.set(v);
+    } else if (v != null) {
+      _width = DoubleObservable(Binding.toKey(id, 'width'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  double get width => _width?.get() ?? 200;
+
   /// The border choice, can be `all`, `none`, `top`, `left`, `right`, `bottom`, `vertical`, or `horizontal`
   StringObservable? _border;
   set border(dynamic v) {
@@ -224,7 +237,7 @@ class DecoratedInputModel extends FormFieldModel {
       }
     }
   }
-  double? get size => _size?.get();
+  double? get size => _size?.get() ?? 14;
 
 
 

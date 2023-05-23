@@ -271,7 +271,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
                       .of(context)
                       .colorScheme
                       .onBackground : Theme.of(context).colorScheme.surfaceVariant,
-                  fontSize: widget.model.size ?? 14),
+                  fontSize: widget.model.size),
               decoration: InputDecoration(
                   contentPadding: EdgeInsets.only(bottom:2),
                   isDense: true,
@@ -320,7 +320,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
     focus.addListener(onFocusChange);
     if (widget.model.border == 'all') {
       view = Container(
-        padding: const EdgeInsets.fromLTRB(15, 0, 5, 0),
+        padding: const EdgeInsets.fromLTRB(12, 4, 0, 4),
         decoration: BoxDecoration(
           color: widget.model.setFieldColor(context),
           border: Border.all(
@@ -334,13 +334,22 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
       );
     }
 
-    Text errorText = Text(widget.model.returnErrorText(), style: TextStyle(color: Theme.of(context).colorScheme.error),);
+    String? errorTextValue = widget.model.returnErrorText();
 
-    view = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [view, errorText],
-    );
+
+    if(!S.isNullOrEmpty(errorTextValue)) {
+      Text? errorText = Text(errorTextValue, style: TextStyle(color: Theme.of(context)
+          .colorScheme.error),);
+
+      view = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [view, errorText],
+      );
+  }
+
+
 
     // display busy
     //var busy;
@@ -351,8 +360,6 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
 
     // constrain the input to 200 pixels if not constrained by the model
     if (!modelConstraints.hasHorizontalExpansionConstraints) modelConstraints.width  = 200;
-    if (!modelConstraints.hasVerticalExpansionConstraints)   modelConstraints.height = widget.model.returnErrorState() ? 70 : 48;
-
 
     // add margins
     view = addMargins(view);

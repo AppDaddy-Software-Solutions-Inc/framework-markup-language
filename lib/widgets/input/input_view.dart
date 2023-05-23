@@ -615,6 +615,8 @@ class _InputViewState extends WidgetState<InputView>
         maxLengthEnforcement: length != null
             ? MaxLengthEnforcement.enforced
             : MaxLengthEnforcement.none,
+
+        //Everything Below is Decorations
         decoration: InputDecoration(
           isDense: (widget.model.dense == true),
           errorMaxLines: 8,
@@ -630,8 +632,10 @@ class _InputViewState extends WidgetState<InputView>
               ? EdgeInsets.only(
                   left: pad, top: pad + 10, right: pad +10, bottom: pad +10)
               : EdgeInsets.only(
-                  left: pad + 10, top: pad + 10, right: pad, bottom: pad + 10),
+              left: pad + 10, top: pad + 15, right: pad + 10, bottom: pad + 15),
           alignLabelWithHint: true,
+
+
           labelText: widget.model.dense ? null : hint,
           labelStyle: TextStyle(
             fontSize: fontsize != null ? fontsize - 2 : 14,
@@ -639,20 +643,16 @@ class _InputViewState extends WidgetState<InputView>
                 ? hintTextColor
                 : disabledTextColor,
           ),
-          counterText: "",
-          // widget.model.error is getting set to null somewhere.
-          errorText: widget.model.error == true &&
-                  widget.model.errortext != 'null' &&
-                  widget.model.errortext != 'none'
-              ? errorText ?? ""
-              : null,
           errorStyle: TextStyle(
             fontSize: fontsize ?? 14,
             fontWeight: FontWeight.w300,
             color: errorTextColor,
           ),
-          errorBorder: _getBorder(errorBorderColor, null),
-          focusedErrorBorder: _getBorder(focusBorderColor, null),
+          errorText: widget.model.error == true &&
+              widget.model.errortext != 'null' &&
+              widget.model.errortext != 'none'
+              ? errorText ?? ""
+              : null,
           hintText: widget.model.dense ? hint : null,
           hintStyle: TextStyle(
             fontSize: fontsize ?? 14,
@@ -661,6 +661,10 @@ class _InputViewState extends WidgetState<InputView>
                 ? hintTextColor
                 : disabledTextColor,
           ),
+          counterText: "",
+          // widget.model.error is getting set to null somewhere.
+
+          //Icon Attributes
           prefixIcon: (widget.model.icon != null)
               ? Padding(
                   padding: EdgeInsets.only(right: 10),
@@ -675,7 +679,11 @@ class _InputViewState extends WidgetState<InputView>
                   widget.model.clear)
               ? BoxConstraints(maxHeight: 20)
               : null,
+
+          //border attributes
           border: _getBorder(enabledBorderColor, null),
+          errorBorder: _getBorder(errorBorderColor, null),
+          focusedErrorBorder: _getBorder(focusBorderColor, null),
           focusedBorder: _getBorder(focusBorderColor, null),
           enabledBorder: _getBorder(enabledBorderColor, null),
           disabledBorder: _getBorder(disabledBorderColor, enabledBorderColor),
@@ -757,4 +765,5 @@ class _InputViewState extends WidgetState<InputView>
     } else {
       return null;
     }
-  }}
+  }
+}

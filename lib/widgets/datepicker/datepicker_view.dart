@@ -91,7 +91,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
 
     // set the border color arrays
     // set the border colors
-    Color? enabledBorderColor = widget.model.bordercolor;
+    Color? enabledBorderColor = widget.model.bordercolor ?? Theme.of(context).colorScheme.outline;;
     Color? disabledBorderColor = Theme.of(context).disabledColor;
     Color? focusBorderColor = Theme.of(context).focusColor;
     Color? errorBorderColor = Theme.of(context).colorScheme.error;
@@ -169,11 +169,11 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
                       ? errorColor ?? Colors.transparent
                       : enabledColor ?? Colors.transparent,
               filled: true,
-              contentPadding: ((widget.model.dense == true)
+              contentPadding: widget.model.dense == true
                   ? EdgeInsets.only(
-                  left: pad, top: pad + 10, right: pad, bottom: pad)
+                  left: pad, top: pad + 10, right: pad +10, bottom: pad +10)
                   : EdgeInsets.only(
-                  left: pad + 10, top: pad + 4, right: pad, bottom: pad + 4)),
+                  left: pad + 10, top: pad + 15, right: pad + 10, bottom: pad + 15),
               alignLabelWithHint: true,
               labelText: widget.model.dense ? null : hint,
               labelStyle: TextStyle(
@@ -193,46 +193,6 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
                 fontWeight: FontWeight.w300,
                 color: errorTextColor,
               ),
-              errorBorder: (widget.model.border == "outline" ||
-                      widget.model.border == "all")
-                  ? OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(rad ?? 4)),
-                      borderSide: BorderSide(
-                          color: errorBorderColor,
-                          width: widget.model.borderwidth),
-                    )
-                  : widget.model.border == "none"
-                      ? InputBorder.none
-                      : (widget.model.border == "bottom" ||
-                              widget.model.border == "underline")
-                          ? UnderlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(rad ?? 0)),
-                              borderSide: BorderSide(
-                                  color: errorBorderColor,
-                                  width: widget.model.borderwidth),
-                            )
-                          : InputBorder.none,
-              focusedErrorBorder: (widget.model.border == "outline" ||
-                      widget.model.border == "all")
-                  ? OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(rad ?? 4)),
-                      borderSide: BorderSide(
-                          color: errorBorderColor,
-                          width: widget.model.borderwidth),
-                    )
-                  : widget.model.border == "none"
-                      ? InputBorder.none
-                      : (widget.model.border == "bottom" ||
-                              widget.model.border == "underline")
-                          ? UnderlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(rad ?? 0)),
-                              borderSide: BorderSide(
-                                  color: errorBorderColor,
-                                  width: widget.model.borderwidth),
-                            )
-                          : InputBorder.none,
               hintText: widget.model.dense ? hint : null,
               hintStyle: TextStyle(
                 fontSize: fontsize ?? 14,
@@ -253,95 +213,13 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
               prefixIconConstraints: BoxConstraints(maxHeight: 24),
               suffixIcon: null,
               suffixIconConstraints: null,
-              border: (widget.model.border == "outline" ||
-                      widget.model.border == "all")
-                  ? OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(rad ?? 4)),
-                      borderSide: BorderSide(
-                          color: enabledBorderColor ??
-                              Theme.of(context).colorScheme.outline,
-                          width: widget.model.borderwidth),
-                    )
-                  : widget.model.border == "none"
-                      ? InputBorder.none
-                      : (widget.model.border == "bottom" ||
-                              widget.model.border == "underline")
-                          ? UnderlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(rad ?? 0)),
-                              borderSide: BorderSide(
-                                  color: enabledBorderColor ??
-                                      Theme.of(context).colorScheme.outline,
-                                  width: widget.model.borderwidth),
-                            )
-                          : InputBorder.none,
-              focusedBorder: (widget.model.border == "outline" ||
-                      widget.model.border == "all")
-                  ? OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(rad ?? 4)),
-                      borderSide: BorderSide(
-                          color: focusBorderColor,
-                          width: widget.model.borderwidth),
-                    )
-                  : (widget.model.border == "bottom" ||
-                          widget.model.border == "underline")
-                      ? UnderlineInputBorder(
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(rad ?? 0)),
-                          borderSide: BorderSide(
-                              color: focusBorderColor,
-                              width: widget.model.borderwidth),
-                        )
-                      : widget.model.border == "none"
-                          ? InputBorder.none
-                          : InputBorder.none,
-              enabledBorder: (widget.model.border == "outline" ||
-                      widget.model.border == "all")
-                  ? OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(rad ?? 4)),
-                      borderSide: BorderSide(
-                          color: enabledBorderColor ??
-                              Theme.of(context).colorScheme.outline,
-                          width: widget.model.borderwidth),
-                    )
-                  : widget.model.border == "none"
-                      ? InputBorder.none
-                      : (widget.model.border == "bottom" ||
-                              widget.model.border == "underline")
-                          ? UnderlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(rad ?? 0)),
-                              borderSide: BorderSide(
-                                  color: enabledBorderColor ??
-                                      Theme.of(context).colorScheme.outline,
-                                  width: widget.model.borderwidth),
-                            )
-                          : InputBorder.none,
-              disabledBorder: (widget.model.border == "outline" ||
-                      widget.model.border == "all")
-                  ? OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(rad ?? 4)),
-                      borderSide: BorderSide(
-                          color: disabledBorderColor,
-                          width: widget.model.borderwidth),
-                    )
-                  : widget.model.border == "none"
-                      ? InputBorder.none
-                      : (widget.model.border == "bottom" ||
-                              widget.model.border == "underline")
-                          ? UnderlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(rad ?? 0)),
-                              borderSide: BorderSide(
-                                  color: widget.model.editable == false
-                                      ? enabledBorderColor ??
-                                          Theme.of(context)
-                                              .colorScheme
-                                              .surfaceVariant
-                                      : disabledBorderColor,
-                                  width: widget.model.borderwidth),
-                            )
-                          : InputBorder.none,
+
+              border: _getBorder(enabledBorderColor, null),
+              errorBorder: _getBorder(errorBorderColor, null),
+              focusedErrorBorder: _getBorder(focusBorderColor, null),
+              focusedBorder: _getBorder(focusBorderColor, null),
+              enabledBorder: _getBorder(enabledBorderColor, null),
+              disabledBorder: _getBorder(disabledBorderColor, enabledBorderColor),
             ),
           ),
         ),
@@ -389,4 +267,38 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
     cont!.text = '';
     widget.model.value = '';
   }
+
+
+  _getBorder(Color mainColor, Color? secondaryColor){
+
+    secondaryColor ??= mainColor;
+
+    if(widget.model.border == "none") {
+      return InputBorder.none;
+    }
+    else if (widget.model.border == "bottom" ||
+        widget.model.border == "underline"){
+      return UnderlineInputBorder(
+        borderRadius: BorderRadius.all(
+            Radius.circular(widget.model.radius)),
+        borderSide: BorderSide(
+            color: widget.model.editable == false
+                ? secondaryColor
+                : mainColor,
+            width: widget.model.borderwidth),
+      );}
+
+    else {
+      return OutlineInputBorder(
+        borderRadius:
+        BorderRadius.all(Radius.circular(widget.model.radius)),
+        borderSide: BorderSide(
+            color: mainColor,
+            width: widget.model.borderwidth),
+      );
+    }
+
+  }
+
+
 }

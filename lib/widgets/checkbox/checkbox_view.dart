@@ -92,13 +92,30 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
       }
     }
 
-    Text errorText = Text(widget.model.returnErrorText(), style: TextStyle(color: Theme.of(context).colorScheme.error),);
+    String? errorTextValue = widget.model.returnErrorText();
+
+    Widget? errorText = Padding(padding: EdgeInsets.only(top: 6.0 , bottom: 2.0), child: Text("     $errorTextValue", style: TextStyle(color: Theme.of(context)
+        .colorScheme.error),),);
 
     view = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [view, errorText],
     );
+
+    // get the model constraints
+    var modelConstraints = widget.model.constraints;
+
+    // constrain the input to 200 pixels if not constrained by the model
+    //if (!modelConstraints.hasHorizontalExpansionConstraints) modelConstraints.width  = 200;
+
+    // add margins
+    view = addMargins(view);
+
+    // apply constraints
+    view = applyConstraints(view, modelConstraints);
+
+
 
     return view;
   }
@@ -173,7 +190,7 @@ class CheckBox extends StatelessWidget {
             children: <Widget>[
               Padding(
                   padding:
-                      EdgeInsets.only(top: 8, bottom: 8, right: 8, left: 4),
+                      EdgeInsets.only(top: 8, bottom: 8, right: 8, left: 0),
                   child: checkbox),
               label
             ]);
@@ -182,5 +199,11 @@ class CheckBox extends StatelessWidget {
 
 
     return model.editable != false && model.enabled != false ? chk : Opacity(opacity: 0.7, child: chk);
+
+
+
+
+
+
   }
 }

@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'dart:html';
 import 'package:collection/collection.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
@@ -659,6 +660,13 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
     var function = propertyOrFunction.toLowerCase().trim();
     switch (function)
     {
+      // set the list
+      case "set":
+         dynamic jsonOrXml = S.item(arguments, 0);
+         var data = Data.from(jsonOrXml, root: root);
+         onSuccess(data, code: HttpStatus.ok);
+         break;
+
       // clear the list
       case "clear":
         int? start = S.toInt(S.item(arguments, 0));

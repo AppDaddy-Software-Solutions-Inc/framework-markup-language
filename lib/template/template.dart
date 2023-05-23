@@ -65,13 +65,6 @@ class Template
     // saved document
     if (isUUID(url)) return await fetchSaved(url: url);
 
-    if (url == '.js' && parameters != null) {
-      XmlDocument? document = TemplateManager().fromJs(parameters['templ8']);
-      // if (document != null) return document;
-      if (document != null) return Template.fromDocument(name: url, xml: document, parameters: parameters).document;
-      return null;
-    }
-
     Log().debug('Getting template $url');
 
     // parse the url

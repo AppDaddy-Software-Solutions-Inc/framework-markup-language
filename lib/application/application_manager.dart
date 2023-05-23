@@ -31,9 +31,7 @@ class _ApplicationManagerState extends State<ApplicationManager>
     System().registerEventListener(EventTypes.open, onOpen);
     System().registerEventListener(EventTypes.refresh, onRefresh);
     System().registerEventListener(EventTypes.theme, onTheme);
-    System().registerEventListener(EventTypes.openjstemplate, onOpenJsTemplate);
-    // Allows for Javascript communication to FML
-    Platform.js2fml();
+
     super.initState();
   }
 
@@ -43,7 +41,6 @@ class _ApplicationManagerState extends State<ApplicationManager>
     System().removeEventListener(EventTypes.open, onOpen);
     System().removeEventListener(EventTypes.refresh, onRefresh);
     System().removeEventListener(EventTypes.theme, onTheme);
-    System().removeEventListener(EventTypes.openjstemplate, onOpenJsTemplate);
     super.dispose();
   }
 
@@ -83,19 +80,6 @@ class _ApplicationManagerState extends State<ApplicationManager>
 
     // open the page
     return NavigationManager().open(parameters, model: event.model, dependency: dependency, refresh: refresh);
-  }
-
-  bool onOpenJsTemplate(Event event) {
-    // mark event as handled
-    event.handled = true;
-
-    // build parameters
-    Map<String, String?>? parameters = Map<String, String?>();
-    if (event.parameters != null) parameters.addAll(event.parameters!);
-
-    String templ8 = parameters['templ8'] ?? '<FML><TEXT value="Template Parsing Error" /></FML>';
-    // open the template
-    return NavigationManager().openJsTemplate(templ8);
   }
 
   void onRefresh(Event event) async

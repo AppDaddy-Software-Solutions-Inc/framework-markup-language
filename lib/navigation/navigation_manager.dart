@@ -382,20 +382,6 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     _addPage(page, index: index);
   }
 
-  bool openJsTemplate(String templ8) {
-    bool ok = true;
-    Widget view;
-    view = FrameworkView(FrameworkModel.fromJs(templ8));
-    // build page
-    MaterialPage page = _buildPage('', child: view);
-    // ensure we remove any current template
-    if (_pages.length > 1)
-      _pages.removeLast();
-    // push the new template to the page
-    _addPage(page, index: 1);
-    return ok;
-  }
-
   Future<bool> back(dynamic until) async
   {
     bool ok = true;

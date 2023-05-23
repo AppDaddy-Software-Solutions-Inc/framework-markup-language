@@ -106,7 +106,6 @@ class EventHandler extends Eval
       functions[S.fromEnum(EventTypes.logoff)]        = _handleEventLogoff;
       functions[S.fromEnum(EventTypes.signInWithFirebase)] = _handleEventSignInWithFirebase;
       functions[S.fromEnum(EventTypes.open)]          = _handleEventOpen;
-      functions[S.fromEnum(EventTypes.openjstemplate)]= _handleEventOpenJsTemplate;
       // replace (legacy) overlaps with Eval() function replace. use replaceRoute()
       functions[S.fromEnum(EventTypes.replace)]       = _handleEventReplace;
       functions[S.fromEnum(EventTypes.replaceroute)]  = _handleEventReplace;
@@ -529,15 +528,6 @@ class EventHandler extends Eval
     parameters['replace']    = S.toStr(replace);
     parameters['replaceall'] = S.toStr(replaceall);
     if (url != null && url != '') EventManager.of(model)?.broadcastEvent(model,Event(EventTypes.open, parameters: parameters, model: model));
-    return true;
-  }
-
-  /// Broadcasts the open event to be handled by individual widgets
-  Future<bool> _handleEventOpenJsTemplate([dynamic templ8]) async
-  {
-    Map<String,String?> parameters     = Map<String,String?>();
-    parameters['templ8']        = S.toStr(templ8);
-    if (templ8 != null && templ8 != '') EventManager.of(model)?.broadcastEvent(model,Event(EventTypes.openjstemplate, parameters: parameters, model: model));
     return true;
   }
 

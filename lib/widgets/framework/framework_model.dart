@@ -363,46 +363,6 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
     }
   }
 
-  static FrameworkModel fromJs(String templ8)
-  {
-    FrameworkModel model = FrameworkModel(System.app!, 'js2fml');
-    model._loadjs2fml(templ8);
-    return model;
-  }
-
-  Future _loadjs2fml(String templ8) async
-  {
-    try
-    {
-      XmlDocument? document = await Template.fetchTemplate(url: '.js', parameters: {'templ8': templ8}, refresh: true);
-      Template template = Template.fromDocument(name: 'js2fml', xml: document);
-      // get the xml
-      var xml = template.document!.rootElement;
-
-      // register late scope
-      var alias = Xml.attribute(node: xml, tag: "id");
-      if (scope != null && alias != null) System.app?.scopeManager.add(scope!, alias: alias);
-
-      // set template name
-      templateName = template.name ?? 'js2fml';
-      if (dependency != null) this.dependency = dependency;
-
-      // deserialize from xml
-      deserialize(xml);
-
-      // If the model contains any databrokers we fire them before building so we can bind to the data
-      // This normally happens in the view initState(), however, since the view builds before the
-      // template has been loaded, initState() has already run and we need to do it here.
-      model.initialize();
-    }
-    catch(e)
-    {
-      String msg = "Error building model from js2fml template";
-      Log().error(msg);
-      return Future.error(msg);
-    }
-  }
-
   /// Deserializes the FML template elements, attributes and children
   @override
   void deserialize(XmlElement? xml)

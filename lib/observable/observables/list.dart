@@ -81,6 +81,11 @@ class ListObservable extends Observable with ListMixin<dynamic>
   @override
   set(dynamic value, {bool notify = true})
   {
+    if (setter != null)
+    {
+      value = setter!(value);
+    }
+
     // null value
     if (value == null)
     {

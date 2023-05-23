@@ -81,18 +81,21 @@ class SplitViewState extends WidgetState<SplitView>
 
   Widget _constrainBox(BoxView box, BoxConstraints constraints, double ratio)
   {
-    if (!widget.model.vertical && constraints.hasBoundedWidth)
+    var direction = widget.model.vertical ? Axis.vertical : Axis.horizontal;
+    switch (direction)
     {
-      var width = (constraints.maxWidth * ratio) - (widget.model.dividerWidth/2);
-      box.model.setWidth(width);
-    }
+      case Axis.horizontal:
+        var width = (constraints.maxWidth * ratio) - (widget.model.dividerWidth/2);
+        box.model.setWidth(width);
+        if (constraints.hasBoundedHeight) box.model.setHeight(constraints.maxHeight);
+        break;
 
-    if (widget.model.vertical && constraints.hasBoundedHeight)
-    {
-      var height = (constraints.maxHeight * ratio) - (widget.model.dividerWidth/2);
-      box.model.setHeight(height);
+      case Axis.vertical:
+        var height = (constraints.maxHeight * ratio) - (widget.model.dividerWidth/2);
+        box.model.setHeight(height);
+        if (constraints.hasBoundedWidth) box.model.setWidth(constraints.maxWidth);
+        break;
     }
-
     return LayoutBoxChildData(child: box, model: box.model);
   }
 

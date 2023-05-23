@@ -295,7 +295,8 @@ class _BoxViewState extends WidgetState<BoxView>
     {
       // stack object
       case LayoutType.stack:
-        view = StackObject(model: widget.model,
+        view = StackObject(
+          model: widget.model,
           alignment: alignment.aligned,
           fit: StackFit.passthrough,
           clipBehavior: Clip.antiAlias,
@@ -345,6 +346,8 @@ class _BoxViewState extends WidgetState<BoxView>
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
+    var id = widget.model.id;
+
     // Check if widget is visible before wasting resources on building it
     if (widget.model.visible == false) return Offstage();
 

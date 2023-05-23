@@ -1,10 +1,9 @@
 import 'package:flutter/rendering.dart';
-import 'package:fml/system.dart';
 import 'package:fml/widgets/box/box_data.dart';
+import 'package:fml/widgets/box/box_mixin.dart';
 import 'dart:math' as math;
 
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 
 class _RunMetrics {
   _RunMetrics(this.mainAxisExtent, this.crossAxisExtent, this.childCount);
@@ -28,7 +27,10 @@ class _RunMetrics {
 ///
 /// The runs themselves are then positioned in the cross axis according to the
 /// [runSpacing] and [runAlignment].
-class WrapRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, BoxData>, RenderBoxContainerDefaultsMixin<RenderBox, BoxData>
+class WrapRenderer extends RenderBox with
+    BoxMixin,
+    ContainerRenderObjectMixin<RenderBox, BoxData>,
+    RenderBoxContainerDefaultsMixin<RenderBox, BoxData>
 {
   final BoxModel model;
 
@@ -479,101 +481,6 @@ class WrapRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
     }
   }
 
-  BoxConstraints _getChildLayoutConstraints(RenderBox child, ViewableWidgetModel model)
-  {
-    BoxConstraints constraints = this.constraints;
-
-    // get the child's width from the model
-    // and tighten the child's width constraint
-    var width = model.getWidth(widthParent: myWidth ?? myParentsWidth);
-    if (width != null)
-    {
-      constraints = constraints.tighten(width: width);
-    }
-
-    // get the child's height from the model
-    // and tighten the child's height constraint
-    var height = model.getHeight(heightParent: myHeight ?? myParentsHeight);
-    if (height != null)
-    {
-      constraints = constraints.tighten(height: height);
-    }
-
-    // If both of us are unconstrained in the horizontal axis,
-    // tighten the child's width constraint prior to layout
-    if (!constraints.hasBoundedWidth && model.canExpandInfinitelyWide)
-    {
-      constraints = BoxConstraints(minWidth: constraints.minWidth, maxWidth: myParentsWidth, minHeight: constraints.minHeight, maxHeight: constraints.maxHeight);
-    }
-
-    // If both of us are unconstrained in the vertical axis,
-    // tighten the child's height constraint prior to layout
-    if (!constraints.hasBoundedHeight && model.canExpandInfinitelyHigh)
-    {
-      constraints = BoxConstraints(minWidth: constraints.minWidth, maxWidth: constraints.maxWidth, minHeight: constraints.minHeight, maxHeight: myParentsHeight);
-    }
-
-    return constraints;
-  }
-
-  double? get myHeight
-  {
-    double? height;
-    var modelHeight = model.getHeight(heightParent: myParentsHeight);
-    if (modelHeight != null)
-    {
-      height = modelHeight;
-    }
-    return height;
-  }
-
-  double get myParentsHeight
-  {
-    double? height;
-    var parent = this.parent;
-    while (height != null &&  parent != null)
-    {
-      if (parent is RenderBox && parent.constraints.hasBoundedHeight)
-      {
-        height = parent.constraints.maxHeight;
-      }
-      else
-      {
-        parent = parent.parent;
-      }
-    }
-    return height ?? System().screenheight.toDouble();
-  }
-
-  double? get myWidth
-  {
-    double? width;
-    var modelWidth = model.getWidth(widthParent: myParentsWidth);
-    if (modelWidth != null)
-    {
-      width = modelWidth;
-    }
-    return width;
-  }
-
-  double get myParentsWidth
-  {
-    double? width;
-    var parent = this.parent;
-    while (width != null &&  parent != null)
-    {
-      if (parent is RenderBox && parent.constraints.hasBoundedWidth)
-      {
-        width = parent.constraints.maxWidth;
-      }
-      else
-      {
-        parent = parent.parent;
-      }
-    }
-    return width ?? System().screenwidth.toDouble();
-  }
-
   @override
   void performLayout()
   {
@@ -633,7 +540,7 @@ class WrapRenderer extends RenderBox with ContainerRenderObjectMixin<RenderBox, 
       var childModel = childData.model!;
 
       // get layout constraints
-      var childConstraints = _getChildLayoutConstraints(child, childModel);
+      var childConstraints = getChildLayoutConstraints(this, model, constraints, child, childModel);
 
       // Perform the layout
       child.layout(childConstraints, parentUsesSize: true);

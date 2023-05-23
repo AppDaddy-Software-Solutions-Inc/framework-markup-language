@@ -361,8 +361,8 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
 
 
     if(!S.isNullOrEmpty(errorTextValue)) {
-      Text? errorText = Text(errorTextValue, style: TextStyle(color: Theme.of(context)
-          .colorScheme.error),);
+      Widget? errorText = Padding(padding: EdgeInsets.only(top: 6.0 , bottom: 2.0), child: Text("    $errorTextValue", style: TextStyle(color: Theme.of(context)
+          .colorScheme.error),),);
 
       view = Column(
         crossAxisAlignment: CrossAxisAlignment.start,

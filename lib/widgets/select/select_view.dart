@@ -132,9 +132,7 @@ class _SelectViewState extends WidgetState<SelectView>
                 borderRadius: BorderRadius.circular(widget.model.radius.toDouble() <= 24
                             ? widget.model.radius.toDouble()
                             : 24),
-                underline: widget.model.border == 'underline'
-                    ? Container(height: 2, color: selcol)
-                    : Container(),
+                underline: Container(),
                 disabledHint: widget.model.hint == null
                     ? Container(height: 10,)
                     : Text(
@@ -152,11 +150,34 @@ class _SelectViewState extends WidgetState<SelectView>
                     .withOpacity(0.15),
               ))
           : child;
-    if (widget.model.border == 'all') {
+    if (widget.model.border == 'none') {
       view = Container(
-        padding: const EdgeInsets.fromLTRB(12, 0, 8, 0),
+        padding: const EdgeInsets.fromLTRB(12, 4, 0, 4),
         decoration: BoxDecoration(
-          color: selcol,
+          color: widget.model.setFieldColor(context),
+          borderRadius: BorderRadius.circular(widget.model.radius.toDouble()),
+        ),
+        child: view,
+      );
+    } else if (widget.model.border == 'bottom' || widget.model.border == 'underline') {
+      view = Container(
+        padding: const EdgeInsets.fromLTRB(12, 0, 0, 3),
+        decoration: BoxDecoration(
+          color: widget.model.setFieldColor(context),
+          border: Border(
+            bottom: BorderSide(
+                width: widget.model.borderwidth.toDouble(),
+                color: widget.model.enabled
+                    ? (widget.model.bordercolor ?? Theme.of(context).colorScheme.outline)
+                    : Theme.of(context).colorScheme.surfaceVariant),
+          ),),
+        child: view,
+      );
+      } else {
+      view = Container(
+        padding: const EdgeInsets.fromLTRB(12, 4, 0, 4),
+        decoration: BoxDecoration(
+          color: widget.model.setFieldColor(context),
           border: Border.all(
               width: widget.model.borderwidth.toDouble(),
               color: widget.model.enabled

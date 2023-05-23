@@ -547,7 +547,7 @@ class _InputViewState extends WidgetState<InputView>
         widget.model.border == "underline"){
         return UnderlineInputBorder(
       borderRadius: BorderRadius.all(
-          Radius.circular(widget.model.radius)),
+          Radius.circular(0)),
       borderSide: BorderSide(
           color: widget.model.editable == false
               ? secondaryColor
@@ -638,6 +638,8 @@ class _InputViewState extends WidgetState<InputView>
     _setFormatting();
 
     double pad = (widget.model.dense ? 0 : 4);
+    double additionalTopPad = widget.model.border == "bottom" || widget.model.border == "underline" ? 3 : 15;
+    double additionalBottomPad = widget.model.border == "bottom" || widget.model.border == "underline" ? 14 : 15;
     Widget view = TextField(
         controller: widget.model.controller,
         focusNode: focus,
@@ -685,18 +687,13 @@ class _InputViewState extends WidgetState<InputView>
           isDense: (widget.model.dense == true),
           errorMaxLines: 8,
           hintMaxLines: 8,
-          fillColor: widget.model.enabled == false
-              ? disabledColor ??
-              Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.2)
-              : widget.model.error == true
-              ? errorColor ?? Colors.transparent
-              : enabledColor ?? Colors.transparent,
+          fillColor: widget.model.setFieldColor(context),
           filled: true,
           contentPadding: widget.model.dense == true
               ? EdgeInsets.only(
-              left: pad, top: pad + 10, right: pad +10, bottom: pad +10)
+              left: pad, top: pad + 10, right: pad +10, bottom: pad + 10)
               : EdgeInsets.only(
-              left: pad + 10, top: pad + 15, right: pad + 10, bottom: pad + 15),
+              left: pad + 10, top: pad + additionalTopPad, right: pad + 10, bottom: pad + additionalBottomPad),
           alignLabelWithHint: true,
 
 

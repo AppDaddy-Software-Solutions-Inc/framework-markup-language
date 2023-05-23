@@ -318,7 +318,30 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
         )
     );
     focus.addListener(onFocusChange);
-    if (widget.model.border == 'all') {
+    if (widget.model.border == 'none') {
+      view = Container(
+        padding: const EdgeInsets.fromLTRB(12, 4, 0, 4),
+        decoration: BoxDecoration(
+          color: widget.model.setFieldColor(context),
+          borderRadius: BorderRadius.circular(widget.model.radius.toDouble()),
+        ),
+        child: view,
+      );
+    } else if (widget.model.border == 'bottom' || widget.model.border == 'underline') {
+      view = Container(
+        padding: const EdgeInsets.fromLTRB(12, 5, 0, 6),
+        decoration: BoxDecoration(
+          color: widget.model.setFieldColor(context),
+          border: Border(
+            bottom: BorderSide(
+                width: widget.model.borderwidth.toDouble(),
+                color: widget.model.enabled
+                    ? (widget.model.bordercolor ?? Theme.of(context).colorScheme.outline)
+                    : Theme.of(context).colorScheme.surfaceVariant),
+          ),),
+        child: view,
+      );
+    } else {
       view = Container(
         padding: const EdgeInsets.fromLTRB(12, 4, 0, 4),
         decoration: BoxDecoration(

@@ -117,7 +117,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
         widget.model.border == "underline"){
       return UnderlineInputBorder(
         borderRadius: BorderRadius.all(
-            Radius.circular(widget.model.radius)),
+            Radius.circular(0)),
         borderSide: BorderSide(
             color: widget.model.editable == false
                 ? secondaryColor
@@ -217,15 +217,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
               isDense: (widget.model.dense == true),
               errorMaxLines: 8,
               hintMaxLines: 8,
-              fillColor: widget.model.enabled == false
-                  ? disabledColor ??
-                  Theme.of(context)
-                      .colorScheme
-                      .surfaceVariant
-                      .withOpacity(0.2)
-                  : widget.model.error == true
-                  ? errorColor ?? Colors.transparent
-                  : enabledColor ?? Colors.transparent,
+              fillColor: widget.model.setFieldColor(context),
               filled: true,
               contentPadding: widget.model.dense == true
                   ? EdgeInsets.only(
@@ -262,8 +254,8 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
               prefixIcon: Padding(
                   padding: EdgeInsets.only(
                       right: 10,
-                      left: widget.model.border == "all" ? 10 : 0,
-                      bottom: widget.model.border == "all" ? 9 : 0),
+                      left: 10,
+                      bottom: 0),
                   child: Icon(widget.model.icon ??
                       (widget.model.type.toLowerCase() == "time"
                           ? Icons.access_time

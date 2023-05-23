@@ -728,11 +728,11 @@ class _InputViewState extends WidgetState<InputView>
           //Icon Attributes
           prefixIcon: (widget.model.icon != null)
               ? Padding(
-              padding: EdgeInsets.only(right: 10),
+              padding: EdgeInsets.symmetric(horizontal: 10),
               child: Icon(widget.model.icon))
               : null,
           prefixIconConstraints: (widget.model.icon != null)
-              ? BoxConstraints(maxHeight: 14, minWidth: 30)
+              ? BoxConstraints(maxHeight: 20, minWidth: 30)
               : null,
           suffixIcon: _getSuffixIcon(hintTextColor),
           suffixIconConstraints: (widget.model.enabled != false &&

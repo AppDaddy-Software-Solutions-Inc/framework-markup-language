@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:collection/collection.dart';
 import 'package:fml/log/manager.dart';
+import 'package:fml/observable/observables/string.dart';
 import 'binding.dart';
 import 'scope.dart';
 import 'package:fml/eval/eval.dart'       as fml_eval;
@@ -214,42 +215,57 @@ class Observable
     return value;
   }
 
-  onObservableChange(Observable? observable) {
-    String? template = signature;
+  onObservableChange(Observable? observable)
+  {
+    dynamic value = signature;
 
     // resolve all bindings
     Map<String?, dynamic>? variables;
-    if ((bindings != null) && (scope != null)){
-      for (Binding binding in bindings!) {
+    if ((bindings != null) && (scope != null))
+    {
+      for (Binding binding in bindings!)
+      {
         dynamic v;
 
         // get binding source
-        Observable? source = scope!.getObservable(
-            binding, requestor: observable);
-        if (source != null) {
+        Observable? source = scope!.getObservable(binding, requestor: observable);
+        if (source != null)
+        {
           dynamic myValue = source.get();
           v = binding.translate(myValue);
         }
 
         // is this an eval?
-        if (isEval) {
+        if (isEval)
+        {
           variables ??= <String?, dynamic>{};
-          if ((source is BlobObservable) && (!S.isNullOrEmpty(v))) {
+          if ((source is BlobObservable) && (!S.isNullOrEmpty(v)))
+          {
             variables[binding.signature] = 'blob';
-          } else {
+          }
+          else
+          {
             variables[binding.signature] = v;
           }
         }
 
+        else if (this is! StringObservable && bindings!.length == 1 && signature != null && signature!.replaceFirst(binding.signature, "").trim().isEmpty)
+        {
+          value = source?.get();
+          break;
+        }
+
         // simple replacement of string values
-        else {
+        else
+        {
           v = S.toStr(v) ?? "";
-          template = template!.replaceAll(binding.signature, v.toString());
+          value = value!.replaceAll(binding.signature, v);
         }
       }
-  }
+    }
+
     // set the value
-    dynamic value = (isEval) ? doEvaluation(signature, variables: variables) : template;
+    value = (isEval) ? doEvaluation(signature, variables: variables) : value;
 
     // 2-way binding?
     if (observable?.twoway == this) value = observable!.value;

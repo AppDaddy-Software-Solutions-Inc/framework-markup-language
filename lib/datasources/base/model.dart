@@ -271,6 +271,31 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
     status = (busy == true) ? "busy" : (status ?? "idle");
   }
 
+  // value
+  ListObservable? _value;
+  @override
+  set value(dynamic v)
+  {
+    if (_value != null)
+    {
+      _value!.set(v);
+    }
+    else
+    {
+      if (v != null)
+      {
+        _value = ListObservable(Binding.toKey(id, 'value'), v, scope: scope, setter: _valueSetter);
+      }
+    }
+  }
+
+  dynamic _valueSetter(dynamic jsonOrXml)
+  {
+    var data = Data.from(jsonOrXml, root: root);
+    onSuccess(data, code: HttpStatus.ok);
+    return data;
+  }
+
   // root
   StringObservable? _root;
   @override
@@ -347,9 +372,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
     statusmessage = Xml.get(node: xml, tag: 'statusmessage');
     maxrecords = Xml.get(node: xml, tag: 'maxrecords');
     root = Xml.attribute(node: xml, tag: 'root');
-
-    String? value = Xml.get(node: xml, tag: 'value');
-    if (!S.isNullOrEmpty(value)) onSuccess(Data.from(value, root: root));
+    value = Xml.get(node: xml, tag: 'value');
 
     // custom body defined?
     XmlElement? body = Xml.getChildElement(node: xml, tag: 'body');
@@ -660,13 +683,6 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
     var function = propertyOrFunction.toLowerCase().trim();
     switch (function)
     {
-      // set the list
-      case "set":
-         dynamic jsonOrXml = S.item(arguments, 0);
-         var data = Data.from(jsonOrXml, root: root);
-         onSuccess(data, code: HttpStatus.ok);
-         break;
-
       // clear the list
       case "clear":
         int? start = S.toInt(S.item(arguments, 0));

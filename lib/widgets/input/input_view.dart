@@ -627,11 +627,6 @@ class _InputViewState extends WidgetState<InputView>
     Color? hintTextColor =Theme.of(context).focusColor;
     Color? errorTextColor = Theme.of(context).colorScheme.error;
 
-    // get colors
-    Color? enabledColor = widget.model.color;
-    Color? disabledColor = widget.model.color2;
-    Color? errorColor = widget.model.color3;
-
     double? fontsize = widget.model.size;
     String? hint = widget.model.hint;
     int? length = widget.model.length;

@@ -98,8 +98,6 @@ class _SelectViewState extends WidgetState<SelectView>
             : Theme.of(context).colorScheme.onSurfaceVariant
     );
 
-    Color selcol = widget.model.setFieldColor(context);
-
     //////////
     /* View */
     //////////

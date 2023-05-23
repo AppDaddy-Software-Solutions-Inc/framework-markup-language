@@ -799,8 +799,6 @@ class FlexRenderer extends RenderBox
       {required BoxConstraints constraints,
       required ChildLayouter layoutChild}) {
 
-    var parentId = model.id;
-
     // size fixed children
     var fixedSize = calculateFixedChildSizes(layoutChild);
 

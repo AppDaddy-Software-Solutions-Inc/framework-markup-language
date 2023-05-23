@@ -541,7 +541,13 @@ class _InputViewState extends WidgetState<InputView>
     secondaryColor ??= mainColor;
 
     if(widget.model.border == "none") {
-      return InputBorder.none;
+      return OutlineInputBorder(
+        borderRadius:
+        BorderRadius.all(Radius.circular(widget.model.radius)),
+        borderSide: BorderSide(
+            color: Colors.transparent,
+            width: 2),
+      );
     }
         else if (widget.model.border == "bottom" ||
         widget.model.border == "underline"){

@@ -320,7 +320,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
     focus.addListener(onFocusChange);
     if (widget.model.border == 'none') {
       view = Container(
-        padding: const EdgeInsets.fromLTRB(12, 4, 0, 4),
+        padding: const EdgeInsets.fromLTRB(12, 6, 0, 6),
         decoration: BoxDecoration(
           color: widget.model.setFieldColor(context),
           borderRadius: BorderRadius.circular(widget.model.radius.toDouble()),
@@ -343,7 +343,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
       );
     } else {
       view = Container(
-        padding: const EdgeInsets.fromLTRB(12, 4, 0, 4),
+        padding: const EdgeInsets.fromLTRB(12, 5, 0, 4),
         decoration: BoxDecoration(
           color: widget.model.setFieldColor(context),
           border: Border.all(

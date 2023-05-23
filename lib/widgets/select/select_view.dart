@@ -152,7 +152,7 @@ class _SelectViewState extends WidgetState<SelectView>
           : child;
     if (widget.model.border == 'none') {
       view = Container(
-        padding: const EdgeInsets.fromLTRB(12, 4, 0, 4),
+        padding: const EdgeInsets.fromLTRB(12, 2, 8, 2),
         decoration: BoxDecoration(
           color: widget.model.setFieldColor(context),
           borderRadius: BorderRadius.circular(widget.model.radius.toDouble()),
@@ -161,7 +161,7 @@ class _SelectViewState extends WidgetState<SelectView>
       );
     } else if (widget.model.border == 'bottom' || widget.model.border == 'underline') {
       view = Container(
-        padding: const EdgeInsets.fromLTRB(12, 0, 0, 3),
+        padding: const EdgeInsets.fromLTRB(12, 0, 8, 3),
         decoration: BoxDecoration(
           color: widget.model.setFieldColor(context),
           border: Border(
@@ -175,7 +175,7 @@ class _SelectViewState extends WidgetState<SelectView>
       );
       } else {
       view = Container(
-        padding: const EdgeInsets.fromLTRB(12, 4, 0, 4),
+        padding: const EdgeInsets.fromLTRB(12, 1, 9, 0),
         decoration: BoxDecoration(
           color: widget.model.setFieldColor(context),
           border: Border.all(

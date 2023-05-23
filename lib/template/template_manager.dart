@@ -22,6 +22,22 @@ class TemplateManager
   }
   TemplateManager._init();
 
+  XmlDocument? fromJs(String? xml)
+  {
+    XmlDocument? template;
+    try {
+      template = Xml.tryParse(xml);
+      if (template == null) { // invalid xml from the js2fml data
+        Log().warning('Template Parsing Error, likely invalid syntax', caller: 'template_manager.dart: fromJs()');
+        template = Xml.tryParse('<FML><CENTER><TEXT style="h6" value="Template Parsing Error" /></CENTER></FML>');
+      }
+    } catch(e) {
+      Log().exception(e, caller: 'template_manager.dart: fromJs()');
+      template = null;
+    }
+    return template;
+  }
+
   XmlDocument? fromMemory(String url)
   {
     var uri = URI.parse(url);

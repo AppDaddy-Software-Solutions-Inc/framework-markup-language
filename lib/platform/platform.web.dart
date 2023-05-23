@@ -1,11 +1,14 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
-import 'package:universal_html/html.dart';
+import 'package:fml/event/event.dart';
+import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:universal_html/html.dart' hide Event;
 import 'package:flutter/foundation.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
-import 'package:universal_html/js.dart';
+import 'package:universal_html/js.dart' as JS;
 import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/event/manager.dart';
 
 class Platform
 {
@@ -37,6 +40,9 @@ class Platform
   {
     try
     {
+      JS.context.callMethod('postMessage', ['FML v${System().release}', '*']);
+      // postMessage('FML v${System().release}', '*');
+      print('posted message?');
       window.document.getElementById("logo")!.style.visibility = "hidden";
     }
     catch(e){
@@ -120,7 +126,7 @@ class Platform
         script.innerText = "function $id(i) { window.history.go(i); }";
         document.head!.append(script);
       }
-      context.callMethod(id, [-1 * pages]);
+      JS.context.callMethod(id, [-1 * pages]);
       return true;
     }
     catch(e)
@@ -148,4 +154,36 @@ class Platform
     if (e.isNotEmpty && e.first is MetaElement) title = (e.first as MetaElement).content;
     return title ?? applicationTitle;
   }
+
+  // Using the js package we can capture calls from javascript within flutter.
+  // The js2fml(json) function is called from js and held in the `context` map
+  // for use within flutter, passing its json as a map and allowing us in
+  // dart/flutter to access it. This enables fml to be used through an iframe.
+  //
+  // index.html listens to the .js postMessages
+  // <!-- VSCode Webview Template File Parsing -->
+  // <script>
+  // window.addEventListener('message', function(event) {
+  //   try {
+  //     if (!event.origin.startsWith('vscode-webview://')) {
+  //       console.log('bad origin');
+  //       return;
+  //     }
+  //     console.log(`Received ${event.data} from ${event.origin}`);
+  //     js2fml({'data': `${event.data}`, 'from': `${event.origin}`, 'to': 'fml'});
+  //   } catch(err) {
+  //     console.log(`js2fml error`);
+  //   }
+  // });
+  // </script>
+  static void js2fml() {
+    JS.context['js2fml'] = (json) async {
+      // The script in index.html sets the data value that we assign to doc:
+      // `js2fml({'data': `${event.data}`, 'from': `${event.origin}`, 'to': 'fml'});`
+      String doc = json['data'];
+      WidgetModel? model = System().model;
+      EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.openjstemplate, parameters: {'templ8': doc}));
+    };
+  }
+
 }

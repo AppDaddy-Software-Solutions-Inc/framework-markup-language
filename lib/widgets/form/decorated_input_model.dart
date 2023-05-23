@@ -165,6 +165,7 @@ class DecoratedInputModel extends FormFieldModel {
 
   /// The width of the containers border, defaults to 2
   DoubleObservable? _width;
+  @override
   set width(dynamic v) {
     if (_width != null) {
       _width!.set(v);
@@ -174,6 +175,7 @@ class DecoratedInputModel extends FormFieldModel {
     }
   }
 
+  @override
   double get width => _width?.get() ?? 200;
 
   /// The border choice, can be `all`, `none`, `top`, `left`, `right`, `bottom`, `vertical`, or `horizontal`

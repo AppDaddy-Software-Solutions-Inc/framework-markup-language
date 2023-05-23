@@ -535,175 +535,6 @@ class _InputViewState extends WidgetState<InputView>
     }
   }
 
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints) {
-    // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
-
-    // save system constraints
-    onLayout(constraints);
-
-    // set the border colors
-    Color? enabledBorderColor = widget.model.bordercolor ?? Theme.of(context).colorScheme.outline;
-    Color? disabledBorderColor = Theme.of(context).disabledColor;
-    Color? focusBorderColor = Theme.of(context).focusColor;
-    Color? errorBorderColor = Theme.of(context).colorScheme.error;
-
-    // set the text color arrays
-    Color? enabledTextColor = widget.model.textcolor;
-    Color? disabledTextColor = Theme.of(context).disabledColor;
-    Color? hintTextColor =Theme.of(context).focusColor;
-    Color? errorTextColor = Theme.of(context).colorScheme.error;
-
-    // get colors
-    Color? enabledColor = widget.model.color;
-    Color? disabledColor = widget.model.color2;
-    Color? errorColor = widget.model.color3;
-
-    double? fontsize = widget.model.size;
-    String? hint = widget.model.hint;
-    int? length = widget.model.length;
-    int? lines = widget.model.lines;
-
-    if (!S.isNullOrEmpty(widget.model.obscure)) obscure = widget.model.obscure;
-    if (obscure == true) lines = 1;
-
-    // set formatting
-    _setFormatting();
-
-    double pad = (widget.model.dense ? 0 : 4);
-    Widget view = TextField(
-        controller: widget.model.controller,
-        focusNode: focus,
-        autofocus: false,
-        autocorrect: false,
-        expands: widget.model.expand == true,
-        obscureText: obscure!,
-        keyboardType: (keyboardtype != null)
-            ? (keyboardTypes[keyboardtype!.toLowerCase()] ?? TextInputType.text)
-            : TextInputType.text,
-        textInputAction: (widget.model.keyboardinput != null)
-            ? (keyboardInputs[widget.model.keyboardinput?.toLowerCase()] ??
-                TextInputAction.next)
-            : TextInputAction.next,
-        inputFormatters: formatters,
-        enabled: (widget.model.enabled == false) ? false : true,
-        style: TextStyle(
-            color: widget.model.enabled != false
-                ? enabledTextColor ?? Theme.of(context).colorScheme.onBackground
-                : disabledTextColor,
-            fontSize: fontsize),
-        onChanged: (text) => onValue(text),
-        onEditingComplete: _commit,
-        onSubmitted: (s) {
-          if (widget.onSubmitted != null) widget.onSubmitted();
-          _handleSubmit(s);
-        },
-        textAlignVertical: widget.model.expand == true
-            ? TextAlignVertical.top
-            : TextAlignVertical.center,
-        maxLength: length,
-        maxLines: widget.model.expand == true
-            ? null
-            : obscure!
-                ? 1
-                : widget.model.maxlines ??
-                    (widget.model.wrap == true ? null : lines ?? 1),
-        minLines: widget.model.expand == true ? null : lines ?? 1,
-        maxLengthEnforcement: length != null
-            ? MaxLengthEnforcement.enforced
-            : MaxLengthEnforcement.none,
-
-        //Everything Below is Decorations
-        decoration: InputDecoration(
-          isDense: (widget.model.dense == true),
-          errorMaxLines: 8,
-          hintMaxLines: 8,
-          fillColor: widget.model.enabled == false
-              ? disabledColor ??
-                  Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.2)
-              : widget.model.error == true
-                  ? errorColor ?? Colors.transparent
-                  : enabledColor ?? Colors.transparent,
-          filled: true,
-          contentPadding: widget.model.dense == true
-              ? EdgeInsets.only(
-                  left: pad, top: pad + 10, right: pad +10, bottom: pad +10)
-              : EdgeInsets.only(
-              left: pad + 10, top: pad + 15, right: pad + 10, bottom: pad + 15),
-          alignLabelWithHint: true,
-
-
-          labelText: widget.model.dense ? null : hint,
-          labelStyle: TextStyle(
-            fontSize: fontsize != null ? fontsize - 2 : 14,
-            color: widget.model.enabled != false
-                ? hintTextColor
-                : disabledTextColor,
-          ),
-          errorStyle: TextStyle(
-            fontSize: fontsize ?? 14,
-            fontWeight: FontWeight.w300,
-            color: errorTextColor,
-          ),
-          errorText: widget.model.error == true &&
-              widget.model.errortext != 'null' &&
-              widget.model.errortext != 'none'
-              ? errorText ?? ""
-              : null,
-          hintText: widget.model.dense ? hint : null,
-          hintStyle: TextStyle(
-            fontSize: fontsize ?? 14,
-            fontWeight: FontWeight.w300,
-            color: widget.model.enabled != false
-                ? hintTextColor
-                : disabledTextColor,
-          ),
-          counterText: "",
-          // widget.model.error is getting set to null somewhere.
-
-          //Icon Attributes
-          prefixIcon: (widget.model.icon != null)
-              ? Padding(
-                  padding: EdgeInsets.only(right: 10),
-                  child: Icon(widget.model.icon))
-              : null,
-          prefixIconConstraints: (widget.model.icon != null)
-              ? BoxConstraints(maxHeight: 14, minWidth: 30)
-              : null,
-          suffixIcon: _getSuffixIcon(hintTextColor),
-          suffixIconConstraints: (widget.model.enabled != false &&
-                  widget.model.editable != false &&
-                  widget.model.clear)
-              ? BoxConstraints(maxHeight: 20)
-              : null,
-
-          //border attributes
-          border: _getBorder(enabledBorderColor, null),
-          errorBorder: _getBorder(errorBorderColor, null),
-          focusedErrorBorder: _getBorder(focusBorderColor, null),
-          focusedBorder: _getBorder(focusBorderColor, null),
-          enabledBorder: _getBorder(enabledBorderColor, null),
-          disabledBorder: _getBorder(disabledBorderColor, enabledBorderColor),
-        ));
-
-    // get the model constraints
-    var modelConstraints = widget.model.constraints;
-
-    // constrain the input to 200 pixels if not constrained by the model
-    if (!modelConstraints.hasHorizontalExpansionConstraints &&
-        !widget.model.expand) modelConstraints.width = 200;
-
-    // add margins
-    view = addMargins(view);
-
-    // apply constraints
-    view = applyConstraints(view, modelConstraints);
-
-    return view;
-  }
 
   _getBorder(Color mainColor, Color? secondaryColor){
 
@@ -766,4 +597,176 @@ class _InputViewState extends WidgetState<InputView>
       return null;
     }
   }
+
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints) {
+    // Check if widget is visible before wasting resources on building it
+    if (!widget.model.visible) return Offstage();
+
+    // save system constraints
+    onLayout(constraints);
+
+    // set the border colors
+    Color? enabledBorderColor = widget.model.bordercolor ?? Theme.of(context).colorScheme.outline;
+    Color? disabledBorderColor = Theme.of(context).disabledColor;
+    Color? focusBorderColor = Theme.of(context).focusColor;
+    Color? errorBorderColor = Theme.of(context).colorScheme.error;
+
+    // set the text color arrays
+    Color? enabledTextColor = widget.model.textcolor;
+    Color? disabledTextColor = Theme.of(context).disabledColor;
+    Color? hintTextColor =Theme.of(context).focusColor;
+    Color? errorTextColor = Theme.of(context).colorScheme.error;
+
+    // get colors
+    Color? enabledColor = widget.model.color;
+    Color? disabledColor = widget.model.color2;
+    Color? errorColor = widget.model.color3;
+
+    double? fontsize = widget.model.size;
+    String? hint = widget.model.hint;
+    int? length = widget.model.length;
+    int? lines = widget.model.lines;
+
+    if (!S.isNullOrEmpty(widget.model.obscure)) obscure = widget.model.obscure;
+    if (obscure == true) lines = 1;
+
+    // set formatting
+    _setFormatting();
+
+    double pad = (widget.model.dense ? 0 : 4);
+    Widget view = TextField(
+        controller: widget.model.controller,
+        focusNode: focus,
+        autofocus: false,
+        autocorrect: false,
+        expands: widget.model.expand == true,
+        obscureText: obscure!,
+        keyboardType: (keyboardtype != null)
+            ? (keyboardTypes[keyboardtype!.toLowerCase()] ?? TextInputType.text)
+            : TextInputType.text,
+        textInputAction: (widget.model.keyboardinput != null)
+            ? (keyboardInputs[widget.model.keyboardinput?.toLowerCase()] ??
+            TextInputAction.next)
+            : TextInputAction.next,
+        inputFormatters: formatters,
+        enabled: (widget.model.enabled == false) ? false : true,
+        style: TextStyle(
+            color: widget.model.enabled != false
+                ? enabledTextColor ?? Theme.of(context).colorScheme.onBackground
+                : disabledTextColor,
+            fontSize: fontsize),
+        onChanged: (text) => onValue(text),
+        onEditingComplete: _commit,
+        onSubmitted: (s) {
+          if (widget.onSubmitted != null) widget.onSubmitted();
+          _handleSubmit(s);
+        },
+        textAlignVertical: widget.model.expand == true
+            ? TextAlignVertical.top
+            : TextAlignVertical.center,
+        maxLength: length,
+        maxLines: widget.model.expand == true
+            ? null
+            : obscure!
+            ? 1
+            : widget.model.maxlines ??
+            (widget.model.wrap == true ? null : lines ?? 1),
+        minLines: widget.model.expand == true ? null : lines ?? 1,
+        maxLengthEnforcement: length != null
+            ? MaxLengthEnforcement.enforced
+            : MaxLengthEnforcement.none,
+
+        //Everything Below is Decorations
+        decoration: InputDecoration(
+          isDense: (widget.model.dense == true),
+          errorMaxLines: 8,
+          hintMaxLines: 8,
+          fillColor: widget.model.enabled == false
+              ? disabledColor ??
+              Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.2)
+              : widget.model.error == true
+              ? errorColor ?? Colors.transparent
+              : enabledColor ?? Colors.transparent,
+          filled: true,
+          contentPadding: widget.model.dense == true
+              ? EdgeInsets.only(
+              left: pad, top: pad + 10, right: pad +10, bottom: pad +10)
+              : EdgeInsets.only(
+              left: pad + 10, top: pad + 15, right: pad + 10, bottom: pad + 15),
+          alignLabelWithHint: true,
+
+
+          labelText: widget.model.dense ? null : hint,
+          labelStyle: TextStyle(
+            fontSize: fontsize != null ? fontsize - 2 : 14,
+            color: widget.model.enabled != false
+                ? hintTextColor
+                : disabledTextColor,
+          ),
+          errorStyle: TextStyle(
+            fontSize: fontsize ?? 14,
+            fontWeight: FontWeight.w300,
+            color: errorTextColor,
+          ),
+          errorText: widget.model.error == true &&
+              widget.model.errortext != 'null' &&
+              widget.model.errortext != 'none'
+              ? errorText ?? ""
+              : null,
+          hintText: widget.model.dense ? hint : null,
+          hintStyle: TextStyle(
+            fontSize: fontsize ?? 14,
+            fontWeight: FontWeight.w300,
+            color: widget.model.enabled != false
+                ? hintTextColor
+                : disabledTextColor,
+          ),
+          counterText: "",
+          // widget.model.error is getting set to null somewhere.
+
+          //Icon Attributes
+          prefixIcon: (widget.model.icon != null)
+              ? Padding(
+              padding: EdgeInsets.only(right: 10),
+              child: Icon(widget.model.icon))
+              : null,
+          prefixIconConstraints: (widget.model.icon != null)
+              ? BoxConstraints(maxHeight: 14, minWidth: 30)
+              : null,
+          suffixIcon: _getSuffixIcon(hintTextColor),
+          suffixIconConstraints: (widget.model.enabled != false &&
+              widget.model.editable != false &&
+              widget.model.clear)
+              ? BoxConstraints(maxHeight: 20)
+              : null,
+
+          //border attributes
+          border: _getBorder(enabledBorderColor, null),
+          errorBorder: _getBorder(errorBorderColor, null),
+          focusedErrorBorder: _getBorder(focusBorderColor, null),
+          focusedBorder: _getBorder(focusBorderColor, null),
+          enabledBorder: _getBorder(enabledBorderColor, null),
+          disabledBorder: _getBorder(disabledBorderColor, enabledBorderColor),
+        ));
+
+    // get the model constraints
+    var modelConstraints = widget.model.constraints;
+
+    // constrain the input to 200 pixels if not constrained by the model
+    if (!modelConstraints.hasHorizontalExpansionConstraints &&
+        !widget.model.expand) modelConstraints.width = 200;
+
+    // add margins
+    view = addMargins(view);
+
+    // apply constraints
+    view = applyConstraints(view, modelConstraints);
+
+    return view;
+  }
+
 }

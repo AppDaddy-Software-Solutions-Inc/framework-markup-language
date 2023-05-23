@@ -79,169 +79,6 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
     if (mounted) setState(() {});
   }
 
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints) {
-    // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
-
-    // save system constraints
-    onLayout(constraints);
-
-    // set the border color arrays
-    // set the border colors
-    Color? enabledBorderColor = widget.model.bordercolor ?? Theme.of(context).colorScheme.outline;;
-    Color? disabledBorderColor = Theme.of(context).disabledColor;
-    Color? focusBorderColor = Theme.of(context).focusColor;
-    Color? errorBorderColor = Theme.of(context).colorScheme.error;
-
-    // set the text color arrays
-    Color? enabledTextColor = widget.model.textcolor;
-    Color? disabledTextColor = Theme.of(context).disabledColor;
-    Color? hintTextColor =Theme.of(context).focusColor;
-    Color? errorTextColor = Theme.of(context).colorScheme.error;
-
-
-    Color? enabledColor = widget.model.color;
-    Color? disabledColor = widget.model.color2;
-    Color? errorColor = widget.model.color3;
-
-    double? fontsize = widget.model.size;
-    String? hint = widget.model.hint;
-
-    // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
-
-    String? value = widget.model.value;
-    double? rad = S.toDouble(widget.model.radius);
-    cont = TextEditingController(text: value);
-    double pad = (widget.model.dense ? 0 : 4);
-    // View
-    Widget view;
-    view = GestureDetector(
-      //a wee bit janky way of copying and highlighting entire selection without datepicker opening.
-      onLongPress: () {
-        focusNode!.requestFocus();
-        cont!.selection =
-            TextSelection(baseOffset: 0, extentOffset: cont!.value.text.length);
-        Clipboard.setData(ClipboardData(text: cont!.text));
-      },
-      onTap: () async {
-        focusNode!.requestFocus();
-        if (widget.model.editable != false) {
-          widget.model.isPicking = true;
-
-          await widget.model.show(context, widget.model.mode, widget.model.type,
-              widget.model.oldest, widget.model.newest, widget.model.format);
-          widget.model.isPicking = false;
-        }
-      },
-      child: view = Container(
-        color: Colors.transparent,
-        child: IgnorePointer(
-          child: TextField(
-            keyboardType: TextInputType.none,
-            showCursor: false,
-            focusNode: focusNode,
-            onChanged: (val) => onChange(val),
-            controller: cont,
-            autofocus: false,
-            enabled: (widget.model.enabled == false) ? false : true,
-            style: TextStyle(
-                color: widget.model.enabled != false
-                    ? enabledTextColor ??
-                        Theme.of(context).colorScheme.onBackground
-                    : disabledTextColor,
-                fontSize: fontsize),
-            textAlignVertical: TextAlignVertical.center,
-            decoration: InputDecoration(
-              isDense: (widget.model.dense == true),
-              errorMaxLines: 8,
-              hintMaxLines: 8,
-              fillColor: widget.model.enabled == false
-                  ? disabledColor ??
-                      Theme.of(context)
-                          .colorScheme
-                          .surfaceVariant
-                          .withOpacity(0.2)
-                  : widget.model.error == true
-                      ? errorColor ?? Colors.transparent
-                      : enabledColor ?? Colors.transparent,
-              filled: true,
-              contentPadding: widget.model.dense == true
-                  ? EdgeInsets.only(
-                  left: pad, top: pad + 10, right: pad +10, bottom: pad +10)
-                  : EdgeInsets.only(
-                  left: pad + 10, top: pad + 15, right: pad + 10, bottom: pad + 15),
-              alignLabelWithHint: true,
-              labelText: widget.model.dense ? null : hint,
-              labelStyle: TextStyle(
-                fontSize: fontsize != null ? fontsize - 2 : 14,
-                color: widget.model.enabled != false
-                    ? hintTextColor
-                    : disabledTextColor,
-              ),
-              counterText: "",
-              errorText: widget.model.error == true &&
-                      widget.model.errortext != 'null' &&
-                      widget.model.errortext != 'none'
-                  ? widget.model.errortext ?? ""
-                  : null,
-              errorStyle: TextStyle(
-                fontSize: fontsize ?? 12,
-                fontWeight: FontWeight.w300,
-                color: errorTextColor,
-              ),
-              hintText: widget.model.dense ? hint : null,
-              hintStyle: TextStyle(
-                fontSize: fontsize ?? 14,
-                fontWeight: FontWeight.w300,
-                color: widget.model.enabled != false
-                    ? hintTextColor
-                    : disabledTextColor,
-              ),
-              prefixIcon: Padding(
-                  padding: EdgeInsets.only(
-                      right: 10,
-                      left: widget.model.border == "all" ? 10 : 0,
-                      bottom: widget.model.border == "all" ? 9 : 0),
-                  child: Icon(widget.model.icon ??
-                      (widget.model.type.toLowerCase() == "time"
-                          ? Icons.access_time
-                          : Icons.calendar_today))),
-              prefixIconConstraints: BoxConstraints(maxHeight: 24),
-              suffixIcon: null,
-              suffixIconConstraints: null,
-
-              border: _getBorder(enabledBorderColor, null),
-              errorBorder: _getBorder(errorBorderColor, null),
-              focusedErrorBorder: _getBorder(focusBorderColor, null),
-              focusedBorder: _getBorder(focusBorderColor, null),
-              enabledBorder: _getBorder(enabledBorderColor, null),
-              disabledBorder: _getBorder(disabledBorderColor, enabledBorderColor),
-            ),
-          ),
-        ),
-      ),
-    );
-
-    // get the model constraints
-    var modelConstraints = widget.model.constraints;
-
-    // constrain the input to 200 pixels if not constrained by the model
-    if (!modelConstraints.hasHorizontalExpansionConstraints) {
-      modelConstraints.width = 200;
-    }
-
-    // add margins
-    view = addMargins(view);
-
-    // apply user defined constraints
-    view = applyConstraints(view, widget.model.constraints);
-
-    return view;
-  }
 
   void onChange(String d) async {
     if (true) {
@@ -299,6 +136,171 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
     }
 
   }
+
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints) {
+    // Check if widget is visible before wasting resources on building it
+    if (!widget.model.visible) return Offstage();
+
+    // save system constraints
+    onLayout(constraints);
+
+    // set the border color arrays
+    // set the border colors
+    Color? enabledBorderColor = widget.model.bordercolor ?? Theme.of(context).colorScheme.outline;
+    Color? disabledBorderColor = Theme.of(context).disabledColor;
+    Color? focusBorderColor = Theme.of(context).focusColor;
+    Color? errorBorderColor = Theme.of(context).colorScheme.error;
+
+    // set the text color arrays
+    Color? enabledTextColor = widget.model.textcolor;
+    Color? disabledTextColor = Theme.of(context).disabledColor;
+    Color? hintTextColor =Theme.of(context).focusColor;
+    Color? errorTextColor = Theme.of(context).colorScheme.error;
+
+
+    Color? enabledColor = widget.model.color;
+    Color? disabledColor = widget.model.color2;
+    Color? errorColor = widget.model.color3;
+
+    double? fontsize = widget.model.size;
+    String? hint = widget.model.hint;
+
+    // Check if widget is visible before wasting resources on building it
+    if (!widget.model.visible) return Offstage();
+
+    String? value = widget.model.value;
+    cont = TextEditingController(text: value);
+    double pad = (widget.model.dense ? 0 : 4);
+    // View
+    Widget view;
+    view = GestureDetector(
+      //a wee bit janky way of copying and highlighting entire selection without datepicker opening.
+      onLongPress: () {
+        focusNode!.requestFocus();
+        cont!.selection =
+            TextSelection(baseOffset: 0, extentOffset: cont!.value.text.length);
+        Clipboard.setData(ClipboardData(text: cont!.text));
+      },
+      onTap: () async {
+        focusNode!.requestFocus();
+        if (widget.model.editable != false) {
+          widget.model.isPicking = true;
+
+          await widget.model.show(context, widget.model.mode, widget.model.type,
+              widget.model.oldest, widget.model.newest, widget.model.format);
+          widget.model.isPicking = false;
+        }
+      },
+      child: view = Container(
+        color: Colors.transparent,
+        child: IgnorePointer(
+          child: TextField(
+            keyboardType: TextInputType.none,
+            showCursor: false,
+            focusNode: focusNode,
+            onChanged: (val) => onChange(val),
+            controller: cont,
+            autofocus: false,
+            enabled: (widget.model.enabled == false) ? false : true,
+            style: TextStyle(
+                color: widget.model.enabled != false
+                    ? enabledTextColor ??
+                    Theme.of(context).colorScheme.onBackground
+                    : disabledTextColor,
+                fontSize: fontsize),
+            textAlignVertical: TextAlignVertical.center,
+            decoration: InputDecoration(
+              isDense: (widget.model.dense == true),
+              errorMaxLines: 8,
+              hintMaxLines: 8,
+              fillColor: widget.model.enabled == false
+                  ? disabledColor ??
+                  Theme.of(context)
+                      .colorScheme
+                      .surfaceVariant
+                      .withOpacity(0.2)
+                  : widget.model.error == true
+                  ? errorColor ?? Colors.transparent
+                  : enabledColor ?? Colors.transparent,
+              filled: true,
+              contentPadding: widget.model.dense == true
+                  ? EdgeInsets.only(
+                  left: pad, top: pad + 10, right: pad +10, bottom: pad +10)
+                  : EdgeInsets.only(
+                  left: pad + 10, top: pad + 15, right: pad + 10, bottom: pad + 15),
+              alignLabelWithHint: true,
+              labelText: widget.model.dense ? null : hint,
+              labelStyle: TextStyle(
+                fontSize: fontsize != null ? fontsize - 2 : 14,
+                color: widget.model.enabled != false
+                    ? hintTextColor
+                    : disabledTextColor,
+              ),
+              counterText: "",
+              errorText: widget.model.error == true &&
+                  widget.model.errortext != 'null' &&
+                  widget.model.errortext != 'none'
+                  ? widget.model.errortext ?? ""
+                  : null,
+              errorStyle: TextStyle(
+                fontSize: fontsize ?? 12,
+                fontWeight: FontWeight.w300,
+                color: errorTextColor,
+              ),
+              hintText: widget.model.dense ? hint : null,
+              hintStyle: TextStyle(
+                fontSize: fontsize ?? 14,
+                fontWeight: FontWeight.w300,
+                color: widget.model.enabled != false
+                    ? hintTextColor
+                    : disabledTextColor,
+              ),
+              prefixIcon: Padding(
+                  padding: EdgeInsets.only(
+                      right: 10,
+                      left: widget.model.border == "all" ? 10 : 0,
+                      bottom: widget.model.border == "all" ? 9 : 0),
+                  child: Icon(widget.model.icon ??
+                      (widget.model.type.toLowerCase() == "time"
+                          ? Icons.access_time
+                          : Icons.calendar_today))),
+              prefixIconConstraints: BoxConstraints(maxHeight: 24),
+              suffixIcon: null,
+              suffixIconConstraints: null,
+
+              border: _getBorder(enabledBorderColor, null),
+              errorBorder: _getBorder(errorBorderColor, null),
+              focusedErrorBorder: _getBorder(focusBorderColor, null),
+              focusedBorder: _getBorder(focusBorderColor, null),
+              enabledBorder: _getBorder(enabledBorderColor, null),
+              disabledBorder: _getBorder(disabledBorderColor, enabledBorderColor),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    // get the model constraints
+    var modelConstraints = widget.model.constraints;
+
+    // constrain the input to 200 pixels if not constrained by the model
+    if (!modelConstraints.hasHorizontalExpansionConstraints) {
+      modelConstraints.width = 200;
+    }
+
+    // add margins
+    view = addMargins(view);
+
+    // apply user defined constraints
+    view = applyConstraints(view, widget.model.constraints);
+
+    return view;
+  }
+
 
 
 }

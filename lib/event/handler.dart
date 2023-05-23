@@ -535,7 +535,7 @@ class EventHandler extends Eval
   /// Broadcasts the open event to be handled by individual widgets
   Future<bool> _handleEventOpenJsTemplate([dynamic templ8]) async
   {
-    Map<String,String?> parameters     = Map<String,String?>();
+    Map<String,String?> parameters     = {};
     parameters['templ8']        = S.toStr(templ8);
     if (templ8 != null && templ8 != '') EventManager.of(model)?.broadcastEvent(model,Event(EventTypes.openjstemplate, parameters: parameters, model: model));
     return true;

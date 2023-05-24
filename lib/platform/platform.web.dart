@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'dart:convert';
 import 'package:fml/event/event.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:universal_html/html.dart';
@@ -153,27 +154,40 @@ class Platform
     return title ?? applicationTitle;
   }
 
-  // Using the js package we can capture calls from javascript within flutter.
-  // The js2fml(json) function is called from js and held in the `context` map
-  // for use within flutter, passing its json as a map and allowing us in
-  // dart/flutter to access it. This enables fml to be used through an iframe.
-  //
-  // index.html listens to the .js postMessages
-  // <!-- VSCode Webview Template File Parsing -->
-  // <script>
-  // window.addEventListener('message', function(event) {
-  //   try {
-  //     if (!event.origin.startsWith('vscode-webview://')) {
-  //       console.log('bad origin');
-  //       return;
-  //     }
-  //     console.log(`Received ${event.data} from ${event.origin}`);
-  //     js2fml({'data': `${event.data}`, 'from': `${event.origin}`, 'to': 'fml'});
-  //   } catch(err) {
-  //     console.log(`js2fml error`);
-  //   }
-  // });
-  // </script>
+  /// Using the js package we can capture calls from javascript within flutter.
+  /// The js2fml(json) function is called from js and held in the `context` map
+  /// for use within flutter, passing its json as a map and allowing us in
+  /// dart/flutter to access it. This enables fml to be used through an iframe.
+  ///
+  /// index.html loads the script from local.js file
+  /// then listens to the .js postMessages() calls
+  ///
+  ///   // <!-- VSCode Webview Template File Parsing -->
+  ///   window.addEventListener('message', function(event) {
+  ///       var data;
+  ///       try {
+  ///           // <!--console.log(`Received ${event.data} from ${event.origin}`);-->
+  ///           data = JSON.parse(event.data);
+  ///       } catch(e) {}
+  ///       try {
+  ///           if (event.origin.startsWith('https://pad.fml.dev') && data && data.data && data.to) {
+  ///               window.parent.postMessage({'data': data.data, 'from': event.origin, 'to': data.to});
+  ///           }
+  ///           else if (!event.origin.startsWith('vscode-webview://')) {
+  ///               // <!--console.log('bad origin');-->
+  ///               return;
+  ///           }
+  ///           else {
+  ///              js2fml({'data': `${event.data}`, 'from': `${event.origin}`, 'to': 'fml'});
+  ///          }
+  ///       } catch(err) {
+  ///           // <!--console.log(`js2fml error`);-->
+  ///       }
+  ///   });
+
+
+  /// Basic implementation to show a template sent from js for vscode extension.
+  /// Next step: non-breaking refactor to expand the protocol and enhance fml2js
   static void js2fml() {
     context['js2fml'] = (json) async {
       // The script in index.html sets the data value that we assign to doc:
@@ -184,9 +198,18 @@ class Platform
     };
   }
 
+  /// This is a stub for expansion, some kind of protocol should be decided on
+  /// within the data field before proceeding further
   static void fml2js({String? version}) {
     version = version ?? '?';
-    context.callMethod('postMessage', ['FML v$version', '*']);
+    final data = <String, dynamic>{
+      'data': 'FML v$version',
+      'from': 'fml',
+      'to': 'js'
+    };
+    final jsonEncoder = JsonEncoder();
+    final json = jsonEncoder.convert(data);
+    context.callMethod('postMessage', [json, '*']);
     print('posted message: $version');
   }
 

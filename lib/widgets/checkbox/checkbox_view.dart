@@ -177,7 +177,7 @@ class CheckBox extends StatelessWidget {
               : Colors.transparent,
           side: BorderSide(
               width: 2,
-              color: model.setErrorBorderColor(context, model.color)),
+              color: model.setErrorBorderColor(context, model.color ?? Theme.of(context).colorScheme.primary.withOpacity(0.4))),
           visualDensity: VisualDensity(horizontal: -2, vertical: -4),
           splashRadius: 18,
           mouseCursor: model.enabled != false && model.editable != false

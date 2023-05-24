@@ -638,7 +638,7 @@ class _InputViewState extends WidgetState<InputView>
     // set formatting
     _setFormatting();
 
-    double pad = (widget.model.dense ? 0 : 4);
+    double pad = 4;
     double additionalTopPad = widget.model.border == "bottom" || widget.model.border == "underline" ? 3 : 15;
     double additionalBottomPad = widget.model.border == "bottom" || widget.model.border == "underline" ? 14 : 15;
     Widget view = TextField(
@@ -685,14 +685,14 @@ class _InputViewState extends WidgetState<InputView>
 
         //Everything Below is Decorations
         decoration: InputDecoration(
-          isDense: (widget.model.dense == true),
+          isDense: false,
           errorMaxLines: 8,
           hintMaxLines: 8,
           fillColor: widget.model.setFieldColor(context),
           filled: true,
           contentPadding: widget.model.dense == true
               ? EdgeInsets.only(
-              left: pad, top: pad + 10, right: pad +10, bottom: pad + 10)
+              left: pad + 10, top: pad + 8, right: pad +10, bottom: pad + 21)
               : EdgeInsets.only(
               left: pad + 10, top: pad + additionalTopPad, right: pad + 10, bottom: pad + additionalBottomPad),
           alignLabelWithHint: true,
@@ -749,6 +749,8 @@ class _InputViewState extends WidgetState<InputView>
           disabledBorder: _getBorder(disabledBorderColor, enabledBorderColor),
         ));
 
+
+    if (widget.model.dense) view = Padding(padding: EdgeInsets.all(4), child: view);
     // get the model constraints
     var modelConstraints = widget.model.constraints;
 

@@ -255,9 +255,11 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
   }
   int? get autoquery => _autoquery;
 
-  // busy
+  // loading
+  BooleanObservable? _busy;
   @override
   set busy(dynamic v) {
+
     dynamic old = busy;
     super.busy = v;
 
@@ -269,6 +271,8 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
     // Set Status
     status = (busy == true) ? "busy" : (status ?? "idle");
   }
+  @override
+  bool get busy => _busy?.get() ?? false;
 
   // root
   StringObservable? _root;

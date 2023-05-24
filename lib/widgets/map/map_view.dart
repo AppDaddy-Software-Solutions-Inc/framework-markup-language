@@ -180,7 +180,7 @@ class _MapViewState extends WidgetState<MapView>
     Widget view = Stack(children: children);
 
     // apply user defined constraints
-    view = applyConstraints(view, widget.model.constraints.tightestOrDefault);
+    view = applyConstraints(view, widget.model.tightestOrDefault);
 
     return view;
   }

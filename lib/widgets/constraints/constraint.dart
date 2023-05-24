@@ -8,7 +8,7 @@ class Constraints
     this.minWidth = minWidth;
     this.maxWidth = maxWidth;
 
-    this.height    = width;
+    this.height    = height;
     this.minHeight = minHeight;
     this.maxHeight = maxHeight;
   }

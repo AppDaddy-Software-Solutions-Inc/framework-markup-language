@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
+import 'package:fml/helper/string.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/checkbox/checkbox_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
@@ -63,38 +64,70 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
     Widget view;
     if (widget.model.layout == 'row') {
       if (widget.model.wrap == true) {
-        view = Center(
-            child: Wrap(
+        view = Wrap(
                 children: _list,
                 direction: Axis.horizontal,
-                alignment: alignment.mainWrapAlignment,
+                alignment: WrapAlignment.start,
                 runAlignment: alignment.mainWrapAlignment,
-                crossAxisAlignment: alignment.crossWrapAlignment));
+                crossAxisAlignment: alignment.crossWrapAlignment);
       } else {
-        view = Center(
-            child: Row(
+        view = Row(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: alignment.crossAlignment,
-                mainAxisAlignment: alignment.mainAlignment,
-                children: _list));
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: _list);
       }
     } else {
       if (widget.model.wrap == true) {
-        view = Center(
-            child: Wrap(
+        view = Wrap(
                 children: _list,
                 direction: Axis.vertical,
-                alignment: alignment.mainWrapAlignment,
+                alignment: WrapAlignment.start,
                 runAlignment: alignment.mainWrapAlignment,
-                crossAxisAlignment: alignment.crossWrapAlignment));
+                crossAxisAlignment: alignment.crossWrapAlignment);
       } else {
-        view = Center(
-            child: Column(
-                crossAxisAlignment: alignment.crossAlignment,
+        view = Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: alignment.mainAlignment,
-                children: _list));
+                children: _list);
       }
     }
+
+    String? errorTextValue = widget.model.returnErrorText();
+
+    if(!S.isNullOrEmpty(errorTextValue)) {
+      Widget? errorText = Text(
+        "     $errorTextValue", style: TextStyle(color: Theme
+          .of(context)
+          .colorScheme
+          .error),);
+
+      view = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [view, errorText],
+      );
+    }
+
+    view = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [view],
+    );
+
+    // get the model constraints
+    var modelConstraints = widget.model.constraints;
+
+    // constrain the input to 200 pixels if not constrained by the model
+    //if (!modelConstraints.hasHorizontalExpansionConstraints) modelConstraints.width  = 200;
+
+    // add margins
+    view = addMargins(view);
+
+    // apply constraints
+    view = applyConstraints(view, modelConstraints);
+
+
 
     return view;
   }
@@ -129,6 +162,10 @@ class CheckBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    Color selectedColor = model.setErrorBorderColor(context, model.color ?? Theme.of(context).colorScheme.primary);
+    Color unselectedColor = model.setErrorBorderColor(context, Theme.of(context).colorScheme.outline);
+
     var checkbox = Checkbox(
           value: checked,
           onChanged: (value) =>
@@ -137,18 +174,16 @@ class CheckBox extends StatelessWidget {
                   : null,
           checkColor: Theme.of(context).colorScheme.onPrimary,
           fillColor: MaterialStateColor.resolveWith(
-              (states) => Theme.of(context).colorScheme.primary),
+              (states) => selectedColor),
           focusColor: Theme.of(context).colorScheme.onInverseSurface,
           hoverColor: model.enabled != false && model.editable != false
               ? Theme.of(context).colorScheme.onInverseSurface
               : Colors.transparent,
           side: BorderSide(
               width: 2,
-              color: model.enabled != false && model.editable != false
-                  ? Theme.of(context).colorScheme.surfaceVariant
-                  : Theme.of(context).colorScheme.onInverseSurface),
+              color: unselectedColor),
           visualDensity: VisualDensity(horizontal: -2, vertical: -4),
-          splashRadius: 20,
+          splashRadius: 18,
           mouseCursor: model.enabled != false && model.editable != false
               ? SystemMouseCursors.click
               : SystemMouseCursors.basic,
@@ -161,20 +196,44 @@ class CheckBox extends StatelessWidget {
     {
       var view = option.label!.getView();
       if (view != null) label = view;
+
+      label  = MouseRegion(
+          cursor:
+          model.enabled != false && model.editable != false
+              ? SystemMouseCursors.click
+              : SystemMouseCursors.basic,
+          child: GestureDetector(
+              onTap: () => {
+                model.enabled != false &&
+                    model.editable != false
+                    ? callOnChecked()
+                    : () => {}
+              },
+              child: label));
     }
 
     // View
     var chk = Row(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Padding(
                   padding:
-                      EdgeInsets.only(top: 8, bottom: 8, right: 8, left: 4),
+                      EdgeInsets.only(top: 8, bottom: 8, right: 4, left: 0),
                   child: checkbox),
               label
             ]);
 
+
+
+
     return model.editable != false && model.enabled != false ? chk : Opacity(opacity: 0.7, child: chk);
+
+
+
+
+
+
   }
 }

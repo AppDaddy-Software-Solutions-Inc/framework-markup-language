@@ -6,7 +6,7 @@ import 'package:universal_html/html.dart' hide Event;
 import 'package:flutter/foundation.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
-import 'package:universal_html/js.dart' as JS;
+import 'package:universal_html/js.dart' as universal_html_js;
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/event/manager.dart';
 
@@ -40,7 +40,7 @@ class Platform
   {
     try
     {
-      JS.context.callMethod('postMessage', ['FML v${System().release}', '*']);
+      universal_html_js.context.callMethod('postMessage', ['FML v${System().release}', '*']);
       // postMessage('FML v${System().release}', '*');
       print('posted message?');
       window.document.getElementById("logo")!.style.visibility = "hidden";
@@ -126,7 +126,7 @@ class Platform
         script.innerText = "function $id(i) { window.history.go(i); }";
         document.head!.append(script);
       }
-      JS.context.callMethod(id, [-1 * pages]);
+      universal_html_js.context.callMethod(id, [-1 * pages]);
       return true;
     }
     catch(e)
@@ -177,7 +177,7 @@ class Platform
   // });
   // </script>
   static void js2fml() {
-    JS.context['js2fml'] = (json) async {
+    universal_html_js.context['js2fml'] = (json) async {
       // The script in index.html sets the data value that we assign to doc:
       // `js2fml({'data': `${event.data}`, 'from': `${event.origin}`, 'to': 'fml'});`
       String doc = json['data'];

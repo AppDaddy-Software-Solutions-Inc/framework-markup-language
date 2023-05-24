@@ -18,6 +18,10 @@ abstract class IFormField
   dynamic get defaultValue;
   set defaultValue (dynamic v);
 
+  // field default error
+  dynamic get error;
+  set error (dynamic v);
+
   // field metadata
   dynamic get meta;
   set meta (dynamic v);
@@ -54,6 +58,12 @@ abstract class IFormField
   // field alarm state
   String? get alarm;
   bool? get alarming;
+
+  bool? get hasDefaulted;
+  set hasDefaulted(dynamic v);
+
+  bool? get validationHasHit;
+  set validationHasHit(dynamic v);
 
   /// GeoCode for each [IFormField] which is set on answer
   Payload? geocode;

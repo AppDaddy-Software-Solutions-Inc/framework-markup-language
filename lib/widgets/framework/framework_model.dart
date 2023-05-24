@@ -385,7 +385,6 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
 
       // set template name
       templateName = template.name ?? 'js2fml';
-      if (dependency != null) this.dependency = dependency;
 
       // deserialize from xml
       deserialize(xml);

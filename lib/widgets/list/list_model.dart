@@ -22,12 +22,6 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
   // prototype
   String? prototype;
 
-  @override
-  bool isVerticallyExpanding({bool ignoreFixedHeight = false}) => !isFixedHeight;
-
-  @override
-  bool isHorizontallyExpanding({bool ignoreFixedWidth = false}) => !isFixedWidth;
-
   BooleanObservable? _scrollShadows;
   set scrollShadows (dynamic v)
   {

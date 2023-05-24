@@ -389,8 +389,9 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     // build page
     MaterialPage page = _buildPage('', child: view);
     // ensure we remove any current template
-    if (_pages.length > 1)
+    if (_pages.length > 1) {
       _pages.removeLast();
+    }
     // push the new template to the page
     _addPage(page, index: 1);
     return ok;

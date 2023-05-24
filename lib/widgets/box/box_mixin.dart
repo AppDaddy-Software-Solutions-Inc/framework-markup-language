@@ -105,6 +105,13 @@ mixin BoxMixin
       constraints = BoxConstraints(minWidth: constraints.minWidth, maxWidth: constraints.maxWidth, minHeight: constraints.minHeight, maxHeight: _myParentsHeight(parent));
     }
 
+    // The constraints must NOT be tight otherwise "parentUsesSize" will be ignored
+    // and the parent will not resize
+    if (constraints.isTight)
+    {
+      constraints = constraints.loosen();
+    }
+
     return constraints.normalize();
   }
 }

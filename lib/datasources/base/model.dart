@@ -273,7 +273,6 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
 
   // value
   ListObservable? _value;
-  @override
   set value(dynamic v)
   {
     if (_value != null)

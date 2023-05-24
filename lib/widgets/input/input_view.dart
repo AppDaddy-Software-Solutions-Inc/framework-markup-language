@@ -725,14 +725,13 @@ class _InputViewState extends WidgetState<InputView>
           // widget.model.error is getting set to null somewhere.
 
           //Icon Attributes
-          prefixIcon: (widget.model.icon != null)
-              ? Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              child: Icon(widget.model.icon))
-              : null,
-          prefixIconConstraints: (widget.model.icon != null)
-              ? BoxConstraints(maxHeight: 20, minWidth: 30)
-              : null,
+          prefixIcon: widget.model.icon != null ? Padding(
+              padding: EdgeInsets.only(
+                  right: 10,
+                  left: 10,
+                  bottom: 0),
+              child: Icon(widget.model.icon)) : null,
+          prefixIconConstraints: BoxConstraints(maxHeight: 24),
           suffixIcon: _getSuffixIcon(hintTextColor),
           suffixIconConstraints: (widget.model.enabled != false &&
               widget.model.editable != false &&

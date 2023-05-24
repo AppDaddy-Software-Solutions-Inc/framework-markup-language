@@ -14,6 +14,12 @@ import 'package:fml/helper/common_helpers.dart';
 
 class TextModel extends DecoratedWidgetModel 
 {
+  @override
+  FlexFit? get flexFit
+  {
+    return super.flexFit ?? FlexFit.loose;
+  }
+
   String? markup;
 
   // value
@@ -58,7 +64,7 @@ class TextModel extends DecoratedWidgetModel
     if (_sizeIsPercent == true)
     {
       var width  = calculatedMaxHeightForPercentage * (s / 100.0);
-      var height = calculatedMaxWidthForPercentage  * (s / 100.0);
+      var height = myMaxWidthForPercentage  * (s / 100.0);
       s = max(width, height);
     }
     return s;

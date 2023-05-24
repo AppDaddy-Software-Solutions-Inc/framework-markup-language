@@ -1,20 +1,39 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/view/view_model.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/system.dart';
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/splitview/split_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class SplitModel extends DecoratedWidgetModel 
+class SplitModel extends BoxModel
 {
+  @override
+  String? get layout => vertical ? "column" : "row";
+
   /// vertical or horizontal splitter?
   bool? _vertical;
   bool get vertical => _vertical ?? false;
 
+  /// left:right view size ratio
+  final double defaultRatio = 0.25;
+  DoubleObservable? _ratio;
+  set ratio (dynamic v)
+  {
+    if (_ratio != null)
+    {
+      _ratio!.set(v);
+    }
+    else if (v != null)
+    {
+      _ratio = DoubleObservable(Binding.toKey(id, 'ratio'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  double get ratio => _ratio?.get() ?? defaultRatio;
+  
   /// The splitter bar divider color
   ColorObservable? _dividerColor;
   set dividerColor (dynamic v)
@@ -43,7 +62,12 @@ class SplitModel extends DecoratedWidgetModel
       _dividerWidth = DoubleObservable(Binding.toKey(id, 'dividerwidth'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  double? get dividerWidth => _dividerWidth?.get();
+  double get dividerWidth
+  {
+    var width = _dividerWidth?.get() ?? (System().useragent == 'desktop' || S.isNullOrEmpty(System().useragent) ? 6.0 : 12.0);
+    if (width % 2 != 0) width = width + 1;
+    return width;
+  }
 
   /// The splitter bar divider handle color
   ColorObservable? _dividerHandleColor;
@@ -59,15 +83,11 @@ class SplitModel extends DecoratedWidgetModel
     }
   }
   Color? get dividerHandleColor => _dividerHandleColor?.get();
-
-  SplitModel(WidgetModel parent, String? id, {dynamic width, dynamic height, bool? vertical}) : super(parent, id)
+  
+  SplitModel(WidgetModel parent, String? id, {bool? vertical}) : super(parent, id)
   {
-    if (width  != null) this.width  = width;
-    if (height != null) this.height = height;
-
     if (vertical != null) _vertical = vertical;
   }
-
 
   static SplitModel? fromXml(WidgetModel parent, XmlElement xml)
   {
@@ -87,29 +107,28 @@ class SplitModel extends DecoratedWidgetModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
+  void deserialize(XmlElement? xml)
   {
 
     // deserialize 
     super.deserialize(xml);
 
     // properties
-    double ratio = S.toDouble(Xml.get(node: xml, tag: 'ratio')) ?? -1;
-    if (ratio >= 0 && ratio <= 1)
-    {
-      if (vertical) {
-        height = "${ratio * 100}%";
-      } else {
-        width  = "${ratio * 100}%";
-      }
-    }
-
-    dividerColor  = Xml.get(node: xml, tag: 'dividercolor');
-    dividerWidth  = Xml.get(node: xml, tag: 'dividerwidth');
+    ratio = Xml.get(node: xml, tag: 'ratio');
+    dividerColor = Xml.get(node: xml, tag: 'dividercolor');
+    dividerWidth = Xml.get(node: xml, tag: 'dividerwidth');
     dividerHandleColor  = Xml.get(node: xml, tag: 'dividerhandlecolor');
 
     // remove non view children
-    children?.removeWhere((element) => element is! ViewModel);
+    children?.removeWhere((element) => element is! BoxModel);
+  }
+
+  @override
+  List<Widget> inflate({BoxConstraints? constraints})
+  {
+    SplitViewState? view = findListenerOfExactType(SplitViewState);
+    if (view == null || constraints == null) return [];
+    return view.inflate(constraints);
   }
 
   @override

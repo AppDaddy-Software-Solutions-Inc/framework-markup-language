@@ -103,35 +103,6 @@ class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling
     if (mounted) setState(() {});
   }
 
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints)
-  {
-    // save system constraints
-    onLayout(constraints);
-
-    // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
-
-    //var background = BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor);
-
-    /// Busy / Loading Indicator
-    busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
-
-    //////////
-    /* View */
-    //////////
-    Widget view = Stack(children: [
-      _buildMenuItems(widget.model.calculatedMaxWidthOrDefault),
-      Center(child: busy)
-    ]);
-    return Container(
-        color: widget.model.color ?? Theme.of(context).colorScheme.background,
-        child: Center(
-            child: SingleChildScrollView(controller: vScroller, child: view)));
-  }
-
   Widget _buildMenuItems(double width) {
     List<MenuItemView> tilesList = []; //list of tiles
     List<Widget> tileRows = []; // row of tiles from list
@@ -179,5 +150,32 @@ class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling
         )
       )
     );
+  }
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
+    // save system constraints
+    onLayout(constraints);
+
+    // Check if widget is visible before wasting resources on building it
+    if (!widget.model.visible) return Offstage();
+
+    //var background = BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor);
+
+    /// Busy / Loading Indicator
+    busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
+
+    //////////
+    /* View */
+    //////////
+    Widget view = Stack(children: [
+      _buildMenuItems(widget.model.myMaxWidthOrDefault),
+      Center(child: busy)
+    ]);
+
+    return Container(color: widget.model.color ?? Theme.of(context).colorScheme.background, child: Center(child: SingleChildScrollView(controller: vScroller, child: view)));
   }
 }

@@ -8,10 +8,10 @@ import 'package:fml/helper/common_helpers.dart';
 
 class DataModel extends DataSourceModel implements IDataSource
 {
-  DataModel(WidgetModel parent, String? id) : super(parent, id);
-
   @override
   bool get autoexecute => super.autoexecute ?? true;
+
+  DataModel(WidgetModel parent, String? id, {dynamic datastring}) : super(parent, id);
 
   static DataModel? fromXml(WidgetModel parent, XmlElement xml)
   {

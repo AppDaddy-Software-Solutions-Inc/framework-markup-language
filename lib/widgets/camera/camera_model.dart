@@ -310,8 +310,9 @@ class CameraModel extends CameraImageModel
     // enable streaming
     if (detectors != null) {
       for (var detector in detectors!) {
-        if ((detector.source == DetectorSources.stream) || (detector.source == DetectorSources.any))
+        if ((detector.source == DetectorSources.stream) || (detector.source == DetectorSources.any)) {
           stream = true;
+        }
       }
     }
   }

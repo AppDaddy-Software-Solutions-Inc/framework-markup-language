@@ -6,10 +6,8 @@ import 'package:fml/event/event.dart'   ;
 import 'package:fml/system.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
-import 'package:fml/widgets/layout/layout_model.dart';
 import 'package:fml/widgets/overlay/overlay_manager_view.dart';
 import 'package:fml/widgets/overlay/overlay_model.dart';
-import 'package:fml/widgets/widget/iwidget_view.dart';
 
 class OverlayView extends StatefulWidget
 {
@@ -122,19 +120,6 @@ class OverlayViewState extends State<OverlayView>
     // if (widget.model.decorate == false)
     //      card = Card(child: content, margin: EdgeInsets.all(0.0), elevation: 0.0, borderOnForeground: false);
     // else card = Card(child: content, margin: EdgeInsets.all(4.0), elevation: 25.0, borderOnForeground: true, shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5.0)), side: BorderSide(color: Colors.transparent)));
-
-    // this forces the inner child view to resize
-    // somewhat of a hack to force rebuild since the
-    // old triggered a build on the inner view
-    if (widget.model.child is IWidgetView)
-    {
-      var model = (widget.model.child as IWidgetView).model;
-      if (model is LayoutModel)
-      {
-        if (model.isHorizontallyExpanding()) model.setWidth(width);
-        if (model.isVerticallyExpanding()) model.setHeight(height);
-      }
-    }
 
     // Non-Minimized View
     if (minimized == false)

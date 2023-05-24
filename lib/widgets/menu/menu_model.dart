@@ -10,7 +10,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class MenuModel extends DecoratedWidgetModel 
+class MenuModel extends DecoratedWidgetModel
 {
   static final String typeList   = "list";
   static final String typeButton = "button";
@@ -20,6 +20,20 @@ class MenuModel extends DecoratedWidgetModel
 
   // items
   List<MenuItemModel> items = [];
+
+  @override
+  bool get canExpandInfinitelyWide
+  {
+    if (hasBoundedWidth) return false;
+    return true;
+  }
+
+  @override
+  bool get canExpandInfinitelyHigh
+  {
+    if (hasBoundedHeight) return false;
+    return true;
+  }
 
   MenuModel(WidgetModel? parent, String?  id) : super(parent, id)
   {

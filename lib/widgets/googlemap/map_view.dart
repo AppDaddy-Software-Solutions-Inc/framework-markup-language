@@ -109,8 +109,8 @@ class _MapViewState extends WidgetState<MapView>
     /// Busy / Loading Indicator
     busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
 
-    var width = widget.model.width   ?? widget.model.calculatedMaxWidthOrDefault;
-    var height = widget.model.height ?? widget.model.calculatedMaxHeightOrDefault;
+    var width = widget.model.width   ?? widget.model.myMaxWidthOrDefault;
+    var height = widget.model.height ?? widget.model.myMaxHeightOrDefault;
 
     //////////////////
     /* Reset Button */
@@ -128,7 +128,7 @@ class _MapViewState extends WidgetState<MapView>
                         children: [map!, Positioned(top: 10, right: 10, child: reset), busy!])))));
 
     // apply user defined constraints
-    return applyConstraints(view, widget.model.constraints.model);
+    return applyConstraints(view, widget.model.constraints);
   }
 
   GoogleMap? _buildGoogleMap()

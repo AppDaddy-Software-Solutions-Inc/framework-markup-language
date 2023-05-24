@@ -18,14 +18,22 @@ class MapModel extends DecoratedWidgetModel
 {
   final List<String> layers = [];
 
-  @override
-  bool isVerticallyExpanding({bool ignoreFixedHeight = false}) => !isFixedHeight;
-
-  @override
-  bool isHorizontallyExpanding({bool ignoreFixedWidth = false}) => !isFixedWidth;
-  
   // marker prototypes
   final HashMap<String?,List<String>> prototypes = HashMap<String?,List<String>>();
+
+  @override
+  bool get canExpandInfinitelyWide
+  {
+    if (hasBoundedWidth) return false;
+    return true;
+  }
+
+  @override
+  bool get canExpandInfinitelyHigh
+  {
+    if (hasBoundedHeight) return false;
+    return true;
+  }
 
   // latitude
   DoubleObservable? _latitude;

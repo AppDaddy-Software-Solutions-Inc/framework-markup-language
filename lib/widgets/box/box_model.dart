@@ -307,8 +307,8 @@ class BoxModel extends DecoratedWidgetModel
   {
     // process children
     List<Widget> views = [];
-    for (var model in viewableChildren) {
-      if (model is! ModalModel)
+    for (var model in viewableChildren)
+    if (model is! ModalModel)
     {
       var view = model.getView();
 
@@ -321,7 +321,6 @@ class BoxModel extends DecoratedWidgetModel
       }
 
       if (view != null) views.add(view);
-    }
     }
     return views;
   }

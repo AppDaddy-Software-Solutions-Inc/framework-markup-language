@@ -192,6 +192,20 @@ class CheckBox extends StatelessWidget {
     {
       var view = option.label!.getView();
       if (view != null) label = view;
+
+      label  = MouseRegion(
+          cursor:
+          model.enabled != false && model.editable != false
+              ? SystemMouseCursors.click
+              : SystemMouseCursors.basic,
+          child: GestureDetector(
+              onTap: () => {
+                model.enabled != false &&
+                    model.editable != false
+                    ? callOnChecked()
+                    : () => {}
+              },
+              child: label));
     }
 
     // View

@@ -71,6 +71,19 @@ class _RadioViewState extends WidgetState<RadioView>
         {
           var view = option.label!.getView();
           if (view != null) label = view;
+          label = MouseRegion(
+              cursor:
+              widget.model.enabled != false && widget.model.editable != false
+                  ? SystemMouseCursors.click
+                  : SystemMouseCursors.basic,
+              child: GestureDetector(
+                  onTap: () => {
+                    widget.model.enabled != false &&
+                        widget.model.editable != false
+                        ? _onCheck(option)
+                        : () => {}
+                  },
+                  child: label));
         }
 
         // Option

@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/widgets/animation/animation_model.dart';
+import 'package:fml/widgets/modal/modal_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_view.dart';
 import 'package:fml/widgets/constraints/constraint_model.dart';
@@ -617,6 +618,7 @@ class ViewableWidgetModel extends ConstraintModel
     // process children
     List<Widget> views = [];
     for (var model in viewableChildren)
+    if (model is! ModalModel)
     {
       var view = model.getView();
       if (view != null) views.add(view);

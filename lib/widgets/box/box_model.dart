@@ -3,6 +3,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/modal/modal_model.dart';
 import 'package:fml/widgets/positioned/positioned_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
@@ -307,6 +308,7 @@ class BoxModel extends DecoratedWidgetModel
     // process children
     List<Widget> views = [];
     for (var model in viewableChildren)
+    if (model is! ModalModel)
     {
       var view = model.getView();
 

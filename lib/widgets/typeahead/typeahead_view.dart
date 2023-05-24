@@ -257,7 +257,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
 
     List<OptionModel>? suggestions;
     view = SizedBox(
-        width: widget.model.calculatedMaxWidthOrDefault,
+        width: widget.model.myMaxWidthOrDefault,
         child: TypeAheadField(
           textFieldConfiguration: TextFieldConfiguration(
               enabled: widget.model.enabled != false,

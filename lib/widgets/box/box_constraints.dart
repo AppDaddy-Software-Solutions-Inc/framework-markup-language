@@ -8,10 +8,12 @@ class LocalBoxConstraints extends BoxConstraints
     super.maxHeight = double.infinity,
   });
 
-  static LocalBoxConstraints from(BoxConstraints constraints)
-  {
-    return LocalBoxConstraints(minWidth: constraints.minWidth, maxWidth: constraints.maxWidth, minHeight: constraints.minHeight, maxHeight: constraints.maxHeight);
-  }
+  static LocalBoxConstraints from(BoxConstraints constraints) =>
+      LocalBoxConstraints(
+          minWidth: constraints.minWidth,
+          maxWidth: constraints.maxWidth,
+          minHeight: constraints.minHeight,
+          maxHeight: constraints.maxHeight);
 
   @override
   bool get isTight

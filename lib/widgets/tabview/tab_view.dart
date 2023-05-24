@@ -336,10 +336,10 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
   Widget _tabViewWithTabBarAndButton()
   {
     // max height
-    double? height = widget.model.calculatedMaxHeightOrDefault;
+    double? height = widget.model.myMaxHeightOrDefault;
 
     // max width
-    double? width = widget.model.calculatedMaxWidthOrDefault;
+    double? width = widget.model.myMaxWidthOrDefault;
 
     // Build Tab Bar
     var bar = _buildTabBar(height: barheight - barpadding);
@@ -370,15 +370,15 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
   Widget _tabViewWithTabBar()
   {
     // max height
-    double? height = widget.model.calculatedMaxHeightOrDefault;
+    double? height = widget.model.myMaxHeightOrDefault;
 
     // max width
-    double? width = widget.model.calculatedMaxWidthOrDefault;
+    double? width = widget.model.myMaxWidthOrDefault;
 
     // Build Tab Bar
     var bar = _buildTabBar(height: barheight - barpadding);
 
-    var con = widget.model.calculated;
+    var con = widget.model.constraints;
 
     Widget view = Column(children: [
       SizedBox(width: width,

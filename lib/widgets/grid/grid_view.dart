@@ -298,21 +298,21 @@ class _GridViewState extends WidgetState<GridView> {
       return prototypeGrid;
     }
 
-    gridWidth = widget.model.width ?? widget.model.calculatedMaxWidthOrDefault;
+    gridWidth = widget.model.width ?? widget.model.myMaxWidthOrDefault;
     gridHeight =
-        widget.model.height ?? widget.model.calculatedMaxHeightOrDefault;
+        widget.model.height ?? widget.model.myMaxHeightOrDefault;
 
     if (widget.model.items.isNotEmpty) {
       prototypeWidth = widget.model.items.entries.first.value.width ??
-          widget.model.calculatedMaxWidthOrDefault /
+          widget.model.myMaxWidthOrDefault /
               (sqrt(widget.model.items.length) + 1);
       prototypeHeight = widget.model.items.entries.first.value.height ??
-          widget.model.calculatedMaxHeightOrDefault /
+          widget.model.myMaxHeightOrDefault /
               (sqrt(widget.model.items.length) + 1);
     } else {
-      prototypeWidth = widget.model.calculatedMaxWidthOrDefault /
+      prototypeWidth = widget.model.myMaxWidthOrDefault /
           (sqrt(widget.model.items.length) + 1);
-      prototypeHeight = widget.model.calculatedMaxHeightOrDefault /
+      prototypeHeight = widget.model.myMaxHeightOrDefault /
           (sqrt(widget.model.items.length) + 1);
     }
 

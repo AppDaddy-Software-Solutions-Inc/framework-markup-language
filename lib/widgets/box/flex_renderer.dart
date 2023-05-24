@@ -797,12 +797,8 @@ class FlexRenderer extends RenderBox
     return FlexType.shrinking;
   }
 
-  _LayoutSizes _computeSizes(
-      {required BoxConstraints constraints,
-      required ChildLayouter layoutChild}) {
-
-    //var parentId = model.id;
-
+  _LayoutSizes _computeSizes({required BoxConstraints constraints, required ChildLayouter layoutChild})
+  {
     // size fixed children
     var fixedSize = calculateFixedChildSizes(layoutChild);
 
@@ -830,7 +826,14 @@ class FlexRenderer extends RenderBox
         break;
 
       case FlexType.fixed:
-        maxHeight = constraints.hasTightHeight ? constraints.maxHeight : (myHeight(this,model) ?? 0);
+        if (constraints.hasTightHeight)
+        {
+          maxHeight = constraints.maxHeight;
+        }
+        else
+        {
+          maxHeight = myHeight(this,model) ?? 0;
+        }
         break;
 
       case FlexType.expanding:

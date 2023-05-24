@@ -42,8 +42,8 @@ class _PositionedViewState extends WidgetState<PositionedView>
     {
       if (widget.model.xoffset != null && widget.model.yoffset != null)
       {
-        double fromTop = (widget.model.calculatedMaxHeightOrDefault / 2) + widget.model.yoffset!;
-        double fromLeft = (widget.model.calculatedMaxWidthOrDefault / 2) + widget.model.xoffset!;
+        double fromTop = (widget.model.myMaxHeightOrDefault / 2) + widget.model.yoffset!;
+        double fromLeft = (widget.model.myMaxWidthOrDefault / 2) + widget.model.xoffset!;
         view = LayoutBoxChildData(
             model: widget.model,
             top: fromTop,

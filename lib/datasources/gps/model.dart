@@ -77,8 +77,10 @@ class GpsModel extends DataSourceModel implements IDataSource, IGpsListener
       // build data
       Data data = Data();
       data.add(payload.map);
-
       onSuccess(data, code: 200);
+    } else {
+      //we should check for permissions here and possibly have a permissiongranted="" permissiondenied="" event?
+      onFail(Data(), code: 400);
     }
   }
 }

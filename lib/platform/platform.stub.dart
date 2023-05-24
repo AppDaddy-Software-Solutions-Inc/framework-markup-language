@@ -22,4 +22,5 @@ class Platform
   static Future<bool> goBackPages(int pages) async => throw UnimplementedError();
   static int getNavigationType() => throw UnimplementedError();
   static String get title => throw UnimplementedError();
+  static void js2fml() => throw UnimplementedError();
 }

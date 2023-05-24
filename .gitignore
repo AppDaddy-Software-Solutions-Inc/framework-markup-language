@@ -408,3 +408,4 @@ windows/flutter/generated_plugin_registrant.cc
 android/keystore.properties
 android/app/google-services.json
 ios/Runner/GoogleService-Info.plist
+windows/flutter/generated_plugins.cmake

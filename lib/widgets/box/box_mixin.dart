@@ -1,10 +1,26 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/rendering.dart';
+import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 
 mixin BoxMixin
 {
+  AbstractNode? _parentOf(AbstractNode child)
+  {
+    AbstractNode? node = child.parent;
+    while (true)
+    {
+      if (node == null) break;
+      if (node is  RenderConstrainedLayoutBuilder)
+      {
+        node = node.parent;
+        break;
+      }
+      node = node.parent;
+    }
+    return node;
+  }
+
   double? myHeight(RenderBox root, ViewableWidgetModel model)
   {
     double? height;
@@ -16,23 +32,23 @@ mixin BoxMixin
     return height;
   }
 
-  double _myParentsHeight(RenderBox root)
+  double _myParentsHeight(RenderBox node)
   {
     double? height;
 
-    // walk up to flex renderer parent
-    AbstractNode? node = root.parent;
+    // find the nodes parent
+    AbstractNode? parent = _parentOf(node);
 
     // walk up the tree
     while (true)
     {
-      if (node == null) break;
-      if (node is RenderBox && node.constraints.hasBoundedHeight)
+      if (parent == null) break;
+      if (parent is RenderBox && parent.constraints.hasBoundedHeight)
       {
-        height = node.constraints.maxHeight;
+        height = parent.constraints.maxHeight;
         break;
       }
-      node = node.parent;
+      parent = parent.parent;
     }
 
     return height ?? System().screenheight.toDouble();
@@ -49,26 +65,26 @@ mixin BoxMixin
     return width;
   }
 
-  double _myParentsWidth(RenderBox root)
+  double _myParentsWidth(RenderBox node)
   {
     double? width;
 
-    // walk up to flex renderer parent
-    AbstractNode? node = root.parent;
+    // find the nodes parent
+    AbstractNode? parent = _parentOf(node);
 
     // walk up the tree
     while (true)
     {
-      if (node == null) break;
-      if (node is RenderBox && node.constraints.hasBoundedWidth)
+      if (parent == null) break;
+      if (parent is RenderBox && parent.constraints.hasBoundedWidth)
       {
-        width = node.constraints.maxWidth;
+        width = parent.constraints.maxWidth;
         break;
       }
-      node = node.parent;
+      parent = parent.parent;
     }
 
-    return width ?? System().screenwidth.toDouble();
+    return width ?? System().screenheight.toDouble();
   }
 
   BoxConstraints getChildLayoutConstraints(RenderBox parent, ViewableWidgetModel parentModel, BoxConstraints constraints, RenderBox child, ViewableWidgetModel childModel)
@@ -76,19 +92,19 @@ mixin BoxMixin
     // get the child's width from the model
     // and tighten the child's width constraint
     var parentWidth = myWidth(parent, parentModel);
-    var width = childModel.getWidth(widthParent: parentWidth);
-    if (width != null)
+    var childWidth  = childModel.getWidth(widthParent: parentWidth);
+    if (childWidth != null)
     {
-      constraints = constraints.tighten(width: width);
+      constraints = constraints.tighten(width: childWidth);
     }
 
     // get the child's height from the model
     // and tighten the child's height constraint
     var parentHeight = myHeight(parent, parentModel);
-    var height = childModel.getHeight(heightParent: parentHeight);
-    if (height != null)
+    var childHeight  = childModel.getHeight(heightParent: parentHeight);
+    if (childHeight != null)
     {
-      constraints = constraints.tighten(height: height);
+      constraints = constraints.tighten(height: childHeight);
     }
 
     // If both of us are unconstrained in the horizontal axis,
@@ -105,11 +121,10 @@ mixin BoxMixin
       constraints = BoxConstraints(minWidth: constraints.minWidth, maxWidth: constraints.maxWidth, minHeight: constraints.minHeight, maxHeight: _myParentsHeight(parent));
     }
 
-    // The constraints must NOT be tight otherwise "parentUsesSize" will be ignored
-    // and the parent will not resize
-    if (constraints.isTight)
+    // visible?
+    if (!childModel.visible)
     {
-      constraints = constraints.loosen();
+      constraints = BoxConstraints(minWidth: 0, maxWidth: 0, minHeight: 0, maxHeight: 0);
     }
 
     return constraints.normalize();

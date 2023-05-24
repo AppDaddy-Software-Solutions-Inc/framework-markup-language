@@ -309,7 +309,7 @@ class _TableViewState extends WidgetState<TableView>
     onLayout(constraints);
 
     double? viewportHeight =
-        widget.model.height ?? widget.model.calculatedMaxHeightOrDefault;
+        widget.model.height ?? widget.model.myMaxHeightOrDefault;
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();

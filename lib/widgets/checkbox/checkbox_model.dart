@@ -151,7 +151,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
           username: System.app?.user.claim('name'));
 
       // save the value
-      //ok = await save();
+      // ok = await save();
 
       // save failed?
       if (ok == false)
@@ -167,7 +167,6 @@ class CheckboxModel extends FormFieldModel implements IFormField
         _value!.notifyListeners();
       }
     }
-
     return ok;
   }
 

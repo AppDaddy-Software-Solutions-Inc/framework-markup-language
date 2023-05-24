@@ -64,7 +64,7 @@ class TextModel extends DecoratedWidgetModel
     if (_sizeIsPercent == true)
     {
       var width  = calculatedMaxHeightForPercentage * (s / 100.0);
-      var height = calculatedMaxWidthForPercentage  * (s / 100.0);
+      var height = myMaxWidthForPercentage  * (s / 100.0);
       s = max(width, height);
     }
     return s;

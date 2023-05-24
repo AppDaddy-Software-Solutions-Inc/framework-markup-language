@@ -7,7 +7,7 @@ import 'package:universal_html/html.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
-import 'package:universal_html/js.dart';
+import 'package:universal_html/js.dart' as universal_html_js;
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/event/manager.dart';
 
@@ -41,6 +41,9 @@ class Platform
   {
     try
     {
+      universal_html_js.context.callMethod('postMessage', ['FML v${System().release}', '*']);
+      // postMessage('FML v${System().release}', '*');
+      print('posted message?');
       window.document.getElementById("logo")!.style.visibility = "hidden";
     }
     catch(e){
@@ -125,7 +128,7 @@ class Platform
         script.innerText = "function $id(i) { window.history.go(i); }";
         document.head!.append(script);
       }
-      context.callMethod(id, [-1 * pages]);
+      universal_html_js.context.callMethod(id, [-1 * pages]);
       return true;
     }
     catch(e)
@@ -212,5 +215,4 @@ class Platform
     context.callMethod('postMessage', [json, '*']);
     print('posted message: $version');
   }
-
 }

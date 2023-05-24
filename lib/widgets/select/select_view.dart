@@ -90,15 +90,13 @@ class _SelectViewState extends WidgetState<SelectView>
 
     bool enabled = (widget.model.enabled != false) && (widget.model.busy != true);
 
-    TextStyle ts = TextStyle(fontSize: 14,
+    TextStyle ts = TextStyle(fontSize: widget.model.size,
         color: widget.model.color != null
             ? (widget.model.color?.computeLuminance() ?? 1) < 0.4
               ? Colors.white.withOpacity(0.5)
               : Colors.black.withOpacity(0.5)
             : Theme.of(context).colorScheme.onSurfaceVariant
     );
-
-    Color selcol = widget.model.setFieldColor(context);
 
     //////////
     /* View */
@@ -132,9 +130,7 @@ class _SelectViewState extends WidgetState<SelectView>
                 borderRadius: BorderRadius.circular(widget.model.radius.toDouble() <= 24
                             ? widget.model.radius.toDouble()
                             : 24),
-                underline: widget.model.border == 'underline'
-                    ? Container(height: 2, color: selcol)
-                    : Container(),
+                underline: Container(),
                 disabledHint: widget.model.hint == null
                     ? Container(height: 10,)
                     : Text(
@@ -152,16 +148,35 @@ class _SelectViewState extends WidgetState<SelectView>
                     .withOpacity(0.15),
               ))
           : child;
-    if (widget.model.border == 'all') {
+    if (widget.model.border == 'none') {
       view = Container(
-        padding: const EdgeInsets.fromLTRB(15, 0, 5, 0),
+        padding: const EdgeInsets.fromLTRB(12, 2, 8, 2),
         decoration: BoxDecoration(
-          color: selcol,
+          color: widget.model.setFieldColor(context),
+          borderRadius: BorderRadius.circular(widget.model.radius.toDouble()),
+        ),
+        child: view,
+      );
+    } else if (widget.model.border == 'bottom' || widget.model.border == 'underline') {
+      view = Container(
+        padding: const EdgeInsets.fromLTRB(12, 0, 8, 3),
+        decoration: BoxDecoration(
+          color: widget.model.setFieldColor(context),
+          border: Border(
+            bottom: BorderSide(
+                width: widget.model.borderwidth.toDouble(),
+                color: widget.model.setErrorBorderColor(context, widget.model.bordercolor)),
+          ),),
+        child: view,
+      );
+      } else {
+      view = Container(
+        padding: const EdgeInsets.fromLTRB(12, 1, 9, 0),
+        decoration: BoxDecoration(
+          color: widget.model.setFieldColor(context),
           border: Border.all(
               width: widget.model.borderwidth.toDouble(),
-              color: widget.model.enabled
-                  ? (widget.model.bordercolor ?? Theme.of(context).colorScheme.outline)
-                  : Theme.of(context).colorScheme.surfaceVariant),
+              color: widget.model.setErrorBorderColor(context, widget.model.bordercolor)),
           borderRadius: BorderRadius.circular(widget.model.radius.toDouble()),
         ),
         child: view,
@@ -171,18 +186,36 @@ class _SelectViewState extends WidgetState<SelectView>
     // display busy
     if (busy != null) view = Stack(children: [view, Positioned(top: 0, bottom: 0, left: 0, right: 0, child: busy)]);
 
-    // Sized?
-    view = SizedBox(width: widget.model.width ?? 200, height: widget.model.height ?? 48, child: view);
+    String? errorTextValue = widget.model.returnErrorText();
 
-     Padding(padding: EdgeInsets.symmetric(vertical: /*widget.model.dense ? 0 : */4), child: view);
+    if(!S.isNullOrEmpty(errorTextValue)) {
+      Widget? errorText = Padding(padding: EdgeInsets.only(top: 6.0 , bottom: 2.0), child: Text("    $errorTextValue", style: TextStyle(color: Theme.of(context)
+          .colorScheme.error),),);
 
-    Text errorText = Text(widget.model.returnErrorText(), style: TextStyle(color: Theme.of(context).colorScheme.error),);
+      view = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [view, errorText],
+      );
+    }
 
-    return view = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [view, errorText],
-    );
+
+    // get the model constraints
+    var modelConstraints = widget.model.constraints;
+
+    // constrain the input to 200 pixels if not constrained by the model
+    if (!modelConstraints.hasHorizontalExpansionConstraints) modelConstraints.width  = 200;
+
+    // add margins
+    view = addMargins(view);
+
+    // apply constraints
+    view = applyConstraints(view, modelConstraints);
+
+
+
+    return view;
   }
 
   Future<List<OptionModel>> getSuggestions(String pattern) async

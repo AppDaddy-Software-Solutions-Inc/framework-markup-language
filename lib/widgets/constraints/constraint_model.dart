@@ -491,62 +491,8 @@ class ConstraintModel extends WidgetModel
     return 0;
   }
 
-  // returns the constraints as calculated
-  // by walking up the model tree and
-  // examining system and local model constraints
-  Constraints get calculated
-  {
-    Constraints constraints = Constraints();
-
-    // calculated constraints
-    Constraints calculated = Constraints();
-    calculated.minWidth  = myMinWidth;
-    calculated.maxWidth  = myMaxWidth;
-    calculated.minHeight = myMinHeight;
-    calculated.maxHeight = myMaxHeight;
-
-    // constraints as specified on the model template
-    Constraints model = this.constraints;
-
-    // WIDTH
-    constraints.width     = model.width;
-    constraints.minWidth  = model.width  ?? model.minWidth  ?? calculated.minWidth;
-    constraints.maxWidth  = model.width  ?? model.maxWidth  ?? calculated.maxWidth;
-
-    // ensure not negative
-    if (constraints.minWidth == null || constraints.minWidth!.isNegative) constraints.minWidth = null;
-    if (constraints.maxWidth == null || constraints.maxWidth!.isNegative) constraints.maxWidth = null;
-
-    // ensure max > min
-    if (constraints.minWidth != null && constraints.maxWidth != null && constraints.minWidth! > constraints.maxWidth!)
-    {
-      var v = constraints.minWidth;
-      constraints.minWidth = constraints.maxWidth;
-      constraints.maxWidth = v;
-    }
-
-    // HEIGHT
-    constraints.height    = model.height;
-    constraints.minHeight = model.height ?? model.minHeight ?? calculated.minHeight;
-    constraints.maxHeight = model.height ?? model.maxHeight ?? calculated.maxHeight;
-
-    // ensure not negative
-    if (constraints.minHeight != null && constraints.minHeight!.isNegative) constraints.minHeight = null;
-    if (constraints.maxHeight != null && constraints.maxHeight!.isNegative) constraints.maxHeight = null;
-
-    // ensure max > min
-    if (constraints.minHeight != null && constraints.maxHeight != null && constraints.minHeight! > constraints.maxHeight!)
-    {
-      var v = constraints.minHeight;
-      constraints.minHeight = constraints.maxHeight;
-      constraints.maxHeight = v;
-    }
-
-    return constraints;
-  }
-
   // returns the max width or screen width if unconstrained
-  double get calculatedMaxWidthOrDefault
+  double get myMaxWidthOrDefault
   {
     var v = myMaxWidth;
     if (v == double.infinity) v = System().screenwidth.toDouble();
@@ -554,7 +500,7 @@ class ConstraintModel extends WidgetModel
   }
 
   // returns the max height or screen width if unconstrained
-  double get calculatedMaxHeightOrDefault
+  double get myMaxHeightOrDefault
   {
     var v = myMaxHeight;
     if (v == double.infinity) v = System().screenheight.toDouble();
@@ -563,7 +509,7 @@ class ConstraintModel extends WidgetModel
 
   // if the widgets own constraints specify a maxWidth then that is used
   // otherwise it gets the maxWidth from its parent walking up the model tree
-  double get calculatedMaxWidthForPercentage
+  double get myMaxWidthForPercentage
   {
     if (system.maxWidth != null && system.maxWidth != double.infinity) return system.maxWidth!;
     if (parent is ViewableWidgetModel) return (parent as ViewableWidgetModel).myMaxWidth;

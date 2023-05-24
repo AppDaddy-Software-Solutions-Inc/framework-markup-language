@@ -91,6 +91,7 @@ class _ApplicationManagerState extends State<ApplicationManager>
 
     // build parameters
     Map<String, String?>? parameters = {};
+
     if (event.parameters != null) parameters.addAll(event.parameters!);
 
     String templ8 = parameters['templ8'] ?? '<FML><TEXT value="Template Parsing Error" /></FML>';

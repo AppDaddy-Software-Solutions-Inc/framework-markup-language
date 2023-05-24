@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
+import 'package:fml/helper/string.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/radio/radio_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
@@ -31,7 +32,8 @@ class _RadioViewState extends WidgetState<RadioView>
 
     // save system constraints
     onLayout(constraints);
-    Color color = widget.model.setFieldColor(context);
+    Color selectedColor = widget.model.setErrorBorderColor(context, widget.model.color ?? Theme.of(context).colorScheme.primary);
+    Color unselectedColor = widget.model.setErrorBorderColor(context, Theme.of(context).colorScheme.outline);
     // Options
     if (widget.model.options.isNotEmpty) {
 
@@ -42,11 +44,11 @@ class _RadioViewState extends WidgetState<RadioView>
 
         var checked = Icon(Icons.radio_button_checked,
             size: widget.model.size,
-            color: color);
+            color: selectedColor);
 
         var unchecked = Icon(Icons.radio_button_unchecked,
             size: widget.model.size,
-            color: color);
+            color: unselectedColor);
 
         var radio = MouseRegion(
             cursor:
@@ -70,6 +72,19 @@ class _RadioViewState extends WidgetState<RadioView>
         {
           var view = option.label!.getView();
           if (view != null) label = view;
+          label = MouseRegion(
+              cursor:
+              widget.model.enabled != false && widget.model.editable != false
+                  ? SystemMouseCursors.click
+                  : SystemMouseCursors.basic,
+              child: GestureDetector(
+                  onTap: () => {
+                    widget.model.enabled != false &&
+                        widget.model.editable != false
+                        ? _onCheck(option)
+                        : () => {}
+                  },
+                  child: label));
         }
 
         // Option
@@ -79,7 +94,7 @@ class _RadioViewState extends WidgetState<RadioView>
             children: <Widget>[
               Padding(
                   padding:
-                  EdgeInsets.only(top: 8, bottom: 8, right: 8, left: 4),
+                  EdgeInsets.only(top: 8, bottom: 8, right: 8, left: 3),
                   child: radio),
               label
             ]);
@@ -125,13 +140,25 @@ class _RadioViewState extends WidgetState<RadioView>
       }
     }
 
-    Text errorText = Text(widget.model.returnErrorText(), style: TextStyle(color: Theme.of(context).colorScheme.error),);
+    String? errorTextValue = widget.model.returnErrorText();
 
-    view = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [view, errorText],
-    );
+    if(!S.isNullOrEmpty(errorTextValue)) {
+      Widget? errorText = Text(
+        "     $errorTextValue", style: TextStyle(color: Theme
+          .of(context)
+          .colorScheme
+          .error),);
+
+
+      view = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [view, errorText],
+      );
+    }
+
+
+
 
     return view;
   }

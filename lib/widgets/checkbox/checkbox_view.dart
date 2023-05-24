@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
+import 'package:fml/helper/string.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/checkbox/checkbox_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
@@ -92,13 +93,41 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
       }
     }
 
-    Text errorText = Text(widget.model.returnErrorText(), style: TextStyle(color: Theme.of(context).colorScheme.error),);
+    String? errorTextValue = widget.model.returnErrorText();
+
+    if(!S.isNullOrEmpty(errorTextValue)) {
+      Widget? errorText = Text(
+        "     $errorTextValue", style: TextStyle(color: Theme
+          .of(context)
+          .colorScheme
+          .error),);
+
+      view = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [view, errorText],
+      );
+    }
 
     view = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
-      children: [view, errorText],
+      children: [view],
     );
+
+    // get the model constraints
+    var modelConstraints = widget.model.constraints;
+
+    // constrain the input to 200 pixels if not constrained by the model
+    //if (!modelConstraints.hasHorizontalExpansionConstraints) modelConstraints.width  = 200;
+
+    // add margins
+    view = addMargins(view);
+
+    // apply constraints
+    view = applyConstraints(view, modelConstraints);
+
+
 
     return view;
   }
@@ -133,6 +162,10 @@ class CheckBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    Color selectedColor = model.setErrorBorderColor(context, model.color ?? Theme.of(context).colorScheme.primary);
+    Color unselectedColor = model.setErrorBorderColor(context, Theme.of(context).colorScheme.outline);
+
     var checkbox = Checkbox(
           value: checked,
           onChanged: (value) =>
@@ -141,16 +174,16 @@ class CheckBox extends StatelessWidget {
                   : null,
           checkColor: Theme.of(context).colorScheme.onPrimary,
           fillColor: MaterialStateColor.resolveWith(
-              (states) => Theme.of(context).colorScheme.primary),
+              (states) => selectedColor),
           focusColor: Theme.of(context).colorScheme.onInverseSurface,
           hoverColor: model.enabled != false && model.editable != false
               ? Theme.of(context).colorScheme.onInverseSurface
               : Colors.transparent,
           side: BorderSide(
               width: 2,
-              color: model.setFieldColor(context)),
+              color: unselectedColor),
           visualDensity: VisualDensity(horizontal: -2, vertical: -4),
-          splashRadius: 20,
+          splashRadius: 18,
           mouseCursor: model.enabled != false && model.editable != false
               ? SystemMouseCursors.click
               : SystemMouseCursors.basic,
@@ -163,6 +196,20 @@ class CheckBox extends StatelessWidget {
     {
       var view = option.label!.getView();
       if (view != null) label = view;
+
+      label  = MouseRegion(
+          cursor:
+          model.enabled != false && model.editable != false
+              ? SystemMouseCursors.click
+              : SystemMouseCursors.basic,
+          child: GestureDetector(
+              onTap: () => {
+                model.enabled != false &&
+                    model.editable != false
+                    ? callOnChecked()
+                    : () => {}
+              },
+              child: label));
     }
 
     // View
@@ -173,7 +220,7 @@ class CheckBox extends StatelessWidget {
             children: <Widget>[
               Padding(
                   padding:
-                      EdgeInsets.only(top: 8, bottom: 8, right: 8, left: 4),
+                      EdgeInsets.only(top: 8, bottom: 8, right: 4, left: 0),
                   child: checkbox),
               label
             ]);
@@ -182,5 +229,11 @@ class CheckBox extends StatelessWidget {
 
 
     return model.editable != false && model.enabled != false ? chk : Opacity(opacity: 0.7, child: chk);
+
+
+
+
+
+
   }
 }

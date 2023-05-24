@@ -257,7 +257,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
 
     List<OptionModel>? suggestions;
     view = SizedBox(
-        width: widget.model.calculatedMaxWidthOrDefault,
+        width: widget.model.myMaxWidthOrDefault,
         child: TypeAheadField(
           textFieldConfiguration: TextFieldConfiguration(
               enabled: widget.model.enabled != false,
@@ -271,7 +271,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
                       .of(context)
                       .colorScheme
                       .onBackground : Theme.of(context).colorScheme.surfaceVariant,
-                  fontSize: widget.model.size ?? 14),
+                  fontSize: widget.model.size),
               decoration: InputDecoration(
                   contentPadding: EdgeInsets.only(bottom:2),
                   isDense: true,
@@ -318,29 +318,57 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
         )
     );
     focus.addListener(onFocusChange);
-    if (widget.model.border == 'all') {
+    if (widget.model.border == 'none') {
       view = Container(
-        padding: const EdgeInsets.fromLTRB(15, 0, 5, 0),
+        padding: const EdgeInsets.fromLTRB(12, 6, 0, 6),
+        decoration: BoxDecoration(
+          color: widget.model.setFieldColor(context),
+          borderRadius: BorderRadius.circular(widget.model.radius.toDouble()),
+        ),
+        child: view,
+      );
+    } else if (widget.model.border == 'bottom' || widget.model.border == 'underline') {
+      view = Container(
+        padding: const EdgeInsets.fromLTRB(12, 5, 0, 6),
+        decoration: BoxDecoration(
+          color: widget.model.setFieldColor(context),
+          border: Border(
+            bottom: BorderSide(
+                width: widget.model.borderwidth.toDouble(),
+                color: widget.model.setErrorBorderColor(context, widget.model.bordercolor)),
+          ),),
+        child: view,
+      );
+    } else {
+      view = Container(
+        padding: const EdgeInsets.fromLTRB(12, 5, 0, 4),
         decoration: BoxDecoration(
           color: widget.model.setFieldColor(context),
           border: Border.all(
               width: widget.model.borderwidth.toDouble(),
-              color: widget.model.enabled
-                  ? (widget.model.bordercolor ?? Theme.of(context).colorScheme.outline)
-                  : Theme.of(context).colorScheme.surfaceVariant),
+              color: widget.model.setErrorBorderColor(context, widget.model.bordercolor)),
           borderRadius: BorderRadius.circular(widget.model.radius.toDouble()),
         ),
         child: view,
       );
     }
 
-    Text errorText = Text(widget.model.returnErrorText(), style: TextStyle(color: Theme.of(context).colorScheme.error),);
+    String? errorTextValue = widget.model.returnErrorText();
 
-    view = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [view, errorText],
-    );
+
+    if(!S.isNullOrEmpty(errorTextValue)) {
+      Widget? errorText = Padding(padding: EdgeInsets.only(top: 6.0 , bottom: 2.0), child: Text("    $errorTextValue", style: TextStyle(color: Theme.of(context)
+          .colorScheme.error),),);
+
+      view = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [view, errorText],
+      );
+  }
+
+
 
     // display busy
     //var busy;
@@ -351,8 +379,6 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
 
     // constrain the input to 200 pixels if not constrained by the model
     if (!modelConstraints.hasHorizontalExpansionConstraints) modelConstraints.width  = 200;
-    if (!modelConstraints.hasVerticalExpansionConstraints)   modelConstraints.height = widget.model.returnErrorState() ? 70 : 48;
-
 
     // add margins
     view = addMargins(view);

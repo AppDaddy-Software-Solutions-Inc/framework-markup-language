@@ -80,6 +80,7 @@ class System extends WidgetModel implements IEventManager {
   factory System() => _singleton;
   System._initialize() : super(null, myId, scope: Scope(id: myId)) {
     _initialize();
+    Platform.fml2js(version: version);
   }
 
   // current application
@@ -183,31 +184,22 @@ class System extends WidgetModel implements IEventManager {
     // not until the moves it or clicks
     // this routine traps that
     RendererBinding.instance.mouseTracker.addListener(onMouseDetected);
-
     // initialize platform
     await Platform.init();
-
     // initialize System Globals
     await _initBindables();
-
     // initialize Hive
     await _initDatabase();
-
     // initialize connectivity
     await _initConnectivity();
-
     // create empty applications folder
     if (!isWeb) await _initFolders();
-
     // set initial route
     await _initRoute();
-
     // start the Post Master
     await postmaster.start();
-
     // start the Janitor
     await janitor.start();
-
     // signal complete
     _completer.complete(true);
   }

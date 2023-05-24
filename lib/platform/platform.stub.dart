@@ -23,4 +23,5 @@ class Platform
   static int getNavigationType() => throw UnimplementedError();
   static String get title => throw UnimplementedError();
   static void js2fml() => throw UnimplementedError();
+  static void fml2js({String? version}) => throw UnimplementedError();
 }

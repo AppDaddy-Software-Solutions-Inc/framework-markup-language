@@ -29,7 +29,7 @@ class TemplateManager
       template = Xml.tryParse(xml);
       if (template == null) { // invalid xml from the js2fml data
         Log().warning('Template Parsing Error, likely invalid syntax', caller: 'template_manager.dart: fromJs()');
-        template = Xml.tryParse('<FML><CENTER><TEXT style="h6" value="Template Parsing Error" /></CENTER></FML>');
+        template = Xml.tryParse('<FML><BOX center="true"><TEXT style="h6" value="Template Parsing Error" /></BOX></FML>');
       }
     } catch(e) {
       Log().exception(e, caller: 'template_manager.dart: fromJs()');

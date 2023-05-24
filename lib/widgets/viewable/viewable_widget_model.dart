@@ -617,11 +617,12 @@ class ViewableWidgetModel extends ConstraintModel
   {
     // process children
     List<Widget> views = [];
-    for (var model in viewableChildren)
-    if (model is! ModalModel)
+    for (var model in viewableChildren) {
+      if (model is! ModalModel)
     {
       var view = model.getView();
       if (view != null) views.add(view);
+    }
     }
     return views;
   }

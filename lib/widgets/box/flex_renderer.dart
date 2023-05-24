@@ -835,9 +835,9 @@ class FlexRenderer extends RenderBox
         break;
 
       case FlexType.fixed:
-        if (constraints.hasTightHeight)
-        {
+        if (constraints.hasTightHeight) {
           maxHeight = constraints.maxHeight;
+        }
         break;
 
       case FlexType.expanding:

@@ -11,6 +11,7 @@ import 'package:fml/datasources/data/model.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/event/handler.dart' ;
 import 'package:xml/xml.dart';
@@ -19,7 +20,7 @@ import 'package:fml/helper/common_helpers.dart';
 
 enum ListTypes { replace, lifo, fifo, append, prepend }
 
-class DataSourceModel extends DecoratedWidgetModel implements IDataSource
+class DataSourceModel extends ViewableWidgetModel implements IDataSource
 {
   // data override
   @override
@@ -151,7 +152,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
   int get timetoidle => _timetoidle?.get() ?? 5;
 
   // status
-  Timer? t;
+  Timer? _statusTimer;
   StringObservable? _status;
   set status(dynamic v) {
     if (_status != null) {
@@ -159,8 +160,9 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
     } else if (v != null) {
       _status = StringObservable(Binding.toKey(id, 'status'), v, scope: scope);
     }
-    if (((v == "success") || (v == "error")) && (timetoidle > 0)) {
-      t = Timer(Duration(seconds: timetoidle), () => status = "idle");
+    if ((v == "success" || v == "error") && timetoidle > 0)
+    {
+      _statusTimer = Timer(Duration(seconds: timetoidle), () => status = "idle");
     }
   }
   String? get status => _status?.get();
@@ -256,19 +258,29 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
   }
   int? get autoquery => _autoquery;
 
-  // busy
   @override
-  set busy(dynamic v) {
-    dynamic old = busy;
+  set busy(dynamic v)
+  {
+    bool oldBusy = busy;
     super.busy = v;
-
-    if (busy != old){
-      for (var listener in listeners) {
+    if (busy != oldBusy)
+    {
+      for (var listener in listeners)
+      {
         listener.onDataSourceBusy(this, busy);
-      }}
+      }
+    }
 
     // Set Status
-    status = (busy == true) ? "busy" : (status ?? "idle");
+    if (busy)
+    {
+      status = "busy";
+    }
+
+    else if (_statusTimer == null)
+    {
+      status = "idle";
+    }
   }
 
   // value

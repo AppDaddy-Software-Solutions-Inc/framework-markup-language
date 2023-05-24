@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'dart:convert';
+import 'dart:js';
 import 'package:fml/event/event.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:universal_html/html.dart';

@@ -303,11 +303,11 @@ class StackRenderer extends RenderBox with
         if (childData.model != null) childConstraints = getChildLayoutConstraints(this, model, constraints, child, childData.model!);
 
         // layout the child
-        final Size childSize = layoutChild(child, childConstraints);
+        layoutChild(child, childConstraints);
 
         // size of stack is largest unpositioned child if not hard sized
-        if (!hardSizedWidth)  width  = math.max(width,  childSize.width);
-        if (!hardSizedHeight) height = math.max(height, childSize.height);
+        if (!hardSizedWidth)  width  = math.max(width,  child.size.width);
+        if (!hardSizedHeight) height = math.max(height, child.size.height);
       }
       child = childData.nextSibling;
     }

@@ -1,8 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/observable/binding.dart';
-import 'package:fml/observable/observables/string.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/datasources/base/model.dart';
 import 'package:xml/xml.dart';

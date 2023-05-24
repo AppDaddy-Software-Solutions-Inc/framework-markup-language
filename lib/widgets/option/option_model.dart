@@ -10,9 +10,6 @@ import 'package:fml/helper/common_helpers.dart';
 
 class OptionModel extends ViewableWidgetModel
 {
-  @override
-  bool get inflateable => false;
-
   // label
   ViewableWidgetModel? label;
 

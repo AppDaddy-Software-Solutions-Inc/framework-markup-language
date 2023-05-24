@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'dart:html';
 import 'package:collection/collection.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
@@ -270,6 +271,30 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
     status = (busy == true) ? "busy" : (status ?? "idle");
   }
 
+  // value
+  ListObservable? _value;
+  set value(dynamic v)
+  {
+    if (_value != null)
+    {
+      _value!.set(v);
+    }
+    else
+    {
+      if (v != null)
+      {
+        _value = ListObservable(Binding.toKey(id, 'value'), v, scope: scope, setter: _valueSetter);
+      }
+    }
+  }
+
+  dynamic _valueSetter(dynamic jsonOrXml)
+  {
+    var data = Data.from(jsonOrXml, root: root);
+    onSuccess(data, code: HttpStatus.ok);
+    return data;
+  }
+
   // root
   StringObservable? _root;
   @override
@@ -346,9 +371,7 @@ class DataSourceModel extends DecoratedWidgetModel implements IDataSource
     statusmessage = Xml.get(node: xml, tag: 'statusmessage');
     maxrecords = Xml.get(node: xml, tag: 'maxrecords');
     root = Xml.attribute(node: xml, tag: 'root');
-
-    String? value = Xml.get(node: xml, tag: 'value');
-    if (!S.isNullOrEmpty(value)) onSuccess(Data.from(value, root: root));
+    value = Xml.get(node: xml, tag: 'value');
 
     // custom body defined?
     XmlElement? body = Xml.getChildElement(node: xml, tag: 'body');

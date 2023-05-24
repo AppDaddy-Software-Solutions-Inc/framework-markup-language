@@ -182,10 +182,10 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   {
     if ((notification.metrics.axisDirection == AxisDirection.left) || (notification.metrics.axisDirection == AxisDirection.right)) return false;
 
-    double maxHeight = widget.model.header?.height ?? widget.model.header?.constraints.model.maxHeight ?? 0;
+    double maxHeight = widget.model.header?.height ?? widget.model.header?.constraints.maxHeight ?? 0;
     if (maxHeight.isNegative) maxHeight = 0;
 
-    double minHeight = widget.model.header?.height ?? widget.model.header?.constraints.model.minHeight ?? 0;
+    double minHeight = widget.model.header?.height ?? widget.model.header?.constraints.minHeight ?? 0;
     if (minHeight.isNegative) minHeight = 0;
 
     // Non-Resizeable Header
@@ -198,9 +198,9 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     if (height < minHeight) height = minHeight;
 
     var safeArea = MediaQuery.of(context).padding.top.ceil();
-    var viewportHeight = widget.model.constraints.system.maxHeight!;
+    var viewportHeight = widget.model.system.maxHeight!;
     widget.model.header?.height = height;
-    widget.model.height = viewportHeight - height - (widget.model.footer?.constraints.model.height ?? 0) - safeArea;
+    widget.model.height = viewportHeight - height - (widget.model.footer?.constraints.height ?? 0) - safeArea;
 
     /* Stop Notification Bubble */
     return false;
@@ -385,7 +385,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     // is wrapped in a Scroller
     if (body.findChildOfExactType(ScrollerModel) != null) view = NotificationListener<ScrollNotification>(onNotification: onScroll, child: view);
 
-    return UnconstrainedBox(child: SizedBox(child: view, width: body.width, height: body.height));
+    return SizedBox(child: view, width: body.width, height: body.height);
   }
 
   _setDeviceOrientation(String? orientation)

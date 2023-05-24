@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/layout/layout_model.dart';
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:flutter/material.dart';
@@ -16,12 +16,6 @@ import 'package:fml/helper/common_helpers.dart';
 /// Defines the properties used to build a [SCROLLER.ScrollerView]
 class ScrollerModel extends ViewableWidgetModel 
 {
-  @override
-  bool isVerticallyExpanding({bool ignoreFixedHeight = false}) => !isFixedHeight;
-
-  @override
-  bool isHorizontallyExpanding({bool ignoreFixedWidth = false}) => !isFixedWidth;
-
   /// The cross alignment of the widgets children. Can be `top`, `bottom`, `start`, or `end`.
   StringObservable? _align;
 
@@ -36,23 +30,27 @@ class ScrollerModel extends ViewableWidgetModel
   String? get align => _align?.get();
 
   @override
-  bool get verticallyConstrained
+  bool get expandHorizontally => true;
+
+  @override
+  bool get expandVertically => true;
+
+  @override
+  bool get canExpandInfinitelyWide
   {
-    var layout = LayoutModel.getLayoutType(this.layout);
-    if (layout == LayoutType.column) return false;
-    return super.verticallyConstrained;
+    if (hasBoundedWidth) return false;
+    return true;
   }
 
   @override
-  bool get horizontallyConstrained
+  bool get canExpandInfinitelyHigh
   {
-    var layout = LayoutModel.getLayoutType(this.layout);
-    if (layout == LayoutType.row) return false;
-    return super.verticallyConstrained;
+    if (hasBoundedHeight) return false;
+    return true;
   }
 
   /// Layout determines the widgets childrens layout. Can be `row`, `column`, `col`. Defaulted to `column`. Overrides direction.
-  LayoutType get layoutType => LayoutModel.getLayoutType(layout, defaultLayout: LayoutType.column);
+  LayoutType get layoutType => BoxModel.getLayoutType(layout, defaultLayout: LayoutType.column);
 
   StringObservable? _layout;
   set layout(dynamic v)

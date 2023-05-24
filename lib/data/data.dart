@@ -97,7 +97,8 @@ class Data with ListMixin<dynamic>
     {
       if (value.trim().startsWith('<')) {
         data = Data.fromXml(value);
-      } else {
+      } else
+      {
         data = Data.fromJson(value);
       }
     }

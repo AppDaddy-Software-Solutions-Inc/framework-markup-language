@@ -235,7 +235,7 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
     view = addMargins(view);
 
     // apply user defined constraints
-    view = applyConstraints(view, widget.model.constraints.tightestOrDefault);
+    view = applyConstraints(view, widget.model.tightestOrDefault);
 
     // add list
     children.add(view);

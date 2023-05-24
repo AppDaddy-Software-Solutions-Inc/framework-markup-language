@@ -28,7 +28,7 @@ class _ButtonViewState extends WidgetState<ButtonView>
 
     if (model.buttontype == 'elevated') {
       return ElevatedButton.styleFrom(
-          minimumSize:  Size(model.constraints.model.minWidth ?? 64, (model.constraints.model.minHeight ?? 0) + 40), //add 40 to the constraint as the width is offset by 40
+          minimumSize:  Size(model.constraints.minWidth ?? 64, (model.constraints.minHeight ?? 0) + 40), //add 40 to the constraint as the width is offset by 40
           backgroundColor: model.color ?? Theme.of(context).colorScheme.primary,
           foregroundColor: Theme.of(context).colorScheme.onPrimary,
           disabledForegroundColor: Theme.of(context).colorScheme.onSurface,
@@ -77,7 +77,7 @@ class _ButtonViewState extends WidgetState<ButtonView>
 
     return ButtonStyle(
       minimumSize: MaterialStateProperty.all(
-          Size(model.constraints.model.minWidth ?? 64, (model.constraints.model.minHeight?? 0) + 40)), //add 40 to the constraint as the width is offset by 40
+          Size(model.constraints.minWidth ?? 64, (model.constraints.minHeight?? 0) + 40)), //add 40 to the constraint as the width is offset by 40
       foregroundColor: foregroundColorStyle,
       backgroundColor: backgroundColorStyle,
       // overlayColor: overlayColorStyle,
@@ -134,7 +134,7 @@ class _ButtonViewState extends WidgetState<ButtonView>
     view = addMargins(view);
 
     // apply user defined constraints
-    view = applyConstraints(view, widget.model.constraints.model);
+    view = applyConstraints(view, widget.model.constraints);
 
     // allow button to shrink to size of its contents
     view = UnconstrainedBox(child: view);

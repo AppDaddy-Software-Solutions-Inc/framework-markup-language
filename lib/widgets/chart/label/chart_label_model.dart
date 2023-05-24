@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/log/manager.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/observable/observable_barrel.dart';

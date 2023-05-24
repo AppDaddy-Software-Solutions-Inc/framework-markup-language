@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/column/column_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -10,11 +10,12 @@ import 'package:fml/widgets/link/link_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class LinkModel extends DecoratedWidgetModel 
+class LinkModel extends ColumnModel
 {
-  /////////
-  /* url */
-  /////////
+  @override
+  bool get expand => false;
+  
+  // url
   StringObservable? _url;
   set url(dynamic v)
   {
@@ -32,9 +33,7 @@ class LinkModel extends DecoratedWidgetModel
     return _url?.get();
   }
 
-  /////////////
-  /* onclick */
-  /////////////
+  // onclick
   StringObservable? _onclick;
   set onclick(dynamic v)
   {
@@ -52,9 +51,7 @@ class LinkModel extends DecoratedWidgetModel
     return _onclick?.get();
   }
 
-  //////////////////
-  /* onlongpress */
-  /////////////////
+  // onlongpress
   StringObservable? _onlongpress;
   set onlongpress(dynamic v)
   {
@@ -71,9 +68,7 @@ class LinkModel extends DecoratedWidgetModel
     return _onlongpress?.get();
   }
 
-  /////////////////
-  /* ondoubletap */
-  /////////////////
+  // ondoubletap
   StringObservable? _ondoubletap;
   set ondoubletap(dynamic v)
   {
@@ -91,9 +86,7 @@ class LinkModel extends DecoratedWidgetModel
     return _ondoubletap?.get();
   }
 
-  //////////
-  /* hint */
-  //////////
+  // hint
   StringObservable? _hint;
   set hint(dynamic v)
   {
@@ -131,7 +124,7 @@ class LinkModel extends DecoratedWidgetModel
     LinkModel? model;
     try
     {
-// build model
+      // build model
       model = LinkModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
@@ -145,7 +138,7 @@ class LinkModel extends DecoratedWidgetModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
+  void deserialize(XmlElement? xml)
   {
     // deserialize
     super.deserialize(xml);

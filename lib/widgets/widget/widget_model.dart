@@ -51,6 +51,7 @@ import 'package:fml/datasources/http/delete/model.dart';
 import 'package:fml/widgets/draggable/draggable_model.dart';
 import 'package:fml/widgets/droppable/droppable_model.dart';
 import 'package:fml/widgets/editor/editor_model.dart';
+import 'package:fml/widgets/field/field_model.dart';
 import 'package:fml/widgets/filepicker/filepicker_model.dart';
 import 'package:fml/widgets/footer/footer_model.dart';
 import 'package:fml/widgets/form/form_model.dart';
@@ -124,7 +125,6 @@ import 'package:fml/widgets/video/video_model.dart';
 import 'package:fml/widgets/html/html_model.dart';
 import 'package:fml/widgets/span/span_model.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/view/view_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
@@ -275,8 +275,15 @@ class WidgetModel implements IDataSourceListener {
   double get horizontalPadding => 0;
 
   WidgetModel(this.parent, String? id, {Scope? scope}) {
-    // default id
-    if (S.isNullOrEmpty(id)) id = S.newId();
+
+    // build default id
+    if (S.isNullOrEmpty(id))
+    {
+      var prefix = elementName.toLowerCase();
+      if (prefix.endsWith('model')) prefix = prefix.substring(0, prefix.lastIndexOf('model'));
+      id = S.newId(prefix: prefix);
+    }
+
     this.id = id!;
 
     // set the scope
@@ -446,6 +453,10 @@ class WidgetModel implements IDataSourceListener {
         if (parent is IDataSource) model = Eval.fromXml(model, node);
         break;
 
+      case "field":
+        model = FieldModel.fromXml(parent, node);
+        break;
+
       case "filepicker":
         model = FilepickerModel.fromXml(parent, node);
         break;
@@ -548,6 +559,10 @@ class WidgetModel implements IDataSourceListener {
         model = InputModel.fromXml(parent, node);
         break;
 
+      case "layout":
+        model = BoxModel.fromXml(parent, node);
+      break;
+
       case "label":
         if (parent is ChartModel) {
           model = ChartLabelModel.fromXml(parent, node);
@@ -615,6 +630,11 @@ class WidgetModel implements IDataSourceListener {
         } else {
           model = RotateTransitionModel.fromXml(parent, node);
         }
+        break;
+
+      case "sbox":
+      case "shrinkbox":
+        model = BoxModel.fromXml(parent, node, expandByDefault: false);
         break;
 
       case "size":
@@ -860,7 +880,7 @@ class WidgetModel implements IDataSourceListener {
 
       case "view":
         if (parent is SplitModel) {
-          model = ViewModel.fromXml(parent, node);
+          model = BoxModel.fromXml(parent, node);
         }
         break;
 
@@ -1068,14 +1088,16 @@ class WidgetModel implements IDataSourceListener {
     List<dynamic> list = [];
 
     // evaluate me
-    if ((runtimeType == (T ?? runtimeType)) &&
-        (this.id == (id ?? this.id))) list.add(this);
+    if ((runtimeType == (T ?? runtimeType)) && (this.id == (id ?? this.id))) {
+      list.add(this);
+    }
 
     // evaluate my siblings
     if ((includeSiblings) && (children != null)) {
       for (var child in children!) {
-        if ((child.runtimeType == T) && (child.id == (id ?? child.id)))
+        if ((child.runtimeType == T) && (child.id == (id ?? child.id))) {
           list.add(child);
+        }
       }
     }
 
@@ -1107,8 +1129,9 @@ class WidgetModel implements IDataSourceListener {
     List<dynamic> list = [];
 
     // evaluate me
-    if ((runtimeType == (T ?? runtimeType)) &&
-        (this.id == (id ?? this.id))) list.add(this);
+    if ((runtimeType == (T ?? runtimeType)) && (this.id == (id ?? this.id))) {
+      list.add(this);
+    }
 
     // evaluate my children
     if (children != null) {

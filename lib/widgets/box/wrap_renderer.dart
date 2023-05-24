@@ -1,4 +1,5 @@
 import 'package:flutter/rendering.dart';
+import 'package:fml/widgets/box/box_constraints.dart';
 import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/box/box_mixin.dart';
 import 'dart:math' as math;
@@ -542,8 +543,11 @@ class WrapRenderer extends RenderBox with
       // get layout constraints
       var childConstraints = getChildLayoutConstraints(this, model, constraints, child, childModel);
 
-      // Perform the layout
-      child.layout(childConstraints, parentUsesSize: true);
+      // calculate the child's size by performing
+      // a dry layout. We use LocalBoxConstraints in order to
+      // override isTight, which is used in Layout() to determine if a
+      // child size change forces a parent to resize.
+      child.layout(LocalBoxConstraints.from(childConstraints), parentUsesSize: true);
 
       final double childMainAxisExtent  = _getMainAxisExtent(child.size);
       final double childCrossAxisExtent = _getCrossAxisExtent(child.size);

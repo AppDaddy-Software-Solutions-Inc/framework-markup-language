@@ -13,7 +13,6 @@ class BoxData extends ContainerBoxParentData<RenderBox>
 
   int? flex;
   FlexFit? fit;
-  Size? size;
 
   int runIndex = 0;
 

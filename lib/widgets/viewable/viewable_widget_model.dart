@@ -431,16 +431,6 @@ class ViewableWidgetModel extends ConstraintModel
   }
   bool get visible => _visible?.get() ?? true;
 
-  // is visible
-  static bool isVisible(DecoratedWidgetModel? widget) {
-    if (widget == null) return false;
-    if (widget.visible == false) return false;
-    if (widget.parent is DecoratedWidgetModel) {
-      return isVisible(widget.parent as DecoratedWidgetModel);
-    }
-    return true;
-  }
-
   // enabled
   BooleanObservable? _enabled;
 

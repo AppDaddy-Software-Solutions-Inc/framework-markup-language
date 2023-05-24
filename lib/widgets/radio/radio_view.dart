@@ -32,7 +32,8 @@ class _RadioViewState extends WidgetState<RadioView>
 
     // save system constraints
     onLayout(constraints);
-    Color color = widget.model.setErrorBorderColor(context, widget.model.color ?? Theme.of(context).colorScheme.primary);
+    Color selectedColor = widget.model.setErrorBorderColor(context, widget.model.color ?? Theme.of(context).colorScheme.primary);
+    Color unselectedColor = widget.model.setErrorBorderColor(context, Theme.of(context).colorScheme.outline);
     // Options
     if (widget.model.options.isNotEmpty) {
 
@@ -43,11 +44,11 @@ class _RadioViewState extends WidgetState<RadioView>
 
         var checked = Icon(Icons.radio_button_checked,
             size: widget.model.size,
-            color: color);
+            color: selectedColor);
 
         var unchecked = Icon(Icons.radio_button_unchecked,
             size: widget.model.size,
-            color: color.withOpacity(0.4));
+            color: unselectedColor);
 
         var radio = MouseRegion(
             cursor:

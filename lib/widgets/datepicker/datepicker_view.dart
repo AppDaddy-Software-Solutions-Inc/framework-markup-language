@@ -164,7 +164,6 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
     // set the text color arrays
     Color? enabledTextColor = widget.model.textcolor;
     Color? disabledTextColor = Theme.of(context).disabledColor;
-    Color? hintTextColor =Theme.of(context).focusColor;
     Color? errorTextColor = Theme.of(context).colorScheme.error;
 
     double? fontsize = widget.model.size;
@@ -226,7 +225,6 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
                   : EdgeInsets.only(
                   left: pad + 10, top: pad + 15, right: pad + 10, bottom: pad + 15),
               alignLabelWithHint: true,
-              labelText: widget.model.dense ? null : hint,
               labelStyle: TextStyle(
                 fontSize: fontsize != null ? fontsize - 2 : 14,
                 color: widget.model.setErrorHintColor(context),
@@ -242,13 +240,11 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
                 fontWeight: FontWeight.w300,
                 color: errorTextColor,
               ),
-              hintText: widget.model.dense ? hint : null,
+              hintText: hint,
               hintStyle: TextStyle(
                 fontSize: fontsize ?? 14,
                 fontWeight: FontWeight.w300,
-                color: widget.model.enabled != false
-                    ? hintTextColor
-                    : disabledTextColor,
+                color: widget.model.setErrorHintColor(context),
               ),
               prefixIcon: Padding(
                   padding: EdgeInsets.only(

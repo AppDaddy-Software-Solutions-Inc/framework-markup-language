@@ -41,9 +41,6 @@ class Platform
   {
     try
     {
-      context.callMethod('postMessage', ['FML v${System().release}', '*']);
-      // postMessage('FML v${System().release}', '*');
-      print('posted message?');
       window.document.getElementById("logo")!.style.visibility = "hidden";
     }
     catch(e){
@@ -215,4 +212,5 @@ class Platform
     context.callMethod('postMessage', [json, '*']);
     print('posted message: $version');
   }
+
 }

@@ -701,9 +701,7 @@ class _InputViewState extends WidgetState<InputView>
           labelText: widget.model.dense ? null : hint,
           labelStyle: TextStyle(
             fontSize: fontsize != null ? fontsize - 2 : 14,
-            color: widget.model.enabled != false
-                ? hintTextColor
-                : disabledTextColor,
+            color: widget.model.setErrorHintColor(context),
           ),
           errorStyle: TextStyle(
             fontSize: fontsize ?? 14,
@@ -721,6 +719,8 @@ class _InputViewState extends WidgetState<InputView>
             fontWeight: FontWeight.w300,
             color: widget.model.setErrorHintColor(context),
           ),
+
+
           counterText: "",
           // widget.model.error is getting set to null somewhere.
 

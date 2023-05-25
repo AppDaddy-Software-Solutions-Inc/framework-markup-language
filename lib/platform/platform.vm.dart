@@ -248,4 +248,8 @@ class Platform
   static int getNavigationType() => 0;
 
   static String get title => applicationTitle;
+
+  static void js2fml() {}
+  static void fml2js({String? version}) {}
+
 }

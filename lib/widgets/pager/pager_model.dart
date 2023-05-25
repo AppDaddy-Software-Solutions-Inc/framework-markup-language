@@ -2,28 +2,34 @@
 import 'package:flutter/material.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/pager/page/page_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/pager/pager_view.dart';
-import 'package:fml/widgets/pager/page/pager_page_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class PagerModel extends DecoratedWidgetModel 
+class PagerModel extends BoxModel
 {
+  @override
+  LayoutType layoutType = LayoutType.stack;
+
+  @override
+  bool get expand => true;
+
+  @override
+  bool get center => true;
+
   PageController? controller;
 
   // prototype
   String? prototype;
 
-  // pages
-  List<PagerPageModel> pages = [];
+  List<PageModel> pages = [];
 
-  ///////////
-  /* pager */
-  ///////////
+  // pager
   BooleanObservable? _pager;
   set pager (dynamic v)
   {
@@ -38,9 +44,7 @@ class PagerModel extends DecoratedWidgetModel
   }
   bool get pager => _pager?.get() ?? true;
 
-  /////////////////
-  /* initialpage */
-  /////////////////
+  // initialpage
   IntegerObservable? _initialpage;
   set initialpage (dynamic v)
   {
@@ -60,9 +64,7 @@ class PagerModel extends DecoratedWidgetModel
     return v;
   }
 
-  /////////////////
-  /* currentpage */
-  /////////////////
+  // currentpage
   IntegerObservable? _currentpage;
   set currentpage (dynamic v)
   {
@@ -123,7 +125,7 @@ class PagerModel extends DecoratedWidgetModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
+  void deserialize(XmlElement? xml)
   {
     // deserialize 
     super.deserialize(xml);
@@ -132,7 +134,7 @@ class PagerModel extends DecoratedWidgetModel
     pager = Xml.get(node: xml, tag: 'pager');
 
     // build pages
-    List<PagerPageModel> pages = findChildrenOfExactType(PagerPageModel).cast<PagerPageModel>();
+    List<PageModel> pages = findChildrenOfExactType(PageModel).cast<PageModel>();
 
       // set prototype
       if ((!S.isNullOrEmpty(datasource)) && (pages.isNotEmpty))
@@ -150,7 +152,7 @@ class PagerModel extends DecoratedWidgetModel
     if (pages.isEmpty)
     {
       XmlDocument missingXml = XmlDocument.parse('<PAGE><CENTER><TEXT value="Missing <Page /> Element" /></CENTER></PAGE>');
-      var page = PagerPageModel.fromXml(this, missingXml.rootElement);
+      var page = PageModel.fromXml(this, missingXml.rootElement);
       if (page != null) this.pages.add(page);
     }
 
@@ -177,7 +179,7 @@ class PagerModel extends DecoratedWidgetModel
         XmlElement? prototype = S.fromPrototype(this.prototype, "$id-$i");
         i = i + 1;
 
-        var model = PagerPageModel.fromXml(parent, prototype, data: row);
+        var model = PageModel.fromXml(parent, prototype, data: row);
         if (model != null) pages[i] = model;
       }
 
@@ -202,7 +204,15 @@ class PagerModel extends DecoratedWidgetModel
 
     super.dispose();
   }
-  
+
+  @override
+  List<Widget> inflate({BoxConstraints? constraints})
+  {
+    PagerViewState? view = findListenerOfExactType(PagerViewState);
+    if (view == null || constraints == null) return [];
+    return view.inflate(constraints);
+  }
+
   @override
   Widget getView({Key? key}) => getReactiveView(PagerView(this));
 }

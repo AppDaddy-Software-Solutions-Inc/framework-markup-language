@@ -721,18 +721,18 @@ class FlexRenderer extends RenderBox
 
             // get the childs max extent
             double maxExtent = (child == lastFlexChild) ? (freeSpace - flexSpaceUsed) : spacePerFlex * flex;
+            double minExtent = 0.0;
 
             // get the childs min extent
-            late final double minExtent;
-            switch (fit)
-            {
-              case FlexFit.tight:
-                minExtent = maxExtent;
-                break;
-              case FlexFit.loose:
-                minExtent = 0.0;
-                break;
-            }
+            // switch (fit)
+            // {
+            //   case FlexFit.tight:
+            //     minExtent = maxExtent;
+            //     break;
+            //   case FlexFit.loose:
+            //     minExtent = 0.0;
+            //     break;
+            // }
 
             // how much of the free space can I consume?
             var maxSpace = (flex / totalFlex) * freeSpace;

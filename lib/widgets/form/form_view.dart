@@ -4,6 +4,7 @@ import 'package:fml/dialog/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
+import 'package:fml/widgets/pager/page/page_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,6 @@ import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/datasources/gps/gps_litener_interface.dart';
 import 'package:fml/widgets/form/form_model.dart';
-import 'package:fml/widgets/pager/page/pager_page_model.dart';
 import 'package:fml/widgets/pager/pager_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
@@ -80,10 +80,10 @@ class FormViewState extends WidgetState<FormView> implements IGpsListener {
           found = true;
           try {
             List<dynamic>? pagers =
-                (field as WidgetModel).findAncestorsOfExactType(PagerPageModel);
+                (field as WidgetModel).findAncestorsOfExactType(PageModel);
             if (pagers != null) {
               Log().debug('found ${pagers.length} page(s)');
-              for (PagerPageModel page in pagers as Iterable<PagerPageModel>) {
+              for (PageModel page in pagers as Iterable<PageModel>) {
                 // ensure we can handle pagers within pagers, probably a bit extreme
                 PagerModel pageParent = page.parent
                     as PagerModel; // (parent as PAGER.PagerModel).View();

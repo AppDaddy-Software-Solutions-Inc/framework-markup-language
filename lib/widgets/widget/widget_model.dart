@@ -75,8 +75,8 @@ import 'package:fml/widgets/menu/menu_model.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/padding/padding_model.dart';
+import 'package:fml/widgets/pager/page/page_model.dart';
 import 'package:fml/widgets/pager/pager_model.dart';
-import 'package:fml/widgets/pager/page/pager_page_model.dart';
 import 'package:fml/widgets/popover/item/popover_item_model.dart';
 import 'package:fml/widgets/popover/popover_model.dart';
 import 'package:fml/widgets/positioned/positioned_model.dart';
@@ -698,8 +698,9 @@ class WidgetModel implements IDataSourceListener {
         break;
 
       case "page":
-        if (parent is PagerModel) {
-          model = PagerPageModel.fromXml(parent, node);
+        if (parent is PagerModel)
+        {
+          model = PageModel.fromXml(parent, node);
         }
         break;
 

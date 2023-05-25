@@ -214,7 +214,6 @@ class _SelectViewState extends WidgetState<SelectView>
     view = applyConstraints(view, modelConstraints);
 
 
-
     return view;
   }
 

@@ -70,6 +70,8 @@ class TableRowCellModel extends BoxModel
   }
   Color? get altcolor
   {
+    if (selected == true) return selectedcolor;
+    if ((parent != null) && (parent is TableRowModel) && ((parent as TableRowModel).selected == true)) return (parent as TableRowModel).selectedcolor;
     if (_altcolor == null)
     {
       if ((parent != null) && (parent is TableRowModel)) return (parent as TableRowModel).altcolor;

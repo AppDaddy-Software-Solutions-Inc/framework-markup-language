@@ -232,8 +232,8 @@ dependencies:
   web_socket_channel: ^2.2.0
   # BSD-3-Clause
 
-  # Updated 2023/03/13
-  universal_html: ^2.2.1
+  # Updated 2023/05/25
+  universal_html: ^2.2.2
   # Apache-2.0
 
   # Updated 2022/09/28

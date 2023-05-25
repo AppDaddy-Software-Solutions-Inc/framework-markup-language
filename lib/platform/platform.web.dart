@@ -210,7 +210,6 @@ class Platform
     final jsonEncoder = JsonEncoder();
     final json = jsonEncoder.convert(data);
     context.callMethod('postMessage', [json, '*']);
-    print('posted message: $version');
   }
 
 }

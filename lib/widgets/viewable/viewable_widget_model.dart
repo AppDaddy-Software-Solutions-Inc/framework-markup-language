@@ -264,7 +264,7 @@ class ViewableWidgetModel extends ConstraintModel
         marginTop=s[0];
         marginRight=s[1];
         marginBottom=s[2];
-        marginLeft=null;
+        marginLeft=0;
       }
 
       // top/bottom

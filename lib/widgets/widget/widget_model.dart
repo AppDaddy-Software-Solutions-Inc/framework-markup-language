@@ -274,17 +274,10 @@ class WidgetModel implements IDataSourceListener {
   // to return the amount of horizontal space allocated for padding, borders and margins
   double get horizontalPadding => 0;
 
-  WidgetModel(this.parent, String? id, {Scope? scope}) {
-
-    // build default id
-    if (S.isNullOrEmpty(id))
-    {
-      var prefix = elementName.toLowerCase();
-      if (prefix.endsWith('model')) prefix = prefix.substring(0, prefix.lastIndexOf('model'));
-      id = S.newId(prefix: prefix);
-    }
-
-    this.id = id!;
+  WidgetModel(this.parent, String? id, {Scope? scope})
+  {
+    // set the id
+    this.id = _toId(id);
 
     // set the scope
     this.scope = scope ?? Scope.of(this);
@@ -292,10 +285,25 @@ class WidgetModel implements IDataSourceListener {
     // set the framework
     framework = findAncestorOfExactType(FrameworkModel);
 
-    // register the model with the scope
-    if (!S.isNullOrEmpty(id) && this.scope != null) {
-      this.scope!.registerModel(this);
+    // register the model
+    this.scope?.registerModel(this);
+  }
+
+  static RegExp onlyAlpha = RegExp(r'''[^a-zA-Z0-9\s.]''');
+  String _toId(String? id)
+  {
+    if (S.isNullOrEmpty(id))
+    {
+      String prefix = "auto";
+      if (kDebugMode)
+      {
+        prefix = "$runtimeType".toLowerCase();
+        prefix = prefix.replaceAll(onlyAlpha,'');
+        if (prefix.endsWith('model')) prefix = prefix.substring(0, prefix.lastIndexOf('model'));
+      }
+      id = S.newId(prefix: prefix);
     }
+    return id!;
   }
 
   static WidgetModel? fromXml(WidgetModel parent, XmlElement node) {

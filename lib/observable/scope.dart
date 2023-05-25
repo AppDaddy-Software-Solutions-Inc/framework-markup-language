@@ -26,7 +26,7 @@ class Scope
   LinkedHashMap<String, IDataSource> datasources  = LinkedHashMap<String, IDataSource>();
 
   // list of widget models in this scope
-  LinkedHashMap<String?, WidgetModel> models  = LinkedHashMap<String?, WidgetModel>();
+  LinkedHashMap<String, WidgetModel> models  = LinkedHashMap<String, WidgetModel>();
 
   // file links
   final Map<String, File> files = <String, File>{};

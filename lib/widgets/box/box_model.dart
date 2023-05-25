@@ -308,19 +308,21 @@ class BoxModel extends DecoratedWidgetModel
     // process children
     List<Widget> views = [];
     for (var model in viewableChildren)
-    if (model is! ModalModel)
     {
-      var view = model.getView();
-
-      // wrap child in child data widget
-      // this is done for us in "positioned" if the child happens
-      // to be a positioned widget and the layout is "stack" (see positioned_view.dart)
-      if (view is! PositionedView)
+      if (model is! ModalModel)
       {
-        view = LayoutBoxChildData(child: view!, model: model);
-      }
+        var view = model.getView();
 
-      if (view != null) views.add(view);
+        // wrap child in child data widget
+        // this is done for us in "positioned" if the child happens
+        // to be a positioned widget and the layout is "stack" (see positioned_view.dart)
+        if (view is! PositionedView)
+        {
+          view = LayoutBoxChildData(child: view!, model: model);
+        }
+
+        if (view != null) views.add(view);
+      }
     }
     return views;
   }

@@ -84,9 +84,9 @@ class _TableRowCellViewState extends WidgetState<TableRowCellView> with WidgetsB
         // Colors.transparent;
     double borderwidth = widget.model.borderwidth;
     Color bordercolor = Colors.transparent;
-    Color? outerbordercolor = widget.model.outerbordercolor;
+    Color? outerbordercolor = widget.model.bordercolor;
 
-    bool selectable = widget.model.visible;
+    bool selectable = true;
 
     // Cell
     Widget cell = Container(

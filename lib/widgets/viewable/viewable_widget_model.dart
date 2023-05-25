@@ -357,7 +357,7 @@ class ViewableWidgetModel extends ConstraintModel
         paddingTop=s[0];
         paddingRight=s[1];
         paddingBottom=s[2];
-        paddingLeft=null;
+        paddingLeft=0;
       }
 
       // top/bottom
@@ -366,7 +366,7 @@ class ViewableWidgetModel extends ConstraintModel
         paddingTop=s[0];
         paddingRight=s[1];
         paddingBottom=s[2];
-        paddingLeft=s[4];
+        paddingLeft=s[3];
       }
     }
   }

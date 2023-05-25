@@ -264,7 +264,7 @@ class ViewableWidgetModel extends ConstraintModel
         marginTop=s[0];
         marginRight=s[1];
         marginBottom=s[2];
-        marginLeft=0;
+        marginLeft=s[1];
       }
 
       // top/bottom
@@ -357,7 +357,7 @@ class ViewableWidgetModel extends ConstraintModel
         paddingTop=s[0];
         paddingRight=s[1];
         paddingBottom=s[2];
-        paddingLeft=0;
+        paddingLeft=s[1];
       }
 
       // top/bottom

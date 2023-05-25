@@ -1,14 +1,16 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
+import 'package:fml/widgets/box/box_data.dart';
+import 'package:fml/widgets/box/box_view.dart';
+import 'package:fml/widgets/pager/page/page_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/event/event.dart' ;
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/pager/pager_model.dart';
-import 'package:fml/widgets/pager/page/pager_page_view.dart';
-import 'package:fml/widgets/pager/page/pager_page_model.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
@@ -19,14 +21,16 @@ class PagerView extends StatefulWidget implements IWidgetView
   PagerView(this.model) : super(key: ObjectKey(model));
 
   @override
-  State<PagerView> createState() => _PagerViewState();
+  State<PagerView> createState() => PagerViewState();
 }
 
-class _PagerViewState extends WidgetState<PagerView>
+class PagerViewState extends WidgetState<PagerView>
 {
   PageController? _controller;
-  List<PagerPageView> _pages = [];
-  BusyView? busy;
+  List<Widget> _pages = [];
+  Widget? busy;
+  Widget? pageView;
+  Widget? pager;
 
   @override
   void initState()
@@ -73,55 +77,7 @@ class _PagerViewState extends WidgetState<PagerView>
   @override
   onModelChange(WidgetModel model, {String? property, value})
   {
-// TODO missing setState?
-  }
-
-
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints)
-  {
-    // save system constraints
-    onLayout(constraints);
-
-    // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
-
-    /// Busy / Loading Indicator
-    busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
-
-    /////////////////
-    /* Build Pages */
-    /////////////////
-    _pages = [];
-    for (PagerPageModel model in widget.model.pages)
-    {
-      var page = PagerPageView(model);
-      _pages.add(page);
-    }
-
-    dynamic pageView = PageView.builder(
-        controller: _controller,
-        itemBuilder: buildPage,
-        itemCount: _pages.length,
-        // Maintains our `currentpage` bindable when a page is changed, by dotsindicator/scroll/drag/event
-        onPageChanged: (int page) => widget.model.currentpage = page + 1);
-
-    dynamic pager = widget.model.pager ? Positioned(bottom: 8, child: Container(child: DotsIndicator(controller: _controller!, itemCount: _pages.length, color: widget.model.color ?? Theme.of(context).colorScheme.onBackground,
-      onPageSelected: (int page) {
-        _controller!.animateToPage(page, duration: Duration(milliseconds: 150), curve: Curves.ease,);
-      },
-    ))) : Container();
-
-    var c = widget.model.constraints;
-    if (!c.isNotEmpty && constraints.maxWidth == double.infinity) {
-      pageView = UnconstrainedBox(child: SizedBox(height: widget.model.height ?? widget.model.myMaxHeightOrDefault, width: widget.model.width ?? widget.model.myMaxWidthOrDefault, child: pageView));
-    }
-
-    var view = Stack(alignment: Alignment.bottomCenter, children: [pageView, pager, Center(child: busy)]);
-
-    return view;
+    // TODO missing setState?
   }
 
   Widget buildPage(BuildContext context, int index)
@@ -165,6 +121,56 @@ class _PagerViewState extends WidgetState<PagerView>
     }
   }
 
+  // called by models inflate
+  List<Widget> inflate(BoxConstraints constraints)
+  {
+    List<Widget> list = [];
+
+    // create page view
+    if (pageView == null)
+    {
+      // Build Pages
+      _pages = [];
+      for (PageModel model in widget.model.pages)
+      {
+        var view = LayoutBoxChildData(model: model, child: model.getView());
+        _pages.add(view);
+      }
+      pageView = PageView.builder(controller: _controller, itemBuilder: buildPage, itemCount: _pages.length, onPageChanged: (int page) => widget.model.currentpage = page + 1);
+      pageView = LayoutBoxChildData(model: widget.model, child: pageView!);
+    }
+    list.add(pageView!);
+
+    // create pager
+    if (pager == null && widget.model.pager)
+    {
+      var model = ViewableWidgetModel(widget.model, null);
+      pager = Container(child: DotsIndicator(controller: _controller!, itemCount: _pages.length, color: widget.model.color ?? Theme.of(context).colorScheme.onBackground,
+          onPageSelected: (int page)
+          {
+            _controller!.animateToPage(page, duration: Duration(milliseconds: 150), curve: Curves.ease,);
+          }));
+      pager = LayoutBoxChildData(model: model, child: pager!, bottom: 8);
+    }
+    if (pager != null)
+    {
+      list.add(pager!);
+    }
+
+    // create busy indicator
+    if (busy == null)
+    {
+      var model = BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable);
+      busy = BusyView(model);
+      busy = LayoutBoxChildData(model: model, child: busy!);
+    }
+    list.add(busy!);
+
+    return list;
+  }
+
+  @override
+  Widget build(BuildContext context) => BoxView(widget.model);
 }
 
 class DotsIndicator extends AnimatedWidget {

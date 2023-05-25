@@ -1,16 +1,22 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class PagerPageModel extends DecoratedWidgetModel
+class PageModel extends BoxModel
 {
-  /////////
-  /* url */
-  /////////
+  @override
+  LayoutType layoutType = LayoutType.column;
+
+  @override
+  bool get expand => true;
+  
+  // url
   StringObservable? _url;
   set url (dynamic v)
   {
@@ -25,19 +31,19 @@ class PagerPageModel extends DecoratedWidgetModel
   }
   String? get url => _url?.get();
 
-  PagerPageModel(WidgetModel? parent, String? id, {dynamic data, dynamic url}) : super(parent, id, scope: Scope(parent: parent?.scope))
+  PageModel(WidgetModel? parent, String? id, {dynamic data, dynamic url}) : super(parent, id, scope: Scope(parent: parent?.scope))
   {
     this.data = data;
     this.url = url;
   }
 
-  static PagerPageModel? fromXml(WidgetModel? parent, XmlElement? xml, {dynamic data, dynamic onTap, dynamic onLongPress})
+  static PageModel? fromXml(WidgetModel? parent, XmlElement? xml, {dynamic data, dynamic onTap, dynamic onLongPress})
   {
-    PagerPageModel? model;
+    PageModel? model;
     try
     {
       // build model
-      model = PagerPageModel(parent, Xml.get(node: xml, tag: 'id'), data: data);
+      model = PageModel(parent, Xml.get(node: xml, tag: 'id'), data: data);
       model.deserialize(xml);
     }
     catch(e)
@@ -62,9 +68,5 @@ class PagerPageModel extends DecoratedWidgetModel
   }
 
   @override
-  dispose()
-  {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
-  }
+  Widget getView({Key? key}) => BoxView(this);
 }

@@ -139,12 +139,34 @@ class ModalModel extends BoxModel
       case "open" :
         
         // modal width
-        String? width = arguments.isNotEmpty ? S.toStr(arguments[0]) : null;
-        width ??= (widthPercentage != null) ? "$widthPercentage%" : "$width";
+        String? width;
+        if (arguments.isNotEmpty)
+        {
+          width = S.toStr(arguments[0]);
+        }
+        else if (this.width != null)
+        {
+          width = "${this.width}";
+        }
+        else if (this.widthPercentage != null)
+        {
+          width = "${this.widthPercentage}%";
+        }
 
         // modal height
-        String? height = arguments.length > 1 ? S.toStr(arguments[1]) : null;
-        height ??= (heightPercentage != null) ? "$heightPercentage%" : "$height";
+        String? height;
+        if (arguments.length > 1)
+        {
+          height = S.toStr(arguments[1]);
+        }
+        else if (this.height != null)
+        {
+          height = "${this.height}";
+        }
+        else if (this.heightPercentage != null)
+        {
+          height = "${this.heightPercentage}%";
+        }
 
         // resizeable
         if (arguments.length > 2) resizeable = S.toBool(arguments[2]) ?? true;

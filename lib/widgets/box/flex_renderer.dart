@@ -650,6 +650,7 @@ class FlexRenderer extends RenderBox
         var childData = (child.parentData as BoxData);
         var childModel = childData.model!;
 
+        var idChild = childModel.id;
         // assign flex value
         _setChildFlex(childData, childModel);
 
@@ -713,6 +714,8 @@ class FlexRenderer extends RenderBox
         if (child.parentData is BoxData &&
             (child.parentData as BoxData).model != null) {
           var childModel = (child.parentData as BoxData).model!;
+
+          var idChild = childModel.id;
 
           final int flex = _getFlex(child);
           if (flex > 0)
@@ -802,6 +805,8 @@ class FlexRenderer extends RenderBox
     // size fixed children
     var fixedSize = calculateFixedChildSizes(layoutChild);
 
+    var idChild = model.id;
+
     var maxWidth = 0.0;
     switch (_horizontalFlex)
     {
@@ -826,14 +831,7 @@ class FlexRenderer extends RenderBox
         break;
 
       case FlexType.fixed:
-        if (constraints.hasTightHeight)
-        {
-          maxHeight = constraints.maxHeight;
-        }
-        else
-        {
-          maxHeight = myHeight(this,model) ?? 0;
-        }
+        maxHeight = constraints.hasTightHeight ? constraints.maxHeight : (myHeight(this,model) ?? 0);
         break;
 
       case FlexType.expanding:
@@ -853,16 +851,7 @@ class FlexRenderer extends RenderBox
     switch (_horizontalFlex)
     {
       case FlexType.shrinking:
-        // row
-        if (direction == Axis.horizontal)
-        {
-          width = fixedSize.width + flexSize.width;
-        }
-        // column
-        else
-        {
-          width = maxWidth;
-        }
+        width = direction == Axis.horizontal ? fixedSize.width + flexSize.width : max(fixedSize.width, flexSize.width);
         break;
 
       case FlexType.fixed:
@@ -877,16 +866,7 @@ class FlexRenderer extends RenderBox
     switch (_verticalFlex)
     {
       case FlexType.shrinking:
-        // column
-        if (direction == Axis.vertical)
-        {
-          height = fixedSize.height + flexSize.height;
-        }
-        // row
-        else
-        {
-          height = maxHeight;
-        }
+        height = direction == Axis.horizontal ? max(fixedSize.height, flexSize.height) : fixedSize.height + flexSize.height;
         break;
 
       case FlexType.fixed:

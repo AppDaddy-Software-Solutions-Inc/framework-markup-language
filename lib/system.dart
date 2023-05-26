@@ -41,7 +41,7 @@ String get defaultDomain => 'https://test.appdaddy.co';
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
-final ApplicationTypes appType = ApplicationTypes.singleApp;
+final ApplicationTypes appType = ApplicationTypes.multiApp;
 
 enum ApplicationTypes { singleApp, multiApp }
 

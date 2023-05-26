@@ -297,8 +297,8 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
         _value = ListObservable(Binding.toKey(id, 'value'), v, scope: scope, setter: _valueSetter);
 
         // the setter will have already fired if the value (v) is an eval
-        // or contains bindings, so no need to refire.
-        if (_value?.bindings != null && !_value!.isEval) _value!.set(v);
+        // or contains bindings, so no need to refire the setter.
+        if ((_value?.bindings?.isEmpty ?? true) || !(_value?.isEval ?? false)) _value!.set(v);
       }
     }
   }

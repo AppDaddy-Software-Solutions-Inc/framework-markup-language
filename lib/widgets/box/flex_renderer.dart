@@ -12,6 +12,9 @@ import 'package:fml/widgets/box/box_mixin.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 
+// change to false to allow write messages
+final debug = kDebugMode && true;
+
 /// Displays its children in a one-dimensional array.
 ///
 /// ## Layout algorithm
@@ -650,7 +653,8 @@ class FlexRenderer extends RenderBox
         var childData = (child.parentData as BoxData);
         var childModel = childData.model!;
 
-        var idChild = childModel.id;
+        //var idChild = childModel.id;
+
         // assign flex value
         _setChildFlex(childData, childModel);
 
@@ -715,7 +719,7 @@ class FlexRenderer extends RenderBox
             (child.parentData as BoxData).model != null) {
           var childModel = (child.parentData as BoxData).model!;
 
-          var idChild = childModel.id;
+          //var idChild = childModel.id;
 
           final int flex = _getFlex(child);
           if (flex > 0)
@@ -805,7 +809,7 @@ class FlexRenderer extends RenderBox
     // size fixed children
     var fixedSize = calculateFixedChildSizes(layoutChild);
 
-    var idChild = model.id;
+    //var idChild = model.id;
 
     var maxWidth = 0.0;
     switch (_horizontalFlex)

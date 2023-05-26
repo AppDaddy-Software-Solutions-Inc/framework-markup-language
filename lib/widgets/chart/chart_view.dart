@@ -260,7 +260,9 @@ class _ChartViewState extends WidgetState<ChartView>
     // Determine Y Axis Ticks dynamically based on the value range and interval
     if (widget.model.yaxis?.interval != null) {
       num range = (S.toNum(widget.model.yaxis?.max) ?? yMax) - (S.toNum(widget.model.yaxis?.min) ?? yMin);
-      yTicksCount = (range / (S.toNum(widget.model.yaxis?.interval) ?? 1) + 1).ceil();
+      if (range.isFinite) {
+        yTicksCount = (range / (S.toNum(widget.model.yaxis?.interval) ?? 1) + 1).ceil();
+      }
     }
 
     return charts_flutter.BarChart(
@@ -328,12 +330,16 @@ class _ChartViewState extends WidgetState<ChartView>
     // Determine Y Axis Ticks dynamically based on the value range and interval
     if (widget.model.yaxis?.interval != null) {
       num range = (S.toNum(widget.model.yaxis?.max) ?? yMax) - (S.toNum(widget.model.yaxis?.min) ?? yMin);
-      yTicksCount = (range / (S.toNum(widget.model.yaxis?.interval) ?? 1) + 1).ceil();
+      if (range.isFinite) {
+        yTicksCount = (range / (S.toNum(widget.model.yaxis?.interval) ?? 1) + 1).ceil();
+      }
     }
     // Determine X Axis Ticks dynamically based on the value range and interval
     if (widget.model.xaxis?.interval != null) {
       num range = (S.toNum(widget.model.xaxis?.max) ?? xMax) - (S.toNum(widget.model.xaxis?.min) ?? xMin);
-      xTicksCount = (range / (S.toNum(widget.model.xaxis?.interval) ?? 1) + 1).ceil();
+      if (range.isFinite) {
+        xTicksCount = (range / (S.toNum(widget.model.xaxis?.interval) ?? 1) + 1).ceil();
+      }
     }
 
     return charts_flutter.NumericComboChart(
@@ -382,7 +388,9 @@ class _ChartViewState extends WidgetState<ChartView>
     // Determine Y Axis Ticks dynamically based on the value range and interval
     if (widget.model.yaxis?.interval != null) {
       num range = (S.toNum(widget.model.yaxis?.max) ?? yMax) - (S.toNum(widget.model.yaxis?.min) ?? yMin);
-      yTicksCount = (range / (S.toNum(widget.model.yaxis?.interval) ?? 1) + 1).ceil();
+      if (range.isFinite) {
+        yTicksCount = (range / (S.toNum(widget.model.yaxis?.interval) ?? 1) + 1).ceil();
+      }
     }
 
     return charts_flutter.OrdinalComboChart(
@@ -461,7 +469,9 @@ class _ChartViewState extends WidgetState<ChartView>
     // Determine Y Axis Ticks dynamically based on the value range and interval
     if (widget.model.yaxis?.interval != null) {
       num range = (S.toNum(widget.model.yaxis?.max) ?? yMax) - (S.toNum(widget.model.yaxis?.min) ?? yMin);
-      yTicksCount = (range / (S.toNum(widget.model.yaxis?.interval) ?? 1) + 1).ceil();
+      if (range.isFinite) {
+        yTicksCount = (range / (S.toNum(widget.model.yaxis?.interval) ?? 1) + 1).ceil();
+      }
     }
 
     return charts_flutter.TimeSeriesChart(

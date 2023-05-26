@@ -139,12 +139,34 @@ class ModalModel extends BoxModel
       case "open" :
         
         // modal width
-        String? width = arguments.isNotEmpty ? S.toStr(arguments[0]) : null;
-        width ??= (widthPercentage != null) ? "$widthPercentage%" : "$width";
+        String? modalWidth;
+        if (arguments.isNotEmpty)
+        {
+          modalWidth = S.toStr(arguments[0]);
+        }
+        else if (width != null)
+        {
+          modalWidth = "$width";
+        }
+        else if (widthPercentage != null)
+        {
+          modalWidth = "$widthPercentage%";
+        }
 
         // modal height
-        String? height = arguments.length > 1 ? S.toStr(arguments[1]) : null;
-        height ??= (heightPercentage != null) ? "$heightPercentage%" : "$height";
+        String? modalHeight;
+        if (arguments.length > 1)
+        {
+          modalHeight = S.toStr(arguments[1]);
+        }
+        else if (height != null)
+        {
+          modalHeight = "$height";
+        }
+        else if (heightPercentage != null)
+        {
+          modalHeight = "$heightPercentage%";
+        }
 
         // resizeable
         if (arguments.length > 2) resizeable = S.toBool(arguments[2]) ?? true;
@@ -158,7 +180,7 @@ class ModalModel extends BoxModel
         // modal
         if (arguments.length > 5) modal = S.toBool(arguments[5]) ?? true;
 
-        overlay = NavigationManager().openModal(ModalView(this), context, modal: modal, resizeable: resizeable, closeable: closeable, draggable: draggable, width: width, height: height);
+        overlay = NavigationManager().openModal(ModalView(this), context, modal: modal, resizeable: resizeable, closeable: closeable, draggable: draggable, width: modalWidth, height: modalHeight);
         return true;
 
       case "close" :

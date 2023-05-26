@@ -33,6 +33,6 @@ class _ModalViewState extends WidgetState<ModalView>
     // apply user defined constraints
     view = applyConstraints(view, widget.model.constraints);
 
-    return view;
+    return Material(child: view);
   }
 }

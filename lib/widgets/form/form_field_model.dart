@@ -181,6 +181,19 @@ class FormFieldModel extends DecoratedWidgetModel {
 
   String? get alarmerrortext => _alarmerrortext?.get();
 
+  /// The combined error text of the fields.
+  StringObservable? _returnederrortext;
+  set returnederrortext(dynamic v) {
+    if (_returnederrortext != null) {
+      _returnederrortext!.set(v);
+    } else if (v != null) {
+      _returnederrortext = StringObservable(Binding.toKey(id, 'returnederrortext'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  String? get returnederrortext => _returnederrortext?.get();
+
   /// True if there is an alarm sounding on a [iFormField]
   BooleanObservable? _alarming;
   set alarming(dynamic v) {
@@ -254,11 +267,13 @@ class FormFieldModel extends DecoratedWidgetModel {
         dynamic onfocuslost,
         dynamic touched,
         dynamic alarmerrortext,
+        dynamic returnederrortext,
       })
       : super(parent, id) {
     if (error != null) this.error = error;
     if (errortext != null) this.errortext = errortext;
     if (alarmerrortext != null) this.alarmerrortext = alarmerrortext;
+    if (returnederrortext != null) this.returnederrortext = returnederrortext;
     if (editable != null) this.editable = editable;
     if (enabled != null) this.enabled = enabled;
     if (post != null) this.post = post;

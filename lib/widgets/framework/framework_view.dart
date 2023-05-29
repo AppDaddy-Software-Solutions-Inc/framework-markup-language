@@ -487,7 +487,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     // set the system constraints
     widget.model.setLayoutConstraints(constraints);
 
-    Log().debug('Build called on framework view => <FML name=${widget.model.templateName} url="${widget.model.url}"/>');
+    // Log().debug('Build called on framework view => <FML name=${widget.model.templateName} url="${widget.model.url}"/>');
 
     // stop listening during build
     widget.model.removeListener(this);

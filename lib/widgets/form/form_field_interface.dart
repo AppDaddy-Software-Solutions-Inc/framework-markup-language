@@ -55,8 +55,6 @@ abstract class IFormField
   // set the field answer
   Future<bool> answer(dynamic value);
 
-  // field alarm state
-  String? get alarm;
   bool? get alarming;
 
   bool? get hasDefaulted;

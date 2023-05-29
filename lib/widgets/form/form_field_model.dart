@@ -136,16 +136,6 @@ class FormFieldModel extends DecoratedWidgetModel {
   /// [Alarm]s based on validation checks
   final Map<String?, AlarmModel> _alarms = {};
 
-  StringObservable? _alarm;
-  set alarm(dynamic v) {
-    if (_alarm != null) {
-      _alarm!.set(v);
-    } else {
-      _alarm = StringObservable(Binding.toKey(id, 'alarm'), v, scope: scope);
-    }
-  }
-
-  String? get alarm => _alarm?.get();
 
   /// If the field will display its error state.
   BooleanObservable? _error;

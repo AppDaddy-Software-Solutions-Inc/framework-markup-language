@@ -307,20 +307,21 @@ class FormFieldModel extends DecoratedWidgetModel {
     // The errorobservable from the alarm is the value of the alarms error atrribute.
     bool alarmSounding = errorObservable.get();
     AlarmModel? currentAlarm = _alarms[sourceid];
-    String? triggerType = currentAlarm?.alarmtrigger;
+    // String? triggerType = currentAlarm?.alarmtrigger;
 
     // set the error if the trigger type is not validation based, or if validation has already been hit
-    if (triggerType != "validate" || validationHasHit == true)
-    {
-      alarmerror = alarmSounding;
-    }
+    // if (triggerType != "validate" || validationHasHit == true)
+    // {
+    //
+    // }
     // turn off the validation state if the alarm has been dismissed to require a validation per alarm sounding
-    if (validationHasHit == true && !error) validationHasHit = false;
+    if (validationHasHit == true && !alarmerror) validationHasHit = false;
 
     // check to see if an alarm is already sounding and ensure the field is not alarming already
-    if (alarmSounding && !alarming) {
+    if (alarmSounding) {
+      alarmerror = alarmSounding;
       alarmerrortext = currentAlarm?.errortext;
-      alarming = true;
+     // alarming = true;
       // execute the onalarm event string if the error state is active, this will not activate if validate is the type until validation happens.
       if (alarmerror) currentAlarm?.executeAlarmString(true);
       // tell the field which alarm has set its alarm state, this prevents multiple alarms
@@ -329,7 +330,7 @@ class FormFieldModel extends DecoratedWidgetModel {
     // check that the changed alarm has set the alarming state, and that the alarm is not sounding
     else if (!alarmSounding && didSetAlarm == sourceid) {
       // set the alarming state to false
-      alarming = false;
+      alarmerror = alarmSounding;
       // execute the ondismiss event string
       currentAlarm?.executeAlarmString(false);
     }
@@ -347,6 +348,7 @@ class FormFieldModel extends DecoratedWidgetModel {
   }
 
   Future<bool> onChange(BuildContext? context) async {
+    //set alarming to false when the value is updated
     return await EventHandler(this).execute(_onchange);
   }
 
@@ -409,9 +411,6 @@ class FormFieldModel extends DecoratedWidgetModel {
        return alarmerrortext;
     }
     if (!S.isNullOrEmpty(errortext) && error == true) return errortext!;
-    if (error == true || alarmerror == true) {
-      return errortext ?? alarmerrortext;
-    }
     return null;
   }
 

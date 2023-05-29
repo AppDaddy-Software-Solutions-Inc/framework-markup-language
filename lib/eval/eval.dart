@@ -40,7 +40,7 @@ class Eval
       {
         i++;
         var mKey = "___V$i";
-        myVariables[mKey] = _isNumeric(value) ? _toNum(value) : _isBool(value) ? _toBool(value) : value;
+        myVariables[mKey] = S.toNum(value) ?? S.toBool(value) ?? value;
         myExpression = myExpression.replaceAll(key!, mKey);
       });
       }

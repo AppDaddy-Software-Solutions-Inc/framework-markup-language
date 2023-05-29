@@ -367,8 +367,8 @@ class S {
 
       String b = s.toString();
       b = b.trim().toLowerCase();
-      if ((b == 'false') || (b == '0') || (b == 'no')) return false;
-      if ((b == 'true') || (b == '1') || (b == 'yes')) return true;
+      if ((b == 'false') || (b == '0')) return false;
+      if ((b == 'true') || (b == '1'))  return true;
       return null;
     } catch (e) {
       return null;

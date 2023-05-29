@@ -178,7 +178,18 @@ class FormFieldModel extends DecoratedWidgetModel {
 
 
 
-  String? alarmerrortext;
+  /// The error message value of a form field.
+  StringObservable? _alarmerrortext;
+  set alarmerrortext(dynamic v) {
+    if (_alarmerrortext != null) {
+      _alarmerrortext!.set(v);
+    } else if (v != null) {
+      _alarmerrortext = StringObservable(Binding.toKey(id, 'alarmerrortext'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  String? get alarmerrortext => _alarmerrortext?.get();
 
   /// True if there is an alarm sounding on a [iFormField]
   BooleanObservable? _alarming;
@@ -252,10 +263,12 @@ class FormFieldModel extends DecoratedWidgetModel {
         dynamic onchange,
         dynamic onfocuslost,
         dynamic touched,
+        dynamic alarmerrortext,
       })
       : super(parent, id) {
     if (error != null) this.error = error;
     if (errortext != null) this.errortext = errortext;
+    if (alarmerrortext != null) this.alarmerrortext = alarmerrortext;
     if (editable != null) this.editable = editable;
     if (enabled != null) this.enabled = enabled;
     if (post != null) this.post = post;
@@ -309,7 +322,7 @@ class FormFieldModel extends DecoratedWidgetModel {
     // set the error if the trigger type is not validation based, or if validation has already been hit
     if (triggerType != "validate" || validationHasHit == true)
     {
-      error = alarmSounding;
+      alarmerror = alarmSounding;
     }
     // turn off the validation state if the alarm has been dismissed to require a validation per alarm sounding
     if (validationHasHit == true && !error) validationHasHit = false;
@@ -399,39 +412,20 @@ class FormFieldModel extends DecoratedWidgetModel {
     return false;
   }
 
-  //set the field color based on the error state
-  Color setFieldColor(BuildContext context) {
-    if (enabled != false) {
-        return color ?? Theme
-            .of(context)
-            .colorScheme
-            .surfaceVariant;
-    } else {
-      return color ?? Theme
-          .of(context)
-          .colorScheme
-          .primary
-          .withOpacity(0.5);
+
+  // return the correct combination of error and errotext based on the alarm vs the error.
+  String? returnErrorText() {
+    if (!S.isNullOrEmpty(alarmerrortext) && alarmerror == true) {
+       return alarmerrortext;
     }
+    if (!S.isNullOrEmpty(errortext) && error == true) return errortext!;
+    if (error == true || alarmerror == true) {
+      return errortext ?? alarmerrortext;
+    }
+    return null;
   }
 
-  //set the field color based on the error state
-  Color setErrorHintColor(BuildContext context) {
-    if (enabled != false) {
-      if(returnErrorState()) {
-        return Theme.of(context).colorScheme.error;
-      } else {
-        return color ?? Theme
-            .of(context)
-            .colorScheme
-            .surfaceVariant;
-      }
-    } else {
-      return color ?? Theme.of(context).colorScheme.primary.withOpacity(0.5);
-    }
-  }
-
-
+  //this stays here as it is used by checkbox and radio
   Color setErrorBorderColor(BuildContext context, Color? borderColor) {
     if (enabled != false) {
       if(returnErrorState()) {
@@ -445,34 +439,6 @@ class FormFieldModel extends DecoratedWidgetModel {
     } else {
       return color ?? Theme.of(context).colorScheme.primary.withOpacity(0.5);
     }
-  }
-
-  //set the field color based on the error state
-  Color setBorderColor(BuildContext context) {
-    if (enabled != false) {
-      if(returnErrorState()) {
-        return Theme.of(context).colorScheme.error.withOpacity(0.5);
-      } else {
-        return color ?? Theme
-            .of(context)
-            .colorScheme
-            .surfaceVariant;
-      }
-    } else {
-      return color ?? Theme.of(context).colorScheme.primary.withOpacity(0.5);
-    }
-  }
-
-  // return the correct combination of error and errotext based on the alarm vs the error.
-  String? returnErrorText() {
-    if (!S.isNullOrEmpty(alarmerrortext) && error == true) {
-       return alarmerrortext;
-    }
-    if (!S.isNullOrEmpty(errortext) && error == true) return errortext!;
-    if (error == true || alarmerror == true) {
-      return errortext ?? alarmerrortext;
-    }
-    return null;
   }
 
 

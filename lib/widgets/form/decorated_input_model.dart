@@ -301,4 +301,56 @@ class DecoratedInputModel extends FormFieldModel {
     radius = Xml.get(node: xml, tag: 'radius');
   }
 
+
+  //set the field color based on the error state
+  Color setFieldColor(BuildContext context) {
+    if (enabled != false) {
+      return color ?? Theme
+          .of(context)
+          .colorScheme
+          .surfaceVariant;
+    } else {
+      return color ?? Theme
+          .of(context)
+          .colorScheme
+          .primary
+          .withOpacity(0.5);
+    }
+  }
+
+  //set the field color based on the error state
+  Color setErrorHintColor(BuildContext context) {
+    if (enabled != false) {
+      if(returnErrorState()) {
+        return Theme.of(context).colorScheme.error;
+      } else {
+        return color ?? Theme
+            .of(context)
+            .colorScheme
+            .surfaceVariant;
+      }
+    } else {
+      return color ?? Theme.of(context).colorScheme.primary.withOpacity(0.5);
+    }
+  }
+
+
+
+
+  //set the field color based on the error state
+  Color setBorderColor(BuildContext context) {
+    if (enabled != false) {
+      if(returnErrorState()) {
+        return Theme.of(context).colorScheme.error.withOpacity(0.5);
+      } else {
+        return color ?? Theme
+            .of(context)
+            .colorScheme
+            .surfaceVariant;
+      }
+    } else {
+      return color ?? Theme.of(context).colorScheme.primary.withOpacity(0.5);
+    }
+  }
+
 }

@@ -96,7 +96,10 @@ class OverlayViewState extends State<OverlayView>
     ColorScheme t = Theme.of(context).colorScheme;
 
     // Size
-    if ((width == null) || (height == null)) return Offstage(child: Material(child: MeasuredView(UnconstrainedBox(child: widget.model.child), onMeasured)));
+    if ((width == null) || (height == null))
+    {
+      return Material(child: MeasuredView(UnconstrainedBox(child: widget.model.child), onMeasured));
+    }
 
     // Overlay Manager
     OverlayManagerView? manager = context.findAncestorWidgetOfExactType<OverlayManagerView>();

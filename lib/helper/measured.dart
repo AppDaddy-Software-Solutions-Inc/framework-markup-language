@@ -27,6 +27,13 @@ class MeasureObject extends RenderProxyBox
       onChange(newSize, data: data);
     });
   }
+
+  @override
+  void paint(PaintingContext context, Offset offset)
+  {
+    // do nothing
+    return;
+  }
 }
 
 class MeasuredView extends SingleChildRenderObjectWidget

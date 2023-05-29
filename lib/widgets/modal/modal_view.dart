@@ -19,7 +19,9 @@ class ModalView extends StatefulWidget implements IWidgetView
 class _ModalViewState extends WidgetState<ModalView>
 {
   @override
-  Widget build(BuildContext context)
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints)
   {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
@@ -28,10 +30,10 @@ class _ModalViewState extends WidgetState<ModalView>
     Widget view = BoxView(widget.model);
 
     // view
-    view = SingleChildScrollView(child: view, scrollDirection: Axis.vertical);
+    //view = SingleChildScrollView(child: view, scrollDirection: Axis.vertical);
 
     // apply user defined constraints
-    view = applyConstraints(view, widget.model.constraints);
+    //view = applyConstraints(view, widget.model.constraints);
 
     return Material(child: view);
   }

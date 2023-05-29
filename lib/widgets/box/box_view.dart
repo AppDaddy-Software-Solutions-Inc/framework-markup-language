@@ -10,6 +10,8 @@ import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
 
+typedef OnBoxMeasured = void Function(Size size, {dynamic data});
+
 /// [BOX] view
 class BoxView extends StatefulWidget implements IWidgetView
 {

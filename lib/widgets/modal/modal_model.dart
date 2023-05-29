@@ -12,6 +12,21 @@ import 'modal_view.dart';
 
 class ModalModel extends BoxModel
 {
+  @override
+  bool get center => true;
+
+  @override
+  bool get expand
+  {
+    return false;
+  }
+
+  @override
+  Color? get color
+  {
+    return Colors.blue;
+  }
+
   OverlayView? overlay;
   Size? proxysize;
 
@@ -140,33 +155,11 @@ class ModalModel extends BoxModel
         
         // modal width
         String? modalWidth;
-        if (arguments.isNotEmpty)
-        {
-          modalWidth = S.toStr(arguments[0]);
-        }
-        else if (width != null)
-        {
-          modalWidth = "$width";
-        }
-        else if (widthPercentage != null)
-        {
-          modalWidth = "$widthPercentage%";
-        }
+        if (arguments.isNotEmpty) modalWidth = S.toStr(arguments[0]);
 
         // modal height
         String? modalHeight;
-        if (arguments.length > 1)
-        {
-          modalHeight = S.toStr(arguments[1]);
-        }
-        else if (height != null)
-        {
-          modalHeight = "$height";
-        }
-        else if (heightPercentage != null)
-        {
-          modalHeight = "$heightPercentage%";
-        }
+        if (arguments.length > 1) modalHeight = S.toStr(arguments[1]);
 
         // resizeable
         if (arguments.length > 2) resizeable = S.toBool(arguments[2]) ?? true;

@@ -332,7 +332,7 @@ class FormFieldModel extends DecoratedWidgetModel {
       alarmerrortext = currentAlarm?.errortext;
       alarming = true;
       // execute the onalarm event string if the error state is active, this will not activate if validate is the type until validation happens.
-      if (error) currentAlarm?.executeAlarmString(true);
+      if (alarmerror) currentAlarm?.executeAlarmString(true);
       // tell the field which alarm has set its alarm state, this prevents multiple alarms
       didSetAlarm = sourceid ?? '';
     }

@@ -209,7 +209,7 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
             expandedHeaderPadding: EdgeInsets.all(4),
             children: expansionItems(context)));
     } else {
-      view = ListView.custom(  physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null, scrollDirection: direction, controller: scroller, childrenDelegate: SliverChildBuilderDelegate((BuildContext context, int index) {return itemBuilder(context, index);}, childCount: widget.model.data?.length ?? widget.model.children?.length ?? 0));
+      view = ListView.custom(physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null, scrollDirection: direction, controller: scroller, childrenDelegate: SliverChildBuilderDelegate((BuildContext context, int index) {return itemBuilder(context, index);}, childCount: widget.model.data?.length ?? widget.model.children?.length ?? 0));
     }
 
 

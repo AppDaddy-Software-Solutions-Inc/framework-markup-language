@@ -708,11 +708,7 @@ class _InputViewState extends WidgetState<InputView>
             fontWeight: FontWeight.w300,
             color: errorTextColor,
           ),
-          errorText: widget.model.error == true &&
-              widget.model.errortext != 'null' &&
-              widget.model.errortext != 'none'
-              ? errorText ?? ""
-              : null,
+          errorText: widget.model.returnErrorText(),
           hintText: widget.model.dense ? hint : null,
           hintStyle: TextStyle(
             fontSize: fontsize ?? 14,

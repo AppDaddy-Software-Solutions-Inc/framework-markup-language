@@ -176,8 +176,18 @@ class FormFieldModel extends DecoratedWidgetModel {
 
   String? get errortext => _errortext?.get();
 
-  /// the alarm that is going off's error text. As to not override errortext.
-  String? alarmerrortext;
+  /// The error message value of a form field.
+  StringObservable? _alarmerrortext;
+  set alarmerrortext(dynamic v) {
+    if (_alarmerrortext != null) {
+      _alarmerrortext!.set(v);
+    } else if (v != null) {
+      _alarmerrortext = StringObservable(Binding.toKey(id, 'alarmerrortext'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  String? get alarmerrortext => _alarmerrortext?.get();
 
   /// True if there is an alarm sounding on a [iFormField]
   BooleanObservable? _alarming;
@@ -251,10 +261,12 @@ class FormFieldModel extends DecoratedWidgetModel {
         dynamic onchange,
         dynamic onfocuslost,
         dynamic touched,
+        dynamic alarmerrortext,
       })
       : super(parent, id) {
     if (error != null) this.error = error;
     if (errortext != null) this.errortext = errortext;
+    if (alarmerrortext != null) this.alarmerrortext = alarmerrortext;
     if (editable != null) this.editable = editable;
     if (enabled != null) this.enabled = enabled;
     if (post != null) this.post = post;
@@ -463,15 +475,15 @@ class FormFieldModel extends DecoratedWidgetModel {
   }
 
   // return the correct combination of error and errotext based on the alarm vs the error.
-  String returnErrorText() {
-    if (!S.isNullOrEmpty(alarmerrortext) && alarmerror == true) {
-      return alarmerrortext!;
+  String? returnErrorText() {
+    if (!S.isNullOrEmpty(alarmerrortext) && error == true) {
+       return alarmerrortext;
     }
     if (!S.isNullOrEmpty(errortext) && error == true) return errortext!;
     if (error == true || alarmerror == true) {
-      return errortext ?? alarmerrortext ?? '';
+      return errortext ?? alarmerrortext;
     }
-    return '';
+    return null;
   }
 
 

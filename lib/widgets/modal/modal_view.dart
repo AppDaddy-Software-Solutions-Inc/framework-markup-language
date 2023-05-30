@@ -415,7 +415,7 @@ class ModalViewState extends WidgetState<ModalView>
       lastWidth ??= width;
       lastHeight ??= height;
 
-      var frame = SizedBox(child: body, height: height, width: width);
+      Widget frame = UnconstrainedBox(child: ClipRect(child: SizedBox(height: height, width: width, child: body)));
 
       // View
       Widget content = UnconstrainedBox(child: Container(color: Colors.red, height: height! + (padding * 2), width: width! + (padding * 2),

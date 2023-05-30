@@ -222,6 +222,7 @@ class Calc extends TransformModel implements ITransform
     }
   }
 
+  //Total calculates the total occurences in each field and prints to a source. Would be useful to add this feature to DISTINCT.
   _total(Data? list)
   {
     if ((list== null) || (source == null)) return null;

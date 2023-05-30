@@ -60,7 +60,7 @@ class ModalViewState extends WidgetState<ModalView>
 
     width  = widget.model.width;
     height = widget.model.height;
-    dx     = widget.model.x ?? 0;
+    dx     = widget.model.x;
     dy     = widget.model.y;
     super.initState();
   }
@@ -337,14 +337,15 @@ class ModalViewState extends WidgetState<ModalView>
   }
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints)
+  Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    if (width == null) width = widget.model.width ?? 50;
+    if (width == null || height == null)
+    {
+      return Mea
+    }
     if (height == null) height = widget.model.height ?? 50;
 
     ColorScheme t = Theme.of(context).colorScheme;
@@ -418,7 +419,7 @@ class ModalViewState extends WidgetState<ModalView>
       Widget frame = UnconstrainedBox(child: ClipRect(child: SizedBox(height: height, width: width, child: body)));
 
       // View
-      Widget content = UnconstrainedBox(child: Container(color: Colors.red, height: height! + (padding * 2), width: width! + (padding * 2),
+      Widget content = UnconstrainedBox(child: Container(color: Colors.transparent, height: height! + (padding * 2), width: width! + (padding * 2),
           child: Stack(children: [
             Center(child: frame),
             Positioned(child: resizeableL, top: 0, left: 0),
@@ -437,7 +438,6 @@ class ModalViewState extends WidgetState<ModalView>
       Widget curtain = GestureDetector(child: content, onDoubleTap: onRestoreTo, onTapDown: onBringToFront, onPanStart: (_) => onBringToFront(null), onPanUpdate: onDrag, onPanEnd: onDragEnd, behavior: HitTestBehavior.deferToChild);
 
       // Return View
-      print('positioned to $dx, $dy');
       return Positioned(top: dy, left: dx, child: curtain);
     }
 

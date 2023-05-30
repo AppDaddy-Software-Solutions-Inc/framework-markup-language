@@ -26,6 +26,8 @@ class Distinct extends TransformModel implements ITransform
   }
   String? get field => _field?.get();
 
+
+
   Distinct(WidgetModel? parent, {String? id, dynamic enabled, dynamic field}) : super(parent, id)
   {
     this.enabled  = enabled ?? true;
@@ -56,7 +58,7 @@ class Distinct extends TransformModel implements ITransform
     super.deserialize(xml);
   }
 
-  List<Map<dynamic, dynamic>> distinctList = [];
+  List<Map<String, dynamic>> distinctList = [];
   List<String?> uniqueFields = [];
 
   _fromList(Data? data)

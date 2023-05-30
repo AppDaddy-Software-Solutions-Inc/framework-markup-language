@@ -438,7 +438,7 @@ class ModalViewState extends WidgetState<ModalView>
 
       // Return View
       print('positioned to $dx, $dy');
-      return Positioned(top: dx, left: dy, child: curtain);
+      return Positioned(top: dy, left: dx, child: curtain);
     }
 
     // Minimized View

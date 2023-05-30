@@ -343,9 +343,7 @@ class ModalViewState extends WidgetState<ModalView>
     if (!widget.model.visible) return Offstage();
 
     if (width == null || height == null)
-    {
-      return Mea
-    }
+    {}
     if (height == null) height = widget.model.height ?? 50;
 
     ColorScheme t = Theme.of(context).colorScheme;

@@ -801,8 +801,6 @@ class FlexRenderer extends RenderBox
     // size fixed children
     var fixedSize = calculateFixedChildSizes(layoutChild);
 
-    var idChild = model.id;
-
     var maxWidth = 0.0;
     switch (_horizontalFlex)
     {

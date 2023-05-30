@@ -226,7 +226,6 @@ class WidgetModel implements IDataSourceListener {
 
   // State
   StringObservable? _state;
-
   set state(dynamic v) {
     if (_state != null) {
       _state!.set(v);

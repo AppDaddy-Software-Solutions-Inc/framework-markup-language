@@ -157,7 +157,7 @@ class ChartAxisModel extends WidgetModel
   bool get truncate => _truncate?.get() ?? false;
 
   ChartAxisModel(
-      WidgetModel parent,
+      WidgetModel? parent,
       String?  id,
       this.axis,
       {

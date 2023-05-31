@@ -44,56 +44,43 @@ class PagerModel extends BoxModel
   }
   bool get pager => _pager?.get() ?? true;
 
-  // initialpage
-  IntegerObservable? _initialpage;
-  set initialpage (dynamic v)
-  {
-    if (_initialpage != null)
-    {
-      _initialpage!.set(v);
-    }
-    else if (v != null)
-    {
-      _initialpage = IntegerObservable(Binding.toKey(id, 'initialpage'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  int? get initialpage
-  {
-    int v = _initialpage?.get() ?? 1;
-    if (v <= 0) v = 1;
-    return v;
-  }
-
   // currentpage
   IntegerObservable? _currentpage;
   set currentpage (dynamic v)
   {
     if (_currentpage != null)
     {
-      if (pages.isNotEmpty && v > pages.length) {
-        _currentpage!.set(pages.length);
-      } else if (v < 1 || v == null) {
-        _currentpage!.set(1);
-      } else {
-        _currentpage!.set(v ?? initialpage ?? 1);
-      }
+      _currentpage!.set(v);
     }
     else if (v != null)
     {
-      _currentpage = IntegerObservable(Binding.toKey(id, 'currentpage'), v, scope: scope, listener: onPropertyChange);
+      _currentpage = IntegerObservable(Binding.toKey(id, 'currentpage'), v, scope: scope, listener: onPropertyChange, setter: _pageSetter);
     }
   }
   int get currentpage
   {
     int v = _currentpage?.get() ?? 1;
-    if (v <= 0) v = 1;
+    return v;
+  }
+
+  dynamic _pageSetter(dynamic value)
+  {
+    int? v = S.toInt(value);
+    if (v == null) {
+      return value;
+    }
+    if (pages.isNotEmpty && v > pages.length) {
+      v = pages.length;
+    } else if (v < 1) {
+      v = 1;
+    }
+
     return v;
   }
 
   PagerModel(WidgetModel parent, String? id,
   {
     dynamic pager,
-    dynamic initialpage,
     dynamic currentpage,
     dynamic color,
   }) : super(parent, id)
@@ -102,7 +89,6 @@ class PagerModel extends BoxModel
     busy = false;
 
     this.pager = pager;
-    this.initialpage = initialpage;
     this.currentpage = currentpage;
     this.color = color;
   }
@@ -156,8 +142,30 @@ class PagerModel extends BoxModel
       if (page != null) this.pages.add(page);
     }
 
-    initialpage = Xml.get(node: xml, tag: 'initialpage');
-    currentpage = Xml.get(node: xml, tag: 'currentpage');
+    currentpage = Xml.get(node: xml, tag: 'initialpage') ?? 1;
+  }
+
+  //we need a reset function to set the controller back to 0 without ticking.
+  @override
+  Future<bool?> execute(
+      String caller, String propertyOrFunction, List<dynamic> arguments) async {
+    /// setter
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+    switch (function) {
+      case "page":
+        var view = findListenerOfExactType(PagerViewState);
+        if (view is PagerViewState) {
+
+          dynamic page;
+          if (arguments.isNotEmpty)
+          {
+            page = arguments[0];
+          }
+          view.page(page);
+        }
+    }
+    return super.execute(caller, propertyOrFunction, arguments);
   }
 
   @override

@@ -789,7 +789,7 @@ class FormModel extends DecoratedWidgetModel {
 
     if ((scope != null) && (data != null)) {
       //for a single datasource grab the scope
-      IDataSource? source = scope!.getDataSource(data);
+      IDataSource? source = scope!.getDataSource(data[0]);
       if (source != null) {
         // start the datasource
         ok = await source.start();

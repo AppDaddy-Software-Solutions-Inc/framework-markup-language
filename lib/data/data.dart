@@ -446,14 +446,12 @@ class Data with ListMixin<dynamic>
   {
     // replace bindings
     List<Binding>? bindings = Binding.getBindings(string);
-    if (bindings != null){
-      for (Binding binding in bindings)
-      {
+    if (bindings != null) {
+      for (Binding binding in bindings) {
         // fully qualified data binding name (data.value.x.y.)
-        if ((binding.source.toLowerCase() == 'data'))
-        {
+        if ((binding.source.toLowerCase() == 'data')) {
           String signature = binding.property + (binding.dotnotation?.signature != null ? ".${binding.dotnotation!.signature}" : "");
-          String value = Xml.encodeIllegalCharacters(readValue(data,signature)) ?? "";
+          String value = Xml.encodeIllegalCharacters(readValue(data,signature))?.toString() ?? "";
           string = string!.replaceAll(binding.signature, value);
         }
       }}

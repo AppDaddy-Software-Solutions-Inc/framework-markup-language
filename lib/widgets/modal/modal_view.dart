@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart';
+import 'package:fml/helper/measured.dart';
 import 'package:fml/helper/string.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
@@ -52,6 +53,13 @@ class ModalViewState extends WidgetState<ModalView>
 
   bool closeHovered = false;
   bool minimizeHovered = false;
+
+  onMeasured(Size size, {dynamic data})
+  {
+    height ??= size.height;
+    width ??= size.width;
+    setState(() {});
+  }
 
   @override
   void initState()
@@ -342,9 +350,11 @@ class ModalViewState extends WidgetState<ModalView>
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    if (width == null || height == null)
-    {}
-    if (height == null) height = widget.model.height ?? 50;
+    // Size
+    if ((width == null) || (height == null))
+    {
+      return UnconstrainedBox(child: MeasuredView(Material(child: BoxView(widget.model)), onMeasured));
+    }
 
     ColorScheme t = Theme.of(context).colorScheme;
 

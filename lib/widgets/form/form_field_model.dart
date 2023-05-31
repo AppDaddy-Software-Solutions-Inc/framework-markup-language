@@ -153,6 +153,9 @@ class FormFieldModel extends DecoratedWidgetModel {
   /// If an alarm is going off, seperate from the error field as to not override it.
   bool alarmerror = false;
 
+  bool systemerror = false;
+
+
   /// The error message value of a form field.
   StringObservable? _errortext;
   set errortext(dynamic v) {
@@ -193,6 +196,19 @@ class FormFieldModel extends DecoratedWidgetModel {
   }
 
   String? get returnederrortext => _returnederrortext?.get();
+
+  /// The system level error text of the fields.
+  StringObservable? _systemerrortext;
+  set systemerrortext(dynamic v) {
+    if (_systemerrortext != null) {
+      _systemerrortext!.set(v);
+    } else if (v != null) {
+      _systemerrortext = StringObservable(Binding.toKey(id, 'systemerrortext'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  String? get systemerrortext => _systemerrortext?.get();
 
   /// True if there is an alarm sounding on a [iFormField]
   BooleanObservable? _alarming;
@@ -255,11 +271,11 @@ class FormFieldModel extends DecoratedWidgetModel {
 
   FormFieldModel(WidgetModel? parent, String? id,
       {
-      dynamic error,
-      dynamic errortext,
-      dynamic validationHasHit,
-      dynamic hasDefaulted,
-      dynamic editable,
+        dynamic error,
+        dynamic errortext,
+        dynamic validationHasHit,
+        dynamic hasDefaulted,
+        dynamic editable,
         dynamic enabled,
         dynamic post,
         dynamic mandatory,
@@ -268,12 +284,14 @@ class FormFieldModel extends DecoratedWidgetModel {
         dynamic touched,
         dynamic alarmerrortext,
         dynamic returnederrortext,
+        dynamic systemerrortext,
       })
       : super(parent, id) {
     if (error != null) this.error = error;
     if (errortext != null) this.errortext = errortext;
     if (alarmerrortext != null) this.alarmerrortext = alarmerrortext;
     if (returnederrortext != null) this.returnederrortext = returnederrortext;
+    if (systemerrortext != null) this.systemerrortext = systemerrortext;
     if (editable != null) this.editable = editable;
     if (enabled != null) this.enabled = enabled;
     if (post != null) this.post = post;
@@ -364,6 +382,10 @@ class FormFieldModel extends DecoratedWidgetModel {
 
   Future<bool> onChange(BuildContext? context) async {
     //set alarming to false when the value is updated
+    if(value != null && !S.isNullOrEmpty(systemerrortext) && error == true){
+      error = false;
+      systemerrortext = null;
+    }
     return await EventHandler(this).execute(_onchange);
   }
 
@@ -416,16 +438,20 @@ class FormFieldModel extends DecoratedWidgetModel {
   bool returnErrorState() {
     if (alarmerror == true) return true;
     if (error == true) return true;
+    if (systemerror == true) return true;
     return false;
   }
 
 
   // return the correct combination of error and errotext based on the alarm vs the error.
   String? returnErrorText() {
-    if (!S.isNullOrEmpty(alarmerrortext) && alarmerror == true) {
+    if(systemerrortext != null){
+      return systemerrortext;
+    } else if (!S.isNullOrEmpty(alarmerrortext) && alarmerror == true) {
        return alarmerrortext;
+    } else if (!S.isNullOrEmpty(errortext) && error == true) {
+      return errortext!;
     }
-    if (!S.isNullOrEmpty(errortext) && error == true) return errortext!;
     return null;
   }
 

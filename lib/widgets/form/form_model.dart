@@ -777,6 +777,9 @@ class FormModel extends DecoratedWidgetModel {
       if ((isMandatory) && (!field.answered)) {
         missing ??= [];
         missing.add(field);
+        //set the error state of the field and update the error message
+        field.systemerrortext = "This Field is Mandatory";
+        field.error = true;
       }
     }
     return missing;

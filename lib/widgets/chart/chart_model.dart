@@ -18,8 +18,8 @@ import 'package:xml/xml.dart';
 ///
 /// Defines the properties used to build a Chart
 class ChartModel extends DecoratedWidgetModel  {
-  ChartAxisModel? xaxis; // = ChartAxisModel(null, null, Axis.X, title: null, fontsize: null, fontcolor: Colors.white, type: ChartAxisModel.type_category);
-  ChartAxisModel? yaxis; // = ChartAxisModel(null, null, Axis.Y, title: null, fontsize: null, fontcolor: Colors.white, type: ChartAxisModel.type_numeric);
+  ChartAxisModel xaxis = ChartAxisModel(null, null, ChartAxis.X);
+  ChartAxisModel yaxis = ChartAxisModel(null, null, ChartAxis.Y);
   final List<ChartSeriesModel> series = [];
   final List<ChartLabelModel> labels = [];
 
@@ -37,15 +37,15 @@ class ChartModel extends DecoratedWidgetModel  {
     return true;
   }
 
-  ChartModel(WidgetModel parent, String? id,
-    {
-      dynamic type,
-      dynamic showlegend,
-      dynamic horizontal,
-      dynamic animated,
-      dynamic selected,
-      dynamic legendsize,
-    }) : super(parent, id) {
+  ChartModel(WidgetModel? parent, String? id,
+      {
+        dynamic type,
+        dynamic showlegend,
+        dynamic horizontal,
+        dynamic animated,
+        dynamic selected,
+        dynamic legendsize,
+      }) : super(parent, id) {
     this.selected         = selected;
     this.animated         = animated;
     this.horizontal       = horizontal;
@@ -109,14 +109,14 @@ class ChartModel extends DecoratedWidgetModel  {
     // Set Series
     this.series.clear();
     List<ChartSeriesModel> series = findChildrenOfExactType(ChartSeriesModel).cast<ChartSeriesModel>();
-      for (var model in series) {
-        // add the series to the list
-        this.series.add(model);
+    for (var model in series) {
+      // add the series to the list
+      this.series.add(model);
 
-        // register listener to the datasource
-        IDataSource? source = (scope != null) ? scope!.getDataSource(model.datasource) : null;
-        if (source != null) source.register(this);
-      }
+      // register listener to the datasource
+      IDataSource? source = (scope != null) ? scope!.getDataSource(model.datasource) : null;
+      if (source != null) source.register(this);
+    }
 
     // Set Labels
     this.labels.clear();
@@ -256,35 +256,35 @@ class ChartModel extends DecoratedWidgetModel  {
   {
     try
     {
-        for (var series in series) {
-          if (series.datasource == source.id) {
-            series.dataPoint.clear();
-            if (list != null) {
-              for (var p in list) {
-                ChartDataPoint point = series.seriesPoint(p);
-                if ((point.x != null) && (point.y != null)) {
-                  series.dataPoint.add(point);
-                }
+      for (var series in series) {
+        if (series.datasource == source.id) {
+          series.dataPoint.clear();
+          if (list != null) {
+            for (var p in list) {
+              ChartDataPoint point = series.seriesPoint(p);
+              if ((point.x != null) && (point.y != null)) {
+                series.dataPoint.add(point);
               }
             }
-            series.data = list;
           }
+          series.data = list;
         }
-        for (var label in labels) {
-          if (label.datasource == null && list != null) {
-            label.dataLabel.clear();
-            label.dataLabel.add(label.chartLabel(data));
-          }
-          else if (label.datasource == source.id) {
-            label.dataLabel.clear();
-            if (list != null) {
-              for (var l in list) {
-                label.dataLabel.add(label.chartLabel(l));
-              }
+      }
+      for (var label in labels) {
+        if (label.datasource == null && list != null) {
+          label.dataLabel.clear();
+          label.dataLabel.add(label.chartLabel(data));
+        }
+        else if (label.datasource == source.id) {
+          label.dataLabel.clear();
+          if (list != null) {
+            for (var l in list) {
+              label.dataLabel.add(label.chartLabel(l));
             }
-            label.data = list;
           }
+          label.data = list;
         }
+      }
       notifyListeners('list', null);
     }
     catch(e)

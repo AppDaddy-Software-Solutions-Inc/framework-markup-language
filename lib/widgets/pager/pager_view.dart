@@ -35,10 +35,17 @@ class PagerViewState extends WidgetState<PagerView>
   @override
   void initState()
   {
+    // call before super so that we don't trigger a loop on the listener created in super.initState();
+
+    // stop listening to prevent rebuilt
+    widget.model.removeListener(this);
+    widget.model.currentpage = widget.model.initialpage ?? 1;
+    // resume listening to model changes
+    widget.model.registerListener(this);
+
     super.initState();
 
     _controller = PageController(initialPage: (widget.model.initialpage != null ? widget.model.initialpage! - 1 : 0));
-    widget.model.currentpage = widget.model.initialpage ?? 1;
     widget.model.controller = _controller;
   }
 

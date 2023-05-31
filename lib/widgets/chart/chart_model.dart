@@ -18,8 +18,8 @@ import 'package:xml/xml.dart';
 ///
 /// Defines the properties used to build a Chart
 class ChartModel extends DecoratedWidgetModel  {
-  ChartAxisModel? xaxis; // = ChartAxisModel(null, null, Axis.X, title: null, fontsize: null, fontcolor: Colors.white, type: ChartAxisModel.type_category);
-  ChartAxisModel? yaxis; // = ChartAxisModel(null, null, Axis.Y, title: null, fontsize: null, fontcolor: Colors.white, type: ChartAxisModel.type_numeric);
+  ChartAxisModel xaxis; // = ChartAxisModel(null, null, Axis.X, title: null, fontsize: null, fontcolor: Colors.white, type: ChartAxisModel.type_category);
+  ChartAxisModel yaxis; // = ChartAxisModel(null, null, Axis.Y, title: null, fontsize: null, fontcolor: Colors.white, type: ChartAxisModel.type_numeric);
   final List<ChartSeriesModel> series = [];
   final List<ChartLabelModel> labels = [];
 
@@ -45,7 +45,9 @@ class ChartModel extends DecoratedWidgetModel  {
       dynamic animated,
       dynamic selected,
       dynamic legendsize,
-    }) : super(parent, id) {
+    }) : xaxis = ChartAxisModel(parent, null, ChartAxis.X), yaxis = ChartAxisModel(parent, null, ChartAxis.Y), super(parent, id) {
+    xaxis = ChartAxisModel(this, null, ChartAxis.X);
+    yaxis = ChartAxisModel(this, null, ChartAxis.Y);
     this.selected         = selected;
     this.animated         = animated;
     this.horizontal       = horizontal;

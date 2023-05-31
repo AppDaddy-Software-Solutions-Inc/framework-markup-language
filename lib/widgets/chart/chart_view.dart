@@ -71,9 +71,9 @@ class _ChartViewState extends WidgetState<ChartView>
     // x axis is a date/time based axis you must use a timeSeriesChart.
     // You can still have grouped bars in a TimeSeries but not in combo charts.
     // Check for pie type before letting the category axis determine a combo chart.
-    if (widget.model.xaxis!.type == ChartAxisType.datetime ||
-        widget.model.xaxis!.type == ChartAxisType.date ||
-        widget.model.xaxis!.type == ChartAxisType.time) {
+    if (widget.model.xaxis.type == ChartAxisType.datetime ||
+        widget.model.xaxis.type == ChartAxisType.date ||
+        widget.model.xaxis.type == ChartAxisType.time) {
       // Determine if the X Axis is time based
       return ChartType.timeSeriesChart;
     }
@@ -86,9 +86,9 @@ class _ChartViewState extends WidgetState<ChartView>
         (widget.model.type!.toLowerCase() == 'pie' ||
             widget.model.type!.toLowerCase() == 'circle')) {
       return ChartType.pieChart;
-    } else if (widget.model.xaxis!.type == ChartAxisType.category) {
+    } else if (widget.model.xaxis.type == ChartAxisType.category) {
       return ChartType.ordinalComboChart;
-    } else if (widget.model.xaxis!.type == ChartAxisType.numeric) {
+    } else if (widget.model.xaxis.type == ChartAxisType.numeric) {
       return ChartType.numericComboChart;
     } else {
       Log().warning(
@@ -99,14 +99,14 @@ class _ChartViewState extends WidgetState<ChartView>
 
   /// Measure/Y Axis Specifications
   charts_flutter.NumericAxisSpec yNumericAxisSpec({int? ticks}) => charts_flutter.NumericAxisSpec(
-      tickProviderSpec: charts_flutter.BasicNumericTickProviderSpec(zeroBound: false, dataIsInWholeNumbers: true, desiredTickCount: ticks),
-      viewport: widget.model.yaxis?.min != null && widget.model.yaxis?.max != null
-          ? charts_flutter.NumericExtents(S.toNum(widget.model.yaxis!.min!)!, S.toNum(widget.model.yaxis!.max!)!) : null,
+      tickProviderSpec: charts_flutter.BasicNumericTickProviderSpec(zeroBound: !widget.model.yaxis.truncate, dataIsInWholeNumbers: true, desiredTickCount: ticks),
+      viewport: widget.model.yaxis.min != null && widget.model.yaxis.max != null
+          ? charts_flutter.NumericExtents(S.toNum(widget.model.yaxis.min!)!, S.toNum(widget.model.yaxis.max!)!) : null,
       renderSpec: charts_flutter.SmallTickRendererSpec( // GridlineRendererSpec(
           tickLengthPx: 4,
           lineStyle: charts_flutter.LineStyleSpec(dashPattern: []),
           labelStyle: charts_flutter.TextStyleSpec(
-              fontSize: widget.model.yaxis?.labelvisible == false ? 0 : widget.model.yaxis!.labelsize,
+              fontSize: widget.model.yaxis.labelvisible == false ? 0 : widget.model.yaxis.labelsize,
               color: charts_flutter.ColorUtil.fromDartColor(
                   Theme.of(context).colorScheme.onBackground)),
       ),
@@ -114,18 +114,18 @@ class _ChartViewState extends WidgetState<ChartView>
 
   charts_flutter.NumericAxisSpec xNumComboAxisSpec({int? ticks}) => charts_flutter.NumericAxisSpec(
       tickProviderSpec: charts_flutter.BasicNumericTickProviderSpec(dataIsInWholeNumbers: false, desiredTickCount: ticks),
-      viewport: widget.model.yaxis?.min != null && widget.model.yaxis?.max != null
-          ? charts_flutter.NumericExtents(S.toNum(widget.model.yaxis!.min!)!, S.toNum(widget.model.yaxis!.max!)!) : null,
+      viewport: widget.model.yaxis.min != null && widget.model.yaxis.max != null
+          ? charts_flutter.NumericExtents(S.toNum(widget.model.yaxis.min!)!, S.toNum(widget.model.yaxis.max!)!) : null,
       renderSpec: charts_flutter.SmallTickRendererSpec(
         axisLineStyle: charts_flutter.LineStyleSpec(
             color: charts_flutter.ColorUtil.fromDartColor(
                 Theme.of(context).colorScheme.onBackground)),
         labelStyle: charts_flutter.TextStyleSpec(
-            fontSize: widget.model.xaxis?.labelvisible == false ? 0 : widget.model.xaxis!.labelsize,
+            fontSize: widget.model.xaxis.labelvisible == false ? 0 : widget.model.xaxis.labelsize,
             color: charts_flutter.ColorUtil.fromDartColor(
                 Theme.of(context).colorScheme.onBackground)),
-        labelRotation: widget.model.xaxis!.labelrotation.abs() * -1,
-        labelOffsetFromAxisPx: (sin(widget.model.xaxis!.labelrotation.abs() * (pi / 180)) * 80).ceil() + 8, // 80 is rough estimate of our text length
+        labelRotation: widget.model.xaxis.labelrotation.abs() * -1,
+        labelOffsetFromAxisPx: (sin(widget.model.xaxis.labelrotation.abs() * (pi / 180)) * 80).ceil() + 8, // 80 is rough estimate of our text length
         labelOffsetFromTickPx: 10,
         labelJustification: TickLabelJustification.inside,
       ),
@@ -137,12 +137,12 @@ class _ChartViewState extends WidgetState<ChartView>
           color: charts_flutter.ColorUtil.fromDartColor(
               Theme.of(context).colorScheme.onBackground)),
       labelStyle: charts_flutter.TextStyleSpec(
-          fontSize: widget.model.xaxis?.labelvisible == false ? 0 : widget.model.xaxis!.labelsize,
+          fontSize: widget.model.xaxis.labelvisible == false ? 0 : widget.model.xaxis.labelsize,
           color: charts_flutter.ColorUtil.fromDartColor(
               Theme.of(context).colorScheme.onBackground)),
-      labelRotation: widget.model.xaxis!.labelrotation.abs() * -1,
+      labelRotation: widget.model.xaxis.labelrotation.abs() * -1,
       labelOffsetFromAxisPx:
-      (sin(widget.model.xaxis!.labelrotation.abs() * (pi / 180)) * 80)
+      (sin(widget.model.xaxis.labelrotation.abs() * (pi / 180)) * 80)
           .ceil() +
           (widget.model.horizontal == true
               ? 28
@@ -159,12 +159,12 @@ class _ChartViewState extends WidgetState<ChartView>
                 Theme.of(context).colorScheme.onBackground)),
         labelAnchor: charts_flutter.TickLabelAnchor.after,
         labelStyle: charts_flutter.TextStyleSpec(
-            fontSize: widget.model.xaxis?.labelvisible == false ? 0 : widget.model.xaxis!.labelsize,
+            fontSize: widget.model.xaxis.labelvisible == false ? 0 : widget.model.xaxis.labelsize,
             color: charts_flutter.ColorUtil.fromDartColor(
                 Theme.of(context).colorScheme.onBackground)),
-        labelRotation: widget.model.xaxis!.labelrotation.abs() * -1,
+        labelRotation: widget.model.xaxis.labelrotation.abs() * -1,
         labelOffsetFromAxisPx:
-        (sin(widget.model.xaxis!.labelrotation.abs() * (pi / 180)) * 80)
+        (sin(widget.model.xaxis.labelrotation.abs() * (pi / 180)) * 80)
             .ceil() +
             (widget.model.horizontal == true
                 ? 28
@@ -240,11 +240,11 @@ class _ChartViewState extends WidgetState<ChartView>
 
     List<charts_flutter.SeriesRendererConfig<String>> seriesRenderers = [];
     for (var s in widget.model.series) {
-      Function configFunc = getSeriesRenderer(s, widget.model.xaxis!.type);
+      Function configFunc = getSeriesRenderer(s, widget.model.xaxis.type);
       charts_flutter.SeriesRendererConfig<String> config = configFunc(s);
       seriesRenderers.add(config);
       // Calculate Numeric Y Axis Ticks
-      if (widget.model.yaxis?.interval != null && s.dataPoint.isNotEmpty) {
+      if (widget.model.yaxis.interval != null && s.dataPoint.isNotEmpty) {
         num ySeriesMin = s.dataPoint.fold(
             S.toNum(s.dataPoint[0].y) ?? yMin, (num previous, ChartDataPoint current) =>
         previous < (S.toNum(current.y) ?? yMin) ? previous : (S.toNum(current.y) ?? yMin));
@@ -258,10 +258,10 @@ class _ChartViewState extends WidgetState<ChartView>
     }
 
     // Determine Y Axis Ticks dynamically based on the value range and interval
-    if (widget.model.yaxis?.interval != null) {
-      num range = (S.toNum(widget.model.yaxis?.max) ?? yMax) - (S.toNum(widget.model.yaxis?.min) ?? yMin);
+    if (widget.model.yaxis.interval != null) {
+      num range = (S.toNum(widget.model.yaxis.max) ?? yMax) - (S.toNum(widget.model.yaxis.min) ?? yMin);
       if (range.isFinite) {
-        yTicksCount = (range / (S.toNum(widget.model.yaxis?.interval) ?? 1) + 1).ceil();
+        yTicksCount = (range / (S.toNum(widget.model.yaxis.interval) ?? 1) + 1).ceil();
       }
     }
 
@@ -297,12 +297,12 @@ class _ChartViewState extends WidgetState<ChartView>
         Log().warning(
             'Stacked Bar Series are only compatible with Category type X Axis and each series must be type="bar"');
       }
-      Function configFunc = getSeriesRenderer(s, widget.model.xaxis!.type);
+      Function configFunc = getSeriesRenderer(s, widget.model.xaxis.type);
       charts_flutter.SeriesRendererConfig<num> config = configFunc(s);
       seriesRenderers.add(config);
 
       // Calculate Numeric X Axis Ticks
-      if (widget.model.xaxis?.interval != null && s.dataPoint.isNotEmpty) {
+      if (widget.model.xaxis.interval != null && s.dataPoint.isNotEmpty) {
         num xSeriesMin = s.dataPoint.fold(
             S.toNum(s.dataPoint[0].x) ?? xMin, (num previous, ChartDataPoint current) =>
         previous < (S.toNum(current.x) ?? xMin) ? previous : (S.toNum(current.x) ?? xMin));
@@ -314,7 +314,7 @@ class _ChartViewState extends WidgetState<ChartView>
         xMax = xSeriesMax > xMax ? xSeriesMax : xMax;
       }
       // Calculate Numeric Y Axis Ticks
-      if (widget.model.yaxis?.interval != null && s.dataPoint.isNotEmpty) {
+      if (widget.model.yaxis.interval != null && s.dataPoint.isNotEmpty) {
         num ySeriesMin = s.dataPoint.fold(
             S.toNum(s.dataPoint[0].y) ?? yMin, (num previous, ChartDataPoint current) =>
         previous < (S.toNum(current.y) ?? yMin) ? previous : (S.toNum(current.y) ?? yMin));
@@ -328,17 +328,17 @@ class _ChartViewState extends WidgetState<ChartView>
     }
 
     // Determine Y Axis Ticks dynamically based on the value range and interval
-    if (widget.model.yaxis?.interval != null) {
-      num range = (S.toNum(widget.model.yaxis?.max) ?? yMax) - (S.toNum(widget.model.yaxis?.min) ?? yMin);
+    if (widget.model.yaxis.interval != null) {
+      num range = (S.toNum(widget.model.yaxis.max) ?? yMax) - (S.toNum(widget.model.yaxis.min) ?? yMin);
       if (range.isFinite) {
-        yTicksCount = (range / (S.toNum(widget.model.yaxis?.interval) ?? 1) + 1).ceil();
+        yTicksCount = (range / (S.toNum(widget.model.yaxis.interval) ?? 1) + 1).ceil();
       }
     }
     // Determine X Axis Ticks dynamically based on the value range and interval
-    if (widget.model.xaxis?.interval != null) {
-      num range = (S.toNum(widget.model.xaxis?.max) ?? xMax) - (S.toNum(widget.model.xaxis?.min) ?? xMin);
+    if (widget.model.xaxis.interval != null) {
+      num range = (S.toNum(widget.model.xaxis.max) ?? xMax) - (S.toNum(widget.model.xaxis.min) ?? xMin);
       if (range.isFinite) {
-        xTicksCount = (range / (S.toNum(widget.model.xaxis?.interval) ?? 1) + 1).ceil();
+        xTicksCount = (range / (S.toNum(widget.model.xaxis.interval) ?? 1) + 1).ceil();
       }
     }
 
@@ -368,11 +368,11 @@ class _ChartViewState extends WidgetState<ChartView>
         Log().warning(
             'Stacked Bar Series are only compatible with Category type X Axis and each series must be type="bar"');
       }
-      Function configFunc = getSeriesRenderer(s, widget.model.xaxis!.type);
+      Function configFunc = getSeriesRenderer(s, widget.model.xaxis.type);
       charts_flutter.SeriesRendererConfig<String> config = configFunc(s);
       seriesRenderers.add(config);
       // Calculate Numeric Y Axis Ticks
-      if (widget.model.yaxis?.interval != null && s.dataPoint.isNotEmpty) {
+      if (widget.model.yaxis.interval != null && s.dataPoint.isNotEmpty) {
         num ySeriesMin = s.dataPoint.fold(
             S.toNum(s.dataPoint[0].y) ?? yMin, (num previous, ChartDataPoint current) =>
         previous < (S.toNum(current.y) ?? yMin) ? previous : (S.toNum(current.y) ?? yMin));
@@ -386,10 +386,10 @@ class _ChartViewState extends WidgetState<ChartView>
     }
 
     // Determine Y Axis Ticks dynamically based on the value range and interval
-    if (widget.model.yaxis?.interval != null) {
-      num range = (S.toNum(widget.model.yaxis?.max) ?? yMax) - (S.toNum(widget.model.yaxis?.min) ?? yMin);
+    if (widget.model.yaxis.interval != null) {
+      num range = (S.toNum(widget.model.yaxis.max) ?? yMax) - (S.toNum(widget.model.yaxis.min) ?? yMin);
       if (range.isFinite) {
-        yTicksCount = (range / (S.toNum(widget.model.yaxis?.interval) ?? 1) + 1).ceil();
+        yTicksCount = (range / (S.toNum(widget.model.yaxis.interval) ?? 1) + 1).ceil();
       }
     }
 
@@ -423,7 +423,7 @@ class _ChartViewState extends WidgetState<ChartView>
         Log().warning(
             'Stacked Bar Series are only compatible with Category type X Axis and each series must be type="bar"');
       }
-      Function configFunc = getSeriesRenderer(s, widget.model.xaxis?.type ?? ChartAxisType.datetime);
+      Function configFunc = getSeriesRenderer(s, /*widget.model.xaxis.type ??*/ ChartAxisType.datetime);
       charts_flutter.SeriesRendererConfig<DateTime> config = configFunc(s);
       seriesRenderers.add(config);
       // Map all the x values for the ticks
@@ -432,13 +432,13 @@ class _ChartViewState extends WidgetState<ChartView>
         if (xDateTime != null) {
           int epoch = xDateTime.toUtc().millisecondsSinceEpoch;
           // Ignore date/time data ticks before the min datetime on the x axis
-          if (widget.model.xaxis?.min != null
-              && DT.isBefore(xDateTime, S.toDate(widget.model.xaxis!.min!)!)) {
+          if (widget.model.xaxis.min != null
+              && DT.isBefore(xDateTime, S.toDate(widget.model.xaxis.min!)!)) {
             continue;
           }
           // Ignore date/time data ticks after the max datetime on the x axis
-          if (widget.model.xaxis?.max != null
-              && DT.isAfter(xDateTime, S.toDate(widget.model.xaxis!.max!)!)) {
+          if (widget.model.xaxis.max != null
+              && DT.isAfter(xDateTime, S.toDate(widget.model.xaxis.max!)!)) {
             continue;
           }
           ticksMap[epoch] = xDateTime;
@@ -448,7 +448,7 @@ class _ChartViewState extends WidgetState<ChartView>
         }
       }
       // Calculate Numeric Y Axis Ticks
-      if (widget.model.yaxis?.interval != null && s.dataPoint.isNotEmpty) {
+      if (widget.model.yaxis.interval != null && s.dataPoint.isNotEmpty) {
         num ySeriesMin = s.dataPoint.fold(
             S.toNum(s.dataPoint[0].y) ?? yMin, (num previous, ChartDataPoint current) =>
         previous < (S.toNum(current.y) ?? yMin) ? previous : (S.toNum(current.y) ?? yMin));
@@ -463,14 +463,14 @@ class _ChartViewState extends WidgetState<ChartView>
 
     // Statically build each X Axis datetime tick
     xTicks = dateTimeTickBuilder(ticksMap.entries.map((entry) => entry.value).toList(),
-        interval: widget.model.xaxis?.interval.toString().trim(),
-        format: widget.model.xaxis?.format);
+        interval: widget.model.xaxis.interval.toString().trim(),
+        format: widget.model.xaxis.format);
 
     // Determine Y Axis Ticks dynamically based on the value range and interval
-    if (widget.model.yaxis?.interval != null) {
-      num range = (S.toNum(widget.model.yaxis?.max) ?? yMax) - (S.toNum(widget.model.yaxis?.min) ?? yMin);
+    if (widget.model.yaxis.interval != null) {
+      num range = (S.toNum(widget.model.yaxis.max) ?? yMax) - (S.toNum(widget.model.yaxis.min) ?? yMin);
       if (range.isFinite) {
-        yTicksCount = (range / (S.toNum(widget.model.yaxis?.interval) ?? 1) + 1).ceil();
+        yTicksCount = (range / (S.toNum(widget.model.yaxis.interval) ?? 1) + 1).ceil();
       }
     }
 
@@ -513,11 +513,7 @@ class _ChartViewState extends WidgetState<ChartView>
     List<charts_flutter.Series<dynamic, DateTime>> timeSeriesList = [];
     List<charts_flutter.Series<dynamic, num>> numericSeriesList = [];
     List<charts_flutter.Series<dynamic, String>> categorySeriesList = [];
-    if (widget.model.xaxis == null || widget.model.yaxis == null) {
-      Log().error(
-          'Unable to build series list because of a null axis, x: ${widget.model.xaxis.toString()} y: ${widget.model.yaxis.toString()}');
-      return null;
-    }
+
     bool pureBar = false;
 
     ChartSeriesModel? nonBarSeries =
@@ -530,7 +526,7 @@ class _ChartViewState extends WidgetState<ChartView>
     for (ChartSeriesModel series in widget.model.series) {
       // Auto group bar series if not specified
       if ((series.stack == null ||
-              widget.model.xaxis!.type != ChartAxisType.category) &&
+              widget.model.xaxis.type != ChartAxisType.category) &&
           series.group == null &&
           pureBar == true) series.group = 'defaultgrouping';
       // Build the data points
@@ -545,7 +541,7 @@ class _ChartViewState extends WidgetState<ChartView>
           dynamic xParsed;
           dynamic yParsed;
           try {
-            xParsed = parsePlotPoint(point.x, widget.model.xaxis!.type);
+            xParsed = parsePlotPoint(point.x, widget.model.xaxis.type);
           } catch(e) {
             Log().error(
                 'Unable to parse X axis plot point, chart id: ${widget.model.id.toString()} - series name: ${series.name.toString()} - $e');
@@ -554,7 +550,7 @@ class _ChartViewState extends WidgetState<ChartView>
           try {
             yParsed = S.isNullOrEmpty(point.y)
                 ? null
-                : parsePlotPoint(point.y, widget.model.yaxis!.type);
+                : parsePlotPoint(point.y, widget.model.yaxis.type);
           } catch(e) {
             Log().error(
                 'Unable to parse Y axis plot point, chart id: ${widget.model.id.toString()} - series name: ${series.name.toString()} - $e');
@@ -564,19 +560,19 @@ class _ChartViewState extends WidgetState<ChartView>
           if (xAllNull == true) xAllNull = xParsed == null;
           if (yAllNull == true) yAllNull = yParsed == null;
           // Ignore date/time data points before the min datetime on the x axis
-          if ((widget.model.xaxis!.type == ChartAxisType.datetime ||
-              widget.model.xaxis!.type == ChartAxisType.date ||
-              widget.model.xaxis!.type == ChartAxisType.time) &&
-              widget.model.xaxis?.min != null && xParsed != null
-              && DT.isBefore(xParsed, S.toDate(widget.model.xaxis!.min!)!)) {
+          if ((widget.model.xaxis.type == ChartAxisType.datetime ||
+              widget.model.xaxis.type == ChartAxisType.date ||
+              widget.model.xaxis.type == ChartAxisType.time) &&
+              widget.model.xaxis.min != null && xParsed != null
+              && DT.isBefore(xParsed, S.toDate(widget.model.xaxis.min!)!)) {
             continue;
           }
           // Ignore date/time data points after the max datetime on the x axis
-          if ((widget.model.xaxis!.type == ChartAxisType.datetime ||
-              widget.model.xaxis!.type == ChartAxisType.date ||
-              widget.model.xaxis!.type == ChartAxisType.time) &&
-              widget.model.xaxis?.max != null && xParsed != null
-              && DT.isAfter(xParsed, S.toDate(widget.model.xaxis!.max!)!)) {
+          if ((widget.model.xaxis.type == ChartAxisType.datetime ||
+              widget.model.xaxis.type == ChartAxisType.date ||
+              widget.model.xaxis.type == ChartAxisType.time) &&
+              widget.model.xaxis.max != null && xParsed != null
+              && DT.isAfter(xParsed, S.toDate(widget.model.xaxis.max!)!)) {
             continue;
           }
           // get label
@@ -597,7 +593,7 @@ class _ChartViewState extends WidgetState<ChartView>
       //if (xAllNull) Log().warning('id: ${series.id.toString()} name: ${series.name.toString()} X values are all null');
       //if (yAllNull) Log().warning('id: ${series.id.toString()} name: ${series.name.toString()} Y values are all null');
 
-      switch (widget.model.xaxis!.type) {
+      switch (widget.model.xaxis.type) {
         // Date/Time based X Axis
         case ChartAxisType.datetime:
         case ChartAxisType.date:
@@ -673,7 +669,7 @@ class _ChartViewState extends WidgetState<ChartView>
       }
     }
     // We return the series of the correct data type here
-    switch (widget.model.xaxis!.type) {
+    switch (widget.model.xaxis.type) {
       case ChartAxisType.datetime:
       case ChartAxisType.date:
       case ChartAxisType.time:
@@ -929,22 +925,22 @@ class _ChartViewState extends WidgetState<ChartView>
 
         try {
           if (hasX && !S.isNullOrEmpty(label.x)) {
-            xParsed = parsePlotPoint(label.x, widget.model.xaxis!.type);
+            xParsed = parsePlotPoint(label.x, widget.model.xaxis.type);
           }
           if (hasX && !S.isNullOrEmpty(label.x1)) {
-            x1Parsed = parsePlotPoint(label.x1, widget.model.xaxis!.type);
+            x1Parsed = parsePlotPoint(label.x1, widget.model.xaxis.type);
           }
           if (hasX && hasX2 && !S.isNullOrEmpty(label.x2)) {
-            x2Parsed = parsePlotPoint(label.x2, widget.model.xaxis!.type);
+            x2Parsed = parsePlotPoint(label.x2, widget.model.xaxis.type);
           }
           if (hasY && !S.isNullOrEmpty(label.y)) {
-            yParsed = parsePlotPoint(label.y, widget.model.yaxis!.type);
+            yParsed = parsePlotPoint(label.y, widget.model.yaxis.type);
           }
           if (hasY && !S.isNullOrEmpty(label.y1)) {
-            y1Parsed = parsePlotPoint(label.y1, widget.model.yaxis!.type);
+            y1Parsed = parsePlotPoint(label.y1, widget.model.yaxis.type);
           }
           if (hasY && hasY2 && !S.isNullOrEmpty(label.y2)) {
-            y2Parsed = parsePlotPoint(label.y2, widget.model.yaxis!.type);
+            y2Parsed = parsePlotPoint(label.y2, widget.model.yaxis.type);
           }
         }
         catch(e) {
@@ -1031,7 +1027,7 @@ class _ChartViewState extends WidgetState<ChartView>
                     : charts_flutter.Color(r: Theme.of(context).colorScheme.onSurfaceVariant.red, g: Theme.of(context).colorScheme.onSurfaceVariant.green, b: Theme.of(context).colorScheme.onSurfaceVariant.blue, a: Theme.of(context).colorScheme.onSurfaceVariant.alpha))
           ) as RangeAnnotationSegment<T>;
         } else if (axis == RangeAnnotationAxisType.domain) {
-          switch (widget.model.xaxis!.type) {
+          switch (widget.model.xaxis.type) {
             case ChartAxisType.date:
             case ChartAxisType.time:
             case ChartAxisType.datetime:
@@ -1130,8 +1126,8 @@ class _ChartViewState extends WidgetState<ChartView>
       ));
     }
 
-    if (widget.model.xaxis!.title != null) {
-      behaviors.add(charts_flutter.ChartTitle(widget.model.xaxis!.title!,
+    if (widget.model.xaxis.title != null) {
+      behaviors.add(charts_flutter.ChartTitle(widget.model.xaxis.title!,
           titleStyleSpec: charts_flutter.TextStyleSpec(
             color: charts_flutter.Color.fromHex(code: '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
           ),
@@ -1141,8 +1137,8 @@ class _ChartViewState extends WidgetState<ChartView>
           titleOutsideJustification: charts_flutter.OutsideJustification.middleDrawArea));
     }
 
-    if (widget.model.yaxis!.title != null) {
-      behaviors.add(charts_flutter.ChartTitle(widget.model.yaxis!.title!,
+    if (widget.model.yaxis.title != null) {
+      behaviors.add(charts_flutter.ChartTitle(widget.model.yaxis.title!,
           titleStyleSpec: charts_flutter.TextStyleSpec(
             color: charts_flutter.Color.fromHex(code: '#${Theme.of(context).colorScheme.onBackground.value.toRadixString(16).toString().substring(2)}'),
           ),

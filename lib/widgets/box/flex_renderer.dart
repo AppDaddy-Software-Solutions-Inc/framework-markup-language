@@ -810,6 +810,7 @@ class FlexRenderer extends RenderBox
 
       case FlexType.fixed:
         maxWidth = myWidth(this,model) ?? 0;
+        if (constraints.hasBoundedWidth && constraints.maxWidth < maxWidth) maxWidth = constraints.maxWidth;
         break;
 
       case FlexType.expanding:
@@ -826,6 +827,7 @@ class FlexRenderer extends RenderBox
 
       case FlexType.fixed:
         maxHeight = myHeight(this,model) ?? 0;
+        if (constraints.hasBoundedHeight && constraints.maxHeight < maxHeight) maxHeight = constraints.maxHeight;
         break;
 
       case FlexType.expanding:

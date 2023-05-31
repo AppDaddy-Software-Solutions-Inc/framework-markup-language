@@ -49,6 +49,23 @@ class ModalModel extends BoxModel
     if (dismissable != null) this.dismissable = dismissable;
   }
 
+  @override
+  String get border => "all";
+
+  Color? defaultBorderColor;
+
+  @override
+  Color get bordercolor => super.bordercolor ?? defaultBorderColor ?? Colors.white;
+
+  // returns thge modal border radius for the header
+  double get headerRadius => super.radiusTopRight;
+
+  @override
+  double get radiusTopRight => 0;
+
+  @override
+  double get radiusTopLeft => 0;
+
   // title 
   StringObservable? _title;
   set title (dynamic v)

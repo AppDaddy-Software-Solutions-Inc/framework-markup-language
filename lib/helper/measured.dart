@@ -16,16 +16,27 @@ class MeasureObject extends RenderProxyBox
   @override
   void performLayout()
   {
-    super.performLayout();
+    Size size = Size(0,0);
+    if (child != null)
+    {
+      child!.layout(constraints, parentUsesSize: true);
+      size = child!.size;
+    }
+    this.size = constraints.smallest;
 
-    Size newSize = child!.size;
-    if (oldSize == newSize) return;
-
-    oldSize = newSize;
+    if (oldSize == size) return;
+    oldSize = size;
     WidgetsBinding.instance.addPostFrameCallback((_)
     {
-      onChange(newSize, data: data);
+      onChange(size, data: data);
     });
+  }
+
+  @override
+  void paint(PaintingContext context, Offset offset)
+  {
+    // do nothing
+    return;
   }
 }
 

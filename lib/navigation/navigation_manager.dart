@@ -3,9 +3,10 @@ import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
-import 'package:fml/widgets/overlay/overlay_manager_view.dart';
-import 'package:fml/widgets/overlay/overlay_manager_model.dart';
-import 'package:fml/widgets/overlay/overlay_model.dart';
+import 'package:fml/widgets/modal/modal_manager_model.dart';
+import 'package:fml/widgets/modal/modal_manager_view.dart';
+import 'package:fml/widgets/modal/modal_model.dart';
+import 'package:fml/widgets/modal/modal_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/page.dart';
@@ -16,7 +17,6 @@ import 'package:fml/system.dart';
 import 'package:fml/widgets/framework/framework_view.dart' ;
 import 'package:fml/store/store_view.dart';
 import 'package:fml/page404/page404_view.dart';
-import 'package:fml/widgets/overlay/overlay_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/helper/common_helpers.dart';
 
@@ -101,9 +101,9 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     if (pages.isNotEmpty)
     {
       var page = pages.last;
-      if (page is MaterialPage && page.child is OverlayManagerView)
+      if (page is MaterialPage && page.child is ModalManagerView)
       {
-         var manager  = page.child as OverlayManagerView;
+         var manager  = page.child as ModalManagerView;
          if (manager.model.child is FrameworkView) return manager.model.child as FrameworkView;
       }
     }
@@ -330,17 +330,23 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     if (!local) return _openBrowser(url);
 
     // open new page in modal window?
-    if (modal == true)
+    if (modal == true && model != null)
     {
-      if (model != null)
+      bool ok = false;
+      var framework = model.findParentOfExactType(FrameworkModel);
+      if (framework != null)
       {
-        var framework = model.findParentOfExactType(FrameworkModel);
-        if (framework != null)
+        var view = FrameworkView(FrameworkModel.fromUrl(framework, url, refresh: refresh ?? false, dependency: dependency));
+        ModalManagerView? manager = model.context?.findAncestorWidgetOfExactType<ModalManagerView>();
+        if (manager != null)
         {
-          var view = FrameworkView(FrameworkModel.fromUrl(framework, url, refresh: refresh ?? false, dependency: dependency));
-          return openModal(view, model.context, modal: false, width: width, height: height) != null;
+          var modal = ModalView(ModalModel(model, null, child: view, modal: false, width: width, height: height));
+          manager.model.modals.add(modal);
+          manager.model.refresh();
+          ok = true;
         }
       }
+      return ok;
     }
 
     /* replace */
@@ -371,7 +377,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
         break;
 
       default:
-        view =  OverlayManagerView(OverlayManagerModel(FrameworkView(FrameworkModel.fromUrl(System.app!, url, refresh: refresh, dependency: dependency))));
+        view =  ModalManagerView(ModalManagerModel(FrameworkView(FrameworkModel.fromUrl(System.app!, url, refresh: refresh, dependency: dependency))));
         break;
     }
 
@@ -489,28 +495,6 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     return result;
   }
 
-  OverlayView? openModal(Widget view, BuildContext? context, {bool modal = true, bool resizeable = true, bool closeable = true, bool draggable = true, String? width, String? height})
-  {
-    OverlayView? overlay;
-    OverlayManagerView? manager = context?.findAncestorWidgetOfExactType<OverlayManagerView>();
-    if (manager != null)
-    {
-      overlay = OverlayView(OverlayModel(child: view, modal: modal, resizeable: resizeable, closeable: closeable, draggable: draggable, width: _toWidth(width), height: _toHeight(height)));
-      manager.model.overlays.add(overlay);
-      manager.model.refresh();
-    }
-    return overlay;
-  }
-
-  bool closeModal(OverlayView? overlay, BuildContext? context)
-  {
-    if ((overlay == null) || (overlay.model.closeable == false)) return true;
-    overlay.model.close();
-    OverlayManagerView? manager = context?.findAncestorWidgetOfExactType<OverlayManagerView>();
-    if (manager != null) manager.model.refresh();
-    return true;
-  }
-
   Future<bool> _openBrowser(String url) async
   {
       bool ok = true;
@@ -530,59 +514,6 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
       }
       return ok;
   }
-
-  double? _toWidth(String? value)
-  {
-    if (S.isNullOrEmpty(value)) return null;
-    double? width;
-    try
-    {
-      if (value!.endsWith("%"))
-      {
-        width = S.toDouble(value.substring(0, value.length - 1));
-        if (navigatorKey.currentContext != null && width != null)
-        {
-          var size = MediaQuery.of(navigatorKey.currentContext!).size.width;
-          width = size * (width / 100);
-        }
-      }
-      else {
-        width = S.toDouble(value);
-      }
-    }
-    catch(e)
-    {
-      Log().error("Error getting width. Error is $e");
-    }
-    return width;
-  }
-
-  double? _toHeight(String? value)
-  {
-    if (S.isNullOrEmpty(value)) return null;
-    double? height;
-    try
-    {
-      if (value!.endsWith("%"))
-      {
-        height = S.toDouble(value.substring(0, value.length - 1));
-        if (navigatorKey.currentContext != null && height != null)
-        {
-          var size = MediaQuery.of(navigatorKey.currentContext!).size.height;
-          height   = size * (height / 100);
-        }
-      }
-      else {
-        height = S.toDouble(value);
-      }
-    }
-    catch(e)
-    {
-      Log().error("Error getting height. Error is $e");
-    }
-    return height;
-  }
-
 
  void setPageTitle(BuildContext context, String? title)
   {

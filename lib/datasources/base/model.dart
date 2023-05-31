@@ -306,6 +306,14 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
   dynamic _valueSetter(dynamic jsonOrXml)
   {
     var data = Data.from(jsonOrXml, root: root);
+
+
+    if (jsonOrXml != null && jsonOrXml is! String)
+    {
+      // clone the data so the datasource does not manipulate its inherited widgets data in the original source.
+      data = data.clone();
+    }
+
     onSuccess(data, code: HttpStatus.ok);
     return data;
   }
@@ -641,7 +649,10 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     // notify nested data sources
     if (datasources != null){
       for (IDataSource model in datasources!) {
-        if (model is DataModel) model.onSuccess(data.clone());
+        if (model is DataModel)
+        {
+          model.value = data;
+        }
       }}
 
     // requery?

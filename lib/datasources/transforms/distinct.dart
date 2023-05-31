@@ -1,4 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:convert';
+
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/transforms/transform_interface.dart';
 import 'package:fml/datasources/transforms/transform_model.dart';
@@ -25,6 +27,8 @@ class Distinct extends TransformModel implements ITransform
     }
   }
   String? get field => _field?.get();
+
+
 
   Distinct(WidgetModel? parent, {String? id, dynamic enabled, dynamic field}) : super(parent, id)
   {
@@ -56,12 +60,14 @@ class Distinct extends TransformModel implements ITransform
     super.deserialize(xml);
   }
 
-  List<Map<dynamic, dynamic>> distinctList = [];
-  List<String?> uniqueFields = [];
+
 
   _fromList(Data? data)
   {
     if (data == null) return null;
+
+    List<Map<String, dynamic>> distinctList = [];
+    List<String?> uniqueFields = [];
 
     if (field == null) {
       data.toSet().toList();
@@ -69,15 +75,13 @@ class Distinct extends TransformModel implements ITransform
       for (dynamic l in data) {
         if (!uniqueFields.contains(l[field])) {
           uniqueFields.add(l[field]);
-          distinctList.add(l);
+          distinctList.add(Map<String, dynamic>.from(l));
         }
       }
       data.clear();
       data.addAll(distinctList);
-      // list = distinctList;
-      distinctList = [];
-      uniqueFields = [];
     }
+
   }
 
   String encode(String v)

@@ -19,6 +19,7 @@ class Calc extends TransformModel implements ITransform
   static const String avglong   = "average";
   static const String count     = "cnt";
   static const String countlong = "count";
+  static const String total = "total";
   static const String evaluate  = "eval";
 
   @override
@@ -124,6 +125,24 @@ class Calc extends TransformModel implements ITransform
     return results;
   }
 
+
+  Map? _calcTotal(Data list)
+  {
+    if (source == null) return null;
+    Map duplicates = {};
+
+    for (var element in list) {
+      var value = Data.readValue(element, source);
+      if(!duplicates.containsKey(value)) {
+        duplicates[value] = 1;
+      } else {
+        duplicates[value] += 1;
+      }
+    }
+    return duplicates;
+  }
+
+
   HashMap<String,double>? _calcSum(Data list)
   {
     if (source == null) return null;
@@ -199,6 +218,23 @@ class Calc extends TransformModel implements ITransform
       for (var row in list) {
         String? group = _getGroup(row);
         if ((_inGroup(row, group)) && (map.containsKey(group))) Data.writeValue(row, target, S.toInt(map[group!]));
+      }
+    }
+  }
+
+  //Total calculates the total occurences in each field and prints to a source. Would be useful to add this feature to DISTINCT.
+  _total(Data? list)
+  {
+    if ((list== null) || (source == null)) return null;
+    Map? map = _calcTotal(list);
+
+    if (map != null) {
+      for (var row in list) {
+        String? group = _getGroup(row);
+        var value = Data.readValue(row, source);
+        if ((_inGroup(row, group)) && map.containsKey(value)) {
+          Data.writeValue(row, target, S.toInt(map[value]));
+        }
       }
     }
   }
@@ -280,6 +316,9 @@ class Calc extends TransformModel implements ITransform
         break;
       case countlong:
         _cnt(data);
+        break;
+      case total:
+        _total(data);
         break;
       case evaluate:
         _eval(data);

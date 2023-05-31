@@ -1,26 +1,52 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/navigation/navigation_manager.dart';
+import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/modal/modal_manager_view.dart';
+import 'package:fml/widgets/positioned/positioned_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
-import 'package:fml/widgets/overlay/overlay_view.dart';
 import 'modal_view.dart';
 
 class ModalModel extends BoxModel
 {
-  OverlayView? overlay;
-  Size? proxysize;
+  final Widget? child;
+  
+  @override
+  bool get center => true;
+
+  @override
+  bool get expand => true;
 
   ModalModel(WidgetModel parent, String?  id,
   {
+    this.child,
     dynamic title,
-  }) : super(parent, id)
+    dynamic width,
+    dynamic height,
+    dynamic x,
+    dynamic y,
+    dynamic color,
+    dynamic resizeable,
+    dynamic draggable,
+    dynamic modal,
+    dynamic closeable,
+    dynamic dismissable}) : super(parent, id)
   {
-    this.title = title;
+    if (title != null) this.title = title;
+    if (width != null) this.width = width;
+    if (height != null) this.height = height;
+    if (x != null) this.x = x;
+    if (y != null) this.y = y;
+    if (color != null) this.color = color;
+    if (resizeable != null) this.resizeable = resizeable;
+    if (draggable != null) this.draggable = draggable;
+    if (modal != null) this.modal = modal;
+    if (closeable != null) this.closeable = closeable;
+    if (dismissable != null) this.dismissable = dismissable;
   }
 
   // title 
@@ -53,6 +79,21 @@ class ModalModel extends BoxModel
   }
   bool get modal => _modal?.get() ?? true;
 
+  // dismissable 
+  BooleanObservable? _dismissable;
+  set dismissable (dynamic v)
+  {
+    if (_dismissable != null)
+    {
+      _dismissable!.set(v);
+    }
+    else if (v != null)
+    {
+      _dismissable = BooleanObservable(Binding.toKey(id, 'dismissable'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get dismissable => _dismissable?.get() ?? true;
+  
   // resizeable 
   BooleanObservable? _resizeable;
   set resizeable (dynamic v)
@@ -97,7 +138,44 @@ class ModalModel extends BoxModel
     }
   }
   bool get draggable => _draggable?.get() ?? true;
-  
+
+  bool get minimized
+  {
+    var view = findListenerOfExactType(ModalViewState);
+    if (view != null) return view!.minimized;
+    return false;
+  }
+
+  DoubleObservable? _x;
+  set x(dynamic v)
+  {
+    if (_x != null)
+    {
+      _x!.set(v);
+    }
+    else if (v != null)
+    {
+      _x = DoubleObservable(Binding.toKey(id, 'x'), v, scope: scope, listener: onPropertyChange);
+      _x!.set(v, notify: false);
+    }
+  }
+  double? get x => _x?.get();
+
+  DoubleObservable? _y;
+  set y(dynamic v)
+  {
+    if (_y != null)
+    {
+      _y!.set(v);
+    }
+    else if (v != null)
+    {
+      _y = DoubleObservable(Binding.toKey(id, 'y'), v, scope: scope, listener: onPropertyChange);
+      _y!.set(v, notify: false);
+    }
+  }
+  double? get y => _y?.get();
+
   static ModalModel? fromXml(WidgetModel parent, XmlElement xml)
   {
     ModalModel? model;
@@ -122,11 +200,49 @@ class ModalModel extends BoxModel
     super.deserialize(xml);
 
     // properties
-    title       = Xml.get(node: xml, tag: 'title');
-    resizeable  = Xml.get(node: xml, tag: 'resizeable');
-    closeable   = Xml.get(node: xml, tag: 'closable');
-    draggable   = Xml.get(node: xml, tag: 'draggable');
-    modal       = Xml.get(node: xml, tag: 'modal');
+    title        = Xml.get(node: xml, tag: 'title');
+    dismissable  = Xml.get(node: xml, tag: 'resizeable');
+    resizeable   = Xml.get(node: xml, tag: 'resizeable');
+    closeable    = Xml.get(node: xml, tag: 'closable');
+    draggable    = Xml.get(node: xml, tag: 'draggable');
+    modal        = Xml.get(node: xml, tag: 'modal');
+  }
+
+  @override
+  List<Widget> inflate({BoxConstraints? constraints})
+  {
+    // process children
+    List<Widget> views = [];
+    for (var model in viewableChildren)
+    {
+      if (model is! ModalModel)
+      {
+        var view = model.getView();
+
+        // wrap child in child data widget
+        // this is done for us in "positioned" if the child happens
+        // to be a positioned widget and the layout is "stack" (see positioned_view.dart)
+        if (view is! PositionedView)
+        {
+          view = LayoutBoxChildData(child: view!, model: model);
+        }
+
+        if (view != null) views.add(view);
+      }
+    }
+
+    // add the static child
+    if (child != null)
+    {
+      var view = child;
+      if (view is! PositionedView)
+      {
+         view = LayoutBoxChildData(child: child!, model: this);
+      }
+      views.add(view!);
+    }
+
+    return views;
   }
   
   @override
@@ -137,57 +253,65 @@ class ModalModel extends BoxModel
     switch (function)
     {
       case "open" :
-        
-        // modal width
-        String? modalWidth;
-        if (arguments.isNotEmpty)
-        {
-          modalWidth = S.toStr(arguments[0]);
-        }
-        else if (width != null)
-        {
-          modalWidth = "$width";
-        }
-        else if (widthPercentage != null)
-        {
-          modalWidth = "$widthPercentage%";
-        }
 
-        // modal height
-        String? modalHeight;
-        if (arguments.length > 1)
+        var view = findListenerOfExactType(ModalViewState);
+        if (view == null)
         {
-          modalHeight = S.toStr(arguments[1]);
+          // modal width
+          if (arguments.isNotEmpty) width = S.toStr(arguments[0]);
+
+          // modal height
+          if (arguments.length > 1) height = S.toStr(arguments[1]);
+
+          // resizeable
+          if (arguments.length > 2) resizeable = S.toBool(arguments[2]) ?? true;
+
+          // closeable
+          if (arguments.length > 3) closeable = S.toBool(arguments[3]) ?? true;
+
+          // draggable
+          if (arguments.length > 4) draggable = S.toBool(arguments[4]) ?? true;
+
+          // modal
+          if (arguments.length > 5) modal = S.toBool(arguments[5]) ?? true;
+
+          view = ModalView(this);
         }
-        else if (height != null)
-        {
-          modalHeight = "$height";
-        }
-        else if (heightPercentage != null)
-        {
-          modalHeight = "$heightPercentage%";
-        }
-
-        // resizeable
-        if (arguments.length > 2) resizeable = S.toBool(arguments[2]) ?? true;
-
-        // closeable
-        if (arguments.length > 3) closeable = S.toBool(arguments[3]) ?? true;
-
-        // draggable
-        if (arguments.length > 4) draggable = S.toBool(arguments[4]) ?? true;
-
-        // modal
-        if (arguments.length > 5) modal = S.toBool(arguments[5]) ?? true;
-
-        overlay = NavigationManager().openModal(ModalView(this), context, modal: modal, resizeable: resizeable, closeable: closeable, draggable: draggable, width: modalWidth, height: modalHeight);
+        open(view);
         return true;
 
       case "close" :
-        NavigationManager().closeModal(overlay, context);
+        close();
         return true;
     }
     return super.execute(caller, propertyOrFunction, arguments);
+  }
+
+  void open(ModalView view)
+  {
+    ModalManagerView? manager = context?.findAncestorWidgetOfExactType<ModalManagerView>();
+    if (manager != null)
+    {
+      manager.model.modals.add(view);
+      manager.model.refresh();
+    }
+  }
+
+  void close()
+  {
+    var view = findListenerOfExactType(ModalViewState);
+    if (view != null)
+    {
+      view!.onClose();
+      ModalManagerView? manager = context?.findAncestorWidgetOfExactType<ModalManagerView>();
+      if (manager != null) manager.model.refresh();
+    }
+  }
+
+  void dismiss()
+  {
+    var view = findListenerOfExactType(ModalViewState);
+    if (view != null) view!.onDismiss();
   }
 
   /// Returns the [MODAL] View

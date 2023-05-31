@@ -1,13 +1,13 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/overlay/overlay_manager_view.dart';
-import 'package:fml/widgets/overlay/overlay_model.dart';
+import 'package:fml/widgets/modal/modal_manager_view.dart';
+import 'package:fml/widgets/modal/modal_model.dart';
+import 'package:fml/widgets/modal/modal_view.dart';
 import 'package:fml/widgets/table/row/cell/table_row_cell_model.dart';
 import 'package:fml/widgets/table/row/table_row_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart' ;
-import 'package:fml/widgets/overlay/overlay_view.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
 
 class TableRowCellView extends StatefulWidget implements IWidgetView
@@ -140,17 +140,14 @@ class _TableRowCellViewState extends WidgetState<TableRowCellView> with WidgetsB
     return Listener(
         onPointerDown: (_) => onTap(selectable),
         behavior: HitTestBehavior.translucent,
-        child: Container(
-            child: (selectable)
-                ? MouseRegion(cursor: SystemMouseCursors.click, child: cell)
-                : cell));
+        child: Container(child: selectable ? MouseRegion(cursor: SystemMouseCursors.click, child: cell) : cell));
   }
 
   onTap(bool selectable) async {
     if (selectable) {
       if ((widget.model.expandedheight != null) ||
           ((widget.model.expandedwidth != null))) {
-        if (context.findAncestorWidgetOfExactType<OverlayView>() !=
+        if (context.findAncestorWidgetOfExactType<ModalView>() !=
             null) return;
         _expand();
       }
@@ -175,23 +172,20 @@ class _TableRowCellViewState extends WidgetState<TableRowCellView> with WidgetsB
     }
 
     // Build Overlay Entry
-    OverlayManagerView? manger = context.findAncestorWidgetOfExactType<OverlayManagerView>();
+    ModalManagerView? manger = context.findAncestorWidgetOfExactType<ModalManagerView>();
     if (manger != null)
     {
-      OverlayView entry = OverlayView(OverlayModel(
+      ModalView modal = ModalView(ModalModel(widget.model,null,
           child: widget,
           modal: true,
-          dx: dx,
-          dy: dy,
+          x: dx,
+          y: dy,
           width: width,
           height: height,
           draggable: false,
           closeable: false,
-          dismissable: true,
-          pad: false,
-          decorate: false,
-          modalBarrierColor: Colors.transparent));
-      manger.model.overlays.add(entry);
+          dismissable: true));
+      manger.model.modals.add(modal);
       manger.model.refresh();
     }
   }

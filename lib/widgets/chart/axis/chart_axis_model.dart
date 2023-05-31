@@ -157,7 +157,7 @@ class ChartAxisModel extends WidgetModel
   bool get truncate => _truncate?.get() ?? false;
 
   ChartAxisModel(
-      WidgetModel parent,
+      WidgetModel? parent,
       String?  id,
       this.axis,
       {
@@ -226,8 +226,14 @@ class ChartAxisModel extends WidgetModel
           this.type = ChartAxisType.time;
           break;
         default:
-          Log().info('axis type unset, defaulting to category');
-          this.type = ChartAxisType.category;
+          if (axis == ChartAxis.X) {
+            Log().info('X axis type unset, defaulting to category');
+            this.type = ChartAxisType.category;
+          }
+          else {
+            Log().info('Y axis type unset, defaulting to numeric');
+            this.type = ChartAxisType.numeric;
+          }
           break;
       }
     } catch(e) {

@@ -24,14 +24,19 @@ class Xml {
   }
 
   // Olajos - Added October 23, 2001
-  static String? encodeIllegalCharacters(String? s)
+  static String? encodeIllegalCharacters(dynamic s)
   {
     if (s != null)
     {
-      s = s.replaceAll("<",  "&lt;");
-      s = s.replaceAll(">",  "&gt;");
-      s = s.replaceAll("'",  "&apos;");
-      s = s.replaceAll("\"", "&quot;");
+      if (s is String) {
+        s = s.replaceAll("<", "&lt;");
+        s = s.replaceAll(">", "&gt;");
+        s = s.replaceAll("'", "&apos;");
+        s = s.replaceAll("\"", "&quot;");
+      }
+      else {
+        return s.toString();
+      }
     }
     return s;
   }

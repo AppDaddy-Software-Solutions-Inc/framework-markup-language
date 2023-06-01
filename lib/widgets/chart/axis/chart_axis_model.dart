@@ -227,11 +227,9 @@ class ChartAxisModel extends WidgetModel
           break;
         default:
           if (axis == ChartAxis.X) {
-            Log().info('X axis type unset, defaulting to category');
             this.type = ChartAxisType.category;
           }
           else {
-            Log().info('Y axis type unset, defaulting to numeric');
             this.type = ChartAxisType.numeric;
           }
           break;

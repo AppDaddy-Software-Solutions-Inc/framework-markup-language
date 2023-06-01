@@ -156,6 +156,62 @@ class BoxModel extends DecoratedWidgetModel
   }
   String? get radius => _radius?.get()?.toLowerCase();
 
+  double get radiusTopRight
+  {
+    if (radius == null) return 0;
+    var radii = radius!.split(',');
+    if (radii.isEmpty) return 0;
+    return S.toDouble(radii[0]) ?? 0;
+  }
+
+  double get radiusBottomRight
+  {
+    if (radius == null) return 0;
+    var radii = radius!.split(',');
+    if (radii.isEmpty) return 0;
+    if (radii.length == 1)
+    {
+      return S.toDouble(radii[0]) ?? 0;
+    }
+    if (radii.length > 1)
+    {
+      return S.toDouble(radii[1]) ?? 0;
+    }
+    return 0;
+  }
+
+  double get radiusBottomLeft
+  {
+    if (radius == null) return 0;
+    var radii = radius!.split(',');
+    if (radii.isEmpty) return 0;
+    if (radii.length == 1)
+    {
+      return S.toDouble(radii[0]) ?? 0;
+    }
+    if (radii.length > 2)
+    {
+      return S.toDouble(radii[2]) ?? 0;
+    }
+    return 0;
+  }
+
+  double get radiusTopLeft
+  {
+    if (radius == null) return 0;
+    var radii = radius!.split(',');
+    if (radii.isEmpty) return 0;
+    if (radii.length == 1)
+    {
+      return S.toDouble(radii[0]) ?? 0;
+    }
+    if (radii.length > 3)
+    {
+      return S.toDouble(radii[3]) ?? 0;
+    }
+    return 0;
+  }
+
   /// The color of the border for box, defaults to black54
   ColorObservable? _bordercolor;
   set bordercolor(dynamic v)

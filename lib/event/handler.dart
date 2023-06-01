@@ -110,7 +110,6 @@ class EventHandler extends Eval
       // replace (legacy) overlaps with Eval() function replace. use replaceRoute()
       functions[S.fromEnum(EventTypes.replace)]       = _handleEventReplace;
       functions[S.fromEnum(EventTypes.replaceroute)]  = _handleEventReplace;
-      functions[S.fromEnum(EventTypes.page)]          = _handleEventPage;
       functions[S.fromEnum(EventTypes.refresh)]       = _handleEventRefresh;
       functions[S.fromEnum(EventTypes.reset)]         = _handleEventReset;
       functions[S.fromEnum(EventTypes.saveas)]        = _handleEventSaveAs;
@@ -577,15 +576,6 @@ class EventHandler extends Eval
   Future<bool> _handleEventBack([dynamic p]) async
   {
     return _handleEventClose(p);
-  }
-
-  /// Broadcasts the page event to be handled by individual widgets
-  Future<bool> _handleEventPage([dynamic page]) async
-  {
-    Map<String,String?> parameters = <String,String?>{};
-    parameters['page']   = S.toStr(page);
-    EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.page, parameters: parameters));
-    return true;
   }
 
   /// Broadcasts the refresh event to be handled by individual widgets

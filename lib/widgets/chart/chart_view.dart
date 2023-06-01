@@ -67,11 +67,16 @@ class _ChartViewState extends WidgetState<ChartView>
   ///  We don't support a fallback in the case your axis/series are unmatched
   ///  its important to show the data type syntax for template clarity
   ChartType? getChartType() {
+    ChartSeriesModel? pieSeries = widget.model.series.firstWhereOrNull((series) =>
+      series.type?.toLowerCase() == 'pie' || series.type?.toLowerCase() == 'circle');
+    if (pieSeries != null || widget.model.type != null &&
+      (widget.model.type!.toLowerCase() == 'pie' || widget.model.type!.toLowerCase() == 'circle')) {
+    return ChartType.pieChart;
     // This is a bit odd- time series needs to be identified first because if the
     // x axis is a date/time based axis you must use a timeSeriesChart.
     // You can still have grouped bars in a TimeSeries but not in combo charts.
     // Check for pie type before letting the category axis determine a combo chart.
-    if (widget.model.xaxis.type == ChartAxisType.datetime ||
+    } else if (widget.model.xaxis.type == ChartAxisType.datetime ||
         widget.model.xaxis.type == ChartAxisType.date ||
         widget.model.xaxis.type == ChartAxisType.time) {
       // Determine if the X Axis is time based
@@ -82,10 +87,6 @@ class _ChartViewState extends WidgetState<ChartView>
     if (nonBarSeries == null) {
       // Exclusively BarSeries, can use BarChart
       return ChartType.barChart;
-    } else if (widget.model.type != null &&
-        (widget.model.type!.toLowerCase() == 'pie' ||
-            widget.model.type!.toLowerCase() == 'circle')) {
-      return ChartType.pieChart;
     } else if (widget.model.xaxis.type == ChartAxisType.category) {
       return ChartType.ordinalComboChart;
     } else if (widget.model.xaxis.type == ChartAxisType.numeric) {

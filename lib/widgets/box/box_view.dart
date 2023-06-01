@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:ui';
-import 'package:fml/helper/common_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/flex_object.dart';
@@ -123,44 +122,6 @@ class _BoxViewState extends WidgetState<BoxView>
       }
     }
     return border;
-  }
-
-  BorderRadius? _getRadius(Border? border)
-  {
-    String? radius = widget.model.radius;
-    if (radius == null) return null;
-    if (border != null && widget.model.border != 'all') return null;
-
-    // border decoration
-    List<String> cornersFromTopRightClockwise = [];
-    List<double?> radii = [];
-    try
-    {
-      cornersFromTopRightClockwise = radius.split(',');
-      if (cornersFromTopRightClockwise.length == 1) {
-        radii = List<double?>.filled(4, S.toDouble(cornersFromTopRightClockwise[0]));
-      } else {
-        radii = cornersFromTopRightClockwise.map((r) => S.toDouble(r)).toList();
-      }
-    }
-    catch(e)
-    {
-      // TODO LOG
-      radii = List<double>.filled(4, 0);
-    }
-
-    BorderRadius? containerRadius =
-    BorderRadius.only(
-        topRight: Radius.circular(
-            radii.asMap().containsKey(0) ? radii[0] ?? 0 : 0),
-        bottomRight: Radius.circular(
-            radii.asMap().containsKey(1) ? radii[1] ?? 0 : 0),
-        bottomLeft: Radius.circular(
-            radii.asMap().containsKey(2) ? radii[2] ?? 0 : 0),
-        topLeft: Radius.circular(
-            radii.asMap().containsKey(3) ? radii[3] ?? 0 : 0));
-
-    return containerRadius;
   }
 
   BoxShadow? _getShadow()
@@ -367,7 +328,11 @@ class _BoxViewState extends WidgetState<BoxView>
     Border? border = _getBorder();
 
     // get the border radius
-    BorderRadius? radius = _getRadius(border);
+    BorderRadius? radius = BorderRadius.only(
+        topRight: Radius.circular(widget.model.radiusTopRight),
+        bottomRight: Radius.circular(widget.model.radiusBottomRight),
+        bottomLeft: Radius.circular(widget.model.radiusBottomLeft),
+        topLeft: Radius.circular(widget.model.radiusTopLeft));
 
     // build the box decoration
     BoxDecoration? decoration = _getBoxDecoration(radius);

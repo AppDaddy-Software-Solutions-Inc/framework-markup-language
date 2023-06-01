@@ -35,7 +35,10 @@ class ModalViewState extends WidgetState<ModalView>
   double? width;
   double? height;
 
+  bool atMaxHeight = false;
   late double maxHeight;
+
+  bool atMaxWidth = false;
   late double maxWidth;
 
   bool minimized = false;
@@ -53,6 +56,7 @@ class ModalViewState extends WidgetState<ModalView>
 
   bool closeHovered = false;
   bool minimizeHovered = false;
+  bool maximizedHovered = false;
 
   onMeasured(Size size, {dynamic data})
   {
@@ -93,12 +97,21 @@ class ModalViewState extends WidgetState<ModalView>
     });
   }
 
+  onMaximizeWindow()
+  {
+    if (widget.model.closeable == false) return;
+    setState(()
+    {
+      dx = 0;
+      dy = 0;
+      width = maxWidth;
+      height = maxHeight;
+    });
+  }
+
   onMaximize()
   {
     if (widget.model.closeable == false) return;
-    minimized = false;
-    maximized = true;
-
     setState(()
     {
       minimized = false;
@@ -344,6 +357,53 @@ class ModalViewState extends WidgetState<ModalView>
     }
   }
 
+  Widget _buildHeader(ColorScheme t, double height)
+  {
+    double iconSize = height - 10;
+
+    Color c1 = t.onSurfaceVariant;
+    Color c2 = t.primary;
+    Color c3 = widget.model.bordercolor;
+
+    var divider = Container(width: 5, height:1);
+
+    // window is maximized?
+    bool isMaximized = atMaxHeight && atMaxWidth;
+
+    // Build View
+    Widget close = (widget.model.closeable == false)
+       ? Container()
+       : GestureDetector(onTap: () => onClose(),
+       child: MouseRegion(cursor: SystemMouseCursors.click, onHover: (ev) => setState(() => closeHovered = true), onExit: (ev) => setState(() => closeHovered = false),
+           child: UnconstrainedBox(child: SizedBox(height: iconSize, width: iconSize,
+               child: Icon(Icons.close, size: iconSize - 4, color: !closeHovered ? c1 : c2)))));
+
+    Widget minimize = ((widget.model.closeable == false)  || (widget.model.modal == true))
+       ? Container()
+       : GestureDetector(onTap: () => onMinimize(),
+       child: MouseRegion(cursor: SystemMouseCursors.click, onHover: (ev) => setState(() => minimizeHovered = true), onExit: (ev) => setState(() => minimizeHovered = false),
+           child: UnconstrainedBox(child: SizedBox(height: iconSize, width: iconSize,
+               child: Icon(Icons.horizontal_rule, size: iconSize - 4, color: !minimizeHovered ? c1 : c2)))));
+
+    Widget maximize = ((widget.model.closeable == false)  || (widget.model.modal == true))
+       ? Container()
+       : GestureDetector(onTap: () => isMaximized ? onRestoreToLast() : onMaximizeWindow(),
+       child: MouseRegion(cursor: SystemMouseCursors.click, onHover: (ev) => setState(() => maximizedHovered = true), onExit: (ev) => setState(() => maximizedHovered = false),
+           child: UnconstrainedBox(child: SizedBox(height: iconSize, width: iconSize,
+               child: Icon(isMaximized ? Icons.crop_7_5_sharp : Icons.crop_square_sharp, size: iconSize - 4, color: !maximizedHovered ? c1 : c2)))));
+
+    // build header top radius
+    // the body radius tops are overridden ion the model
+    // and set to zero
+    double radius = widget.model.headerRadius;
+    if (radius <= 0) radius = 5;
+    BorderRadius? containerRadius = BorderRadius.only(topRight: Radius.circular(radius), topLeft: Radius.circular(radius));
+
+    var toolbar = Row(mainAxisAlignment: MainAxisAlignment.end, crossAxisAlignment: CrossAxisAlignment.center, children: [minimize, divider, maximize, divider, close, divider]);
+
+    return Container(decoration: BoxDecoration(borderRadius: containerRadius, color: c3), width: width!, height: height, child: toolbar);
+  }
+
   @override
   Widget build(BuildContext context)
   {
@@ -358,6 +418,9 @@ class ModalViewState extends WidgetState<ModalView>
 
     ColorScheme t = Theme.of(context).colorScheme;
 
+    // set the models default border color
+    widget.model.defaultBorderColor = t.surfaceVariant;
+
     // Overlay Manager
     ModalManagerView? manager = context.findAncestorWidgetOfExactType<ModalManagerView>();
 
@@ -365,36 +428,31 @@ class ModalViewState extends WidgetState<ModalView>
     double sa = MediaQuery.of(context).padding.top;
 
     // Exceeds Width of Viewport
+    atMaxWidth = false;
     maxWidth  = MediaQuery.of(context).size.width;
-    if (width! > (maxWidth - (padding * 4))) width = (maxWidth - (padding * 4));
+    if (width! >= (maxWidth - (padding * 4)))
+    {
+      atMaxWidth = true;
+      width = (maxWidth - (padding * 4));
+    }
     if (width! <= 0) width = 50;
 
     // Exceeds Height of Viewport
+    atMaxHeight = false;
     maxHeight = MediaQuery.of(context).size.height - sa;
-    if (height! > (maxHeight - (padding * 4))) height = (maxHeight - (padding * 4));
+    if (height! >= (maxHeight - (padding * 4)))
+    {
+      atMaxHeight = true;
+      height = (maxHeight - (padding * 4));
+    }
     if (height! <= 0) height = 50;
 
-    // Card
-    if (body == null) body = Material(child: BoxView(widget.model));
+    // Content Box
+    body ??= Material(child: BoxView(widget.model));
 
     // Non-Minimized View
     if (!minimized)
     {
-      // Build View
-      Widget close = (widget.model.closeable == false)
-          ? Container()
-          : Padding(padding: EdgeInsets.only(left: 10), child: GestureDetector(onTap: () => onClose(),
-          child: MouseRegion(cursor: SystemMouseCursors.click, onHover: (ev) => setState(() => closeHovered = true), onExit: (ev) => setState(() => closeHovered = false),
-              child: UnconstrainedBox(child: SizedBox(height: 36, width: 36,
-                  child: Tooltip(message: phrase.close,    child: Icon(Icons.close, size: 32, color: !closeHovered ? t.surfaceVariant : t.onBackground)))))));
-
-      Widget minimize = ((widget.model.closeable == false)  || (widget.model.modal == true))
-          ? Container()
-          : Padding(padding: EdgeInsets.only(left: 10), child: GestureDetector(onTap: () => onMinimize(),
-          child: MouseRegion(cursor: SystemMouseCursors.click, onHover: (ev) => setState(() => minimizeHovered = true), onExit: (ev) => setState(() => minimizeHovered = false),
-              child: UnconstrainedBox(child: SizedBox(height: 36, width: 36,
-                  child: Tooltip(message: phrase.minimize, child: Icon(Icons.remove_circle, size: 32, color: !minimizeHovered ? t.surfaceVariant : t.onBackground)))))));
-
       Widget resize        = Icon(Icons.apps, size: 24, color: Colors.transparent);
       Widget resizeableBR  = (widget.model.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeUpLeftDownRight, child: resize), onPanUpdate: onResizeBR, onTapDown: onBringToFront);
       Widget resizeableBL  = (widget.model.resizeable == false) ? Container() : GestureDetector(child: MouseRegion(cursor: SystemMouseCursors.resizeUpRightDownLeft, child: resize), onPanUpdate: onResizeBL, onTapDown: onBringToFront);
@@ -426,10 +484,14 @@ class ModalViewState extends WidgetState<ModalView>
 
       Widget frame = UnconstrainedBox(child: ClipRect(child: SizedBox(height: height, width: width, child: body)));
 
+      double headerHeight = 30;
+      var header = _buildHeader(t, headerHeight);
+
       // View
-      Widget content = UnconstrainedBox(child: Container(color: Colors.transparent, height: height! + (padding * 2), width: width! + (padding * 2),
+      Widget content = UnconstrainedBox(child: Container(color: Colors.transparent, height: height! + (padding * 2) + headerHeight, width: width! + (padding * 2),
           child: Stack(children: [
-            Center(child: frame),
+            Positioned(child: header, top: padding, left: padding),
+            Positioned(child: frame,   top: headerHeight + padding, left: padding),
             Positioned(child: resizeableL, top: 0, left: 0),
             Positioned(child: resizeableR, top: 0, right: 0),
             Positioned(child: resizeableT, top: 0, left: 0),
@@ -437,8 +499,7 @@ class ModalViewState extends WidgetState<ModalView>
             Positioned(child: resizeableTL, top: 0, left: 0),
             Positioned(child: resizeableBL, bottom: 0, left: 0),
             Positioned(child: resizeableBR, bottom: 0, right: 0),
-            Positioned(child: minimize, top: 15, right: 50),
-            Positioned(child: close, top: 15, right: 15)])));
+          ])));
 
       // Remove from Park
       if (manager != null) manager.model.unpark(widget);
@@ -458,9 +519,8 @@ class ModalViewState extends WidgetState<ModalView>
 
       // Build View
       Widget scaled  = Card(margin: EdgeInsets.all(1), child: SizedBox(width: 100, height: 50, child: Padding(child: FittedBox(child: body), padding:EdgeInsets.all(5))), elevation: 5, color: t.secondary.withOpacity(0.50), borderOnForeground: false, shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(4.0)), side: BorderSide(width: 2, color: t.primary)));
-      Widget close   = (widget.model.closeable == false) ? Container() : Padding(padding: EdgeInsets.only(left: 10), child: GestureDetector(onTap: () => onClose(),  child: MouseRegion(cursor: SystemMouseCursors.click, child: UnconstrainedBox(child: SizedBox(height: 24, width: 24, child: Container(decoration: BoxDecoration(color: t.primaryContainer, shape: BoxShape.circle), child: Tooltip(message: phrase.close, child: Icon(Icons.close, size: 24, color: t.onPrimaryContainer))))))));
       Widget curtain = GestureDetector(onTap: onRestore, child: MouseRegion(cursor: SystemMouseCursors.click, child: SizedBox(width: 100, height: 50)));
-      Widget view    = Stack(children: [scaled, curtain, Positioned(child: close, top: 15, right: 15)]);
+      Widget view    = Stack(children: [scaled, curtain]);
 
       // Return View
       return Positioned(bottom: 10, left: 10 + (slot! * 110).toDouble(), child: view);

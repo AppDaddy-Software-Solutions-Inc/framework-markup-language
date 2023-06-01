@@ -35,96 +35,54 @@ class PagerViewState extends WidgetState<PagerView>
   @override
   void initState()
   {
-    // call before super so that we don't trigger a loop on the listener created in super.initState();
-
-    // stop listening to prevent rebuilt
-    widget.model.removeListener(this);
-    widget.model.currentpage = widget.model.initialpage ?? 1;
-    // resume listening to model changes
-    widget.model.registerListener(this);
-
     super.initState();
 
-    _controller = PageController(initialPage: (widget.model.initialpage != null ? widget.model.initialpage! - 1 : 0));
+    _controller = PageController(initialPage: (widget.model.currentpage - 1));
     widget.model.controller = _controller;
   }
 
-  @override
-  void didChangeDependencies()
-  {
-    // register event listeners
-    EventManager.of(widget.model)?.registerEventListener(EventTypes.page, onPage);
-
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(PagerView oldWidget)
-  {
-    super.didUpdateWidget(oldWidget);
-    if ((oldWidget.model != widget.model))
-    {
-      // remove old event listeners
-      EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.page, onPage);
-
-      // register new event listeners
-      EventManager.of(widget.model)?.registerEventListener(EventTypes.page, onPage);
-    }
-  }
-
-  @override
-  void dispose()
-  {
-    // remove old event listeners
-    EventManager.of(widget.model)?.removeEventListener(EventTypes.page, onPage);
-
-    super.dispose();
-  }
-
-  @override
-  onModelChange(WidgetModel model, {String? property, value})
-  {
-    // TODO missing setState?
-  }
 
   Widget buildPage(BuildContext context, int index)
   {
     return _pages[index];
   }
 
-  void onPage(Event event)
+  void page(dynamic page)
   {
-    if ((event.parameters != null) &&
-        (event.parameters!.containsKey('page'))) {
-      int page = _controller!.page!.toInt() + 1; // add 1 because page 1 is index 0
-      int initialPage = page;
-      int pages = widget.model.pages.length;
+    int currentPage = _controller!.page!.toInt() + 1;
+    int? pageNum = S.toInt(page);
+    int pages = widget.model.pages.length;
 
-      String to = event.parameters!['page']!;
-      if (to.toLowerCase() == "previous") {
-        page = page - 1;
-      } else if (to.toLowerCase() == "next") {
-        page = page + 1;
-      } else if (to.toLowerCase() == "first") {
-        page = 1;
-      } else if (to.toLowerCase() == "last") {
-        page = pages;
-      } else if (S.isNumber(to)) {
-        page = S.toInt(to)!;
+    if (pageNum == null && page is String) {
+      switch (page.trim().toLowerCase()) {
+        case 'previous':
+          pageNum = currentPage - 1;
+          if (pageNum < 1) pageNum = pages;
+          break;
+        case 'next':
+          pageNum = currentPage + 1;
+          if (pageNum > pages) pageNum = 1;
+          break;
+        case 'first':
+          pageNum = 1;
+          break;
+        case 'last':
+          pageNum = pages;
+          break;
+        default:
+          break;
       }
+    }
 
-      if (pages == 0) {
-        event.handled = true;
-        return;
-      }
+    pageNum ??= 1;
 
-      if (page > pages) page = 1;
-      if (page < 1) page = pages;
-      int diff = (initialPage - page).abs();
-      if (diff > 9) _controller!.jumpToPage(page - 1);
-      _controller!.animateToPage(page - 1, duration: Duration(milliseconds: diff * 150), curve: Curves.easeInOutQuad);
-
-      event.handled = true;
+    if (pageNum > pages) pageNum = 1;
+    if (pageNum < 1) pageNum = pages;
+    int diff = (currentPage - pageNum).abs();
+    if (diff > 9) {
+      _controller!.jumpToPage(pageNum - 1);
+    } else {
+      _controller!.animateToPage(pageNum - 1, duration: Duration(milliseconds: diff * 150), curve: Curves.easeInOutQuad);
     }
   }
 

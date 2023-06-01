@@ -522,6 +522,8 @@ class _ChartViewState extends WidgetState<ChartView>
     if (nonBarSeries == null) {
       // Exclusively BarSeries
       pureBar = true;
+      // pureBar charts must have String values on X Axis
+      widget.model.xaxis.type = ChartAxisType.category;
     }
     // Loop through each series
     for (ChartSeriesModel series in widget.model.series) {

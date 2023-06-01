@@ -85,6 +85,7 @@ class _MapViewState extends WidgetState<MapView>
           zoom: zoom,
           minZoom: 1,
           maxZoom: 20,
+          adaptiveBoundaries: true,
           //bounds: LatLngBounds(
           //  LatLng(51.74920, -0.56741),
           //  LatLng(51.25709, 0.34018),
@@ -128,7 +129,8 @@ class _MapViewState extends WidgetState<MapView>
           var height = marker.height ?? 20;
           if (height < 5 || height > 200) height = 20;
 
-          markers.add(Marker(point: LatLng(marker.latitude!,  marker.longitude!), width: width, height: height, builder: (context) => _markerBuilder(marker.children)));
+          var m = Marker(point: LatLng(marker.latitude!,  marker.longitude!), width: width, height: height, builder: (context) => _markerBuilder(marker));
+          markers.add(m);
         }
       }
     }
@@ -138,12 +140,12 @@ class _MapViewState extends WidgetState<MapView>
 
   }
 
-  Widget _markerBuilder(List<WidgetModel>? children)
+  Widget _markerBuilder(MapMarkerModel model)
   {
     // build the child views
-    List<Widget> children = widget.model.inflate();
+    List<Widget> children = model.inflate();
 
-    Widget child = FlutterLogo();
+    Widget child = Icon(Icons.location_on_outlined, color: Colors.red);
     if (children.length == 1) child = children.first;
     if (children.length >  1) child = Column(children: children);
     return child;

@@ -7,11 +7,11 @@ import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/phrase.dart';
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
 import 'package:validators/validators.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/hive/form.dart' as hive_form;
@@ -21,21 +21,15 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
 abstract class IForm {
-  ///
   // Dirty
-  ///
   bool? get dirty;
   set dirty(bool? b);
   BooleanObservable? get dirtyObservable;
 
-  ///
   // Clean
-  ///
   set clean(bool b);
 
-  //
   // Routines
-  //
   Future<bool> save();
   Future<bool> complete();
   Future<bool> onComplete(BuildContext context);
@@ -43,7 +37,11 @@ abstract class IForm {
 
 enum StatusCodes { incomplete, complete }
 
-class FormModel extends DecoratedWidgetModel {
+class FormModel extends BoxModel
+{
+  @override
+  String get layout => super.layout ?? "column";
+
   List<IFormField> fields = [];
 
   List<IForm> forms = [];
@@ -277,7 +275,10 @@ class FormModel extends DecoratedWidgetModel {
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml) {
+  void deserialize(XmlElement? xml)
+  {
+    if (xml == null) return;
+
     // deserialize
     super.deserialize(xml);
 

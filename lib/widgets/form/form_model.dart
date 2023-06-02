@@ -831,8 +831,6 @@ class FormModel extends DecoratedWidgetModel {
       if (field.alarming!) {
         //tell the form that validation has been hit
         field.validationHasHit = true;
-        //set the fields error state to sound
-        field.error = true;
         alarming ??= [];
         //add the field to the forms list of alarms
         alarming.add(field);

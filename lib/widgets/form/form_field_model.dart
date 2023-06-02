@@ -169,8 +169,6 @@ class FormFieldModel extends DecoratedWidgetModel {
 
   String? get errortext => _errortext?.get();
 
-
-
   /// The error message value of a form field.
   StringObservable? _alarmerrortext;
   set alarmerrortext(dynamic v) {
@@ -415,10 +413,21 @@ class FormFieldModel extends DecoratedWidgetModel {
 
   //Return the error state between the alarm and the error set on the model
   bool returnErrorState() {
-    if (alarmerror == true) return true;
-    if (error == true) return true;
-    if (systemerror == true) return true;
-    return false;
+    if (alarmerror == true) {
+      alarming = true;
+      return true;
+    }
+      else if (error == true) {
+        alarming = true;
+        return true;
+      }
+      else if (systemerror == true) {
+        alarming = true;
+        return true;
+      } else {
+      alarming = false;
+      return false;
+    }
   }
 
 

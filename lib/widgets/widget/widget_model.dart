@@ -551,14 +551,17 @@ class WidgetModel implements IDataSourceListener {
         break;
 
       case "item":
-        if (parent is MenuModel) {
-          model = MenuItemModel.fromXml(parent, node);
+        if (parent is GridModel) {
+          model = GridItemModel.fromXml(parent, node);
         }
         if (parent is ListModel) {
           model = ListItemModel.fromXml(parent, node);
         }
-        if (parent is GridModel) {
-          model = GridItemModel.fromXml(parent, node);
+        if (parent is MenuModel) {
+          model = MenuItemModel.fromXml(parent, node);
+        }
+        if (parent is PopoverModel) {
+          model = PopoverItemModel.fromXml(parent, node);
         }
         break;
 

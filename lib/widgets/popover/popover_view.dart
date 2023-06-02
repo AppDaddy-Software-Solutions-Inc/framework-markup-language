@@ -50,7 +50,7 @@ class _PopoverViewState extends WidgetState<PopoverView>
                         Theme.of(context).colorScheme.inverseSurface),
                       widget.model.label != null ? Text(widget.model.label!, style: TextStyle(
                         color: widget.model.color ?? Theme.of(context).colorScheme.onBackground,
-                        fontSize: 11,
+                        fontSize: 10,
                         fontWeight: FontWeight.w400,
                         fontStyle: FontStyle.normal,
                       )) : Offstage(),

@@ -1,4 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:fml/data/data.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -13,10 +15,10 @@ import 'package:fml/helper/common_helpers.dart';
 class PopoverModel extends DecoratedWidgetModel implements IModelListener
 {
   List<PopoverItemModel> items = [];
+  // prototype
+  String? prototype;
 
-  ///////////
-  /* label */
-  ///////////
+  // label
   StringObservable? _label;
   set label (dynamic v)
   {
@@ -34,9 +36,7 @@ class PopoverModel extends DecoratedWidgetModel implements IModelListener
     return _label?.get();
   }
 
-  //////////
-  /* icon */
-  //////////
+  // icon
   IconObservable? _icon;
   set icon (dynamic v)
   {
@@ -91,22 +91,66 @@ class PopoverModel extends DecoratedWidgetModel implements IModelListener
     label   = Xml.get(node: xml, tag: 'label');
     icon    = Xml.get(node: xml, tag: 'icon');
 
-    /////////////////
-    /* Build Items */
-    /////////////////
-    Iterable<XmlElement> nodes = xml.findElements("ITEM", namespace: "*");
-      for (XmlElement node in nodes) {
-        var item = PopoverItemModel.fromXml(this, node);
-        if (item != null) {
-          item.registerListener(this);
-          items.add(item);
-        }
+    // dispose of old items
+    for(PopoverItemModel i in items) {
+      i.dispose();
+    }
+    items.clear();
+
+    // Get Items from XML
+    List<PopoverItemModel> popoverItems = findChildrenOfExactType(PopoverItemModel).cast<PopoverItemModel>();
+
+    // build datasource popover items
+    if (!S.isNullOrEmpty(datasource) && popoverItems.isNotEmpty) {
+      prototype = S.toPrototype(popoverItems[0].element.toString());
+      popoverItems.removeAt(0);
+    }
+
+    // add models
+    for (PopoverItemModel model in popoverItems) {
+      items.add(model);
+    }
+  }
+
+  @override
+  Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async
+  {
+    busy = true;
+
+    // build options
+    int i = 0;
+    if ((list != null))
+    {
+      // clear items
+      for (var item in items) {
+        item.dispose();
       }
+      items.clear();
+
+      for (var row in list) {
+        XmlElement? prototype = S.fromPrototype(this.prototype, "$id-${i++}");
+        var model = PopoverItemModel.fromXml(parent, prototype, data: row);
+        if (model != null) items.add(model);
+      }
+
+      notifyListeners('list', items);
+    }
+
+    busy = false;
+
+    return true;
   }
 
   @override
   dispose() {
     // Log().debug('dispose called on => <$elementName id="$id">');
+
+    // clear items
+    for (var item in items) {
+      item.dispose();
+    }
+    items.clear();
+
     super.dispose();
   }
 

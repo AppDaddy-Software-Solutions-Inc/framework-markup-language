@@ -117,8 +117,6 @@ class ListItemModel extends DecoratedWidgetModel
   }
   String? get title => _title?.get();
 
-  bool selected = false;
-
   ListItemModel(WidgetModel parent, String?  id, {dynamic data, this.type, dynamic backgroundcolor, dynamic margin}) : super(parent, id, scope: Scope(parent: parent.scope))
   {
     this.data             = data;

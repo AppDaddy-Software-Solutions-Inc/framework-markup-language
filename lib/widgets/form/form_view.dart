@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:fml/dialog/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/phrase.dart';
+import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:fml/widgets/pager/page/page_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
@@ -115,43 +116,24 @@ class FormViewState extends WidgetState<FormView> implements IGpsListener {
   }
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints) {
-    // save system constraints
-    onLayout(constraints);
-
+  Widget build(BuildContext context)
+  {
     // Check if widget is visible before wasting resources on building it
-    if ((widget.model.children == null) || ((!widget.model.visible))) {
-      return Offstage();
-    }
-
-    // build child views
-    List<Widget> children = widget.model.inflate();
-    if (children.isEmpty) children.add(Container());
+    if (!widget.model.visible) return Offstage();
 
     // Center
-    dynamic view = children.length == 1
-        ? children[0]
-        : Column(
-            children: children,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max);
+    Widget view = BoxView(widget.model);
 
     // Close Keyboard
     //final gesture = GestureDetector(onTap: () => WidgetModel.unfocus(), child: view);
 
-    // Detect Exit
-    final willpop = WillPopScope(onWillPop: quit, child: view);
-
     /// Busy / Loading Indicator
-    busy ??= BusyView(BusyModel(widget.model,
-        visible: widget.model.busy, observable: widget.model.busyObservable));
+    busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
 
-    view = Stack(children: [willpop, Center(child: busy)]);
+    // stack gets the same size as the view when busy is positioned rather than center
+    view = WillPopScope(onWillPop: quit, child: Stack(children: [view, Positioned(child: busy!, left: 0, right: 0, top:0, bottom: 0)]));
 
     // apply user defined constraints
-    return applyConstraints(view, widget.model.constraints);
+    return view;
   }
 }

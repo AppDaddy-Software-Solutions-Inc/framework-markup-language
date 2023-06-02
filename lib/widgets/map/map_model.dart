@@ -158,7 +158,7 @@ class MapModel extends DecoratedWidgetModel
         prototypes[model.datasource]!.add(prototype);
 
         // register listener to the models datasource
-        IDataSource? source = (scope != null) ? scope!.getDataSource(model.datasource) : null;
+        IDataSource? source = scope?.getDataSource(model.datasource);
         if (source != null) source.register(this);
       }
 

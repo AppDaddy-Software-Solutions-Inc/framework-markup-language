@@ -251,7 +251,7 @@ class Observable
 
         else if (this is! StringObservable && bindings!.length == 1 && signature != null && signature!.replaceFirst(binding.signature, "").trim().isEmpty)
         {
-          value = source?.get();
+          value = v ?? source?.get();
           break;
         }
 

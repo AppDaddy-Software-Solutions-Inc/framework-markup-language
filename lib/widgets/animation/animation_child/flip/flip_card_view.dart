@@ -170,14 +170,14 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
     //this is done likely wrong. We need to find each element of type, not sure if getting the view here is any good
 
      frontWidget = widget.child;
-    if(_animation.value <= 0.5) {
+    if(_animation.value <= 0.5 && frontWidget.model.children.length >= 2) {
       frontWidget.model.children
           .elementAt(0)
           .visible = false;
       frontWidget.model.children
           .elementAt(1)
           .visible = true;
-    } else {
+    } else if (frontWidget.model.children.length >= 2){
     frontWidget.model.children
         .elementAt(0)
         .visible = true;

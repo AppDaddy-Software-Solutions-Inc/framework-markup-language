@@ -216,21 +216,21 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
       parent: _controller,
     ));
     _xTranslateAnimation = Tween<double>(
-      begin: S.toDouble(translateFrom?.elementAt(0)) ?? 0,
+      begin: S.toDouble(translateFrom.elementAt(0)) ?? 0,
       end: S.toDouble(translateTo.elementAt(0)) ?? 0,
     ).animate(CurvedAnimation(
       curve: curve,
       parent: _controller,
     ));
     _yTranslateAnimation = Tween<double>(
-      begin: S.toDouble(translateFrom?.elementAt(1)) ?? 0,
+      begin: S.toDouble(translateFrom.elementAt(1)) ?? 0,
       end: S.toDouble(translateTo.elementAt(1)) ?? 0,
     ).animate(CurvedAnimation(
       curve: curve,
       parent: _controller,
     ));
     _zTranslateAnimation = Tween<double>(
-      begin: S.toDouble(translateFrom?.elementAt(2)) ?? 0,
+      begin: S.toDouble(translateFrom.elementAt(2)) ?? 0,
       end: S.toDouble(translateTo.elementAt(2)) ?? 0,
     ).animate(CurvedAnimation(
       curve: curve,

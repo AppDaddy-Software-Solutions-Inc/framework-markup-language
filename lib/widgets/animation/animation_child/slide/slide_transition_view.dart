@@ -138,11 +138,20 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
       _defaultFrom = [0, -1];
     }
 
+
+
     // Tween
-    List<String>? from = widget.model.from?.split(",");
+    List<String> from = widget.model.from?.split(",") ?? [];
+    if(from.isEmpty){
+      from.add("-1");
+      from.add("0");
+    } else if (from.length < 2) {
+      from.add("-1");
+    }
+
     Offset fromOffset = Offset(
-        S.toDouble(from?.elementAt(0)) ?? _defaultFrom[0],
-        S.toDouble(from?.elementAt(1)) ?? _defaultFrom[1]);
+        S.toDouble(from.elementAt(0)) ?? _defaultFrom[0],
+        S.toDouble(from.elementAt(1)) ?? _defaultFrom[1]);
     List<String>? to = widget.model.to.split(",");
     Offset toOffset = Offset(
         S.toDouble(to.elementAt(0)) ?? 0, S.toDouble(to.elementAt(1)) ?? 0);

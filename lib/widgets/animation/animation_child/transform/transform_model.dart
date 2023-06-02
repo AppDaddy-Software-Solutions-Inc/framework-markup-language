@@ -40,7 +40,7 @@ class TransformModel extends AnimationChildModel
     }
   }
 
-  String get rotateTo => _rotateTo?.get() ?? "0, 0";
+  String get rotateTo => _rotateTo?.get() ?? "0,0";
 
 
   StringObservable? _translateFrom;

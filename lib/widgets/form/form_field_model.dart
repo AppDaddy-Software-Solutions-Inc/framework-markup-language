@@ -340,13 +340,7 @@ class FormFieldModel extends DecoratedWidgetModel {
     // The errorobservable from the alarm is the value of the alarms error atrribute.
     bool alarmSounding = errorObservable.get();
     AlarmModel? currentAlarm = _alarms[sourceid];
-    // String? triggerType = currentAlarm?.alarmtrigger;
 
-    // set the error if the trigger type is not validation based, or if validation has already been hit
-    // if (triggerType != "validate" || validationHasHit == true)
-    // {
-    //
-    // }
     // turn off the validation state if the alarm has been dismissed to require a validation per alarm sounding
     if (validationHasHit == true && !alarmerror) validationHasHit = false;
 

@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "co.appdaddy" "\0"
-            VALUE "FileDescription", "fml" "\0"
+            VALUE "FileDescription", "flutter_markup_language" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "fml" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2022 co.appdaddy. All rights reserved." "\0"
-            VALUE "OriginalFilename", "fml.exe" "\0"
-            VALUE "ProductName", "fml" "\0"
+            VALUE "InternalName", "flutter_markup_language" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2023 co.appdaddy. All rights reserved." "\0"
+            VALUE "OriginalFilename", "flutter_markup_language.exe" "\0"
+            VALUE "ProductName", "flutter_markup_language" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

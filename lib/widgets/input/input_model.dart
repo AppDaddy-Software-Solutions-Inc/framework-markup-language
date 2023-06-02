@@ -89,7 +89,7 @@ class InputModel extends DecoratedInputModel implements IFormField {
     }
   }
 
-  bool get obscure => _obscure?.get() ?? false;
+  bool? get obscure => _obscure?.get();
 
   /// the value of the input. If not set to "" initially, the value will not be settable through events.
   StringObservable? _value;

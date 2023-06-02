@@ -30,6 +30,11 @@ abstract class IFormField
   bool? get mandatory;
   set mandatory (dynamic v);
 
+  // field is required
+  String? get systemerrortext;
+  set systemerrortext (dynamic v);
+
+
   // field has been manually updated
   bool? touched = false;
 
@@ -55,8 +60,6 @@ abstract class IFormField
   // set the field answer
   Future<bool> answer(dynamic value);
 
-  // field alarm state
-  String? get alarm;
   bool? get alarming;
 
   bool? get hasDefaulted;

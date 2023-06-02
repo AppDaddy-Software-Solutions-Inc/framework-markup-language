@@ -136,16 +136,6 @@ class FormFieldModel extends DecoratedWidgetModel {
   /// [Alarm]s based on validation checks
   final Map<String?, AlarmModel> _alarms = {};
 
-  StringObservable? _alarm;
-  set alarm(dynamic v) {
-    if (_alarm != null) {
-      _alarm!.set(v);
-    } else {
-      _alarm = StringObservable(Binding.toKey(id, 'alarm'), v, scope: scope);
-    }
-  }
-
-  String? get alarm => _alarm?.get();
 
   /// If the field will display its error state.
   BooleanObservable? _error;
@@ -163,6 +153,9 @@ class FormFieldModel extends DecoratedWidgetModel {
   /// If an alarm is going off, seperate from the error field as to not override it.
   bool alarmerror = false;
 
+  bool systemerror = false;
+
+
   /// The error message value of a form field.
   StringObservable? _errortext;
   set errortext(dynamic v) {
@@ -176,8 +169,31 @@ class FormFieldModel extends DecoratedWidgetModel {
 
   String? get errortext => _errortext?.get();
 
-  /// the alarm that is going off's error text. As to not override errortext.
-  String? alarmerrortext;
+  /// The error message value of a form field.
+  StringObservable? _alarmerrortext;
+  set alarmerrortext(dynamic v) {
+    if (_alarmerrortext != null) {
+      _alarmerrortext!.set(v);
+    } else if (v != null) {
+      _alarmerrortext = StringObservable(Binding.toKey(id, 'alarmerrortext'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  String? get alarmerrortext => _alarmerrortext?.get();
+
+  /// The system level error text of the fields.
+  StringObservable? _systemerrortext;
+  set systemerrortext(dynamic v) {
+    if (_systemerrortext != null) {
+      _systemerrortext!.set(v);
+    } else if (v != null) {
+      _systemerrortext = StringObservable(Binding.toKey(id, 'systemerrortext'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  String? get systemerrortext => _systemerrortext?.get();
 
   /// True if there is an alarm sounding on a [iFormField]
   BooleanObservable? _alarming;
@@ -240,21 +256,25 @@ class FormFieldModel extends DecoratedWidgetModel {
 
   FormFieldModel(WidgetModel? parent, String? id,
       {
-      dynamic error,
-      dynamic errortext,
-      dynamic validationHasHit,
-      dynamic hasDefaulted,
-      dynamic editable,
+        dynamic error,
+        dynamic errortext,
+        dynamic validationHasHit,
+        dynamic hasDefaulted,
+        dynamic editable,
         dynamic enabled,
         dynamic post,
         dynamic mandatory,
         dynamic onchange,
         dynamic onfocuslost,
         dynamic touched,
+        dynamic alarmerrortext,
+        dynamic systemerrortext,
       })
       : super(parent, id) {
     if (error != null) this.error = error;
     if (errortext != null) this.errortext = errortext;
+    if (alarmerrortext != null) this.alarmerrortext = alarmerrortext;
+    if (systemerrortext != null) this.systemerrortext = systemerrortext;
     if (editable != null) this.editable = editable;
     if (enabled != null) this.enabled = enabled;
     if (post != null) this.post = post;
@@ -303,29 +323,24 @@ class FormFieldModel extends DecoratedWidgetModel {
     // The errorobservable from the alarm is the value of the alarms error atrribute.
     bool alarmSounding = errorObservable.get();
     AlarmModel? currentAlarm = _alarms[sourceid];
-    String? triggerType = currentAlarm?.alarmtrigger;
 
-    // set the error if the trigger type is not validation based, or if validation has already been hit
-    if (triggerType != "validate" || validationHasHit == true)
-    {
-      error = alarmSounding;
-    }
     // turn off the validation state if the alarm has been dismissed to require a validation per alarm sounding
-    if (validationHasHit == true && !error) validationHasHit = false;
+    if (validationHasHit == true && !alarmerror) validationHasHit = false;
 
     // check to see if an alarm is already sounding and ensure the field is not alarming already
-    if (alarmSounding && !alarming) {
+    if (alarmSounding) {
+      alarmerror = alarmSounding;
       alarmerrortext = currentAlarm?.errortext;
-      alarming = true;
+     // alarming = true;
       // execute the onalarm event string if the error state is active, this will not activate if validate is the type until validation happens.
-      if (error) currentAlarm?.executeAlarmString(true);
+      if (alarmerror) currentAlarm?.executeAlarmString(true);
       // tell the field which alarm has set its alarm state, this prevents multiple alarms
       didSetAlarm = sourceid ?? '';
     }
     // check that the changed alarm has set the alarming state, and that the alarm is not sounding
     else if (!alarmSounding && didSetAlarm == sourceid) {
       // set the alarming state to false
-      alarming = false;
+      alarmerror = alarmSounding;
       // execute the ondismiss event string
       currentAlarm?.executeAlarmString(false);
     }
@@ -343,6 +358,11 @@ class FormFieldModel extends DecoratedWidgetModel {
   }
 
   Future<bool> onChange(BuildContext? context) async {
+    //set alarming to false when the value is updated
+    if(value != null && !S.isNullOrEmpty(systemerrortext) && error == true){
+      error = false;
+      systemerrortext = null;
+    }
     return await EventHandler(this).execute(_onchange);
   }
 
@@ -393,44 +413,37 @@ class FormFieldModel extends DecoratedWidgetModel {
 
   //Return the error state between the alarm and the error set on the model
   bool returnErrorState() {
-    if (alarmerror == true) return true;
-    if (error == true) return true;
-    return false;
-  }
-
-  //set the field color based on the error state
-  Color setFieldColor(BuildContext context) {
-    if (enabled != false) {
-        return color ?? Theme
-            .of(context)
-            .colorScheme
-            .surfaceVariant;
-    } else {
-      return color ?? Theme
-          .of(context)
-          .colorScheme
-          .primary
-          .withOpacity(0.5);
+    if (alarmerror == true) {
+      alarming = true;
+      return true;
     }
-  }
-
-  //set the field color based on the error state
-  Color setErrorHintColor(BuildContext context) {
-    if (enabled != false) {
-      if(returnErrorState()) {
-        return Theme.of(context).colorScheme.error;
-      } else {
-        return color ?? Theme
-            .of(context)
-            .colorScheme
-            .surfaceVariant;
+      else if (error == true) {
+        alarming = true;
+        return true;
       }
-    } else {
-      return color ?? Theme.of(context).colorScheme.primary.withOpacity(0.5);
+      else if (systemerror == true) {
+        alarming = true;
+        return true;
+      } else {
+      alarming = false;
+      return false;
     }
   }
 
 
+  // return the correct combination of error and errotext based on the alarm vs the error.
+  String? returnErrorText() {
+    if(systemerrortext != null){
+      return systemerrortext;
+    } else if (!S.isNullOrEmpty(alarmerrortext) && alarmerror == true) {
+       return alarmerrortext;
+    } else if (!S.isNullOrEmpty(errortext) && error == true) {
+      return errortext!;
+    }
+    return null;
+  }
+
+  //this stays here as it is used by checkbox and radio
   Color setErrorBorderColor(BuildContext context, Color? borderColor) {
     if (enabled != false) {
       if(returnErrorState()) {
@@ -444,34 +457,6 @@ class FormFieldModel extends DecoratedWidgetModel {
     } else {
       return color ?? Theme.of(context).colorScheme.primary.withOpacity(0.5);
     }
-  }
-
-  //set the field color based on the error state
-  Color setBorderColor(BuildContext context) {
-    if (enabled != false) {
-      if(returnErrorState()) {
-        return Theme.of(context).colorScheme.error.withOpacity(0.5);
-      } else {
-        return color ?? Theme
-            .of(context)
-            .colorScheme
-            .surfaceVariant;
-      }
-    } else {
-      return color ?? Theme.of(context).colorScheme.primary.withOpacity(0.5);
-    }
-  }
-
-  // return the correct combination of error and errotext based on the alarm vs the error.
-  String returnErrorText() {
-    if (!S.isNullOrEmpty(alarmerrortext) && alarmerror == true) {
-      return alarmerrortext!;
-    }
-    if (!S.isNullOrEmpty(errortext) && error == true) return errortext!;
-    if (error == true || alarmerror == true) {
-      return errortext ?? alarmerrortext ?? '';
-    }
-    return '';
   }
 
 

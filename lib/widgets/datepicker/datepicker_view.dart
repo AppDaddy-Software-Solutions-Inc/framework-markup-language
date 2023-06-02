@@ -76,6 +76,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
       widget.model.onChange(context);
     }
     cont!.text = widget.model.value;
+
     if (mounted) setState(() {});
   }
 
@@ -227,11 +228,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
                 color: widget.model.setErrorHintColor(context),
               ),
               counterText: "",
-              errorText: widget.model.error == true &&
-                  widget.model.errortext != 'null' &&
-                  widget.model.errortext != 'none'
-                  ? widget.model.errortext ?? ""
-                  : null,
+              errorText: widget.model.returnErrorText(),
               errorStyle: TextStyle(
                 fontSize: fontsize ?? 12,
                 fontWeight: FontWeight.w300,

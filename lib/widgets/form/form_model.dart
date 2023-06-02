@@ -777,6 +777,9 @@ class FormModel extends DecoratedWidgetModel {
       if ((isMandatory) && (!field.answered)) {
         missing ??= [];
         missing.add(field);
+        //set the error state of the field and update the error message
+        field.systemerrortext = "This Field is Mandatory";
+        field.error = true;
       }
     }
     return missing;
@@ -789,7 +792,7 @@ class FormModel extends DecoratedWidgetModel {
 
     if ((scope != null) && (data != null)) {
       //for a single datasource grab the scope
-      IDataSource? source = scope!.getDataSource(data);
+      IDataSource? source = scope!.getDataSource(data[0]);
       if (source != null) {
         // start the datasource
         ok = await source.start();
@@ -828,8 +831,6 @@ class FormModel extends DecoratedWidgetModel {
       if (field.alarming!) {
         //tell the form that validation has been hit
         field.validationHasHit = true;
-        //set the fields error state to sound
-        field.error = true;
         alarming ??= [];
         //add the field to the forms list of alarms
         alarming.add(field);

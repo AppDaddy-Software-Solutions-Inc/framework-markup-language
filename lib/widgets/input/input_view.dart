@@ -140,10 +140,10 @@ class _InputViewState extends WidgetState<InputView>
   onModelChange(WidgetModel model, {String? property, dynamic value}) {
     // ensure we don't call setstate if the model update was entered via
     // keyboard by comparing the controller to the callback's value
+
+
     var b = Binding.fromString(property);
-    if (mounted &&
-        ((widget.model.controller?.text != value && b?.property == 'value') ||
-            b?.property != 'value')) {
+    if (mounted && ((widget.model.controller?.text != value && b?.property == 'value') || b?.property != 'value')) {
       setState(() {
         // This places the cursor at the end of the selection when focussed.
         // This must be after the text is set to the models value. - 7eaae252 - IO
@@ -159,6 +159,8 @@ class _InputViewState extends WidgetState<InputView>
                   TextPosition(offset: oldcursorPos)));
         }
       });
+    } else {
+
     }
   }
 
@@ -285,6 +287,7 @@ class _InputViewState extends WidgetState<InputView>
   }
 
   Future<bool> _commit({bool passDebounce = true}) async {
+
     if (widget.model.editable == false) {
       oldValue = widget.model.value;
       return true;
@@ -708,11 +711,7 @@ class _InputViewState extends WidgetState<InputView>
             fontWeight: FontWeight.w300,
             color: errorTextColor,
           ),
-          errorText: widget.model.error == true &&
-              widget.model.errortext != 'null' &&
-              widget.model.errortext != 'none'
-              ? errorText ?? ""
-              : null,
+          errorText: widget.model.returnErrorText(),
           hintText: widget.model.dense ? hint : null,
           hintStyle: TextStyle(
             fontSize: fontsize ?? 14,

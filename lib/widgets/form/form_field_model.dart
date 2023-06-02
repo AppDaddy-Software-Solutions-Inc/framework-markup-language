@@ -184,19 +184,6 @@ class FormFieldModel extends DecoratedWidgetModel {
 
   String? get alarmerrortext => _alarmerrortext?.get();
 
-  /// The combined error text of the fields.
-  StringObservable? _returnederrortext;
-  set returnederrortext(dynamic v) {
-    if (_returnederrortext != null) {
-      _returnederrortext!.set(v);
-    } else if (v != null) {
-      _returnederrortext = StringObservable(Binding.toKey(id, 'returnederrortext'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  String? get returnederrortext => _returnederrortext?.get();
-
   /// The system level error text of the fields.
   StringObservable? _systemerrortext;
   set systemerrortext(dynamic v) {
@@ -283,14 +270,12 @@ class FormFieldModel extends DecoratedWidgetModel {
         dynamic onfocuslost,
         dynamic touched,
         dynamic alarmerrortext,
-        dynamic returnederrortext,
         dynamic systemerrortext,
       })
       : super(parent, id) {
     if (error != null) this.error = error;
     if (errortext != null) this.errortext = errortext;
     if (alarmerrortext != null) this.alarmerrortext = alarmerrortext;
-    if (returnederrortext != null) this.returnederrortext = returnederrortext;
     if (systemerrortext != null) this.systemerrortext = systemerrortext;
     if (editable != null) this.editable = editable;
     if (enabled != null) this.enabled = enabled;

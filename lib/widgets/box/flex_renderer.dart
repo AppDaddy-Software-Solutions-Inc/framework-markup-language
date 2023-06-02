@@ -810,6 +810,8 @@ class FlexRenderer extends RenderBox
 
       case FlexType.fixed:
         maxWidth = myWidth(this,model) ?? 0;
+
+        //we check to see if the fixed type has a bounded width, as myWidth sets the maxWidth for expanding on the second pass incorrectly (disregarding the pad of the parent)
         if (constraints.hasBoundedWidth && constraints.maxWidth < maxWidth) maxWidth = constraints.maxWidth;
         break;
 
@@ -827,6 +829,8 @@ class FlexRenderer extends RenderBox
 
       case FlexType.fixed:
         maxHeight = myHeight(this,model) ?? 0;
+        //we check to see if the fixed type has a bounded height, as myHeight sets the maxWidth for expanding on the second pass incorrectly (disregarding the pad of the parent).
+        //This behavior can be seen when a box type column is set height with and expanding child and padding.
         if (constraints.hasBoundedHeight && constraints.maxHeight < maxHeight) maxHeight = constraints.maxHeight;
         break;
 

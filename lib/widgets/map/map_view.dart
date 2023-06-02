@@ -32,12 +32,13 @@ class _MapViewState extends WidgetState<MapView>
   final mapController = MapController();
   List<Marker> markers = [];
 
-  double? latitudeUpperBound;
-  double? longitudeUpperBound;
-  double? latitudeLowerBound;
-  double? longitudeLowerBound;
+  // top left coordinate
+  LatLng? tlLatLng;
 
-  /// Callback function for when the model changes, used to force a rebuild with setState()
+  // top right coordinate
+  LatLng? brLatLng;
+
+   /// Callback function for when the model changes, used to force a rebuild with setState()
   @override
   onModelChange(WidgetModel model,{String? property, dynamic value})
   {
@@ -45,11 +46,6 @@ class _MapViewState extends WidgetState<MapView>
     {
       var b = Binding.fromString(property);
       if (b?.property == 'busy') return;
-      if (property == 'busy') return;
-
-      if ((b?.property == 'latitude' || b?.property == 'longitude') && (widget.model.latitude != null && widget.model.longitude != null)) {
-        mapController.move(LatLng(widget.model.latitude!, widget.model.longitude!), widget.model.zoom);
-      }
       setState(() {});
     }
   }
@@ -60,12 +56,16 @@ class _MapViewState extends WidgetState<MapView>
       {
         // add map layers
         List<Widget> layers = [];
-        for (var url in widget.model.layers) {
+        for (var url in widget.model.layers)
+        {
           layers.add(TileLayer(urlTemplate: url, userAgentPackageName: 'fml.dev'));
         }
 
         // default layer is openstreets
-        if (widget.model.layers.isEmpty) layers.add(TileLayer(urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png", userAgentPackageName: 'fml.dev'));
+        if (widget.model.layers.isEmpty)
+        {
+          layers.add(TileLayer(urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png", userAgentPackageName: 'fml.dev'));
+        }
 
         // add markers
         layers.add(MarkerLayer(markers: markers));
@@ -73,26 +73,57 @@ class _MapViewState extends WidgetState<MapView>
         // center point
         LatLng? center;
         if (widget.model.latitude != null && widget.model.longitude != null) center = LatLng(widget.model.latitude!, widget.model.longitude!);
+        if (tlLatLng != null)
+        {
+          center = tlLatLng;
+        }
 
         // zoom level
         double zoom = 16.0;
-        if (widget.model.zoom > 0) zoom = widget.model.zoom;
+        if (widget.model.zoom > 0)
+        {
+          zoom = widget.model.zoom;
+        }
+
+        LatLngBounds? bounds;
+        if (center == null && tlLatLng != null && brLatLng != null)
+        {
+          bounds = LatLngBounds(tlLatLng, brLatLng);
+        }
 
         // map options
         MapOptions options = MapOptions(
           keepAlive: true,
-          center: center,
           zoom: zoom,
           minZoom: 1,
           maxZoom: 20,
-          //bounds: LatLngBounds(
-          //  LatLng(51.74920, -0.56741),
-          //  LatLng(51.25709, 0.34018),
-          //),
+          slideOnBoundaries: true,
+          center: center,
+          bounds: bounds,
           maxBounds: LatLngBounds(LatLng(-90, -180.0), LatLng(90.0, 180.0)));
 
         // map
-        return FlutterMap(mapController: mapController, children: layers, options: options);
+        var map = FlutterMap(mapController: mapController, children: layers, options: options);
+
+        // center the map
+        if (center != null)
+        {
+          WidgetsBinding.instance.addPostFrameCallback((_)
+          {
+            mapController.move(center!,zoom);
+          });
+        }
+
+        // center the map
+        else if (bounds != null)
+        {
+          WidgetsBinding.instance.addPostFrameCallback((_)
+          {
+            mapController.centerZoomFitBounds(bounds!,options: FitBoundsOptions(padding: EdgeInsets.all(10)));
+          });
+        }
+
+        return map;
       }
       catch(e)
       {
@@ -101,21 +132,18 @@ class _MapViewState extends WidgetState<MapView>
       return null;
   }
 
+  LatLngBounds? markerBounds;
+  
   void _buildMarkers() async
   {
-    try {
-      ///////////////////
-      /* Clear Markers */
-      ///////////////////
+    try 
+    {
+      //Clear Markers
       markers.clear();
 
-      //////////////////
-      /* Reset Bounds */
-      //////////////////
-      latitudeUpperBound  = null;
-      latitudeLowerBound  = null;
-      longitudeUpperBound = null;
-      longitudeLowerBound = null;
+      //Reset Bounds
+      tlLatLng = null;
+      brLatLng = null;
 
       // build markers
       for (MapMarkerModel marker in widget.model.markers)
@@ -128,22 +156,48 @@ class _MapViewState extends WidgetState<MapView>
           var height = marker.height ?? 20;
           if (height < 5 || height > 200) height = 20;
 
-          markers.add(Marker(point: LatLng(marker.latitude!,  marker.longitude!), width: width, height: height, builder: (context) => _markerBuilder(marker.children)));
+          double lat = marker.latitude!;
+          double lon = marker.longitude!;
+
+          var point = tlLatLng == null ? LatLng(lat, lon) : tlLatLng!;
+          if (point.latitude > lat)
+          {
+            point.latitude = lat;
+          }
+          if (point.longitude > lon)
+          {
+            point.longitude = lon;
+          }
+          tlLatLng = point;
+
+          point = brLatLng == null ? LatLng(lat, lon) : brLatLng!;
+          if (point.latitude > lat)
+          {
+            point.latitude = lat;
+          }
+          if (point.longitude < lon)
+          {
+            point.longitude = lon;
+          }
+          brLatLng = point;
+
+          var m = Marker(point: LatLng(marker.latitude!,  marker.longitude!), width: width, height: height, builder: (context) => _markerBuilder(marker));
+          markers.add(m);
         }
       }
     }
-    catch(e) {
+    catch(e)
+    {
       Log().debug('$e');
     }
-
   }
 
-  Widget _markerBuilder(List<WidgetModel>? children)
+  Widget _markerBuilder(MapMarkerModel model)
   {
     // build the child views
-    List<Widget> children = widget.model.inflate();
+    List<Widget> children = model.inflate();
 
-    Widget child = FlutterLogo();
+    Widget child = Icon(Icons.location_on_outlined, color: Colors.red);
     if (children.length == 1) child = children.first;
     if (children.length >  1) child = Column(children: children);
     return child;
@@ -170,7 +224,7 @@ class _MapViewState extends WidgetState<MapView>
     var map = _buildMap();
     if (map != null) children.insert(0, map);
 
-    /// Busy / Loading Indicator
+     // Busy / Loading Indicator
     busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
 
     // add busy

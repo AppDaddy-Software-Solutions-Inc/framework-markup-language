@@ -372,11 +372,11 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     var viewportHeight = constraints.maxHeight;
     var usedHeight     = (header?.height ?? 0) + (footer?.height ?? 0) + safeArea;
 
-    var height = viewportHeight- usedHeight - (body.marginTop ?? 0) - (body.marginBottom ?? 0);
-    body.setHeight(height);
+    var height = viewportHeight - usedHeight - (body.marginTop ?? 0) - (body.marginBottom ?? 0);
+    //body.setHeight(height);
 
     var width = viewportWidth - (body.marginLeft ?? 0) - (body.marginRight ?? 0);
-    body.setWidth(width);
+    //body.setWidth(width);
 
     // build framework body
     Widget view = BoxView(body);
@@ -385,7 +385,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     // is wrapped in a Scroller
     if (body.findChildOfExactType(ScrollerModel) != null) view = NotificationListener<ScrollNotification>(onNotification: onScroll, child: view);
 
-    return SizedBox(child: view, width: body.width, height: body.height);
+    return SizedBox(child: view, width: width, height: height);
   }
 
   _setDeviceOrientation(String? orientation)

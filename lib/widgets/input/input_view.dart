@@ -366,7 +366,6 @@ class _InputViewState extends WidgetState<InputView>
         if (trimmed != old) await widget.model.onChange(context);
       }
     }
-    widget.model.returnederrortext = widget.model.returnErrorText();
     return true;
   }
 
@@ -712,7 +711,7 @@ class _InputViewState extends WidgetState<InputView>
             fontWeight: FontWeight.w300,
             color: errorTextColor,
           ),
-          errorText: widget.model.returnederrortext,
+          errorText: widget.model.returnErrorText(),
           hintText: widget.model.dense ? hint : null,
           hintStyle: TextStyle(
             fontSize: fontsize ?? 14,

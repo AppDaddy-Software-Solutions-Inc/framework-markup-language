@@ -142,10 +142,49 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
     double warp = (widget.model.warp ?? 15) / 10000;
     Curve curve = AnimationHelper.getCurve(widget.model.curve);
 
-    List<String>? rotateFrom = widget.model.rotateFrom?.split(",");
-    List<String>? rotateTo = widget.model.rotateTo.split(",");
-    List<String>? translateFrom = widget.model.translateFrom?.split(",");
-    List<String>? translateTo = widget.model.translateTo.split(",");
+    List<String?> rotateFrom = widget.model.rotateFrom?.split(",") ?? [];
+
+    if(rotateFrom.isEmpty){
+      rotateFrom.add("0");
+      rotateFrom.add("0");
+    } else if (rotateFrom.length < 2) {
+      rotateFrom.add("0");
+    }
+
+    List<String?> rotateTo = widget.model.rotateTo.split(",");
+
+    if(rotateTo.isEmpty){
+      rotateTo.add("0");
+      rotateTo.add("0");
+    } else if (rotateTo.length < 2) {
+      rotateTo.add("0");
+    }
+
+    List<String?> translateFrom = widget.model.translateFrom?.split(",") ?? [];
+
+    if(translateFrom.isEmpty){
+      translateFrom.add("0");
+      translateFrom.add("0");
+      translateFrom.add("0");
+    } else if (translateFrom.length < 2) {
+      translateFrom.add("0");
+      translateFrom.add("0");
+    } else if (translateFrom.length < 3) {
+      translateFrom.add("0");
+    }
+
+    List<String?> translateTo = widget.model.translateTo.split(",");
+
+    if(translateTo.isEmpty){
+      translateTo.add("0");
+      translateTo.add("0");
+      translateTo.add("0");
+    } else if (translateTo.length < 2) {
+      translateTo.add("0");
+      translateTo.add("0");
+    } else if (translateTo.length < 3) {
+      translateTo.add("0");
+    }
 
     //start, end, center
     Alignment align =
@@ -163,14 +202,14 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
     }
 
     _xAnimation = Tween<double>(
-      begin: S.toDouble(rotateFrom?.elementAt(0)) ?? 0,
+      begin: S.toDouble(rotateFrom.elementAt(0)) ?? 0,
       end: S.toDouble(rotateTo.elementAt(0)) ?? 0,
     ).animate(CurvedAnimation(
       curve: curve,
       parent: _controller,
     ));
     _yAnimation = Tween<double>(
-      begin: S.toDouble(rotateFrom?.elementAt(1)) ?? 0,
+      begin: S.toDouble(rotateFrom.elementAt(1)) ?? 0,
       end: S.toDouble(rotateTo.elementAt(1)) ?? 0,
     ).animate(CurvedAnimation(
       curve: curve,

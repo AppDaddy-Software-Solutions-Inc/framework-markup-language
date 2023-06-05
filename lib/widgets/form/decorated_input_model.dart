@@ -319,7 +319,7 @@ class DecoratedInputModel extends FormFieldModel {
   }
 
   //set the field color based on the error state
-  Color setErrorHintColor(BuildContext context) {
+  Color setErrorHintColor(BuildContext context, {Color? color}) {
     if (enabled != false) {
       if(returnErrorState()) {
         return Theme.of(context).colorScheme.error;
@@ -327,7 +327,7 @@ class DecoratedInputModel extends FormFieldModel {
         return color ?? Theme
             .of(context)
             .colorScheme
-            .surfaceVariant;
+            .onSurfaceVariant;
       }
     } else {
       return color ?? Theme.of(context).colorScheme.primary.withOpacity(0.5);

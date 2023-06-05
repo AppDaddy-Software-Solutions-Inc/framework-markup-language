@@ -307,11 +307,13 @@ class FormFieldModel extends DecoratedWidgetModel {
     onchange = Xml.get(node: xml, tag: 'onchange');
 
     // Build alarms
-    List<AlarmModel> alarms =
-        findChildrenOfExactType(AlarmModel).cast<AlarmModel>();
+    List<AlarmModel> alarms = findChildrenOfExactType(AlarmModel).cast<AlarmModel>();
+
     _alarms.clear();
-    for (var alarm in alarms) {
+    for (var alarm in alarms)
+    {
       _alarms[alarm.id] = alarm;
+
       //register a listener to always throw the alarm state when the value of the alarm changes if the alarm type is 'all'
       alarm.seterror?.registerListener(onAlarmChange);
     }

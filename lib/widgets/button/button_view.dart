@@ -26,6 +26,12 @@ class _ButtonViewState extends WidgetState<ButtonView>
   {
     var model = widget.model;
 
+    BorderRadius? radius = BorderRadius.only(
+        topRight: Radius.circular(widget.model.radiusTopRight),
+        bottomRight: Radius.circular(widget.model.radiusBottomRight),
+        bottomLeft: Radius.circular(widget.model.radiusBottomLeft),
+        topLeft: Radius.circular(widget.model.radiusTopLeft));
+
     if (model.buttontype == 'elevated') {
       return ElevatedButton.styleFrom(
           minimumSize:  Size(model.constraints.minWidth ?? 64, (model.constraints.minHeight ?? 0) + 40), //add 40 to the constraint as the width is offset by 40
@@ -33,7 +39,7 @@ class _ButtonViewState extends WidgetState<ButtonView>
           foregroundColor: Theme.of(context).colorScheme.onPrimary,
           disabledForegroundColor: Theme.of(context).colorScheme.onSurface,
           shadowColor: Theme.of(context).colorScheme.shadow,
-          shape: RoundedRectangleBorder(borderRadius: model.radius > 0 ? BorderRadius.all(Radius.circular(model.radius)) : BorderRadius.zero),
+          shape: RoundedRectangleBorder(borderRadius: radius),
           elevation: 3);
     }
 
@@ -71,9 +77,7 @@ class _ButtonViewState extends WidgetState<ButtonView>
     }) : null; // Defer to the widget
 
     var buttonShape = MaterialStateProperty.all(
-        RoundedRectangleBorder(borderRadius: widget.model.radius > 0 ?
-        BorderRadius.all(Radius.circular(widget.model.radius)) :
-        BorderRadius.zero));
+        RoundedRectangleBorder(borderRadius: radius));
 
     return ButtonStyle(
       minimumSize: MaterialStateProperty.all(

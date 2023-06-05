@@ -5,7 +5,7 @@ import 'package:fml/event/event.dart' ;
 import 'package:fml/event/handler.dart' ;
 import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/button/button_view.dart';
@@ -15,7 +15,7 @@ import 'package:fml/helper/common_helpers.dart';
 /// Button [ButtonModel]
 ///
 /// Defines the properties used to build a [BUTTON.ButtonView]
-class ButtonModel extends DecoratedWidgetModel 
+class ButtonModel extends BoxModel
 {
   /// [Event]s to execute when the button is clicked
   StringObservable? _onclick;
@@ -35,6 +35,8 @@ class ButtonModel extends DecoratedWidgetModel
     if (_onclick == null) return null;
     return _onclick?.get();
   }
+
+  final bool expandByDefault = false;
 
   /////////////
   /* onenter */
@@ -105,21 +107,6 @@ class ButtonModel extends DecoratedWidgetModel
     }
     return l;
   }
-
-  /// Corner radius
-  DoubleObservable? _radius;
-  set radius (dynamic v)
-  {
-    if (_radius != null)
-    {
-      _radius!.set(v);
-    }
-    else if (v != null)
-    {
-      _radius = DoubleObservable(Binding.toKey(id, 'radius'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  double get radius => _radius?.get() ?? 30;
 
 
   /// Type of button
@@ -217,7 +204,7 @@ class ButtonModel extends DecoratedWidgetModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
+  void deserialize(XmlElement? xml)
   {
 
     // deserialize 

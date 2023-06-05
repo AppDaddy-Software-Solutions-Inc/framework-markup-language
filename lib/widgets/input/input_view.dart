@@ -627,7 +627,7 @@ class _InputViewState extends WidgetState<InputView>
     // set the text color arrays
     Color? enabledTextColor = widget.model.textcolor;
     Color? disabledTextColor = Theme.of(context).disabledColor;
-    Color? hintTextColor =Theme.of(context).focusColor;
+    Color? hintTextColor = widget.model.textcolor?.withOpacity(0.7) ?? Theme.of(context).focusColor;
     Color? errorTextColor = Theme.of(context).colorScheme.error;
 
     double? fontsize = widget.model.size;
@@ -704,7 +704,24 @@ class _InputViewState extends WidgetState<InputView>
           labelText: widget.model.dense ? null : hint,
           labelStyle: TextStyle(
             fontSize: fontsize != null ? fontsize - 2 : 14,
-            color: widget.model.setErrorHintColor(context),
+            color: widget.model.setErrorHintColor(context, color: hintTextColor),
+            shadows: <Shadow>[
+              Shadow(
+                offset: Offset(0.0, 0.5),
+                blurRadius: 2.0,
+                color: widget.model.color ?? Colors.transparent
+              ),
+              Shadow(
+                  offset: Offset(0.0, 0.5),
+                  blurRadius: 2.0,
+                  color: widget.model.color ?? Colors.transparent
+              ),
+              Shadow(
+                  offset: Offset(0.0, 0.5),
+                  blurRadius: 2.0,
+                  color: widget.model.color ?? Colors.transparent
+              ),
+            ],
           ),
           errorStyle: TextStyle(
             fontSize: fontsize ?? 14,
@@ -716,7 +733,7 @@ class _InputViewState extends WidgetState<InputView>
           hintStyle: TextStyle(
             fontSize: fontsize ?? 14,
             fontWeight: FontWeight.w300,
-            color: widget.model.setErrorHintColor(context),
+            color: widget.model.setErrorHintColor(context, color: hintTextColor),
           ),
 
 

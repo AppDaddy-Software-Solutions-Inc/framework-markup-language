@@ -107,7 +107,7 @@ dependencies:
   # MIT
 
   # Updated 2023/01/30
-  flutter_typeahead: ^4.6.0
+  flutter_typeahead: ^4.6.1
   # BSD-2-Clause
 
   # Updated 2022/12/30

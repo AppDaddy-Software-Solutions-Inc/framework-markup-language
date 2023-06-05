@@ -76,24 +76,20 @@ class SplitViewState extends WidgetState<SplitView>
     GestureDetector(behavior: HitTestBehavior.opaque, onVerticalDragUpdate:  (DragUpdateDetails details) => _onDrag(details, constraints), child: Container(color: myDividerColor, child: SizedBox(width: constraints.maxWidth, height: myDividerWidth, child: MouseRegion(cursor: SystemMouseCursors.resizeUpDown,     child: Stack(children: [Positioned(top: -10, child: Icon(Icons.drag_handle, color: widget.model.dividerHandleColor))]))))) :
     GestureDetector(behavior: HitTestBehavior.opaque, onHorizontalDragUpdate: (DragUpdateDetails details) => _onDrag(details, constraints), child: Container(color: myDividerColor, child: SizedBox(width: myDividerWidth, height: constraints.maxHeight, child: MouseRegion(cursor: SystemMouseCursors.resizeLeftRight, child: RotationTransition(child: Icon(Icons.drag_handle, color: widget.model.dividerHandleColor), turns: AlwaysStoppedAnimation(.25))))));
 
-    return LayoutBoxChildData(child: view, model: BoxModel(null,null));
+    return LayoutBoxChildData(child: view, model: BoxModel(null,null,expandByDefault: false));
   }
 
-  Widget _constrainBox(BoxView box, BoxConstraints constraints, double ratio)
+  Widget _constrainBox(BoxView box, BoxConstraints constraints, int flex)
   {
     var direction = widget.model.vertical ? Axis.vertical : Axis.horizontal;
     switch (direction)
     {
       case Axis.horizontal:
-        var width = (constraints.maxWidth * ratio) - (widget.model.dividerWidth/2);
-        box.model.setWidth(width);
-        if (constraints.hasBoundedHeight) box.model.setHeight(constraints.maxHeight);
+        box.model.setFlex(flex);
         break;
 
       case Axis.vertical:
-        var height = (constraints.maxHeight * ratio) - (widget.model.dividerWidth/2);
-        box.model.setHeight(height);
-        if (constraints.hasBoundedWidth) box.model.setWidth(constraints.maxWidth);
+        box.model.setFlex(flex);
         break;
     }
     return LayoutBoxChildData(child: box, model: box.model);
@@ -105,42 +101,29 @@ class SplitViewState extends WidgetState<SplitView>
   List<Widget> inflate(BoxConstraints constraints)
   {
     // create box views
-    if (widget.boxes.isEmpty && widget.model.viewableChildren.isNotEmpty)
+    if (widget.boxes.isEmpty)
     {
       var views = widget.model.viewableChildren;
 
       Widget? view1;
       if (views.isNotEmpty) view1 = views.elementAt(0).getView();
-      if (view1 is BoxView)
-      {
-        widget.boxes.add(view1);
-      }
-      else
-      {
-        widget.boxes.add(_missingView);
-      }
+      widget.boxes.add(view1 is BoxView ? view1 : _missingView);
 
       Widget? view2;
       if (views.length > 1) view2 = views.elementAt(1).getView();
-      if (view2 is BoxView)
-      {
-        widget.boxes.add(view2);
-      }
-      else
-      {
-        widget.boxes.add(_missingView);
-      }
+      widget.boxes.add(view2 is BoxView ? view2 : _missingView);
     }
 
-    // calculate sizes
+    // ratio box1:box2. if 1, box 1 is 100% size
     var ratio = widget.model.ratio;
     if (ratio < 0) ratio = 0;
     if (ratio > 1) ratio = 1;
+    var flex = (ratio * 1000).ceil();
 
     List<Widget> list = [];
 
     // left/top pane
-    var box1 = _constrainBox(widget.boxes[0],constraints, ratio);
+    var box1 = _constrainBox(widget.boxes[0], constraints, flex);
     list.add(box1);
 
     // handle
@@ -148,7 +131,7 @@ class SplitViewState extends WidgetState<SplitView>
     list.add(handle);
 
     // right/bottom pane
-    var box2 = _constrainBox(widget.boxes[1],constraints, 1 - ratio);
+    var box2 = _constrainBox(widget.boxes[1], constraints, 1000 - flex);
     list.add(box2);
 
     return list;

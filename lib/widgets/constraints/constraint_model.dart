@@ -224,6 +224,22 @@ class ConstraintModel extends WidgetModel
   }
   int? get flex => _flex?.get();
 
+  // this routine set the width silently and resets the
+  // fixedWidth property
+  setFlex(int v)
+  {
+    // create the _flex observable if it
+    // hasn't already been created
+    if (_flex == null)
+    {
+      _flex = IntegerObservable(Binding.toKey(id, 'flex'), null, scope: scope);
+      _flex!.registerListener(onPropertyChange);
+    }
+
+    // set the width
+    _flex?.set(v, notify: false);
+  }
+
   // flex fit
   // loose or tight are only supported types
   StringObservable? _flexfit;

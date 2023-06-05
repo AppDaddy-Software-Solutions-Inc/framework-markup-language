@@ -32,6 +32,8 @@ mixin BoxMixin
     return height;
   }
 
+  // walk up the render tree
+  // to find first constrained height
   double _myParentsHeight(RenderBox node)
   {
     double? height;
@@ -65,6 +67,8 @@ mixin BoxMixin
     return width;
   }
 
+  // walk up the render tree
+  // to find first constrained width
   double _myParentsWidth(RenderBox node)
   {
     double? width;

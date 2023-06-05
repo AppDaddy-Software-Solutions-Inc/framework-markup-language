@@ -81,30 +81,6 @@ class ConstraintModel extends WidgetModel
   }
   double? get width => _width?.get();
 
-  // this routine set the width silently and resets the
-  // fixedWidth property
-  setWidth(double? v)
-  {
-    // create the _width observable if it
-    // hasn't already been created
-    if (_width == null)
-    {
-      _width = DoubleObservable(Binding.toKey(id, 'width'), null, scope: scope, setter: _widthSetter);
-      _width!.registerListener(onPropertyChange);
-    }
-
-    // we must remember these settings since they are
-    // changed by the _widthSetter() and need to be restored
-    // after assigning _width a value
-    var pct = _widthPercentage;
-
-    // set the width
-    _width?.set(v, notify: false);
-
-    // restore original settings
-    if (pct != null) _widthPercentage = pct;
-  }
-
   // this routine enforces the min and max width
   // constraints from the template
   dynamic _widthSetter(dynamic value)
@@ -154,28 +130,6 @@ class ConstraintModel extends WidgetModel
     }
   }
   double? get height => _height?.get();
-
-  setHeight(double? v)
-  {
-    // create the _height observable if it
-    // hasn't already been created
-    if (_height == null)
-    {
-      _height = DoubleObservable(Binding.toKey(id, 'height'), null, scope: scope, setter: _heightSetter);
-      _height!.registerListener(onPropertyChange);
-    }
-
-    // we must remember these settings since they are
-    // changed by the _heightSetter() and need to be restored
-    // after assigning _height a value
-    var pct = _heightPercentage;
-
-    // set the height
-    _height?.set(v, notify:false);
-
-    // restore original settings
-    if (pct != null) _heightPercentage = pct;
-  }
 
   // this routine enforces the min and max height
   // constraints from the template

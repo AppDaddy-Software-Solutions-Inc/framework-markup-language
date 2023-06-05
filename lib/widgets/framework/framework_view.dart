@@ -309,6 +309,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   {
     Widget view = Container();
 
+    widget.model.header?.removeAllListeners();
     if (widget.model.header != null && widget.model.header!.visible != false)
     {
       var header = widget.model.header!;
@@ -317,15 +318,14 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       if (widget.model.layout == null) header.layout = "stack";
 
       // set header constraints
-      var width = constraints.maxWidth;
-      header.setWidth(width);
+      header.width = constraints.maxWidth;
 
       // build framework header view
       view = header.getView();
     }
     else
     {
-      widget.model.header?.setHeight(0);
+      widget.model.header?.height = 0;
     }
 
     return view;
@@ -335,6 +335,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   {
     Widget view = Container();
 
+    widget.model.footer?.removeAllListeners();
     if (widget.model.footer != null && widget.model.footer!.visible != false)
     {
       var footer = widget.model.footer!;
@@ -343,15 +344,14 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       if (widget.model.layout == null) footer.layout = "stack";
 
       // set footer constraints
-      var width = constraints.maxWidth;
-      footer.setWidth(width);
+      footer.width = constraints.maxWidth;
 
       // build framework footer view
       view = footer.getView();
     }
     else
     {
-      widget.model.footer?.setHeight(0);
+      widget.model.footer?.height = 0;
     }
 
     return view;
@@ -372,12 +372,6 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     var viewportHeight = constraints.maxHeight;
     var usedHeight     = (header?.height ?? 0) + (footer?.height ?? 0) + safeArea;
 
-    var height = viewportHeight - usedHeight - (body.marginTop ?? 0) - (body.marginBottom ?? 0);
-    //body.setHeight(height);
-
-    var width = viewportWidth - (body.marginLeft ?? 0) - (body.marginRight ?? 0);
-    //body.setWidth(width);
-
     // build framework body
     Widget view = BoxView(body);
 
@@ -385,7 +379,12 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     // is wrapped in a Scroller
     if (body.findChildOfExactType(ScrollerModel) != null) view = NotificationListener<ScrollNotification>(onNotification: onScroll, child: view);
 
-    return SizedBox(child: view, width: width, height: height);
+    var height = viewportHeight - usedHeight - (body.marginTop ?? 0) - (body.marginBottom ?? 0);
+    var width = viewportWidth - (body.marginLeft ?? 0) - (body.marginRight ?? 0);
+
+    view = SizedBox(child: view, width: width, height: height);
+
+    return view;
   }
 
   _setDeviceOrientation(String? orientation)

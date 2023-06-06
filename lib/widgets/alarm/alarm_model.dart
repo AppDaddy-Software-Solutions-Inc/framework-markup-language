@@ -10,15 +10,6 @@ class AlarmModel extends WidgetModel
 {
   /// The value of the alarms parent.
   StringObservable? _value;
-  set value(dynamic v) {
-    if (_value != null) {
-      _value?.set(v);
-    } else if (v != null) {
-      _value = StringObservable(Binding.toKey(id, 'value'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  String? get value => _value?.get();
 
   /// The error message value of a form field.
   StringObservable? _errortext;
@@ -89,20 +80,23 @@ class AlarmModel extends WidgetModel
   AlarmModel(
       WidgetModel parent,
       String?  id, {
-      dynamic value,
       dynamic error,
       dynamic errortext,
       dynamic onalarm,
       dynamic ondismissed,
       dynamic alarmtrigger,
   })
-      : super(parent, id) {
-    if (value     != null) this.value = value;
-    if (error     != null) this.error = error;
-    if (errortext     != null) this.errortext = errortext;
-    if (onalarm     != null) this.onalarm = onalarm;
-    if (ondismissed     != null) this.ondismissed = ondismissed;
-    if (alarmtrigger     != null) this.alarmtrigger = alarmtrigger;
+      : super(parent, id)
+  {
+    if (error != null) this.error = error;
+    if (errortext != null) this.errortext = errortext;
+    if (onalarm != null) this.onalarm = onalarm;
+    if (ondismissed != null) this.ondismissed = ondismissed;
+    if (alarmtrigger != null) this.alarmtrigger = alarmtrigger;
+
+    // Build a binding to the parent value
+    var binding = "{${parent.id}.value}";
+    _value = StringObservable(Binding.toKey(id, 'value'),binding, scope: scope);
   }
 
   static AlarmModel? fromXml(WidgetModel parent, XmlElement xml)
@@ -110,7 +104,7 @@ class AlarmModel extends WidgetModel
     AlarmModel? model;
     try
     {
-      model = AlarmModel(parent, Xml.get(node: xml, tag: 'id'), value: Xml.getText(xml));
+      model = AlarmModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
     catch(e)

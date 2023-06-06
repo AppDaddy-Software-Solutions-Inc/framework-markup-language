@@ -60,9 +60,9 @@ dependencies:
   # MIT
 
   # Microsoft Logon
-  # Updated 2023/03/22
-  firebase_auth: ^4.6.1
-  firebase_core: ^2.13.0
+  # Updated 2023/06/06
+  firebase_auth: ^4.6.2
+  firebase_core: ^2.13.1
   firebase_core_platform_interface: ^4.8.0
   # BSD-3-Clause
 
@@ -86,12 +86,8 @@ dependencies:
   flutter_image_transform: ^1.0.0
   # MIT
 
-  # Added 2022/12/13
-  flutter_map: ^3.0.0
-  # BSD-3-Clause
-
-  # Added 2022/12/13
-  flutter_map_marker_cluster: ^1.0.1
+  # Added 2023/06/06
+  flutter_map: ^4.0.0
   # BSD-3-Clause
 
   # Updated 2023/03/19
@@ -102,11 +98,11 @@ dependencies:
   flutter_nfc_kit: ^3.3.1
   # MIT
 
-  # Updated 2022/08/09
-  flutter_svg: ^2.0.5
+  # Updated 2023/06/05
+  flutter_svg: ^2.0.6
   # MIT
 
-  # Updated 2023/01/30
+  # Updated 2023/06/05
   flutter_typeahead: ^4.6.1
   # BSD-2-Clause
 
@@ -114,7 +110,7 @@ dependencies:
   geolocator: ^9.0.2
   # MIT
 
-  # Updated 2022/05/26
+  # Updated 2023/06/06
   google_fonts: ^4.0.4
   # Apache-2.0
 
@@ -144,11 +140,11 @@ dependencies:
   hive: ^2.2.1
   # Apache-2.0
 
-  # Updated 2022/08/22
+  # Updated 2023/06/06
   http: ^0.13.5
   # BSD-3-Clause
 
-  # Updated 2022/11/06
+  # Updated 2022/11/06 // Our library "flutter_image_transform" is blocking this update
   image: ^3.2.2
   # MIT
 
@@ -168,8 +164,8 @@ dependencies:
   js: ^0.6.5
   # BSD-3-Clause
 
-  # Updated 2022/12/13
-  latlong2: ^0.8.1
+  # Updated 2023/06/06
+  latlong2: ^0.8.2
   # BSD-3-Clause
 
   # Updated 2023/03/13

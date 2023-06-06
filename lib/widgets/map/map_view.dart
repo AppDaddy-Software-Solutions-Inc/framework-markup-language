@@ -88,7 +88,7 @@ class _MapViewState extends WidgetState<MapView>
         LatLngBounds? bounds;
         if (center == null && tlLatLng != null && brLatLng != null)
         {
-          bounds = LatLngBounds(tlLatLng, brLatLng);
+          bounds = LatLngBounds(tlLatLng!, brLatLng!);
         }
 
         // map options

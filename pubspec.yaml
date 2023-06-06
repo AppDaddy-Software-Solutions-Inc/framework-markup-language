@@ -86,12 +86,8 @@ dependencies:
   flutter_image_transform: ^1.0.0
   # MIT
 
-  # Added 2022/12/13
-  flutter_map: ^3.0.0
-  # BSD-3-Clause
-
-  # Added 2022/12/13
-  flutter_map_marker_cluster: ^1.0.1
+  # Added 2023/06/06
+  flutter_map: ^4.0.0
   # BSD-3-Clause
 
   # Updated 2023/03/19
@@ -115,7 +111,7 @@ dependencies:
   # MIT
 
   # Updated 2023/06/06
-  google_fonts: ^5.0.0
+  google_fonts: ^4.0.0
   # Apache-2.0
 
   # Updated 2022/10/20
@@ -144,7 +140,7 @@ dependencies:
   hive: ^2.2.1
   # Apache-2.0
 
-  # Updated 2022/08/22
+  # Updated 2023/06/06
   http: ^0.13.5
   # BSD-3-Clause
 
@@ -168,8 +164,8 @@ dependencies:
   js: ^0.6.5
   # BSD-3-Clause
 
-  # Updated 2022/12/13
-  latlong2: ^0.8.1
+  # Updated 2023/06/06
+  latlong2: ^0.8.0
   # BSD-3-Clause
 
   # Updated 2023/03/13

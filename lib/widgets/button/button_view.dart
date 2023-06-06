@@ -94,16 +94,27 @@ class _ButtonViewState extends WidgetState<ButtonView>
   
   Widget _buildButton(Widget body)
   {
-    var model = widget.model;
     var style = _getStyle();
-    var onPressed = (model.onclick != null && model.enabled != false) ? () => model.onPress(context) : null;
+    var onPressed = (widget.model.onclick != null && widget.model.enabled != false) ? () => widget.model.onPress(context) : null;
 
-    switch (model.buttontype)
+    Widget view;
+    switch (widget.model.buttontype)
     {
-      case 'outlined': return OutlinedButton(style: style, onPressed: onPressed, child: body);
-      case 'elevated': return ElevatedButton(style: style, onPressed: onPressed, child: body);
-      default: return TextButton(style: style, onPressed: onPressed, child: body);
+      case 'outlined':
+        view = OutlinedButton(style: style, onPressed: onPressed, child: body);
+        break;
+      case 'elevated':
+        view = ElevatedButton(style: style, onPressed: onPressed, child: body);
+        break;
+      default:
+        view = TextButton(style: style, onPressed: onPressed, child: body);
+        break;
     }
+
+    // If onclick is null or enabled is false we fade the button
+    if (widget.model.onclick == null || widget.model.enabled == false) view = Opacity(opacity: 0.9, child: view); // Disabled
+
+    return view;
   }
 
   @override
@@ -114,22 +125,13 @@ class _ButtonViewState extends WidgetState<ButtonView>
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    var body = BoxView(widget.model);
+    var body = BoxView(widget.model.content);
 
     // Build the Button Types
     var view = _buildButton(body);
 
-    // If onclick is null or enabled is false we fade the button
-    if (widget.model.onclick == null || widget.model.enabled == false) view = Opacity(opacity: 0.9, child: view); // Disabled
-
     // add margins
     view = addMargins(view);
-
-    // apply user defined constraints
-    view = applyConstraints(view, widget.model.constraints);
-
-    // allow button to shrink to size of its contents
-    view = UnconstrainedBox(child: view);
 
     return view;
   }

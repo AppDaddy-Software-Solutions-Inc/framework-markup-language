@@ -84,7 +84,7 @@ class PagerViewState extends WidgetState<PagerView>
   }
 
   // called by models inflate
-  List<Widget> inflate(BoxConstraints constraints)
+  List<Widget> inflate()
   {
     List<Widget> list = [];
 

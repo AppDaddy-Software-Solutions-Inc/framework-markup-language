@@ -6,6 +6,9 @@ import 'package:fml/event/handler.dart' ;
 import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/column/column_model.dart';
+import 'package:fml/widgets/row/row_model.dart';
+import 'package:fml/widgets/stack/stack_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
@@ -18,13 +21,10 @@ import 'package:fml/helper/common_helpers.dart';
 /// Defines the properties used to build a [BUTTON.ButtonView]
 class ButtonModel extends BoxModel
 {
-  // shrink by default
-  @override
-  bool get expand => false;
+  late BoxModel content;
 
-  // layout as row by default
   @override
-  String get layout => super.layout ?? 'row';
+  LayoutType get layoutType => BoxModel.getLayoutType(layout);
 
   @override
   bool get center => true;
@@ -45,11 +45,7 @@ class ButtonModel extends BoxModel
       _onclick = StringObservable(Binding.toKey(id, 'onclick'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
     }
   }
-  String? get onclick
-  {
-    if (_onclick == null) return null;
-    return _onclick?.get();
-  }
+  String? get onclick => _onclick?.get();
 
   // onenter
   StringObservable? _onenter;
@@ -64,11 +60,7 @@ class ButtonModel extends BoxModel
       _onenter = StringObservable(Binding.toKey(id, 'onenter'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
     }
   }
-  String? get onenter
-  {
-    if (_onenter == null) return null;
-    return _onenter?.get();
-  }
+  String? get onenter => _onenter?.get();
 
   // onexit
   StringObservable? _onexit;
@@ -83,11 +75,7 @@ class ButtonModel extends BoxModel
       _onexit = StringObservable(Binding.toKey(id, 'onexit'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
     }
   }
-  String? get onexit
-  {
-    if (_onexit == null) return null;
-    return _onexit?.get();
-  }
+  String? get onexit => _onexit?.get();
 
   /// Text value for Button
   ///
@@ -109,9 +97,12 @@ class ButtonModel extends BoxModel
   {
     if (_label == null) return null;
     String? l = _label?.get();
-    try {
+    try
+    {
       if ((l is String) && (l.contains(':'))) l = S.parseEmojis(l);
-    } catch(e) {
+    }
+    catch(e)
+    {
       Log().debug('$e');
     }
     return l;
@@ -133,25 +124,7 @@ class ButtonModel extends BoxModel
       _buttontype = StringObservable(Binding.toKey(id, 'type'), v, scope: scope, listener: onPropertyChange);
     }
   }
-
-  String? get buttontype
-  {
-    if (_buttontype == null) return null;
-    return _buttontype?.get();
-  }
-
-  /// Returns the children
-  List<WidgetModel>? get contents
-  {
-    if (children == null) return null;
-    return children;
-  }
-
-  @override
-  set children(List<WidgetModel>? s)
-  {
-    super.children = s;
-  }
+  String? get buttontype => _buttontype?.get();
 
   ButtonModel(WidgetModel? parent, String? id, {
     dynamic onclick,
@@ -168,6 +141,7 @@ class ButtonModel extends BoxModel
     dynamic maxwidth,
     dynamic minheight,
     dynamic maxheight,
+    dynamic layout,
     List<WidgetModel>? children
   }) : super(parent, id)
   {
@@ -179,6 +153,7 @@ class ButtonModel extends BoxModel
     if (maxwidth  != null) maxWidth  = maxwidth;
     if (maxheight != null) maxHeight = maxheight;
 
+    this.layout     = layout;
     this.onclick    = onclick;
     this.onenter    = onenter;
     this.onexit     = onexit;
@@ -188,18 +163,54 @@ class ButtonModel extends BoxModel
     this.color      = color;
     this.radius     = radius;
     this.enabled    = enabled;
+    this.children   = children;
+
+    // build inner content
+    switch (layoutType)
+    {
+      case LayoutType.column:
+        content = ColumnModel(this, null);
+        break;
+      case LayoutType.stack:
+        content = StackModel(this, null);
+        break;
+      case LayoutType.row:
+      default:
+        content = RowModel(this, null);
+        break;
+    }
+    _buildContent();
+  }
+
+  _buildContent()
+  {
+    content.expand = expand;
+    
+    // add children to the inner box
     if (children != null)
     {
-      this.children = [];
-      this.children!.addAll(children);
+      content.children ??= [];
+      content.children!.addAll(children!);
     }
+
+    // create default child from label
+    if (content.viewableChildren.isEmpty && label != null)
+    {
+      // create text model bound to this label
+      var text = TextModel(content, null, value: "{$id.label}");
+      content.children!.add(text);
+    }
+
+    // clear all children
+    children?.clear();
   }
+
   static ButtonModel? fromXml(WidgetModel parent, XmlElement xml)
   {
     ButtonModel? model;
     try
     {
-      model = ButtonModel(parent, Xml.get(node: xml, tag: 'id'));
+      model = ButtonModel(parent, Xml.get(node: xml, tag: 'id'), layout: Xml.get(node: xml, tag: 'layout'));
       model.deserialize(xml);
     }
     catch(e)
@@ -231,11 +242,7 @@ class ButtonModel extends BoxModel
     radius            = Xml.get(node: xml, tag: 'radius');
 
     // add label
-    if (viewableChildren.isEmpty && label != null)
-    {
-      children ??= [];
-      children!.add(TextModel(this,null,value: label));
-    }
+    _buildContent();
   }
 
   @override

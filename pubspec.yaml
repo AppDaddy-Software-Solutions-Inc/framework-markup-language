@@ -111,7 +111,7 @@ dependencies:
   # MIT
 
   # Updated 2023/06/06
-  google_fonts: ^4.0.0
+  google_fonts: ^4.0.4
   # Apache-2.0
 
   # Updated 2022/10/20
@@ -144,7 +144,7 @@ dependencies:
   http: ^0.13.5
   # BSD-3-Clause
 
-  # Updated 2022/11/06
+  # Updated 2022/11/06 // Our library "flutter_image_transform" is blocking this update
   image: ^3.2.2
   # MIT
 
@@ -165,7 +165,7 @@ dependencies:
   # BSD-3-Clause
 
   # Updated 2023/06/06
-  latlong2: ^0.8.0
+  latlong2: ^0.8.2
   # BSD-3-Clause
 
   # Updated 2023/03/13

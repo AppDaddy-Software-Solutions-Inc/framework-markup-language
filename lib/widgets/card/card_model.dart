@@ -31,7 +31,7 @@ class CardModel extends BoxModel
   @override
   String  get valign  => super.valign  ?? "start";
 
-  CardModel(WidgetModel parent, String? id) : super(parent, id, expandByDefault: false);
+  CardModel(WidgetModel parent, String? id) : super(parent, id, expandDefault: false);
 
   static CardModel? fromXml(WidgetModel parent, XmlElement xml)
   {

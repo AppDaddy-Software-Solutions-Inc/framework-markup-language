@@ -25,7 +25,9 @@ class SplitView extends StatefulWidget implements IWidgetView
 
 class SplitViewState extends WidgetState<SplitView>
 {
- void onBack(Event event)
+  BoxConstraints constraints = BoxConstraints();
+
+  void onBack(Event event)
   {
     event.handled = true;
     String? pages = S.mapVal(event.parameters, 'until');
@@ -67,7 +69,7 @@ class SplitViewState extends WidgetState<SplitView>
     if (ratio != widget.model.ratio) widget.model.ratio = ratio;
   }
 
-  Widget _buildHandle(BoxConstraints constraints)
+  Widget _buildHandle()
   {
     var myDividerColor = widget.model.dividerColor ?? Theme.of(context).colorScheme.onInverseSurface;
     var myDividerWidth = widget.model.dividerWidth;
@@ -76,10 +78,10 @@ class SplitViewState extends WidgetState<SplitView>
     GestureDetector(behavior: HitTestBehavior.opaque, onVerticalDragUpdate:  (DragUpdateDetails details) => _onDrag(details, constraints), child: Container(color: myDividerColor, child: SizedBox(width: constraints.maxWidth, height: myDividerWidth, child: MouseRegion(cursor: SystemMouseCursors.resizeUpDown,     child: Stack(children: [Positioned(top: -10, child: Icon(Icons.drag_handle, color: widget.model.dividerHandleColor))]))))) :
     GestureDetector(behavior: HitTestBehavior.opaque, onHorizontalDragUpdate: (DragUpdateDetails details) => _onDrag(details, constraints), child: Container(color: myDividerColor, child: SizedBox(width: myDividerWidth, height: constraints.maxHeight, child: MouseRegion(cursor: SystemMouseCursors.resizeLeftRight, child: RotationTransition(child: Icon(Icons.drag_handle, color: widget.model.dividerHandleColor), turns: AlwaysStoppedAnimation(.25))))));
 
-    return LayoutBoxChildData(child: view, model: BoxModel(null,null,expandByDefault: false));
+    return LayoutBoxChildData(child: view, model: BoxModel(null,null,expandDefault: false));
   }
 
-  Widget _constrainBox(BoxView box, BoxConstraints constraints, int flex)
+  Widget _constrainBox(BoxView box, int flex)
   {
     var direction = widget.model.vertical ? Axis.vertical : Axis.horizontal;
     switch (direction)
@@ -98,7 +100,7 @@ class SplitViewState extends WidgetState<SplitView>
   BoxView get _missingView => BoxView(BoxModel(widget.model,null));
 
   // called by models inflate
-  List<Widget> inflate(BoxConstraints constraints)
+  List<Widget> inflate()
   {
     // create box views
     if (widget.boxes.isEmpty)
@@ -123,20 +125,26 @@ class SplitViewState extends WidgetState<SplitView>
     List<Widget> list = [];
 
     // left/top pane
-    var box1 = _constrainBox(widget.boxes[0], constraints, flex);
+    var box1 = _constrainBox(widget.boxes[0], flex);
     list.add(box1);
 
     // handle
-    Widget handle = _buildHandle(constraints);
+    Widget handle = _buildHandle();
     list.add(handle);
 
     // right/bottom pane
-    var box2 = _constrainBox(widget.boxes[1], constraints, 1000 - flex);
+    var box2 = _constrainBox(widget.boxes[1], 1000 - flex);
     list.add(box2);
 
     return list;
   }
 
   @override
-  Widget build(BuildContext context) => BoxView(widget.model);
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
+    this.constraints = constraints;
+    return BoxView(widget.model);
+  }
 }

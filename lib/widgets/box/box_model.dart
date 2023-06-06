@@ -22,7 +22,7 @@ class BoxModel extends DecoratedWidgetModel
   LayoutType get layoutType => getLayoutType(layout, defaultLayout: LayoutType.column);
 
   // Denotes whether box widgets (row, column) naturally expand or contract
-  final bool expandByDefault;
+  final bool expandDefault;
 
   // indicates if the widget will grow in
   // its horizontal axis
@@ -47,7 +47,7 @@ class BoxModel extends DecoratedWidgetModel
       _expand = BooleanObservable(Binding.toKey(id, 'expand'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  bool get expand => _expand?.get() ?? expandByDefault;
+  bool get expand => _expand?.get() ?? expandDefault;
 
   /// layout
   StringObservable? _layout;
@@ -80,8 +80,7 @@ class BoxModel extends DecoratedWidgetModel
           scope: scope, listener: onPropertyChange);
     }
   }
-
-  bool get center => _center?.get() ?? false;
+  bool? get center => _center?.get();
 
   /// wrap determines the widget, if layout is row or col, how it will wrap.
   BooleanObservable? _wrap;
@@ -310,13 +309,13 @@ class BoxModel extends DecoratedWidgetModel
   }
   double get shadowy => _shadowy?.get() ?? 4;
 
-  BoxModel(WidgetModel? parent, String? id,{Scope?  scope, this.expandByDefault = true}) : super(parent, id, scope: scope);
+  BoxModel(WidgetModel? parent, String? id,{Scope?  scope, this.expandDefault = true}) : super(parent, id, scope: scope);
 
-  static BoxModel? fromXml(WidgetModel parent, XmlElement xml, {bool expandByDefault = true})
+  static BoxModel? fromXml(WidgetModel parent, XmlElement xml, {bool expandDefault = true})
   {
     BoxModel? model;
     try {
-      model = BoxModel(parent, Xml.get(node: xml, tag: 'id'), expandByDefault: expandByDefault);
+      model = BoxModel(parent, Xml.get(node: xml, tag: 'id'), expandDefault: expandDefault);
       model.deserialize(xml);
     }
     catch(e)
@@ -359,7 +358,7 @@ class BoxModel extends DecoratedWidgetModel
   }
 
   @override
-  List<Widget> inflate({BoxConstraints? constraints})
+  List<Widget> inflate()
   {
     // process children
     List<Widget> views = [];

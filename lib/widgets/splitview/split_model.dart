@@ -124,11 +124,11 @@ class SplitModel extends BoxModel
   }
 
   @override
-  List<Widget> inflate({BoxConstraints? constraints})
+  List<Widget> inflate()
   {
     SplitViewState? view = findListenerOfExactType(SplitViewState);
-    if (view == null || constraints == null) return [];
-    return view.inflate(constraints);
+    if (view == null) return [];
+    return view.inflate();
   }
 
   @override

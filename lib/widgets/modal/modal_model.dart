@@ -226,7 +226,7 @@ class ModalModel extends BoxModel
   }
 
   @override
-  List<Widget> inflate({BoxConstraints? constraints})
+  List<Widget> inflate()
   {
     // process children
     List<Widget> views = [];

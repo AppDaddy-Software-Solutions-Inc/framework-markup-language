@@ -506,13 +506,13 @@ class Xml {
   }
 
   /// Given an [XmlNode] this will return the raw [XmlNodeType.TEXT] String
-  static String? getText(XmlNode node)
+  static String? getText(XmlNode? node)
   {
-    if ((node.nodeType == XmlNodeType.TEXT) || (node.nodeType == XmlNodeType.CDATA)) return node.text;
-    if ((node.children.isNotEmpty))
+    if ((node?.nodeType == XmlNodeType.TEXT) || (node?.nodeType == XmlNodeType.CDATA)) return node?.text;
+    if ((node?.children.isNotEmpty == true))
     {
       String? text;
-      for (XmlNode n in node.children)
+      for (XmlNode n in node!.children)
       {
         String? s;
         if ((n.nodeType ==  XmlNodeType.TEXT) || (n.nodeType ==  XmlNodeType.CDATA)) s = n.text;

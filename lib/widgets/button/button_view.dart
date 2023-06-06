@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/button/button_model.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
@@ -26,6 +27,12 @@ class _ButtonViewState extends WidgetState<ButtonView>
   {
     var model = widget.model;
 
+    BorderRadius? radius = BorderRadius.only(
+        topRight: Radius.circular(widget.model.radiusTopRight),
+        bottomRight: Radius.circular(widget.model.radiusBottomRight),
+        bottomLeft: Radius.circular(widget.model.radiusBottomLeft),
+        topLeft: Radius.circular(widget.model.radiusTopLeft));
+
     if (model.buttontype == 'elevated') {
       return ElevatedButton.styleFrom(
           minimumSize:  Size(model.constraints.minWidth ?? 64, (model.constraints.minHeight ?? 0) + 40), //add 40 to the constraint as the width is offset by 40
@@ -33,7 +40,7 @@ class _ButtonViewState extends WidgetState<ButtonView>
           foregroundColor: Theme.of(context).colorScheme.onPrimary,
           disabledForegroundColor: Theme.of(context).colorScheme.onSurface,
           shadowColor: Theme.of(context).colorScheme.shadow,
-          shape: RoundedRectangleBorder(borderRadius: model.radius > 0 ? BorderRadius.all(Radius.circular(model.radius)) : BorderRadius.zero),
+          shape: RoundedRectangleBorder(borderRadius: radius),
           elevation: 3);
     }
 
@@ -71,9 +78,7 @@ class _ButtonViewState extends WidgetState<ButtonView>
     }) : null; // Defer to the widget
 
     var buttonShape = MaterialStateProperty.all(
-        RoundedRectangleBorder(borderRadius: widget.model.radius > 0 ?
-        BorderRadius.all(Radius.circular(widget.model.radius)) :
-        BorderRadius.zero));
+        RoundedRectangleBorder(borderRadius: radius));
 
     return ButtonStyle(
       minimumSize: MaterialStateProperty.all(
@@ -89,57 +94,45 @@ class _ButtonViewState extends WidgetState<ButtonView>
   
   Widget _buildButton(Widget body)
   {
-    var model = widget.model;
     var style = _getStyle();
-    var onPressed = (model.onclick != null && model.enabled != false) ? () => model.onPress(context) : null;
+    var onPressed = (widget.model.onclick != null && widget.model.enabled != false) ? () => widget.model.onPress(context) : null;
 
-    switch (model.buttontype)
+    Widget view;
+    switch (widget.model.buttontype)
     {
-      case 'outlined': return OutlinedButton(style: style, onPressed: onPressed, child: body);
-      case 'elevated': return ElevatedButton(style: style, onPressed: onPressed, child: body);
-      default: return TextButton(style: style, onPressed: onPressed, child: body);
+      case 'outlined':
+        view = OutlinedButton(style: style, onPressed: onPressed, child: body);
+        break;
+      case 'elevated':
+        view = ElevatedButton(style: style, onPressed: onPressed, child: body);
+        break;
+      default:
+        view = TextButton(style: style, onPressed: onPressed, child: body);
+        break;
     }
+
+    // If onclick is null or enabled is false we fade the button
+    if (widget.model.onclick == null || widget.model.enabled == false) view = Opacity(opacity: 0.9, child: view); // Disabled
+
+    return view;
   }
-  
+
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    // save system constraints
-    onLayout(constraints);
-
-    ButtonModel model = widget.model;
-
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    // build the child views
-    List<Widget> children = widget.model.inflate();
-    if (children.isEmpty) children.add(Container());
-
-    // Add a text child if label is set
-    if (!S.isNullOrEmpty(model.label)) children.add(Text(model.label ?? ""));
-
-    // center the body
-    var body = Center(child: Row(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.center, children: children));
+    var body = BoxView(widget.model.content);
 
     // Build the Button Types
     var view = _buildButton(body);
 
-    // If onclick is null or enabled is false we fade the button
-    if (model.onclick == null || model.enabled == false) view = Opacity(opacity: 0.9, child: view); // Disabled
-
     // add margins
     view = addMargins(view);
 
-    // apply user defined constraints
-    view = applyConstraints(view, widget.model.constraints);
-
-    // allow button to shrink to size of its contents
-    view = UnconstrainedBox(child: view);
-
-    // apply user defined constraints
     return view;
   }
 }

@@ -5,7 +5,11 @@ import 'package:fml/event/event.dart' ;
 import 'package:fml/event/handler.dart' ;
 import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/column/column_model.dart';
+import 'package:fml/widgets/row/row_model.dart';
+import 'package:fml/widgets/stack/stack_model.dart';
+import 'package:fml/widgets/text/text_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/button/button_view.dart';
@@ -15,8 +19,19 @@ import 'package:fml/helper/common_helpers.dart';
 /// Button [ButtonModel]
 ///
 /// Defines the properties used to build a [BUTTON.ButtonView]
-class ButtonModel extends DecoratedWidgetModel 
+class ButtonModel extends BoxModel
 {
+  late BoxModel content;
+
+  @override
+  LayoutType get layoutType => BoxModel.getLayoutType(layout);
+
+  @override
+  bool get center => true;
+
+  @override
+  String get border => 'none';
+
   /// [Event]s to execute when the button is clicked
   StringObservable? _onclick;
   set onclick (dynamic v)
@@ -30,15 +45,9 @@ class ButtonModel extends DecoratedWidgetModel
       _onclick = StringObservable(Binding.toKey(id, 'onclick'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
     }
   }
-  String? get onclick
-  {
-    if (_onclick == null) return null;
-    return _onclick?.get();
-  }
+  String? get onclick => _onclick?.get();
 
-  /////////////
-  /* onenter */
-  /////////////
+  // onenter
   StringObservable? _onenter;
   set onenter (dynamic v)
   {
@@ -51,15 +60,9 @@ class ButtonModel extends DecoratedWidgetModel
       _onenter = StringObservable(Binding.toKey(id, 'onenter'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
     }
   }
-  String? get onenter
-  {
-    if (_onenter == null) return null;
-    return _onenter?.get();
-  }
+  String? get onenter => _onenter?.get();
 
-  /////////////
-  /* onexit */
-  /////////////
+  // onexit
   StringObservable? _onexit;
   set onexit (dynamic v)
   {
@@ -72,11 +75,7 @@ class ButtonModel extends DecoratedWidgetModel
       _onexit = StringObservable(Binding.toKey(id, 'onexit'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
     }
   }
-  String? get onexit
-  {
-    if (_onexit == null) return null;
-    return _onexit?.get();
-  }
+  String? get onexit => _onexit?.get();
 
   /// Text value for Button
   ///
@@ -98,28 +97,16 @@ class ButtonModel extends DecoratedWidgetModel
   {
     if (_label == null) return null;
     String? l = _label?.get();
-    try {
+    try
+    {
       if ((l is String) && (l.contains(':'))) l = S.parseEmojis(l);
-    } catch(e) {
+    }
+    catch(e)
+    {
       Log().debug('$e');
     }
     return l;
   }
-
-  /// Corner radius
-  DoubleObservable? _radius;
-  set radius (dynamic v)
-  {
-    if (_radius != null)
-    {
-      _radius!.set(v);
-    }
-    else if (v != null)
-    {
-      _radius = DoubleObservable(Binding.toKey(id, 'radius'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  double get radius => _radius?.get() ?? 30;
 
 
   /// Type of button
@@ -137,25 +124,7 @@ class ButtonModel extends DecoratedWidgetModel
       _buttontype = StringObservable(Binding.toKey(id, 'type'), v, scope: scope, listener: onPropertyChange);
     }
   }
-
-  String? get buttontype
-  {
-    if (_buttontype == null) return null;
-    return _buttontype?.get();
-  }
-
-  /// Returns the children
-  List<WidgetModel>? get contents
-  {
-    if (children == null) return null;
-    return children;
-  }
-
-  @override
-  set children(List<WidgetModel>? s)
-  {
-    super.children = s;
-  }
+  String? get buttontype => _buttontype?.get();
 
   ButtonModel(WidgetModel? parent, String? id, {
     dynamic onclick,
@@ -172,6 +141,7 @@ class ButtonModel extends DecoratedWidgetModel
     dynamic maxwidth,
     dynamic minheight,
     dynamic maxheight,
+    dynamic layout,
     List<WidgetModel>? children
   }) : super(parent, id)
   {
@@ -183,6 +153,7 @@ class ButtonModel extends DecoratedWidgetModel
     if (maxwidth  != null) maxWidth  = maxwidth;
     if (maxheight != null) maxHeight = maxheight;
 
+    this.layout     = layout;
     this.onclick    = onclick;
     this.onenter    = onenter;
     this.onexit     = onexit;
@@ -192,19 +163,54 @@ class ButtonModel extends DecoratedWidgetModel
     this.color      = color;
     this.radius     = radius;
     this.enabled    = enabled;
+    this.children   = children;
+
+    // build inner content
+    switch (layoutType)
+    {
+      case LayoutType.column:
+        content = ColumnModel(this, null);
+        break;
+      case LayoutType.stack:
+        content = StackModel(this, null);
+        break;
+      case LayoutType.row:
+      default:
+        content = RowModel(this, null);
+        break;
+    }
+    _buildContent();
+  }
+
+  _buildContent()
+  {
+    content.expand = expand;
+    
+    // add children to the inner box
     if (children != null)
     {
-      this.children = [];
-      this.children!.addAll(children);
+      content.children ??= [];
+      content.children!.addAll(children!);
     }
 
+    // create default child from label
+    if (content.viewableChildren.isEmpty && label != null)
+    {
+      // create text model bound to this label
+      var text = TextModel(content, null, value: "{$id.label}");
+      content.children!.add(text);
+    }
+
+    // clear all children
+    children?.clear();
   }
+
   static ButtonModel? fromXml(WidgetModel parent, XmlElement xml)
   {
     ButtonModel? model;
     try
     {
-      model = ButtonModel(parent, Xml.get(node: xml, tag: 'id'));
+      model = ButtonModel(parent, Xml.get(node: xml, tag: 'id'), layout: Xml.get(node: xml, tag: 'layout'));
       model.deserialize(xml);
     }
     catch(e)
@@ -217,14 +223,14 @@ class ButtonModel extends DecoratedWidgetModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
+  void deserialize(XmlElement? xml)
   {
 
     // deserialize 
     super.deserialize(xml);
 
     // properties
-    String?                      text = Xml.get(node: xml, tag: 'value');
+    String? text = Xml.get(node: xml, tag: 'value');
     if (S.isNullOrEmpty(text))  text = Xml.get(node: xml, tag: 'label');
     if (S.isNullOrEmpty(text))  text = Xml.getText(xml);
 
@@ -234,6 +240,9 @@ class ButtonModel extends DecoratedWidgetModel
     onexit            = Xml.get(node: xml, tag: 'onexit');
     buttontype        = Xml.get(node: xml, tag: 'type');
     radius            = Xml.get(node: xml, tag: 'radius');
+
+    // add label
+    _buildContent();
   }
 
   @override

@@ -648,7 +648,7 @@ class WidgetModel implements IDataSourceListener {
 
       case "sbox":
       case "shrinkbox":
-        model = BoxModel.fromXml(parent, node, expandByDefault: false);
+        model = BoxModel.fromXml(parent, node, expandDefault: false);
         break;
 
       case "size":

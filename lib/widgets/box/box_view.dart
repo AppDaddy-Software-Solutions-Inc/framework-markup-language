@@ -9,8 +9,6 @@ import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
 
-typedef OnBoxMeasured = void Function(Size size, {dynamic data});
-
 /// [BOX] view
 class BoxView extends StatefulWidget implements IWidgetView
 {
@@ -250,7 +248,7 @@ class _BoxViewState extends WidgetState<BoxView>
   Widget _buildInnerContent(BoxConstraints constraints, WidgetAlignment alignment)
   {
     /// Build the Layout
-    var children = widget.model.inflate(constraints: constraints);
+    var children = widget.model.inflate();
 
     // create view
     Widget view;

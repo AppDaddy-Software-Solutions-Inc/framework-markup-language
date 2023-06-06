@@ -274,9 +274,10 @@ class StackRenderer extends RenderBox with
     // get my width from the model
     // and tighten the my width constraint's if not null
     bool hardSizedWidth = false;
-    if (myWidth(this, model) != null)
+    var myWidth = model.getWidth(widthParent: parentMaxWidth(this));
+    if (myWidth != null)
     {
-      width = myWidth(this,model)!;
+      width = myWidth;
       hardSizedWidth = true;
       myConstraints = BoxConstraints(minWidth: myConstraints.minWidth, maxWidth: width, minHeight: myConstraints.minHeight, maxHeight: myConstraints.maxHeight);
     }
@@ -284,9 +285,10 @@ class StackRenderer extends RenderBox with
     // get my width from the model
     // and tighten the my width constraint's if not null
     bool hardSizedHeight = false;
-    if (myHeight(this,model) != null)
+    var myHeight = model.getHeight(heightParent: parentMaxHeight(this));
+    if (myHeight != null)
     {
-      height = myHeight(this,model)!;
+      height = myHeight;
       hardSizedHeight = true;
       myConstraints = BoxConstraints(minWidth: myConstraints.minWidth, maxWidth: myConstraints.maxWidth, minHeight: myConstraints.minHeight, maxHeight: height);
     }
@@ -300,7 +302,7 @@ class StackRenderer extends RenderBox with
       {
         // get child constraints
         var childConstraints = myConstraints;
-        if (childData.model != null) childConstraints = getChildLayoutConstraints(this, model, constraints, child, childData.model!);
+        if (childData.model != null) childConstraints = getChildLayoutConstraints(constraints, child, childData.model!);
 
         // layout the child
         layoutChild(child, childConstraints);

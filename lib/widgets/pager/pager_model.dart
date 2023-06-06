@@ -214,11 +214,11 @@ class PagerModel extends BoxModel
   }
 
   @override
-  List<Widget> inflate({BoxConstraints? constraints})
+  List<Widget> inflate()
   {
     PagerViewState? view = findListenerOfExactType(PagerViewState);
-    if (view == null || constraints == null) return [];
-    return view.inflate(constraints);
+    if (view == null) return [];
+    return view.inflate();
   }
 
   @override

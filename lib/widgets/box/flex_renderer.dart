@@ -578,27 +578,27 @@ class FlexRenderer extends RenderBox
         defaultValue: null));
   }
 
-  BoxConstraints _getChildLayoutConstraints(RenderBox child, ViewableWidgetModel childModel, double maxChildExtent)
+  BoxConstraints _getChildLayoutConstraints(RenderBox child, ViewableWidgetModel model, double maxExtent)
   {
-    BoxConstraints childConstraints = BoxConstraints(maxHeight: constraints.maxHeight, maxWidth: constraints.maxWidth);
+    BoxConstraints constraints = BoxConstraints(maxHeight: this.constraints.maxHeight, maxWidth: this.constraints.maxWidth);
 
     // set constraints flex child
     switch (_direction)
     {
       case Axis.horizontal:
-        childConstraints = BoxConstraints(
-            maxWidth: maxChildExtent,
-            maxHeight: childConstraints.maxHeight);
+        constraints = BoxConstraints(
+            maxWidth: maxExtent,
+            maxHeight: constraints.maxHeight);
         break;
 
       case Axis.vertical:
-        childConstraints = BoxConstraints(
-            maxWidth: childConstraints.maxWidth,
-            maxHeight: maxChildExtent);
+        constraints = BoxConstraints(
+            maxWidth: constraints.maxWidth,
+            maxHeight: maxExtent);
         break;
     }
 
-    return getChildLayoutConstraints(this, model, childConstraints, child, childModel);
+    return getChildLayoutConstraints(constraints, child, model);
   }
 
   void _setChildFlex(BoxData data, ViewableWidgetModel model)
@@ -809,7 +809,7 @@ class FlexRenderer extends RenderBox
         break;
 
       case FlexType.fixed:
-        maxWidth = myWidth(this,model) ?? 0;
+        maxWidth = model.getWidth(widthParent: parentMaxWidth(this)) ?? 0;
 
         //we check to see if the fixed type has a bounded width, as myWidth sets the maxWidth for expanding on the second pass incorrectly (disregarding the pad of the parent)
         if (constraints.hasBoundedWidth && constraints.maxWidth < maxWidth) maxWidth = constraints.maxWidth;
@@ -828,7 +828,7 @@ class FlexRenderer extends RenderBox
         break;
 
       case FlexType.fixed:
-        maxHeight = myHeight(this,model) ?? 0;
+        maxHeight = model.getHeight(heightParent: parentMaxHeight(this)) ?? 0;
         //we check to see if the fixed type has a bounded height, as myHeight sets the maxWidth for expanding on the second pass incorrectly (disregarding the pad of the parent).
         //This behavior can be seen when a box type column is set height with and expanding child and padding.
         if (constraints.hasBoundedHeight && constraints.maxHeight < maxHeight) maxHeight = constraints.maxHeight;

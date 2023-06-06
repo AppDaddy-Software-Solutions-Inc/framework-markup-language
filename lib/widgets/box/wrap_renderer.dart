@@ -541,7 +541,7 @@ class WrapRenderer extends RenderBox with
       var childModel = childData.model!;
 
       // get layout constraints
-      var childConstraints = getChildLayoutConstraints(this, model, constraints, child, childModel);
+      var childConstraints = getChildLayoutConstraints(constraints, child, childModel);
 
       // calculate the child's size by performing
       // a dry layout. We use LocalBoxConstraints in order to

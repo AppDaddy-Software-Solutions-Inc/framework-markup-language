@@ -21,20 +21,9 @@ mixin BoxMixin
     return node;
   }
 
-  double? myHeight(RenderBox root, ViewableWidgetModel model)
-  {
-    double? height;
-    var modelHeight = model.getHeight(heightParent: _myParentsHeight(root));
-    if (modelHeight != null)
-    {
-      height = modelHeight;
-    }
-    return height;
-  }
-
   // walk up the render tree
   // to find first constrained height
-  double _myParentsHeight(RenderBox node)
+  double parentMaxHeight(RenderBox node)
   {
     double? height;
 
@@ -56,20 +45,9 @@ mixin BoxMixin
     return height ?? System().screenheight.toDouble();
   }
 
-  double? myWidth(RenderBox root, ViewableWidgetModel model)
-  {
-    double? width;
-    var modelWidth = model.getWidth(widthParent: _myParentsWidth(root));
-    if (modelWidth != null)
-    {
-      width = modelWidth;
-    }
-    return width;
-  }
-
   // walk up the render tree
   // to find first constrained width
-  double _myParentsWidth(RenderBox node)
+  double parentMaxWidth(RenderBox node)
   {
     double? width;
 
@@ -91,12 +69,11 @@ mixin BoxMixin
     return width ?? System().screenheight.toDouble();
   }
 
-  BoxConstraints getChildLayoutConstraints(RenderBox parent, ViewableWidgetModel parentModel, BoxConstraints constraints, RenderBox child, ViewableWidgetModel childModel)
+  BoxConstraints getChildLayoutConstraints(BoxConstraints constraints, RenderBox child, ViewableWidgetModel model)
   {
     // get the child's width from the model
     // and tighten the child's width constraint
-    var parentWidth = myWidth(parent, parentModel);
-    var childWidth  = childModel.getWidth(widthParent: parentWidth);
+    var childWidth  = model.getWidth(widthParent: parentMaxWidth(child));
     if (childWidth != null)
     {
       constraints = constraints.tighten(width: childWidth);
@@ -104,8 +81,7 @@ mixin BoxMixin
 
     // get the child's height from the model
     // and tighten the child's height constraint
-    var parentHeight = myHeight(parent, parentModel);
-    var childHeight  = childModel.getHeight(heightParent: parentHeight);
+    var childHeight  = model.getHeight(heightParent: parentMaxHeight(child));
     if (childHeight != null)
     {
       constraints = constraints.tighten(height: childHeight);
@@ -113,20 +89,20 @@ mixin BoxMixin
 
     // If both of us are unconstrained in the horizontal axis,
     // tighten the child's width constraint prior to layout
-    if (!constraints.hasBoundedWidth && childModel.canExpandInfinitelyWide)
+    if (!constraints.hasBoundedWidth && model.canExpandInfinitelyWide)
     {
-      constraints = BoxConstraints(minWidth: constraints.minWidth, maxWidth: _myParentsWidth(parent), minHeight: constraints.minHeight, maxHeight: constraints.maxHeight);
+      constraints = BoxConstraints(minWidth: constraints.minWidth, maxWidth: parentMaxWidth(child), minHeight: constraints.minHeight, maxHeight: constraints.maxHeight);
     }
 
     // If both of us are unconstrained in the vertical axis,
     // tighten the child's height constraint prior to layout
-    if (!constraints.hasBoundedHeight && childModel.canExpandInfinitelyHigh)
+    if (!constraints.hasBoundedHeight && model.canExpandInfinitelyHigh)
     {
-      constraints = BoxConstraints(minWidth: constraints.minWidth, maxWidth: constraints.maxWidth, minHeight: constraints.minHeight, maxHeight: _myParentsHeight(parent));
+      constraints = BoxConstraints(minWidth: constraints.minWidth, maxWidth: constraints.maxWidth, minHeight: constraints.minHeight, maxHeight: parentMaxHeight(child));
     }
 
     // visible?
-    if (!childModel.visible)
+    if (!model.visible)
     {
       constraints = BoxConstraints(minWidth: 0, maxWidth: 0, minHeight: 0, maxHeight: 0);
     }

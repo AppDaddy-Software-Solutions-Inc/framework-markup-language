@@ -6,6 +6,7 @@ import 'package:fml/event/handler.dart' ;
 import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/text/text_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/button/button_view.dart';
@@ -17,6 +18,20 @@ import 'package:fml/helper/common_helpers.dart';
 /// Defines the properties used to build a [BUTTON.ButtonView]
 class ButtonModel extends BoxModel
 {
+  // shrink by default
+  @override
+  bool get expand => false;
+
+  // layout as row by default
+  @override
+  String get layout => super.layout ?? 'row';
+
+  @override
+  bool get center => true;
+
+  @override
+  String get border => 'none';
+
   /// [Event]s to execute when the button is clicked
   StringObservable? _onclick;
   set onclick (dynamic v)
@@ -36,11 +51,7 @@ class ButtonModel extends BoxModel
     return _onclick?.get();
   }
 
-  final bool expandByDefault = false;
-
-  /////////////
-  /* onenter */
-  /////////////
+  // onenter
   StringObservable? _onenter;
   set onenter (dynamic v)
   {
@@ -59,9 +70,7 @@ class ButtonModel extends BoxModel
     return _onenter?.get();
   }
 
-  /////////////
-  /* onexit */
-  /////////////
+  // onexit
   StringObservable? _onexit;
   set onexit (dynamic v)
   {
@@ -184,7 +193,6 @@ class ButtonModel extends BoxModel
       this.children = [];
       this.children!.addAll(children);
     }
-
   }
   static ButtonModel? fromXml(WidgetModel parent, XmlElement xml)
   {
@@ -211,7 +219,7 @@ class ButtonModel extends BoxModel
     super.deserialize(xml);
 
     // properties
-    String?                      text = Xml.get(node: xml, tag: 'value');
+    String? text = Xml.get(node: xml, tag: 'value');
     if (S.isNullOrEmpty(text))  text = Xml.get(node: xml, tag: 'label');
     if (S.isNullOrEmpty(text))  text = Xml.getText(xml);
 
@@ -221,6 +229,13 @@ class ButtonModel extends BoxModel
     onexit            = Xml.get(node: xml, tag: 'onexit');
     buttontype        = Xml.get(node: xml, tag: 'type');
     radius            = Xml.get(node: xml, tag: 'radius');
+
+    // add label
+    if (viewableChildren.isEmpty && label != null)
+    {
+      children ??= [];
+      children!.add(TextModel(this,null,value: label));
+    }
   }
 
   @override

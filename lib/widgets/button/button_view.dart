@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/button/button_model.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
@@ -104,35 +105,22 @@ class _ButtonViewState extends WidgetState<ButtonView>
       default: return TextButton(style: style, onPressed: onPressed, child: body);
     }
   }
-  
+
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    // save system constraints
-    onLayout(constraints);
-
-    ButtonModel model = widget.model;
-
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    // build the child views
-    List<Widget> children = widget.model.inflate();
-    if (children.isEmpty) children.add(Container());
-
-    // Add a text child if label is set
-    if (!S.isNullOrEmpty(model.label)) children.add(Text(model.label ?? ""));
-
-    // center the body
-    var body = Center(child: Row(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.center, children: children));
+    var body = BoxView(widget.model);
 
     // Build the Button Types
     var view = _buildButton(body);
 
     // If onclick is null or enabled is false we fade the button
-    if (model.onclick == null || model.enabled == false) view = Opacity(opacity: 0.9, child: view); // Disabled
+    if (widget.model.onclick == null || widget.model.enabled == false) view = Opacity(opacity: 0.9, child: view); // Disabled
 
     // add margins
     view = addMargins(view);
@@ -143,7 +131,6 @@ class _ButtonViewState extends WidgetState<ButtonView>
     // allow button to shrink to size of its contents
     view = UnconstrainedBox(child: view);
 
-    // apply user defined constraints
     return view;
   }
 }

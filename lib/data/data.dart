@@ -382,7 +382,7 @@ class Data with ListMixin<dynamic>
     return data;
   }
 
-  static dynamic writeValue(dynamic data, String? tag, dynamic value)
+  static writeValue(dynamic data, String? tag, dynamic value)
   {
     // get segments
     DotNotation? segments = DotNotation.fromString(tag);

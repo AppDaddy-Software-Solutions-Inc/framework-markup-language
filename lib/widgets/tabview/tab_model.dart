@@ -172,9 +172,7 @@ class TabModel extends BoxModel
     tabbar    = Xml.get(node: xml, tag: 'tabbar');
     tabbutton = Xml.get(node: xml, tag: 'tabbutton');
 
-    //////////////////
-    /* Create Pages */
-    //////////////////
+    // create Tabs
     int i = 0;
     dynamic nodes = xml.findElements("TAB", namespace: "*");
     if (nodes != null){

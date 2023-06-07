@@ -77,7 +77,7 @@ class Xml {
       List<XmlAttribute> attributes = node.attributes;
       for (XmlAttribute attribute in attributes)
       {
-        String value = attribute.text;
+        String value = attribute.value;
         String name  = attribute.name.toString();
         map[name] = value;
       }
@@ -90,9 +90,9 @@ class Xml {
       {
         if (child is XmlElement)
         {
-          XmlElement e = child;
-          String value = e.text;
-          String name  = e.name.toString();
+          XmlElement e  = child;
+          String? value = e.value;
+          String name   = e.name.toString();
           map[name] = value;
         }
       }
@@ -180,16 +180,16 @@ class Xml {
       {
         if (child is XmlElement)
         {
-          XmlElement e = child;
-          String value = e.text.trim();
-          String name  = e.name.toString();
-          map[name]    = hasChildElements(child) ? child.outerXml.toString().trim() : value;
+          XmlElement e  = child;
+          String? value = e.value?.trim();
+          String name   = e.name.toString();
+          map[name]     = hasChildElements(child) ? child.outerXml.toString().trim() : value;
         }
 
         else if (child is XmlText)
         {
           XmlText e = child;
-          String value = e.text.trim();
+          String value = e.value.trim();
           String name  = node.localName;
           map[name]    = value;
         }
@@ -508,14 +508,14 @@ class Xml {
   /// Given an [XmlNode] this will return the raw [XmlNodeType.TEXT] String
   static String? getText(XmlNode? node)
   {
-    if ((node?.nodeType == XmlNodeType.TEXT) || (node?.nodeType == XmlNodeType.CDATA)) return node?.text;
+    if ((node?.nodeType == XmlNodeType.TEXT) || (node?.nodeType == XmlNodeType.CDATA)) return node?.value;
     if ((node?.children.isNotEmpty == true))
     {
       String? text;
       for (XmlNode n in node!.children)
       {
         String? s;
-        if ((n.nodeType ==  XmlNodeType.TEXT) || (n.nodeType ==  XmlNodeType.CDATA)) s = n.text;
+        if ((n.nodeType ==  XmlNodeType.TEXT) || (n.nodeType ==  XmlNodeType.CDATA)) s = n.value;
         if (s != null) text = (text ?? '') + s.trim();
       }
       return text;

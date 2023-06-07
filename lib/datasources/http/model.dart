@@ -70,20 +70,20 @@ class HttpModel extends DataSourceModel implements IDataSource
   int get timeout => _timeout?.get() ?? defaultTimeout;
 
   // url
-  StringObservable? _url;
+  StringObservable? urlObservable;
   set url(dynamic v)
   {
-    if (_url != null)
+    if (urlObservable != null)
     {
-      _url!.set(v);
+      urlObservable!.set(v);
     }
     else if (v != null)
     {
-      _url = StringObservable(Binding.toKey(id, 'url'), v, scope: scope, listener: onPropertyChange);
-      _url!.registerListener(onUrlChange);
+      urlObservable = StringObservable(Binding.toKey(id, 'url'), v, scope: scope, listener: onPropertyChange);
+      urlObservable!.registerListener(onUrlChange);
     }
   }
-  String? get url => _url?.get();
+  String? get url => urlObservable?.get();
 
   // response
   StringObservable? _response;
@@ -139,15 +139,16 @@ class HttpModel extends DataSourceModel implements IDataSource
 
     // build headers
     var headers = Xml.getChildElements(node: xml, tag: 'header');
-    if (headers != null){
-    for (var node in headers)
+    if (headers != null)
     {
-      // set headers
-      if (this.headers == null) this.headers = <String,String>{};
-      String? key   = Xml.get(node: node, tag: 'key');
-      String? value = Xml.get(node: node, tag: 'value');
-      if (!S.isNullOrEmpty(key) && !S.isNullOrEmpty(value)) this.headers![key!] = value!;
-    }
+      for (var node in headers)
+      {
+        // set headers
+        if (this.headers == null) this.headers = <String,String>{};
+        String? key   = Xml.get(node: node, tag: 'key');
+        String? value = Xml.get(node: node, tag: 'value');
+        if (!S.isNullOrEmpty(key) && !S.isNullOrEmpty(value)) this.headers![key!] = value!;
+      }
     }
   }
 

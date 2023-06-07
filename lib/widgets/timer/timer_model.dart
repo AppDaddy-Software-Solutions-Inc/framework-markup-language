@@ -31,11 +31,13 @@ class TimerModel extends WidgetModel
   set frequency(dynamic frequency)
   {
     if (frequency == null) return;
-    frequency = frequency.trim().toLowerCase();
-
     int factor = 1;
-    if (frequency.endsWith('s')) factor = 1000;
-    if (factor > 1) frequency = (frequency.length > 1) ? frequency.substring(0, frequency.length - 1) : null;
+    if (frequency is String)
+    {
+      frequency = frequency.trim().toLowerCase();
+     if (frequency.endsWith('s')) factor = 1000;
+     if (factor > 1) frequency = (frequency.length > 1) ? frequency.substring(0, frequency.length - 1) : null;
+    }
 
     if (S.isNumber(frequency))
     {

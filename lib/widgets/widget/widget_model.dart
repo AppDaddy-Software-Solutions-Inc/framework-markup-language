@@ -8,6 +8,7 @@ import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/datasources/datasource_listener_interface.dart';
 import 'package:fml/datasources/stash/stash_model.dart';
 import 'package:fml/datasources/log/log_model.dart';
+import 'package:fml/datasources/transforms/subquery.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/datasources/detectors/barcode/barcode_detector_model.dart';
 import 'package:fml/datasources/detectors/text/text_detector_model.dart';
@@ -366,7 +367,7 @@ class WidgetModel implements IDataSourceListener {
         break;
 
       case "calc":
-        if (parent is IDataSource) model = Calc.fromXml(model, node);
+        if (parent is IDataSource) model = Calc.fromXml(parent, node);
         break;
 
       case "camera":
@@ -432,7 +433,7 @@ class WidgetModel implements IDataSourceListener {
         break;
 
       case "distinct":
-        if (parent is IDataSource) model = Distinct.fromXml(model, node);
+        if (parent is IDataSource) model = Distinct.fromXml(parent, node);
         break;
 
       case "drag": // Preferred case.
@@ -457,7 +458,7 @@ class WidgetModel implements IDataSourceListener {
         break;
 
       case "eval":
-        if (parent is IDataSource) model = Eval.fromXml(model, node);
+        if (parent is IDataSource) model = Eval.fromXml(parent, node);
         break;
 
       case "field":
@@ -682,6 +683,10 @@ class WidgetModel implements IDataSourceListener {
         model = StashModel.fromXml(parent, node);
         break;
 
+      case "subquery":
+        if (parent is HttpGetModel) model = Query.fromXml(parent, node);
+        break;
+
       case "transform":
         if (parent is AnimationModel) {
           model = TransformModel.fromXml(parent, node);
@@ -715,7 +720,7 @@ class WidgetModel implements IDataSourceListener {
         break;
 
       case "pivot":
-        if (parent is IDataSource) model = Pivot.fromXml(model, node);
+        if (parent is IDataSource) model = Pivot.fromXml(parent, node);
         break;
 
       case "put":
@@ -791,7 +796,7 @@ class WidgetModel implements IDataSourceListener {
         break;
 
       case "sort":
-        if (parent is IDataSource) model = Sort.fromXml(model, node);
+        if (parent is IDataSource) model = Sort.fromXml(parent, node);
         break;
 
       case "span":

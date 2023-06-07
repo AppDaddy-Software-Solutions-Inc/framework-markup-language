@@ -167,16 +167,16 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
   String? get status => _status?.get();
 
   // status code
-  StringObservable? _statuscode;
+  IntegerObservable? _statuscode;
   set statuscode(dynamic v) {
     if (_statuscode != null) {
       _statuscode!.set(v);
     } else if (v != null) {
       _statuscode =
-          StringObservable(Binding.toKey(id, 'statuscode'), v, scope: scope);
+          IntegerObservable(Binding.toKey(id, 'statuscode'), v, scope: scope);
     }
   }
-  String? get statuscode => _statuscode?.get();
+  int? get statuscode => _statuscode?.get();
 
   // status message
   StringObservable? _statusmessage;
@@ -196,16 +196,20 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
   set timetolive(dynamic ttl) {
     _timetolive = 0;
     if (ttl == null) return;
-    ttl = ttl.trim().toLowerCase();
 
     int factor = 1;
-    if (ttl.endsWith('s')) factor = 1000;
-    if (ttl.endsWith('m')) factor = 1000 * 60;
-    if (ttl.endsWith('h')) factor = 1000 * 60 * 60;
-    if (ttl.endsWith('d')) factor = 1000 * 60 * 60 * 24;
-    if (factor > 1) ttl = (ttl.length > 1) ? ttl.substring(0, ttl.length - 1) : null;
+    if (ttl is String)
+    {
+      ttl = ttl.trim().toLowerCase();
+      if (ttl.endsWith('s')) factor = 1000;
+      if (ttl.endsWith('m')) factor = 1000 * 60;
+      if (ttl.endsWith('h')) factor = 1000 * 60 * 60;
+      if (ttl.endsWith('d')) factor = 1000 * 60 * 60 * 24;
+      if (factor > 1) ttl = (ttl.length > 1) ? ttl.substring(0, ttl.length - 1) : null;
+    }
 
-    if (S.isNumber(ttl)) {
+    if (S.isNumber(ttl))
+    {
       int t = S.toInt(ttl)! * factor;
       if (t >= 0) _timetolive = t;
     }
@@ -228,29 +232,39 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
 
   // autoquery
   int? _autoquery;
-  set autoquery(dynamic autoquery) {
+  set autoquery(dynamic autoquery)
+  {
     _autoquery = 0;
-
     if (autoquery == null) return;
-    autoquery = autoquery.trim().toLowerCase();
 
     int factor = 1;
-    if (autoquery.endsWith('s')) {
-      factor = 1;
-    } else if (autoquery.endsWith('m')) {
-      factor = 1 * 60;
-    } else if (autoquery.endsWith('h')) {
-      factor = 1 * 60 * 60;
-    } else if (autoquery.endsWith('d')) {
-      factor = 1 * 60 * 60 * 24;
-    }
-    if (autoquery.endsWith('s') || autoquery.endsWith('m') || autoquery.endsWith('h') || autoquery.endsWith('d')) {
-      autoquery = (autoquery.length > 1)
-          ? autoquery.substring(0, autoquery.length - 1)
-          : null;
+    if (autoquery is String)
+    {
+      autoquery = autoquery.trim().toLowerCase();
+      if (autoquery.endsWith('s'))
+      {
+        factor = 1;
+      }
+      else if (autoquery.endsWith('m'))
+      {
+        factor = 1 * 60;
+      }
+      else if (autoquery.endsWith('h'))
+      {
+        factor = 1 * 60 * 60;
+      }
+      else if (autoquery.endsWith('d'))
+      {
+        factor = 1 * 60 * 60 * 24;
+      }
+      if (autoquery.endsWith('s') || autoquery.endsWith('m') || autoquery.endsWith('h') || autoquery.endsWith('d'))
+      {
+        autoquery = (autoquery.length > 1) ? autoquery.substring(0, autoquery.length - 1) : null;
+      }
     }
 
-    if (S.isNumber(autoquery)) {
+    if (S.isNumber(autoquery))
+    {
       int t = S.toInt(autoquery)! * factor;
       if (t >= 0) _autoquery = t;
     }
@@ -506,7 +520,10 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     // apply data transforms
     if (children != null){
       for (WidgetModel model in children!) {
-        if (model is ITransform) await (model as ITransform).apply(data);
+        if (model is ITransform)
+        {
+          await (model as ITransform).apply(data);
+        }
       }}
 
     // type - default is replace
@@ -647,13 +664,16 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     }
 
     // notify nested data sources
-    if (datasources != null){
-      for (IDataSource model in datasources!) {
+    if (datasources != null)
+    {
+      for (IDataSource model in datasources!)
+      {
         if (model is DataModel)
         {
-          model.value = data;
+          model.onSuccess(data, code: code, message: message);
         }
-      }}
+      }
+    }
 
     // requery?
     if (((autoquery ?? 0) > 0) && (timer == null) && (!disposed)) {

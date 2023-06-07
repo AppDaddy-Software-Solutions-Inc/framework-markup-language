@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -14,20 +13,10 @@ import 'package:fml/helper/common_helpers.dart';
 /// Button [ScrollerModel]
 ///
 /// Defines the properties used to build a [SCROLLER.ScrollerView]
-class ScrollerModel extends ViewableWidgetModel 
+class ScrollerModel extends BoxModel
 {
-  /// The cross alignment of the widgets children. Can be `top`, `bottom`, `start`, or `end`.
-  StringObservable? _align;
-
-  set align(dynamic v) {
-    if (_align != null) {
-      _align!.set(v);
-    } else if (v != null) {
-      _align = StringObservable(Binding.toKey(id, 'align'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  String? get align => _align?.get();
+  @override
+  String get border => 'none';
 
   @override
   bool get expandHorizontally => true;
@@ -49,31 +38,18 @@ class ScrollerModel extends ViewableWidgetModel
     return true;
   }
 
-  /// Layout determines the widgets childrens layout. Can be `row`, `column`, `col`. Defaulted to `column`. Overrides direction.
-  LayoutType get layoutType => BoxModel.getLayoutType(layout, defaultLayout: LayoutType.column);
-
-  StringObservable? _layout;
+  @override
   set layout(dynamic v)
   {
-    if (v == 'horizontal') v = 'row';
-    if (v == 'vertical')   v = 'column';
-    if (v == 'col')        v = 'column';
-    if (_layout != null)
+    if (v is String && v.toLowerCase().trim() == 'horizontal')
     {
-      _layout!.set(v);
+      v = 'row';
     }
-    else if (v != null)
+    else if (v is String && v.toLowerCase().trim() == 'vertical')
     {
-      _layout = StringObservable(Binding.toKey(id, 'layout'), v, scope: scope, listener: onPropertyChange);
+      v = 'column';
     }
-  }
-  String get layout
-  {
-    var v = _layout?.get()?.toLowerCase().trim();
-    if (v == 'horizontal') v = 'row';
-    if (v == 'vertical')   v = 'column';
-    if (v == 'col')        v = 'column';
-    return v ?? 'column';
+    super.layout = v;
   }
 
   /// If true will display a scrollbar, just used as a backup if flutter's built in scrollbar doesn't work
@@ -89,7 +65,7 @@ class ScrollerModel extends ViewableWidgetModel
       _scrollbar = BooleanObservable(Binding.toKey(id, 'scrollbar'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  bool? get scrollbar => _scrollbar?.get();
+  bool get scrollbar => _scrollbar?.get() ?? true;
 
   /// Calls an [Event] String when the scroll reaches max extent
   StringObservable? _onscrolledtoend;
@@ -132,24 +108,10 @@ class ScrollerModel extends ViewableWidgetModel
   }
   bool get draggable => _draggable?.get() ?? false;
 
-  ColorObservable? _shadowcolor;
-  set shadowcolor(dynamic v) {
-    if (_shadowcolor != null) {
-      _shadowcolor!.set(v);
-    } else if (v != null) {
-      _shadowcolor = ColorObservable(
-          Binding.toKey(id, 'shadowcolor'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  Color? get shadowcolor => _shadowcolor?.get();
-
 
   ScrollerModel(WidgetModel parent, String? id,
-      { dynamic direction,
-        dynamic scrollbar,
+      { dynamic scrollbar,
         dynamic draggable,
-        dynamic align,
         dynamic layout,
         dynamic shadowcolor,
         dynamic onscrolledtoend,
@@ -172,7 +134,6 @@ class ScrollerModel extends ViewableWidgetModel
 
     this.draggable = draggable;
     this.onpulldown = onpulldown;
-    this.align = align;
     this.shadowcolor = shadowcolor;
     this.layout = layout;
     this.scrollbar = scrollbar;
@@ -198,16 +159,14 @@ class ScrollerModel extends ViewableWidgetModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml)
+  void deserialize(XmlElement? xml)
   {
-
     // deserialize 
     super.deserialize(xml);
 
     // properties
     layout = Xml.get(node: xml, tag: 'layout') ?? Xml.get(node: xml, tag: 'direction');
     scrollbar = Xml.get(node: xml, tag: 'scrollbar');
-    align = Xml.get(node: xml, tag: 'align');
     onscrolledtoend = Xml.get(node: xml, tag: 'onscrolledtoend');
     shadowcolor = Xml.get(node: xml, tag: 'shadowcolor');
     onpulldown = Xml.get(node: xml, tag: 'onpulldown');

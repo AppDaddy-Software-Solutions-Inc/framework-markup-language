@@ -34,7 +34,7 @@ class ModalModel extends BoxModel
     dynamic draggable,
     dynamic modal,
     dynamic closeable,
-    dynamic dismissable}) : super(parent, id)
+    dynamic dismissible}) : super(parent, id)
   {
     if (title != null) this.title = title;
     if (width != null) this.width = width;
@@ -46,7 +46,7 @@ class ModalModel extends BoxModel
     if (draggable != null) this.draggable = draggable;
     if (modal != null) this.modal = modal;
     if (closeable != null) this.closeable = closeable;
-    if (dismissable != null) this.dismissable = dismissable;
+    if (dismissible != null) this.dismissable = dismissible;
   }
 
   @override

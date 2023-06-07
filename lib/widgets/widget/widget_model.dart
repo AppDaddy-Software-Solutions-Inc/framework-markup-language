@@ -684,7 +684,7 @@ class WidgetModel implements IDataSourceListener {
         break;
 
       case "subquery":
-        if (parent is IDataSource) model = Query.fromXml(parent, node);
+        if (parent is HttpGetModel) model = Query.fromXml(parent, node);
         break;
 
       case "transform":

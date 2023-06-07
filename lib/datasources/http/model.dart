@@ -70,20 +70,20 @@ class HttpModel extends DataSourceModel implements IDataSource
   int get timeout => _timeout?.get() ?? defaultTimeout;
 
   // url
-  StringObservable? _url;
+  StringObservable? urlObservable;
   set url(dynamic v)
   {
-    if (_url != null)
+    if (urlObservable != null)
     {
-      _url!.set(v);
+      urlObservable!.set(v);
     }
     else if (v != null)
     {
-      _url = StringObservable(Binding.toKey(id, 'url'), v, scope: scope, listener: onPropertyChange);
-      _url!.registerListener(onUrlChange);
+      urlObservable = StringObservable(Binding.toKey(id, 'url'), v, scope: scope, listener: onPropertyChange);
+      urlObservable!.registerListener(onUrlChange);
     }
   }
-  String? get url => _url?.get();
+  String? get url => urlObservable?.get();
 
   // response
   StringObservable? _response;

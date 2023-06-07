@@ -75,7 +75,6 @@ class TransformModel extends WidgetModel
   @override
   void deserialize(XmlElement xml)
   {
-
     // deserialize
     super.deserialize(xml);
 

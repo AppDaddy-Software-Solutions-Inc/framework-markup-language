@@ -43,8 +43,10 @@ class Eval extends TransformModel implements ITransform
     if ((list== null) || (source == null)) return null;
 
     List<Binding>? bindings = Binding.getBindings(source);
-    for (var row in list) {
+    for (var row in list)
+    {
       // get variables
+
       Map<String?, dynamic> variables = Data.readValues(bindings, row);
 
       // evaluate

@@ -4,6 +4,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/list/list_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/form/form_model.dart';
@@ -32,6 +33,34 @@ class ListItemModel extends DecoratedWidgetModel
   }
   List<String>? get postbrokers => _postbrokers;
 
+  BooleanObservable? _selected;
+  set selected (dynamic v)
+  {
+    if (_selected != null)
+    {
+      _selected!.set(v);
+    }
+    else if (v != null)
+    {
+      _selected = BooleanObservable(Binding.toKey(id, 'selected'), v, scope: scope);
+    }
+  }
+  bool? get selected =>  _selected?.get();
+
+  BooleanObservable? _selectable;
+  set selectable (dynamic v)
+  {
+    if (_selectable != null)
+    {
+      _selectable!.set(v);
+    }
+    else if (v != null)
+    {
+      _selectable = BooleanObservable(Binding.toKey(id, 'selectable'), v, scope: scope);
+    }
+  }
+  bool get selectable =>  _selectable?.get() ?? true;
+  
   ///////////
   /* dirty */
   ///////////
@@ -82,7 +111,6 @@ class ListItemModel extends DecoratedWidgetModel
   }
   Color? get backgroundcolor =>  _backgroundcolor?.get();
 
-
   ////////////
   /* margin */
   ////////////
@@ -117,13 +145,14 @@ class ListItemModel extends DecoratedWidgetModel
   }
   String? get title => _title?.get();
 
-  ListItemModel(WidgetModel parent, String?  id, {dynamic data, this.type, dynamic backgroundcolor, dynamic margin}) : super(parent, id, scope: Scope(parent: parent.scope))
+  ListItemModel(WidgetModel parent, String?  id, {dynamic data, dynamic selected, this.type, dynamic title, dynamic backgroundcolor, dynamic margin}) : super(parent, id, scope: Scope(parent: parent.scope))
   {
     this.data             = data;
     this.backgroundcolor  = backgroundcolor;
-    dirty            = false;
+    dirty                 = false;
     this.margin           = margin;
-    title            = title;
+    title                 = title;
+    this.selected         = selected;
   }
 
   static ListItemModel? fromXml(WidgetModel parent, XmlElement? xml, {dynamic data})
@@ -158,6 +187,8 @@ class ListItemModel extends DecoratedWidgetModel
     margin          = Xml.get(node: xml, tag: 'margin');
     title           = Xml.get(node: xml, tag: 'title');
     postbrokers     = Xml.attribute(node: xml, tag: 'postbroker');
+    selected        = Xml.get(node: xml, tag: 'selected');
+    selectable      = Xml.get(node: xml, tag: 'selectable');
 
     // find all descendants
     List<dynamic>? fields = findDescendantsOfExactType(null);
@@ -220,6 +251,15 @@ class ListItemModel extends DecoratedWidgetModel
       ok = false;
     }
     return ok;
+  }
+
+  Future<bool> onTap() async
+  {
+    if (parent is ListModel)
+    {
+      (parent as ListModel).onTap(this);
+    }
+    return true;
   }
 
   @override

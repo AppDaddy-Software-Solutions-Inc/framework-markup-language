@@ -137,7 +137,11 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
   {
     ListItemModel? model = widget.model.getItemModel(index);
     if (model == null) return null;
-    return ListItemView(model: model, selectable: widget.model.selectable);
+
+    Widget view = ListItemView(model: model, selectable: model.selectable);
+    view = MouseRegion(cursor: SystemMouseCursors.click, child: view);
+    view = GestureDetector(onTap: () => model.onTap(), child: view, behavior: HitTestBehavior.translucent);
+    return view;
   }
 
   List<ExpansionPanelRadio> expansionItems(BuildContext context) {
@@ -147,7 +151,7 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
     do {
       itemModel = widget.model.getItemModel(index++);
       if (itemModel != null) {
-        var listItem = ListItemView(model: itemModel, selectable: widget.model.selectable);
+        var listItem = ListItemView(model: itemModel, selectable: itemModel.selectable);
         Text? title;
         if (!S.isNullOrEmpty(itemModel.title)) {
           title = Text(itemModel.title!);

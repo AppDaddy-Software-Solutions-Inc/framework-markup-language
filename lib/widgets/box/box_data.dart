@@ -8,8 +8,9 @@ enum FlexType {shrinking, fixed, expanding}
 /// Parent data for use with [BoxRenderer].
 class BoxData extends ContainerBoxParentData<RenderBox>
 {
-  String? parentKey;
   ViewableWidgetModel? model;
+
+  Size? parentSize;
 
   int? flex;
   FlexFit? fit;

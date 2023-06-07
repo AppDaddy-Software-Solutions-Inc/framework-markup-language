@@ -19,26 +19,6 @@ class ScrollerModel extends BoxModel
   String get border => 'none';
 
   @override
-  bool get expandHorizontally => true;
-
-  @override
-  bool get expandVertically => true;
-
-  @override
-  bool get canExpandInfinitelyWide
-  {
-    if (hasBoundedWidth) return false;
-    return true;
-  }
-
-  @override
-  bool get canExpandInfinitelyHigh
-  {
-    if (hasBoundedHeight) return false;
-    return true;
-  }
-
-  @override
   set layout(dynamic v)
   {
     if (v is String && v.toLowerCase().trim() == 'horizontal')

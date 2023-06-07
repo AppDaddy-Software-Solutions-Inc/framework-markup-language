@@ -10,6 +10,8 @@ import 'package:fml/widgets/box/box_constraints.dart';
 import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/box/box_mixin.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/box/stack_renderer.dart';
+import 'package:fml/widgets/box/wrap_renderer.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 
 // change to false to allow write messages
@@ -645,7 +647,9 @@ class FlexRenderer extends RenderBox
         var childData = (child.parentData as BoxData);
         var childModel = childData.model!;
 
-        //var idChild = childModel.id;
+        // var idParent = model.id;
+        // var idChild = childModel.id;
+        // var constr = constraints;
 
         // assign flex value
         _setChildFlex(childData, childModel);
@@ -809,10 +813,15 @@ class FlexRenderer extends RenderBox
         break;
 
       case FlexType.fixed:
-        maxWidth = model.getWidth(widthParent: parentMaxWidth(this)) ?? 0;
-
-        //we check to see if the fixed type has a bounded width, as myWidth sets the maxWidth for expanding on the second pass incorrectly (disregarding the pad of the parent)
-        if (constraints.hasBoundedWidth && constraints.maxWidth < maxWidth) maxWidth = constraints.maxWidth;
+        var parent = parentOf(this);
+        if (constraints.hasBoundedWidth && (parent is FlexRenderer || parent is StackRenderer || parent is WrapRenderer))
+        {
+          maxWidth = constraints.maxWidth;
+        }
+        else
+        {
+          maxWidth = model.getWidth(widthParent: widthOf(this.parent)) ?? 0;
+        }
         break;
 
       case FlexType.expanding:
@@ -828,10 +837,15 @@ class FlexRenderer extends RenderBox
         break;
 
       case FlexType.fixed:
-        maxHeight = model.getHeight(heightParent: parentMaxHeight(this)) ?? 0;
-        //we check to see if the fixed type has a bounded height, as myHeight sets the maxWidth for expanding on the second pass incorrectly (disregarding the pad of the parent).
-        //This behavior can be seen when a box type column is set height with and expanding child and padding.
-        if (constraints.hasBoundedHeight && constraints.maxHeight < maxHeight) maxHeight = constraints.maxHeight;
+        var parent = parentOf(this);
+        if (constraints.hasBoundedHeight && (parent is FlexRenderer || parent is StackRenderer || parent is WrapRenderer))
+        {
+          maxHeight = constraints.maxHeight;
+        }
+        else
+        {
+          maxHeight = model.getHeight(heightParent: heightOf(parent)) ?? 0;
+        }
         break;
 
       case FlexType.expanding:
@@ -892,8 +906,8 @@ class FlexRenderer extends RenderBox
   }
 
   @override
-  void performLayout() {
-    final BoxConstraints constraints = this.constraints;
+  void performLayout()
+  {
     final _LayoutSizes sizes = _computeSizes(layoutChild: ChildLayoutHelper.layoutChild, constraints: constraints);
 
     final double allocatedSize = sizes.allocatedSize;

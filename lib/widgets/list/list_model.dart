@@ -17,7 +17,6 @@ import 'package:fml/helper/common_helpers.dart';
 class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
 {
   final HashMap<int,ListItemModel> items = HashMap<int,ListItemModel>();
-  bool   selectable = false;
 
   // prototype
   String? prototype;
@@ -36,6 +35,36 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
   bool get scrollShadows => _scrollShadows?.get() ?? false;
 
+  IntegerObservable? _selectedIndex;
+  set selectedIndex (dynamic v)
+  {
+    if (_selectedIndex != null)
+    {
+      _selectedIndex!.set(v);
+    }
+    else if (v != null)
+    {
+      _selectedIndex = IntegerObservable(Binding.toKey(id, 'selectedindex'), v, scope: scope);
+    }
+  }
+  int? get selectedIndex => _selectedIndex?.get();
+
+  // selected selected element
+  ListObservable? _selected;
+  set selected(dynamic v)
+  {
+    if (_selected != null)
+    {
+      _selected!.set(v);
+    }
+    else if (v != null)
+    {
+      _selected = ListObservable(Binding.toKey(id, 'selected'), null, scope: scope);
+      _selected!.set(v);
+    }
+  }
+  get selected => _selected?.get();
+  
   BooleanObservable? _scrollButtons;
   set scrollButtons (dynamic v)
   {
@@ -391,6 +420,31 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
   Future<void> onPull(BuildContext context) async
   {
     await EventHandler(this).execute(_onpulldown);
+  }
+
+  Future<bool> onTap(ListItemModel model) async
+  {
+    int i = 0;
+    items.forEach((key, item)
+    {
+       if (item == model)
+       {
+         // toggle selected
+         bool ok = (item.selected ?? false) ? false : true;
+
+         // set values
+         item.selected = ok;
+         selectedIndex = ok ? i : null;
+         selected      = ok ? item.data : Data();
+       }
+       else
+       {
+         item.selected = false;
+       }
+       i++;
+    });
+    selected = model.data;
+    return true;
   }
 
   @override

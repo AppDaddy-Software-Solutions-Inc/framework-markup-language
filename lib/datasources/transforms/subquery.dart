@@ -16,9 +16,9 @@ class Query extends TransformModel implements ITransform
   final String? source;
   final String? target;
 
-  Query(WidgetModel? parent, {String? id, this.source, this.target}) : super(parent, id);
+  Query(WidgetModel parent, {String? id, this.source, this.target}) : super(parent, id);
 
-  static Query? fromXml(WidgetModel? parent, XmlElement xml)
+  static Query? fromXml(WidgetModel parent, XmlElement xml)
   {
     Query model = Query(parent,
         id        : Xml.get(node: xml, tag: 'id'),

@@ -353,6 +353,9 @@ class _BoxViewState extends WidgetState<BoxView>
     // blur the view - white10 = Blur (This creates mirrored/frosted effect overtop of something else)
     if (widget.model.color == Colors.white10) view = _getFrostedView(view, radius);
 
+    var c = widget.model.constraints;
+    view = applyConstraints(view, widget.model.constraints);
+
     // add margins around the entire widget
     view = addMargins(view);
 

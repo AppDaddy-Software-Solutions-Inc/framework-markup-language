@@ -108,6 +108,8 @@ class ButtonModel extends BoxModel
     return l;
   }
 
+  @override
+  String get radius => super.radius ?? '20';
 
   /// Type of button
   ///
@@ -125,6 +127,20 @@ class ButtonModel extends BoxModel
     }
   }
   String? get buttontype => _buttontype?.get();
+
+  BooleanObservable? _expand;
+  @override
+  set expand(dynamic v) {
+    if (_expand != null) {
+      _expand!.set(v);
+    } else if (v != null) {
+      _expand = BooleanObservable(Binding.toKey(id, 'expand'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  @override
+  bool get expand => _expand?.get() ?? false;
 
   ButtonModel(WidgetModel? parent, String? id, {
     dynamic onclick,

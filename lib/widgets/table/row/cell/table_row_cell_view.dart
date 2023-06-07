@@ -184,7 +184,7 @@ class _TableRowCellViewState extends WidgetState<TableRowCellView> with WidgetsB
           height: height,
           draggable: false,
           closeable: false,
-          dismissable: true));
+          dismissible: true));
       manger.model.modals.add(modal);
       manger.model.refresh();
     }

@@ -19,7 +19,7 @@ class Calc extends TransformModel implements ITransform
   static const String avglong   = "average";
   static const String count     = "cnt";
   static const String countlong = "count";
-  static const String total = "total";
+  static const String total      = "total";
   static const String evaluate  = "eval";
 
   @override

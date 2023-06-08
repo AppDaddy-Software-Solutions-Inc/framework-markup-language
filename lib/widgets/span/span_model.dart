@@ -104,20 +104,6 @@ class SpanModel extends DecoratedWidgetModel
   }
   double? get weight => _weight?.get();
 
-  ///////////////
-  /* bold font */
-  ///////////////
-  BooleanObservable? _bold;
-
-  set bold(dynamic v) {
-    if (_bold != null) {
-      _bold!.set(v);
-    } else if (v != null) {
-      _bold = BooleanObservable(Binding.toKey(id, 'bold'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get bold => _bold?.get() ?? false;
 
   //////////////////////////////////////////////
   /* If the text is raw or uses special chars */
@@ -132,6 +118,33 @@ class SpanModel extends DecoratedWidgetModel
     }
   }
   bool get raw => _raw?.get() ?? false;
+
+  // If the text is selectable defaults to false
+  BooleanObservable? _selectable;
+  set selectable(dynamic v) {
+    if (_selectable != null) {
+      _selectable!.set(v);
+    } else if (v != null) {
+      _selectable = BooleanObservable(Binding.toKey(id, 'selectable'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get selectable => _selectable?.get() ?? false;
+
+  ///////////////
+  /* bold font */
+  ///////////////
+  BooleanObservable? _bold;
+
+  set bold(dynamic v) {
+    if (_bold != null) {
+      _bold!.set(v);
+    } else if (v != null) {
+      _bold = BooleanObservable(Binding.toKey(id, 'bold'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get bold => _bold?.get() ?? false;
 
   /////////////////
   /* italic font */
@@ -328,6 +341,7 @@ class SpanModel extends DecoratedWidgetModel
         dynamic letterspace,
         dynamic lineheight,
         dynamic raw,
+        dynamic selectable,
         dynamic valign,
         dynamic overflow,
         dynamic halign,
@@ -357,6 +371,7 @@ class SpanModel extends DecoratedWidgetModel
     if (halign != null) this.halign = halign;
     if (style != null) this.style = style;
     if (raw != null) this.raw = raw;
+    if (selectable != null) this.selectable = selectable;
   }
 
   static SpanModel? fromXml(WidgetModel parent, XmlElement xml)
@@ -411,6 +426,7 @@ class SpanModel extends DecoratedWidgetModel
     overflow = Xml.get(node: xml, tag: 'overflow');
     style = Xml.get(node: xml, tag: 'style');
     raw = Xml.get(node: xml, tag: 'raw');
+    selectable = Xml.get(node: xml, tag: 'selectable');
 
     // build spans
     List<TextModel> textSpans = findChildrenOfExactType(TextModel).cast<TextModel>();

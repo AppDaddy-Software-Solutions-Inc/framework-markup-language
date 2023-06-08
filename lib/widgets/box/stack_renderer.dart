@@ -5,6 +5,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:fml/widgets/box/box_constraints.dart';
 import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/box/box_mixin.dart';
 import 'package:fml/widgets/box/box_model.dart';
@@ -221,7 +222,11 @@ class StackRenderer extends RenderBox with
       childConstraints = childConstraints.tighten(height: childParentData.height);
     }
 
-    child.layout(childConstraints, parentUsesSize: true);
+    // calculate the child's size by performing
+    // a dry layout. We use LocalBoxConstraints in order to
+    // override isTight, which is used in Layout() to determine if a
+    // child size change forces a parent to resize.
+    child.layout(LocalBoxConstraints.from(childConstraints), parentUsesSize: true);
 
     final double x;
     if (childParentData.left != null) {
@@ -306,8 +311,11 @@ class StackRenderer extends RenderBox with
         var childConstraints = myConstraints;
         if (childData.model != null) childConstraints = getChildLayoutConstraints(constraints, child, childData.model!);
 
-        // layout the child
-        layoutChild(child, childConstraints);
+        // calculate the child's size by performing
+        // a dry layout. We use LocalBoxConstraints in order to
+        // override isTight, which is used in Layout() to determine if a
+        // child size change forces a parent to resize.
+        layoutChild(child, LocalBoxConstraints.from(childConstraints));
 
         // size of stack is largest unpositioned child if not hard sized
         if (!hardSizedWidth)  width  = math.max(width,  child.size.width);

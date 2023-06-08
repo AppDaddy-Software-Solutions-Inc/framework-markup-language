@@ -13,6 +13,27 @@ class GridItemModel extends DecoratedWidgetModel
 
   String? type;
 
+  // dataset  index
+  // This property indicates your position on the dataset, 0 being the top
+  IntegerObservable? get indexObservable => _index;
+  IntegerObservable? _index;
+  set index (dynamic v)
+  {
+    if (_index != null)
+    {
+      _index!.set(v);
+    }
+    else if (v != null)
+    {
+      _index = IntegerObservable(Binding.toKey(id, 'index'), v, scope: scope);
+    }
+  }
+  int? get index
+  {
+    if (_index == null) return -1;
+    return _index?.get();
+  }
+
 // indicates if this item has been selected
   BooleanObservable? _selected;
   set selected (dynamic v)

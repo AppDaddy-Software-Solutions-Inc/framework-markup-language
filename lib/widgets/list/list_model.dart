@@ -327,6 +327,16 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
 
     if (model != null)
     {
+      // set the index
+      model.index = index;
+
+      // set the selected data
+      if (model.selected == true)
+      {
+        // this must be done after the build
+        WidgetsBinding.instance.addPostFrameCallback((_) => data = model.data);
+      }
+
       // register listener to dirty field
       if (model.dirtyObservable != null) model.dirtyObservable!.registerListener(onDirtyListener);
 
@@ -402,7 +412,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     await EventHandler(this).execute(_onpulldown);
   }
 
-  Future<bool> onTap(ListItemModel model) async
+  Future<bool> onTap(ListItemModel? model) async
   {
     items.forEach((key, item)
     {
@@ -421,6 +431,43 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
        }
     });
     return true;
+  }
+
+  @override
+  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
+  {
+    /// setter
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+
+    switch (function)
+    {
+      // selects the item by index
+      case "select" :
+        int index = S.toInt(S.item(arguments, 0)) ?? -1;
+        if (index >= 0 && _dataset != null && index < _dataset!.length)
+        {
+          var item = _dataset![index];
+          if (item.selected == false) onTap(item);
+        }
+        return true;
+
+      // de-selects the item by index
+      case "deselect" :
+        int index = S.toInt(S.item(arguments, 0)) ?? -1;
+        if (index >= 0 && _dataset != null && index < _dataset!.length)
+        {
+          var item = _dataset![index];
+          if (item.selected == true) onTap(item);
+        }
+        return true;
+
+    // de-selects the item by index
+      case "clear" :
+        onTap(null);
+        return true;
+    }
+    return super.execute(caller, propertyOrFunction, arguments);
   }
 
   @override

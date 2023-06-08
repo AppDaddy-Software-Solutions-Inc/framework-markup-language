@@ -347,6 +347,8 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
   String? get root => _root?.get();
 
   // rowcount
+  // indicates the number of rows in the
+  // data set
   IntegerObservable? _rowcount;
   set rowcount(dynamic v)
   {

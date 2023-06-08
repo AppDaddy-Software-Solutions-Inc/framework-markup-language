@@ -98,7 +98,8 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
     event.handled = true;
   }
 
-  scroll(Event event, ScrollController? sc) async {
+  scroll(Event event, ScrollController? sc) async
+  {
     try {
       if (event.parameters!.containsKey("direction") && event.parameters!.containsKey("pixels")) {
         String? direction = event.parameters!["direction"];

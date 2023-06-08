@@ -281,35 +281,34 @@ class _GridViewState extends WidgetState<GridView> {
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
-  Widget builder(BuildContext context, BoxConstraints constraints) {
-    // save system constraints
-    onLayout(constraints);
-
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
+    // save system constraints
+    onLayout(constraints);
+
     // Check if grid has items before wasting resources on building it
     List<Widget> children = [];
-    if (widget.model.itemSize == null || widget.model.items.isEmpty) {
+    if (widget.model.itemSize == null || widget.model.items.isEmpty)
+    {
       GridItemModel? prototypeModel;
       Widget prototypeGrid;
-      try {
+      try
+      {
         // build prototype
-        XmlElement? prototype =
-            S.fromPrototype(widget.model.prototype, "${widget.model.id}-0");
+        XmlElement? prototype = S.fromPrototype(widget.model.prototype, "${widget.model.id}-0");
+
         // build model
         prototypeModel = GridItemModel.fromXml(widget.model, prototype);
-        prototypeGrid = Offstage(
-            child: MeasuredView(
-                UnconstrainedBox(child: GridItemView(model: prototypeModel)),
-                onMeasuredItem));
-      } catch (e) {
-        prototypeModel = widget.model.items.isNotEmpty
-            ? widget.model.items.values.first
-            : null;
+        prototypeGrid = Offstage(child: MeasuredView(UnconstrainedBox(child: GridItemView(model: prototypeModel)), onMeasuredItem));
+      }
+      catch (e)
+      {
+        prototypeModel = widget.model.items.isNotEmpty ? widget.model.items.values.first : null;
         prototypeGrid = Text('Error Prototyping GridModel');
       }
-
       return prototypeGrid;
     }
 

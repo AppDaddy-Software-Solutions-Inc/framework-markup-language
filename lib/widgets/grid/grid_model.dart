@@ -283,7 +283,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
   @override
   Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async {
     busy = true;
-    int i = 0;
+    int index = 0;
 
     if (list != null)
     {
@@ -296,9 +296,24 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
       // Populate grid items from datasource
       for (var row in list)
       {
-        XmlElement? prototype = S.fromPrototype(this.prototype, "$id-$i");
+        XmlElement? prototype = S.fromPrototype(this.prototype, "$id-$index");
         var model = GridItemModel.fromXml(parent!, prototype, data: row);
-        if (model != null) items[i++] = model;
+
+        if (model != null)
+        {
+          // set the index
+          model.index = index;
+
+          // set the selected data
+          if (model.selected == true)
+          {
+            // this must be done after the build
+            WidgetsBinding.instance.addPostFrameCallback((_) => data = model.data);
+          }
+
+          // add to items list
+          items[index++] = model;
+        }
       }
 
       _dataset = list;
@@ -309,7 +324,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
     return true;
   }
 
-  Future<bool> onTap(GridItemModel model) async
+  Future<bool> onTap(GridItemModel? model) async
   {
     items.forEach((key, item)
     {
@@ -376,6 +391,43 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
     await EventHandler(this).execute(_onpulldown);
   }
 
+  @override
+  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
+  {
+    /// setter
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+
+    switch (function)
+    {
+    // selects the item by index
+      case "select" :
+        int index = S.toInt(S.item(arguments, 0)) ?? -1;
+        if (index >= 0 && _dataset != null && index < _dataset!.length)
+        {
+          var item = _dataset![index];
+          if (item.selected == false) onTap(item);
+        }
+        return true;
+
+    // de-selects the item by index
+      case "deselect" :
+        int index = S.toInt(S.item(arguments, 0)) ?? -1;
+        if (index >= 0 && _dataset != null && index < _dataset!.length)
+        {
+          var item = _dataset![index];
+          if (item.selected == true) onTap(item);
+        }
+        return true;
+
+    // de-selects the item by index
+      case "clear" :
+        onTap(null);
+        return true;
+    }
+    return super.execute(caller, propertyOrFunction, arguments);
+  }
+  
   @override
   Widget getView({Key? key}) => getReactiveView(grid_view.GridView(this));
 }

@@ -445,10 +445,10 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
       // selects the item by index
       case "select" :
         int index = S.toInt(S.item(arguments, 0)) ?? -1;
-        if (index >= 0 && _dataset != null && index < _dataset!.length)
+        if (index >= 0 && index < items.length)
         {
-          var item = _dataset![index];
-          if (item.selected == false) onTap(item);
+          var model = items[index];
+          if (model != null && model.selected == false) onTap(model);
         }
         return true;
 
@@ -457,8 +457,8 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
         int index = S.toInt(S.item(arguments, 0)) ?? -1;
         if (index >= 0 && _dataset != null && index < _dataset!.length)
         {
-          var item = _dataset![index];
-          if (item.selected == true) onTap(item);
+          var model = items[index];
+          if (model != null && model.selected == true) onTap(model);
         }
         return true;
 

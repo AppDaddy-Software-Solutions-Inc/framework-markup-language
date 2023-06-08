@@ -219,7 +219,9 @@ class ButtonModel extends BoxModel
     }
 
     // clear all children
-    children?.clear();
+    children ??= [];
+    children!.clear();
+    children!.add(content);
   }
 
   static ButtonModel? fromXml(WidgetModel parent, XmlElement xml)

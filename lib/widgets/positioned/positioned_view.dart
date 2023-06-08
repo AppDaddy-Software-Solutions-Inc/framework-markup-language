@@ -62,6 +62,11 @@ class _PositionedViewState extends WidgetState<PositionedView>
             child: view);
       }
     }
+    else
+    {
+      view = LayoutBoxChildData(child: view, model: widget.model);
+    }
+
     return view;
   }
 }

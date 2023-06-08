@@ -3,8 +3,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
-import 'package:fml/widgets/alignment/alignment.dart';
 import 'package:fml/widgets/scroller/scroller_shadow_view.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/event/event.dart' ;
@@ -29,10 +29,6 @@ class ScrollerView extends StatefulWidget implements IWidgetView
 class _ScrollerViewState extends WidgetState<ScrollerView>
 {
   final ScrollController _scrollController = ScrollController();
-  // state holder for when a maxextent updates and we need a recalculation cycle
-  int _tryToScrollBeyond = 0;
-  // Scrollbar position relative to full view size
-  double? _viewSize;
 
   /// When true the scroller has been scrolled to the end
   bool hasScrolledThrough = false;
@@ -105,6 +101,100 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
     }
   }
 
+  ScrollBehavior _getScrollBehaviour(Axis direction)
+  {
+    late ScrollBehavior behavior;
+
+    // Check to see if pulldown is enabled, draggable is enabled, or horizontal is enabled (as web doesnt support device horizontal scrolling) and enable
+    // dragging for the scroller.
+    if(widget.model.onpulldown != null || widget.model.draggable == true || direction == Axis.horizontal)
+    {
+      behavior = ScrollConfiguration.of(context).copyWith(scrollbars: widget.model.scrollbar == false ? false : true, dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse});
+    }
+    else
+    {
+      behavior = ScrollConfiguration.of(context).copyWith(scrollbars: widget.model.scrollbar == false ? false : true);
+    }
+    return behavior;
+  }
+
+  Widget _addScrollShadows(Widget view, Axis direction)
+  {
+    switch (direction)
+    {
+      case Axis.vertical:
+        view = Listener(behavior: HitTestBehavior.translucent,
+            onPointerSignal: (ps) {},
+            child: Stack(fit: StackFit.loose,
+                children: [
+                  view,
+                  ScrollShadow(_scrollController, 'top', Axis.vertical, widget.model.shadowcolor),
+                  ScrollShadow(_scrollController, 'bottom', Axis.vertical, widget.model.shadowcolor),
+                  SizedBox.expand(),
+                ]));
+        break;
+
+      case Axis.horizontal:
+        view = Listener(
+          behavior: HitTestBehavior.translucent,
+          onPointerSignal: (ps) {},
+          child: Stack(
+            fit: StackFit.loose,
+            children: [
+              view,
+              ScrollShadow(_scrollController, 'top', Axis.horizontal, widget.model.shadowcolor),
+              ScrollShadow(_scrollController, 'bottom', Axis.horizontal, widget.model.shadowcolor),
+              SizedBox.expand(),
+            ],
+          ),
+        );
+    }
+    return view;
+  }
+  Widget _buildScrollbar(Widget child)
+  {
+    Widget view;
+
+    // build body
+    Axis direction = widget.model.layoutType == LayoutType.row ? Axis.horizontal : Axis.vertical;
+
+    // add pull down
+    if (widget.model.onpulldown != null)
+    {
+      view = RefreshIndicator(
+          onRefresh: () => widget.model.onPull(context),
+          child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: child,
+              scrollDirection: direction,
+              controller: _scrollController));
+    }
+    else
+    {
+      view = SingleChildScrollView(child: child, scrollDirection: direction, controller: _scrollController);
+    }
+
+    // add scroll bar
+    if (widget.model.scrollbar)
+    {
+      view = Container(child: Scrollbar(controller: _scrollController, thumbVisibility: widget.model.scrollbar, child: view));
+      view = Listener(behavior: HitTestBehavior.translucent,
+        onPointerSignal: (ps) {},
+        child: Stack(fit: StackFit.loose, children: [view, SizedBox.shrink()]));
+    }
+
+    // no scroll bar - add scroll shadow
+    else
+    {
+      view = _addScrollShadows(view, direction);
+    }
+
+    // set behavior
+    view = ScrollConfiguration(behavior: _getScrollBehaviour(direction), child: view);
+
+    return view;
+  }
+
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
@@ -113,144 +203,19 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    // save system constraints
-    onLayout(constraints);
+    // build the body
+    var contents = BoxView(widget.model.content);
 
-    // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    // build the scroll bar
+    Widget view = _buildScrollbar(contents);
 
-    // build the child views
-    List<Widget> children = widget.model.inflate();
-    if (children.isEmpty) children.add(Container());
+    // apply constraints
+    view = applyConstraints(view, widget.model.constraints);
 
-    if (_tryToScrollBeyond == 1)
-    {
-      setState(() => _tryToScrollBeyond = 2);
-      _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent + 10,
-          duration: Duration(milliseconds: 50),
-          curve: Curves.easeOut);
-      Future.delayed(Duration(milliseconds: 50),
-              () => setState(() => _tryToScrollBeyond = 0));
-    }
-
-    if (_viewSize != null) _viewSize = _scrollController.position.viewportDimension;
-
-    // Flex: on my phone there is a 36px padding on the keyboard so I've subtracted it here
-    if (widget.model.layout != 'row')
-    {
-      double keyboardSpacer = MediaQuery.of(context).viewInsets.bottom;
-      children.add(Container(height: keyboardSpacer < 36 ? keyboardSpacer : (keyboardSpacer - 36)));
-    }
-
-    // get alignment
-    var alignment = WidgetAlignment(widget.model.layoutType, false, widget.model.halign, widget.model.valign);
-
-    // build body
-    Axis direction = widget.model.layoutType == LayoutType.row ? Axis.horizontal : Axis.vertical;
-    Widget child;
-    if (direction == Axis.vertical) {
-      child = Column(children: children, crossAxisAlignment: alignment.crossAlignment);
-    } else {
-      child = Row(children: children, crossAxisAlignment: alignment.crossAlignment);
-    }
-    children.add(Column(mainAxisSize: MainAxisSize.max));
-
-    Widget scsv;
-    ScrollBehavior behavior;
-    // Check to see if pulldown is enabled, draggable is enabled, or horizontal is enabled (as web doesnt support device horizontal scrolling) and enable
-    // dragging for the scroller.
-    if(widget.model.onpulldown != null || widget.model.draggable == true || direction == Axis.horizontal) {
-      behavior = ScrollConfiguration.of(context).copyWith(scrollbars: widget.model.scrollbar == false ? false : true, dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse});
-    } else {
-      behavior = ScrollConfiguration.of(context).copyWith(scrollbars: widget.model.scrollbar == false ? false : true);
-    }
-
-    if(widget.model.onpulldown != null)
-    {
-     scsv = RefreshIndicator(
-         onRefresh: () => widget.model.onPull(context),
-         child: SingleChildScrollView(
-         physics: const AlwaysScrollableScrollPhysics(),
-         child: child,
-         scrollDirection: direction,
-         controller: _scrollController));
-    }
-    else {
-      scsv = SingleChildScrollView(child: child, scrollDirection: direction, controller: _scrollController);
-    }
-
-    // show no scroll bar
-    // POINTERDEVICE MOUSE is not recommended on web due to text selection difficulty, but i have added it in since we do not have text selection.
-    if (widget.model.scrollbar !=  false)
-    {
-      scsv = Container(
-          child: Scrollbar(
-              controller: _scrollController,
-              thumbVisibility: widget.model.scrollbar ?? false,
-              child: scsv,));
-    }
-    scsv = ScrollConfiguration(behavior: behavior, child: scsv);
-
-    Widget view;
-    if (widget.model.scrollbar != true && direction == Axis.vertical)
-    {
-      view = Listener(behavior: HitTestBehavior.translucent,
-        onPointerSignal: (ps) {
-          // mouse wheel scrolling
-        },
-        child: Stack(
-          fit: StackFit.loose,
-          children: [
-            scsv,
-            ScrollShadow(_scrollController, 'top', Axis.vertical,
-                widget.model.shadowcolor),
-            ScrollShadow(_scrollController, 'bottom', Axis.vertical,
-                widget.model.shadowcolor),
-            SizedBox.expand(),
-          ],
-        ),
-      );
-    } else if (widget.model.scrollbar != true && direction == Axis.horizontal) {
-      view = Listener(
-        behavior: HitTestBehavior.translucent,
-        onPointerSignal: (ps) {
-          // mouse wheel scrolling
-        },
-        child: Stack(
-          fit: StackFit.loose,
-          children: [
-            scsv,
-            ScrollShadow(_scrollController, 'top', Axis.horizontal,
-                widget.model.shadowcolor),
-            ScrollShadow(_scrollController, 'bottom', Axis.horizontal,
-                widget.model.shadowcolor),
-            SizedBox.expand(),
-          ],
-        ),
-      );
-    } else {
-      view = Listener(
-        behavior: HitTestBehavior.translucent,
-        onPointerSignal: (ps) {
-          // mouse wheel scrolling
-        },
-        child: Stack(
-          fit: StackFit.loose,
-          children: [
-            scsv,
-            SizedBox.shrink(),
-          ],
-        ),
-      );
-    }
-
-    // add margins
+    // add margins around the entire widget
     view = addMargins(view);
 
-    // apply user defined constraints
-    view = applyConstraints(view, widget.model.tightestOrDefault);
-
+    view = UnconstrainedBox(child: SizedBox(width: constraints.maxWidth, height: constraints.maxHeight, child: view,));
     return view;
   }
 }

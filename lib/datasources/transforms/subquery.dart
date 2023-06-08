@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/datasources/http/get/model.dart';
 import 'package:fml/datasources/http/model.dart';
 import 'package:fml/datasources/transforms/transform_interface.dart';

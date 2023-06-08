@@ -274,7 +274,8 @@ class StackRenderer extends RenderBox with
     // get my width from the model
     // and tighten the my width constraint's if not null
     bool hardSizedWidth = false;
-    var myWidth = model.getWidth(widthParent: parentMaxWidth(this));
+    var parentWidth = widthOf(parent);
+    var myWidth = model.getWidth(widthParent: parentWidth);
     if (myWidth != null)
     {
       width = myWidth;
@@ -285,7 +286,8 @@ class StackRenderer extends RenderBox with
     // get my width from the model
     // and tighten the my width constraint's if not null
     bool hardSizedHeight = false;
-    var myHeight = model.getHeight(heightParent: parentMaxHeight(this));
+    var parentHeight = constraints.hasBoundedHeight ? constraints.maxHeight : heightOf(parent);
+    var myHeight = model.getHeight(heightParent: parentHeight);
     if (myHeight != null)
     {
       height = myHeight;

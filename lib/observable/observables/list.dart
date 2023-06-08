@@ -73,7 +73,7 @@ class ListObservable extends Observable with ListMixin<dynamic>
     }
     else
     {
-      _value.clear();
+      _value = [];
       if (value != null) _value.add(value);
     }
   }

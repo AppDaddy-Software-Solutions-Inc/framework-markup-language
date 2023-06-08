@@ -164,16 +164,18 @@ class WidgetModel implements IDataSourceListener {
 
   // data element
   ListObservable? _data;
-  set data(dynamic v) {
-    if (_data != null) {
+  set data(dynamic v)
+  {
+    if (_data != null)
+    {
       _data!.set(v);
-    } else if (v != null) {
-      _data = ListObservable(Binding.toKey(id, 'data'), null,
-          scope: scope, listener: onPropertyChange);
+    }
+    else if (v != null)
+    {
+      _data = ListObservable(Binding.toKey(id, 'data'), null, scope: scope, listener: onPropertyChange);
       _data!.set(v);
     }
   }
-
   get data => _data?.get();
 
   // listeners

@@ -541,8 +541,8 @@ class ModalViewState extends WidgetState<ModalView>
       if (manager != null) slot = manager.model.park(widget);
 
       // Build View
-      Widget scaled  = Card(margin: EdgeInsets.all(1), child: SizedBox(width: 100, height: minimumSize, child: Padding(child: FittedBox(child: body), padding:EdgeInsets.all(5))), elevation: 5, color: t.secondary.withOpacity(minimumSize), borderOnForeground: false, shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(4.0)), side: BorderSide(width: 2, color: t.primary)));
-      Widget curtain = GestureDetector(onTap: onRestore, child: MouseRegion(cursor: SystemMouseCursors.click, child: SizedBox(width: 100, height: minimumSize)));
+      Widget scaled  = Card(margin: EdgeInsets.all(1), child: SizedBox(width: 100, height: 50, child: Padding(child: FittedBox(child: body), padding:EdgeInsets.all(5))), elevation: 5, color: t.secondary.withOpacity(0.5), borderOnForeground: false, shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(4.0)), side: BorderSide(width: 2, color: t.primary)));
+      Widget curtain = GestureDetector(onTap: onRestore, child: MouseRegion(cursor: SystemMouseCursors.click, child: SizedBox(width: 100, height: 50)));
       Widget view    = Stack(children: [scaled, curtain]);
 
       // Return View

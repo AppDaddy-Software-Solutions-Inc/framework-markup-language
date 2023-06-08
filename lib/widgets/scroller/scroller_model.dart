@@ -188,7 +188,9 @@ class ScrollerModel extends ViewableWidgetModel
     }
 
     // clear all children
-    children?.clear();
+    children ??= [];
+    children!.clear();
+    children!.add(content);
   }
 
   Future<bool> scrolledToEnd(BuildContext context) async {

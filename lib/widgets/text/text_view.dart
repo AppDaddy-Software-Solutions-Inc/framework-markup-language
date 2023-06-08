@@ -99,6 +99,9 @@ class _TextViewState extends WidgetState<TextView>
         fontStyle: widget.model.italic ? FontStyle.italic : textStyle!.fontStyle,
         decoration: textDecoration);
 
+    if (widget.model.selectable == true) {
+      return SelectableText.rich(TextSpan(children: textSpans, style: style), textAlign: textAlign);
+    }
     return RichText(text: TextSpan(children: textSpans, style: style), overflow: textOverflow, textAlign: textAlign);
   }
 
@@ -143,7 +146,10 @@ class _TextViewState extends WidgetState<TextView>
     }
 
     //SizedBox is used to make the text fit the size of the widget.
-    return SizedBox(width: widget.model.width, child: Text(widget.model.value ?? '', style: textstyle));
+    return SizedBox(width: widget.model.width,
+        child: widget.model.selectable == true
+            ? SelectableText(widget.model.value ?? '', style: textstyle)
+            : Text(widget.model.value ?? '', style: textstyle));
   }
 
   TextOverflow _getOverflow()
@@ -362,9 +368,9 @@ class _TextViewState extends WidgetState<TextView>
             script = "sup";
             break;
           case "code":
-            codeBlockBG = theme?.colorScheme.surfaceVariant;
-            codeBlockFont = 'Cutive Mono';
-            weight = FontWeight.w600;
+            codeBlockBG = theme?.colorScheme.surfaceVariant.withOpacity(0.7);
+            codeBlockFont = 'Inconsolata';
+            weight = FontWeight.w400;
             break;
           default:
             codeBlockBG = theme?.colorScheme.surfaceVariant;

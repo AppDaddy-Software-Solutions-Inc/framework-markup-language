@@ -28,8 +28,8 @@ void matchElements (String value) {
   RegExp ovC =  RegExp(r"\_\_\_((?=[ \*\_\^\#\`\\])|\\)");
   RegExp stO =  RegExp(r"(([ \*\_\^\#\`\\])|\\)(\_\_)(?![ \_])");
   RegExp stC =  RegExp(r"\_\_((?=[ \*\_\^\#\`\\])|\\)");
-  RegExp codeO = RegExp(r"(([ \*\_\^\#\`\\])|\\)(\`\`\`)(?![ \`])");
-  RegExp codeC = RegExp(r"\`\`\`((?=[ \*\_\^\#\`\\])|\\)");
+  RegExp codeO = RegExp(r"(([ *_^#`\\])|\\)(```)(?![ `])");
+  RegExp codeC = RegExp(r"(\S)(```(?=\W|\\))");
 
   // pad the value rather than adding extra cases for start and end of line
   if (value.length > 2) {
@@ -89,7 +89,8 @@ void matchElements (String value) {
 
   while (codeO.firstMatch(value) != null && codeC.firstMatch(value) != null) {
     value = value.replaceFirstMapped(codeO, (match) => "${match.group(1)!}###code###");
-    value = value.replaceFirst(codeC, '###code###');
+    value = value.replaceFirstMapped(codeC, (match) => "${match[1]!}###code###");
+    // value = value.replaceFirst(codeC, '###code###');
   }
 
   return extractStyles(value, []);

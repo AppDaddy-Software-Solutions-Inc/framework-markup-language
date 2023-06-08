@@ -175,7 +175,31 @@ class TextModel extends DecoratedWidgetModel
     }
   }
   double? get weight => _weight?.get();
+  
+  // If the text is raw or uses special chars
+  BooleanObservable? _raw;
+  set raw(dynamic v) {
+    if (_raw != null) {
+      _raw!.set(v);
+    } else if (v != null) {
+      _raw = BooleanObservable(Binding.toKey(id, 'raw'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get raw => _raw?.get() ?? false;
 
+  // If the text is selectable defaults to false
+  BooleanObservable? _selectable;
+  set selectable(dynamic v) {
+    if (_selectable != null) {
+      _selectable!.set(v);
+    } else if (v != null) {
+      _selectable = BooleanObservable(Binding.toKey(id, 'selectable'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get selectable => _selectable?.get() ?? false;
+  
   // bold font
   BooleanObservable? _bold;
   set bold(dynamic v) {
@@ -188,23 +212,7 @@ class TextModel extends DecoratedWidgetModel
   }
   bool get bold => _bold?.get() ?? false;
 
-  //////////////////////////////////////////////
-  /* If the text is raw or uses special chars */
-  //////////////////////////////////////////////
-  BooleanObservable? _raw;
-  set raw(dynamic v) {
-    if (_raw != null) {
-      _raw!.set(v);
-    } else if (v != null) {
-      _raw = BooleanObservable(Binding.toKey(id, 'raw'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get raw => _raw?.get() ?? false;
-
-  /////////////////
-  /* italic font */
-  /////////////////
+  // italic font 
   BooleanObservable? _italic;
   set italic(dynamic v) {
     if (_italic != null) {
@@ -216,9 +224,7 @@ class TextModel extends DecoratedWidgetModel
   }
   bool get italic => _italic?.get() ?? false;
 
-  ////////////////
-  /* font theme */
-  ////////////////
+  // font theme 
   StringObservable? _theme;
   set theme(dynamic v) {
     if (_theme != null) {
@@ -230,9 +236,7 @@ class TextModel extends DecoratedWidgetModel
   }
   String? get theme => _theme?.get();
 
-  ////////////////
-  /* font style */
-  ////////////////
+  // font style 
   StringObservable? _style;
   set style(dynamic v) {
     if (_style != null) {
@@ -244,9 +248,7 @@ class TextModel extends DecoratedWidgetModel
   }
   String? get style => _style?.get();
 
-  ////////////////////
-  /* font decoration */
-  ////////////////////
+  // font decoration 
   StringObservable? _decoration;
   set decoration(dynamic v) {
     if (_decoration != null) {
@@ -259,9 +261,7 @@ class TextModel extends DecoratedWidgetModel
   }
   String? get decoration => _decoration?.get();
 
-  ////////////////////
-  /* decorationweight */
-  ////////////////////
+  // decorationweight 
   DoubleObservable? _decorationweight;
   set decorationweight(dynamic v) {
     if (_decorationweight != null) {
@@ -274,9 +274,7 @@ class TextModel extends DecoratedWidgetModel
   }
   double? get decorationweight => _decorationweight?.get();
 
-  /////////////////////
-  /* decoration color */
-  /////////////////////
+  // decoration color 
   ColorObservable? _decorationcolor;
   set decorationcolor(dynamic v) {
     if (_decorationcolor != null) {
@@ -289,9 +287,7 @@ class TextModel extends DecoratedWidgetModel
   }
   Color? get decorationcolor => _decorationcolor?.get();
 
-  /////////////////////
-  /* decorationstyle */
-  /////////////////////
+  // decorationstyle 
   StringObservable? _decorationstyle;
   set decorationstyle(dynamic v) {
     if (_decorationstyle != null) {
@@ -304,9 +300,7 @@ class TextModel extends DecoratedWidgetModel
   }
   String? get decorationstyle => _decorationstyle?.get();
 
-  //////////////////
-  /* wordspacing */
-  //////////////////
+  // wordspacing 
   DoubleObservable? _wordspace;
 
   set wordspace(dynamic v) {
@@ -319,9 +313,7 @@ class TextModel extends DecoratedWidgetModel
   }
   double? get wordspace => _wordspace?.get();
 
-  //////////////////
-  /* letterspacing */
-  //////////////////
+  // letterspacing 
   DoubleObservable? _letterspace;
   set letterspace(dynamic v) {
     if (_letterspace != null) {
@@ -334,9 +326,7 @@ class TextModel extends DecoratedWidgetModel
   }
   double get letterspace => _letterspace?.get() ?? 0;
 
-  //////////////////
-  /* lineheight  */
-  //////////////////
+  // lineheight
   DoubleObservable? _lineheight;
 
   set lineheight(dynamic v) {
@@ -351,11 +341,7 @@ class TextModel extends DecoratedWidgetModel
 
   double? get lineheight => _lineheight?.get();
 
-  // overrides
-
-  ////////////////////
-  /* overflow */
-  ////////////////////
+  // overflow
   StringObservable? _overflow;
   set overflow(dynamic v) {
     if (_overflow != null) {
@@ -393,6 +379,7 @@ class TextModel extends DecoratedWidgetModel
     dynamic letterspace,
     dynamic lineheight,
     dynamic raw,
+    dynamic selectable,
     dynamic valign,
     dynamic overflow,
     dynamic halign,
@@ -426,6 +413,7 @@ class TextModel extends DecoratedWidgetModel
     if (halign != null) this.halign = halign;
     if (style != null) this.style = style;
     if (raw != null) this.raw = raw;
+    if (selectable != null) this.selectable = selectable;
   }
   
   static TextModel? fromXml(WidgetModel parent, XmlElement xml) {
@@ -481,6 +469,7 @@ class TextModel extends DecoratedWidgetModel
     overflow = Xml.get(node: xml, tag: 'overflow');
     style = Xml.get(node: xml, tag: 'style');
     raw = Xml.get(node: xml, tag: 'raw');
+    selectable = Xml.get(node: xml, tag: 'selectable');
   }
 
   @override

@@ -138,20 +138,21 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
     ListItemModel? model = widget.model.getItemModel(index);
     if (model == null) return null;
 
-    Widget view = ListItemView(model: model, selectable: model.selectable);
+    Widget view = ListItemView(model);
     view = MouseRegion(cursor: SystemMouseCursors.click, child: view);
     view = GestureDetector(onTap: () => model.onTap(), child: view, behavior: HitTestBehavior.translucent);
     return view;
   }
 
-  List<ExpansionPanelRadio> expansionItems(BuildContext context) {
+  List<ExpansionPanelRadio> expansionItems(BuildContext context)
+  {
     List<ExpansionPanelRadio> items = [];
     ListItemModel? itemModel;
     int index = 0;
     do {
       itemModel = widget.model.getItemModel(index++);
       if (itemModel != null) {
-        var listItem = ListItemView(model: itemModel, selectable: itemModel.selectable);
+        var listItem = ListItemView(itemModel);
         Text? title;
         if (!S.isNullOrEmpty(itemModel.title)) {
           title = Text(itemModel.title!);
@@ -213,7 +214,7 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
             expandedHeaderPadding: EdgeInsets.all(4),
             children: expansionItems(context)));
     } else {
-      view = ListView.custom(physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null, scrollDirection: direction, controller: scroller, childrenDelegate: SliverChildBuilderDelegate((BuildContext context, int index) {return itemBuilder(context, index);}, childCount: widget.model.data?.length ?? widget.model.children?.length ?? 0));
+      view = ListView.custom(physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null, scrollDirection: direction, controller: scroller, childrenDelegate: SliverChildBuilderDelegate((BuildContext context, int index) {return itemBuilder(context, index);}, childCount: widget.model.records ?? widget.model.children?.length ?? 0));
     }
 
 

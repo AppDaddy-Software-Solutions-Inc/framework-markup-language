@@ -6,7 +6,6 @@ import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/form/form_model.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
-import 'package:fml/widgets/selectable/selectable_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/event/handler.dart'            ;
 import 'package:fml/widgets/list/list_view.dart';
@@ -15,12 +14,19 @@ import 'package:fml/widgets/widget/widget_model.dart'     ;
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class ListModel extends SelectableModel implements IForm, IScrolling
+class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
 {
   final HashMap<int,ListItemModel> items = HashMap<int,ListItemModel>();
 
   // prototype
   String? prototype;
+
+  // full list of data
+  // pointing to data broker data
+  Data? _dataset;
+
+  // returns the number of records in the dataset
+  int? get records => _dataset?.length;
 
   BooleanObservable? _scrollShadows;
   set scrollShadows (dynamic v)
@@ -306,21 +312,24 @@ class ListModel extends SelectableModel implements IForm, IScrolling
     if (S.isNullOrEmpty(datasource)) return (index < items.length) ? items[index] : null;
 
     // item model exists?
-    if (data == null) return null;
-    if ((data.length < (index + 1))) return null;
-    if ((items.containsKey(index))) return items[index];
-    if ((index.isNegative) || (data.length < index)) return null;
+    if (_dataset == null) return null;
+
+    var list = _dataset!;
+    if (list.length < (index + 1)) return null;
+    if (items.containsKey(index)) return items[index];
+    if (index.isNegative || list.length < index) return null;
 
     // build prototype
     XmlElement? prototype = S.fromPrototype(this.prototype, "$id-$index");
 
     // build item model
-    var model = ListItemModel.fromXml(this, prototype, data: data[index]);
+    var model = ListItemModel.fromXml(this, prototype, data: list[index]);
 
     if (model != null)
     {
       // register listener to dirty field
       if (model.dirtyObservable != null) model.dirtyObservable!.registerListener(onDirtyListener);
+
       // save model
       items[index] = model;
     }
@@ -340,7 +349,7 @@ class ListModel extends SelectableModel implements IForm, IScrolling
       items.forEach((_,item) => item.dispose());
       items.clear();
 
-      data = list;
+      _dataset = list;
       notifyListeners('list', items);
     }
     busy = false;
@@ -395,26 +404,22 @@ class ListModel extends SelectableModel implements IForm, IScrolling
 
   Future<bool> onTap(ListItemModel model) async
   {
-    int i = 0;
     items.forEach((key, item)
     {
        if (item == model)
        {
          // toggle selected
-         bool ok = (item.selected ?? false) ? false : true;
+         bool isSelected = (item.selected ?? false) ? false : true;
 
          // set values
-         item.selected = ok;
-         selectedIndex = ok ? i : null;
-         selected      = ok ? item.data : Data();
+         item.selected = isSelected;
+         data = isSelected ? item.data : Data();
        }
        else
        {
          item.selected = false;
        }
-       i++;
     });
-    selected = model.data;
     return true;
   }
 

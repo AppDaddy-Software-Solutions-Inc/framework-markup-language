@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/datasources/datasource_interface.dart';
+import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
@@ -63,6 +64,25 @@ class ListItemModel extends DecoratedWidgetModel
     }
   }
   bool get selectable =>  _selectable?.get() ?? true;
+
+
+
+  /// [Event]s to execute when the item is clicked
+  StringObservable? _onclick;
+  set onclick (dynamic v)
+  {
+    if (_onclick != null)
+    {
+      _onclick!.set(v);
+    }
+    else if (v != null)
+    {
+      _onclick = StringObservable(Binding.toKey(id, 'onclick'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
+    }
+  }
+  String? get onclick => _onclick?.get();
+
+
 
   // dataset  index
   // This property indicates your position on the dataset, 0 being the top
@@ -169,7 +189,7 @@ class ListItemModel extends DecoratedWidgetModel
   }
   String? get title => _title?.get();
 
-  ListItemModel(WidgetModel parent, String?  id, {dynamic data, dynamic selected, this.type, dynamic title, dynamic backgroundcolor, dynamic margin}) : super(parent, id, scope: Scope(parent: parent.scope))
+  ListItemModel(WidgetModel parent, String?  id, {dynamic data, dynamic selected, dynamic onclick, this.type, dynamic title, dynamic backgroundcolor, dynamic margin}) : super(parent, id, scope: Scope(parent: parent.scope))
   {
     this.data             = data;
     this.backgroundcolor  = backgroundcolor;
@@ -177,6 +197,7 @@ class ListItemModel extends DecoratedWidgetModel
     this.margin           = margin;
     title                 = title;
     this.selected         = selected;
+    this.onclick          = onclick;
   }
 
   static ListItemModel? fromXml(WidgetModel parent, XmlElement? xml, {dynamic data})
@@ -213,6 +234,7 @@ class ListItemModel extends DecoratedWidgetModel
     postbrokers     = Xml.attribute(node: xml, tag: 'postbroker');
     selected        = Xml.get(node: xml, tag: 'selected');
     selectable      = Xml.get(node: xml, tag: 'selectable');
+    onclick         = Xml.get(node: xml, tag: 'onclick');
 
     // find all descendants
     List<dynamic>? fields = findDescendantsOfExactType(null);
@@ -283,6 +305,7 @@ class ListItemModel extends DecoratedWidgetModel
     {
       (parent as ListModel).onTap(this);
     }
+    await EventHandler(this).execute(_onclick);
     return true;
   }
 

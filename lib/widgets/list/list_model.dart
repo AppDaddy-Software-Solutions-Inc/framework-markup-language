@@ -17,10 +17,16 @@ import 'package:fml/helper/common_helpers.dart';
 class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
 {
   final HashMap<int,ListItemModel> items = HashMap<int,ListItemModel>();
-  bool   selectable = false;
 
   // prototype
   String? prototype;
+
+  // full list of data
+  // pointing to data broker data
+  Data? _dataset;
+
+  // returns the number of records in the dataset
+  int? get records => _dataset?.length;
 
   BooleanObservable? _scrollShadows;
   set scrollShadows (dynamic v)
@@ -35,7 +41,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     }
   }
   bool get scrollShadows => _scrollShadows?.get() ?? false;
-
+  
   BooleanObservable? _scrollButtons;
   set scrollButtons (dynamic v)
   {
@@ -306,21 +312,24 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     if (S.isNullOrEmpty(datasource)) return (index < items.length) ? items[index] : null;
 
     // item model exists?
-    if (data == null) return null;
-    if ((data.length < (index + 1))) return null;
-    if ((items.containsKey(index))) return items[index];
-    if ((index.isNegative) || (data.length < index)) return null;
+    if (_dataset == null) return null;
+
+    var list = _dataset!;
+    if (list.length < (index + 1)) return null;
+    if (items.containsKey(index)) return items[index];
+    if (index.isNegative || list.length < index) return null;
 
     // build prototype
     XmlElement? prototype = S.fromPrototype(this.prototype, "$id-$index");
 
     // build item model
-    var model = ListItemModel.fromXml(this, prototype, data: data[index]);
+    var model = ListItemModel.fromXml(this, prototype, data: list[index]);
 
     if (model != null)
     {
       // register listener to dirty field
       if (model.dirtyObservable != null) model.dirtyObservable!.registerListener(onDirtyListener);
+
       // save model
       items[index] = model;
     }
@@ -340,7 +349,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
       items.forEach((_,item) => item.dispose());
       items.clear();
 
-      data = list;
+      _dataset = list;
       notifyListeners('list', items);
     }
     busy = false;
@@ -391,6 +400,27 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
   Future<void> onPull(BuildContext context) async
   {
     await EventHandler(this).execute(_onpulldown);
+  }
+
+  Future<bool> onTap(ListItemModel model) async
+  {
+    items.forEach((key, item)
+    {
+       if (item == model)
+       {
+         // toggle selected
+         bool isSelected = (item.selected ?? false) ? false : true;
+
+         // set values
+         item.selected = isSelected;
+         data = isSelected ? item.data : Data();
+       }
+       else
+       {
+         item.selected = false;
+       }
+    });
+    return true;
   }
 
   @override

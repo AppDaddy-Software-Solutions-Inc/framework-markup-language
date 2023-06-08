@@ -201,7 +201,7 @@ class ButtonModel extends BoxModel
   _buildContent()
   {
     content.expand = expand;
-    
+
     // add children to the inner box
     if (children != null)
     {
@@ -214,6 +214,7 @@ class ButtonModel extends BoxModel
     {
       // create text model bound to this label
       var text = TextModel(content, null, value: "{$id.label}");
+      content.children ??= [];
       content.children!.add(text);
     }
 

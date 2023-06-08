@@ -5,13 +5,15 @@ import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 
 mixin BoxMixin
 {
-  AbstractNode? _parentOf(AbstractNode child)
+  // finds the parent RenderConstrainedLayoutBuilder of
+  // the node
+  AbstractNode? parentOf(AbstractNode child)
   {
     AbstractNode? node = child.parent;
     while (true)
     {
       if (node == null) break;
-      if (node is  RenderConstrainedLayoutBuilder)
+      if (node is RenderConstrainedLayoutBuilder)
       {
         node = node.parent;
         break;
@@ -23,49 +25,37 @@ mixin BoxMixin
 
   // walk up the render tree
   // to find first constrained height
-  double parentMaxHeight(RenderBox node)
+  double heightOf(AbstractNode? node)
   {
     double? height;
-
-    // find the nodes parent
-    AbstractNode? parent = _parentOf(node);
-
-    // walk up the tree
     while (true)
     {
-      if (parent == null) break;
-      if (parent is RenderBox && parent.constraints.hasBoundedHeight)
+      if (node == null) break;
+      if (node is RenderBox && node.constraints.hasBoundedHeight)
       {
-        height = parent.constraints.maxHeight;
+        height = node.constraints.maxHeight;
         break;
       }
-      parent = parent.parent;
+      node = node.parent;
     }
-
     return height ?? System().screenheight.toDouble();
   }
 
   // walk up the render tree
   // to find first constrained width
-  double parentMaxWidth(RenderBox node)
+  double widthOf(AbstractNode? node)
   {
     double? width;
-
-    // find the nodes parent
-    AbstractNode? parent = _parentOf(node);
-
-    // walk up the tree
     while (true)
     {
-      if (parent == null) break;
-      if (parent is RenderBox && parent.constraints.hasBoundedWidth)
+      if (node == null) break;
+      if (node is RenderBox && node.constraints.hasBoundedWidth)
       {
-        width = parent.constraints.maxWidth;
+        width = node.constraints.maxWidth;
         break;
       }
-      parent = parent.parent;
+      node = node.parent;
     }
-
     return width ?? System().screenheight.toDouble();
   }
 
@@ -73,7 +63,8 @@ mixin BoxMixin
   {
     // get the child's width from the model
     // and tighten the child's width constraint
-    var childWidth  = model.getWidth(widthParent: parentMaxWidth(child));
+    var parentWidth = widthOf(child.parent);
+    var childWidth  = model.getWidth(widthParent: parentWidth);
     if (childWidth != null)
     {
       constraints = constraints.tighten(width: childWidth);
@@ -81,7 +72,8 @@ mixin BoxMixin
 
     // get the child's height from the model
     // and tighten the child's height constraint
-    var childHeight  = model.getHeight(heightParent: parentMaxHeight(child));
+    var parentHeight = heightOf(child.parent);
+    var childHeight  = model.getHeight(heightParent: parentHeight);
     if (childHeight != null)
     {
       constraints = constraints.tighten(height: childHeight);
@@ -91,14 +83,14 @@ mixin BoxMixin
     // tighten the child's width constraint prior to layout
     if (!constraints.hasBoundedWidth && model.canExpandInfinitelyWide)
     {
-      constraints = BoxConstraints(minWidth: constraints.minWidth, maxWidth: parentMaxWidth(child), minHeight: constraints.minHeight, maxHeight: constraints.maxHeight);
+      constraints = BoxConstraints(minWidth: constraints.minWidth, maxWidth: parentWidth, minHeight: constraints.minHeight, maxHeight: constraints.maxHeight);
     }
 
     // If both of us are unconstrained in the vertical axis,
     // tighten the child's height constraint prior to layout
     if (!constraints.hasBoundedHeight && model.canExpandInfinitelyHigh)
     {
-      constraints = BoxConstraints(minWidth: constraints.minWidth, maxWidth: constraints.maxWidth, minHeight: constraints.minHeight, maxHeight: parentMaxHeight(child));
+      constraints = BoxConstraints(minWidth: constraints.minWidth, maxWidth: constraints.maxWidth, minHeight: constraints.minHeight, maxHeight: parentHeight);
     }
 
     // visible?

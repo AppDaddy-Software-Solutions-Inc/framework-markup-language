@@ -46,7 +46,7 @@ class ModalModel extends BoxModel
     if (draggable != null) this.draggable = draggable;
     if (modal != null) this.modal = modal;
     if (closeable != null) this.closeable = closeable;
-    if (dismissible != null) this.dismissable = dismissible;
+    if (dismissible != null) dismissable = dismissible;
   }
 
   @override

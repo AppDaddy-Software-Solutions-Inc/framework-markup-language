@@ -129,10 +129,11 @@ class _SpanViewState extends WidgetState<SpanView>
 
     view = SizedBox(
         width: widget.model.width,
-        child: RichText(
-            text: TextSpan(
-              children: _list,
-              style: TextStyle(
+        child: widget.model.selectable
+          ? SelectableText.rich(
+              TextSpan(
+                children: _list,
+                style: TextStyle(
                   wordSpacing: wordSpace,
                   letterSpacing: letterSpace,
                   height: lineSpace,
@@ -144,6 +145,23 @@ class _SpanViewState extends WidgetState<SpanView>
                   decorationStyle: textDecoStyle,
                   decorationColor: widget.model.decorationcolor,
                   decorationThickness: widget.model.decorationweight),
+            ),
+            textAlign: textAlign)
+          : RichText(
+            text: TextSpan(
+              children: _list,
+              style: TextStyle(
+                wordSpacing: wordSpace,
+                letterSpacing: letterSpace,
+                height: lineSpace,
+                shadows: textShadow,
+                color: Colors.red,
+                fontWeight: widget.model.bold ? FontWeight.bold : widget.model.weight as FontWeight?,
+                //fontStyle: style,
+                decoration: textDecoration,
+                decorationStyle: textDecoStyle,
+                decorationColor: widget.model.decorationcolor,
+                decorationThickness: widget.model.decorationweight),
             ),
             overflow: textOverflow,
             textAlign: textAlign));

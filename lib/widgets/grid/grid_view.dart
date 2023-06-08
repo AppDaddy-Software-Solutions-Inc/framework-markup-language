@@ -152,7 +152,7 @@ class _GridViewState extends WidgetState<GridView> {
           behavior: SnackBarBehavior.floating,
           elevation: 5);
       ScaffoldMessenger.of(context).showSnackBar(snackbar);
-      await widget.model.export(raw: event.parameters!['raw'] == 'true');
+      await widget.model.export();
     }
   }
 
@@ -189,7 +189,8 @@ class _GridViewState extends WidgetState<GridView> {
     }
   }
 
-  Widget? rowBuilder(BuildContext context, int rowIndex) {
+  Widget? itemBuilder(BuildContext context, int rowIndex)
+  {
     int startIndex = (rowIndex * count);
     int endIndex = (startIndex + count);
 
@@ -197,20 +198,34 @@ class _GridViewState extends WidgetState<GridView> {
     if (startIndex >= widget.model.items.length) return null;
 
     List<Widget> children = [];
-    for (int i = startIndex; i < endIndex; i++) {
-      if (i < widget.model.items.length) {
-        var view = GridItemView(model: widget.model.items[i]);
-        children.add(Expanded(
-            child: SizedBox(
-                width: prototypeWidth, height: prototypeHeight, child: view)));
-      } else {
+    for (int i = startIndex; i < endIndex; i++)
+    {
+      if (i < widget.model.items.length)
+      {
+        // create the view
+        var model = widget.model.items[i]!;
+        Widget view = GridItemView(model: widget.model.items[i]);
+
+        // wrap for selectable
+        view = MouseRegion(cursor: SystemMouseCursors.click, child: view);
+        view = GestureDetector(onTap: () => model.onTap(), child: view, behavior: HitTestBehavior.translucent);
+
+        // add view to child list
+        children.add(Expanded(child: SizedBox(width: prototypeWidth, height: prototypeHeight, child: view)));
+      }
+      else
+      {
+        // add empty placeholder
         children.add(Expanded(child: Container()));
       }
     }
 
-    if (direction == Axis.vertical) {
+    if (direction == Axis.vertical)
+    {
       return Row(children: children, mainAxisSize: MainAxisSize.min);
-    } else {
+    }
+    else
+    {
       return Column(children: children, mainAxisSize: MainAxisSize.min);
     }
   }
@@ -398,7 +413,7 @@ class _GridViewState extends WidgetState<GridView> {
         controller: scroller,
         childrenDelegate: SliverChildBuilderDelegate(
             (BuildContext context, int rowIndex) =>
-                rowBuilder(context, rowIndex),
+                itemBuilder(context, rowIndex),
             childCount: (widget.model.items.length / count).ceil()));
 
     if (widget.model.onpulldown != null) {

@@ -33,6 +33,7 @@ class ListItemModel extends DecoratedWidgetModel
   }
   List<String>? get postbrokers => _postbrokers;
 
+  // indicates if this item has been selected
   BooleanObservable? _selected;
   set selected (dynamic v)
   {
@@ -47,6 +48,8 @@ class ListItemModel extends DecoratedWidgetModel
   }
   bool? get selected =>  _selected?.get();
 
+  // indicates that this item can be selected
+  // by clicking it
   BooleanObservable? _selectable;
   set selectable (dynamic v)
   {

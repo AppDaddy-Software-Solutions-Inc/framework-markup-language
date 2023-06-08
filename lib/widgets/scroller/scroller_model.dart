@@ -126,9 +126,10 @@ class ScrollerModel extends ViewableWidgetModel
   }
   bool get draggable => _draggable?.get() ?? false;
 
-  ScrollerModel(WidgetModel parent, String? id, String? layout) : super(parent, id)
+  ScrollerModel(WidgetModel parent, String? id, dynamic layout) : super(parent, id)
   {
     // build inner content
+    this.layout = layout;
     switch (layoutType)
     {
       case LayoutType.row:

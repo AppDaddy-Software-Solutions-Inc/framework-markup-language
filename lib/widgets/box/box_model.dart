@@ -369,14 +369,18 @@ class BoxModel extends DecoratedWidgetModel
         var view = model.getView();
 
         // wrap child in child data widget
-        // this is done for us in "positioned" if the child happens
-        // to be a positioned widget and the layout is "stack" (see positioned_view.dart)
+        // This is already done for us in our "positioned" widget view
         if (view is! PositionedView)
         {
           view = LayoutBoxChildData(child: view!, model: model);
         }
 
-        if (view != null) views.add(view);
+        // add the view to the
+        // view list
+        if (view != null)
+        {
+          views.add(view);
+        }
       }
     }
     return views;

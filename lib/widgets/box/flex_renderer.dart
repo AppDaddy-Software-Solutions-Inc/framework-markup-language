@@ -638,6 +638,8 @@ class FlexRenderer extends RenderBox
 
     double maxChildExtent = _direction == Axis.horizontal ? constraints.maxWidth : constraints.maxHeight;
 
+    var idParent = model.id;
+
     RenderBox? child = firstChild;
     while (child != null)
     {
@@ -647,9 +649,7 @@ class FlexRenderer extends RenderBox
         var childData = (child.parentData as BoxData);
         var childModel = childData.model!;
 
-        // var idParent = model.id;
-        // var idChild = childModel.id;
-        // var constr = constraints;
+        var idChild = childModel.id;
 
         // assign flex value
         _setChildFlex(childData, childModel);
@@ -677,6 +677,10 @@ class FlexRenderer extends RenderBox
       child = childAfter(child);
     }
 
+    if (idParent == 'scroller')
+    {
+        int i = 0;
+    }
     return Size(allocatedWidth, allocatedHeight);
   }
 

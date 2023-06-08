@@ -1,6 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/column/column_model.dart';
+import 'package:fml/widgets/row/row_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -13,24 +16,59 @@ import 'package:fml/helper/common_helpers.dart';
 /// Button [ScrollerModel]
 ///
 /// Defines the properties used to build a [SCROLLER.ScrollerView]
-class ScrollerModel extends BoxModel
+class ScrollerModel extends ViewableWidgetModel
 {
-  @override
-  String get border => 'none';
+  late BoxModel content;
 
-  @override
+  LayoutType get layoutType => BoxModel.getLayoutType(_layout, defaultLayout: LayoutType.column);
+
+  String _layout = 'column';
   set layout(dynamic v)
   {
-    if (v is String && v.toLowerCase().trim() == 'horizontal')
+    if (v is String)
     {
-      v = 'row';
+      switch (v.toLowerCase().trim())
+      {
+        case 'row':
+        case 'horizontal':
+          _layout = 'row';
+          break;
+        default:
+          _layout = 'column';
+          break;
+      }
     }
-    else if (v is String && v.toLowerCase().trim() == 'vertical')
-    {
-      v = 'column';
-    }
-    super.layout = v;
   }
+
+  /// We want the scroller to expand in it cross axis by default
+  /// and share space with its siblings.
+  /// This can be done by returning a flex=1 to the parent box
+  /// layout renderer
+  @override
+  int? get flex
+  {
+    if (super.flex != null) return super.flex;
+    if (layoutType == LayoutType.row && !hasBoundedWidth) return 1;
+    if (layoutType == LayoutType.column && !hasBoundedHeight) return 1;
+    return null;
+  }
+
+  /// shadow attributes
+  ///
+  /// the color of the elevation shadow, defaults to black26
+  ColorObservable? _shadowcolor;
+  set shadowcolor(dynamic v)
+  {
+    if (_shadowcolor != null)
+    {
+      _shadowcolor!.set(v);
+    }
+    else if (v != null)
+    {
+      _shadowcolor = ColorObservable(Binding.toKey(id, 'shadowcolor'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  Color get shadowcolor => _shadowcolor?.get() ?? Colors.black26;
 
   /// If true will display a scrollbar, just used as a backup if flutter's built in scrollbar doesn't work
   BooleanObservable? _scrollbar;
@@ -88,36 +126,18 @@ class ScrollerModel extends BoxModel
   }
   bool get draggable => _draggable?.get() ?? false;
 
-
-  ScrollerModel(WidgetModel parent, String? id,
-      { dynamic scrollbar,
-        dynamic draggable,
-        dynamic layout,
-        dynamic shadowcolor,
-        dynamic onscrolledtoend,
-        dynamic width,
-        dynamic height,
-        dynamic minwidth,
-        dynamic minheight,
-        dynamic maxwidth,
-        dynamic onpulldown,
-        dynamic maxheight,})
-      : super(parent, id)
+  ScrollerModel(WidgetModel parent, String? id, String? layout) : super(parent, id)
   {
-    // constraints
-    if (width     != null) this.width     = width;
-    if (height    != null) this.height    = height;
-    if (minwidth  != null) minWidth  = minwidth;
-    if (minheight != null) minHeight = minheight;
-    if (maxwidth  != null) maxWidth  = maxwidth;
-    if (maxheight != null) maxHeight = maxheight;
-
-    this.draggable = draggable;
-    this.onpulldown = onpulldown;
-    this.shadowcolor = shadowcolor;
-    this.layout = layout;
-    this.scrollbar = scrollbar;
-    this.onscrolledtoend = onscrolledtoend;
+    // build inner content
+    switch (layoutType)
+    {
+      case LayoutType.row:
+        content = RowModel(this, null);
+        break;
+      default:
+        content = ColumnModel(this, null);
+        break;
+    }
   }
 
   static ScrollerModel? fromXml(WidgetModel parent, XmlElement xml)
@@ -125,8 +145,8 @@ class ScrollerModel extends BoxModel
     ScrollerModel? model;
     try
     {
-// build model
-      model = ScrollerModel(parent, Xml.get(node: xml, tag: 'id'));
+      // build model
+      model = ScrollerModel(parent, Xml.get(node: xml, tag: 'id'), Xml.get(node: xml, tag: 'layout') ?? Xml.get(node: xml, tag: 'direction'));
       model.deserialize(xml);
     }
     catch(e)
@@ -139,18 +159,35 @@ class ScrollerModel extends BoxModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement? xml)
+  void deserialize(XmlElement xml)
   {
     // deserialize 
     super.deserialize(xml);
 
     // properties
-    layout = Xml.get(node: xml, tag: 'layout') ?? Xml.get(node: xml, tag: 'direction');
-    scrollbar = Xml.get(node: xml, tag: 'scrollbar');
+    scrollbar       = Xml.get(node: xml, tag: 'scrollbar');
     onscrolledtoend = Xml.get(node: xml, tag: 'onscrolledtoend');
-    shadowcolor = Xml.get(node: xml, tag: 'shadowcolor');
-    onpulldown = Xml.get(node: xml, tag: 'onpulldown');
-    draggable = Xml.get(node: xml, tag: 'draggable');
+    shadowcolor     = Xml.get(node: xml, tag: 'shadowcolor');
+    onpulldown      = Xml.get(node: xml, tag: 'onpulldown');
+    draggable       = Xml.get(node: xml, tag: 'draggable');
+
+    // set the flex
+    _buildContent();
+  }
+
+  _buildContent()
+  {
+    content.expand = false;
+
+    // add children to the inner box
+    if (children != null)
+    {
+      content.children ??= [];
+      content.children!.addAll(children!);
+    }
+
+    // clear all children
+    children?.clear();
   }
 
   Future<bool> scrolledToEnd(BuildContext context) async {

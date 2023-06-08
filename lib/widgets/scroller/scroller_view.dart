@@ -30,9 +30,6 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
 {
   final ScrollController _scrollController = ScrollController();
 
-  // state holder for when a maxextent updates and we need a recalculation cycle
-  int _tryToScrollBeyond = 0;
-
   /// When true the scroller has been scrolled to the end
   bool hasScrolledThrough = false;
 
@@ -207,7 +204,7 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
     if (!widget.model.visible) return Offstage();
 
     // build the body
-    var contents = BoxView(widget.model);
+    var contents = BoxView(widget.model.content);
 
     // build the scroll bar
     Widget view = _buildScrollbar(contents);
@@ -218,13 +215,7 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
     // add margins around the entire widget
     view = addMargins(view);
 
-    if (_tryToScrollBeyond == 1)
-    {
-      setState(() => _tryToScrollBeyond = 2);
-      _scrollController.animateTo(_scrollController.position.maxScrollExtent + 10, duration: Duration(milliseconds: 50), curve: Curves.easeOut);
-      Future.delayed(Duration(milliseconds: 50), () => setState(() => _tryToScrollBeyond = 0));
-    }
-
+    view = UnconstrainedBox(child: SizedBox(width: constraints.maxWidth, height: constraints.maxHeight, child: view,));
     return view;
   }
 }

@@ -223,9 +223,9 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
       if ((list != null) && (source != null))
       {
         // build options
-        for (var row in list) {
-          XmlElement? prototype = S.fromPrototype(this.prototype, "$id-$i");
-          i = i + 1;
+        for (var row in list)
+        {
+          XmlElement? prototype = S.fromPrototype(this.prototype);
           var model = OptionModel.fromXml(this, prototype, data: row);
           if (model != null) options.add(model);
         }

@@ -554,9 +554,10 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     }
   }
 
-  TableRowModel? getEmptyRowModel() {
+  TableRowModel? getEmptyRowModel()
+  {
     // build prototype
-    XmlElement? prototype = S.fromPrototype(this.prototype, "$id-${0}");
+    XmlElement? prototype = S.fromPrototype(this.prototype);
 
     // build model
     TableRowModel? model =
@@ -567,7 +568,8 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     return model;
   }
 
-  TableRowModel? getRowModel(int index) {
+  TableRowModel? getRowModel(int index)
+  {
     // model exists?
     if (data == null) return null;
     if (data.length < (index + 1)) return null;
@@ -575,12 +577,10 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     if ((index.isNegative) || (data.length < index)) return null;
 
     // build prototype
-    XmlElement? prototype =
-        S.fromPrototype(this.prototype, "$id-$index");
+    XmlElement? prototype = S.fromPrototype(this.prototype);
 
     // build row model
-    TableRowModel? model =
-        TableRowModel.fromXml(this, prototype, data: data[index]);
+    TableRowModel? model = TableRowModel.fromXml(this, prototype, data: data[index]);
 
     // defined height
     if (prototypeModel!.height != null) heights['row'] = prototypeModel!.height;

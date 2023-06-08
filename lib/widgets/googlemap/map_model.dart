@@ -176,11 +176,9 @@ class MapModel extends DecoratedWidgetModel
       if ((list != null) && (list.isNotEmpty)){
         for (String prototype in prototypes)
         {
-          int i = 0;
-          for (var data in list) {
-            XmlElement? node = S.fromPrototype(prototype, S.newId());
-            i = i + 1;
-
+          for (var data in list)
+          {
+            XmlElement? node = S.fromPrototype(prototype);
             var location = MapLocationModel.fromXml(parent!, node, data: data);
             if (location != null) locations.add(location);
           }

@@ -183,8 +183,9 @@ class PagerModel extends BoxModel
       }
       pages.clear();
 
-      for (var row in list) {
-        XmlElement? prototype = S.fromPrototype(this.prototype, "$id-$i");
+      for (var row in list)
+      {
+        XmlElement? prototype = S.fromPrototype(this.prototype);
         i = i + 1;
 
         var model = PageModel.fromXml(parent, prototype, data: row);

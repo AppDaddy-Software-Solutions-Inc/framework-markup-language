@@ -235,12 +235,23 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
   bool get draggable => _draggable?.get() ?? false;
 
-  ListModel(WidgetModel? parent, String? id, {dynamic direction, dynamic draggable, dynamic scrollShadows, dynamic onpulldown}) : super(parent, id)
+  BooleanObservable? _reverse;
+  set reverse(dynamic v) {
+    if (_reverse != null) {
+      _reverse!.set(v);
+    } else if (v != null) {
+      _reverse = BooleanObservable(Binding.toKey(id, 'reverse'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get reverse => _reverse?.get() ?? false;
+
+  ListModel(WidgetModel? parent, String? id, {dynamic direction, dynamic reverse, dynamic draggable, dynamic scrollShadows, dynamic onpulldown}) : super(parent, id)
   {
     // instantiate busy observable
     busy = false;
 
     this.direction = direction;
+    this.reverse = reverse;
     this.draggable = draggable;
     this.onpulldown = onpulldown;
     this.scrollShadows = scrollShadows;
@@ -284,6 +295,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     scrollButtons = Xml.get(node: xml, tag: 'scrollbuttons');
     collapsed = Xml.get(node: xml, tag: 'collapsed');
     onpulldown  = Xml.get(node: xml, tag: 'onpulldown');
+    reverse  = Xml.get(node: xml, tag: 'reverse');
 
     // clear items
     this.items.forEach((_,item) => item.dispose());

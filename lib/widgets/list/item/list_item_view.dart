@@ -1,5 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/box/box_view.dart';
+import 'package:fml/widgets/row/row_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/list/item/list_item_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
@@ -27,6 +29,6 @@ class _ListItemViewState extends WidgetState<ListItemView>
     List<Widget> children = widget.model.inflate();
     if (children.isEmpty) children.add(Container());
 
-    return Container(color: widget.model.color ?? widget.model.backgroundcolor ?? Theme.of(context).colorScheme.onInverseSurface, child: children.length == 1 ? children[0] : Row(children: children));
+    return BoxView(widget.model);
   }
 }

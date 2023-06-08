@@ -2,6 +2,7 @@
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
@@ -12,7 +13,7 @@ import 'package:fml/widgets/form/form_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class ListItemModel extends DecoratedWidgetModel
+class ListItemModel extends BoxModel
 {
   Map? map;
 

@@ -14,20 +14,20 @@ List<String> styles = [];
 
 void matchElements (String value) {
   /// WARNING: DO NOT USE LOOKBEHIND it is unsupported in safari and other browsers.
-  RegExp bdO =  RegExp(r"(([ \*\_\^\#\`])|\\)(\*\*)(?![ \*])"); // \ will escape the mandatory space before or after a character.
-  RegExp bdC =  RegExp(r"\*\*((?=[ \*\_\^\#\`\\])|\\)");
-  RegExp itO =  RegExp(r"(([ \*\_\^\#\`\\])|\\)(\*)(?![ \*])");
-  RegExp itC =  RegExp(r"\*((?=[ \*\_\^\#\`\\])|\\)");
-  RegExp sbO =  RegExp(r"(([ \*\_\^\#\`\\])|\\)(\^\^)(?![ \^])");
-  RegExp sbC =  RegExp(r"\^\^((?=[ \*\_\^\#\`\\])|\\)");
-  RegExp spO =  RegExp(r"(([ \*\_\^\#\`\\])|\\)(\^)(?![ \^])");
-  RegExp spC =  RegExp(r"\^((?=[ \*\_\^\#\`\\])|\\)");
-  RegExp unO =  RegExp(r"(([ \*\_\^\#\`\\])|\\)(\_)(?![ \_])");
-  RegExp unC =  RegExp(r"(\_)((?=[ \*\_\^\#\`\\])|\\)");
-  RegExp ovO =  RegExp(r"(([ \*\_\^\#\`\\])|\\)(\_\_\_)(?![ \_])");
-  RegExp ovC =  RegExp(r"\_\_\_((?=[ \*\_\^\#\`\\])|\\)");
-  RegExp stO =  RegExp(r"(([ \*\_\^\#\`\\])|\\)(\_\_)(?![ \_])");
-  RegExp stC =  RegExp(r"\_\_((?=[ \*\_\^\#\`\\])|\\)");
+  RegExp bdO =  RegExp(r"(([ *_^#`])|\\)(\*\*)(?![ *])"); // \ will escape the mandatory space before or after a character.
+  RegExp bdC =  RegExp(r"(\S)(\*\*(?=\W|\\))");
+  RegExp itO =  RegExp(r"(([ *_^#`\\])|\\)(\*)(?![ *])");
+  RegExp itC =  RegExp(r"(\S)(\*(?=\W|\\))");
+  RegExp sbO =  RegExp(r"(([ *_^#`\\])|\\)(\^\^)(?![ ^])");
+  RegExp sbC =  RegExp(r"(\S)(\^\^(?=\W|\\))");
+  RegExp spO =  RegExp(r"(([ *_^#`\\])|\\)(\^)(?![ ^])");
+  RegExp spC =  RegExp(r"(\S)(\^(?=\W|\\))");
+  RegExp unO =  RegExp(r"(([ *_^#`\\])|\\)(_)(?![ _])");
+  RegExp unC =  RegExp(r"(\S)(_(?=\W|\\))");
+  RegExp ovO =  RegExp(r"(([ *_^#`\\])|\\)(___)(?![ _])");
+  RegExp ovC =  RegExp(r"(\S)(___(?=\W|\\))");
+  RegExp stO =  RegExp(r"(([ *_^#`\\])|\\)(__)(?![ _])");
+  RegExp stC =  RegExp(r"(\S)(__(?=\W|\\))");
   RegExp codeO = RegExp(r"(([ *_^#`\\])|\\)(```)(?![ `])");
   RegExp codeC = RegExp(r"(\S)(```(?=\W|\\))");
 
@@ -40,57 +40,50 @@ void matchElements (String value) {
 
   while (bdO.firstMatch(value) != null && bdC.firstMatch(value) != null) // add or for start and end or add space to start and end
    {
-    //value = value.replaceFirst(bdO, '###bol###');
     value = value.replaceFirstMapped(bdO, (match) => "${match.group(1)!}###bol###");
-    value = value.replaceFirst(bdC, '###bol###');
+    value = value.replaceFirstMapped(bdC, (match) => "${match[1]!}###bol###");
   }
 
   while (itO.firstMatch(value) != null && itC.firstMatch(value) != null)
   {
-    //value = value.replaceFirst(itO, '###ita###', 1);
     value = value.replaceFirstMapped(itO, (match) => "${match.group(1)!}###ita###");
-    value = value.replaceFirst(itC, '###ita###');
+    value = value.replaceFirstMapped(itC, (match) => "${match[1]!}###ita###");
   }
-
-
-
-
 
   while (sbO.firstMatch(value) != null && sbC.firstMatch(value) != null)
   {
     value = value.replaceFirstMapped(sbO, (match) => "${match.group(1)!}###sub###");
-    value = value.replaceFirst(sbC, '###sub###');
+    value = value.replaceFirstMapped(sbC, (match) => "${match[1]!}###sub###");
   }
 
   while (spO.firstMatch(value) != null && spC.firstMatch(value) != null)
   {
     value = value.replaceFirstMapped(spO, (match) => "${match.group(1)!}###sup###");
-    value = value.replaceFirst(spC, '###sup###');
+    value = value.replaceFirstMapped(spC, (match) => "${match[1]!}###sup###");
   }
 
   while (ovO.firstMatch(value) != null && ovC.firstMatch(value) != null)
   {
     value = value.replaceFirstMapped(ovO, (match) => "${match.group(1)!}###ove###");
-    value = value.replaceFirst(ovC, '###ove###');
+    value = value.replaceFirstMapped(ovC, (match) => "${match[1]!}###ove###");
   }
 
   while (stO.firstMatch(value) != null && stC.firstMatch(value) != null)
   {
     value = value.replaceFirstMapped(stO, (match) => "${match.group(1)!}###str###");
-    value = value.replaceFirst(stC, '###str###');
+    value = value.replaceFirstMapped(stC, (match) => "${match[1]!}###str###");
   }
 
   while (unO.firstMatch(value) != null && unC.firstMatch(value) != null)
   {
     value = value.replaceFirstMapped(unO, (match) => "${match.group(1)!}###und###");
-    value = value.replaceFirst(unC, '###und###');
+    value = value.replaceFirstMapped(unC, (match) => "${match[1]!}###und###");
   }
 
 
   while (codeO.firstMatch(value) != null && codeC.firstMatch(value) != null) {
     value = value.replaceFirstMapped(codeO, (match) => "${match.group(1)!}###code###");
     value = value.replaceFirstMapped(codeC, (match) => "${match[1]!}###code###");
-    // value = value.replaceFirst(codeC, '###code###');
   }
 
   return extractStyles(value, []);

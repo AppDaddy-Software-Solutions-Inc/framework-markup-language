@@ -335,65 +335,65 @@ class _TextViewState extends WidgetState<TextView>
 
     if (markupTextValues.isNotEmpty) {
       for (var element in markupTextValues) {
-      InlineSpan textSpan;
-      FontWeight? weight;
-      FontStyle? style;
-      String? script;
-      TextDecoration? deco;
-      Color? codeBlockBG;
-      String? codeBlockFont;
+        InlineSpan textSpan;
+        FontWeight? weight;
+        FontStyle? style;
+        String? script;
+        TextDecoration? deco;
+        Color? codeBlockBG;
+        String? codeBlockFont;
 
-      for (var element in element.styles) {
-        switch (element)
-        {
-          case "underline":
-            deco = TextDecoration.underline;
-            break;
-          case "strikethrough":
-            deco = TextDecoration.lineThrough;
-            break;
-          case "overline":
-            deco = TextDecoration.overline;
-            break;
-          case "bold":
-            weight = FontWeight.bold;
-            break;
-          case "italic":
-            style = FontStyle.italic;
-            break;
-          case "subscript":
-            script = "sub";
-            break;
-          case "superscript":
-            script = "sup";
-            break;
-          case "code":
-            codeBlockBG = theme?.colorScheme.surfaceVariant.withOpacity(0.7);
-            codeBlockFont = 'Inconsolata';
-            weight = FontWeight.w400;
-            break;
-          default:
-            codeBlockBG = theme?.colorScheme.surfaceVariant;
-            codeBlockFont = null;
-            weight = FontWeight.normal;
-            style = FontStyle.normal;
-            deco = TextDecoration.none;
-            script = "normal";
-            break;
+        for (var element in element.styles) {
+          switch (element)
+          {
+            case "underline":
+              deco = TextDecoration.underline;
+              break;
+            case "strikethrough":
+              deco = TextDecoration.lineThrough;
+              break;
+            case "overline":
+              deco = TextDecoration.overline;
+              break;
+            case "bold":
+              weight = FontWeight.bold;
+              break;
+            case "italic":
+              style = FontStyle.italic;
+              break;
+            case "subscript":
+              script = "sub";
+              break;
+            case "superscript":
+              script = "sup";
+              break;
+            case "code":
+              codeBlockBG = theme?.colorScheme.surfaceVariant.withOpacity(0.7);
+              codeBlockFont = 'Inconsolata';
+              weight = FontWeight.w400;
+              break;
+            default:
+              codeBlockBG = theme?.colorScheme.surfaceVariant;
+              codeBlockFont = null;
+              weight = FontWeight.normal;
+              style = FontStyle.normal;
+              deco = TextDecoration.none;
+              script = "normal";
+              break;
+          }
         }
-      }
 
-      String text = element.text.replaceAll('\\n', '\n').replaceAll('\\t','\t\t\t\t');
+        String text = element.text.replaceAll('\\n', '\n').replaceAll('\\t','\t\t\t\t');
 
-      if (widget.model.addWhitespace) text = ' $text';
+        if (widget.model.addWhitespace) text = ' $text';
 
-      //4 ts here as dart interprets the tab character as a single space.
-      if (script == "sub")
-      {
-        WidgetSpan widgetSpan = WidgetSpan(child: Transform.translate(
-          offset: const Offset(2, 4),
-          child: Text(text, textScaleFactor: 0.7,
-            style: TextStyle(
+        //4 ts here as dart interprets the tab character as a single space.
+        if (script == "sub") {
+          WidgetSpan widgetSpan = WidgetSpan(child: Transform.translate(
+            offset: const Offset(2, 4),
+            child: Text(text, textScaleFactor: 0.7,
+              style: TextStyle(
+                color: widget.model.color ?? Theme.of(context).colorScheme.onSurface,
                 wordSpacing: widget.model.wordspace,
                 letterSpacing: widget.model.letterspace,
                 height: widget.model.lineheight,
@@ -404,14 +404,14 @@ class _TextViewState extends WidgetState<TextView>
                 decorationStyle: textDecoStyle,
                 decorationColor: widget.model.decorationcolor,
                 decorationThickness: widget.model.decorationweight),),),);
-        textSpans.add(widgetSpan);
-      }
-      else if (script == "sup")
-      {
-        WidgetSpan widgetSpan = WidgetSpan(child: Transform.translate(
-          offset: const Offset(2, -4),
-          child: Text(text, textScaleFactor: 0.7,
-            style: TextStyle(
+          textSpans.add(widgetSpan);
+        }
+        else if (script == "sup") {
+          WidgetSpan widgetSpan = WidgetSpan(child: Transform.translate(
+            offset: const Offset(2, -4),
+            child: Text(text, textScaleFactor: 0.7,
+              style: TextStyle(
+                  color: widget.model.color ?? Theme.of(context).colorScheme.onSurface,
                 wordSpacing: widget.model.wordspace,
                 letterSpacing: widget.model.letterspace,
                 height: widget.model.lineheight,
@@ -422,45 +422,42 @@ class _TextViewState extends WidgetState<TextView>
                 decorationStyle: textDecoStyle,
                 decorationColor: widget.model.decorationcolor,
                 decorationThickness: widget.model.decorationweight),),),);
-        textSpans.add(widgetSpan);
-      }
-      else
-      {
-        TextStyle? textstyle;
-        String? font = codeBlockFont ?? widget.model.font;
-        if (font != null && (libraryLoader?.isCompleted ?? false))
-        {
-          textstyle = fonts.GoogleFonts.getFont(font,
-              backgroundColor: codeBlockBG,
-              wordSpacing: widget.model.wordspace,
-              letterSpacing: widget.model.letterspace,
-              height: widget.model.lineheight,
-              shadows: shadow != null ? [shadow] : null,
-              fontWeight: weight,
-              fontStyle: style,
-              decoration: deco,
-              decorationStyle: textDecoStyle,
-              decorationColor: widget.model.decorationcolor,
-              decorationThickness: widget.model.decorationweight);
+          textSpans.add(widgetSpan);
         }
-        else
-        {
-          textstyle = TextStyle(
-              wordSpacing: widget.model.wordspace,
-              letterSpacing: widget.model.letterspace,
-              height: widget.model.lineheight,
-              shadows: shadow != null ? [shadow] : null,
-              fontWeight: weight,
-              fontStyle: style,
-              decoration: deco,
-              decorationStyle: textDecoStyle,
-              decorationColor: widget.model.decorationcolor,
-              decorationThickness: widget.model.decorationweight);
+        else {
+          TextStyle? textstyle;
+          String? font = codeBlockFont ?? widget.model.font;
+          if (font != null && (libraryLoader?.isCompleted ?? false)) {
+            textstyle = fonts.GoogleFonts.getFont(font,
+                backgroundColor: codeBlockBG,
+                wordSpacing: widget.model.wordspace,
+                letterSpacing: widget.model.letterspace,
+                height: widget.model.lineheight,
+                shadows: shadow != null ? [shadow] : null,
+                fontWeight: weight,
+                fontStyle: style,
+                decoration: deco,
+                decorationStyle: textDecoStyle,
+                decorationColor: widget.model.decorationcolor,
+                decorationThickness: widget.model.decorationweight);
+          }
+          else {
+            textstyle = TextStyle(
+                wordSpacing: widget.model.wordspace,
+                letterSpacing: widget.model.letterspace,
+                height: widget.model.lineheight,
+                shadows: shadow != null ? [shadow] : null,
+                fontWeight: weight,
+                fontStyle: style,
+                decoration: deco,
+                decorationStyle: textDecoStyle,
+                decorationColor: widget.model.decorationcolor,
+                decorationThickness: widget.model.decorationweight);
+          }
+          textSpan = TextSpan(text: text, style: textstyle);
+          textSpans.add(textSpan);
         }
-        textSpan = TextSpan(text: text, style: textstyle);
-        textSpans.add(textSpan);
       }
-    }
     }
 
     return textSpans;

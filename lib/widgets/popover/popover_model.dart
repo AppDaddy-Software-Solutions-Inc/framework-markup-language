@@ -118,7 +118,6 @@ class PopoverModel extends DecoratedWidgetModel implements IModelListener
     busy = true;
 
     // build options
-    int i = 0;
     if ((list != null))
     {
       // clear items
@@ -128,7 +127,7 @@ class PopoverModel extends DecoratedWidgetModel implements IModelListener
       items.clear();
 
       for (var row in list) {
-        XmlElement? prototype = S.fromPrototype(this.prototype, "$id-${i++}");
+        XmlElement? prototype = S.fromPrototype(this.prototype);
         var model = PopoverItemModel.fromXml(parent, prototype, data: row);
         if (model != null) items.add(model);
       }

@@ -296,7 +296,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
       // Populate grid items from datasource
       for (var row in list)
       {
-        XmlElement? prototype = S.fromPrototype(this.prototype, "$id-$index");
+        XmlElement? prototype = S.fromPrototype(this.prototype);
         var model = GridItemModel.fromXml(parent!, prototype, data: row);
 
         if (model != null)

@@ -298,7 +298,7 @@ class _GridViewState extends WidgetState<GridView> {
       try
       {
         // build prototype
-        XmlElement? prototype = S.fromPrototype(widget.model.prototype, "${widget.model.id}-0");
+        XmlElement? prototype = S.fromPrototype(widget.model.prototype);
 
         // build model
         prototypeModel = GridItemModel.fromXml(widget.model, prototype);

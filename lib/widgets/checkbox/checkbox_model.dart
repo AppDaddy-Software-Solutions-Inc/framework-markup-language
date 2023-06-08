@@ -422,13 +422,11 @@ class CheckboxModel extends FormFieldModel implements IFormField
       options.clear();
 
       // build options
-      int i = 0;
-      if ((list != null)) {
+      if ((list != null))
+      {
         list.forEach((row)
       {
-        XmlElement? prototype = S.fromPrototype(this.prototype, "$id-$i");
-        i = i + 1;
-
+        XmlElement? prototype = S.fromPrototype(this.prototype);
         OptionModel? model = OptionModel.fromXml(parent, prototype, data: row);
         if (model != null) options.add(model);
       });

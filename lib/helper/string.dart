@@ -598,36 +598,53 @@ class S {
   }
 
   static String placeholder = "{{id}}";
-  static String toPrototype(String prototype) {
-    // process bindings
-    var original = prototype;
-    var bindings = Binding.getBindings(prototype);
-    List<String?> processed = [];
-    if (bindings != null) {
-      for (var binding in bindings) {
-        if ((binding.source == 'data') &&
-            (!processed.contains(binding.signature))) {
-          processed.add(binding.signature);
-          var signature =
-              "{$placeholder.data.${binding.property}${(binding.dotnotation?.signature != null ? ".${binding.dotnotation!.signature}" : "")}}";
-          prototype = prototype.replaceAll(binding.signature, signature);
+  static String toPrototype(String prototype)
+  {
+    var copyOfPrototype = prototype;
+
+    var xml = Xml.tryParse(copyOfPrototype);
+    if (xml != null)
+    {
+      // replace any id's
+      var id = Xml.attribute(node: xml.rootElement, tag: "id");
+      if (!S.isNullOrEmpty(id))
+      {
+        copyOfPrototype = copyOfPrototype.replaceAll("{$id.", "{$placeholder.");
+      }
+
+      // process data bindings
+      var bindings = Binding.getBindings(copyOfPrototype);
+      List<String?> processed = [];
+      if (bindings != null)
+      {
+        for (var binding in bindings)
+        {
+          if (binding.source == 'data' && !processed.contains(binding.signature))
+          {
+            processed.add(binding.signature);
+            var signature = "{$placeholder.data.${binding.property}${(binding.dotnotation?.signature != null ? ".${binding.dotnotation!.signature}" : "")}}";
+            copyOfPrototype = copyOfPrototype.replaceAll(binding.signature, signature);
+          }
         }
       }
-    }
 
-    // parse
-    if (prototype != original) {
-      var xml = Xml.tryParse(prototype)!.rootElement;
-      Xml.setAttribute(xml, 'id', placeholder);
-      prototype = xml.toString();
+      // parse the new xml
+      xml = Xml.tryParse(copyOfPrototype);
+      if (xml != null)
+      {
+        // set the id to the placeholder
+        xml.rootElement.setAttribute('id', placeholder);
+        prototype = xml.toString();
+      }
     }
-
     return prototype;
   }
 
-  static XmlElement? fromPrototype(String? prototype, String id) {
-    if ((prototype != null)) {
-      prototype = prototype.replaceAll(placeholder, id);
+  static XmlElement? fromPrototype(String? prototype)
+  {
+    if ((prototype != null))
+    {
+      prototype = prototype.replaceAll(placeholder, S.newId());
       var document = Xml.tryParse(prototype);
       var node = document?.rootElement;
       return node;

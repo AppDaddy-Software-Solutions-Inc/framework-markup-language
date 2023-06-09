@@ -100,8 +100,6 @@ class MapModel extends DecoratedWidgetModel
     }
   }
   bool get autozoom => _autozoom?.get() ?? true;
-  
-  bool showAll = true;
 
   final List<MapMarkerModel> markers = [];
 
@@ -109,8 +107,7 @@ class MapModel extends DecoratedWidgetModel
     WidgetModel parent,
     String? id, {
     dynamic zoom,
-    dynamic visible,
-    dynamic showAll,
+    dynamic visible
   }) : super(parent, id)
   {
     // instantiate busy observable
@@ -118,7 +115,6 @@ class MapModel extends DecoratedWidgetModel
 
     this.zoom = zoom;
     this.visible = visible;
-    this.showAll = (showAll ?? true);
   }
 
   static MapModel? fromXml(WidgetModel parent, XmlElement xml) {
@@ -148,7 +144,6 @@ class MapModel extends DecoratedWidgetModel
     autozoom  = Xml.get(node: xml, tag: 'autozoom');
     latitude  = Xml.get(node: xml, tag: 'latitude');
     longitude = Xml.get(node: xml, tag: 'longitude');
-    showAll   = S.toBool(Xml.get(node: xml, tag: 'showallpoints')) == false ? false : true;
 
     // add layers
     var layers = Xml.getChildElements(node: xml, tag: "LAYER");

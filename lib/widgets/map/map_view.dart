@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
@@ -69,48 +70,47 @@ class _MapViewState extends WidgetState<MapView>
         layers.add(MarkerLayer(markers: markers));
 
         // zoom level
-        double zoom = 16.0;
-        if (widget.model.zoom > 0)
-        {
-          zoom = widget.model.zoom;
-        }
+        double zoom = widget.model.zoom > 0 ? min(16.0, widget.model.zoom) : 16.0;
 
         // center point
-        LatLng? center;
-        if (widget.model.latitude != null && widget.model.longitude != null) center = LatLng(widget.model.latitude!, widget.model.longitude!);
-        if (center == null && centerPoint != null && markerBounds == null)
+        if (widget.model.latitude != null && widget.model.longitude != null)
         {
-          center = centerPoint;
+          centerPoint = LatLng(widget.model.latitude!, widget.model.longitude!);
         }
 
-        //bounds
-        LatLngBounds? bounds;
+        // bounds
         final FitBoundsOptions boundsOptions = FitBoundsOptions(padding: EdgeInsets.all(50));
-        if (center == null && markerBounds != null)
+        if (markerBounds != null)
         {
-          bounds = markerBounds;
-          CenterZoom cz = mapController.centerZoomFitBounds(markerBounds!,options: boundsOptions);
-          center = cz.center;
+          var cz = mapController.centerZoomFitBounds(markerBounds!,options: boundsOptions);
+          centerPoint = cz.center;
           zoom = cz.zoom;
         }
 
-        // default center
         // map options
         MapOptions options = MapOptions(
           keepAlive: true,
           zoom: zoom,
-          minZoom: 1,
-          bounds: bounds,
+          center: centerPoint,
+          bounds: markerBounds,
           boundsOptions: boundsOptions,
-          maxZoom: 20);
+          slideOnBoundaries: true);
 
         // map
         var map = FlutterMap(key: ObjectKey(widget.model), mapController: mapController, children: layers, options: options);
 
-        //center the map
+        // center the map
         WidgetsBinding.instance.addPostFrameCallback((_)
         {
-          mapController.move(center ?? centerDefault, zoom);
+          if (widget.model.autozoom)
+          {
+            // this move is a hack to force the map to
+            // refresh its tiles on startup.
+            mapController.move(centerDefault, zoom);
+
+            // move back to intended spot
+            mapController.move(centerPoint ?? centerDefault, zoom);
+          }
         });
 
         return map;

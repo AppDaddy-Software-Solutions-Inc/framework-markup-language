@@ -162,28 +162,28 @@ class Platform
   /// index.html loads the script from local.js file
   /// then listens to the .js postMessages() calls
   ///
-  ///   // <!-- VSCode Webview Template File Parsing -->
-  ///   window.addEventListener('message', function(event) {
-  ///       var data;
-  ///       try {
-  ///           // <!--console.log(`Received ${event.data} from ${event.origin}`);-->
-  ///           data = JSON.parse(event.data);
-  ///       } catch(e) {}
-  ///       try {
-  ///           if (event.origin.startsWith('https://pad.fml.dev') && data && data.data && data.to) {
-  ///               window.parent.postMessage({'data': data.data, 'from': event.origin, 'to': data.to});
-  ///           }
-  ///           else if (!event.origin.startsWith('vscode-webview://')) {
-  ///               // <!--console.log('bad origin');-->
-  ///               return;
-  ///           }
-  ///           else {
-  ///              js2fml({'data': `${event.data}`, 'from': `${event.origin}`, 'to': 'fml'});
-  ///          }
-  ///       } catch(err) {
-  ///           // <!--console.log(`js2fml error`);-->
-  ///       }
-  ///   });
+     // <!-- VSCode Webview Template File Parsing -->
+     // window.addEventListener('message', function(event) {
+     //     var data;
+     //     try {
+     //         // <!--console.log(`Received ${event.data} from ${event.origin}`);-->
+     //         data = JSON.parse(event.data);
+     //     } catch(e) {}
+     //     try {
+     //         if (event.origin.startsWith('https://pad.fml.dev') && data && data.data && data.to) {
+     //             window.parent.postMessage({'data': data.data, 'from': event.origin, 'to': data.to});
+     //         }
+     //         else if (!event.origin.startsWith('vscode-webview://')) {
+     //             // <!--console.log('bad origin');-->
+     //             return;
+     //         }
+     //         else {
+     //            js2fml({'data': `${event.data}`, 'from': `${event.origin}`, 'to': 'fml'});
+     //        }
+     //     } catch(err) {
+     //         // <!--console.log(`js2fml error`);-->
+     //     }
+     // });
 
 
   /// Basic implementation to show a template sent from js for vscode extension.

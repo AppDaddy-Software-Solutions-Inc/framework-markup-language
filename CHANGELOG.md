@@ -1,8 +1,12 @@
+
+2.0.0
+- todo
+
 1.3.0
-- To-Do
+- todo
 
 1.2.3
-- To-Do
+- todo
 
 1.2.0
 - Added EDITOR widget for code editing in FML apps.

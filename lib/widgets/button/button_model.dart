@@ -109,6 +109,21 @@ class ButtonModel extends BoxModel
   }
 
   @override
+  ColorObservable? _color;
+  set color (dynamic v)
+  {
+    if (_color != null)
+    {
+      _color!.set(v);
+    }
+    else if (v != null)
+    {
+      _color = ColorObservable(Binding.toKey(id, 'color'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  Color? get color => _color?.get();
+
+  @override
   String get radius => super.radius ?? '20';
 
   /// Type of button
@@ -176,7 +191,6 @@ class ButtonModel extends BoxModel
     this.label      = label;
     this.color      = color;
     this.buttontype = buttontype;
-    this.color      = color;
     this.radius     = radius;
     this.enabled    = enabled;
     this.children   = children;
@@ -193,6 +207,7 @@ class ButtonModel extends BoxModel
       case LayoutType.row:
       default:
         content = RowModel(this, null);
+        content.center = true;
         break;
     }
     _buildContent();
@@ -213,7 +228,7 @@ class ButtonModel extends BoxModel
     if (content.viewableChildren.isEmpty && label != null)
     {
       // create text model bound to this label
-      var text = TextModel(content, null, value: "{$id.label}");
+      var text = TextModel(content, null, value: "{$id.label}", color: enabled ? color : color?.withOpacity(0.8));
       content.children ??= [];
       content.children!.add(text);
     }
@@ -249,11 +264,7 @@ class ButtonModel extends BoxModel
     super.deserialize(xml);
 
     // properties
-    String? text = Xml.get(node: xml, tag: 'value');
-    if (S.isNullOrEmpty(text))  text = Xml.get(node: xml, tag: 'label');
-    if (S.isNullOrEmpty(text))  text = Xml.getText(xml);
-
-    label             = text;
+    label             = Xml.get(node: xml, tag: 'value') ?? Xml.get(node: xml, tag: 'label') ?? Xml.getText(xml);
     onclick           = Xml.get(node: xml, tag: 'onclick');
     onenter           = Xml.get(node: xml, tag: 'onenter');
     onexit            = Xml.get(node: xml, tag: 'onexit');

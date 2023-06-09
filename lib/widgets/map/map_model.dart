@@ -87,6 +87,20 @@ class MapModel extends DecoratedWidgetModel
     return scale;
   }
 
+  // autozoom
+  BooleanObservable? _autozoom;
+  set autozoom(dynamic v) {
+    if (_autozoom != null)
+    {
+      _autozoom!.set(v);
+    }
+    else if (v != null)
+    {
+      _autozoom = BooleanObservable(Binding.toKey(id, 'autozoom'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get autozoom => _autozoom?.get() ?? true;
+  
   bool showAll = true;
 
   final List<MapMarkerModel> markers = [];
@@ -131,6 +145,7 @@ class MapModel extends DecoratedWidgetModel
 
     // properties
     zoom      = Xml.get(node: xml, tag: 'zoom');
+    autozoom  = Xml.get(node: xml, tag: 'autozoom');
     latitude  = Xml.get(node: xml, tag: 'latitude');
     longitude = Xml.get(node: xml, tag: 'longitude');
     showAll   = S.toBool(Xml.get(node: xml, tag: 'showallpoints')) == false ? false : true;

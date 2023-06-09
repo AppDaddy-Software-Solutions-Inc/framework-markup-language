@@ -235,12 +235,23 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
   bool get draggable => _draggable?.get() ?? false;
 
-  ListModel(WidgetModel? parent, String? id, {dynamic direction, dynamic draggable, dynamic scrollShadows, dynamic onpulldown}) : super(parent, id)
+  BooleanObservable? _reverse;
+  set reverse(dynamic v) {
+    if (_reverse != null) {
+      _reverse!.set(v);
+    } else if (v != null) {
+      _reverse = BooleanObservable(Binding.toKey(id, 'reverse'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get reverse => _reverse?.get() ?? false;
+
+  ListModel(WidgetModel? parent, String? id, {dynamic direction, dynamic reverse, dynamic draggable, dynamic scrollShadows, dynamic onpulldown}) : super(parent, id)
   {
     // instantiate busy observable
     busy = false;
 
     this.direction = direction;
+    this.reverse = reverse;
     this.draggable = draggable;
     this.onpulldown = onpulldown;
     this.scrollShadows = scrollShadows;
@@ -284,6 +295,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     scrollButtons = Xml.get(node: xml, tag: 'scrollbuttons');
     collapsed = Xml.get(node: xml, tag: 'collapsed');
     onpulldown  = Xml.get(node: xml, tag: 'onpulldown');
+    reverse  = Xml.get(node: xml, tag: 'reverse');
 
     // clear items
     this.items.forEach((_,item) => item.dispose());
@@ -320,13 +332,23 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     if (index.isNegative || list.length < index) return null;
 
     // build prototype
-    XmlElement? prototype = S.fromPrototype(this.prototype, "$id-$index");
+    XmlElement? prototype = S.fromPrototype(this.prototype);
 
     // build item model
     var model = ListItemModel.fromXml(this, prototype, data: list[index]);
 
     if (model != null)
     {
+      // set the index
+      model.index = index;
+
+      // set the selected data
+      if (model.selected == true)
+      {
+        // this must be done after the build
+        WidgetsBinding.instance.addPostFrameCallback((_) => data = model.data);
+      }
+
       // register listener to dirty field
       if (model.dirtyObservable != null) model.dirtyObservable!.registerListener(onDirtyListener);
 
@@ -402,7 +424,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     await EventHandler(this).execute(_onpulldown);
   }
 
-  Future<bool> onTap(ListItemModel model) async
+  Future<bool> onTap(ListItemModel? model) async
   {
     items.forEach((key, item)
     {
@@ -421,6 +443,43 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
        }
     });
     return true;
+  }
+
+  @override
+  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
+  {
+    /// setter
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+
+    switch (function)
+    {
+      // selects the item by index
+      case "select" :
+        int index = S.toInt(S.item(arguments, 0)) ?? -1;
+        if (index >= 0 && index < items.length)
+        {
+          var model = items[index];
+          if (model != null && model.selected == false) onTap(model);
+        }
+        return true;
+
+      // de-selects the item by index
+      case "deselect" :
+        int index = S.toInt(S.item(arguments, 0)) ?? -1;
+        if (index >= 0 && _dataset != null && index < _dataset!.length)
+        {
+          var model = items[index];
+          if (model != null && model.selected == true) onTap(model);
+        }
+        return true;
+
+    // de-selects the item by index
+      case "clear" :
+        onTap(null);
+        return true;
+    }
+    return super.execute(caller, propertyOrFunction, arguments);
   }
 
   @override

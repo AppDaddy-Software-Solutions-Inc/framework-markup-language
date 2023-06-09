@@ -1,14 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:collection';
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart'     ;
-import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/grid/grid_view.dart' as grid_view;
 import 'package:fml/widgets/grid/item/grid_item_model.dart';
 import 'package:fml/datasources/transforms/sort.dart' as sort_transform;
@@ -21,6 +19,13 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
 {
   // prototype
   String? prototype;
+
+  // full list of data
+  // pointing to data broker data
+  Data? _dataset;
+
+  // returns the number of records in the dataset
+  int? get records => _dataset?.length;
 
   // items
   HashMap<int,GridItemModel> items = HashMap<int,GridItemModel>();
@@ -278,7 +283,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
   @override
   Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async {
     busy = true;
-    int i = 0;
+    int index = 0;
 
     if (list != null)
     {
@@ -289,12 +294,29 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
       items.clear();
 
       // Populate grid items from datasource
-      for (var row in list) {
-        XmlElement? prototype = S.fromPrototype(this.prototype, "$id-$i");
+      for (var row in list)
+      {
+        XmlElement? prototype = S.fromPrototype(this.prototype);
         var model = GridItemModel.fromXml(parent!, prototype, data: row);
-        if (model != null) items[i++] = model;
+
+        if (model != null)
+        {
+          // set the index
+          model.index = index;
+
+          // set the selected data
+          if (model.selected == true)
+          {
+            // this must be done after the build
+            WidgetsBinding.instance.addPostFrameCallback((_) => data = model.data);
+          }
+
+          // add to items list
+          items[index++] = model;
+        }
       }
 
+      _dataset = list;
       notifyListeners('list', items);
     }
 
@@ -302,130 +324,54 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
     return true;
   }
 
-  void sort(String? field, String? type, bool? ascending) async {
-    if ((data == null) ||  (data.isEmpty) || (field == null)) return;
+  Future<bool> onTap(GridItemModel? model) async
+  {
+    items.forEach((key, item)
+    {
+      if (item == model)
+      {
+        // toggle selected
+        bool isSelected = (item.selected ?? false) ? false : true;
+
+        // set values
+        item.selected = isSelected;
+        data = isSelected ? item.data : Data();
+      }
+      else
+      {
+        item.selected = false;
+      }
+    });
+    return true;
+  }
+
+  void sort(String? field, String? type, bool? ascending) async
+  {
+    if (_dataset == null ||  _dataset!.isEmpty || field == null) return;
 
     busy = true;
 
     sort_transform.Sort sort = sort_transform.Sort(null, field: field, type: type, ascending: ascending);
-    await sort.apply(data);
+    await sort.apply(_dataset);
 
     busy = false;
   }
 
-  Future<bool> export({bool? raw}) async
+  // export to excel
+  Future<bool> export() async
   {
-//  //////////
-//    EXCEL
-//  //////////
-//    List<int> excelBytes = await EXCEL.Excel.create(this.data);
-//    if (excelBytes != null) System().fileSaveAs(excelBytes, S.newId() + '.csv');
+    var data = Data.from(_dataset);
 
-//  ////////
-//    CSV
-//  ////////
-    List<int> csvBytes = []; // Our csvString is stored in Uint8List for output to file
-//    /////////////
-//      ALL DATA
-//    /////////////
-//    Note csvStringFromData() does not handle large amounts of data in chunks and can overflow
-    if (raw == true) {
-      String str = await csvStringFromData(data);
-      csvBytes = utf8.encode(str);
-      Platform.fileSaveAs(csvBytes, '${S.newId()}.csv');
-      return true;
-    }
+    // convert to data
+    String csv = await Data.toCsv(data);
 
-//    /////////////
-//      GRID DATA
-//    /////////////
-//    HEADERS
-    GridItemModel? currItem;
-    int i = 0;
-    // String csvItems = '';
-    while ((currItem = getItemModel(i++)) != null) {
-      String csvCellText = '';
-      List<dynamic>? descendants = currItem!.findDescendantsOfExactType(TextModel);
-      if (descendants != null && descendants.isNotEmpty) {
-        for (var val in descendants) {
-          var textLine = '';
-          // add return newline to csv for multiple text values within cell
-//          if (csvCellText != '') csvCellText += '\n';
-          textLine = val?.value ?? '';
-          // escape "'s in string
-          textLine.replaceAll('"', '""');
-          // surround in quotes for newline+returns / comma handling
-          textLine = (textLine.contains(',') || textLine.contains('\n')) ? '"$textLine"' : textLine;
-          // goto next column
-          csvCellText = '$textLine, ';
-        }
-      }
-      else {
-        csvCellText = '';
-      }
+    // encode
+    var csvBytes = utf8.encode(csv);
 
-      // go to next row
-      csvCellText += '\n';
-      // append the csv cell row to the csv string bytes
-      csvBytes = [...csvBytes, ...utf8.encode(csvCellText)];
-      // reset current csv row
-      csvCellText = '';
-    }
-    // eof replacing last \n with \r\n
-    if (csvBytes.length >= 2) {
-      csvBytes.removeLast(); // \ = 5c
-      csvBytes.removeLast(); // n = 6e
-    }
-    csvBytes = [...csvBytes, ...utf8.encode('\r\n')]; // \r\n = 5c, 72, 5c, 6e
-    // Uint8List.fromList(bytes) - typed_data conversion needed for converting back to Uint8List after manipulating the list
-    if ( csvBytes.isNotEmpty) Platform.fileSaveAs(Uint8List.fromList(csvBytes), '${S.newId()}.csv');
+    // save to file
+    Platform.fileSaveAs(csvBytes, "${S.newId()}.csv");
+
     return true;
-  }
-
-  Future<String> csvStringFromData(List<dynamic>? data) async {
-    String str = '';
-    int i = 0;
-    try {
-//      Build Header
-      List<String> header = [];
-      List<String> columns = [];
-      if ((data != null) && (data.isNotEmpty)) {
-        data[0].forEach((key, value) {
-          columns.add(key);
-          String h = key.toString();
-          h.replaceAll('"', '""');
-          h = h.contains(',') ? '"$h"' : h;
-          header.add(h);
-        });
-      }
-
-//      Output Header
-      str += '${header.join(", ")}\n';
-//      Output Data
-      i = 0;
-      if (columns.isNotEmpty) {
-        for (var map in data!) {
-          i++;
-          List<String> row = [];
-          for (var column in columns) {
-            String value = map.containsKey(column) ? map[column].toString() : '';
-            value.replaceAll('"', '""');
-            value = value.contains(',') ? '"$value"' : value;
-            row.add(value);
-          }
-          str += '${row.join(", ")}\n';
-        }
-      }
-      // eof
-      str.replaceFirst('\n', '\r\n', str.lastIndexOf('\n')); // replaces last
-    }
-    catch(e)
-    {
-      Log().exception(e, caller: 'grid.Model');
-      Log().debug('Error - Creating CSV - column[$i]');
-      Log().info('Error - Creating CSV');
-    }
-    return str;
   }
 
   @override
@@ -443,6 +389,43 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
   Future<void> onPull(BuildContext context) async
   {
     await EventHandler(this).execute(_onpulldown);
+  }
+
+  @override
+  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
+  {
+    /// setter
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+
+    switch (function)
+    {
+    // selects the item by index
+      case "select" :
+        int index = S.toInt(S.item(arguments, 0)) ?? -1;
+        if (index >= 0 && index < items.length)
+        {
+          var model = items[index];
+          if (model != null && model.selected == false) onTap(model);
+        }
+        return true;
+
+    // de-selects the item by index
+      case "deselect" :
+        int index = S.toInt(S.item(arguments, 0)) ?? -1;
+        if (index >= 0 && _dataset != null && index < _dataset!.length)
+        {
+          var model = items[index];
+          if (model != null && model.selected == true) onTap(model);
+        }
+        return true;
+
+    // de-selects the item by index
+      case "clear" :
+        onTap(null);
+        return true;
+    }
+    return super.execute(caller, propertyOrFunction, arguments);
   }
 
   @override

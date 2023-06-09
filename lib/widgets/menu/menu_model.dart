@@ -123,19 +123,18 @@ class MenuModel extends DecoratedWidgetModel
     busy = true;
 
     // build options
-    int i = 0;
     if ((list != null))
     {
       // clear items
-      for (var item in items) {
+      for (var item in items)
+      {
         item.dispose();
       }
       items.clear();
 
-      for (var row in list) {
-        XmlElement? prototype = S.fromPrototype(this.prototype, "$id-$i");
-        i = i + 1;
-
+      for (var row in list)
+      {
+        XmlElement? prototype = S.fromPrototype(this.prototype);
         var model = MenuItemModel.fromXml(parent, prototype, data: row);
         if (model != null) items.add(model);
       }

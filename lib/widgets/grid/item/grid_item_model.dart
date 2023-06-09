@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/grid/grid_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -12,7 +13,57 @@ class GridItemModel extends DecoratedWidgetModel
 
   String? type;
 
-  bool selected = false;
+  // dataset  index
+  // This property indicates your position on the dataset, 0 being the top
+  IntegerObservable? get indexObservable => _index;
+  IntegerObservable? _index;
+  set index (dynamic v)
+  {
+    if (_index != null)
+    {
+      _index!.set(v);
+    }
+    else if (v != null)
+    {
+      _index = IntegerObservable(Binding.toKey(id, 'index'), v, scope: scope);
+    }
+  }
+  int? get index
+  {
+    if (_index == null) return -1;
+    return _index?.get();
+  }
+
+// indicates if this item has been selected
+  BooleanObservable? _selected;
+  set selected (dynamic v)
+  {
+    if (_selected != null)
+    {
+      _selected!.set(v);
+    }
+    else if (v != null)
+    {
+      _selected = BooleanObservable(Binding.toKey(id, 'selected'), v, scope: scope);
+    }
+  }
+  bool? get selected =>  _selected?.get();
+
+  // indicates that this item can be selected
+  // by clicking it
+  BooleanObservable? _selectable;
+  set selectable (dynamic v)
+  {
+    if (_selectable != null)
+    {
+      _selectable!.set(v);
+    }
+    else if (v != null)
+    {
+      _selectable = BooleanObservable(Binding.toKey(id, 'selectable'), v, scope: scope);
+    }
+  }
+  bool get selectable =>  _selectable?.get() ?? true;
 
   ///////////
   /* dirty */
@@ -73,5 +124,14 @@ class GridItemModel extends DecoratedWidgetModel
     // Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
     scope?.dispose();
+  }
+
+  Future<bool> onTap() async
+  {
+    if (parent is GridModel)
+    {
+      (parent as GridModel).onTap(this);
+    }
+    return true;
   }
 }

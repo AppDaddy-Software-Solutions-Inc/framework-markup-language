@@ -32,12 +32,6 @@ class _MapViewState extends WidgetState<MapView>
   final mapController = MapController();
   List<Marker> markers = [];
 
-  // top left coordinate
-  LatLng? tlLatLng;
-
-  // top right coordinate
-  LatLng? brLatLng;
-
    /// Callback function for when the model changes, used to force a rebuild with setState()
   @override
   onModelChange(WidgetModel model,{String? property, dynamic value})
@@ -70,14 +64,6 @@ class _MapViewState extends WidgetState<MapView>
         // add markers
         layers.add(MarkerLayer(markers: markers));
 
-        // center point
-        LatLng? center;
-        if (widget.model.latitude != null && widget.model.longitude != null) center = LatLng(widget.model.latitude!, widget.model.longitude!);
-        if (tlLatLng != null)
-        {
-          center = tlLatLng;
-        }
-
         // zoom level
         double zoom = 16.0;
         if (widget.model.zoom > 0)
@@ -85,10 +71,19 @@ class _MapViewState extends WidgetState<MapView>
           zoom = widget.model.zoom;
         }
 
-        LatLngBounds? bounds;
-        if (center == null && tlLatLng != null && brLatLng != null)
+        // center point
+        LatLng? center;
+        if (widget.model.latitude != null && widget.model.longitude != null) center = LatLng(widget.model.latitude!, widget.model.longitude!);
+        if (center == null && centerPoint != null && markerBounds == null)
         {
-          bounds = LatLngBounds(tlLatLng!, brLatLng!);
+          center = centerPoint;
+        }
+
+        //bounds
+        LatLngBounds? bounds;
+        if (center == null && markerBounds != null)
+        {
+          bounds = markerBounds;
         }
 
         // map options
@@ -133,6 +128,7 @@ class _MapViewState extends WidgetState<MapView>
   }
 
   LatLngBounds? markerBounds;
+  LatLng? centerPoint;
   
   void _buildMarkers() async
   {
@@ -141,9 +137,14 @@ class _MapViewState extends WidgetState<MapView>
       //Clear Markers
       markers.clear();
 
+      markerBounds = null;
+      centerPoint = null;
+
       //Reset Bounds
-      tlLatLng = null;
-      brLatLng = null;
+      double? minLogitude;
+      double? minLatitude;
+      double? maxLogitude;
+      double? maxLatitude;
 
       // build markers
       for (MapMarkerModel marker in widget.model.markers)
@@ -156,33 +157,52 @@ class _MapViewState extends WidgetState<MapView>
           var height = marker.height ?? 20;
           if (height < 5 || height > 200) height = 20;
 
-          double lat = marker.latitude!;
-          double lon = marker.longitude!;
+          double latitude  = marker.latitude!;
+          double longitude = marker.longitude!;
 
-          var point = tlLatLng == null ? LatLng(lat, lon) : tlLatLng!;
-          if (point.latitude > lat)
+          // set center
+          if (centerPoint == null)
           {
-            point.latitude = lat;
+            centerPoint = LatLng(latitude, longitude);
           }
-          if (point.longitude > lon)
-          {
-            point.longitude = lon;
-          }
-          tlLatLng = point;
 
-          point = brLatLng == null ? LatLng(lat, lon) : brLatLng!;
-          if (point.latitude > lat)
+          // set min/max values
+          if (minLogitude == null || minLogitude > longitude)
           {
-            point.latitude = lat;
+            minLogitude = longitude;
           }
-          if (point.longitude < lon)
+          if (minLatitude == null || minLatitude > latitude)
           {
-            point.longitude = lon;
+            minLatitude = latitude;
           }
-          brLatLng = point;
+          if (maxLogitude == null || maxLogitude > longitude)
+          {
+            maxLogitude = longitude;
+          }
+          if (maxLatitude == null || maxLatitude > latitude)
+          {
+            maxLatitude = latitude;
+          }
 
+          // build marker
           var m = Marker(point: LatLng(marker.latitude!,  marker.longitude!), width: width, height: height, builder: (context) => _markerBuilder(marker));
           markers.add(m);
+        }
+      }
+
+      // set marker bounds
+      if (widget.model.markers.length > 1 && minLatitude != null && minLogitude != null && maxLatitude != null && maxLogitude != null)
+      {
+        // top left coordinate
+        var tl = LatLng(minLatitude, minLogitude);
+
+        // top right coordinate
+        var br = LatLng(maxLatitude, minLogitude);
+
+        // marker bounds
+        if (tl.latitude != br.latitude || tl.longitude != br.longitude)
+        {
+          markerBounds = LatLngBounds(tl, br);
         }
       }
     }

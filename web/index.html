@@ -137,13 +137,12 @@
                 onEntrypointLoaded: async function(engineInitializer)
                 {
                     // if (loadingText != null) loadingText.textContent = "Initializing engine...";
-                    let config = {renderer: renderer}
+                    let config = { renderer: renderer, useColorEmoji: true }
                     let appRunner = await engineInitializer.initializeEngine(config)
 
                     // remove loading image and text
                     if (loadingImage != null) loadingImage.remove();
                     if (loadingText  != null) loadingText.remove();
-
                     // run the app
                     await appRunner.runApp();
                 }

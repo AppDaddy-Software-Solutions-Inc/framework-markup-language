@@ -6,7 +6,7 @@ import 'package:fml/observable/observable.dart';
 import 'package:fml/observable/observables/double.dart';
 import 'package:fml/observable/scope.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
-import 'package:fml/widgets/googlemap/map_model.dart';
+import 'package:fml/widgets/map/map_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/helper/common_helpers.dart';

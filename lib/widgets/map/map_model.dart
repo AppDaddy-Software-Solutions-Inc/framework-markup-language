@@ -190,7 +190,9 @@ class MapModel extends DecoratedWidgetModel
       if (prototypes == null) return true;
 
       // Remove Old Locations
-      markers.removeWhere((model) => source.id == model.datasource);
+      var obsoleteMarkers = markers.where((model) => source.id == model.datasource);
+      markers.removeWhere((model) => obsoleteMarkers.contains(model));
+      obsoleteMarkers.forEach((model) => model.dispose());
 
       // build new locations
       if ((list != null) && (list.isNotEmpty)){

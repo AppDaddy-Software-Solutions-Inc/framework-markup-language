@@ -32,6 +32,10 @@ class _MapViewState extends WidgetState<MapView>
   final mapController = MapController();
   List<Marker> markers = [];
 
+  // default center
+  // new york city
+  final centerDefault = LatLng(40.712776, -74.005974);
+
    /// Callback function for when the model changes, used to force a rebuild with setState()
   @override
   onModelChange(WidgetModel model,{String? property, dynamic value})
@@ -81,42 +85,33 @@ class _MapViewState extends WidgetState<MapView>
 
         //bounds
         LatLngBounds? bounds;
+        final FitBoundsOptions boundsOptions = FitBoundsOptions(padding: EdgeInsets.all(50));
         if (center == null && markerBounds != null)
         {
           bounds = markerBounds;
+          CenterZoom cz = mapController.centerZoomFitBounds(markerBounds!,options: boundsOptions);
+          center = cz.center;
+          zoom = cz.zoom;
         }
 
+        // default center
         // map options
         MapOptions options = MapOptions(
           keepAlive: true,
           zoom: zoom,
           minZoom: 1,
+          bounds: bounds,
+          boundsOptions: boundsOptions,
           maxZoom: 20);
 
         // map
-        var map = FlutterMap(mapController: mapController, children: layers, options: options);
+        var map = FlutterMap(key: ObjectKey(widget.model), mapController: mapController, children: layers, options: options);
 
-        // center the map
-        if (center != null)
+        //center the map
+        WidgetsBinding.instance.addPostFrameCallback((_)
         {
-          WidgetsBinding.instance.addPostFrameCallback((_)
-          {
-            mapController.move(center!,zoom);
-          });
-        }
-
-        // center the map
-        else if (bounds != null)
-        {
-          WidgetsBinding.instance.addPostFrameCallback((_)
-          {
-            var options = FitBoundsOptions(padding: EdgeInsets.all(50));
-            mapController.fitBounds(bounds!,options: options);
-
-            CenterZoom cz = mapController.centerZoomFitBounds(bounds,options: options);
-            mapController.move(cz.center, cz.zoom);
-          });
-        }
+          mapController.move(center ?? centerDefault, zoom);
+        });
 
         return map;
       }

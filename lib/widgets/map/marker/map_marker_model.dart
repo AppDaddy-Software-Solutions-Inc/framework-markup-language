@@ -1,53 +1,18 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
+import 'package:fml/observable/observable.dart';
 import 'package:fml/observable/observables/double.dart';
-import 'package:fml/observable/observables/string.dart';
 import 'package:fml/observable/scope.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/googlemap/map_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/helper/common_helpers.dart';
 
 class MapMarkerModel extends DecoratedWidgetModel
 {
-  dynamic onTap;
-  String? description;
-  String? label;
-  Uint8List? icon;
-
-  /// title
-  StringObservable? _title;
-  set title (dynamic v)
-  {
-    if (_title != null)
-    {
-      _title!.set(v);
-    }
-    else if (v != null)
-    {
-      _title = StringObservable(Binding.toKey(id, 'title'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  String? get title => _title?.get();
-
-  /// marker
-  StringObservable? _marker;
-  set marker (dynamic v)
-  {
-    if (_marker != null)
-    {
-      _marker!.set(v);
-    }
-    else if (v != null)
-    {
-      _marker = StringObservable(Binding.toKey(id, 'marker'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  String? get marker => _marker?.get();
-
   /// latitude
   DoubleObservable? _latitude;
   set latitude (dynamic v)
@@ -59,6 +24,7 @@ class MapMarkerModel extends DecoratedWidgetModel
     else if (v != null)
     {
       _latitude = DoubleObservable(Binding.toKey(id, 'latitude'), v, scope: scope);
+      _latitude!.registerListener(onMarkerChange);
     }
   }
   double? get latitude => _latitude?.get();
@@ -74,6 +40,7 @@ class MapMarkerModel extends DecoratedWidgetModel
     else if (v != null)
     {
       _longitude = DoubleObservable(Binding.toKey(id, 'longitude'), v, scope: scope);
+      _longitude!.registerListener(onMarkerChange);
     }
   }
   double? get longitude => _longitude?.get();
@@ -85,7 +52,6 @@ class MapMarkerModel extends DecoratedWidgetModel
      dynamic longitude,
      String? info,
      String? infoSnippet,
-     this.label,
      String? marker,
      dynamic visible
   }) : super(parent, id, scope: Scope(parent: parent.scope))
@@ -93,10 +59,6 @@ class MapMarkerModel extends DecoratedWidgetModel
     this.data         = data;
     this.latitude     = latitude;
     this.longitude    = longitude;
-    title        = info;
-    description  = infoSnippet;
-    this.marker       = marker;
-    this.visible      = visible;
   }
 
   static MapMarkerModel? fromXml(WidgetModel parent, XmlElement? xml, {dynamic data})
@@ -127,10 +89,6 @@ class MapMarkerModel extends DecoratedWidgetModel
 
     latitude    = Xml.get(node: xml, tag: 'latitude');
     longitude   = Xml.get(node: xml, tag: 'longitude');
-    title       = Xml.get(node: xml, tag: 'info');
-    description = Xml.get(node: xml, tag: 'infoSnippet');
-    label       = Xml.get(node: xml, tag: 'label');
-    marker      = Xml.get(node: xml, tag: 'marker');
 
     // remove datasource listener. The parent map will take care of this.
     if ((datasource != null) && (scope != null) && (scope!.datasources.containsKey(datasource))) scope!.datasources[datasource!]!.remove(this);
@@ -142,6 +100,14 @@ class MapMarkerModel extends DecoratedWidgetModel
     // Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
     scope?.dispose();
+  }
+
+  void onMarkerChange(Observable observable)
+  {
+    if (this.parent is MapModel)
+    {
+      (this.parent as MapModel).notifyListeners(observable.key, observable.get());
+    }
   }
 
   @override

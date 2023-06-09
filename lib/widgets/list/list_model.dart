@@ -19,7 +19,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
   final HashMap<int,ListItemModel> items = HashMap<int,ListItemModel>();
 
   // prototype
-  String? prototype;
+  XmlElement? prototype;
 
   // full list of data
   // pointing to data broker data
@@ -308,7 +308,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     // set prototype
     if ((!S.isNullOrEmpty(datasource)) && (items.isNotEmpty))
     {
-      prototype = S.toPrototype(items[0].element.toString());
+      prototype = WidgetModel.prototypeOf(items[0].element);
       items.removeAt(0);
     }
 
@@ -331,12 +331,8 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     if (items.containsKey(index)) return items[index];
     if (index.isNegative || list.length < index) return null;
 
-    // build prototype
-    XmlElement? prototype = S.fromPrototype(this.prototype);
-
     // build item model
     var model = ListItemModel.fromXml(this, prototype, data: list[index]);
-
     if (model != null)
     {
       // set the index

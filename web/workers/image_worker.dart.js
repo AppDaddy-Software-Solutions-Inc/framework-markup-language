@@ -386,13 +386,13 @@ $.jA[n]=m
 Object.defineProperty(a,v.dispatchPropertyName,{value:m,enumerable:false,writable:true,configurable:true})
 return m.i}if(p==="~"){$.jI[n]=s
 return s}if(p==="-"){o=A.jK(s)
-Object.defineProperty(Object.getPrototypeOf(a),v.dispatchPropertyName,{value:o,enumerable:false,writable:true,configurable:true})
+Object.defineProperty(Object.getWidgetModel.prototypeOf((a),v.dispatchPropertyName,{value:o,enumerable:false,writable:true,configurable:true})
 return o.i}if(p==="+")return A.mv(a,s)
 if(p==="*")throw A.d(A.da(n))
 if(v.leafTags[n]===true){o=A.jK(s)
-Object.defineProperty(Object.getPrototypeOf(a),v.dispatchPropertyName,{value:o,enumerable:false,writable:true,configurable:true})
+Object.defineProperty(Object.getWidgetModel.prototypeOf((a),v.dispatchPropertyName,{value:o,enumerable:false,writable:true,configurable:true})
 return o.i}else return A.mv(a,s)},
-mv(a,b){var s=Object.getPrototypeOf(a)
+mv(a,b){var s=Object.getWidgetModel.prototypeOf((a)
 Object.defineProperty(s,v.dispatchPropertyName,{value:J.kA(b,s,null,null),enumerable:false,writable:true,configurable:true})
 return b},
 jK(a){return J.kA(a,!1,null,!!a.$iai)},
@@ -4935,7 +4935,7 @@ if(n==null)if($.kz==null){A.q9()
 n=a[v.dispatchPropertyName]}if(n!=null){s=n.p
 if(!1===s)return n.i
 if(!0===s)return a
-r=Object.getPrototypeOf(a)
+r=Object.getWidgetModel.prototypeOf((a)
 if(s===r)return n.i
 if(n.e===r)throw A.d(A.da("Return interceptor for "+A.v(s(a,n))))}q=a.constructor
 if(q==null)p=null
@@ -4945,7 +4945,7 @@ p=q[o]}if(p!=null)return p
 p=A.qe(a)
 if(p!=null)return p
 if(typeof a=="function")return B.b4
-s=Object.getPrototypeOf(a)
+s=Object.getWidgetModel.prototypeOf((a)
 if(s==null)return B.aM
 if(s===Object.prototype)return B.aM
 if(typeof q=="function"){o=$.j5
@@ -6943,7 +6943,7 @@ if(r)A.F(A.bu("DateTime is outside valid range: "+s,null))
 A.cl(!0,"isUtc",t.v)
 return new A.bx(s,!0)}if(a instanceof RegExp)throw A.d(A.da("structured clone of RegExp"))
 if(typeof Promise!="undefined"&&a instanceof Promise)return A.qh(a,t.z)
-q=Object.getPrototypeOf(a)
+q=Object.getWidgetModel.prototypeOf((a)
 if(q===Object.prototype||q===null){p=j.bl(a)
 r=j.b
 if(!(p<r.length))return A.a(r,p)

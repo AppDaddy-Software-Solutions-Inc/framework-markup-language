@@ -20,7 +20,6 @@ import 'package:fml/widgets/grid/item/grid_item_model.dart';
 import 'package:fml/widgets/icon/icon_model.dart';
 import 'package:fml/widgets/button/button_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
-import 'package:xml/xml.dart';
 import 'package:fml/helper/common_helpers.dart';
 
 class GridView extends StatefulWidget implements IWidgetView {
@@ -297,11 +296,8 @@ class _GridViewState extends WidgetState<GridView> {
       Widget prototypeGrid;
       try
       {
-        // build prototype
-        XmlElement? prototype = S.fromPrototype(widget.model.prototype);
-
         // build model
-        prototypeModel = GridItemModel.fromXml(widget.model, prototype);
+        prototypeModel = GridItemModel.fromXml(widget.model, widget.model.prototype);
         prototypeGrid = Offstage(child: MeasuredView(UnconstrainedBox(child: GridItemView(model: prototypeModel)), onMeasuredItem));
       }
       catch (e)

@@ -25,7 +25,7 @@ class PagerModel extends BoxModel
   PageController? controller;
 
   // prototype
-  String? prototype;
+  XmlElement? prototype;
 
   List<PageModel> pages = [];
 
@@ -125,7 +125,7 @@ class PagerModel extends BoxModel
       // set prototype
       if ((!S.isNullOrEmpty(datasource)) && (pages.isNotEmpty))
       {
-        prototype = S.toPrototype(pages[0].element.toString());
+        prototype = WidgetModel.prototypeOf(pages[0].element);
         pages.removeAt(0);
       }
 
@@ -185,9 +185,7 @@ class PagerModel extends BoxModel
 
       for (var row in list)
       {
-        XmlElement? prototype = S.fromPrototype(this.prototype);
         i = i + 1;
-
         var model = PageModel.fromXml(parent, prototype, data: row);
         if (model != null) pages[i] = model;
       }

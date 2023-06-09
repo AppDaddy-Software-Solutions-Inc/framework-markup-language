@@ -19,7 +19,7 @@ class MapModel extends DecoratedWidgetModel
   final List<String> layers = [];
 
   // marker prototypes
-  final HashMap<String?,List<String>> prototypes = HashMap<String?,List<String>>();
+  final prototypes = HashMap<String?,List<XmlElement>>();
 
   @override
   bool get canExpandInfinitelyWide
@@ -152,10 +152,13 @@ class MapModel extends DecoratedWidgetModel
         if (!prototypes.containsKey(model.datasource)) prototypes[model.datasource] = [];
 
         // build prototype
-        String prototype = S.toPrototype(model.element.toString());
+        var prototype = WidgetModel.prototypeOf(model.element) ?? model.element;
 
         // add location model
-        prototypes[model.datasource]!.add(prototype);
+        if (prototype != null)
+        {
+          prototypes[model.datasource]!.add(prototype);
+        }
 
         // register listener to the models datasource
         IDataSource? source = scope?.getDataSource(model.datasource);
@@ -183,7 +186,7 @@ class MapModel extends DecoratedWidgetModel
   Future<bool> _build(Data? list, IDataSource source) async {
     try
     {
-      List<String>? prototypes = this.prototypes.containsKey(source.id) ? this.prototypes[source.id] : null;
+      var prototypes = this.prototypes.containsKey(source.id) ? this.prototypes[source.id] : null;
       if (prototypes == null) return true;
 
       // Remove Old Locations
@@ -191,12 +194,11 @@ class MapModel extends DecoratedWidgetModel
 
       // build new locations
       if ((list != null) && (list.isNotEmpty)){
-        for (String prototype in prototypes)
+        for (var prototype in prototypes)
         {
           for (var data in list)
           {
-            XmlElement? node = S.fromPrototype(prototype);
-            var location = MapMarkerModel.fromXml(parent!, node, data: data);
+            var location = MapMarkerModel.fromXml(parent!, prototype, data: data);
             if (location != null) markers.add(location);
           }
         }}

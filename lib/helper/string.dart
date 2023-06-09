@@ -4,16 +4,13 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:fml/emoji.dart';
-import 'package:fml/helper/xml.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/observable/binding.dart';
 import 'package:intl/intl.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/observable/observables/color.dart';
 import 'package:mime/mime.dart' deferred as mime;
 import 'package:uuid/uuid.dart';
-import 'package:xml/xml.dart';
 
 /// String Helpers
 ///
@@ -595,61 +592,6 @@ class S {
     } catch (e) {
       return null;
     }
-  }
-
-  static String placeholder = "{{id}}";
-  static String toPrototype(String prototype)
-  {
-    var copyOfPrototype = prototype;
-
-    var xml = Xml.tryParse(copyOfPrototype);
-    if (xml != null)
-    {
-      // replace any id's
-      var id = Xml.attribute(node: xml.rootElement, tag: "id");
-      if (!S.isNullOrEmpty(id))
-      {
-        copyOfPrototype = copyOfPrototype.replaceAll("{$id.", "{$placeholder.");
-      }
-
-      // process data bindings
-      var bindings = Binding.getBindings(copyOfPrototype);
-      List<String?> processed = [];
-      if (bindings != null)
-      {
-        for (var binding in bindings)
-        {
-          if (binding.source == 'data' && !processed.contains(binding.signature))
-          {
-            processed.add(binding.signature);
-            var signature = "{$placeholder.data.${binding.property}${(binding.dotnotation?.signature != null ? ".${binding.dotnotation!.signature}" : "")}}";
-            copyOfPrototype = copyOfPrototype.replaceAll(binding.signature, signature);
-          }
-        }
-      }
-
-      // parse the new xml
-      xml = Xml.tryParse(copyOfPrototype);
-      if (xml != null)
-      {
-        // set the id to the placeholder
-        xml.rootElement.setAttribute('id', placeholder);
-        prototype = xml.toString();
-      }
-    }
-    return prototype;
-  }
-
-  static XmlElement? fromPrototype(String? prototype)
-  {
-    if ((prototype != null))
-    {
-      prototype = prototype.replaceAll(placeholder, S.newId());
-      var document = Xml.tryParse(prototype);
-      var node = document?.rootElement;
-      return node;
-    }
-    return null;
   }
 
   /// makes a filename safe

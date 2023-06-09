@@ -15,7 +15,7 @@ import 'package:fml/helper/common_helpers.dart';
 
 class RadioModel extends FormFieldModel implements IFormField {
   // prototype
-  String? prototype;
+  XmlElement? prototype;
 
   // options
   List<OptionModel> options = [];
@@ -205,7 +205,7 @@ class RadioModel extends FormFieldModel implements IFormField {
 
     // set prototype
     if ((!S.isNullOrEmpty(datasource)) && (options.isNotEmpty)) {
-      prototype = S.toPrototype(options[0].element.toString());
+      prototype = WidgetModel.prototypeOf(options[0].element);
       options.removeAt(0);
     }
     // build options
@@ -226,10 +226,11 @@ class RadioModel extends FormFieldModel implements IFormField {
       options.clear();
 
       // build options
-      if ((list != null)) {
+      if ((list != null)) 
+      {
         // build options
-        for (var row in list) {
-          XmlElement? prototype = S.fromPrototype(this.prototype);
+        for (var row in list) 
+        {
           var model = OptionModel.fromXml(this, prototype, data: row);
           if (model != null) options.add(model);
         }

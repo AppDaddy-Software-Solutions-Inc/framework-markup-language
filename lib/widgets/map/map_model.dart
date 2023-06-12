@@ -202,7 +202,10 @@ class MapModel extends DecoratedWidgetModel
       // Remove Old Locations
       var obsoleteMarkers = markers.where((model) => source.id == model.datasource);
       markers.removeWhere((model) => obsoleteMarkers.contains(model));
-      obsoleteMarkers.forEach((model) => model.dispose());
+      for (var model in obsoleteMarkers)
+      {
+        model.dispose();
+      }
 
       // build new locations
       if ((list != null) && (list.isNotEmpty)){

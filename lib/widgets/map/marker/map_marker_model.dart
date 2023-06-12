@@ -104,9 +104,9 @@ class MapMarkerModel extends DecoratedWidgetModel
 
   void onMarkerChange(Observable observable)
   {
-    if (this.parent is MapModel)
+    if (parent is MapModel)
     {
-      (this.parent as MapModel).notifyListeners(observable.key, observable.get());
+      (parent as MapModel).notifyListeners(observable.key, observable.get());
     }
   }
 

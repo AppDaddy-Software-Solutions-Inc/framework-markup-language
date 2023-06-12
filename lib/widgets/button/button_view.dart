@@ -125,7 +125,8 @@ class _ButtonViewState extends WidgetState<ButtonView>
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    var body = BoxView(widget.model.content);
+    // build the body
+    var body = BoxView(widget.model.getContentModel());
 
     // Build the Button Types
     var view = _buildButton(body);

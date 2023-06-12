@@ -206,7 +206,7 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
     if (!widget.model.visible) return Offstage();
 
     // build the body
-    var contents = BoxView(widget.model.content);
+    var contents = BoxView(widget.model.getContentModel());
 
     // build the scroll bar
     Widget view = _buildScrollbar(contents);

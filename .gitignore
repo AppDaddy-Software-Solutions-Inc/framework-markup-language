@@ -409,3 +409,4 @@ android/keystore.properties
 android/app/google-services.json
 ios/Runner/GoogleService-Info.plist
 windows/flutter/generated_plugins.cmake
+macos/Flutter/GeneratedPluginRegistrant.swift

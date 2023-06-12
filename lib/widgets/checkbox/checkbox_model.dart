@@ -20,7 +20,7 @@ import 'package:fml/helper/common_helpers.dart';
 class CheckboxModel extends FormFieldModel implements IFormField
 {
   // prototype
-  String? prototype;
+  XmlElement? prototype;
 
   // options
   final List<OptionModel> options = [];
@@ -397,7 +397,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
     // set prototype
     if ((!S.isNullOrEmpty(datasource)) && (options.isNotEmpty))
     {
-      prototype = S.toPrototype(options[0].element.toString());
+      prototype = WidgetModel.prototypeOf(options[0].element);
       options.removeAt(0);
     }
 
@@ -426,7 +426,6 @@ class CheckboxModel extends FormFieldModel implements IFormField
       {
         list.forEach((row)
       {
-        XmlElement? prototype = S.fromPrototype(this.prototype);
         OptionModel? model = OptionModel.fromXml(parent, prototype, data: row);
         if (model != null) options.add(model);
       });

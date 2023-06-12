@@ -26,7 +26,7 @@ enum PaddingType { none, first, last, evenly, proportionately }
 class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
 {
   // prototype
-  String? prototype;
+  XmlElement? prototype;
   TableRowModel? prototypeModel;
 
   TableHeaderModel? tableheader;
@@ -550,18 +550,14 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     List<TableRowModel> rows = findChildrenOfExactType(TableRowModel).cast<TableRowModel>();
     if ((rows.isNotEmpty)) {
       prototypeModel = rows.first;
-      prototype = S.toPrototype(prototypeModel!.element.toString());
+      prototype = WidgetModel.prototypeOf(prototypeModel!.element);
     }
   }
 
   TableRowModel? getEmptyRowModel()
   {
-    // build prototype
-    XmlElement? prototype = S.fromPrototype(this.prototype);
-
     // build model
-    TableRowModel? model =
-        TableRowModel.fromXml(this, prototype, data: null);
+    TableRowModel? model = TableRowModel.fromXml(this, prototype, data: null);
     if(model?.cells != null){for (var cell in model!.cells) {
       cell.visible = false;
     }}
@@ -575,9 +571,6 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     if (data.length < (index + 1)) return null;
     if (rows.containsKey(index)) return rows[index];
     if ((index.isNegative) || (data.length < index)) return null;
-
-    // build prototype
-    XmlElement? prototype = S.fromPrototype(this.prototype);
 
     // build row model
     TableRowModel? model = TableRowModel.fromXml(this, prototype, data: data[index]);

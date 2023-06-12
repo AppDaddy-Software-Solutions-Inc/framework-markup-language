@@ -19,7 +19,7 @@ class MapModel extends DecoratedWidgetModel
   final List<String> layers = [];
 
   // marker prototypes
-  final HashMap<String?,List<String>> prototypes = HashMap<String?,List<String>>();
+  final prototypes = HashMap<String?,List<XmlElement>>();
 
   @override
   bool get canExpandInfinitelyWide
@@ -87,7 +87,19 @@ class MapModel extends DecoratedWidgetModel
     return scale;
   }
 
-  bool showAll = true;
+  // autozoom
+  BooleanObservable? _autozoom;
+  set autozoom(dynamic v) {
+    if (_autozoom != null)
+    {
+      _autozoom!.set(v);
+    }
+    else if (v != null)
+    {
+      _autozoom = BooleanObservable(Binding.toKey(id, 'autozoom'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get autozoom => _autozoom?.get() ?? true;
 
   final List<MapMarkerModel> markers = [];
 
@@ -95,8 +107,7 @@ class MapModel extends DecoratedWidgetModel
     WidgetModel parent,
     String? id, {
     dynamic zoom,
-    dynamic visible,
-    dynamic showAll,
+    dynamic visible
   }) : super(parent, id)
   {
     // instantiate busy observable
@@ -104,7 +115,6 @@ class MapModel extends DecoratedWidgetModel
 
     this.zoom = zoom;
     this.visible = visible;
-    this.showAll = (showAll ?? true);
   }
 
   static MapModel? fromXml(WidgetModel parent, XmlElement xml) {
@@ -131,9 +141,9 @@ class MapModel extends DecoratedWidgetModel
 
     // properties
     zoom      = Xml.get(node: xml, tag: 'zoom');
+    autozoom  = Xml.get(node: xml, tag: 'autozoom');
     latitude  = Xml.get(node: xml, tag: 'latitude');
     longitude = Xml.get(node: xml, tag: 'longitude');
-    showAll   = S.toBool(Xml.get(node: xml, tag: 'showallpoints')) == false ? false : true;
 
     // add layers
     var layers = Xml.getChildElements(node: xml, tag: "LAYER");
@@ -152,10 +162,13 @@ class MapModel extends DecoratedWidgetModel
         if (!prototypes.containsKey(model.datasource)) prototypes[model.datasource] = [];
 
         // build prototype
-        String prototype = S.toPrototype(model.element.toString());
+        var prototype = WidgetModel.prototypeOf(model.element) ?? model.element;
 
         // add location model
-        prototypes[model.datasource]!.add(prototype);
+        if (prototype != null)
+        {
+          prototypes[model.datasource]!.add(prototype);
+        }
 
         // register listener to the models datasource
         IDataSource? source = scope?.getDataSource(model.datasource);
@@ -183,20 +196,21 @@ class MapModel extends DecoratedWidgetModel
   Future<bool> _build(Data? list, IDataSource source) async {
     try
     {
-      List<String>? prototypes = this.prototypes.containsKey(source.id) ? this.prototypes[source.id] : null;
+      var prototypes = this.prototypes.containsKey(source.id) ? this.prototypes[source.id] : null;
       if (prototypes == null) return true;
 
       // Remove Old Locations
-      markers.removeWhere((model) => source.id == model.datasource);
+      var obsoleteMarkers = markers.where((model) => source.id == model.datasource);
+      markers.removeWhere((model) => obsoleteMarkers.contains(model));
+      obsoleteMarkers.forEach((model) => model.dispose());
 
       // build new locations
       if ((list != null) && (list.isNotEmpty)){
-        for (String prototype in prototypes)
+        for (var prototype in prototypes)
         {
           for (var data in list)
           {
-            XmlElement? node = S.fromPrototype(prototype);
-            var location = MapMarkerModel.fromXml(parent!, node, data: data);
+            var location = MapMarkerModel.fromXml(parent!, prototype, data: data);
             if (location != null) markers.add(location);
           }
         }}

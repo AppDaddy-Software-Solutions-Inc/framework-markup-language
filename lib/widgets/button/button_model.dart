@@ -23,6 +23,20 @@ class ButtonModel extends BoxModel
 {
   BoxModel? _body;
 
+  final double defaultMargin = 3;
+
+  @override
+  double? get marginTop => super.marginTop ?? (buttontype == 'elevated' ? defaultMargin : null);
+
+  @override
+  double? get marginRight => super.marginRight ?? (buttontype == 'elevated' ? defaultMargin : null);
+
+  @override
+  double? get marginBottom => super.marginBottom ?? (buttontype == 'elevated' ? defaultMargin : null);
+
+  @override
+  double? get marginLeft => super.marginLeft ?? (buttontype == 'elevated' ? defaultMargin : null);
+
   @override
   LayoutType get layoutType => BoxModel.getLayoutType(layout);
 
@@ -217,7 +231,7 @@ class ButtonModel extends BoxModel
     if (viewableChildren.isEmpty && label != null)
     {
       children ??= [];
-      children!.add(TextModel(this, null, value: "{$id.label}", color: enabled ? color : color?.withOpacity(0.8)));
+      children!.add(TextModel(this, null, value: "{$id.label}"));
     }
   }
 

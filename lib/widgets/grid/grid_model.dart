@@ -18,7 +18,7 @@ import 'package:fml/helper/common_helpers.dart';
 class GridModel extends DecoratedWidgetModel implements IScrolling
 {
   // prototype
-  String? prototype;
+  XmlElement? prototype;
 
   // full list of data
   // pointing to data broker data
@@ -265,8 +265,9 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
     List<GridItemModel> items = findChildrenOfExactType(GridItemModel).cast<GridItemModel>();
 
     // set prototype
-    if (!S.isNullOrEmpty(datasource) && items.isNotEmpty) {
-      prototype = S.toPrototype(items[0].element.toString());
+    if (!S.isNullOrEmpty(datasource) && items.isNotEmpty)
+    {
+      prototype = WidgetModel.prototypeOf(items[0].element);
       items.removeAt(0);
     }
     // build items
@@ -296,7 +297,6 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
       // Populate grid items from datasource
       for (var row in list)
       {
-        XmlElement? prototype = S.fromPrototype(this.prototype);
         var model = GridItemModel.fromXml(parent!, prototype, data: row);
 
         if (model != null)

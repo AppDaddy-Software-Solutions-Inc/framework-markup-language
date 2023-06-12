@@ -138,7 +138,7 @@ class LinkModel extends ColumnModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement? xml)
+  void deserialize(XmlElement xml)
   {
     // deserialize
     super.deserialize(xml);

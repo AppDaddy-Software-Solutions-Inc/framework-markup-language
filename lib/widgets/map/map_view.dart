@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
@@ -32,11 +33,9 @@ class _MapViewState extends WidgetState<MapView>
   final mapController = MapController();
   List<Marker> markers = [];
 
-  // top left coordinate
-  LatLng? tlLatLng;
-
-  // top right coordinate
-  LatLng? brLatLng;
+  // default center
+  // new york city
+  final centerDefault = LatLng(40.712776, -74.005974);
 
    /// Callback function for when the model changes, used to force a rebuild with setState()
   @override
@@ -70,58 +69,49 @@ class _MapViewState extends WidgetState<MapView>
         // add markers
         layers.add(MarkerLayer(markers: markers));
 
-        // center point
-        LatLng? center;
-        if (widget.model.latitude != null && widget.model.longitude != null) center = LatLng(widget.model.latitude!, widget.model.longitude!);
-        if (tlLatLng != null)
-        {
-          center = tlLatLng;
-        }
-
         // zoom level
-        double zoom = 16.0;
-        if (widget.model.zoom > 0)
+        double zoom = widget.model.zoom > 0 ? min(16.0, widget.model.zoom) : 16.0;
+
+        // center point
+        if (widget.model.latitude != null && widget.model.longitude != null)
         {
-          zoom = widget.model.zoom;
+          centerPoint = LatLng(widget.model.latitude!, widget.model.longitude!);
         }
 
-        LatLngBounds? bounds;
-        if (center == null && tlLatLng != null && brLatLng != null)
+        // bounds
+        final FitBoundsOptions boundsOptions = FitBoundsOptions(padding: EdgeInsets.all(50));
+        if (markerBounds != null)
         {
-          bounds = LatLngBounds(tlLatLng!, brLatLng!);
+          var cz = mapController.centerZoomFitBounds(markerBounds!,options: boundsOptions);
+          centerPoint = cz.center;
+          zoom = cz.zoom;
         }
 
         // map options
         MapOptions options = MapOptions(
           keepAlive: true,
           zoom: zoom,
-          minZoom: 1,
-          maxZoom: 20,
-          slideOnBoundaries: true,
-          center: center,
-          bounds: bounds,
-          maxBounds: LatLngBounds(LatLng(-90, -180.0), LatLng(90.0, 180.0)));
+          center: centerPoint,
+          bounds: markerBounds,
+          boundsOptions: boundsOptions,
+          slideOnBoundaries: true);
 
         // map
-        var map = FlutterMap(mapController: mapController, children: layers, options: options);
+        var map = FlutterMap(key: ObjectKey(widget.model), mapController: mapController, children: layers, options: options);
 
         // center the map
-        if (center != null)
+        WidgetsBinding.instance.addPostFrameCallback((_)
         {
-          WidgetsBinding.instance.addPostFrameCallback((_)
+          if (widget.model.autozoom)
           {
-            mapController.move(center!,zoom);
-          });
-        }
+            // this move is a hack to force the map to
+            // refresh its tiles on startup.
+            mapController.move(centerDefault, zoom);
 
-        // center the map
-        else if (bounds != null)
-        {
-          WidgetsBinding.instance.addPostFrameCallback((_)
-          {
-            mapController.centerZoomFitBounds(bounds!,options: FitBoundsOptions(padding: EdgeInsets.all(10)));
-          });
-        }
+            // move back to intended spot
+            mapController.move(centerPoint ?? centerDefault, zoom);
+          }
+        });
 
         return map;
       }
@@ -133,6 +123,7 @@ class _MapViewState extends WidgetState<MapView>
   }
 
   LatLngBounds? markerBounds;
+  LatLng? centerPoint;
   
   void _buildMarkers() async
   {
@@ -141,49 +132,38 @@ class _MapViewState extends WidgetState<MapView>
       //Clear Markers
       markers.clear();
 
-      //Reset Bounds
-      tlLatLng = null;
-      brLatLng = null;
-
       // build markers
-      for (MapMarkerModel marker in widget.model.markers)
+      List<LatLng> points = [];
+      for (MapMarkerModel model in widget.model.markers)
       {
-        if (marker.latitude != null && marker.longitude != null)
+        if (model.latitude != null && model.longitude != null)
         {
-          var width = marker.width ?? 20;
+          var width = model.width ?? 20;
           if (width < 5 || width > 200) width = 20;
 
-          var height = marker.height ?? 20;
+          var height = model.height ?? 20;
           if (height < 5 || height > 200) height = 20;
 
-          double lat = marker.latitude!;
-          double lon = marker.longitude!;
-
-          var point = tlLatLng == null ? LatLng(lat, lon) : tlLatLng!;
-          if (point.latitude > lat)
-          {
-            point.latitude = lat;
-          }
-          if (point.longitude > lon)
-          {
-            point.longitude = lon;
-          }
-          tlLatLng = point;
-
-          point = brLatLng == null ? LatLng(lat, lon) : brLatLng!;
-          if (point.latitude > lat)
-          {
-            point.latitude = lat;
-          }
-          if (point.longitude < lon)
-          {
-            point.longitude = lon;
-          }
-          brLatLng = point;
-
-          var m = Marker(point: LatLng(marker.latitude!,  marker.longitude!), width: width, height: height, builder: (context) => _markerBuilder(marker));
-          markers.add(m);
+          // build marker
+          var point = LatLng(model.latitude!,  model.longitude!);
+          points.add(point);
+          var marker = Marker(point: point, width: width, height: height, builder: (context) => _markerBuilder(model));
+          markers.add(marker);
         }
+      }
+
+      // set center point
+      centerPoint = null;
+      if (points.length == 1)
+      {
+        centerPoint = points.first;
+      }
+
+      // set bounds
+      markerBounds = null;
+      if (points.length > 1)
+      {
+        markerBounds = LatLngBounds.fromPoints(points);
       }
     }
     catch(e)

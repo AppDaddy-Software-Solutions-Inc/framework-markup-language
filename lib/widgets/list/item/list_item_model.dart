@@ -5,7 +5,6 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/list/list_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:xml/xml.dart';

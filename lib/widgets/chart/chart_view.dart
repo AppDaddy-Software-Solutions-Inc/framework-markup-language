@@ -67,27 +67,31 @@ class _ChartViewState extends WidgetState<ChartView>
   ///  We don't support a fallback in the case your axis/series are unmatched
   ///  its important to show the data type syntax for template clarity
   ChartType? getChartType() {
-    ChartSeriesModel? pieSeries = widget.model.series.firstWhereOrNull((series) =>
-      series.type?.toLowerCase() == 'pie' || series.type?.toLowerCase() == 'circle');
-    if (pieSeries != null || widget.model.type != null &&
-      (widget.model.type!.toLowerCase() == 'pie' || widget.model.type!.toLowerCase() == 'circle')) {
-    return ChartType.pieChart;
-    // This is a bit odd- time series needs to be identified first because if the
-    // x axis is a date/time based axis you must use a timeSeriesChart.
-    // You can still have grouped bars in a TimeSeries but not in combo charts.
-    // Check for pie type before letting the category axis determine a combo chart.
-    } else if (widget.model.xaxis.type == ChartAxisType.datetime ||
+    ChartSeriesModel? pieSeries = widget.model.series.firstWhereOrNull((series) => series.type?.toLowerCase() == 'pie' || series.type?.toLowerCase() == 'circle');
+    ChartSeriesModel? nonBarSeries = widget.model.series.firstWhereOrNull((series) => series.type != 'bar');
+    ChartSeriesModel? stackedSeries = widget.model.series.firstWhereOrNull((series) => series.type == 'bar' && series.stack != null);
+    if (pieSeries != null || widget.model.type != null && (widget.model.type!.toLowerCase() == 'pie' || widget.model.type!.toLowerCase() == 'circle')) {
+      return ChartType.pieChart;
+    }
+    else if (stackedSeries == null &&
+        (widget.model.xaxis.type == ChartAxisType.datetime ||
         widget.model.xaxis.type == ChartAxisType.date ||
-        widget.model.xaxis.type == ChartAxisType.time) {
-      // Determine if the X Axis is time based
+        widget.model.xaxis.type == ChartAxisType.time)) {
+      // Determine if the X Axis is time based, timebased charts override other base chart types.
+      //
+      // Bar charts cannot have a timeSeries axis if they are stacked/grouped&stacked,
+      // they will be converted to category axis and built as BarCharts in that case.
       return ChartType.timeSeriesChart;
     }
-
-    ChartSeriesModel? nonBarSeries = widget.model.series.firstWhereOrNull((series) => series.type != 'bar');
-    if (nonBarSeries == null) {
-      // Exclusively BarSeries, can use BarChart
+    else if (nonBarSeries == null) {
+      // Aside from BarCharts built as timeSeriesCharts all other barcharts must be a
+      // String (category) x axis as per the library restriction on series value type.
+      if (widget.model.xaxis.type != ChartAxisType.category) {
+        widget.model.xaxis.type = ChartAxisType.category;
+      }
       return ChartType.barChart;
-    } else if (widget.model.xaxis.type == ChartAxisType.category) {
+    }
+    else if (widget.model.xaxis.type == ChartAxisType.category) {
       return ChartType.ordinalComboChart;
     } else if (widget.model.xaxis.type == ChartAxisType.numeric) {
       return ChartType.numericComboChart;
@@ -522,8 +526,6 @@ class _ChartViewState extends WidgetState<ChartView>
     if (nonBarSeries == null) {
       // Exclusively BarSeries
       pureBar = true;
-      // pureBar charts must have String values on X Axis
-      widget.model.xaxis.type = ChartAxisType.category;
     }
     // Loop through each series
     for (ChartSeriesModel series in widget.model.series) {

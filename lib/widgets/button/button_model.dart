@@ -21,7 +21,7 @@ import 'package:fml/helper/common_helpers.dart';
 /// Defines the properties used to build a [BUTTON.ButtonView]
 class ButtonModel extends BoxModel
 {
-  late BoxModel content;
+  BoxModel? _body;
 
   @override
   LayoutType get layoutType => BoxModel.getLayoutType(layout);
@@ -176,52 +176,9 @@ class ButtonModel extends BoxModel
     this.label      = label;
     this.color      = color;
     this.buttontype = buttontype;
-    this.color      = color;
     this.radius     = radius;
     this.enabled    = enabled;
     this.children   = children;
-
-    // build inner content
-    switch (layoutType)
-    {
-      case LayoutType.column:
-        content = ColumnModel(this, null);
-        break;
-      case LayoutType.stack:
-        content = StackModel(this, null);
-        break;
-      case LayoutType.row:
-      default:
-        content = RowModel(this, null);
-        break;
-    }
-    _buildContent();
-  }
-
-  _buildContent()
-  {
-    content.expand = expand;
-
-    // add children to the inner box
-    if (children != null)
-    {
-      content.children ??= [];
-      content.children!.addAll(children!);
-    }
-
-    // create default child from label
-    if (content.viewableChildren.isEmpty && label != null)
-    {
-      // create text model bound to this label
-      var text = TextModel(content, null, value: "{$id.label}");
-      content.children ??= [];
-      content.children!.add(text);
-    }
-
-    // clear all children
-    children ??= [];
-    children!.clear();
-    children!.add(content);
   }
 
   static ButtonModel? fromXml(WidgetModel parent, XmlElement xml)
@@ -242,26 +199,26 @@ class ButtonModel extends BoxModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement? xml)
+  void deserialize(XmlElement xml)
   {
 
     // deserialize 
     super.deserialize(xml);
 
     // properties
-    String? text = Xml.get(node: xml, tag: 'value');
-    if (S.isNullOrEmpty(text))  text = Xml.get(node: xml, tag: 'label');
-    if (S.isNullOrEmpty(text))  text = Xml.getText(xml);
+    label      = Xml.get(node: xml, tag: 'value') ?? Xml.get(node: xml, tag: 'label') ?? Xml.getText(xml);
+    onclick    = Xml.get(node: xml, tag: 'onclick');
+    onenter    = Xml.get(node: xml, tag: 'onenter');
+    onexit     = Xml.get(node: xml, tag: 'onexit');
+    buttontype = Xml.get(node: xml, tag: 'type');
+    radius     = Xml.get(node: xml, tag: 'radius');
 
-    label             = text;
-    onclick           = Xml.get(node: xml, tag: 'onclick');
-    onenter           = Xml.get(node: xml, tag: 'onenter');
-    onexit            = Xml.get(node: xml, tag: 'onexit');
-    buttontype        = Xml.get(node: xml, tag: 'type');
-    radius            = Xml.get(node: xml, tag: 'radius');
-
-    // add label
-    _buildContent();
+    // create text model bound to this label as default
+    if (viewableChildren.isEmpty && label != null)
+    {
+      children ??= [];
+      children!.add(TextModel(this, null, value: "{$id.label}", color: enabled ? color : color?.withOpacity(0.8)));
+    }
   }
 
   @override
@@ -302,6 +259,36 @@ class ButtonModel extends BoxModel
   Future<bool> onExit(BuildContext context) async
   {
     return await EventHandler(this).execute(_onexit);
+  }
+
+  // returns the inner content model
+  BoxModel getContentModel()
+  {
+    // build the _body model
+    if (_body == null)
+    {
+      switch (layoutType)
+      {
+        case LayoutType.column:
+          _body = ColumnModel(this, null);
+          break;
+        case LayoutType.stack:
+          _body = StackModel(this, null);
+          break;
+        case LayoutType.row:
+        default:
+          _body = RowModel(this, null);
+          _body!.center = true;
+          break;
+      }
+    }
+
+    // add my children to content
+    _body!.expand = expand;
+    _body!.children = [];
+    _body!.children!.addAll(children ?? []);
+
+    return _body!;
   }
 
   @override

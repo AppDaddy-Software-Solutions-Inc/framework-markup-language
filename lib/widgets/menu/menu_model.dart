@@ -16,7 +16,7 @@ class MenuModel extends DecoratedWidgetModel
   static final String typeButton = "button";
 
   // prototype
-  String? prototype;
+  XmlElement? prototype;
 
   // items
   List<MenuItemModel> items = [];
@@ -107,7 +107,7 @@ class MenuModel extends DecoratedWidgetModel
     // set prototype
     if ((!S.isNullOrEmpty(datasource)) && (items.isNotEmpty))
     {
-      prototype = S.toPrototype(items[0].element.toString());
+      prototype = WidgetModel.prototypeOf(items[0].element);
       items.removeAt(0);
     }
 
@@ -134,7 +134,6 @@ class MenuModel extends DecoratedWidgetModel
 
       for (var row in list)
       {
-        XmlElement? prototype = S.fromPrototype(this.prototype);
         var model = MenuItemModel.fromXml(parent, prototype, data: row);
         if (model != null) items.add(model);
       }

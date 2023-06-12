@@ -1051,7 +1051,8 @@ class WidgetModel implements IDataSourceListener {
     }
   }
 
-  void onPropertyChange(Observable observable) {
+  void onPropertyChange(Observable observable)
+  {
     notifyListeners(observable.key, observable.get());
   }
 
@@ -1590,5 +1591,42 @@ class WidgetModel implements IDataSourceListener {
       default:
         return false;
     }
+  }
+
+  static XmlElement? prototypeOf(XmlElement? prototype)
+  {
+    if (prototype == null) return null;
+
+    // get the id
+    var id = Xml.attribute(node: prototype, tag: "id");
+
+    // if missing, assign it a unique key
+    if (id == null)
+    {
+      id = S.newId();
+      Xml.setAttribute(prototype, "id", id);
+    }
+
+    // process data bindings
+    var xml = prototype.toString();
+    var bindings = Binding.getBindings(xml);
+    List<String?> processed = [];
+    if (bindings != null)
+    {
+      // process each binding
+      for (var binding in bindings)
+      {
+        if (binding.source == 'data' && !processed.contains(binding.signature))
+        {
+          processed.add(binding.signature);
+          var signature = "{$id.data.${binding.property}${(binding.dotnotation?.signature != null ? ".${binding.dotnotation!.signature}" : "")}}";
+          xml = xml.replaceAll(binding.signature, signature);
+        }
+      }
+
+      // parse the new xml
+      prototype = Xml.tryParse(xml)?.rootElement ?? prototype;
+    }
+    return prototype;
   }
 }

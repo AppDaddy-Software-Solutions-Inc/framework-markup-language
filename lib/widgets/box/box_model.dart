@@ -328,10 +328,8 @@ class BoxModel extends DecoratedWidgetModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement? xml)
+  void deserialize(XmlElement xml)
   {
-    if (xml == null) return;
-
     // deserialize
     super.deserialize(xml);
 

@@ -217,7 +217,17 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
     // add margins around the entire widget
     view = addMargins(view);
 
-    view = UnconstrainedBox(child: SizedBox(width: constraints.maxWidth, height: constraints.maxHeight, child: view,));
+    // shrink the scroller in the cross axis
+    var axisSize = widget.model.expand ? MainAxisSize.max : MainAxisSize.min;
+    if (widget.model.layoutType == LayoutType.row)
+    {
+      view = Column(mainAxisSize: axisSize, children: [view],);
+    }
+    else if (widget.model.layoutType == LayoutType.column)
+    {
+      view = Row(mainAxisSize: axisSize, children: [view],);
+    }
+
     return view;
   }
 }

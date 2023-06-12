@@ -38,7 +38,7 @@ final String applicationTitle = "Flutter Markup Language $version";
 // Set this to file://applications/<app> to use the asset applications
 
 
-String get defaultDomain => 'https://pad.fml.dev';
+String get defaultDomain => 'https://test.appdaddy.co';
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup

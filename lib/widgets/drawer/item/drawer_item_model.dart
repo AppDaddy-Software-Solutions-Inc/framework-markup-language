@@ -20,7 +20,10 @@ class DrawerItemModel extends BoxModel
     try
     {
       model = DrawerItemModel(parent, Xml.get(node: xml, tag: 'id'), position);
-      model.deserialize(xml);
+      if (xml != null)
+      {
+        model.deserialize(xml);
+      }
     }
     catch(e)
     {

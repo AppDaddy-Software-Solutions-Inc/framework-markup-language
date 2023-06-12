@@ -109,21 +109,6 @@ class ButtonModel extends BoxModel
   }
 
   @override
-  ColorObservable? _color;
-  set color (dynamic v)
-  {
-    if (_color != null)
-    {
-      _color!.set(v);
-    }
-    else if (v != null)
-    {
-      _color = ColorObservable(Binding.toKey(id, 'color'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  Color? get color => _color?.get();
-
-  @override
   String get radius => super.radius ?? '20';
 
   /// Type of button
@@ -214,7 +199,7 @@ class ButtonModel extends BoxModel
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement? xml)
+  void deserialize(XmlElement xml)
   {
 
     // deserialize 

@@ -18,9 +18,10 @@ import 'package:fml/helper/common_helpers.dart';
 /// Defines the properties used to build a [SCROLLER.ScrollerView]
 class ScrollerModel extends ViewableWidgetModel
 {
-  late BoxModel content;
-
   LayoutType get layoutType => BoxModel.getLayoutType(_layout, defaultLayout: LayoutType.column);
+
+  // holds the inner child content
+  BoxModel? _body;
 
   String _layout = 'column';
   set layout(dynamic v)
@@ -126,20 +127,7 @@ class ScrollerModel extends ViewableWidgetModel
   }
   bool get draggable => _draggable?.get() ?? false;
 
-  ScrollerModel(WidgetModel parent, String? id, dynamic layout) : super(parent, id)
-  {
-    // build inner content
-    this.layout = layout;
-    switch (layoutType)
-    {
-      case LayoutType.row:
-        content = RowModel(this, null);
-        break;
-      default:
-        content = ColumnModel(this, null);
-        break;
-    }
-  }
+  ScrollerModel(WidgetModel parent, String? id) : super(parent, id);
 
   static ScrollerModel? fromXml(WidgetModel parent, XmlElement xml)
   {
@@ -147,7 +135,7 @@ class ScrollerModel extends ViewableWidgetModel
     try
     {
       // build model
-      model = ScrollerModel(parent, Xml.get(node: xml, tag: 'id'), Xml.get(node: xml, tag: 'layout') ?? Xml.get(node: xml, tag: 'direction'));
+      model = ScrollerModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
     catch(e)
@@ -166,34 +154,16 @@ class ScrollerModel extends ViewableWidgetModel
     super.deserialize(xml);
 
     // properties
+    layout          = Xml.get(node: xml, tag: 'layout') ?? Xml.get(node: xml, tag: 'direction');
     scrollbar       = Xml.get(node: xml, tag: 'scrollbar');
     onscrolledtoend = Xml.get(node: xml, tag: 'onscrolledtoend');
     shadowcolor     = Xml.get(node: xml, tag: 'shadowcolor');
     onpulldown      = Xml.get(node: xml, tag: 'onpulldown');
     draggable       = Xml.get(node: xml, tag: 'draggable');
-
-    // set the flex
-    _buildContent();
   }
 
-  _buildContent()
+  Future<bool> scrolledToEnd(BuildContext context) async
   {
-    content.expand = false;
-
-    // add children to the inner box
-    if (children != null)
-    {
-      content.children ??= [];
-      content.children!.addAll(children!);
-    }
-
-    // clear all children
-    children ??= [];
-    children!.clear();
-    children!.add(content);
-  }
-
-  Future<bool> scrolledToEnd(BuildContext context) async {
     if (S.isNullOrEmpty(onscrolledtoend)) return false;
     return await EventHandler(this).execute(_onscrolledtoend);
   }
@@ -210,9 +180,24 @@ class ScrollerModel extends ViewableWidgetModel
     await EventHandler(this).execute(_onpulldown);
   }
 
+  // returns the inner content model
+  BoxModel getContentModel()
+  {
+    // build the _body model
+    if (_body == null)
+    {
+      _body = (layoutType == LayoutType.row) ? RowModel(this, null) : ColumnModel(this, null);
+    }
 
-  @override
-  Widget getView({Key? key}) => getReactiveView(ScrollerView(this));
+    // add my children to content
+    _body!.children = [];
+    _body!.children!.addAll(children ?? []);
+
+    return _body!;
+  }
+
+ @override
+ Widget getView({Key? key}) => getReactiveView(ScrollerView(this));
 }
 
 

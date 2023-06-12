@@ -109,6 +109,21 @@ class ButtonModel extends BoxModel
   }
 
   @override
+  ColorObservable? _color;
+  set color (dynamic v)
+  {
+    if (_color != null)
+    {
+      _color!.set(v);
+    }
+    else if (v != null)
+    {
+      _color = ColorObservable(Binding.toKey(id, 'color'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  Color? get color => _color?.get();
+
+  @override
   String get radius => super.radius ?? '20';
 
   /// Type of button
@@ -176,7 +191,6 @@ class ButtonModel extends BoxModel
     this.label      = label;
     this.color      = color;
     this.buttontype = buttontype;
-    this.color      = color;
     this.radius     = radius;
     this.enabled    = enabled;
     this.children   = children;

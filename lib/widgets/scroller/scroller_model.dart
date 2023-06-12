@@ -43,14 +43,14 @@ class ScrollerModel extends BoxModel
   /// cross axis unless expand="false"
   /// This can be done by returning a flex=1 to the parent box
   /// layout renderer
-  @override
-  int? get flex
-  {
-    if (super.flex != null) return super.flex;
-    if (layoutType == LayoutType.row    && !hasBoundedWidth) return 1;
-    if (layoutType == LayoutType.column && !hasBoundedHeight) return 1;
-    return null;
-  }
+  // @override
+  // int? get flex
+  // {
+  //   if (super.flex != null) return super.flex;
+  //   if (layoutType == LayoutType.row    && !hasBoundedWidth  && !expand) return 1;
+  //   if (layoutType == LayoutType.column && !hasBoundedHeight && !expand) return 1;
+  //   return null;
+  // }
 
   /// If true will display a scrollbar, just used as a backup if flutter's built in scrollbar doesn't work
   BooleanObservable? _scrollbar;

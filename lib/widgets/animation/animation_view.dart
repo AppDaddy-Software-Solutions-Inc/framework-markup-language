@@ -120,28 +120,9 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
       return view;
     }
 
-    // Build Children
-    widget.children.clear();
-
-    // add child
-    if (widget.child != null) widget.children.add(widget.child!);
-
-    // add additional children
-    widget.children.addAll(widget.model.inflate());
-
-    // default is empty container
-    if (widget.children.isEmpty) widget.children.add(Container());
-
     var child = widget.children.length == 1 ? widget.children[0] : Column(children: widget.children, crossAxisAlignment: CrossAxisAlignment.start);
 
-    // Build View
-    Widget? view;
-
-    // Start the Controller
-    if ((widget.model.autoplay == true) && (!_stopped)) start();
-
-    // Return View
-    return view ?? child;
+    return child;
   }
 
   void onAnimate(Event event) {

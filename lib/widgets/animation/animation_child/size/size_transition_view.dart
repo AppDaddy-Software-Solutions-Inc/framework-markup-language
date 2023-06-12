@@ -161,11 +161,13 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
     // Build View
     Widget? view;
 
-    view = SizeTransition(
-      sizeFactor: _animation,
-      axis: direction,
-      axisAlignment: align,
-      child: widget.child,
+    view = UnconstrainedBox(
+      child: SizeTransition(
+        sizeFactor: _animation,
+        axis: direction,
+        axisAlignment: align,
+        child: widget.child,
+      ),
     );
 
     // Return View

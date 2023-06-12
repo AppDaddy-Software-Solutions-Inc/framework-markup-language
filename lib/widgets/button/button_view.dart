@@ -126,7 +126,13 @@ class _ButtonViewState extends WidgetState<ButtonView>
     if (!widget.model.visible) return Offstage();
 
     // build the body
-    var body = BoxView(widget.model.getContentModel());
+    Widget body = BoxView(widget.model.getContentModel());
+
+    // disabled?
+    if (!widget.model.enabled)
+    {
+      body = Opacity(opacity: .8, child: body);
+    }
 
     // Build the Button Types
     var view = _buildButton(body);

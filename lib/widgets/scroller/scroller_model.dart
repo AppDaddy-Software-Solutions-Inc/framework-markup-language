@@ -3,7 +3,6 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/column/column_model.dart';
 import 'package:fml/widgets/row/row_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -16,14 +15,12 @@ import 'package:fml/helper/common_helpers.dart';
 /// Button [ScrollerModel]
 ///
 /// Defines the properties used to build a [SCROLLER.ScrollerView]
-class ScrollerModel extends ViewableWidgetModel
+class ScrollerModel extends BoxModel
 {
-  LayoutType get layoutType => BoxModel.getLayoutType(_layout, defaultLayout: LayoutType.column);
-
   // holds the inner child content
   BoxModel? _body;
 
-  String _layout = 'column';
+  @override
   set layout(dynamic v)
   {
     if (v is String)
@@ -32,44 +29,28 @@ class ScrollerModel extends ViewableWidgetModel
       {
         case 'row':
         case 'horizontal':
-          _layout = 'row';
+          super.layout = 'row';
           break;
         default:
-          _layout = 'column';
+          super.layout = 'column';
           break;
       }
     }
   }
 
-  /// We want the scroller to expand in it cross axis by default
-  /// and share space with its siblings.
+  /// We want the scroller to expand in it main axis by default
+  /// and share space with its siblings. The scroller expands naturally in its
+  /// cross axis unless expand="false"
   /// This can be done by returning a flex=1 to the parent box
   /// layout renderer
-  @override
-  int? get flex
-  {
-    if (super.flex != null) return super.flex;
-    if (layoutType == LayoutType.row && !hasBoundedWidth) return 1;
-    if (layoutType == LayoutType.column && !hasBoundedHeight) return 1;
-    return null;
-  }
-
-  /// shadow attributes
-  ///
-  /// the color of the elevation shadow, defaults to black26
-  ColorObservable? _shadowcolor;
-  set shadowcolor(dynamic v)
-  {
-    if (_shadowcolor != null)
-    {
-      _shadowcolor!.set(v);
-    }
-    else if (v != null)
-    {
-      _shadowcolor = ColorObservable(Binding.toKey(id, 'shadowcolor'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  Color get shadowcolor => _shadowcolor?.get() ?? Colors.black26;
+  // @override
+  // int? get flex
+  // {
+  //   if (super.flex != null) return super.flex;
+  //   if (layoutType == LayoutType.row    && !hasBoundedWidth  && !expand) return 1;
+  //   if (layoutType == LayoutType.column && !hasBoundedHeight && !expand) return 1;
+  //   return null;
+  // }
 
   /// If true will display a scrollbar, just used as a backup if flutter's built in scrollbar doesn't work
   BooleanObservable? _scrollbar;

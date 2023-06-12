@@ -217,7 +217,7 @@ class ButtonModel extends BoxModel
     if (viewableChildren.isEmpty && label != null)
     {
       children ??= [];
-      children!.add(TextModel(this, null, value: "{$id.label}"));
+      children!.add(TextModel(this, null, value: "{$id.label}", color: enabled ? color : color?.withOpacity(0.8)));
     }
   }
 
@@ -277,7 +277,8 @@ class ButtonModel extends BoxModel
           break;
         case LayoutType.row:
         default:
-        _body = RowModel(this, null);
+          _body = RowModel(this, null);
+          _body!.center = true;
           break;
       }
     }

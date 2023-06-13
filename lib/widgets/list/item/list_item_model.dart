@@ -66,7 +66,6 @@ class ListItemModel extends BoxModel
   bool get selectable =>  _selectable?.get() ?? true;
 
 
-
   /// [Event]s to execute when the item is clicked
   StringObservable? _onclick;
   set onclick (dynamic v)

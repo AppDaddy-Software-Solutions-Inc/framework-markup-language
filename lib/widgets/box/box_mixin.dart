@@ -98,20 +98,20 @@ mixin BoxMixin
     // instance when a <box expand="true"/> is inside a <scroller/>. Normally the
     // expand would be set to false in the view. This ensures the widget is at least as
     // wide as the first parent with a constrained width.
-    if (model.expandHorizontally && !constraints.hasBoundedWidth)
-    {
-      constraints = BoxConstraints(minWidth: parentWidth, maxWidth: constraints.maxWidth, minHeight: constraints.minHeight, maxHeight: constraints.maxHeight);
-    }
+    // if (model.expandHorizontally && !constraints.hasBoundedWidth)
+    // {
+    //   constraints = BoxConstraints(minWidth: parentWidth, maxWidth: constraints.maxWidth, minHeight: constraints.minHeight, maxHeight: constraints.maxHeight);
+    // }
 
     // if the model wants to expand in the vertical and has an unbounded
     // height, then set the min height to the parent height. This happens for
     // instance when a <box expand="true"/> is inside a <scroller/>. Normally the
     // expand would be set to false in the view. This ensures the widget is at least as
     // high as the first parent with a constrained height.
-    if (model.expandVertically && !constraints.hasBoundedHeight)
-    {
-      constraints = BoxConstraints(minWidth: constraints.minWidth, maxWidth: constraints.maxWidth, minHeight: parentHeight, maxHeight: constraints.maxHeight);
-    }
+    // if (model.expandVertically && !constraints.hasBoundedHeight)
+    // {
+    //   constraints = BoxConstraints(minWidth: constraints.minWidth, maxWidth: constraints.maxWidth, minHeight: parentHeight, maxHeight: constraints.maxHeight);
+    // }
 
     // visible?
     if (!model.visible)

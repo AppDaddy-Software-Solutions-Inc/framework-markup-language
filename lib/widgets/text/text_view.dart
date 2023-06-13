@@ -94,7 +94,7 @@ class _TextViewState extends WidgetState<TextView>
 
     var style = TextStyle(
         fontSize: widget.model.size ?? textStyle!.fontSize,
-        color: widget.model.color,
+        color: widget.model.color ?? theme?.colorScheme.onBackground,
         fontWeight: widget.model.bold ? FontWeight.bold : textStyle!.fontWeight,
         fontStyle: widget.model.italic ? FontStyle.italic : textStyle!.fontStyle,
         decoration: textDecoration);

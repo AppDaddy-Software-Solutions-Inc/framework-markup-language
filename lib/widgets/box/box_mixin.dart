@@ -79,6 +79,36 @@ mixin BoxMixin
       constraints = constraints.tighten(height: childHeight);
     }
 
+    // set child min/max widths as defined in the model
+    if (!constraints.hasTightWidth)
+    {
+      var childMinWidth = model.getMinWidth(widthParent: parentHeight);
+      if (childMinWidth != null && childMinWidth > constraints.minWidth)
+      {
+        constraints = BoxConstraints(minWidth: childMinWidth, maxWidth: constraints.maxWidth, minHeight: constraints.minHeight, maxHeight: constraints.maxHeight);
+      }
+      var childMaxWidth = model.getMaxWidth(widthParent: parentHeight);
+      if (childMaxWidth != null && childMaxWidth < constraints.maxWidth)
+      {
+        constraints = BoxConstraints(minWidth: constraints.minWidth, maxWidth: childMaxWidth, minHeight: constraints.minHeight, maxHeight: constraints.maxHeight);
+      }
+    }
+
+    // set child min/max heights as defined in the model
+    if (!constraints.hasTightHeight)
+    {
+      var childMinHeight = model.getMinHeight(heightParent: parentHeight);
+      if (childMinHeight != null && childMinHeight > constraints.minHeight)
+      {
+        constraints = BoxConstraints(minWidth: constraints.minWidth, maxWidth: constraints.maxWidth, minHeight: childMinHeight, maxHeight: constraints.maxHeight);
+      }
+      var childMaxHeight = model.getMaxHeight(heightParent: parentHeight);
+      if (childMaxHeight != null && childMaxHeight < constraints.maxHeight)
+      {
+        constraints = BoxConstraints(minWidth: constraints.minWidth, maxWidth: constraints.maxWidth, minHeight: constraints.minHeight, maxHeight: childMaxHeight);
+      }
+    }
+    
     // If both of us are unconstrained in the horizontal axis,
     // tighten the child's width constraint prior to layout
     if (!constraints.hasBoundedWidth && model.canExpandInfinitelyWide)

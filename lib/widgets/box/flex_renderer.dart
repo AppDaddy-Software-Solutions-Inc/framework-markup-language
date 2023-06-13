@@ -649,7 +649,7 @@ class FlexRenderer extends RenderBox
         var childData = (child.parentData as BoxData);
         var childModel = childData.model!;
 
-        var idChild = childModel.id;
+        //var idChild = childModel.id;
 
         // assign flex value
         _setChildFlex(childData, childModel);

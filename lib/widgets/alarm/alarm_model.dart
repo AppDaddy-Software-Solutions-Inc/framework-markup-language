@@ -96,7 +96,7 @@ class AlarmModel extends WidgetModel
 
     // Build a binding to the parent value
     var binding = "{${parent.id}.value}";
-    _value = StringObservable(Binding.toKey(id, 'value'),binding, scope: scope);
+    _value ??= StringObservable(Binding.toKey(id, 'value'),binding, scope: scope);
   }
 
   static AlarmModel? fromXml(WidgetModel parent, XmlElement xml)

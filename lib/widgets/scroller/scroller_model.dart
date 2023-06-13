@@ -38,20 +38,6 @@ class ScrollerModel extends BoxModel
     }
   }
 
-  /// We want the scroller to expand in it main axis by default
-  /// and share space with its siblings. The scroller expands naturally in its
-  /// cross axis unless expand="false"
-  /// This can be done by returning a flex=1 to the parent box
-  /// layout renderer
-  // @override
-  // int? get flex
-  // {
-  //   if (super.flex != null) return super.flex;
-  //   if (layoutType == LayoutType.row    && !hasBoundedWidth  && !expand) return 1;
-  //   if (layoutType == LayoutType.column && !hasBoundedHeight && !expand) return 1;
-  //   return null;
-  // }
-
   /// If true will display a scrollbar, just used as a backup if flutter's built in scrollbar doesn't work
   BooleanObservable? _scrollbar;
   set scrollbar (dynamic v)
@@ -165,10 +151,7 @@ class ScrollerModel extends BoxModel
   BoxModel getContentModel()
   {
     // build the _body model
-    if (_body == null)
-    {
-      _body = (layoutType == LayoutType.row) ? RowModel(this, null) : ColumnModel(this, null);
-    }
+    _body ??= (layoutType == LayoutType.row) ? RowModel(this, null) : ColumnModel(this, null);
 
     // add my children to content
     _body!.children = [];

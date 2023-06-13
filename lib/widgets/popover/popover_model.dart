@@ -15,6 +15,7 @@ import 'package:fml/helper/common_helpers.dart';
 class PopoverModel extends DecoratedWidgetModel implements IModelListener
 {
   List<PopoverItemModel> items = [];
+
   // prototype
   XmlElement? prototype;
 
@@ -118,16 +119,18 @@ class PopoverModel extends DecoratedWidgetModel implements IModelListener
     busy = true;
 
     // build options
-    if ((list != null))
+    if (list != null && prototype != null)
     {
       // clear items
-      for (var item in items) {
+      for (var item in items)
+      {
         item.dispose();
       }
       items.clear();
 
-      for (var row in list) {
-        var model = PopoverItemModel.fromXml(parent, prototype, data: row);
+      for (var row in list)
+      {
+        var model = PopoverItemModel.fromXml(this, prototype!, data: row);
         if (model != null) items.add(model);
       }
 
@@ -144,7 +147,8 @@ class PopoverModel extends DecoratedWidgetModel implements IModelListener
     // Log().debug('dispose called on => <$elementName id="$id">');
 
     // clear items
-    for (var item in items) {
+    for (var item in items)
+    {
       item.dispose();
     }
     items.clear();
@@ -159,9 +163,16 @@ class PopoverModel extends DecoratedWidgetModel implements IModelListener
   }
 
   @override
-  onModelChange(WidgetModel model, {String? property, value}) {
+  onModelChange(WidgetModel model, {String? property, value})
+  {
     // TODO missing setState?
     onPropertyChange(StringObservable(null, null)); // Allow us to rebuild the child model when it changes
+  }
+
+  Future<bool> onTap(PopoverItemModel? model) async
+  {
+    data = model?.data ?? Data();
+    return true;
   }
 
   @override

@@ -339,15 +339,17 @@ class ConstraintModel extends WidgetModel
     if (myWidth != null)
     {
       // must be greater than minWidth
-      if (minWidth != null && myWidth < minWidth!)
+      var minWidth = getMinWidth(widthParent: widthParent);
+      if (minWidth != null && myWidth < minWidth)
       {
-        myWidth = minWidth!;
+        myWidth = minWidth;
       }
 
       // must be greater than maxWidth
-      if (maxWidth != null && myWidth > maxWidth!)
+      var maxWidth = getMaxWidth(widthParent: widthParent);
+      if (maxWidth != null && myWidth > maxWidth)
       {
-        myWidth = maxWidth!;
+        myWidth = maxWidth;
       }
     }
 
@@ -360,6 +362,56 @@ class ConstraintModel extends WidgetModel
     return myWidth;
   }
 
+  double? getMinWidth({double? widthParent})
+  {
+    double? width;
+
+    // width
+    if (minWidth != null)
+    {
+      width = minWidth;
+    }
+
+    // percentage width based on parent
+    else if (minWidthPercentage != null && widthParent != null)
+    {
+      width = ((minWidthPercentage!/100) * widthParent);
+    }
+
+    // cannot be negative
+    if (width != null && width.isNegative)
+    {
+      width = 0;
+    }
+
+    return width;
+  }
+
+  double? getMaxWidth({double? widthParent})
+  {
+    double? width;
+
+    // width
+    if (maxWidth != null)
+    {
+      width = maxWidth;
+    }
+
+    // percentage width based on parent
+    else if (maxWidthPercentage != null && widthParent != null)
+    {
+      width = ((maxWidthPercentage!/100) * widthParent);
+    }
+
+    // cannot be negative
+    if (width != null && width.isNegative)
+    {
+      width = 0;
+    }
+
+    return width;
+  }
+  
   // return the bounded height
   double? getHeight({double? heightParent})
   {
@@ -383,15 +435,17 @@ class ConstraintModel extends WidgetModel
     if (myHeight != null)
     {
       // must be greater than minHeight
-      if (minHeight != null && myHeight < minHeight!)
+      var minHeight = getMinHeight(heightParent: heightParent);
+      if (minHeight != null && myHeight < minHeight)
       {
-        myHeight = minHeight!;
+        myHeight = minHeight;
       }
 
       // must be greater than maxHeight
-      if (maxHeight != null && myHeight > maxHeight!)
+      var maxHeight = getMaxHeight(heightParent: heightParent);
+      if (maxHeight != null && myHeight > maxHeight)
       {
-        myHeight = maxHeight!;
+        myHeight = maxHeight;
       }
     }
 
@@ -402,6 +456,56 @@ class ConstraintModel extends WidgetModel
     }
 
     return myHeight;
+  }
+
+  double? getMinHeight({double? heightParent})
+  {
+    double? height;
+
+    // height
+    if (minHeight != null)
+    {
+      height = minHeight;
+    }
+
+    // percentage height based on parent
+    else if (minHeightPercentage != null && heightParent != null)
+    {
+      height = ((minHeightPercentage!/100) * heightParent);
+    }
+
+    // cannot be negative
+    if (height != null && height.isNegative)
+    {
+      height = 0;
+    }
+
+    return height;
+  }
+
+  double? getMaxHeight({double? heightParent})
+  {
+    double? height;
+
+    // height
+    if (maxHeight != null)
+    {
+      height = maxHeight;
+    }
+
+    // percentage height based on parent
+    else if (maxHeightPercentage != null && heightParent != null)
+    {
+      height = ((maxHeightPercentage!/100) * heightParent);
+    }
+
+    // cannot be negative
+    if (height != null && height.isNegative)
+    {
+      height = 0;
+    }
+
+    return height;
   }
 
   //Constraints get tightest => Constraints.tightest(Constraints.tightest(model, system), calculated);

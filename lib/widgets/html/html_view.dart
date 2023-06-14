@@ -33,20 +33,14 @@ class _HtmlViewState extends WidgetState<HtmlView>
         child: Html(
           shrinkWrap: true,
           data: widget.model.value,
-          onLinkTap: (url, _, __, ___) {
-            Log().debug("Opening $url...");
-          },
-          onImageTap: (src, _, __, ___) {
-            Log().debug(src ?? "");
-          },
-          onImageError: (exception, stackTrace) {
-            Log().exception(exception);
+          onLinkTap: (url, _, __) {
+            Log().debug("Html: Opening $url...", caller: 'Html_view');
           },
           onCssParseError: (css, messages) {
-            Log().debug("css that errored: $css");
-            Log().debug("error messages:");
+            Log().debug("css that errored: $css", caller: 'Html_view');
+            Log().debug("error messages:", caller: 'Html_view');
             for (var element in messages) {
-              Log().debug('$element');
+              Log().debug('$element', caller: 'Html_view');
             }
             return null;
             },

@@ -79,7 +79,7 @@ dependencies:
   # MIT
 
   # Added 2022/06/10
-  flutter_html: ^3.0.0-alpha.5
+  flutter_html: ^3.0.0-beta.2
   # MIT
 
   # Updated 2022/12/29

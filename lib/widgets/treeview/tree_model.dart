@@ -1,4 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:fml/data/data.dart';
+import 'package:fml/datasources/datasource_interface.dart';
+import 'package:fml/datasources/http/model.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +15,9 @@ import 'package:fml/helper/common_helpers.dart';
 
 class TreeModel extends DecoratedWidgetModel 
 {
+  // Data sourced prototype
+  XmlElement? prototype;
+
   // Icon
   IconObservable? _icon;
   set icon (dynamic v)
@@ -42,7 +48,6 @@ class TreeModel extends DecoratedWidgetModel
   }
   IconData? get expandedicon => _expandedicon?.get();
 
-  TreeNodeModel? nodeTemplate;
   final List<TreeNodeModel> nodes = [];
   final List<TreeNodeModel?> youngestGeneration = [];
 
@@ -76,43 +81,28 @@ class TreeModel extends DecoratedWidgetModel
     expandedicon = Xml.get(node: xml, tag: 'expandedicon');
 
     // Build Nodes and find the youngestGeneration
+    _buildNodes();
 
-    // clear nodes
-    for (var model in this.nodes) {
-      model.dispose();
-    }
-    this.nodes.clear();
-
-    for (var model in youngestGeneration) {
-      model?.dispose();
-    }
-    youngestGeneration.clear();
-
-    List<TreeNodeModel> nodes = findChildrenOfExactType(TreeNodeModel).cast<TreeNodeModel>();
-    for (var node in nodes) {
-     this.nodes.add(node);
-     recurseChildren(node);
-    }
-
-    if ((datasource != null) && (this.nodes.isNotEmpty))
+    // build the prototype
+    if (datasource != null && nodes.isNotEmpty)
     {
-      nodeTemplate = this.nodes.first;
-      this.nodes.removeAt(0);
+      prototype = WidgetModel.prototypeOf(nodes.first.element);
+      nodes.removeAt(0);
     }
   }
 
   @override
   dispose()
   {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-
     // clear nodes
-    for (var model in nodes) {
+    for (var model in nodes)
+    {
       model.dispose();
     }
     nodes.clear();
 
-    for (var model in youngestGeneration) {
+    for (var model in youngestGeneration)
+    {
       model?.dispose();
     }
     youngestGeneration.clear();
@@ -162,15 +152,70 @@ class TreeModel extends DecoratedWidgetModel
     if (!event.handled) focusTreeNode(null);
   }
 
-  void recurseChildren(dynamic node) {
-    for (dynamic n in node.children) {
-      if (n.children != null && n.children.length > 0) {
-        recurseChildren(n);
-      } else {
+  _buildNodes()
+  {
+    // clear nodes
+    for (var model in this.nodes)
+    {
+      model.dispose();
+    }
+    this.nodes.clear();
+
+    for (var model in youngestGeneration)
+    {
+      model?.dispose();
+    }
+    youngestGeneration.clear();
+
+    List<TreeNodeModel> nodes = findChildrenOfExactType(TreeNodeModel).cast<TreeNodeModel>();
+    for (var node in nodes)
+    {
+      this.nodes.add(node);
+      _buildSubNodes(node);
+    }
+  }
+
+  void _buildSubNodes(dynamic node)
+  {
+    for (dynamic n in node.children)
+    {
+      if (n.children != null && n.children.length > 0)
+      {
+        _buildSubNodes(n);
+      }
+      else
+      {
         youngestGeneration.add(n);
       }
     }
   }
+
+  @override
+  Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async
+  {
+    var x = source;
+    busy = true;
+    if (list != null)
+    {
+      // clear items
+      nodes.forEach((item) => item.dispose());
+      nodes.clear();
+
+      if (source is HttpModel)
+      {
+        // parse the xml
+        var document = Xml.tryParse(source.response);
+        if (document is XmlDocument)
+        {
+          var model = WidgetModel.fromXml(this, document.rootElement);
+        }
+      }
+      notifyListeners('list', nodes);
+    }
+    busy = false;
+    return true;
+  }
+
 
   @override
   Widget getView({Key? key}) => getReactiveView(TreeView(this));

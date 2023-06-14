@@ -36,6 +36,9 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 {
   BusyView? busy;
 
+  double get safeAreaHeight => MediaQuery.of(context).viewPadding.top  + MediaQuery.of(context).viewPadding.bottom + MediaQuery.of(context).viewInsets.top  + MediaQuery.of(context).viewInsets.bottom;
+  double get safeAreaWidth  => MediaQuery.of(context).viewPadding.left + MediaQuery.of(context).viewPadding.right  + MediaQuery.of(context).viewInsets.left + MediaQuery.of(context).viewInsets.right;
+
   // this is used to fire the models onstart
   bool started = false;
 
@@ -197,10 +200,9 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     height = maxHeight - scrolled;
     if (height < minHeight) height = minHeight;
 
-    var safeArea = MediaQuery.of(context).padding.top.ceil();
     var viewportHeight = widget.model.system.maxHeight!;
     widget.model.header?.height = height;
-    widget.model.height = viewportHeight - height - (widget.model.footer?.constraints.height ?? 0) - safeArea;
+    widget.model.height = viewportHeight - height - (widget.model.footer?.constraints.height ?? 0) - safeAreaHeight;
 
     /* Stop Notification Bubble */
     return false;
@@ -367,10 +369,9 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     if (widget.model.layout == null) body.layout = "stack";
 
     // set body constraints
-    var safeArea       = MediaQuery.of(context).padding.top.ceil();
     var viewportWidth  = constraints.maxWidth;
     var viewportHeight = constraints.maxHeight;
-    var usedHeight     = (header?.height ?? 0) + (footer?.height ?? 0) + safeArea;
+    var usedHeight     = (header?.height ?? 0) + (footer?.height ?? 0) + safeAreaHeight.ceil();
 
     // build framework body
     Widget view = BoxView(body);
@@ -379,8 +380,8 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     // is wrapped in a Scroller
     if (body.findChildOfExactType(ScrollerModel) != null) view = NotificationListener<ScrollNotification>(onNotification: onScroll, child: view);
 
-    var height = viewportHeight - usedHeight - (body.marginTop ?? 0) - (body.marginBottom ?? 0);
-    var width = viewportWidth - (body.marginLeft ?? 0) - (body.marginRight ?? 0);
+    var height = viewportHeight - usedHeight;
+    var width = viewportWidth;
 
     view = SizedBox(child: view, width: width, height: height);
 

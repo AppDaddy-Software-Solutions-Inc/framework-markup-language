@@ -619,7 +619,10 @@ class WidgetModel implements IDataSourceListener {
         break;
 
       case "node":
-        model = TreeNodeModel.fromXml(parent, node);
+        if (parent is TreeModel || parent is TreeNodeModel)
+        {
+          model = TreeNodeModel.fromXml(parent, node);
+        }
         break;
 
       case "ocr":

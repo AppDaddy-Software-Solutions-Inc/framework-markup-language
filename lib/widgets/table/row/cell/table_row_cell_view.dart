@@ -140,7 +140,7 @@ class _TableRowCellViewState extends WidgetState<TableRowCellView> with WidgetsB
     return Listener(
         onPointerDown: (_) => onTap(selectable),
         behavior: HitTestBehavior.translucent,
-        child: Container(child: selectable ? MouseRegion(cursor: SystemMouseCursors.click, child: cell) : cell));
+        child: Container(child: MouseRegion(cursor: SystemMouseCursors.click, child: cell)));
   }
 
   onTap(bool selectable) async {

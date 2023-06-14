@@ -201,7 +201,7 @@ class AnimationModel extends ViewableWidgetModel
   }
   bool get runonce => _runonce?.get() ?? false;
 
-  dynamic controllerValue;
+  double controllerValue = 0;
 
   AnimationModel(WidgetModel parent, String? id)
       : super(parent, id); // ; {key: value}

@@ -193,12 +193,14 @@ class TreeModel extends DecoratedWidgetModel
   @override
   Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async
   {
-    var x = source;
     busy = true;
     if (list != null)
     {
       // clear items
-      nodes.forEach((item) => item.dispose());
+      for (var item in nodes)
+      {
+        item.dispose();
+      }
       nodes.clear();
 
       if (source is HttpModel)
@@ -207,7 +209,7 @@ class TreeModel extends DecoratedWidgetModel
         var document = Xml.tryParse(source.response);
         if (document is XmlDocument)
         {
-          var model = WidgetModel.fromXml(this, document.rootElement);
+          //var model = WidgetModel.fromXml(this, document.rootElement);
         }
       }
       notifyListeners('list', nodes);

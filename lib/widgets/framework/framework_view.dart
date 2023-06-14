@@ -202,7 +202,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
     var viewportHeight = widget.model.system.maxHeight!;
     widget.model.header?.height = height;
-    widget.model.height = viewportHeight - height - (widget.model.footer?.constraints.height ?? 0) - safeAreaHeight;
+    widget.model.height = viewportHeight - height - (widget.model.footer?.constraints.height ?? 0) - safeAreaHeight.ceil();
 
     /* Stop Notification Bubble */
     return false;

@@ -36,8 +36,20 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 {
   BusyView? busy;
 
-  double get safeAreaHeight => MediaQuery.of(context).viewPadding.top  + MediaQuery.of(context).viewPadding.bottom + MediaQuery.of(context).viewInsets.top  + MediaQuery.of(context).viewInsets.bottom;
-  double get safeAreaWidth  => MediaQuery.of(context).viewPadding.left + MediaQuery.of(context).viewPadding.right  + MediaQuery.of(context).viewInsets.left + MediaQuery.of(context).viewInsets.right;
+  double get safeAreaHeight
+  {
+    // if we are not a root framework then
+    // safe area can be ignored
+    if (widget.model.framework != null) return 0;
+    return MediaQuery.of(context).viewPadding.top  + MediaQuery.of(context).viewPadding.bottom + MediaQuery.of(context).viewInsets.top  + MediaQuery.of(context).viewInsets.bottom;
+  }
+  double get safeAreaWidth
+  {
+    // if we are not a root framework then
+    // safe area can be ignored
+    if (widget.model.framework != null) return 0;
+    return MediaQuery.of(context).viewPadding.left + MediaQuery.of(context).viewPadding.right  + MediaQuery.of(context).viewInsets.left + MediaQuery.of(context).viewInsets.right;
+  }
 
   // this is used to fire the models onstart
   bool started = false;
@@ -309,54 +321,24 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
   Widget _buildHeader(BoxConstraints constraints)
   {
-    Widget view = Container();
+    var header = widget.model.header;
+    if (header == null) return Container();
 
-    widget.model.header?.removeAllListeners();
-    if (widget.model.header != null && widget.model.header!.visible != false)
-    {
-      var header = widget.model.header!;
+    header.removeAllListeners();
+    header.width = header.visible ? constraints.maxWidth : 0;
 
-      // default model layout to stack if not supplied
-      if (widget.model.layout == null) header.layout = "stack";
-
-      // set header constraints
-      header.width = constraints.maxWidth;
-
-      // build framework header view
-      view = header.getView();
-    }
-    else
-    {
-      widget.model.header?.height = 0;
-    }
-
-    return view;
+    return SizedBox(child: header.getView(), width: header.width, height: header.height);
   }
 
   Widget _buildFooter(BoxConstraints constraints)
   {
-    Widget view = Container();
+    var footer = widget.model.footer;
+    if (footer == null) return Container();
 
-    widget.model.footer?.removeAllListeners();
-    if (widget.model.footer != null && widget.model.footer!.visible != false)
-    {
-      var footer = widget.model.footer!;
+    footer.removeAllListeners();
+    footer.width = footer.visible ? constraints.maxWidth : 0;
 
-      // default model layout to stack if not supplied
-      if (widget.model.layout == null) footer.layout = "stack";
-
-      // set footer constraints
-      footer.width = constraints.maxWidth;
-
-      // build framework footer view
-      view = footer.getView();
-    }
-    else
-    {
-      widget.model.footer?.height = 0;
-    }
-
-    return view;
+    return SizedBox(child: footer.getView(), width: footer.width, height: footer.height);
   }
 
   Widget _buildBody(BoxConstraints constraints)
@@ -383,9 +365,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     var height = viewportHeight - usedHeight;
     var width = viewportWidth;
 
-    view = SizedBox(child: view, width: width, height: height);
-
-    return view;
+    return SizedBox(child: view, width: width, height: height);
   }
 
   _setDeviceOrientation(String? orientation)
@@ -530,7 +510,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     view = _getGestureDetector(view,drawer);
 
     // scaffold with safe area
-    view = SafeArea(child: Scaffold(resizeToAvoidBottomInset: true, body: view));
+    view = Scaffold(resizeToAvoidBottomInset: true, body: view);
 
     // start listening to model changes
     widget.model.registerListener(this);

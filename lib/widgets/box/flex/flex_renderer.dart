@@ -10,8 +10,8 @@ import 'package:fml/widgets/box/box_constraints.dart';
 import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/box/box_mixin.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/box/stack_renderer.dart';
-import 'package:fml/widgets/box/wrap_renderer.dart';
+import 'package:fml/widgets/box/stack/stack_renderer.dart';
+import 'package:fml/widgets/box/wrap/wrap_renderer.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 
 // change to false to allow write messages
@@ -812,14 +812,12 @@ class FlexRenderer extends RenderBox
         break;
 
       case FlexType.fixed:
-        var parent = parentOf(this);
-        if (constraints.hasBoundedWidth && (parent is FlexRenderer || parent is StackRenderer || parent is WrapRenderer))
+        var  parent = parentOf(this);
+        bool parentIsBox = parent is FlexRenderer || parent is StackRenderer || parent is WrapRenderer;
+        maxWidth = constraints.maxWidth;
+        if (constraints.hasInfiniteWidth || !parentIsBox)
         {
-          maxWidth = constraints.maxWidth;
-        }
-        else
-        {
-          maxWidth = model.getWidth(widthParent: widthOf(this.parent)) ?? 0;
+          maxWidth = min(model.getWidth(widthParent: widthOf(this.parent)) ?? double.infinity, constraints.maxWidth);
         }
         break;
 
@@ -836,14 +834,12 @@ class FlexRenderer extends RenderBox
         break;
 
       case FlexType.fixed:
-        var parent = parentOf(this);
-        if (constraints.hasBoundedHeight && (parent is FlexRenderer || parent is StackRenderer || parent is WrapRenderer))
+        var  parent = parentOf(this);
+        bool parentIsBox = parent is FlexRenderer || parent is StackRenderer || parent is WrapRenderer;
+        maxHeight = constraints.maxHeight;
+        if (constraints.hasInfiniteHeight || !parentIsBox)
         {
-          maxHeight = constraints.maxHeight;
-        }
-        else
-        {
-          maxHeight = model.getHeight(heightParent: heightOf(parent)) ?? 0;
+          maxHeight = min(model.getHeight(heightParent: heightOf(this.parent)) ?? double.infinity, constraints.maxHeight);
         }
         break;
 

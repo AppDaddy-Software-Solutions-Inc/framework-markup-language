@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/box/flex_renderer.dart';
+import 'package:fml/widgets/box/flex/flex_renderer.dart';
 
 class FlexObject extends MultiChildRenderObjectWidget {
   /// Creates a flex layout.

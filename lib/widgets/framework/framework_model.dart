@@ -35,6 +35,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
   executeEvent(WidgetModel source, String event) => manager.execute(this, event);
 
   HeaderModel?  header;
+  BoxModel?     body;
   FooterModel?  footer;
   DrawerModel?  drawer;
 

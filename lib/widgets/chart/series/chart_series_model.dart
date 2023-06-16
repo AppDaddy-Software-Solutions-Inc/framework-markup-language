@@ -44,7 +44,7 @@ class ChartSeriesModel extends WidgetModel
       dynamic radius,
       dynamic size,
       dynamic label,
-      dynamic labelled,
+      dynamic labeled,
       dynamic labelType,
       this.type,
       dynamic tooltips,
@@ -64,7 +64,7 @@ class ChartSeriesModel extends WidgetModel
     this.radius = radius;
     this.size = size;
     this.label = label;
-    this.labelled = labelled;
+    this.labeled = labeled;
     this.labelType = labelType;
     this.tooltips = tooltips;
     this.animated = animated;
@@ -111,7 +111,7 @@ class ChartSeriesModel extends WidgetModel
     size        = Xml.get(node: xml, tag: 'size');
     type        = Xml.get(node: xml, tag: 'type');
     label       = Xml.get(node: xml, tag: 'label');
-    labelled    = Xml.get(node: xml, tag: 'labelled');
+    labeled    = Xml.get(node: xml, tag: 'labeled');
     labelType   = Xml.get(node: xml, tag: 'labelType');
     tooltips    = Xml.get(node: xml, tag: 'tooltips');
     animated    = Xml.get(node: xml, tag: 'animated');
@@ -314,19 +314,19 @@ class ChartSeriesModel extends WidgetModel
   bool get showpoints => _showpoints?.get() ?? true;
 
   /// Set to true if you want to label a non label type series
-  BooleanObservable? _labelled;
-  set labelled (dynamic v)
+  BooleanObservable? _labeled;
+  set labeled (dynamic v)
   {
-    if (_labelled != null)
+    if (_labeled != null)
     {
-      _labelled!.set(v);
+      _labeled!.set(v);
     }
     else if (v != null)
     {
-      _labelled = BooleanObservable(Binding.toKey(id, 'labelled'), v, scope: scope, listener: onPropertyChange);
+      _labeled = BooleanObservable(Binding.toKey(id, 'labeled'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  bool? get labelled => _labelled?.get();
+  bool? get labeled => _labeled?.get();
 
 
   /// Can be a 'string' or a 'widget', default is string

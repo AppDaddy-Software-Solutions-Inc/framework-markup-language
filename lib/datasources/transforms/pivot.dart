@@ -157,22 +157,22 @@ class Pivot extends TransformModel implements ITransform
     Data result = Data();
     statistics.forEach((key, value)
     {
-      Map<String?, dynamic> row = <String?, dynamic>{};
-      row["TIME"] = key;
+      Map<String?, dynamic> myrow = <String?, dynamic>{};
+      myrow[row] = key;
 
       // Sum
       double sum = 0;
       double count = 0;
       value.forEach((key, value)
       {
-        row[key] = value["sum"].toString();
+        myrow[key] = value["sum"].toString();
         sum = sum + (value["sum"] ?? 0);
         count++;
       });
 
-      row["AVG"]   = (count > 0) ? (sum /count).toStringAsFixed(2) : "";
-      row["TOTAL"] = sum.toString();
-      result.add(row);
+      myrow["AVG"]   = (count > 0) ? (sum /count).toStringAsFixed(2) : "";
+      myrow["TOTAL"] = sum.toString();
+      result.add(myrow);
     });
 
     // Column Totals
@@ -198,8 +198,8 @@ class Pivot extends TransformModel implements ITransform
     });
 
     /* Totals */
-    totals["TIME"]   = "TOTAL";
-    averages["TIME"] = "AVG";
+    totals[row!]   = "TOTAL";
+    averages[row!] = "AVG";
 
     totals["AVG"]     = "";
     averages["TOTAL"] = "";

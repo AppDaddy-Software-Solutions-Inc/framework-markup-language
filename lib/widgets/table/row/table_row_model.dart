@@ -16,15 +16,11 @@ import 'package:fml/helper/common_helpers.dart';
 
 class TableRowModel extends DecoratedWidgetModel
 {
-  ///////////
-  /* Cells */
-  ///////////
+  // Cells
   final List<TableRowCellModel> cells = [];
   late XmlElement cellprototype;
 
-  /////////////////////
-  /* Editable Fields */
-  /////////////////////
+  // Editable Fields
   List<IFormField>? fields;
 
   // posting source source
@@ -42,9 +38,7 @@ class TableRowModel extends DecoratedWidgetModel
   }
   List<String>? get postbrokers => _postbrokers;
 
-  ///////////
-  /* index */
-  ///////////
+  // index
   IntegerObservable? _index;
   set index(dynamic v) {
     if (_index != null) {
@@ -56,9 +50,7 @@ class TableRowModel extends DecoratedWidgetModel
   }
   int? get index => _index?.get();
 
-  //////////////
-  /* selected */
-  //////////////
+  // selected
   BooleanObservable? _selected;
   set selected(dynamic v) {
     if (_selected != null) {
@@ -70,9 +62,7 @@ class TableRowModel extends DecoratedWidgetModel
   }
   bool get selected => _selected?.get() ?? false;
 
-  /////////////
-  /* onclick */
-  /////////////
+  // onclick
   StringObservable? _onclick;
   set onclick(dynamic v) {
     if (_onclick != null) {
@@ -86,9 +76,7 @@ class TableRowModel extends DecoratedWidgetModel
     return _onclick?.get();
   }
 
-  ///////////
-  /* Color */
-  ///////////
+  // Color
   ColorObservable? _color;
   @override
   Color? get color
@@ -101,9 +89,7 @@ class TableRowModel extends DecoratedWidgetModel
     return _color?.get();
   }
 
-  ////////////////////
-  /* alter color */
-  ////////////////////
+  // alter color
   ColorObservable? _altcolor;
   set altcolor(dynamic v) {
     if (_altcolor != null) {
@@ -124,9 +110,7 @@ class TableRowModel extends DecoratedWidgetModel
     return _altcolor?.get();
   }
 
-  ////////////////////
-  /* selected color */
-  ////////////////////
+  // selected color
   ColorObservable? _selectedcolor;
   set selectedcolor(dynamic v) {
     if (_selectedcolor != null) {
@@ -148,9 +132,7 @@ class TableRowModel extends DecoratedWidgetModel
     return _selectedcolor?.get();
   }
 
-  ///////////////////////////
-  /* selected border color */
-  ///////////////////////////
+  // selected border color
   ColorObservable? _selectedbordercolor;
   set selectedbordercolor(dynamic v) {
     if (_selectedbordercolor != null) {
@@ -172,9 +154,7 @@ class TableRowModel extends DecoratedWidgetModel
     return _selectedbordercolor?.get();
   }
 
-  //////////////////
-  /* border color */
-  //////////////////
+  // border color
   ColorObservable? _bordercolor;
   set bordercolor(dynamic v) {
     if (_bordercolor != null) {
@@ -196,9 +176,7 @@ class TableRowModel extends DecoratedWidgetModel
     return _bordercolor?.get();
   }
 
-  //////////////////
-  /* border width */
-  //////////////////
+  // border width
   DoubleObservable? _borderwidth;
   set borderwidth(dynamic v) {
     if (_borderwidth != null) {
@@ -221,7 +199,6 @@ class TableRowModel extends DecoratedWidgetModel
   }
 
   /// alignment and layout attributes
-  ///
   /// The horizontal alignment of the widgets children, overrides `center`. Can be `left`, `right`, `start`, or `end`.
   StringObservable? _halign;
   @override
@@ -290,9 +267,7 @@ class TableRowModel extends DecoratedWidgetModel
     return _wrap?.get() ?? false;
   }
 
-  /////////////////
-  /* onccomplete */
-  /////////////////
+  // onccomplete
   StringObservable? _oncomplete;
   set oncomplete(dynamic v) {
     if (_oncomplete != null) {
@@ -303,9 +278,7 @@ class TableRowModel extends DecoratedWidgetModel
   }
   String? get oncomplete => _oncomplete?.get();
 
-  ///////////
-  /* dirty */
-  ///////////
+  // dirty
   BooleanObservable? get dirtyObservable => _dirty;
   BooleanObservable? _dirty;
   set dirty(dynamic v) {
@@ -399,17 +372,13 @@ class TableRowModel extends DecoratedWidgetModel
     onclick      = Xml.get(node: xml, tag: 'onclick');
     postbrokers  = Xml.attribute(node: xml, tag: 'postbroker');
 
-    ///////////////
-    /* Get Cells */
-    ///////////////
+    // Get Cells
     List<TableRowCellModel> models = findChildrenOfExactType(TableRowCellModel).cast<TableRowCellModel>();
     for (TableRowCellModel model in models) {
       cells.add(model);
     }
 
-    ////////////////////////////
-    /* Initialize Form Fields */
-    ////////////////////////////
+    // Initialize Form Fields
     for (TableRowCellModel _ in cells)
     {
       List<IFormField> fields = findChildrenOfExactType(IFormField).cast<IFormField>();
@@ -422,37 +391,37 @@ class TableRowModel extends DecoratedWidgetModel
       }
     }
 
-    ////////////////
-    /* Prototype? */
-    ////////////////
-    if ((cells.length == 1) && (cells[0].element!.toXmlString().contains("{field}"))) cellprototype = cells[0].element!.copy();
+    // Prototype?
+    if ((cells.length == 1) && (cells[0].element!.toXmlString().contains("{field}")))
+    {
+      cellprototype = cells[0].element!.copy();
+    }
   }
 
   @override
-  void onPropertyChange(Observable observable) {
-
-      notifyListeners(observable.key, observable.get());
+  void onPropertyChange(Observable observable)
+  {
+    notifyListeners(observable.key, observable.get());
   }
 
-  Future<bool> onClick(BuildContext context) async {
+  Future<bool> onClick(BuildContext context) async
+  {
     if (onclick == null) return true;
     return await EventHandler(this).execute(_onclick);
   }
 
-  Future<bool> complete() async {
+  Future<bool> complete() async
+  {
     busy = true;
 
     bool ok = true;
 
-    //////////////////
-    /* Post the Row */
-    //////////////////
+    // Post the Row
     if (ok) ok = await _post();
-
-    ////////////////
-    /* Mark Clean */
-    ////////////////
-    if ((ok) && (fields != null)) {
+    
+    // Mark Clean
+    if ((ok) && (fields != null))
+    {
       for (var field in fields!) {
         field.dirty = false;
       }
@@ -469,9 +438,7 @@ class TableRowModel extends DecoratedWidgetModel
 
     bool ok = true;
 
-    ///////////////////
-    /* Post the Form */
-    ///////////////////
+    // Post the Form
     if (ok && dirty) ok = await complete();
 
     busy = false;

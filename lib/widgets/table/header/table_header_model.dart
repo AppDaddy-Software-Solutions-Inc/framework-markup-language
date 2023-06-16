@@ -16,9 +16,6 @@ class TableHeaderModel extends DecoratedWidgetModel
   ///////////
   final List<TableHeaderCellModel> cells = [];
 
-  // prototype
-  XmlElement? prototype;
-
   //////////////////
   /* border color */
   //////////////////
@@ -192,18 +189,12 @@ class TableHeaderModel extends DecoratedWidgetModel
     bordercolor = Xml.get(node: xml, tag: 'bordercolor');
     borderwidth = Xml.get(node: xml, tag: 'borderwidth');
 
-    ///////////////
-    /* Get Cells */
-    ///////////////
+    // get cells
     List<TableHeaderCellModel> cells = findChildrenOfExactType(TableHeaderCellModel).cast<TableHeaderCellModel>();
-    for (TableHeaderCellModel model in cells) {
+    for (TableHeaderCellModel model in cells)
+    {
       this.cells.add(model);
     }
-
-    ////////////////
-    /* Prototype? */
-    ////////////////
-    if ((cells.length == 1) && (cells[0].element!.toXmlString().contains("{field}"))) prototype = cells[0].element!.copy();
   }
 
   bool onSort(TableHeaderCellModel model)

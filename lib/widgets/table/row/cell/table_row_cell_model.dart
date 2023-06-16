@@ -253,7 +253,8 @@ class TableRowCellModel extends BoxModel
     return model;
   }
 
-  static TableRowCellModel? fromXmlString(WidgetModel parent, String xml) {
+  static TableRowCellModel? fromXmlString(WidgetModel parent, String xml)
+  {
     XmlDocument? document = Xml.tryParse(xml);
     return (document != null) ? TableRowCellModel.fromXml(parent, document.rootElement) : null;
   }

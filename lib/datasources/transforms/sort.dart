@@ -2,21 +2,29 @@
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/transforms/transform_interface.dart';
 import 'package:fml/datasources/transforms/transform_model.dart';
+import 'package:fml/observable/observable_barrel.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/helper/common_helpers.dart';
 
 class Sort extends TransformModel implements ITransform
 {
-  ///////////
-  /* Field */
-  ///////////
-  String? _field;
-  set field(dynamic v)
+  ///////////////
+  /*   Field   */
+  ///////////////
+  StringObservable? _field;
+  set field (dynamic v)
   {
-    _field = S.toStr(v);
+    if (_field != null)
+    {
+      _field!.set(v);
+    }
+    else if (v != null)
+    {
+      _field = StringObservable(Binding.toKey(id, 'field'), v, scope: scope, listener: onPropertyChange);
+    }
   }
-  String? get field => _field;
+  String? get field => _field?.get();
 
   ////////////////
   /* Field Type */
@@ -41,12 +49,19 @@ class Sort extends TransformModel implements ITransform
   ///////////////
   /* Ascending */
   ///////////////
-  bool? _ascending;
-  set ascending(dynamic v)
+  BooleanObservable? _ascending;
+  set ascending (dynamic v)
   {
-    _ascending = S.toBool(v);
+    if (_ascending != null)
+    {
+      _ascending!.set(v);
+    }
+    else if (v != null)
+    {
+      _ascending = BooleanObservable(Binding.toKey(id, 'ascending'), v, scope: scope, listener: onPropertyChange);
+    }
   }
-  bool get ascending => _ascending ?? true;
+  bool get ascending => _ascending?.get() ?? true;
 
   ////////////////////
   /* Case Sensitive */

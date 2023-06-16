@@ -75,9 +75,10 @@ class MenuModel extends DecoratedWidgetModel
 
   void unmap(Map<String, String> map)
   {
-    map.forEach((key, value) {
+    map.forEach((key, value)
+    {
       MenuItemModel item = MenuItemModel(
-        null,
+        this,
         S.newId(),
         // url: ,
         title: key,
@@ -134,7 +135,7 @@ class MenuModel extends DecoratedWidgetModel
 
       for (var row in list)
       {
-        var model = MenuItemModel.fromXml(parent, prototype, data: row);
+        var model = MenuItemModel.fromXml(this, prototype, data: row);
         if (model != null) items.add(model);
       }
 

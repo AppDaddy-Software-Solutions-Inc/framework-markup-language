@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/box/wrap_renderer.dart';
+import 'package:fml/widgets/box/wrap/wrap_renderer.dart';
 
 class WrapObject extends MultiChildRenderObjectWidget
 {

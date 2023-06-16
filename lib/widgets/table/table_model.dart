@@ -26,16 +26,18 @@ enum PaddingType { none, first, last, evenly, proportionately }
 class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
 {
   // prototype
-  XmlElement? prototype;
-  TableRowModel? prototypeModel;
+  XmlElement? prototypeHeaderCell;
+  XmlElement? prototypeRowCell;
+  XmlElement? prototypeRow;
 
-  TableHeaderModel? tableheader;
-  TableFooterModel? tablefooter;
+  TableHeaderModel? header;
+  TableFooterModel? footer;
+
   final HashMap<int, TableRowModel> rows = HashMap<int, TableRowModel>();
 
   Size? proxyrow;
   Size? proxyheader;
-  Map<String, double?> heights = {'header': 48, 'row': 38, 'footer': 48};
+  Map<String, double> heights = {'header': 48, 'row': 38, 'footer': 48};
   Map<int, double> widths = HashMap<int, double>();
   Map<int, double> cellpadding = HashMap<int, double>();
 
@@ -54,9 +56,9 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     if (type != null) _paddingType = type;
   }
 
-  ////////////////////
-  /* slt color */
-  ////////////////////
+  
+  // slt color 
+  
   ColorObservable? _altcolor;
   set altcolor(dynamic v) {
     if (_altcolor != null) {
@@ -68,10 +70,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
   Color? get altcolor => _altcolor?.get();
 
-
-  ////////////////////
-  /* selected color */
-  ////////////////////
+  // selected color
   ColorObservable? _selectedcolor;
   set selectedcolor(dynamic v) {
     if (_selectedcolor != null) {
@@ -83,9 +82,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
   Color? get selectedcolor => _selectedcolor?.get();
 
-  ///////////////////////////
-  /* selected border color */
-  ///////////////////////////
+  // selected border color
   ColorObservable? _selectedbordercolor;
   set selectedbordercolor(dynamic v) {
     if (_selectedbordercolor != null) {
@@ -98,9 +95,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
   Color? get selectedbordercolor => _selectedbordercolor?.get();
 
-  //////////////////
-  /* border color */
-  //////////////////
+  // border color
   ColorObservable? _bordercolor;
   set bordercolor(dynamic v) {
     if (_bordercolor != null) {
@@ -112,9 +107,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
   Color? get bordercolor => _bordercolor?.get();
 
-  //////////////////
-  /* border width */
-  //////////////////
+  // border width
   DoubleObservable? _borderwidth;
   set borderwidth(dynamic v) {
     if (_borderwidth != null) {
@@ -176,9 +169,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
   bool get scrollShadows => _scrollShadows?.get() ?? false;
 
-  ///////////
-  /* moreup */
-  ///////////
+  // moreup
   BooleanObservable? _moreUp;
   @override
   set moreUp(dynamic v)
@@ -195,9 +186,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   @override
   bool? get moreUp=> _moreUp?.get();
 
-  ///////////
-  /* moreDown */
-  ///////////
+  // moreDown
   BooleanObservable? _moreDown;
   @override
   set moreDown(dynamic v)
@@ -214,9 +203,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   @override
   bool? get moreDown => _moreDown?.get();
 
-  ///////////
-  /* moreLeft */
-  ///////////
+  // moreLeft
   BooleanObservable? _moreLeft;
   @override
   set moreLeft(dynamic v)
@@ -230,9 +217,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   @override
   bool? get moreLeft => _moreLeft?.get();
 
-  ///////////////
-  /* moreRight */
-  ///////////////
+  // moreRight
   BooleanObservable? _moreRight;
   @override
   set moreRight(dynamic v)
@@ -249,9 +234,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   @override
   bool? get moreRight => _moreRight?.get();
 
-  //////////////////
-  /* Multi-Select */
-  //////////////////
+  // Multi-Select
   bool _multiselect = false;
   set multiselect(dynamic v) {
     bool? b = S.toBool(v);
@@ -260,9 +243,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
 
   get multiselect => _multiselect;
 
-  /////////////////
-  /* onccomplete */
-  /////////////////
+  // onccomplete
   StringObservable? _oncomplete;
   set oncomplete(dynamic v) {
     if (_oncomplete != null) {
@@ -274,9 +255,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
   String? get oncomplete => _oncomplete?.get();
 
-  ///////////
-  /* dirty */
-  ///////////
+  // dirty
   @override
   BooleanObservable? get dirtyObservable => _dirty;
   BooleanObservable? _dirty;
@@ -302,18 +281,14 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     dirty = isDirty;
   }
 
-  ///////////
-  /* Clean */
-  ///////////
+  // Clean
   @override
   set clean(bool b) {
     dirty = false;
     rows.forEach((index, row) => row.dirty = false);
   }
 
-  ///////////
-  /* paged */
-  ///////////
+  // paged
   BooleanObservable? _paged;
   set paged(dynamic v) {
     if (_paged != null) {
@@ -324,9 +299,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
   bool get paged => _paged?.get() ?? true;
 
-  //////////////
-  /* pagesize */
-  //////////////
+  // pagesize
   IntegerObservable? _pagesize;
   set pagesize(dynamic v) {
     if (_pagesize != null) {
@@ -346,9 +319,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     return _pagesize?.get();
   }
 
-  //////////
-  /* page */
-  //////////
+  // page
   IntegerObservable? _page;
   set page(dynamic v) {
     if (_page != null) {
@@ -369,9 +340,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     return _page?.get();
   }
 
-  ////////////
-  /* margin */
-  ////////////
+  // margin
   DoubleObservable? _margin;
   set margin(dynamic v) {
     if (_margin != null) {
@@ -382,9 +351,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
   double get margin => _margin?.get() ?? 24;
 
-  ////////////
-  /* spacing */
-  ////////////
+  // spacing
   DoubleObservable? _spacing;
   set spacing(dynamic v) {
     if (_spacing != null) {
@@ -395,9 +362,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
   double get spacing => _spacing?.get() ?? 56;
 
-  /////////////////
-  /* sortButtons */
-  /////////////////
+  // sortButtons
   BooleanObservable? _sortButtons;
   set sortButtons(dynamic v) {
     if (_sortButtons != null) {
@@ -534,31 +499,43 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     scrollButtons = Xml.get(node: xml, tag: 'scrollbuttons');
     scrollShadows = Xml.get(node: xml, tag: 'scrollshadows');
 
-    //////////////////////
-    /* Get Table Header */
-    //////////////////////
+    // Get Table Header
     List<TableHeaderModel> headers = findChildrenOfExactType(TableHeaderModel).cast<TableHeaderModel>();
-    if (headers.isNotEmpty) tableheader = headers.first;
+    if (headers.isNotEmpty)
+    {
+      header = headers.first;
+      if (header!.cells.length == 1)
+      {
+        prototypeHeaderCell = header!.cells.first.element;
+      }
+    }
 
-    //////////////////////
-    /* Get Table Footer */
-    //////////////////////
+    // Get Table Footer
     List<TableFooterModel> footers = findChildrenOfExactType(TableFooterModel).cast<TableFooterModel>();
-    if (footers.isNotEmpty) tablefooter = footers.first;
+    if (footers.isNotEmpty)
+    {
+      footer = footers.first;
+    }
 
-    // get prototype
+    // dynamic?
     List<TableRowModel> rows = findChildrenOfExactType(TableRowModel).cast<TableRowModel>();
-    if ((rows.isNotEmpty)) {
-      prototypeModel = rows.first;
-      prototype = WidgetModel.prototypeOf(prototypeModel!.element);
+    if (rows.isNotEmpty)
+    {
+      prototypeRow = WidgetModel.prototypeOf(rows.first.element);
+      if (rows.first.cells.length == 1)
+      {
+        prototypeRowCell = rows.first.cells.first.element;
+      }
     }
   }
 
   TableRowModel? getEmptyRowModel()
   {
     // build model
-    TableRowModel? model = TableRowModel.fromXml(this, prototype, data: null);
-    if(model?.cells != null){for (var cell in model!.cells) {
+    TableRowModel? model = TableRowModel.fromXml(this, prototypeRow, data: null);
+    if (model?.cells != null)
+    {for (var cell in model!.cells)
+    {
       cell.visible = false;
     }}
     return model;
@@ -573,10 +550,14 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     if ((index.isNegative) || (data.length < index)) return null;
 
     // build row model
-    TableRowModel? model = TableRowModel.fromXml(this, prototype, data: data[index]);
+    TableRowModel? model = TableRowModel.fromXml(this, prototypeRow, data: data[index]);
 
     // defined height
-    if (prototypeModel!.height != null) heights['row'] = prototypeModel!.height;
+    var height = S.toDouble(Xml.get(node: prototypeRow, tag: "height"));
+    if (height != null)
+    {
+      heights['row'] = height;
+    }
 
     // Register Listener to Dirty Field
     if (model?.dirtyObservable != null) model?.dirtyObservable!.registerListener(onDirtyListener);
@@ -586,16 +567,20 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     return model;
   }
 
-  TableHeaderCellModel? getHeaderCell(int col) {
-    if ((tableheader != null) && (col < tableheader!.cells.length)) {
-      return tableheader!.cells[col];
+  TableHeaderCellModel? getHeaderCell(int col)
+  {
+    if ((header != null) && (col < header!.cells.length))
+    {
+      return header!.cells[col];
     }
     return null;
   }
 
-  Future<bool> _build(IDataSource source, Data? map) async {
-    if ((S.isNullOrEmpty(datasource)) || (datasource == source.id)) {
-      if (tableheader!.prototype != null) await _buildDynamic(map);
+  Future<bool> _build(IDataSource source, Data? data) async
+  {
+    if (S.isNullOrEmpty(datasource) || datasource == source.id)
+    {
+      await _buildDynamic(data);
 
       clean = true;
 
@@ -604,7 +589,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
       rows.clear();
 
       page = 1;
-      data = map;
+      this.data = data;
     }
     notifyListeners('list', null);
     return true;
@@ -691,8 +676,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     // Log().debug('dispose called on => <$elementName id="$id">');
 
     // cleanup
-    tableheader?.dispose();
-    prototypeModel?.dispose();
+    header?.dispose();
 
     // clear rows
     rows.forEach((_,row) => row.dispose());
@@ -707,9 +691,9 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
 
     bool ok = true;
 
-    ///////////////////
-    /* Post the Form */
-    ///////////////////
+    ///
+    // Post the Form 
+    ///
     if (dirty){
       for (var entry in rows.entries) {
         ok = await entry.value.complete();
@@ -791,80 +775,64 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     }
   }
 
-  Future<bool> _buildDynamic(Data? data) async {
-    /////////////////////////
-    /* Remove Header Cells */
-    /////////////////////////
-    tableheader!.cells.clear();
+  Future<void> _buildDynamic(Data? data) async
+  {
+    // both header and row prototypes must be defined
+    if (prototypeHeaderCell == null || prototypeRowCell == null) return;
 
-    //////////////////////
-    /* Remove Row Cells */
-    //////////////////////
-    prototypeModel!.cells.clear();
+    // clear old header cells
+    for (var cell in header!.cells)
+    {
+      cell.dispose();
+    }
+    header!.cells.clear();
 
-    Iterable<XmlElement>? nodes = Xml.getChildElements(node: prototypeModel!.element!, tag: 'cell');
+    // clear prototype row cells
+    prototypeRow ??= XmlElement(XmlName("ROW"));
+    prototypeRow!.children.clear();
 
-    prototypeModel!.element!.children.removeWhere((node) => nodes!.contains(node));
-
-    if ((data != null) && (data.isNotEmpty)) {
+    if (data != null && data.isNotEmpty)
+    {
+      var headerCell = prototypeHeaderCell.toString();
+      var rowCell = prototypeRowCell.toString();
       data[0].forEach((key, value)
       {
-        if ((key != 'xml') && (key != 'rownum')) {
-          String xml;
+        if (key != 'xml' && key != 'rownum')
+        {
+          // header cell
+          var xml = headerCell.replaceAll("{field}", key);
+          var m1 = TableHeaderCellModel.fromXmlString(this, xml);
 
-          /////////////////
-          /* Header Cell */
-          /////////////////
-          xml = tableheader!
-              .prototype!
-              .toXmlString()
-              .replaceAll("{field}", key);
-          TableHeaderCellModel? c1 =
-              TableHeaderCellModel.fromXmlString(this, xml);
-          if ((c1 != null) && (c1.visible == false)) c1 = null;
+          // row cells
+          xml = rowCell.replaceAll("{field}", "{data.$key}");
+          var m2 = Xml.tryParse(xml);
 
-          ///////////////
-          /* Row Cells */
-          ///////////////
-          xml = prototypeModel!.cellprototype
-              .toXmlString()
-              .replaceAll("{field}", "{$key}");
-          XmlDocument? c2 = Xml.tryParse(xml);
-
-          //////////////////////////////
-          /* Add Header and Row Cells */
-          //////////////////////////////
-          if ((c1 != null) && (c2 != null)) {
-            tableheader!.cells.add(c1);
-            prototypeModel!.element!.children.add(c2.rootElement.copy());
+          if (m1 != null && m2 != null)
+          {
+            header?.cells.add(m1);
+            prototypeRow!.children.add(m2.rootElement.copy());
           }
         }
       });
     }
 
-    //////////////////////////
-    /* Force View to Resize */
-    //////////////////////////
+    // make prototype conversions
+    prototypeRow = WidgetModel.prototypeOf(prototypeRow);
+
+    // Force View to Resize
     proxyheader = null;
     proxyrow = null;
-
-    return true;
   }
 
   void calculatePadding(double pad) {
-    ///////////////////
-    /* Clear Padding */
-    ///////////////////
+
+    // Clear Padding
     cellpadding.clear();
 
-    ////////////////
-    /* Do Nothing */
-    ////////////////
+    // Do Nothing
     if (pad == 0) return;
-
-    ////////////
-    /* Shrink */
-    ////////////
+    
+    // Shrink
     if (pad.isNegative) return shrinkBy(pad);
 
     if (paddingType == PaddingType.none) return;
@@ -873,27 +841,21 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
       case PaddingType.none:
         break;
 
-      //////////////////////
-      /* Pad First Column */
-      //////////////////////
+      // Pad First Column
       case PaddingType.first:
         {
           cellpadding[0] = pad;
           break;
         }
 
-      /////////////////////
-      /* Pad Last Column */
-      /////////////////////
+      // Pad Last Column
       case PaddingType.last:
         {
           cellpadding[widths.length - 1] = pad;
           break;
         }
 
-      ////////////////////////////
-      /* Pad Each Column Evenly */
-      ////////////////////////////
+      // Pad Each Column Evenly
       case PaddingType.evenly:
         {
           double p = pad / widths.length;
@@ -901,9 +863,7 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
           break;
         }
 
-      ////////////////////////////////////////
-      /* Pad Each Proportionate to its Size */
-      ////////////////////////////////////////
+      // Pad Each Proportionate to its Size
       case PaddingType.proportionately:
         {
           double totalWidth = 0;

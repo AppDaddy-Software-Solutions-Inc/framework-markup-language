@@ -262,7 +262,7 @@ class _TableViewState extends WidgetState<TableView>
   }
 
   _setWidth(int index, double width) {
-    TableHeaderCellModel? cell = widget.model.tableheader!.cells[index];
+    TableHeaderCellModel? cell = widget.model.header!.cells[index];
     double? cellwidth = cell.width;
     if (!widget.model.widths.containsKey(index)) {
       widget.model.widths[index] = cellwidth ?? width;
@@ -278,7 +278,7 @@ class _TableViewState extends WidgetState<TableView>
     }
     if (data is int) {
       double width = size.width;
-      if (!S.isNullOrEmpty(widget.model.tableheader!.cells[data].sort)) {
+      if (!S.isNullOrEmpty(widget.model.header!.cells[data].sort)) {
         width += 16;
       }
       _setWidth(data, width);
@@ -291,7 +291,7 @@ class _TableViewState extends WidgetState<TableView>
     }
     if (data is int) {
       double width = size.width;
-      if (!S.isNullOrEmpty(widget.model.tableheader!.cells[data].sort)) {
+      if (!S.isNullOrEmpty(widget.model.header!.cells[data].sort)) {
         width += 16;
       }
       _setWidth(data, width);
@@ -478,7 +478,7 @@ class _TableViewState extends WidgetState<TableView>
 
       // Proxy Each Cell in the Header
       int i = 0;
-      for (var model in widget.model.tableheader!.cells) {
+      for (var model in widget.model.header!.cells) {
         Widget view = TableHeaderCellView(model);
         var width = model.width;
         var height = model.height;
@@ -496,7 +496,7 @@ class _TableViewState extends WidgetState<TableView>
       children.add(MeasuredView(
           UnconstrainedBox(
               child:
-                  TableHeaderView(widget.model.tableheader, null, null, null)),
+                  TableHeaderView(widget.model.header, null, null, null)),
           onProxyHeaderSize));
 
       // Return Offstage
@@ -504,7 +504,7 @@ class _TableViewState extends WidgetState<TableView>
           child: Row(mainAxisSize: MainAxisSize.min, children: children));
     } else {
       return TableHeaderView(
-          widget.model.tableheader,
+          widget.model.header,
           widget.model.heights['header'],
           widget.model.widths,
           widget.model.cellpadding);
@@ -556,14 +556,14 @@ class _TableViewState extends WidgetState<TableView>
   }
 
   Widget footerBuilder(double width, double? height) {
-    Color? color = widget.model.tableheader?.color ??
+    Color? color = widget.model.header?.color ??
         Theme.of(context).colorScheme.secondaryContainer;
 
     Color? bordercolor =
-        widget.model.tableheader!.bordercolor ?? Colors.transparent;
-    if ((widget.model.tablefooter != null) &&
-        (widget.model.tablefooter!.bordercolor != null)) {
-      bordercolor = widget.model.tablefooter!.bordercolor;
+        widget.model.header!.bordercolor ?? Colors.transparent;
+    if ((widget.model.footer != null) &&
+        (widget.model.footer!.bordercolor != null)) {
+      bordercolor = widget.model.footer!.bordercolor;
     }
     bordercolor ??= Theme.of(context).colorScheme.outline;
 
@@ -865,7 +865,8 @@ class _TableViewState extends WidgetState<TableView>
     return true;
   }
 
-  TableRowModel? getRowModel(int index) {
+  TableRowModel? getRowModel(int index)
+  {
     int records = widget.model.data != null ? widget.model.data.length : 0;
     int pagesize = widget.model.pagesize ?? records;
 

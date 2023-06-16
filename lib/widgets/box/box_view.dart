@@ -2,9 +2,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/box/flex_object.dart';
-import 'package:fml/widgets/box/stack_object.dart';
-import 'package:fml/widgets/box/wrap_object.dart';
+import 'package:fml/widgets/box/flex/flex_object.dart';
+import 'package:fml/widgets/box/stack/stack_object.dart';
+import 'package:fml/widgets/box/wrap/wrap_object.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/alignment/alignment.dart';

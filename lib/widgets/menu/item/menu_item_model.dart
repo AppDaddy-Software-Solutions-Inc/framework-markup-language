@@ -12,9 +12,7 @@ import 'package:fml/helper/common_helpers.dart';
 
 class MenuItemModel extends DecoratedWidgetModel
 {
-  /////////
-  /* url */
-  /////////
+  // url
   StringObservable? _url;
   set url (dynamic v)
   {
@@ -29,9 +27,7 @@ class MenuItemModel extends DecoratedWidgetModel
   }
   String? get url => _url?.get();
 
-  /////////////
-  /* onclick */
-  /////////////
+  // onclick
   StringObservable? _onclick;
   set onclick(dynamic v) {
     if (_onclick != null) {
@@ -45,10 +41,7 @@ class MenuItemModel extends DecoratedWidgetModel
     return _onclick?.get();
   }
 
-
-  ///////////
-  /* title */
-  ///////////
+  // title
   StringObservable? _title;
   set title (dynamic v)
   {
@@ -63,9 +56,7 @@ class MenuItemModel extends DecoratedWidgetModel
   }
   String? get title => _title?.get();
 
-  //////////////
-  /* subtitle */
-  //////////////
+  // subtitle
   StringObservable? _subtitle;
   set subtitle (dynamic v)
   {
@@ -80,9 +71,7 @@ class MenuItemModel extends DecoratedWidgetModel
   }
   String? get subtitle => _subtitle?.get();
 
-  //////////
-  /* icon */
-  //////////
+  // icon
   IconObservable? _icon;
   set icon (dynamic v)
   {
@@ -97,9 +86,9 @@ class MenuItemModel extends DecoratedWidgetModel
   }
   IconData? get icon => _icon?.get();
 
-  ///////////////
-  /* icon size */
-  ///////////////
+  ///
+  // icon size 
+  ///
   DoubleObservable? _iconsize;
   set iconsize (dynamic v)
   {
@@ -114,9 +103,9 @@ class MenuItemModel extends DecoratedWidgetModel
   }
   double? get iconsize => _iconsize?.get();
 
-  //////////////////
-  /* icon opacity */
-  //////////////////
+  //
+  // icon opacity 
+  //
   DoubleObservable? _iconopacity;
   set iconopacity (dynamic v)
   {
@@ -131,9 +120,9 @@ class MenuItemModel extends DecoratedWidgetModel
   }
   double? get iconopacity => _iconopacity?.get();
 
-  ////////////////
-  /* icon color */
-  ////////////////
+  
+  // icon color 
+  
   ColorObservable? _iconcolor;
   set iconcolor (dynamic v)
   {
@@ -148,9 +137,9 @@ class MenuItemModel extends DecoratedWidgetModel
   }
   Color? get iconcolor => _iconcolor?.get();
 
-  ///////////////
-  /* font size */
-  ///////////////
+  ///
+  // font size 
+  ///
   DoubleObservable? _fontsize;
   set fontsize (dynamic v)
   {
@@ -165,9 +154,9 @@ class MenuItemModel extends DecoratedWidgetModel
   }
   double? get fontsize => _fontsize?.get();
 
-  ////////////////
-  /* font color */
-  ////////////////
+  
+  // font color 
+  
   ColorObservable? _fontcolor;
   set fontcolor (dynamic v)
   {
@@ -182,9 +171,7 @@ class MenuItemModel extends DecoratedWidgetModel
   }
   Color? get fontcolor => _fontcolor?.get();
 
-  //////////////////////
-  /* background color */
-  //////////////////////
+  // background color
   ColorObservable? _backgroundcolor;
   set backgroundcolor (dynamic v)
   {
@@ -199,9 +186,7 @@ class MenuItemModel extends DecoratedWidgetModel
   }
   Color? get backgroundcolor => _backgroundcolor?.get();
 
-  //////////////////////
-  /* background image */
-  //////////////////////
+  // background image
   StringObservable? _backgroundimage;
   set backgroundimage (dynamic v)
   {
@@ -216,9 +201,7 @@ class MenuItemModel extends DecoratedWidgetModel
   }
   String? get backgroundimage => _backgroundimage?.get()?.toLowerCase();
 
-  ///////////////
-  /* font size */
-  ///////////////
+  // font size
   DoubleObservable? _radius;
   set radius (dynamic v)
   {
@@ -237,7 +220,7 @@ class MenuItemModel extends DecoratedWidgetModel
   VoidCallback ? onTap;
   UriData? image;
 
-  MenuItemModel(WidgetModel? parent, String? id, {
+  MenuItemModel(WidgetModel parent, String? id, {
     dynamic data,
     dynamic url,
     dynamic title,
@@ -258,7 +241,7 @@ class MenuItemModel extends DecoratedWidgetModel
     dynamic radius,
     dynamic enabled,
     String? image
-  }) : super(parent, id)
+  }) : super(parent, id, scope: Scope(parent: parent.scope))
   {
     this.data             = data;
     this.title            = title;
@@ -278,7 +261,7 @@ class MenuItemModel extends DecoratedWidgetModel
     if (image != null) this.image = S.toDataUri(image);
   }
 
-  static MenuItemModel? fromXml(WidgetModel? parent, XmlElement? xml, {dynamic data, dynamic onTap, dynamic onLongPress})
+  static MenuItemModel? fromXml(WidgetModel parent, XmlElement? xml, {dynamic data, dynamic onTap, dynamic onLongPress})
   {
     MenuItemModel? model;
     try

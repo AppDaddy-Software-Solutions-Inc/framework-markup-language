@@ -17,8 +17,6 @@ import 'package:fml/helper/measured.dart';
 import 'package:fml/widgets/grid/grid_model.dart';
 import 'package:fml/widgets/grid/item/grid_item_view.dart';
 import 'package:fml/widgets/grid/item/grid_item_model.dart';
-import 'package:fml/widgets/icon/icon_model.dart';
-import 'package:fml/widgets/button/button_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/helper/common_helpers.dart';
 
@@ -203,7 +201,7 @@ class _GridViewState extends WidgetState<GridView> {
       {
         // create the view
         var model = widget.model.items[i]!;
-        Widget view = GridItemView(model: widget.model.items[i]);
+        Widget view = GridItemView(model);
 
         // wrap for selectable
         view = MouseRegion(cursor: SystemMouseCursors.click, child: view);
@@ -247,7 +245,7 @@ class _GridViewState extends WidgetState<GridView> {
 
   onMeasuredItem(Size size, {dynamic data}) {
     setState(() {
-      widget.model.itemSize = size;
+      widget.model.size = size;
     });
   }
 
@@ -288,31 +286,31 @@ class _GridViewState extends WidgetState<GridView> {
     // save system constraints
     onLayout(constraints);
 
-    // Check if grid has items before wasting resources on building it
-    List<Widget> children = [];
-    if (widget.model.itemSize == null || widget.model.items.isEmpty)
+    // build the prototype
+    if (widget.model.size == null || widget.model.items.isEmpty)
     {
-      GridItemModel? prototypeModel;
-      Widget prototypeGrid;
+      Widget prototypeGrid = Container();
       try
       {
         // build model
-        prototypeModel = GridItemModel.fromXml(widget.model, widget.model.prototype);
-        prototypeGrid = Offstage(child: MeasuredView(UnconstrainedBox(child: GridItemView(model: prototypeModel)), onMeasuredItem));
+        var model = GridItemModel.fromXml(widget.model, widget.model.prototype);
+        if (model != null)
+        {
+          prototypeGrid = Offstage(child: MeasuredView(UnconstrainedBox(child: GridItemView(model)), onMeasuredItem));
+        }
       }
       catch (e)
       {
-        prototypeModel = widget.model.items.isNotEmpty ? widget.model.items.values.first : null;
         prototypeGrid = Text('Error Prototyping GridModel');
       }
       return prototypeGrid;
     }
 
-    gridWidth = widget.model.width ?? widget.model.myMaxWidthOrDefault;
-    gridHeight =
-        widget.model.height ?? widget.model.myMaxHeightOrDefault;
+    gridWidth  = widget.model.width  ?? widget.model.myMaxWidthOrDefault;
+    gridHeight = widget.model.height ?? widget.model.myMaxHeightOrDefault;
 
-    if (widget.model.items.isNotEmpty) {
+    if (widget.model.items.isNotEmpty)
+    {
       prototypeWidth = widget.model.items.entries.first.value.width ??
           widget.model.myMaxWidthOrDefault /
               (sqrt(widget.model.items.length) + 1);
@@ -351,69 +349,22 @@ class _GridViewState extends WidgetState<GridView> {
     busy ??= BusyView(BusyModel(widget.model,
         visible: widget.model.busy, observable: widget.model.busyObservable));
 
-    var iconUp = IconModel(null, null, icon: 'keyboard_arrow_up');
-    var scrollUpModel = ButtonModel(null, null,
-        label: 'up',
-        buttontype: "icon",
-        color: Theme.of(context).highlightColor.withOpacity(0.3),
-        onclick: "scroll('up', 360)",
-        children: [iconUp] /*, visible: widget.model.moreUp*/);
-    widget.model.moreUpObservable!.registerListener((observable) {
-      scrollUpModel.visible = observable.get();
-    });
-
-    var iconDown = IconModel(null, null, icon: 'keyboard_arrow_down');
-    var scrollDownModel = ButtonModel(null, null,
-        label: 'down',
-        buttontype: "icon",
-        color: Theme.of(context).highlightColor.withOpacity(0.3),
-        onclick: "scroll('down', 360)",
-        children: [iconDown] /*, visible: widget.model.moreDown*/);
-    widget.model.moreDownObservable!.registerListener((observable) {
-      scrollDownModel.visible = observable.get();
-    });
-
-    var iconLeft = IconModel(null, null, icon: 'keyboard_arrow_left');
-    var scrollLeftModel = ButtonModel(null, null,
-        label: 'left',
-        buttontype: "icon",
-        color: Theme.of(context).highlightColor.withOpacity(0.3),
-        onclick: "scroll('left', 360)",
-        children: [iconLeft] /*, visible: widget.model.moreLeft*/);
-    widget.model.moreLeftObservable!.registerListener((observable) {
-      scrollLeftModel.visible = observable.get();
-    });
-
-    var iconRight = IconModel(null, null, icon: 'keyboard_arrow_right');
-    var scrollRightModel = ButtonModel(null, null,
-        label: 'right',
-        buttontype: "icon",
-        color: Theme.of(context).highlightColor.withOpacity(0.3),
-        onclick: "scroll('right', 360)",
-        children: [iconRight] /*, visible: widget.model.moreRight*/);
-    widget.model.moreRightObservable!.registerListener((observable) {
-      scrollRightModel.visible = observable.get();
-    });
 
     //////////
     /* View */
     //////////
 
     // Build the Grid Rows
-    Widget view = ListView.custom(
-        scrollDirection: direction,
-        physics: widget.model.onpulldown != null
-            ? const AlwaysScrollableScrollPhysics()
-            : null,
+    Widget view = ListView.custom(scrollDirection: direction, physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null,
         controller: scroller,
         childrenDelegate: SliverChildBuilderDelegate(
             (BuildContext context, int rowIndex) =>
                 itemBuilder(context, rowIndex),
             childCount: (widget.model.items.length / count).ceil()));
 
-    if (widget.model.onpulldown != null) {
-      view = RefreshIndicator(
-          onRefresh: () => widget.model.onPull(context), child: view);
+    if (widget.model.onpulldown != null)
+    {
+      view = RefreshIndicator(onRefresh: () => widget.model.onPull(context), child: view);
     }
 
     if (widget.model.onpulldown != null || widget.model.draggable) {
@@ -435,6 +386,8 @@ class _GridViewState extends WidgetState<GridView> {
 
     // apply user defined constraints
     view = applyConstraints(view, widget.model.tightestOrDefault);
+
+    List<Widget> children = [];
 
     children.add(view);
 

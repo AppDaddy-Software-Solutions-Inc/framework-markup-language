@@ -21,9 +21,7 @@ class ChartDataPoint {
   final dynamic x;
   final dynamic y;
 
-  ChartDataPoint({
-    this.x, this.y, this.color, this.label
-  });
+  ChartDataPoint({this.x, this.y, this.color, this.label});
 }
 
 /// Chart Series [ChartSeriesModel]
@@ -56,7 +54,9 @@ class ChartSeriesModel extends WidgetModel
       dynamic showline,
       dynamic showpoints,
     }
-  ) : super(parent, id) {
+  ) : super(parent, id)
+  {
+    data = Data();
     this.x = x;
     this.y = y;
     this.color = color;
@@ -81,8 +81,9 @@ class ChartSeriesModel extends WidgetModel
     ChartSeriesModel? model;
     try
     {
-      model = ChartSeriesModel(parent, Xml.get(node: xml, tag: 'id'));
-      model.deserialize(xml);
+      var _xml = (WidgetModel.prototypeOf(xml) ?? xml).copy();
+      model = ChartSeriesModel(parent, Xml.get(node: _xml, tag: 'id'));
+      model.deserialize(_xml);
     }
     catch(e)
     {
@@ -96,13 +97,10 @@ class ChartSeriesModel extends WidgetModel
   @override
   void deserialize(XmlElement xml)
   {
-
     //* Deserialize */
     super.deserialize(xml);
 
-    /////////////////
-    //* Properties */
-    /////////////////
+    // properties
     x           = Xml.get(node: xml, tag: 'x');
     y           = Xml.get(node: xml, tag: 'y');
     color       = Xml.get(node: xml, tag: 'color');
@@ -172,7 +170,7 @@ class ChartSeriesModel extends WidgetModel
     }
     else if (v != null)
     {
-      _x = StringObservable(Binding.toKey(id, 'x'), v, scope: scope, listener: onPropertyChange);
+      _x = StringObservable(Binding.toKey(id, 'x'), v, scope: scope);
     }
   }
   String? get x => _x?.get();
@@ -187,7 +185,7 @@ class ChartSeriesModel extends WidgetModel
     }
     else if (v != null)
     {
-      _y = StringObservable(Binding.toKey(id, 'y'), v, scope: scope, listener: onPropertyChange);
+      _y = StringObservable(Binding.toKey(id, 'y'), v, scope: scope);
     }
   }
   String? get y => _y?.get();
@@ -202,7 +200,7 @@ class ChartSeriesModel extends WidgetModel
     }
     else if (v != null)
     {
-      _label = StringObservable(Binding.toKey(id, 'label'), v, scope: scope, listener: onPropertyChange);
+      _label = StringObservable(Binding.toKey(id, 'label'), v, scope: scope);
     }
   }
   String? get label => _label?.get();
@@ -217,7 +215,7 @@ class ChartSeriesModel extends WidgetModel
     }
     else if (v != null)
     {
-      _color = ColorObservable(Binding.toKey(id, 'color'), v, scope: scope, listener: onPropertyChange);
+      _color = ColorObservable(Binding.toKey(id, 'color'), v, scope: scope);
     }
   }
   Color? get color => _color?.get();
@@ -232,7 +230,7 @@ class ChartSeriesModel extends WidgetModel
     }
     else if (v != null)
     {
-      stroke_ = DoubleObservable(Binding.toKey(id, 'stroke'), v, scope: scope, listener: onPropertyChange);
+      stroke_ = DoubleObservable(Binding.toKey(id, 'stroke'), v, scope: scope);
     }
   }
   double? get stroke => stroke_?.get();
@@ -247,7 +245,7 @@ class ChartSeriesModel extends WidgetModel
     }
     else if (v != null)
     {
-      radius_ = DoubleObservable(Binding.toKey(id, 'radius'), v, scope: scope, listener: onPropertyChange);
+      radius_ = DoubleObservable(Binding.toKey(id, 'radius'), v, scope: scope);
     }
   }
   double get radius => radius_?.get() ?? 3.5;
@@ -262,7 +260,7 @@ class ChartSeriesModel extends WidgetModel
     }
     else if (v != null)
     {
-      _size = DoubleObservable(Binding.toKey(id, 'size'), v, scope: scope, listener: onPropertyChange);
+      _size = DoubleObservable(Binding.toKey(id, 'size'), v, scope: scope);
     }
   }
   double? get size => _size?.get();
@@ -277,7 +275,7 @@ class ChartSeriesModel extends WidgetModel
     }
     else if (v != null)
     {
-      _showarea = BooleanObservable(Binding.toKey(id, 'showarea'), v, scope: scope, listener: onPropertyChange);
+      _showarea = BooleanObservable(Binding.toKey(id, 'showarea'), v, scope: scope);
     }
   }
   bool get showarea => _showarea?.get() ?? false;
@@ -293,7 +291,7 @@ class ChartSeriesModel extends WidgetModel
     }
     else if (v != null)
     {
-      _showline = BooleanObservable(Binding.toKey(id, 'showline'), v, scope: scope, listener: onPropertyChange);
+      _showline = BooleanObservable(Binding.toKey(id, 'showline'), v, scope: scope);
     }
   }
   bool get showline => _showline?.get() ?? true;
@@ -308,7 +306,7 @@ class ChartSeriesModel extends WidgetModel
     }
     else if (v != null)
     {
-      _showpoints = BooleanObservable(Binding.toKey(id, 'showpoints'), v, scope: scope, listener: onPropertyChange);
+      _showpoints = BooleanObservable(Binding.toKey(id, 'showpoints'), v, scope: scope);
     }
   }
   bool get showpoints => _showpoints?.get() ?? true;
@@ -323,7 +321,7 @@ class ChartSeriesModel extends WidgetModel
     }
     else if (v != null)
     {
-      _labelled = BooleanObservable(Binding.toKey(id, 'labelled'), v, scope: scope, listener: onPropertyChange);
+      _labelled = BooleanObservable(Binding.toKey(id, 'labelled'), v, scope: scope);
     }
   }
   bool? get labelled => _labelled?.get();
@@ -336,7 +334,7 @@ class ChartSeriesModel extends WidgetModel
       _labelType!.set(v);
     }
     else if (v != null) {
-      _labelType = StringObservable(Binding.toKey(id, 'labelType'), v, scope: scope, listener: onPropertyChange);
+      _labelType = StringObservable(Binding.toKey(id, 'labelType'), v, scope: scope);
     }
   }
   String? get labelType => _labelType?.get();
@@ -351,7 +349,7 @@ class ChartSeriesModel extends WidgetModel
     }
     else if (v != null)
     {
-      _tooltips = BooleanObservable(Binding.toKey(id, 'tooltips'), v, scope: scope, listener: onPropertyChange);
+      _tooltips = BooleanObservable(Binding.toKey(id, 'tooltips'), v, scope: scope);
     }
   }
   bool? get tooltips => _tooltips?.get();
@@ -365,7 +363,7 @@ class ChartSeriesModel extends WidgetModel
       _animated!.set(v);
     }
     else if (v != null) {
-      _animated = BooleanObservable(Binding.toKey(id, 'animated'), v, scope: scope, listener: onPropertyChange);
+      _animated = BooleanObservable(Binding.toKey(id, 'animated'), v, scope: scope);
     }
   }
   bool? get animated => _animated?.get();
@@ -380,7 +378,7 @@ class ChartSeriesModel extends WidgetModel
     }
     else if (v != null)
     {
-      _name = StringObservable(Binding.toKey(id, 'name'), v, scope: scope, listener: onPropertyChange);
+      _name = StringObservable(Binding.toKey(id, 'name'), v, scope: scope);
     }
   }
   String? get name => _name?.get();
@@ -395,7 +393,7 @@ class ChartSeriesModel extends WidgetModel
     }
     else if (v != null)
     {
-      _group = StringObservable(Binding.toKey(id, 'group'), v, scope: scope, listener: onPropertyChange);
+      _group = StringObservable(Binding.toKey(id, 'group'), v, scope: scope);
     }
   }
   String? get group => _group?.get();
@@ -410,7 +408,7 @@ class ChartSeriesModel extends WidgetModel
     }
     else if (v != null)
     {
-      _stack = StringObservable(Binding.toKey(id, 'stack'), v, scope: scope, listener: onPropertyChange);
+      _stack = StringObservable(Binding.toKey(id, 'stack'), v, scope: scope);
     }
   }
   String? get stack => _stack?.get();
@@ -425,45 +423,21 @@ class ChartSeriesModel extends WidgetModel
     }
     else if (v != null)
     {
-      _selected = IntegerObservable(Binding.toKey(id, 'selected'), v, scope: scope, listener: onPropertyChange);
+      _selected = IntegerObservable(Binding.toKey(id, 'selected'), v, scope: scope);
     }
   }
   int? get selected => _selected?.get();
 
-  ChartDataPoint seriesPoint(dynamic data)
+
+  @override
+  // we purposely don't want to do anything on change since there is no view
+  // and the entire chart gets rebuilt
+  void onPropertyChange(Observable observable) {}
+
+  ChartDataPoint fromData(dynamic data)
   {
-    // dynamic color = replace(_color,data); // _color.set(_color?.applyMap(map)); // run eval(s)
-    dynamic color;
-    if (_color != null && _color!.bindings != null && _color!.bindings!.isNotEmpty) {
-      color = replaceFromDataMap(_color,data); // _color.set(_color?.applyMap(map)); // run eval(s)
-    } else if (_color != null && _color!.value != null) {
-      color = _color!.value;
-    }
-    dynamic x     = replaceFromDataMap(_x,data);
-    dynamic y     = replaceFromDataMap(_y,data);
-    dynamic label = replaceFromDataMap(_label,data);
+    // this will set and databinding values
+    this.data = data;
     return ChartDataPoint(x: x, y: y, color: color, label: label);
   }
-
-  dynamic replaceFromDataMap(Observable? observable, dynamic data)
-  {
-    if (observable == null) {
-      return null;
-    } else if (observable.signature == null) {
-      return observable.value;
-    }
-
-    // apply data to Json data
-    dynamic value = Data.replaceValue(observable.signature, data);
-
-    // evaluate
-    if (observable.isEval == true) value = Observable.doEvaluation(value);
-
-    // set observable value
-    observable.set(value);
-
-    // return value
-    return observable.get();
-  }
-
 }

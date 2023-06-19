@@ -1,17 +1,23 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/grid/grid_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class GridItemModel extends DecoratedWidgetModel
+class GridItemModel extends BoxModel
 {
-  Map? map;
+  // indicates if the widget will grow in
+  // its horizontal axis
+  @override
+  bool get expandHorizontally => false;
 
-  String? type;
+  // indicates if the widget will grow in
+  // its vertical axis
+  @override
+  bool get expandVertically => false;
 
   // dataset  index
   // This property indicates your position on the dataset, 0 being the top
@@ -83,7 +89,7 @@ class GridItemModel extends DecoratedWidgetModel
   }
   bool get dirty => _dirty?.get() ?? false;
 
-  GridItemModel(WidgetModel parent, String?  id, {dynamic data, this.type, dynamic backgroundcolor}) : super(parent, id, scope: Scope(parent: parent.scope))
+  GridItemModel(WidgetModel parent, String?  id, {dynamic data, dynamic backgroundcolor}) : super(parent, id, scope: Scope(parent: parent.scope))
   {
     this.data = data;
   }
@@ -113,9 +119,6 @@ class GridItemModel extends DecoratedWidgetModel
 
     // deserialize 
     super.deserialize(xml);
-
-    // properties
-    type       = Xml.get(node: xml, tag: 'type');
   }
 
   @override

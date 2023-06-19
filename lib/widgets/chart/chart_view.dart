@@ -529,6 +529,11 @@ class _ChartViewState extends WidgetState<ChartView>
     }
     // Loop through each series
     for (ChartSeriesModel series in widget.model.series) {
+      if (series.data == null || series.data.length == 0) {
+        Log().error(
+            'id: ${series.id.toString()} name: ${series.name.toString()} needs a data source attribute');
+        return null;
+      }
       // Auto group bar series if not specified
       if ((series.stack == null ||
               widget.model.xaxis.type != ChartAxisType.category) &&

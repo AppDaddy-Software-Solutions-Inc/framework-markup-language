@@ -5,19 +5,19 @@ import 'package:fml/widgets/table/header/table_header_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
-class TableHeaderView extends StatefulWidget implements IWidgetView
+class TableBodyView extends StatefulWidget implements IWidgetView
 {
   @override
   final TableHeaderModel model;
 
-  TableHeaderView(this.model);
+  TableBodyView(this.model);
 
   @override
-  State<TableHeaderView> createState() => _TableHeaderViewState();
+  State<TableBodyView> createState() => _TableBodyViewState();
 }
 //
 
-class _TableHeaderViewState extends WidgetState<TableHeaderView>
+class _TableBodyViewState extends WidgetState<TableBodyView>
 {
   final double anchorWidth = 23;
   TableModel? tableModel;

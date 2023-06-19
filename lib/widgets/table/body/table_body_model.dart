@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_data.dart';
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/row/row_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/table/table_model.dart';
@@ -12,7 +13,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class TableHeaderModel extends RowModel
+class TableBodyModel extends BoxModel
 {
   bool needsLayout = false;
 
@@ -105,19 +106,19 @@ class TableHeaderModel extends RowModel
   }
   bool get draggable => _draggable?.get() ?? true;
 
-  TableHeaderModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic color}) : super(parent, id, scope: Scope(parent: parent.scope))
+  TableBodyModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic color}) : super(parent, id, scope: Scope(parent: parent.scope))
   {
     if (width  != null) this.width  = width;
     if (height != null) this.height = height;
     this.color = color;
   }
 
-  static TableHeaderModel? fromXml(WidgetModel parent, XmlElement xml, {Map<dynamic, dynamic>? data})
+  static TableBodyModel? fromXml(WidgetModel parent, XmlElement xml, {Map<dynamic, dynamic>? data})
   {
-    TableHeaderModel? model;
+    TableBodyModel? model;
     try
     {
-      model = TableHeaderModel(parent, Xml.get(node: xml, tag: 'id'));
+      model = TableBodyModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
     catch(e)

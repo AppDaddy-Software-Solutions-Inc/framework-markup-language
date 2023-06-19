@@ -81,8 +81,9 @@ class _TableRowCellViewState extends WidgetState<TableRowCellView> with WidgetsB
     // Container
     int index = widget.model.index ?? 0;
     int lastIndex = (widget.model.parent as TableRowModel).cells.length - 1;
-        // Colors.transparent;
-    double borderwidth = widget.model.borderwidth;
+
+    // Colors.transparent;
+    double borderwidth = widget.model.borderwidth ?? 1;
     Color bordercolor = Colors.transparent;
     Color? outerbordercolor = widget.model.bordercolor;
 

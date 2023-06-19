@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/column/column_model.dart';
 import 'package:fml/widgets/table/row/table_row_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
@@ -8,14 +8,28 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class TableRowCellModel extends BoxModel
+class TableRowCellModel extends ColumnModel
 {
+  // shrink in both axis
   @override
-  LayoutType get layoutType => LayoutType.stack;
+  bool get expandHorizontally => false;
 
-  /////////////////////
-  /* Position in Row */
-  /////////////////////
+  @override
+  bool get expandVertically => false;
+
+  @override
+  double? get paddingTop => super.paddingTop ?? (parent is TableRowModel ? (parent as TableRowModel).paddingTop : null) ?? 2;
+
+  @override
+  double? get paddingBottom => super.paddingBottom ?? (parent is TableRowModel ? (parent as TableRowModel).paddingBottom : null) ?? 2;
+
+  @override
+  double? get paddingLeft => super.paddingLeft ?? (parent is TableRowModel ? (parent as TableRowModel).paddingLeft : null) ?? 10;
+
+  @override
+  double? get paddingRight => super.paddingRight ?? (parent is TableRowModel ? (parent as TableRowModel).paddingRight : null) ?? 10;
+
+  // rows offset
   int? get index {
     if ((parent != null) && (parent is TableRowModel)) {
       return (parent as TableRowModel).cells.indexOf(this);
@@ -23,9 +37,7 @@ class TableRowCellModel extends BoxModel
     return null;
   }
 
-  //////////////
-  /* selected */
-  //////////////
+  // selected
   BooleanObservable? _selected;
   set selected(dynamic v) {
     if (_selected != null) {
@@ -35,12 +47,9 @@ class TableRowCellModel extends BoxModel
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get selected => _selected?.get() ?? false;
 
-  ///////////
-  /* Color */
-  ///////////
+  // color
   ColorObservable? _color;
   @override
   Color? get color

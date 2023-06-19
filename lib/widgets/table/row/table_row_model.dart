@@ -1,8 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
+import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/row/row_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/event/handler.dart' ;
 import 'package:fml/widgets/table/table_model.dart';
@@ -14,11 +15,20 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class TableRowModel extends DecoratedWidgetModel
+class TableRowModel extends RowModel
 {
+  // shrink in both axis
+  @override
+  bool get expandHorizontally => false;
+
+  @override
+  bool get expandVertically => false;
+
+  @override
+  String get layout => "row";
+
   // Cells
   final List<TableRowCellModel> cells = [];
-  late XmlElement cellprototype;
 
   // Editable Fields
   List<IFormField>? fields;
@@ -76,18 +86,20 @@ class TableRowModel extends DecoratedWidgetModel
     return _onclick?.get();
   }
 
-  // Color
-  ColorObservable? _color;
   @override
-  Color? get color
-  {
-    if (_color == null)
-    {
-      if ((parent != null) && (parent is TableModel)) return (parent as TableModel).color;
-      return null;
-    }
-    return _color?.get();
-  }
+  Color? get color => super.color ?? (parent is TableModel ? (parent as TableModel).color : null);
+
+  @override
+  Color? get bordercolor => super.bordercolor ?? (parent is TableModel ? (parent as TableModel).bordercolor : null);
+
+  @override
+  String? get halign => super.halign ?? (parent is TableModel ? (parent as TableModel).halign : null);
+
+  @override
+  String? get valign => super.valign ?? (parent is TableModel ? (parent as TableModel).valign : null);
+
+  @override
+  bool? get center => super.center ?? (parent is TableModel ? (parent as TableModel).center : null);
 
   // alter color
   ColorObservable? _altcolor;
@@ -152,119 +164,6 @@ class TableRowModel extends DecoratedWidgetModel
       return null;
     }
     return _selectedbordercolor?.get();
-  }
-
-  // border color
-  ColorObservable? _bordercolor;
-  set bordercolor(dynamic v) {
-    if (_bordercolor != null) {
-      _bordercolor!.set(v);
-    } else if (v != null) {
-      _bordercolor = ColorObservable(
-          Binding.toKey(id, 'bordercolor'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  Color? get bordercolor {
-    if (_bordercolor == null) {
-      if ((parent != null) && (parent is TableModel)) {
-        return (parent as TableModel).bordercolor;
-      }
-      return null;
-    }
-    return _bordercolor?.get();
-  }
-
-  // border width
-  DoubleObservable? _borderwidth;
-  set borderwidth(dynamic v) {
-    if (_borderwidth != null) {
-      _borderwidth!.set(v);
-    } else if (v != null) {
-      _borderwidth = DoubleObservable(
-          Binding.toKey(id, 'borderwidth'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  double? get borderwidth {
-    if (_borderwidth == null) {
-      if ((parent != null) && (parent is TableModel)) {
-        return (parent as TableModel).borderwidth;
-      }
-      return null;
-    }
-    return _borderwidth?.get();
-  }
-
-  /// alignment and layout attributes
-  /// The horizontal alignment of the widgets children, overrides `center`. Can be `left`, `right`, `start`, or `end`.
-  StringObservable? _halign;
-  @override
-  String? get halign {
-    if (_halign == null) {
-      if ((parent != null) && (parent is TableModel)) {
-        return (parent as TableModel).halign;
-      }
-      return null;
-    }
-    return _halign?.get();
-  }
-
-  /// The vertical alignment of the widgets children, overrides `center`. Can be `top`, `bottom`, `start`, or `end`.
-  StringObservable? _valign;
-  @override
-  String? get valign {
-    if (_valign == null) {
-      if ((parent != null) && (parent is TableModel)) {
-        return (parent as TableModel).valign;
-      }
-      return null;
-    }
-    return _valign?.get();
-  }
-
-  /// Center attribute allows a simple boolean override for halign and valign both being center. halign and valign will override center if given.
-  BooleanObservable? _center;
-  set center(dynamic v) {
-    if (_center != null) {
-      _center!.set(v);
-    } else if (v != null) {
-      _center = BooleanObservable(Binding.toKey(id, 'center'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  bool get center
-  {
-    if (_center == null)
-    {
-      if ((parent != null) && (parent is TableModel)) return (parent as TableModel).center;
-      return false;
-    }
-    return _center?.get() ?? false;
-  }
-
-  /// wrap is a boolean that dictates if the widget will wrap or not.
-  BooleanObservable? _wrap;
-  set wrap(dynamic v) {
-    if (_wrap != null) {
-      _wrap!.set(v);
-    } else if (v != null) {
-      _wrap = BooleanObservable(Binding.toKey(id, 'wrap'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  bool get wrap
-  {
-    if (_wrap == null)
-    {
-      if ((parent != null) && (parent is TableModel)) return (parent as TableModel).wrap;
-      return false;
-    }
-    return _wrap?.get() ?? false;
   }
 
   // onccomplete
@@ -374,7 +273,8 @@ class TableRowModel extends DecoratedWidgetModel
 
     // Get Cells
     List<TableRowCellModel> models = findChildrenOfExactType(TableRowCellModel).cast<TableRowCellModel>();
-    for (TableRowCellModel model in models) {
+    for (TableRowCellModel model in models)
+    {
       cells.add(model);
     }
 
@@ -389,12 +289,6 @@ class TableRowModel extends DecoratedWidgetModel
         // Register Listener
         if (field.dirtyObservable != null) field.dirtyObservable!.registerListener(onDirtyListener);
       }
-    }
-
-    // Prototype?
-    if ((cells.length == 1) && (cells[0].element!.toXmlString().contains("{field}")))
-    {
-      cellprototype = cells[0].element!.copy();
     }
   }
 
@@ -472,6 +366,21 @@ class TableRowModel extends DecoratedWidgetModel
       (parent as TableModel).onSelect(this, cell);
     }
   }
+
+  @override
+  List<Widget> inflate()
+  {
+    // process children
+    List<Widget> views = [];
+    for (var model in cells)
+    {
+      var view = model.getView();
+      view = LayoutBoxChildData(child: view, model: model);
+      views.add(view);
+    }
+    return views;
+  }
+
 
   @override
   dispose()

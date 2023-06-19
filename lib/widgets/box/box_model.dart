@@ -64,12 +64,6 @@ class BoxModel extends DecoratedWidgetModel
   }
   String? get layout => _layout?.get()?.toLowerCase().trim();
 
-  @override
-  double get verticalPadding  => (marginTop ?? 0)  + (marginBottom ?? 0) + (borderwidth * 2) + (paddingTop ?? 0) + (paddingBottom ?? 0);
-
-  @override
-  double get horizontalPadding => (marginLeft ?? 0) + (marginRight  ?? 0) + (borderwidth * 2) + (paddingLeft ?? 0) + (paddingRight ?? 0);
-
   /// Center attribute allows a simple boolean override for halign and valign both being center. halign and valign will override center if given.
   BooleanObservable? _center;
   set center(dynamic v) {
@@ -239,7 +233,7 @@ class BoxModel extends DecoratedWidgetModel
       _borderwidth = DoubleObservable(Binding.toKey(id, 'borderwidth'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  double get borderwidth => _borderwidth?.get() ?? (border == 'none' ? 0 : 1);
+  double? get borderwidth => _borderwidth?.get();
 
   /// The border choice, can be `all`, `none`, `top`, `left`, `right`, `bottom`, `vertical`, or `horizontal`
   StringObservable? _border;
@@ -254,7 +248,7 @@ class BoxModel extends DecoratedWidgetModel
       _border = StringObservable(Binding.toKey(id, 'border'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  String get border => _border?.get()?.toLowerCase() ?? 'none';
+  String? get border => _border?.get()?.toLowerCase();
 
   /// shadow attributes
   ///

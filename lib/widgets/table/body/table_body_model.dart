@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/row/row_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/table/table_model.dart';
 import 'package:fml/widgets/table/header/cell/table_header_cell_model.dart';
@@ -166,7 +165,7 @@ class TableBodyModel extends BoxModel
     for (var model in cells)
     {
       var view = model.getView();
-      view = LayoutBoxChildData(child: view, model: model);
+      view = LayoutBoxChildData(child: view!, model: model);
       views.add(view);
     }
     return views;

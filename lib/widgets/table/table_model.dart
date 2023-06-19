@@ -4,8 +4,8 @@ import 'dart:convert';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/form/form_model.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/datasources/transforms/sort.dart' as sort_transform;
 import 'package:fml/event/handler.dart' ;
@@ -20,19 +20,26 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
+
 enum PaddingType { none, first, last, evenly, proportionately }
 
-class TableModel extends BoxModel implements IForm, IScrolling
+class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
 {
-  late TableHeaderModel header;
-  TableFooterModel? footer;
-
   // prototype
   XmlElement? prototypeHeaderCell;
   XmlElement? prototypeRowCell;
   XmlElement? prototypeRow;
 
+  TableHeaderModel? header;
+  TableFooterModel? footer;
+
   final HashMap<int, TableRowModel> rows = HashMap<int, TableRowModel>();
+
+  Size? proxyrow;
+  Size? proxyheader;
+  Map<String, double> heights = {'header': 48, 'row': 38, 'footer': 48};
+  Map<int, double> widths = HashMap<int, double>();
+  Map<int, double> cellpadding = HashMap<int, double>();
 
   TableRowModel? selectedRow;
   TableRowCellModel? selectedCell;
@@ -50,7 +57,8 @@ class TableModel extends BoxModel implements IForm, IScrolling
   }
 
   
-  // slt color
+  // slt color 
+  
   ColorObservable? _altcolor;
   set altcolor(dynamic v) {
     if (_altcolor != null) {
@@ -87,9 +95,57 @@ class TableModel extends BoxModel implements IForm, IScrolling
   }
   Color? get selectedbordercolor => _selectedbordercolor?.get();
 
+  // border color
+  ColorObservable? _bordercolor;
+  set bordercolor(dynamic v) {
+    if (_bordercolor != null) {
+      _bordercolor!.set(v);
+    } else if (v != null) {
+      _bordercolor = ColorObservable(Binding.toKey(id, 'bordercolor'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  Color? get bordercolor => _bordercolor?.get();
+
+  // border width
+  DoubleObservable? _borderwidth;
+  set borderwidth(dynamic v) {
+    if (_borderwidth != null) {
+      _borderwidth!.set(v);
+    } else if (v != null) {
+      _borderwidth = DoubleObservable(Binding.toKey(id, 'borderwidth'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  double? get borderwidth => _borderwidth?.get();
+
   // override
   @override
   String get valign => super.valign ?? 'center';
+
+  /// Center attribute allows a simple boolean override for halign and valign both being center. halign and valign will override center if given.
+  BooleanObservable? _center;
+  set center(dynamic v) {
+    if (_center != null) {
+      _center!.set(v);
+    } else if (v != null) {
+      _center = BooleanObservable(Binding.toKey(id, 'center'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get center => _center?.get() ?? false;
+
+  /// wrap is a boolean that dictates if the widget will wrap or not.
+  BooleanObservable? _wrap;
+  set wrap(dynamic v) {
+    if (_wrap != null) {
+      _wrap!.set(v);
+    } else if (v != null) {
+      _wrap = BooleanObservable(Binding.toKey(id, 'wrap'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get wrap => _wrap?.get() ?? false;
 
   BooleanObservable? _scrollButtons;
   set scrollButtons(dynamic v) {
@@ -445,10 +501,13 @@ class TableModel extends BoxModel implements IForm, IScrolling
 
     // Get Table Header
     List<TableHeaderModel> headers = findChildrenOfExactType(TableHeaderModel).cast<TableHeaderModel>();
-    header = headers.isEmpty ? TableHeaderModel(this,null) : headers.first;
-    if (header.viewableChildren.length == 1)
+    if (headers.isNotEmpty)
     {
-      prototypeHeaderCell = header.viewableChildren.first.element;
+      header = headers.first;
+      if (header!.cells.length == 1)
+      {
+        prototypeHeaderCell = header!.cells.first.element;
+      }
     }
 
     // Get Table Footer
@@ -493,6 +552,13 @@ class TableModel extends BoxModel implements IForm, IScrolling
     // build row model
     TableRowModel? model = TableRowModel.fromXml(this, prototypeRow, data: data[index]);
 
+    // defined height
+    var height = S.toDouble(Xml.get(node: prototypeRow, tag: "height"));
+    if (height != null)
+    {
+      heights['row'] = height;
+    }
+
     // Register Listener to Dirty Field
     if (model?.dirtyObservable != null) model?.dirtyObservable!.registerListener(onDirtyListener);
 
@@ -503,9 +569,9 @@ class TableModel extends BoxModel implements IForm, IScrolling
 
   TableHeaderCellModel? getHeaderCell(int col)
   {
-    if (col < header.cells.length)
+    if ((header != null) && (col < header!.cells.length))
     {
-      return header.cells[col];
+      return header!.cells[col];
     }
     return null;
   }
@@ -610,7 +676,7 @@ class TableModel extends BoxModel implements IForm, IScrolling
     // Log().debug('dispose called on => <$elementName id="$id">');
 
     // cleanup
-    header.dispose();
+    header?.dispose();
 
     // clear rows
     rows.forEach((_,row) => row.dispose());
@@ -640,6 +706,42 @@ class TableModel extends BoxModel implements IForm, IScrolling
   @override
   Future<bool> onComplete(BuildContext context) async {
     return await EventHandler(this).execute(_oncomplete);
+  }
+
+  void setCellWidth(int cellindex, double width) {
+    if ((width >= 0) && (cellindex < widths.length)) widths[cellindex] = width;
+  }
+
+  void setCellPadding(int cellindex, double padding) {
+    if ((padding >= 0) && (cellindex < cellpadding.length)) {
+      cellpadding[cellindex] = padding;
+    }
+  }
+
+  double getCellPosition(int cellindex) {
+    double offset = 0;
+    for (int i = 0; i < cellindex; i++) {
+      offset += (widths[i] ?? 0) + (cellpadding[i] ?? 0);
+    }
+    return offset;
+  }
+
+  double? getCellWidth(int cellindex) {
+    double? width = 0;
+    if (widths.containsKey(cellindex)) width = widths[cellindex];
+    return width;
+  }
+
+  double getContentWidth() {
+    double width = 0;
+    widths.forEach((key, cellwidth) => width += cellwidth);
+    return width;
+  }
+
+  double? getCellPadding(int cellindex) {
+    double? pad = 0;
+    if (cellpadding.containsKey(cellindex)) pad = cellpadding[cellindex];
+    return pad;
   }
 
   Future<bool> onSort(int index) async {
@@ -679,12 +781,11 @@ class TableModel extends BoxModel implements IForm, IScrolling
     if (prototypeHeaderCell == null || prototypeRowCell == null) return;
 
     // clear old header cells
-    for (var cell in header.cells)
+    for (var cell in header!.cells)
     {
       cell.dispose();
     }
-    header.cells.clear();
-    header.children?.clear();
+    header!.cells.clear();
 
     // clear prototype row cells
     prototypeRow ??= XmlElement(XmlName("ROW"));
@@ -700,7 +801,7 @@ class TableModel extends BoxModel implements IForm, IScrolling
         {
           // header cell
           var xml = headerCell.replaceAll("{field}", key);
-          var m1 = TableHeaderCellModel.fromXmlString(this.header, xml);
+          var m1 = TableHeaderCellModel.fromXmlString(this, xml);
 
           // row cells
           xml = rowCell.replaceAll("{field}", "{data.$key}");
@@ -708,7 +809,7 @@ class TableModel extends BoxModel implements IForm, IScrolling
 
           if (m1 != null && m2 != null)
           {
-            header.cells.add(m1);
+            header?.cells.add(m1);
             prototypeRow!.children.add(m2.rootElement.copy());
           }
         }
@@ -718,8 +819,71 @@ class TableModel extends BoxModel implements IForm, IScrolling
     // make prototype conversions
     prototypeRow = WidgetModel.prototypeOf(prototypeRow);
 
-    // forces a relayout
-    header.cellHeight = null;
+    // Force View to Resize
+    proxyheader = null;
+    proxyrow = null;
+  }
+
+  void calculatePadding(double pad) {
+
+    // Clear Padding
+    cellpadding.clear();
+
+    // Do Nothing
+    if (pad == 0) return;
+    
+    // Shrink
+    if (pad.isNegative) return shrinkBy(pad);
+
+    if (paddingType == PaddingType.none) return;
+
+    switch (paddingType) {
+      case PaddingType.none:
+        break;
+
+      // Pad First Column
+      case PaddingType.first:
+        {
+          cellpadding[0] = pad;
+          break;
+        }
+
+      // Pad Last Column
+      case PaddingType.last:
+        {
+          cellpadding[widths.length - 1] = pad;
+          break;
+        }
+
+      // Pad Each Column Evenly
+      case PaddingType.evenly:
+        {
+          double p = pad / widths.length;
+          widths.forEach((key, value) => cellpadding[key] = p);
+          break;
+        }
+
+      // Pad Each Proportionate to its Size
+      case PaddingType.proportionately:
+        {
+          double totalWidth = 0;
+          widths.forEach((key, width) => totalWidth += width);
+          widths.forEach((key, width) {
+            double percentageWidth = (width) / totalWidth;
+            double p = pad * percentageWidth;
+            cellpadding[key] = p;
+          });
+        }
+    }
+  }
+
+  void shrinkBy(double pixels) {
+    double currentWidth = getContentWidth();
+    double targetWidth = currentWidth - pixels.abs();
+    double percentReduction = targetWidth / currentWidth;
+    for (int i = 0; i < widths.length; i++) {
+      widths[i] = (widths[i]! * percentReduction).roundToDouble();
+    }
   }
 
   @override

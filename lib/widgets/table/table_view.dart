@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'dart:ui';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
@@ -7,24 +8,27 @@ import 'package:fml/observable/binding.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/event/event.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
-import 'package:fml/widgets/table/header/table_header_view.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/table/table_model.dart';
+import 'package:fml/widgets/table/header/table_header_view.dart';
+import 'package:fml/widgets/table/header/cell/table_header_cell_model.dart';
+import 'package:fml/widgets/table/header/cell/table_header_cell_view.dart';
 import 'package:fml/widgets/table/row/table_row_model.dart';
 import 'package:fml/widgets/table/row/table_row_view.dart';
+import 'package:fml/widgets/table/row/cell/table_row_cell_view.dart';
+import 'package:fml/helper/measured.dart';
+import 'package:fml/widgets/scrollbar/scrollbar_view.dart';
 import 'package:fml/system.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
-class MyCustomScrollBehavior extends MaterialScrollBehavior
-{
+class MyCustomScrollBehavior extends MaterialScrollBehavior {
   @override
-  Widget buildScrollbar(BuildContext context, Widget child, ScrollableDetails details)
-  {
+  Widget buildScrollbar(
+      BuildContext context, Widget child, ScrollableDetails details) {
     return child;
   }
 }
@@ -245,20 +249,318 @@ class _TableViewState extends WidgetState<TableView>
     }
   }
 
-  Widget? rowBuilder(BuildContext context, int index)
-  {
+  onProxyHeaderSize(Size size, {dynamic data}) {
+    setState(() {
+      widget.model.proxyheader = size;
+    });
+  }
+
+  onProxyRowSize(Size size, {dynamic data}) {
+    setState(() {
+      widget.model.proxyrow = size;
+    });
+  }
+
+  _setWidth(int index, double width) {
+    TableHeaderCellModel? cell = widget.model.header!.cells[index];
+    double? cellwidth = cell.width;
+    if (!widget.model.widths.containsKey(index)) {
+      widget.model.widths[index] = cellwidth ?? width;
+    }
+    if (width > widget.model.widths[index]!) {
+      widget.model.widths[index] = cellwidth ?? width;
+    }
+  }
+
+  onProxyHeaderCellSize(Size size, {dynamic data}) {
+    if (size.height > widget.model.heights['header']!) {
+      widget.model.heights['header'] = size.height;
+    }
+    if (data is int) {
+      double width = size.width;
+      if (!S.isNullOrEmpty(widget.model.header!.cells[data].sort)) {
+        width += 16;
+      }
+      _setWidth(data, width);
+    }
+  }
+
+  onProxyRowCellSize(Size size, {dynamic data}) {
+    if (size.height > widget.model.heights['row']!) {
+      widget.model.heights['row'] = size.height;
+    }
+    if (data is int) {
+      double width = size.width;
+      if (!S.isNullOrEmpty(widget.model.header!.cells[data].sort)) {
+        width += 16;
+      }
+      _setWidth(data, width);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints) {
+    // Clear Padding
+    widget.model.cellpadding.clear();
+
+    // save system constraints
+    onLayout(constraints);
+
+    double? viewportHeight =
+        widget.model.height ?? widget.model.myMaxHeightOrDefault;
+
+    // Check if widget is visible before wasting resources on building it
+    if (!widget.model.visible) return Offstage();
+
+    // Proxy Header
+    if (widget.model.proxyheader == null) return headerBuilder(proxy: true);
+
+    // Content Size
+    double contentWidth = widget.model.getContentWidth();
+
+    // Viewport Size
+    double viewportWidth = constraints.maxWidth;
+    if (((widget.model.height ?? 0) > 0) &&
+        ((widget.model.height ?? 0) < viewportHeight)) {
+      viewportHeight = widget.model.height;
+    }
+
+    // Set Padding to Fill Viewport
+    double padding = viewportWidth - contentWidth;
+    widget.model.calculatePadding(padding);
+    if (padding.isNegative) padding = 0;
+
+    // Header Size
+    double headerHeight = widget.model.heights['header']!;
+    double headerWidth = contentWidth + padding;
+
+    // Horizontal Scroll Bar
+    ScrollbarView hslider = ScrollbarView(
+        Direction.horizontal, hScroller, viewportWidth, headerWidth);
+    double trackHeight = hslider.isVisible() ? (isMobile ? 25 : 15) : 0;
+
+    // Footer Size
+    double? footerHeight = widget.model.heights['footer'];
+    double footerWidth = contentWidth + padding;
+    if (widget.model.paged == false) footerHeight = 0;
+
+    // Body Size
+    double bodyHeight =
+        viewportHeight! - headerHeight - footerHeight! - trackHeight;
+    double bodyWidth = contentWidth + padding;
+    visibleRows = (bodyHeight / widget.model.heights['row']!).floor();
+
+    // Build Header
+    Widget header = headerBuilder();
+
+    // Vertical Scroll Bar
+    Widget vslider = Container();
+    if (widget.model.proxyrow != null) {
+      var height = widget.model.heights['row']!;
+      var rows = widget.model.data?.length ?? 0;
+      int pagesize = widget.model.pagesize ?? rows;
+      if (pagesize > rows) pagesize = rows;
+      double theoreticalHeight = pagesize * height;
+      if (theoreticalHeight > 0) {
+        vslider = ScrollbarView(
+            Direction.vertical, vScroller, bodyHeight, theoreticalHeight,
+            itemExtent: widget.model.heights['row']);
+      }
+    }
+
+    // Build Body
+    Widget list;
+
+    list = ListView.custom(
+        physics: widget.model.onpulldown != null
+            ? const AlwaysScrollableScrollPhysics()
+            : null,
+        scrollDirection: Axis.vertical,
+        controller: vScroller,
+        itemExtent: widget.model.heights['row'],
+        childrenDelegate: SliverChildBuilderDelegate(
+          (BuildContext context, int index) {
+            return rowBuilder(context, index);
+          },
+        ));
+
+    if (widget.model.onpulldown != null) {
+      list = RefreshIndicator(
+          onRefresh: () => widget.model.onPull(context), child: list);
+    }
+
+    ScrollBehavior behavior =
+        (widget.model.onpulldown != null || widget.model.draggable)
+            ? MyCustomScrollBehavior().copyWith(dragDevices: {
+                PointerDeviceKind.touch,
+                PointerDeviceKind.mouse,
+              })
+            : MyCustomScrollBehavior();
+
+    Widget body = UnconstrainedBox(
+        child: SizedBox(
+            width: bodyWidth,
+            height: bodyHeight,
+            child: ScrollConfiguration(behavior: behavior, child: list)));
+
+    // Build Horizontal Scroll Track
+    Widget htrack = Container();
+    if (trackHeight > 0) {
+      htrack = Container(width: footerWidth, height: trackHeight);
+    }
+
+    // Build Footer
+    Widget footer = footerBuilder(footerWidth, footerHeight);
+
+    // Overlays
+    Widget footerOverlay1 = Container(
+        width: viewportWidth,
+        height: footerHeight,
+        child: Center(child: footerPageSize()));
+    Widget footerOverlay2 = Container(
+        width: viewportWidth,
+        height: footerHeight,
+        child: footerRecordsDisplayed());
+    Widget footerOverlay3 = Container(
+        width: viewportWidth,
+        height: footerHeight,
+        child: Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [footerPrevPage(), footerCurrPage(), footerNextPage()]));
+
+    // Busy
+    busy ??= BusyView(BusyModel(widget.model,
+        visible: widget.model.busy, observable: widget.model.busyObservable));
+
+    // Table
+    Widget table = Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [header, body, htrack, footer]);
+
+    // Scrolled Table
+    Widget scrolledTable;
+
+    scrolledTable = SingleChildScrollView(
+        scrollDirection: Axis.horizontal, child: table, controller: hScroller);
+
+    if (widget.model.onpulldown != null || widget.model.draggable) {
+      scrolledTable = ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(
+          dragDevices: {
+            PointerDeviceKind.touch,
+            PointerDeviceKind.mouse,
+          },
+        ),
+        child: scrolledTable,
+      );
+    }
+
+    // View
+    return Stack(children: [
+      scrolledTable,
+      Positioned(top: headerHeight, right: 0, child: vslider),
+      Positioned(bottom: footerHeight, left: 0, child: hslider),
+      Positioned(bottom: 0, left: 0, child: footerOverlay1),
+      Positioned(bottom: 0, left: 0, child: footerOverlay2),
+      Positioned(bottom: 0, left: 0, child: footerOverlay3),
+      Center(child: busy)
+    ]);
+  }
+
+  Widget headerBuilder({bool proxy = false}) {
+    if ((proxy) == true) {
+      List<Widget> children = [];
+
+      // Proxy Each Cell in the Header
+      int i = 0;
+      for (var model in widget.model.header!.cells) {
+        Widget view = TableHeaderCellView(model);
+        var width = model.width;
+        var height = model.height;
+        if ((width ?? 0) > 0 || (height ?? 0) > 0) {
+          view = SizedBox(child: view, width: width, height: height);
+        }
+
+        final int index = i++;
+        children.add(MeasuredView(
+            UnconstrainedBox(child: view), onProxyHeaderCellSize,
+            data: index));
+      }
+
+      // Proxy the Header
+      children.add(MeasuredView(
+          UnconstrainedBox(
+              child:
+                  TableHeaderView(widget.model.header, null, null, null)),
+          onProxyHeaderSize));
+
+      // Return Offstage
+      return Offstage(
+          child: Row(mainAxisSize: MainAxisSize.min, children: children));
+    } else {
+      return TableHeaderView(
+          widget.model.header,
+          widget.model.heights['header'],
+          widget.model.widths,
+          widget.model.cellpadding);
+    }
+  }
+
+  Widget? rowBuilder(BuildContext context, int index) {
     // Get Row Model
     TableRowModel? model = getRowModel(index);
     if (model == null) return null;
-    return TableRowView(model, index);
+
+    bool proxy = false;
+    if ((widget.model.proxyrow == null) &&
+        (widget.model.data != null) &&
+        (widget.model.data.isNotEmpty) &&
+        (index == 0)) proxy = true;
+
+    // Proxy Row
+    if (proxy) {
+      List<Widget> children = [];
+
+      // Proxy Row
+      children.add(MeasuredView(
+          UnconstrainedBox(child: TableRowView(model, null, null, null, null)),
+          onProxyRowSize));
+
+      // Proxy Each Cell in the Row
+      int i = 0;
+      for (var m in model.cells) {
+        final int index = i++;
+        children.add(MeasuredView(
+            UnconstrainedBox(child: TableRowCellView(m, null)),
+            onProxyRowCellSize,
+            data: index));
+      }
+
+      // Return Offstage
+      return Offstage(
+          child: UnconstrainedBox(
+              child: Row(mainAxisSize: MainAxisSize.min, children: children)));
+    } else {
+      return TableRowView(
+          model,
+          index,
+          widget.model.height ?? widget.model.heights['row'],
+          widget.model.widths,
+          widget.model.cellpadding);
+    }
   }
 
   Widget footerBuilder(double width, double? height) {
-    Color? color = widget.model.header.color ??
+    Color? color = widget.model.header?.color ??
         Theme.of(context).colorScheme.secondaryContainer;
 
     Color? bordercolor =
-        widget.model.header.bordercolor ?? Colors.transparent;
+        widget.model.header!.bordercolor ?? Colors.transparent;
     if ((widget.model.footer != null) &&
         (widget.model.footer!.bordercolor != null)) {
       bordercolor = widget.model.footer!.bordercolor;
@@ -591,58 +893,5 @@ class _TableViewState extends WidgetState<TableView>
       return model;
     }
     return null;
-  }
-
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints)
-  {
-    // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
-
-    // proxy header
-    if (widget.model.header.cellHeight == null)
-    {
-      return TableHeaderView(widget.model.header);
-    }
-
-    // proxy header
-    if (widget.model.footer?.viewHeight == null)
-    {
-      return TableFooterView(widget.model.header);
-    }
-
-    var v = BoxView(widget.model, children: [header, body, ]);
-
-    // build header
-    Widget header = widget.model.header.getView();
-
-    // build body
-    Widget body = ListView.custom(physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null,
-        scrollDirection: Axis.vertical,
-        controller: vScroller,
-        itemExtent: widget.model.header.viewHeight,
-        childrenDelegate: SliverChildBuilderDelegate(rowBuilder));
-
-    body = SizedBox(child: body, height: constraints.height), constrainedAxis: Axis.horizontal)
-
-    // Build Footer
-    Widget footer = widget.model.footer?.getView() ?? Container();
-
-    // table is header, body, footer
-    Widget view = Column(children: [header, body, footer]);
-
-    // pull down refresh?
-    if (widget.model.onpulldown != null)
-    {
-      view = RefreshIndicator(onRefresh: () => widget.model.onPull(context), child: view);
-    }
-
-    // Busy
-    busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
-
-    // View
-    return body;//Stack(children: [view, Center(child: busy)]);
   }
 }

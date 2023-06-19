@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/row/row_model.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/table/table_model.dart';
 import 'package:flutter/material.dart';
@@ -8,29 +8,57 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class TableFooterModel extends RowModel
+class TableFooterModel extends DecoratedWidgetModel
 {
-  // shrink in both axis
-  @override
-  bool get expandHorizontally => false;
+  //////////////////
+  /* border color */
+  //////////////////
+  ColorObservable? _bordercolor;
+  set bordercolor (dynamic v)
+  {
+    if (_bordercolor != null)
+    {
+      _bordercolor!.set(v);
+    }
+    else if (v != null)
+    {
+      _bordercolor = ColorObservable(Binding.toKey(id, 'bordercolor'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  Color? get bordercolor
+  {
+    if (_bordercolor == null)
+    {
+      if ((parent != null) && (parent is TableModel)) return (parent as TableModel).bordercolor;
+      return null;
+    }
+    return _bordercolor?.get();
+  }
 
-  @override
-  bool get expandVertically => false;
-
-  @override
-  Color? get color => super.color ?? (parent is TableModel ? (parent as TableModel).color : null);
-
-  @override
-  Color? get bordercolor => super.bordercolor ?? (parent is TableModel ? (parent as TableModel).bordercolor : null);
-
-  @override
-  String? get halign => super.halign ?? (parent is TableModel ? (parent as TableModel).halign : null);
-
-  @override
-  String? get valign => super.valign ?? (parent is TableModel ? (parent as TableModel).valign : null);
-
-  @override
-  bool? get center => super.center ?? (parent is TableModel ? (parent as TableModel).center : null);
+  //////////////////
+  /* border width */
+  //////////////////
+  DoubleObservable? _borderwidth;
+  set borderwidth (dynamic v)
+  {
+    if (_borderwidth != null)
+    {
+      _borderwidth!.set(v);
+    }
+    else if (v != null)
+    {
+      _borderwidth = DoubleObservable(Binding.toKey(id, 'borderwidth'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  double? get borderwidth
+  {
+    if (_borderwidth == null)
+    {
+      if ((parent != null) && (parent is TableModel)) return (parent as TableModel).borderwidth;
+      return null;
+    }
+    return _borderwidth?.get();
+  }
 
   TableFooterModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic color}) : super(parent, id, scope: Scope(parent: parent.scope))
   {
@@ -70,6 +98,7 @@ class TableFooterModel extends RowModel
   @override
   dispose()
   {
+    // Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
     scope?.dispose();
   }

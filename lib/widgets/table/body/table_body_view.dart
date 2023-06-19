@@ -32,5 +32,5 @@ class _TableBodyViewState extends WidgetState<TableBodyView>
   }
 
   @override
-  Widget build(BuildContext context) => widget.model.getView();
+  Widget build(BuildContext context) => widget.model.getView()!;
 }

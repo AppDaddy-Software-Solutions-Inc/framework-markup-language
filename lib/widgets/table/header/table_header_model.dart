@@ -1,9 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'dart:math';
-
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/box/box_data.dart';
-import 'package:fml/widgets/row/row_model.dart';
+import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/table/table_model.dart';
 import 'package:fml/widgets/table/header/cell/table_header_cell_model.dart';
@@ -12,98 +9,151 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class TableHeaderModel extends RowModel
+class TableHeaderModel extends DecoratedWidgetModel
 {
-  bool needsLayout = false;
+  ///////////
+  /* Cells */
+  ///////////
+  final List<TableHeaderCellModel> cells = [];
 
-  double? cellHeight;
+  //////////////////
+  /* border color */
+  //////////////////
+  ColorObservable? _bordercolor;
+  set bordercolor(dynamic v) {
+    if (_bordercolor != null) {
+      _bordercolor!.set(v);
+    } else if (v != null) {
+      _bordercolor = ColorObservable(
+          Binding.toKey(id, 'bordercolor'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
 
-  // shrink in both axis
-  @override
-  bool get expandHorizontally => true;
+  Color? get bordercolor {
+    if (_bordercolor == null) {
+      if ((parent != null) && (parent is TableModel)) {
+        return (parent as TableModel).bordercolor;
+      }
+      return null;
+    }
+    return _bordercolor?.get();
+  }
 
-  @override
-  bool get expandVertically => false;
-
-  // list of cells
-  List<TableHeaderCellModel> cells = [];
-
-  @override
-  String? get border => super.border ?? "all";
-
-  @override
-  double? get paddingTop => super.paddingTop ?? (parent is TableModel ? (parent as TableModel).paddingTop : null);
-
-  @override
-  double? get paddingBottom => super.paddingBottom ?? (parent is TableModel ? (parent as TableModel).paddingBottom : null);
-
-  @override
-  double? get paddingLeft => super.paddingLeft ?? (parent is TableModel ? (parent as TableModel).paddingLeft : null);
-
-  @override
-  double? get paddingRight => super.paddingRight ?? (parent is TableModel ? (parent as TableModel).paddingRight : null);
-
-  @override
-  Color? get color => super.color ?? (parent is TableModel ? (parent as TableModel).color : null);
-
-  @override
-  Color? get bordercolor => super.bordercolor ?? (parent is TableModel ? (parent as TableModel).bordercolor : null);
-
-  @override
-  double? get borderwidth => super.borderwidth ?? 1;
-
-  @override
-  String? get halign => super.halign ?? (parent is TableModel ? (parent as TableModel).halign : null);
-
-  @override
-  String? get valign => super.valign ?? (parent is TableModel ? (parent as TableModel).valign : null);
-
-  @override
-  bool? get center => super.center ?? (parent is TableModel ? (parent as TableModel).center : null);
-
-  Color? get headerbordercolor
-  {
-    if ((parent != null) && (parent is TableModel))
-    {
+  Color? get headerbordercolor {
+    if ((parent != null) && (parent is TableModel)) {
       return (parent as TableModel).bordercolor;
     }
     return null;
   }
 
-  @override
-  void layoutComplete(Size size, Offset offset)
-  {
-    var height = cellHeight;
-
-    super.layoutComplete(size, offset);
-    for (var cell in cells)
-    {
-      cellHeight = max(cellHeight ?? 0, cell.viewHeight ?? 0);
+  //////////////////
+  /* border width */
+  //////////////////
+  DoubleObservable? _borderwidth;
+  set borderwidth(dynamic v) {
+    if (_borderwidth != null) {
+      _borderwidth!.set(v);
+    } else if (v != null) {
+      _borderwidth = DoubleObservable(
+          Binding.toKey(id, 'borderwidth'), v,
+          scope: scope, listener: onPropertyChange);
     }
+  }
 
-    var refresh = cellHeight != height;
-    if (refresh && parent is TableModel)
-    {
-      var parent = (this.parent as TableModel);
-      WidgetsBinding.instance.addPostFrameCallback((_) => parent.notifyListeners("cellheight", cellHeight));
+  double? get borderwidth {
+    if (_borderwidth == null) {
+      if ((parent != null) && (parent is TableModel)) {
+        return (parent as TableModel).borderwidth;
+      }
+      return null;
     }
+    return _borderwidth?.get();
   }
 
   /// Allows header to be resized by dragging
   /// Defaults to true
   BooleanObservable? _draggable;
-  set draggable(dynamic v)
-  {
-    if (_draggable != null)
-    {
+  set draggable(dynamic v) {
+    if (_draggable != null) {
       _draggable!.set(v);
-    }
-    else if (v != null)
-    {
-      _draggable = BooleanObservable(Binding.toKey(id, 'draggable'), v, scope: scope, listener: onPropertyChange);
+    } else if (v != null) {
+      _draggable = BooleanObservable(Binding.toKey(id, 'draggable'), v,
+          scope: scope, listener: onPropertyChange);
     }
   }
   bool get draggable => _draggable?.get() ?? true;
+
+  /// alignment and layout attributes
+  ///
+  /// The horizontal alignment of the widgets children, overrides `center`. Can be `left`, `right`, `start`, or `end`.
+  StringObservable? _halign;
+  @override
+  String? get halign
+  {
+    if (_halign == null) {
+      if ((parent != null) && (parent is TableModel)) {
+        return (parent as TableModel).halign;
+      }
+      return null;
+    }
+    return _halign?.get();
+  }
+
+  /// The vertical alignment of the widgets children, overrides `center`. Can be `top`, `bottom`, `start`, or `end`.
+  StringObservable? _valign;
+  @override
+  String? get valign {
+    if (_valign == null) {
+      if ((parent != null) && (parent is TableModel)) {
+        return (parent as TableModel).valign;
+      }
+      return null;
+    }
+    return _valign?.get();
+  }
+
+  /// Center attribute allows a simple boolean override for halign and valign both being center. halign and valign will override center if given.
+  BooleanObservable? _center;
+  set center(dynamic v) {
+    if (_center != null) {
+      _center!.set(v);
+    } else if (v != null) {
+      _center = BooleanObservable(Binding.toKey(id, 'center'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  bool get center
+  {
+    if (_center == null)
+    {
+      if ((parent != null) && (parent is TableModel)) return (parent as TableModel).center;
+      return false;
+    }
+    return _center?.get() ?? false;
+  }
+
+  /// wrap is a boolean that dictates if the widget will wrap or not.
+  BooleanObservable? _wrap;
+  set wrap(dynamic v)
+  {
+    if (_wrap != null) {
+      _wrap!.set(v);
+    } else if (v != null) {
+      _wrap = BooleanObservable(Binding.toKey(id, 'wrap'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get wrap
+  {
+    if (_wrap == null)
+    {
+      if ((parent != null) && (parent is TableModel)) return (parent as TableModel).wrap;
+      return false;
+    }
+    return _wrap?.get() ?? false;
+  }
 
   TableHeaderModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic color}) : super(parent, id, scope: Scope(parent: parent.scope))
   {
@@ -139,36 +189,21 @@ class TableHeaderModel extends RowModel
     bordercolor = Xml.get(node: xml, tag: 'bordercolor');
     borderwidth = Xml.get(node: xml, tag: 'borderwidth');
 
-    // Get Cells
-    List<TableHeaderCellModel> models = findChildrenOfExactType(TableHeaderCellModel).cast<TableHeaderCellModel>();
-    for (TableHeaderCellModel model in models)
+    // get cells
+    List<TableHeaderCellModel> cells = findChildrenOfExactType(TableHeaderCellModel).cast<TableHeaderCellModel>();
+    for (TableHeaderCellModel model in cells)
     {
-      cells.add(model);
+      this.cells.add(model);
     }
   }
 
   bool onSort(TableHeaderCellModel model)
   {
-    int? index = children?.indexOf(model);
-    if (index != null && parent is TableModel)
-    {
+    int index = cells.indexOf(model);
+    if ((parent != null) && (parent is TableModel)) {
       (parent as TableModel).onSort(index);
     }
     return true;
-  }
-
-  @override
-  List<Widget> inflate()
-  {
-    // process children
-    List<Widget> views = [];
-    for (var model in cells)
-    {
-      var view = model.getView();
-      view = LayoutBoxChildData(child: view, model: model);
-      views.add(view);
-    }
-    return views;
   }
 
   @override

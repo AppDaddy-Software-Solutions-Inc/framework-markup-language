@@ -707,7 +707,7 @@ class WrapRenderer extends RenderBox with
     }
 
     // set my size in the model
-    model.layoutComplete(size, Offset(this.paintBounds.top,this.paintBounds.left));
+    model.layoutComplete(size, Offset(paintBounds.top,paintBounds.left));
   }
 
   @override

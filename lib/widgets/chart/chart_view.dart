@@ -529,7 +529,7 @@ class _ChartViewState extends WidgetState<ChartView>
     }
     // Loop through each series
     for (ChartSeriesModel series in widget.model.series) {
-      if (series.data == null || series.data.length == 0) {
+      if (series.datasource == null) {
         Log().error(
             'id: ${series.id.toString()} name: ${series.name.toString()} needs a data source attribute');
         return null;

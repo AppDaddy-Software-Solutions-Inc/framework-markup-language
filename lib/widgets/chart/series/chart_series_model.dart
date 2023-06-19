@@ -44,8 +44,6 @@ class ChartSeriesModel extends WidgetModel
       dynamic radius,
       dynamic size,
       dynamic label,
-      dynamic labelled,
-      dynamic labelType,
       this.type,
       dynamic tooltips,
       dynamic animated,
@@ -64,8 +62,6 @@ class ChartSeriesModel extends WidgetModel
     this.radius = radius;
     this.size = size;
     this.label = label;
-    this.labelled = labelled;
-    this.labelType = labelType;
     this.tooltips = tooltips;
     this.animated = animated;
     this.name = name;
@@ -111,8 +107,6 @@ class ChartSeriesModel extends WidgetModel
     size        = Xml.get(node: xml, tag: 'size');
     type        = Xml.get(node: xml, tag: 'type');
     label       = Xml.get(node: xml, tag: 'label');
-    labelled    = Xml.get(node: xml, tag: 'labelled');
-    labelType   = Xml.get(node: xml, tag: 'labelType');
     tooltips    = Xml.get(node: xml, tag: 'tooltips');
     animated    = Xml.get(node: xml, tag: 'animated');
     name        = Xml.get(node: xml, tag: 'name');
@@ -312,34 +306,6 @@ class ChartSeriesModel extends WidgetModel
     }
   }
   bool get showpoints => _showpoints?.get() ?? true;
-
-  /// Set to true if you want to label a non label type series
-  BooleanObservable? _labelled;
-  set labelled (dynamic v)
-  {
-    if (_labelled != null)
-    {
-      _labelled!.set(v);
-    }
-    else if (v != null)
-    {
-      _labelled = BooleanObservable(Binding.toKey(id, 'labelled'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool? get labelled => _labelled?.get();
-
-
-  /// Can be a 'string' or a 'widget', default is string
-  StringObservable? _labelType;
-  set labelType (dynamic v) {
-    if (_labelType != null) {
-      _labelType!.set(v);
-    }
-    else if (v != null) {
-      _labelType = StringObservable(Binding.toKey(id, 'labelType'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  String? get labelType => _labelType?.get();
 
   /// If true points will have a tooltip appear on hover
   BooleanObservable? _tooltips;

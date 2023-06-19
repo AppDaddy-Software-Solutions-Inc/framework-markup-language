@@ -268,14 +268,6 @@ class WidgetModel implements IDataSourceListener {
 
   bool get busy => _busy?.get() ?? false;
 
-  // override this getter in widgets that inherit from this class
-  // to return the amount of vertical space allocated for padding, borders and margins
-  double get verticalPadding => 0;
-
-  // override this getter in widgets that inherit from this class
-  // to return the amount of horizontal space allocated for padding, borders and margins
-  double get horizontalPadding => 0;
-
   WidgetModel(this.parent, String? id, {Scope? scope})
   {
     // set the id

@@ -14,8 +14,9 @@ class BoxView extends StatefulWidget implements IWidgetView
 {
   @override
   final BoxModel model;
+  final List<Widget>? children;
 
-  BoxView(this.model) : super(key: ObjectKey(model));
+  BoxView(this.model, {this.children}) : super(key: ObjectKey(model));
 
   @override
   State<BoxView> createState() => _BoxViewState();
@@ -82,38 +83,39 @@ class _BoxViewState extends WidgetState<BoxView>
   Border? _getBorder()
   {
     Border? border;
-    bool hasBorder = widget.model.border != 'none';
+    bool hasBorder = widget.model.border != null && widget.model.border != 'none';
     if (hasBorder)
     {
+      var width = widget.model.borderwidth ?? 1;
       if (widget.model.border == 'all')
       {
         border = Border.all(
             color: widget.model.bordercolor ?? Theme.of(context).colorScheme.onInverseSurface,
-            width: widget.model.borderwidth);
+            width: width);
       } else {
         border = Border(
           top: (widget.model.border == 'top' ||
               widget.model.border == 'vertical')
               ? BorderSide(
-              width: widget.model.borderwidth,
+              width: width,
               color: widget.model.bordercolor ?? Theme.of(context).colorScheme.onInverseSurface)
               : BorderSide(width: 0, color: Colors.transparent),
           bottom: (widget.model.border == 'bottom' ||
               widget.model.border == 'vertical')
               ? BorderSide(
-              width: widget.model.borderwidth,
+              width: width,
               color: widget.model.bordercolor ?? Theme.of(context).colorScheme.onInverseSurface)
               : BorderSide(width: 0, color: Colors.transparent),
           left: (widget.model.border == 'left' ||
               widget.model.border == 'horizontal')
               ? BorderSide(
-              width: widget.model.borderwidth,
+              width: width,
               color: widget.model.bordercolor ?? Theme.of(context).colorScheme.onInverseSurface)
               : BorderSide(width: 0, color: Colors.transparent),
           right: (widget.model.border == 'right' ||
               widget.model.border == 'horizontal')
               ? BorderSide(
-              width: widget.model.borderwidth,
+              width: width,
               color: widget.model.bordercolor ?? Theme.of(context).colorScheme.onInverseSurface)
               : BorderSide(width: 0, color: Colors.transparent),
         );
@@ -248,7 +250,7 @@ class _BoxViewState extends WidgetState<BoxView>
   Widget _buildInnerContent(BoxConstraints constraints, WidgetAlignment alignment)
   {
     /// Build the Layout
-    var children = widget.model.inflate();
+    var children = widget.children ?? widget.model.inflate();
 
     // create view
     Widget view;

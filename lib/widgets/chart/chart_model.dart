@@ -109,7 +109,8 @@ class ChartModel extends DecoratedWidgetModel  {
     // Set Series
     this.series.clear();
     List<ChartSeriesModel> series = findChildrenOfExactType(ChartSeriesModel).cast<ChartSeriesModel>();
-    for (var model in series) {
+    for (var model in series)
+    {
       // add the series to the list
       this.series.add(model);
 
@@ -261,7 +262,7 @@ class ChartModel extends DecoratedWidgetModel  {
           series.dataPoint.clear();
           if (list != null) {
             for (var p in list) {
-              ChartDataPoint point = series.seriesPoint(p);
+              ChartDataPoint point = series.fromData(p);
               if ((point.x != null) && (point.y != null)) {
                 series.dataPoint.add(point);
               }
@@ -273,13 +274,13 @@ class ChartModel extends DecoratedWidgetModel  {
       for (var label in labels) {
         if (label.datasource == null && list != null) {
           label.dataLabel.clear();
-          label.dataLabel.add(label.chartLabel(data));
+          label.dataLabel.add(label.fromData(data));
         }
         else if (label.datasource == source.id) {
           label.dataLabel.clear();
           if (list != null) {
             for (var l in list) {
-              label.dataLabel.add(label.chartLabel(l));
+              label.dataLabel.add(label.fromData(l));
             }
           }
           label.data = list;

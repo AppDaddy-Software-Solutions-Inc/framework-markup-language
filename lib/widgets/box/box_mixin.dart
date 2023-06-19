@@ -1,10 +1,30 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:fml/system.dart';
+import 'package:fml/widgets/box/box_constraints.dart';
+import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 
 mixin BoxMixin
 {
+  // lays out the child
+  // and sets its size in the model
+  doLayout(RenderBox child, BoxConstraints constraints, ChildLayouter layoutChild)
+  {
+    // calculate the child's size by performing
+    // a dry layout. We use LocalBoxConstraints in order to
+    // override isTight, which is used in Layout() to determine if a
+    // child size change forces a parent to resize.
+    layoutChild(child, LocalBoxConstraints.from(constraints));
+
+    // set child size in its model
+    if (child.parentData is BoxData)
+    {
+      (child.parentData as BoxData).model?.layoutComplete(child.size, Offset(child.paintBounds.left, child.paintBounds.top));
+    }
+  }
+
   // finds the parent RenderConstrainedLayoutBuilder of
   // the node
   AbstractNode? parentOf(AbstractNode child)

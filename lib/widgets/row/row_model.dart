@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
+import 'package:fml/observable/scope.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
@@ -31,7 +32,7 @@ class RowModel extends BoxModel
     return flexible;
   }
 
-  RowModel(WidgetModel parent, String? id) : super(parent, id);
+  RowModel(WidgetModel parent, String? id, {Scope?  scope}) : super(parent, id, scope: scope);
 
   static RowModel? fromXml(WidgetModel parent, XmlElement xml)
   {

@@ -451,8 +451,10 @@ class WrapRenderer extends RenderBox with
     double runCrossAxisExtent = 0.0;
     int childCount = 0;
     RenderBox? child = firstChild;
-    while (child != null) {
+    while (child != null)
+    {
       final Size childSize = layoutChild(child, childConstraints);
+
       final double childMainAxisExtent = _getMainAxisExtent(childSize);
       final double childCrossAxisExtent = _getCrossAxisExtent(childSize);
       // There must be at least one child before we move on to the next run.
@@ -548,6 +550,12 @@ class WrapRenderer extends RenderBox with
       // override isTight, which is used in Layout() to determine if a
       // child size change forces a parent to resize.
       child.layout(LocalBoxConstraints.from(childConstraints), parentUsesSize: true);
+
+      // set child size in its model
+      if (child.parentData is BoxData)
+      {
+        (child.parentData as BoxData).model?.layoutComplete(child.size, Offset(child.paintBounds.left, child.paintBounds.top));
+      }
 
       final double childMainAxisExtent  = _getMainAxisExtent(child.size);
       final double childCrossAxisExtent = _getCrossAxisExtent(child.size);
@@ -697,6 +705,9 @@ class WrapRenderer extends RenderBox with
         crossAxisOffset += runCrossAxisExtent + runBetweenSpace;
       }
     }
+
+    // set my size in the model
+    model.layoutComplete(size, Offset(paintBounds.top,paintBounds.left));
   }
 
   @override
@@ -705,7 +716,8 @@ class WrapRenderer extends RenderBox with
   }
 
   @override
-  void paint(PaintingContext context, Offset offset) {
+  void paint(PaintingContext context, Offset offset)
+  {
     // TODO(ianh): move the debug flex overflow paint logic somewhere common so
     // it can be reused here
     if (_hasVisualOverflow && clipBehavior != Clip.none) {

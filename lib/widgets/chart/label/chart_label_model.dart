@@ -33,7 +33,6 @@ class ChartDataLabel {
 /// Defines the properties used to build Labels on the Charts
 class ChartLabelModel extends WidgetModel
 {
-
   List<ChartDataLabel> dataLabel = [];
 
   ChartLabelModel(
@@ -56,6 +55,7 @@ class ChartLabelModel extends WidgetModel
       dynamic y2,
     }
   ) : super(parent, id) {
+    data = Data();
     this.color = color;
     this.anchor = anchor;
     this.position = position;
@@ -130,7 +130,7 @@ class ChartLabelModel extends WidgetModel
     }
     else if (v != null)
     {
-      _color = ColorObservable(Binding.toKey(id, 'color'), v, scope: scope, listener: onPropertyChange);
+      _color = ColorObservable(Binding.toKey(id, 'color'), v, scope: scope);
     }
   }
   Color get color => _color?.get() ?? Colors.transparent;
@@ -143,7 +143,7 @@ class ChartLabelModel extends WidgetModel
       _anchor!.set(v);
     }
     else if (v != null) {
-      _anchor = StringObservable(Binding.toKey(id, 'anchor'), v, scope: scope, listener: onPropertyChange);
+      _anchor = StringObservable(Binding.toKey(id, 'anchor'), v, scope: scope);
     }
   }
   String get anchor => _anchor?.get() ?? 'middle';
@@ -156,7 +156,7 @@ class ChartLabelModel extends WidgetModel
       _position!.set(v);
     }
     else if (v != null) {
-      _position = StringObservable(Binding.toKey(id, 'position'), v, scope: scope, listener: onPropertyChange);
+      _position = StringObservable(Binding.toKey(id, 'position'), v, scope: scope);
     }
   }
   String get position => _position?.get() ?? 'auto';
@@ -168,7 +168,7 @@ class ChartLabelModel extends WidgetModel
       _direction!.set(v);
     }
     else if (v != null) {
-      _direction = StringObservable(Binding.toKey(id, 'direction'), v, scope: scope, listener: onPropertyChange);
+      _direction = StringObservable(Binding.toKey(id, 'direction'), v, scope: scope);
     }
   }
   String? get direction => _direction?.get();
@@ -182,7 +182,7 @@ class ChartLabelModel extends WidgetModel
     }
     else if (v != null)
     {
-      _label = StringObservable(Binding.toKey(id, 'label'), v, scope: scope, listener: onPropertyChange);
+      _label = StringObservable(Binding.toKey(id, 'label'), v, scope: scope);
     }
   }
   String? get label => _label?.get();
@@ -197,7 +197,7 @@ class ChartLabelModel extends WidgetModel
     }
     else if (v != null)
     {
-      _labelcolor = ColorObservable(Binding.toKey(id, 'labelcolor'), v, scope: scope, listener: onPropertyChange);
+      _labelcolor = ColorObservable(Binding.toKey(id, 'labelcolor'), v, scope: scope);
     }
   }
   Color? get labelcolor => _labelcolor?.get();
@@ -212,7 +212,7 @@ class ChartLabelModel extends WidgetModel
     }
     else if (v != null)
     {
-      _labelsize = IntegerObservable(Binding.toKey(id, 'labelsize'), v, scope: scope, listener: onPropertyChange);
+      _labelsize = IntegerObservable(Binding.toKey(id, 'labelsize'), v, scope: scope);
     }
   }
   int? get labelsize => _labelsize?.get();
@@ -226,7 +226,7 @@ class ChartLabelModel extends WidgetModel
     }
     else if (v != null)
     {
-      _startlabel = StringObservable(Binding.toKey(id, 'startlabel'), v, scope: scope, listener: onPropertyChange);
+      _startlabel = StringObservable(Binding.toKey(id, 'startlabel'), v, scope: scope);
     }
   }
   String? get startlabel => _startlabel?.get();
@@ -240,7 +240,7 @@ class ChartLabelModel extends WidgetModel
     }
     else if (v != null)
     {
-      _endlabel = StringObservable(Binding.toKey(id, 'endlabel'), v, scope: scope, listener: onPropertyChange);
+      _endlabel = StringObservable(Binding.toKey(id, 'endlabel'), v, scope: scope);
     }
   }
   String? get endlabel => _endlabel?.get();
@@ -254,7 +254,7 @@ class ChartLabelModel extends WidgetModel
     }
     else if (v != null)
     {
-      _x = StringObservable(Binding.toKey(id, 'x'), v, scope: scope, listener: onPropertyChange);
+      _x = StringObservable(Binding.toKey(id, 'x'), v, scope: scope);
     }
   }
   String? get x => _x?.get();
@@ -268,7 +268,7 @@ class ChartLabelModel extends WidgetModel
     }
     else if (v != null)
     {
-      _x1 = StringObservable(Binding.toKey(id, 'x1'), v, scope: scope, listener: onPropertyChange);
+      _x1 = StringObservable(Binding.toKey(id, 'x1'), v, scope: scope);
     }
   }
   String? get x1 => _x1?.get();
@@ -282,7 +282,7 @@ class ChartLabelModel extends WidgetModel
     }
     else if (v != null)
     {
-      _x2 = StringObservable(Binding.toKey(id, 'x2'), v, scope: scope, listener: onPropertyChange);
+      _x2 = StringObservable(Binding.toKey(id, 'x2'), v, scope: scope);
     }
   }
   String? get x2 => _x2?.get();
@@ -296,7 +296,7 @@ class ChartLabelModel extends WidgetModel
     }
     else if (v != null)
     {
-      _y = StringObservable(Binding.toKey(id, 'y'), v, scope: scope, listener: onPropertyChange);
+      _y = StringObservable(Binding.toKey(id, 'y'), v, scope: scope);
     }
   }
   String? get y => _y?.get();
@@ -310,7 +310,7 @@ class ChartLabelModel extends WidgetModel
     }
     else if (v != null)
     {
-      _y1 = StringObservable(Binding.toKey(id, 'y1'), v, scope: scope, listener: onPropertyChange);
+      _y1 = StringObservable(Binding.toKey(id, 'y1'), v, scope: scope);
     }
   }
   String? get y1 => _y1?.get();
@@ -324,29 +324,17 @@ class ChartLabelModel extends WidgetModel
     }
     else if (v != null)
     {
-      _y2 = StringObservable(Binding.toKey(id, 'y2'), v, scope: scope, listener: onPropertyChange);
+      _y2 = StringObservable(Binding.toKey(id, 'y2'), v, scope: scope);
     }
   }
   String? get y2 => _y2?.get();
 
-  ChartDataLabel chartLabel(dynamic data)
-  {
-    dynamic color = replaceFromDataMap(_color, data) ?? Colors.transparent;
-    dynamic anchor = replaceFromDataMap(_anchor, data);
-    dynamic position = replaceFromDataMap(_position, data);
-    dynamic direction = replaceFromDataMap(_direction, data);
-    dynamic labelcolor = replaceFromDataMap(_labelcolor, data);
-    dynamic labelsize = replaceFromDataMap(_labelsize, data);
-    dynamic label = replaceFromDataMap(_label, data);
-    dynamic startlabel = replaceFromDataMap(_startlabel, data);
-    dynamic endlabel = replaceFromDataMap(_endlabel, data);
-    dynamic x = replaceFromDataMap(_x, data);
-    dynamic x1 = replaceFromDataMap(_x1, data);
-    dynamic x2 = replaceFromDataMap(_x2, data);
-    dynamic y = replaceFromDataMap(_y, data);
-    dynamic y1 = replaceFromDataMap(_y1, data);
-    dynamic y2 = replaceFromDataMap(_y2, data);
+  @override
+  void onPropertyChange(Observable observable) {}
 
+  ChartDataLabel fromData(dynamic data)
+  {
+    this.data = data;
     return ChartDataLabel(
       color: color, anchor: anchor, position: position, direction: direction,
       labelcolor: labelcolor, labelsize: labelsize,
@@ -355,30 +343,4 @@ class ChartLabelModel extends WidgetModel
       y: y, y1: y1, y2: y2,
     );
   }
-
-  dynamic replaceFromDataMap(Observable? observable, dynamic data)
-  {
-    // Null value
-    if (observable == null) {
-      return null;
-    }
-    // Static value does not contain bindings or evals, no need to replace
-    // anything just return the value
-    else if (observable.signature == null || (observable.bindings == null || observable.bindings!.isEmpty)) {
-      return observable.value;
-    }
-
-    // apply data to Json data
-    dynamic value = Data.replaceValue(observable.signature, data);
-
-    // evaluate
-    if (observable.isEval == true) value = Observable.doEvaluation(value);
-
-    // set observable value
-    observable.set(value);
-
-    // return value
-    return observable.get();
-  }
-  
 }

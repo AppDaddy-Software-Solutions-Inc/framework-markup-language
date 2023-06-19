@@ -6,7 +6,6 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:fml/widgets/box/box_constraints.dart';
 import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/box/box_mixin.dart';
 import 'package:fml/widgets/box/box_model.dart';
@@ -462,7 +461,8 @@ class FlexRenderer extends RenderBox
   }
 
   @override
-  void paint(PaintingContext context, Offset offset) {
+  void paint(PaintingContext context, Offset offset)
+  {
     if (!_hasOverflow) {
       if (size > Size.zero && model.color != null) {
         //context.canvas.drawRect(offset & size, Paint()..color = Colors.green);
@@ -664,7 +664,7 @@ class FlexRenderer extends RenderBox
           // a dry layout. We use LocalBoxConstraints in order to
           // override isTight, which is used in Layout() to determine if a
           // child size change forces a parent to resize.
-          layoutChild(child, LocalBoxConstraints.from(childConstraints));
+          doLayout(child, childConstraints, layoutChild);
 
           // set width
           allocatedWidth = _direction == Axis.horizontal ? (allocatedWidth + (child.size.width)) : max(allocatedWidth, (child.size.width));
@@ -749,7 +749,7 @@ class FlexRenderer extends RenderBox
             // a dry layout. We use LocalBoxConstraints in order to
             // override isTight, which is used in Layout() to determine if a
             // child size change forces a parent to resize.
-            layoutChild(child, LocalBoxConstraints.from(childConstraints));
+            doLayout(child, childConstraints, layoutChild);
 
             // set used flex space
             switch (fit)
@@ -1051,6 +1051,9 @@ class FlexRenderer extends RenderBox
       }
       child = data.nextSibling;
     }
+
+    // set my size in model
+    model.layoutComplete(size, Offset(paintBounds.top,paintBounds.left));
   }
 }
 

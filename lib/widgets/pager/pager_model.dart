@@ -28,7 +28,7 @@ class PagerModel extends BoxModel
   XmlElement? prototype;
 
   List<PageModel> pages = [];
-
+  
   // pager
   BooleanObservable? _pager;
   set pager (dynamic v)
@@ -63,6 +63,21 @@ class PagerModel extends BoxModel
     return v;
   }
 
+  // transition - slide or jump
+  StringObservable? _transition;
+  set transition (dynamic v)
+  {
+    if (_transition != null)
+    {
+      _transition!.set(v);
+    }
+    else if (v != null)
+    {
+      _transition = StringObservable(Binding.toKey(id, 'transition'), v, scope: scope);
+    }
+  }
+  String get transition =>  _transition?.get() ?? "jump";
+
   dynamic _pageSetter(dynamic value)
   {
     int? v = S.toInt(value);
@@ -74,7 +89,6 @@ class PagerModel extends BoxModel
     } else if (v < 1) {
       v = 1;
     }
-
     return v;
   }
 
@@ -118,21 +132,22 @@ class PagerModel extends BoxModel
 
     // properties
     pager = Xml.get(node: xml, tag: 'pager');
+    transition = Xml.get(node: xml, tag: 'transition');
 
     // build pages
     List<PageModel> pages = findChildrenOfExactType(PageModel).cast<PageModel>();
 
-      // set prototype
-      if ((!S.isNullOrEmpty(datasource)) && (pages.isNotEmpty))
-      {
-        prototype = WidgetModel.prototypeOf(pages[0].element);
-        pages.removeAt(0);
-      }
+    // set prototype
+    if ((!S.isNullOrEmpty(datasource)) && (pages.isNotEmpty))
+    {
+      prototype = WidgetModel.prototypeOf(pages[0].element);
+      pages.removeAt(0);
+    }
 
-      // build items
-      for (var page in pages) {
-        this.pages.add(page);
-      }
+    // build items
+    for (var page in pages) {
+      this.pages.add(page);
+    }
 
 
     if (pages.isEmpty)
@@ -162,7 +177,7 @@ class PagerModel extends BoxModel
           {
             page = arguments[0];
           }
-          view.page(page);
+          view.pageTo(page, transition);
         }
     }
     return super.execute(caller, propertyOrFunction, arguments);

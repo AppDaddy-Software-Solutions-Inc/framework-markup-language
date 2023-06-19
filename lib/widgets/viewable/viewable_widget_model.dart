@@ -20,12 +20,6 @@ class ViewableWidgetModel extends ConstraintModel
   // holds animations
   List<AnimationModel>? animations;
 
-  @override
-  double get verticalPadding  => (marginTop ?? 0)  + (marginBottom ?? 0)  + (paddingTop ?? 0) + (paddingBottom  ?? 0);
-
-  @override
-  double get horizontalPadding => (marginLeft ?? 0) + (marginRight  ?? 0) + (paddingLeft ?? 0) + (paddingRight  ?? 0);
-
   // viewable children
   List<ViewableWidgetModel> get viewableChildren
   {
@@ -627,23 +621,15 @@ class ViewableWidgetModel extends ConstraintModel
     return views;
   }
 
-  void onLayoutComplete(ViewableWidgetModel? model) async
+  void layoutComplete(Size size, Offset offset)
   {
-    if (context == null) return;
-
-    var box = context!.findRenderObject() as RenderBox?;
-    if (box == null) return;
-
-    var position = box.localToGlobal(Offset.zero);
-    var size = box.size;
-
     // set the view width, height and position
-    if (size.width != viewWidth || size.height != viewHeight || position.dx != viewX || position.dy != viewY)
+    if (size.width != viewWidth || size.height != viewHeight || offset.dx != viewX || offset.dy != viewY)
     {
       viewWidth  = size.width;
       viewHeight = size.height;
-      viewX      = position.dx;
-      viewY      = position.dy;
+      viewX      = offset.dx;
+      viewY      = offset.dy;
     }
   }
 

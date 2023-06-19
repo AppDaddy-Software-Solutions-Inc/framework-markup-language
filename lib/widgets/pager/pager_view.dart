@@ -44,7 +44,7 @@ class PagerViewState extends WidgetState<PagerView>
     return _pages[index];
   }
 
-  void page(dynamic page)
+  void pageTo(dynamic page, String transition)
   {
     int currentPage = _controller!.page!.toInt() + 1;
     int? pageNum = S.toInt(page);
@@ -76,9 +76,16 @@ class PagerViewState extends WidgetState<PagerView>
     if (pageNum > pages) pageNum = 1;
     if (pageNum < 1) pageNum = pages;
     int diff = (currentPage - pageNum).abs();
-    if (diff > 9) {
+
+    // jump to page
+    if (transition == "jump")
+    {
       _controller!.jumpToPage(pageNum - 1);
-    } else {
+    }
+
+    // animate to page
+    else
+    {
       _controller!.animateToPage(pageNum - 1, duration: Duration(milliseconds: diff * 150), curve: Curves.easeInOutQuad);
     }
   }
@@ -108,10 +115,7 @@ class PagerViewState extends WidgetState<PagerView>
     {
       var model = ViewableWidgetModel(widget.model, null);
       pager = Container(child: DotsIndicator(controller: _controller!, itemCount: _pages.length, color: widget.model.color ?? Theme.of(context).colorScheme.onBackground,
-          onPageSelected: (int page)
-          {
-            _controller!.animateToPage(page, duration: Duration(milliseconds: 150), curve: Curves.ease,);
-          }));
+          onPageSelected: (int page) => pageTo(page + 1, widget.model.transition)));
       pager = LayoutBoxChildData(model: model, child: pager!, bottom: 8);
     }
     if (pager != null)

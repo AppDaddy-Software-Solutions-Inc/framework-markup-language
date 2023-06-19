@@ -315,7 +315,7 @@ class StackRenderer extends RenderBox with
         // a dry layout. We use LocalBoxConstraints in order to
         // override isTight, which is used in Layout() to determine if a
         // child size change forces a parent to resize.
-        layoutChild(child, LocalBoxConstraints.from(childConstraints));
+        doLayout(child, childConstraints, layoutChild);
 
         // size of stack is largest unpositioned child if not hard sized
         if (!hardSizedWidth)  width  = math.max(width,  child.size.width);
@@ -355,6 +355,9 @@ class StackRenderer extends RenderBox with
       assert(child.parentData == childParentData);
       child = childParentData.nextSibling;
     }
+
+    // set my size in the model
+    model.layoutComplete(size, Offset(paintBounds.top,paintBounds.left));
   }
 
   @override
@@ -372,7 +375,8 @@ class StackRenderer extends RenderBox with
   }
 
   @override
-  void paint(PaintingContext context, Offset offset) {
+  void paint(PaintingContext context, Offset offset)
+  {
     if (clipBehavior != Clip.none && _hasVisualOverflow) {
       _clipRectLayer.layer = context.pushClipRect(
         needsCompositing,

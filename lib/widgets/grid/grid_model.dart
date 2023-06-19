@@ -5,7 +5,7 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart'     ;
 import 'package:fml/widgets/grid/grid_view.dart' as grid_view;
 import 'package:fml/widgets/grid/item/grid_item_model.dart';
@@ -15,7 +15,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class GridModel extends DecoratedWidgetModel implements IScrolling
+class GridModel extends BoxModel implements IScrolling
 {
   // prototype
   XmlElement? prototype;
@@ -207,7 +207,7 @@ class GridModel extends DecoratedWidgetModel implements IScrolling
   }
   bool get draggable => _draggable?.get() ?? false;
 
-  Size? itemSize;
+  Size? size;
 
   GridModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic direction, dynamic scrollShadows, dynamic scrollButtons, dynamic onpulldown, dynamic draggable}) : super(parent, id)
   {

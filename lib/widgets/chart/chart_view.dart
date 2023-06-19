@@ -278,7 +278,7 @@ class _ChartViewState extends WidgetState<ChartView>
       domainAxis: xStringAxisSpec(),
       barGroupingType: barGroupingType,
       vertical: widget.model.horizontal == true ? false : true,
-      // barRendererDecorator: charts_flutter.BarLabelDecorator<String>(labelPosition: charts_flutter.BarLabelPosition.inside, labelAnchor: charts_flutter.BarLabelAnchor.middle),
+      barRendererDecorator: charts_flutter.BarLabelDecorator<String>(labelPosition: charts_flutter.BarLabelPosition.inside, labelAnchor: charts_flutter.BarLabelAnchor.middle),
       customSeriesRenderers: seriesRenderers,
       selectionModels: [
         charts_flutter.SelectionModelConfig(
@@ -529,6 +529,11 @@ class _ChartViewState extends WidgetState<ChartView>
     }
     // Loop through each series
     for (ChartSeriesModel series in widget.model.series) {
+      if (series.data == null || series.data.length == 0) {
+        Log().error(
+            'id: ${series.id.toString()} name: ${series.name.toString()} needs a data source attribute');
+        return null;
+      }
       // Auto group bar series if not specified
       if ((series.stack == null ||
               widget.model.xaxis.type != ChartAxisType.category) &&
@@ -581,9 +586,9 @@ class _ChartViewState extends WidgetState<ChartView>
             continue;
           }
           // get label
-          var label = S.isNullOrEmpty(point.label) ? null : point.label.trim();
+          var label = point.label?.trim();
           // Add to point list
-          if (xParsed != null && (series.labelled != true || label != null)) {
+          if (xParsed != null) {
             seriesData.add(ChartDataPoint(
                 x: xParsed, y: yParsed, color: point.color, label: label));
           }
@@ -618,8 +623,7 @@ class _ChartViewState extends WidgetState<ChartView>
                           : Colors.black)),
               domainFn: (dynamic plot, _) => plot.x,
               measureFn: (dynamic plot, _) => plot.y,
-              labelAccessorFn: (dynamic plot, _) =>
-                  '${plot.label ?? (plot.y > 0 ? plot.y : '')}', // Unavailable outside of pie/bar charts
+              labelAccessorFn: (dynamic plot, _) => drawLabel(plot), // Unavailable outside of pie/bar charts
               data: seriesData)
             ..setAttribute(charts_flutter.rendererIdKey, getRendererKey(series)));
           break;
@@ -640,8 +644,7 @@ class _ChartViewState extends WidgetState<ChartView>
                           : Colors.black)),
               domainFn: (dynamic plot, _) => plot.x,
               measureFn: (dynamic plot, _) => plot.y,
-              labelAccessorFn: (dynamic plot, _) =>
-                  '${plot.label ?? (plot.y > 0 ? plot.y : '')}', // Unavailable outside of pie/bar charts
+              labelAccessorFn: (dynamic plot, _) => drawLabel(plot), // Unavailable outside of pie/bar charts
               data: seriesData)
             ..setAttribute(charts_flutter.rendererIdKey, getRendererKey(series)));
           break;
@@ -662,8 +665,7 @@ class _ChartViewState extends WidgetState<ChartView>
                           : Colors.black)),
               domainFn: (dynamic plot, _) => plot.x,
               measureFn: (dynamic plot, _) => plot.y,
-              labelAccessorFn: (dynamic plot, _) =>
-                  '${plot.label ?? (plot.y > 0 ? plot.y : '')}', // Unavailable outside of pie/bar charts
+              labelAccessorFn: (dynamic plot, _) => drawLabel(plot), // Unavailable outside of pie/bar charts
               data: seriesData)
             ..setAttribute(charts_flutter.rendererIdKey, getRendererKey(series)));
           break;
@@ -686,6 +688,10 @@ class _ChartViewState extends WidgetState<ChartView>
       default:
         return null;
     }
+  }
+
+  String drawLabel(plot) {
+    return '${plot.label ?? (plot.y > 0 ? plot.y : '')}';
   }
 
   /// Unique id for each series based off the FML id, fallback on the name attribute

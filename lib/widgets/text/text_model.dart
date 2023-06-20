@@ -165,16 +165,16 @@ class TextModel extends DecoratedWidgetModel
   String? get font => _font?.get() ?? System.theme.font;
 
   // weight
-  DoubleObservable? _weight;
+  IntegerObservable? _weight;
   set weight(dynamic v) {
     if (_weight != null) {
       _weight!.set(v);
     } else if (v != null) {
-      _weight = DoubleObservable(Binding.toKey(id, 'weight'), v,
+      _weight = IntegerObservable(Binding.toKey(id, 'weight'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
-  double? get weight => _weight?.get();
+  int? get weight => _weight?.get();
   
   // If the text is raw or uses special chars
   BooleanObservable? _raw;

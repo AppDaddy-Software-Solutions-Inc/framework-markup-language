@@ -95,7 +95,7 @@ class _TextViewState extends WidgetState<TextView>
     var style = TextStyle(
         fontSize: widget.model.size ?? textStyle!.fontSize,
         color: widget.model.color ?? theme?.colorScheme.onBackground,
-        fontWeight: widget.model.bold ? FontWeight.bold : textStyle!.fontWeight,
+        fontWeight: getTextWeight(),
         fontStyle: widget.model.italic ? FontStyle.italic : textStyle!.fontStyle,
         decoration: textDecoration);
 
@@ -123,7 +123,7 @@ class _TextViewState extends WidgetState<TextView>
           letterSpacing: widget.model.letterspace,
           height: widget.model.lineheight,
           shadows: textShadow != null ? [textShadow] : null,
-          fontWeight: widget.model.bold  ? FontWeight.bold : FontWeight.normal,
+          fontWeight: getTextWeight(),
           fontStyle: widget.model.italic ? FontStyle.italic : FontStyle.normal,
           decoration: textDecoration,
           decorationStyle: textDecoStyle,
@@ -137,7 +137,7 @@ class _TextViewState extends WidgetState<TextView>
           letterSpacing: widget.model.letterspace,
           height: widget.model.lineheight,
           shadows: textShadow != null ? [textShadow] : null,
-          fontWeight: widget.model.bold ? FontWeight.bold : FontWeight.normal,
+          fontWeight: getTextWeight(),
           fontStyle: widget.model.italic ? FontStyle.italic : FontStyle.normal,
           decoration: textDecoration,
           decorationStyle: textDecoStyle,
@@ -213,6 +213,34 @@ class _TextViewState extends WidgetState<TextView>
         break;
     }
     return textDecoration;
+  }
+
+  FontWeight getTextWeight() {
+    if (widget.model.bold) {
+      return FontWeight.bold;
+    }
+    switch(widget.model.weight) {
+      case 100:
+        return FontWeight.w100;
+      case 200:
+        return FontWeight.w200;
+      case 300:
+        return FontWeight.w300;
+      case 400:
+        return FontWeight.w400;
+      case 500:
+        return FontWeight.w500;
+      case 600:
+        return FontWeight.w600;
+      case 700:
+        return FontWeight.w700;
+      case 800:
+        return FontWeight.w800;
+      case 900:
+        return FontWeight.w900;
+      default:
+        return FontWeight.normal;
+    }
   }
 
   TextDecorationStyle? _getDecorationStyle()
@@ -375,7 +403,7 @@ class _TextViewState extends WidgetState<TextView>
             default:
               codeBlockBG = theme?.colorScheme.surfaceVariant;
               codeBlockFont = null;
-              weight = FontWeight.normal;
+              weight = getTextWeight();
               style = FontStyle.normal;
               deco = TextDecoration.none;
               script = "normal";

@@ -231,7 +231,7 @@ class ButtonModel extends BoxModel
     if (viewableChildren.isEmpty && label != null)
     {
       children ??= [];
-      children!.add(TextModel(this, null, value: "{$id.label}", color: getTextColor(), decorationweight: 700));
+      children!.add(TextModel(this, null, value: "{$id.label}", color: getTextColor(), weight: 500));
     }
   }
 

@@ -321,7 +321,6 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
   {
     var data = Data.from(jsonOrXml, root: root);
 
-
     if (jsonOrXml != null && jsonOrXml is! String)
     {
       // clone the data so the datasource does not manipulate its inherited widgets data in the original source.
@@ -672,7 +671,8 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
       {
         if (model is DataModel)
         {
-          model.onSuccess(data, code: code, message: message);
+          // clone the data
+          model.onSuccess(data.clone(), code: code, message: message);
         }
       }
     }

@@ -1,5 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:convert';
+import 'package:fml/widgets/box/box_data.dart';
+import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:universal_html/html.dart' as universal_html;
@@ -39,18 +41,12 @@ class _InlineFrameViewState extends WidgetState<InlineFrameView> {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    //This prevents the iframe from rebuilding and hiding the keyboard every time.
+    // This prevents the iframe from rebuilding and hiding the keyboard every time.
     iframe ??= IFrameWidget(model: model);
     Widget view = iframe!;
 
     // basic view
-    view = Container(
-        child: view,
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height);
-
-    // apply user defined constraints
-    view = applyConstraints(view, widget.model.constraints);
+    view = BoxView(widget.model, children: [LayoutBoxChildData(model: model, child:view)],);
 
     return view;
   }
@@ -71,47 +67,6 @@ class IFrameWidget extends StatelessWidget {
     Log().debug('disposing of iframe ...');
     universal_html.window.removeEventListener('message', receive);
     iframe.remove();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    /////////////////////////////
-    /* Create an iFrame widget */
-    /////////////////////////////
-    iFrame = HtmlElementView(key: UniqueKey(), viewType: id);
-
-    ///////////////////////////
-    /* Create IFrame Element */
-    ///////////////////////////
-    iframe = universal_html.IFrameElement()
-      ..style.border = 'none'
-      // ..style.boxShadow = '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.19)'
-      // ..style.borderRadius = '5px'
-      ..style.width = '100%'
-      ..style.height = '100%';
-    iframe.src = model.url;
-
-    /////////////////////////////////////
-    /* Contructor Callback from Script */
-    /////////////////////////////////////
-    universal_js.context["flutter"] = (content) {
-      //////////////////
-      /* Add Listener */
-      //////////////////
-      universal_html.window.removeEventListener('message', receive);
-      universal_html.window.addEventListener('message', receive);
-
-      return id;
-    };
-
-    /////////////////////
-    /* Register IFrame */
-    /////////////////////
-    // ignore: undefined_prefixed_name
-    dart_ui.platformViewRegistry
-        .registerViewFactory(id, (int viewId) => iframe);
-
-    return iFrame;
   }
 
   void receive(dynamic event) {
@@ -138,5 +93,46 @@ class IFrameWidget extends StatelessWidget {
     } catch (e) {
       Log().exception(e);
     }
+  }
+
+  @override
+  Widget build(BuildContext context)
+  {
+    /////////////////////////////
+    /* Create an iFrame widget */
+    /////////////////////////////
+    iFrame = HtmlElementView(key: UniqueKey(), viewType: id);
+
+    ///////////////////////////
+    /* Create IFrame Element */
+    ///////////////////////////
+    iframe = universal_html.IFrameElement()
+      ..style.border = 'none'
+    // ..style.boxShadow = '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.19)'
+    // ..style.borderRadius = '5px'
+      ..style.width = '100%'
+      ..style.height = '100%';
+    iframe.src = model.url;
+
+    /////////////////////////////////////
+    /* Contructor Callback from Script */
+    /////////////////////////////////////
+    universal_js.context["flutter"] = (content) {
+      //////////////////
+      /* Add Listener */
+      //////////////////
+      universal_html.window.removeEventListener('message', receive);
+      universal_html.window.addEventListener('message', receive);
+
+      return id;
+    };
+
+    /////////////////////
+    /* Register IFrame */
+    /////////////////////
+    // ignore: undefined_prefixed_name
+    dart_ui.platformViewRegistry.registerViewFactory(id, (int viewId) => iframe);
+
+    return iFrame;
   }
 }

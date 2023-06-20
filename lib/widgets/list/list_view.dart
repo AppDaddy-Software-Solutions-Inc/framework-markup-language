@@ -246,8 +246,12 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
     // add list
     children.add(view);
 
-    // add busy
-    children.add(Center(child: busy));
+    // show busy
+    if (widget.model.showbusy)
+    {
+      children.add(Center(child: busy));
+    }
+
 
     view = Stack(children: children);
 

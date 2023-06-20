@@ -117,15 +117,20 @@ class _MapViewState extends WidgetState<MapView>
     //////////////////
    var reset = FloatingActionButton.extended(onPressed: _showAll, label: Text(phrase.reset), icon: Icon(Icons.zoom_out_map_outlined));
 
-    //////////
-    /* View */
-    //////////
+    // add busy
+    List<Widget> children = [map!, Positioned(top: 10, right: 10, child: reset)];
+    if (widget.model.showbusy)
+    {
+      children.add(Center(child: busy));
+    }
+
+    // View
     dynamic view = Container(
         child: GestureDetector(behavior: HitTestBehavior.opaque, onDoubleTap: () => true, onVerticalDragCancel: () => true, onVerticalDragUpdate: (_) => true, onVerticalDragStart: (_) => true, onVerticalDragDown: (_) => true, onVerticalDragEnd: (_) => true, onHorizontalDragCancel: () => true, onHorizontalDragUpdate: (_) => true, onHorizontalDragStart: (_) => true, onHorizontalDragDown: (_) => true, onHorizontalDragEnd: (_) => true, // block scroll events while writing
             child: Listener(behavior: HitTestBehavior.opaque, onPointerSignal: (ps) => true,
                 child: SizedBox(width: width, height: height,
                     child: Stack(fit: StackFit.expand,
-                        children: [map!, Positioned(top: 10, right: 10, child: reset), busy!])))));
+                        children: children)))));
 
     // apply user defined constraints
     return applyConstraints(view, widget.model.constraints);

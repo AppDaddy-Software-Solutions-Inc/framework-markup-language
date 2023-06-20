@@ -130,8 +130,15 @@ class FormViewState extends WidgetState<FormView> implements IGpsListener {
     /// Busy / Loading Indicator
     busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
 
+    // add busy
+    var children = [view];
+    if (widget.model.showbusy)
+    {
+      children.add(Positioned(child: busy!, left: 0, right: 0, top:0, bottom: 0));
+    }
+
     // stack gets the same size as the view when busy is positioned rather than center
-    view = WillPopScope(onWillPop: quit, child: Stack(children: [view, Positioned(child: busy!, left: 0, right: 0, top:0, bottom: 0)]));
+    view = WillPopScope(onWillPop: quit, child: Stack(children: children));
 
     // apply user defined constraints
     return view;

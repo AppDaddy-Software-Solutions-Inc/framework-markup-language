@@ -1245,7 +1245,10 @@ class _ChartViewState extends WidgetState<ChartView>
     children.insert(0, SafeArea(child: view));
 
     // add busy
-    children.add(Center(child: busy));
+    if (widget.model.showbusy)
+    {
+      children.add(Center(child: busy));
+    }
 
     // Display children over chart
     view = Stack(children: children);

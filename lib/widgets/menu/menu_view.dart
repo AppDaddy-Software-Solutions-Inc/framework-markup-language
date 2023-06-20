@@ -168,13 +168,16 @@ class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling
     /// Busy / Loading Indicator
     busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
 
-    //////////
-    /* View */
-    //////////
-    Widget view = Stack(children: [
-      _buildMenuItems(widget.model.myMaxWidthOrDefault),
-      Center(child: busy)
-    ]);
+    List<Widget> children = [_buildMenuItems(widget.model.myMaxWidthOrDefault)];
+
+    // show busy
+    if (widget.model.showbusy)
+    {
+      children.add(Center(child: busy));
+    }
+
+    // View
+    Widget view = Stack(children: children);
 
     return Container(color: widget.model.color ?? Theme.of(context).colorScheme.background, child: Center(child: SingleChildScrollView(controller: vScroller, child: view)));
   }

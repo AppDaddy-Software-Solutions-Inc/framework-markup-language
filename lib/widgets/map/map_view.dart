@@ -207,8 +207,11 @@ class _MapViewState extends WidgetState<MapView>
      // Busy / Loading Indicator
     busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
 
-    // add busy
-    children.add(Center(child: busy));
+    // show busy
+    if (widget.model.showbusy)
+    {
+      children.add(Center(child: busy));
+    }
 
     // view
     Widget view = Stack(children: children);

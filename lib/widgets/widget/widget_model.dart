@@ -254,6 +254,8 @@ class WidgetModel implements IDataSourceListener {
 
   double? get depth => _depth?.get();
 
+  bool showbusy = true;
+
   // busy
   BooleanObservable? get busyObservable => _busy;
   BooleanObservable? _busy;
@@ -265,7 +267,6 @@ class WidgetModel implements IDataSourceListener {
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get busy => _busy?.get() ?? false;
 
   WidgetModel(this.parent, String? id, {Scope? scope})
@@ -942,6 +943,9 @@ class WidgetModel implements IDataSourceListener {
     debug = Xml.get(node: xml, tag: 'debug');
     depth = Xml.get(node: xml, tag: 'depth');
     state = Xml.get(node: xml, tag: 'state');
+
+    // display the busy indicator
+    showbusy = S.toBool(Xml.get(node: xml, tag: 'showbusy')) ?? true;
 
     // register as datasource
     if ((this is IDataSource) && (scope != null)) {

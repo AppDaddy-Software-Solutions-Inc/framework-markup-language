@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/flex/flex_object.dart';
 import 'package:fml/widgets/box/stack/stack_object.dart';
@@ -14,7 +15,7 @@ class BoxView extends StatefulWidget implements IWidgetView
 {
   @override
   final BoxModel model;
-  final List<Widget>? children;
+  final List<LayoutBoxChildData>? children;
 
   BoxView(this.model, {this.children}) : super(key: ObjectKey(model));
 

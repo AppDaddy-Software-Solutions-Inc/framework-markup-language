@@ -573,6 +573,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
     }
     return super.execute(caller, propertyOrFunction, arguments);
   }
+
   @override
   Widget getView({Key? key}) => getReactiveView(FrameworkView(this));
 }

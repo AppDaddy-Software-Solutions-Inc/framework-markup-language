@@ -274,11 +274,19 @@ class GridModel extends BoxModel implements IScrolling
     for (var item in items) {
       this.items[i++] = item;
     }
+    busy="false";
   }
 
   GridItemModel? getItemModel(int item) {
     if ((item.isNegative) || (items.length <= item)) return null;
     return items[item];
+  }
+
+  @override
+  onDataSourceBusy(IDataSource source, bool busy)
+  {
+    this.busy = busy;
+    //notifyListeners('busy', this.busy);
   }
 
   @override

@@ -460,16 +460,22 @@ class _TableViewState extends WidgetState<TableView>
       );
     }
 
+    List<Widget> children = [
+    scrolledTable,
+    Positioned(top: headerHeight, right: 0, child: vslider),
+    Positioned(bottom: footerHeight, left: 0, child: hslider),
+    Positioned(bottom: 0, left: 0, child: footerOverlay1),
+    Positioned(bottom: 0, left: 0, child: footerOverlay2),
+    Positioned(bottom: 0, left: 0, child: footerOverlay3)];
+
+    // show busy
+    if (widget.model.showbusy)
+    {
+      children.add(Center(child: busy));
+    }
+
     // View
-    return Stack(children: [
-      scrolledTable,
-      Positioned(top: headerHeight, right: 0, child: vslider),
-      Positioned(bottom: footerHeight, left: 0, child: hslider),
-      Positioned(bottom: 0, left: 0, child: footerOverlay1),
-      Positioned(bottom: 0, left: 0, child: footerOverlay2),
-      Positioned(bottom: 0, left: 0, child: footerOverlay3),
-      Center(child: busy)
-    ]);
+    return Stack(children: children);
   }
 
   Widget headerBuilder({bool proxy = false}) {

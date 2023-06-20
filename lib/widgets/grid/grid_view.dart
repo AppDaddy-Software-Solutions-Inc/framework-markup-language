@@ -285,6 +285,11 @@ class _GridViewState extends WidgetState<GridView> {
 
     // save system constraints
     onLayout(constraints);
+    List<Widget> children = [];
+
+    /// Busy / Loading Indicator
+    busy ??= BusyView(BusyModel(widget.model,
+        visible: widget.model.busy, observable: widget.model.busyObservable));
 
     // build the prototype
     if (widget.model.size == null || widget.model.items.isEmpty)
@@ -296,7 +301,14 @@ class _GridViewState extends WidgetState<GridView> {
         var model = GridItemModel.fromXml(widget.model, widget.model.prototype);
         if (model != null)
         {
+          if (widget.model.showbusy)
+          {
+            children.add(Center(child: busy));
+          }
+
           prototypeGrid = Offstage(child: MeasuredView(UnconstrainedBox(child: GridItemView(model)), onMeasuredItem));
+          children.add(prototypeGrid);
+          prototypeGrid = Stack(children: children);
         }
       }
       catch (e)
@@ -345,11 +357,6 @@ class _GridViewState extends WidgetState<GridView> {
       count = (gridHeight / cellHeight).floor();
     }
 
-    /// Busy / Loading Indicator
-    busy ??= BusyView(BusyModel(widget.model,
-        visible: widget.model.busy, observable: widget.model.busyObservable));
-
-
     //////////
     /* View */
     //////////
@@ -387,8 +394,6 @@ class _GridViewState extends WidgetState<GridView> {
     // apply user defined constraints
     view = applyConstraints(view, widget.model.tightestOrDefault);
 
-    List<Widget> children = [];
-
     children.add(view);
 
     // Initialize scroll shadows to controller after building
@@ -397,7 +402,11 @@ class _GridViewState extends WidgetState<GridView> {
       children.add(ScrollShadowView(scrollShadow));
     }
 
-    children.add(Center(child: busy));
+    // show busy
+    if (widget.model.showbusy)
+    {
+      children.add(Center(child: busy));
+    }
 
     view = Stack(children: children);
 

@@ -231,7 +231,6 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
       Row(mainAxisSize: MainAxisSize.min, children: [view]);
     }
 
-
     return view;
   }
 }

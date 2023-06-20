@@ -19,15 +19,7 @@ class ListItemView extends StatefulWidget implements IWidgetView
 class _ListItemViewState extends WidgetState<ListItemView>
 {
   @override
-  Widget build(BuildContext context)
-  {
-    // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
-    // build the child views
-    List<Widget> children = widget.model.inflate();
-    if (children.isEmpty) children.add(Container());
-
-    return BoxView(widget.model);
-  }
+  Widget builder(BuildContext context, BoxConstraints constraints) => BoxView(widget.model);
 }

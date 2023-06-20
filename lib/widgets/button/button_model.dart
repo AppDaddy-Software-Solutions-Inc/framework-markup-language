@@ -231,7 +231,7 @@ class ButtonModel extends BoxModel
     if (viewableChildren.isEmpty && label != null)
     {
       children ??= [];
-      children!.add(TextModel(this, null, value: "{$id.label}"));
+      children!.add(TextModel(this, null, value: "{$id.label}", color: getTextColor(), decorationweight: 700));
     }
   }
 
@@ -273,6 +273,20 @@ class ButtonModel extends BoxModel
   Future<bool> onExit(BuildContext context) async
   {
     return await EventHandler(this).execute(_onexit);
+  }
+
+  Color getTextColor() {
+    if (context == null) {
+      return Colors.grey;
+    }
+    switch (buttontype) {
+      case 'elevated':
+        return Theme.of(context!).colorScheme.onPrimary;
+      case 'outlined':
+      case 'text':
+      default:
+        return color ?? Theme.of(context!).colorScheme.primary;
+    }
   }
 
   // returns the inner content model

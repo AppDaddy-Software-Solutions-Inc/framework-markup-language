@@ -4,10 +4,11 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/chart/series/chart_series_model.dart';
 import 'package:fml/widgets/chart/label/chart_label_model.dart';
 import 'package:fml/widgets/chart/axis/chart_axis_model.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/modal/modal_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/chart/chart_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -17,7 +18,8 @@ import 'package:xml/xml.dart';
 /// Chart [ChartModel]
 ///
 /// Defines the properties used to build a Chart
-class ChartModel extends DecoratedWidgetModel  {
+class ChartModel extends BoxModel
+{
   ChartAxisModel xaxis = ChartAxisModel(null, null, ChartAxis.X);
   ChartAxisModel yaxis = ChartAxisModel(null, null, ChartAxis.Y);
   final List<ChartSeriesModel> series = [];
@@ -294,6 +296,21 @@ class ChartModel extends DecoratedWidgetModel  {
       // DialogService().show(type: DialogType.error, title: phrase.error, description: e.message);
     }
     return true;
+  }
+
+  @override
+  List<Widget> inflate()
+  {
+    // process children
+    List<Widget> views = [];
+    for (var model in viewableChildren) {
+      if (model is! ModalModel)
+      {
+        var view = model.getView();
+        if (view != null) views.add(view);
+      }
+    }
+    return views;
   }
 
   @override

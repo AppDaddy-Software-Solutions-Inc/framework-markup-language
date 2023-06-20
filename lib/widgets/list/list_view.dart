@@ -5,6 +5,8 @@ import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart'        ;
+import 'package:fml/widgets/box/box_data.dart';
+import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart'       ;
 import 'package:fml/widgets/busy/busy_model.dart';
@@ -237,12 +239,6 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
     );
     }
 
-    // add margins
-    view = addMargins(view);
-
-    // apply user defined constraints
-    view = applyConstraints(view, widget.model.tightestOrDefault);
-
     // add list
     children.add(view);
 
@@ -250,6 +246,9 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
     children.add(Center(child: busy));
 
     view = Stack(children: children);
+
+    // create as Box
+    view = BoxView(widget.model, children: [LayoutBoxChildData(model: widget.model, child:view)]);
 
     return view;
   }

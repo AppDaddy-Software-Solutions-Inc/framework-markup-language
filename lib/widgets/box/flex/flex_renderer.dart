@@ -463,10 +463,8 @@ class FlexRenderer extends RenderBox
   @override
   void paint(PaintingContext context, Offset offset)
   {
-    if (!_hasOverflow) {
-      if (size > Size.zero && model.color != null) {
-        //context.canvas.drawRect(offset & size, Paint()..color = Colors.green);
-      }
+    if (!_hasOverflow)
+    {
       defaultPaint(context, offset);
       return;
     }

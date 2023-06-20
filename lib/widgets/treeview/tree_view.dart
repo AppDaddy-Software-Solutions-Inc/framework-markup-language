@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
+import 'package:fml/widgets/box/box_data.dart';
+import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/treeview/tree_model.dart';
 import 'package:fml/widgets/treeview/node/tree_node_view.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
@@ -58,6 +60,11 @@ class _TreeViewState extends WidgetState<TreeView>
     if (!widget.model.visible) return Offstage();
 
     // View
-    return ClipRect(child:ListView.builder(padding: EdgeInsets.zero, itemCount: widget.model.nodes.length, itemBuilder: (context, index) => TreeNodeView(widget.model.nodes[index])));
+    Widget view = ClipRect(child:ListView.builder(padding: EdgeInsets.zero, itemCount: widget.model.nodes.length, itemBuilder: (context, index) => TreeNodeView(widget.model.nodes[index])));
+
+    // create as Box
+    view = BoxView(widget.model, children: [LayoutBoxChildData(model: widget.model, child:view)]);
+
+    return view;
   }
 }

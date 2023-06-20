@@ -5,7 +5,7 @@ import 'package:fml/datasources/http/model.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/treeview/tree_view.dart';
 import 'package:fml/widgets/treeview/node/tree_node_model.dart';
@@ -13,7 +13,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class TreeModel extends DecoratedWidgetModel 
+class TreeModel extends BoxModel
 {
   // Data sourced prototype
   XmlElement? prototype;

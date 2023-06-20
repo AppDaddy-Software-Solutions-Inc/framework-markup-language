@@ -5,6 +5,8 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/box/box_data.dart';
+import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/map/map_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -213,8 +215,8 @@ class _MapViewState extends WidgetState<MapView>
     // view
     Widget view = Stack(children: children);
 
-    // apply user defined constraints
-    view = applyConstraints(view, widget.model.tightestOrDefault);
+    // create as Box
+    view = BoxView(widget.model, children: [LayoutBoxChildData(model: widget.model, child:view)]);
 
     return view;
   }

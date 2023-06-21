@@ -76,7 +76,7 @@ class PagerModel extends BoxModel
       _transition = StringObservable(Binding.toKey(id, 'transition'), v, scope: scope);
     }
   }
-  String get transition =>  _transition?.get() ?? "slide";
+  String get transition =>  _transition?.get() ?? 'slide';
 
   dynamic _pageSetter(dynamic value)
   {

@@ -496,13 +496,19 @@ class _ChartViewState extends WidgetState<ChartView>
   }
 
   charts_flutter.PieChart buildPieChart(List<charts_flutter.Series<dynamic, String>> series) {
+    charts_flutter.ArcRendererConfig<String>? labelRendererWithData;
+    // Flex: I Added this based on a bug Isaac reported where the arc label renderer without data held up
+    // other paint jobs using the same data, ie a MAP drawn after a pie chart using the same datasource.
+    if (series.isNotEmpty && series[0].data.isNotEmpty) {
+      labelRendererWithData = charts_flutter.ArcRendererConfig(arcRendererDecorators: [
+        charts_flutter.ArcLabelDecorator(labelPosition: charts_flutter.ArcLabelPosition.auto)
+      ]);
+    }
     return charts_flutter.PieChart<String>(
       series,
       animate: widget.model.animated,
       behaviors: getBehaviors<String>(),
-      defaultRenderer: charts_flutter.ArcRendererConfig(arcRendererDecorators: [
-        charts_flutter.ArcLabelDecorator(labelPosition: charts_flutter.ArcLabelPosition.auto)
-      ]),
+      defaultRenderer: labelRendererWithData,
       selectionModels: [
         charts_flutter.SelectionModelConfig(
           type: charts_flutter.SelectionModelType.info,

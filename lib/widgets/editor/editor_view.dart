@@ -3,7 +3,7 @@ import 'package:flutter_code_editor/flutter_code_editor.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/widgets/editor/editor_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_highlight/theme_map.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
@@ -11,8 +11,7 @@ import 'package:highlight/languages/http.dart';
 import 'package:highlight/languages/dart.dart';
 import 'package:highlight/languages/xml.dart';
 
-class EditorView extends StatefulWidget implements IWidgetView
-{
+class EditorView extends StatefulWidget implements IWidgetView {
   @override
   final EditorModel model;
   EditorView(this.model) : super(key: ObjectKey(model));
@@ -21,23 +20,19 @@ class EditorView extends StatefulWidget implements IWidgetView
   State<EditorView> createState() => _EditorViewState();
 }
 
-class _EditorViewState extends WidgetState<EditorView>
-{
+class _EditorViewState extends WidgetState<EditorView> {
   CodeController? _controller;
 
   @override
-  void dispose()
-  {
+  void dispose() {
     if (_controller != null) _controller!.dispose();
     super.dispose();
   }
 
   /// Callback to fire the [_EditorViewState.build] when the [EditorModel] changes
   @override
-  onModelChange(WidgetModel model, {String? property, dynamic value})
-  {
-    if (mounted)
-    {
+  onModelChange(WidgetModel model, {String? property, dynamic value}) {
+    if (mounted) {
       // value changes as user edits the text
       // we don't want to do a set state after every keystroke
       if (Binding.fromString(property)?.property == 'value' && _controller?.fullText == widget.model.value) return;
@@ -46,30 +41,27 @@ class _EditorViewState extends WidgetState<EditorView>
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
     var language = xml;
-    switch (widget.model.language)
-    {
-      case "xml" :
+    switch (widget.model.language) {
+      case "xml":
         language = xml;
         break;
 
-      case "dart" :
+      case "dart":
         language = dart;
         break;
 
-      case "http" :
+      case "http":
         language = http;
         break;
     }
 
     // build the controller
-    if (_controller == null || _controller?.language != language)
-    {
+    if (_controller == null || _controller?.language != language) {
       if (_controller != null) _controller!.dispose();
       _controller = CodeController(text: widget.model.value, language: language);
       _controller!.readOnlySectionNames = {'readonly'};
@@ -79,7 +71,18 @@ class _EditorViewState extends WidgetState<EditorView>
     if (_controller?.fullText != widget.model.value) _controller!.fullText = widget.model.value ?? "";
 
     // set the editor text theme
-    var theme = CodeThemeData(styles: themeMap.containsKey(widget.model.theme) ? themeMap[widget.model.theme] : themeMap.values.first);
-    return CodeTheme(data: theme, child: CodeField(controller: _controller!, onChanged: (_) {widget.model.value = _controller?.fullText;}, background: Colors.transparent, maxLines: null));
-    }
+    var theme = CodeThemeData(
+        styles: themeMap.containsKey(widget.model.theme) ? themeMap[widget.model.theme] : themeMap.values.first);
+    return CodeTheme(
+        data: theme,
+        child: CodeField(
+          controller: _controller!,
+          onChanged: (_) {
+            widget.model.value = _controller?.fullText;
+          },
+          background: Colors.transparent,
+          maxLines: null,
+          textStyle: TextStyle(fontSize: 14),
+          gutterStyle: GutterStyle(width: 80, margin: 0),));
   }
+}

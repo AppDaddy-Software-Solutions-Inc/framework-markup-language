@@ -26,16 +26,16 @@ class ButtonModel extends BoxModel
   final double defaultMargin = 3;
 
   @override
-  double? get marginTop => super.marginTop ?? (buttontype == 'elevated' ? defaultMargin : null);
+  double? get marginTop => super.marginTop ?? defaultMargin;
 
   @override
-  double? get marginRight => super.marginRight ?? (buttontype == 'elevated' ? defaultMargin : null);
+  double? get marginRight => super.marginRight ?? defaultMargin;
 
   @override
-  double? get marginBottom => super.marginBottom ?? (buttontype == 'elevated' ? defaultMargin : null);
+  double? get marginBottom => super.marginBottom ?? defaultMargin;
 
   @override
-  double? get marginLeft => super.marginLeft ?? (buttontype == 'elevated' ? defaultMargin : null);
+  double? get marginLeft => super.marginLeft ?? defaultMargin;
 
   @override
   LayoutType get layoutType => BoxModel.getLayoutType(layout);

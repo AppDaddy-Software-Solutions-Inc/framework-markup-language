@@ -2,6 +2,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:fml/observable/observable.dart';
 import 'package:fml/observable/scope.dart';
 
@@ -393,7 +394,9 @@ class ColorObservable extends Observable
         } else if (color.length == 7 && color.startsWith('#')) {
           c = Color(int.parse(color.substring(1, 7), radix: 16) + 0xFF000000);
         } else if (color.length == 9 && color.startsWith('#')) {
-          c = Color(int.parse(color.substring(1, 9), radix: 16) + 0x00000000);
+          String opacity = color.substring(7,9);
+          String mainColor = color.substring(1,7);
+          c = Color(int.parse('$opacity$mainColor', radix: 16) + 0x00000000);
         } else if (color.length == 8 && color.startsWith('0x')) {
           c = Color(int.parse(color.substring(2, 8), radix: 16) + 0xFF000000);
         } else if (color.length == 10 && color.startsWith('0x')) {

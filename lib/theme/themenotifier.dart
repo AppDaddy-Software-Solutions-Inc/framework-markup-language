@@ -2,10 +2,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:fml/helper/color.dart';
 import 'package:fml/hive/settings.dart';
 import 'package:fml/system.dart';
 import 'package:google_fonts/google_fonts.dart' deferred as fonts;
-import 'package:fml/observable/observables/color.dart';
 
 class ThemeNotifier with ChangeNotifier
 {
@@ -87,14 +87,14 @@ class ThemeNotifier with ChangeNotifier
     Settings().set('brightness', sBrightness);
     if (sColor != null)
     {
-      Color? colorScheme = ColorObservable.toColor(sColor);
+      Color? colorScheme = ColorHelper.fromString(sColor);
       System.theme.colorscheme = sColor;
       ThemeData themeData = ThemeData(colorSchemeSeed: colorScheme, brightness: brightness, fontFamily: System.theme.font, textTheme: fontTheme, useMaterial3: true);
       _themeData = themeData;
     }
     else
     {
-      ThemeData themeData = ThemeData(brightness: brightness, colorSchemeSeed: ColorObservable.toColor(System.theme.colorscheme), fontFamily: System.theme.font, textTheme: fontTheme, useMaterial3: true);
+      ThemeData themeData = ThemeData(brightness: brightness, colorSchemeSeed: ColorHelper.fromString(System.theme.colorscheme), fontFamily: System.theme.font, textTheme: fontTheme, useMaterial3: true);
       _themeData = themeData;
     }
     notifyListeners();

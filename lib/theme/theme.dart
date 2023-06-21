@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/theme/theme_model.dart';
-import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
 MyTheme theme = MyTheme();
@@ -21,7 +20,7 @@ class MyTheme {
 
   /// Derive theme from a color value and a https://fonts.google.com/ font
   ThemeData deriveTheme(String? fromValue, {String googleFont = font}) {
-    Color? col = ColorObservable.toColor(fromValue);
+    Color? col = ColorHelper.fromString(fromValue);
     Brightness? b = getBrightness();
 
     return ThemeData(
@@ -84,40 +83,40 @@ ThemeData applyCustomizations(ColorScheme base, ThemeModel m) {
     customizedTheme = ThemeData.from(
       colorScheme: ColorScheme(
         brightness: m.brightness == 'dark' ? Brightness.dark : Brightness.light,
-        background: S.toColor(m.background) ?? base.background,
-        onBackground: S.toColor(m.onbackground) ?? base.onBackground,
-        shadow: S.toColor(m.shadow) ?? base.shadow,
-        outline: S.toColor(m.outline) ?? base.outline,
-        surface: S.toColor(m.surface) ?? base.surface,
-        onSurface: S.toColor(m.onsurface) ?? base.onSurface,
-        surfaceVariant: S.toColor(m.surfacevariant) ?? base.surfaceVariant,
+        background: ColorHelper.fromString(m.background) ?? base.background,
+        onBackground: ColorHelper.fromString(m.onbackground) ?? base.onBackground,
+        shadow: ColorHelper.fromString(m.shadow) ?? base.shadow,
+        outline: ColorHelper.fromString(m.outline) ?? base.outline,
+        surface: ColorHelper.fromString(m.surface) ?? base.surface,
+        onSurface: ColorHelper.fromString(m.onsurface) ?? base.onSurface,
+        surfaceVariant: ColorHelper.fromString(m.surfacevariant) ?? base.surfaceVariant,
         onSurfaceVariant:
-            S.toColor(m.onsurfacevariant) ?? base.onSurfaceVariant,
-        inverseSurface: S.toColor(m.inversesurface) ?? base.inverseSurface,
+            ColorHelper.fromString(m.onsurfacevariant) ?? base.onSurfaceVariant,
+        inverseSurface: ColorHelper.fromString(m.inversesurface) ?? base.inverseSurface,
         onInverseSurface:
-            S.toColor(m.oninversesurface) ?? base.onInverseSurface,
-        primary: S.toColor(m.primary) ?? base.primary,
-        onPrimary: S.toColor(m.onprimary) ?? base.onPrimary,
+            ColorHelper.fromString(m.oninversesurface) ?? base.onInverseSurface,
+        primary: ColorHelper.fromString(m.primary) ?? base.primary,
+        onPrimary: ColorHelper.fromString(m.onprimary) ?? base.onPrimary,
         primaryContainer:
-            S.toColor(m.primarycontainer) ?? base.primaryContainer,
+            ColorHelper.fromString(m.primarycontainer) ?? base.primaryContainer,
         onPrimaryContainer:
-            S.toColor(m.onprimarycontainer) ?? base.onPrimaryContainer,
-        inversePrimary: S.toColor(m.inverseprimary) ?? base.inversePrimary,
-        secondary: S.toColor(m.secondary) ?? base.secondary,
-        onSecondary: S.toColor(m.onsecondary) ?? base.onSecondary,
+            ColorHelper.fromString(m.onprimarycontainer) ?? base.onPrimaryContainer,
+        inversePrimary: ColorHelper.fromString(m.inverseprimary) ?? base.inversePrimary,
+        secondary: ColorHelper.fromString(m.secondary) ?? base.secondary,
+        onSecondary: ColorHelper.fromString(m.onsecondary) ?? base.onSecondary,
         secondaryContainer:
-            S.toColor(m.secondarycontainer) ?? base.secondaryContainer,
+            ColorHelper.fromString(m.secondarycontainer) ?? base.secondaryContainer,
         onSecondaryContainer:
-            S.toColor(m.onsecondarycontainer) ?? base.onSecondaryContainer,
+            ColorHelper.fromString(m.onsecondarycontainer) ?? base.onSecondaryContainer,
         tertiaryContainer:
-            S.toColor(m.tertiarycontainer) ?? base.tertiaryContainer,
+            ColorHelper.fromString(m.tertiarycontainer) ?? base.tertiaryContainer,
         onTertiaryContainer:
-            S.toColor(m.ontertiarycontainer) ?? base.onTertiaryContainer,
-        error: S.toColor(m.error) ?? base.error,
-        onError: S.toColor(m.onerror) ?? base.onError,
-        errorContainer: S.toColor(m.errorcontainer) ?? base.errorContainer,
+            ColorHelper.fromString(m.ontertiarycontainer) ?? base.onTertiaryContainer,
+        error: ColorHelper.fromString(m.error) ?? base.error,
+        onError: ColorHelper.fromString(m.onerror) ?? base.onError,
+        errorContainer: ColorHelper.fromString(m.errorcontainer) ?? base.errorContainer,
         onErrorContainer:
-            S.toColor(m.onerrorcontainer) ?? base.onErrorContainer,
+            ColorHelper.fromString(m.onerrorcontainer) ?? base.onErrorContainer,
       ),
       useMaterial3: true,
     );

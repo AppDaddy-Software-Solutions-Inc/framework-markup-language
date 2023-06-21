@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
+import 'package:fml/helper/color.dart';
 import 'package:fml/helper/string.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/animation/animation_helper.dart';
@@ -150,8 +151,8 @@ Widget build(BuildContext context) => LayoutBuilder(builder: builder);
     // we must check from != to and begin !< end
 
     if (widget.model.type == "color") {
-      from = S.toColor(widget.model.from) ?? Colors.white;
-      to = S.toColor(widget.model.to) ?? Colors.black;
+      from = ColorHelper.fromString(widget.model.from) ?? Colors.white;
+      to = ColorHelper.fromString(widget.model.to) ?? Colors.black;
       newTween = ColorTween(
         begin: from,
         end: to,

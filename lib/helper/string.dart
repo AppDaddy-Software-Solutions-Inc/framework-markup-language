@@ -5,10 +5,8 @@ import 'dart:typed_data';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:fml/emoji.dart';
 import 'package:fml/log/manager.dart';
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:fml/phrase.dart';
-import 'package:fml/observable/observables/color.dart';
 import 'package:mime/mime.dart' deferred as mime;
 import 'package:uuid/uuid.dart';
 
@@ -215,33 +213,6 @@ class S {
     String pattern = "[^a-zA-Z0-9]";
     bool valid = RegExp(pattern).hasMatch(value);
     return valid;
-  }
-
-  /// Parse a String to a Flutter Color
-  ///
-  /// Works with plaintext colors like `red`, `blue`, `yellow`
-  /// Works with hex code colors like #FF00000 and with opacity hex #AA0000FF
-  static Color? toColor(String? color) {
-    Color? c;
-    Map<String, Color> colors = ColorObservable.colors;
-    try {
-      if (color != null) {
-        if ((colors.containsKey(color.toLowerCase()))) {
-          c = colors[color.toLowerCase()];
-        }
-        if (c == null && color.length == 7) {
-          c = Color(int.parse(color.substring(1, 7), radix: 16) + 0xFF000000);
-        }
-        if (c == null && color.length == 9) {
-          c = Color(int.parse(color.substring(1, 9), radix: 16) + 0x00000000);
-        }
-      }
-    } catch (e) {
-      c = null;
-      Log().debug(e.toString(),
-          caller: 'helper/string.dart => Color toColor(String color)');
-    }
-    return c;
   }
 
   /// Converts a String to a formattable DateTime object

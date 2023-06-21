@@ -624,8 +624,8 @@ class _ChartViewState extends WidgetState<ChartView>
               colorFn: (dynamic plot, _) => charts_flutter.ColorUtil.fromDartColor(
                   plot.color ??
                       series.color ??
-                      (ColorObservable.niceColors.length > _!
-                          ? ColorObservable.niceColors[_]!
+                      (ColorHelper.niceColors.length > _!
+                          ? ColorHelper.niceColors[_]!
                           : Colors.black)),
               domainFn: (dynamic plot, _) => plot.x,
               measureFn: (dynamic plot, _) => plot.y,
@@ -645,8 +645,8 @@ class _ChartViewState extends WidgetState<ChartView>
               colorFn: (dynamic plot, _) => charts_flutter.ColorUtil.fromDartColor(
                   plot.color ??
                       series.color ??
-                      (ColorObservable.niceColors.length > _!
-                          ? ColorObservable.niceColors[_]!
+                      (ColorHelper.niceColors.length > _!
+                          ? ColorHelper.niceColors[_]!
                           : Colors.black)),
               domainFn: (dynamic plot, _) => plot.x,
               measureFn: (dynamic plot, _) => plot.y,
@@ -666,8 +666,8 @@ class _ChartViewState extends WidgetState<ChartView>
               colorFn: (dynamic plot, _) => charts_flutter.ColorUtil.fromDartColor(
                   plot.color ??
                       series.color ??
-                      (ColorObservable.niceColors.length > _!
-                          ? ColorObservable.niceColors[_]!
+                      (ColorHelper.niceColors.length > _!
+                          ? ColorHelper.niceColors[_]!
                           : Colors.black)),
               domainFn: (dynamic plot, _) => plot.x,
               measureFn: (dynamic plot, _) => plot.y,

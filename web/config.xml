@@ -3,7 +3,7 @@
 
         <!-- Settings -->
         <APPLICATION_NAME 		value="SAMPLE APP" />
-        <VERSION                value="1.3.0"/>
+        <VERSION                value="2.0.1"/>
         <APP_ICON	 			value="assets/images/fml-logo.png" />
         <HOME_PAGE       		value="templates/main.xml" />
         <LOGIN_PAGE             value=""/>

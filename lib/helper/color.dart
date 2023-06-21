@@ -7,54 +7,55 @@ import 'package:fml/log/manager.dart';
 class ColorHelper {
 
   @override
-  dynamic to(dynamic value)
-  {
-    try
-    {
+  dynamic to(dynamic value) {
+    try {
       if (value == null)   return null;
       if (value is Color)  return value;
       if (value is String) return fromString(value);
       return Exception();
     }
-    catch(e)
-    {
+    catch(e) {
       return e;
     }
   }
 
-  static Color? fromString(String? color)
-  {
+  static Color? fromString(String? color) {
     Color? c;
-    try
-    {
-      if (color != null && color != '')
-      {
+    try {
+      if (color != null && color != '') {
         // color code
         if (colors.containsKey(color.toLowerCase())) {
           c = colors[color.toLowerCase()];
-        } else if (color.toLowerCase() == 'random') {
+        }
+        else if (color.toLowerCase() == 'random') {
           c = colors[colors.keys.elementAt(Random().nextInt(colors.length))];
-        } else if (color.length == 7 && color.startsWith('#')) {
+        }
+        else if (color.length == 7 && color.startsWith('#')) {
           c = Color(int.parse(color.substring(1, 7), radix: 16) + 0xFF000000);
-        } else if (color.length == 9 && color.startsWith('#')) {
+        }
+        else if (color.length == 9 && color.startsWith('#')) {
           String opacity = color.substring(7,9);
           String mainColor = color.substring(1,7);
           c = Color(int.parse('$opacity$mainColor', radix: 16) + 0x00000000);
-        } else if (color.length == 8 && color.startsWith('0x')) {
+        }
+        else if (color.length == 8 && color.startsWith('0x')) {
           c = Color(int.parse(color.substring(2, 8), radix: 16) + 0xFF000000);
-        } else if (color.length == 10 && color.startsWith('0x')) {
+        }
+        else if (color.length == 10 && color.startsWith('0x')) {
           c = Color(int.parse(color.substring(2, 10), radix: 16) + 0x00000000);
-        } else if (color.length == 17 && color.startsWith('Color(0x')) {
+        }
+        else if (color.length == 17 && color.startsWith('Color(0x')) {
           c = Color(int.parse(color.substring(8, 16), radix: 16) + 0x00000000);
-        } else if (color.length == 47 && color.startsWith('MaterialColor(primary value: Color(0x')) {
+        }
+        else if (color.length == 47 && color.startsWith('MaterialColor(primary value: Color(0x')) {
           c = Color(int.parse(color.substring(37, 45), radix: 16) + 0x00000000);
-        } else if (color.length == 53 && color.startsWith('MaterialAccentColor(primary value: Color(0x')) {
+        }
+        else if (color.length == 53 && color.startsWith('MaterialAccentColor(primary value: Color(0x')) {
           c = Color(int.parse(color.substring(43, 51), radix: 16) + 0x00000000);
         }
       }
     }
-    catch(e)
-    {
+    catch(e) {
       c = null;
       Log().debug(e.toString(),
           caller: 'helper/color.dart => Color toColor(String color)');
@@ -86,8 +87,7 @@ class ColorHelper {
     return brightness < 0.5 ? darken(color, amount) : lighten(color, amount);
   }
 
-  static Map<String,Color> colors =
-  {
+  static Map<String,Color> colors = {
     'red'                 : Colors.red,
     'redaccent'           : Colors.redAccent,
     'pink'                : Colors.pink,

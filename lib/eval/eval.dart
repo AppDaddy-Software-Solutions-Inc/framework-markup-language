@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:math';
 import 'package:fml/crypto/crypto.dart';
+import 'package:fml/helper/time.dart';
 import 'package:fml/system.dart';
 import 'package:intl/intl.dart';
 import 'package:fml/eval/evaluator.dart';
@@ -19,7 +20,7 @@ class Eval
   static final ExpressionEvaluator evaluator = const ExpressionEvaluator();
 
   /// The String value mapping of all the functions
-  static final Map<String, dynamic> functions = {'acos': acos, 'asin': asin, 'atan': atan, 'bit': _bit, 'bytes': _bytes, 'case' : _case, 'ceil': _ceil, 'contains': _contains, 'cos': cos, 'decrypt': _decrypt, 'distance': _distance, 'encrypt': _encrypt, 'endsWith': _endsWith, 'endswith': _endsWith, 'floor': _floor, 'hash' : _hash, 'if': _if, 'isBool' : _isBool, 'isbool' : _isBool, 'isBoolean' : _isBool, 'isboolean' : _isBool, 'isNull': _isNull, 'isnull': _isNull, 'isNullOrEmpty': _isNullOrEmpty, 'isnullorempty': _isNullOrEmpty, 'isNum' : _isNumeric, 'isnum' : _isNumeric, 'isNumeric' : _isNumeric, 'isnumeric' : _isNumeric, 'join': _join, 'length': _length, 'mod': _mod, 'noe': _isNullOrEmpty, 'number': _number, 'nvl': _nvl, 'pi': pi / 5, 'regex': _regex, 'replace': _replace, 'round': _round, 'sin': sin, 'startsWith': _startsWith, 'startswith': _startsWith, 'substring': _substring, 'tan': tan, 'toBool': _toBool, 'tobool': _toBool, 'toBoolean': _toBool, 'toboolean': _toBool, 'toDate': _toDate, 'todate': _toDate, 'toLower' : _toLower, 'tolower': _toLower, 'toNum': _toNum, 'tonum': _toNum, 'toNumber': _toNum, 'tonumber': _toNum, 'toStr': _toString, 'tostr': _toString, 'toString': _toString, 'tostring': _toString, 'toUpper' : _toUpper, 'toupper': _toUpper, 'truncate': _truncate,};
+  static final Map<String, dynamic> functions = {'acos': acos, 'addTime': _addTime, 'addtime': _addTime, 'asin': asin, 'atan': atan, 'bit': _bit, 'bytes': _bytes, 'case' : _case, 'ceil': _ceil, 'contains': _contains, 'cos': cos, 'decrypt': _decrypt, 'distance': _distance, 'encrypt': _encrypt, 'endsWith': _endsWith, 'endswith': _endsWith, 'floor': _floor, 'hash' : _hash, 'if': _if, 'isAfter': _isAfter, 'isafter': _isAfter, 'isBefore': _isBefore, 'isbefore': _isBefore, 'isBool' : _isBool, 'isbool' : _isBool, 'isBoolean' : _isBool, 'isboolean' : _isBool, 'isNull': _isNull, 'isnull': _isNull, 'isNullOrEmpty': _isNullOrEmpty, 'isnullorempty': _isNullOrEmpty, 'isNum' : _isNumeric, 'isnum' : _isNumeric, 'isNumeric' : _isNumeric, 'isnumeric' : _isNumeric, 'join': _join, 'length': _length, 'mod': _mod, 'noe': _isNullOrEmpty, 'number': _number, 'nvl': _nvl, 'pi': pi / 5, 'regex': _regex, 'replace': _replace, 'round': _round, 'sin': sin, 'startsWith': _startsWith, 'startswith': _startsWith, 'substring': _substring, 'subtractTime': _subtractTime, 'subtracttime': _subtractTime, 'tan': tan, 'timeBetween': _timeBetween, 'timebetween': _timeBetween, 'toBool': _toBool, 'tobool': _toBool, 'toBoolean': _toBool, 'toboolean': _toBool, 'toDate': _toDate, 'todate': _toDate, 'toEpoch': _toEpoch, 'toepoch': _toEpoch, 'toLower' : _toLower, 'tolower': _toLower, 'toNum': _toNum, 'tonum': _toNum, 'toNumber': _toNum, 'tonumber': _toNum, 'toStr': _toString, 'tostr': _toString, 'toString': _toString, 'tostring': _toString, 'toUpper' : _toUpper, 'toupper': _toUpper, 'truncate': _truncate,};
 
   static dynamic evaluate(String? expression, {Map<String?, dynamic>? variables, Map<String?, dynamic>? altFunctions})
   {
@@ -627,4 +628,65 @@ class Eval
     }
     return value;
   }
+
+  /// Returns the epoch of a DateTime String
+  static int? _toEpoch(dynamic dts) {
+    if (dts == null || dts is! String) return null;
+    DateTime? dt = S.toDate(dts);
+    if (dt == null) return null;
+    return dt.millisecondsSinceEpoch;
+  }
+
+  /// Takes in 2 DateTime Strings and returns true if the first is after the second
+  /// otherwise it returns false except, when an input is an invalid format it will return null.
+  static bool? _isAfter(dynamic dts1, dynamic dts2) {
+    if (dts1 == null || dts1 is! String || dts2 == null || dts2 is! String) return null;
+    DateTime? dt1 = S.toDate(dts1);
+    DateTime? dt2 = S.toDate(dts2);
+    if (dt1 == null || dt2 == null) return null;
+    return DT.isAfter(dt1, dt2);
+  }
+
+  /// Takes in 2 DateTime Strings and returns true if the first is before the second
+  /// otherwise it returns false, except when an input is an invalid format it will return null.
+  static bool? _isBefore(dynamic dts1, dynamic dts2) {
+    if (dts1 == null || dts1 is! String || dts2 == null || dts2 is! String) return null;
+    DateTime? dt1 = S.toDate(dts1);
+    DateTime? dt2 = S.toDate(dts2);
+    if (dt1 == null || dt2 == null) return null;
+    return DT.isBefore(dt1, dt2);
+  }
+
+  /// Takes in 2 DateTime Strings and returns a human readable string describing the time between.
+  /// When either input is an invalid format it will return null.
+  static String? _timeBetween(dynamic dts1, dynamic dts2) {
+    if (dts1 == null || dts1 is! String || dts2 == null || dts2 is! String) return null;
+    DateTime? dt1 = S.toDate(dts1);
+    DateTime? dt2 = S.toDate(dts2);
+    if (dt1 == null || dt2 == null) return null;
+    return DT.timeBetween(dt1, dt2);
+  }
+
+  /// Takes in a plain language time value String and adds it to a DateTime String.
+  /// Plain language time values ie: `500ms`, `1 year`, `3 weeks`, for more see [TimeUnitDuration]
+  static String? _addTime(dynamic add, dynamic dts) {
+    if (add == null || add is! String || dts == null || dts is! String) return null;
+    TimeUnitDuration addTUD = TimeUnitDuration.fromString(add);
+    if (addTUD.amount == 0) return null;
+    DateTime? dt = S.toDate(dts);
+    if (dt == null) return null;
+    return DT.add(dt, addTUD).toString();
+  }
+
+  /// Takes in a plain language time value String and subtracts it from a DateTime String.
+  /// Plain language time values ie: `500ms`, `1 year`, `3 weeks`, for more see [TimeUnitDuration]
+  static String? _subtractTime(dynamic subtract, dynamic dts) {
+    if (subtract == null || subtract is! String || dts == null || dts is! String) return null;
+    TimeUnitDuration addTUD = TimeUnitDuration.fromString(subtract);
+    if (addTUD.amount == 0) return null;
+    DateTime? dt = S.toDate(dts);
+    if (dt == null) return null;
+    return DT.subtract(dt, addTUD).toString();
+  }
+
 }

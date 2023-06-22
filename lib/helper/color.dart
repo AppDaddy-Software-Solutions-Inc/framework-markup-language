@@ -6,7 +6,6 @@ import 'package:fml/log/manager.dart';
 
 class ColorHelper {
 
-  @override
   dynamic to(dynamic value) {
     try {
       if (value == null)   return null;

@@ -667,7 +667,8 @@ class Eval
     return DT.timeBetween(dt1, dt2);
   }
 
-  ///
+  /// Takes in a plain language time value String and adds it to a DateTime String.
+  /// Plain language time values ie: `500ms`, `1 year 3 weeks` and even `1d 1hours10month 100 seconds`
   static String? _addTime(dynamic add, dynamic dts) {
     if (add == null || add !is String || dts == null || dts !is String) return null;
     TimeUnitDuration addTUD = TimeUnitDuration.fromString(add);
@@ -677,6 +678,8 @@ class Eval
     return DT.add(dt, addTUD).toString();
   }
 
+  /// Takes in a plain language time value String and subtracts it from a DateTime String.
+  /// Plain language time values ie: `500ms`, `1 year 3 weeks` and even `1d 1hours10month 100 seconds`
   static String? _subtractTime(dynamic subtract, dynamic dts) {
     if (subtract == null || subtract !is String || dts == null || dts !is String) return null;
     TimeUnitDuration addTUD = TimeUnitDuration.fromString(subtract);

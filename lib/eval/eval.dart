@@ -631,7 +631,7 @@ class Eval
 
   /// Returns the epoch of a DateTime String
   static int? _toEpoch(dynamic dts) {
-    if (dts == null || dts !is String) return null;
+    if (dts == null || dts is! String) return null;
     DateTime? dt = S.toDate(dts);
     if (dt == null) return null;
     return dt.millisecondsSinceEpoch;
@@ -640,7 +640,7 @@ class Eval
   /// Takes in 2 DateTime Strings and returns true if the first is after the second
   /// otherwise it returns false except, when an input is an invalid format it will return null.
   static bool? _isAfter(dynamic dts1, dynamic dts2) {
-    if (dts1 == null || dts1 !is String || dts2 == null || dts2 !is String) return null;
+    if (dts1 == null || dts1 is! String || dts2 == null || dts2 is! String) return null;
     DateTime? dt1 = S.toDate(dts1);
     DateTime? dt2 = S.toDate(dts2);
     if (dt1 == null || dt2 == null) return null;
@@ -650,7 +650,7 @@ class Eval
   /// Takes in 2 DateTime Strings and returns true if the first is before the second
   /// otherwise it returns false, except when an input is an invalid format it will return null.
   static bool? _isBefore(dynamic dts1, dynamic dts2) {
-    if (dts1 == null || dts1 !is String || dts2 == null || dts2 !is String) return null;
+    if (dts1 == null || dts1 is! String || dts2 == null || dts2 is! String) return null;
     DateTime? dt1 = S.toDate(dts1);
     DateTime? dt2 = S.toDate(dts2);
     if (dt1 == null || dt2 == null) return null;
@@ -660,7 +660,7 @@ class Eval
   /// Takes in 2 DateTime Strings and returns a human readable string describing the time between.
   /// When either input is an invalid format it will return null.
   static String? _timeBetween(dynamic dts1, dynamic dts2) {
-    if (dts1 == null || dts1 !is String || dts2 == null || dts2 !is String) return null;
+    if (dts1 == null || dts1 is! String || dts2 == null || dts2 is! String) return null;
     DateTime? dt1 = S.toDate(dts1);
     DateTime? dt2 = S.toDate(dts2);
     if (dt1 == null || dt2 == null) return null;
@@ -668,9 +668,9 @@ class Eval
   }
 
   /// Takes in a plain language time value String and adds it to a DateTime String.
-  /// Plain language time values ie: `500ms`, `1 year 3 weeks` and even `1d 1hours10month 100 seconds`
+  /// Plain language time values ie: `500ms`, `1 year`, `3 weeks`, for more see [TimeUnitDuration]
   static String? _addTime(dynamic add, dynamic dts) {
-    if (add == null || add !is String || dts == null || dts !is String) return null;
+    if (add == null || add is! String || dts == null || dts is! String) return null;
     TimeUnitDuration addTUD = TimeUnitDuration.fromString(add);
     if (addTUD.amount == 0) return null;
     DateTime? dt = S.toDate(dts);
@@ -679,9 +679,9 @@ class Eval
   }
 
   /// Takes in a plain language time value String and subtracts it from a DateTime String.
-  /// Plain language time values ie: `500ms`, `1 year 3 weeks` and even `1d 1hours10month 100 seconds`
+  /// Plain language time values ie: `500ms`, `1 year`, `3 weeks`, for more see [TimeUnitDuration]
   static String? _subtractTime(dynamic subtract, dynamic dts) {
-    if (subtract == null || subtract !is String || dts == null || dts !is String) return null;
+    if (subtract == null || subtract is! String || dts == null || dts is! String) return null;
     TimeUnitDuration addTUD = TimeUnitDuration.fromString(subtract);
     if (addTUD.amount == 0) return null;
     DateTime? dt = S.toDate(dts);

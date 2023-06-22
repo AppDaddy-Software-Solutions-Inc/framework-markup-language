@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/helper/time.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart/chart_model.dart';
 import 'package:fml/widgets/chart/label/chart_label_model.dart';

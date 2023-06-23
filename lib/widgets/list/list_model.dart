@@ -359,17 +359,18 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
   Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async
   {
     busy = true;
-    if (list != null)
-    {
+
       clean = true;
 
       // clear items
       items.forEach((_,item) => item.dispose());
       items.clear();
 
-      _dataset = list;
-      notifyListeners('list', items);
-    }
+    if (list != null)
+    {_dataset = list;   }
+    else _dataset = Data();
+    notifyListeners('list', items);
+
     busy = false;
     return true;
   }

@@ -1,9 +1,7 @@
 <FML id="Home" version="1.00" center="true">
 	<SCROLL center="true">
 			<SBOX center="true" pad="20">
-
 			<IMAGE url="images/fml-logo.png" width="100"/>
-
 			<PAD top="20"/>
 			<TXT value="Flutter Markup Language" style="h4" />
 			<PAD top="40"/>
@@ -15,9 +13,7 @@
 			<PAD top="30"/>
 			<TXT value="Find us on:" color="grey"/>
 			<PAD top="10"/>
-
 			<ROW center="true" wrap="true">
-
 				<BTN onclick="open('https://discord.gg/NEXAXmNXTZ');">
 					<IMAGE url="images/discord.svg" height="40"/>
 				</BTN>
@@ -30,9 +26,7 @@
 				<BTN onclick="open('https://github.com/AppDaddy-Software-Solutions-Inc/Flutter-Markup-Language');" center="true">
 					<IMAGE url="images/github.svg" height="40"/>
 				</BTN>
-
 			</ROW>
-
 		</SBOX>
 	</SCROLL>
 </FML> 

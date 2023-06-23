@@ -116,14 +116,14 @@ dependencies:
   google_fonts: ^4.0.4
   # Apache-2.0
 
-  # Updated 2022/10/20
-  google_mlkit_barcode_scanning: ^0.6.0
+  # Updated 2023/06/23
+  google_mlkit_barcode_scanning: ^0.7.0
   # MIT
 
   # google_mlkit_face_detection: ^0.2.0
 
-  # Updated 2022/10/20
-  google_mlkit_text_recognition: ^0.6.0
+  # Updated 2022/06/23
+  google_mlkit_text_recognition: ^0.8.1
   # MIT
 
   # Updated 2022/05/26

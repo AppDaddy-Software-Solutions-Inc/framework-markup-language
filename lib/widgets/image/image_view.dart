@@ -54,7 +54,7 @@ class ImageView extends StatefulWidget implements IWidgetView
       // error handler
       Widget errorHandler(BuildContext content, Object object, StackTrace? stacktrace)
       {
-        Log().debug("Bad image url (${url?.substring(0,min(100,url.length - 1))}. Error is $object", caller: "errorHandler");
+        Log().debug("Bad image url (${url?.substring(0,min(100,url.length))}. Error is $object", caller: "errorHandler");
         if (defaultImage == null) return Icon(Icons.broken_image_outlined, size: 36, color: Colors.grey);
         if (defaultImage.toLowerCase().trim() == 'none') return Container();
         return getImage(defaultImage, animate, defaultImage: null, fit: fit, width: width, height: height, filter: filter, fade: fade, fadeDuration: fadeDuration);

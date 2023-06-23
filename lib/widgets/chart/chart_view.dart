@@ -1237,7 +1237,13 @@ class _ChartViewState extends WidgetState<ChartView>
           view = buildOrdinalChart(series!);
           break;
         case ChartType.pieChart:
-          view = buildPieChart((series as List<charts_flutter.Series<dynamic, String>>));
+          if (series == null || series.isEmpty) {
+            view = Center(child: Icon(Icons.add_chart));
+          } else if (series[0].data.isNotEmpty) {
+            view = buildPieChart((series as List<charts_flutter.Series<dynamic, String>>));
+          } else {
+            view = Center(child: Icon(Icons.add_chart));
+          }
           break;
         case ChartType.timeSeriesChart:
           view = buildTimeChart(series!);

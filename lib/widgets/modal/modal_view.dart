@@ -344,13 +344,13 @@ class ModalViewState extends WidgetState<ModalView>
       lastWidth  = width;
       lastHeight = height;
 
-      print('on drag $dx,$dy...');
+      // print('on drag $dx,$dy...');
     });
   }
 
   onDragEnd(DragEndDetails details)
   {
-    print('on drag end ...');
+    // print('on drag end ...');
     if (!widget.model.draggable || widget.model.modal) return;
     var viewport = MediaQuery.of(context).size;
     bool minimize = (dx! + width! < 0) || (dx! > viewport.width) || (dy! + height! < 0) || (dy! > viewport.height);

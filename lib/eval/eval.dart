@@ -403,11 +403,14 @@ class Eval
     if (S.isNullOrEmpty(val)) return '';
     int start = S.toInt(startIndex) ?? 0;
     int end   = S.toInt(endIndex) ?? val.length;
-    if(end > val.length) {
-      end = val.length;
-    }
     if (start < 0 && (start * -1) <= val.length) {
-      return val.substring(0, val.length + start);
+      start = val.length + start;
+    }
+    if (end < 0 && (end * -1) <= val.length) {
+      end = val.length + end;
+    }
+    if (end > val.length) {
+      end = val.length;
     }
     if (start >= end) {
       return ''; // out of range

@@ -367,8 +367,15 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
       items.clear();
 
     if (list != null)
-    {_dataset = list;   }
-    else _dataset = Data();
+    {
+      _dataset = list;
+    }
+    else
+    {
+      _dataset = Data();
+    }
+
+    // notify listeners
     notifyListeners('list', items);
 
     busy = false;

@@ -58,10 +58,7 @@ class ListObservable extends Observable with ListMixin<dynamic>
   ListObservable(String? name, dynamic value, {Scope? scope, OnChangeCallback? listener, Getter? getter, Setter? setter}) : super(name, value, scope: scope, listener: listener, getter: getter, setter: setter);
 
   @override
-  List? get()
-  {
-    return (_value.isNotEmpty) ? _value : null;
-  }
+  List get() => _value;
 
   @override
   dynamic to(dynamic value)

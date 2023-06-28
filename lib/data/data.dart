@@ -233,18 +233,28 @@ class Data with ListMixin<dynamic>
               done = true;
             }
             else if (node.entries.length >  1) {
-              // If any two nodes share the same key we know its the repeated element
-              if (node.entries.first.key == node.entries.last.key) {
+              // If any two nodes share the same key (ignoring xml attribute elements denoted with a _ prefix)
+              // then we know its the repeated element. This is required as JSON has unnamed Lists and XML does not,
+              // as well XML has attributes which get converted to elements and added as prefixed (_) entries in JSON.
+              Iterable<MapEntry>? nonXmlEntries = node.entries.where((e) => !e.key.toString().startsWith('_'));
+              // Once excluding xmlEntries, if there are multiple entries we have the root
+              if (nonXmlEntries.length > 1) {
                 done = true;
               }
               // If the nodes don't all have the same id we aren't at the repeated element
               else {
-                MapEntry? listEntry = node.entries.firstWhereOrNull((e) => e.value is List);
-                if (listEntry != null) {
+                MapEntry? listEntry = node.entries.firstWhereOrNull((e) => e.value is List && e.value.length > 0);
+                if (listEntry == null) {
+                  // No deeper repeated element exists
+                  done = true;
+                }
+                else {
                   name = listEntry.key;
                   root = (root == null) ? name : "$root.$name";
                   node = listEntry;
-                  if ((node is Map) && (node.entries.isNotEmpty) && (node.values.first is String)) done = true;
+                  if ((node is Map) && (node.entries.isNotEmpty) && (node.values.first is String)) {
+                    done = true;
+                  }
                 }
               }
             }

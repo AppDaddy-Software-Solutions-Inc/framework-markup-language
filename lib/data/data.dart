@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:collection';
+import 'package:collection/collection.dart';
 import 'package:fml/data/dotnotation.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
@@ -228,9 +229,26 @@ class Data with ListMixin<dynamic>
         {
           if (node is Map)
           {
-            if (node.entries.isEmpty) done = true;
-            if (node.entries.length >  1) done = true;
-            if (node.entries.length == 1)
+            if (node.entries.isEmpty) {
+              done = true;
+            }
+            else if (node.entries.length >  1) {
+              // If any two nodes share the same key we know its the repeated element
+              if (node.entries.first.key == node.entries.last.key) {
+                done = true;
+              }
+              // If the nodes don't all have the same id we aren't at the repeated element
+              else {
+                MapEntry? listEntry = node.entries.firstWhereOrNull((e) => e.value is List);
+                if (listEntry != null) {
+                  name = listEntry.key;
+                  root = (root == null) ? name : "$root.$name";
+                  node = listEntry;
+                  if ((node is Map) && (node.entries.isNotEmpty) && (node.values.first is String)) done = true;
+                }
+              }
+            }
+            else if (node.entries.length == 1)
             {
               var name = node.keys.first;
               root = (root == null) ? name : "$root.$name";

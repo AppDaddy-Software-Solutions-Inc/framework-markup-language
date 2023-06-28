@@ -27,12 +27,6 @@ class DetectableImage
 
     final inputImageFormat = InputImageFormatValue.fromRawValue(image.format.raw) ?? InputImageFormat.nv21;
 
-    // final planeData = image.planes.map((Plane plane)
-    // {
-    //     return InputImagePlaneMetadata(bytesPerRow: plane.bytesPerRow, height: plane.height, width: plane.width,);
-    // }).toList();
-    // final inputImageData = InputImageData(size: imageSize, imageRotation: imageRotation, inputImageFormat: inputImageFormat, planeData: planeData,);
-
     final inputImageData = InputImageMetadata(size: imageSize, rotation: imageRotation, format: inputImageFormat, bytesPerRow: image.planes[0].bytesPerRow,);
 
     return DetectableImage(InputImage.fromBytes(bytes: bytes, metadata: inputImageData));

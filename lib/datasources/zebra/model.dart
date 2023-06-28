@@ -12,6 +12,11 @@ import 'package:fml/helper/common_helpers.dart';
 
 class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener
 {
+  // disable datasource by default when not top of stack
+  // override by setting background="true"
+  @override
+  bool get allowBackgroundExecution => false;
+
   @override
   bool get autoexecute => super.autoexecute ?? true;
 

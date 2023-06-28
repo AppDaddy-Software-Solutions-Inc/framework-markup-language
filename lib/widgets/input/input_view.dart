@@ -627,7 +627,7 @@ class _InputViewState extends WidgetState<InputView>
     // set the text color arrays
     Color? enabledTextColor = widget.model.textcolor;
     Color? disabledTextColor = Theme.of(context).disabledColor;
-    Color? hintTextColor = widget.model.textcolor?.withOpacity(0.7) ?? Theme.of(context).focusColor;
+    Color? hintTextColor = widget.model.textcolor?.withOpacity(0.7) ?? Theme.of(context).colorScheme.onSurfaceVariant;
     Color? errorTextColor = Theme.of(context).colorScheme.error;
 
     double? fontsize = widget.model.size;

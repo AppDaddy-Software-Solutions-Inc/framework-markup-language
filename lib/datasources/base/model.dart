@@ -21,6 +21,11 @@ enum ListTypes { replace, lifo, fifo, append, prepend }
 
 class DataSourceModel extends ViewableWidgetModel implements IDataSource
 {
+  // allow datasource to continue execution if not
+  // top of stack
+  // override by setting background="false"
+  bool get allowBackgroundExecution => true;
+
   // data override
   @override
   Data? get data
@@ -433,13 +438,8 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     // register the datasource with the scope manager
     if (scope != null) scope!.registerDataSource(this);
 
-    // disable the datasource when the framework isn't active (i.e. top of stack)
-    bool? runInBackground = S.toBool(Xml.get(node: xml, tag: 'background'));
-    if ((runInBackground == false) &&
-        (framework != null) &&
-        (framework!.indexObservable != null)) {
-      framework!.indexObservable!.registerListener(onIndexChange);
-    }
+    bool runInBackground = S.toBool(Xml.get(node: xml, tag: 'background')) ?? allowBackgroundExecution;
+    if (!runInBackground) framework?.indexObservable?.registerListener(onIndexChange);
   }
 
   void onIndexChange(Observable index) {

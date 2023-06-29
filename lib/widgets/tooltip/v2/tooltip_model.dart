@@ -31,19 +31,6 @@ class TooltipModel extends ViewableWidgetModel
   }
   Color? get color => _color?.get();
 
-  // padding
-  DoubleObservable? _padding;
-  @override
-  set margins(dynamic v)
-  {
-    if (_padding != null) {
-      _padding!.set(v);
-    } else if (v != null) {
-      _padding = DoubleObservable(Binding.toKey(id, 'padding'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  double get margins => _padding?.get() ?? 14.0;
-
   StringObservable? _position;
   set position(dynamic v)
   {
@@ -71,7 +58,7 @@ class TooltipModel extends ViewableWidgetModel
       _distance = DoubleObservable(Binding.toKey(id, 'distance'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  double get distance => _distance?.get() ?? 10.0;
+  double get distance => _distance?.get() ?? 8.0;
 
   /// [radius] Border radius around the tooltip.
   DoubleObservable? _radius;

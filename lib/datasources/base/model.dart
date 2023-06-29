@@ -21,11 +21,6 @@ enum ListTypes { replace, lifo, fifo, append, prepend }
 
 class DataSourceModel extends ViewableWidgetModel implements IDataSource
 {
-  // allow datasource to continue execution if not
-  // top of stack
-  // override by setting background="false"
-  bool get allowBackgroundExecution => true;
-
   // data override
   @override
   Data? get data
@@ -55,19 +50,34 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     if (!disposed && enabled) start();
   }
 
+  // disable datasource by default when not top of stack
+  // override by setting background="false"
+  bool enabledInBackground = true;
+
+  // position in stack
+  bool _isInBackground = false;
+
   // enabled
   BooleanObservable? _enabled;
   @override
-  set enabled(dynamic v) {
-    if (_enabled != null) {
+  set enabled(dynamic v)
+  {
+    if (_enabled != null)
+    {
       _enabled!.set(v);
-    } else if (v != null) {
-      _enabled = BooleanObservable(Binding.toKey(id, 'enabled'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else if (v != null)
+    {
+      _enabled = BooleanObservable(Binding.toKey(id, 'enabled'), v, scope: scope, listener: onPropertyChange);
     }
   }
+
   @override
-  bool get enabled => _enabled?.get() ?? true;
+  bool get enabled
+  {
+    if (!enabledInBackground && _isInBackground) return false;
+    return _enabled?.get() ?? true;
+  }
 
   // queue
   StringObservable? _queuetype;
@@ -438,16 +448,19 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     // register the datasource with the scope manager
     if (scope != null) scope!.registerDataSource(this);
 
-    bool runInBackground = S.toBool(Xml.get(node: xml, tag: 'background')) ?? allowBackgroundExecution;
-    if (!runInBackground) framework?.indexObservable?.registerListener(onIndexChange);
+    // disable in background
+    enabledInBackground = S.toBool(Xml.get(node: xml, tag: 'background')) ?? enabledInBackground;
+    if (!enabledInBackground) framework?.indexObservable?.registerListener(onIndexChange);
   }
 
-  void onIndexChange(Observable index) {
-    enabled = (S.toInt(index.get()) == 0);
+  void onIndexChange(Observable index)
+  {
+    _isInBackground = (S.toInt(index.get()) != 0);
   }
 
   @override
-  register(IDataSourceListener listener) {
+  register(IDataSourceListener listener)
+  {
     if (!listeners.contains(listener)) listeners.add(listener);
   }
 

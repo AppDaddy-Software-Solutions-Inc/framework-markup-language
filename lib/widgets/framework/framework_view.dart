@@ -509,7 +509,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     view = _getGestureDetector(view,drawer);
 
     // scaffold with safe area
-    view = Padding(padding: EdgeInsets.only(top: MediaQuery.viewPaddingOf(context).top), child: Scaffold(resizeToAvoidBottomInset: true, body: view));
+    view = Scaffold(resizeToAvoidBottomInset: true, body: SafeArea(child: view));
 
     // start listening to model changes
     widget.model.registerListener(this);

@@ -41,7 +41,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     // if we are not a root framework then
     // safe area can be ignored
     if (widget.model.framework != null) return 0;
-    return MediaQuery.of(context).viewPadding.top  + MediaQuery.of(context).viewPadding.bottom + MediaQuery.of(context).viewInsets.top  + MediaQuery.of(context).viewInsets.bottom;
+    return MediaQuery.viewPaddingOf(context).top +  MediaQuery.of(context).viewPadding.bottom + MediaQuery.of(context).viewInsets.top  + MediaQuery.of(context).viewInsets.bottom;
   }
   double get safeAreaWidth
   {
@@ -50,7 +50,6 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     if (widget.model.framework != null) return 0;
     return MediaQuery.of(context).viewPadding.left + MediaQuery.of(context).viewPadding.right  + MediaQuery.of(context).viewInsets.left + MediaQuery.of(context).viewInsets.right;
   }
-
   // this is used to fire the models onstart
   bool started = false;
 
@@ -510,7 +509,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     view = _getGestureDetector(view,drawer);
 
     // scaffold with safe area
-    view = Scaffold(resizeToAvoidBottomInset: true, body: view);
+    view = Padding(padding: EdgeInsets.only(top: MediaQuery.viewPaddingOf(context).top), child: Scaffold(resizeToAvoidBottomInset: true, body: view));
 
     // start listening to model changes
     widget.model.registerListener(this);

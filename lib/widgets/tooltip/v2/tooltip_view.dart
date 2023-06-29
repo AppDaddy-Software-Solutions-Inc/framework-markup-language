@@ -79,7 +79,7 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
   // holds the wrapped view
   Widget view = Container();
 
-  final ElementBox _arrowBox = ElementBox(h: 10.0, w: 16.0);
+  final ElementBox _arrowBox = ElementBox(h: 9.0, w: 14.0);
   ElementBox _overlayBox = ElementBox(h: 0.0, w: 0.0);
   OverlayEntry? overlayEntry;
   OverlayEntry? _overlayEntryHidden;
@@ -169,7 +169,7 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
           child: Center(
             child: Bubble(
               key: _widgetKey,
-              padding: widget.model.margins,
+              padding: widget.model.paddingTop ?? 10,
               child: widget.content,
             ),
           ),
@@ -238,7 +238,7 @@ class TooltipViewState extends WidgetState<TooltipView> with WidgetsBindingObser
       top:  toolTipElementsDisplay.bubble.y,
       left: toolTipElementsDisplay.bubble.x,
       child: Bubble(
-        padding: widget.model.margins,
+        padding: widget.model.paddingTop ?? 10,
         radius: toolTipElementsDisplay.radius,
         color: widget.model.color ?? Theme.of(context).colorScheme.surfaceVariant,
         child: widget.content,

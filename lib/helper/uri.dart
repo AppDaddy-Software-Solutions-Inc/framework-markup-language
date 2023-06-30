@@ -39,7 +39,11 @@ extension URI on Uri
     if (!this.isAbsolute)
     {
       var url = "$root/$host/$path";
-      if (hasFragment) url = "$url#$fragment";
+      if (hasFragment)
+      {
+        var f = fragment;
+        url = "$url#$fragment";
+      }
       if (hasQuery)    url = "$url?$query";
       var uri = Uri.parse(url).removeEmptySegments();
       return uri;
@@ -123,6 +127,17 @@ extension URI on Uri
   {
     // null or missing url
     if (url == null || url.trim() == "") return null;
+
+    // fix for fragment # in query parameter
+    // encode # to %23
+    if (url.contains("#"))
+    {
+      var parts = url.split("?");
+      if (parts.length > 1)
+      {
+        url = "${parts[0]}?${parts[1].replaceAll("#", "%23")}";
+      }
+    }
 
     // invalid url?
     Uri? uri = Uri.tryParse(url);

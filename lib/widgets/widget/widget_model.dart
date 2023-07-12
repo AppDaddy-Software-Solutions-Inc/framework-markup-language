@@ -40,6 +40,8 @@ import 'package:fml/widgets/chart/chart_model.dart';
 import 'package:fml/widgets/chart/axis/chart_axis_model.dart';
 import 'package:fml/widgets/chart/label/chart_label_model.dart';
 import 'package:fml/widgets/chart/series/chart_series_model.dart';
+import 'package:fml/widgets/chart_painter/chart_model.dart';
+import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
 
 // import 'package:fml/widgets/chart_syncfusion/chart_model.dart' as SFCHART;
 // import 'package:fml/widgets/chart_syncfusion/axis/chart_axis_model.dart' as SFCHART;
@@ -377,7 +379,7 @@ class WidgetModel implements IDataSourceListener {
         break;
 
       case "chart":
-        model = ChartModel.fromXml(parent, node);
+        model = ChartPainterModel.fromXml(parent, node);
         break;
 
       // case "sfchart":
@@ -780,6 +782,8 @@ class WidgetModel implements IDataSourceListener {
       case "series":
         if (parent is ChartModel) {
           model = ChartSeriesModel.fromXml(parent, node);
+        } else if (parent is ChartPainterModel){
+          model = ChartPainterSeriesModel.fromXml(parent, node);
         }
         // else if (parent is SFCHART.ChartModel) model = SFCHART.ChartSeriesModel.fromXml(parent, node);
         break;

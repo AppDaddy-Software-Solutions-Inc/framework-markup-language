@@ -1,5 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:charts_painter/chart.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/cupertino.dart';
@@ -30,7 +30,7 @@ class ChartDataPoint {
 /// Defines the properties used to build a Charts's Series
 class ChartPainterSeriesModel extends WidgetModel
 {
-  List<ChartItem> dataPoint = [];
+  List<FlSpot> dataPoint = [];
   String? type = 'bar';
 
   ChartPainterSeriesModel(
@@ -401,11 +401,12 @@ class ChartPainterSeriesModel extends WidgetModel
   // and the entire chart gets rebuilt
   void onPropertyChange(Observable observable) {}
 
-  ChartItem fromData(dynamic data)
+  FlSpot fromData(dynamic data)
   {
     // this will set and databinding values
     this.data = data;
-    ChartItem item = ChartItem(S.toDouble(x));
+    //BarChartRodData item = BarChartRodData(toY: S.toDouble(y) ?? 0, color: ColorHelper.fromString('random'));
+    FlSpot item = FlSpot(S.toDouble(x) ?? 0, S.toDouble(y) ?? 0);
     return item;
   }
 }

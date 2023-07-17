@@ -1,5 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:charts_painter/chart.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart' hide Axis;
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
@@ -251,7 +251,7 @@ class ChartPainterModel extends BoxModel
           series.dataPoint.clear();
           if (list != null) {
             for (var p in list) {
-              ChartItem point = series.fromData(p);
+              FlSpot point = series.fromData(p);
               if (true) {
                 series.dataPoint.add(point);
               }

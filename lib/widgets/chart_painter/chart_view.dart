@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
+import 'package:fml/helper/color.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart_painter/chart_model.dart';
@@ -125,7 +126,7 @@ class _ChartViewState extends WidgetState<ChartView>
       //add each series datapoint to the list
       for (var series in seriesData) {
         //add the series data to the list as a LineChartBarData object.
-        data.add(LineChartBarData(spots: series.lineDataPoint));
+        data.add(LineChartBarData(spots: series.lineDataPoint, barWidth: series.type == 'point' ? 0 : 2, color: series.color ?? ColorHelper.fromString('random')));
       }
     }
 
@@ -134,6 +135,7 @@ class _ChartViewState extends WidgetState<ChartView>
     LineChart chart = LineChart(
       LineChartData(
         lineBarsData: data,
+        //the series must determine the min and max y
         minY: 0,
         maxY: 20,
         //range annotations (blocks)

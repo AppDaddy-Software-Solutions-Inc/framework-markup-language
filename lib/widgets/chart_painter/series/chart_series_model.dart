@@ -452,7 +452,7 @@ class ChartPainterSeriesModel extends WidgetModel
     // this will set and databinding values
     data = pointData;
     //barchartrodstackitem allows stacking within series group.
-    BarChartGroupData point = BarChartGroupData(x: S.toInt(x) ?? 0, barRods: [BarChartRodData(toY: S.toDouble(y) ?? 0, color: ColorHelper.fromString('random'))]);
+    BarChartGroupData point = BarChartGroupData(x: S.toInt(x) ?? 0, barRods: [BarChartRodData(toY: S.toDouble(y) ?? 0, color: color ?? ColorHelper.fromString('random'))]);
     barDataPoint.add(point);
   }
 
@@ -461,7 +461,7 @@ class ChartPainterSeriesModel extends WidgetModel
     // this will set and databinding values
     data = pointData;
     //barchartrodstackitem allows stacking within series group.
-    BarChartRodData point = BarChartRodData(toY: S.toDouble(y) ?? 0, color: ColorHelper.fromString('random'));
+    BarChartRodData point = BarChartRodData(toY: S.toDouble(y) ?? 0, color: color ?? ColorHelper.fromString('random'));
     rodDataPoint.add(point);
   }
 
@@ -470,7 +470,7 @@ class ChartPainterSeriesModel extends WidgetModel
     // this will set and databinding values
     data = pointData;
     //barchartrodstackitem allows stacking within series group.
-    BarChartRodStackItem point = BarChartRodStackItem(0, S.toDouble(y) ?? 0, ColorHelper.fromString('random') ?? Colors.blue);
+    BarChartRodStackItem point = BarChartRodStackItem(0, S.toDouble(y) ?? 0, color ?? ColorHelper.fromString('random') ?? Colors.blue);
     stackDataPoint.add(point);
   }
 }

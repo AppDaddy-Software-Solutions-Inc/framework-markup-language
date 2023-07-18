@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/cupertino.dart';
@@ -30,7 +31,11 @@ class ChartDataPoint {
 /// Defines the properties used to build a Charts's Series
 class ChartPainterSeriesModel extends WidgetModel
 {
-  List<FlSpot> dataPoint = [];
+  List<FlSpot> lineDataPoint = [];
+  List<BarChartGroupData> barDataPoint = [];
+  List<BarChartRodData> rodDataPoint = [];
+  List<BarChartRodStackItem> stackDataPoint = [];
+
   String? type = 'bar';
 
   ChartPainterSeriesModel(
@@ -401,12 +406,71 @@ class ChartPainterSeriesModel extends WidgetModel
   // and the entire chart gets rebuilt
   void onPropertyChange(Observable observable) {}
 
-  FlSpot fromData(dynamic data)
+
+  buildDataPoints(dynamic data, String chartType, int seriesIndex){
+
+    if (data == null) return;
+
+    if(chartType == 'line')
+    {
+      //lineDataPoint.clear();
+      iteratePoints(pointFromLineData, data);
+    } else if (chartType == 'bar')
+    {
+      //barDataPoint.clear();
+      if(type == 'bar' || S.isNullOrEmpty(type)) {
+        iteratePoints(pointFromBarData, data);
+      } else if (type == 'stacked'){
+        iteratePoints(pointFromStackedBarData, data);
+        barDataPoint.add(BarChartGroupData(x: seriesIndex, barRods: [BarChartRodData(toY: 20, rodStackItems: stackDataPoint)]));
+      } else if (type == 'grouped') {
+        iteratePoints(pointFromGroupedBarData, data);
+        barDataPoint.add(BarChartGroupData(x: seriesIndex, barRods: rodDataPoint));
+      }
+    }
+    this.data = data;
+  }
+
+  //This function takes in the function related to the type of point plotted
+  void iteratePoints(Function plotPoint, dynamic data){
+    for (var pointData in data) {
+      plotPoint(pointData);
+    }
+  }
+
+  void pointFromLineData(dynamic pointData)
   {
     // this will set and databinding values
-    this.data = data;
-    //BarChartRodData item = BarChartRodData(toY: S.toDouble(y) ?? 0, color: ColorHelper.fromString('random'));
-    FlSpot item = FlSpot(S.toDouble(x) ?? 0, S.toDouble(y) ?? 0);
-    return item;
+    data = pointData;
+
+    FlSpot point = FlSpot(S.toDouble(x) ?? 0, S.toDouble(y) ?? 0);
+    lineDataPoint.add(point);
+  }
+
+  void pointFromBarData(dynamic pointData)
+  {
+    // this will set and databinding values
+    data = pointData;
+    //barchartrodstackitem allows stacking within series group.
+    BarChartGroupData point = BarChartGroupData(x: S.toInt(x) ?? 0, barRods: [BarChartRodData(toY: S.toDouble(y) ?? 0, color: ColorHelper.fromString('random'))]);
+    barDataPoint.add(point);
+  }
+
+  void pointFromGroupedBarData(dynamic pointData)
+  {
+    // this will set and databinding values
+    data = pointData;
+    //barchartrodstackitem allows stacking within series group.
+    BarChartRodData point = BarChartRodData(toY: S.toDouble(y) ?? 0, color: ColorHelper.fromString('random'));
+    rodDataPoint.add(point);
+  }
+
+  void pointFromStackedBarData(dynamic pointData)
+  {
+    // this will set and databinding values
+    data = pointData;
+    //barchartrodstackitem allows stacking within series group.
+    BarChartRodStackItem point = BarChartRodStackItem(0, S.toDouble(y) ?? 0, ColorHelper.fromString('random') ?? Colors.blue);
+    stackDataPoint.add(point);
   }
 }

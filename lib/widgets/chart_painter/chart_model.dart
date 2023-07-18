@@ -234,7 +234,7 @@ class ChartPainterModel extends BoxModel
       _type = StringObservable(Binding.toKey(id, 'type'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  String? get type => _type?.get();
+  String get type => _type?.get() ?? 'bar';
 
   /// Called when the databroker returns a successful result
   ///
@@ -246,19 +246,13 @@ class ChartPainterModel extends BoxModel
   {
     try
     {
+      int i = 0;
       for (var series in series) {
         if (series.datasource == source.id) {
-          series.dataPoint.clear();
-          if (list != null) {
-            for (var p in list) {
-              FlSpot point = series.fromData(p);
-              if (true) {
-                series.dataPoint.add(point);
-              }
-            }
-          }
-          series.data = list;
+          // build the datapoints for the series, passing in the chart type, index, and data
+          series.buildDataPoints(list, type, i);
         }
+        i++;
       }
       notifyListeners('list', null);
     }

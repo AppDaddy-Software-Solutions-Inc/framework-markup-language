@@ -1,10 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart_painter/chart_model.dart';
+import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
@@ -40,6 +39,28 @@ class _ChartViewState extends WidgetState<ChartView>
   BusyView? busy;
   ChartType? chartType;
 
+
+  Widget bottomTitles(double value, TitleMeta meta) {
+    var style = TextStyle(fontSize: 10);
+    // replace the value with the x value of the index[value] in the list of data points.
+    return SideTitleWidget(
+      axisSide: meta.axisSide,
+      child: Text(value.toString(), style: style),
+    );
+  }
+
+
+  Widget leftTitles(double value, TitleMeta meta) {
+    var style = TextStyle(fontSize: 10);
+    return SideTitleWidget(
+      axisSide: meta.axisSide,
+      space: 6,
+      fitInside: SideTitleFitInsideData.fromTitleMeta(meta),
+      child: Text(value.toString(), style: style, textAlign: TextAlign.center),
+    );
+  }
+
+
   @override
   void initState()
   {
@@ -49,21 +70,45 @@ class _ChartViewState extends WidgetState<ChartView>
 
 
   BarChart buildBarChart(seriesData){
-    List<BarChartGroupData> data = [BarChartGroupData(x: 0, barRods: seriesData)];
+    List<BarChartGroupData> data = [];
+
+    if(seriesData.isNotEmpty) {
+      //add each series datapoint to the list
+      for (var series in seriesData) {
+        //add the series data to the list as a LineChartBarData object.
+        data.addAll(series.barDataPoint);
+      }
+    }
+
+
     BarChart chart = BarChart(
       BarChartData(
         barGroups: data,
         minY: 0,
         maxY: 20,
-        rangeAnnotations: RangeAnnotations(),
-        borderData: FlBorderData(
+        //rangeAnnotations: RangeAnnotations(),
+        // borderData: FlBorderData(
+        //   show: true,
+        // ),
+        // gridData: const FlGridData(
+        //   show: true,
+        // ),
+        titlesData: FlTitlesData(
+          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              getTitlesWidget: leftTitles,
+            )
+          ),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+                showTitles: true,
+                getTitlesWidget: bottomTitles,
+            )
+          ),
           show: true,
-        ),
-        gridData: const FlGridData(
-          show: true,
-        ),
-        titlesData: const FlTitlesData(
-          show: false,
         ),
       ),
     );
@@ -71,17 +116,28 @@ class _ChartViewState extends WidgetState<ChartView>
     return chart;
   }
 
-  LineChart buildLineChart(List<FlSpot> seriesData){
-    List<LineChartBarData> data = [
-      LineChartBarData(
-        spots: seriesData)];
+  //Comes in as list of series
+  LineChart buildLineChart(List<ChartPainterSeriesModel> seriesData){
+
+    List<LineChartBarData> data = [];
+
+    if(seriesData.isNotEmpty) {
+      //add each series datapoint to the list
+      for (var series in seriesData) {
+        //add the series data to the list as a LineChartBarData object.
+        data.add(LineChartBarData(spots: series.lineDataPoint));
+      }
+    }
+
+
+
     LineChart chart = LineChart(
       LineChartData(
         lineBarsData: data,
         minY: 0,
         maxY: 20,
         //range annotations (blocks)
-        rangeAnnotations: RangeAnnotations(horizontalRangeAnnotations: [], verticalRangeAnnotations: []),
+        //rangeAnnotations: RangeAnnotations(horizontalRangeAnnotations: [], verticalRangeAnnotations: []),
         borderData: FlBorderData(
           show: true,
         ),
@@ -89,9 +145,10 @@ class _ChartViewState extends WidgetState<ChartView>
           show: true,
         ),
         titlesData: const FlTitlesData(
-          //righttitles shows on left side? lefttitles shows on right side
+          //righttitles shows on left side? lefttitles shows on right side...
           rightTitles: AxisTitles(),
-          bottomTitles: AxisTitles(),
+          //toptitles shows axis on the bottom...
+          topTitles: AxisTitles(),
           show: true,
         ),
       ),
@@ -114,14 +171,17 @@ class _ChartViewState extends WidgetState<ChartView>
     // Busy / Loading Indicator
     busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
 
-    Widget view;
+    Widget? view;
 
     // get the children
     List<Widget> children = widget.model.inflate();
 
     try {
-     widget.model.series[0].dataPoint.sort((a, b) => a.x.compareTo(b.x));
-     view = buildLineChart(widget.model.series[0].dataPoint);
+     if(widget.model.type == 'bar') {
+       view = buildBarChart(widget.model.series);
+     } else if(widget.model.type == 'line') {
+       view = buildLineChart(widget.model.series);
+     }
     } catch(e) {
       Log().exception(e, caller: 'chart_view builder() ');
       view = Center(child: Icon(Icons.add_chart));

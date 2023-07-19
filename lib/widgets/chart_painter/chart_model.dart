@@ -24,6 +24,8 @@ class ChartPainterModel extends BoxModel
 {
   ChartAxisModel xaxis = ChartAxisModel(null, null, ChartAxis.X);
   ChartAxisModel yaxis = ChartAxisModel(null, null, ChartAxis.Y);
+  num yMax = 0;
+  num yMin = 0;
   Set<dynamic> uniqueValues = {};
   final List<ChartPainterSeriesModel> series = [];
 
@@ -128,7 +130,10 @@ class ChartPainterModel extends BoxModel
     List<ChartAxisModel> axis = findChildrenOfExactType(ChartAxisModel).cast<ChartAxisModel>();
     for (var axis in axis) {
       if (axis.axis == ChartAxis.X) xaxis = axis;
+
       if (axis.axis == ChartAxis.Y) yaxis = axis;
+      yMax = S.toInt(yaxis.max) ?? 0;
+      yMin = S.toInt(yaxis.min) ?? 0;
     }
   }
 
@@ -238,7 +243,7 @@ class ChartPainterModel extends BoxModel
       _type = StringObservable(Binding.toKey(id, 'type'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  String get type => _type?.get() ?? 'bar';
+  String get type => _type?.get() ?? 'line';
 
   /// Called when the databroker returns a successful result
   ///
@@ -252,9 +257,6 @@ class ChartPainterModel extends BoxModel
     {
       int i = 0;
       //here if the data strategy is category, we must fold all of the lists together and create a dummy key value map of every unique value, in order
-      // this will allow us to plot via index rather than scale, showing equal space between points.
-      // we need to create key value pairs of the x axis doubles and label titles as well, or indeces in the case of bar.
-      // we should also create an aggregation data strategy for BAR if Y is undefined, allowing us to display the count of each category.
       uniqueValues.clear();
       for (var serie in series) {
         if (serie.datasource == source.id) {

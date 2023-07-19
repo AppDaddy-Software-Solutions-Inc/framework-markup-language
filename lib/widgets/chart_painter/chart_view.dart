@@ -43,17 +43,19 @@ class _ChartViewState extends WidgetState<ChartView>
 
 
   Widget bottomTitles(double value, TitleMeta meta) {
-    var style = TextStyle(fontSize: 10);
+    var style = TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.outline);
+    int? index = S.toInt(value);
+    String text = (index != null && widget.model.uniqueValues.isNotEmpty ? widget.model.uniqueValues.elementAt(index) : value).toString();
     // replace the value with the x value of the index[value] in the list of data points.
     return SideTitleWidget(
       axisSide: meta.axisSide,
-      child: Text(value.toString(), style: style),
+      child: Text(text, style: style),
     );
   }
 
 
   Widget leftTitles(double value, TitleMeta meta) {
-    var style = TextStyle(fontSize: 10);
+    var style = TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.outline);
     return SideTitleWidget(
       axisSide: meta.axisSide,
       space: 6,
@@ -86,8 +88,8 @@ class _ChartViewState extends WidgetState<ChartView>
     BarChart chart = BarChart(
       BarChartData(
         barGroups: data,
-        minY: 0,
-        maxY: 20,
+        minY: S.toDouble(widget.model.yaxis.min),
+        maxY: S.toDouble(widget.model.yaxis.max),
         //rangeAnnotations: RangeAnnotations(),
         // borderData: FlBorderData(
         //   show: true,
@@ -129,7 +131,7 @@ class _ChartViewState extends WidgetState<ChartView>
       for (var series in seriesData) {
 
         //add the series data to the list as a LineChartBarData object.
-        data.add(LineChartBarData(spots: series.lineDataPoint, barWidth: series.type == 'point' ? 0 : 2, color: series.color ?? ColorHelper.fromString('random')));
+        data.add(LineChartBarData(spots: series.lineDataPoint, dotData: FlDotData(show: series.showpoints), barWidth: series.type == 'point' || series.showline == false ? 0 : 2, color: series.color ?? ColorHelper.fromString('random')));
       }
     }
 
@@ -139,8 +141,9 @@ class _ChartViewState extends WidgetState<ChartView>
       LineChartData(
         lineBarsData: data,
         //the series must determine the min and max y
-        minY: 0,
-        maxY: 20,
+        minY: S.toDouble(widget.model.yaxis.min),
+        maxY: S.toDouble(widget.model.yaxis.max),
+        baselineX: 0,
         //range annotations (blocks)
         //rangeAnnotations: RangeAnnotations(horizontalRangeAnnotations: [], verticalRangeAnnotations: []),
         borderData: FlBorderData(
@@ -149,11 +152,22 @@ class _ChartViewState extends WidgetState<ChartView>
         gridData: const FlGridData(
           show: true,
         ),
-        titlesData: const FlTitlesData(
-          //righttitles shows on left side? lefttitles shows on right side...
-          rightTitles: AxisTitles(),
-          //toptitles shows axis on the bottom...
-          topTitles: AxisTitles(),
+        titlesData: FlTitlesData(
+          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          leftTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                getTitlesWidget: leftTitles,
+              )
+          ),
+          bottomTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                reservedSize: 44,
+                getTitlesWidget: bottomTitles,
+              )
+          ),
           show: true,
         ),
       ),

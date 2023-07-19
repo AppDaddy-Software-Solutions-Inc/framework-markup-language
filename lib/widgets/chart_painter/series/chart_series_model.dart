@@ -38,6 +38,8 @@ class ChartPainterSeriesModel extends WidgetModel
   List<dynamic> xValues = [];
   Function? plotFunction;
   dynamic dataList;
+  double maxY = 0;
+  double minY = 0;
 
   String? type = 'bar';
 
@@ -416,6 +418,7 @@ class ChartPainterSeriesModel extends WidgetModel
 
     if(chartType == 'line')
     {
+      lineDataPoint.clear();
       //check if series is date
       plotFunction = pointFromLineData;
     } else if (chartType == 'bar')
@@ -447,12 +450,13 @@ class ChartPainterSeriesModel extends WidgetModel
   }
 
   void plotLineCategoryPoints(dynamic uniqueXValueList){
+
     for (var pointData in dataList) {
       //set the data of the series for databinding
       data = pointData;
       //ensure the value is in the list, it always should be.
       if (uniqueXValueList.contains(S.toInt(x))) {
-        x = uniqueXValueList.toList().indexOf(S.toInt(x)) + 1;
+        x = uniqueXValueList.toList().indexOf(S.toInt(x));
         //plot the point as a point object based on the desired function based on series and chart type.
         plotFunction!();
       }

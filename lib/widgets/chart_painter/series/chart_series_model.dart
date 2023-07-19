@@ -35,6 +35,9 @@ class ChartPainterSeriesModel extends WidgetModel
   List<BarChartGroupData> barDataPoint = [];
   List<BarChartRodData> rodDataPoint = [];
   List<BarChartRodStackItem> stackDataPoint = [];
+  List<dynamic> xValues = [];
+  Function? plotFunction;
+  dynamic dataList;
 
   String? type = 'bar';
 
@@ -407,68 +410,78 @@ class ChartPainterSeriesModel extends WidgetModel
   void onPropertyChange(Observable observable) {}
 
 
-  buildDataPoints(dynamic data, String chartType, int seriesIndex){
+  determinePlotFunctions(String chartType, int seriesIndex){
 
     if (data == null) return;
 
     if(chartType == 'line')
     {
-      //lineDataPoint.clear();
-      iteratePoints(pointFromLineData, data);
+      //check if series is date
+      plotFunction = pointFromLineData;
     } else if (chartType == 'bar')
     {
-      //barDataPoint.clear();
       if(type == 'bar' || S.isNullOrEmpty(type)) {
-        iteratePoints(pointFromBarData, data);
+        plotFunction = pointFromBarData;
       } else if (type == 'stacked'){
-        iteratePoints(pointFromStackedBarData, data);
+        plotFunction = pointFromStackedBarData;
+
         barDataPoint.add(BarChartGroupData(x: seriesIndex, barRods: [BarChartRodData(toY: 20, rodStackItems: stackDataPoint)]));
       } else if (type == 'grouped') {
-        iteratePoints(pointFromGroupedBarData, data);
+        plotFunction = pointFromGroupedBarData;
         barDataPoint.add(BarChartGroupData(x: seriesIndex, barRods: rodDataPoint));
       }
     }
-    this.data = data;
   }
 
   //This function takes in the function related to the type of point plotted
-  void iteratePoints(Function plotPoint, dynamic data){
+  void iteratePoints(dynamic data, {bool plotOnFirstPass = false}){
+    dataList =  data;
     for (var pointData in data) {
-      plotPoint(pointData);
+      //set the data of the series for databinding
+      this.data = pointData;
+      //add the value of x to the list only if the type is category.
+      xValues.add(S.toInt(x));
+      //plot the point as a point object based on the desired function based on series and chart type.
+      if(plotOnFirstPass) plotFunction!();
     }
   }
 
-  void pointFromLineData(dynamic pointData)
-  {
-    // this will set and databinding values
-    data = pointData;
+  void plotLineCategoryPoints(dynamic uniqueXValueList){
+    for (var pointData in dataList) {
+      //set the data of the series for databinding
+      data = pointData;
+      //ensure the value is in the list, it always should be.
+      if (uniqueXValueList.contains(S.toInt(x))) {
+        x = uniqueXValueList.toList().indexOf(S.toInt(x)) + 1;
+        //plot the point as a point object based on the desired function based on series and chart type.
+        plotFunction!();
+      }
+    }
+  }
 
+  // these should possibly be called from the chart after determining all values by index.
+  void pointFromLineData()
+  {
     FlSpot point = FlSpot(S.toDouble(x) ?? 0, S.toDouble(y) ?? 0);
     lineDataPoint.add(point);
   }
 
-  void pointFromBarData(dynamic pointData)
+  void pointFromBarData()
   {
-    // this will set and databinding values
-    data = pointData;
     //barchartrodstackitem allows stacking within series group.
     BarChartGroupData point = BarChartGroupData(x: S.toInt(x) ?? 0, barRods: [BarChartRodData(toY: S.toDouble(y) ?? 0, color: color ?? ColorHelper.fromString('random'))]);
     barDataPoint.add(point);
   }
 
-  void pointFromGroupedBarData(dynamic pointData)
+  void pointFromGroupedBarData()
   {
-    // this will set and databinding values
-    data = pointData;
     //barchartrodstackitem allows stacking within series group.
     BarChartRodData point = BarChartRodData(toY: S.toDouble(y) ?? 0, color: color ?? ColorHelper.fromString('random'));
     rodDataPoint.add(point);
   }
 
-  void pointFromStackedBarData(dynamic pointData)
+  void pointFromStackedBarData()
   {
-    // this will set and databinding values
-    data = pointData;
     //barchartrodstackitem allows stacking within series group.
     BarChartRodStackItem point = BarChartRodStackItem(0, S.toDouble(y) ?? 0, color ?? ColorHelper.fromString('random') ?? Colors.blue);
     stackDataPoint.add(point);

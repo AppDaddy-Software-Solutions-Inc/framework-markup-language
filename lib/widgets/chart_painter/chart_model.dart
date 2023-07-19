@@ -1,4 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:collection';
+
+import 'package:collection/collection.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart' hide Axis;
 import 'package:fml/data/data.dart';
@@ -21,6 +24,7 @@ class ChartPainterModel extends BoxModel
 {
   ChartAxisModel xaxis = ChartAxisModel(null, null, ChartAxis.X);
   ChartAxisModel yaxis = ChartAxisModel(null, null, ChartAxis.Y);
+  Set<dynamic> uniqueValues = {};
   final List<ChartPainterSeriesModel> series = [];
 
   @override
@@ -247,12 +251,22 @@ class ChartPainterModel extends BoxModel
     try
     {
       int i = 0;
-      for (var series in series) {
-        if (series.datasource == source.id) {
+      //here if the data strategy is category, we must fold all of the lists together and create a dummy key value map of every unique value, in order
+      // this will allow us to plot via index rather than scale, showing equal space between points.
+      // we need to create key value pairs of the x axis doubles and label titles as well, or indeces in the case of bar.
+      // we should also create an aggregation data strategy for BAR if Y is undefined, allowing us to display the count of each category.
+      uniqueValues.clear();
+      for (var serie in series) {
+        if (serie.datasource == source.id) {
           // build the datapoints for the series, passing in the chart type, index, and data
-          series.buildDataPoints(list, type, i);
+          serie.determinePlotFunctions(type, i);
+          serie.iteratePoints(list, plotOnFirstPass: false);
+          // add the built x values to a unique list to map to indeces
+          uniqueValues.addAll(serie.xValues);
         }
         i++;
+        //plot only if the chart data type is category
+        if(true) serie.plotLineCategoryPoints(uniqueValues);
       }
       notifyListeners('list', null);
     }

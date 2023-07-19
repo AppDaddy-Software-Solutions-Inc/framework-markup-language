@@ -58,24 +58,14 @@ class _ChartViewState extends WidgetState<ChartView>
     var style = TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.outline);
     return SideTitleWidget(
       axisSide: meta.axisSide,
-      space: 6,
+      space: 8,
       fitInside: SideTitleFitInsideData.fromTitleMeta(meta),
       child: Text(value.toString(), style: style, textAlign: TextAlign.center),
     );
   }
 
-
-  @override
-  void initState()
-  {
-    super.initState();
-  }
-
-
-
   BarChart buildBarChart(seriesData){
     List<BarChartGroupData> data = [];
-
     if(seriesData.isNotEmpty) {
       //add each series datapoint to the list
       for (var series in seriesData) {
@@ -143,7 +133,7 @@ class _ChartViewState extends WidgetState<ChartView>
         //the series must determine the min and max y
         minY: S.toDouble(widget.model.yaxis.min),
         maxY: S.toDouble(widget.model.yaxis.max),
-        baselineX: 0,
+        //baselineX: 0,
         //range annotations (blocks)
         //rangeAnnotations: RangeAnnotations(horizontalRangeAnnotations: [], verticalRangeAnnotations: []),
         borderData: FlBorderData(

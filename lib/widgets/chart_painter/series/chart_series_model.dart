@@ -461,9 +461,10 @@ class ChartPainterSeriesModel extends WidgetModel
         plotFunction!();
       }
       data = null;
-      dataList = null;
-      plotFunction = null; 
+
     }
+    dataList = null;
+    plotFunction = null;
   }
 
   // these should possibly be called from the chart after determining all values by index.

@@ -460,6 +460,9 @@ class ChartPainterSeriesModel extends WidgetModel
         //plot the point as a point object based on the desired function based on series and chart type.
         plotFunction!();
       }
+      data = null;
+      dataList = null;
+      plotFunction = null; 
     }
   }
 

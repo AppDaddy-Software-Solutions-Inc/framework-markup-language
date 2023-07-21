@@ -65,19 +65,19 @@ class _ChartViewState extends WidgetState<ChartView>
   }
 
   BarChart buildBarChart(seriesData){
-    List<BarChartGroupData> data = [];
-    if(seriesData.isNotEmpty) {
-      //add each series datapoint to the list
-      for (var series in seriesData) {
-        //add the series data to the list as a LineChartBarData object.
-        data.addAll(series.barDataPoint);
-      }
-    }
+    // List<BarChartGroupData> data = [];
+    // if(seriesData.isNotEmpty) {
+    //   //add each series datapoint to the list
+    //   for (var series in seriesData) {
+    //     //add the series data to the list as a LineChartBarData object.
+    //
+    //   }
+    // }
 
 
     BarChart chart = BarChart(
       BarChartData(
-        barGroups: data,
+        barGroups: widget.model.dataList as List<BarChartGroupData>,
         minY: S.toDouble(widget.model.yaxis.min),
         maxY: S.toDouble(widget.model.yaxis.max),
         //rangeAnnotations: RangeAnnotations(),
@@ -113,23 +113,24 @@ class _ChartViewState extends WidgetState<ChartView>
   //Comes in as list of series
   LineChart buildLineChart(List<ChartPainterSeriesModel> seriesData){
 
-    List<LineChartBarData> data = [];
-
-    if(seriesData.isNotEmpty) {
-
-      //add each series datapoint to the list
-      for (var series in seriesData) {
-
-        //add the series data to the list as a LineChartBarData object.
-        data.add(LineChartBarData(spots: series.lineDataPoint, dotData: FlDotData(show: series.showpoints), barWidth: series.type == 'point' || series.showline == false ? 0 : 2, color: series.color ?? ColorHelper.fromString('random')));
-      }
-    }
+    //List<LineChartBarData> data = [];
+    //
+    // if(seriesData.isNotEmpty) {
+    //
+    //   // //add each series datapoint to the list
+    //   // for (var series in seriesData) {
+    //   //
+    //   //   //add the series data to the list as a LineChartBarData object.
+    //   //   data.add(LineChartBarData(spots: series.lineDataPoint, dotData: FlDotData(show: series.showpoints), barWidth: series.type == 'point' || series.showline == false ? 0 : 2, color: series.color ?? ColorHelper.fromString('random')));
+    //   //   series.barDataPoint.clear();
+    //   // }
+    // }
 
 
 
     LineChart chart = LineChart(
       LineChartData(
-        lineBarsData: data,
+        lineBarsData: widget.model.dataList,
         //the series must determine the min and max y
         minY: S.toDouble(widget.model.yaxis.min),
         maxY: S.toDouble(widget.model.yaxis.max),

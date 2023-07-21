@@ -28,6 +28,7 @@ class ChartPainterModel extends BoxModel
   num yMin = 0;
   Set<dynamic> uniqueValues = {};
   final List<ChartPainterSeriesModel> series = [];
+  List<LineChartBarData> dataList = [];
 
   @override
   bool get canExpandInfinitelyWide
@@ -265,11 +266,15 @@ class ChartPainterModel extends BoxModel
           serie.iteratePoints(list, plotOnFirstPass: false);
           // add the built x values to a unique list to map to indeces
           uniqueValues.addAll(serie.xValues);
+         //   //
         }
         i++;
         //plot only if the chart data type is category
         if(true) serie.plotLineCategoryPoints(uniqueValues);
+        dataList.add(LineChartBarData(spots: serie.lineDataPoint, dotData: FlDotData(show: serie.showpoints), barWidth: serie.type == 'point' || serie.showline == false ? 0 : 2, color: serie.color ?? ColorHelper.fromString('random')));
+        serie.xValues.clear();
       }
+      uniqueValues.clear();
       notifyListeners('list', null);
     }
     catch(e)

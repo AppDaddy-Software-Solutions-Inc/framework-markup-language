@@ -25,18 +25,10 @@ class ChartModel extends BoxModel
   final List<ChartLabelModel> labels = [];
 
   @override
-  bool get canExpandInfinitelyWide
-  {
-    if (hasBoundedWidth) return false;
-    return true;
-  }
+  bool get canExpandInfinitelyWide => !hasBoundedWidth;
 
   @override
-  bool get canExpandInfinitelyHigh
-  {
-    if (hasBoundedHeight) return false;
-    return true;
-  }
+  bool get canExpandInfinitelyHigh => !hasBoundedHeight;
 
   ChartModel(WidgetModel? parent, String? id,
       {

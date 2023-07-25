@@ -14,6 +14,9 @@ import 'package:fml/helper/common_helpers.dart';
 
 class TypeaheadModel extends DecoratedInputModel implements IFormField
 {
+  @override
+  bool get canExpandInfinitelyWide => !hasBoundedWidth;
+
   bool? addempty = true;
 
   // bindable data

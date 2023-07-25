@@ -138,20 +138,6 @@ class DecoratedInputModel extends FormFieldModel
   }
   double get borderwidth => _borderwidth?.get() ?? 1;
 
-  /// The width of the containers border, defaults to 2
-  DoubleObservable? _width;
-  @override
-  set width(dynamic v) {
-    if (_width != null) {
-      _width!.set(v);
-    } else if (v != null) {
-      _width = DoubleObservable(Binding.toKey(id, 'width'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  @override
-  double get width => _width?.get() ?? 200;
-
   /// The border choice, can be `all`, `none`, `top`, `left`, `right`, `bottom`, `vertical`, or `horizontal`
   StringObservable? _border;
   set border(dynamic v) {
@@ -225,8 +211,6 @@ class DecoratedInputModel extends FormFieldModel
 
   }) : super(parent, id)
   {
-
-  if (width        != null) this.width = width;
   if (hint         != null) this.hint = hint;
   if (expand != null) this.expand = expand;
   if (color != null) this.color = color;
@@ -264,12 +248,14 @@ class DecoratedInputModel extends FormFieldModel
 
   //set the field color based on the error state
   Color setFieldColor(BuildContext context) {
-    if (enabled != false) {
+    if (enabled != false && border != 'all') {
       return color ?? Theme
           .of(context)
           .colorScheme
           .surfaceVariant;
-    } else {
+    } else if (border == 'all') {
+      return color ?? Colors.transparent;
+    } else  {
       return color ?? Theme
           .of(context)
           .colorScheme

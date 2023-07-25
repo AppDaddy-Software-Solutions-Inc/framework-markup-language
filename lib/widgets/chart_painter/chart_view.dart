@@ -163,7 +163,6 @@ class _ChartViewState extends WidgetState<ChartView>
         ),
       ),
     );
-
     return chart;
   }
 

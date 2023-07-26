@@ -23,18 +23,10 @@ class MapModel extends BoxModel
   final prototypes = HashMap<String?,List<XmlElement>>();
 
   @override
-  bool get canExpandInfinitelyWide
-  {
-    if (hasBoundedWidth) return false;
-    return true;
-  }
+  bool get canExpandInfinitelyWide => !hasBoundedWidth;
 
   @override
-  bool get canExpandInfinitelyHigh
-  {
-    if (hasBoundedHeight) return false;
-    return true;
-  }
+  bool get canExpandInfinitelyHigh => !hasBoundedHeight;
 
   // latitude
   DoubleObservable? _latitude;

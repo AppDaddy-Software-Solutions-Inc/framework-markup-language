@@ -22,18 +22,10 @@ class MenuModel extends DecoratedWidgetModel
   List<MenuItemModel> items = [];
 
   @override
-  bool get canExpandInfinitelyWide
-  {
-    if (hasBoundedWidth) return false;
-    return true;
-  }
+  bool get canExpandInfinitelyWide => !hasBoundedWidth;
 
   @override
-  bool get canExpandInfinitelyHigh
-  {
-    if (hasBoundedHeight) return false;
-    return true;
-  }
+  bool get canExpandInfinitelyHigh => !hasBoundedHeight;
 
   MenuModel(WidgetModel? parent, String?  id) : super(parent, id)
   {

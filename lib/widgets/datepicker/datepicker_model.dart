@@ -20,6 +20,9 @@ class DatepickerModel extends DecoratedInputModel implements IFormField
   static const timeFormatDefault = "HH:mm";
   static const dateFormatDefault = "yyyy-MM-dd";
 
+  @override
+  bool get canExpandInfinitelyWide => !hasBoundedWidth;
+
   // view
   BooleanObservable? _view;
 

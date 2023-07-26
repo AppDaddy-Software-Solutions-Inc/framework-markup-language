@@ -271,9 +271,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
     var modelConstraints = widget.model.constraints;
 
     // constrain the input to 200 pixels if not constrained by the model
-    if (!modelConstraints.hasHorizontalExpansionConstraints) {
-      modelConstraints.width = 200;
-    }
+    if (!modelConstraints.hasHorizontalExpansionConstraints) modelConstraints.width = 200;
 
     // add margins
     view = addMargins(view);

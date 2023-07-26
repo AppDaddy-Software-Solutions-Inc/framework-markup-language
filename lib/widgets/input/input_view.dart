@@ -766,12 +766,12 @@ class _InputViewState extends WidgetState<InputView>
 
 
     if (widget.model.dense) view = Padding(padding: EdgeInsets.all(4), child: view);
+
     // get the model constraints
     var modelConstraints = widget.model.constraints;
 
     // constrain the input to 200 pixels if not constrained by the model
-    if (!modelConstraints.hasHorizontalExpansionConstraints &&
-        !widget.model.expand) modelConstraints.width = 200;
+    if (!modelConstraints.hasHorizontalExpansionConstraints) modelConstraints.width = 800;
 
     // add margins
     view = addMargins(view);

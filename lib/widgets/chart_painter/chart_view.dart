@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/helper/color.dart';
 import 'package:fml/helper/string.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
@@ -107,6 +106,12 @@ class _ChartViewState extends WidgetState<ChartView>
       ),
     );
 
+    return chart;
+  }
+
+  PieChart buildPieChart(){
+
+    PieChart chart = PieChart(widget.model.dataList as PieChartData);
     return chart;
   }
 

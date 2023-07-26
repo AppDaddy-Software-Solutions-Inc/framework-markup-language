@@ -58,8 +58,6 @@ class _GridViewState extends WidgetState<GridView> {
     EventManager.of(widget.model)
         ?.registerEventListener(EventTypes.sort, onSort);
     EventManager.of(widget.model)
-        ?.registerEventListener(EventTypes.export, onExport);
-    EventManager.of(widget.model)
         ?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
 
     super.didChangeDependencies();
@@ -75,8 +73,6 @@ class _GridViewState extends WidgetState<GridView> {
       EventManager.of(oldWidget.model)
           ?.removeEventListener(EventTypes.sort, onSort);
       EventManager.of(oldWidget.model)
-          ?.removeEventListener(EventTypes.export, onExport);
-      EventManager.of(oldWidget.model)
           ?.removeEventListener(EventTypes.scrollto, onScrollTo);
 
       // register new event listeners
@@ -84,8 +80,6 @@ class _GridViewState extends WidgetState<GridView> {
           ?.registerEventListener(EventTypes.scroll, onScroll);
       EventManager.of(widget.model)
           ?.registerEventListener(EventTypes.sort, onSort);
-      EventManager.of(widget.model)
-          ?.registerEventListener(EventTypes.export, onExport);
       EventManager.of(widget.model)
           ?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
     }
@@ -97,8 +91,6 @@ class _GridViewState extends WidgetState<GridView> {
     EventManager.of(widget.model)
         ?.removeEventListener(EventTypes.scroll, onScroll);
     EventManager.of(widget.model)?.removeEventListener(EventTypes.sort, onSort);
-    EventManager.of(widget.model)
-        ?.removeEventListener(EventTypes.export, onExport);
     EventManager.of(widget.model)
         ?.removeEventListener(EventTypes.scrollto, onScrollTo);
 
@@ -139,21 +131,8 @@ class _GridViewState extends WidgetState<GridView> {
     }
   }
 
-  void onExport(Event event) async {
-    if (event.parameters!['format'] != 'print') {
-      event.handled = true;
-
-      final snackbar = SnackBar(
-          content: Text(phrase.exportingData),
-          duration: Duration(seconds: 1),
-          behavior: SnackBarBehavior.floating,
-          elevation: 5);
-      ScaffoldMessenger.of(context).showSnackBar(snackbar);
-      await widget.model.export();
-    }
-  }
-
-  void onScroll(Event event) async {
+  void onScroll(Event event) async
+  {
     if (scroller != null) scroll(event, scroller);
     event.handled = true;
   }

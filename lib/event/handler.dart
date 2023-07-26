@@ -99,7 +99,6 @@ class EventHandler extends Eval
       functions['continue']                           = _handleEventContinue;
       functions[S.fromEnum(EventTypes.copy)]          = _handleEventCopy;
       functions[S.fromEnum(EventTypes.execute)]       = _handleEventExecute;
-      functions[S.fromEnum(EventTypes.export)]        = _handleEventExport;
       functions[S.fromEnum(EventTypes.focusnode)]     = _handleEventFocusNode;
       functions[S.fromEnum(EventTypes.keypress)]      = _handleEventKeyPress;
       functions[S.fromEnum(EventTypes.signInWithJwt)] = _handleEventSignInWithJwt;
@@ -617,16 +616,6 @@ class EventHandler extends Eval
     parameters['direction']  = S.toStr(direction);
     parameters['pixels']     = S.toStr(pixels);
     EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.scroll, parameters: parameters));
-    return true;
-  }
-
-  /// Broadcasts the export event to be handled by individual widgets
-  Future<bool> _handleEventExport([dynamic format, bool? israw]) async
-  {
-    Map<String,String?> parameters = <String,String?>{};
-    parameters['format'] = S.toStr(format);
-    parameters['israw']  = S.toStr(israw);
-    EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.export, parameters: parameters));
     return true;
   }
 

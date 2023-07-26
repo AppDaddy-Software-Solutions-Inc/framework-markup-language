@@ -65,7 +65,7 @@ class FilePickerView implements FilePicker {
           String? name = blob.name;
           int? size = blob.size;
           var file = File(blob, url, name, type, size);
-          await file.read();
+          
           // process detectors
           if ((detectors != null) && (type.startsWith("image")))
           {

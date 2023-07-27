@@ -8,7 +8,7 @@ void main() {
 
     testWidgets('Visible Busy Widget', (builder) async {
       BusyModel model = BusyModel(null, visible: true);
-      BusyView view = BusyView(model);
+      BusyView view = model.getView() as BusyView;
       Widget widget = MaterialApp(home: view);
       await builder.pumpWidget(widget);
       expect(find.byType(CircularProgressIndicator), findsOneWidget);

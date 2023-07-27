@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
-import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/scrollshadow/scroll_shadow_view.dart';
 import 'package:fml/widgets/scrollshadow/scroll_shadow_model.dart';
@@ -30,7 +29,7 @@ class GridView extends StatefulWidget implements IWidgetView {
 }
 
 class _GridViewState extends WidgetState<GridView> {
-  BusyView? busy;
+  Widget? busy;
   bool startup = true;
   ScrollController? scroller;
   late ScrollShadowModel scrollShadow;
@@ -346,8 +345,8 @@ class _GridViewState extends WidgetState<GridView> {
     }
 
     /// Busy / Loading Indicator
-    busy ??= BusyView(BusyModel(widget.model,
-        visible: widget.model.busy, observable: widget.model.busyObservable));
+    busy ??= BusyModel(widget.model,
+        visible: widget.model.busy, observable: widget.model.busyObservable).getView();
 
 
     //////////

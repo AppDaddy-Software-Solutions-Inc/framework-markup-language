@@ -13,7 +13,6 @@ import 'package:fml/widgets/chart/label/chart_label_model.dart';
 import 'package:fml/widgets/chart/series/chart_series_model.dart';
 import 'package:fml/widgets/chart/axis/chart_axis_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
-import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:community_charts_flutter/community_charts_flutter.dart' as charts_flutter;
 import 'package:fml/widgets/widget/widget_state.dart';
@@ -44,7 +43,7 @@ class _ChartViewState extends WidgetState<ChartView>
 {
   Future<Template>? template;
   Future<ChartModel>? chartViewModel;
-  BusyView? busy;
+  Widget? busy;
   ChartType? chartType;
 
   @override
@@ -1215,7 +1214,7 @@ class _ChartViewState extends WidgetState<ChartView>
     if (!widget.model.visible) return Offstage();
 
     // Busy / Loading Indicator
-    busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
+    busy ??= BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable).getView();
 
     Widget view;
 

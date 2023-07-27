@@ -8,7 +8,6 @@ import 'package:fml/observable/binding.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/event/event.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
@@ -44,7 +43,7 @@ class TableView extends StatefulWidget implements IWidgetView {
 
 class _TableViewState extends WidgetState<TableView>
     implements IEventScrolling {
-  BusyView? busy;
+  Widget? busy;
   Future<TableModel>? future;
   bool startup = true;
 
@@ -433,8 +432,8 @@ class _TableViewState extends WidgetState<TableView>
             children: [footerPrevPage(), footerCurrPage(), footerNextPage()]));
 
     // Busy
-    busy ??= BusyView(BusyModel(widget.model,
-        visible: widget.model.busy, observable: widget.model.busyObservable));
+    busy ??= BusyModel(widget.model,
+        visible: widget.model.busy, observable: widget.model.busyObservable).getView();
 
     // Table
     Widget table = Column(

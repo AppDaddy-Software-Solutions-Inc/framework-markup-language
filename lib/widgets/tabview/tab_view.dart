@@ -424,11 +424,18 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
 
   Widget _buildTabView()
   {
-    if (widget.model.views.isNotEmpty) return Container();
-    if (widget.model.tabbar == true ) {
-      return widget.model.tabbutton == true ? _tabViewWithTabBarAndButton() : _tabViewWithTabBar();
-    } else {
-      return widget.model.tabbutton == true ? _tabViewWithTabButton()       : _tabView();
+    if (widget.model.views.isEmpty) return Container();
+
+    // tab bar
+    if (widget.model.tabbar)
+    {
+      return widget.model.tabbutton ? _tabViewWithTabBarAndButton() : _tabViewWithTabBar();
+    }
+
+    // no tab bar
+    else
+    {
+      return widget.model.tabbutton ? _tabViewWithTabButton() : _tabView();
     }
   }
 

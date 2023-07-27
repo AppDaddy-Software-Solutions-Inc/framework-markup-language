@@ -1,12 +1,10 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:math';
 import 'dart:ui';
-
 import 'package:fml/event/manager.dart';
 import 'package:fml/helper/scroll_behavior.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/phrase.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/busy/busy_view.dart';

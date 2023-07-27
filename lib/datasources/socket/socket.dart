@@ -168,7 +168,10 @@ class Socket
     {
       connected = false;
       int? code = _socket?.closeCode;
-      String? msg = _socket?.closeReason ?? lastMessage;
+
+      // The close reason must be no longer than 123 bytes
+      String? msg = S.isNullOrEmpty(_socket?.closeReason) ? lastMessage : _socket?.closeReason;
+
       listener.onDisconnected(code, msg);
     }
   }

@@ -897,6 +897,22 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     await EventHandler(this).execute(_onpulldown);
   }
 
+  @override
+  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
+  {
+    /// setter
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+
+    switch (function)
+    {
+      // export the data
+      case "export" :
+        await export();
+        return true;
+    }
+    return super.execute(caller, propertyOrFunction, arguments);
+  }
 
   @override
   Widget getView({Key? key}) => getReactiveView(TableView(this));

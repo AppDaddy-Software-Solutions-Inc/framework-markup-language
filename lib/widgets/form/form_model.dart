@@ -386,9 +386,9 @@ class FormModel extends BoxModel
       for (String id in postbrokers!) {
         IDataSource? source = scope!.getDataSource(id);
         if ((source != null) && (ok) && (commit != false)) {
-          if (source.custombody != true) {
-            source.body =
-                await buildPostingBody(fields, rootname: source.root ?? "FORM");
+          if (!source.custombody)
+          {
+            source.body = await buildPostingBody(fields, rootname: source.root ?? "FORM");
           }
           ok = await source.start(key: form!.key);
         }

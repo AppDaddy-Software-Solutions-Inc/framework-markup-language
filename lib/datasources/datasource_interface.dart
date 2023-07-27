@@ -9,7 +9,7 @@ abstract class IDataSource
   String get id;
   Data? get data;
   bool get busy;
-  bool? initialized;
+  bool initialized = false;
   bool? autoexecute;
 
   StringObservable? get bodyObservable;

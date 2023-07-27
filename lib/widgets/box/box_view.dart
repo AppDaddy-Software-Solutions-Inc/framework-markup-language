@@ -80,6 +80,8 @@ List<Color> getGradientColors(c1, c2, c3, c4) {
 
 class _BoxViewState extends WidgetState<BoxView>
 {
+  late ThemeData theme;
+
   Border? _getBorder()
   {
     Border? border;
@@ -90,7 +92,7 @@ class _BoxViewState extends WidgetState<BoxView>
       if (widget.model.border == 'all')
       {
         border = Border.all(
-            color: widget.model.bordercolor ?? Theme.of(context).colorScheme.onInverseSurface,
+            color: widget.model.bordercolor ?? theme.colorScheme.onInverseSurface,
             width: width);
       } else {
         border = Border(
@@ -98,25 +100,25 @@ class _BoxViewState extends WidgetState<BoxView>
               widget.model.border == 'vertical')
               ? BorderSide(
               width: width,
-              color: widget.model.bordercolor ?? Theme.of(context).colorScheme.onInverseSurface)
+              color: widget.model.bordercolor ?? theme.colorScheme.onInverseSurface)
               : BorderSide(width: 0, color: Colors.transparent),
           bottom: (widget.model.border == 'bottom' ||
               widget.model.border == 'vertical')
               ? BorderSide(
               width: width,
-              color: widget.model.bordercolor ?? Theme.of(context).colorScheme.onInverseSurface)
+              color: widget.model.bordercolor ?? theme.colorScheme.onInverseSurface)
               : BorderSide(width: 0, color: Colors.transparent),
           left: (widget.model.border == 'left' ||
               widget.model.border == 'horizontal')
               ? BorderSide(
               width: width,
-              color: widget.model.bordercolor ?? Theme.of(context).colorScheme.onInverseSurface)
+              color: widget.model.bordercolor ?? theme.colorScheme.onInverseSurface)
               : BorderSide(width: 0, color: Colors.transparent),
           right: (widget.model.border == 'right' ||
               widget.model.border == 'horizontal')
               ? BorderSide(
               width: width,
-              color: widget.model.bordercolor ?? Theme.of(context).colorScheme.onInverseSurface)
+              color: widget.model.bordercolor ?? theme.colorScheme.onInverseSurface)
               : BorderSide(width: 0, color: Colors.transparent),
         );
       }
@@ -309,6 +311,9 @@ class _BoxViewState extends WidgetState<BoxView>
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
+    // set theme
+    theme = Theme.of(context);
+
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 

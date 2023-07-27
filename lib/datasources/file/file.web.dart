@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'dart:typed_data';
-import 'package:universal_html/html.dart';
+import 'package:universal_html/html.dart' as universal_html;
 import 'package:camera/camera.dart' show XFile;
 import 'package:fml/log/manager.dart';
 import 'file.base.dart';
@@ -24,7 +24,7 @@ class File extends FileBase
       if (bytes != null) return bytes;
 
       // filepicker format read from file
-      if (file is File)
+      if (file is universal_html.File)
       {
         if ((start == null) && (end == null))
         {
@@ -59,7 +59,7 @@ class File extends FileBase
       /////////////////
       /* File Reader */
       /////////////////
-      FileReader reader = FileReader();
+      universal_html.FileReader reader = universal_html.FileReader();
 
       ///////////////////
       /* Read Complete */
@@ -95,7 +95,7 @@ class File extends FileBase
     /////////////////
     /* File Reader */
     /////////////////
-    FileReader reader = FileReader();
+    universal_html.FileReader reader = universal_html.FileReader();
 
     ///////////////////
     /* Read Complete */

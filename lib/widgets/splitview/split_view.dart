@@ -25,6 +25,8 @@ class SplitView extends StatefulWidget implements IWidgetView
 
 class SplitViewState extends WidgetState<SplitView>
 {
+  ThemeData? theme;
+
   BoxConstraints constraints = BoxConstraints();
 
   void onBack(Event event)
@@ -71,7 +73,7 @@ class SplitViewState extends WidgetState<SplitView>
 
   Widget _buildHandle()
   {
-    var myDividerColor = widget.model.dividerColor ?? Theme.of(context).colorScheme.onInverseSurface;
+    var myDividerColor = widget.model.dividerColor ?? theme?.colorScheme.onInverseSurface;
     var myDividerWidth = widget.model.dividerWidth;
 
     Widget view = widget.model.vertical ?
@@ -144,6 +146,8 @@ class SplitViewState extends WidgetState<SplitView>
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
+    theme = Theme.of(context);
+
     this.constraints = constraints;
     return BoxView(widget.model);
   }

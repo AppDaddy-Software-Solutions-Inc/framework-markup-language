@@ -34,7 +34,7 @@ class FrameworkView extends StatefulWidget
 
 class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveClientMixin implements IModelListener, INavigatorObserver
 {
-  BusyView? busy;
+  //BusyView? busy;
 
   double get safeAreaHeight
   {
@@ -461,7 +461,9 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     }
 
     // model is initializing
-    if (!widget.model.initialized) return Scaffold(body: Center(child: BusyView(BusyModel(null, visible: true))));
+    // if (!widget.model.initialized) {
+    //   return Scaffold(body: Center(child: BusyModel(null, visible: true).getView()));
+    // }
 
     // set the system constraints
     widget.model.setLayoutConstraints(constraints);

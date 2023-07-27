@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter_beacon/flutter_beacon.dart';
 import 'package:fml/dialog/manager.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
@@ -38,6 +39,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
   BoxModel?     body;
   FooterModel?  footer;
   DrawerModel?  drawer;
+  bool hasHitBusy = false;
 
   List<String>? bindables;
 
@@ -574,7 +576,9 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
     return super.execute(caller, propertyOrFunction, arguments);
   }
   @override
-  Widget getView({Key? key}) => getReactiveView(FrameworkView(this));
+  Widget getView({Key? key}){
+      return FrameworkView(this);
+  }
 }
 
 abstract class IDragListener

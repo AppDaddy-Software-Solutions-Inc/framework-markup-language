@@ -102,7 +102,7 @@ class DatepickerModel extends DecoratedInputModel implements IFormField
           scope: scope, listener: onPropertyChange);
     }
   }
-  String? get format => _format?.get() ?? "yMd";
+  String? get format => _format?.get();
 
   // Value
   StringObservable? _value;
@@ -348,7 +348,6 @@ class DatepickerModel extends DecoratedInputModel implements IFormField
         value = '';
       }
     } else {
-      //if (format == 'yMd') {format ??= 'y/M/d H:mm'; this.format = "y/M/d H:mm";}
       try {
         value = DateFormat(format).format(DateTime(result!.year, result.month,
                 result.day, timeResult!.hour, timeResult.minute));

@@ -28,7 +28,6 @@ class FormFieldModel extends DecoratedWidgetModel {
       }
     }
   }
-
   dynamic get defaultValue => _defaultValue?.get();
 
   /// metadata to save with the post
@@ -139,15 +138,17 @@ class FormFieldModel extends DecoratedWidgetModel {
 
   /// If the field will display its error state.
   BooleanObservable? _error;
-  set error(dynamic v) {
-    if (_error != null) {
+  set error(dynamic v)
+  {
+    if (_error != null)
+    {
       _error!.set(v);
-    } else if (v != null) {
-      _error = BooleanObservable(Binding.toKey(id, 'error'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else if (v != null)
+    {
+      _error = BooleanObservable(Binding.toKey(id, 'error'), v, scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get error => _error?.get() ?? false;
 
   /// If an alarm is going off, seperate from the error field as to not override it.
@@ -408,7 +409,8 @@ class FormFieldModel extends DecoratedWidgetModel {
   }
 
   @override
-  dispose() {
+  dispose()
+  {
     super.dispose();
     removeAllListeners();
   }
@@ -460,7 +462,6 @@ class FormFieldModel extends DecoratedWidgetModel {
       return color ?? Theme.of(context).colorScheme.primary.withOpacity(0.5);
     }
   }
-
 
   Future<bool> onFocusLost(BuildContext context) async {
     return await EventHandler(this).execute(_onfocuslost);

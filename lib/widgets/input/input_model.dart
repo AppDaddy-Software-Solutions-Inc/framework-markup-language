@@ -119,10 +119,6 @@ class InputModel extends DecoratedInputModel implements IFormField {
     return _value!.get();
   }
 
-  set valueNoModelChange(dynamic v) {
-    if (_value != null) _value!.set(v, notify: false);
-  }
-
   // mask
   StringObservable? _mask;
   set mask(dynamic v) {

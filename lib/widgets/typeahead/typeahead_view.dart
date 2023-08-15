@@ -226,6 +226,14 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
     return true;
   }
 
+  //debounce for inputenabled so it does not autocommit onchange.
+  _onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      _inputSelection(query);
+    });
+  }
+
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
@@ -393,10 +401,5 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
     return view;
   }
 
-  _onSearchChanged(String query) {
-    if (_debounce?.isActive ?? false) _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () {
-      _inputSelection(query);
-    });
-  }
+
 }

@@ -34,11 +34,13 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
   final TextEditingController controller = TextEditingController();
   FocusNode focus = FocusNode();
   String typeaheadText = '';
+  Timer? _debounce;
 
   @override
   void dispose()
   {
     controller.dispose();
+    _debounce?.cancel();
     super.dispose();
   }
 
@@ -265,7 +267,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
               controller: controller,
               textAlignVertical: TextAlignVertical.center,
               onSubmitted: _inputSelection,
-              onChanged: widget.model.inputenabled ? _inputSelection : null,
+              onChanged: widget.model.inputenabled ? _onSearchChanged : null,
               style: TextStyle(
                   color: widget.model.enabled != false ? widget.model.textcolor ?? Theme
                       .of(context)
@@ -389,5 +391,12 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
 
 
     return view;
+  }
+
+  _onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      _inputSelection(query);
+    });
   }
 }

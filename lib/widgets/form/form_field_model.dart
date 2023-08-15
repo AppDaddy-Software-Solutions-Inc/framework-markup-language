@@ -372,6 +372,7 @@ class FormFieldModel extends DecoratedWidgetModel {
   Future<bool> answer(dynamic v) async {
     bool ok = true;
     touched = true;
+    dirty = true;
 
     if (value != v) {
       // remember old value
@@ -397,6 +398,7 @@ class FormFieldModel extends DecoratedWidgetModel {
       if (ok == false) {
         value = oldValue;
         geocode = oldGeocode;
+        dirty = false;
       }
 
       // save succeeded. set dirty

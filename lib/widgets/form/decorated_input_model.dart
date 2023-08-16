@@ -239,14 +239,12 @@ class DecoratedInputModel extends FormFieldModel
     // deserialize
     super.deserialize(xml);
 
-
     hint = Xml.get(node: xml, tag: 'hint');
     border = Xml.get(node: xml, tag: 'border');
     bordercolor = Xml.get(node: xml, tag: 'bordercolor');
     borderwidth = Xml.get(node: xml, tag: 'borderwidth');
     radius = Xml.get(node: xml, tag: 'radius');
   }
-
 
   //set the field color based on the error state
   Color setFieldColor(BuildContext context) {
@@ -265,17 +263,21 @@ class DecoratedInputModel extends FormFieldModel
   }
 
   //set the field color based on the error state
-  Color setErrorHintColor(BuildContext context, {Color? color}) {
-    if (enabled != false) {
-      if(returnErrorState()) {
+  Color setErrorHintColor(BuildContext context, {Color? color})
+  {
+    if (enabled != false)
+    {
+      if (alarming)
+      {
         return Theme.of(context).colorScheme.error;
-      } else {
-        return color ?? Theme
-            .of(context)
-            .colorScheme
-            .onSurfaceVariant;
       }
-    } else {
+      else
+      {
+        return color ?? Theme.of(context).colorScheme.onSurfaceVariant;
+      }
+    }
+    else
+    {
       return color ?? Theme.of(context).colorScheme.primary.withOpacity(0.5);
     }
   }
@@ -284,17 +286,21 @@ class DecoratedInputModel extends FormFieldModel
 
 
   //set the field color based on the error state
-  Color setBorderColor(BuildContext context) {
-    if (enabled != false) {
-      if(returnErrorState()) {
+  Color setBorderColor(BuildContext context)
+  {
+    if (enabled != false)
+    {
+      if (alarming)
+      {
         return Theme.of(context).colorScheme.error.withOpacity(0.5);
-      } else {
-        return color ?? Theme
-            .of(context)
-            .colorScheme
-            .surfaceVariant;
       }
-    } else {
+      else
+      {
+        return color ?? Theme.of(context).colorScheme.surfaceVariant;
+      }
+    }
+    else
+    {
       return color ?? Theme.of(context).colorScheme.primary.withOpacity(0.5);
     }
   }

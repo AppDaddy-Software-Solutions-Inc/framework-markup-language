@@ -522,6 +522,12 @@ class Phrases
     return 'There are {#} mandatory fields missing';
   }
 
+  String get fieldMandatory
+  {
+    if (language == french) return '(FR) Mandatory field';
+    return 'Mandatory field';
+  }
+
   String get warningAlarms
   {
     if (language == french) return '(FR) There are {#} fields alarming';

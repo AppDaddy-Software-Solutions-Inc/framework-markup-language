@@ -527,9 +527,11 @@ class FormModel extends BoxModel
           if (field.geocode != null) field.geocode!.serialize(node);
 
           // field value
-          try {
+          try
+          {
             // xml data
-            if ((field is InputModel) && (field.format == InputFormats.xml)) {
+            if (field is InputModel && (field.formatType == "xml"))
+            {
               var document = XmlDocument.parse(value);
               var e = document.rootElement;
               document.children.remove(e);
@@ -569,24 +571,30 @@ class FormModel extends BoxModel
     return node.toXmlString(pretty: true);
   }
 
-  static Future<String?> buildPostingBody(List<IFormField>? fields,
-      {String rootname = "FORM"}) async {
-    try {
+  static Future<String?> buildPostingBody(List<IFormField>? fields, {String rootname = "FORM"}) async
+  {
+    try
+    {
       // build xml document
       XmlDocument document = XmlDocument();
-      XmlElement root =
-          XmlElement(XmlName(S.isNullOrEmpty(rootname) ? "FORM" : rootname));
+      XmlElement root = XmlElement(XmlName(S.isNullOrEmpty(rootname) ? "FORM" : rootname));
       document.children.add(root);
 
-      if (fields != null) {
-        for (var field in fields) {
+      if (fields != null)
+      {
+        for (var field in fields)
+        {
           // postable?
-          if (field.postable == true) {
-            if (field.values != null) {
-              field.values?.forEach((value) {
+          if (field.postable == true)
+          {
+            if (field.values != null)
+            {
+              field.values?.forEach((value)
+              {
                 XmlElement node;
                 String name = field.field ?? field.id ?? "";
-                try {
+                try
+                {
                   // valid element name?
                   if (!S.isNumber(name.substring(0, 1))) {
                     node = XmlElement(XmlName(name));
@@ -594,31 +602,34 @@ class FormModel extends BoxModel
                     node = XmlElement(XmlName("FIELD"));
                     node.attributes.add(XmlAttribute(XmlName('id'), name));
                   }
-                } catch (e) {
+                }
+                catch (e)
+                {
                   node = XmlElement(XmlName("FIELD"));
                   node.attributes.add(XmlAttribute(XmlName('id'), name));
                 }
 
                 // add field type
-                if (!S.isNullOrEmpty(field.elementName)) {
-                  node.attributes
-                      .add(XmlAttribute(XmlName('type'), field.elementName));
+                if (!S.isNullOrEmpty(field.elementName))
+                {
+                  node.attributes.add(XmlAttribute(XmlName('type'), field.elementName));
                 }
 
                 /// GeoCode for each [iFormField] which is set on answer
                 if (field.geocode != null) field.geocode!.serialize(node);
 
                 // add meta data
-                if (!S.isNullOrEmpty(field.meta)) {
-                  node.attributes
-                      .add(XmlAttribute(XmlName('meta'), field.meta));
+                if (!S.isNullOrEmpty(field.meta))
+                {
+                  node.attributes.add(XmlAttribute(XmlName('meta'), field.meta));
                 }
 
                 // value
-                try {
+                try
+                {
                   // Xml Data
-                  if ((field is InputModel) &&
-                      (field.format == InputFormats.xml)) {
+                  if (field is InputModel && field.formatType == "xml")
+                  {
                     var document = XmlDocument.parse(value);
                     var e = document.rootElement;
                     document.children.remove(e);
@@ -626,43 +637,55 @@ class FormModel extends BoxModel
                   }
 
                   // Non-XML? Wrap in CDATA
-                  else if (Xml.hasIllegalCharacters(value)) {
+                  else if (Xml.hasIllegalCharacters(value))
+                  {
                     node.children.add(XmlCDATA(value));
-                  } else {
+                  }
+                  else
+                  {
                     node.children.add(XmlText(value));
                   }
-                } on XmlException catch (e) {
+                }
+                on XmlException catch (e)
+                {
                   node.children.add(XmlCDATA(e.message));
                 }
 
                 // Add Node
                 root.children.add(node);
               });
-            } else {
+            }
+            else
+            {
               // Build Element
               XmlElement node;
               String name = field.field ?? field.id ?? "";
-              try {
+              try
+              {
                 // Valid Element Name
-                if (!S.isNumber(name.substring(0, 1))) {
+                if (!S.isNumber(name.substring(0, 1)))
+                {
                   node = XmlElement(XmlName(name));
                 }
 
                 // In-Valid Element Name
-                else {
+                else
+                {
                   node = XmlElement(XmlName("FIELD"));
                   node.attributes.add(XmlAttribute(XmlName('id'), name));
                 }
-              } catch (e) {
+              }
+              catch (e)
+              {
                 // In-Valid Element Name
                 node = XmlElement(XmlName("FIELD"));
                 node.attributes.add(XmlAttribute(XmlName('id'), name));
               }
 
               // Add Field Type
-              if (!S.isNullOrEmpty(field.elementName)) {
-                node.attributes
-                    .add(XmlAttribute(XmlName('type'), field.elementName));
+              if (!S.isNullOrEmpty(field.elementName))
+              {
+                node.attributes.add(XmlAttribute(XmlName('type'), field.elementName));
               }
 
               // Add Node
@@ -674,38 +697,24 @@ class FormModel extends BoxModel
 
       // Set Body
       return document.toXmlString(pretty: true);
-    } catch (e) {
-      Log().error(
-          "Error serializing posting document. Error is ${e.toString()}");
+    }
+    catch (e)
+    {
+      Log().error("Error serializing posting document. Error is ${e.toString()}");
       return null;
     }
   }
 
-  Future<List<IFormField>?> validate() async {
-    // Force Close
+  Future<List<IFormField>?> validate() async
+  {
+    // force commits on focused field
     WidgetModel.unfocus();
 
-    // Commit the Form
-    var missing = await _getMissing();
-    if (missing?.isNotEmpty == true) {
+    var alarms = await _getAlarmingFields();
+    if (alarms.isNotEmpty)
+    {
       // display toast message
-      String msg =
-          phrase.warningMandatory.replaceAll('{#}', missing!.length.toString());
-      System.toast("${phrase.warning} $msg");
-
-      // scroll to the field
-      var view = findListenerOfExactType(FormViewState);
-      //TODO: when field is cleared, scroll to the next alarming field without validation.
-      if (view is FormViewState) view.show(missing.first);
-
-      return missing;
-    }
-
-    var alarms = await _getAlarms();
-    if (alarms?.isNotEmpty == true) {
-      // display toast message
-      String msg =
-          phrase.warningAlarms.replaceAll('{#}', alarms!.length.toString());
+      String msg = phrase.warningAlarms.replaceAll('{#}', alarms.length.toString());
       System.toast("${phrase.warning} $msg");
 
       // scroll to the field
@@ -714,7 +723,6 @@ class FormModel extends BoxModel
 
       return alarms;
     }
-
     return null;
   }
 
@@ -768,33 +776,18 @@ class FormModel extends BoxModel
     return form;
   }
 
-  Future<List<IFormField>?> _getMissing() async {
-    List<IFormField>? missing;
-    for (var field in fields) {
-      bool? isMandatory;
-      if ((field.mandatory != null)) isMandatory = field.mandatory;
-      if ((isMandatory == null) && (mandatory != null)) isMandatory = mandatory;
-      isMandatory ??= false;
-      if ((isMandatory) && (!field.answered)) {
-        missing ??= [];
-        missing.add(field);
-        //set the error state of the field and update the error message
-        field.systemerrortext = "This Field is Mandatory";
-        field.error = true;
-      }
-    }
-    return missing;
-  }
-
-  Future<void> _fillEmptyFields() async {
+  Future<void> _fillEmptyFields() async
+  {
     //display busy
     busy = true;
     bool ok = false;
 
-    if ((scope != null) && (data != null)) {
+    if ((scope != null) && (data != null))
+    {
       //for a single datasource grab the scope
       IDataSource? source = scope!.getDataSource(data[0]);
-      if (source != null) {
+      if (source != null)
+      {
         // start the datasource
         ok = await source.start();
       }
@@ -802,18 +795,22 @@ class FormModel extends BoxModel
       // if the data is null do not fill fields
       if (source?.data == null || source == null) ok = false;
 
-      if (ok) {
-        for (var field in fields) {
+      if (ok)
+      {
+        for (var field in fields)
+        {
           // check to see if the field is not assigned a by the developer, even if that value is null, and is not answered.
-          if ((isNull(field.value) || field.hasDefaulted == true) &&
-              field.touched == false) {
+          if (isNull(field.value) && field.touched == false)
+          {
             //create the binding string based on the fields ID.
             String binding = '${field.id}';
+
             //assign the signature of the source to the field and grab it from the data. Data will generally return a list, so we must grab the 0th element.
             dynamic sourceData = Data.fromDotNotation(source!.data!, DotNotation.fromString(binding)!)?.elementAt(0);
 
             //data can return a jsonmap as part of the data's list if it fails to grab the binding. If this is the case, do not set the value.
-            if (sourceData != null && sourceData is! Map) {
+            if (sourceData != null && sourceData is! Map)
+            {
               field.value = sourceData.toString();
             }
           }
@@ -824,24 +821,21 @@ class FormModel extends BoxModel
     busy = false;
   }
 
-  Future<List<IFormField>?> _getAlarms() async {
-    List<IFormField>? alarming;
-    for (var field in fields) {
-      if (field.alarming!) {
-        //tell the form that validation has been hit
-        field.validationHasHit = true;
-        alarming ??= [];
-        //add the field to the forms list of alarms
-        alarming.add(field);
-      }
+  Future<List<IFormField>> _getAlarmingFields() async
+  {
+    List<IFormField> alarms = [];
+    for (var field in fields)
+    {
+      if (field.alarming) alarms.add(field);
     }
-    return alarming;
+    return alarms;
   }
 
   @override
-  Future<bool?> execute(
-      String caller, String propertyOrFunction, List<dynamic> arguments) async {
+  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
+  {
     if (scope == null) return null;
+
     var function = propertyOrFunction.toLowerCase().trim();
     switch (function) {
       case 'complete':

@@ -18,32 +18,24 @@ import 'package:flutter/services.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class InputView extends StatefulWidget implements IWidgetView {
+class InputView extends StatefulWidget implements IWidgetView
+{
   @override
   final InputModel model;
   final dynamic onChangeCallback;
   final dynamic onSubmitted;
 
-  InputView(this.model, {this.onChangeCallback, this.onSubmitted})
-      : super(key: ObjectKey(model));
+  InputView(this.model, {this.onChangeCallback, this.onSubmitted}) : super(key: ObjectKey(model));
 
   @override
   State<InputView> createState() => _InputViewState();
 }
 
-class _InputViewState extends WidgetState<InputView>
-    with WidgetsBindingObserver {
+class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
+{
   final focus = FocusNode();
-  bool hasSetObscure = false;
-  Timer? debounce;
-  Function? validator;
+  Timer? commitTimer;
   bool? obscure = false;
-  String? errorText;
-  bool userSetErrorText = false;
-  String? overrideErrorText;
-  String? oldValue = "";
-  List<TextInputFormatter> formatters = [];
-  String? keyboardtype;
 
   static const Map<String, TextInputAction> keyboardInputs = {
     'next': TextInputAction.next,
@@ -73,15 +65,13 @@ class _InputViewState extends WidgetState<InputView>
   };
 
   @override
-  void initState() {
+  void initState()
+  {
     super.initState();
 
     // create the controller if its not already created in the model.
     // This allows us to get around having to use GlobalKey() on the Input to preserve the controller state
     widget.model.controller ??= TextEditingController();
-
-    // Set Controller Text
-    if (widget.model.errortext != null) userSetErrorText = true;
 
     // set controller value
     widget.model.controller!.value = TextEditingValue(
@@ -89,9 +79,7 @@ class _InputViewState extends WidgetState<InputView>
         selection: TextSelection.fromPosition(TextPosition(
             offset: widget.model.controller!.text.characters.length)));
 
-    //////////////////////
-    /* On Loss of Focus */
-    //////////////////////
+    // On Loss of Focus
     focus.addListener(onFocusChange);
 
     widget.model.registerListener(this);
@@ -99,73 +87,48 @@ class _InputViewState extends WidgetState<InputView>
     // If the model contains any databrokers we fire them before building so we can bind to the data
     widget.model.initialize();
 
-    // Debounce
-    widget.model.controller!.addListener(_onInputChange);
-
-    //////////////////////////////////////
-    /* Add WidgetsBindingObserver mixin */
-    //////////////////////////////////////
-    //WidgetsBinding.instance.addObserver(this);
+    // debounce
+    widget.model.controller!.addListener(_debounce);
   }
 
   @override
-  void didUpdateWidget(InputView oldWidget) {
+  void didUpdateWidget(InputView oldWidget)
+  {
     super.didUpdateWidget(oldWidget);
 
     var oldcursorPos = widget.model.controller?.selection.base.offset;
-    if (oldcursorPos != null) {
+    if (oldcursorPos != null)
+    {
       widget.model.controller?.value = TextEditingValue(
           text: widget.model.value ?? "",
-          selection:
-              TextSelection.fromPosition(TextPosition(offset: oldcursorPos)));
+          selection: TextSelection.fromPosition(TextPosition(offset: oldcursorPos)));
     }
   }
 
   @override
-  void dispose() {
+  void dispose()
+  {
     // cleanup the controller.
     // its important to set the controller to null so that it gets recreated
     // when the input rebuilds.
-
     focus.dispose();
 
     // Remove WidgetsBindingObserver mixin
     //WidgetsBinding.instance.removeObserver(this);
-
     super.dispose();
   }
 
   /// Callback to fire the [_InputViewState.build] when the [InputModel] changes
   @override
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
+  onModelChange(WidgetModel model, {String? property, dynamic value})
+  {
     // ensure we don't call setstate if the model update was entered via
     // keyboard by comparing the controller to the callback's value
-
-
     var b = Binding.fromString(property);
-    if (mounted && ((widget.model.controller?.text != value && b?.property == 'value') || b?.property != 'value')) {
-      setState(() {
-        // This places the cursor at the end of the selection when focussed.
-        // This must be after the text is set to the models value. - 7eaae252 - IO
-        // *edit* I have moved this back above as it was resetting the cursor to
-        // * the start every commit originally there was an issue with clear +
-        // * form that we can't reproduce, causing a loop on selection and this
-        // * line fixed it, likely a coincidence but somewhere lies a bug. - BF
-        var oldcursorPos = widget.model.controller?.selection.base.offset;
-        if (oldcursorPos != null) {
-          widget.model.controller?.value = TextEditingValue(
-              text: widget.model.value ?? "",
-              selection: TextSelection.fromPosition(
-                  TextPosition(offset: oldcursorPos)));
-        }
-      });
-    } else {
-
+    if (mounted && ((widget.model.controller?.text != value && b?.property == 'value') || b?.property != 'value'))
+    {
+      setState(() {});
     }
-  }
-
-  _onInputChange() {
-    _commit(passDebounce: false);
   }
 
   @override
@@ -237,14 +200,14 @@ class _InputViewState extends WidgetState<InputView>
 
   _handleSubmit(String _) {
     try {
-      if (S.isNullOrEmpty(widget.model.keyboardinput) ||
-          widget.model.keyboardinput!.toLowerCase() == 'done' ||
-          widget.model.keyboardinput!.toLowerCase() == 'go' ||
-          widget.model.keyboardinput!.toLowerCase() == 'search' ||
-          widget.model.keyboardinput!.toLowerCase() == 'send') {
+      if (S.isNullOrEmpty(widget.model.keyboardInput) ||
+          widget.model.keyboardInput!.toLowerCase() == 'done' ||
+          widget.model.keyboardInput!.toLowerCase() == 'go' ||
+          widget.model.keyboardInput!.toLowerCase() == 'search' ||
+          widget.model.keyboardInput!.toLowerCase() == 'send') {
         focus.unfocus();
         return;
-      } else if (widget.model.keyboardinput!.toLowerCase() == 'next') {
+      } else if (widget.model.keyboardInput!.toLowerCase() == 'next') {
         try {
           FocusScope.of(context).nextFocus();
         } catch (e) {
@@ -267,9 +230,7 @@ class _InputViewState extends WidgetState<InputView>
     var editable = (widget.model.editable != false);
     if (!editable) return;
 
-    /////////////////////////////////////
-    /* Commit Changes on Loss of Focus */
-    /////////////////////////////////////
+    // commit changes on loss of focus
     bool focused = focus.hasFocus;
 
     if (focused) {
@@ -286,104 +247,41 @@ class _InputViewState extends WidgetState<InputView>
     if (!focused) await _commit();
   }
 
-  Future<bool> _commit({bool passDebounce = true}) async {
+  Future<bool> _commit() async
+  {
+    String? value = widget.model.controller != null ? widget.model.controller!.text : null;
 
-    if (widget.model.editable == false) {
-      oldValue = widget.model.value;
-      return true;
+    // value changed?
+    if (widget.model.value != value)
+    {
+      // set answer
+      await widget.model.answer(value);
     }
 
-    ////////////////////
-    /* Trim the Value */
-    ////////////////////
-    String? trimmed = (widget.model.controller != null)
-        ? widget.model.controller!.text
-        : null;
-
-    // Flex- I removed the trim here because we want to keep the full state of a user typing
-    // we should trim the text later or on the backend service.
-
-    ////////////////////
-    /* Value Changed? */
-    ////////////////////
-    if (widget.model.value != trimmed) {
-      ///////////////////////////
-      /* Retain Rollback Value */
-      ///////////////////////////
-      dynamic old = widget.model.value;
-
-      ////////////////
-      /* Set Answer */
-      ////////////////
-      await widget.model
-          .answer(trimmed); // should this be done only on focus change
-
-      // this should only trigger with the oninputchange
-
-      if (!passDebounce) {
-        if (debounce?.isActive ?? false) debounce!.cancel();
-
-        // should check for alarms here as well.
-        // allow debounce to be altered
-        debounce = Timer(Duration(milliseconds: 1000), () async {
-          if (S.isNullOrEmpty(widget.model.value) &&
-              widget.model.mandatory == true) {
-            widget.model.error = "true";
-            if (!userSetErrorText) errorText = "Field required";
-          } else if (validator != null &&
-              !S.isNullOrEmpty(widget.model.value)) {
-            widget.model.error = (!validator!(widget.model.value)).toString();
-            if (!userSetErrorText) errorText = overrideErrorText;
-          } else if (S.isNullOrEmpty(widget.model.value)) {
-            widget.model.error = "false";
-          }
-          widget.model.errortext = errorText;
-
-          //////////////////////////
-          /* Fire on Change Event */
-          //////////////////////////
-          if (trimmed != old) await widget.model.onChange(context);
-        });
-      }
-
-      // this will always trigger unless the oninputchange is called
-      if (passDebounce) {
-        if (S.isNullOrEmpty(widget.model.value) &&
-            widget.model.mandatory == true) {
-          widget.model.error = "true";
-          if (!userSetErrorText) errorText = "Field required";
-        } else if (validator != null && !S.isNullOrEmpty(widget.model.value)) {
-          widget.model.error = (!validator!(widget.model.value)).toString();
-          if (!userSetErrorText) errorText = overrideErrorText;
-        } else if (S.isNullOrEmpty(widget.model.value)) {
-          widget.model.error = "false";
-        }
-        widget.model.errortext = errorText;
-
-        //////////////////////////
-        /* Fire on Change Event */
-        //////////////////////////
-        if (trimmed != old) await widget.model.onChange(context);
-      }
-    }
     return true;
   }
 
-  onValue(String text) {
-    if (widget.model.editable == false) {
-      widget.model.controller!.value = TextEditingValue(
-          text: oldValue ?? "",
-          selection: TextSelection(
-              baseOffset: 0, extentOffset: oldValue!.characters.length));
-      return;
-    }
-    oldValue = text;
-    if (widget.onChangeCallback != null) {
+  void _debounce()
+  {
+    // this should only trigger with the oninputchange
+    if (commitTimer?.isActive ?? false) commitTimer!.cancel();
+
+    // reset the timer
+    commitTimer = Timer(Duration(milliseconds: 1000), () async => _commit());
+  }
+
+  onValue(String text)
+  {
+    if (widget.onChangeCallback != null)
+    {
       widget.onChangeCallback(widget.model, text);
     }
+
     var editable = (widget.model.editable != false);
-    if (!editable) {
-      setState(() {
+    if (!editable)
+    {
+      setState(()
+      {
         var oldcursorPos = widget.model.controller!.selection.base.offset;
         widget.model.controller!.value = TextEditingValue(
             text: widget.model.value ?? "",
@@ -394,156 +292,150 @@ class _InputViewState extends WidgetState<InputView>
     }
   }
 
-  void onClear() {
-    if (widget.onChangeCallback != null) {
+  void onClear()
+  {
+    if (widget.onChangeCallback != null)
+    {
       widget.onChangeCallback(widget.model, '');
     }
+
     widget.model.controller!.text = '';
     _commit();
   }
 
-
-  String? _getFormatType() {
-    String? formatter;
-    List? formatterTypes = [];
-    if (widget.model.format != null) {
-      formatterTypes = widget.model.format.split(',');
-      formatter = formatterTypes![0].trim();
-    }
-    return formatter?.toLowerCase();
-  }
-
-  void _setFormatting() {
-    formatters.clear();
-    overrideErrorText = null;
-    keyboardtype = widget.model.keyboardtype;
-
-    /* Custom Formatters */
-    //if (!S.isNullOrEmpty(model.formatter)) formatters.add(CustomFormatter(model.formatter));
-
-    int? length = widget.model.length;
+  List<TextInputFormatter> _getFormatters()
+  {
+    List<TextInputFormatter> formatters = [];
 
     // capitalization
-    if (widget.model.capitalization == CapitalizationTypes.upper) {
+    if (widget.model.capitalization == CapitalizationTypes.upper)
+    {
       formatters.add(UpperCaseTextFormatter());
     }
-    if (widget.model.capitalization == CapitalizationTypes.lower) {
+
+    if (widget.model.capitalization == CapitalizationTypes.lower)
+    {
       formatters.add(LowerCaseTextFormatter());
     }
-    if (length != null) {
-      formatters.add(LengthLimitingTextInputFormatter(length));
+
+    if (widget.model.length != null)
+    {
+      formatters.add(LengthLimitingTextInputFormatter(widget.model.length));
     }
 
     // format type
-    switch (_getFormatType()) {
+    switch (widget.model.formatType)
+    {
       // not 100% sure what the purpose of the first 3 formatters are.
       case 'numeric':
         formatters.add(TextToNumericFormatter());
-        keyboardtype = "numeric";
-        overrideErrorText = "Value is not a number";
         break;
 
       case 'int':
         formatters.add(TextToIntegerFormatter());
-        keyboardtype = "numeric";
-        overrideErrorText = "Value is not an integer";
         break;
 
       case 'bool':
         formatters.add(TextToBooleanFormatter());
-        overrideErrorText = "Value must be a boolean";
         break;
 
       case 'credit':
         formatters.add(CreditCardNumberInputFormatter());
-        keyboardtype = "numeric";
-        overrideErrorText = "Invalid card number";
-        validator = isCardValidNumber;
         break;
 
       case 'cvc':
         formatters.add(CreditCardCvcInputFormatter());
-        keyboardtype = "numeric";
-        overrideErrorText = "Invalid CVC code";
         break;
 
       case 'expire':
         formatters.add(CreditCardExpirationDateFormatter());
-        keyboardtype = "numeric";
-        overrideErrorText = "Invalid expiry date";
-        validator = TextInputValidators().isExpiryValid;
         break;
 
       case 'currency':
         formatters.add(CurrencyInputFormatter());
-        keyboardtype = "numeric";
-        overrideErrorText = "Invalid Currency";
         break;
 
       case 'phone':
         formatters.add(PhoneInputFormatter());
-        // isPhoneValid(widget.model.value);
-        keyboardtype = "phone";
-        overrideErrorText = "Invalid phone number";
-        validator = isPhoneValid;
-        break;
-
-      case 'password':
-        if (!hasSetObscure) {
-          obscure = true;
-          hasSetObscure = true;
-        }
-        keyboardtype = "password";
-        overrideErrorText =
-            "The password must be at least 8 characters long, including upper/lowercase and a number.";
-        validator = TextInputValidators().isPasswordValid;
-        break;
-
-      case 'email':
-        keyboardtype = "email";
-        overrideErrorText = "Invalid email";
-        validator = TextInputValidators().isEmailValid;
         break;
 
       default:
         break;
     }
 
-    if (userSetErrorText) errorText = widget.model.errortext;
-
     //using allow must not use a mask for filteringtextformatter, causes issues.
-    if (widget.model.allow != null && widget.model.mask == null) {
+    if (widget.model.allow != null && widget.model.mask == null)
+    {
       // Not sure how to make this work with interpolation
-      formatters.add(FilteringTextInputFormatter.allow(
-          RegExp(r'[' "${widget.model.allow!}" ']')));
+      formatters.add(FilteringTextInputFormatter.allow(RegExp(r'[' "${widget.model.allow!}" ']')));
     }
-    if (widget.model.deny != null) {
+
+    if (widget.model.deny != null)
+    {
       // Not sure how to make this work with interpolation
-      formatters.add(FilteringTextInputFormatter.deny(
-          RegExp(r'[' "${widget.model.deny!}" ']')));
+      formatters.add(FilteringTextInputFormatter.deny(RegExp(r'[' "${widget.model.deny!}" ']')));
     }
 
     // The mask formatter with allow
-    if (widget.model.mask != null) {
-      if (widget.model.allow != null) {
-        formatters.add(MaskedInputFormatter(
-          widget.model.mask,
-
-          // Not sure how to make this work with interpolation
-          allowedCharMatcher: RegExp(r'[' "${widget.model.allow!}" ']+'),
-        ));
-      } else {
+    if (widget.model.mask != null)
+    {
+      if (widget.model.allow != null)
+      {
+        formatters.add(MaskedInputFormatter(widget.model.mask, allowedCharMatcher: RegExp(r'[' "${widget.model.allow!}" ']+')));
+      }
+      else
+      {
         formatters.add(MaskedInputFormatter(widget.model.mask));
       }
     }
+
+    return formatters;
   }
 
+  TextInputType _getKeyboardType()
+  {
+    var keyboardType = widget.model.keyboardType?.trim().toLowerCase();
 
-  _getBorder(Color mainColor, Color? secondaryColor){
+    // keyboartd based on format type
+    switch (widget.model.formatType)
+    {
+      case 'expire':
+      case 'int':
+      case 'credit':
+      case 'cvc':
+      case 'numeric':
+      case 'currency':
+        keyboardType = "numeric";
+        break;
 
+      case 'phone':
+        keyboardType = "phone";
+        break;
+
+      case 'password':
+        if (obscure != true) obscure = true;
+        keyboardType = "password";
+        break;
+
+      case 'email':
+        keyboardType = "email";
+        break;
+
+      default:
+        break;
+    }
+
+    var inputType = TextInputType.text;
+    if (keyboardType != null && keyboardTypes.containsKey(keyboardType)) inputType = keyboardTypes[keyboardType]!;
+    return inputType;
+  }
+
+  _getBorder(Color mainColor, Color? secondaryColor)
+  {
     secondaryColor ??= mainColor;
 
-    if(widget.model.border == "none") {
+    if(widget.model.border == "none")
+    {
       return OutlineInputBorder(
         borderRadius:
         BorderRadius.all(Radius.circular(widget.model.radius)),
@@ -576,74 +468,170 @@ class _InputViewState extends WidgetState<InputView>
 
   }
 
-  _getSuffixIcon(Color hintTextColor) {
-    if (_getFormatType() == "password" && widget.model.clear == false) {
-      return IconButton(
-        icon: Icon(
-          obscure! ? Icons.visibility : Icons.visibility_off,
-          size: 17,
-          color: hintTextColor,
-        ),
+  _getSuffixIcon(Color hintTextColor)
+  {
+    if (widget.model.formatType == "password" && widget.model.clear == false)
+    {
+      return IconButton(icon: Icon(obscure! ? Icons.visibility : Icons.visibility_off, size: 17, color: hintTextColor),
         onPressed: () {
           widget.model.obscure = !obscure!;
         },
       );
-    } else if (widget.model.enabled != false &&
-        widget.model.editable != false &&
-        widget.model.clear) {
-      return IconButton(
-        padding: EdgeInsets.zero,
-        icon: Icon(
-          Icons.clear_rounded,
-          size: 17,
-          color: hintTextColor,
-        ),
+    }
+    else if (widget.model.enabled != false && widget.model.editable != false && widget.model.clear)
+    {
+      return IconButton(padding: EdgeInsets.zero, icon: Icon(Icons.clear_rounded, size: 17, color: hintTextColor),
         onPressed: () {
           onClear();
         },
       );
-    } else {
+    }
+    else
+    {
       return null;
     }
   }
 
-
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints) {
-    // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
-
-    // save system constraints
-    onLayout(constraints);
-
+  InputDecoration _getDecoration()
+  {
     // set the border colors
     Color? enabledBorderColor = widget.model.bordercolor ?? Theme.of(context).colorScheme.outline;
     Color? disabledBorderColor = Theme.of(context).disabledColor;
     Color? focusBorderColor = Theme.of(context).focusColor;
     Color? errorBorderColor = Theme.of(context).colorScheme.error;
 
-    // set the text color arrays
-    Color? enabledTextColor = widget.model.textcolor;
-    Color? disabledTextColor = Theme.of(context).disabledColor;
+    String? hint = widget.model.hint;
     Color? hintTextColor = widget.model.textcolor?.withOpacity(0.7) ?? Theme.of(context).colorScheme.onSurfaceVariant;
     Color? errorTextColor = Theme.of(context).colorScheme.error;
 
+    double pad = 4;
+    double additionalTopPad = widget.model.border == "bottom" || widget.model.border == "underline" ? 3 : 15;
+    double additionalBottomPad = widget.model.border == "bottom" || widget.model.border == "underline" ? 14 : 15;
+
     double? fontsize = widget.model.size;
-    String? hint = widget.model.hint;
+
+    var decoration = InputDecoration(
+      isDense: false,
+      errorMaxLines: 8,
+      hintMaxLines: 8,
+      fillColor: widget.model.setFieldColor(context),
+      filled: true,
+      contentPadding: widget.model.dense == true
+          ? EdgeInsets.only(
+          left: pad + 10, top: pad + 8, right: pad +10, bottom: pad + 21)
+          : EdgeInsets.only(
+          left: pad + 10, top: pad + additionalTopPad, right: pad + 10, bottom: pad + additionalBottomPad),
+      alignLabelWithHint: true,
+
+
+      labelText: widget.model.dense ? null : hint,
+      labelStyle: TextStyle(
+        fontSize: fontsize != null ? fontsize - 2 : 14,
+        color: widget.model.setErrorHintColor(context, color: hintTextColor),
+        shadows: <Shadow>[
+          Shadow(
+              offset: Offset(0.0, 0.5),
+              blurRadius: 2.0,
+              color: widget.model.color ?? Colors.transparent
+          ),
+          Shadow(
+              offset: Offset(0.0, 0.5),
+              blurRadius: 2.0,
+              color: widget.model.color ?? Colors.transparent
+          ),
+          Shadow(
+              offset: Offset(0.0, 0.5),
+              blurRadius: 2.0,
+              color: widget.model.color ?? Colors.transparent
+          ),
+        ],
+      ),
+      errorStyle: TextStyle(
+        fontSize: fontsize ?? 14,
+        fontWeight: FontWeight.w300,
+        color: errorTextColor,
+      ),
+      errorText: widget.model.alarmText,
+      hintText: widget.model.dense ? hint : null,
+      hintStyle: TextStyle(
+        fontSize: fontsize ?? 14,
+        fontWeight: FontWeight.w300,
+        color: widget.model.setErrorHintColor(context, color: hintTextColor),
+      ),
+
+
+      counterText: "",
+      // widget.model.error is getting set to null somewhere.
+
+      //Icon Attributes
+      prefixIcon: widget.model.icon != null ? Padding(
+          padding: EdgeInsets.only(
+              right: 10,
+              left: 10,
+              bottom: 0),
+          child: Icon(widget.model.icon)) : null,
+      prefixIconConstraints: BoxConstraints(maxHeight: 24),
+      suffixIcon: _getSuffixIcon(hintTextColor),
+      suffixIconConstraints: (widget.model.enabled != false &&
+          widget.model.editable != false &&
+          widget.model.clear)
+          ? BoxConstraints(maxHeight: 20)
+          : null,
+
+      //border attributes
+      border: _getBorder(enabledBorderColor, null),
+      errorBorder: _getBorder(errorBorderColor, null),
+      focusedErrorBorder: _getBorder(errorBorderColor, null),
+      focusedBorder: _getBorder(focusBorderColor, null),
+      enabledBorder: _getBorder(enabledBorderColor, null),
+      disabledBorder: _getBorder(disabledBorderColor, enabledBorderColor),
+    );
+
+    return decoration;
+  }
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
+    // Check if widget is visible before wasting resources on building it
+    if (!widget.model.visible) return Offstage();
+
+    // save system constraints
+    onLayout(constraints);
+
+    // set the text color arrays
+    Color? enabledTextColor = widget.model.textcolor;
+    Color? disabledTextColor = Theme.of(context).disabledColor;
+
+    double? fontsize = widget.model.size;
     int? length = widget.model.length;
     int? lines = widget.model.lines;
 
     if (!S.isNullOrEmpty(widget.model.obscure)) obscure = widget.model.obscure;
     if (obscure == true) lines = 1;
 
-    // set formatting
-    _setFormatting();
+    // get formatters
+    var formatters = _getFormatters();
 
-    double pad = 4;
-    double additionalTopPad = widget.model.border == "bottom" || widget.model.border == "underline" ? 3 : 15;
-    double additionalBottomPad = widget.model.border == "bottom" || widget.model.border == "underline" ? 14 : 15;
+    // get keyboard type
+    var keyboard = _getKeyboardType();
+
+    var action = (widget.model.keyboardInput != null)
+        ? (keyboardInputs[widget.model.keyboardInput?.toLowerCase()] ??
+        TextInputAction.next)
+        : TextInputAction.next;
+
+    var style = TextStyle(
+        color: widget.model.enabled != false
+            ? enabledTextColor ?? Theme.of(context).colorScheme.onBackground
+            : disabledTextColor,
+        fontSize: fontsize);
+
+    var minLines = widget.model.expand == true ? null : lines ?? 1;
+    var maxLines = widget.model.expand == true ? null : obscure! ? 1 : widget.model.maxlines ?? (widget.model.wrap == true ? null : lines ?? 1);
+
     Widget view = TextField(
         controller: widget.model.controller,
         focusNode: focus,
@@ -651,119 +639,18 @@ class _InputViewState extends WidgetState<InputView>
         autocorrect: false,
         expands: widget.model.expand == true,
         obscureText: obscure!,
-        keyboardType: (keyboardtype != null)
-            ? (keyboardTypes[keyboardtype!.toLowerCase()] ?? TextInputType.text)
-            : TextInputType.text,
-        textInputAction: (widget.model.keyboardinput != null)
-            ? (keyboardInputs[widget.model.keyboardinput?.toLowerCase()] ??
-            TextInputAction.next)
-            : TextInputAction.next,
+        keyboardType: keyboard,
+        textInputAction: action,
         inputFormatters: formatters,
         enabled: (widget.model.enabled == false) ? false : true,
-        style: TextStyle(
-            color: widget.model.enabled != false
-                ? enabledTextColor ?? Theme.of(context).colorScheme.onBackground
-                : disabledTextColor,
-            fontSize: fontsize),
-        onChanged: (text) => onValue(text),
-        onEditingComplete: _commit,
-        onSubmitted: (s) {
-          if (widget.onSubmitted != null) widget.onSubmitted();
-          _handleSubmit(s);
-        },
-        textAlignVertical: widget.model.expand == true
-            ? TextAlignVertical.top
-            : TextAlignVertical.center,
+        style: style,
+        textAlignVertical: widget.model.expand == true ? TextAlignVertical.top : TextAlignVertical.center,
         maxLength: length,
-        maxLines: widget.model.expand == true
-            ? null
-            : obscure!
-            ? 1
-            : widget.model.maxlines ??
-            (widget.model.wrap == true ? null : lines ?? 1),
-        minLines: widget.model.expand == true ? null : lines ?? 1,
-        maxLengthEnforcement: length != null
-            ? MaxLengthEnforcement.enforced
-            : MaxLengthEnforcement.none,
-
-        //Everything Below is Decorations
-        decoration: InputDecoration(
-          isDense: false,
-          errorMaxLines: 8,
-          hintMaxLines: 8,
-          fillColor: widget.model.setFieldColor(context),
-          filled: true,
-          contentPadding: widget.model.dense == true
-              ? EdgeInsets.only(
-              left: pad + 10, top: pad + 8, right: pad +10, bottom: pad + 21)
-              : EdgeInsets.only(
-              left: pad + 10, top: pad + additionalTopPad, right: pad + 10, bottom: pad + additionalBottomPad),
-          alignLabelWithHint: true,
-
-
-          labelText: widget.model.dense ? null : hint,
-          labelStyle: TextStyle(
-            fontSize: fontsize != null ? fontsize - 2 : 14,
-            color: widget.model.setErrorHintColor(context, color: hintTextColor),
-            shadows: <Shadow>[
-              Shadow(
-                offset: Offset(0.0, 0.5),
-                blurRadius: 2.0,
-                color: widget.model.color ?? Colors.transparent
-              ),
-              Shadow(
-                  offset: Offset(0.0, 0.5),
-                  blurRadius: 2.0,
-                  color: widget.model.color ?? Colors.transparent
-              ),
-              Shadow(
-                  offset: Offset(0.0, 0.5),
-                  blurRadius: 2.0,
-                  color: widget.model.color ?? Colors.transparent
-              ),
-            ],
-          ),
-          errorStyle: TextStyle(
-            fontSize: fontsize ?? 14,
-            fontWeight: FontWeight.w300,
-            color: errorTextColor,
-          ),
-          errorText: widget.model.returnErrorText(),
-          hintText: widget.model.dense ? hint : null,
-          hintStyle: TextStyle(
-            fontSize: fontsize ?? 14,
-            fontWeight: FontWeight.w300,
-            color: widget.model.setErrorHintColor(context, color: hintTextColor),
-          ),
-
-
-          counterText: "",
-          // widget.model.error is getting set to null somewhere.
-
-          //Icon Attributes
-          prefixIcon: widget.model.icon != null ? Padding(
-              padding: EdgeInsets.only(
-                  right: 10,
-                  left: 10,
-                  bottom: 0),
-              child: Icon(widget.model.icon)) : null,
-          prefixIconConstraints: BoxConstraints(maxHeight: 24),
-          suffixIcon: _getSuffixIcon(hintTextColor),
-          suffixIconConstraints: (widget.model.enabled != false &&
-              widget.model.editable != false &&
-              widget.model.clear)
-              ? BoxConstraints(maxHeight: 20)
-              : null,
-
-          //border attributes
-          border: _getBorder(enabledBorderColor, null),
-          errorBorder: _getBorder(errorBorderColor, null),
-          focusedErrorBorder: _getBorder(errorBorderColor, null),
-          focusedBorder: _getBorder(focusBorderColor, null),
-          enabledBorder: _getBorder(enabledBorderColor, null),
-          disabledBorder: _getBorder(disabledBorderColor, enabledBorderColor),
-        ));
-
+        maxLines: maxLines,
+        minLines: minLines,
+        maxLengthEnforcement: length != null ? MaxLengthEnforcement.enforced : MaxLengthEnforcement.none,
+        decoration: _getDecoration(),
+        onSubmitted: _handleSubmit);
 
     if (widget.model.dense) view = Padding(padding: EdgeInsets.all(4), child: view);
 
@@ -781,5 +668,4 @@ class _InputViewState extends WidgetState<InputView>
 
     return view;
   }
-
 }

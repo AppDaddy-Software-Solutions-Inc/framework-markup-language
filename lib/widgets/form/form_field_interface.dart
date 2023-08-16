@@ -18,10 +18,6 @@ abstract class IFormField
   dynamic get defaultValue;
   set defaultValue (dynamic v);
 
-  // field default error
-  dynamic get error;
-  set error (dynamic v);
-
   // field metadata
   dynamic get meta;
   set meta (dynamic v);
@@ -29,11 +25,6 @@ abstract class IFormField
   // field is required
   bool? get mandatory;
   set mandatory (dynamic v);
-
-  // field is required
-  String? get systemerrortext;
-  set systemerrortext (dynamic v);
-
 
   // field has been manually updated
   bool? touched = false;
@@ -60,13 +51,7 @@ abstract class IFormField
   // set the field answer
   Future<bool> answer(dynamic value);
 
-  bool? get alarming;
-
-  bool? get hasDefaulted;
-  set hasDefaulted(dynamic v);
-
-  bool? get validationHasHit;
-  set validationHasHit(dynamic v);
+  bool get alarming;
 
   /// GeoCode for each [IFormField] which is set on answer
   Payload? geocode;

@@ -6,97 +6,88 @@ import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:xml/xml.dart';
 import 'package:fml/helper/common_helpers.dart';
 
+enum AlarmType {mandatory, userDefined, validation}
+
 class AlarmModel extends WidgetModel
 {
-  /// The value of the alarms parent.
+  // indicates the type of alarm
+  AlarmType type = AlarmType.userDefined;
+
+  // value of the parent
   StringObservable? _value;
 
-  /// The error message value of a form field.
-  StringObservable? _errortext;
-  set errortext(dynamic v) {
-    if (_errortext != null) {
-      _errortext!.set(v);
-    } else if (v != null) {
-      _errortext = StringObservable(Binding.toKey(id, 'errortext'), v,
-          scope: scope, listener: onPropertyChange);
+  /// The alarm text to display when alarm is active
+  StringObservable? _text;
+  set text(dynamic v)
+  {
+    if (_text != null)
+    {
+      _text!.set(v);
+    }
+    else if (v != null)
+    {
+      _text = StringObservable(Binding.toKey(id, 'errortext'), v, scope: scope, listener: onPropertyChange);
     }
   }
-
-  String? get errortext => _errortext?.get();
+  String? get text => _text?.get();
 
   /// The eval to determine if the error state of the parent is displayed.
-  BooleanObservable? seterror;
-  set error(dynamic v) {
-    if (seterror != null) {
-      seterror?.set(v);
-    } else if (v != null) {
-      seterror = BooleanObservable(Binding.toKey(id, 'error'), v,
-          scope: scope, listener: onPropertyChange);
+  BooleanObservable? get alarmingObservable => _alarming;
+  BooleanObservable? _alarming;
+  set alarming(dynamic v)
+  {
+    if (_alarming != null)
+    {
+      _alarming?.set(v);
+    }
+    else if (v != null)
+    {
+      _alarming = BooleanObservable(Binding.toKey(id, 'alarming'), v, scope: scope);
     }
   }
+  bool get alarming => _alarming?.get() ?? false;
 
-  bool? get error => seterror?.get();
-
-  // TODO: implement mandatory to allow for forms to pass with alarms
+  // custom validator
+  Function? validator;
 
   /// The event string to execute when an alarm is triggered.
   StringObservable? _onalarm;
-  set onalarm(dynamic v) {
-    if (_onalarm != null) {
+  set onalarm(dynamic v)
+  {
+    if (_onalarm != null)
+    {
       _onalarm?.set(v);
-    } else if (v != null) {
-      _onalarm = StringObservable(Binding.toKey(id, 'onalarm'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else if (v != null)
+    {
+      _onalarm = StringObservable(Binding.toKey(id, 'onalarm'), v, scope: scope, listener: onPropertyChange);
     }
   }
   String? get onalarm => _onalarm?.get();
 
   /// The event string to execute when an alarm is dismissed.
   StringObservable? _ondismissed;
-  set ondismissed(dynamic v) {
-    if (_ondismissed != null) {
+  set ondismissed(dynamic v)
+  {
+    if (_ondismissed != null)
+    {
       _ondismissed?.set(v);
-    } else if (v != null) {
-      _ondismissed = StringObservable(Binding.toKey(id, 'ondismissed'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else if (v != null)
+    {
+      _ondismissed = StringObservable(Binding.toKey(id, 'ondismissed'), v, scope: scope, listener: onPropertyChange);
     }
   }
   String? get ondismissed => _ondismissed?.get();
 
-  /// 'Type' in FML, The type of alarm trigger state. Can be validate (which will trigger on complete(), save() or validate() of the form or the field, or all.
-  StringObservable? _alarmtrigger;
-  set alarmtrigger(dynamic v) {
-    if (_alarmtrigger != null) {
-      _alarmtrigger?.set(v);
-    } else if (v != null) {
-      _alarmtrigger = StringObservable(Binding.toKey(id, 'alarmtrigger'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  String? get alarmtrigger => _alarmtrigger?.get();
-
-
-
-  AlarmModel(
-      WidgetModel parent,
-      String?  id, {
-      dynamic error,
-      dynamic errortext,
-      dynamic onalarm,
-      dynamic ondismissed,
-      dynamic alarmtrigger,
-  })
-      : super(parent, id)
+  AlarmModel(WidgetModel parent, String? id, {this.type = AlarmType.userDefined, dynamic text, dynamic alarm, this.validator}) : super(parent, id)
   {
-    if (error != null) this.error = error;
-    if (errortext != null) this.errortext = errortext;
-    if (onalarm != null) this.onalarm = onalarm;
-    if (ondismissed != null) this.ondismissed = ondismissed;
-    if (alarmtrigger != null) this.alarmtrigger = alarmtrigger;
+    if (text  != null) this.text = text;
+    if (alarm != null) alarming = alarm;
 
     // Build a binding to the parent value
     var binding = "{${parent.id}.value}";
-    _value ??= StringObservable(Binding.toKey(id, 'value'),binding, scope: scope);
+    _value ??= StringObservable(Binding.toKey(this.id, 'value'),binding, scope: scope, listener: _onValueChange);
   }
 
   static AlarmModel? fromXml(WidgetModel parent, XmlElement xml)
@@ -116,27 +107,37 @@ class AlarmModel extends WidgetModel
   }
 
   @override
-  void deserialize(XmlElement xml) {
+  void deserialize(XmlElement xml)
+  {
     // deserialize
     super.deserialize(xml);
 
     // set properties
-    error = Xml.get(node: xml, tag: 'error');
-    errortext = Xml.get(node: xml, tag: 'errortext');
-    onalarm = Xml.get(node: xml, tag: 'onalarm');
+    alarming    = Xml.get(node: xml, tag: 'alarm') ?? Xml.get(node: xml, tag: 'error');
+    text        = Xml.get(node: xml, tag: 'text')  ?? Xml.get(node: xml, tag: 'errortext');
+    onalarm     = Xml.get(node: xml, tag: 'onalarm');
     ondismissed = Xml.get(node: xml, tag: 'ondismissed');
-    //override 'alarmtrigger' with 'type' as the xml attribute name;
-    alarmtrigger = Xml.get(node: xml, tag: 'type');
   }
 
-  void executeAlarmString(bool isAlarming){
-    if(isAlarming) {
-      //execute the onalarm
+  void _onValueChange(_)
+  {
+    if (validator != null && !S.isNullOrEmpty(_value?.get()))
+    {
+      alarming = validator!(_value?.get());
+    }
+  }
+
+  void executeAlarmString(bool isAlarming)
+  {
+    //execute the onalarm
+    if(isAlarming)
+    {
       EventHandler(this).execute(_onalarm);
-    } else {
+    }
+    else
+    {
       // execute the ondismissed
       EventHandler(this).execute(_ondismissed);
     }
   }
-
 }

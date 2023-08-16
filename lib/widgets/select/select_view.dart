@@ -59,7 +59,6 @@ class _SelectViewState extends WidgetState<SelectView>
       }
       if ((_selected == null) && (_list.isNotEmpty)) {
         _selected = _list[0].value;
-        widget.model.hasDefaulted = true;
       }
     }
   }
@@ -186,12 +185,9 @@ class _SelectViewState extends WidgetState<SelectView>
     // display busy
     if (busy != null) view = Stack(children: [view, Positioned(top: 0, bottom: 0, left: 0, right: 0, child: busy)]);
 
-    String? errorTextValue = widget.model.returnErrorText();
-
-    if(!S.isNullOrEmpty(errorTextValue)) {
-      Widget? errorText = Padding(padding: EdgeInsets.only(top: 6.0 , bottom: 2.0), child: Text("    $errorTextValue", style: TextStyle(color: Theme.of(context)
-          .colorScheme.error),),);
-
+    if(!S.isNullOrEmpty(widget.model.alarmText))
+    {
+      Widget? errorText = Padding(padding: EdgeInsets.only(top: 6.0 , bottom: 2.0), child: Text("${widget.model.alarmText}", style: TextStyle(color: Theme.of(context).colorScheme.error)));
       view = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,

@@ -353,12 +353,10 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
       );
     }
 
-    String? errorTextValue = widget.model.returnErrorText();
-
-
-    if(!S.isNullOrEmpty(errorTextValue)) {
-      Widget? errorText = Padding(padding: EdgeInsets.only(top: 6.0 , bottom: 2.0), child: Text("    $errorTextValue", style: TextStyle(color: Theme.of(context)
-          .colorScheme.error),),);
+    if(!S.isNullOrEmpty(widget.model.alarmText))
+    {
+      Widget? errorText = Padding(padding: EdgeInsets.only(top: 6.0 , bottom: 2.0),
+        child: Text("${widget.model.alarmText}", style: TextStyle(color: Theme.of(context).colorScheme.error),),);
 
       view = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -366,13 +364,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
         mainAxisSize: MainAxisSize.min,
         children: [view, errorText],
       );
-  }
-
-
-
-    // display busy
-    //var busy;
-    //if (busy != null) view = Stack(children: [view, Positioned(top: 0, bottom: 0, left: 0, right: 0, child: busy)]);
+    }
 
     // get the model constraints
     var modelConstraints = widget.model.constraints;
@@ -385,8 +377,6 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
 
     // apply constraints
     view = applyConstraints(view, modelConstraints);
-
-
 
     return view;
   }

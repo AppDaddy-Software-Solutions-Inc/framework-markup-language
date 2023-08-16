@@ -93,7 +93,7 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
       }
     }
 
-    String? errorTextValue = widget.model.returnErrorText();
+    String? errorTextValue = widget.model.alarmText;
 
     if(!S.isNullOrEmpty(errorTextValue)) {
       Widget? errorText = Text(

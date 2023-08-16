@@ -195,8 +195,6 @@ class DatepickerModel extends DecoratedInputModel implements IFormField
     style = Xml.get(node: xml, tag: 'style');
     dense = Xml.get(node: xml, tag: 'dense');
     clear = Xml.get(node: xml, tag: 'clear');
-    error = Xml.get(node: xml, tag: 'error');
-    errortext = Xml.get(node: xml, tag: 'errortext');
     size = Xml.get(node: xml, tag: 'size');
     icon = Xml.get(node: xml, tag: 'icon');
     padding = Xml.get(node: xml, tag: 'padding');

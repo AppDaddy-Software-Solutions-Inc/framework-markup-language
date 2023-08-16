@@ -1056,17 +1056,22 @@ class WidgetModel implements IDataSourceListener {
     if (datasources != null) {
       for (var datasource in datasources!) {
         // already started?
-        if (!datasource.initialized!) {
+        if (!datasource.initialized)
+        {
           // mark as started
           datasource.initialized = true;
 
           // announce data for late binding
-          if ((datasource.data != null) && (datasource.data!.isNotEmpty)) {
+          if ((datasource.data != null) && (datasource.data!.isNotEmpty))
+          {
             datasource.notify();
           }
 
           // start the datasource if autoexecute = true
-          if (datasource.autoexecute == true) datasource.start();
+          if (datasource.autoexecute == true)
+          {
+            datasource.start();
+          }
         }
       }
     }

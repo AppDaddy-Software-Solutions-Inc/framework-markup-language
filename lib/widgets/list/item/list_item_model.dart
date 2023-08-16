@@ -287,7 +287,10 @@ class ListItemModel extends BoxModel
         IDataSource? source = scope!.getDataSource(id);
         if ((source != null) && (ok))
         {
-          if (source.custombody != true) source.body = await FormModel.buildPostingBody(fields, rootname: source.root ?? "FORM");
+          if (!source.custombody)
+          {
+            source.body = await FormModel.buildPostingBody(fields, rootname: source.root ?? "FORM");
+          }
           ok = await source.start();
         }
         if (!ok) break;

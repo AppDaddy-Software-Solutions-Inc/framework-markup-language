@@ -66,8 +66,6 @@ class _TableViewState extends WidgetState<TableView>
     EventManager.of(widget.model)
         ?.registerEventListener(EventTypes.scroll, onScroll);
     EventManager.of(widget.model)
-        ?.registerEventListener(EventTypes.export, onExport);
-    EventManager.of(widget.model)
         ?.registerEventListener(EventTypes.complete, onComplete);
     EventManager.of(widget.model)
         ?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
@@ -83,8 +81,6 @@ class _TableViewState extends WidgetState<TableView>
       EventManager.of(oldWidget.model)
           ?.removeEventListener(EventTypes.scroll, onScroll);
       EventManager.of(oldWidget.model)
-          ?.removeEventListener(EventTypes.export, onExport);
-      EventManager.of(oldWidget.model)
           ?.removeEventListener(EventTypes.complete, onComplete);
       EventManager.of(oldWidget.model)
           ?.removeEventListener(EventTypes.scrollto, onScrollTo);
@@ -92,8 +88,6 @@ class _TableViewState extends WidgetState<TableView>
       // register new event listeners
       EventManager.of(widget.model)
           ?.registerEventListener(EventTypes.scroll, onScroll);
-      EventManager.of(widget.model)
-          ?.registerEventListener(EventTypes.export, onExport);
       EventManager.of(widget.model)
           ?.registerEventListener(EventTypes.complete, onComplete);
       EventManager.of(widget.model)
@@ -106,8 +100,6 @@ class _TableViewState extends WidgetState<TableView>
     // remove event listeners
     EventManager.of(widget.model)
         ?.removeEventListener(EventTypes.scroll, onScroll);
-    EventManager.of(widget.model)
-        ?.removeEventListener(EventTypes.export, onExport);
     EventManager.of(widget.model)
         ?.removeEventListener(EventTypes.complete, onComplete);
     EventManager.of(widget.model)
@@ -187,14 +179,6 @@ class _TableViewState extends WidgetState<TableView>
     }
 
     return ok;
-  }
-
-  void onExport(Event event) async {
-    if (event.parameters!['format'] != 'print') {
-      event.handled = true;
-      System.toast(S.toStr(phrase.exportingData), duration: 1);
-      await widget.model.export();
-    }
   }
 
   @override

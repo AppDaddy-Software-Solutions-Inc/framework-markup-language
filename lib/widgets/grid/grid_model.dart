@@ -400,7 +400,12 @@ class GridModel extends BoxModel implements IScrolling
 
     switch (function)
     {
-    // selects the item by index
+      // export the data
+      case "export" :
+        await export();
+        return true;
+
+      // selects the item by index
       case "select" :
         int index = S.toInt(S.item(arguments, 0)) ?? -1;
         if (index >= 0 && index < items.length)
@@ -410,7 +415,7 @@ class GridModel extends BoxModel implements IScrolling
         }
         return true;
 
-    // de-selects the item by index
+      // de-selects the item by index
       case "deselect" :
         int index = S.toInt(S.item(arguments, 0)) ?? -1;
         if (index >= 0 && _dataset != null && index < _dataset!.length)
@@ -420,11 +425,12 @@ class GridModel extends BoxModel implements IScrolling
         }
         return true;
 
-    // de-selects the item by index
+      // de-selects the item by index
       case "clear" :
         onTap(null);
         return true;
     }
+
     return super.execute(caller, propertyOrFunction, arguments);
   }
 

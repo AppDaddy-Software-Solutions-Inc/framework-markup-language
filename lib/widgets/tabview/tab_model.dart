@@ -112,7 +112,9 @@ class TabModel extends BoxModel
   dispose()
   {
     // cleanup framework models
-    for (var view in views.values) {
+    var views = this.views.values.toList();
+    for (var view in views)
+    {
       deleteView(view);
     }
     super.dispose();
@@ -124,7 +126,10 @@ class TabModel extends BoxModel
     views.removeWhere((key, value) => value == view);
 
     // cleanup framework models
-    if (view is FrameworkView) view.model.dispose();
+    if (view is FrameworkView)
+    {
+      view.model.dispose();
+    }
   }
 
   deleteAllIndexesExcept(int index) {

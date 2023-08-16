@@ -35,7 +35,7 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
 
   // indicates if the broker has been started after the view has loaded
   @override
-  bool? initialized = false;
+  bool initialized = false;
 
   // framework is being disposed
   bool get disposed => (framework?.disposed == true);

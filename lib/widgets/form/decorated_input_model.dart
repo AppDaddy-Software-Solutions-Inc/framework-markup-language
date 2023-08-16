@@ -211,8 +211,6 @@ class DecoratedInputModel extends FormFieldModel
 
   }) : super(parent, id)
   {
-
-  if (width        != null) this.width = width;
   if (hint         != null) this.hint = hint;
   if (expand != null) this.expand = expand;
   if (color != null) this.color = color;
@@ -250,12 +248,14 @@ class DecoratedInputModel extends FormFieldModel
 
   //set the field color based on the error state
   Color setFieldColor(BuildContext context) {
-    if (enabled != false) {
+    if (enabled != false && border != 'all') {
       return color ?? Theme
           .of(context)
           .colorScheme
           .surfaceVariant;
-    } else {
+    } else if (border == 'all') {
+      return color ?? Colors.transparent;
+    } else  {
       return color ?? Theme
           .of(context)
           .colorScheme

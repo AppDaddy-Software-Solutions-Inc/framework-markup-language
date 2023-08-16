@@ -11,7 +11,6 @@ import 'package:fml/navigation/navigation_observer.dart';
 import 'package:fml/event/event.dart'             ;
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
-import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/tabview/tab_view.dart';
@@ -34,7 +33,7 @@ class FrameworkView extends StatefulWidget
 
 class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveClientMixin implements IModelListener, INavigatorObserver
 {
-  BusyView? busy;
+  //Widget? busy;
 
   double get safeAreaHeight
   {
@@ -461,7 +460,9 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     }
 
     // model is initializing
-    if (!widget.model.initialized) return Scaffold(body: Center(child: BusyView(BusyModel(null, visible: true))));
+    // if (!widget.model.initialized) {
+    //   return Scaffold(body: Center(child: BusyModel(null, visible: true).getView()));
+    // }
 
     // set the system constraints
     widget.model.setLayoutConstraints(constraints);

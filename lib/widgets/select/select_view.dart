@@ -4,7 +4,6 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
-import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
@@ -79,13 +78,13 @@ class _SelectViewState extends WidgetState<SelectView>
     onLayout(constraints);
 
     // busy?
-    BusyView? busy;
+    Widget? busy;
     if (widget.model.busy == true) {
-      busy = BusyView(BusyModel(widget.model,
+      busy = BusyModel(widget.model,
           visible: true,
           size: 24,
           color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.5),
-          modal: false));
+          modal: false).getView();
     }
 
     bool enabled = (widget.model.enabled != false) && (widget.model.busy != true);

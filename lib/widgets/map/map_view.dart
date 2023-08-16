@@ -10,7 +10,6 @@ import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/map/map_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/map/marker/map_marker_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
@@ -28,7 +27,7 @@ class MapView extends StatefulWidget implements IWidgetView
 
 class _MapViewState extends WidgetState<MapView>
 {
-  BusyView? busy;
+  Widget? busy;
   Future<MapModel>? future;
   bool startup = true;
 
@@ -207,7 +206,7 @@ class _MapViewState extends WidgetState<MapView>
     if (map != null) children.insert(0, map);
 
      // Busy / Loading Indicator
-    busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
+    busy ??= BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable).getView();
 
     // add busy
     children.add(Center(child: busy));

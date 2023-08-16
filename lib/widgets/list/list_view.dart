@@ -8,7 +8,6 @@ import 'package:fml/event/event.dart'        ;
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart'       ;
 import 'package:fml/widgets/busy/busy_model.dart';
-import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/list/list_model.dart';
 import 'package:fml/widgets/list/item/list_item_view.dart';
 import 'package:fml/widgets/list/item/list_item_model.dart';
@@ -29,7 +28,7 @@ class ListLayoutView extends StatefulWidget implements IWidgetView
 class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEventScrolling
 {
   Future<ListModel>? listViewModel;
-  BusyView? busy;
+  Widget? busy;
   ScrollController? scroller;
 
   @override
@@ -194,7 +193,7 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
     if (!widget.model.visible) return Offstage();
 
     /// Busy / Loading Indicator
-    busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
+    busy ??= BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable).getView();
 
     // Direction
     dynamic direction = Axis.vertical;

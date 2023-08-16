@@ -5,7 +5,6 @@ import 'package:fml/event/event.dart' ;
 import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
-import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/menu/menu_model.dart';
@@ -24,7 +23,7 @@ class MenuView extends StatefulWidget implements IWidgetView
 
 class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling
 {
-  BusyView? busy;
+  Widget? busy;
   ScrollController? vScroller;
 
   @override
@@ -166,7 +165,7 @@ class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling
     //var background = BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor);
 
     /// Busy / Loading Indicator
-    busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
+    busy ??= BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable).getView();
 
     //////////
     /* View */

@@ -47,9 +47,6 @@ class AlarmModel extends WidgetModel
   }
   bool get alarming => _alarming?.get() ?? false;
 
-  // custom validator
-  Function? validator;
-
   /// The event string to execute when an alarm is triggered.
   StringObservable? _onalarm;
   set onalarm(dynamic v)
@@ -80,14 +77,14 @@ class AlarmModel extends WidgetModel
   }
   String? get ondismissed => _ondismissed?.get();
 
-  AlarmModel(WidgetModel parent, String? id, {this.type = AlarmType.userDefined, dynamic text, dynamic alarm, this.validator}) : super(parent, id)
+  AlarmModel(WidgetModel parent, String? id, {this.type = AlarmType.userDefined, dynamic text, dynamic alarm}) : super(parent, id)
   {
     if (text  != null) this.text = text;
     if (alarm != null) alarming = alarm;
 
     // Build a binding to the parent value
     var binding = "{${parent.id}.value}";
-    _value ??= StringObservable(Binding.toKey(this.id, 'value'),binding, scope: scope, listener: _onValueChange);
+    _value ??= StringObservable(Binding.toKey(this.id, 'value'),binding, scope: scope);
   }
 
   static AlarmModel? fromXml(WidgetModel parent, XmlElement xml)
@@ -117,14 +114,6 @@ class AlarmModel extends WidgetModel
     text        = Xml.get(node: xml, tag: 'text')  ?? Xml.get(node: xml, tag: 'errortext');
     onalarm     = Xml.get(node: xml, tag: 'onalarm');
     ondismissed = Xml.get(node: xml, tag: 'ondismissed');
-  }
-
-  void _onValueChange(_)
-  {
-    if (validator != null && !S.isNullOrEmpty(_value?.get()))
-    {
-      alarming = validator!(_value?.get());
-    }
   }
 
   void executeAlarmString(bool isAlarming)

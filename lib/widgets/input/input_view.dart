@@ -35,7 +35,6 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
 {
   final focus = FocusNode();
   Timer? commitTimer;
-  bool? obscure = false;
 
   static const Map<String, TextInputAction> keyboardInputs = {
     'next': TextInputAction.next,
@@ -413,7 +412,6 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
         break;
 
       case 'password':
-        if (obscure != true) obscure = true;
         keyboardType = "password";
         break;
 
@@ -472,10 +470,8 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
   {
     if (widget.model.formatType == "password" && widget.model.clear == false)
     {
-      return IconButton(icon: Icon(obscure! ? Icons.visibility : Icons.visibility_off, size: 17, color: hintTextColor),
-        onPressed: () {
-          widget.model.obscure = !obscure!;
-        },
+      return IconButton(icon: Icon(widget.model.obscure ? Icons.visibility : Icons.visibility_off, size: 17, color: hintTextColor),
+        onPressed: () => widget.model.obscure = !widget.model.obscure,
       );
     }
     else if (widget.model.enabled != false && widget.model.editable != false && widget.model.clear)
@@ -609,8 +605,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     int? length = widget.model.length;
     int? lines = widget.model.lines;
 
-    if (!S.isNullOrEmpty(widget.model.obscure)) obscure = widget.model.obscure;
-    if (obscure == true) lines = 1;
+    if (widget.model.obscure) lines = 1;
 
     // get formatters
     var formatters = _getFormatters();
@@ -630,7 +625,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
         fontSize: fontsize);
 
     var minLines = widget.model.expand == true ? null : lines ?? 1;
-    var maxLines = widget.model.expand == true ? null : obscure! ? 1 : widget.model.maxlines ?? (widget.model.wrap == true ? null : lines ?? 1);
+    var maxLines = widget.model.expand == true ? null : widget.model.obscure ? 1 : widget.model.maxlines ?? (widget.model.wrap == true ? null : lines ?? 1);
 
     Widget view = TextField(
         controller: widget.model.controller,
@@ -638,7 +633,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
         autofocus: false,
         autocorrect: false,
         expands: widget.model.expand == true,
-        obscureText: obscure!,
+        obscureText: widget.model.obscure,
         keyboardType: keyboard,
         textInputAction: action,
         inputFormatters: formatters,

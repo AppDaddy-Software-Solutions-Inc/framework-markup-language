@@ -144,7 +144,7 @@ class FormFieldModel extends DecoratedWidgetModel
   String? get onchange => _onchange?.get();
 
   /// [Alarm]s based on validation checks
-  final List<AlarmModel> alarms = [];
+  final List<AlarmModel> _alarms = [];
 
   /// true if there is an alarm sounding on a [iFormField]
   BooleanObservable? _alarming;
@@ -164,7 +164,7 @@ class FormFieldModel extends DecoratedWidgetModel
   /// alarm
   AlarmModel? get alarm
   {
-    for (var alarm in alarms)
+    for (var alarm in _alarms)
     {
       if (alarm.alarming) return alarm;
     }
@@ -224,33 +224,46 @@ class FormFieldModel extends DecoratedWidgetModel
     // properties
     defaultValue = Xml.get(node: xml, tag: 'default');
     meta = Xml.get(node: xml, tag: 'meta');
-
-    //error = Xml.get(node: xml, tag: 'error');
-    //errorText = Xml.get(node: xml, tag: 'errortext');
-
     field = Xml.get(node: xml, tag: 'field');
     mandatory = Xml.get(node: xml, tag: 'mandatory');
     editable = Xml.get(node: xml, tag: 'editable');
     post = Xml.get(node: xml, tag: 'post');
     onchange = Xml.get(node: xml, tag: 'onchange');
 
-    // add mandatory alarms
-    if (mandatory == true)
-    {
-      var alarm = AlarmModel(this, null, type: AlarmType.mandatory, text: Phrases().fieldMandatory, alarm: "=noe({this.value})");
-      children ??= [];
-      children!.add(alarm);
-    }
-
-    // Build alarms
+    // add alarms
     List<AlarmModel> alarmModels = findChildrenOfExactType(AlarmModel).cast<AlarmModel>();
-    alarms.clear();
     for (var alarm in alarmModels)
     {
-      alarms.add(alarm);
+      addAlarm(alarm);
+    }
+
+    // add mandatory alarm
+    if (mandatory == true)
+    {
+      addAlarm(AlarmModel(this, null, type: AlarmType.mandatory, text: Phrases().fieldMandatory, alarm: "=noe({this.value})"));
+    }
+  }
+
+  void addAlarm(AlarmModel alarm, {int? position})
+  {
+    if (!_alarms.contains(alarm))
+    {
+      if (position != null)
+      {
+        if (position < 0) position = 0;
+        if (position > _alarms.length) position = _alarms.length;
+        _alarms.insert(position, alarm);
+      }
+      else
+      {
+        _alarms.add(alarm);
+      }
 
       // register a listener to the alarm
       alarm.alarmingObservable?.registerListener(_onAlarmChange);
+
+      children ??= [];
+      if (!children!.contains(alarm)) children!.add(alarm);
     }
   }
 

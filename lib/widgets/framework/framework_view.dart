@@ -459,11 +459,6 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       return Offstage();
     }
 
-    // model is initializing
-    // if (!widget.model.initialized) {
-    //   return Scaffold(body: Center(child: BusyModel(null, visible: true).getView()));
-    // }
-
     // set the system constraints
     widget.model.setLayoutConstraints(constraints);
 
@@ -479,7 +474,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     _setDeviceOrientation(widget.model.orientation);
 
     // post onstart callback
-    if (!started)
+    if (widget.model.initialized && !started)
     {
       started = true;
       WidgetsBinding.instance.addPostFrameCallback((_) => widget.model.onStart(context));

@@ -273,9 +273,10 @@ class Xml {
     String? v;
     try
     {
-      v = node.getAttribute(tag.toLowerCase());
+      v = node.getAttribute(tag);
+      v ??= node.getAttribute(tag.toLowerCase());
       v ??= node.getAttribute(tag.toUpperCase());
-      v ??= node.getAttribute(tag);
+
     }
     catch(e) {
       v = null;
@@ -289,9 +290,9 @@ class Xml {
   {
     try
     {
+      if (node.getAttributeNode(tag) != null) return true;
       if (node.getAttributeNode(tag.toLowerCase()) != null) return true;
       if (node.getAttributeNode(tag.toUpperCase()) != null) return true;
-      if (node.getAttributeNode(tag) != null) return true;
     }
     catch(e)
     {
@@ -347,9 +348,9 @@ class Xml {
     String? v;
     try
     {
-      XmlElement? child = getChildElement(node: node, tag: tag.toUpperCase());
+      XmlElement? child = getChildElement(node: node, tag: tag);
       child ??= getChildElement(node: node, tag: tag.toLowerCase());
-      child ??= getChildElement(node: node, tag: tag);
+      child ??= getChildElement(node: node, tag: tag.toUpperCase());
       if (child != null) v = getText(child);
     }
     catch(e) {
@@ -364,9 +365,9 @@ class Xml {
   {
     try
     {
+      if (getChildElement(node: node, tag: tag)               != null) return true;
       if (getChildElement(node: node, tag: tag.toUpperCase()) != null) return true;
       if (getChildElement(node: node, tag: tag.toLowerCase()) != null) return true;
-      if (getChildElement(node: node, tag: tag)               != null) return true;
     }
     catch(e)
     {

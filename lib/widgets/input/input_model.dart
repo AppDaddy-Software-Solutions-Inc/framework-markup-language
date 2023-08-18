@@ -14,6 +14,10 @@ enum InputFormats { numeric, integer, text, boolean, xml }
 enum CapitalizationTypes { mixed, camel, upper, lower, sentences, words }
 
 class InputModel extends DecoratedInputModel implements IFormField {
+
+  @override
+  bool get canExpandInfinitelyWide => !hasBoundedWidth;
+
   List<Suggestion> suggestions = [];
 
   /// Capitilization sets the input to uppercase or lowercase with `upper` and `lower`

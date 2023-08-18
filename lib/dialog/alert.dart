@@ -145,7 +145,8 @@ class Alert {
   }
 
   // Alert dialog content widget
-  Widget _buildDialog() {
+  Widget _buildDialog()
+  {
     final Widget myChild = ConstrainedBox(
       constraints: style.constraints ??
           BoxConstraints.expand(width: double.infinity, height: double.infinity), child: Align(alignment: style.alertAlignment,

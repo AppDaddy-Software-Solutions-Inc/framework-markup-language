@@ -41,7 +41,6 @@ extension URI on Uri
       var url = "$root/$host/$path";
       if (hasFragment)
       {
-        var f = fragment;
         url = "$url#$fragment";
       }
       if (hasQuery)    url = "$url?$query";

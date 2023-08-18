@@ -5,7 +5,6 @@ import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/pager/page/page_model.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
-import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/pager/pager_model.dart';
 import 'package:fml/helper/common_helpers.dart';
@@ -127,7 +126,7 @@ class PagerViewState extends WidgetState<PagerView>
     if (busy == null)
     {
       var model = BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable);
-      busy = BusyView(model);
+      busy =model.getView();
       busy = LayoutBoxChildData(model: model, child: busy!);
     }
     list.add(busy!);

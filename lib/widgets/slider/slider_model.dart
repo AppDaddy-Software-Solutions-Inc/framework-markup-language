@@ -16,6 +16,9 @@ enum InputTypes { numeric, integer, text, boolean}
 
 class SliderModel extends FormFieldModel implements IFormField
 {
+  @override
+  bool get canExpandInfinitelyWide => !hasBoundedWidth;
+
   ////////////////////
   /* capitalization */
   ////////////////////

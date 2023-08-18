@@ -115,19 +115,11 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
       children: [view],
     );
 
-    // get the model constraints
-    var modelConstraints = widget.model.constraints;
-
-    // constrain the input to 200 pixels if not constrained by the model
-    //if (!modelConstraints.hasHorizontalExpansionConstraints) modelConstraints.width  = 200;
-
     // add margins
     view = addMargins(view);
 
     // apply constraints
-    view = applyConstraints(view, modelConstraints);
-
-
+    view = applyConstraints(view, widget.model.constraints);
 
     return view;
   }

@@ -20,6 +20,9 @@ class DatepickerModel extends DecoratedInputModel implements IFormField
   static const timeFormatDefault = "HH:mm";
   static const dateFormatDefault = "yyyy-MM-dd";
 
+  @override
+  bool get canExpandInfinitelyWide => !hasBoundedWidth;
+
   // view
   BooleanObservable? _view;
 
@@ -99,7 +102,7 @@ class DatepickerModel extends DecoratedInputModel implements IFormField
           scope: scope, listener: onPropertyChange);
     }
   }
-  String? get format => _format?.get() ?? "yMd";
+  String? get format => _format?.get();
 
   // Value
   StringObservable? _value;
@@ -260,6 +263,8 @@ class DatepickerModel extends DecoratedInputModel implements IFormField
     DateTimeRange? range;
     TimeOfDay? timeResult = TimeOfDay.now();
 
+    setFormat();
+
     if (type == "range") {
       range = await showDateRangePicker(
         context: buildContext!,
@@ -334,7 +339,7 @@ class DatepickerModel extends DecoratedInputModel implements IFormField
         Log().debug('${e}FORMATTING ERROR!!!!!');
       }
     } else if (type == "time") {
-      if (format == 'yMd') format= 'H:m';
+      //if (format == 'yMd') format= 'H:m';
       try {
         value = DateFormat(format).format(DateTime(now.year, now.month,
                 now.day, timeResult!.hour, timeResult.minute));
@@ -343,7 +348,6 @@ class DatepickerModel extends DecoratedInputModel implements IFormField
         value = '';
       }
     } else {
-      if (format == 'yMd') {format= 'y/M/d H:mm'; this.format = "y/M/d H:mm";}
       try {
         value = DateFormat(format).format(DateTime(result!.year, result.month,
                 result.day, timeResult!.hour, timeResult.minute));
@@ -353,6 +357,18 @@ class DatepickerModel extends DecoratedInputModel implements IFormField
       }
     }
     onChange(context);
+  }
+
+  void setFormat(){
+    if (format != null) return;
+    if (type == "date" || type == "year" || type == "range") {
+      format ='y/M/d';
+    } else if (type == "time") {
+      format= 'H:m';
+    } else {
+      format = 'y/M/d H:mm';
+    }
+
   }
 
   @override

@@ -185,7 +185,7 @@ class _TableViewState extends WidgetState<TableView>
       }
       else
       {
-        ok = await widget.model.onComplete(context);
+        //ok = await widget.model.onComplete(context);
       }
     }
 

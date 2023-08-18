@@ -187,34 +187,64 @@ class FormModel extends BoxModel implements IForm
   }
 
   // on complete event
-  StringObservable? _oncomplete;
-  set oncomplete(dynamic v)
+  StringObservable? _onComplete;
+  set onComplete(dynamic v)
   {
-    if (_oncomplete != null)
+    if (_onComplete != null)
     {
-      _oncomplete!.set(v);
+      _onComplete!.set(v);
     }
     else if (v != null)
     {
-      _oncomplete = StringObservable(Binding.toKey(id, 'oncomplete'), v, scope: scope, lazyEval: true);
+      _onComplete = StringObservable(Binding.toKey(id, 'onComplete'), v, scope: scope, lazyEval: true);
     }
   }
-  String? get oncomplete => _oncomplete?.get();
+  String? get onComplete => _onComplete?.get();
 
-  // show exception
-  BooleanObservable? _showexception;
-  set showexception(dynamic v)
+  // on save event
+  StringObservable? _onSave;
+  set onSave(dynamic v)
   {
-    if (_showexception != null)
+    if (_onSave != null)
     {
-      _showexception!.set(v);
+      _onSave!.set(v);
     }
     else if (v != null)
     {
-      _showexception = BooleanObservable(Binding.toKey(id, 'showexception'), v, scope: scope);
+      _onSave = StringObservable(Binding.toKey(id, 'onSave'), v, scope: scope, lazyEval: true);
     }
   }
-  bool get showexception => _showexception?.get() ?? true;
+  String? get onSave => _onSave?.get();
+
+  // on validate event
+  StringObservable? _onValidate;
+  set onValidate(dynamic v)
+  {
+    if (_onValidate != null)
+    {
+      _onValidate!.set(v);
+    }
+    else if (v != null)
+    {
+      _onValidate = StringObservable(Binding.toKey(id, 'onValidate'), v, scope: scope, lazyEval: true);
+    }
+  }
+  String? get onValidate => _onValidate?.get();
+
+  // failed validation event
+  StringObservable? _onInvalid;
+  set onInvalid(dynamic v)
+  {
+    if (_onInvalid != null)
+    {
+      _onInvalid!.set(v);
+    }
+    else if (v != null)
+    {
+      _onInvalid = StringObservable(Binding.toKey(id, 'onInvalid'), v, scope: scope, lazyEval: true);
+    }
+  }
+  String? get onInvalid => _onInvalid?.get();
 
   Map<String, String?> get map
   {
@@ -257,8 +287,6 @@ class FormModel extends BoxModel implements IForm
     dynamic autosave,
     dynamic mandatory,
     dynamic geocode,
-    dynamic oncomplete,
-    dynamic showexception,
     dynamic data,
   }) : super(parent, id)
   {
@@ -270,8 +298,6 @@ class FormModel extends BoxModel implements IForm
     this.mandatory = mandatory;
     dirty = false;
     this.geocode = geocode;
-    this.oncomplete = oncomplete;
-    this.showexception = showexception;
     this.data = data;
   }
 
@@ -281,7 +307,7 @@ class FormModel extends BoxModel implements IForm
 
     try
     {
-      model = FormModel(parent, Xml.get(node: xml, tag: 'id'), showexception: Xml.get(node: xml, tag: 'showexception'));
+      model = FormModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
     catch (e)
@@ -302,14 +328,19 @@ class FormModel extends BoxModel implements IForm
     super.deserialize(xml);
 
     // properties
-    status = Xml.get(node: xml, tag: 'status');
-    autosave = Xml.get(node: xml, tag: 'autosave');
-    mandatory = Xml.get(node: xml, tag: 'mandatory');
-    geocode = Xml.get(node: xml, tag: 'geocode');
-    oncomplete = Xml.get(node: xml, tag: 'oncomplete');
+    status      = Xml.get(node: xml, tag: 'status');
+    autosave    = Xml.get(node: xml, tag: 'autosave');
+    mandatory   = Xml.get(node: xml, tag: 'mandatory');
+    geocode     = Xml.get(node: xml, tag: 'geocode');
     postbrokers = Xml.attribute(node: xml, tag: 'post');
-    data = Xml.attribute(node: xml, tag: 'data');
+    data        = Xml.attribute(node: xml, tag: 'data');
 
+    // events
+    onComplete  = Xml.get(node: xml, tag: 'oncomplete');
+    onSave      = Xml.get(node: xml, tag: 'onsave');
+    onValidate  = Xml.get(node: xml, tag: 'onvalidate');
+    onInvalid   = Xml.get(node: xml, tag: 'oninvalid');
+    
     // get fields
     fields.addAll(getFields(children));
 
@@ -323,32 +354,38 @@ class FormModel extends BoxModel implements IForm
     var nodes = xml.findElements("ANSWER", namespace: "*");
 
     // clear answers
-    for (XmlElement node in nodes) {
+    for (XmlElement node in nodes) 
+    {
       String? id = Xml.get(node: node, tag: 'id');
       IFormField? field = getField(id);
-      if (field != null) {
+      if (field != null) 
+      {
         dynamic value = field.value;
-        if (value is List) {
+        if (value is List) 
+        {
           field.value.clear();
-        } else {
+        } 
+        else 
+        {
           field.value = null;
         }
       }
     }
 
     // apply answers
-    for (XmlElement node in nodes) {
-      ///
-      // Value
-      ///
+    for (XmlElement node in nodes) 
+    {
       String? answer = Xml.getText(node);
       String? id = Xml.get(node: node, tag: 'id');
       IFormField field = getField(id)!;
 
       dynamic value = field.value;
-      if (value is List) {
+      if (value is List) 
+      {
         field.value.add(answer);
-      } else {
+      } 
+      else 
+      {
         field.value = answer;
       }
 
@@ -364,14 +401,17 @@ class FormModel extends BoxModel implements IForm
     clean = true;
 
     // add dirty listener to each field
-    for (var field in fields) {
-      if (field.dirtyObservable != null) {
+    for (var field in fields) 
+    {
+      if (field.dirtyObservable != null) 
+      {
         field.dirtyObservable!.registerListener(onDirtyListener);
       }
     }
 
     // add dirty listener to each sub-form
-    for (var form in forms) {
+    for (var form in forms) 
+    {
       Observable? property = form.dirtyObservable;
       if (property != null) property.registerListener(onDirtyListener);
     }
@@ -468,7 +508,7 @@ class FormModel extends BoxModel implements IForm
     }
 
     // validate the form
-    if (ok) ok = _validate();
+    if (ok) ok = await validate();
 
     // save the form and pass the validation check so validate is not called a second time. This is so the form is always saved on complete.
     hive.Form? form;
@@ -480,8 +520,8 @@ class FormModel extends BoxModel implements IForm
     // Set Clean
     if (ok == true) clean = true;
 
-    // fire on complete events
-    if (ok) ok = await EventHandler(this).execute(_oncomplete);
+    // fire on complete event
+    if (ok) ok = await EventHandler(this).execute(_onComplete);
 
     // set complete
     if (ok) status = StatusCodes.complete;
@@ -738,7 +778,8 @@ class FormModel extends BoxModel implements IForm
     }
   }
 
-  bool _validate()
+  @override
+  Future<bool> validate() async
   {
     bool ok = true;
 
@@ -760,6 +801,16 @@ class FormModel extends BoxModel implements IForm
       var view = findListenerOfExactType(FormViewState);
       if (view is FormViewState) view.show(list.first);
     }
+    
+    // execute validation events
+    if (ok)
+    {
+      await EventHandler(this).execute(_onValidate);
+    }
+    else
+    {
+      await EventHandler(this).execute(_onInvalid);
+    }
 
     return ok;
   }
@@ -769,12 +820,6 @@ class FormModel extends BoxModel implements IForm
   {
     var form = await _save();
     return form != null;
-  }
-
-  @override
-  Future<bool> onComplete(BuildContext context) async
-  {
-    return await EventHandler(this).execute(_oncomplete);
   }
 
   Future<hive.Form?> _save() async
@@ -889,15 +934,16 @@ class FormModel extends BoxModel implements IForm
     if (scope == null) return null;
 
     var function = propertyOrFunction.toLowerCase().trim();
-    switch (function) {
+    switch (function) 
+    {
       case 'complete':
-        return complete();
+        return await complete();
 
       case 'save':
-        return (await _save() != null);
+        return await save();
 
       case 'validate':
-        return _validate();
+        return await validate();
 
       case 'clear':
         return clear();

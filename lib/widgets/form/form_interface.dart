@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:fml/observable/observables/boolean.dart';
 
 abstract class IForm
@@ -14,5 +13,5 @@ abstract class IForm
   // Routines
   Future<bool> save();
   Future<bool> complete();
-  Future<bool> onComplete(BuildContext context);
+  Future<bool> validate();
 }

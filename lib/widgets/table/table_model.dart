@@ -704,9 +704,10 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
 
   @override
-  Future<bool> onComplete(BuildContext context) async {
-    return await EventHandler(this).execute(_oncomplete);
-  }
+  Future<bool> validate() async => true;
+
+  @override
+  Future<bool> save() async => true;
 
   void setCellWidth(int cellindex, double width) {
     if ((width >= 0) && (cellindex < widths.length)) widths[cellindex] = width;
@@ -884,12 +885,6 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     for (int i = 0; i < widths.length; i++) {
       widths[i] = (widths[i]! * percentReduction).roundToDouble();
     }
-  }
-
-  @override
-  Future<bool> save() async {
-    // not implemented
-    return true;
   }
 
   Future<void> onPull(BuildContext context) async

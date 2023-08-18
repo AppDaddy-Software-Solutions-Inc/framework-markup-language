@@ -415,17 +415,10 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
 
   @override
-  Future<bool> onComplete(BuildContext context) async
-  {
-    return await EventHandler(this).execute(_oncomplete);
-  }
+  Future<bool> validate() async => true;
 
   @override
-  Future<bool> save() async
-  {
-    // not implemented
-    return true;
-  }
+  Future<bool> save() async => true;
 
   Future<void> onPull(BuildContext context) async
   {

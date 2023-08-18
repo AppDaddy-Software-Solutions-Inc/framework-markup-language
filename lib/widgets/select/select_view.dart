@@ -1,7 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
-import 'package:fml/log/manager.dart';
-import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
@@ -58,7 +56,6 @@ class _SelectViewState extends WidgetState<SelectView>
       }
       if ((_selected == null) && (_list.isNotEmpty)) {
         _selected = _list[0].value;
-        widget.model.hasDefaulted = true;
       }
     }
   }
@@ -151,7 +148,7 @@ class _SelectViewState extends WidgetState<SelectView>
       view = Container(
         padding: const EdgeInsets.fromLTRB(12, 2, 8, 2),
         decoration: BoxDecoration(
-          color: widget.model.setFieldColor(context),
+          color: widget.model.getFieldColor(context),
           borderRadius: BorderRadius.circular(widget.model.radius.toDouble()),
         ),
         child: view,
@@ -160,7 +157,7 @@ class _SelectViewState extends WidgetState<SelectView>
       view = Container(
         padding: const EdgeInsets.fromLTRB(12, 0, 8, 3),
         decoration: BoxDecoration(
-          color: widget.model.setFieldColor(context),
+          color: widget.model.getFieldColor(context),
           border: Border(
             bottom: BorderSide(
                 width: widget.model.borderwidth.toDouble(),
@@ -172,7 +169,7 @@ class _SelectViewState extends WidgetState<SelectView>
       view = Container(
         padding: const EdgeInsets.fromLTRB(12, 1, 9, 0),
         decoration: BoxDecoration(
-          color: widget.model.setFieldColor(context),
+          color: widget.model.getFieldColor(context),
           border: Border.all(
               width: widget.model.borderwidth.toDouble(),
               color: widget.model.setErrorBorderColor(context, widget.model.bordercolor)),
@@ -185,12 +182,9 @@ class _SelectViewState extends WidgetState<SelectView>
     // display busy
     if (busy != null) view = Stack(children: [view, Positioned(top: 0, bottom: 0, left: 0, right: 0, child: busy)]);
 
-    String? errorTextValue = widget.model.returnErrorText();
-
-    if(!S.isNullOrEmpty(errorTextValue)) {
-      Widget? errorText = Padding(padding: EdgeInsets.only(top: 6.0 , bottom: 2.0), child: Text("    $errorTextValue", style: TextStyle(color: Theme.of(context)
-          .colorScheme.error),),);
-
+    if(!S.isNullOrEmpty(widget.model.alarmText))
+    {
+      Widget? errorText = Padding(padding: EdgeInsets.only(top: 6.0 , bottom: 2.0), child: Text("${widget.model.alarmText}", style: TextStyle(color: Theme.of(context).colorScheme.error)));
       view = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -291,26 +285,13 @@ class _SelectViewState extends WidgetState<SelectView>
 
   }
 
-  onFocusChange() async {
-
+  onFocusChange() async
+  {
     var editable = (widget.model.editable != false);
     if (!editable) return;
 
-    /////////////////////////////////////
-    /* Commit Changes on Loss of Focus */
-    /////////////////////////////////////
-    bool focused = focus.hasFocus;
-    try {
-      if (focused) {
-        System().commit = _commit;
-      } else {
-        System().commit = null;
-      }
-
-      if (!focused) await _commit();
-    } catch(e) {
-      Log().debug('$e');
-    }
+    // commit changes on loss of focus
+    if (!focus.hasFocus) await _commit();
   }
 
   Future<bool> _commit() async

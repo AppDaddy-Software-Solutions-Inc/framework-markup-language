@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/observable/observable_barrel.dart';
+import 'package:fml/widgets/alarm/alarm_model.dart';
 
 abstract class IFormField
 {
@@ -18,25 +19,16 @@ abstract class IFormField
   dynamic get defaultValue;
   set defaultValue (dynamic v);
 
-  // field default error
-  dynamic get error;
-  set error (dynamic v);
-
   // field metadata
-  dynamic get meta;
-  set meta (dynamic v);
+  dynamic get metaData;
+  set metaData (dynamic v);
 
   // field is required
   bool? get mandatory;
   set mandatory (dynamic v);
 
-  // field is required
-  String? get systemerrortext;
-  set systemerrortext (dynamic v);
-
-
   // field has been manually updated
-  bool? touched = false;
+  bool touched = false;
 
   // field has been edited
   bool? get dirty;
@@ -51,6 +43,9 @@ abstract class IFormField
   bool get enabled;
   set enabled (dynamic v);
 
+  // field is enabled for edit
+  bool get visible;
+
   // return value as a list
   List<String>? get values;
 
@@ -60,13 +55,11 @@ abstract class IFormField
   // set the field answer
   Future<bool> answer(dynamic value);
 
-  bool? get alarming;
+  // has active alarms
+  bool get alarming;
 
-  bool? get hasDefaulted;
-  set hasDefaulted(dynamic v);
-
-  bool? get validationHasHit;
-  set validationHasHit(dynamic v);
+  // returns the current active alarm
+  AlarmModel? get alarm;
 
   /// GeoCode for each [IFormField] which is set on answer
   Payload? geocode;

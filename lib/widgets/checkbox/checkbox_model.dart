@@ -56,9 +56,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
   }
   bool get center => _center?.get() ?? false;
 
-  //////////
-  /* wrap */
-  //////////
+  // wrap
   BooleanObservable? _wrap;
   set wrap(dynamic v) {
     if (_wrap != null) {

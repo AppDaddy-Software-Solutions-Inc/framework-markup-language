@@ -1,4 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:flutter/material.dart';
+
 class PageConfiguration
 {
   String? title;
@@ -7,6 +9,8 @@ class PageConfiguration
   final String? transition;
 
   Uri? uri;
+
+  Route? route;
 
   String get breadcrumb
   {

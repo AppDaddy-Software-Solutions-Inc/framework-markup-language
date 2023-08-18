@@ -44,7 +44,7 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
   void initState()
   {
     super.initState();
-    appURLInput = InputModel(null, null, hint: phrase.store, value: "", icon: Icons.link, keyboardtype: 'url', keyboardinput: 'done');
+    appURLInput = InputModel(null, null, hint: phrase.store, value: "", icon: Icons.link, keyboardType: 'url', keyboardInput: 'done');
     Store().registerListener(this);
   }
 

@@ -140,25 +140,11 @@ class _RadioViewState extends WidgetState<RadioView>
       }
     }
 
-    String? errorTextValue = widget.model.returnErrorText();
-
-    if(!S.isNullOrEmpty(errorTextValue)) {
-      Widget? errorText = Text(
-        "     $errorTextValue", style: TextStyle(color: Theme
-          .of(context)
-          .colorScheme
-          .error),);
-
-
-      view = Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [view, errorText],
-      );
+    if(!S.isNullOrEmpty(widget.model.alarmText))
+    {
+      Widget? errorText = Text("${widget.model.alarmText}", style: TextStyle(color: Theme.of(context).colorScheme.error));
+      view = Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [view, errorText]);
     }
-
-
-
 
     return view;
   }

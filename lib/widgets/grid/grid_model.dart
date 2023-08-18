@@ -44,9 +44,7 @@ class GridModel extends BoxModel implements IScrolling
   }
   bool get scrollShadows => _scrollShadows?.get() ?? false;
 
-  ///////////
-  /* dirty */
-  ///////////
+  // dirty
   BooleanObservable? get dirtyObservable => _dirty;
   BooleanObservable? _dirty;
   set dirty (dynamic v)
@@ -84,7 +82,6 @@ class GridModel extends BoxModel implements IScrolling
     dirty = false;
     items.forEach((index, item) => item.dirty = false);
   }
-
 
   ////////////
   /* moreup */

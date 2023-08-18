@@ -218,17 +218,17 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
               isDense: false,
               errorMaxLines: 8,
               hintMaxLines: 8,
-              fillColor: widget.model.setFieldColor(context),
+              fillColor: widget.model.getFieldColor(context),
               filled: true,
               contentPadding: EdgeInsets.only(
                   left: pad + 10, top: pad + 15, right: pad + 10, bottom: pad + 15),
               alignLabelWithHint: true,
               labelStyle: TextStyle(
                 fontSize: fontsize != null ? fontsize - 2 : 14,
-                color: widget.model.setErrorHintColor(context),
+                color: widget.model.getErrorHintColor(context),
               ),
               counterText: "",
-              errorText: widget.model.returnErrorText(),
+              errorText: widget.model.alarmText,
               errorStyle: TextStyle(
                 fontSize: fontsize ?? 12,
                 fontWeight: FontWeight.w300,
@@ -238,7 +238,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
               hintStyle: TextStyle(
                 fontSize: fontsize ?? 14,
                 fontWeight: FontWeight.w300,
-                color: widget.model.setErrorHintColor(context),
+                color: widget.model.getErrorHintColor(context),
               ),
               prefixIcon: Padding(
                   padding: EdgeInsets.only(

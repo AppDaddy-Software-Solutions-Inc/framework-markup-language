@@ -4,7 +4,7 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/form/form_model.dart';
+import 'package:fml/widgets/form/form_interface.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/event/handler.dart'            ;
@@ -402,26 +402,23 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     bool ok = true;
 
     // Post the Form
-    if (dirty) {for (var entry in items.entries) {
-      ok = await entry.value.complete();
-    }}
+    if (dirty)
+    {
+      for (var entry in items.entries)
+      {
+        ok = await entry.value.complete();
+      }
+    }
 
     busy = false;
     return ok;
   }
 
   @override
-  Future<bool> onComplete(BuildContext context) async
-  {
-    return await EventHandler(this).execute(_oncomplete);
-  }
+  Future<bool> validate() async => true;
 
   @override
-  Future<bool> save() async
-  {
-    // not implemented
-    return true;
-  }
+  Future<bool> save() async => true;
 
   Future<void> onPull(BuildContext context) async
   {

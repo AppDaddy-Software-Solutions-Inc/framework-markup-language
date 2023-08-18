@@ -2,7 +2,6 @@
 import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
@@ -200,26 +199,17 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
     var editable = (widget.model.editable != false);
     if (!editable) return;
 
-    /////////////////////////////////////
-    /* Commit Changes on Loss of Focus */
-    /////////////////////////////////////
-    bool focused = focus.hasFocus;
-    if (focused) {
-      controller.selection = TextSelection(baseOffset: 0, extentOffset: controller.text.length);
-    }
-    try {
-      if (focused) {
-        System().commit = _commit;
-      }
-      if (!focused) await _commit();
-    } catch(e) {
-      Log().debug('$e');
-    }
+    // select all
+    if (focus.hasFocus) controller.selection = TextSelection(baseOffset: 0, extentOffset: controller.text.length);
+
+    // commit changes on loss of focus
+    if (!focus.hasFocus) await _commit();
   }
 
   Future<bool> _commit() async
   {
     controller.text = controller.text.trim();
+
     // if the value does not match the option value, clear only when input is disabled.
     if (!widget.model.inputenabled) controller.text = _extractText(_selected)!;
 
@@ -332,7 +322,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
       view = Container(
         padding: const EdgeInsets.fromLTRB(12, 6, 0, 6),
         decoration: BoxDecoration(
-          color: widget.model.setFieldColor(context),
+          color: widget.model.getFieldColor(context),
           borderRadius: BorderRadius.circular(widget.model.radius.toDouble()),
         ),
         child: view,
@@ -341,7 +331,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
       view = Container(
         padding: const EdgeInsets.fromLTRB(12, 5, 0, 6),
         decoration: BoxDecoration(
-          color: widget.model.setFieldColor(context),
+          color: widget.model.getFieldColor(context),
           border: Border(
             bottom: BorderSide(
                 width: widget.model.borderwidth.toDouble(),
@@ -353,7 +343,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
       view = Container(
         padding: const EdgeInsets.fromLTRB(12, 5, 0, 4),
         decoration: BoxDecoration(
-          color: widget.model.setFieldColor(context),
+          color: widget.model.getFieldColor(context),
           border: Border.all(
               width: widget.model.borderwidth.toDouble(),
               color: widget.model.setErrorBorderColor(context, widget.model.bordercolor)),
@@ -363,12 +353,10 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
       );
     }
 
-    String? errorTextValue = widget.model.returnErrorText();
-
-
-    if(!S.isNullOrEmpty(errorTextValue)) {
-      Widget? errorText = Padding(padding: EdgeInsets.only(top: 6.0 , bottom: 2.0), child: Text("    $errorTextValue", style: TextStyle(color: Theme.of(context)
-          .colorScheme.error),),);
+    if(!S.isNullOrEmpty(widget.model.alarmText))
+    {
+      Widget? errorText = Padding(padding: EdgeInsets.only(top: 6.0 , bottom: 2.0),
+        child: Text("${widget.model.alarmText}", style: TextStyle(color: Theme.of(context).colorScheme.error),),);
 
       view = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -376,13 +364,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
         mainAxisSize: MainAxisSize.min,
         children: [view, errorText],
       );
-  }
-
-
-
-    // display busy
-    //var busy;
-    //if (busy != null) view = Stack(children: [view, Positioned(top: 0, bottom: 0, left: 0, right: 0, child: busy)]);
+    }
 
     // get the model constraints
     var modelConstraints = widget.model.constraints;
@@ -395,8 +377,6 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
 
     // apply constraints
     view = applyConstraints(view, modelConstraints);
-
-
 
     return view;
   }

@@ -28,7 +28,7 @@ class FormView extends StatefulWidget implements IWidgetView {
 
 class FormViewState extends WidgetState<FormView> implements IGpsListener
 {
-  BusyView? busy;
+  Widget? busy;
 
   @override
   onGpsData({Payload? payload})

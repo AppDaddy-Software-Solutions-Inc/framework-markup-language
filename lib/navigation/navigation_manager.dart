@@ -126,23 +126,46 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
 
     // page in navigation history?
     Page? page;
-    if ((url == "/") && (_pages.isNotEmpty)) {
+    if ((url == "/") && (_pages.isNotEmpty))
+    {
       page = _pages.first;
-    } else {
+    }
+    else
+    {
       page = _pages.reversed.firstWhereOrNull((page) => (page.name == url));
     }
 
     // navigate back to the page if found in the navigation history
     if (page != null)
     {
-      while ((_pages.isNotEmpty) && (_pages.last != page)) {
+      bool notify = false;
+
+      // remove pages until target page encountered
+      while (_pages.isNotEmpty && _pages.last != page)
+      {
+        // check if page WillPopScope()
+        if (_pages.last.arguments is PageConfiguration && navigatorKey.currentState?.mounted == true)
+        {
+          var configuration = _pages.last.arguments as PageConfiguration;
+          if (configuration.route != null)
+          {
+            RoutePopDisposition disposition = await configuration.route!.willPop();
+            if (disposition == RoutePopDisposition.doNotPop) break;
+          }
+        }
+
+        // remove the last page from the list
+        notify = true;
         _pages.removeLast();
       }
-      notifyListeners();
+
+      // notify listeners
+      if (notify) notifyListeners();
     }
     
     // open a new page
-    else {
+    else
+    {
       _open(url, transition: configuration.transition);
     }
   }
@@ -155,12 +178,15 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
   }
 
   @override
-  Future<bool> popRoute()
+  Future<bool> popRoute() async
   {
     // this only fires on mobile
-    if (_pages.length > 1) {
+    if (_pages.length > 1)
+    {
       return _goback(1);
-    } else {
+    }
+    else
+    {
       return _confirmAppExit();
     }
   }

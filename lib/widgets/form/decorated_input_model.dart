@@ -211,31 +211,30 @@ class DecoratedInputModel extends FormFieldModel
 
   }) : super(parent, id)
   {
-
-  if (width        != null) this.width = width;
-  if (hint         != null) this.hint = hint;
-  if (expand != null) this.expand = expand;
-  if (color != null) this.color = color;
-  if (width != null) this.width = width;
-  if (hint != null) this.hint = hint;
-  if (size != null) this.size = size;
-  if (weight != null) this.weight = weight;
-  if (style != null) this.style = style;
-  if (padding != null) margins = padding;
-  if (icon != null) this.icon = icon;
-  if (dense != null) this.dense = dense;
-  if (border != null) this.border = border;
-  if (radius != null) this.radius = radius;
-  if (bordercolor != null) this.bordercolor = bordercolor;
-  if (borderwidth != null) this.borderwidth = borderwidth;
-  if (textcolor != null) this.textcolor = textcolor;
-  if (label         != null) this.label         = label;
-
+    if (width != null) this.width = width;
+    if (hint != null) this.hint = hint;
+    if (expand != null) this.expand = expand;
+    if (color != null) this.color = color;
+    if (width != null) this.width = width;
+    if (hint != null) this.hint = hint;
+    if (size != null) this.size = size;
+    if (weight != null) this.weight = weight;
+    if (style != null) this.style = style;
+    if (padding != null) margins = padding;
+    if (icon != null) this.icon = icon;
+    if (dense != null) this.dense = dense;
+    if (border != null) this.border = border;
+    if (radius != null) this.radius = radius;
+    if (bordercolor != null) this.bordercolor = bordercolor;
+    if (borderwidth != null) this.borderwidth = borderwidth;
+    if (textcolor != null) this.textcolor = textcolor;
+    if (label != null) this.label = label;
   }
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml) {
+  void deserialize(XmlElement xml)
+  {
     // deserialize
     super.deserialize(xml);
 
@@ -247,62 +246,34 @@ class DecoratedInputModel extends FormFieldModel
   }
 
   //set the field color based on the error state
-  Color setFieldColor(BuildContext context) {
-    if (enabled != false) {
-      return color ?? Theme
-          .of(context)
-          .colorScheme
-          .surfaceVariant;
-    } else {
-      return color ?? Theme
-          .of(context)
-          .colorScheme
-          .primary
-          .withOpacity(0.5);
-    }
+  Color getFieldColor(BuildContext context)
+  {
+    // user defined
+    if (color != null) return color!;
+
+    // disabled
+    if (!enabled) return Theme.of(context).colorScheme.primary.withOpacity(0.5);
+
+    // default
+    return Theme.of(context).colorScheme.primary.withOpacity(0.5);
   }
 
   //set the field color based on the error state
-  Color setErrorHintColor(BuildContext context, {Color? color})
+  Color getErrorHintColor(BuildContext context, {Color? color})
   {
-    if (enabled != false)
-    {
-      if (alarming)
-      {
-        return Theme.of(context).colorScheme.error;
-      }
-      else
-      {
-        return color ?? Theme.of(context).colorScheme.onSurfaceVariant;
-      }
-    }
-    else
-    {
-      return color ?? Theme.of(context).colorScheme.primary.withOpacity(0.5);
-    }
+    // disabled
+    if (!enabled) return Theme.of(context).colorScheme.primary.withOpacity(0.5);
+
+    // alarm
+    var alarm = this.alarm;
+
+    // alarm
+    if (alarm != null) return Theme.of(context).colorScheme.error;
+
+    // user defined
+    if (color != null) return color;
+
+    // default color
+    return Theme.of(context).colorScheme.onSurfaceVariant;
   }
-
-
-
-
-  //set the field color based on the error state
-  Color setBorderColor(BuildContext context)
-  {
-    if (enabled != false)
-    {
-      if (alarming)
-      {
-        return Theme.of(context).colorScheme.error.withOpacity(0.5);
-      }
-      else
-      {
-        return color ?? Theme.of(context).colorScheme.surfaceVariant;
-      }
-    }
-    else
-    {
-      return color ?? Theme.of(context).colorScheme.primary.withOpacity(0.5);
-    }
-  }
-
 }

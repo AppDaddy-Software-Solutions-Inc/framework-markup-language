@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
+import 'package:fml/navigation/page.dart';
 
 abstract class INavigatorObserver
 {
@@ -25,16 +26,20 @@ class NavigationObserver extends NavigatorObserver
   {
     super.didPush(route, previousRoute);
 
-    /////////////////////////
-    /* Notify Pushed Route */
-    /////////////////////////
+    // remember the route
+    if (route.settings.arguments is PageConfiguration)
+    {
+      var configuration = route.settings.arguments as PageConfiguration;
+      configuration.route = route;
+    }
+
+    // notify pushed route
     INavigatorObserver? pushed = listenerOf(route);
     if (pushed != null) pushed.onNavigatorPush();
 
-    ///////////////////
-    /* Signal Change */
-    ///////////////////
-    for (INavigatorObserver listener in _listeners) {
+    // signal change
+    for (INavigatorObserver listener in _listeners)
+    {
       listener.onNavigatorChange();
     }
   }
@@ -47,20 +52,14 @@ class NavigationObserver extends NavigatorObserver
     INavigatorObserver? popped = listenerOf(route);
     INavigatorObserver? pushed = listenerOf(previousRoute);
 
-    ////////////////////
-    /* Get Parameters */
-    ////////////////////
+    // get parameters
     Map<String?, String>? parameters;
     if (popped != null) parameters = popped.onNavigatorPop();
 
-    /////////////////////////
-    /* Notify Pushed Route */
-    /////////////////////////
+    // notify pushed route
     if (pushed != null) pushed.onNavigatorPush(parameters: parameters);
 
-    ///////////////////
-    /* Signal Change */
-    ///////////////////
+    // signal change
     for (INavigatorObserver listener in _listeners) {
       listener.onNavigatorChange();
     }
@@ -74,20 +73,14 @@ class NavigationObserver extends NavigatorObserver
     INavigatorObserver? popped = listenerOf(route);
     INavigatorObserver? pushed = listenerOf(previousRoute);
 
-    ////////////////////
-    /* Get Parameters */
-    ////////////////////
+    // get parameters
     Map<String?, String>? parameters;
     if (popped != null) parameters = popped.onNavigatorPop();
 
-    /////////////////////////
-    /* Notify Pushed Route */
-    /////////////////////////
+    // notify pushed route
     if (pushed != null) pushed.onNavigatorPush(parameters: parameters);
 
-    ///////////////////
-    /* Signal Change */
-    ///////////////////
+    // signal change
     for (INavigatorObserver listener in _listeners) {
       listener.onNavigatorChange();
     }

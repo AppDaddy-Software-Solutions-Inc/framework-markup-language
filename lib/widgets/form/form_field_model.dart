@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/phrase.dart';
@@ -19,11 +20,16 @@ class FormFieldModel extends DecoratedWidgetModel
 
   // default value
   StringObservable? _defaultValue;
-  set defaultValue(dynamic v) {
-    if (_defaultValue != null) {
+  set defaultValue(dynamic v)
+  {
+    if (_defaultValue != null)
+    {
       _defaultValue!.set(v);
-    } else {
-      if (v != null) {
+    }
+    else
+    {
+      if (v != null)
+      {
         _defaultValue = StringObservable(null, v, scope: scope);
       }
     }
@@ -31,19 +37,34 @@ class FormFieldModel extends DecoratedWidgetModel
   dynamic get defaultValue => _defaultValue?.get();
 
   /// metadata to save with the post
-  StringObservable? _meta;
-  set meta(dynamic v) {
-    if (_meta != null) {
-      _meta!.set(v);
-    } else if (v != null) {
-      _meta = StringObservable(Binding.toKey(id, 'meta'), v, scope: scope);
+  StringObservable? _metaData;
+  set metaData(dynamic v)
+  {
+    if (_metaData != null)
+    {
+      _metaData!.set(v);
+    }
+    else if (v != null)
+    {
+      _metaData = StringObservable(Binding.toKey(id, 'meta'), v, scope: scope);
     }
   }
+  String? get metaData => _metaData?.get();
 
-  String? get meta => _meta?.get();
-
-  // field manually updated
-  bool? touched = false;
+  /// If the input has been focused at least once
+  BooleanObservable? _touched;
+  set touched(dynamic v)
+  {
+    if (_touched != null)
+    {
+      _touched!.set(v);
+    }
+    else if (v != null)
+    {
+      _touched = BooleanObservable(Binding.toKey(id, 'touched'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get touched => _touched?.get() ?? false;
 
   // form field name override
   String? field;
@@ -62,12 +83,7 @@ class FormFieldModel extends DecoratedWidgetModel
       _dirty = BooleanObservable(Binding.toKey(id, 'dirty'), v, scope: scope, listener: onPropertyChange);
     }
   }
-
-  bool get dirty
-  {
-    if (_dirty == null) return false;
-    return _dirty?.get() ?? false;
-  }
+  bool get dirty => _dirty?.get() ?? false;
 
   /// mandatory will dictate if the field will stop the form from `complete()`ing if not filled out.
   BooleanObservable? _mandatory;
@@ -97,11 +113,11 @@ class FormFieldModel extends DecoratedWidgetModel
       _post = BooleanObservable(Binding.toKey(id, 'post'), v, scope: scope, listener: onPropertyChange);
     }
   }
-
   bool? get post => _post?.get();
 
   /// visible determining if postable. This is not a settable attribute but part of post.
-  bool get postable {
+  bool get postable
+  {
     if (S.isNullOrEmpty(id)) return false;
     if (post != null) return post!;
     if ((value == null) || value is List && value.isEmpty) return false;
@@ -117,12 +133,15 @@ class FormFieldModel extends DecoratedWidgetModel
 
   //field is editable
   BooleanObservable? _editable;
-  set editable(dynamic v) {
-    if (_editable != null) {
+  set editable(dynamic v)
+  {
+    if (_editable != null)
+    {
       _editable!.set(v);
-    } else if (v != null) {
-      _editable = BooleanObservable(Binding.toKey(id, 'editable'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else if (v != null)
+    {
+      _editable = BooleanObservable(Binding.toKey(id, 'editable'), v, scope: scope, listener: onPropertyChange);
     }
   }
   bool? get editable => _editable?.get();
@@ -140,7 +159,6 @@ class FormFieldModel extends DecoratedWidgetModel
       _onchange = StringObservable(Binding.toKey(id, 'onchange'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
     }
   }
-
   String? get onchange => _onchange?.get();
 
   /// [Alarm]s based on validation checks
@@ -161,7 +179,7 @@ class FormFieldModel extends DecoratedWidgetModel
   }
   bool get alarming => _alarming?.get() ?? false;
 
-  /// alarm
+  /// returns active alarm
   AlarmModel? get alarm
   {
     for (var alarm in _alarms)
@@ -172,7 +190,12 @@ class FormFieldModel extends DecoratedWidgetModel
   }
 
   /// alarm text
-  String? get alarmText => alarm?.text;
+  String? get alarmText
+  {
+    var alarm = this.alarm;
+    if (alarm == null) return null;
+    return alarm.text;
+  }
 
   /// The string of events that will be executed when focus is lost.
   StringObservable? _onfocuslost;
@@ -187,29 +210,26 @@ class FormFieldModel extends DecoratedWidgetModel
       _onfocuslost = StringObservable(Binding.toKey(id, 'onfocuslost'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
     }
   }
-
   String? get onfocuslost => _onfocuslost?.get();
 
   // field offset
   Offset? offset;
 
   FormFieldModel(WidgetModel? parent, String? id,
-      {
-        dynamic editable,
-        dynamic enabled,
-        dynamic post,
-        dynamic mandatory,
-        dynamic onchange,
-        dynamic onfocuslost,
-        dynamic touched,
-      })
-      : super(parent, id) {
+  {
+    dynamic editable,
+    dynamic enabled,
+    dynamic post,
+    dynamic mandatory,
+    dynamic onchange,
+    dynamic onfocuslost
+  }) : super(parent, id)
+  {
     if (editable != null) this.editable = editable;
     if (enabled != null) this.enabled = enabled;
     if (post != null) this.post = post;
     if (mandatory != null) this.mandatory = mandatory;
     if (onchange      != null)  this.onchange      = onchange;
-    if (touched != null) this.touched = touched;
     if (onfocuslost != null) this.onfocuslost = onfocuslost;
 
     alarming = false;
@@ -223,7 +243,7 @@ class FormFieldModel extends DecoratedWidgetModel
 
     // properties
     defaultValue = Xml.get(node: xml, tag: 'default');
-    meta = Xml.get(node: xml, tag: 'meta');
+    metaData = Xml.get(node: xml, tag: 'meta');
     field = Xml.get(node: xml, tag: 'field');
     mandatory = Xml.get(node: xml, tag: 'mandatory');
     editable = Xml.get(node: xml, tag: 'editable');
@@ -240,12 +260,21 @@ class FormFieldModel extends DecoratedWidgetModel
     // add mandatory alarm
     if (mandatory == true)
     {
-      addAlarm(AlarmModel(this, null, type: AlarmType.mandatory, text: Phrases().fieldMandatory, alarm: "=noe({this.value})"));
+      addAlarm(AlarmModel(this, null, type: AlarmType.mandatory, text: Phrases().fieldMandatory, alarm: "=noe({this.value}) && {$id.touched}"));
     }
   }
 
   void addAlarm(AlarmModel alarm, {int? position})
   {
+    // there can only be one mandatory alarm
+    // this allows the user to override the alarm wordage with their own
+    if (alarm.type == AlarmType.mandatory && (_alarms.firstWhereOrNull((a) => a.type == AlarmType.mandatory) != null)) return;
+
+    // there can only be one validation alarm
+    // this allows the user to override the alarm wordage with their own
+    if (alarm.type == AlarmType.validation && (_alarms.firstWhereOrNull((a) => a.type == AlarmType.validation) != null)) return;
+
+    // add the alarm
     if (!_alarms.contains(alarm))
     {
       if (position != null)
@@ -269,10 +298,8 @@ class FormFieldModel extends DecoratedWidgetModel
 
   void _onAlarmChange(_)
   {
-    var alarm     = this.alarm;
-    var alarming  = (alarm != null);
-    this.alarming = alarming;
-    notifyListeners("alarming", this.alarming);
+    alarming = (alarm != null);
+    notifyListeners("alarming", alarming);
   }
 
   // values

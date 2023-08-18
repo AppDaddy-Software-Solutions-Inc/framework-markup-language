@@ -1,17 +1,16 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:xml/xml.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-enum AlarmType {mandatory, userDefined, validation}
+enum AlarmType {generic, mandatory, validation, server}
 
 class AlarmModel extends WidgetModel
 {
   // indicates the type of alarm
-  AlarmType type = AlarmType.userDefined;
+  AlarmType type = AlarmType.generic;
 
   // value of the parent
   StringObservable? _value;
@@ -77,8 +76,13 @@ class AlarmModel extends WidgetModel
   }
   String? get ondismissed => _ondismissed?.get();
 
-  AlarmModel(WidgetModel parent, String? id, {this.type = AlarmType.userDefined, dynamic text, dynamic alarm}) : super(parent, id)
+  AlarmModel(WidgetModel parent, String? id, {dynamic type, dynamic text, dynamic alarm}) : super(parent, id)
   {
+    // set type
+    this.type = AlarmType.generic;
+    if (type is String)    this.type = S.toEnum(type.trim().toLowerCase(), AlarmType.values) ?? AlarmType.generic;
+    if (type is AlarmType) this.type = type;
+
     if (text  != null) this.text = text;
     if (alarm != null) alarming = alarm;
 
@@ -92,7 +96,7 @@ class AlarmModel extends WidgetModel
     AlarmModel? model;
     try
     {
-      model = AlarmModel(parent, Xml.get(node: xml, tag: 'id'));
+      model = AlarmModel(parent, Xml.get(node: xml, tag: 'id'), type: Xml.get(node: xml, tag: 'type'));
       model.deserialize(xml);
     }
     catch(e)
@@ -114,19 +118,5 @@ class AlarmModel extends WidgetModel
     text        = Xml.get(node: xml, tag: 'text')  ?? Xml.get(node: xml, tag: 'errortext');
     onalarm     = Xml.get(node: xml, tag: 'onalarm');
     ondismissed = Xml.get(node: xml, tag: 'ondismissed');
-  }
-
-  void executeAlarmString(bool isAlarming)
-  {
-    //execute the onalarm
-    if(isAlarming)
-    {
-      EventHandler(this).execute(_onalarm);
-    }
-    else
-    {
-      // execute the ondismissed
-      EventHandler(this).execute(_ondismissed);
-    }
   }
 }

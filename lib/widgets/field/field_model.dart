@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:flutter/cupertino.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/widgets/form/form_field_model.dart';
@@ -64,4 +65,7 @@ class FieldModel extends FormFieldModel implements IFormField
     super.deserialize(xml);
     value = Xml.get(node: xml, tag: S.fromEnum('value'));
   }
+
+  @override
+  Widget getView({Key? key}) => Offstage();
 }

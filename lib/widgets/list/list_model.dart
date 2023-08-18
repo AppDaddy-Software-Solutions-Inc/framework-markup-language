@@ -4,7 +4,7 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/form/form_model.dart';
+import 'package:fml/widgets/form/form_interface.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/event/handler.dart'            ;
@@ -402,9 +402,13 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     bool ok = true;
 
     // Post the Form
-    if (dirty) {for (var entry in items.entries) {
-      ok = await entry.value.complete();
-    }}
+    if (dirty)
+    {
+      for (var entry in items.entries)
+      {
+        ok = await entry.value.complete();
+      }
+    }
 
     busy = false;
     return ok;

@@ -1,7 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
-import 'package:fml/log/manager.dart';
-import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
@@ -151,7 +149,7 @@ class _SelectViewState extends WidgetState<SelectView>
       view = Container(
         padding: const EdgeInsets.fromLTRB(12, 2, 8, 2),
         decoration: BoxDecoration(
-          color: widget.model.setFieldColor(context),
+          color: widget.model.getFieldColor(context),
           borderRadius: BorderRadius.circular(widget.model.radius.toDouble()),
         ),
         child: view,
@@ -160,7 +158,7 @@ class _SelectViewState extends WidgetState<SelectView>
       view = Container(
         padding: const EdgeInsets.fromLTRB(12, 0, 8, 3),
         decoration: BoxDecoration(
-          color: widget.model.setFieldColor(context),
+          color: widget.model.getFieldColor(context),
           border: Border(
             bottom: BorderSide(
                 width: widget.model.borderwidth.toDouble(),
@@ -172,7 +170,7 @@ class _SelectViewState extends WidgetState<SelectView>
       view = Container(
         padding: const EdgeInsets.fromLTRB(12, 1, 9, 0),
         decoration: BoxDecoration(
-          color: widget.model.setFieldColor(context),
+          color: widget.model.getFieldColor(context),
           border: Border.all(
               width: widget.model.borderwidth.toDouble(),
               color: widget.model.setErrorBorderColor(context, widget.model.bordercolor)),
@@ -288,26 +286,13 @@ class _SelectViewState extends WidgetState<SelectView>
 
   }
 
-  onFocusChange() async {
-
+  onFocusChange() async
+  {
     var editable = (widget.model.editable != false);
     if (!editable) return;
 
-    /////////////////////////////////////
-    /* Commit Changes on Loss of Focus */
-    /////////////////////////////////////
-    bool focused = focus.hasFocus;
-    try {
-      if (focused) {
-        System().commit = _commit;
-      } else {
-        System().commit = null;
-      }
-
-      if (!focused) await _commit();
-    } catch(e) {
-      Log().debug('$e');
-    }
+    // commit changes on loss of focus
+    if (!focus.hasFocus) await _commit();
   }
 
   Future<bool> _commit() async

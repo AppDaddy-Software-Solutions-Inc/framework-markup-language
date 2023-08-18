@@ -115,9 +115,7 @@ class InputModel extends DecoratedInputModel implements IFormField {
   dynamic get value
   {
     if (_value == null) return defaultValue;
-    if ((!dirty) &&
-        (S.isNullOrEmpty(_value!.get())) &&
-        (!S.isNullOrEmpty(defaultValue))) _value!.set(defaultValue);
+    if (!dirty && S.isNullOrEmpty(_value!.get()) && !S.isNullOrEmpty(defaultValue)) _value!.set(defaultValue);
     return _value!.get();
   }
 
@@ -227,23 +225,6 @@ class InputModel extends DecoratedInputModel implements IFormField {
     }
   }
   String? get keyboardInput => _keyboardInput?.get();
-
-  /// If the input has been focused at least once
-  BooleanObservable? _touched;
-  @override
-  set touched(dynamic v)
-  {
-    if (_touched != null)
-    {
-      _touched!.set(v);
-    }
-    else if (v != null)
-    {
-      _touched = BooleanObservable(Binding.toKey(id, 'touched'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  @override
-  bool get touched => _touched?.get() ?? false;
 
   BooleanObservable? _wrap;
   set wrap(dynamic v)
@@ -374,7 +355,6 @@ class InputModel extends DecoratedInputModel implements IFormField {
     borderwidth = Xml.get(node: xml, tag: 'borderwidth');
     textcolor = Xml.get(node: xml, tag: 'textcolor');
     mask = Xml.get(node: xml, tag: 'mask');
-    touched = Xml.get(node: xml, tag: 'touched');
   }
 
   setValidator(String? defaultText)
@@ -385,27 +365,27 @@ class InputModel extends DecoratedInputModel implements IFormField {
       switch (formatType)
       {
         case 'credit':
-          var alarm = AlarmModel(parent!, null,type:AlarmType.validation,text: defaultText ?? "Invalid card number",alarm: "=!isCard({${id}.value})");
+          var alarm = AlarmModel(parent!, null,type:AlarmType.validation,text: defaultText ?? "Invalid card number",alarm: "=!isCard({$id.value})");
           addAlarm(alarm, position: 0);
           break;
 
         case 'expire':
-          var alarm = AlarmModel(parent!, null,type:AlarmType.validation,text: defaultText ?? "Invalid expiry date", alarm: "=!isExpiry({${id}.value})");
+          var alarm = AlarmModel(parent!, null,type:AlarmType.validation,text: defaultText ?? "Invalid expiry date", alarm: "=!isExpiry({$id.value})");
           addAlarm(alarm, position: 0);
           break;
 
         case 'phone':
-          var alarm = AlarmModel(parent!, null,type:AlarmType.validation,text: defaultText ?? "Invalid phone number", alarm: "=!isPhone({${id}.value})");
+          var alarm = AlarmModel(parent!, null,type:AlarmType.validation,text: defaultText ?? "Invalid phone number", alarm: "=!isPhone({$id.value})");
           addAlarm(alarm, position: 0);
           break;
 
         case 'password':
-          var alarm = AlarmModel(parent!, null,type:AlarmType.validation,text: defaultText ?? "The password must be at least 8 characters long, including upper/lowercase and a number", alarm: "=!isPassword({${id}.value})");
+          var alarm = AlarmModel(parent!, null,type:AlarmType.validation,text: defaultText ?? "The password must be at least 8 characters long, including upper/lowercase and a number", alarm: "=!isPassword({$id.value})");
           addAlarm(alarm, position: 0);
           break;
 
         case 'email':
-          var alarm = AlarmModel(parent!, null,type:AlarmType.validation,text: defaultText ?? "Invalid email", alarm: "=!isEmail({${id}.value})");
+          var alarm = AlarmModel(parent!, null,type:AlarmType.validation,text: defaultText ?? "Invalid email", alarm: "=!isEmail({$id.value})");
           addAlarm(alarm, position: 0);
           break;
 

@@ -72,8 +72,6 @@ class ModalViewState extends WidgetState<ModalView>
   @override
   void initState()
   {
-    widget.model.state = this;
-
     width  = widget.model.width;
     height = widget.model.height;
     dx     = widget.model.x;

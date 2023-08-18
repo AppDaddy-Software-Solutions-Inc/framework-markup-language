@@ -4,7 +4,6 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/event/event.dart' ;
 import 'package:fml/event/handler.dart' ;
 import 'package:flutter/material.dart';
-import 'package:fml/system.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/column/column_model.dart';
 import 'package:fml/widgets/row/row_model.dart';
@@ -254,7 +253,6 @@ class ButtonModel extends BoxModel
       preventClicking = true;
 
       WidgetModel.unfocus();
-      await System().onCommit();
 
       if (enabled != false) await onClick(context);
     }

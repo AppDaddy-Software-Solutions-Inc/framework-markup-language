@@ -123,9 +123,7 @@ class DatepickerModel extends DecoratedInputModel implements IFormField
   dynamic get value
   {
     if (_value == null) return defaultValue;
-    if ((!dirty) &&
-        (S.isNullOrEmpty(_value?.get())) &&
-        (!S.isNullOrEmpty(defaultValue))) _value!.set(defaultValue);
+    if (!dirty && S.isNullOrEmpty(_value?.get()) && !S.isNullOrEmpty(defaultValue)) _value!.set(defaultValue);
     return _value?.get();
   }
 

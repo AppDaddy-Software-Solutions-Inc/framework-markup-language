@@ -7,7 +7,6 @@ import 'package:flutter_multi_formatter/formatters/credit_card_number_input_form
 import 'package:flutter_multi_formatter/formatters/masked_input_formatter.dart';
 import 'package:flutter_multi_formatter/formatters/currency_input_formatter.dart';
 import 'package:flutter_multi_formatter/formatters/phone_input_formatter.dart';
-import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/input/input_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
@@ -86,7 +85,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     // If the model contains any databrokers we fire them before building so we can bind to the data
     widget.model.initialize();
 
-    // debounce
+    // debounce listener
     widget.model.controller!.addListener(_debounce);
   }
 
@@ -225,25 +224,23 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     return 'field must be supplied';
   }
 
-  onFocusChange() async {
+  onFocusChange() async
+  {
     var editable = (widget.model.editable != false);
     if (!editable) return;
 
     // commit changes on loss of focus
-    bool focused = focus.hasFocus;
+    if (!focus.hasFocus)
+    {
+      // cancel the debounce timer
+      if (commitTimer?.isActive ?? false) commitTimer!.cancel();
 
-    if (focused) {
-      if (widget.model.touched == false) {
-        widget.model.touched = true;
-      }
-      System().commit = _commit;
-    } else {
-      // Makes sure that if a button is clicked the _commit is fired similar to onfocusloss
-      System().commit = null;
-      await widget.model.onFocusLost(context);
+      // trigger onFocusLost event
+      bool ok = await widget.model.onFocusLost(context);
+
+      // commit
+      if (ok) await _commit();
     }
-
-    if (!focused) await _commit();
   }
 
   Future<bool> _commit() async
@@ -260,8 +257,12 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     return true;
   }
 
+  // triggers when data is typed
   void _debounce()
   {
+    // field has changed
+    widget.model.touched = true;
+
     // this should only trigger with the oninputchange
     if (commitTimer?.isActive ?? false) commitTimer!.cancel();
 
@@ -510,7 +511,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
       isDense: false,
       errorMaxLines: 8,
       hintMaxLines: 8,
-      fillColor: widget.model.setFieldColor(context),
+      fillColor: widget.model.getFieldColor(context),
       filled: true,
       contentPadding: widget.model.dense == true
           ? EdgeInsets.only(
@@ -518,12 +519,10 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
           : EdgeInsets.only(
           left: pad + 10, top: pad + additionalTopPad, right: pad + 10, bottom: pad + additionalBottomPad),
       alignLabelWithHint: true,
-
-
       labelText: widget.model.dense ? null : hint,
       labelStyle: TextStyle(
         fontSize: fontsize != null ? fontsize - 2 : 14,
-        color: widget.model.setErrorHintColor(context, color: hintTextColor),
+        color: widget.model.getErrorHintColor(context, color: hintTextColor),
         shadows: <Shadow>[
           Shadow(
               offset: Offset(0.0, 0.5),
@@ -552,7 +551,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
       hintStyle: TextStyle(
         fontSize: fontsize ?? 14,
         fontWeight: FontWeight.w300,
-        color: widget.model.setErrorHintColor(context, color: hintTextColor),
+        color: widget.model.getErrorHintColor(context, color: hintTextColor),
       ),
 
 
@@ -632,14 +631,14 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
         focusNode: focus,
         autofocus: false,
         autocorrect: false,
-        expands: widget.model.expand == true,
+        expands: widget.model.expand,
         obscureText: widget.model.obscure,
         keyboardType: keyboard,
         textInputAction: action,
         inputFormatters: formatters,
         enabled: (widget.model.enabled == false) ? false : true,
         style: style,
-        textAlignVertical: widget.model.expand == true ? TextAlignVertical.top : TextAlignVertical.center,
+        textAlignVertical: widget.model.expand ? TextAlignVertical.top : TextAlignVertical.center,
         maxLength: length,
         maxLines: maxLines,
         minLines: minLines,

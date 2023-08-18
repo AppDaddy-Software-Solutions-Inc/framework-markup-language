@@ -136,7 +136,8 @@ class _TableViewState extends WidgetState<TableView>
     }
   }
 
-  Future<bool> onComplete(Event event) async {
+  Future<bool> onComplete(Event event) async
+  {
     bool ok = true;
 
     // Specific Complete?
@@ -157,24 +158,33 @@ class _TableViewState extends WidgetState<TableView>
 
     // Row Level Event?
     TableRowModel? row;
-    if (event.model != null) {
+    if (event.model != null)
+    {
       row = event.model!.findAncestorOfExactType(TableRowModel);
     }
 
     // Complete the Table
-    if (ok) {
-      if (row != null) {
+    if (ok)
+    {
+      if (row != null)
+      {
         ok = await row.complete();
-      } else {
+      }
+      else
+      {
         ok = await widget.model.complete();
       }
     }
 
     // Fire OnComplete
-    if (ok) {
-      if (row != null) {
+    if (ok)
+    {
+      if (row != null)
+      {
         ok = await row.onComplete();
-      } else {
+      }
+      else
+      {
         ok = await widget.model.onComplete(context);
       }
     }
@@ -183,16 +193,19 @@ class _TableViewState extends WidgetState<TableView>
   }
 
   @override
-  void onScroll(Event event) async {
-    if (hScroller != null && vScroller != null) {
+  void onScroll(Event event) async
+  {
+    if (hScroller != null && vScroller != null)
+    {
       scroll(event, hScroller, vScroller);
     }
     event.handled = true;
   }
 
-  scroll(Event event, ScrollController? hScroller,
-      ScrollController? vScroller) async {
-    try {
+  scroll(Event event, ScrollController? hScroller, ScrollController? vScroller) async
+  {
+    try
+    {
       if (event.parameters!.containsKey("direction") &&
           event.parameters!.containsKey("pixels")) {
         String? direction = event.parameters!["direction"];
@@ -213,7 +226,9 @@ class _TableViewState extends WidgetState<TableView>
           }
         }
       }
-    } catch (e) {
+    }
+    catch (e)
+    {
       Log().error('onScroll Error: ');
       Log().exception(e, caller: 'View');
     }
@@ -221,37 +236,46 @@ class _TableViewState extends WidgetState<TableView>
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
   @override
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    try {
+  onModelChange(WidgetModel model, {String? property, dynamic value})
+  {
+    try
+    {
       var b = Binding.fromString(property);
       if (b?.property == 'busy') return;
       if (mounted) setState(() {});
-    } catch (e) {
-      Log().exception(e,
-          caller:
-              ' onModelChange(WidgetModel model,{String? property, dynamic value})');
+    }
+    catch (e)
+    {
+      Log().exception(e, caller: ' onModelChange(WidgetModel model,{String? property, dynamic value})');
     }
   }
 
-  onProxyHeaderSize(Size size, {dynamic data}) {
-    setState(() {
+  onProxyHeaderSize(Size size, {dynamic data})
+  {
+    setState(()
+    {
       widget.model.proxyheader = size;
     });
   }
 
-  onProxyRowSize(Size size, {dynamic data}) {
-    setState(() {
+  onProxyRowSize(Size size, {dynamic data})
+  {
+    setState(()
+    {
       widget.model.proxyrow = size;
     });
   }
 
-  _setWidth(int index, double width) {
+  _setWidth(int index, double width)
+  {
     TableHeaderCellModel? cell = widget.model.header!.cells[index];
     double? cellwidth = cell.width;
-    if (!widget.model.widths.containsKey(index)) {
+    if (!widget.model.widths.containsKey(index))
+    {
       widget.model.widths[index] = cellwidth ?? width;
     }
-    if (width > widget.model.widths[index]!) {
+    if (width > widget.model.widths[index]!)
+    {
       widget.model.widths[index] = cellwidth ?? width;
     }
   }

@@ -247,16 +247,26 @@ class DecoratedInputModel extends FormFieldModel
 
   //set the field color based on the error state
 
-  Color getFieldColor(BuildContext context)
-  {
+  Color getFieldColor(BuildContext context) {
     // user defined
     if (color != null) return color!;
 
     // disabled
-    if (!enabled) return Theme.of(context).colorScheme.primary.withOpacity(0.5);
+    if (!enabled) {
+      return Theme
+        .of(context)
+        .colorScheme
+        .primary
+        .withOpacity(0.5);
+    }
 
     // default
-    return Theme.of(context).colorScheme.primary.withOpacity(0.5);
+    return Theme
+        .of(context)
+        .colorScheme
+        .primary
+        .withOpacity(0.5);
+  }
   
   Color setFieldColor(BuildContext context) {
     if (enabled != false && border != 'all') {

@@ -362,7 +362,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
       var framework = model.findParentOfExactType(FrameworkModel);
       if (framework != null)
       {
-        var view = FrameworkView(FrameworkModel.fromUrl(framework, url, refresh: refresh ?? false, dependency: dependency));
+        var view = FrameworkModel.fromUrl(framework, url, refresh: refresh ?? false, dependency: dependency).getView();
         ModalManagerView? manager = model.context?.findAncestorWidgetOfExactType<ModalManagerView>();
         if (manager != null)
         {
@@ -403,7 +403,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
         break;
 
       default:
-        view =  ModalManagerView(ModalManagerModel(FrameworkView(FrameworkModel.fromUrl(System.app!, url, refresh: refresh, dependency: dependency))));
+        view =  ModalManagerView(ModalManagerModel(FrameworkModel.fromUrl(System.app!, url, refresh: refresh, dependency: dependency).getView()));
         break;
     }
 
@@ -417,7 +417,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
   bool openJsTemplate(String templ8) {
     bool ok = true;
     Widget view;
-    view = FrameworkView(FrameworkModel.fromJs(templ8));
+    view = FrameworkModel.fromJs(templ8).getView();
     // build page
     MaterialPage page = _buildPage('', child: view);
     // ensure we remove any current template

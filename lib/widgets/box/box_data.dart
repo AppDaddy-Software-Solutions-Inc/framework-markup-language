@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
@@ -133,7 +132,7 @@ class LayoutBoxChildData extends ParentDataWidget<BoxData>
 
       if (needsLayout)
       {
-        final AbstractNode? targetParent = renderObject.parent;
+        final RenderObject? targetParent = renderObject.parent;
         if (targetParent is RenderObject)
         {
           targetParent.markNeedsLayout();

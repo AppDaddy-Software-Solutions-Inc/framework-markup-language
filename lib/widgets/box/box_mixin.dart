@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fml/system.dart';
@@ -27,9 +26,9 @@ mixin BoxMixin
 
   // finds the parent RenderConstrainedLayoutBuilder of
   // the node
-  AbstractNode? parentOf(AbstractNode child)
+  RenderObject? parentOf(RenderObject child)
   {
-    AbstractNode? node = child.parent;
+    RenderObject? node = child.parent;
     while (true)
     {
       if (node == null) break;
@@ -45,7 +44,7 @@ mixin BoxMixin
 
   // walk up the render tree
   // to find first constrained height
-  double heightOf(AbstractNode? node)
+  double heightOf(RenderObject? node)
   {
     double? height;
     while (true)
@@ -63,7 +62,7 @@ mixin BoxMixin
 
   // walk up the render tree
   // to find first constrained width
-  double widthOf(AbstractNode? node)
+  double widthOf(RenderObject? node)
   {
     double? width;
     while (true)

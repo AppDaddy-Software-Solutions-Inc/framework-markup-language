@@ -1042,7 +1042,7 @@ class WidgetModel implements IDataSourceListener {
     notifyListeners(observable.key, observable.get());
   }
 
-  void initialize() {
+  Future<void> initialize() async {
     // start datasources
     if (datasources != null) {
       for (var datasource in datasources!) {

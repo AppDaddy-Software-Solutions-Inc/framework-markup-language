@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/googlemap/map_model.dart';
 import 'package:fml/widgets/googlemap/location/map_location_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
-import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -27,7 +26,7 @@ class MapView extends StatefulWidget implements IWidgetView
 
 class _MapViewState extends WidgetState<MapView>
 {
-  BusyView? busy;
+  Widget? busy;
   Future<MapModel>? future;
   bool startup = true;
 
@@ -107,7 +106,7 @@ class _MapViewState extends WidgetState<MapView>
     map ??= _buildGoogleMap();
 
     /// Busy / Loading Indicator
-    busy ??= BusyView(BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable));
+    busy ??= BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable).getView();
 
     var width = widget.model.width   ?? widget.model.myMaxWidthOrDefault;
     var height = widget.model.height ?? widget.model.myMaxHeightOrDefault;

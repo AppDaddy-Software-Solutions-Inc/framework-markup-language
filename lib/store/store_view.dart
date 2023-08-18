@@ -128,7 +128,7 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
               Center(child: Opacity(opacity: 0.03, child: Image(image: AssetImage('assets/images/fml-logo.png')))),
               Center(child: apps.isEmpty ? noAppDisplay : storeDisplay),
               Align(alignment: Alignment.bottomLeft, child: Padding(padding: EdgeInsets.only(left: 5), child: Text('${phrase.version} $version', style: TextStyle(color: Colors.black26))),),
-              Center(child: BusyView(BusyModel(Store(), visible: Store().busy, observable: Store().busyObservable, modal: true)))]))
+              Center(child: BusyModel(Store(), visible: Store().busy, observable: Store().busyObservable, modal: true).getView())]))
         )
     );
   }
@@ -376,7 +376,7 @@ class AppFormState extends State<AppForm>
     var buttons = Padding(padding: const EdgeInsets.only(top: 10.0, bottom: 10),child: Align(alignment: Alignment.bottomCenter, child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [cancel,connect])));
     layout.add(buttons);
 
-    var b = BusyView(BusyModel(Store(), visible: (busy.get() ?? false), observable: busy, modal: false, color: Colors.amberAccent));
+    var b = BusyModel(Store(), visible: (busy.get() ?? false), observable: busy, modal: false, color: Colors.amberAccent).getView();
     var form = Form(key: _formKey, child: Column(children: layout, mainAxisSize: MainAxisSize.min, mainAxisAlignment: MainAxisAlignment.end, crossAxisAlignment: CrossAxisAlignment.start));
 
     return Stack(fit: StackFit.passthrough, children: [form,b]);

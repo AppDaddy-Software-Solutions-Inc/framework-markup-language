@@ -38,6 +38,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
   BoxModel?     body;
   FooterModel?  footer;
   DrawerModel?  drawer;
+  bool hasHitBusy = false;
 
   List<String>? bindables;
 
@@ -579,7 +580,9 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
     return super.execute(caller, propertyOrFunction, arguments);
   }
   @override
-  Widget getView({Key? key}) => getReactiveView(FrameworkView(this));
+  Widget getView({Key? key}){
+      return FrameworkView(this);
+  }
 }
 
 abstract class IDragListener

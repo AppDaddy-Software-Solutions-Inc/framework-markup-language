@@ -101,7 +101,7 @@ class _ChartViewState extends State<ChartView> implements IModelListener
 {
   Future<Template>? template;
   Future<CHART.ChartModel>? chartViewModel;
-  BUSY.BusyView? busy;
+  BUSY.Widget? busy;
 
   var xAxis;
   var yAxis;

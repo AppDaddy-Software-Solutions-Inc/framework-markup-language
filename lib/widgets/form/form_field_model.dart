@@ -319,6 +319,7 @@ class FormFieldModel extends DecoratedWidgetModel
   {
     bool ok = true;
     touched = true;
+    dirty = true;
 
     if (value != v)
     {
@@ -346,6 +347,7 @@ class FormFieldModel extends DecoratedWidgetModel
       {
         value = oldValue;
         geocode = oldGeocode;
+        dirty = false;
       }
 
       // save succeeded. set dirty

@@ -256,6 +256,10 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
     // value is not in data?
     if (!_containsOption())
     {
+      //put this in so if input is allowed we accept the inputs value.
+      if(inputenabled && dirty) return;
+
+
       var value = options.isNotEmpty ? options[0].value : null;
 
       // set to first entry if no datasource
@@ -288,6 +292,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
   {
     bool contains = false;
     for (var option in options) {
+      //we could potentially match the label vs the value with typeing, or give the option on which to match on?
       if (option.value == value) contains = true;
     }
     return contains;

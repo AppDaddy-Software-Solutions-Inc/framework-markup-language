@@ -171,7 +171,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
       model = FrameworkModel.fromUrl(widget.model, url, dependency: event?.model?.id);
 
       // build the view
-      view = FrameworkView(model);
+      view = model.getView() as FrameworkView;
 
       // save the view
       widget.model.views[url] = view;

@@ -336,13 +336,6 @@ class System extends WidgetModel implements IEventManager {
     return ok;
   }
 
-  // hack to fix focus/unfocus commits
-  CommitCallback? commit;
-  Future<bool> onCommit() async {
-    if (commit != null) return await commit!();
-    return true;
-  }
-
   static toast(String? msg, {int? duration}) {
     BuildContext? context = NavigationManager().navigatorKey.currentContext;
     if (context != null) {

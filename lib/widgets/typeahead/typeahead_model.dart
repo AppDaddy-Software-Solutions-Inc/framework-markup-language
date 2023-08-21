@@ -78,7 +78,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
   dynamic get value
   {
     if (_value == null) return defaultValue;
-    if ((!dirty) && (S.isNullOrEmpty(_value?.get())) && (!S.isNullOrEmpty(defaultValue))) _value!.set(defaultValue);
+    if (!dirty && S.isNullOrEmpty(_value?.get()) && !S.isNullOrEmpty(defaultValue)) _value!.set(defaultValue);
     return _value?.get();
   }
 
@@ -174,11 +174,9 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
     String? empty = Xml.get(node: xml, tag: 'addempty');
     if (S.isBool(empty)) addempty = S.toBool(empty);
 
-    //check to see if value has been specified so the form does not fill it out.
-    hasDefaulted = (Xml.get(node: xml, tag: 'value') == null);
-
     // clear options
-    for (var option in this.options) {
+    for (var option in this.options)
+    {
       option.dispose();
     }
     this.options.clear();

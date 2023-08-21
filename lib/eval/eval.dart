@@ -8,6 +8,9 @@ import 'package:fml/eval/evaluator.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/eval/expressions.dart';
 import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/widgets/input/input_formatters.dart';
+import 'package:flutter_multi_formatter/formatters/credit_card_number_input_formatter.dart';
+import 'package:flutter_multi_formatter/formatters/phone_input_formatter.dart';
 
 /// Eval parses evaluation strings from FML templates
 ///
@@ -20,7 +23,7 @@ class Eval
   static final ExpressionEvaluator evaluator = const ExpressionEvaluator();
 
   /// The String value mapping of all the functions
-  static final Map<String, dynamic> functions = {'acos': acos, 'addTime': _addTime, 'addtime': _addTime, 'asin': asin, 'atan': atan, 'bit': _bit, 'bytes': _bytes, 'case' : _case, 'ceil': _ceil, 'contains': _contains, 'cos': cos, 'decrypt': _decrypt, 'distance': _distance, 'encrypt': _encrypt, 'endsWith': _endsWith, 'endswith': _endsWith, 'floor': _floor, 'hash' : _hash, 'if': _if, 'isAfter': _isAfter, 'isafter': _isAfter, 'isBefore': _isBefore, 'isbefore': _isBefore, 'isBool' : _isBool, 'isbool' : _isBool, 'isBoolean' : _isBool, 'isboolean' : _isBool, 'isNull': _isNull, 'isnull': _isNull, 'isNullOrEmpty': _isNullOrEmpty, 'isnullorempty': _isNullOrEmpty, 'isNum' : _isNumeric, 'isnum' : _isNumeric, 'isNumeric' : _isNumeric, 'isnumeric' : _isNumeric, 'join': _join, 'length': _length, 'mod': _mod, 'noe': _isNullOrEmpty, 'number': _number, 'nvl': _nvl, 'pi': pi / 5, 'regex': _regex, 'replace': _replace, 'round': _round, 'sin': sin, 'startsWith': _startsWith, 'startswith': _startsWith, 'substring': _substring, 'subtractTime': _subtractTime, 'subtracttime': _subtractTime, 'tan': tan, 'timeBetween': _timeBetween, 'timebetween': _timeBetween, 'toBool': _toBool, 'tobool': _toBool, 'toBoolean': _toBool, 'toboolean': _toBool, 'toDate': _toDate, 'todate': _toDate, 'toEpoch': _toEpoch, 'toepoch': _toEpoch, 'toLower' : _toLower, 'tolower': _toLower, 'toNum': _toNum, 'tonum': _toNum, 'toNumber': _toNum, 'tonumber': _toNum, 'toStr': _toString, 'tostr': _toString, 'toString': _toString, 'tostring': _toString, 'toUpper' : _toUpper, 'toupper': _toUpper, 'truncate': _truncate,};
+  static final Map<String, dynamic> functions = {'acos': acos, 'addTime': _addTime, 'addtime': _addTime, 'asin': asin, 'atan': atan, 'bit': _bit, 'bytes': _bytes, 'case' : _case, 'ceil': _ceil, 'contains': _contains, 'cos': cos, 'decrypt': _decrypt, 'distance': _distance, 'encrypt': _encrypt, 'endsWith': _endsWith, 'endswith': _endsWith, 'floor': _floor, 'hash' : _hash, 'if': _if, 'isAfter': _isAfter, 'isafter': _isAfter, 'isBefore': _isBefore, 'isbefore': _isBefore, 'isBool' : _isBool, 'isbool' : _isBool, 'isBoolean' : _isBool, 'isboolean' : _isBool, 'isPhone' : _isValidPhone, 'isCard' : _isValidCreditCard, 'isPassword' : _isValidPassword, 'isEmail' : _isValidEmail, 'isExpiryDate' : _isValidExpiryDate, 'isNull': _isNull, 'isnull': _isNull, 'isNullOrEmpty': _isNullOrEmpty, 'isnullorempty': _isNullOrEmpty, 'isNum' : _isNumeric, 'isnum' : _isNumeric, 'isNumeric' : _isNumeric, 'isnumeric' : _isNumeric, 'join': _join, 'length': _length, 'mod': _mod, 'noe': _isNullOrEmpty, 'number': _number, 'nvl': _nvl, 'pi': pi / 5, 'regex': _regex, 'replace': _replace, 'round': _round, 'sin': sin, 'startsWith': _startsWith, 'startswith': _startsWith, 'substring': _substring, 'subtractTime': _subtractTime, 'subtracttime': _subtractTime, 'tan': tan, 'timeBetween': _timeBetween, 'timebetween': _timeBetween, 'toBool': _toBool, 'tobool': _toBool, 'toBoolean': _toBool, 'toboolean': _toBool, 'toDate': _toDate, 'todate': _toDate, 'toEpoch': _toEpoch, 'toepoch': _toEpoch, 'toLower' : _toLower, 'tolower': _toLower, 'toNum': _toNum, 'tonum': _toNum, 'toNumber': _toNum, 'tonumber': _toNum, 'toStr': _toString, 'tostr': _toString, 'toString': _toString, 'tostring': _toString, 'toUpper' : _toUpper, 'toupper': _toUpper, 'truncate': _truncate,};
 
   static dynamic evaluate(String? expression, {Map<String?, dynamic>? variables, Map<String?, dynamic>? altFunctions})
   {
@@ -692,4 +695,18 @@ class Eval
     return DT.subtract(dt, addTUD).toString();
   }
 
+  /// validates phone number
+  static bool? _isValidPhone(dynamic num) =>  _isNullOrEmpty(num) ? null : isPhoneValid(num);
+
+  /// validates credit card number
+  static bool? _isValidCreditCard(dynamic num) =>  _isNullOrEmpty(num) ? null : isCardValidNumber(num);
+
+  /// validates email
+  static bool? _isValidEmail(dynamic num) =>  _isNullOrEmpty(num) ? null : TextInputValidators().isEmailValid(num);
+
+  /// validates password
+  static bool? _isValidPassword(dynamic num) =>  _isNullOrEmpty(num) ? null : TextInputValidators().isPasswordValid(num);
+
+  /// validates expiry date
+  static bool? _isValidExpiryDate(dynamic num) =>  _isNullOrEmpty(num) ? null : TextInputValidators().isExpiryValid(num);
 }

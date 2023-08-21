@@ -6,7 +6,6 @@ import 'package:collection/collection.dart' show IterableExtension;
 import 'package:fml/emoji.dart';
 import 'package:fml/log/manager.dart';
 import 'package:intl/intl.dart';
-import 'package:fml/phrase.dart';
 import 'package:mime/mime.dart' deferred as mime;
 import 'package:uuid/uuid.dart';
 
@@ -155,36 +154,6 @@ class S {
       Log().debug('$e');
     }
     return false;
-  }
-
-  /// Check if a String is a valid email
-  static bool isValidEmail(String value) {
-    bool valid = RegExp(
-            r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$")
-        .hasMatch(value);
-    return valid;
-  }
-
-  // TODO: improve/remove
-  static String isValidPassword(String? value) {
-    if (value == null) return phrase.passwordEmpty;
-    if (!hasSpecialCharacter(value)) return phrase.passwordNoSpecial;
-//    if (!hasLower(value))  return Phrase.passwordNoLower;
-//    if (!hasUpper(value))  return Phrase.passwordNoUpper;
-//    if (!hasNumber(value)) return Phrase.passwordNoNumber;
-    if (value.length < 6) return phrase.passwordLength;
-    return phrase.passwordEmpty;
-  }
-
-  /// Check if a String is a valid phone number
-  static bool isValidPhone(String value) {
-    value = value.replaceAll(" ", '');
-    value = value.replaceAll("-", '');
-    value = value.replaceAll("+", '');
-
-    String pattern = r'(^(?:[+0]9)?[0-9]{10,12}$)';
-    bool valid = RegExp(pattern).hasMatch(value);
-    return valid;
   }
 
   /// Check if a String contains uppercase character(s)

@@ -26,46 +26,49 @@ class FormView extends StatefulWidget implements IWidgetView {
   FormViewState createState() => FormViewState();
 }
 
-class FormViewState extends WidgetState<FormView> implements IGpsListener {
+class FormViewState extends WidgetState<FormView> implements IGpsListener
+{
   Widget? busy;
 
   @override
-  onGpsData({Payload? payload}) {
+  onGpsData({Payload? payload})
+  {
     // Save Current Location
     if (payload != null) System().currentLocation = payload;
   }
 
   @override
-  void initState() {
+  void initState()
+  {
     super.initState();
 
     // Listen to GPS
     if (widget.model.geocode == true) System().gps.registerListener(this);
+
+    // do form initialization
+    widget.model.initialize();
   }
 
   @override
-  void dispose() {
+  void dispose()
+  {
     // Stop Listening to GPS
     System().gps.removeListener(this);
 
     super.dispose();
   }
 
-  Future<bool> quit() async {
+  Future<bool> quit() async
+  {
     WidgetModel.unfocus();
     bool exit = true;
-    bool dirty = widget.model.dirty!;
 
-    if (dirty) {
-      int? response = await widget.model.framework
-          ?.show(type: DialogType.info, title: phrase.saveBeforeExit, buttons: [
-        Text(phrase.yes,
-            style: TextStyle(
-                fontSize: 18, color: Theme.of(context).colorScheme.outline)),
-        Text(phrase.no,
-            style: TextStyle(
-                fontSize: 18, color: Theme.of(context).colorScheme.outline))
-      ]);
+    // model is dirty?
+    if (widget.model.dirty)
+    {
+      var no  = Text(phrase.no,  style: TextStyle(fontSize: 18, color: Theme.of(context).colorScheme.onBackground));
+      var yes = Text(phrase.yes, style: TextStyle(fontSize: 18, color: Theme.of(context).colorScheme.onBackground));
+      int? response = await widget.model.framework?.show(type: DialogType.info, title: phrase.continueQuitting, buttons: [no, yes]);
       exit = (response == 1);
     }
     return exit;

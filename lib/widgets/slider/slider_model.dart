@@ -99,7 +99,7 @@ class SliderModel extends FormFieldModel implements IFormField
   {
     // if (_range?.get() == true && _startvalue != null && _endvalue != null) return '${_startvalue?.get()},${_endvalue?.get()}';
     if (_value == null) return defaultValue;
-    if ((!dirty) && (S.isNullOrEmpty(_value?.get())) && (!S.isNullOrEmpty(defaultValue))) _value!.set(defaultValue);
+    if (!dirty && S.isNullOrEmpty(_value?.get()) && !S.isNullOrEmpty(defaultValue)) _value!.set(defaultValue);
     return _value?.get();
   }
 

@@ -123,9 +123,7 @@ class DatepickerModel extends DecoratedInputModel implements IFormField
   dynamic get value
   {
     if (_value == null) return defaultValue;
-    if ((!dirty) &&
-        (S.isNullOrEmpty(_value?.get())) &&
-        (!S.isNullOrEmpty(defaultValue))) _value!.set(defaultValue);
+    if (!dirty && S.isNullOrEmpty(_value?.get()) && !S.isNullOrEmpty(defaultValue)) _value!.set(defaultValue);
     return _value?.get();
   }
 
@@ -195,8 +193,6 @@ class DatepickerModel extends DecoratedInputModel implements IFormField
     style = Xml.get(node: xml, tag: 'style');
     dense = Xml.get(node: xml, tag: 'dense');
     clear = Xml.get(node: xml, tag: 'clear');
-    error = Xml.get(node: xml, tag: 'error');
-    errortext = Xml.get(node: xml, tag: 'errortext');
     size = Xml.get(node: xml, tag: 'size');
     icon = Xml.get(node: xml, tag: 'icon');
     padding = Xml.get(node: xml, tag: 'padding');

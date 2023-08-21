@@ -219,28 +219,18 @@ class WidgetModel implements IDataSourceListener {
   }
 
   // context
-  BuildContext? get statelessContext {
-    if (_listeners != null) {
-      for (IModelListener listener in _listeners!) {
+  BuildContext? get statelessContext
+  {
+    if (_listeners != null)
+    {
+      for (IModelListener listener in _listeners!)
+      {
         if (listener is State) return (listener as State).context;
       }
     }
     if (parent != null) return parent!.statelessContext;
     return null;
   }
-
-  // State
-  StringObservable? _state;
-  set state(dynamic v) {
-    if (_state != null) {
-      _state!.set(v);
-    } else if (v != null) {
-      _state = StringObservable(Binding.toKey(id, 'state'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  String? get state => _state?.get();
 
   // Depth
   DoubleObservable? _depth;
@@ -934,7 +924,8 @@ class WidgetModel implements IDataSourceListener {
     return model;
   }
 
-  void deserialize(XmlElement xml) {
+  void deserialize(XmlElement xml)
+  {
     // Busy
     busy = true;
 
@@ -945,10 +936,10 @@ class WidgetModel implements IDataSourceListener {
     datasource = Xml.attribute(node: xml, tag: 'data');
     debug = Xml.get(node: xml, tag: 'debug');
     depth = Xml.get(node: xml, tag: 'depth');
-    state = Xml.get(node: xml, tag: 'state');
 
     // register as datasource
-    if ((this is IDataSource) && (scope != null)) {
+    if ((this is IDataSource) && (scope != null))
+    {
       scope!.registerDataSource(this as IDataSource);
     }
 
@@ -1081,10 +1072,14 @@ class WidgetModel implements IDataSourceListener {
     }
   }
 
-  static void unfocus() {
-    try {
+  static void unfocus()
+  {
+    try
+    {
       WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
-    } catch (e) {
+    }
+    catch (e)
+    {
       Log().exception(e);
     }
   }

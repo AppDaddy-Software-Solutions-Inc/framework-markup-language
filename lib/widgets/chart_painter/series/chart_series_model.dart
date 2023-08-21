@@ -74,7 +74,6 @@ class ChartPainterSeriesModel extends WidgetModel
     this.size = size;
     this.label = label;
     this.tooltips = tooltips;
-    this.animated = animated;
     this.name = name;
     this.group = group;
     this.stack = stack;
@@ -117,7 +116,6 @@ class ChartPainterSeriesModel extends WidgetModel
     type        = Xml.get(node: xml, tag: 'type');
     label       = Xml.get(node: xml, tag: 'label');
     tooltips    = Xml.get(node: xml, tag: 'tooltips');
-    animated    = Xml.get(node: xml, tag: 'animated');
     name        = Xml.get(node: xml, tag: 'name');
     group       = Xml.get(node: xml, tag: 'group');
     stack       = Xml.get(node: xml, tag: 'stack');
@@ -330,20 +328,6 @@ class ChartPainterSeriesModel extends WidgetModel
     }
   }
   bool? get tooltips => _tooltips?.get();
-
-  /// If true the series animates on build
-  BooleanObservable? _animated; // Kind funky with state rebuilds
-  set animated (dynamic v)
-  {
-    if (_animated != null)
-    {
-      _animated!.set(v);
-    }
-    else if (v != null) {
-      _animated = BooleanObservable(Binding.toKey(id, 'animated'), v, scope: scope);
-    }
-  }
-  bool? get animated => _animated?.get();
 
   /// The series name, will be displayed in the legend if it is visible
   StringObservable? _name;

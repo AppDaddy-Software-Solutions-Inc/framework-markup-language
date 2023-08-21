@@ -1,7 +1,4 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'dart:collection';
-
-import 'package:collection/collection.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart' hide Axis;
 import 'package:fml/data/data.dart';
@@ -28,7 +25,9 @@ class ChartPainterModel extends BoxModel
   num yMin = 0;
   Set<dynamic> uniqueValues = {};
   final List<ChartPainterSeriesModel> series = [];
-  List<LineChartBarData> dataList = [];
+  List<LineChartBarData> lineDataList = [];
+  List<BarChartGroupData> barDataList = [];
+  PieChartData? pieDataList;
 
   @override
   bool get canExpandInfinitelyWide
@@ -270,9 +269,20 @@ class ChartPainterModel extends BoxModel
         }
         i++;
         //plot only if the chart data type is category
-        if(true) serie.plotLineCategoryPoints(uniqueValues);
-        dataList.add(LineChartBarData(spots: serie.lineDataPoint, dotData: FlDotData(show: serie.showpoints), barWidth: serie.type == 'point' || serie.showline == false ? 0 : 2, color: serie.color ?? ColorHelper.fromString('random')));
-        serie.xValues.clear();
+        if(type == 'line') {
+          serie.plotLineCategoryPoints(uniqueValues);
+          lineDataList.add(LineChartBarData(spots: serie.lineDataPoint,
+              dotData: FlDotData(show: serie.showpoints),
+              barWidth: serie.type == 'point' || serie.showline == false ? 0 : 2,
+              color: serie.color ?? ColorHelper.fromString('random')));
+        } else if (type == 'bar'){
+          serie.plotLineCategoryPoints(uniqueValues);
+          barDataList.addAll(serie.barDataPoint);
+        } else if (type == 'pie'){
+          pieDataList;
+
+        }
+          serie.xValues.clear();
       }
       uniqueValues.clear();
       notifyListeners('list', null);

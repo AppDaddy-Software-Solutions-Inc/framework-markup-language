@@ -76,7 +76,7 @@ class _ChartViewState extends WidgetState<ChartView>
 
     BarChart chart = BarChart(
       BarChartData(
-        barGroups: widget.model.dataList as List<BarChartGroupData>,
+        barGroups: widget.model.barDataList,
         minY: S.toDouble(widget.model.yaxis.min),
         maxY: S.toDouble(widget.model.yaxis.max),
         //rangeAnnotations: RangeAnnotations(),
@@ -109,9 +109,9 @@ class _ChartViewState extends WidgetState<ChartView>
     return chart;
   }
 
-  PieChart buildPieChart(){
+  PieChart buildPieChart(seriesData){
 
-    PieChart chart = PieChart(widget.model.dataList as PieChartData);
+    PieChart chart = PieChart(seriesData);
     return chart;
   }
 
@@ -135,7 +135,7 @@ class _ChartViewState extends WidgetState<ChartView>
 
     LineChart chart = LineChart(
       LineChartData(
-        lineBarsData: widget.model.dataList,
+        lineBarsData: widget.model.lineDataList,
         //the series must determine the min and max y
         minY: S.toDouble(widget.model.yaxis.min),
         maxY: S.toDouble(widget.model.yaxis.max),

@@ -66,8 +66,9 @@ class FormViewState extends WidgetState<FormView> implements IGpsListener
     // model is dirty?
     if (widget.model.dirty)
     {
-      var no  = Text(phrase.no,  style: TextStyle(fontSize: 18, color: Theme.of(context).colorScheme.onBackground));
-      var yes = Text(phrase.yes, style: TextStyle(fontSize: 18, color: Theme.of(context).colorScheme.onBackground));
+      var color = Theme.of(context).buttonTheme.colorScheme?.inversePrimary ?? Theme.of(context).colorScheme.inversePrimary;
+      var no  = Text(phrase.no,  style: TextStyle(fontSize: 18, color: color));
+      var yes = Text(phrase.yes, style: TextStyle(fontSize: 18, color: color));
       int? response = await widget.model.framework?.show(type: DialogType.info, title: phrase.continueQuitting, buttons: [no, yes]);
       exit = (response == 1);
     }

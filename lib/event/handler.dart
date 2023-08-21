@@ -301,12 +301,20 @@ class EventHandler extends Eval
   Future<bool> _handleEventContinue([dynamic type,  dynamic title, dynamic message, dynamic phrase1, dynamic phrase2]) async
   {
     bool ok = true;
+
+    var color = Colors.white;
+    var context = System().context;
+    if (context != null) color = Theme.of(context).buttonTheme.colorScheme?.inversePrimary ?? Theme.of(context).colorScheme.inversePrimary;
+
+    var no  = Text(S.toStr(phrase1) ?? phrase.no, style: TextStyle(fontSize: 18, color: color));
+    var yes = Text(S.toStr(phrase2) ?? phrase.yes, style: TextStyle(fontSize: 18, color: color));
+
     int? response = await model.framework?.show(
         type: S.toEnum(S.toStr(type), DialogType.values),
-        title: S.toStr(title), description: S.toStr(message),
-        buttons: [
-          Text(S.toStr(phrase1) ?? phrase.no, style: TextStyle(fontSize: 18, color: Colors.white)),
-          Text(S.toStr(phrase2) ?? phrase.yes, style: TextStyle(fontSize: 18, color: Colors.white))]);
+        title: S.toStr(title),
+        description: S.toStr(message),
+        buttons: [no, yes]);
+
     if (response == 0)  ok = false;
     if (response == 1)  ok = true;
     if (response == -1) ok = false;

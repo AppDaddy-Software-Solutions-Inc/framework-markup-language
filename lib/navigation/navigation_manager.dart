@@ -143,16 +143,8 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
       // remove pages until target page encountered
       while (_pages.isNotEmpty && _pages.last != page)
       {
-        // check if page WillPopScope()
-        if (_pages.last.arguments is PageConfiguration && navigatorKey.currentState?.mounted == true)
-        {
-          var configuration = _pages.last.arguments as PageConfiguration;
-          if (configuration.route != null)
-          {
-            RoutePopDisposition disposition = await configuration.route!.willPop();
-            if (disposition == RoutePopDisposition.doNotPop) break;
-          }
-        }
+        bool canPop = await _canPop(_pages.last);
+        if (!canPop) break;
 
         // remove the last page from the list
         notify = true;
@@ -175,6 +167,24 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
   {
     TransitionDelegate transitionDelegate = Transition();
     return Navigator(key: navigatorKey, pages: List.of(_pages), onPopPage: _onPopPage,  transitionDelegate: transitionDelegate, observers: [NavigationObserver()],);
+  }
+
+  Future<bool> _canPop(Page page) async
+  {
+    bool canPop = true;
+
+    // check if page WillPopScope()
+    if (_pages.last.arguments is PageConfiguration && navigatorKey.currentState?.mounted == true)
+    {
+      var configuration = _pages.last.arguments as PageConfiguration;
+      if (configuration.route != null)
+      {
+        RoutePopDisposition disposition = await configuration.route!.willPop();
+        if (disposition == RoutePopDisposition.doNotPop) canPop = false;
+      }
+    }
+
+    return canPop;
   }
 
   @override
@@ -274,14 +284,24 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     // cannot go past the end of the nav stack
     if (pages == 0) return false;
 
-    // web?
+    // on web, goBackPages returnds true. on VM (mobiler and desktop) its important
+    // that this returns false indicating we need to do a page naviagtion manually
+    // by removing page(s) from _pages
     bool ok = await Platform.goBackPages(pages);
     if (ok) return true;
 
-    for (int i = 0; i < pages; i++) {
+    // remove the page
+    bool notify = false;
+    for (int i = 0; i < pages; i++)
+    {
+      bool canPop = await _canPop(_pages.last);
+      if (!canPop) break;
+
+      notify = true;
       _pages.removeLast();
     }
-    notifyListeners();
+
+    if (notify) notifyListeners();
     return true;
   }
 

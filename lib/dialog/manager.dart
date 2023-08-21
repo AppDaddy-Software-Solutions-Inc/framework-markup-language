@@ -30,34 +30,35 @@ class DialogManager
 
     if (request.type == DialogType.modal)
     {
+      // close button
       dynamic closeButton = Column(crossAxisAlignment: CrossAxisAlignment.end, children: [SizedBox(width: 35, child: IconButton(onPressed: () => Navigator.of(context).pop(), icon: Icon(Icons.cancel, size: 24)))]);
-      if (request.title != null && request.title != '') {
+      if (request.title != null && request.title != '')
+      {
         closeButton = Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Expanded(child: Container(child: Text(request.title!, style: TextStyle(fontSize: 16)))),
           closeButton,
-        ],);
+        ]);
       }
 
+      // title
+      var title = Padding(padding: EdgeInsets.symmetric(horizontal: 10), child: closeButton);
 
-      double paddingV = isMobile ? 64 : 128;
-      double paddingH = isMobile ? 10 : 128;
-
-      AlertDialog modalWindow = AlertDialog(title: Padding(padding: EdgeInsets.symmetric(horizontal: 10), child: closeButton), insetPadding: EdgeInsets.symmetric(horizontal: paddingH, vertical: paddingV),
+      // dialog
+      AlertDialog dialog = AlertDialog(
+          title: title,
+          insetPadding: EdgeInsets.symmetric(horizontal: isMobile ? 10 : 128, vertical: isMobile ? 64 : 128),
           titlePadding: EdgeInsets.all(0),
           content: request.content,
-          contentPadding: EdgeInsets.only(top: 0, bottom: 10, left: isMobile ? 2 : 10, right: isMobile ? 2 : 10)
-      );
-      showDialog(context: context, useRootNavigator: true, builder: (BuildContext context)
-      { // turn root navigation off for back button functionality to close modal.
-        return modalWindow;
-      });
+          contentPadding: EdgeInsets.only(top: 0, bottom: 10, left: isMobile ? 2 : 10, right: isMobile ? 2 : 10));
+
+      // show the dialog
+      showDialog(context: context, useRootNavigator: true, builder: (BuildContext context) => dialog);
     }
 
     else
     {
       // style
       AlertStyle style = AlertStyle(
-        animationType: Animations.grow,
         isCloseButton: true,
         isOverlayTapDismiss: buttons.isNotEmpty ? false : true,
         animationDuration: Duration(milliseconds: 400),
@@ -74,6 +75,7 @@ class DialogManager
       if (request.type == DialogType.error)   type = Types.error;
       if (request.type == DialogType.success) type = Types.success;
       if (request.type == DialogType.modal)   type = Types.none;
+
       Alert dialog = Alert(context: context, type: type, style: style, image: request.image, title: request.title ?? '', desc: request.description, content: request.content, buttons: buttons, closeFunction: () {completer.complete(AlertResponse(pressed: -1)); Navigator.of(context).pop();});
 
       // display dialog

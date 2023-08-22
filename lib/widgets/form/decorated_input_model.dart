@@ -251,24 +251,6 @@ class DecoratedInputModel extends FormFieldModel
     // user defined
     if (color != null) return color!;
 
-    // disabled
-    if (!enabled) {
-      return Theme
-        .of(context)
-        .colorScheme
-        .primary
-        .withOpacity(0.5);
-    }
-
-    // default
-    return Theme
-        .of(context)
-        .colorScheme
-        .primary
-        .withOpacity(0.5);
-  }
-  
-  Color setFieldColor(BuildContext context) {
     if (enabled != false && border != 'all') {
       return color ?? Theme
           .of(context)

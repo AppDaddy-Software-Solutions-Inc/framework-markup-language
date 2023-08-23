@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart'         ;
 import 'package:fml/widgets/table/row/table_row_model.dart';
@@ -35,6 +36,8 @@ class _TableRowViewState extends WidgetState<TableRowView>
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
+    print('rebuild row');
+
     ///////////
     /* Cells */
     ///////////
@@ -51,7 +54,7 @@ class _TableRowViewState extends WidgetState<TableRowView>
       //////////
       /* View */
       //////////
-      Widget cell = TableRowCellView(model, widget.row);
+      Widget cell = RepaintBoundary(child: BoxView(model));
       if ((width != null) && (height != null)) {
         cells.add(UnconstrainedBox(child: ClipRect(child: SizedBox(width: width, height: height, child: cell))));
       } else {
@@ -63,7 +66,7 @@ class _TableRowViewState extends WidgetState<TableRowView>
     //////////
     /* View */
     //////////
-    dynamic row = Row(children: cells, mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize:  MainAxisSize.min);
+    Widget row = Row(children: cells, mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize:  MainAxisSize.min);
     if (widget.model.onclick != null && cells.isNotEmpty) {
       row = GestureDetector(onTap: onTap, child: row);
     }

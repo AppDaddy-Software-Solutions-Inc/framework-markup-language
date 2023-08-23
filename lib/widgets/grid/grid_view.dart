@@ -167,7 +167,7 @@ class _GridViewState extends WidgetState<GridView> {
     int startIndex = (rowIndex * count);
     int endIndex = (startIndex + count);
 
-    // If all rows are built return null to the SliverChildBuilderDelegate
+    // If all rows are built return null
     if (startIndex >= widget.model.items.length) return null;
 
     List<Widget> children = [];
@@ -331,12 +331,9 @@ class _GridViewState extends WidgetState<GridView> {
     //////////
 
     // Build the Grid Rows
-    Widget view = ListView.custom(scrollDirection: direction, physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null,
+    Widget view = ListView.builder(scrollDirection: direction, physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null,
         controller: scroller,
-        childrenDelegate: SliverChildBuilderDelegate(
-            (BuildContext context, int rowIndex) =>
-                itemBuilder(context, rowIndex),
-            childCount: (widget.model.items.length / count).ceil()));
+        itemBuilder: itemBuilder);
 
     if (widget.model.onpulldown != null)
     {

@@ -27,7 +27,7 @@ import 'package:fml/helper/common_helpers.dart';
 import 'dart:io' as io;
 
 // application build version
-final String version = '2.0.1';
+final String version = '2.0.3';
 
 // application title
 // only used in Android when viewing open applications
@@ -45,11 +45,8 @@ final ApplicationTypes appType = ApplicationTypes.multiApp;
 enum ApplicationTypes { singleApp, multiApp }
 
 // platform
-String get platform => isWeb
-    ? "web"
-    : isMobile
-        ? "mobile"
-        : "desktop";
+String get platform => isWeb ? "web" : isMobile ? "mobile" : "desktop";
+
 bool get isWeb => kIsWeb;
 bool get isMobile => !isWeb && (io.Platform.isAndroid || io.Platform.isIOS);
 bool get isDesktop => !isWeb && !isMobile;

@@ -380,18 +380,14 @@ class _TableViewState extends WidgetState<TableView>
     // Build Body
     Widget list;
 
-    list = ListView.custom(
+    list = ListView.builder(
         physics: widget.model.onpulldown != null
             ? const AlwaysScrollableScrollPhysics()
             : null,
         scrollDirection: Axis.vertical,
         controller: vScroller,
         itemExtent: widget.model.heights['row'],
-        childrenDelegate: SliverChildBuilderDelegate(
-          (BuildContext context, int index) {
-            return rowBuilder(context, index);
-          },
-        ));
+        itemBuilder: rowBuilder);
 
     if (widget.model.onpulldown != null) {
       list = RefreshIndicator(

@@ -28,7 +28,6 @@ class ChartPainterModel extends BoxModel
   Set<dynamic> uniqueValues = {};
   final List<ChartPainterSeriesModel> series = [];
   List<LineChartBarData> lineDataList = [];
-  List<BarChartGroupData> barDataList = [];
   PieChartData pieData = PieChartData();
 
   @override
@@ -277,8 +276,6 @@ class ChartPainterModel extends BoxModel
               dotData: FlDotData(show: serie.showpoints),
               barWidth: serie.type == 'point' || serie.showline == false ? 0 : 2,
               color: serie.color ?? ColorHelper.fromString('random')));
-        } else if (type == 'bar'){
-          barDataList.addAll(serie.barDataPoint);
         } else if (type == 'pie'){
           pieData = PieChartData(sections: serie.pieDataPoint);
         }

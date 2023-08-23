@@ -40,6 +40,7 @@ import 'package:fml/widgets/chart/chart_model.dart';
 import 'package:fml/widgets/chart/axis/chart_axis_model.dart';
 import 'package:fml/widgets/chart/label/chart_label_model.dart';
 import 'package:fml/widgets/chart/series/chart_series_model.dart';
+import 'package:fml/widgets/chart_painter/bar/bar_chart_model.dart';
 import 'package:fml/widgets/chart_painter/chart_model.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
 
@@ -370,6 +371,10 @@ class WidgetModel implements IDataSourceListener {
 
       case "chart":
         model = ChartPainterModel.fromXml(parent, node);
+        break;
+
+      case "barchart":
+        model = BarChartModel.fromXml(parent, node);
         break;
 
       // case "sfchart":

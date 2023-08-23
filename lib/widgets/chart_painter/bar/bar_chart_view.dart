@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/helper/string.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
+import 'package:fml/widgets/chart_painter/bar/bar_chart_model.dart';
 import 'package:fml/widgets/chart_painter/chart_model.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
@@ -15,17 +16,17 @@ import 'package:fml/widgets/widget/widget_state.dart';
 ///
 /// Builds a Chart View using [CHART.ChartModel], [SERIES.ChartSeriesModel], [AXIS.ChartAxisModel] and
 /// [EXCERPT.Model] properties
-class ChartView extends StatefulWidget implements IWidgetView
+class BarChartView extends StatefulWidget implements IWidgetView
 {
   @override
-  final ChartPainterModel model;
-  ChartView(this.model) : super(key: ObjectKey(model));
+  final BarChartModel model;
+  BarChartView(this.model) : super(key: ObjectKey(model));
 
   @override
-  State<ChartView> createState() => _ChartViewState();
+  State<BarChartView> createState() => _ChartViewState();
 }
 
-class _ChartViewState extends WidgetState<ChartView>
+class _ChartViewState extends WidgetState<BarChartView>
 {
   Future<Template>? template;
   Future<ChartPainterModel>? chartViewModel;
@@ -52,44 +53,19 @@ class _ChartViewState extends WidgetState<ChartView>
     );
   }
 
-  PieChart buildPieChart(seriesData){
-    PieChart chart = PieChart(widget.model.pieData);
-    return chart;
-  }
-
-  //Comes in as list of series
-  LineChart buildLineChart(List<ChartPainterSeriesModel> seriesData){
-
-    //List<LineChartBarData> data = [];
-    //
-    // if(seriesData.isNotEmpty) {
-    //
-    //   // //add each series datapoint to the list
-    //   // for (var series in seriesData) {
-    //   //
-    //   //   //add the series data to the list as a LineChartBarData object.
-    //   //   data.add(LineChartBarData(spots: series.lineDataPoint, dotData: FlDotData(show: series.showpoints), barWidth: series.type == 'point' || series.showline == false ? 0 : 2, color: series.color ?? ColorHelper.fromString('random')));
-    //   //   series.barDataPoint.clear();
-    //   // }
-    // }
-
-
-
-    LineChart chart = LineChart(
-      LineChartData(
-        lineBarsData: widget.model.lineDataList,
-        //the series must determine the min and max y
+  BarChart buildChart(seriesData){
+    BarChart chart = BarChart(
+      BarChartData(
+        barGroups: widget.model.barDataList,
         minY: S.toDouble(widget.model.yaxis.min),
         maxY: S.toDouble(widget.model.yaxis.max),
-        //baselineX: 0,
-        //range annotations (blocks)
-        //rangeAnnotations: RangeAnnotations(horizontalRangeAnnotations: [], verticalRangeAnnotations: []),
-        borderData: FlBorderData(
-          show: true,
-        ),
-        gridData: const FlGridData(
-          show: true,
-        ),
+        //rangeAnnotations: RangeAnnotations(),
+        // borderData: FlBorderData(
+        //   show: true,
+        // ),
+        // gridData: const FlGridData(
+        //   show: true,
+        // ),
         titlesData: FlTitlesData(
           topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
           rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
@@ -102,7 +78,6 @@ class _ChartViewState extends WidgetState<ChartView>
           bottomTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
-                reservedSize: 44,
                 getTitlesWidget: bottomTitles,
               )
           ),
@@ -110,6 +85,7 @@ class _ChartViewState extends WidgetState<ChartView>
         ),
       ),
     );
+
     return chart;
   }
 
@@ -133,13 +109,9 @@ class _ChartViewState extends WidgetState<ChartView>
     List<Widget> children = widget.model.inflate();
 
     try {
-     if(widget.model.type == 'line') {
-       view = buildLineChart(widget.model.series);
-     } else if (widget.model.type == 'pie') {
-       view = buildPieChart(widget.model.series);
-     }
+        view = buildChart(widget.model.series);
     } catch(e) {
-      Log().exception(e, caller: 'chart_view builder() ');
+      Log().exception(e, caller: 'bar_chart_view builder() ');
       view = Center(child: Icon(Icons.add_chart));
     }
 

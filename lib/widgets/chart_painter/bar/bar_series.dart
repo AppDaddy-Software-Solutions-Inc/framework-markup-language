@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/observable/observable_barrel.dart';
@@ -23,13 +24,14 @@ class ChartDataPoint {
   ChartDataPoint({this.x, this.y, this.color, this.label});
 }
 
-/// Chart Series [ChartSeriesModel]
+/// Chart Series [BarChartSeriesModel]
 ///
 /// Defines the properties used to build a Charts's Series
-class ChartPainterSeriesModel extends WidgetModel
+class BarChartSeriesModel extends ChartPainterSeriesModel
 {
-  List<FlSpot> lineDataPoint = [];
-  List<PieChartSectionData> pieDataPoint = [];
+  List<BarChartGroupData> barDataPoint = [];
+  List<BarChartRodData> rodDataPoint = [];
+  List<BarChartRodStackItem> stackDataPoint = [];
   List<dynamic> xValues = [];
   Function? plotFunction;
   dynamic dataList;
@@ -38,27 +40,27 @@ class ChartPainterSeriesModel extends WidgetModel
 
   String? type = 'bar';
 
-  ChartPainterSeriesModel(
-    WidgetModel parent,
-    String? id, {
-      dynamic x,
-      dynamic y,
-      dynamic color,
-      dynamic stroke,
-      dynamic radius,
-      dynamic size,
-      dynamic label,
-      this.type,
-      dynamic tooltips,
-      dynamic animated,
-      dynamic name,
-      dynamic group,
-      dynamic stack,
-      dynamic showarea,
-      dynamic showline,
-      dynamic showpoints,
-    }
-  ) : super(parent, id)
+  BarChartSeriesModel(
+      WidgetModel parent,
+      String? id, {
+        dynamic x,
+        dynamic y,
+        dynamic color,
+        dynamic stroke,
+        dynamic radius,
+        dynamic size,
+        dynamic label,
+        this.type,
+        dynamic tooltips,
+        dynamic animated,
+        dynamic name,
+        dynamic group,
+        dynamic stack,
+        dynamic showarea,
+        dynamic showline,
+        dynamic showpoints,
+      }
+      ) : super(parent, id)
   {
     data = Data();
     this.x = x;
@@ -77,13 +79,13 @@ class ChartPainterSeriesModel extends WidgetModel
     this.showpoints = showpoints;
   }
 
-  static ChartPainterSeriesModel? fromXml(WidgetModel parent, XmlElement xml)
+  static BarChartSeriesModel? fromXml(WidgetModel parent, XmlElement xml)
   {
-    ChartPainterSeriesModel? model;
+    BarChartSeriesModel? model;
     try
     {
       xml = WidgetModel.prototypeOf(xml) ?? xml;
-      model = ChartPainterSeriesModel(parent, Xml.get(node: xml, tag: 'id'));
+      model = BarChartSeriesModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
     catch(e)
@@ -229,7 +231,7 @@ class ChartPainterSeriesModel extends WidgetModel
     }
   }
   double? get size => _size?.get();
-  
+
   /// Set to true if you want to show the area under the line series
   BooleanObservable? _showarea;
   set showarea (dynamic v)
@@ -305,7 +307,7 @@ class ChartPainterSeriesModel extends WidgetModel
     }
   }
   String? get name => _name?.get();
-  
+
   /// The series group, allows multiple bar series to be displayed beside each other if they match
   StringObservable? _group;
   set group (dynamic v)
@@ -357,19 +359,21 @@ class ChartPainterSeriesModel extends WidgetModel
   // and the entire chart gets rebuilt
   void onPropertyChange(Observable observable) {}
 
-
-  determinePlotFunctions(String chartType, int seriesIndex){
-
+  determinePlotFunctions(String chartType, int seriesIndex) {
     if (data == null) return;
 
-    if(chartType == 'line')
-    {
-      lineDataPoint.clear();
-      //check if series is date
-      plotFunction = pointFromLineData;
-    } else if (chartType == 'pie')
-    {
-      plotFunction = pointFromPieData;
+    lineDataPoint.clear();
+    //check if series is date
+    plotFunction = pointFromBarData;
+    if (type == 'bar' || S.isNullOrEmpty(type)) {
+      plotFunction = pointFromBarData;
+    } else if (type == 'stacked') {
+      plotFunction = pointFromStackedBarData;
+      barDataPoint.add(
+          BarChartGroupData(x: seriesIndex, barRods: [BarChartRodData(toY: 20, rodStackItems: stackDataPoint)]));
+    } else if (type == 'grouped') {
+      plotFunction = pointFromGroupedBarData;
+      barDataPoint.add(BarChartGroupData(x: seriesIndex, barRods: rodDataPoint));
     }
   }
 
@@ -386,35 +390,24 @@ class ChartPainterSeriesModel extends WidgetModel
     }
   }
 
-  void plotLineCategoryPoints(dynamic uniqueXValueList){
-
-    for (var pointData in dataList) {
-      //set the data of the series for databinding
-      data = pointData;
-      //ensure the value is in the list, it always should be.
-      if (uniqueXValueList.contains(S.toInt(x))) {
-        x = uniqueXValueList.toList().indexOf(S.toInt(x));
-        //plot the point as a point object based on the desired function based on series and chart type.
-        plotFunction!();
-      }
-      data = null;
-
-    }
-    dataList = null;
-    plotFunction = null;
-  }
-
-  // these should possibly be called from the chart after determining all values by index.
-  void pointFromLineData()
-  {
-    FlSpot point = FlSpot(S.toDouble(x) ?? 0, S.toDouble(y) ?? 0);
-    lineDataPoint.add(point);
-  }
-
-  void pointFromPieData()
+  void pointFromBarData()
   {
     //barchartrodstackitem allows stacking within series group.
-    PieChartSectionData point = PieChartSectionData(value: S.toDouble(y) ?? 0, title: x, color: color ?? ColorHelper.fromString('random'));
-    pieDataPoint.add(point);
+    BarChartGroupData point = BarChartGroupData(x: S.toInt(x) ?? 0, barRods: [BarChartRodData(toY: S.toDouble(y) ?? 0, color: color ?? ColorHelper.fromString('random'))]);
+    barDataPoint.add(point);
+  }
+
+  void pointFromGroupedBarData()
+  {
+    //barchartrodstackitem allows stacking within series group.
+    BarChartRodData point = BarChartRodData(toY: S.toDouble(y) ?? 0, color: color ?? ColorHelper.fromString('random'));
+    rodDataPoint.add(point);
+  }
+
+  void pointFromStackedBarData()
+  {
+    //barchartrodstackitem allows stacking within series group.
+    BarChartRodStackItem point = BarChartRodStackItem(0, S.toDouble(y) ?? 0, color ?? ColorHelper.fromString('random') ?? Colors.blue);
+    stackDataPoint.add(point);
   }
 }

@@ -272,8 +272,6 @@ class TableRowCellModel extends BoxModel
     altcolor          = Xml.get(node: xml, tag: 'altcolor');
     selectedcolor = Xml.get(node: xml, tag: 'selectedcolor');
     selectedbordercolor = Xml.get(node: xml, tag: 'selectedbordercolor');
-    bordercolor    = Xml.get(node: xml, tag: 'bordercolor');
-    borderwidth    = Xml.get(node: xml, tag: 'borderwidth');
     expandedwidth  = Xml.get(node: xml, tag: 'expandedwidth');
     expandedheight = Xml.get(node: xml, tag: 'expandedheight');
   }

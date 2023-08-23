@@ -35,6 +35,8 @@ class _TableRowCellViewState extends WidgetState<TableRowCellView> with WidgetsB
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
+    print("rebuild");
+
     // save system constraints
     onLayout(constraints);
 
@@ -64,13 +66,16 @@ class _TableRowCellViewState extends WidgetState<TableRowCellView> with WidgetsB
 
 
     Color color;
-    if(widget.model.color != null){
+    if(widget.model.color != null)
+    {
       color = ((((widget.row ?? 0) % 2) == 0)
           ? widget.model.color ?? Theme.of(context).colorScheme.onInverseSurface
           : widget.model.altcolor ?? Theme.of(context)
           .colorScheme
           .surfaceVariant);
-    } else {
+    }
+    else
+    {
       color = ((((widget.row ?? 0) % 2) == 0)
           ? Theme.of(context).colorScheme.onInverseSurface
           : Theme.of(context)

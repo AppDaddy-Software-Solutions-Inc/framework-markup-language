@@ -110,8 +110,7 @@ class _ChartViewState extends WidgetState<ChartView>
   }
 
   PieChart buildPieChart(seriesData){
-
-    PieChart chart = PieChart(seriesData);
+    PieChart chart = PieChart(widget.model.pieData);
     return chart;
   }
 
@@ -195,6 +194,8 @@ class _ChartViewState extends WidgetState<ChartView>
        view = buildBarChart(widget.model.series);
      } else if(widget.model.type == 'line') {
        view = buildLineChart(widget.model.series);
+     } else if (widget.model.type == 'pie') {
+       view = buildPieChart(widget.model.series);
      }
     } catch(e) {
       Log().exception(e, caller: 'chart_view builder() ');

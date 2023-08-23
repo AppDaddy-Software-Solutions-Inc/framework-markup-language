@@ -35,6 +35,7 @@ class ChartPainterSeriesModel extends WidgetModel
   List<BarChartGroupData> barDataPoint = [];
   List<BarChartRodData> rodDataPoint = [];
   List<BarChartRodStackItem> stackDataPoint = [];
+  List<PieChartSectionData> pieDataPoint = [];
   List<dynamic> xValues = [];
   Function? plotFunction;
   dynamic dataList;
@@ -417,6 +418,9 @@ class ChartPainterSeriesModel extends WidgetModel
         plotFunction = pointFromGroupedBarData;
         barDataPoint.add(BarChartGroupData(x: seriesIndex, barRods: rodDataPoint));
       }
+    }else if (chartType == 'pie')
+    {
+      plotFunction = pointFromPieData;
     }
   }
 
@@ -470,6 +474,13 @@ class ChartPainterSeriesModel extends WidgetModel
     //barchartrodstackitem allows stacking within series group.
     BarChartRodData point = BarChartRodData(toY: S.toDouble(y) ?? 0, color: color ?? ColorHelper.fromString('random'));
     rodDataPoint.add(point);
+  }
+
+  void pointFromPieData()
+  {
+    //barchartrodstackitem allows stacking within series group.
+    PieChartSectionData point = PieChartSectionData(value: S.toDouble(y) ?? 0, title: x, color: color ?? ColorHelper.fromString('random'));
+    pieDataPoint.add(point);
   }
 
   void pointFromStackedBarData()

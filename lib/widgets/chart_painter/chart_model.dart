@@ -14,6 +14,8 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:xml/xml.dart';
 
+import '../chart/chart_model.dart';
+
 /// Chart [ChartModel]
 ///
 /// Defines the properties used to build a Chart
@@ -27,7 +29,7 @@ class ChartPainterModel extends BoxModel
   final List<ChartPainterSeriesModel> series = [];
   List<LineChartBarData> lineDataList = [];
   List<BarChartGroupData> barDataList = [];
-  PieChartData? pieDataList;
+  PieChartData pieData = PieChartData();
 
   @override
   bool get canExpandInfinitelyWide
@@ -262,7 +264,7 @@ class ChartPainterModel extends BoxModel
         if (serie.datasource == source.id) {
           // build the datapoints for the series, passing in the chart type, index, and data
           serie.determinePlotFunctions(type, i);
-          serie.iteratePoints(list, plotOnFirstPass: false);
+          serie.iteratePoints(list, plotOnFirstPass: type == 'line'  ? false : true);
           // add the built x values to a unique list to map to indeces
           uniqueValues.addAll(serie.xValues);
          //   //
@@ -276,11 +278,9 @@ class ChartPainterModel extends BoxModel
               barWidth: serie.type == 'point' || serie.showline == false ? 0 : 2,
               color: serie.color ?? ColorHelper.fromString('random')));
         } else if (type == 'bar'){
-          serie.plotLineCategoryPoints(uniqueValues);
           barDataList.addAll(serie.barDataPoint);
         } else if (type == 'pie'){
-          pieDataList;
-
+          pieData = PieChartData(sections: serie.pieDataPoint);
         }
           serie.xValues.clear();
       }

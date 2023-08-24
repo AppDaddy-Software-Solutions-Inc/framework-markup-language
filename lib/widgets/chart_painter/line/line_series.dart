@@ -29,7 +29,6 @@ class LineChartSeriesModel extends ChartPainterSeriesModel
 {
   List<FlSpot> lineDataPoint = [];
   List<dynamic> xValues = [];
-  Function? plotFunction;
   dynamic dataList;
   double maxY = 0;
   double minY = 0;
@@ -346,15 +345,6 @@ class LineChartSeriesModel extends ChartPainterSeriesModel
   }
   int? get selected => _selected?.get();
 
-  @override
-  determinePlotFunctions(String chartType, int seriesIndex){
-
-    if (data == null) return;
-      lineDataPoint.clear();
-      //check if series is date
-      plotFunction = pointFromLineData;
-  }
-
   //This function takes in the function related to the type of point plotted
   @override
   void iteratePoints(dynamic data, {bool plotOnFirstPass = false}){
@@ -363,29 +353,26 @@ class LineChartSeriesModel extends ChartPainterSeriesModel
       //set the data of the series for databinding
       this.data = pointData;
       //add the value of x to the list only if the type is category.
-      xValues.add(S.toInt(x));
+      if(true) xValues.add(S.toInt(x));
       //plot the point as a point object based on the desired function based on series and chart type.
-      if(plotOnFirstPass) plotFunction!();
+      if(plotOnFirstPass) pointFromLineData();
     }
   }
 
-  @override
-  void plotLineCategoryPoints(dynamic uniqueXValueList){
+
+  void plotPoints(dynamic dataList, bool isCategory){
 
     for (var pointData in dataList) {
       //set the data of the series for databinding
       data = pointData;
-      //ensure the value is in the list, it always should be.
-      if (uniqueXValueList.contains(S.toInt(x))) {
-        x = uniqueXValueList.toList().indexOf(S.toInt(x));
+        if(isCategory) x = dataList.toList().indexOf(S.toInt(x));
         //plot the point as a point object based on the desired function based on series and chart type.
-        plotFunction!();
-      }
-      data = null;
+        pointFromLineData();
+
+
 
     }
     dataList = null;
-    plotFunction = null;
   }
 
   // these should possibly be called from the chart after determining all values by index.

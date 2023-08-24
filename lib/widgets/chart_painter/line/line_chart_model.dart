@@ -26,7 +26,6 @@ class LineChartModel extends ChartPainterModel
   Set<dynamic> uniqueValues = {};
   final List<LineChartSeriesModel> series = [];
   List<LineChartBarData> lineDataList = [];
-  PieChartData pieData = PieChartData();
 
   @override
   bool get canExpandInfinitelyWide
@@ -238,14 +237,17 @@ class LineChartModel extends ChartPainterModel
       for (var serie in series) {
         if (serie.datasource == source.id) {
           // build the datapoints for the series, passing in the chart type, index, and data
-          serie.determinePlotFunctions(type, i);
-          serie.iteratePoints(list, plotOnFirstPass:false);
+          serie.iteratePoints(list, plotOnFirstPass: false);
           // add the built x values to a unique list to map to indeces
-          uniqueValues.addAll(serie.xValues);
-          //   //
+          if(xaxis.type == ChartAxisType.category || xaxis.type == ChartAxisType.date) {
+            uniqueValues.addAll(serie.xValues);
+          }
+          else {
+            serie.plotPoints(serie.dataList, false);
+          }
         }
         i++;
-        serie.plotLineCategoryPoints(uniqueValues);
+        if(xaxis.type == ChartAxisType.category || xaxis.type == ChartAxisType.date) serie.plotPoints(uniqueValues, true);
         lineDataList.add(LineChartBarData(spots: serie.lineDataPoint,
             dotData: FlDotData(show: serie.showpoints),
             barWidth: serie.type == 'point' || serie.showline == false ? 0 : 2,

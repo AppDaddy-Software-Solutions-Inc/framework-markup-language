@@ -17,7 +17,7 @@ class ChartAxisModel extends WidgetModel
   /// Axis type: `category`, `numeric`, `datetime`, `date` or `time`
   ///
   /// This is used to help display the data on an axis correctly based on the data type
-  ChartAxisType type = ChartAxisType.category;
+  ChartAxisType? type;
 
   final ChartAxis axis;
 
@@ -227,7 +227,7 @@ class ChartAxisModel extends WidgetModel
           break;
         default:
           if (axis == ChartAxis.X) {
-            this.type = ChartAxisType.category;
+            this.type = null;
           }
           else {
             this.type = ChartAxisType.numeric;

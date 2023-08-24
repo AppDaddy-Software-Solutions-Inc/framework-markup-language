@@ -360,7 +360,8 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
   @override
   determinePlotFunctions(String chartType, int seriesIndex) {
     if (data == null) return;
-    //check if series is date
+
+
     plotFunction = pointFromBarData;
     if (type == 'bar' || S.isNullOrEmpty(type)) {
       plotFunction = pointFromBarData;

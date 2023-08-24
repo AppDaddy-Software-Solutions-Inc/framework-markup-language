@@ -113,29 +113,6 @@ class ChartPainterModel extends BoxModel
     legendsize      = Xml.get(node: xml, tag: 'legendsize');
     type            = Xml.get(node: xml, tag: 'type');
 
-    // Set Series
-    this.series.clear();
-    List<ChartPainterSeriesModel> series = findChildrenOfExactType(ChartPainterSeriesModel).cast<ChartPainterSeriesModel>();
-    for (var model in series)
-    {
-      // add the series to the list
-      this.series.add(model);
-
-      // register listener to the datasource
-      IDataSource? source = (scope != null) ? scope!.getDataSource(model.datasource) : null;
-      if (source != null) source.register(this);
-    }
-
-
-    // Set Axis
-    List<ChartAxisModel> axis = findChildrenOfExactType(ChartAxisModel).cast<ChartAxisModel>();
-    for (var axis in axis) {
-      if (axis.axis == ChartAxis.X) xaxis = axis;
-
-      if (axis.axis == ChartAxis.Y) yaxis = axis;
-      yMax = S.toInt(yaxis.max) ?? 0;
-      yMin = S.toInt(yaxis.min) ?? 0;
-    }
   }
 
   /// Contains the data map from the row (point) that is selected
@@ -251,46 +228,6 @@ class ChartPainterModel extends BoxModel
   /// [ChartModel] overrides [WidgetModel]'s onDataSourceSuccess
   /// to populate the series data from the datasource and
   /// to populate the label data from the datasource data.
-  @override
-  Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async
-  {
-    try
-    {
-      int i = 0;
-      //here if the data strategy is category, we must fold all of the lists together and create a dummy key value map of every unique value, in order
-      uniqueValues.clear();
-      for (var serie in series) {
-        if (serie.datasource == source.id) {
-          // build the datapoints for the series, passing in the chart type, index, and data
-          serie.determinePlotFunctions(type, i);
-          serie.iteratePoints(list, plotOnFirstPass: type == 'line'  ? false : true);
-          // add the built x values to a unique list to map to indeces
-          uniqueValues.addAll(serie.xValues);
-         //   //
-        }
-        i++;
-        //plot only if the chart data type is category
-        if(type == 'line') {
-          serie.plotLineCategoryPoints(uniqueValues);
-          lineDataList.add(LineChartBarData(spots: serie.lineDataPoint,
-              dotData: FlDotData(show: serie.showpoints),
-              barWidth: serie.type == 'point' || serie.showline == false ? 0 : 2,
-              color: serie.color ?? ColorHelper.fromString('random')));
-        } else if (type == 'pie'){
-          pieData = PieChartData(sections: serie.pieDataPoint);
-        }
-          serie.xValues.clear();
-      }
-      uniqueValues.clear();
-      notifyListeners('list', null);
-    }
-    catch(e)
-    {
-      Log().debug('Series onDataSourceSuccess() error');
-      // DialogService().show(type: DialogType.error, title: phrase.error, description: e.message);
-    }
-    return true;
-  }
 
   @override
   Widget getView({Key? key})

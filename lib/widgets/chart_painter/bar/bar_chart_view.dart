@@ -5,7 +5,6 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart_painter/bar/bar_chart_model.dart';
 import 'package:fml/widgets/chart_painter/chart_model.dart';
-import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';

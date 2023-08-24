@@ -28,7 +28,6 @@ class ChartDataPoint {
 /// Defines the properties used to build a Charts's Series
 class ChartPainterSeriesModel extends WidgetModel
 {
-  List<FlSpot> lineDataPoint = [];
   List<PieChartSectionData> pieDataPoint = [];
   List<dynamic> xValues = [];
   Function? plotFunction;
@@ -36,7 +35,7 @@ class ChartPainterSeriesModel extends WidgetModel
   double maxY = 0;
   double minY = 0;
 
-  String? type = 'bar';
+  String? type;
 
   ChartPainterSeriesModel(
     WidgetModel parent,
@@ -359,18 +358,8 @@ class ChartPainterSeriesModel extends WidgetModel
 
 
   determinePlotFunctions(String chartType, int seriesIndex){
-
     if (data == null) return;
-
-    if(chartType == 'line')
-    {
-      lineDataPoint.clear();
-      //check if series is date
-      plotFunction = pointFromLineData;
-    } else if (chartType == 'pie')
-    {
-      plotFunction = pointFromPieData;
-    }
+    plotFunction = pointFromPieData;
   }
 
   //This function takes in the function related to the type of point plotted
@@ -402,13 +391,6 @@ class ChartPainterSeriesModel extends WidgetModel
     }
     dataList = null;
     plotFunction = null;
-  }
-
-  // these should possibly be called from the chart after determining all values by index.
-  void pointFromLineData()
-  {
-    FlSpot point = FlSpot(S.toDouble(x) ?? 0, S.toDouble(y) ?? 0);
-    lineDataPoint.add(point);
   }
 
   void pointFromPieData()

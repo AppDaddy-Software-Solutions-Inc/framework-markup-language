@@ -24,23 +24,19 @@ class ChartDataPoint {
   ChartDataPoint({this.x, this.y, this.color, this.label});
 }
 
-/// Chart Series [BarChartSeriesModel]
+/// Chart Series [ChartSeriesModel]
 ///
 /// Defines the properties used to build a Charts's Series
-class BarChartSeriesModel extends ChartPainterSeriesModel
+class LineChartSeriesModel extends ChartPainterSeriesModel
 {
-  List<BarChartGroupData> barDataPoint = [];
-  List<BarChartRodData> rodDataPoint = [];
-  List<BarChartRodStackItem> stackDataPoint = [];
+  List<FlSpot> lineDataPoint = [];
   List<dynamic> xValues = [];
   Function? plotFunction;
   dynamic dataList;
   double maxY = 0;
   double minY = 0;
 
-  String? type = 'bar';
-
-  BarChartSeriesModel(
+  LineChartSeriesModel(
       WidgetModel parent,
       String? id, {
         dynamic x,
@@ -50,7 +46,6 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
         dynamic radius,
         dynamic size,
         dynamic label,
-        this.type,
         dynamic tooltips,
         dynamic animated,
         dynamic name,
@@ -79,13 +74,13 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
     this.showpoints = showpoints;
   }
 
-  static BarChartSeriesModel? fromXml(WidgetModel parent, XmlElement xml)
+  static LineChartSeriesModel? fromXml(WidgetModel parent, XmlElement xml)
   {
-    BarChartSeriesModel? model;
+    LineChartSeriesModel? model;
     try
     {
       xml = WidgetModel.prototypeOf(xml) ?? xml;
-      model = BarChartSeriesModel(parent, Xml.get(node: xml, tag: 'id'));
+      model = LineChartSeriesModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
     catch(e)
@@ -353,30 +348,17 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
   }
   int? get selected => _selected?.get();
 
-
   @override
-  // we purposely don't want to do anything on change since there is no view
-  // and the entire chart gets rebuilt
-  void onPropertyChange(Observable observable) {}
+  determinePlotFunctions(String chartType, int seriesIndex){
 
-  @override
-  determinePlotFunctions(String chartType, int seriesIndex) {
     if (data == null) return;
-    //check if series is date
-    plotFunction = pointFromBarData;
-    if (type == 'bar' || S.isNullOrEmpty(type)) {
-      plotFunction = pointFromBarData;
-    } else if (type == 'stacked') {
-      plotFunction = pointFromStackedBarData;
-      barDataPoint.add(
-          BarChartGroupData(x: seriesIndex, barRods: [BarChartRodData(toY: 20, rodStackItems: stackDataPoint)]));
-    } else if (type == 'grouped') {
-      plotFunction = pointFromGroupedBarData;
-      barDataPoint.add(BarChartGroupData(x: seriesIndex, barRods: rodDataPoint));
-    }
+      lineDataPoint.clear();
+      //check if series is date
+      plotFunction = pointFromLineData;
   }
 
   //This function takes in the function related to the type of point plotted
+  @override
   void iteratePoints(dynamic data, {bool plotOnFirstPass = false}){
     dataList =  data;
     for (var pointData in data) {
@@ -389,24 +371,29 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
     }
   }
 
-  void pointFromBarData()
-  {
-    //barchartrodstackitem allows stacking within series group.
-    BarChartGroupData point = BarChartGroupData(x: S.toInt(x) ?? 0, barRods: [BarChartRodData(toY: S.toDouble(y) ?? 0, color: color ?? ColorHelper.fromString('random'))]);
-    barDataPoint.add(point);
+  @override
+  void plotLineCategoryPoints(dynamic uniqueXValueList){
+
+    for (var pointData in dataList) {
+      //set the data of the series for databinding
+      data = pointData;
+      //ensure the value is in the list, it always should be.
+      if (uniqueXValueList.contains(S.toInt(x))) {
+        x = uniqueXValueList.toList().indexOf(S.toInt(x));
+        //plot the point as a point object based on the desired function based on series and chart type.
+        plotFunction!();
+      }
+      data = null;
+
+    }
+    dataList = null;
+    plotFunction = null;
   }
 
-  void pointFromGroupedBarData()
+  // these should possibly be called from the chart after determining all values by index.
+  void pointFromLineData()
   {
-    //barchartrodstackitem allows stacking within series group.
-    BarChartRodData point = BarChartRodData(toY: S.toDouble(y) ?? 0, color: color ?? ColorHelper.fromString('random'));
-    rodDataPoint.add(point);
-  }
-
-  void pointFromStackedBarData()
-  {
-    //barchartrodstackitem allows stacking within series group.
-    BarChartRodStackItem point = BarChartRodStackItem(0, S.toDouble(y) ?? 0, color ?? ColorHelper.fromString('random') ?? Colors.blue);
-    stackDataPoint.add(point);
+    FlSpot point = FlSpot(S.toDouble(x) ?? 0, S.toDouble(y) ?? 0);
+    lineDataPoint.add(point);
   }
 }

@@ -41,7 +41,9 @@ import 'package:fml/widgets/chart/axis/chart_axis_model.dart';
 import 'package:fml/widgets/chart/label/chart_label_model.dart';
 import 'package:fml/widgets/chart/series/chart_series_model.dart';
 import 'package:fml/widgets/chart_painter/bar/bar_chart_model.dart';
+import 'package:fml/widgets/chart_painter/bar/bar_series.dart';
 import 'package:fml/widgets/chart_painter/chart_model.dart';
+import 'package:fml/widgets/chart_painter/pie/pie_chart_model.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
 
 // import 'package:fml/widgets/chart_syncfusion/chart_model.dart' as SFCHART;
@@ -132,6 +134,10 @@ import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
+
+import '../chart_painter/line/line_chart_model.dart';
+import '../chart_painter/line/line_series.dart';
+import '../chart_painter/pie/pie_series.dart';
 
 abstract class IModelListener {
   onModelChange(WidgetModel model, {String? property, dynamic value});
@@ -369,8 +375,12 @@ class WidgetModel implements IDataSourceListener {
         model = CenterModel.fromXml(parent, node);
         break;
 
-      case "chart":
-        model = ChartPainterModel.fromXml(parent, node);
+      case "linechart":
+        model = LineChartModel.fromXml(parent, node);
+        break;
+
+      case "piechart":
+        model = PieChartModel.fromXml(parent, node);
         break;
 
       case "barchart":
@@ -777,8 +787,12 @@ class WidgetModel implements IDataSourceListener {
       case "series":
         if (parent is ChartModel) {
           model = ChartSeriesModel.fromXml(parent, node);
-        } else if (parent is ChartPainterModel){
-          model = ChartPainterSeriesModel.fromXml(parent, node);
+        }else if (parent is BarChartModel){
+          model = BarChartSeriesModel.fromXml(parent, node);
+        } else if (parent is LineChartModel){
+          model = LineChartSeriesModel.fromXml(parent, node);
+        }else if (parent is PieChartModel){
+          model = PieChartSeriesModel.fromXml(parent, node);
         }
         // else if (parent is SFCHART.ChartModel) model = SFCHART.ChartSeriesModel.fromXml(parent, node);
         break;

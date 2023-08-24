@@ -20,7 +20,7 @@ class BarChartModel extends ChartPainterModel
 {
   List<BarChartGroupData> barDataList = [];
 
-  final List<BarChartSeriesModel> barSeries = [];
+  final List<BarChartSeriesModel> series = [];
 
   BarChartModel(WidgetModel? parent, String? id,
       {
@@ -129,7 +129,7 @@ class BarChartModel extends ChartPainterModel
       int i = 0;
       //here if the data strategy is category, we must fold all of the lists together and create a dummy key value map of every unique value, in order
       uniqueValues.clear();
-      for (var serie in barSeries) {
+      for (var serie in series) {
         if (serie.datasource == source.id) {
           // build the datapoints for the series, passing in the chart type, index, and data
           serie.determinePlotFunctions(type, i);

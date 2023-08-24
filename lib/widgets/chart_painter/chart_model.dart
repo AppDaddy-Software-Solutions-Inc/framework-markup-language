@@ -1,15 +1,11 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart' hide Axis;
-import 'package:fml/data/data.dart';
-import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/box/box_model.dart';
-import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
 import 'package:fml/widgets/chart_painter/axis/chart_axis_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:fml/widgets/chart_painter/chart_view.dart' as painter;
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:xml/xml.dart';
@@ -26,7 +22,6 @@ class ChartPainterModel extends BoxModel
   num yMax = 0;
   num yMin = 0;
   Set<dynamic> uniqueValues = {};
-  final List<ChartPainterSeriesModel> series = [];
   List<LineChartBarData> lineDataList = [];
   PieChartData pieData = PieChartData();
 
@@ -230,8 +225,7 @@ class ChartPainterModel extends BoxModel
   /// to populate the label data from the datasource data.
 
   @override
-  Widget getView({Key? key})
-  {
-    return getReactiveView(painter.ChartView(this));
+  Widget getView({Key? key}) {
+    return Offstage();
   }
 }

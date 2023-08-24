@@ -42,9 +42,7 @@ import 'package:fml/widgets/chart/label/chart_label_model.dart';
 import 'package:fml/widgets/chart/series/chart_series_model.dart';
 import 'package:fml/widgets/chart_painter/bar/bar_chart_model.dart';
 import 'package:fml/widgets/chart_painter/bar/bar_series.dart';
-import 'package:fml/widgets/chart_painter/chart_model.dart';
 import 'package:fml/widgets/chart_painter/pie/pie_chart_model.dart';
-import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
 
 // import 'package:fml/widgets/chart_syncfusion/chart_model.dart' as SFCHART;
 // import 'package:fml/widgets/chart_syncfusion/axis/chart_axis_model.dart' as SFCHART;

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:fml/helper/string.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
-import 'package:fml/widgets/chart_painter/chart_model.dart';
 import 'package:fml/widgets/chart_painter/pie/pie_chart_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/busy/busy_view.dart';

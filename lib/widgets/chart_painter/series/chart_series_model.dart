@@ -9,8 +9,6 @@ import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-import '../bar/bar_chart_model.dart';
-
 /// ChartDataPoint Object
 ///
 /// Holds the plot values for each data node in the series

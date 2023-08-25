@@ -193,28 +193,25 @@ class TreeModel extends BoxModel
   @override
   Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async
   {
-    busy = true;
-    if (list != null)
+    if (source is HttpModel)
     {
-      // clear items
-      for (var item in nodes)
+      // parse the xml
+      var document = Xml.tryParse(source.response);
+      if (document is XmlDocument)
       {
-        item.dispose();
-      }
-      nodes.clear();
-
-      if (source is HttpModel)
-      {
-        // parse the xml
-        var document = Xml.tryParse(source.response);
-        if (document is XmlDocument)
+        var model = WidgetModel.fromXml(this, document.rootElement);
+        if (model is TreeNodeModel)
         {
-          //var model = WidgetModel.fromXml(this, document.rootElement);
+          busy = true;
+          removeChildrenOfExactType(TreeNodeModel);
+          children ??= [];
+          children!.add(model);
+          _buildNodes();
+          busy = false;
         }
+        notifyListeners('list', nodes);
       }
-      notifyListeners('list', nodes);
     }
-    busy = false;
     return true;
   }
 

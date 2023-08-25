@@ -247,7 +247,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
           child: IconButton(onPressed: () => _onDelete(view), padding: EdgeInsets.all(1.5), icon: Icon(Icons.close, size: 22, color: Theme.of(context).colorScheme.onSurfaceVariant))));
 
       // tab bar
-      String title   = uri.queryParameters['title'] ?? url;
+      String title   = uri.queryParameters['title'] ?? uri.page.toString();
       Widget child = Row(children: [
         Expanded(
             child: Row(

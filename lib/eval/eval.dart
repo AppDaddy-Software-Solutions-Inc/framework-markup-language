@@ -130,7 +130,12 @@ class Eval
         if (expression.value is String)
         {
           String v = expression.value ?? "";
-          variables.forEach((key, value) => v = v.replaceAll(key, _toString(value) ?? key));
+          //loop backwards in the string so v1 does not replace the start of v10
+        for (String key in variables.keys.toList().reversed) {
+          //replace the keys in the string with the value of the variables map
+            v = v.replaceAll(key, _toString(variables[key]) ?? key);
+            v;
+          }
           expression = Literal(v,v);
         }
         break;

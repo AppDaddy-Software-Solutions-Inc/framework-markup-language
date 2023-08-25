@@ -125,6 +125,8 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     var b = Binding.fromString(property);
     if (mounted && ((widget.model.controller?.text != value && b?.property == 'value') || b?.property != 'value'))
     {
+      widget.model.controller?.value = TextEditingValue(
+          text: widget.model.value ?? "",);
       setState(() {});
     }
   }

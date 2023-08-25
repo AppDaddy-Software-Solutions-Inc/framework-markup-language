@@ -122,15 +122,19 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
   {
     // ensure we don't call setstate if the model update was entered via
     // keyboard by comparing the controller to the callback's value
+    //return if not mounted
+    if(!mounted) return;
+
+    //grab the property that is changing
     var b = Binding.fromString(property);
-    if (mounted && ((widget.model.controller?.text != value && b?.property == 'value') || b?.property != 'value'))
-    {
-      if (widget.model.controller?.text != value) {
-        widget.model.controller?.value = TextEditingValue(
-          text: widget.model.value ?? "",);
-      }
-      setState(() {});
+    if (b?.property == 'value') {
+      if (widget.model.controller?.text == value) return;
+      //set the controllers value to the model value.
+      //this acts in cases where the value changes based on an eval or set.
+      widget.model.controller?.value = TextEditingValue(text: widget.model.value ?? "",);
     }
+    //call setstate with no effects (ovverriden from widget model onmodel change)
+    setState(() {});
   }
 
   @override

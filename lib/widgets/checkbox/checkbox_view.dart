@@ -155,8 +155,9 @@ class CheckBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    Color selectedColor = model.setErrorBorderColor(context, model.color ?? Theme.of(context).colorScheme.primary);
-    Color unselectedColor = model.setErrorBorderColor(context, Theme.of(context).colorScheme.outline);
+    Color fillColorSelected = model.setErrorBorderColor(context, model.color ?? Theme.of(context).colorScheme.primary);
+    Color fillColorUnSelected = model.setErrorBorderColor(context, model.color ?? Colors.transparent);
+    Color borderColor = model.setErrorBorderColor(context, Theme.of(context).colorScheme.outline);
 
     var checkbox = Checkbox(
           value: checked,
@@ -166,14 +167,14 @@ class CheckBox extends StatelessWidget {
                   : null,
           checkColor: Theme.of(context).colorScheme.onPrimary,
           fillColor: MaterialStateColor.resolveWith(
-              (states) => selectedColor),
+              (states) => checked ? fillColorSelected : fillColorUnSelected),
           focusColor: Theme.of(context).colorScheme.onInverseSurface,
           hoverColor: model.enabled != false && model.editable != false
               ? Theme.of(context).colorScheme.onInverseSurface
               : Colors.transparent,
           side: BorderSide(
               width: 2,
-              color: unselectedColor),
+              color: checked ? fillColorSelected : borderColor),
           visualDensity: VisualDensity(horizontal: -2, vertical: -4),
           splashRadius: 18,
           mouseCursor: model.enabled != false && model.editable != false

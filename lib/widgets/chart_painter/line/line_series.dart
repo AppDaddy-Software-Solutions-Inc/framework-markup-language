@@ -356,31 +356,20 @@ class LineChartSeriesModel extends ChartPainterSeriesModel
       this.data = pointData;
       //add the value of x to the list only if the type is category.
       if(true) xValues.add(S.toInt(x));
-      //plot the point as a point object based on the desired function based on series and chart type.
-      if(plotOnFirstPass) pointFromLineData();
     }
   }
 
 
   void plotPoints(dynamic dataList, bool isCategory){
 
-    for (var pointData in dataList) {
+    for (var i=0; i< dataList.length; i++) {
       //set the data of the series for databinding
-      data = pointData;
-        if(isCategory) x = dataList.toList().indexOf(S.toInt(x));
+      data = dataList[i];
+        if(isCategory) x = i;
         //plot the point as a point object based on the desired function based on series and chart type.
-        pointFromLineData();
-
-
-
+      FlSpot point = FlSpot(S.toDouble(x) ?? 0, S.toDouble(y) ?? 0);
+      lineDataPoint.add(point);
     }
     dataList = null;
-  }
-
-  // these should possibly be called from the chart after determining all values by index.
-  void pointFromLineData()
-  {
-    FlSpot point = FlSpot(S.toDouble(x) ?? 0, S.toDouble(y) ?? 0);
-    lineDataPoint.add(point);
   }
 }

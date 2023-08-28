@@ -238,8 +238,8 @@ class LineChartModel extends ChartPainterModel
           // build the datapoints for the series, passing in the chart type, index, and data
           serie.iteratePoints(list, plotOnFirstPass: false);
           // add the built x values to a unique list to map to indeces
-          if(xaxis.type == ChartAxisType.category || xaxis.type == ChartAxisType.date) {
-            uniqueValues.addAll(serie.xValues);
+          if(true || xaxis.type == ChartAxisType.date) {
+            serie.plotPoints(serie.dataList, true);
           }
           else {
             serie.plotPoints(serie.dataList, false);

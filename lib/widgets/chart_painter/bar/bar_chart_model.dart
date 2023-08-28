@@ -19,8 +19,11 @@ import 'package:xml/xml.dart';
 class BarChartModel extends ChartPainterModel
 {
   List<BarChartGroupData> barDataList = [];
-
   final List<BarChartSeriesModel> series = [];
+  ChartAxisModel xaxis = ChartAxisModel(null, null, ChartAxis.X);
+  ChartAxisModel yaxis = ChartAxisModel(null, null, ChartAxis.Y);
+  num yMax = 0;
+  num yMin = 0;
 
   BarChartModel(WidgetModel? parent, String? id,
       {

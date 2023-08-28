@@ -17,10 +17,6 @@ import '../chart/chart_model.dart';
 /// Defines the properties used to build a Chart
 class ChartPainterModel extends BoxModel
 {
-  ChartAxisModel xaxis = ChartAxisModel(null, null, ChartAxis.X);
-  ChartAxisModel yaxis = ChartAxisModel(null, null, ChartAxis.Y);
-  num yMax = 0;
-  num yMin = 0;
   Set<dynamic> uniqueValues = {};
   List<LineChartBarData> lineDataList = [];
   PieChartData pieData = PieChartData();

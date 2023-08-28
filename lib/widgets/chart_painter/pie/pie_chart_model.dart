@@ -7,7 +7,6 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart_painter/pie/pie_chart_view.dart';
 import 'package:fml/widgets/chart_painter/pie/pie_series.dart';
-import 'package:fml/widgets/chart_painter/axis/chart_axis_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
@@ -19,13 +18,10 @@ import '../chart_model.dart';
 /// Defines the properties used to build a Chart
 class PieChartModel extends ChartPainterModel
 {
-  ChartAxisModel xaxis = ChartAxisModel(null, null, ChartAxis.X);
-  ChartAxisModel yaxis = ChartAxisModel(null, null, ChartAxis.Y);
-  num yMax = 0;
-  num yMin = 0;
+  @override
   Set<dynamic> uniqueValues = {};
   final List<PieChartSeriesModel> series = [];
-  List<LineChartBarData> lineDataList = [];
+  @override
   PieChartData pieData = PieChartData();
 
   @override
@@ -124,16 +120,6 @@ class PieChartModel extends ChartPainterModel
       if (source != null) source.register(this);
     }
 
-
-    // Set Axis
-    List<ChartAxisModel> axis = findChildrenOfExactType(ChartAxisModel).cast<ChartAxisModel>();
-    for (var axis in axis) {
-      if (axis.axis == ChartAxis.X) xaxis = axis;
-
-      if (axis.axis == ChartAxis.Y) yaxis = axis;
-      yMax = S.toInt(yaxis.max) ?? 0;
-      yMin = S.toInt(yaxis.min) ?? 0;
-    }
   }
 
   /// Contains the data map from the row (point) that is selected
@@ -221,28 +207,6 @@ class PieChartModel extends ChartPainterModel
     }
   }
   int? get legendsize => _legendsize?.get();
-
-  /// Type of chart (`cartesian` or `circle`) defaults to `cartesian`
-  ///
-  /// Charts have 2 types circle and cartesian
-  /// Circle charts are single series charts and Cartesian are multi series
-  /// Cartesian chart types: area, spline, line, fastline, bar, stackedbar,
-  /// percentstackedbar, sidebar, waterfall plot and label
-  /// Circle chart types: pie, doughnut, explodedpie, explodeddoughnut, radial
-  /// and radialbar
-  StringObservable? _type;
-  set type (dynamic v)
-  {
-    if (_type != null)
-    {
-      _type!.set(v);
-    }
-    else if (v != null)
-    {
-      _type = StringObservable(Binding.toKey(id, 'type'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  String get type => _type?.get() ?? 'line';
 
   /// Called when the databroker returns a successful result
   ///

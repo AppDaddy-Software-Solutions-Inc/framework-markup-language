@@ -4,7 +4,6 @@ import 'package:fml/helper/string.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart_painter/bar/bar_chart_model.dart';
-import 'package:fml/widgets/chart_painter/chart_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
@@ -28,7 +27,7 @@ class BarChartView extends StatefulWidget implements IWidgetView
 class _ChartViewState extends WidgetState<BarChartView>
 {
   Future<Template>? template;
-  Future<ChartPainterModel>? chartViewModel;
+  Future<BarChartModel>? chartViewModel;
   BusyView? busy;
 
   Widget bottomTitles(double value, TitleMeta meta) {

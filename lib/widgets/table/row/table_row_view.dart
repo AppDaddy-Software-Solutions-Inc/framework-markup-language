@@ -4,7 +4,6 @@ import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart'         ;
 import 'package:fml/widgets/table/row/table_row_model.dart';
-import 'package:fml/widgets/table/row/cell/table_row_cell_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class TableRowView extends StatefulWidget implements IWidgetView
@@ -15,7 +14,6 @@ class TableRowView extends StatefulWidget implements IWidgetView
   final Map<int, double>? width;
   final int? row;
   final Map<int, double>? padding;
-
   TableRowView(this.model, this.row, this.height, this.width, this.padding);
 
   @override

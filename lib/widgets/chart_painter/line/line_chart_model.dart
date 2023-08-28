@@ -21,8 +21,8 @@ class LineChartModel extends ChartPainterModel
 {
   ChartAxisModel xaxis = ChartAxisModel(null, null, ChartAxis.X);
   ChartAxisModel yaxis = ChartAxisModel(null, null, ChartAxis.Y);
-  num yMax = 0;
-  num yMin = 0;
+  num? yMax;
+  num? yMin;
   Set<dynamic> uniqueValues = {};
   final List<LineChartSeriesModel> series = [];
   List<LineChartBarData> lineDataList = [];
@@ -130,8 +130,8 @@ class LineChartModel extends ChartPainterModel
       if (axis.axis == ChartAxis.X) xaxis = axis;
 
       if (axis.axis == ChartAxis.Y) yaxis = axis;
-      yMax = S.toInt(yaxis.max) ?? 0;
-      yMin = S.toInt(yaxis.min) ?? 0;
+      yMax = S.toInt(yaxis.max);
+      yMin = S.toInt(yaxis.min);
     }
   }
 
@@ -231,7 +231,6 @@ class LineChartModel extends ChartPainterModel
   {
     try
     {
-      int i = 0;
       //here if the data strategy is category, we must fold all of the lists together and create a dummy key value map of every unique value, in order
       uniqueValues.clear();
       for (var serie in series) {
@@ -246,7 +245,6 @@ class LineChartModel extends ChartPainterModel
             serie.plotPoints(serie.dataList, false);
           }
         }
-        i++;
         if(xaxis.type == ChartAxisType.category || xaxis.type == ChartAxisType.date) serie.plotPoints(uniqueValues, true);
         lineDataList.add(LineChartBarData(spots: serie.lineDataPoint,
             dotData: FlDotData(show: serie.showpoints),

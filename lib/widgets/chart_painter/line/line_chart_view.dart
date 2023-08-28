@@ -76,7 +76,10 @@ class _LineChartViewState extends WidgetState<LineChartView>
         //the series must determine the min and max y
         minY: S.toDouble(widget.model.yaxis.min),
         maxY: S.toDouble(widget.model.yaxis.max),
-        //baselineX: 0,
+        minX: S.toDouble(widget.model.xaxis.min),
+        maxX: S.toDouble(widget.model.xaxis.max),
+        baselineX: 0,
+        baselineY: 0,
         //range annotations (blocks)
         //rangeAnnotations: RangeAnnotations(horizontalRangeAnnotations: [], verticalRangeAnnotations: []),
         borderData: FlBorderData(

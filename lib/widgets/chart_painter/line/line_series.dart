@@ -240,6 +240,8 @@ class LineChartSeriesModel extends ChartPainterSeriesModel
   bool get showarea => _showarea?.get() ?? false;
 
 
+
+
   /// Set to false if you want to hide the line in the line series
   BooleanObservable? _showline;
   set showline (dynamic v)

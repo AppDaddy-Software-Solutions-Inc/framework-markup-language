@@ -247,8 +247,10 @@ class LineChartModel extends ChartPainterModel
         }
         if(xaxis.type == ChartAxisType.category || xaxis.type == ChartAxisType.date) serie.plotPoints(uniqueValues, true);
         lineDataList.add(LineChartBarData(spots: serie.lineDataPoint,
+            isCurved: serie.curved,
+            belowBarData: BarAreaData(show: serie.showarea),
             dotData: FlDotData(show: serie.showpoints),
-            barWidth: serie.type == 'point' || serie.showline == false ? 0 : 2,
+            barWidth: serie.type == 'point' || serie.showline == false ? 0 : serie.stroke ?? 2,
             color: serie.color ?? ColorHelper.fromString('random')));
         serie.xValues.clear();
       }

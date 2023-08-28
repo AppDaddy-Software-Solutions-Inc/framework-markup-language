@@ -35,6 +35,21 @@ class ChartPainterSeriesModel extends WidgetModel
 
   String? type;
 
+  /// Set to true if you want to show the area under the line series
+  BooleanObservable? _curved;
+  set curved (dynamic v)
+  {
+    if (_curved != null)
+    {
+      _curved!.set(v);
+    }
+    else if (v != null)
+    {
+      _curved = BooleanObservable(Binding.toKey(id, 'curved'), v, scope: scope);
+    }
+  }
+  bool get curved => _curved?.get() ?? false;
+
   ChartPainterSeriesModel(
     WidgetModel parent,
     String? id, {
@@ -54,6 +69,7 @@ class ChartPainterSeriesModel extends WidgetModel
       dynamic showarea,
       dynamic showline,
       dynamic showpoints,
+        dynamic curved,
     }
   ) : super(parent, id)
   {
@@ -63,6 +79,7 @@ class ChartPainterSeriesModel extends WidgetModel
     this.color = color;
     this.stroke = stroke;
     this.radius = radius;
+    this.curved = curved;
     this.size = size;
     this.label = label;
     this.tooltips = tooltips;
@@ -114,6 +131,7 @@ class ChartPainterSeriesModel extends WidgetModel
     showarea    = Xml.get(node: xml, tag: 'showarea');
     showline    = Xml.get(node: xml, tag: 'showline');
     showpoints  = Xml.get(node: xml, tag: 'showpoints');
+    curved      = Xml.get(node: xml, tag: 'curved');
 
     // Remove datasource listener. The parent chart will take care of this.
     if ((datasource != null) && (scope != null) && (scope!.datasources.containsKey(datasource))) scope!.datasources[datasource!]!.remove(this);

@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_view.dart';
+import 'package:fml/widgets/table/row/cell/table_row_cell_view.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart'         ;
 import 'package:fml/widgets/table/row/table_row_model.dart';
@@ -54,7 +55,7 @@ class _TableRowViewState extends WidgetState<TableRowView>
       //////////
       /* View */
       //////////
-      Widget cell = RepaintBoundary(child: BoxView(model));
+      Widget cell = TableRowCellView(model, widget.row);
       if ((width != null) && (height != null)) {
         cells.add(UnconstrainedBox(child: ClipRect(child: SizedBox(width: width, height: height, child: cell))));
       } else {

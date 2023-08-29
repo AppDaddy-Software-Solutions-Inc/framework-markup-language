@@ -6,7 +6,7 @@ import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/event/handler.dart' ;
 import 'package:fml/widgets/table/table_model.dart';
-import 'package:fml/widgets/table/row/cell/table_row_cell_model.dart';
+import 'package:fml/widgets/table/table_row_cell_model.dart';
 import 'package:fml/widgets/form/form_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +16,12 @@ import 'package:fml/helper/common_helpers.dart';
 
 class TableRowModel extends DecoratedWidgetModel
 {
-  // Cells
+  // cells
   final List<TableRowCellModel> cells = [];
+
+  // cell by index
+  TableRowCellModel? cell(int index) => index >= 0 && index < cells.length ? cells[index] : null;
+
   late XmlElement cellprototype;
 
   // Editable Fields

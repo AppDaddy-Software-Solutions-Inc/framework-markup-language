@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'dart:convert';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
+import 'package:fml/datasources/transforms/sort.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/form_interface.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
@@ -10,11 +11,11 @@ import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/datasources/transforms/sort.dart' as sort_transform;
 import 'package:fml/event/handler.dart' ;
 import 'package:fml/widgets/table/table_view.dart';
-import 'package:fml/widgets/table/header/table_header_model.dart';
-import 'package:fml/widgets/table/header/cell/table_header_cell_model.dart';
-import 'package:fml/widgets/table/footer/table_footer_model.dart';
-import 'package:fml/widgets/table/row/table_row_model.dart';
-import 'package:fml/widgets/table/row/cell/table_row_cell_model.dart';
+import 'package:fml/widgets/table/table_header_model.dart';
+import 'package:fml/widgets/table/table_header_cell_model.dart';
+import 'package:fml/widgets/table/table_footer_model.dart';
+import 'package:fml/widgets/table/table_row_model.dart';
+import 'package:fml/widgets/table/table_row_cell_model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -567,15 +568,6 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     return model;
   }
 
-  TableHeaderCellModel? getHeaderCell(int col)
-  {
-    if ((header != null) && (col < header!.cells.length))
-    {
-      return header!.cells[col];
-    }
-    return null;
-  }
-
   Future<bool> _build(IDataSource source, Data? data) async
   {
     if (S.isNullOrEmpty(datasource) || datasource == source.id)
@@ -602,55 +594,41 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     return true;
   }
 
-  Future<void> sort(final int index, context) async {
+  Future<void> onSortData(int index) async
+  {
+    // get the header cell
+    var hdr = header?.cell(index);
+    if (hdr == null || hdr.sortBy == null) return;
+
     busy = true;
 
-    int i = 0;
-    TableHeaderCellModel? model;
-    while ((model = getHeaderCell(i)) != null) {
-      if (i == index) {
-        model = getHeaderCell(index);
-        if (model != null) {
-          model.sorted = true;
-          model.sortAscending = !model.sortAscending;
-          model.isSorting = true;
-        }
+    // set sort type
+    hdr.sortType = hdr.sortType == SortTypes.descending ? SortTypes.ascending : SortTypes.descending;
 
+    // sort the data
+    sort_transform.Sort sort = sort_transform.Sort(null,
+        field: hdr.sortBy,
+        type: "string",
+        ascending: hdr.sortType == SortTypes.ascending,
+        casesensitive: false);
 
-        sort_transform.Sort sort = sort_transform.Sort(null,
-            field: model?.sort,
-            type: model?.sortType,
-            ascending: model?.sortAscending,
-            casesensitive: false);
-
-        await sort.apply(data);
-      } else {
-        model?.sorted = false;
-      }
-      i = i + 1;
-    }
+    // apply the sort
+    await sort.apply(data);
 
     // clear rows
     rows.forEach((_,row) => row.dispose());
     rows.clear();
 
-    // Notify Listeners of Change
+    // set other header cells sort type to none
+    header?.cells.forEach((cell)
+    {
+      if (cell != hdr) cell.sortType = SortTypes.none;
+    });
+
+    // notify listeners of change
     notifyListeners('list', null);
 
     busy = false;
-  }
-
-  void updatedSortedBy(ascending, index) {
-    dynamic currCol;
-    int i = 0;
-    while ((currCol = getHeaderCell(i++)) != null) {
-      if (i == index) {
-        currCol.sortAscending = ascending;
-        currCol.sortedColumn = true;
-      } else {
-        currCol.sortedColumn = false;
-      }
-    }
   }
 
   // export to excel
@@ -743,13 +721,6 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     double? pad = 0;
     if (cellpadding.containsKey(cellindex)) pad = cellpadding[cellindex];
     return pad;
-  }
-
-  Future<bool> onSort(int index) async {
-    busy = true;
-    await sort(index, null);
-    busy = false;
-    return true;
   }
 
   void onSelect(TableRowModel row, TableRowCellModel cell) {

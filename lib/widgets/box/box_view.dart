@@ -311,7 +311,6 @@ class _BoxViewState extends WidgetState<BoxView>
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    print('rebuild');
     // set theme
     theme = Theme.of(context);
 

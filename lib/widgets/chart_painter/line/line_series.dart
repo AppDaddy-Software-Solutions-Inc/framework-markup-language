@@ -360,12 +360,13 @@ class LineChartSeriesModel extends ChartPainterSeriesModel
   }
 
 
-  void plotPoints(dynamic dataList, bool isCategory){
+  void plotPoints(dynamic dataList, bool isCategory, bool isDate){
 
     for (var i=0; i< dataList.length; i++) {
       //set the data of the series for databinding
       data = dataList[i];
         if(isCategory) x = i;
+        if(isDate) x =  S.toDate(x, format: 'yyyy/MM/dd')?.millisecondsSinceEpoch;
         //plot the point as a point object based on the desired function based on series and chart type.
       FlSpot point = FlSpot(S.toDouble(x) ?? 0, S.toDouble(y) ?? 0);
       lineDataPoint.add(point);

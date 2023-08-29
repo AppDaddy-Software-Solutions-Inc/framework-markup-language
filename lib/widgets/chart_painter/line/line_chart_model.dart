@@ -229,8 +229,7 @@ class LineChartModel extends ChartPainterModel
   @override
   Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async
   {
-    try
-    {
+    try {
       //here if the data strategy is category, we must fold all of the lists together and create a dummy key value map of every unique value, in order
       uniqueValues.clear();
       for (var serie in series) {
@@ -238,24 +237,28 @@ class LineChartModel extends ChartPainterModel
           // build the datapoints for the series, passing in the chart type, index, and data
           serie.iteratePoints(list, plotOnFirstPass: false);
           // add the built x values to a unique list to map to indeces
-          if(true || xaxis.type == ChartAxisType.date) {
-            serie.plotPoints(serie.dataList, true);
+          if (xaxis.type == ChartAxisType.category) {
+            serie.plotPoints(serie.dataList, true, false);
+          }
+          else if (xaxis.type == ChartAxisType.date) {
+            serie.plotPoints(serie.dataList, false, true);
           }
           else {
-            serie.plotPoints(serie.dataList, false);
+            serie.plotPoints(serie.dataList, false, false);
           }
+          // if(xaxis.type == ChartAxisType.category || xaxis.type == ChartAxisType.date) serie.plotPoints(uniqueValues, true);
+
+          lineDataList.add(LineChartBarData(spots: serie.lineDataPoint,
+              isCurved: serie.curved,
+              belowBarData: BarAreaData(show: serie.showarea),
+              dotData: FlDotData(show: serie.showpoints),
+              barWidth: serie.type == 'point' || serie.showline == false ? 0 : serie.stroke ?? 2,
+              color: serie.color ?? ColorHelper.fromString('random')));
+          serie.xValues.clear();
         }
-        if(xaxis.type == ChartAxisType.category || xaxis.type == ChartAxisType.date) serie.plotPoints(uniqueValues, true);
-        lineDataList.add(LineChartBarData(spots: serie.lineDataPoint,
-            isCurved: serie.curved,
-            belowBarData: BarAreaData(show: serie.showarea),
-            dotData: FlDotData(show: serie.showpoints),
-            barWidth: serie.type == 'point' || serie.showline == false ? 0 : serie.stroke ?? 2,
-            color: serie.color ?? ColorHelper.fromString('random')));
-        serie.xValues.clear();
+        uniqueValues.clear();
+        notifyListeners('list', null);
       }
-      uniqueValues.clear();
-      notifyListeners('list', null);
     }
     catch(e)
     {

@@ -265,16 +265,11 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     return configuration;
   }
 
-  void buildRows({int? page})
+  void buildAllRows() => buildOutRows(double.infinity.toInt());
+  void buildOutRows(int length)
   {
-    var pageSize = widget.model.pageSize;
-    if (pageSize <= 0) pageSize = 10;
-
-    // determine #rows to build
-    int range = page != null ? page * pageSize : double.maxFinite.toInt();
-
     // build rows
-    while (rows.length < range)
+    while (rows.length < length)
     {
       var row = buildRow(rows.length);
       if (row == null) break;
@@ -343,33 +338,168 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     return view;
   }
 
-  Future<PlutoLazyPaginationResponse> onFetchPage(PlutoLazyPaginationRequest request) async
+  Future<PlutoInfinityScrollRowsResponse> onLazyLoad(PlutoInfinityScrollRowsRequest request) async
   {
-    var pageSize = widget.model.pageSize;
-    if (pageSize <= 0) pageSize = 10;
-
+    // rows are filtered?
     var filter = request.filterRows.isNotEmpty;
+
+    // rows are sorted?
     var sort   = request.sortColumn != null && !request.sortColumn!.sort.isNone;
+
+    // total number of rows
+    var rows = widget.model.data is Data ? (widget.model.data as Data).length : 0;
+
+    // number of records to fetch
+    var fetchSize = 50;
+
+    // index of last row fetched
+    var rowIdx = 0;
+    if (request.lastRow != null)
+    {
+      var row = request.lastRow!;
+      rowIdx = this.rows.contains(row) ? this.rows.indexOf(row) : 0;
+    }
 
     // build rows
     if (filter || sort)
     {
       // build all
-      buildRows();
+      buildAllRows();
     }
     else
     {
-      // build only as required
-      buildRows(page: request.page);
+      buildOutRows(rowIdx + fetchSize);
     }
 
     // build the list
     List<PlutoRow> tempList = this.rows.toList();
 
-    final rows = widget.model.data is Data ? (widget.model.data as Data).length : 0;
+    // If you have a filtering state,
+    // you need to implement it so that the user gets data from the server
+    // according to the filtering state.
+    //
+    // request.page is 1 when the filtering state changes.
+    // This is because, when the filtering state is changed,
+    // the first page must be loaded with the new filtering applied.
+    //
+    // request.filterRows is a List<PlutoRow> type containing filtering information.
+    // To convert to Map type, you can do as follows.
+    //
+    // FilterHelper.convertRowsToMap(request.filterRows);
+    //
+    // When the filter of abc is applied as Contains type to column2
+    // and 123 as Contains type to column3, for example
+    // It is returned as below.
+    // {column2: [{Contains: 123}], column3: [{Contains: abc}]}
+    //
+    // If multiple filtering conditions are set in one column,
+    // multiple conditions are included as shown below.
+    // {column2: [{Contains: abc}, {Contains: 123}]}
+    //
+    // The filter type in FilterHelper.defaultFilters is the default,
+    // If there is user-defined filtering,
+    // the title set by the user is returned as the filtering type.
+    // All filtering can change the value returned as a filtering type by changing the name property.
+    // In case of PlutoFilterTypeContains filter, if you change the static type name to include
+    // PlutoFilterTypeContains.name = 'include';
+    // {column2: [{include: abc}, {include: 123}]} will be returned.
+    if (filter)
+    {
+      final filter = FilterHelper.convertRowsToFilter(request.filterRows, stateManager.refColumns);
+      tempList = tempList.where(filter!).toList();
+    }
 
-    // denotes the total number of pages
+    // If there is a sort state,
+    // you need to implement it so that the user gets data from the server
+    // according to the sort state.
+    //
+    // request.page is 1 when the sort state changes.
+    // This is because when the sort state changes,
+    // new data to which the sort state is applied must be loaded.
+    if (sort)
+    {
+      tempList = [...tempList];
+      tempList.sort((a, b)
+      {
+        final sortA = request.sortColumn!.sort.isAscending ? a : b;
+        final sortB = request.sortColumn!.sort.isAscending ? b : a;
+        return request.sortColumn!.type.compare(sortA.cells[request.sortColumn!.field]!.valueForSorting, sortB.cells[request.sortColumn!.field]!.valueForSorting);
+      });
+    }
+
+    // Data needs to be implemented so that the next row
+    // to be fetched by the user is fetched from the server according to the value of lastRow.
+    //
+    // If [request.lastRow] is null, it corresponds to the first page.
+    // After that, implement request.lastRow to get the next row from the server.
+    //
+    // How many are fetched is not a concern in PlutoGrid.
+    // The user just needs to bring as many as they can get at one time.
+    //
+    // To convert data from server to PlutoRow
+    // You can convert it using [PlutoRow.fromJson].
+    // In the example, PlutoRow is already created, so it is not created separately.
+    Iterable<PlutoRow> fetchedRows = tempList.skipWhile((row) => request.lastRow != null && row.key != request.lastRow!.key);
+
+    if (request.lastRow == null)
+    {
+      fetchedRows = fetchedRows.take(fetchSize);
+    }
+    else
+    {
+      fetchedRows = fetchedRows.skip(1).take(fetchSize);
+    }
+
+    // await Future.delayed(const Duration(milliseconds: 500));
+
+    // The return value returns the PlutoInfinityScrollRowsResponse class.
+    // isLast should be true when there is no more data to load.
+    // rows should pass a List<PlutoRow>.
+    final bool isLast = fetchedRows.isEmpty || rows < this.rows.length;
+
+    // notify the user
+    if (isLast && mounted)
+    {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Last Page!')));
+    }
+
+    var list = fetchedRows.toList();
+
+    return Future.value(PlutoInfinityScrollRowsResponse(isLast: isLast, rows: list));
+  }
+
+  Future<PlutoLazyPaginationResponse> onPageLoad(PlutoLazyPaginationRequest request) async
+  {
+    // rows are filtered?
+    var filter = request.filterRows.isNotEmpty;
+
+    // rows are sorted?
+    var sort   = request.sortColumn != null && !request.sortColumn!.sort.isNone;
+
+    // total number of rows
+    var rows = widget.model.data is Data ? (widget.model.data as Data).length : 0;
+
+    // page size
+    var pageSize = widget.model.pageSize;
+    if (pageSize <= 0) pageSize = 10;
+
+    // total number of pages
     var pages = (rows / pageSize).ceil();
+
+    // build rows
+    if (filter || sort)
+    {
+      // build all
+      buildAllRows();
+    }
+    else
+    {
+      // build only as many as required
+      buildOutRows(pageSize * request.page);
+    }
+
+    // build the list
+    List<PlutoRow> tempList = this.rows.toList();
 
     // If you have a filtering state,
     // you need to implement it so that the user gets data from the server
@@ -462,15 +592,15 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     //await widget.model.onSortData(index);
   }
 
-  PlutoLazyPagination onCreateFooter(PlutoGridStateManager stateManager)
+  PlutoLazyPagination _pageLoader(PlutoGridStateManager stateManager)
   {
-    var pager = PlutoLazyPagination(
+    var loader = PlutoLazyPagination(
 
         stateManager: stateManager,
 
         // fetch routine called on
         // page change
-        fetch: onFetchPage,
+        fetch: onPageLoad,
 
         // Determine the first page.
         // Default is 1.
@@ -496,9 +626,36 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
         pageSizeToMove: null
     );
 
-    return pager;
+    return loader;
   }
 
+  PlutoInfinityScrollRows _lazyLoader(PlutoGridStateManager stateManager)
+  {
+    var loader = PlutoInfinityScrollRows(
+
+      stateManager: stateManager,
+
+      // fetch routine called on
+      // page change
+      fetch: onLazyLoad,
+
+      // First call the fetch function to determine whether to load the page.
+      // Default is true.
+      initialFetch: true,
+
+      // Decide whether sorting will be handled by the server.
+      // If false, handle sorting on the client side.
+      // Default is true.
+      fetchWithSorting: true,
+
+      // Decide whether filtering is handled by the server.
+      // If false, handle filtering on the client side.
+      // Default is true.
+      fetchWithFiltering: true,
+    );
+
+    return loader;
+  }
 
   @override
   Widget build(BuildContext context)
@@ -509,6 +666,9 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     // build style
     var config = _buildConfig();
 
+    // build the content loader
+    var loader = _lazyLoader;//widget.model.pageSize > 0 ?  _pageLoader : _lazyLoader;
+
     // build the grid
     var view = PlutoGrid(key: GlobalKey(),
         configuration: config,
@@ -518,8 +678,7 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
         onChanged: onChanged,
         onSelected: onSelected,
         onSorted: onSorted,
-        createFooter: widget.model.pageSize > 0 ? onCreateFooter : null
-    );
+        createFooter: loader);
 
     return view;
   }

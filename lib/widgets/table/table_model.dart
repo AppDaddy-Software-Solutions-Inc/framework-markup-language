@@ -1,14 +1,13 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:collection';
 import 'dart:convert';
+import 'dart:math';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
-import 'package:fml/datasources/transforms/sort.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/form_interface.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:fml/datasources/transforms/sort.dart' as sort_transform;
 import 'package:fml/event/handler.dart' ;
 import 'package:fml/widgets/table/table_view.dart';
 import 'package:fml/widgets/table/table_header_model.dart';
@@ -21,11 +20,69 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-
 enum PaddingType { none, first, last, evenly, proportionately }
 
 class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
 {
+  final double defaultPadding = 4;
+
+  @override
+  double? get paddingTop => super.paddingTop ?? defaultPadding;
+
+  @override
+  double? get paddingRight => super.paddingRight ?? defaultPadding;
+
+  @override
+  double? get paddingBottom => super.paddingBottom ?? defaultPadding;
+
+  @override
+  double? get paddingLeft => super.paddingLeft ?? defaultPadding;
+
+  // allow sorting
+  BooleanObservable? _sortable;
+  set sortable(dynamic v)
+  {
+    if (_sortable != null)
+    {
+      _sortable!.set(v);
+    }
+    else if (v != null)
+    {
+      _sortable = BooleanObservable(Binding.toKey(id, 'sortable'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get sortable => _sortable?.get() ?? true;
+
+  // allow reordering
+  BooleanObservable? _draggable;
+  set draggable(dynamic v)
+  {
+    if (_draggable != null)
+    {
+      _draggable!.set(v);
+    }
+    else if (v != null)
+    {
+      _draggable = BooleanObservable(Binding.toKey(id, 'draggable'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get draggable => _draggable?.get() ?? true;
+
+  // allow resizing
+  BooleanObservable? _resizeable;
+  set resizeable(dynamic v)
+  {
+    if (_resizeable != null)
+    {
+      _resizeable!.set(v);
+    }
+    else if (v != null)
+    {
+      _resizeable = BooleanObservable(Binding.toKey(id, 'resizeable'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get resizeable => _resizeable?.get() ?? true;
+
   // prototype
   XmlElement? prototypeHeaderCell;
   XmlElement? prototypeRowCell;
@@ -388,16 +445,6 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
   dynamic get onpulldown => _onpulldown?.get();
 
-  BooleanObservable? _draggable;
-  set draggable(dynamic v) {
-    if (_draggable != null) {
-      _draggable!.set(v);
-    } else if (v != null) {
-      _draggable = BooleanObservable(Binding.toKey(id, 'draggable'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get draggable => _draggable?.get() ?? false;
-
   /// Contains the data map from the row that is selected
   ListObservable? _selected;
   set selected(dynamic v) {
@@ -476,8 +523,10 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     super.deserialize(xml);
 
     // properties
-    selected = Xml.get(node: xml, tag: 'selected');
-    draggable = Xml.get(node:xml, tag: 'draggable');
+    selected   = Xml.get(node: xml, tag: 'selected');
+    sortable   = Xml.get(node:xml, tag: 'sortable');
+    draggable  = Xml.get(node:xml, tag: 'draggable');
+    resizeable = Xml.get(node:xml, tag: 'resizeable');
     onpulldown = Xml.get(node: xml, tag: 'onpulldown');
     pagesize = Xml.get(node: xml, tag: 'pagesize');
     paged = Xml.get(node: xml, tag: 'paged');
@@ -568,6 +617,13 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     return model;
   }
 
+  TableRowCellModel? getRowCellModel(int rowIdx, int cellIdx)
+  {
+    TableRowModel? model = getRowModel(rowIdx);
+    if (model == null || cellIdx > model.cells.length) return null;
+    return model.cells[max(cellIdx,0)];
+  }
+
   Future<bool> _build(IDataSource source, Data? data) async
   {
     if (S.isNullOrEmpty(datasource) || datasource == source.id)
@@ -592,43 +648,6 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     await _build(source, list);
     busy = false;
     return true;
-  }
-
-  Future<void> onSortData(int index) async
-  {
-    // get the header cell
-    var hdr = header?.cell(index);
-    if (hdr == null || hdr.sortBy == null) return;
-
-    busy = true;
-
-    // set sort type
-    hdr.sortType = hdr.sortType == SortTypes.descending ? SortTypes.ascending : SortTypes.descending;
-
-    // sort the data
-    sort_transform.Sort sort = sort_transform.Sort(null,
-        field: hdr.sortBy,
-        type: "string",
-        ascending: hdr.sortType == SortTypes.ascending,
-        casesensitive: false);
-
-    // apply the sort
-    await sort.apply(data);
-
-    // clear rows
-    rows.forEach((_,row) => row.dispose());
-    rows.clear();
-
-    // set other header cells sort type to none
-    header?.cells.forEach((cell)
-    {
-      if (cell != hdr) cell.sortType = SortTypes.none;
-    });
-
-    // notify listeners of change
-    notifyListeners('list', null);
-
-    busy = false;
   }
 
   // export to excel
@@ -664,16 +683,17 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
 
   @override
-  Future<bool> complete() async {
+  Future<bool> complete() async
+  {
     busy = true;
 
     bool ok = true;
 
-    ///
-    // Post the Form 
-    ///
-    if (dirty){
-      for (var entry in rows.entries) {
+    // post the form
+    if (dirty)
+    {
+      for (var entry in rows.entries)
+      {
         ok = await entry.value.complete();
       }
   }
@@ -686,42 +706,6 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
 
   @override
   Future<bool> save() async => true;
-
-  void setCellWidth(int cellindex, double width) {
-    if ((width >= 0) && (cellindex < widths.length)) widths[cellindex] = width;
-  }
-
-  void setCellPadding(int cellindex, double padding) {
-    if ((padding >= 0) && (cellindex < cellpadding.length)) {
-      cellpadding[cellindex] = padding;
-    }
-  }
-
-  double getCellPosition(int cellindex) {
-    double offset = 0;
-    for (int i = 0; i < cellindex; i++) {
-      offset += (widths[i] ?? 0) + (cellpadding[i] ?? 0);
-    }
-    return offset;
-  }
-
-  double? getCellWidth(int cellindex) {
-    double? width = 0;
-    if (widths.containsKey(cellindex)) width = widths[cellindex];
-    return width;
-  }
-
-  double getContentWidth() {
-    double width = 0;
-    widths.forEach((key, cellwidth) => width += cellwidth);
-    return width;
-  }
-
-  double? getCellPadding(int cellindex) {
-    double? pad = 0;
-    if (cellpadding.containsKey(cellindex)) pad = cellpadding[cellindex];
-    return pad;
-  }
 
   void onSelect(TableRowModel row, TableRowCellModel cell) {
     if (selectedRow == row && selectedCell == cell) {
@@ -794,68 +778,6 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     // Force View to Resize
     proxyheader = null;
     proxyrow = null;
-  }
-
-  void calculatePadding(double pad) {
-
-    // Clear Padding
-    cellpadding.clear();
-
-    // Do Nothing
-    if (pad == 0) return;
-    
-    // Shrink
-    if (pad.isNegative) return shrinkBy(pad);
-
-    if (paddingType == PaddingType.none) return;
-
-    switch (paddingType) {
-      case PaddingType.none:
-        break;
-
-      // Pad First Column
-      case PaddingType.first:
-        {
-          cellpadding[0] = pad;
-          break;
-        }
-
-      // Pad Last Column
-      case PaddingType.last:
-        {
-          cellpadding[widths.length - 1] = pad;
-          break;
-        }
-
-      // Pad Each Column Evenly
-      case PaddingType.evenly:
-        {
-          double p = pad / widths.length;
-          widths.forEach((key, value) => cellpadding[key] = p);
-          break;
-        }
-
-      // Pad Each Proportionate to its Size
-      case PaddingType.proportionately:
-        {
-          double totalWidth = 0;
-          widths.forEach((key, width) => totalWidth += width);
-          widths.forEach((key, width) {
-            double percentageWidth = (width) / totalWidth;
-            double p = pad * percentageWidth;
-            cellpadding[key] = p;
-          });
-        }
-    }
-  }
-
-  void shrinkBy(double pixels) {
-    double currentWidth = getContentWidth();
-    double targetWidth = currentWidth - pixels.abs();
-    double percentReduction = targetWidth / currentWidth;
-    for (int i = 0; i < widths.length; i++) {
-      widths[i] = (widths[i]! * percentReduction).roundToDouble();
-    }
   }
 
   Future<void> onPull(BuildContext context) async

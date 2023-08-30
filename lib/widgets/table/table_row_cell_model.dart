@@ -3,15 +3,26 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/table/table_row_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
 class TableRowCellModel extends BoxModel
 {
+  // row
+  TableRowModel? get row => parent is TableRowModel ? parent as TableRowModel : null;
+
   @override
-  LayoutType get layoutType => LayoutType.row;
+  double? get paddingTop => super.paddingTop ?? row?.paddingTop;
+
+  @override
+  double? get paddingRight => super.paddingRight ?? row?.paddingRight;
+
+  @override
+  double? get paddingBottom => super.paddingBottom ?? row?.paddingBottom;
+
+  @override
+  double? get paddingLeft => super.paddingLeft ?? row?.paddingLeft;
 
   // Position in Row
   int? get index
@@ -22,6 +33,21 @@ class TableRowCellModel extends BoxModel
     }
     return null;
   }
+
+  // value - used to sort
+  StringObservable? _value;
+  set value(dynamic v)
+  {
+    if (_value != null)
+    {
+      _value!.set(v);
+    }
+    else if (v != null)
+    {
+      _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope);
+    }
+  }
+  String? get value => _value?.get();
 
   // selected
   BooleanObservable? _selected;
@@ -38,74 +64,8 @@ class TableRowCellModel extends BoxModel
   }
   bool get selected => _selected?.get() ?? false;
 
-  // color
-  ColorObservable? _color;
-  @override
-  Color? get color
-  {
-    if (selected == true) return selectedcolor;
-    if ((parent != null) && (parent is TableRowModel) && ((parent as TableRowModel).selected == true)) return (parent as TableRowModel).selectedcolor;
-    if (_color == null)
-    {
-      if ((parent != null) && (parent is TableRowModel)) return (parent as TableRowModel).color;
-      return null;
-    }
-    return _color?.get();
-  }
 
-  ////////////////////
-  /* alter color */
-  ////////////////////
-  ColorObservable? _altcolor;
-  set altcolor(dynamic v) {
-    if (_altcolor != null) {
-      _altcolor!.set(v);
-    } else if (v != null) {
-      _altcolor = ColorObservable(
-          Binding.toKey(id, 'altcolor'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  Color? get altcolor
-  {
-    if (selected == true) return selectedcolor;
-    if ((parent != null) && (parent is TableRowModel) && ((parent as TableRowModel).selected == true)) return (parent as TableRowModel).selectedcolor;
-    if (_altcolor == null)
-    {
-      if ((parent != null) && (parent is TableRowModel)) return (parent as TableRowModel).altcolor;
-      return null;
-    }
-    return _altcolor?.get();
-  }
-  ////////////////////
-  /* selected color */
-  ////////////////////
-  ColorObservable? _selectedcolor;
-  set selectedcolor(dynamic v) {
-    if (_selectedcolor != null) {
-      _selectedcolor!.set(v);
-    } else if (v != null) {
-      _selectedcolor = ColorObservable(
-          Binding.toKey(id, 'selectedcolor'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  Color? get selectedcolor
-  {
-    if (_selectedcolor == null)
-    {
-      if ((parent != null) && (parent is TableRowModel)) return (parent as TableRowModel).selectedcolor;
-      return null;
-    }
-    return _selectedcolor?.get();
-  }
-
-  TableRowCellModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic altcolor}) : super(parent, id)
-  {
-    if (width  != null) this.width  = width;
-    if (height != null) this.height = height;
-    this.altcolor = altcolor;
-  }
+  TableRowCellModel(WidgetModel parent, String? id) : super(parent, id);
 
   static TableRowCellModel? fromXml(WidgetModel parent, XmlElement xml) {
     TableRowCellModel? model;
@@ -136,20 +96,22 @@ class TableRowCellModel extends BoxModel
     super.deserialize(xml);
 
     // properties
-    altcolor      = Xml.get(node: xml, tag: 'altcolor');
-    selectedcolor = Xml.get(node: xml, tag: 'selectedcolor');
+    value = Xml.get(node: xml, tag: 'value');
   }
 
-  void onSelect() {
+  void onSelect()
+  {
     if (selected == false) selected = !selected;
-    if ((parent != null) && (parent is TableRowModel)) {
+    if ((parent != null) && (parent is TableRowModel))
+    {
       (parent as TableRowModel).onSelect(this);
     }
   }
 
   @override
-  dispose() {
-// Log().debug('dispose called on => <$elementName id="$id">');
+  dispose()
+  {
+    // Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
   }
 }

@@ -1,7 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'dart:collection';
+import 'dart:math';
 import 'package:fml/data/data.dart';
-import 'package:fml/datasources/transforms/sort.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
@@ -16,15 +17,8 @@ import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
-class MyCustomScrollBehavior extends MaterialScrollBehavior {
-  @override
-  Widget buildScrollbar(
-      BuildContext context, Widget child, ScrollableDetails details) {
-    return child;
-  }
-}
-
-class TableView extends StatefulWidget implements IWidgetView {
+class TableView extends StatefulWidget implements IWidgetView
+{
   @override
   final TableModel model;
   TableView(this.model) : super(key: ObjectKey(model));
@@ -42,6 +36,8 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
 
   final List<PlutoColumn> columns = [];
   final List<PlutoRow> rows = [];
+
+  final HashMap<int, HashMap<int,Widget>> views = HashMap<int, HashMap<int,Widget>>();
 
   @override
   void initState()
@@ -81,14 +77,12 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
   }
 
   @override
-  void dispose() {
+  void dispose()
+  {
     // remove event listeners
-    EventManager.of(widget.model)
-        ?.removeEventListener(EventTypes.scroll, onScroll);
-    EventManager.of(widget.model)
-        ?.removeEventListener(EventTypes.complete, onComplete);
-    EventManager.of(widget.model)
-        ?.removeEventListener(EventTypes.scrollto, onScrollTo);
+    EventManager.of(widget.model)?.removeEventListener(EventTypes.scroll, onScroll);
+    EventManager.of(widget.model)?.removeEventListener(EventTypes.complete, onComplete);
+    EventManager.of(widget.model)?.removeEventListener(EventTypes.scrollto, onScrollTo);
 
     hScroller?.dispose();
     vScroller?.dispose();
@@ -96,24 +90,31 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     super.dispose();
   }
 
-  closeKeyboard() async {
-    try {
+  closeKeyboard() async
+  {
+    try
+    {
       FocusScope.of(context).unfocus();
-    } catch (e) {
+    }
+    catch (e)
+    {
       Log().exception(e);
     }
   }
 
   /// Takes an event (onscroll) and uses the id to scroll to that widget
-  onScrollTo(Event event) {
+  onScrollTo(Event event)
+  {
     // BuildContext context;
     event.handled = true;
-    if (event.parameters!.containsKey('id')) {
+    if (event.parameters!.containsKey('id'))
+    {
       String? id = event.parameters!['id'];
       var child = widget.model.findDescendantOfExactType(null, id: id);
 
       // if there is an error with this, we need to check _controller.hasClients as it must not be false when using [ScrollPosition],such as [position], [offset], [animateTo], and [jumpTo],
-      if ((child != null) && (child.context != null)) {
+      if ((child != null) && (child.context != null))
+      {
         Scrollable.ensureVisible(child.context,
             duration: Duration(seconds: 1), alignment: 0.2);
       }
@@ -222,16 +223,9 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
   @override
   onModelChange(WidgetModel model, {String? property, dynamic value})
   {
-    try
-    {
-      var b = Binding.fromString(property);
-      if (b?.property == 'busy') return;
-      if (mounted) setState(() {});
-    }
-    catch (e)
-    {
-      Log().exception(e, caller: ' onModelChange(WidgetModel model,{String? property, dynamic value})');
-    }
+    var b = Binding.fromString(property);
+    if (b?.property == 'busy') return;
+    if (mounted) setState(() {});
   }
 
   /// [PlutoGridStateManager] has many methods and properties to dynamically manipulate the grid.
@@ -245,41 +239,42 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     columns.clear();
     for (var model in widget.model.header!.cells)
     {
+      var height = widget.model.header?.height ?? PlutoGridSettings.rowHeight;
+      var title = WidgetSpan(child: SizedBox(height: height, child:BoxView(model)));
+
       var column = PlutoColumn(
         title: model.id,
-        sort: model.sortType == SortTypes.ascending ? PlutoColumnSort.ascending : (model.sortType == SortTypes.descending ? PlutoColumnSort.descending : PlutoColumnSort.none),
-        titleSpan: WidgetSpan(child: BoxView(model)),
-        field: model.field ?? model.id,
+        sort: PlutoColumnSort.none,
+        titleSpan: title,
+        field: model.id,
         type: PlutoColumnType.text(),
-        enableSorting: model.sortBy != null,
+        enableSorting: model.sortable,
         enableEditingMode: false,
+        titlePadding: EdgeInsets.all(0),
+        cellPadding: EdgeInsets.all(0),
         renderer: (rendererContext) => cellBuilder(rendererContext));
 
       columns.add(column);
     }
 
-    // build the data
-    rows.clear();
-    if (widget.model.data is Data)
-    {
-      var list = (widget.model.data as Data);
-      for (int i = 0; i < list.length; i++)
-      {
-        var data = list[i];
-        Map<String, PlutoCell> cells = {};
-        for (var column in columns)
-        {
-          var value = Data.readValue(data, column.field);
-          cells[column.field] = PlutoCell(value: value);
-        }
-        rows.add(PlutoRow(cells: cells));
-      }
-    }
+    // style
+    PlutoGridStyleConfig style = PlutoGridStyleConfig(
+      defaultCellPadding: EdgeInsets.all(0),
+      columnHeight: widget.model.header?.height ?? PlutoGridSettings.rowHeight,
+      rowHeight: widget.model.getRowModel(0)?.height ?? PlutoGridSettings.rowHeight,
+      gridBorderRadius: BorderRadius.circular(10)
+    );
+
+    // config
+    PlutoGridConfiguration configuration = PlutoGridConfiguration(
+      style: style
+    );
 
     // build the grid
     var view = PlutoGrid(key: GlobalKey(),
+      configuration: configuration,
       columns: columns,
-      rows: rows,
+      rows: [],
       onLoaded: (PlutoGridOnLoadedEvent event)
       {
         stateManager = event.stateManager;
@@ -297,27 +292,190 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
       {
         var index = columns.contains(event.column) ? columns.indexOf(event.column) : null;
         if (index == null) return;
-        await widget.model.onSortData(index);
-      }
+        views.clear();
+        //await widget.model.onSortData(index);
+      },
+        createFooter: (stateManager) {
+          return PlutoLazyPagination(
+            // Determine the first page.
+            // Default is 1.
+            initialPage: 1,
+
+            // First call the fetch function to determine whether to load the page.
+            // Default is true.
+            initialFetch: true,
+
+            // Decide whether sorting will be handled by the server.
+            // If false, handle sorting on the client side.
+            // Default is true.
+            fetchWithSorting: true,
+
+            // Decide whether filtering is handled by the server.
+            // If false, handle filtering on the client side.
+            // Default is true.
+            fetchWithFiltering: true,
+
+            // Determines the page size to move to the previous and next page buttons.
+            // Default value is null. In this case,
+            // it moves as many as the number of page buttons visible on the screen.
+            pageSizeToMove: null,
+            fetch: fetch,
+            stateManager: stateManager,
+          );
+    }
     );
     return view;
   }
 
+  int pageSize = 7;
+
+  void buildRows(int page)
+  {
+    // build rows
+    while (rows.length < (page * pageSize))
+    {
+      var row = buildRow(rows.length);
+      if (row == null) break;
+    }
+  }
+
+  PlutoRow? buildRow(int rowIdx)
+  {
+    // row already created
+    if (rowIdx < rows.length) return rows[rowIdx];
+
+    // create the row
+    PlutoRow? row;
+    if (widget.model.data is Data && rowIdx < (widget.model.data as Data).length)
+    {
+      Map<String, PlutoCell> cells = {};
+
+      // get row model
+      int colIdx = 0;
+      for (var column in columns)
+      {
+        var model = widget.model.getRowCellModel(rowIdx, colIdx);
+        cells[column.field] = PlutoCell(value: model?.value);
+        colIdx++;
+      }
+      row = PlutoRow(cells: cells, sortIdx: rowIdx);
+      rows.add(row);
+    }
+
+    return row;
+  }
+
   Widget cellBuilder(PlutoColumnRendererContext context)
   {
-    var colIdx = columns.contains(context.column) ? columns.indexOf(context.column) : null;
+    if (!columns.contains(context.column)) return Text("");
+    if (!rows.contains(context.row)) return Text("");
+
+    var colIdx = columns.indexOf(context.column);
+    var rowIdx = rows.indexOf(context.row);
+
+    print("row-> $rowIdx");
+
+    // return the view
+    if (views[rowIdx]?.containsKey(colIdx) ?? false) return views[rowIdx]![colIdx]!;
 
     Widget? view;
 
     // get row model
-    TableRowModel? model = widget.model.getRowModel(context.rowIdx);
+    TableRowModel? model = widget.model.getRowModel(rowIdx);
 
     // get cell view
-    if (model != null && colIdx != null && colIdx < model.cells.length)
+    if (model != null && colIdx >= 0 && colIdx < model.cells.length)
     {
-      view = BoxView(model.cells[colIdx]);
+      // build the view
+      view = RepaintBoundary(child: BoxView(model.cells[colIdx]));
+
+      // cache the view
+      if (!views.containsKey(rowIdx)) views[rowIdx] = HashMap<int,Widget>();
+      views[rowIdx]![colIdx] = view;
+    }
+    else
+    {
+      view = Text("");
     }
 
-    return view ?? Text("");
+    return view;
+  }
+
+  Future<PlutoLazyPaginationResponse> fetch(PlutoLazyPaginationRequest request) async
+  {
+    // build rows
+    buildRows(request.page);
+
+    // build the list
+    List<PlutoRow> tempList = this.rows.toList();
+
+    // If you have a filtering state,
+    // you need to implement it so that the user gets data from the server
+    // according to the filtering state.
+    //
+    // request.page is 1 when the filtering state changes.
+    // This is because, when the filtering state is changed,
+    // the first page must be loaded with the new filtering applied.
+    //
+    // request.filterRows is a List<PlutoRow> type containing filtering information.
+    // To convert to Map type, you can do as follows.
+    //
+    // FilterHelper.convertRowsToMap(request.filterRows);
+    //
+    // When the filter of abc is applied as Contains type to column2
+    // and 123 as Contains type to column3, for example
+    // It is returned as below.
+    // {column2: [{Contains: 123}], column3: [{Contains: abc}]}
+    //
+    // If multiple filtering conditions are set in one column,
+    // multiple conditions are included as shown below.
+    // {column2: [{Contains: abc}, {Contains: 123}]}
+    //
+    // The filter type in FilterHelper.defaultFilters is the default,
+    // If there is user-defined filtering,
+    // the title set by the user is returned as the filtering type.
+    // All filtering can change the value returned as a filtering type by changing the name property.
+    // In case of PlutoFilterTypeContains filter, if you change the static type name to include
+    // PlutoFilterTypeContains.name = 'include';
+    // {column2: [{include: abc}, {include: 123}]} will be returned.
+    if (request.filterRows.isNotEmpty)
+    {
+      final filter = FilterHelper.convertRowsToFilter(request.filterRows, stateManager.refColumns);
+      //tempList = fakeFetchedRows.where(filter!).toList();
+    }
+
+    // If there is a sort state,
+    // you need to implement it so that the user gets data from the server
+    // according to the sort state.
+    //
+    // request.page is 1 when the sort state changes.
+    // This is because when the sort state changes,
+    // new data to which the sort state is applied must be loaded.
+    if (request.sortColumn != null && !request.sortColumn!.sort.isNone)
+    {
+      tempList = [...tempList];
+      tempList.sort((a, b)
+      {
+        final sortA = request.sortColumn!.sort.isAscending ? a : b;
+        final sortB = request.sortColumn!.sort.isAscending ? b : a;
+        return request.sortColumn!.type.compare(sortA.cells[request.sortColumn!.field]!.valueForSorting, sortB.cells[request.sortColumn!.field]!.valueForSorting);
+      });
+    }
+
+    final page = request.page;
+
+    final rows = widget.model.data is Data ? (widget.model.data as Data).length : 0;
+
+    final totalPage = (rows / pageSize).ceil();
+    final start = (page - 1) * pageSize;
+    final end   = start + pageSize;
+
+    Iterable<PlutoRow> fetchedRows = tempList.getRange(max(0, start), min(tempList.length, end));
+
+    var x = fetchedRows.toList();
+
+    //await Future.delayed(const Duration(milliseconds: 500));
+
+    return Future.value(PlutoLazyPaginationResponse(totalPage: totalPage, rows: x));
   }
 }

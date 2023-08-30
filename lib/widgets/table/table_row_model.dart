@@ -98,33 +98,16 @@ class TableRowModel extends BoxModel
     return _onclick?.get();
   }
 
-  // alter color
-  ColorObservable? _altcolor;
-  set altcolor(dynamic v) {
-    if (_altcolor != null) {
-      _altcolor!.set(v);
-    } else if (v != null) {
-      _altcolor = ColorObservable(
-          Binding.toKey(id, 'altcolor'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  Color? get altcolor
-  {
-    if (_altcolor == null)
-    {
-      if ((parent != null) && (parent is TableModel)) return (parent as TableModel).altcolor;
-      return null;
-    }
-    return _altcolor?.get();
-  }
-
-  // onccomplete
+  // onCcomplete
   StringObservable? _oncomplete;
-  set oncomplete(dynamic v) {
-    if (_oncomplete != null) {
+  set oncomplete(dynamic v)
+  {
+    if (_oncomplete != null)
+    {
       _oncomplete!.set(v);
-    } else if (v != null) {
+    }
+    else if (v != null)
+    {
       _oncomplete = StringObservable(Binding.toKey(id, 'oncomplete'), v, scope: scope, lazyEval: true);
     }
   }
@@ -157,35 +140,10 @@ class TableRowModel extends BoxModel
     dirty = isDirty;
   }
 
-  TableRowModel(
-    WidgetModel parent,
-    String? id, {
-    dynamic data,
-    dynamic width,
-    dynamic height,
-    dynamic oncomplete,
-    dynamic halign,
-    dynamic valign,
-    dynamic center,
-    dynamic altcolor,
-    dynamic wrap,
-    dynamic color,
-    dynamic onclick,
-  }) : super(parent, id, scope: Scope(parent: parent.scope))
+  TableRowModel(WidgetModel parent, String? id, {dynamic data}) : super(parent, id, scope: Scope(parent: parent.scope))
   {
-    if (width  != null) this.width  = width;
-    if (height != null) this.height = height;
-
     this.data = data;
-    this.altcolor = altcolor;
-    this.oncomplete = oncomplete;
     dirty = false;
-    this.color = color;
-    this.halign = halign;
-    this.center = center;
-    this.valign = valign;
-    this.wrap = wrap;
-    this.onclick = onclick;
   }
 
   static TableRowModel? fromXml(WidgetModel parent, XmlElement? xml, {dynamic data})
@@ -219,7 +177,8 @@ class TableRowModel extends BoxModel
 
     // Get Cells
     List<TableRowCellModel> models = findChildrenOfExactType(TableRowCellModel).cast<TableRowCellModel>();
-    for (TableRowCellModel model in models) {
+    for (TableRowCellModel model in models)
+    {
       cells.add(model);
     }
 
@@ -227,7 +186,8 @@ class TableRowModel extends BoxModel
     for (TableRowCellModel _ in cells)
     {
       List<IFormField> fields = findChildrenOfExactType(IFormField).cast<IFormField>();
-      for (var field in fields) {
+      for (var field in fields)
+      {
         if (this.fields == null) this.fields = [];
         this.fields!.add(field);
 
@@ -315,9 +275,11 @@ class TableRowModel extends BoxModel
     return ok;
   }
 
-  void onSelect(TableRowCellModel cell) {
-    if ((parent != null) && (parent is TableModel)) {
-      (parent as TableModel).onSelect(this, cell);
+  void onSelect(TableRowCellModel cell)
+  {
+    if ((parent != null) && (parent is TableModel))
+    {
+      //(parent as TableModel).onSelect(this, cell);
     }
   }
 

@@ -37,11 +37,12 @@ import 'package:fml/widgets/camera/camera_model.dart';
 import 'package:fml/widgets/card/card_model.dart';
 import 'package:fml/widgets/center/center_model.dart';
 import 'package:fml/widgets/chart/chart_model.dart';
-import 'package:fml/widgets/chart/axis/chart_axis_model.dart';
+import 'package:fml/widgets/chart_painter/axis/chart_axis_model.dart';
 import 'package:fml/widgets/chart/label/chart_label_model.dart';
 import 'package:fml/widgets/chart/series/chart_series_model.dart';
 import 'package:fml/widgets/chart_painter/bar/bar_chart_model.dart';
 import 'package:fml/widgets/chart_painter/bar/bar_series.dart';
+import 'package:fml/widgets/chart_painter/chart_model.dart';
 import 'package:fml/widgets/chart_painter/pie/pie_chart_model.dart';
 
 // import 'package:fml/widgets/chart_syncfusion/chart_model.dart' as SFCHART;
@@ -917,14 +918,14 @@ class WidgetModel implements IDataSourceListener {
         break;
 
       case "xaxis":
-        if (parent is ChartModel) {
+        if (parent is ChartPainterModel) {
           model = ChartAxisModel.fromXml(parent, node, ChartAxis.X);
         }
         // else if (parent is SFCHART.ChartModel) model = SFCHART.ChartAxisModel.fromXml(parent, node, SFCHART.Axis.X);
         break;
 
       case "yaxis":
-        if (parent is ChartModel) {
+        if (parent is ChartPainterModel) {
           model = ChartAxisModel.fromXml(parent, node, ChartAxis.Y);
         }
         // else if (parent is SFCHART.ChartModel) model = SFCHART.ChartAxisModel.fromXml(parent, node, SFCHART.Axis.Y);

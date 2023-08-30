@@ -88,12 +88,14 @@ class _LineChartViewState extends WidgetState<LineChartView>
           topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
           rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
           leftTitles: AxisTitles(
+              axisNameWidget: !S.isNullOrEmpty(widget.model.yaxis.title) ? Text(widget.model.yaxis.title ?? "") : null,
               sideTitles: SideTitles(
                 showTitles: true,
                 getTitlesWidget: leftTitles,
               )
           ),
           bottomTitles: AxisTitles(
+            axisNameWidget: !S.isNullOrEmpty(widget.model.xaxis.title) ? Text(widget.model.xaxis.title ?? "") : null,
               sideTitles: SideTitles(
                 showTitles: true,
                 reservedSize: 44,

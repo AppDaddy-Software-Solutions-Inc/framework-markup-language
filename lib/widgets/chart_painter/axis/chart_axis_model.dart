@@ -17,7 +17,19 @@ class ChartAxisModel extends WidgetModel
   /// Axis type: `category`, `numeric`, `datetime`, `date` or `time`
   ///
   /// This is used to help display the data on an axis correctly based on the data type
-  ChartAxisType? type;
+  StringObservable? _type;
+  set type (dynamic v)
+  {
+    if (_type != null)
+    {
+      _type!.set(v);
+    }
+    else if (v != null)
+    {
+      _type = StringObservable(Binding.toKey(id, 'type'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get type => _type?.get();
 
   final ChartAxis axis;
 
@@ -161,7 +173,7 @@ class ChartAxisModel extends WidgetModel
       String?  id,
       this.axis,
       {
-        String? type,
+        dynamic type,
         dynamic labelrotation,
         dynamic labelvisible,
         dynamic labelsize,
@@ -194,6 +206,7 @@ class ChartAxisModel extends WidgetModel
     this.min            = min;
     this.max            = max;
     this.truncate       = truncate;
+    this.type           = type;
     // this.minimum        = minimum;
     // this.maximum        = maximum;
     // this.visibleminimum = visibleminimum;
@@ -207,36 +220,6 @@ class ChartAxisModel extends WidgetModel
     // this.zoomposition   = zoomposition;
 
     if (S.isNullOrEmpty(type)) type = type?.trim().toLowerCase();
-    try {
-      switch (S.toEnum(type, ChartAxisType.values))
-      {
-        case ChartAxisType.category:
-          this.type = ChartAxisType.category;
-          break;
-        case ChartAxisType.numeric:
-          this.type = ChartAxisType.numeric;
-          break;
-        case ChartAxisType.datetime:
-          this.type = ChartAxisType.datetime;
-          break;
-        case ChartAxisType.date:
-          this.type = ChartAxisType.date;
-          break;
-        case ChartAxisType.time:
-          this.type = ChartAxisType.time;
-          break;
-        default:
-          if (axis == ChartAxis.X) {
-            this.type = null;
-          }
-          else {
-            this.type = ChartAxisType.numeric;
-          }
-          break;
-      }
-    } catch(e) {
-      Log().exception(e, caller: 'ChartAxisModel');
-    }
 
   }
 

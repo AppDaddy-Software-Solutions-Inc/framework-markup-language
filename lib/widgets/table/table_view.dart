@@ -222,14 +222,15 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     columns.clear();
     for (var model in widget.model.header!.cells)
     {
+      var name   = model.name ?? "Column ${model.index}";
       var height = widget.model.header?.height ?? PlutoGridSettings.rowHeight;
       var title = WidgetSpan(child: SizedBox(height: height, child:BoxView(model)));
 
       var column = PlutoColumn(
-          title: model.id,
+          title: name,
           sort: PlutoColumnSort.none,
           titleSpan: title,
-          field: model.id,
+          field: name,
           type: PlutoColumnType.text(),
           enableSorting: model.sortable,
           enableEditingMode: false,
@@ -265,7 +266,12 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     return configuration;
   }
 
-  void buildAllRows() => buildOutRows(double.infinity.toInt());
+  void buildAllRows()
+  {
+    var rows = widget.model.data is Data ? (widget.model.data as Data).length : 0;
+    buildOutRows(rows);
+  }
+
   void buildOutRows(int length)
   {
     // build rows
@@ -344,7 +350,7 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     var filter = request.filterRows.isNotEmpty;
 
     // rows are sorted?
-    var sort   = request.sortColumn != null && !request.sortColumn!.sort.isNone;
+    var sort = request.sortColumn != null && !request.sortColumn!.sort.isNone;
 
     // total number of rows
     var rows = widget.model.data is Data ? (widget.model.data as Data).length : 0;

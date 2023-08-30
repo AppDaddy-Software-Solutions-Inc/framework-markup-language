@@ -2,8 +2,10 @@
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/boolean.dart';
+import 'package:fml/observable/observables/string.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/table/table_header_model.dart';
+import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/helper/common_helpers.dart';
@@ -70,15 +72,23 @@ class TableHeaderCellModel extends BoxModel
   }
   bool get resizeable => _resizeable?.get() ?? hdr?.resizeable ?? true;
 
-  // position in row
-  int? get index
+  // name - used by grid display
+  StringObservable? _name;
+  set name(dynamic v)
   {
-    if ((parent != null) && (parent is TableHeaderModel))
+    if (_name != null)
     {
-      return (parent as TableHeaderModel).cells.indexOf(this);
+      _name!.set(v);
     }
-    return null;
+    else if (v != null)
+    {
+      _name = StringObservable(Binding.toKey(id, 'name'), v, scope: scope, listener: onPropertyChange);
+    }
   }
+  String? get name => _name?.get();
+  
+  // position in row
+  int? get index => hdr?.cells.indexOf(this);
 
   TableHeaderCellModel(WidgetModel parent, String? id) : super(parent, id);
 
@@ -112,6 +122,13 @@ class TableHeaderCellModel extends BoxModel
     super.deserialize(xml);
 
     // properties
+    name = Xml.get(node:xml, tag: 'name');
+    if (name == null)
+    {
+      TextModel? text = findChildOfExactType(TextModel);
+      name = text?.value;
+    }
+
     sortable   = Xml.get(node:xml, tag: 'sortable');
     draggable  = Xml.get(node:xml, tag: 'draggable');
     resizeable = Xml.get(node:xml, tag: 'resizeable');

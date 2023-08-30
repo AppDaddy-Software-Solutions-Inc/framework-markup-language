@@ -27,6 +27,12 @@ class TableHeaderCellModel extends BoxModel
   @override
   double? get paddingLeft => super.paddingLeft ?? hdr?.paddingLeft;
 
+  @override
+  String? get halign => super.halign ?? hdr?.halign;
+
+  @override
+  String? get valign => super.valign ?? hdr?.valign;
+
   // allow sorting
   BooleanObservable? _sortable;
   set sortable(dynamic v)

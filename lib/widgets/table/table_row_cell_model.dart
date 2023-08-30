@@ -24,6 +24,12 @@ class TableRowCellModel extends BoxModel
   @override
   double? get paddingLeft => super.paddingLeft ?? row?.paddingLeft;
 
+  @override
+  String? get halign => super.halign ?? row?.halign;
+
+  @override
+  String? get valign => super.valign ?? row?.valign;
+
   // Position in Row
   int? get index
   {

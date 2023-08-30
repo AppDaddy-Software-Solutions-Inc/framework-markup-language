@@ -40,6 +40,12 @@ class TableModel extends BoxModel implements IForm
   @override
   String get radius => super.radius ?? "10";
 
+  @override
+  String get halign => super.halign ?? "center";
+
+  @override
+  String get valign => super.valign ?? "center";
+
   // allow sorting
   BooleanObservable? _sortable;
   set sortable(dynamic v)

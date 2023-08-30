@@ -9,6 +9,7 @@ import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:intl/intl.dart';
 import 'line_chart_model.dart';
 
 /// Chart View
@@ -32,15 +33,23 @@ class _LineChartViewState extends WidgetState<LineChartView>
   BusyView? busy;
 
   Widget bottomTitles(double value, TitleMeta meta) {
-    var style = TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.outline);
-    int? index = S.toInt(value);
-    String text = (index != null && widget.model.uniqueValues.isNotEmpty ? widget.model.uniqueValues.elementAt(index) : value).toString();
-    // replace the value with the x value of the index[value] in the list of data points.
-    return SideTitleWidget(
-      axisSide: meta.axisSide,
-      child: Text(text, style: style),
-    );
-  }
+    var style = TextStyle(fontSize: 8, color: Theme.of(context).colorScheme.outline);
+    //int? index = S.toInt(value);
+    String text = "";
+    if(widget.model.xaxis.type == 'date') {
+      DateFormat(widget.model.xaxis.format ?? 'yyyy/MM/dd').format(DateTime.fromMillisecondsSinceEpoch(value.toInt())).toString();
+    } else if (widget.model.xaxis.type == 'category'){
+      text = value.toInt() <= widget.model.uniqueValues.length && widget.model.uniqueValues.isNotEmpty ? widget.model.uniqueValues.elementAt(value.toInt()).toString(): value.toString();
+    } else {
+      text = value.toString();
+    }
+      // replace the value with the x value of the index[value] in the list of data points.
+      return SideTitleWidget(
+        axisSide: meta.axisSide,
+        child: Text(text, style: style),
+        angle: 0.30,
+      );
+    }
 
   Widget leftTitles(double value, TitleMeta meta) {
     var style = TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.outline);
@@ -88,17 +97,20 @@ class _LineChartViewState extends WidgetState<LineChartView>
           topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
           rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
           leftTitles: AxisTitles(
-              axisNameWidget: !S.isNullOrEmpty(widget.model.yaxis.title) ? Text(widget.model.yaxis.title ?? "") : null,
+              axisNameWidget: !S.isNullOrEmpty(widget.model.yaxis.title) ? Text(widget.model.yaxis.title!, style: TextStyle(fontSize: 12),): null,
               sideTitles: SideTitles(
+                interval: S.toDouble(widget.model.yaxis.interval),
+                reservedSize: 24,
                 showTitles: true,
                 getTitlesWidget: leftTitles,
               )
           ),
           bottomTitles: AxisTitles(
-            axisNameWidget: !S.isNullOrEmpty(widget.model.xaxis.title) ? Text(widget.model.xaxis.title ?? "") : null,
+            axisNameWidget: !S.isNullOrEmpty(widget.model.xaxis.title) ? Text(widget.model.xaxis.title!, style: TextStyle(fontSize: 12),): null,
               sideTitles: SideTitles(
+                interval: widget.model.xaxis.type == 'category' ? 1 : S.toDouble(widget.model.xaxis.interval),
                 showTitles: true,
-                reservedSize: 44,
+                reservedSize: 24,
                 getTitlesWidget: bottomTitles,
               )
           ),

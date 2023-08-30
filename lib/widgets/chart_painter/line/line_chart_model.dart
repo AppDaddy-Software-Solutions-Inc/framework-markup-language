@@ -238,7 +238,9 @@ class LineChartModel extends ChartPainterModel
           serie.iteratePoints(list, plotOnFirstPass: false);
           // add the built x values to a unique list to map to indeces
           if (xaxis.type == "category") {
+            //with category, we may need to change the xValues to a map rather than a set for when multiple points are there
             serie.plotPoints(serie.dataList, true, false);
+            uniqueValues.addAll(serie.xValues);
           }
           else if (xaxis.type == "date") {
             serie.plotPoints(serie.dataList, false, true);
@@ -256,7 +258,7 @@ class LineChartModel extends ChartPainterModel
               color: serie.color ?? ColorHelper.fromString('random')));
           serie.xValues.clear();
         }
-        uniqueValues.clear();
+
         notifyListeners('list', null);
       }
     }

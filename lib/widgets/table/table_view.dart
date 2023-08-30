@@ -9,6 +9,7 @@ import 'package:fml/observable/binding.dart';
 import 'package:fml/event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_view.dart';
+import 'package:fml/widgets/table/table_header_cell_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/table/table_model.dart';
@@ -35,6 +36,15 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
   final List<PlutoRow> rows = [];
 
   final HashMap<int, HashMap<int,Widget>> views = HashMap<int, HashMap<int,Widget>>();
+
+  @override
+  void initState()
+  {
+    super.initState();
+
+    // build the columns
+    _buildColumns();
+  }
 
   @override
   didChangeDependencies()
@@ -217,6 +227,29 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
   /// You can manipulate the grid dynamically at runtime by passing this through the [onLoaded] callback.
   late final PlutoGridStateManager stateManager;
 
+  PlutoColumnType getColumnType(TableHeaderCellModel model)
+  {
+    var type = model.type?.toLowerCase().trim();
+    switch (type)
+    {
+      case "text":
+      case "string":
+        return PlutoColumnType.text();
+      case "number":
+      case "numeric":
+        return PlutoColumnType.number();
+      case "money":
+      case "currency":
+        return PlutoColumnType.currency();
+      case "date":
+        return PlutoColumnType.date();
+      case "time":
+        return PlutoColumnType.time();
+      default:
+        return PlutoColumnType.text();
+    }
+  }
+
   void _buildColumns()
   {
     columns.clear();
@@ -224,14 +257,14 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     {
       var name   = model.name ?? "Column ${model.index}";
       var height = widget.model.header?.height ?? PlutoGridSettings.rowHeight;
-      var title = WidgetSpan(child: SizedBox(height: height, child:BoxView(model)));
+      var title  = WidgetSpan(child: SizedBox(height: height, child:BoxView(model)));
 
       var column = PlutoColumn(
           title: name,
           sort: PlutoColumnSort.none,
           titleSpan: title,
           field: name,
-          type: PlutoColumnType.text(),
+          type: getColumnType(model),
           enableSorting: model.sortable,
           enableEditingMode: false,
           titlePadding: EdgeInsets.all(0),
@@ -577,7 +610,7 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
   void onLoaded(PlutoGridOnLoadedEvent event)
   {
     stateManager = event.stateManager;
-    stateManager.setShowColumnFilter(true);
+    //stateManager.setShowColumnFilter(true);
   }
 
   void onChanged(PlutoGridOnChangedEvent event)
@@ -666,9 +699,6 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
   @override
   Widget build(BuildContext context)
   {
-    // build the columns
-    _buildColumns();
-
     // build style
     var config = _buildConfig();
 

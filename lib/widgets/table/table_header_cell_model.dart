@@ -10,6 +10,8 @@ import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/helper/common_helpers.dart';
 
+enum ColumnTypes {string, numeric, date, time}
+
 class TableHeaderCellModel extends BoxModel
 {
   // header
@@ -32,6 +34,21 @@ class TableHeaderCellModel extends BoxModel
 
   @override
   String? get valign => super.valign ?? hdr?.valign;
+
+  // column type
+  StringObservable? _type;
+  set type(dynamic v)
+  {
+    if (_type != null)
+    {
+      _type!.set(v);
+    }
+    else if (v != null)
+    {
+      _type = StringObservable(Binding.toKey(id, 'type'), v, scope: scope);
+    }
+  }
+  String? get type => _type?.get();
 
   // allow sorting
   BooleanObservable? _sortable;
@@ -135,6 +152,7 @@ class TableHeaderCellModel extends BoxModel
       name = text?.value;
     }
 
+    type       = Xml.get(node:xml, tag: 'type');
     sortable   = Xml.get(node:xml, tag: 'sortable');
     draggable  = Xml.get(node:xml, tag: 'draggable');
     resizeable = Xml.get(node:xml, tag: 'resizeable');

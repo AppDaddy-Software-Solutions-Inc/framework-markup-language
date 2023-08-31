@@ -259,7 +259,16 @@ class TableModel extends BoxModel implements IForm
     sortable   = Xml.get(node: xml, tag: 'sortable');
     draggable  = Xml.get(node: xml, tag: 'draggable');
     resizeable = Xml.get(node: xml, tag: 'resizeable');
-    pageSize   = Xml.get(node: xml, tag: 'pagesize');
+
+    // legacy support
+    var paged = S.toBool(Xml.get(node: xml, tag: 'pagesize'));
+    if (paged != false)
+    {
+      var size = Xml.get(node: xml, tag: 'pagesize');
+      if (size == null && paged == true) size = "20";
+      pageSize = size;
+    }
+
     oncomplete = Xml.get(node: xml, tag: 'oncomplete');
     filter     = Xml.get(node: xml, tag: 'filter');
     filterBar  = Xml.get(node: xml, tag: 'filterbar');
@@ -346,7 +355,13 @@ class TableModel extends BoxModel implements IForm
 
       this.data = data;
     }
-    notifyListeners('list', null);
+
+    var view = findListenerOfExactType(TableViewState);
+    if (view is TableViewState)
+    {
+      (view as TableViewState).refresh();
+    }
+    //notifyListeners('list', null);
     return true;
   }
 

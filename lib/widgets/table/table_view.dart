@@ -26,10 +26,10 @@ class TableView extends StatefulWidget implements IWidgetView
   TableView(this.model) : super(key: ObjectKey(model));
 
   @override
-  State<TableView> createState() => _TableViewState();
+  State<TableView> createState() => TableViewState();
 }
 
-class _TableViewState extends WidgetState<TableView>
+class TableViewState extends WidgetState<TableView>
 {
   Widget? busy;
 
@@ -581,11 +581,17 @@ class _TableViewState extends WidgetState<TableView>
     }
   }
 
-  void onSorted (PlutoGridOnSortedEvent event) async
+  void onSorted(PlutoGridOnSortedEvent event) async
   {
     views.clear();
   }
 
+  void refresh()
+  {
+    stateManager?.eventManager?.addEvent(PlutoGridSetColumnFilterEvent(filterRows: []));
+
+    //stateManager?.resetPage();
+  }
   PlutoLazyPagination _pageLoader(PlutoGridStateManager stateManager)
   {
     var loader = PlutoLazyPagination(
@@ -667,7 +673,7 @@ class _TableViewState extends WidgetState<TableView>
 
     // build the grid
     if (grid == null)
-    grid = PlutoGrid(
+    grid = PlutoGrid(key: GlobalKey(),
         configuration: config,
         columns: columns,
         rows: [],

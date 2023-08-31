@@ -29,10 +29,15 @@ class TableView extends StatefulWidget implements IWidgetView
   State<TableView> createState() => _TableViewState();
 }
 
-class _TableViewState extends WidgetState<TableView> implements IEventScrolling
+class _TableViewState extends WidgetState<TableView>
 {
   Widget? busy;
 
+  /// [PlutoGridStateManager] has many methods and properties to dynamically manipulate the grid.
+  /// You can manipulate the grid dynamically at runtime by passing this through the [onLoaded] callback.
+  PlutoGridStateManager? stateManager;
+
+  // pluto grid
   PlutoGrid? grid;
 
   // list of Pluto Columns
@@ -40,11 +45,6 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
 
   // list of Pluto Rows
   final List<PlutoRow> rows = [];
-
-  // internal list of rows
-  // necessary for filtering and setting
-  // selected
-  final List<PlutoRow> _rows = [];
 
   // maps PlutoColumn -> TableHeaderModel
   // this is necessary since PlutoColumns can be re-ordered
@@ -67,73 +67,15 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     _buildColumns();
   }
 
-  @override
-  didChangeDependencies()
-  {
-    // register event listeners
-    EventManager.of(widget.model)?.registerEventListener(EventTypes.scroll, onScroll);
-    EventManager.of(widget.model)?.registerEventListener(EventTypes.complete, onComplete);
-    EventManager.of(widget.model)?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(TableView oldWidget)
-  {
-    super.didUpdateWidget(oldWidget);
-    if ((oldWidget.model != widget.model))
-    {
-      // remove old event listeners
-      EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.scroll, onScroll);
-      EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.complete, onComplete);
-      EventManager.of(oldWidget.model)?.removeEventListener(EventTypes.scrollto, onScrollTo);
-
-      // register new event listeners
-      EventManager.of(widget.model)?.registerEventListener(EventTypes.scroll, onScroll);
-      EventManager.of(widget.model)?.registerEventListener(EventTypes.complete, onComplete);
-      EventManager.of(widget.model)?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
-    }
-  }
-
-  @override
-  void dispose()
-  {
-    // remove event listeners
-    EventManager.of(widget.model)?.removeEventListener(EventTypes.scroll, onScroll);
-    EventManager.of(widget.model)?.removeEventListener(EventTypes.complete, onComplete);
-    EventManager.of(widget.model)?.removeEventListener(EventTypes.scrollto, onScrollTo);
-
-    super.dispose();
-  }
-
   closeKeyboard() async
   {
     try
     {
       FocusScope.of(context).unfocus();
     }
-    catch (e)
+    catch(e)
     {
       Log().exception(e);
-    }
-  }
-
-  /// Takes an event (onscroll) and uses the id to scroll to that widget
-  onScrollTo(Event event)
-  {
-    // BuildContext context;
-    event.handled = true;
-    if (event.parameters!.containsKey('id'))
-    {
-      String? id = event.parameters!['id'];
-      var child = widget.model.findDescendantOfExactType(null, id: id);
-
-      // if there is an error with this, we need to check _controller.hasClients as it must not be false when using [ScrollPosition],such as [position], [offset], [animateTo], and [jumpTo],
-      if ((child != null) && (child.context != null))
-      {
-        Scrollable.ensureVisible(child.context,
-            duration: Duration(seconds: 1), alignment: 0.2);
-      }
     }
   }
 
@@ -193,48 +135,6 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     return ok;
   }
 
-  @override
-  void onScroll(Event event) async
-  {
-    // if (hScroller != null && vScroller != null)
-    // {
-    //   scroll(event, hScroller, vScroller);
-    // }
-    event.handled = true;
-  }
-
-  scroll(Event event, ScrollController? hScroller, ScrollController? vScroller) async
-  {
-    try
-    {
-      if (event.parameters!.containsKey("direction") &&
-          event.parameters!.containsKey("pixels")) {
-        String? direction = event.parameters!["direction"];
-        double distance = double.parse(event.parameters!["pixels"]!);
-        if (direction != null) {
-          if (direction == 'left' || direction == 'right') {
-            double offset = hScroller!.offset;
-            double moveToPosition =
-                offset + (direction == 'left' ? -distance : distance);
-            hScroller.animateTo(moveToPosition,
-                duration: Duration(milliseconds: 300), curve: Curves.easeOut);
-          } else if (direction == 'up' || direction == 'down') {
-            double offset = vScroller!.offset;
-            double moveToPosition =
-                offset + (direction == 'up' ? -distance : distance);
-            vScroller.animateTo(moveToPosition,
-                duration: Duration(milliseconds: 300), curve: Curves.easeOut);
-          }
-        }
-      }
-    }
-    catch (e)
-    {
-      Log().error('onScroll Error: ');
-      Log().exception(e, caller: 'View');
-    }
-  }
-
   /// Callback function for when the model changes, used to force a rebuild with setState()
   @override
   onModelChange(WidgetModel model, {String? property, dynamic value})
@@ -243,10 +143,6 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     if (b?.property == 'busy') return;
     if (mounted) setState(() {});
   }
-
-  /// [PlutoGridStateManager] has many methods and properties to dynamically manipulate the grid.
-  /// You can manipulate the grid dynamically at runtime by passing this through the [onLoaded] callback.
-  PlutoGridStateManager? stateManager;
 
   PlutoColumnType getColumnType(TableHeaderCellModel model)
   {
@@ -288,6 +184,7 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
           field: name,
           type: getColumnType(model),
           enableSorting: model.sortable,
+          enableFilterMenuItem: model.filter,
           enableEditingMode: false,
           titlePadding: EdgeInsets.all(0),
           cellPadding: EdgeInsets.all(0),
@@ -638,15 +535,14 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
   {
     stateManager = event.stateManager;
 
-    // set selection
-    if (event.stateManager.refRows.contains(lastSelectedRow))
-    {
-      stateManager?.setCurrentCell(lastSelectedCell, event.stateManager.refRows.indexOf(lastSelectedRow!));
-    }
-
     // handles changes in selection state
     //stateManager!.addListener(onSelected);
-    //stateManager?.setShowColumnFilter(true);
+
+    // show filter bar
+    if (widget.model.filterBar)
+    {
+      stateManager?.setShowColumnFilter(true);
+    }
   }
 
   void onSelected(PlutoGridOnSelectedEvent event)
@@ -770,10 +666,11 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     print('building pluto grid ...');
 
     // build the grid
-    grid = PlutoGrid(key: GlobalKey(),
+    if (grid == null)
+    grid = PlutoGrid(
         configuration: config,
         columns: columns,
-        rows: _rows,
+        rows: [],
         mode: PlutoGridMode.selectWithOneTap,
         onSelected: onSelected,
         onLoaded: onLoaded,

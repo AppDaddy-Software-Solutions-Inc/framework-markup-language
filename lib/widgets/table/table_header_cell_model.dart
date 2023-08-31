@@ -95,6 +95,21 @@ class TableHeaderCellModel extends BoxModel
   }
   bool get resizeable => _resizeable?.get() ?? hdr?.resizeable ?? true;
 
+  // allow filtering
+  BooleanObservable? _filter;
+  set filter(dynamic v)
+  {
+    if (_filter != null)
+    {
+      _filter!.set(v);
+    }
+    else if (v != null)
+    {
+      _filter = BooleanObservable(Binding.toKey(id, 'filter'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get filter => _filter?.get() ?? hdr?.filter ?? false;
+
   // name - used by grid display
   StringObservable? _name;
   set name(dynamic v)
@@ -156,5 +171,6 @@ class TableHeaderCellModel extends BoxModel
     sortable   = Xml.get(node:xml, tag: 'sortable');
     draggable  = Xml.get(node:xml, tag: 'draggable');
     resizeable = Xml.get(node:xml, tag: 'resizeable');
+    filter     = Xml.get(node:xml, tag: 'filter');
   }
 }

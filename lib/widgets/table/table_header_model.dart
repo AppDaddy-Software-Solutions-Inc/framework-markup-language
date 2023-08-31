@@ -85,6 +85,20 @@ class TableHeaderModel extends BoxModel
   }
   bool get resizeable => _resizeable?.get() ?? table?.resizeable ?? true;
 
+  // allow filtering
+  BooleanObservable? _filter;
+  set filter(dynamic v)
+  {
+    if (_filter != null)
+    {
+      _filter!.set(v);
+    }
+    else if (v != null)
+    {
+      _filter = BooleanObservable(Binding.toKey(id, 'filter'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get filter => _filter?.get() ?? table?.filter ?? false;
   
   TableHeaderModel(WidgetModel parent, String? id) : super(parent, id, scope: Scope(parent: parent.scope));
 
@@ -115,7 +129,8 @@ class TableHeaderModel extends BoxModel
     sortable   = Xml.get(node:xml, tag: 'sortable');
     draggable  = Xml.get(node:xml, tag: 'draggable');
     resizeable = Xml.get(node:xml, tag: 'resizeable');
-    
+    filter     = Xml.get(node: xml, tag: 'filter');
+
     // get cells
     List<TableHeaderCellModel> cells = findChildrenOfExactType(TableHeaderCellModel).cast<TableHeaderCellModel>();
     for (TableHeaderCellModel model in cells)

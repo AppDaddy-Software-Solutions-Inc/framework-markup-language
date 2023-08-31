@@ -91,6 +91,36 @@ class TableModel extends BoxModel implements IForm
   }
   bool get resizeable => _resizeable?.get() ?? true;
 
+  // allow filtering
+  BooleanObservable? _filter;
+  set filter(dynamic v)
+  {
+    if (_filter != null)
+    {
+      _filter!.set(v);
+    }
+    else if (v != null)
+    {
+      _filter = BooleanObservable(Binding.toKey(id, 'filter'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get filter => _filter?.get() ?? false;
+
+  // show filter bar
+  BooleanObservable? _filterBar;
+  set filterBar(dynamic v)
+  {
+    if (_filterBar != null)
+    {
+      _filterBar!.set(v);
+    }
+    else if (v != null)
+    {
+      _filterBar = BooleanObservable(Binding.toKey(id, 'filterbar'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get filterBar => _filterBar?.get() ?? false;
+  
   // current row selected
   TableRowModel? _rowSelected;
 
@@ -231,6 +261,8 @@ class TableModel extends BoxModel implements IForm
     resizeable = Xml.get(node: xml, tag: 'resizeable');
     pageSize   = Xml.get(node: xml, tag: 'pagesize');
     oncomplete = Xml.get(node: xml, tag: 'oncomplete');
+    filter     = Xml.get(node: xml, tag: 'filter');
+    filterBar  = Xml.get(node: xml, tag: 'filterbar');
 
     // Get Table Header
     List<TableHeaderModel> headers = findChildrenOfExactType(TableHeaderModel).cast<TableHeaderModel>();

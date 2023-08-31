@@ -62,8 +62,8 @@ class UserModel extends WidgetModel
     await System.initialized;
 
     _connected = BooleanObservable(Binding.toKey("connected"), false, scope: scope);
-    _rights    = IntegerObservable(Binding.toKey("language"), Phrases.english, scope: scope);
-    _language  = StringObservable(Binding.toKey("rights"), 0, scope: scope);
+    _language  = StringObservable(Binding.toKey("language"), Phrases.english, scope: scope);
+    _rights    = IntegerObservable(Binding.toKey("rights"), 0, scope: scope);
     _token     = StringObservable(Binding.toKey('jwt'), null, scope: scope);
     return true;
   }

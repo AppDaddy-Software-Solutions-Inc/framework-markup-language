@@ -68,43 +68,50 @@ class TableRowModel extends BoxModel
 
   // index
   IntegerObservable? _index;
-  set index(dynamic v) {
-    if (_index != null) {
+  set index(dynamic v)
+  {
+    if (_index != null)
+    {
       _index!.set(v);
-    } else {
-      _index = IntegerObservable(Binding.toKey(id, 'index'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else
+    {
+      _index = IntegerObservable(Binding.toKey(id, 'index'), v, scope: scope, listener: onPropertyChange);
     }
   }
   int? get index => _index?.get() ?? 0;
 
   // selected
   BooleanObservable? _selected;
-  set selected(dynamic v) {
-    if (_selected != null) {
+  set selected(dynamic v)
+  {
+    if (_selected != null)
+    {
       _selected!.set(v);
-    } else {
-      _selected = BooleanObservable(Binding.toKey(id, 'selected'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else
+    {
+      _selected = BooleanObservable(Binding.toKey(id, 'selected'), v, scope: scope, listener: onPropertyChange);
     }
   }
   bool get selected => _selected?.get() ?? false;
 
   // onclick
-  StringObservable? _onclick;
-  set onclick(dynamic v) {
-    if (_onclick != null) {
-      _onclick!.set(v);
-    } else if (v != null) {
-      _onclick = StringObservable(Binding.toKey(id, 'onclick'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
+  StringObservable? _onClick;
+  set onclick(dynamic v)
+  {
+    if (_onClick != null)
+    {
+      _onClick!.set(v);
+    }
+    else if (v != null)
+    {
+      _onClick = StringObservable(Binding.toKey(id, 'onclick'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
     }
   }
+  String? get onclick => _onClick?.get();
 
-  String? get onclick {
-    return _onclick?.get();
-  }
-
-  // onCcomplete
+  // onComplete
   StringObservable? _oncomplete;
   set oncomplete(dynamic v)
   {
@@ -122,12 +129,15 @@ class TableRowModel extends BoxModel
   // dirty
   BooleanObservable? get dirtyObservable => _dirty;
   BooleanObservable? _dirty;
-  set dirty(dynamic v) {
-    if (_dirty != null) {
+  set dirty(dynamic v)
+  {
+    if (_dirty != null)
+    {
       _dirty!.set(v);
-    } else if (v != null) {
-      _dirty = BooleanObservable(Binding.toKey(id, 'dirty'), v,
-          scope: scope);
+    }
+    else if (v != null)
+    {
+      _dirty = BooleanObservable(Binding.toKey(id, 'dirty'), v, scope: scope);
     }
   }
   bool get dirty => _dirty?.get() ?? false;
@@ -136,7 +146,8 @@ class TableRowModel extends BoxModel
   {
     bool isDirty = false;
     if (fields != null){
-      for (IFormField field in fields!) {
+      for (IFormField field in fields!)
+      {
         if (field.dirty ?? false)
         {
           isDirty = true;
@@ -218,7 +229,7 @@ class TableRowModel extends BoxModel
   Future<bool> onClick(BuildContext context) async
   {
     if (onclick == null) return true;
-    return await EventHandler(this).execute(_onclick);
+    return await EventHandler(this).execute(_onClick);
   }
 
   Future<bool> complete() async
@@ -281,10 +292,7 @@ class TableRowModel extends BoxModel
     return ok;
   }
 
-  void onSelect(TableRowCellModel cell)
-  {
-    //table?.onSelect(this, cell);
-  }
+  void onSelect(TableRowCellModel cell) => table?.onSelect(this, cell);
 
   @override
   dispose()

@@ -40,10 +40,6 @@ import 'package:fml/widgets/chart/chart_model.dart';
 import 'package:fml/widgets/chart/axis/chart_axis_model.dart';
 import 'package:fml/widgets/chart/label/chart_label_model.dart';
 import 'package:fml/widgets/chart/series/chart_series_model.dart';
-
-// import 'package:fml/widgets/chart_syncfusion/chart_model.dart' as SFCHART;
-// import 'package:fml/widgets/chart_syncfusion/axis/chart_axis_model.dart' as SFCHART;
-// import 'package:fml/widgets/chart_syncfusion/series/chart_series_model.dart' as SFCHART;
 import 'package:fml/widgets/checkbox/checkbox_model.dart';
 import 'package:fml/widgets/column/column_model.dart';
 import 'package:fml/widgets/box/box_model.dart';

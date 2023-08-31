@@ -10,6 +10,7 @@ import 'package:fml/event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/table/table_header_cell_model.dart';
+import 'package:fml/widgets/table/table_row_cell_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/table/table_model.dart';
@@ -32,10 +33,20 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
 {
   Widget? busy;
 
+  // list of Pluto Columns
   final List<PlutoColumn> columns = [];
+
+  // list of Pluto Rows
   final List<PlutoRow> rows = [];
 
-  final HashMap<int, HashMap<int,Widget>> views = HashMap<int, HashMap<int,Widget>>();
+  // maps PlutoColumn -> TableHeaderModel
+  // this is necessary since PlutoColumns can be re-ordered
+  final HashMap<PlutoColumn, TableHeaderCellModel> map = HashMap<PlutoColumn, TableHeaderCellModel>();
+
+  final HashMap<TableRowCellModel, Widget> views = HashMap<TableRowCellModel, Widget>();
+
+  PlutoRow? currentRow;
+  PlutoCell? currentCell;
 
   @override
   void initState()
@@ -225,7 +236,7 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
 
   /// [PlutoGridStateManager] has many methods and properties to dynamically manipulate the grid.
   /// You can manipulate the grid dynamically at runtime by passing this through the [onLoaded] callback.
-  late final PlutoGridStateManager stateManager;
+  PlutoGridStateManager? stateManager;
 
   PlutoColumnType getColumnType(TableHeaderCellModel model)
   {
@@ -253,6 +264,7 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
   void _buildColumns()
   {
     columns.clear();
+    map.clear();
     for (var model in widget.model.header!.cells)
     {
       var name   = model.name ?? "Column ${model.index}";
@@ -271,6 +283,10 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
           cellPadding: EdgeInsets.all(0),
           renderer: (rendererContext) => cellBuilder(rendererContext));
 
+      // add to map
+      map[column] = model;
+
+      // add to columns
       columns.add(column);
     }
   }
@@ -343,36 +359,25 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
 
   Widget cellBuilder(PlutoColumnRendererContext context)
   {
-    if (!columns.contains(context.column)) return Text("");
-    if (!rows.contains(context.row)) return Text("");
-
-    var colIdx = columns.indexOf(context.column);
+    // get row and column indexes
     var rowIdx = rows.indexOf(context.row);
+    var colIdx = map.containsKey(context.column) ? map[context.column]!.index : -1;
 
-    print("row-> $rowIdx");
+    // not found
+    if (rowIdx.isNegative || colIdx.isNegative) return Text("");
+
+    // get cell model
+    TableRowCellModel? model = widget.model.getRowCellModel(rowIdx, colIdx);
+    if (model == null) return Text("");
 
     // return the view
-    if (views[rowIdx]?.containsKey(colIdx) ?? false) return views[rowIdx]![colIdx]!;
+    if (views.containsKey(model)) return views[model]!;
 
-    Widget? view;
+    // build the view
+    var view = RepaintBoundary(child: BoxView(model));
 
-    // get row model
-    TableRowModel? model = widget.model.getRowModel(rowIdx);
-
-    // get cell view
-    if (model != null && colIdx >= 0 && colIdx < model.cells.length)
-    {
-      // build the view
-      view = RepaintBoundary(child: BoxView(model.cells[colIdx]));
-
-      // cache the view
-      if (!views.containsKey(rowIdx)) views[rowIdx] = HashMap<int,Widget>();
-      views[rowIdx]![colIdx] = view;
-    }
-    else
-    {
-      view = Text("");
-    }
+    // cache the view
+    views[model] = view;
 
     return view;
   }
@@ -444,7 +449,7 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     // {column2: [{include: abc}, {include: 123}]} will be returned.
     if (filter)
     {
-      final filter = FilterHelper.convertRowsToFilter(request.filterRows, stateManager.refColumns);
+      final filter = FilterHelper.convertRowsToFilter(request.filterRows, stateManager!.refColumns);
       tempList = tempList.where(filter!).toList();
     }
 
@@ -571,7 +576,7 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     // {column2: [{include: abc}, {include: 123}]} will be returned.
     if (filter)
     {
-      final filter = FilterHelper.convertRowsToFilter(request.filterRows, stateManager.refColumns);
+      final filter = FilterHelper.convertRowsToFilter(request.filterRows, stateManager!.refColumns);
       tempList = tempList.where(filter!).toList();
 
       pages = (tempList.length / pageSize).ceil();
@@ -612,34 +617,47 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     stateManager = event.stateManager;
 
     // handles changes in selection state
-    stateManager.addListener(onSelected);
+    //stateManager!.addListener(onSelected);
 
     //stateManager.setShowColumnFilter(true);
   }
 
-  void onSelected()
+  void onSelected(PlutoGridOnSelectedEvent event)
   {
-    if (stateManager.currentRow  == null) return;
-    if (stateManager.currentCell == null) return;
+    // get row and column
+    var row  = event.row;
+    var cell = event.cell;
 
-    var row = stateManager.currentRow!;
-    var col = stateManager.currentCell!.column;
+    // update the model
+    if (row != null && cell?.column != null)
+    {
+      var rowIdx = rows.indexOf(row);
+      var colIdx = map.containsKey(cell?.column) ? map[cell?.column]!.index : -1;
+      if (!rowIdx.isNegative && !colIdx.isNegative)
+      {
+        var model = widget.model.getRowCellModel(rowIdx, colIdx);
+        if (model != null)
+        {
+          // toggle selected
+          model.onSelect();
 
-    var rowIdx = rows.indexOf(row);
-    var colIdx = columns.indexOf(col);
+          // toggle view selected
+          if (!model.selected && currentRow == row && currentCell == cell)
+          {
+            stateManager?.clearCurrentCell(notify: true);
+          }
+        }
+      }
+    }
 
-    if (rowIdx.isNegative || colIdx.isNegative) return;
-
-    var model = widget.model.getRowCellModel(rowIdx, colIdx);
-    if (model != null) model.onSelect();
+    // remember last
+    currentRow = row;
+    currentCell = cell;
   }
 
   void onSorted (PlutoGridOnSortedEvent event) async
   {
-    var index = columns.contains(event.column) ? columns.indexOf(event.column) : null;
-    if (index == null) return;
     views.clear();
-    //await widget.model.onSortData(index);
   }
 
   PlutoLazyPagination _pageLoader(PlutoGridStateManager stateManager)
@@ -710,18 +728,24 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
   @override
   Widget build(BuildContext context)
   {
+    // handles changes in selection state
+    //stateManager?.removeListener(onSelected);
+
     // build style
     var config = _buildConfig();
 
     // build the content loader
     var loader = widget.model.pageSize > 0 ?  _pageLoader : _lazyLoader;
 
+    print('building pluto grid ...');
+
     // build the grid
     var view = PlutoGrid(key: GlobalKey(),
         configuration: config,
         columns: columns,
         rows: [],
-        mode: PlutoGridMode.select,
+        mode: PlutoGridMode.selectWithOneTap,
+        onSelected: onSelected,
         onLoaded: onLoaded,
         onSorted: onSorted,
         createFooter: loader);

@@ -99,11 +99,7 @@ class TableRowCellModel extends BoxModel
     value = Xml.get(node: xml, tag: 'value');
   }
 
-  void onSelect()
-  {
-    selected = !selected;
-    row?.onSelect(this);
-  }
+  void onSelect() => row?.onSelect(this);
 
   @override
   dispose()

@@ -7,11 +7,11 @@ import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/form/form_interface.dart';
+import 'package:fml/widgets/table/table_footer_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/table/table_view.dart';
 import 'package:fml/widgets/table/table_header_model.dart';
 import 'package:fml/widgets/table/table_header_cell_model.dart';
-import 'package:fml/widgets/table/table_footer_model.dart';
 import 'package:fml/widgets/table/table_row_model.dart';
 import 'package:fml/widgets/table/table_row_cell_model.dart';
 import 'package:flutter/material.dart';
@@ -90,6 +90,29 @@ class TableModel extends BoxModel implements IForm
     }
   }
   bool get resizeable => _resizeable?.get() ?? true;
+
+  // current row selected
+  TableRowModel? _rowSelected;
+
+  // current column selected
+  TableRowCellModel? _cellSelected;
+
+  // data map from the row that is currently selected
+  ListObservable? _selected;
+  set selected(dynamic v)
+  {
+    if (_selected != null)
+    {
+      _selected!.set(v);
+    }
+    else if (v != null)
+    {
+      // we don't want this to update the table view so don't add listener: onPropertyChange
+      _selected = ListObservable(Binding.toKey(id, 'selected'), null, scope: scope);
+      _selected!.set(v);
+    }
+  }
+  dynamic get selected => _selected?.get();
 
   // prototype
   XmlElement? prototypeHeaderCell;
@@ -406,29 +429,38 @@ class TableModel extends BoxModel implements IForm
 
   void onSelect(TableRowModel row, TableRowCellModel cell)
   {
-    if (selectedRow == row && selectedCell == cell)
+    // deselect - same row/cell clicked
+    if (_rowSelected == row && _cellSelected == cell)
     {
-      // Deselect
-      selectedRow?.selected = false;
-      selectedCell?.selected = false;
-      selectedRow = null;
-      selectedCell = null;
+      // deselect row and cell
+      row.selected  = false;
+      cell.selected = false;
+
+      // clear current selected row and cell
+      _rowSelected  = null;
+      _cellSelected = null;
+
+      // clear data
       selected = [];
     }
+
+    // select - different row and/or cell
     else
     {
-      // new selection
-      // Unselect the previous selected row/cell models
-      selectedRow?.selected = false;
-      selectedCell?.selected = false;
-      // Set selected on the new row/cell selection
-      row.selected = true;
+      // deselect current row and cell
+      if (_rowSelected  != row )  _rowSelected?.selected  = false;
+      if (_cellSelected != cell ) _cellSelected?.selected = false;
+
+      // select row and cell
+      row.selected  = true;
       cell.selected = true;
-      // Update our table selected row/cell models so we have easy access to them
-      selectedRow = row;
-      selectedCell = cell;
-      // Update the bindables to the selected row data
-      selected = selectedRow!.data;
+
+      // set current selected row and cell
+      _rowSelected  = row;
+      _cellSelected = cell;
+
+      // set data
+      selected = row.data;
     }
   }
 

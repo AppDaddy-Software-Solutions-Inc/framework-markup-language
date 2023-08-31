@@ -111,7 +111,7 @@ class TableHeaderCellModel extends BoxModel
   String? get name => _name?.get();
   
   // position in row
-  int? get index => hdr?.cells.indexOf(this);
+  int get index => hdr?.cells.indexOf(this) ?? -1;
 
   TableHeaderCellModel(WidgetModel parent, String? id) : super(parent, id);
 

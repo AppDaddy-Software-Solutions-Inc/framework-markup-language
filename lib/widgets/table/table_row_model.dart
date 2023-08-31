@@ -283,10 +283,7 @@ class TableRowModel extends BoxModel
 
   void onSelect(TableRowCellModel cell)
   {
-    if ((parent != null) && (parent is TableModel))
-    {
-      //(parent as TableModel).onSelect(this, cell);
-    }
+    //table?.onSelect(this, cell);
   }
 
   @override

@@ -499,7 +499,7 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     // notify the user
     if (isLast && mounted)
     {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Last Page!')));
+      //ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Last Page!')));
     }
 
     var list = fetchedRows.toList();
@@ -513,7 +513,7 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     var filter = request.filterRows.isNotEmpty;
 
     // rows are sorted?
-    var sort   = request.sortColumn != null && !request.sortColumn!.sort.isNone;
+    var sort = request.sortColumn != null && !request.sortColumn!.sort.isNone;
 
     // total number of rows
     var rows = widget.model.data is Data ? (widget.model.data as Data).length : 0;
@@ -610,17 +610,28 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
   void onLoaded(PlutoGridOnLoadedEvent event)
   {
     stateManager = event.stateManager;
+
+    // handles changes in selection state
+    stateManager.addListener(onSelected);
+
     //stateManager.setShowColumnFilter(true);
   }
 
-  void onChanged(PlutoGridOnChangedEvent event)
+  void onSelected()
   {
-    print(event);
-  }
+    if (stateManager.currentRow  == null) return;
+    if (stateManager.currentCell == null) return;
 
-  void onSelected (PlutoGridOnSelectedEvent event)
-  {
-    print("row selected => ${event.rowIdx}");
+    var row = stateManager.currentRow!;
+    var col = stateManager.currentCell!.column;
+
+    var rowIdx = rows.indexOf(row);
+    var colIdx = columns.indexOf(col);
+
+    if (rowIdx.isNegative || colIdx.isNegative) return;
+
+    var model = widget.model.getRowCellModel(rowIdx, colIdx);
+    if (model != null) model.onSelect();
   }
 
   void onSorted (PlutoGridOnSortedEvent event) async
@@ -703,16 +714,15 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     var config = _buildConfig();
 
     // build the content loader
-    var loader = _lazyLoader;//widget.model.pageSize > 0 ?  _pageLoader : _lazyLoader;
+    var loader = widget.model.pageSize > 0 ?  _pageLoader : _lazyLoader;
 
     // build the grid
     var view = PlutoGrid(key: GlobalKey(),
         configuration: config,
         columns: columns,
         rows: [],
+        mode: PlutoGridMode.select,
         onLoaded: onLoaded,
-        onChanged: onChanged,
-        onSelected: onSelected,
         onSorted: onSorted,
         createFooter: loader);
 

@@ -257,7 +257,7 @@ class TableModel extends BoxModel implements IForm
     if (data == null) return null;
     if (data.length < (index + 1)) return null;
     if (rows.containsKey(index)) return rows[index];
-    if ((index.isNegative) || (data.length < index)) return null;
+    if (index.isNegative || data.length < index) return null;
 
     // build row model
     TableRowModel? model = TableRowModel.fromXml(this, prototypeRow, data: data[index]);

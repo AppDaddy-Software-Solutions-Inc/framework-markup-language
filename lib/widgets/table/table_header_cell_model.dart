@@ -120,7 +120,7 @@ class TableHeaderCellModel extends BoxModel
     TableHeaderCellModel? model;
     try
     {
-      model = TableHeaderCellModel(parent, null);
+      model = TableHeaderCellModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
     catch(e)

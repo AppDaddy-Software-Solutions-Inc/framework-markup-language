@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:collection';
+import 'dart:math';
 import 'package:fml/data/dotnotation.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
@@ -438,6 +439,28 @@ class Data with ListMixin<dynamic>
       }
     }
       return values;
-
   }
+
+  static Data testData(int rows)
+  {
+    Data data = Data();
+    List<Map> root = [];
+    data.add(root);
+    for (int i = 0; i < rows; i++)
+    {
+      var row = <String, dynamic>{};
+      row["index"] = "$i";
+      row["user"]  = "";
+      row["age"]   = Random().nextInt(100);
+      row["first"] = names[Random().nextInt(names.length)];
+      row["last"]  = surnames[Random().nextInt(surnames.length)];
+      row["city"]  = cities[Random().nextInt(cities.length)];
+      root.add(row);
+    }
+    return data;
+  }
+
+  static List<String> cities = ["Kingston","Ottawa","Montreal","Toronto"];
+  static List<String> names   = ["Joe","Jeff","Bill","Jeremy"];
+  static List<String> surnames = ["Smith","Jones","Olajos","Green"];
 }

@@ -77,7 +77,7 @@ class TableRowCellModel extends BoxModel
     TableRowCellModel? model;
     try
     {
-      model = TableRowCellModel(parent, null);
+      model = TableRowCellModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
     catch(e)
@@ -86,12 +86,6 @@ class TableRowCellModel extends BoxModel
       model = null;
     }
     return model;
-  }
-
-  static TableRowCellModel? fromXmlString(WidgetModel parent, String xml)
-  {
-    XmlDocument? document = Xml.tryParse(xml);
-    return (document != null) ? TableRowCellModel.fromXml(parent, document.rootElement) : null;
   }
 
   /// Deserializes the FML template elements, attributes and children
@@ -107,11 +101,8 @@ class TableRowCellModel extends BoxModel
 
   void onSelect()
   {
-    if (selected == false) selected = !selected;
-    if ((parent != null) && (parent is TableRowModel))
-    {
-      (parent as TableRowModel).onSelect(this);
-    }
+    selected = !selected;
+    row?.onSelect(this);
   }
 
   @override

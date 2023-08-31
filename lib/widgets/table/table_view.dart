@@ -33,11 +33,18 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
 {
   Widget? busy;
 
+  PlutoGrid? grid;
+
   // list of Pluto Columns
   final List<PlutoColumn> columns = [];
 
   // list of Pluto Rows
   final List<PlutoRow> rows = [];
+
+  // internal list of rows
+  // necessary for filtering and setting
+  // selected
+  final List<PlutoRow> _rows = [];
 
   // maps PlutoColumn -> TableHeaderModel
   // this is necessary since PlutoColumns can be re-ordered
@@ -45,8 +52,11 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
 
   final HashMap<TableRowCellModel, Widget> views = HashMap<TableRowCellModel, Widget>();
 
-  PlutoRow? currentRow;
-  PlutoCell? currentCell;
+  // holds a pointer to the last selected row
+  PlutoRow? lastSelectedRow;
+
+  // holds a pointer to the last selected cell
+  PlutoCell? lastSelectedCell;
 
   @override
   void initState()
@@ -507,7 +517,14 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
       //ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Last Page!')));
     }
 
+    // convert to list
     var list = fetchedRows.toList();
+
+    // set selected
+    if (list.contains(lastSelectedRow))
+    {
+      stateManager?.setCurrentCell(lastSelectedCell, list.indexOf(lastSelectedRow!));
+    }
 
     return Future.value(PlutoInfinityScrollRowsResponse(isLast: isLast, rows: list));
   }
@@ -605,21 +622,31 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     final start = (page - 1) * pageSize;
     final end   = start + pageSize;
 
-    Iterable<PlutoRow> fetchedRows = tempList.getRange(max(0, start), min(tempList.length, end));
+    // get list of rows
+    var fetchedRows = tempList.getRange(max(0, start), min(tempList.length, end)).toList();
 
-    //await Future.delayed(const Duration(milliseconds: 500));
+    // set selected
+    if (fetchedRows.contains(lastSelectedRow))
+    {
+      stateManager?.setCurrentCell(lastSelectedCell, fetchedRows.indexOf(lastSelectedRow!));
+    }
 
-    return Future.value(PlutoLazyPaginationResponse(totalPage: pages, rows: fetchedRows.toList()));
+    return Future.value(PlutoLazyPaginationResponse(totalPage: pages, rows: fetchedRows));
   }
 
   void onLoaded(PlutoGridOnLoadedEvent event)
   {
     stateManager = event.stateManager;
 
+    // set selection
+    if (event.stateManager.refRows.contains(lastSelectedRow))
+    {
+      stateManager?.setCurrentCell(lastSelectedCell, event.stateManager.refRows.indexOf(lastSelectedRow!));
+    }
+
     // handles changes in selection state
     //stateManager!.addListener(onSelected);
-
-    //stateManager.setShowColumnFilter(true);
+    //stateManager?.setShowColumnFilter(true);
   }
 
   void onSelected(PlutoGridOnSelectedEvent event)
@@ -641,18 +668,21 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
           // toggle selected
           model.onSelect();
 
-          // toggle view selected
-          if (!model.selected && currentRow == row && currentCell == cell)
+          // user clicked same cell?
+          bool sameCell = (lastSelectedRow == row && lastSelectedCell == cell);
+          bool deselect = sameCell && !model.selected;
+
+          if (deselect)
           {
             stateManager?.clearCurrentCell(notify: true);
           }
+
+          // set last row and cell
+          lastSelectedRow  = deselect ? null : row;
+          lastSelectedCell = deselect ? null : cell;
         }
       }
     }
-
-    // remember last
-    currentRow = row;
-    currentCell = cell;
   }
 
   void onSorted (PlutoGridOnSortedEvent event) async
@@ -740,16 +770,16 @@ class _TableViewState extends WidgetState<TableView> implements IEventScrolling
     print('building pluto grid ...');
 
     // build the grid
-    var view = PlutoGrid(key: GlobalKey(),
+    grid = PlutoGrid(key: GlobalKey(),
         configuration: config,
         columns: columns,
-        rows: [],
+        rows: _rows,
         mode: PlutoGridMode.selectWithOneTap,
         onSelected: onSelected,
         onLoaded: onLoaded,
         onSorted: onSorted,
         createFooter: loader);
 
-    return view;
+    return grid!;
   }
 }

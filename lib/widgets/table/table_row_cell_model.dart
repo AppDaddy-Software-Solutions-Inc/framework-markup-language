@@ -2,6 +2,7 @@
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/table/table_row_model.dart';
+import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
@@ -97,6 +98,11 @@ class TableRowCellModel extends BoxModel
 
     // properties
     value = Xml.get(node: xml, tag: 'value');
+    if (_value == null)
+    {
+      var txt = findChildOfExactType(TextModel);
+      if (txt is TextModel) value = txt.value;
+    }
   }
 
   void onSelect() => row?.onSelect(this);

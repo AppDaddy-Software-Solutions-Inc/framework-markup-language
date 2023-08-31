@@ -404,6 +404,34 @@ class TableModel extends BoxModel implements IForm
     prototypeRow = WidgetModel.prototypeOf(prototypeRow);
   }
 
+  void onSelect(TableRowModel row, TableRowCellModel cell)
+  {
+    if (selectedRow == row && selectedCell == cell)
+    {
+      // Deselect
+      selectedRow?.selected = false;
+      selectedCell?.selected = false;
+      selectedRow = null;
+      selectedCell = null;
+      selected = [];
+    }
+    else
+    {
+      // new selection
+      // Unselect the previous selected row/cell models
+      selectedRow?.selected = false;
+      selectedCell?.selected = false;
+      // Set selected on the new row/cell selection
+      row.selected = true;
+      cell.selected = true;
+      // Update our table selected row/cell models so we have easy access to them
+      selectedRow = row;
+      selectedCell = cell;
+      // Update the bindables to the selected row data
+      selected = selectedRow!.data;
+    }
+  }
+
   @override
   Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
   {

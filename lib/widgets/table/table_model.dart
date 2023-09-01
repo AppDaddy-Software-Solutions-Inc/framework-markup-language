@@ -20,8 +20,6 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-enum PaddingType { none, first, last, evenly, proportionately }
-
 class TableModel extends BoxModel implements IForm
 {
   final double defaultPadding = 4;
@@ -173,21 +171,6 @@ class TableModel extends BoxModel implements IForm
 
   final HashMap<int, TableRowModel> rows = HashMap<int, TableRowModel>();
 
-  // onccomplete
-  StringObservable? _oncomplete;
-  set oncomplete(dynamic v)
-  {
-    if (_oncomplete != null)
-    {
-      _oncomplete!.set(v);
-    }
-    else if (v != null)
-    {
-      _oncomplete = StringObservable(Binding.toKey(id, 'oncomplete'), v, scope: scope, lazyEval: true);
-    }
-  }
-  String? get oncomplete => _oncomplete?.get();
-
   // onChange - only used for simple data grid
   StringObservable? _onChange;
   set onChange(dynamic v)
@@ -304,13 +287,12 @@ class TableModel extends BoxModel implements IForm
       pageSize = size;
     }
 
-    // handlers
-    oncomplete = Xml.get(node: xml, tag: 'oncomplete');
-    onChange   = Xml.get(node: xml, tag: 'onchange');
+    // events
+    onChange = Xml.get(node: xml, tag: 'onchange');
 
     // filter
-    filter     = Xml.get(node: xml, tag: 'filter');
-    filterBar  = Xml.get(node: xml, tag: 'filterbar');
+    filter = Xml.get(node: xml, tag: 'filter');
+    filterBar = Xml.get(node: xml, tag: 'filterbar');
 
     // Get Table Header
     List<TableHeaderModel> headers = findChildrenOfExactType(TableHeaderModel).cast<TableHeaderModel>();
@@ -453,11 +435,12 @@ class TableModel extends BoxModel implements IForm
     // post the form
     if (dirty)
     {
-      for (var entry in rows.entries)
+      for (var model in rows.values)
       {
-        ok = await entry.value.complete();
+        ok = await model.complete();
       }
-  }
+    }
+
     busy = false;
     return ok;
   }

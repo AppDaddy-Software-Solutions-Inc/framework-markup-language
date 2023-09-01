@@ -28,7 +28,8 @@ class ChartDataPoint {
 class LineChartSeriesModel extends ChartPainterSeriesModel
 {
   List<FlSpot> lineDataPoint = [];
-  List<dynamic> xValues = [];
+  Map<int, dynamic> xValueMap = {};
+  @override
   dynamic dataList;
   double maxY = 0;
   double minY = 0;
@@ -347,33 +348,59 @@ class LineChartSeriesModel extends ChartPainterSeriesModel
   }
   int? get selected => _selected?.get();
 
-  //This function takes in the function related to the type of point plotted
-  @override
-  void iteratePoints(dynamic data, {bool plotOnFirstPass = false}){
-    dataList =  data;
-    for (var pointData in data) {
-      //set the data of the series for databinding
-      this.data = pointData;
-      //add the value of x to the list only if the type is category.
-      //if(true) xValues.add(S.toInt(x));
-    }
-  }
-
-
-  void plotPoints(dynamic dataList, bool isCategory, bool isDate){
-    xValues.clear();
+  void plotCategoryPoints(dynamic dataList){
+    xValueMap.clear();
     for (var i=0; i< dataList.length; i++) {
       //set the data of the series for databinding
       data = dataList[i];
-        if(isCategory) {
-          xValues.add(x);
-          x = i;
-        }
-        if(isDate) x =  S.toDate(x, format: 'yyyy/MM/dd')?.millisecondsSinceEpoch;
-        //plot the point as a point object based on the desired function based on series and chart type.
-      FlSpot point = FlSpot(S.toDouble(x) ?? 0, S.toDouble(y) ?? 0);
-      lineDataPoint.add(point);
+      xValues.add(x);
+      x = i;
+      //plot the point as a point object based on the desired function based on series and chart type.
+      plot();
     }
     dataList = null;
+  }
+
+  void plotRawPoints(dynamic dataList){
+    xValueMap.clear();
+    for (var i=0; i< dataList.length; i++) {
+      //set the data of the series for databinding
+      data = dataList[i];
+      xValues.add(x);
+      x = i;
+      //plot the point as a point object based on the desired function based on series and chart type.
+      plot();
+    }
+    dataList = null;
+  }
+
+  void plotDatePoints(dynamic dataList, {String? format}){
+    xValueMap.clear();
+    for (var i=0; i< dataList.length; i++) {
+      //set the data of the series for databinding
+      data = dataList[i];
+          x = S
+              .toDate(x, format: 'yyyy/MM/dd')
+              ?.millisecondsSinceEpoch;
+          //plot the point as a point object based on the desired function based on series and chart type.
+        plot();
+    }
+    dataList = null;
+  }
+
+  void plotPoints(dynamic dataList){
+    xValueMap.clear();
+    for (var i=0; i< dataList.length; i++) {
+      //set the data of the series for databinding
+      data = dataList[i];
+      //plot the point as a point object based on the desired function based on series and chart type.
+      plot();
+    }
+    dataList = null;
+  }
+
+  void plot(){
+    FlSpot point = FlSpot(S.toDouble(x) ?? 0, S.toDouble(y) ?? 0);
+    lineDataPoint.add(point);
   }
 }

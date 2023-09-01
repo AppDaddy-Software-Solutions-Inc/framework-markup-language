@@ -23,7 +23,7 @@ class LineChartModel extends ChartPainterModel
   ChartAxisModel yaxis = ChartAxisModel(null, null, ChartAxis.Y);
   num? yMax;
   num? yMin;
-  Set<dynamic> uniqueValues = {};
+  Map<int, dynamic> uniqueValueMap = {};
   final List<LineChartSeriesModel> series = [];
   List<LineChartBarData> lineDataList = [];
 
@@ -231,22 +231,19 @@ class LineChartModel extends ChartPainterModel
   {
     try {
       //here if the data strategy is category, we must fold all of the lists together and create a dummy key value map of every unique value, in order
-      uniqueValues.clear();
+      uniqueValueMap.clear();
       for (var serie in series) {
         if (serie.datasource == source.id) {
           // build the datapoints for the series, passing in the chart type, index, and data
-          serie.iteratePoints(list, plotOnFirstPass: false);
-          // add the built x values to a unique list to map to indeces
-          if (xaxis.type == "category") {
+         if (xaxis.type == "raw") {
+            serie.plotRawPoints(list);
+         } else if (xaxis.type == "category") {
             //with category, we may need to change the xValues to a map rather than a set for when multiple points are there
-            serie.plotPoints(serie.dataList, true, false);
-            uniqueValues.addAll(serie.xValues);
-          }
-          else if (xaxis.type == "date") {
-            serie.plotPoints(serie.dataList, false, true);
-          }
-          else {
-            serie.plotPoints(serie.dataList, false, false);
+            serie.plotCategoryPoints(list);
+          } else if (xaxis.type == "date") {
+            serie.plotDatePoints(list, format: xaxis.format);
+          } else {
+            serie.plotPoints(list);
           }
           // if(xaxis.type == ChartAxisType.category || xaxis.type == ChartAxisType.date) serie.plotPoints(uniqueValues, true);
 

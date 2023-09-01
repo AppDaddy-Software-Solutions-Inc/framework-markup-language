@@ -377,19 +377,19 @@ class ChartPainterSeriesModel extends WidgetModel
     if (data == null) return;
     plotFunction = pointFromPieData;
   }
-
-  //This function takes in the function related to the type of point plotted
-  void iteratePoints(dynamic data, {bool plotOnFirstPass = false}){
-    dataList =  data;
-    for (var pointData in data) {
-      //set the data of the series for databinding
-      this.data = pointData;
-      //add the value of x to the list only if the type is category.
-      xValues.add(S.toInt(x));
-      //plot the point as a point object based on the desired function based on series and chart type.
-      if(plotOnFirstPass) plotFunction!();
-    }
-  }
+  //
+  // //This function takes in the function related to the type of point plotted
+  // void iteratePoints(dynamic data, {bool plotOnFirstPass = false}){
+  //   dataList =  data;
+  //   for (var pointData in data) {
+  //     //set the data of the series for databinding
+  //     this.data = pointData;
+  //     //add the value of x to the list only if the type is category.
+  //     xValues.add(S.toInt(x));
+  //     //plot the point as a point object based on the desired function based on series and chart type.
+  //     if(plotOnFirstPass) plotFunction!();
+  //   }
+  // }
 
   void plotLineCategoryPoints(dynamic uniqueXValueList){
 

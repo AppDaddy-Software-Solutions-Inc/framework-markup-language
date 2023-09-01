@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:collection';
+import 'dart:convert';
 import 'dart:math';
-import 'dart:typed_data';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/event/handler.dart';
@@ -394,19 +394,20 @@ class TableModel extends BoxModel implements IForm
       switch (format?.toLowerCase().trim())
       {
         case "raw" :
-          var bytes = Data.from(data);
-          if (bytes != null) Platform.fileSaveAs(bytes, "${S.newId()}.pdf");
+          var file  = await Data.toCsv(Data.from(data));
+          var bytes = utf8.encode(file);
+          Platform.fileSaveAs(bytes, "${S.newId()}.csv");
           break;
 
         case "csv" :
           var bytes = await view.exportToCSVBytes();
-          if (bytes != null) Platform.fileSaveAs(bytes, "${S.newId()}.pdf");
+          if (bytes != null) Platform.fileSaveAs(bytes, "${S.newId()}.csv");
           break;
           
         case "pdf":
         default:
           var bytes = await view.exportToPDF();
-          if (bytes != null) Platform.fileSaveAs(bytes, "${S.newId()}.csv");
+          if (bytes != null) Platform.fileSaveAs(bytes, "${S.newId()}.pdf");
           break;
       }
     }

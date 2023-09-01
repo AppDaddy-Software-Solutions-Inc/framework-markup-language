@@ -529,6 +529,9 @@ class TableViewState extends WidgetState<TableView>
   {
     if (stateManager == null) return null;
 
+    // This ensures we have built out all rows
+    buildAllRows();
+
     // create the text file
     return pluto_grid_export.PlutoGridExport.exportCSV(stateManager!);
   }
@@ -543,6 +546,9 @@ class TableViewState extends WidgetState<TableView>
   Future<Uint8List?> exportToPDF() async
   {
     if (stateManager == null) return null;
+
+    // This ensures we have built out all rows
+    buildAllRows();
 
     // get the fonts
     //final fontRegular = await rootBundle.load('assets/fonts/open_sans/OpenSans-Regular.ttf');

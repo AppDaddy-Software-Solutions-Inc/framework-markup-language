@@ -114,7 +114,7 @@ class TableHeaderModel extends BoxModel
     }
   }
   bool get filter => _filter?.get() ?? table?.filter ?? false;
-  
+
   TableHeaderModel(WidgetModel parent, String? id) : super(parent, id, scope: Scope(parent: parent.scope));
 
   static TableHeaderModel? fromXml(WidgetModel parent, XmlElement xml, {Map<dynamic, dynamic>? data})

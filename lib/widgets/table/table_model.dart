@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
+import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/form/form_interface.dart';
@@ -26,7 +27,7 @@ class TableModel extends BoxModel implements IForm
   final double defaultPadding = 4;
 
   // data grids are grids that do not define a complex row/cell schema
-  bool get hasPrototype => prototypeRow != null;
+  bool get isSimpleGrid => prototypeRow == null;
 
   @override
   double? get paddingTop => super.paddingTop ?? defaultPadding;
@@ -187,6 +188,21 @@ class TableModel extends BoxModel implements IForm
   }
   String? get oncomplete => _oncomplete?.get();
 
+  // onChange - only used for simple data grid
+  StringObservable? _onChange;
+  set onChange(dynamic v)
+  {
+    if (_onChange != null)
+    {
+      _onChange!.set(v);
+    }
+    else if (v != null)
+    {
+      _onChange = StringObservable(Binding.toKey(id, 'onchange'), v, scope: scope);
+    }
+  }
+  String? get onChange => _onChange?.get();
+  
   // dirty
   @override
   BooleanObservable? get dirtyObservable => _dirty;
@@ -288,7 +304,11 @@ class TableModel extends BoxModel implements IForm
       pageSize = size;
     }
 
+    // handlers
     oncomplete = Xml.get(node: xml, tag: 'oncomplete');
+    onChange   = Xml.get(node: xml, tag: 'onchange');
+
+    // filter
     filter     = Xml.get(node: xml, tag: 'filter');
     filterBar  = Xml.get(node: xml, tag: 'filterbar');
 
@@ -493,6 +513,25 @@ class TableModel extends BoxModel implements IForm
     prototypeRow = WidgetModel.prototypeOf(prototypeRow);
   }
 
+  void onChangeHandler(int rowIdx, int colIdx, dynamic value, dynamic oldValue) async
+  {
+    var data = getDataRow(rowIdx);
+    var col  = header?.cell(colIdx);
+    var fld  = col?.field;
+    
+    if (data != null && col != null && fld != null)
+    {
+      Data.writeValue(data, fld, value);
+
+      // fire the onchange event
+      if (_onChange != null)
+      {
+        bool ok = await col.onChangeHandler();
+        if (ok) EventHandler(this).execute(_onChange);
+      }
+    }
+  }
+  
   void onSelect(TableRowModel row, TableRowCellModel cell)
   {
     // deselect - same row/cell clicked

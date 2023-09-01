@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/boolean.dart';
@@ -158,6 +159,21 @@ class TableHeaderCellModel extends BoxModel
   // position in row
   int get index => hdr?.cells.indexOf(this) ?? -1;
 
+  // onChange - only used for simple data grid
+  StringObservable? _onChange;
+  set onChange(dynamic v)
+  {
+    if (_onChange != null)
+    {
+      _onChange!.set(v);
+    }
+    else if (v != null)
+    {
+      _onChange = StringObservable(Binding.toKey(id, 'onchange'), v, scope: scope);
+    }
+  }
+  String? get onChange => _onChange?.get();
+
   TableHeaderCellModel(WidgetModel parent, String? id) : super(parent, id);
 
   static TableHeaderCellModel? fromXml(WidgetModel parent, XmlElement xml)
@@ -210,5 +226,17 @@ class TableHeaderCellModel extends BoxModel
     resizeable = Xml.get(node:xml, tag: 'resizeable');
     editable   = Xml.get(node:xml, tag: 'editable');
     filter     = Xml.get(node:xml, tag: 'filter');
+    onChange   = Xml.get(node: xml, tag: 'onchange');
+  }
+
+  Future<bool> onChangeHandler() async
+  {
+    // fire the onchange event
+    bool ok = true;
+    if (_onChange != null)
+    {
+      ok = await EventHandler(this).execute(_onChange);
+    }
+    return ok;
   }
 }

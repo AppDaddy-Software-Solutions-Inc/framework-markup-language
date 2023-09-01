@@ -200,15 +200,15 @@ class TableViewState extends WidgetState<TableView>
       {
         dynamic value;
 
-        // defined body
-        if (widget.model.hasPrototype)
+        // simple grid
+        if (widget.model.isSimpleGrid)
         {
-          var model = widget.model.getRowCellModel(rowIdx, colIdx);
-          value = model?.value;
+          value = Data.readValue(data, column.field) ?? "";
         }
         else
         {
-          value = Data.readValue(data, column.field) ?? "";
+          var model = widget.model.getRowCellModel(rowIdx, colIdx);
+          value = model?.value;
         }
 
         cells[column.field] = PlutoCell(value: value);
@@ -491,9 +491,10 @@ class TableViewState extends WidgetState<TableView>
     stateManager = event.stateManager;
 
     // handles changes in selection state
-    if (grid?.mode == PlutoGridMode.normal)
+    // necessary when edit mode is enabled
+    if (widget.model.isSimpleGrid)
     {
-      event.stateManager.addListener(onSelectHandler);
+      stateManager!.addListener(onSelectHandler);
     }
 
     // show filter bar
@@ -516,7 +517,7 @@ class TableViewState extends WidgetState<TableView>
     var cell = event.cell;
 
     // simple grid
-    if (!widget.model.hasPrototype)
+    if (widget.model.isSimpleGrid)
     {
       // set the tables selected data
       var data = widget.model.getDataRow(event.rowIdx ?? -1) ?? [];
@@ -560,8 +561,9 @@ class TableViewState extends WidgetState<TableView>
   }
   void onChanged(PlutoGridOnChangedEvent event) async
   {
-    int i = 0;
-    //views.clear();
+    var rowIdx = rows.indexOf(event.row);
+    var colIdx = map.containsKey(event.column) ? map[event.column]!.index : -1;
+    widget.model.onChangeHandler(rowIdx, colIdx, event.value, event.oldValue);
   }
 
 
@@ -676,10 +678,10 @@ class TableViewState extends WidgetState<TableView>
 
       // cell builder - for performance reasons, tables without defined
       // table rows can be rendered much quicker
-      var builder = widget.model.hasPrototype ? (rendererContext) => cellBuilder(rendererContext) : null;
+      var builder = widget.model.isSimpleGrid ? null : (rendererContext) => cellBuilder(rendererContext);
 
       // cell is editable
-      var editable = !widget.model.hasPrototype && model.editable;
+      var editable = widget.model.isSimpleGrid && model.editable;
 
       // build the column
       var column = PlutoColumn(
@@ -709,24 +711,28 @@ class TableViewState extends WidgetState<TableView>
   Widget build(BuildContext context)
   {
     // build style
-    var config = _buildConfig();
+    if (grid == null)
+    {
+      var config = _buildConfig();
 
-    // build the content loader
-    var loader = widget.model.pageSize > 0 ?  _pageLoader : _lazyLoader;
+      // build the content loader
+      var loader = widget.model.pageSize > 0 ?  _pageLoader : _lazyLoader;
+      var mode   = widget.model.isSimpleGrid ? PlutoGridMode.normal : PlutoGridMode.selectWithOneTap;
+      var change = widget.model.isSimpleGrid ? onChanged : null;
+      var select = widget.model.isSimpleGrid ? null : onSelected;
 
-    var mode = widget.model.hasPrototype ? PlutoGridMode.selectWithOneTap : PlutoGridMode.normal;
-
-    // build the grid
-    grid ??= PlutoGrid(key: GlobalKey(),
-        configuration: config,
-        columns: columns,
-        rows: [],
-        mode: mode,
-        onSelected: onSelected,
-        onLoaded: onLoaded,
-        onSorted: onSorted,
-        onChanged: onChanged,
-        createFooter: loader);
+      // build the grid
+      grid = PlutoGrid(key: GlobalKey(),
+          configuration: config,
+          columns: columns,
+          rows: [],
+          mode: mode,
+          onSelected: select,
+          onLoaded: onLoaded,
+          onSorted: onSorted,
+          onChanged: change,
+          createFooter: loader);
+    }
 
     return grid!;
   }

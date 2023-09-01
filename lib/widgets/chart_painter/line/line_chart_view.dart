@@ -39,7 +39,7 @@ class _LineChartViewState extends WidgetState<LineChartView>
     if(widget.model.xaxis.type == 'date') {
       text = DateFormat(widget.model.xaxis.format ?? 'yyyy/MM/dd').format(DateTime.fromMillisecondsSinceEpoch(value.toInt())).toString();
     } else if (widget.model.xaxis.type == 'category'){
-      text = value.toInt() <= widget.model.uniqueValueMap.length && widget.model.uniqueValueMap.isNotEmpty ? widget.model.uniqueValueMap[value.toInt()].toString(): value.toString();
+      text = value.toInt() <= widget.model.uniqueValues.length && widget.model.uniqueValues.isNotEmpty ? widget.model.uniqueValues.elementAt(value.toInt()).toString(): value.toString();
     } else {
       text = value.toString();
     }

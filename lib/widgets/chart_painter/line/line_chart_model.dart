@@ -237,15 +237,16 @@ class LineChartModel extends ChartPainterModel
           // build the datapoints for the series, passing in the chart type, index, and data
          if (xaxis.type == "raw") {
             serie.plotRawPoints(list);
+            uniqueValues.addAll(serie.xValues);
          } else if (xaxis.type == "category") {
             //with category, we may need to change the xValues to a map rather than a set for when multiple points are there
-            serie.plotCategoryPoints(list);
+            serie.plotCategoryPoints(list, uniqueValues);
+            uniqueValues.addAll(serie.xValues);
           } else if (xaxis.type == "date") {
             serie.plotDatePoints(list, format: xaxis.format);
           } else {
             serie.plotPoints(list);
           }
-          // if(xaxis.type == ChartAxisType.category || xaxis.type == ChartAxisType.date) serie.plotPoints(uniqueValues, true);
 
           lineDataList.add(LineChartBarData(spots: serie.lineDataPoint,
               isCurved: serie.curved,

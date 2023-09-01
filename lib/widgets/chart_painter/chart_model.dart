@@ -16,7 +16,7 @@ import '../chart/chart_model.dart';
 /// Defines the properties used to build a Chart
 class ChartPainterModel extends BoxModel
 {
-  Set<dynamic> uniqueValues = {};
+  List uniqueValues = [];
   List<LineChartBarData> lineDataList = [];
   PieChartData pieData = PieChartData();
 

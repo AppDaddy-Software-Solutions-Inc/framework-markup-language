@@ -348,15 +348,23 @@ class LineChartSeriesModel extends ChartPainterSeriesModel
   }
   int? get selected => _selected?.get();
 
-  void plotCategoryPoints(dynamic dataList){
+  void plotCategoryPoints(dynamic dataList, List uniqueValues){
     xValueMap.clear();
+    int len = uniqueValues.length;
     for (var i=0; i< dataList.length; i++) {
       //set the data of the series for databinding
       data = dataList[i];
-      xValues.add(x);
-      x = i;
-      //plot the point as a point object based on the desired function based on series and chart type.
-      plot();
+
+      if(uniqueValues.contains(x)) {
+        x = uniqueValues.indexOf(x);
+      }
+      else {
+        xValues.add(x);
+        x = len + 1;
+        len += 1;
+      }
+        //plot the point as a point object based on the desired function based on series and chart type.
+        plot();
     }
     dataList = null;
   }

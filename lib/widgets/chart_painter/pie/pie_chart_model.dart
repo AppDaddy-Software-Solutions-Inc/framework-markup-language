@@ -18,8 +18,6 @@ import '../chart_model.dart';
 /// Defines the properties used to build a Chart
 class PieChartModel extends ChartPainterModel
 {
-  @override
-  Set<dynamic> uniqueValues = {};
   final List<PieChartSeriesModel> series = [];
   @override
   PieChartData pieData = PieChartData();

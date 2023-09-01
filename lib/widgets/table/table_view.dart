@@ -3,7 +3,6 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:math';
 import 'package:fml/data/data.dart';
-import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/event/event.dart';
@@ -173,24 +172,30 @@ class TableViewState extends WidgetState<TableView>
     map.clear();
     for (var model in widget.model.header!.cells)
     {
-      var name   = model.name ?? "Column ${model.index}";
       var height = widget.model.header?.height ?? PlutoGridSettings.rowHeight;
       var title  = WidgetSpan(child: SizedBox(height: height, child:BoxView(model)));
+      var name   = model.name  ?? model.field ?? "Column ${model.index}";
+      var field  = model.field ?? model.name  ?? name;
 
+      // cell builder - for performance reasons, tables without defined
+      // table rows can be rendered much quicker
+      var builder = widget.model.hasPrototype ? (rendererContext) => cellBuilder(rendererContext) : null;
+
+      // build the column
       var column = PlutoColumn(
           title: name,
           sort: PlutoColumnSort.none,
           titleSpan: title,
-          field: name,
+          field: field,
           type: getColumnType(model),
           enableSorting: model.sortable,
           enableFilterMenuItem: model.filter,
           enableEditingMode: false,
           titlePadding: EdgeInsets.all(0),
           cellPadding: EdgeInsets.all(0),
-          renderer: (rendererContext) => cellBuilder(rendererContext));
+          renderer: builder);
 
-      // add to map
+      // add to the column list
       map[column] = model;
 
       // add to columns
@@ -200,33 +205,28 @@ class TableViewState extends WidgetState<TableView>
 
   PlutoGridConfiguration _buildConfig()
   {
-    var radius = BorderRadius.circular(widget.model.radiusTopRight);
+    var colHeight = widget.model.header?.height ?? PlutoGridSettings.rowHeight;
+    var rowHeight = widget.model.getRowModel(0)?.height ?? widget.model.getEmptyRowModel()?.height ?? colHeight;
+    var borderRadius = BorderRadius.circular(widget.model.radiusTopRight);
 
     // style
     var style = PlutoGridStyleConfig(
 
         defaultCellPadding: EdgeInsets.all(0),
 
-        columnHeight: widget.model.header?.height ?? PlutoGridSettings.rowHeight,
+        columnHeight: colHeight,
 
-        rowHeight: widget.model.getRowModel(0)?.height ?? widget.model.getEmptyRowModel()?.height ?? PlutoGridSettings.rowHeight,
+        rowHeight: rowHeight,
 
-        gridBorderRadius: radius
+        gridBorderRadius: borderRadius
     );
 
     // config
-    var configuration = PlutoGridConfiguration(
-        style: style
-    );
-
-    return configuration;
+    return PlutoGridConfiguration(style: style);
   }
 
-  void buildAllRows()
-  {
-    var rows = widget.model.data is Data ? (widget.model.data as Data).length : 0;
-    buildOutRows(rows);
-  }
+  // build all rows
+  void buildAllRows() => buildOutRows(widget.model.getDataRowCount());
 
   void buildOutRows(int length)
   {
@@ -243,9 +243,13 @@ class TableViewState extends WidgetState<TableView>
     // row already created
     if (rowIdx < rows.length) return rows[rowIdx];
 
-    // create the row
     PlutoRow? row;
-    if (widget.model.data is Data && rowIdx < (widget.model.data as Data).length)
+
+    // get the data row
+    dynamic data = widget.model.getDataRow(rowIdx);
+
+    // create the row
+    if (data != null)
     {
       Map<String, PlutoCell> cells = {};
 
@@ -253,8 +257,20 @@ class TableViewState extends WidgetState<TableView>
       int colIdx = 0;
       for (var column in columns)
       {
-        var model = widget.model.getRowCellModel(rowIdx, colIdx);
-        cells[column.field] = PlutoCell(value: model?.value);
+        dynamic value;
+
+        // defined body
+        if (widget.model.hasPrototype)
+        {
+          var model = widget.model.getRowCellModel(rowIdx, colIdx);
+          value = model?.value;
+        }
+        else
+        {
+          value = Data.readValue(data, column.field) ?? "";
+        }
+
+        cells[column.field] = PlutoCell(value: value);
         colIdx++;
       }
       row = PlutoRow(cells: cells, sortIdx: rowIdx);
@@ -297,9 +313,6 @@ class TableViewState extends WidgetState<TableView>
     // rows are sorted?
     var sort = request.sortColumn != null && !request.sortColumn!.sort.isNone;
 
-    // total number of rows
-    var rows = widget.model.data is Data ? (widget.model.data as Data).length : 0;
-
     // number of records to fetch
     var fetchSize = 50;
 
@@ -308,7 +321,7 @@ class TableViewState extends WidgetState<TableView>
     if (request.lastRow != null)
     {
       var row = request.lastRow!;
-      rowIdx = this.rows.contains(row) ? this.rows.indexOf(row) : 0;
+      rowIdx = rows.contains(row) ? rows.indexOf(row) : 0;
     }
 
     // build rows
@@ -323,7 +336,7 @@ class TableViewState extends WidgetState<TableView>
     }
 
     // build the list
-    List<PlutoRow> tempList = this.rows.toList();
+    List<PlutoRow> tempList = rows.toList();
 
     // If you have a filtering state,
     // you need to implement it so that the user gets data from the server
@@ -406,7 +419,8 @@ class TableViewState extends WidgetState<TableView>
     // The return value returns the PlutoInfinityScrollRowsResponse class.
     // isLast should be true when there is no more data to load.
     // rows should pass a List<PlutoRow>.
-    final bool isLast = fetchedRows.isEmpty || rows < this.rows.length;
+    // total number of rows
+    final bool isLast = fetchedRows.isEmpty || widget.model.getDataRowCount() < rows.length;
 
     // notify the user
     if (isLast && mounted)
@@ -435,7 +449,7 @@ class TableViewState extends WidgetState<TableView>
     var sort = request.sortColumn != null && !request.sortColumn!.sort.isNone;
 
     // total number of rows
-    var rows = widget.model.data is Data ? (widget.model.data as Data).length : 0;
+    var rows = widget.model.getDataRowCount();
 
     // page size
     var pageSize = widget.model.pageSize;
@@ -586,12 +600,12 @@ class TableViewState extends WidgetState<TableView>
     views.clear();
   }
 
+  // forces the lazy/page loaders to refire
   void refresh()
   {
     stateManager?.eventManager?.addEvent(PlutoGridSetColumnFilterEvent(filterRows: []));
-
-    //stateManager?.resetPage();
   }
+
   PlutoLazyPagination _pageLoader(PlutoGridStateManager stateManager)
   {
     var loader = PlutoLazyPagination(
@@ -660,20 +674,14 @@ class TableViewState extends WidgetState<TableView>
   @override
   Widget build(BuildContext context)
   {
-    // handles changes in selection state
-    //stateManager?.removeListener(onSelected);
-
     // build style
     var config = _buildConfig();
 
     // build the content loader
     var loader = widget.model.pageSize > 0 ?  _pageLoader : _lazyLoader;
 
-    print('building pluto grid ...');
-
     // build the grid
-    if (grid == null)
-    grid = PlutoGrid(key: GlobalKey(),
+    grid ??= PlutoGrid(key: GlobalKey(),
         configuration: config,
         columns: columns,
         rows: [],

@@ -124,7 +124,22 @@ class TableHeaderCellModel extends BoxModel
     }
   }
   String? get name => _name?.get();
-  
+
+  // field - used by grid display
+  StringObservable? _field;
+  set field(dynamic v)
+  {
+    if (_field != null)
+    {
+      _field!.set(v);
+    }
+    else if (v != null)
+    {
+      _field = StringObservable(Binding.toKey(id, 'field'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get field => _field?.get();
+
   // position in row
   int get index => hdr?.cells.indexOf(this) ?? -1;
 
@@ -167,7 +182,14 @@ class TableHeaderCellModel extends BoxModel
       name = text?.value;
     }
 
+    // properties
+
+    // field - used to drive simple tables for performance
+    field      = Xml.get(node:xml, tag: 'field');
+
+    //type - denotes the field type. used for sorting
     type       = Xml.get(node:xml, tag: 'type');
+
     sortable   = Xml.get(node:xml, tag: 'sortable');
     draggable  = Xml.get(node:xml, tag: 'draggable');
     resizeable = Xml.get(node:xml, tag: 'resizeable');

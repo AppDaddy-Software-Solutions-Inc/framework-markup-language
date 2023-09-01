@@ -25,6 +25,9 @@ class TableModel extends BoxModel implements IForm
 {
   final double defaultPadding = 4;
 
+  // data grids are grids that do not define a complex row/cell schema
+  bool get hasPrototype => prototypeRow != null;
+
   @override
   double? get paddingTop => super.paddingTop ?? defaultPadding;
 
@@ -359,9 +362,9 @@ class TableModel extends BoxModel implements IForm
     var view = findListenerOfExactType(TableViewState);
     if (view is TableViewState)
     {
-      (view as TableViewState).refresh();
+      view.refresh();
     }
-    //notifyListeners('list', null);
+
     return true;
   }
 
@@ -510,6 +513,21 @@ class TableModel extends BoxModel implements IForm
       selected = row.data;
     }
   }
+
+  // returns the specified row in data
+  dynamic getDataRow(int rowIdx)
+  {
+    if (rowIdx < 0) rowIdx = 0;
+    if (data is Data)
+    {
+      if (rowIdx < data.length) return data[rowIdx];
+    }
+    return null;
+   }
+
+
+  // returns the length of the dataset
+  int getDataRowCount() => data is Data ? (data as Data).length : 0;
 
   @override
   Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async

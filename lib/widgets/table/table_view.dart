@@ -556,6 +556,7 @@ class TableViewState extends WidgetState<TableView>
 
     // build the theme
     final themeData = pluto_grid_export.ThemeData.base();
+
     //final themeData = pluto_grid_export.ThemeData.withFont(base: pluto_grid_export.Font.ttf(fontRegular), bold: pluto_grid_export.Font.ttf(fontBold));
 
     var plutoGridPdfExport = pluto_grid_export.PlutoGridDefaultPdfExport(

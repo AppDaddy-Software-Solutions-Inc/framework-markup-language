@@ -388,28 +388,35 @@ class TableModel extends BoxModel implements IForm
   // export to excel
   Future<bool> export(String? format) async
   {
-    var view = findListenerOfExactType(TableViewState);
-    if (view is TableViewState)
+    try
     {
-      switch (format?.toLowerCase().trim())
+      var view = findListenerOfExactType(TableViewState);
+      if (view is TableViewState)
       {
-        case "raw" :
-          var file  = await Data.toCsv(Data.from(data));
-          var bytes = utf8.encode(file);
-          Platform.fileSaveAs(bytes, "${S.newId()}.csv");
-          break;
+        switch (format?.toLowerCase().trim())
+        {
+          case "raw" :
+            var file  = await Data.toCsv(Data.from(data));
+            var bytes = utf8.encode(file);
+            Platform.fileSaveAs(bytes, "${S.newId()}.csv");
+            break;
 
-        case "csv" :
-          var bytes = await view.exportToCSVBytes();
-          if (bytes != null) Platform.fileSaveAs(bytes, "${S.newId()}.csv");
-          break;
-          
-        case "pdf":
-        default:
-          var bytes = await view.exportToPDF();
-          if (bytes != null) Platform.fileSaveAs(bytes, "${S.newId()}.pdf");
-          break;
+          case "csv" :
+            var bytes = await view.exportToCSVBytes();
+            if (bytes != null) Platform.fileSaveAs(bytes, "${S.newId()}.csv");
+            break;
+
+          case "pdf":
+          default:
+            var bytes = await view.exportToPDF();
+            if (bytes != null) Platform.fileSaveAs(bytes, "${S.newId()}.pdf");
+            break;
+        }
       }
+    }
+    catch(e)
+    {
+      print (e);
     }
     return true;
   }

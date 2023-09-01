@@ -64,21 +64,6 @@ class _LineChartViewState extends WidgetState<LineChartView>
   //Comes in as list of series
   LineChart buildLineChart(List<ChartPainterSeriesModel> seriesData){
 
-    //List<LineChartBarData> data = [];
-    //
-    // if(seriesData.isNotEmpty) {
-    //
-    //   // //add each series datapoint to the list
-    //   // for (var series in seriesData) {
-    //   //
-    //   //   //add the series data to the list as a LineChartBarData object.
-    //   //   data.add(LineChartBarData(spots: series.lineDataPoint, dotData: FlDotData(show: series.showpoints), barWidth: series.type == 'point' || series.showline == false ? 0 : 2, color: series.color ?? ColorHelper.fromString('random')));
-    //   //   series.barDataPoint.clear();
-    //   // }
-    // }
-
-
-
     LineChart chart = LineChart(
       LineChartData(
         lineBarsData: widget.model.lineDataList,

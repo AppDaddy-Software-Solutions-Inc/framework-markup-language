@@ -57,24 +57,22 @@ class _ChartViewState extends WidgetState<BarChartView>
         barGroups: widget.model.barDataList,
         minY: S.toDouble(widget.model.yaxis.min),
         maxY: S.toDouble(widget.model.yaxis.max),
-        //rangeAnnotations: RangeAnnotations(),
-        // borderData: FlBorderData(
-        //   show: true,
-        // ),
-        // gridData: const FlGridData(
-        //   show: true,
-        // ),
+
         titlesData: FlTitlesData(
           topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
           rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
           leftTitles: AxisTitles(
+              axisNameWidget: !S.isNullOrEmpty(widget.model.yaxis.title) ? Text(widget.model.yaxis.title!, style: TextStyle(fontSize: 12),): null,
               sideTitles: SideTitles(
+                interval: S.toDouble(widget.model.yaxis.interval),
                 showTitles: true,
                 getTitlesWidget: leftTitles,
               )
           ),
           bottomTitles: AxisTitles(
+              axisNameWidget: !S.isNullOrEmpty(widget.model.xaxis.title) ? Text(widget.model.xaxis.title!, style: TextStyle(fontSize: 12),): null,
               sideTitles: SideTitles(
+                interval: S.toDouble(widget.model.xaxis.interval),
                 showTitles: true,
                 getTitlesWidget: bottomTitles,
               )

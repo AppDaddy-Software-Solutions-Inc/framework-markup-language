@@ -8,7 +8,6 @@ import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/form/form_interface.dart';
-import 'package:fml/widgets/table/table_footer_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/table/table_view.dart';
 import 'package:fml/widgets/table/table_header_model.dart';
@@ -167,7 +166,6 @@ class TableModel extends BoxModel implements IForm
   XmlElement? prototypeRow;
 
   TableHeaderModel? header;
-  TableFooterModel? footer;
 
   final HashMap<int, TableRowModel> rows = HashMap<int, TableRowModel>();
 
@@ -305,13 +303,6 @@ class TableModel extends BoxModel implements IForm
       }
     }
 
-    // Get Table Footer
-    List<TableFooterModel> footers = findChildrenOfExactType(TableFooterModel).cast<TableFooterModel>();
-    if (footers.isNotEmpty)
-    {
-      footer = footers.first;
-    }
-
     // dynamic?
     List<TableRowModel> rows = findChildrenOfExactType(TableRowModel).cast<TableRowModel>();
     if (rows.isNotEmpty)
@@ -377,6 +368,7 @@ class TableModel extends BoxModel implements IForm
       this.data = data;
     }
 
+    // this forces a table refresh
     var view = findListenerOfExactType(TableViewState);
     if (view is TableViewState)
     {
@@ -396,6 +388,18 @@ class TableModel extends BoxModel implements IForm
   // export to excel
   Future<bool> export() async
   {
+    var view = findListenerOfExactType(TableViewState);
+    if (view is TableViewState)
+    {
+        var bytes = view.exportToCSV();
+
+        // save to file
+        if (bytes != null)
+        {
+          Platform.fileSaveAs(bytes, "${S.newId()}.csv");
+        }
+    }
+
     var data = Data.from(this.data);
 
     // convert to data

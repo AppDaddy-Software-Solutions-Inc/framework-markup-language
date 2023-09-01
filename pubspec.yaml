@@ -85,7 +85,7 @@ dependencies:
   # MIT
 
   # Updated 2022/12/29
-  flutter_image_transform: ^1.0.0
+  flutter_image_transform: ^1.0.1
   # MIT
 
   # Added 2023/06/06
@@ -147,7 +147,7 @@ dependencies:
   # BSD-3-Clause
 
   # Updated 2022/11/06 // Our library "flutter_image_transform" is blocking this update
-  image: ^3.2.2
+  image: ^4.0.17
   # MIT
 
   # Updated 2023/08/31
@@ -208,6 +208,10 @@ dependencies:
 
   # Updated 2023/08/31
   pluto_grid: ^7.0.2
+  # MIT
+
+  # Updated 2023/08/31
+  pluto_grid_export: ^1.0.6
   # MIT
 
   # Updated 2022/05/26

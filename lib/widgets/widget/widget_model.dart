@@ -89,7 +89,6 @@ import 'package:fml/widgets/slider/slider_model.dart';
 import 'package:fml/widgets/splitview/split_model.dart';
 import 'package:fml/widgets/stack/stack_model.dart';
 import 'package:fml/widgets/switch/switch_model.dart';
-import 'package:fml/widgets/table/table_footer_model.dart';
 import 'package:fml/widgets/table/table_header_cell_model.dart';
 import 'package:fml/widgets/table/table_header_model.dart';
 import 'package:fml/widgets/table/table_model.dart';
@@ -810,11 +809,6 @@ class WidgetModel implements IDataSourceListener {
       case "tr":
       case "tablerow":
         model = TableRowModel.fromXml(parent, node);
-        break;
-
-      case "tf":
-      case "tablefooter":
-        model = TableFooterModel.fromXml(parent, node);
         break;
 
       case "td":

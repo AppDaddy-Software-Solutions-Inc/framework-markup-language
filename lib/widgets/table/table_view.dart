@@ -1,11 +1,13 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'dart:collection';
+import 'dart:convert';
 import 'dart:math';
+import 'dart:typed_data';
+import 'package:flutter/services.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
-import 'package:fml/event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/table/table_header_cell_model.dart';
@@ -13,10 +15,9 @@ import 'package:fml/widgets/table/table_row_cell_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/table/table_model.dart';
-import 'package:fml/widgets/table/table_row_model.dart';
-import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:pluto_grid/pluto_grid.dart';
+import 'package:pluto_grid_export/pluto_grid_export.dart' as pluto_grid_export;
 
 class TableView extends StatefulWidget implements IWidgetView
 {
@@ -76,62 +77,6 @@ class TableViewState extends WidgetState<TableView>
     {
       Log().exception(e);
     }
-  }
-
-  Future<bool> onComplete(Event event) async
-  {
-    bool ok = true;
-
-    // Specific Complete?
-    if ((event.parameters != null) &&
-        (!S.isNullOrEmpty(event.parameters!['id'])) &&
-        (event.parameters!['id'] != widget.model.id)) return ok;
-
-    // Mark Event as Handled
-    event.handled = true;
-
-    // Force Close
-    await closeKeyboard();
-
-    // Confirm
-    //int response = await DialogService().show(type: DialogType.info, title: phrase.confirmTableComplete, buttons: [Text(phrase.yes, style: TextStyle(fontSize: 18, color: Colors.white)),Text(phrase.no, style: TextStyle(fontSize: 18, color: Colors.white))]);
-
-    ok = true;
-
-    // Row Level Event?
-    TableRowModel? row;
-    if (event.model != null)
-    {
-      row = event.model!.findAncestorOfExactType(TableRowModel);
-    }
-
-    // Complete the Table
-    if (ok)
-    {
-      if (row != null)
-      {
-        ok = await row.complete();
-      }
-      else
-      {
-        ok = await widget.model.complete();
-      }
-    }
-
-    // Fire OnComplete
-    if (ok)
-    {
-      if (row != null)
-      {
-        ok = await row.onComplete();
-      }
-      else
-      {
-        //ok = await widget.model.onComplete(context);
-      }
-    }
-
-    return ok;
   }
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
@@ -486,6 +431,7 @@ class TableViewState extends WidgetState<TableView>
     return Future.value(PlutoLazyPaginationResponse(totalPage: pages, rows: fetchedRows));
   }
 
+  // called when grid is loaded
   void onLoaded(PlutoGridOnLoadedEvent event)
   {
     stateManager = event.stateManager;
@@ -504,12 +450,15 @@ class TableViewState extends WidgetState<TableView>
     }
   }
 
+  // called on selected
+  // only called when simple grid
   void onSelectHandler()
   {
     var event = PlutoGridOnSelectedEvent(row: stateManager?.currentRow, cell: stateManager?.currentCell, rowIdx: stateManager?.currentRowIdx, selectedRows: stateManager?.currentSelectingRows);
     onSelected(event);
   }
 
+  // called directly when not simple grid
   void onSelected(PlutoGridOnSelectedEvent event)
   {
     // get row and column
@@ -555,10 +504,14 @@ class TableViewState extends WidgetState<TableView>
     }
   }
 
+  // called when a field sort operation happens
   void onSorted(PlutoGridOnSortedEvent event) async
   {
     views.clear();
   }
+
+  // called when a field changed.
+  // only applies to simple grid
   void onChanged(PlutoGridOnChangedEvent event) async
   {
     var rowIdx = rows.indexOf(event.row);
@@ -571,6 +524,45 @@ class TableViewState extends WidgetState<TableView>
   void refresh()
   {
     stateManager?.eventManager?.addEvent(PlutoGridSetColumnFilterEvent(filterRows: []));
+  }
+
+  Future<String?> exportToCSV() async
+  {
+    if (stateManager == null) return null;
+
+    // create the text file
+    return pluto_grid_export.PlutoGridExport.exportCSV(stateManager!);
+  }
+
+  Future<Uint8List?> exportToCSVBytes() async
+  {
+    var file = await exportToCSV();
+    if (file == null) return null;
+    return const Utf8Encoder().convert(file);
+  }
+
+  Future<Uint8List?> exportToPDF() async
+  {
+    if (stateManager == null) return null;
+
+    // get the fonts
+    final fontRegular = await rootBundle.load('assets/fonts/open_sans/OpenSans-Regular.ttf');
+    final fontBold = await await rootBundle.load('assets/fonts/open_sans/OpenSans-Bold.ttf');
+
+    // build the theme
+    final themeData = pluto_grid_export.ThemeData.withFont(base: pluto_grid_export.Font.ttf(fontRegular), bold: pluto_grid_export.Font.ttf(fontBold));
+
+    var plutoGridPdfExport = pluto_grid_export.PlutoGridDefaultPdfExport(
+        title: "Table Export",
+        creator: "Flutter Markup Language",
+        format: pluto_grid_export.PdfPageFormat.a4.landscape,
+        themeData: themeData,
+    );
+
+    // create the document
+    var bytes = await plutoGridPdfExport.export(stateManager!);
+
+    return bytes;
   }
 
   PlutoLazyPagination _pageLoader(PlutoGridStateManager stateManager)

@@ -471,45 +471,57 @@ class TableModel extends BoxModel implements IForm
   Future<void> _buildDynamic(Data? data) async
   {
     // both header and row prototypes must be defined
-    if (prototypeHeaderCell == null || prototypeRowCell == null) return;
+    if (prototypeHeaderCell == null || this.header == null) return;
+
+    var header = this.header!;
 
     // clear old header cells
-    for (var cell in header!.cells)
+    for (var cell in header.cells)
     {
       cell.dispose();
     }
-    header!.cells.clear();
+    header.cells.clear();
 
-    // clear prototype row cells
-    prototypeRow ??= XmlElement(XmlName("ROW"));
-    prototypeRow!.children.clear();
-
+    // build header prototype cells
     if (data != null && data.isNotEmpty)
     {
-      var headerCell = prototypeHeaderCell.toString();
-      var rowCell = prototypeRowCell.toString();
+      var prototype = prototypeHeaderCell.toString();
       data[0].forEach((key, value)
       {
         if (key != 'xml' && key != 'rownum')
         {
           // header cell
-          var xml = headerCell.replaceAll("{field}", key);
-          var m1 = TableHeaderCellModel.fromXmlString(this, xml);
-
-          // row cells
-          xml = rowCell.replaceAll("{field}", "{data.$key}");
-          var m2 = Xml.tryParse(xml);
-
-          if (m1 != null && m2 != null)
-          {
-            header?.cells.add(m1);
-            prototypeRow!.children.add(m2.rootElement.copy());
-          }
+          var xml   = prototype.replaceAll("{field}", key);
+          var model = TableHeaderCellModel.fromXmlString(this, xml) ?? TableHeaderCellModel(this, null);
+          header.cells.add(model);
         }
       });
     }
 
-    // make prototype conversions
+    // no prototype row
+    if (isSimpleGrid) return;
+
+    // clear prototype row cells
+    prototypeRow ??= XmlElement(XmlName("TR"));
+    prototypeRow!.children.clear();
+
+    // build row prototype cells
+    if (data != null && data.isNotEmpty)
+    {
+      var prototype = prototypeRowCell.toString();
+      data[0].forEach((key, value)
+      {
+        if (key != 'xml' && key != 'rownum')
+        {
+          var xml  = prototype.replaceAll("{field}", "{data.$key}");
+          var doc  = Xml.tryParse(xml);
+          var node = doc?.rootElement.copy() ?? XmlElement(XmlName("TD"));
+          prototypeRow!.children.add(node);
+        }
+      });
+    }
+
+    // apply prototype conversions
     prototypeRow = WidgetModel.prototypeOf(prototypeRow);
   }
 

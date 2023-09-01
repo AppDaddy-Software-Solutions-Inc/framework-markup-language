@@ -3,7 +3,6 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:math';
-import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/log/manager.dart';
@@ -546,11 +545,12 @@ class TableViewState extends WidgetState<TableView>
     if (stateManager == null) return null;
 
     // get the fonts
-    final fontRegular = await rootBundle.load('assets/fonts/open_sans/OpenSans-Regular.ttf');
-    final fontBold = await await rootBundle.load('assets/fonts/open_sans/OpenSans-Bold.ttf');
+    //final fontRegular = await rootBundle.load('assets/fonts/open_sans/OpenSans-Regular.ttf');
+    //final fontBold = await rootBundle.load('assets/fonts/open_sans/OpenSans-Bold.ttf');
 
     // build the theme
-    final themeData = pluto_grid_export.ThemeData.withFont(base: pluto_grid_export.Font.ttf(fontRegular), bold: pluto_grid_export.Font.ttf(fontBold));
+    final themeData = pluto_grid_export.ThemeData.base();
+    //final themeData = pluto_grid_export.ThemeData.withFont(base: pluto_grid_export.Font.ttf(fontRegular), bold: pluto_grid_export.Font.ttf(fontBold));
 
     var plutoGridPdfExport = pluto_grid_export.PlutoGridDefaultPdfExport(
         title: "Table Export",

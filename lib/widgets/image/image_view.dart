@@ -10,7 +10,6 @@ import 'package:fml/observable/scope.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/image/image_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
-import 'package:image/image.dart' as image_pack;
 import 'package:fml/helper/common_helpers.dart';
 
 /// [IMAGE] view
@@ -165,55 +164,6 @@ class ImageView extends StatefulWidget implements IWidgetView
         boxFit = BoxFit.cover;
     }
     return boxFit;
-  }
-
-  /// Apply a filter to the image
-  static void applyFilter(Uint8List img, String filter) {
-    image_pack.Image? filtered = image_pack.decodePng(img);
-    switch (filter) {
-      case 'sobel':
-        image_pack.sobel(filtered!, amount: 1.0);
-        break;
-      case 'quantize':
-        image_pack.quantize(filtered!, numberOfColors: 4);
-        break;
-      case 'remap':
-        image_pack.remapColors(filtered!,
-            red: image_pack.Channel.luminance,
-            green: image_pack.Channel.luminance,
-            blue: image_pack.Channel.luminance);
-        break;
-      case 'normalize':
-        image_pack.normalize(filtered!, 85, 170);
-        break;
-      case 'greyscale':
-      case 'grayscale':
-      image_pack.grayscale(filtered!);
-        break;
-      case 'mirror':
-        image_pack.flipHorizontal(filtered!);
-        break;
-      case 'contrast':
-        image_pack.contrast(filtered, 200);
-        break;
-      case 'white':
-        image_pack.adjustColor(filtered!, whites: 130);
-        break;
-      case 'black':
-        image_pack.adjustColor(filtered!, blacks: 130);
-        break;
-      case 'mid':
-        image_pack.adjustColor(filtered!, mids: 130);
-        break;
-      case 'reverse':
-        image_pack.adjustColor(filtered!, blacks: 255, whites: 0);
-        break;
-      case 'convolution':
-        image_pack.convolution(filtered!, [0, -1, 0, -1, 5, -1, 0, -1, 0]);
-        break;
-      default:
-        break;
-    }
   }
 }
 

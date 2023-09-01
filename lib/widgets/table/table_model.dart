@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:collection';
-import 'dart:convert';
 import 'dart:math';
+import 'dart:typed_data';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/event/handler.dart';
@@ -386,31 +386,30 @@ class TableModel extends BoxModel implements IForm
   }
 
   // export to excel
-  Future<bool> export() async
+  Future<bool> export(String? format) async
   {
     var view = findListenerOfExactType(TableViewState);
     if (view is TableViewState)
     {
-        var bytes = view.exportToCSV();
+      switch (format?.toLowerCase().trim())
+      {
+        case "raw" :
+          var bytes = Data.from(data);
+          if (bytes != null) Platform.fileSaveAs(bytes, "${S.newId()}.pdf");
+          break;
 
-        // save to file
-        if (bytes != null)
-        {
-          Platform.fileSaveAs(bytes, "${S.newId()}.csv");
-        }
+        case "csv" :
+          var bytes = await view.exportToCSVBytes();
+          if (bytes != null) Platform.fileSaveAs(bytes, "${S.newId()}.pdf");
+          break;
+          
+        case "pdf":
+        default:
+          var bytes = await view.exportToPDF();
+          if (bytes != null) Platform.fileSaveAs(bytes, "${S.newId()}.csv");
+          break;
+      }
     }
-
-    var data = Data.from(this.data);
-
-    // convert to data
-    String csv = await Data.toCsv(data);
-
-    // encode
-    var csvBytes = utf8.encode(csv);
-
-    // save to file
-    Platform.fileSaveAs(csvBytes, "${S.newId()}.csv");
-
     return true;
   }
 
@@ -585,7 +584,8 @@ class TableModel extends BoxModel implements IForm
     {
       // export the data
       case "export" :
-        await export();
+        var format = S.toStr(S.item(arguments, 0));
+        await export(format);
         return true;
     }
     return super.execute(caller, propertyOrFunction, arguments);

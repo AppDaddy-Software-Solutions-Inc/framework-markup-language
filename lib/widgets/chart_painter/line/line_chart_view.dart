@@ -38,7 +38,7 @@ class _LineChartViewState extends WidgetState<LineChartView>
     String text = "";
     if(widget.model.xaxis.type == 'date') {
       text = DateFormat(widget.model.xaxis.format ?? 'yyyy/MM/dd').format(DateTime.fromMillisecondsSinceEpoch(value.toInt())).toString();
-    } else if (widget.model.xaxis.type == 'category'){
+    } else if (widget.model.xaxis.type == 'category' || widget.model.xaxis.type == 'raw'){
       text = value.toInt() <= widget.model.uniqueValues.length && widget.model.uniqueValues.isNotEmpty ? widget.model.uniqueValues.elementAt(value.toInt()).toString(): value.toString();
     } else {
       text = value.toString();
@@ -93,7 +93,7 @@ class _LineChartViewState extends WidgetState<LineChartView>
           bottomTitles: AxisTitles(
             axisNameWidget: !S.isNullOrEmpty(widget.model.xaxis.title) ? Text(widget.model.xaxis.title!, style: TextStyle(fontSize: 12),): null,
               sideTitles: SideTitles(
-                interval: widget.model.xaxis.type == 'category' ? 1 : S.toDouble(widget.model.xaxis.interval),
+                interval: widget.model.xaxis.type == 'category' || widget.model.xaxis.type == 'raw' ? 1 : S.toDouble(widget.model.xaxis.interval),
                 showTitles: true,
                 reservedSize: 24,
                 getTitlesWidget: bottomTitles,

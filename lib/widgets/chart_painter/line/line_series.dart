@@ -349,13 +349,13 @@ class LineChartSeriesModel extends ChartPainterSeriesModel
   int? get selected => _selected?.get();
 
   void plotCategoryPoints(dynamic dataList, List uniqueValues){
-    xValueMap.clear();
-    int len = uniqueValues.length;
+    xValues.clear();
+    int len = uniqueValues.length - 1;
     for (var i=0; i< dataList.length; i++) {
       //set the data of the series for databinding
       data = dataList[i];
 
-      if(uniqueValues.contains(x)) {
+      if(uniqueValues.isNotEmpty && uniqueValues.contains(x)) {
         x = uniqueValues.indexOf(x);
       }
       else {
@@ -369,14 +369,15 @@ class LineChartSeriesModel extends ChartPainterSeriesModel
     dataList = null;
   }
 
-  void plotRawPoints(dynamic dataList){
-    xValueMap.clear();
+  void plotRawPoints(dynamic dataList, List uniqueValues){
+    xValues.clear();
+    int len = uniqueValues.length - 1;
     for (var i=0; i< dataList.length; i++) {
       //set the data of the series for databinding
       data = dataList[i];
       xValues.add(x);
-      x = i;
-      //plot the point as a point object based on the desired function based on series and chart type.
+      x = len + 1;
+      len += 1;
       plot();
     }
     dataList = null;
@@ -387,9 +388,7 @@ class LineChartSeriesModel extends ChartPainterSeriesModel
     for (var i=0; i< dataList.length; i++) {
       //set the data of the series for databinding
       data = dataList[i];
-          x = S
-              .toDate(x, format: 'yyyy/MM/dd')
-              ?.millisecondsSinceEpoch;
+          x = S.toDate(x, format: format ?? 'yyyy/MM/dd')?.millisecondsSinceEpoch;
           //plot the point as a point object based on the desired function based on series and chart type.
         plot();
     }

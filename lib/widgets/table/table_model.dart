@@ -94,6 +94,21 @@ class TableModel extends BoxModel implements IForm
   }
   bool get resizeable => _resizeable?.get() ?? true;
 
+  // editable - used on non row prototype only
+  BooleanObservable? _editable;
+  set editable(dynamic v)
+  {
+    if (_editable != null)
+    {
+      _editable!.set(v);
+    }
+    else if (v != null)
+    {
+      _editable = BooleanObservable(Binding.toKey(id, 'editable'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool? get editable => _editable?.get();
+
   // allow filtering
   BooleanObservable? _filter;
   set filter(dynamic v)
@@ -262,6 +277,7 @@ class TableModel extends BoxModel implements IForm
     sortable   = Xml.get(node: xml, tag: 'sortable');
     draggable  = Xml.get(node: xml, tag: 'draggable');
     resizeable = Xml.get(node: xml, tag: 'resizeable');
+    editable   = Xml.get(node: xml, tag: 'editable');
 
     // legacy support
     var paged = S.toBool(Xml.get(node: xml, tag: 'pagesize'));
@@ -515,16 +531,7 @@ class TableModel extends BoxModel implements IForm
   }
 
   // returns the specified row in data
-  dynamic getDataRow(int rowIdx)
-  {
-    if (rowIdx < 0) rowIdx = 0;
-    if (data is Data)
-    {
-      if (rowIdx < data.length) return data[rowIdx];
-    }
-    return null;
-   }
-
+  dynamic getDataRow(int rowIdx) => (rowIdx >= 0 && data is Data && rowIdx < data.length) ? data[rowIdx] : null;
 
   // returns the length of the dataset
   int getDataRowCount() => data is Data ? (data as Data).length : 0;

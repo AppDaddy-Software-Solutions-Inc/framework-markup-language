@@ -166,65 +166,6 @@ class TableViewState extends WidgetState<TableView>
     }
   }
 
-  void _buildColumns()
-  {
-    columns.clear();
-    map.clear();
-    for (var model in widget.model.header!.cells)
-    {
-      var height = widget.model.header?.height ?? PlutoGridSettings.rowHeight;
-      var title  = WidgetSpan(child: SizedBox(height: height, child:BoxView(model)));
-      var name   = model.name  ?? model.field ?? "Column ${model.index}";
-      var field  = model.field ?? model.name  ?? name;
-
-      // cell builder - for performance reasons, tables without defined
-      // table rows can be rendered much quicker
-      var builder = widget.model.hasPrototype ? (rendererContext) => cellBuilder(rendererContext) : null;
-
-      // build the column
-      var column = PlutoColumn(
-          title: name,
-          sort: PlutoColumnSort.none,
-          titleSpan: title,
-          field: field,
-          type: getColumnType(model),
-          enableSorting: model.sortable,
-          enableFilterMenuItem: model.filter,
-          enableEditingMode: false,
-          titlePadding: EdgeInsets.all(0),
-          cellPadding: EdgeInsets.all(0),
-          renderer: builder);
-
-      // add to the column list
-      map[column] = model;
-
-      // add to columns
-      columns.add(column);
-    }
-  }
-
-  PlutoGridConfiguration _buildConfig()
-  {
-    var colHeight = widget.model.header?.height ?? PlutoGridSettings.rowHeight;
-    var rowHeight = widget.model.getRowModel(0)?.height ?? widget.model.getEmptyRowModel()?.height ?? colHeight;
-    var borderRadius = BorderRadius.circular(widget.model.radiusTopRight);
-
-    // style
-    var style = PlutoGridStyleConfig(
-
-        defaultCellPadding: EdgeInsets.all(0),
-
-        columnHeight: colHeight,
-
-        rowHeight: rowHeight,
-
-        gridBorderRadius: borderRadius
-    );
-
-    // config
-    return PlutoGridConfiguration(style: style);
-  }
-
   // build all rows
   void buildAllRows() => buildOutRows(widget.model.getDataRowCount());
 
@@ -550,13 +491,22 @@ class TableViewState extends WidgetState<TableView>
     stateManager = event.stateManager;
 
     // handles changes in selection state
-    //stateManager!.addListener(onSelected);
+    if (grid?.mode == PlutoGridMode.normal)
+    {
+      event.stateManager.addListener(onSelectHandler);
+    }
 
     // show filter bar
     if (widget.model.filterBar)
     {
-      stateManager?.setShowColumnFilter(true);
+      stateManager!.setShowColumnFilter(true);
     }
+  }
+
+  void onSelectHandler()
+  {
+    var event = PlutoGridOnSelectedEvent(row: stateManager?.currentRow, cell: stateManager?.currentCell, rowIdx: stateManager?.currentRowIdx, selectedRows: stateManager?.currentSelectingRows);
+    onSelected(event);
   }
 
   void onSelected(PlutoGridOnSelectedEvent event)
@@ -564,6 +514,15 @@ class TableViewState extends WidgetState<TableView>
     // get row and column
     var row  = event.row;
     var cell = event.cell;
+
+    // simple grid
+    if (!widget.model.hasPrototype)
+    {
+      // set the tables selected data
+      var data = widget.model.getDataRow(event.rowIdx ?? -1) ?? [];
+      widget.model.selected = data;
+      return;
+    }
 
     // update the model
     if (row != null && cell?.column != null)
@@ -599,6 +558,12 @@ class TableViewState extends WidgetState<TableView>
   {
     views.clear();
   }
+  void onChanged(PlutoGridOnChangedEvent event) async
+  {
+    int i = 0;
+    //views.clear();
+  }
+
 
   // forces the lazy/page loaders to refire
   void refresh()
@@ -671,6 +636,75 @@ class TableViewState extends WidgetState<TableView>
     return loader;
   }
 
+
+  PlutoGridConfiguration _buildConfig()
+  {
+    var colHeight = widget.model.header?.height ?? PlutoGridSettings.rowHeight;
+    var rowHeight = widget.model.getRowModel(0)?.height ?? widget.model.getEmptyRowModel()?.height ?? colHeight;
+    var borderRadius = BorderRadius.circular(widget.model.radiusTopRight);
+
+    // style
+    var style = PlutoGridStyleConfig(
+
+      defaultCellPadding: EdgeInsets.all(0),
+
+      columnHeight: colHeight,
+
+      rowHeight: rowHeight,
+
+      gridBorderRadius: borderRadius,
+
+      columnAscendingIcon: Icon(Icons.arrow_downward_rounded),
+
+      columnDescendingIcon: Icon(Icons.arrow_upward_rounded),
+    );
+
+    // config
+    return PlutoGridConfiguration(style: style);
+  }
+
+  void _buildColumns()
+  {
+    columns.clear();
+    map.clear();
+    for (var model in widget.model.header!.cells)
+    {
+      var height = widget.model.header?.height ?? PlutoGridSettings.rowHeight;
+      var title  = WidgetSpan(child: SizedBox(height: height, child:BoxView(model)));
+      var name   = model.name  ?? model.field ?? "Column ${model.index}";
+      var field  = model.field ?? model.name  ?? name;
+
+      // cell builder - for performance reasons, tables without defined
+      // table rows can be rendered much quicker
+      var builder = widget.model.hasPrototype ? (rendererContext) => cellBuilder(rendererContext) : null;
+
+      // cell is editable
+      var editable = !widget.model.hasPrototype && model.editable;
+
+      // build the column
+      var column = PlutoColumn(
+          title: name,
+          sort: PlutoColumnSort.none,
+          titleSpan: title,
+          field: field,
+          type: getColumnType(model),
+          enableSorting: model.sortable,
+          enableFilterMenuItem: model.filter,
+          enableEditingMode: editable,
+          enableAutoEditing: false,
+          readOnly: !editable,
+          titlePadding: EdgeInsets.all(0),
+          cellPadding: EdgeInsets.all(0),
+          renderer: builder);
+
+      // add to the column list
+      map[column] = model;
+
+      // add to columns
+      columns.add(column);
+    }
+  }
+
   @override
   Widget build(BuildContext context)
   {
@@ -680,15 +714,18 @@ class TableViewState extends WidgetState<TableView>
     // build the content loader
     var loader = widget.model.pageSize > 0 ?  _pageLoader : _lazyLoader;
 
+    var mode = widget.model.hasPrototype ? PlutoGridMode.selectWithOneTap : PlutoGridMode.normal;
+
     // build the grid
     grid ??= PlutoGrid(key: GlobalKey(),
         configuration: config,
         columns: columns,
         rows: [],
-        mode: PlutoGridMode.selectWithOneTap,
+        mode: mode,
         onSelected: onSelected,
         onLoaded: onLoaded,
         onSorted: onSorted,
+        onChanged: onChanged,
         createFooter: loader);
 
     return grid!;

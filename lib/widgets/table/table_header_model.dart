@@ -85,6 +85,21 @@ class TableHeaderModel extends BoxModel
   }
   bool get resizeable => _resizeable?.get() ?? table?.resizeable ?? true;
 
+  // editable - used on non row prototype only
+  BooleanObservable? _editable;
+  set editable(dynamic v)
+  {
+    if (_editable != null)
+    {
+      _editable!.set(v);
+    }
+    else if (v != null)
+    {
+      _editable = BooleanObservable(Binding.toKey(id, 'editable'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool? get editable => _editable?.get() ?? table?.editable;
+
   // allow filtering
   BooleanObservable? _filter;
   set filter(dynamic v)
@@ -126,9 +141,10 @@ class TableHeaderModel extends BoxModel
     super.deserialize(xml);
 
     // properties
-    sortable   = Xml.get(node:xml, tag: 'sortable');
-    draggable  = Xml.get(node:xml, tag: 'draggable');
-    resizeable = Xml.get(node:xml, tag: 'resizeable');
+    sortable   = Xml.get(node: xml, tag: 'sortable');
+    draggable  = Xml.get(node: xml, tag: 'draggable');
+    resizeable = Xml.get(node: xml, tag: 'resizeable');
+    editable   = Xml.get(node: xml, tag: 'editable');
     filter     = Xml.get(node: xml, tag: 'filter');
 
     // get cells

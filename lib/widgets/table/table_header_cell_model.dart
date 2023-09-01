@@ -95,6 +95,21 @@ class TableHeaderCellModel extends BoxModel
   }
   bool get resizeable => _resizeable?.get() ?? hdr?.resizeable ?? true;
 
+  // editable - used on non row prototype only
+  BooleanObservable? _editable;
+  set editable(dynamic v)
+  {
+    if (_editable != null)
+    {
+      _editable!.set(v);
+    }
+    else if (v != null)
+    {
+      _editable = BooleanObservable(Binding.toKey(id, 'editable'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get editable => _editable?.get() ?? hdr?.editable ?? false;
+
   // allow filtering
   BooleanObservable? _filter;
   set filter(dynamic v)
@@ -125,7 +140,7 @@ class TableHeaderCellModel extends BoxModel
   }
   String? get name => _name?.get();
 
-  // field - used by grid display
+  // field - name of field in data set (non row prototype only)
   StringObservable? _field;
   set field(dynamic v)
   {
@@ -139,7 +154,7 @@ class TableHeaderCellModel extends BoxModel
     }
   }
   String? get field => _field?.get();
-
+  
   // position in row
   int get index => hdr?.cells.indexOf(this) ?? -1;
 
@@ -193,6 +208,7 @@ class TableHeaderCellModel extends BoxModel
     sortable   = Xml.get(node:xml, tag: 'sortable');
     draggable  = Xml.get(node:xml, tag: 'draggable');
     resizeable = Xml.get(node:xml, tag: 'resizeable');
+    editable   = Xml.get(node:xml, tag: 'editable');
     filter     = Xml.get(node:xml, tag: 'filter');
   }
 }

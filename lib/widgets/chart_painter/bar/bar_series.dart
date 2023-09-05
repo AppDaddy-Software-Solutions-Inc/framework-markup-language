@@ -146,8 +146,9 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
     } else if (type == 'stacked') {
       stackDataPoint.clear();
       plotFunction = pointFromStackedBarData;
-      barDataPoint.add(
-          BarChartGroupData(x: uniqueValues.length, barRods: [BarChartRodData(toY: 20, rodStackItems: stackDataPoint)]));
+      //sort the values
+
+
     } else if (type == 'grouped') {
       rodDataPoint.clear();
       plotFunction = pointFromGroupedBarData;
@@ -166,6 +167,12 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
       }
 
       plotFunction!();
+
+    }
+    if (type == 'stacked') {
+      stackDataPoint.sort((b, a) => a.toY.compareTo(b.toY));
+      barDataPoint.add(
+          BarChartGroupData(x: uniqueValues.length, barRods: [BarChartRodData(toY: stackDataPoint[0].toY, color: Colors.transparent, rodStackItems: stackDataPoint)]));
     }
     dataList = null;
   }

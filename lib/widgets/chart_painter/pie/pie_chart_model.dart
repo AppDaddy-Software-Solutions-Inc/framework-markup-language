@@ -224,8 +224,6 @@ class PieChartModel extends ChartPainterModel
         }
         // add the built x values to a unique list to map to indeces
         uniqueValues.addAll(serie.xValues);
-        //   //
-        //plot only if the chart data type is category
 
         pieData = PieChartData(sections: serie.pieDataPoint, centerSpaceRadius: 0, sectionsSpace: 0,);
         serie.xValues.clear();

@@ -232,34 +232,35 @@ class LineChartModel extends ChartPainterModel
     try {
       //here if the data strategy is category, we must fold all of the lists together and create a dummy key value map of every unique value, in order
       uniqueValues.clear();
+      lineDataList.clear();
       for (var serie in series) {
         if (serie.datasource == source.id) {
           // build the datapoints for the series, passing in the chart type, index, and data
          if (xaxis.type == "raw") {
             serie.plotRawPoints(list, uniqueValues);
-            uniqueValues.addAll(serie.xValues);
          } else if (xaxis.type == "category") {
             //with category, we may need to change the xValues to a map rather than a set for when multiple points are there
             serie.plotCategoryPoints(list, uniqueValues);
-            uniqueValues.addAll(serie.xValues);
           } else if (xaxis.type == "date") {
             serie.plotDatePoints(list, format: xaxis.format);
           } else {
             serie.plotPoints(list);
           }
+         notifyListeners('list', null);
+        }
+
+         uniqueValues.addAll(serie.xValues);
 
          serie.lineDataPoint.sort((a, b) => a.x.compareTo(b.x));
-
+          serie.color ??= ColorHelper.fromString('random');
           lineDataList.add(LineChartBarData(spots: serie.lineDataPoint,
               isCurved: serie.curved,
               belowBarData: BarAreaData(show: serie.showarea),
               dotData: FlDotData(show: serie.showpoints),
               barWidth: serie.type == 'point' || serie.showline == false ? 0 : serie.stroke ?? 2,
-              color: serie.color ?? ColorHelper.fromString('random')));
+              color: serie.color ));
           serie.xValues.clear();
-        }
 
-        notifyListeners('list', null);
       }
     }
     catch(e)

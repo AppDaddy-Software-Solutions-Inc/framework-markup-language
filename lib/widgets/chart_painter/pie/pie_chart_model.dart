@@ -214,28 +214,24 @@ class PieChartModel extends ChartPainterModel
   @override
   Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async
   {
-    try
-    {
-      int i = 0;
+    try {
       //here if the data strategy is category, we must fold all of the lists together and create a dummy key value map of every unique value, in order
       uniqueValues.clear();
       for (var serie in series) {
+        // build the datapoints for the series, passing in the chart type, index, and data
         if (serie.datasource == source.id) {
-          // build the datapoints for the series, passing in the chart type, index, and data
-          serie.determinePlotFunctions(type, i);
-          serie.iteratePoints(list, plotOnFirstPass: true);
-          // add the built x values to a unique list to map to indeces
-          uniqueValues.addAll(serie.xValues);
-          //   //
+          serie.plotPoints(list);
         }
-        i++;
+        // add the built x values to a unique list to map to indeces
+        uniqueValues.addAll(serie.xValues);
+        //   //
         //plot only if the chart data type is category
 
-        pieData = PieChartData(sections: serie.pieDataPoint);
+        pieData = PieChartData(sections: serie.pieDataPoint, centerSpaceRadius: 0, sectionsSpace: 0,);
         serie.xValues.clear();
+
+        notifyListeners('list', null);
       }
-      uniqueValues.clear();
-      notifyListeners('list', null);
     }
     catch(e)
     {

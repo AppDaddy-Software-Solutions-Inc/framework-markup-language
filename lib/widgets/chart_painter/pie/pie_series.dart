@@ -211,7 +211,7 @@ class PieChartSeriesModel extends ChartPainterSeriesModel
       radius_ = DoubleObservable(Binding.toKey(id, 'radius'), v, scope: scope);
     }
   }
-  double get radius => radius_?.get() ?? 3.5;
+  double get radius => radius_?.get() ?? 150;
 
   /// Plot type (`plot`) size
   DoubleObservable? _size;
@@ -354,48 +354,37 @@ class PieChartSeriesModel extends ChartPainterSeriesModel
   // we purposely don't want to do anything on change since there is no view
   // and the entire chart gets rebuilt
   void onPropertyChange(Observable observable) {}
+  //
+  // void plotLineCategoryPoints(dynamic uniqueXValueList){
+  //
+  //   for (var pointData in dataList) {
+  //     //set the data of the series for databinding
+  //     data = pointData;
+  //     //ensure the value is in the list, it always should be.
+  //     if (uniqueXValueList.contains(S.toInt(x))) {
+  //       x = uniqueXValueList.toList().indexOf(S.toInt(x));
+  //       //plot the point as a point object based on the desired function based on series and chart type.
+  //       pointFromPieData();
+  //     }
+  //     data = null;
+  //
+  //   }
+  //   dataList = null;
+  // }
 
-
-  determinePlotFunctions(String chartType, int seriesIndex){
-    if (data == null) return;
-    plotFunction = pointFromPieData;
-  }
-
-  //This function takes in the function related to the type of point plotted
-  void iteratePoints(dynamic data, {bool plotOnFirstPass = false}){
-    dataList =  data;
-    for (var pointData in data) {
+  void plotPoints(dynamic dataList){
+    for (var i=0; i< dataList.length; i++) {
       //set the data of the series for databinding
-      this.data = pointData;
-      //add the value of x to the list only if the type is category.
-      xValues.add(S.toInt(x));
+      data = dataList[i];
       //plot the point as a point object based on the desired function based on series and chart type.
-      if(plotOnFirstPass) plotFunction!();
-    }
-  }
-
-  void plotLineCategoryPoints(dynamic uniqueXValueList){
-
-    for (var pointData in dataList) {
-      //set the data of the series for databinding
-      data = pointData;
-      //ensure the value is in the list, it always should be.
-      if (uniqueXValueList.contains(S.toInt(x))) {
-        x = uniqueXValueList.toList().indexOf(S.toInt(x));
-        //plot the point as a point object based on the desired function based on series and chart type.
-        plotFunction!();
-      }
-      data = null;
-
+      plot();
     }
     dataList = null;
-    plotFunction = null;
   }
 
-  void pointFromPieData()
-  {
-    //barchartrodstackitem allows stacking within series group.
-    PieChartSectionData point = PieChartSectionData(value: S.toDouble(y) ?? 0, title: x, color: color ?? ColorHelper.fromString('random'));
+  void plot(){
+    PieChartSectionData point = PieChartSectionData(value: S.toDouble(y) ?? 0, title: x, radius: radius, color: color ?? ColorHelper.fromString('random'));
     pieDataPoint.add(point);
   }
+
 }

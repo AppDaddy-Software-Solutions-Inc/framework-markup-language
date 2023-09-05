@@ -29,13 +29,6 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
   List<BarChartGroupData> barDataPoint = [];
   List<BarChartRodData> rodDataPoint = [];
   List<BarChartRodStackItem> stackDataPoint = [];
-  List<dynamic> xValues = [];
-  Function? plotFunction;
-  dynamic dataList;
-  double maxY = 0;
-  double minY = 0;
-
-  String? type = 'bar';
 
   BarChartSeriesModel(
       WidgetModel parent,
@@ -47,7 +40,7 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
         dynamic radius,
         dynamic size,
         dynamic label,
-        this.type,
+        dynamic type,
         dynamic tooltips,
         dynamic animated,
         dynamic name,
@@ -123,232 +116,20 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
     // Setup the Series type and some internal properties for supporting it
     if (type != null) type = type?.trim().toLowerCase();
   }
-
-  /// The x coordinate
-  StringObservable? _x;
-  set x (dynamic v)
+  /// bar width
+  DoubleObservable? width_;
+  set width (dynamic v)
   {
-    if (_x != null)
+    if (width_ != null)
     {
-      _x!.set(v);
+      width_!.set(v);
     }
     else if (v != null)
     {
-      _x = StringObservable(Binding.toKey(id, 'x'), v, scope: scope);
+      width_ = DoubleObservable(Binding.toKey(id, 'width'), v, scope: scope);
     }
   }
-  String? get x => _x?.get();
-
-  /// The y coordinate
-  StringObservable? _y;
-  set y (dynamic v)
-  {
-    if (_y != null)
-    {
-      _y!.set(v);
-    }
-    else if (v != null)
-    {
-      _y = StringObservable(Binding.toKey(id, 'y'), v, scope: scope);
-    }
-  }
-  String? get y => _y?.get();
-
-  /// The [ChartDataPoint]'s label
-  StringObservable? _label;
-  set label (dynamic v)
-  {
-    if (_label != null)
-    {
-      _label!.set(v);
-    }
-    else if (v != null)
-    {
-      _label = StringObservable(Binding.toKey(id, 'label'), v, scope: scope);
-    }
-  }
-  String? get label => _label?.get();
-
-  /// The [ChartDataPoint]'s color
-  ColorObservable? _color;
-  set color (dynamic v)
-  {
-    if (_color != null)
-    {
-      _color!.set(v);
-    }
-    else if (v != null)
-    {
-      _color = ColorObservable(Binding.toKey(id, 'color'), v, scope: scope);
-    }
-  }
-  Color? get color => _color?.get();
-
-  /// Line type (`spline`, `line` and `fastline`) stroke width
-  DoubleObservable? stroke_;
-  set stroke (dynamic v)
-  {
-    if (stroke_ != null)
-    {
-      stroke_!.set(v);
-    }
-    else if (v != null)
-    {
-      stroke_ = DoubleObservable(Binding.toKey(id, 'stroke'), v, scope: scope);
-    }
-  }
-  double? get stroke => stroke_?.get();
-
-  /// Line/Point type radius width
-  DoubleObservable? radius_;
-  set radius (dynamic v)
-  {
-    if (radius_ != null)
-    {
-      radius_!.set(v);
-    }
-    else if (v != null)
-    {
-      radius_ = DoubleObservable(Binding.toKey(id, 'radius'), v, scope: scope);
-    }
-  }
-  double get radius => radius_?.get() ?? 3.5;
-
-  /// Plot type (`plot`) size
-  DoubleObservable? _size;
-  set size (dynamic v)
-  {
-    if (_size != null)
-    {
-      _size!.set(v);
-    }
-    else if (v != null)
-    {
-      _size = DoubleObservable(Binding.toKey(id, 'size'), v, scope: scope);
-    }
-  }
-  double? get size => _size?.get();
-
-  /// Set to true if you want to show the area under the line series
-  BooleanObservable? _showarea;
-  set showarea (dynamic v)
-  {
-    if (_showarea != null)
-    {
-      _showarea!.set(v);
-    }
-    else if (v != null)
-    {
-      _showarea = BooleanObservable(Binding.toKey(id, 'showarea'), v, scope: scope);
-    }
-  }
-  bool get showarea => _showarea?.get() ?? false;
-
-
-  /// Set to false if you want to hide the line in the line series
-  BooleanObservable? _showline;
-  set showline (dynamic v)
-  {
-    if (_showline != null)
-    {
-      _showline!.set(v);
-    }
-    else if (v != null)
-    {
-      _showline = BooleanObservable(Binding.toKey(id, 'showline'), v, scope: scope);
-    }
-  }
-  bool get showline => _showline?.get() ?? true;
-
-  /// Set to false if you want to hide the points on the line series
-  BooleanObservable? _showpoints;
-  set showpoints (dynamic v)
-  {
-    if (_showpoints != null)
-    {
-      _showpoints!.set(v);
-    }
-    else if (v != null)
-    {
-      _showpoints = BooleanObservable(Binding.toKey(id, 'showpoints'), v, scope: scope);
-    }
-  }
-  bool get showpoints => _showpoints?.get() ?? true;
-
-  /// If true points will have a tooltip appear on hover
-  BooleanObservable? _tooltips;
-  set tooltips (dynamic v)
-  {
-    if (_tooltips != null)
-    {
-      _tooltips!.set(v);
-    }
-    else if (v != null)
-    {
-      _tooltips = BooleanObservable(Binding.toKey(id, 'tooltips'), v, scope: scope);
-    }
-  }
-  bool? get tooltips => _tooltips?.get();
-
-  /// The series name, will be displayed in the legend if it is visible
-  StringObservable? _name;
-  set name (dynamic v)
-  {
-    if (_name != null)
-    {
-      _name!.set(v);
-    }
-    else if (v != null)
-    {
-      _name = StringObservable(Binding.toKey(id, 'name'), v, scope: scope);
-    }
-  }
-  String? get name => _name?.get();
-
-  /// The series group, allows multiple bar series to be displayed beside each other if they match
-  StringObservable? _group;
-  set group (dynamic v)
-  {
-    if (_group != null)
-    {
-      _group!.set(v);
-    }
-    else if (v != null)
-    {
-      _group = StringObservable(Binding.toKey(id, 'group'), v, scope: scope);
-    }
-  }
-  String? get group => _group?.get();
-
-  /// The series stack, allows multiple bar series to be displayed on top each other if they match
-  StringObservable? _stack;
-  set stack (dynamic v)
-  {
-    if (_stack != null)
-    {
-      _stack!.set(v);
-    }
-    else if (v != null)
-    {
-      _stack = StringObservable(Binding.toKey(id, 'stack'), v, scope: scope);
-    }
-  }
-  String? get stack => _stack?.get();
-
-  /// n/a
-  IntegerObservable? _selected;
-  set selected (dynamic v)
-  {
-    if (_selected != null)
-    {
-      _selected!.set(v);
-    }
-    else if (v != null)
-    {
-      _selected = IntegerObservable(Binding.toKey(id, 'selected'), v, scope: scope);
-    }
-  }
-  int? get selected => _selected?.get();
+  double get width => width_?.get() ?? 3.5;
 
 
   @override
@@ -356,42 +137,45 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
   // and the entire chart gets rebuilt
   void onPropertyChange(Observable observable) {}
 
-  @override
-  determinePlotFunctions(String chartType, int seriesIndex) {
-    if (data == null) return;
-
-
-    plotFunction = pointFromBarData;
+  //This function takes in the function related to the type of point plotted
+  void plotPoints(dynamic dataList, List uniqueValues){
+    xValues.clear();
+    barDataPoint.clear();
     if (type == 'bar' || S.isNullOrEmpty(type)) {
       plotFunction = pointFromBarData;
     } else if (type == 'stacked') {
+      stackDataPoint.clear();
       plotFunction = pointFromStackedBarData;
       barDataPoint.add(
-          BarChartGroupData(x: seriesIndex, barRods: [BarChartRodData(toY: 20, rodStackItems: stackDataPoint)]));
+          BarChartGroupData(x: uniqueValues.length, barRods: [BarChartRodData(toY: 20, rodStackItems: stackDataPoint)]));
     } else if (type == 'grouped') {
+      rodDataPoint.clear();
       plotFunction = pointFromGroupedBarData;
-      barDataPoint.add(BarChartGroupData(x: seriesIndex, barRods: rodDataPoint));
+      barDataPoint.add(BarChartGroupData(x: uniqueValues.length, barRods: rodDataPoint));
     }
-  }
-
-  //This function takes in the function related to the type of point plotted
-  void iteratePoints(dynamic data, {bool plotOnFirstPass = false}){
-    dataList =  data;
-    for (var pointData in data) {
+    int len = uniqueValues.length;
+    for (var i=0; i< dataList.length; i++) {
       //set the data of the series for databinding
-      this.data = pointData;
-      //add the value of x to the list only if the type is category.
-      xValues.add(S.toInt(x));
-      //plot the point as a point object based on the desired function based on series and chart type.
-      if(plotOnFirstPass) plotFunction!();
+      data = dataList[i];
+      if (type == 'bar' || type == null){
+        xValues.add(x);
+        x = len;
+        len += 1;
+      } else {
+        x = len;
+      }
+
+      plotFunction!();
     }
+    dataList = null;
   }
 
   void pointFromBarData()
   {
     //barchartrodstackitem allows stacking within series group.
-    BarChartGroupData point = BarChartGroupData(x: S.toInt(x) ?? 0, barRods: [BarChartRodData(toY: S.toDouble(y) ?? 0, color: color ?? ColorHelper.fromString('random'))]);
+    BarChartGroupData point = BarChartGroupData(x: S.toInt(x) ?? 0, barRods: [BarChartRodData(toY: S.toDouble(y) ?? 0, width: width, color: color ?? ColorHelper.fromString('random'))]);
     barDataPoint.add(point);
+
   }
 
   void pointFromGroupedBarData()

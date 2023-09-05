@@ -371,12 +371,12 @@ class LineChartSeriesModel extends ChartPainterSeriesModel
 
   void plotRawPoints(dynamic dataList, List uniqueValues){
     xValues.clear();
-    int len = uniqueValues.length - 1;
+    int len = uniqueValues.length;
     for (var i=0; i< dataList.length; i++) {
       //set the data of the series for databinding
       data = dataList[i];
       xValues.add(x);
-      x = len + 1;
+      x = len;
       len += 1;
       plot();
     }

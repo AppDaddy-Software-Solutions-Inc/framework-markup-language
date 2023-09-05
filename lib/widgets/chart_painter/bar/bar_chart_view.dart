@@ -32,8 +32,7 @@ class _ChartViewState extends WidgetState<BarChartView>
 
   Widget bottomTitles(double value, TitleMeta meta) {
     var style = TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.outline);
-    int? index = S.toInt(value);
-    String text = (index != null && widget.model.uniqueValues.isNotEmpty ? widget.model.uniqueValues.elementAt(index) : value).toString();
+    String text = value.toInt() < widget.model.uniqueValues.length && widget.model.uniqueValues.isNotEmpty ? widget.model.uniqueValues.elementAt(value.toInt()).toString(): value.toString();
     // replace the value with the x value of the index[value] in the list of data points.
     return SideTitleWidget(
       axisSide: meta.axisSide,

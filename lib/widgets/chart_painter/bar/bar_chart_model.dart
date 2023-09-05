@@ -129,24 +129,29 @@ class BarChartModel extends ChartPainterModel
   {
     try
     {
-      int i = 0;
       //here if the data strategy is category, we must fold all of the lists together and create a dummy key value map of every unique value, in order
       uniqueValues.clear();
+      barDataList.clear();
       for (var serie in series) {
-        if (serie.datasource == source.id) {
+
+          serie.xValues.clear();
           // build the datapoints for the series, passing in the chart type, index, and data
-          serie.determinePlotFunctions(type, i);
-          serie.iteratePoints(list, plotOnFirstPass: true);
-          // add the built x values to a unique list to map to indeces
+          if (source.id == serie.datasource) {
+            serie.xValues.clear();
+            serie.plotPoints(list, uniqueValues);
+          }
+          if (serie.type == 'stacked' || serie.type == 'grouped') {
+            uniqueValues.add(serie.name);
+          }
           uniqueValues.addAll(serie.xValues);
-          //   //
-        }
-        i++;
+          // add the built x values to a unique list to map to indeces
+
           barDataList.addAll(serie.barDataPoint);
-        serie.xValues.clear();
+
+          notifyListeners('list', null);
+
+
       }
-      uniqueValues.clear();
-      notifyListeners('list', null);
     }
     catch(e)
     {

@@ -17,8 +17,9 @@ class ChartDataPoint {
   final dynamic label;
   final dynamic x;
   final dynamic y;
+  final dynamic y0;
 
-  ChartDataPoint({this.x, this.y, this.color, this.label});
+  ChartDataPoint({this.x, this.y, this.color, this.label, this.y0});
 }
 
 /// Chart Series [ChartSeriesModel]
@@ -55,6 +56,7 @@ class ChartPainterSeriesModel extends WidgetModel
     String? id, {
       dynamic x,
       dynamic y,
+        dynamic y0,
       dynamic color,
       dynamic stroke,
       dynamic radius,
@@ -76,6 +78,7 @@ class ChartPainterSeriesModel extends WidgetModel
     data = Data();
     this.x = x;
     this.y = y;
+    this.y0 = y0;
     this.color = color;
     this.stroke = stroke;
     this.radius = radius;
@@ -118,6 +121,7 @@ class ChartPainterSeriesModel extends WidgetModel
     // properties
     x           = Xml.get(node: xml, tag: 'x');
     y           = Xml.get(node: xml, tag: 'y');
+    y0           = Xml.get(node: xml, tag: 'y0');
     color       = Xml.get(node: xml, tag: 'color');
     stroke      = Xml.get(node: xml, tag: 'stroke');
     radius      = Xml.get(node: xml, tag: 'radius');
@@ -154,6 +158,22 @@ class ChartPainterSeriesModel extends WidgetModel
     }
   }
   String? get x => _x?.get();
+
+  /// The x coordinate
+  StringObservable? _y0;
+  set y0 (dynamic v)
+  {
+    if (_y0 != null)
+    {
+      _y0!.set(v);
+    }
+    else if (v != null)
+    {
+      _y0 = StringObservable(Binding.toKey(id, 'y0'), v, scope: scope);
+    }
+  }
+  String? get y0 => _y0?.get();
+
 
   /// The y coordinate
   StringObservable? _y;

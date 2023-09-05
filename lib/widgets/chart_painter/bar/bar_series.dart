@@ -180,7 +180,7 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
   void pointFromBarData()
   {
     //barchartrodstackitem allows stacking within series group.
-    BarChartGroupData point = BarChartGroupData(x: S.toInt(x) ?? 0, barRods: [BarChartRodData(toY: S.toDouble(y) ?? 0, width: width, color: color ?? ColorHelper.fromString('random'))]);
+    BarChartGroupData point = BarChartGroupData(x: S.toInt(x) ?? 0, barRods: [BarChartRodData(fromY: S.toDouble(y0) ?? 0,toY: S.toDouble(y) ?? 0, width: width, color: color ?? ColorHelper.fromString('random'))]);
     barDataPoint.add(point);
 
   }
@@ -188,22 +188,21 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
   void pointFromWaterfallBarData()
   {
     //barchartrodstackitem allows stacking within series group.
-    BarChartGroupData point = BarChartGroupData(x: S.toInt(x) ?? 0, barRods: [BarChartRodData(fromY:barDataPoint.isNotEmpty ? barDataPoint[(barDataPoint.length - 1)].barRods[0].toY : 0,toY: S.toDouble(y) ?? 0, width: width, color: color ?? ColorHelper.fromString('random'))]);
+    BarChartGroupData point = BarChartGroupData(x: S.toInt(x) ?? 0, barRods: [BarChartRodData(fromY: barDataPoint.isNotEmpty ? barDataPoint[(barDataPoint.length - 1)].barRods[0].toY : 0,toY: S.toDouble(y) ?? 0, width: width, color: color ?? ColorHelper.fromString('random'))]);
     barDataPoint.add(point);
-
   }
 
   void pointFromGroupedBarData()
   {
     //barchartrodstackitem allows stacking within series group.
-    BarChartRodData point = BarChartRodData(toY: S.toDouble(y) ?? 0, color: color ?? ColorHelper.fromString('random'));
+    BarChartRodData point = BarChartRodData(fromY: S.toDouble(y0) ?? 0, toY: S.toDouble(y) ?? 0, color: color ?? ColorHelper.fromString('random'));
     rodDataPoint.add(point);
   }
 
   void pointFromStackedBarData()
   {
     //barchartrodstackitem allows stacking within series group.
-    BarChartRodStackItem point = BarChartRodStackItem(0, S.toDouble(y) ?? 0, color ?? ColorHelper.fromString('random') ?? Colors.blue);
+    BarChartRodStackItem point = BarChartRodStackItem(S.toDouble(y0) ?? 0, S.toDouble(y) ?? 0, color ?? ColorHelper.fromString('random') ?? Colors.blue);
     stackDataPoint.add(point);
   }
 }

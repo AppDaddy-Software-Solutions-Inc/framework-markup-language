@@ -52,6 +52,21 @@ class TableHeaderCellModel extends BoxModel
   String? get type => _type?.get();
 
   // allow sorting
+  BooleanObservable? _menu;
+  set menu(dynamic v)
+  {
+    if (_menu != null)
+    {
+      _menu!.set(v);
+    }
+    else if (v != null)
+    {
+      _menu = BooleanObservable(Binding.toKey(id, 'menu'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get menu => _menu?.get() ?? hdr?.menu ?? true;
+
+  // allow sorting
   BooleanObservable? _sortable;
   set sortable(dynamic v)
   {
@@ -65,7 +80,7 @@ class TableHeaderCellModel extends BoxModel
     }
   }
   bool get sortable => _sortable?.get() ?? hdr?.sortable ?? true;
-
+  
   // allow reordering
   BooleanObservable? _draggable;
   set draggable(dynamic v)
@@ -127,19 +142,19 @@ class TableHeaderCellModel extends BoxModel
   bool get filter => _filter?.get() ?? hdr?.filter ?? false;
 
   // name - used by grid display
-  StringObservable? _name;
-  set name(dynamic v)
+  StringObservable? _title;
+  set title(dynamic v)
   {
-    if (_name != null)
+    if (_title != null)
     {
-      _name!.set(v);
+      _title!.set(v);
     }
     else if (v != null)
     {
-      _name = StringObservable(Binding.toKey(id, 'name'), v, scope: scope, listener: onPropertyChange);
+      _title = StringObservable(Binding.toKey(id, 'title'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  String? get name => _name?.get();
+  String? get title => _title?.get();
 
   // field - name of field in data set (non row prototype only)
   StringObservable? _field;
@@ -174,7 +189,10 @@ class TableHeaderCellModel extends BoxModel
   }
   String? get onChange => _onChange?.get();
 
-  TableHeaderCellModel(WidgetModel parent, String? id) : super(parent, id);
+  TableHeaderCellModel(WidgetModel parent, String? id) : super(parent, id)
+  {
+    int i = 0;
+  }
 
   static TableHeaderCellModel? fromXml(WidgetModel parent, XmlElement xml)
   {
@@ -206,21 +224,22 @@ class TableHeaderCellModel extends BoxModel
     super.deserialize(xml);
 
     // properties
-    name = Xml.get(node:xml, tag: 'name');
-    if (name == null)
+    title = Xml.get(node:xml, tag: 'title');
+    if (_title == null) title = Xml.get(node:xml, tag: 'sort')?.split(",")[0];
+    if (_title == null)
     {
       TextModel? text = findChildOfExactType(TextModel);
-      name = text?.value;
+      title = text?.value;
     }
 
-    // properties
-
-    // field - used to drive simple tables for performance
-    field      = Xml.get(node:xml, tag: 'field');
+      // field - used to drive simple tables for performance
+    field = Xml.get(node:xml, tag: 'field');
 
     //type - denotes the field type. used for sorting
-    type       = Xml.get(node:xml, tag: 'type');
+    type = Xml.get(node:xml, tag: 'type');
 
+    // context menu
+    menu       = Xml.get(node:xml, tag: 'menu'); 
     sortable   = Xml.get(node:xml, tag: 'sortable');
     draggable  = Xml.get(node:xml, tag: 'draggable');
     resizeable = Xml.get(node:xml, tag: 'resizeable');

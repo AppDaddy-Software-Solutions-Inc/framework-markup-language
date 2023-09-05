@@ -17,6 +17,7 @@ import 'package:fml/widgets/table/table_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import 'package:pluto_grid_export/pluto_grid_export.dart' as pluto_grid_export;
+import 'package:csv/csv.dart';
 
 class TableView extends StatefulWidget implements IWidgetView
 {
@@ -190,6 +191,37 @@ class TableViewState extends WidgetState<TableView>
     return view;
   }
 
+  List<PlutoRow> applyFilters(List<PlutoRow> list)
+  {
+    if (stateManager != null)
+    {
+      final filterRows = stateManager!.filterRows;
+      final filterCols = stateManager!.refColumns;
+      final filter = FilterHelper.convertRowsToFilter(filterRows,filterCols);
+      if (filter != null) return list.where(filter).toList();
+    }
+    return list;
+  }
+
+  List<PlutoRow> applySort(List<PlutoRow> list)
+  {
+    if (stateManager != null)
+    {
+      PlutoColumn? column = stateManager?.getSortedColumn;
+      if (column != null)
+      {
+        list = [...list];
+        list.sort((a, b)
+        {
+          final sortA = column.sort.isAscending ? a : b;
+          final sortB = column.sort.isAscending ? b : a;
+          return column.type.compare(sortA.cells[column.field]!.valueForSorting, sortB.cells[column.field]!.valueForSorting);
+        });
+      }
+    }
+    return list;
+  }
+
   Future<PlutoInfinityScrollRowsResponse> onLazyLoad(PlutoInfinityScrollRowsRequest request) async
   {
     // rows are filtered?
@@ -223,57 +255,16 @@ class TableViewState extends WidgetState<TableView>
     // build the list
     List<PlutoRow> tempList = rows.toList();
 
-    // If you have a filtering state,
-    // you need to implement it so that the user gets data from the server
-    // according to the filtering state.
-    //
-    // request.page is 1 when the filtering state changes.
-    // This is because, when the filtering state is changed,
-    // the first page must be loaded with the new filtering applied.
-    //
-    // request.filterRows is a List<PlutoRow> type containing filtering information.
-    // To convert to Map type, you can do as follows.
-    //
-    // FilterHelper.convertRowsToMap(request.filterRows);
-    //
-    // When the filter of abc is applied as Contains type to column2
-    // and 123 as Contains type to column3, for example
-    // It is returned as below.
-    // {column2: [{Contains: 123}], column3: [{Contains: abc}]}
-    //
-    // If multiple filtering conditions are set in one column,
-    // multiple conditions are included as shown below.
-    // {column2: [{Contains: abc}, {Contains: 123}]}
-    //
-    // The filter type in FilterHelper.defaultFilters is the default,
-    // If there is user-defined filtering,
-    // the title set by the user is returned as the filtering type.
-    // All filtering can change the value returned as a filtering type by changing the name property.
-    // In case of PlutoFilterTypeContains filter, if you change the static type name to include
-    // PlutoFilterTypeContains.name = 'include';
-    // {column2: [{include: abc}, {include: 123}]} will be returned.
+    // filter the list
     if (filter)
     {
-      final filter = FilterHelper.convertRowsToFilter(request.filterRows, stateManager!.refColumns);
-      tempList = tempList.where(filter!).toList();
+      tempList = applyFilters(tempList);
     }
 
-    // If there is a sort state,
-    // you need to implement it so that the user gets data from the server
-    // according to the sort state.
-    //
-    // request.page is 1 when the sort state changes.
-    // This is because when the sort state changes,
-    // new data to which the sort state is applied must be loaded.
+    // sort the list
     if (sort)
     {
-      tempList = [...tempList];
-      tempList.sort((a, b)
-      {
-        final sortA = request.sortColumn!.sort.isAscending ? a : b;
-        final sortB = request.sortColumn!.sort.isAscending ? b : a;
-        return request.sortColumn!.type.compare(sortA.cells[request.sortColumn!.field]!.valueForSorting, sortB.cells[request.sortColumn!.field]!.valueForSorting);
-      });
+      tempList = applySort(tempList);
     }
 
     // Data needs to be implemented so that the next row
@@ -358,60 +349,19 @@ class TableViewState extends WidgetState<TableView>
     // build the list
     List<PlutoRow> tempList = this.rows.toList();
 
-    // If you have a filtering state,
-    // you need to implement it so that the user gets data from the server
-    // according to the filtering state.
-    //
-    // request.page is 1 when the filtering state changes.
-    // This is because, when the filtering state is changed,
-    // the first page must be loaded with the new filtering applied.
-    //
-    // request.filterRows is a List<PlutoRow> type containing filtering information.
-    // To convert to Map type, you can do as follows.
-    //
-    // FilterHelper.convertRowsToMap(request.filterRows);
-    //
-    // When the filter of abc is applied as Contains type to column2
-    // and 123 as Contains type to column3, for example
-    // It is returned as below.
-    // {column2: [{Contains: 123}], column3: [{Contains: abc}]}
-    //
-    // If multiple filtering conditions are set in one column,
-    // multiple conditions are included as shown below.
-    // {column2: [{Contains: abc}, {Contains: 123}]}
-    //
-    // The filter type in FilterHelper.defaultFilters is the default,
-    // If there is user-defined filtering,
-    // the title set by the user is returned as the filtering type.
-    // All filtering can change the value returned as a filtering type by changing the name property.
-    // In case of PlutoFilterTypeContains filter, if you change the static type name to include
-    // PlutoFilterTypeContains.name = 'include';
-    // {column2: [{include: abc}, {include: 123}]} will be returned.
+    // filter the list
     if (filter)
     {
-      final filter = FilterHelper.convertRowsToFilter(request.filterRows, stateManager!.refColumns);
-      tempList = tempList.where(filter!).toList();
+      tempList = applyFilters(tempList);
 
       pages = (tempList.length / pageSize).ceil();
       if (pages < 0) pages = 1;
     }
 
-    // If there is a sort state,
-    // you need to implement it so that the user gets data from the server
-    // according to the sort state.
-    //
-    // request.page is 1 when the sort state changes.
-    // This is because when the sort state changes,
-    // new data to which the sort state is applied must be loaded.
+    // sort the list
     if (sort)
     {
-      tempList = [...tempList];
-      tempList.sort((a, b)
-      {
-        final sortA = request.sortColumn!.sort.isAscending ? a : b;
-        final sortB = request.sortColumn!.sort.isAscending ? b : a;
-        return request.sortColumn!.type.compare(sortA.cells[request.sortColumn!.field]!.valueForSorting, sortB.cells[request.sortColumn!.field]!.valueForSorting);
-      });
+      tempList = applySort(tempList);
     }
 
     final page  = request.page;
@@ -525,6 +475,23 @@ class TableViewState extends WidgetState<TableView>
     stateManager?.eventManager?.addEvent(PlutoGridSetColumnFilterEvent(filterRows: []));
   }
 
+  List<String> getColumnTitles(PlutoGridStateManager state) => getVisibleColumns(state).map((e) => e.title).toList();
+
+  List<PlutoColumn> getVisibleColumns(PlutoGridStateManager state) => state.columns.where((element) => !element.hide).toList();
+
+  List<String?> getSerializedRow(PlutoGridStateManager state, PlutoRow plutoRow)
+  {
+    List<String?> serializedRow = [];
+
+    // Order is important, so we iterate over columns
+    for (PlutoColumn column in getVisibleColumns(state))
+    {
+      dynamic value = plutoRow.cells[column.field]?.value;
+      serializedRow.add(column.formattedValueForDisplay(value));
+    }
+    return serializedRow;
+  }
+
   Future<String?> exportToCSV() async
   {
     if (stateManager == null) return null;
@@ -532,8 +499,27 @@ class TableViewState extends WidgetState<TableView>
     // This ensures we have built out all rows
     buildAllRows();
 
-    // create the text file
-    return pluto_grid_export.PlutoGridExport.exportCSV(stateManager!);
+    // filter the list
+    var list = applyFilters(rows);
+
+    // sort the list
+    list = applySort(list);
+
+    // serialize the list
+    List<List<String?>> serialized = [];
+    for (var row in list)
+    {
+      serialized.add(getSerializedRow(stateManager!, row));
+    }
+
+    String csv = const ListToCsvConverter().convert(
+      [
+        getColumnTitles(stateManager!),
+        ...serialized,
+      ],
+      delimitAllFields: true);
+
+    return csv;
   }
 
   Future<Uint8List?> exportToCSVBytes() async
@@ -550,24 +536,41 @@ class TableViewState extends WidgetState<TableView>
     // This ensures we have built out all rows
     buildAllRows();
 
+    // filter the list
+    var list = applyFilters(rows);
+
+    // sort the list
+    list = applySort(list);
+
+    // serialize the list
+    List<List<String?>> serialized = [];
+    for (var row in list)
+    {
+      serialized.add(getSerializedRow(stateManager!, row));
+    }
+
     // get the fonts
     //final fontRegular = await rootBundle.load('assets/fonts/open_sans/OpenSans-Regular.ttf');
     //final fontBold = await rootBundle.load('assets/fonts/open_sans/OpenSans-Bold.ttf');
+    //final themeData = pluto_grid_export.ThemeData.withFont(base: pluto_grid_export.Font.ttf(fontRegular), bold: pluto_grid_export.Font.ttf(fontBold));
 
     // build the theme
     final themeData = pluto_grid_export.ThemeData.base();
 
-    //final themeData = pluto_grid_export.ThemeData.withFont(base: pluto_grid_export.Font.ttf(fontRegular), bold: pluto_grid_export.Font.ttf(fontBold));
+    // these should be passed not hard coded
+    var title   = "Table Export";
+    var creator = "Futter Markup Language";
+    var format  = pluto_grid_export.PdfPageFormat.a4.landscape;
 
-    var plutoGridPdfExport = pluto_grid_export.PlutoGridDefaultPdfExport(
-        title: "Table Export",
-        creator: "Flutter Markup Language",
-        format: pluto_grid_export.PdfPageFormat.a4.landscape,
-        themeData: themeData,
-    );
-
-    // create the document
-    var bytes = await plutoGridPdfExport.export(stateManager!);
+    // generate the report
+    var bytes = pluto_grid_export.GenericPdfController(
+      title: title,
+      creator: creator,
+      format: format,
+      columns: getColumnTitles(stateManager!),
+      rows: serialized,
+      themeData: themeData,
+    ).generatePdf();
 
     return bytes;
   }
@@ -640,9 +643,11 @@ class TableViewState extends WidgetState<TableView>
 
   PlutoGridConfiguration _buildConfig()
   {
-    var colHeight = widget.model.header?.height ?? PlutoGridSettings.rowHeight;
-    var rowHeight = widget.model.getRowModel(0)?.height ?? widget.model.getEmptyRowModel()?.height ?? colHeight;
+    var colHeight    = widget.model.header?.height ?? PlutoGridSettings.rowHeight;
+    var rowHeight    = widget.model.getRowModel(0)?.height ?? widget.model.getEmptyRowModel()?.height ?? colHeight;
     var borderRadius = BorderRadius.circular(widget.model.radiusTopRight);
+    var borderColor  = widget.model.bordercolor ?? Color(0xFFDDE2EB);
+    var textStyle    = TextStyle(fontSize: widget.model.textSize, color: widget.model.textColor);
 
     // style
     var style = PlutoGridStyleConfig(
@@ -652,6 +657,10 @@ class TableViewState extends WidgetState<TableView>
       columnHeight: colHeight,
 
       rowHeight: rowHeight,
+
+      cellTextStyle: textStyle,
+
+      borderColor: borderColor,
 
       gridBorderRadius: borderRadius,
 
@@ -671,9 +680,9 @@ class TableViewState extends WidgetState<TableView>
     for (var model in widget.model.header!.cells)
     {
       var height = widget.model.header?.height ?? PlutoGridSettings.rowHeight;
-      var title  = WidgetSpan(child: SizedBox(height: height, child:BoxView(model)));
-      var name   = model.name  ?? model.field ?? "Column ${model.index}";
-      var field  = model.field ?? model.name  ?? name;
+      var header = WidgetSpan(child: SizedBox(height: height, child:BoxView(model)));
+      var title  = model.title ?? model.field ?? "Column ${model.index}";
+      var field  = model.field ?? model.title ?? title;
 
       // cell builder - for performance reasons, tables without defined
       // table rows can be rendered much quicker
@@ -682,17 +691,25 @@ class TableViewState extends WidgetState<TableView>
       // cell is editable
       var editable = widget.model.isSimpleGrid && model.editable;
 
+      // cell is resizeable
+      var resizeable = model.resizeable;
+
+      // show context menu?
+      var showMenu = model.menu;
+
       // build the column
       var column = PlutoColumn(
-          title: name,
+          title: title,
           sort: PlutoColumnSort.none,
-          titleSpan: title,
+          titleSpan: header,
           field: field,
           type: getColumnType(model),
           enableSorting: model.sortable,
           enableFilterMenuItem: model.filter,
           enableEditingMode: editable,
           enableAutoEditing: false,
+          enableContextMenu: showMenu,
+          enableDropToResize: resizeable,
           readOnly: !editable,
           titlePadding: EdgeInsets.all(0),
           cellPadding: EdgeInsets.all(0),

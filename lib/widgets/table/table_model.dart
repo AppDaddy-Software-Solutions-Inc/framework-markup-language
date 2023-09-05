@@ -24,7 +24,7 @@ class TableModel extends BoxModel implements IForm
   final double defaultPadding = 4;
 
   // data grids are grids that do not define a complex row/cell schema
-  bool get isSimpleGrid => prototypeRow == null;
+  bool get isSimpleGrid => prototypeRowCell  == null;
 
   @override
   double? get paddingTop => super.paddingTop ?? defaultPadding;
@@ -46,6 +46,45 @@ class TableModel extends BoxModel implements IForm
 
   @override
   String get valign => super.valign ?? "center";
+
+  // text color
+  ColorObservable? _textColor;
+  set textColor(dynamic v)
+  {
+    if (_textColor != null) {
+      _textColor!.set(v);
+    } else if (v != null) {
+      _textColor = ColorObservable(Binding.toKey(id, 'textcolor'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  Color get textColor => _textColor?.get() ?? Colors.black;
+
+  // text Size
+  DoubleObservable? _textSize;
+  set textSize(dynamic v)
+  {
+    if (_textSize != null) {
+      _textSize!.set(v);
+    } else if (v != null) {
+      _textSize = DoubleObservable(Binding.toKey(id, 'textsize'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  double get textSize => _textSize?.get() ?? 14;
+
+  // allow sorting
+  BooleanObservable? _menu;
+  set menu(dynamic v)
+  {
+    if (_menu != null)
+    {
+      _menu!.set(v);
+    }
+    else if (v != null)
+    {
+      _menu = BooleanObservable(Binding.toKey(id, 'menu'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get menu => _menu?.get() ?? true;
 
   // allow sorting
   BooleanObservable? _sortable;
@@ -271,10 +310,15 @@ class TableModel extends BoxModel implements IForm
     super.deserialize(xml);
 
     // properties
+    menu       = Xml.get(node: xml, tag: 'menu');
     sortable   = Xml.get(node: xml, tag: 'sortable');
     draggable  = Xml.get(node: xml, tag: 'draggable');
     resizeable = Xml.get(node: xml, tag: 'resizeable');
     editable   = Xml.get(node: xml, tag: 'editable');
+
+    // used in simple grids
+    textSize   = Xml.get(node: xml, tag: 'textSize') ?? Xml.get(node: xml, tag: 'fontSize');
+    textColor  = Xml.get(node: xml, tag: 'textColor') ?? Xml.get(node: xml, tag: 'fontColor');
 
     // legacy support
     var paged = S.toBool(Xml.get(node: xml, tag: 'pagesize'));
@@ -486,7 +530,7 @@ class TableModel extends BoxModel implements IForm
         {
           // header cell
           var xml   = prototype.replaceAll("{field}", key);
-          var model = TableHeaderCellModel.fromXmlString(this, xml) ?? TableHeaderCellModel(this, null);
+          var model = TableHeaderCellModel.fromXmlString(header, xml) ?? TableHeaderCellModel(header, null);
           header.cells.add(model);
         }
       });

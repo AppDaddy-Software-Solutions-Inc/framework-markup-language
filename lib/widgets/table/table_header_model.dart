@@ -40,6 +40,21 @@ class TableHeaderModel extends BoxModel
   @override
   String? get valign => super.valign ?? table?.valign;
 
+  // show menu
+  BooleanObservable? _menu;
+  set menu(dynamic v)
+  {
+    if (_menu != null)
+    {
+      _menu!.set(v);
+    }
+    else if (v != null)
+    {
+      _menu = BooleanObservable(Binding.toKey(id, 'menu'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get menu => _menu?.get() ?? table?.menu ?? true;
+
   // allow sorting
   BooleanObservable? _sortable;
   set sortable(dynamic v)
@@ -141,6 +156,7 @@ class TableHeaderModel extends BoxModel
     super.deserialize(xml);
 
     // properties
+    menu       = Xml.get(node: xml, tag: 'menu');
     sortable   = Xml.get(node: xml, tag: 'sortable');
     draggable  = Xml.get(node: xml, tag: 'draggable');
     resizeable = Xml.get(node: xml, tag: 'resizeable');

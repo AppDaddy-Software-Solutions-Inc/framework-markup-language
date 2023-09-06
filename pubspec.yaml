@@ -65,11 +65,11 @@ dependencies:
 
   # Microsoft Logon
   # Updated 2023/06/06
-  firebase_auth: ^4.6.3
+  firebase_auth: ^4.9.0
   # Updated 2023/06/23
-  firebase_core: ^2.14.0
+  firebase_core: ^2.15.1
   # Updated 2023/06/06
-  firebase_core_platform_interface: ^4.8.0
+  # firebase_core_platform_interface: ^4.8.0
   # BSD-3-Clause
 
   # Updated 2023/02/02

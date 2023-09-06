@@ -30,27 +30,6 @@ class _PieChartViewState extends WidgetState<PieChartView>
   Future<PieChartModel>? chartViewModel;
   BusyView? busy;
 
-  Widget bottomTitles(double value, TitleMeta meta) {
-    var style = TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.outline);
-    int? index = S.toInt(value);
-    String text = (index != null && widget.model.uniqueValues.isNotEmpty ? widget.model.uniqueValues.elementAt(index) : value).toString();
-    // replace the value with the x value of the index[value] in the list of data points.
-    return SideTitleWidget(
-      axisSide: meta.axisSide,
-      child: Text(text, style: style),
-    );
-  }
-
-  Widget leftTitles(double value, TitleMeta meta) {
-    var style = TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.outline);
-    return SideTitleWidget(
-      axisSide: meta.axisSide,
-      space: 8,
-      fitInside: SideTitleFitInsideData.fromTitleMeta(meta),
-      child: Text(value.toString(), style: style, textAlign: TextAlign.center),
-    );
-  }
-
   PieChart buildPieChart(seriesData){
     PieChart chart = PieChart(widget.model.pieData);
     return chart;
@@ -84,8 +63,8 @@ class _PieChartViewState extends WidgetState<PieChartView>
 
     // Prioritize chart ux interactions
     view = Listener(behavior: HitTestBehavior.opaque, child: view);
-    view = SafeArea(child: view);
-    children.insert(0, SafeArea(child: view));
+    view = Container(child: view);
+    children.insert(0, view);
 
     // add busy
     children.add(Center(child: busy));

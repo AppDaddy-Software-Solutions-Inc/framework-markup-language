@@ -31,20 +31,23 @@ class _ChartViewState extends WidgetState<BarChartView>
   BusyView? busy;
 
   Widget bottomTitles(double value, TitleMeta meta) {
-    var style = TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.outline);
+    var style = TextStyle(fontSize: widget.model.xaxis.labelsize ?? 8, color: Theme.of(context).colorScheme.outline);
     String text = value.toInt() < widget.model.uniqueValues.length && widget.model.uniqueValues.isNotEmpty ? widget.model.uniqueValues.elementAt(value.toInt()).toString(): value.toString();
     // replace the value with the x value of the index[value] in the list of data points.
     return SideTitleWidget(
       axisSide: meta.axisSide,
+      fitInside: SideTitleFitInsideData.fromTitleMeta(meta),
+      angle: widget.model.xaxis.labelrotation,
       child: Text(text, style: style),
     );
   }
 
   Widget leftTitles(double value, TitleMeta meta) {
-    var style = TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.outline);
+    var style = TextStyle(fontSize: widget.model.yaxis.labelsize ?? 8, color: Theme.of(context).colorScheme.outline);
     return SideTitleWidget(
       axisSide: meta.axisSide,
       space: 8,
+      angle: widget.model.yaxis.labelrotation,
       fitInside: SideTitleFitInsideData.fromTitleMeta(meta),
       child: Text(value.toString(), style: style, textAlign: TextAlign.center),
     );
@@ -58,13 +61,13 @@ class _ChartViewState extends WidgetState<BarChartView>
         maxY: S.toDouble(widget.model.yaxis.max),
 
         titlesData: FlTitlesData(
-          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false),  axisNameWidget: !S.isNullOrEmpty(widget.model.title) ? Text(widget.model.title!, style: TextStyle(fontSize: 12),): null,),
           rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
           leftTitles: AxisTitles(
               axisNameWidget: !S.isNullOrEmpty(widget.model.yaxis.title) ? Text(widget.model.yaxis.title!, style: TextStyle(fontSize: 12),): null,
               sideTitles: SideTitles(
                 interval: S.toDouble(widget.model.yaxis.interval),
-                showTitles: true,
+                showTitles: widget.model.yaxis.labelvisible,
                 getTitlesWidget: leftTitles,
               )
           ),
@@ -72,7 +75,7 @@ class _ChartViewState extends WidgetState<BarChartView>
               axisNameWidget: !S.isNullOrEmpty(widget.model.xaxis.title) ? Text(widget.model.xaxis.title!, style: TextStyle(fontSize: 12),): null,
               sideTitles: SideTitles(
                 interval: S.toDouble(widget.model.xaxis.interval),
-                showTitles: true,
+                showTitles: widget.model.xaxis.labelvisible,
                 getTitlesWidget: bottomTitles,
               )
           ),

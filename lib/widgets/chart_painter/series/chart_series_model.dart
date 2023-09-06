@@ -248,7 +248,7 @@ class ChartPainterSeriesModel extends WidgetModel
       radius_ = DoubleObservable(Binding.toKey(id, 'radius'), v, scope: scope);
     }
   }
-  double get radius => radius_?.get() ?? 3.5;
+  double? get radius => radius_?.get();
 
   /// Plot type (`plot`) size
   DoubleObservable? _size;

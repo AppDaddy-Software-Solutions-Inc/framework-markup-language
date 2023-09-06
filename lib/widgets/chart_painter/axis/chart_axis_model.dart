@@ -64,7 +64,7 @@ class ChartAxisModel extends WidgetModel
   String? get interval => _interval?.get();
 
   /// Used to rotate long data labels so you can fit more, generally along the x axis
-  IntegerObservable? _labelrotation;
+  DoubleObservable? _labelrotation;
   set labelrotation (dynamic v)
   {
     if (_labelrotation != null)
@@ -73,13 +73,13 @@ class ChartAxisModel extends WidgetModel
     }
     else if (v != null)
     {
-      _labelrotation = IntegerObservable(Binding.toKey(id, 'labelrotation'), v, scope: scope, listener: onPropertyChange);
+      _labelrotation = DoubleObservable(Binding.toKey(id, 'labelrotation'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  int get labelrotation => _labelrotation?.get() ?? 0;
+  double get labelrotation => _labelrotation?.get() ?? 0;
 
   /// Sets the font size of the tick labels
-  IntegerObservable? _labelsize;
+  DoubleObservable? _labelsize;
   set labelsize (dynamic v)
   {
     if (_labelsize != null)
@@ -88,10 +88,26 @@ class ChartAxisModel extends WidgetModel
     }
     else if (v != null)
     {
-      _labelsize = IntegerObservable(Binding.toKey(id, 'labelsize'), v, scope: scope, listener: onPropertyChange);
+      _labelsize = DoubleObservable(Binding.toKey(id, 'labelsize'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  int? get labelsize => _labelsize?.get();
+  double? get labelsize => _labelsize?.get();
+
+  /// Sets the spacing between labels
+  DoubleObservable? _spacing;
+  set spacing (dynamic v)
+  {
+    if (_spacing != null)
+    {
+      _spacing!.set(v);
+    }
+    else if (v != null)
+    {
+      _spacing = DoubleObservable(Binding.toKey(id, 'spacing'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  double? get spacing => _spacing?.get();
+
 
   /// axis labels visibility
   BooleanObservable? _labelvisible;
@@ -174,6 +190,7 @@ class ChartAxisModel extends WidgetModel
       this.axis,
       {
         dynamic type,
+        dynamic spacing,
         dynamic labelrotation,
         dynamic labelvisible,
         dynamic labelsize,
@@ -183,21 +200,11 @@ class ChartAxisModel extends WidgetModel
         dynamic min,
         dynamic max,
         dynamic truncate,
-        // dynamic minimum,
-        // dynamic maximum,
-        // dynamic visibleminimum,
-        // dynamic visiblemaximum,
-        // dynamic fontsize,
-        // dynamic fontcolor,
-        // dynamic gridcolor,
-        // dynamic interval,
-        // dynamic intervaltype,
-        // dynamic zoomfactor,
-        // dynamic zoomposition,
       }) : super(parent, id)
 
   {
     this.labelrotation  = labelrotation;
+    this.spacing        = spacing;
     this.labelvisible   = labelvisible;
     this.labelsize      = labelsize;
     this.title          = title;
@@ -242,6 +249,7 @@ class ChartAxisModel extends WidgetModel
         min             : Xml.get(node: xml, tag: 'min'),
         max             : Xml.get(node: xml, tag: 'max'),
         truncate        : Xml.get(node: xml, tag: 'truncate'),
+        spacing         : Xml.get(node: xml, tag: 'spacing'),
         // fontsize        : Xml.get(node: xml, tag: 'fontsize'),
         // fontcolor       : Xml.get(node: xml, tag: 'fontcolor'),
         // format          : Xml.get(node: xml, tag: 'format'),

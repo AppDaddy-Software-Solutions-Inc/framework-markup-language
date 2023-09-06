@@ -10,7 +10,7 @@ import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:intl/intl.dart';
-import 'line_chart_model.dart';
+import 'radar_chart_model.dart';
 
 /// Chart View
 ///

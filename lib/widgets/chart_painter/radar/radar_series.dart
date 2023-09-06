@@ -25,18 +25,16 @@ class ChartDataPoint {
 /// Chart Series [ChartSeriesModel]
 ///
 /// Defines the properties used to build a Charts's Series
-class PieChartSeriesModel extends ChartPainterSeriesModel
+class RadarChartSeriesModel extends ChartPainterSeriesModel
 {
-  List<PieChartSectionData> pieDataPoint = [];
-  List<dynamic> xValues = [];
-  Function? plotFunction;
+  List<FlSpot> lineDataPoint = [];
+  Map<int, dynamic> xValueMap = {};
+  @override
   dynamic dataList;
   double maxY = 0;
   double minY = 0;
 
-  String? type;
-
-  PieChartSeriesModel(
+  RadarChartSeriesModel(
       WidgetModel parent,
       String? id, {
         dynamic x,
@@ -46,7 +44,6 @@ class PieChartSeriesModel extends ChartPainterSeriesModel
         dynamic radius,
         dynamic size,
         dynamic label,
-        this.type,
         dynamic tooltips,
         dynamic animated,
         dynamic name,
@@ -75,13 +72,13 @@ class PieChartSeriesModel extends ChartPainterSeriesModel
     this.showpoints = showpoints;
   }
 
-  static PieChartSeriesModel? fromXml(WidgetModel parent, XmlElement xml)
+  static RadarChartSeriesModel? fromXml(WidgetModel parent, XmlElement xml)
   {
-    PieChartSeriesModel? model;
+    RadarChartSeriesModel? model;
     try
     {
       xml = WidgetModel.prototypeOf(xml) ?? xml;
-      model = PieChartSeriesModel(parent, Xml.get(node: xml, tag: 'id'));
+      model = RadarChartSeriesModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
     catch(e)
@@ -123,29 +120,59 @@ class PieChartSeriesModel extends ChartPainterSeriesModel
     if (type != null) type = type?.trim().toLowerCase();
   }
 
-  @override
-  // we purposely don't want to do anything on change since there is no view
-  // and the entire chart gets rebuilt
-  void onPropertyChange(Observable observable) {}
-  //
-  // void plotLineCategoryPoints(dynamic uniqueXValueList){
-  //
-  //   for (var pointData in dataList) {
-  //     //set the data of the series for databinding
-  //     data = pointData;
-  //     //ensure the value is in the list, it always should be.
-  //     if (uniqueXValueList.contains(S.toInt(x))) {
-  //       x = uniqueXValueList.toList().indexOf(S.toInt(x));
-  //       //plot the point as a point object based on the desired function based on series and chart type.
-  //       pointFromPieData();
-  //     }
-  //     data = null;
-  //
-  //   }
-  //   dataList = null;
-  // }
+  void plotCategoryPoints(dynamic dataList, List uniqueValues){
+    xValues.clear();
+    lineDataPoint.clear();
+    int len = uniqueValues.length - 1;
+    for (var i=0; i< dataList.length; i++) {
+      //set the data of the series for databinding
+      data = dataList[i];
+
+      if(uniqueValues.isNotEmpty && uniqueValues.contains(x)) {
+        x = uniqueValues.indexOf(x);
+      }
+      else {
+        xValues.add(x);
+        x = len + 1;
+        len += 1;
+      }
+        //plot the point as a point object based on the desired function based on series and chart type.
+        plot();
+    }
+    dataList = null;
+  }
+
+  void plotRawPoints(dynamic dataList, List uniqueValues){
+    xValues.clear();
+    lineDataPoint.clear();
+    int len = uniqueValues.length;
+    for (var i=0; i< dataList.length; i++) {
+      //set the data of the series for databinding
+      data = dataList[i];
+      xValues.add(x);
+      x = len;
+      len += 1;
+      plot();
+    }
+    dataList = null;
+  }
+
+  void plotDatePoints(dynamic dataList, {String? format}){
+    xValues.clear();
+    lineDataPoint.clear();
+    for (var i=0; i< dataList.length; i++) {
+      //set the data of the series for databinding
+      data = dataList[i];
+          x = S.toDate(x, format: format ?? 'yyyy/MM/dd')?.millisecondsSinceEpoch;
+          //plot the point as a point object based on the desired function based on series and chart type.
+        plot();
+    }
+    dataList = null;
+  }
 
   void plotPoints(dynamic dataList){
+    xValues.clear();
+    lineDataPoint.clear();
     for (var i=0; i< dataList.length; i++) {
       //set the data of the series for databinding
       data = dataList[i];
@@ -156,8 +183,7 @@ class PieChartSeriesModel extends ChartPainterSeriesModel
   }
 
   void plot(){
-    PieChartSectionData point = PieChartSectionData(value: S.toDouble(y) ?? 0, title: x, radius: radius, color: color ?? ColorHelper.fromString('random'));
-    pieDataPoint.add(point);
+    FlSpot point = FlSpot(S.toDouble(x) ?? 0, S.toDouble(y) ?? 0);
+    lineDataPoint.add(point);
   }
-
 }

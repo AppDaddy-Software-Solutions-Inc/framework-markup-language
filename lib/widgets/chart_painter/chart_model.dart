@@ -34,16 +34,34 @@ class ChartPainterModel extends BoxModel
     return true;
   }
 
+  /// The title of the whole chart
+  StringObservable? _title;
+  set title (dynamic v)
+  {
+    if (_title != null)
+    {
+      _title!.set(v);
+    }
+    else if (v != null)
+    {
+      _title = StringObservable(Binding.toKey(id, 'title'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  String? get title => _title?.get();
+
+
   ChartPainterModel(WidgetModel? parent, String? id,
       {
         dynamic type,
         dynamic showlegend,
+        dynamic title,
         dynamic horizontal,
         dynamic animated,
         dynamic selected,
         dynamic legendsize,
       }) : super(parent, id) {
     this.selected         = selected;
+    this.title            = title;
     this.animated         = animated;
     this.horizontal       = horizontal;
     this.showlegend       = showlegend;
@@ -102,6 +120,7 @@ class ChartPainterModel extends BoxModel
     showlegend      = Xml.get(node: xml, tag: 'showlegend');
     legendsize      = Xml.get(node: xml, tag: 'legendsize');
     type            = Xml.get(node: xml, tag: 'type');
+    title           = Xml.get(node: xml, tag: 'title');
 
   }
 

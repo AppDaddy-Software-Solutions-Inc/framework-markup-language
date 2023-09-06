@@ -5,22 +5,27 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
-import 'package:fml/widgets/chart_painter/pie/pie_chart_view.dart';
-import 'package:fml/widgets/chart_painter/pie/pie_series.dart';
+import 'package:fml/widgets/chart_painter/axis/chart_axis_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:xml/xml.dart';
 import '../chart_model.dart';
+import 'radar_chart_view.dart';
+import 'radar_series.dart';
 
 /// Chart [ChartModel]
 ///
 /// Defines the properties used to build a Chart
-class PieChartModel extends ChartPainterModel
+class LineChartModel extends ChartPainterModel
 {
-  final List<PieChartSeriesModel> series = [];
-  @override
-  PieChartData pieData = PieChartData();
+  ChartAxisModel xaxis = ChartAxisModel(null, null, ChartAxis.X);
+  ChartAxisModel yaxis = ChartAxisModel(null, null, ChartAxis.Y);
+  num? yMax;
+  num? yMin;
+  Map<int, dynamic> uniqueValueMap = {};
+  final List<RadarChartSeriesModel> series = [];
+  List<LineChartBarData> lineDataList = [];
 
   @override
   bool get canExpandInfinitelyWide
@@ -36,20 +41,16 @@ class PieChartModel extends ChartPainterModel
     return true;
   }
 
-  PieChartModel(WidgetModel? parent, String? id,
+  LineChartModel(WidgetModel? parent, String? id,
       {
         dynamic type,
         dynamic showlegend,
         dynamic horizontal,
-        dynamic centerRadius,
-        dynamic spacing,
         dynamic animated,
         dynamic selected,
         dynamic legendsize,
       }) : super(parent, id) {
     this.selected         = selected;
-    this.centerRadius     = centerRadius;
-    this.spacing          = spacing;
     this.animated         = animated;
     this.horizontal       = horizontal;
     this.showlegend       = showlegend;
@@ -59,14 +60,14 @@ class PieChartModel extends ChartPainterModel
     busy = false;
   }
 
-  static PieChartModel? fromTemplate(WidgetModel parent, Template template)
+  static LineChartModel? fromTemplate(WidgetModel parent, Template template)
   {
-    PieChartModel? model;
+    LineChartModel? model;
     try
     {
       XmlElement? xml = Xml.getElement(node: template.document!.rootElement, tag: "CHART");
       xml ??= template.document!.rootElement;
-      model = PieChartModel.fromXml(parent, xml);
+      model = LineChartModel.fromXml(parent, xml);
     }
     catch(e)
     {
@@ -76,12 +77,12 @@ class PieChartModel extends ChartPainterModel
     return model;
   }
 
-  static PieChartModel? fromXml(WidgetModel parent, XmlElement xml)
+  static LineChartModel? fromXml(WidgetModel parent, XmlElement xml)
   {
-    PieChartModel? model;
+    LineChartModel? model;
     try
     {
-      model = PieChartModel(parent, Xml.get(node: xml, tag: 'id'));
+      model = LineChartModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
     catch(e)
@@ -108,12 +109,10 @@ class PieChartModel extends ChartPainterModel
     showlegend      = Xml.get(node: xml, tag: 'showlegend');
     legendsize      = Xml.get(node: xml, tag: 'legendsize');
     type            = Xml.get(node: xml, tag: 'type');
-    spacing         = Xml.get(node: xml, tag: 'spacing');;
-    centerRadius    = Xml.get(node: xml, tag: 'centerradius');;
 
     // Set Series
     this.series.clear();
-    List<PieChartSeriesModel> series = findChildrenOfExactType(PieChartSeriesModel).cast<PieChartSeriesModel>();
+    List<RadarChartSeriesModel> series = findChildrenOfExactType(RadarChartSeriesModel).cast<RadarChartSeriesModel>();
     for (var model in series)
     {
       // add the series to the list
@@ -124,38 +123,43 @@ class PieChartModel extends ChartPainterModel
       if (source != null) source.register(this);
     }
 
+
+    // Set Axis
+    List<ChartAxisModel> axis = findChildrenOfExactType(ChartAxisModel).cast<ChartAxisModel>();
+    for (var axis in axis) {
+      if (axis.axis == ChartAxis.X) xaxis = axis;
+
+      if (axis.axis == ChartAxis.Y) yaxis = axis;
+      yMax = S.toInt(yaxis.max);
+      yMin = S.toInt(yaxis.min);
+    }
   }
 
-  /// Sets the font size of the legend labels
-  DoubleObservable? _centerRadius;
-  set centerRadius (dynamic v)
+  /// Contains the data map from the row (point) that is selected
+  ListObservable? _selected;
+  set selected(dynamic v)
   {
-    if (_centerRadius != null)
+    if (_selected != null)
     {
-      _centerRadius!.set(v);
+      _selected!.set(v);
     }
     else if (v != null)
     {
-      _centerRadius = DoubleObservable(Binding.toKey(id, 'centerradius'), v, scope: scope, listener: onPropertyChange);
+      _selected = ListObservable(Binding.toKey(id, 'selected'), null, scope: scope, listener: onPropertyChange);
+      _selected!.set(v);
     }
   }
-  double? get centerRadius => _centerRadius?.get();
+  get selected => _selected?.get();
 
-  /// Sets the font size of the legend labels
-  DoubleObservable? _spacing;
-  set spacing (dynamic v)
+  setSelected(dynamic v)
   {
-    if (_spacing != null)
+    if (_selected == null)
     {
-      _spacing!.set(v);
+      _selected = ListObservable(Binding.toKey(id, 'selected'), null, scope: scope);
+      _selected!.registerListener(onPropertyChange);
     }
-    else if (v != null)
-    {
-      _spacing = DoubleObservable(Binding.toKey(id, 'spacing'), v, scope: scope, listener: onPropertyChange);
-    }
+    _selected?.set(v, notify:false);
   }
-  double? get spacing => _spacing?.get();
-
 
   /// Called when the databroker returns a successful result
   ///
@@ -168,18 +172,35 @@ class PieChartModel extends ChartPainterModel
     try {
       //here if the data strategy is category, we must fold all of the lists together and create a dummy key value map of every unique value, in order
       uniqueValues.clear();
+      lineDataList.clear();
       for (var serie in series) {
-        // build the datapoints for the series, passing in the chart type, index, and data
         if (serie.datasource == source.id) {
-          serie.plotPoints(list);
+          // build the datapoints for the series, passing in the chart type, index, and data
+         if (xaxis.type == "raw") {
+            serie.plotRawPoints(list, uniqueValues);
+         } else if (xaxis.type == "category") {
+            //with category, we may need to change the xValues to a map rather than a set for when multiple points are there
+            serie.plotCategoryPoints(list, uniqueValues);
+          } else if (xaxis.type == "date") {
+            serie.plotDatePoints(list, format: xaxis.format);
+          } else {
+            serie.plotPoints(list);
+          }
+         notifyListeners('list', null);
         }
-        // add the built x values to a unique list to map to indeces
-        uniqueValues.addAll(serie.xValues);
 
-        pieData = PieChartData(sections: serie.pieDataPoint, centerSpaceRadius: centerRadius, sectionsSpace: spacing);
-        serie.xValues.clear();
+         uniqueValues.addAll(serie.xValues);
 
-        notifyListeners('list', null);
+         serie.lineDataPoint.sort((a, b) => a.x.compareTo(b.x));
+          serie.color ??= ColorHelper.fromString('random');
+          lineDataList.add(LineChartBarData(spots: serie.lineDataPoint,
+              isCurved: serie.curved,
+              belowBarData: BarAreaData(show: serie.showarea),
+              dotData: FlDotData(show: serie.showpoints),
+              barWidth: serie.type == 'point' || serie.showline == false ? 0 : serie.stroke ?? 2,
+              color: serie.color ));
+          serie.xValues.clear();
+
       }
     }
     catch(e)
@@ -193,6 +214,6 @@ class PieChartModel extends ChartPainterModel
   @override
   Widget getView({Key? key})
   {
-    return getReactiveView(PieChartView(this));
+    return getReactiveView(LineChartView(this));
   }
 }

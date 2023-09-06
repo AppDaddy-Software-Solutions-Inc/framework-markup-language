@@ -705,12 +705,20 @@ class TableViewState extends WidgetState<TableView>
   {
     columns.clear();
     map.clear();
+
+    List<String> fields = [];
+
     for (var model in widget.model.header!.cells)
     {
       var height = widget.model.header?.height ?? PlutoGridSettings.rowHeight;
       var header = WidgetSpan(child: SizedBox(height: height, child:BoxView(model)));
       var title  = model.title ?? model.field ?? "Column ${model.index}";
+
+      // field names must be unique across columns
       var field  = model.field ?? model.title ?? title;
+      int i = 1;
+      while (fields.contains(field)) field = "$field-${i++}";
+      fields.add(field);
 
       // cell builder - for performance reasons, tables without defined
       // table rows can be rendered much quicker

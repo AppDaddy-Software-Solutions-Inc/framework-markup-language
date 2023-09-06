@@ -24,7 +24,8 @@ class TableModel extends BoxModel implements IForm
   final double defaultPadding = 4;
 
   // data grids are grids that do not define a complex row/cell schema
-  bool get isSimpleGrid => prototypeRowCell  == null;
+  bool _isSimple = false;
+  bool get isSimpleGrid => _isSimple;
 
   @override
   double? get paddingTop => super.paddingTop ?? defaultPadding;
@@ -355,6 +356,7 @@ class TableModel extends BoxModel implements IForm
       if (rows.first.cells.length == 1)
       {
         prototypeRowCell = rows.first.cells.first.element;
+        _isSimple = true;
       }
     }
   }

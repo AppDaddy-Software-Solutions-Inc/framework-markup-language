@@ -6,7 +6,6 @@ import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart'        ;
 import 'package:fml/widgets/widget/iwidget_view.dart';
-import 'package:fml/widgets/widget/widget_model.dart'       ;
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/list/list_model.dart';
 import 'package:fml/widgets/list/item/list_item_view.dart';
@@ -125,12 +124,6 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
       Log().error('onScroll Error: ');
       Log().exception(e, caller: 'table.View');
     }
-  }
-  /// Callback function for when the model changes, used to force a rebuild with setState()
-  @override
-  onModelChange(WidgetModel model,{String? property, dynamic value})
-  {
-    if (mounted) setState((){});
   }
 
   Widget? itemBuilder(BuildContext context, int index)

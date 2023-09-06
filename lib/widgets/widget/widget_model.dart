@@ -8,6 +8,7 @@ import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/datasources/datasource_listener_interface.dart';
 import 'package:fml/datasources/stash/stash_model.dart';
 import 'package:fml/datasources/log/log_model.dart';
+import 'package:fml/datasources/test/test_data_model.dart';
 import 'package:fml/datasources/transforms/subquery.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/datasources/detectors/barcode/barcode_detector_model.dart';
@@ -667,6 +668,10 @@ class WidgetModel implements IDataSourceListener {
 
       case "subquery":
         if (parent is HttpGetModel) model = Query.fromXml(parent, node);
+        break;
+
+      case "testdata":
+        model = TestDataModel.fromXml(parent, node);
         break;
 
       case "transform":
@@ -1570,6 +1575,8 @@ class WidgetModel implements IDataSourceListener {
       case "sse":
         return true;
       case 'stash':
+        return true;
+      case "testdata":
         return true;
       case "zebra":
         return true;

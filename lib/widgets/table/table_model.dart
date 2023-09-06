@@ -563,12 +563,13 @@ class TableModel extends BoxModel implements IForm
     prototypeRow = WidgetModel.prototypeOf(prototypeRow);
   }
 
-  void onChangeHandler(int rowIdx, int colIdx, dynamic value, dynamic oldValue) async
+  Future<bool> onChangeHandler(int rowIdx, int colIdx, dynamic value, dynamic oldValue) async
   {
+    bool ok = true;
     var data = getDataRow(rowIdx);
     var col  = header?.cell(colIdx);
     var fld  = col?.field;
-    
+
     if (data != null && col != null && fld != null)
     {
       Data.writeValue(data, fld, value);
@@ -577,9 +578,10 @@ class TableModel extends BoxModel implements IForm
       if (_onChange != null)
       {
         bool ok = await col.onChangeHandler();
-        if (ok) EventHandler(this).execute(_onChange);
+        if (ok) await EventHandler(this).execute(_onChange);
       }
     }
+    return ok;
   }
   
   void onSelect(TableRowModel row, TableRowCellModel cell)

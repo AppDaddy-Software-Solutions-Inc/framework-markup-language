@@ -444,8 +444,6 @@ class Data with ListMixin<dynamic>
   static Data testData(int rows)
   {
     Data data = Data();
-    List<Map> root = [];
-    data.add(root);
     for (int i = 0; i < rows; i++)
     {
       var row = <String, dynamic>{};
@@ -455,7 +453,9 @@ class Data with ListMixin<dynamic>
       row["first"] = names[Random().nextInt(names.length)];
       row["last"]  = surnames[Random().nextInt(surnames.length)];
       row["city"]  = cities[Random().nextInt(cities.length)];
-      root.add(row);
+      row["job"]   = jobs[Random().nextInt(jobs.length)];
+      row["company"]   = companies[Random().nextInt(companies.length)];
+      data.add(row);
     }
     return data;
   }
@@ -463,4 +463,6 @@ class Data with ListMixin<dynamic>
   static List<String> cities = ["Kingston","Ottawa","Montreal","Toronto"];
   static List<String> names   = ["Joe","Jeff","Bill","Jeremy"];
   static List<String> surnames = ["Smith","Jones","Olajos","Green"];
+  static List<String> jobs = ["Butcher","Baker","Candle Stick Maker","Engineer","Plumber","Electrician","Accountant"];
+  static List<String> companies = ["DuPont","Goodyear"];
 }

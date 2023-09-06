@@ -8,6 +8,7 @@ import 'package:fml/data/data.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/alignment/alignment.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/table/table_header_cell_model.dart';
 import 'package:fml/widgets/table/table_row_cell_model.dart';
@@ -67,6 +68,16 @@ class TableViewState extends WidgetState<TableView>
     _buildColumns();
   }
 
+  @override
+  void dispose()
+  {
+    super.dispose();
+    if (widget.model.isSimpleGrid)
+    {
+      stateManager?.removeListener(onSelectHandler);
+    }
+  }
+
   closeKeyboard() async
   {
     try
@@ -85,7 +96,8 @@ class TableViewState extends WidgetState<TableView>
   {
     var b = Binding.fromString(property);
     if (b?.property == 'busy') return;
-    if (mounted) setState(() {});
+
+    super.onModelChange(model);
   }
 
   PlutoColumnType getColumnType(TableHeaderCellModel model)
@@ -93,12 +105,9 @@ class TableViewState extends WidgetState<TableView>
     var type = model.type?.toLowerCase().trim();
     switch (type)
     {
-      case "text":
-      case "string":
-        return PlutoColumnType.text();
       case "number":
       case "numeric":
-        return PlutoColumnType.number();
+        return PlutoColumnType.number(format: "#", applyFormatOnInit: false);
       case "money":
       case "currency":
         return PlutoColumnType.currency();
@@ -106,6 +115,8 @@ class TableViewState extends WidgetState<TableView>
         return PlutoColumnType.date();
       case "time":
         return PlutoColumnType.time();
+      case "text":
+      case "string":
       default:
         return PlutoColumnType.text();
     }
@@ -389,7 +400,8 @@ class TableViewState extends WidgetState<TableView>
     // necessary when edit mode is enabled
     if (widget.model.isSimpleGrid)
     {
-      stateManager!.addListener(onSelectHandler);
+      stateManager?.removeListener(onSelectHandler);
+      stateManager?.addListener(onSelectHandler);
     }
 
     // show filter bar
@@ -397,6 +409,19 @@ class TableViewState extends WidgetState<TableView>
     {
       stateManager!.setShowColumnFilter(true);
     }
+  }
+
+  // called when a field changes via edit.
+  // only applies to simple grid
+  void onChanged(final PlutoGridOnChangedEvent event) async
+  {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp)
+    {
+      var rowIdx = rows.indexOf(event.row);
+      var colIdx = map.containsKey(event.column) ? map[event.column]!.index : -1;
+      widget.model.onChangeHandler(rowIdx, colIdx, event.value, event.oldValue);
+      onSelectHandler();
+    });
   }
 
   // called on selected
@@ -417,8 +442,13 @@ class TableViewState extends WidgetState<TableView>
     // simple grid
     if (widget.model.isSimpleGrid)
     {
+      var rowIdx = -1;
+      if (row != null) rowIdx = rows.indexOf(row);
+
       // set the tables selected data
-      var data = widget.model.getDataRow(event.rowIdx ?? -1) ?? [];
+      var data = widget.model.getDataRow(rowIdx) ?? [];
+
+      // toggle selected
       widget.model.selected = data;
       return;
     }
@@ -458,16 +488,6 @@ class TableViewState extends WidgetState<TableView>
   {
     views.clear();
   }
-
-  // called when a field changed.
-  // only applies to simple grid
-  void onChanged(PlutoGridOnChangedEvent event) async
-  {
-    var rowIdx = rows.indexOf(event.row);
-    var colIdx = map.containsKey(event.column) ? map[event.column]!.index : -1;
-    widget.model.onChangeHandler(rowIdx, colIdx, event.value, event.oldValue);
-  }
-
 
   // forces the lazy/page loaders to refire
   void refresh()
@@ -640,6 +660,14 @@ class TableViewState extends WidgetState<TableView>
     return loader;
   }
 
+  PlutoColumnTextAlign _getAlignment()
+  {
+    var align = WidgetAlignment(widget.model.layoutType, widget.model.center, widget.model.halign, widget.model.valign);
+    if (align.aligned == Alignment.topCenter || align.aligned == Alignment.center || align.aligned == Alignment.bottomCenter) return PlutoColumnTextAlign.center;
+    if (align.aligned == Alignment.topLeft   || align.aligned == Alignment.centerLeft || align.aligned == Alignment.bottomLeft) return PlutoColumnTextAlign.left;
+    if (align.aligned == Alignment.topRight  || align.aligned == Alignment.centerRight || align.aligned == Alignment.bottomRight) return PlutoColumnTextAlign.right;
+    return PlutoColumnTextAlign.center;
+  }
 
   PlutoGridConfiguration _buildConfig()
   {
@@ -697,6 +725,9 @@ class TableViewState extends WidgetState<TableView>
       // show context menu?
       var showMenu = model.menu;
 
+      // get cell alignment
+      var alignment = _getAlignment();
+
       // build the column
       var column = PlutoColumn(
           title: title,
@@ -704,6 +735,7 @@ class TableViewState extends WidgetState<TableView>
           titleSpan: header,
           field: field,
           type: getColumnType(model),
+          textAlign: alignment,
           enableSorting: model.sortable,
           enableFilterMenuItem: model.filter,
           enableEditingMode: editable,

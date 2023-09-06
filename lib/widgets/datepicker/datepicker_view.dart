@@ -70,14 +70,15 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
   @override
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    if ((cont!.text != widget.model.value) &&
-        (widget.model.isPicking != true)) {
+  onModelChange(WidgetModel model, {String? property, dynamic value})
+  {
+    if ((cont!.text != widget.model.value) && (widget.model.isPicking != true))
+    {
       widget.model.onChange(context);
     }
     cont!.text = widget.model.value;
 
-    if (mounted) setState(() {});
+    super.onModelChange(model);
   }
 
 

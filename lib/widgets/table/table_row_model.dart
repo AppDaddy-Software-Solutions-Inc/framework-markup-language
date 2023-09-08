@@ -280,8 +280,6 @@ class TableRowModel extends BoxModel
     return ok;
   }
 
-  void onSelect(TableRowCellModel cell) => table?.onSelect(this, cell);
-
   @override
   dispose()
   {

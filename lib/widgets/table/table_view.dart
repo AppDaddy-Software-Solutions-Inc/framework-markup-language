@@ -20,6 +20,8 @@ import 'package:pluto_grid/pluto_grid.dart';
 import 'package:pluto_grid_export/pluto_grid_export.dart' as pluto_grid_export;
 import 'package:csv/csv.dart';
 
+enum Toggle {on, off}
+
 class TableView extends StatefulWidget implements IWidgetView
 {
   @override
@@ -63,7 +65,7 @@ class TableViewState extends WidgetState<TableView>
   void dispose()
   {
     super.dispose();
-    stateManager?.removeListener(onSelectHandler);
+    stateManager?.removeListener(onSelectedHandler);
   }
 
   closeKeyboard() async
@@ -131,7 +133,7 @@ class TableViewState extends WidgetState<TableView>
     PlutoRow? row;
 
     // get the data row
-    dynamic data = widget.model.getDataRow(rowIdx);
+    dynamic data = widget.model.getData(rowIdx);
 
     // create the row
     if (data != null)
@@ -150,14 +152,14 @@ class TableViewState extends WidgetState<TableView>
         var model = widget.model.header?.cell(colIdx);
 
         // simple grid
-        if (model?.isSimple ?? false)
-        {
-          value = Data.readValue(data, column.field) ?? "";
-        }
-        else
+        if (model?.usesRenderer ?? false)
         {
           var model = widget.model.getRowCellModel(rowIdx, colIdx);
           value = model?.value;
+        }
+        else
+        {
+          value = Data.readValue(data, column.field) ?? "";
         }
 
         cells[column.field] = PlutoCell(value: value);
@@ -389,13 +391,9 @@ class TableViewState extends WidgetState<TableView>
   {
     stateManager = event.stateManager;
 
-    // handles changes in selection state
-    // necessary when edit mode is enabled
-    if (widget.model.isSimple)
-    {
-      stateManager?.removeListener(onSelectHandler);
-      stateManager?.addListener(onSelectHandler);
-    }
+    // add selection handler
+    stateManager?.removeListener(onSelectedHandler);
+    stateManager?.addListener(onSelectedHandler);
 
     // show filter bar
     if (widget.model.filterBar)
@@ -413,66 +411,71 @@ class TableViewState extends WidgetState<TableView>
       var rowIdx = rows.indexOf(event.row);
       var colIdx = map.containsKey(event.column) ? map[event.column]!.index : -1;
       widget.model.onChangeHandler(rowIdx, colIdx, event.value, event.oldValue);
-      onSelectHandler();
+
+      // we need this to force an update
+      // of the selected data
+      //onSelectedHandler();
     });
   }
 
-  // called on selected
-  // only called when simple grid
-  void onSelectHandler()
-  {
-    var event = PlutoGridOnSelectedEvent(row: stateManager?.currentRow, cell: stateManager?.currentCell, rowIdx: stateManager?.currentRowIdx, selectedRows: stateManager?.currentSelectingRows);
-    onSelectedHandler(event);
-  }
+  PlutoCell? selected;
 
   // called directly when not simple grid
-  void onSelectedHandler(PlutoGridOnSelectedEvent event)
+  bool clickedOnce = false;
+  void onSelectedHandler()
   {
+    if (stateManager == null) return;
+
     // get row and column
-    var row  = event.row;
-    var cell = event.cell;
+    var row  = stateManager!.currentRow;
+    var cell = stateManager!.currentCell;
 
-    // simple grid
-    if (widget.model.isSimple)
+    // this prevents toggling the selection off
+    // on very first click
+    if (cell != null) clickedOnce = true;
+    if (!clickedOnce) return;
+
+    // edit mode
+    if (stateManager!.isEditing) return;
+
+    // field is editable
+    bool editing = (cell != null && stateManager!.isEditableCell(cell));
+
+    // set toggle state
+    Toggle toggle = cell == selected ? Toggle.off : Toggle.on;
+    if (editing) toggle = Toggle.on;
+
+    // manage toggle state
+    switch (toggle)
     {
-      var rowIdx = -1;
-      if (row != null) rowIdx = rows.indexOf(row);
+      case Toggle.off :
 
-      // set the tables selected data
-      var data = widget.model.getDataRow(rowIdx) ?? [];
+        // clear state
+        stateManager?.clearCurrentCell(notify: false);
 
-      // toggle selected
-      widget.model.selected = data;
-      return;
-    }
+        // clear model selection
+        widget.model.onDeSelect();
 
-    // update the model
-    if (row != null && cell?.column != null)
-    {
-      var rowIdx = rows.indexOf(row);
-      var colIdx = map.containsKey(cell?.column) ? map[cell?.column]!.index : -1;
-      if (!rowIdx.isNegative && !colIdx.isNegative)
-      {
-        var model = widget.model.getRowCellModel(rowIdx, colIdx);
-        if (model != null)
-        {
-          // toggle selected
-          model.onSelect();
+        // clear selected
+        selected = null;
 
-          // user clicked same cell?
-          bool sameCell = (lastSelectedRow == row && lastSelectedCell == cell);
-          bool deselect = sameCell && !model.selected;
+        break;
 
-          if (deselect)
-          {
-            stateManager?.clearCurrentCell(notify: true);
-          }
+      case Toggle.on :
 
-          // set last row and cell
-          lastSelectedRow  = deselect ? null : row;
-          lastSelectedCell = deselect ? null : cell;
-        }
-      }
+        // get row index
+        var rowIdx = row != null ? rows.indexOf(row) : -1;
+
+        // get column index
+        var colIdx = map.containsKey(cell?.column) ? map[cell?.column]!.index : -1;
+
+        // set model selection
+        widget.model.onSelect(rowIdx, colIdx);
+
+        // remember last selected
+        selected = cell;
+
+        break;
     }
   }
 
@@ -724,15 +727,12 @@ class TableViewState extends WidgetState<TableView>
       }
       fields.add(field);
 
-      // simple column?
-      var simple = cell.isSimple;
-
       // cell builder - for performance reasons, tables without defined
       // table rows can be rendered much quicker
-      var builder = simple ? null : (rendererContext) => cellBuilder(rendererContext);
+      var builder = cell.usesRenderer ? (rendererContext) => cellBuilder(rendererContext) : null;
 
       // cell is editable
-      var editable = simple && cell.editable;
+      var editable = !cell.usesRenderer && cell.editable;
 
       // cell is resizeable
       var resizeable = cell.resizeable;
@@ -781,29 +781,16 @@ class TableViewState extends WidgetState<TableView>
 
       var config = _buildConfig();
 
-      bool simple = widget.model.isSimple;
-
-      // grid mode
-      var mode = simple ? PlutoGridMode.normal : PlutoGridMode.selectWithOneTap;
-
-      // event handlers
-      var onPageLoad = widget.model.pageSize > 0 ?  _pageLoader : _lazyLoader;
-      var onChanged  = simple ? onChangedHandler : null;
-      var onSelected = simple ? null : onSelectedHandler;
-      var onLoaded   = onLoadedHandler;
-      var onSorted   = onSortedHandler;
-
       // build the grid
       grid = PlutoGrid(key: GlobalKey(),
           configuration: config,
           columns: columns,
           rows: [],
-          mode: mode,
-          onSelected: onSelected,
-          onLoaded: onLoaded,
-          onSorted: onSorted,
-          onChanged: onChanged,
-          createFooter: onPageLoad);
+          mode: PlutoGridMode.normal,
+          onLoaded: onLoadedHandler,
+          onSorted: onSortedHandler,
+          onChanged: onChangedHandler,
+          createFooter: widget.model.pageSize > 0 ?  _pageLoader : _lazyLoader);
     }
 
     return grid!;

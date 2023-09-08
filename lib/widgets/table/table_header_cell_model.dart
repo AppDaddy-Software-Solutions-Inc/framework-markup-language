@@ -21,8 +21,8 @@ class TableHeaderCellModel extends BoxModel
   // cell is dynamic?
   bool get isDynamic => (element?.toString().contains("{field}") ?? false) && (hdr?.table?.hasDataSource ?? false);
 
-  // row has no body
-  bool isSimple = false;
+  // column has a user defined layout
+  bool usesRenderer = false;
 
   @override
   double? get paddingTop => super.paddingTop ?? hdr?.paddingTop;

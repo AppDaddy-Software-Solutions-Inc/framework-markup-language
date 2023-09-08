@@ -32,14 +32,11 @@ class TableModel extends BoxModel implements IForm
 
   final double defaultPadding = 4;
 
-  // table is dynamically built
-  //bool isSimple = true;
-
   // dynamically generated headers
   bool get hasDynamicHeaders => header?.isDynamic ?? false;
 
   // table has a data source
-  bool get hasDataSource => datasources?.isNotEmpty ?? false;
+  bool get hasDataSource => !S.isNullOrEmpty(datasource);
 
   @override
   double? get paddingTop => super.paddingTop ?? defaultPadding;
@@ -192,10 +189,10 @@ class TableModel extends BoxModel implements IForm
   bool get filterBar => _filterBar?.get() ?? false;
   
   // current row selected
-  TableRowModel? _rowSelected;
+  TableRowModel? selectedRow;
 
   // current column selected
-  TableRowCellModel? _cellSelected;
+  TableRowCellModel? selectedCell;
 
   // data map from the row that is currently selected
   ListObservable? _selected;
@@ -342,8 +339,8 @@ class TableModel extends BoxModel implements IForm
     filter = Xml.get(node: xml, tag: 'filter');
     filterBar = Xml.get(node: xml, tag: 'filterbar');
 
-    // build header
-    header = findChildOfExactType(TableHeaderModel).cast<TableHeaderModel>();
+    // set header
+    header = findChildOfExactType(TableHeaderModel);
 
     // build initial rows
     _setInitialRows();
@@ -357,29 +354,23 @@ class TableModel extends BoxModel implements IForm
     // iterate through all rows
     for (var row in rows)
     {
-      var rowIdx = rows.indexOf(row);
+      var isFirstRow = rows.first == row;
 
       // first row?
       // set header as simple
-      if (rowIdx == 0)
+      if (isFirstRow)
       {
         // iterate through all row cells
         for (var cell in row.cells)
         {
-          // get the corresponding column
           var cellIdx = row.cells.indexOf(cell);
-          var column = header != null && cellIdx < header!.cells.length ? header!.cells[cellIdx] : null;
-
-          // set isSimple based on row cell
-          if (column != null)
-          {
-            column.isSimple = (cell.children?.isEmpty ?? true);
-          }
+          var column  = header != null && cellIdx < header!.cells.length ? header!.cells[cellIdx] : null;
+          column?.usesRenderer = TableRowCellModel.usesRenderer(cell);
         }
       }
 
       // create the row prototype
-      if (hasDataSource && rowIdx == 0)
+      if (isFirstRow && hasDataSource)
       {
         // create the row prototype
         this.row = WidgetModel.prototypeOf(row.element);
@@ -394,7 +385,7 @@ class TableModel extends BoxModel implements IForm
       // add the row to the list
       else
       {
-        this.rows[rowIdx] = row;
+        this.rows[this.rows.length] = row;
       }
     }
   }
@@ -658,7 +649,7 @@ class TableModel extends BoxModel implements IForm
   Future<bool> onChangeHandler(int rowIdx, int colIdx, dynamic value, dynamic oldValue) async
   {
     bool ok = true;
-    var data = getDataRow(rowIdx);
+    var data = getData(rowIdx);
     var col  = header?.cell(colIdx);
     var fld  = col?.field;
 
@@ -675,46 +666,41 @@ class TableModel extends BoxModel implements IForm
     }
     return ok;
   }
-  
-  void onSelect(TableRowModel row, TableRowCellModel cell)
+
+  void onSelect(int rowIdx, int cellIdx)
   {
-    // deselect - same row/cell clicked
-    if (_rowSelected == row && _cellSelected == cell)
-    {
-      // deselect row and cell
-      row.selected  = false;
-      cell.selected = false;
+    // set row selection
+    var row = getRowModel(rowIdx);
+    if (row != selectedRow) selectedRow?.selected = false;
+    row?.selected = true;
+    selectedRow = row;
 
-      // clear current selected row and cell
-      _rowSelected  = null;
-      _cellSelected = null;
+    // set cell selection
+    var cell = getRowCellModel(rowIdx, cellIdx);
+    if (cell != selectedCell) selectedCell?.selected = false;
+    cell?.selected = true;
+    selectedCell = cell;
 
-      // clear data
-      selected = [];
-    }
+    // set selected
+    selected = getData(rowIdx) ?? [];
+  }
 
-    // select - different row and/or cell
-    else
-    {
-      // deselect current row and cell
-      if (_rowSelected  != row )  _rowSelected?.selected  = false;
-      if (_cellSelected != cell ) _cellSelected?.selected = false;
+  void onDeSelect()
+  {
+    // set row selection
+    selectedRow?.selected = false;
+    selectedRow = null;
 
-      // select row and cell
-      row.selected  = true;
-      cell.selected = true;
+    // set cell selection
+    selectedCell?.selected = false;
+    selectedCell = null;
 
-      // set current selected row and cell
-      _rowSelected  = row;
-      _cellSelected = cell;
-
-      // set data
-      selected = row.data;
-    }
+    // set selected
+    selected = [];
   }
 
   // returns the specified row in data
-  dynamic getDataRow(int rowIdx) => (rowIdx >= 0 && data is Data && rowIdx < data.length) ? data[rowIdx] : null;
+  dynamic getData(int rowIdx) => (rowIdx >= 0 && data is Data && rowIdx < data.length) ? data[rowIdx] : null;
 
   // returns the length of the dataset
   int getDataRowCount() => data is Data ? (data as Data).length : 0;

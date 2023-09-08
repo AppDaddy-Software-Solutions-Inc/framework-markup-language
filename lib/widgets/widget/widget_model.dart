@@ -1164,17 +1164,22 @@ class WidgetModel implements IDataSourceListener {
   }
 
   dynamic findChildOfExactType(Type T, {String? id}) {
-    if (children != null) {
-      return children!.firstWhereOrNull(
-          (child) => child.runtimeType == T && (child.id == (id ?? child.id)));
+    if (children != null)
+    {
+      var child = children!.firstWhereOrNull((child) => child.runtimeType == (T) && (child.id == (id ?? child.id)));
+      return child;
     }
+    return null;
   }
 
   List<dynamic> findChildrenOfExactType(Type T, {String? id}) {
     List<dynamic> list = [];
-    if (children != null) {
-      for (WidgetModel child in children!) {
-        if ((child.runtimeType == (T)) && (child.id == (id ?? child.id))) {
+    if (children != null)
+    {
+      for (WidgetModel child in children!)
+      {
+        if ((child.runtimeType == (T)) && (child.id == (id ?? child.id)))
+        {
           list.add(child);
         }
       }

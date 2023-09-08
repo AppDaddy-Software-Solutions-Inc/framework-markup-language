@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:collection/collection.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/table/table_row_model.dart';
@@ -108,7 +109,27 @@ class TableRowCellModel extends BoxModel
     }
   }
 
-  void onSelect() => row?.onSelect(this);
+  static bool usesRenderer(TableRowCellModel cell)
+  {
+    // no children
+    if (cell.children?.isEmpty ?? true) return false;
+
+    // multiple children
+    if (cell.children!.length > 1) return true;
+
+    // only child is not a text model
+    if (cell.children!.first is! TextModel) return true;
+
+    var xml = cell.children!.first.element!;
+
+    // text model has attributes other than text="" or label=""
+    if (xml.attributes.firstWhereOrNull((a) => a.name.local.toLowerCase() != "label" && a.name.local.toLowerCase() != "value") != null) return true;
+
+    // text model has elements other than <TEXT/> or <LABEL/>
+    if (xml.childElements.firstWhereOrNull((e) => e.nodeType == XmlNodeType.ELEMENT && e.name.local.toLowerCase() != "label" && e.name.local.toLowerCase() != "value") != null) return true;
+
+    return false;
+  }
 
   @override
   dispose()

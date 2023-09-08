@@ -55,11 +55,8 @@ class TableViewState extends WidgetState<TableView>
 
   final HashMap<TableRowCellModel, Widget> views = HashMap<TableRowCellModel, Widget>();
 
-  // holds a pointer to the last selected row
-  PlutoRow? lastSelectedRow;
-
-  // holds a pointer to the last selected cell
-  PlutoCell? lastSelectedCell;
+  // hold a pointer to the last selected cell;
+  PlutoCell? lastCell;
 
   @override
   void dispose()
@@ -314,9 +311,10 @@ class TableViewState extends WidgetState<TableView>
     var list = fetchedRows.toList();
 
     // set selected
-    if (list.contains(lastSelectedRow))
+    var lastRow = lastCell?.row;
+    if (list.contains(lastRow))
     {
-      stateManager?.setCurrentCell(lastSelectedCell, list.indexOf(lastSelectedRow!));
+      stateManager?.setCurrentCell(lastCell, list.indexOf(lastRow!));
     }
 
     return Future.value(PlutoInfinityScrollRowsResponse(isLast: isLast, rows: list));
@@ -378,9 +376,10 @@ class TableViewState extends WidgetState<TableView>
     var fetchedRows = tempList.getRange(max(0, start), min(tempList.length, end)).toList();
 
     // set selected
-    if (fetchedRows.contains(lastSelectedRow))
+    var lastRow = lastCell?.row;
+    if (fetchedRows.contains(lastRow))
     {
-      stateManager?.setCurrentCell(lastSelectedCell, fetchedRows.indexOf(lastSelectedRow!));
+      stateManager?.setCurrentCell(lastCell, fetchedRows.indexOf(lastRow!));
     }
 
     return Future.value(PlutoLazyPaginationResponse(totalPage: pages, rows: fetchedRows));
@@ -414,35 +413,32 @@ class TableViewState extends WidgetState<TableView>
 
       // we need this to force an update
       // of the selected data
-      //onSelectedHandler();
+      debounce?.cancel();
+      onSelectedHandler();
     });
   }
 
-  PlutoCell? selected;
-
-  // called directly when not simple grid
-  bool clickedOnce = false;
+  Timer? debounce;
   void onSelectedHandler()
   {
     if (stateManager == null) return;
+
+    // we get multiple onSelect calls
+    if (debounce?.isActive ?? false) return;
+    debounce = Timer(Duration(milliseconds: 250),() => null);
 
     // get row and column
     var row  = stateManager!.currentRow;
     var cell = stateManager!.currentCell;
 
-    // this prevents toggling the selection off
-    // on very first click
-    if (cell != null) clickedOnce = true;
-    if (!clickedOnce) return;
-
     // edit mode
     if (stateManager!.isEditing) return;
 
     // field is editable
-    bool editing = (cell != null && stateManager!.isEditableCell(cell));
+    bool editing = (cell != null && cell == lastCell && stateManager!.isEditableCell(cell));
 
     // set toggle state
-    Toggle toggle = cell == selected ? Toggle.off : Toggle.on;
+    Toggle toggle = cell == lastCell ? Toggle.off : Toggle.on;
     if (editing) toggle = Toggle.on;
 
     // manage toggle state
@@ -457,7 +453,7 @@ class TableViewState extends WidgetState<TableView>
         widget.model.onDeSelect();
 
         // clear selected
-        selected = null;
+        lastCell = null;
 
         break;
 
@@ -473,7 +469,7 @@ class TableViewState extends WidgetState<TableView>
         widget.model.onSelect(rowIdx, colIdx);
 
         // remember last selected
-        selected = cell;
+        lastCell = cell;
 
         break;
     }
@@ -495,6 +491,7 @@ class TableViewState extends WidgetState<TableView>
   // forces the lazy/page loaders to refire
   void refresh()
   {
+    // force a page reload
     stateManager?.eventManager?.addEvent(PlutoGridSetColumnFilterEvent(filterRows: []));
   }
 

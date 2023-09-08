@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:collection/collection.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/table/table_model.dart';
@@ -13,8 +14,12 @@ class TableHeaderModel extends BoxModel
   @override
   String? get layout => super.layout ?? "column";
 
-  // cells
+  // rendered cell models
   final List<TableHeaderCellModel> cells = [];
+
+  // dynamic cells
+  bool _isDynamic = false;
+  bool get isDynamic => _isDynamic;
 
   // cell by index
   TableHeaderCellModel? cell(int index) => index >= 0 && index < cells.length ? cells[index] : null;
@@ -164,17 +169,15 @@ class TableHeaderModel extends BoxModel
     filter     = Xml.get(node: xml, tag: 'filter');
 
     // get cells
-    List<TableHeaderCellModel> cells = findChildrenOfExactType(TableHeaderCellModel).cast<TableHeaderCellModel>();
-    for (TableHeaderCellModel model in cells)
-    {
-      this.cells.add(model);
-    }
+    cells.addAll(findChildrenOfExactType(TableHeaderCellModel).cast<TableHeaderCellModel>());
+
+    // has dynamic cells?
+    _isDynamic = cells.firstWhereOrNull((cell) => cell.isDynamic) != null;
   }
 
   @override
   dispose()
   {
-    // Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
     scope?.dispose();
   }

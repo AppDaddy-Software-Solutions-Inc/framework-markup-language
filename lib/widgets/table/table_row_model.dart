@@ -46,8 +46,6 @@ class TableRowModel extends BoxModel
   // cell by index
   TableRowCellModel? cell(int index) => index >= 0 && index < cells.length ? cells[index] : null;
 
-  late XmlElement cellprototype;
-
   // Editable Fields
   List<IFormField>? fields;
 
@@ -192,15 +190,11 @@ class TableRowModel extends BoxModel
     onclick     = Xml.get(node: xml, tag: 'onclick');
     postbrokers = Xml.attribute(node: xml, tag: 'postbroker');
 
-    // Get Cells
-    List<TableRowCellModel> models = findChildrenOfExactType(TableRowCellModel).cast<TableRowCellModel>();
-    for (TableRowCellModel model in models)
-    {
-      cells.add(model);
-    }
+    // get cells
+    cells.addAll(findChildrenOfExactType(TableRowCellModel).cast<TableRowCellModel>());
 
     // Initialize Form Fields
-    for (TableRowCellModel _ in cells)
+    for (var _ in cells)
     {
       List<IFormField> fields = findChildrenOfExactType(IFormField).cast<IFormField>();
       for (var field in fields)
@@ -211,12 +205,6 @@ class TableRowModel extends BoxModel
         // Register Listener
         if (field.dirtyObservable != null) field.dirtyObservable!.registerListener(onDirtyListener);
       }
-    }
-
-    // Prototype?
-    if ((cells.length == 1) && (cells[0].element!.toXmlString().contains("{field}")))
-    {
-      cellprototype = cells[0].element!.copy();
     }
   }
 

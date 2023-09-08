@@ -18,6 +18,12 @@ class TableHeaderCellModel extends BoxModel
   // header
   TableHeaderModel? get hdr => parent is TableHeaderModel ? parent as TableHeaderModel : null;
 
+  // cell is dynamic?
+  bool get isDynamic => (element?.toString().contains("{field}") ?? false) && (hdr?.table?.hasDataSource ?? false);
+
+  // row has no body
+  bool isSimple = false;
+
   @override
   double? get paddingTop => super.paddingTop ?? hdr?.paddingTop;
 
@@ -236,13 +242,13 @@ class TableHeaderCellModel extends BoxModel
     type = Xml.get(node:xml, tag: 'type');
 
     // context menu
-    menu       = Xml.get(node:xml, tag: 'menu'); 
+    menu       = Xml.get(node:xml, tag: 'menu');
     sortable   = Xml.get(node:xml, tag: 'sortable');
     draggable  = Xml.get(node:xml, tag: 'draggable');
     resizeable = Xml.get(node:xml, tag: 'resizeable');
     editable   = Xml.get(node:xml, tag: 'editable');
     filter     = Xml.get(node:xml, tag: 'filter');
-    onChange   = Xml.get(node: xml, tag: 'onchange');
+    onChange   = Xml.get(node:xml, tag: 'onchange');
   }
 
   Future<bool> onChangeHandler() async

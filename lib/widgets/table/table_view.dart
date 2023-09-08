@@ -35,7 +35,7 @@ class TableViewState extends WidgetState<TableView>
   Widget? busy;
 
   /// [PlutoGridStateManager] has many methods and properties to dynamically manipulate the grid.
-  /// You can manipulate the grid dynamically at runtime by passing this through the [onLoaded] callback.
+  /// You can manipulate the grid dynamically at runtime by passing this through the [onLoadedHandler] callback.
   PlutoGridStateManager? stateManager;
 
   // pluto grid
@@ -60,22 +60,10 @@ class TableViewState extends WidgetState<TableView>
   PlutoCell? lastSelectedCell;
 
   @override
-  void initState()
-  {
-    super.initState();
-
-    // build the columns
-    _buildColumns();
-  }
-
-  @override
   void dispose()
   {
     super.dispose();
-    if (widget.model.isSimpleGrid)
-    {
-      stateManager?.removeListener(onSelectHandler);
-    }
+    stateManager?.removeListener(onSelectHandler);
   }
 
   closeKeyboard() async
@@ -151,13 +139,18 @@ class TableViewState extends WidgetState<TableView>
       Map<String, PlutoCell> cells = {};
 
       // get row model
-      int colIdx = 0;
       for (var column in columns)
       {
         dynamic value;
 
+        // get column index
+        var colIdx = map.containsKey(column) ? map[column]!.index : -1;
+
+        // get column model
+        var model = widget.model.header?.cell(colIdx);
+
         // simple grid
-        if (widget.model.isSimpleGrid)
+        if (model?.isSimple ?? false)
         {
           value = Data.readValue(data, column.field) ?? "";
         }
@@ -392,13 +385,13 @@ class TableViewState extends WidgetState<TableView>
   }
 
   // called when grid is loaded
-  void onLoaded(PlutoGridOnLoadedEvent event)
+  void onLoadedHandler(PlutoGridOnLoadedEvent event)
   {
     stateManager = event.stateManager;
 
     // handles changes in selection state
     // necessary when edit mode is enabled
-    if (widget.model.isSimpleGrid)
+    if (widget.model.isSimple)
     {
       stateManager?.removeListener(onSelectHandler);
       stateManager?.addListener(onSelectHandler);
@@ -413,7 +406,7 @@ class TableViewState extends WidgetState<TableView>
 
   // called when a field changes via edit.
   // only applies to simple grid
-  void onChanged(final PlutoGridOnChangedEvent event) async
+  void onChangedHandler(final PlutoGridOnChangedEvent event) async
   {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp)
     {
@@ -429,18 +422,18 @@ class TableViewState extends WidgetState<TableView>
   void onSelectHandler()
   {
     var event = PlutoGridOnSelectedEvent(row: stateManager?.currentRow, cell: stateManager?.currentCell, rowIdx: stateManager?.currentRowIdx, selectedRows: stateManager?.currentSelectingRows);
-    onSelected(event);
+    onSelectedHandler(event);
   }
 
   // called directly when not simple grid
-  void onSelected(PlutoGridOnSelectedEvent event)
+  void onSelectedHandler(PlutoGridOnSelectedEvent event)
   {
     // get row and column
     var row  = event.row;
     var cell = event.cell;
 
     // simple grid
-    if (widget.model.isSimpleGrid)
+    if (widget.model.isSimple)
     {
       var rowIdx = -1;
       if (row != null) rowIdx = rows.indexOf(row);
@@ -484,9 +477,16 @@ class TableViewState extends WidgetState<TableView>
   }
 
   // called when a field sort operation happens
-  void onSorted(PlutoGridOnSortedEvent event) async
+  void onSortedHandler(PlutoGridOnSortedEvent event) async
   {
     views.clear();
+  }
+
+  void rebuild()
+  {
+    grid = null;
+    rows.clear();
+    super.onModelChange(widget.model);
   }
 
   // forces the lazy/page loaders to refire
@@ -672,7 +672,7 @@ class TableViewState extends WidgetState<TableView>
   PlutoGridConfiguration _buildConfig()
   {
     var colHeight    = widget.model.header?.height ?? PlutoGridSettings.rowHeight;
-    var rowHeight    = widget.model.getRowModel(0)?.height ?? widget.model.getEmptyRowModel()?.height ?? colHeight;
+    var rowHeight    = widget.model.getRowModel(0)?.height ?? colHeight;
     var borderRadius = BorderRadius.circular(widget.model.radiusTopRight);
     var borderColor  = widget.model.bordercolor ?? Color(0xFFDDE2EB);
     var textStyle    = TextStyle(fontSize: widget.model.textSize, color: widget.model.textColor);
@@ -706,32 +706,39 @@ class TableViewState extends WidgetState<TableView>
     columns.clear();
     map.clear();
 
-    List<String> fields = [];
+    if (widget.model.header == null) return;
 
-    for (var model in widget.model.header!.cells)
+    List<String> fields = [];
+    for (var cell in widget.model.header!.cells)
     {
       var height = widget.model.header?.height ?? PlutoGridSettings.rowHeight;
-      var header = WidgetSpan(child: SizedBox(height: height, child:BoxView(model)));
-      var title  = model.title ?? model.field ?? "Column ${model.index}";
+      var header = WidgetSpan(child: SizedBox(height: height, child:BoxView(cell)));
+      var title  = cell.title ?? cell.field ?? "Column ${cell.index}";
 
       // field names must be unique across columns
-      var field  = model.field ?? model.title ?? title;
+      var field  = cell.field ?? cell.title ?? title;
       int i = 1;
-      while (fields.contains(field)) field = "$field-${i++}";
+      while (fields.contains(field))
+      {
+        field = "$field-${i++}";
+      }
       fields.add(field);
+
+      // simple column?
+      var simple = cell.isSimple;
 
       // cell builder - for performance reasons, tables without defined
       // table rows can be rendered much quicker
-      var builder = widget.model.isSimpleGrid ? null : (rendererContext) => cellBuilder(rendererContext);
+      var builder = simple ? null : (rendererContext) => cellBuilder(rendererContext);
 
       // cell is editable
-      var editable = widget.model.isSimpleGrid && model.editable;
+      var editable = simple && cell.editable;
 
       // cell is resizeable
-      var resizeable = model.resizeable;
+      var resizeable = cell.resizeable;
 
       // show context menu?
-      var showMenu = model.menu;
+      var showMenu = cell.menu;
 
       // get cell alignment
       var alignment = _getAlignment();
@@ -742,10 +749,10 @@ class TableViewState extends WidgetState<TableView>
           sort: PlutoColumnSort.none,
           titleSpan: header,
           field: field,
-          type: getColumnType(model),
+          type: getColumnType(cell),
           textAlign: alignment,
-          enableSorting: model.sortable,
-          enableFilterMenuItem: model.filter,
+          enableSorting: cell.sortable,
+          enableFilterMenuItem: cell.filter,
           enableEditingMode: editable,
           enableAutoEditing: false,
           enableContextMenu: showMenu,
@@ -756,7 +763,7 @@ class TableViewState extends WidgetState<TableView>
           renderer: builder);
 
       // add to the column list
-      map[column] = model;
+      map[column] = cell;
 
       // add to columns
       columns.add(column);
@@ -769,13 +776,22 @@ class TableViewState extends WidgetState<TableView>
     // build style
     if (grid == null)
     {
+      // build the columns
+      _buildColumns();
+
       var config = _buildConfig();
 
-      // build the content loader
-      var loader = widget.model.pageSize > 0 ?  _pageLoader : _lazyLoader;
-      var mode   = widget.model.isSimpleGrid ? PlutoGridMode.normal : PlutoGridMode.selectWithOneTap;
-      var change = widget.model.isSimpleGrid ? onChanged : null;
-      var select = widget.model.isSimpleGrid ? null : onSelected;
+      bool simple = widget.model.isSimple;
+
+      // grid mode
+      var mode = simple ? PlutoGridMode.normal : PlutoGridMode.selectWithOneTap;
+
+      // event handlers
+      var onPageLoad = widget.model.pageSize > 0 ?  _pageLoader : _lazyLoader;
+      var onChanged  = simple ? onChangedHandler : null;
+      var onSelected = simple ? null : onSelectedHandler;
+      var onLoaded   = onLoadedHandler;
+      var onSorted   = onSortedHandler;
 
       // build the grid
       grid = PlutoGrid(key: GlobalKey(),
@@ -783,11 +799,11 @@ class TableViewState extends WidgetState<TableView>
           columns: columns,
           rows: [],
           mode: mode,
-          onSelected: select,
+          onSelected: onSelected,
           onLoaded: onLoaded,
           onSorted: onSorted,
-          onChanged: change,
-          createFooter: loader);
+          onChanged: onChanged,
+          createFooter: onPageLoad);
     }
 
     return grid!;

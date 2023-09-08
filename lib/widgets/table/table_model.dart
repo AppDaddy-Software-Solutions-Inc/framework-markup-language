@@ -21,11 +21,25 @@ import 'package:fml/helper/common_helpers.dart';
 
 class TableModel extends BoxModel implements IForm
 {
+  // holds header
+  TableHeaderModel? header;
+
+  // holds first row
+  XmlElement? row;
+
+  // holds list of rows
+  final HashMap<int, TableRowModel> rows = HashMap<int, TableRowModel>();
+
   final double defaultPadding = 4;
 
-  // data grids are grids that do not define a complex row/cell schema
-  bool _isSimple = false;
-  bool get isSimpleGrid => _isSimple;
+  // table is dynamically built
+  //bool isSimple = true;
+
+  // dynamically generated headers
+  bool get hasDynamicHeaders => header?.isDynamic ?? false;
+
+  // table has a data source
+  bool get hasDataSource => datasources?.isNotEmpty ?? false;
 
   @override
   double? get paddingTop => super.paddingTop ?? defaultPadding;
@@ -200,15 +214,6 @@ class TableModel extends BoxModel implements IForm
   }
   dynamic get selected => _selected?.get();
 
-  // prototype
-  XmlElement? prototypeHeaderCell;
-  XmlElement? prototypeRowCell;
-  XmlElement? prototypeRow;
-
-  TableHeaderModel? header;
-
-  final HashMap<int, TableRowModel> rows = HashMap<int, TableRowModel>();
-
   // onChange - only used for simple data grid
   StringObservable? _onChange;
   set onChange(dynamic v)
@@ -337,57 +342,89 @@ class TableModel extends BoxModel implements IForm
     filter = Xml.get(node: xml, tag: 'filter');
     filterBar = Xml.get(node: xml, tag: 'filterbar');
 
-    // Get Table Header
-    List<TableHeaderModel> headers = findChildrenOfExactType(TableHeaderModel).cast<TableHeaderModel>();
-    if (headers.isNotEmpty)
-    {
-      header = headers.first;
-      if (header!.cells.length == 1)
-      {
-        prototypeHeaderCell = header!.cells.first.element;
-      }
-    }
+    // build header
+    header = findChildOfExactType(TableHeaderModel).cast<TableHeaderModel>();
 
-    // dynamic?
-    List<TableRowModel> rows = findChildrenOfExactType(TableRowModel).cast<TableRowModel>();
-    if (rows.isNotEmpty)
-    {
-      prototypeRow = WidgetModel.prototypeOf(rows.first.element);
-      if (rows.first.cells.length == 1)
-      {
-        prototypeRowCell = rows.first.cells.first.element;
-        _isSimple = true;
-      }
-    }
+    // build initial rows
+    _setInitialRows();
   }
 
-  TableRowModel? getEmptyRowModel()
+  void _setInitialRows()
   {
-    // build model
-    TableRowModel? model = TableRowModel.fromXml(this, prototypeRow, data: null);
-    if (model?.cells != null)
-    {for (var cell in model!.cells)
+    // get all child rows
+    List<TableRowModel> rows = findChildrenOfExactType(TableRowModel).cast<TableRowModel>();
+
+    // iterate through all rows
+    for (var row in rows)
     {
-      cell.visible = false;
-    }}
-    return model;
+      var rowIdx = rows.indexOf(row);
+
+      // first row?
+      // set header as simple
+      if (rowIdx == 0)
+      {
+        // iterate through all row cells
+        for (var cell in row.cells)
+        {
+          // get the corresponding column
+          var cellIdx = row.cells.indexOf(cell);
+          var column = header != null && cellIdx < header!.cells.length ? header!.cells[cellIdx] : null;
+
+          // set isSimple based on row cell
+          if (column != null)
+          {
+            column.isSimple = (cell.children?.isEmpty ?? true);
+          }
+        }
+      }
+
+      // create the row prototype
+      if (hasDataSource && rowIdx == 0)
+      {
+        // create the row prototype
+        this.row = WidgetModel.prototypeOf(row.element);
+
+        // dispose of the row
+        row.dispose();
+
+        // remove it from the child list
+        children?.remove(row);
+      }
+
+      // add the row to the list
+      else
+      {
+        this.rows[rowIdx] = row;
+      }
+    }
   }
 
   TableRowModel? getRowModel(int index)
   {
     // model exists?
-    if (data == null) return null;
-    if (data.length < (index + 1)) return null;
     if (rows.containsKey(index)) return rows[index];
-    if (index.isNegative || data.length < index) return null;
 
-    // build row model
-    TableRowModel? model = TableRowModel.fromXml(this, prototypeRow, data: data[index]);
+    // prototype exists?
+    if (row == null) return null;
 
-    // Register Listener to Dirty Field
-    if (model?.dirtyObservable != null) model?.dirtyObservable!.registerListener(onDirtyListener);
+    // get data
+    var data = (index >= 0 && this.data is Data && index < (this.data as Data).length) ? this.data[index] : null;
+    if (data == null) return null;
 
-    if (model != null) rows[index] = model;
+    // build the row model
+    TableRowModel? model = TableRowModel.fromXml(this, row, data: data);
+
+    // register a listener to dirty field
+    if (model?.dirtyObservable != null)
+    {
+      model?.dirtyObservable!.registerListener(onDirtyListener);
+    }
+
+    // add it to the list of rows
+    if (model != null)
+    {
+      rows[index] = model;
+    }
 
     return model;
   }
@@ -418,7 +455,7 @@ class TableModel extends BoxModel implements IForm
     var view = findListenerOfExactType(TableViewState);
     if (view is TableViewState)
     {
-      view.refresh();
+      hasDynamicHeaders ? view.rebuild() : view.refresh();
     }
 
     return true;
@@ -508,61 +545,114 @@ class TableModel extends BoxModel implements IForm
   @override
   Future<bool> save() async => true;
 
-  Future<void> _buildDynamic(Data? data) async
+  void _buildDynamicHeaders()
   {
-    // both header and row prototypes must be defined
-    if (prototypeHeaderCell == null || this.header == null) return;
+    // header has no dynamic fields?
+    if (header == null || !header!.isDynamic) return;
 
-    var header = this.header!;
-
-    // clear old header cells
-    for (var cell in header.cells)
+    // dispose of old header cells
+    for (var cell in header!.cells)
     {
       cell.dispose();
     }
-    header.cells.clear();
+    header!.cells.clear();
 
-    // build header prototype cells
-    if (data != null && data.isNotEmpty)
+    // build new headers
+    for (var model in header!.cells)
     {
-      var prototype = prototypeHeaderCell.toString();
-      data[0].forEach((key, value)
-      {
-        if (key != 'xml' && key != 'rownum')
-        {
-          // header cell
-          var xml   = prototype.replaceAll("{field}", key);
-          var model = TableHeaderCellModel.fromXmlString(header, xml) ?? TableHeaderCellModel(header, null);
-          header.cells.add(model);
-        }
-      });
-    }
+      // build the prototype xml
+      var prototype = model.element?.copy().toString();
 
-    // no prototype row
-    if (isSimpleGrid) return;
+      // build the model
+      if (prototype != null)
+      {
+        // dynamic header?
+        if (model.isDynamic)
+        {
+          if (data is Data && (data as Data).isNotEmpty)
+          {
+            (data as Data).first.keys.forEach((key)
+            {
+              if (key != 'xml' && key != 'rownum')
+              {
+                // header cell
+                var xml   = prototype.replaceAll("{field}", key);
+                var model = TableHeaderCellModel.fromXmlString(header!, xml) ?? TableHeaderCellModel(header!, null);
+                header!.cells.add(model);
+              }
+            });
+          }
+        }
+
+        // static header
+        else
+        {
+          var model = TableHeaderCellModel.fromXmlString(header!, prototype) ?? TableHeaderCellModel(header!, null);
+          header!.cells.add(model);
+        }
+      }
+    }
+  }
+
+  void _buildRowPrototype()
+  {
+    if (row == null) return;
 
     // clear prototype row cells
-    prototypeRow ??= XmlElement(XmlName("TR"));
-    prototypeRow!.children.clear();
+    var tr = row!.copy();
+
+    var data = this.data is Data && (this.data as Data).isNotEmpty ? (this.data as Data).first : null;
 
     // build row prototype cells
-    if (data != null && data.isNotEmpty)
+    if (data != null)
     {
-      var prototype = prototypeRowCell.toString();
-      data[0].forEach((key, value)
+      // build row model
+      TableRowModel? model = TableRowModel.fromXml(this, row, data: data);
+      if (model == null) return;
+
+      // process each cell
+      for (var cell in model.cells)
       {
-        if (key != 'xml' && key != 'rownum')
+        // dynamic cell
+        if (cell.isDynamic())
         {
-          var xml  = prototype.replaceAll("{field}", "{data.$key}");
-          var doc  = Xml.tryParse(xml);
-          var node = doc?.rootElement.copy() ?? XmlElement(XmlName("TD"));
-          prototypeRow!.children.add(node);
+          var td = cell.element?.toString();
+          if (data is Map)
+          {
+            data.forEach((key, value)
+            {
+              if (key != 'xml' && key != 'rownum')
+              {
+                var xml  = td?.replaceAll("{field}", "{data.$key}");
+                var doc  = Xml.tryParse(xml);
+                var node = doc?.rootElement.copy() ?? XmlElement(XmlName("TD"));
+                tr.children.add(node);
+              }
+            });
+          }
         }
-      });
+
+        // static cell
+        else
+        {
+          var e = cell.element?.copy();
+          if (e != null) tr.children.add(e);
+        }
+      }
     }
 
     // apply prototype conversions
-    prototypeRow = WidgetModel.prototypeOf(prototypeRow);
+    // and set the main row prototype
+    row = WidgetModel.prototypeOf(tr);
+  }
+
+  Future<void> _buildDynamic(Data? data) async
+  {
+    // build dynamic headers
+    _buildDynamicHeaders();
+
+    // build row model prototype
+    _buildRowPrototype();
   }
 
   Future<bool> onChangeHandler(int rowIdx, int colIdx, dynamic value, dynamic oldValue) async

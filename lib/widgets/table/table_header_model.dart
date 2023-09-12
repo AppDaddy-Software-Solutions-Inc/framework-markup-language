@@ -18,8 +18,8 @@ class TableHeaderModel extends BoxModel
   final List<TableHeaderCellModel> cells = [];
 
   // dynamic cells
-  bool _isDynamic = false;
-  bool get isDynamic => _isDynamic;
+  bool get isDynamic => prototypes.isNotEmpty;
+  List<XmlElement> prototypes = [];
 
   // cell by index
   TableHeaderCellModel? cell(int index) => index >= 0 && index < cells.length ? cells[index] : null;
@@ -168,17 +168,44 @@ class TableHeaderModel extends BoxModel
     editable   = Xml.get(node: xml, tag: 'editable');
     filter     = Xml.get(node: xml, tag: 'filter');
 
-    // get cells
+    // get header cells
     cells.addAll(findChildrenOfExactType(TableHeaderCellModel).cast<TableHeaderCellModel>());
 
-    // has dynamic cells?
-    _isDynamic = cells.firstWhereOrNull((cell) => cell.isDynamic) != null;
+    // remove cells from child list
+    removeChildrenOfExactType(TableHeaderCellModel);
+
+    // build dynamic prototypes
+    _buildDynamicPrototypes();
+  }
+
+  void _buildDynamicPrototypes()
+  {
+    bool hasDynamicCells = cells.firstWhereOrNull((cell) => cell.isDynamic) != null;
+    if (hasDynamicCells)
+    {
+      for (var cell in cells)
+      {
+        var e = cell.element!.copy();
+        if (cell.isDynamic)
+        {
+          e.attributes.add(XmlAttribute(XmlName("dynamic"), ""));
+        }
+        prototypes.add(e);
+      }
+    }
   }
 
   @override
   dispose()
   {
     super.dispose();
+
+    // dispose of cells
+    for (var cell in cells)
+    {
+      cell.dispose();
+    }
+
     scope?.dispose();
   }
 }

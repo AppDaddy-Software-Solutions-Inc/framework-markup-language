@@ -425,7 +425,7 @@ class TableViewState extends WidgetState<TableView>
 
     // we get multiple onSelect calls
     if (debounce?.isActive ?? false) return;
-    debounce = Timer(Duration(milliseconds: 250),() => null);
+    debounce = Timer(Duration(milliseconds: 250),(){});
 
     // get row and column
     var row  = stateManager!.currentRow;

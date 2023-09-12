@@ -24,8 +24,8 @@ class TableModel extends BoxModel implements IForm
   // holds header
   TableHeaderModel? header;
 
-  // holds first row
-  XmlElement? row;
+  // holds first row prototype
+  XmlElement? prototype;
 
   // holds list of rows
   final HashMap<int, TableRowModel> rows = HashMap<int, TableRowModel>();
@@ -360,7 +360,7 @@ class TableModel extends BoxModel implements IForm
       // set header as simple
       if (isFirstRow)
       {
-        // iterate through all row cells
+        // set usesRenderer
         for (var cell in row.cells)
         {
           var cellIdx = row.cells.indexOf(cell);
@@ -373,7 +373,7 @@ class TableModel extends BoxModel implements IForm
       if (isFirstRow && hasDataSource)
       {
         // create the row prototype
-        this.row = WidgetModel.prototypeOf(row.element);
+        prototype = WidgetModel.prototypeOf(row.element);
 
         // dispose of the row
         row.dispose();
@@ -396,14 +396,14 @@ class TableModel extends BoxModel implements IForm
     if (rows.containsKey(index)) return rows[index];
 
     // prototype exists?
-    if (row == null) return null;
+    if (prototype == null) return null;
 
     // get data
     var data = (index >= 0 && this.data is Data && index < (this.data as Data).length) ? this.data[index] : null;
     if (data == null) return null;
 
     // build the row model
-    TableRowModel? model = TableRowModel.fromXml(this, row, data: data);
+    TableRowModel? model = TableRowModel.fromXml(this, prototype, data: data);
 
     // register a listener to dirty field
     if (model?.dirtyObservable != null)
@@ -536,114 +536,121 @@ class TableModel extends BoxModel implements IForm
   @override
   Future<bool> save() async => true;
 
-  void _buildDynamicHeaders()
+  void _buildDynamicHeaders(Data? data)
   {
     // header has no dynamic fields?
     if (header == null || !header!.isDynamic) return;
 
-    // dispose of old header cells
+    // cleanup
     for (var cell in header!.cells)
     {
       cell.dispose();
     }
     header!.cells.clear();
 
-    // build new headers
-    for (var model in header!.cells)
+    // build new header cells
+    for (var prototype in header!.prototypes)
     {
-      // build the prototype xml
-      var prototype = model.element?.copy().toString();
-
-      // build the model
-      if (prototype != null)
+      // build xml
+      bool isDynamic = Xml.hasAttribute(node: prototype, tag: "dynamic");
+      if (isDynamic)
       {
-        // dynamic header?
-        if (model.isDynamic)
+        bool hasData = (data?.isNotEmpty ?? false) && (data?.first is Map);
+        if (hasData)
         {
-          if (data is Data && (data as Data).isNotEmpty)
+          // replace wildcards
+          var keys = (data!.first as Map).keys.where((key) => key != 'xml' && key != 'rownum');
+          for (var key in keys)
           {
-            (data as Data).first.keys.forEach((key)
-            {
-              if (key != 'xml' && key != 'rownum')
-              {
-                // header cell
-                var xml   = prototype.replaceAll("{field}", key);
-                var model = TableHeaderCellModel.fromXmlString(header!, xml) ?? TableHeaderCellModel(header!, null);
-                header!.cells.add(model);
-              }
-            });
+            var xml = prototype.toString().replaceAll("{field}", key).replaceAll("{*}", key);
+
+            // build the cell
+            var model = TableHeaderCellModel.fromXmlString(header!, xml) ?? TableHeaderCellModel(header!, null);
+            header!.cells.add(model);
           }
         }
+      }
 
-        // static header
-        else
-        {
-          var model = TableHeaderCellModel.fromXmlString(header!, prototype) ?? TableHeaderCellModel(header!, null);
-          header!.cells.add(model);
-        }
+      // static header
+      else
+      {
+        var model = TableHeaderCellModel.fromXml(header!, prototype) ?? TableHeaderCellModel(header!, null);
+        header!.cells.add(model);
       }
     }
   }
 
-  void _buildRowPrototype()
+  void _buildRowPrototype(Data? data)
   {
-    if (row == null) return;
+    if (prototype == null) return;
 
-    // clear prototype row cells
-    var tr = row!.copy();
-
-    var data = this.data is Data && (this.data as Data).isNotEmpty ? (this.data as Data).first : null;
+    // create new row with no cell elements
+    var tr = prototype!.copy();
+    tr.children.clear();
 
     // build row prototype cells
-    if (data != null)
+    bool hasData = (data?.isNotEmpty ?? false);
+    if (hasData)
     {
       // build row model
-      TableRowModel? model = TableRowModel.fromXml(this, row, data: data);
+      TableRowModel? model = TableRowModel.fromXml(this, prototype, data: data!.first);
       if (model == null) return;
 
       // process each cell
+      int cellIdx = 0;
       for (var cell in model.cells)
       {
+        var td = cell.element?.toString() ?? XmlElement(XmlName("TD")).toString();
+
         // dynamic cell
-        if (cell.isDynamic())
+        bool isDynamic = td.contains("{field}") || td.contains("{*}");
+        if (isDynamic)
         {
-          var td = cell.element?.toString();
-          if (data is Map)
+          var map = data.first is Map ? data.first as Map : null;
+
+          // replace wildcards
+          var keys = map?.keys.where((key) => key != 'xml' && key != 'rownum') ?? [];
+          for (var key in keys)
           {
-            data.forEach((key, value)
-            {
-              if (key != 'xml' && key != 'rownum')
-              {
-                var xml  = td?.replaceAll("{field}", "{data.$key}");
-                var doc  = Xml.tryParse(xml);
-                var node = doc?.rootElement.copy() ?? XmlElement(XmlName("TD"));
-                tr.children.add(node);
-              }
-            });
+              var xml  = td.replaceAll("{field}", "{data.$key}").replaceAll("{*}", "{data.$key}");
+              var doc  = Xml.tryParse(xml);
+              var node = doc?.rootElement.copy() ?? XmlElement(XmlName("TD"));
+              tr.children.add(node);
+
+              var column  = header != null && cellIdx < header!.cells.length ? header!.cells[cellIdx] : null;
+              column?.usesRenderer = TableRowCellModel.usesRenderer(cell);
+              cellIdx++;
           }
         }
 
         // static cell
         else
         {
-          var e = cell.element?.copy();
-          if (e != null) tr.children.add(e);
+          var node = cell.element?.copy();
+          if (node != null) tr.children.add(node);
+
+          var column  = header != null && cellIdx < header!.cells.length ? header!.cells[cellIdx] : null;
+          column?.usesRenderer = TableRowCellModel.usesRenderer(cell);
+          cellIdx++;
         }
       }
+
+      // cleanup
+      model.dispose();
     }
 
     // apply prototype conversions
     // and set the main row prototype
-    row = WidgetModel.prototypeOf(tr);
+    prototype = WidgetModel.prototypeOf(tr);
   }
 
   Future<void> _buildDynamic(Data? data) async
   {
     // build dynamic headers
-    _buildDynamicHeaders();
+    _buildDynamicHeaders(data);
 
     // build row model prototype
-    _buildRowPrototype();
+    _buildRowPrototype(data);
   }
 
   Future<bool> onChangeHandler(int rowIdx, int colIdx, dynamic value, dynamic oldValue) async

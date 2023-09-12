@@ -14,9 +14,6 @@ class TableRowCellModel extends BoxModel
   // row
   TableRowModel? get row => parent is TableRowModel ? parent as TableRowModel : null;
 
-  // cell is dynamic?
-  bool isDynamic() => (element?.toString().contains("{field}") ?? false) && (row?.table?.hasDataSource ?? false);
-
   @override
   double? get paddingTop => super.paddingTop ?? row?.paddingTop;
 

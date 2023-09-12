@@ -19,7 +19,7 @@ class TableHeaderCellModel extends BoxModel
   TableHeaderModel? get hdr => parent is TableHeaderModel ? parent as TableHeaderModel : null;
 
   // cell is dynamic?
-  bool get isDynamic => (element?.toString().contains("{field}") ?? false) && (hdr?.table?.hasDataSource ?? false);
+  bool get isDynamic => ((element?.toString().contains("{*}") ?? false) || (element?.toString().contains("{field}") ?? false)) && (hdr?.table?.hasDataSource ?? false);
 
   // column has a user defined layout
   bool usesRenderer = false;

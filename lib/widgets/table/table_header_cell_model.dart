@@ -42,6 +42,13 @@ class TableHeaderCellModel extends BoxModel
   @override
   String? get valign => super.valign ?? hdr?.valign;
 
+  @override
+  double? get width => null;
+  double? get widthOuter => super.width;
+
+  @override
+  double? get height => null;
+
   // column type
   StringObservable? _type;
   set type(dynamic v)

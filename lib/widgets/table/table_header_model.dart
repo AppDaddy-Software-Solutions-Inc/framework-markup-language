@@ -135,6 +135,21 @@ class TableHeaderModel extends BoxModel
   }
   bool get filter => _filter?.get() ?? table?.filter ?? false;
 
+  // page size - used for paging
+  StringObservable? _fit;
+  set fit(dynamic v)
+  {
+    if (_fit != null)
+    {
+      _fit!.set(v);
+    }
+    else if (v != null)
+    {
+      _fit = StringObservable(Binding.toKey(id, 'fit'), v, scope: scope, listener: onFitChange);
+    }
+  }
+  String? get fit => _fit?.get();
+
   TableHeaderModel(WidgetModel parent, String? id) : super(parent, id, scope: Scope(parent: parent.scope));
 
   static TableHeaderModel? fromXml(WidgetModel parent, XmlElement xml, {Map<dynamic, dynamic>? data})
@@ -167,6 +182,7 @@ class TableHeaderModel extends BoxModel
     resizeable = Xml.get(node: xml, tag: 'resizeable');
     editable   = Xml.get(node: xml, tag: 'editable');
     filter     = Xml.get(node: xml, tag: 'filter');
+    fit        = Xml.get(node: xml, tag: 'fit');
 
     // get header cells
     cells.addAll(findChildrenOfExactType(TableHeaderCellModel).cast<TableHeaderCellModel>());
@@ -194,6 +210,8 @@ class TableHeaderModel extends BoxModel
       }
     }
   }
+
+  void onFitChange(Observable observable) => table?.autosize(fit);
 
   @override
   dispose()

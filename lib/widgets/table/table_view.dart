@@ -394,6 +394,8 @@ class TableViewState extends WidgetState<TableView>
     stateManager?.removeListener(onSelectedHandler);
     stateManager?.addListener(onSelectedHandler);
 
+    stateManager?.activateColumnsAutoSize();
+
     // show filter bar
     if (widget.model.filterBar)
     {
@@ -510,6 +512,42 @@ class TableViewState extends WidgetState<TableView>
       serializedRow.add(column.formattedValueForDisplay(value));
     }
     return serializedRow;
+  }
+
+  void autosize(String? mode)
+  {
+    // format mode
+    mode = mode?.trim().toLowerCase();
+
+    switch (mode)
+    {
+      case "scale":
+        stateManager?.setColumnSizeConfig(PlutoGridColumnSizeConfig(autoSizeMode: PlutoAutoSizeMode.scale));
+        break;
+
+      case "equal":
+        stateManager?.setColumnSizeConfig(PlutoGridColumnSizeConfig(autoSizeMode: PlutoAutoSizeMode.equal));
+        break;
+
+      case "fit":
+      for (PlutoColumn column in columns)
+      {
+        stateManager?.autoFitColumn(context, column);
+      }
+      break;
+
+      case "none":
+      default:
+      stateManager?.setColumnSizeConfig(PlutoGridColumnSizeConfig(autoSizeMode: PlutoAutoSizeMode.none));
+      break;
+    }
+  }
+
+  // sets the page size
+  void setPageSize(int size)
+  {
+    if (size <= 0) return;
+    stateManager?.setPageSize(size);
   }
 
   Future<String?> exportToCSV() async
@@ -673,9 +711,16 @@ class TableViewState extends WidgetState<TableView>
   {
     var colHeight    = widget.model.header?.height ?? PlutoGridSettings.rowHeight;
     var rowHeight    = widget.model.getRowModel(0)?.height ?? colHeight;
+
     var borderRadius = BorderRadius.circular(widget.model.radiusTopRight);
     var borderColor  = widget.model.bordercolor ?? Color(0xFFDDE2EB);
+
     var textStyle    = TextStyle(fontSize: widget.model.textSize, color: widget.model.textColor);
+
+    // row colors
+    var rowColor     = widget.model.color ?? Colors.white;
+    var oddRowColor  = widget.model.color != null && widget.model.color2 != null ? widget.model.color : null;
+    var evenRowColor = widget.model.color != null && widget.model.color2 != null ? widget.model.color : null;
 
     // style
     var style = PlutoGridStyleConfig(
@@ -695,6 +740,14 @@ class TableViewState extends WidgetState<TableView>
       columnAscendingIcon: Icon(Icons.arrow_downward_rounded),
 
       columnDescendingIcon: Icon(Icons.arrow_upward_rounded),
+
+      rowColor: rowColor,
+
+      oddRowColor: oddRowColor,
+
+      evenRowColor: evenRowColor,
+
+      enableGridBorderShadow: widget.model.shadow,
     );
 
     // config
@@ -757,6 +810,8 @@ class TableViewState extends WidgetState<TableView>
           readOnly: !editable,
           titlePadding: EdgeInsets.all(0),
           cellPadding: EdgeInsets.all(0),
+          width: cell.widthOuter ?? PlutoGridSettings.columnWidth,
+          minWidth: PlutoGridSettings.minColumnWidth,
           renderer: builder);
 
       // add to the column list
@@ -768,8 +823,16 @@ class TableViewState extends WidgetState<TableView>
   }
 
   @override
-  Widget build(BuildContext context)
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints)
   {
+    // Check if widget is visible before wasting resources on building it
+    if (!widget.model.visible) return Offstage();
+
+    // set system sizing
+    onLayout(constraints);
+
     // build style
     if (grid == null)
     {
@@ -790,6 +853,12 @@ class TableViewState extends WidgetState<TableView>
           createFooter: widget.model.pageSize > 0 ?  _pageLoader : _lazyLoader);
     }
 
-    return grid!;
+    // apply constraints
+    var view = applyConstraints(grid!, widget.model.constraints);
+
+    // add margins around the entire widget
+    view = addMargins(view);
+
+    return view;
   }
 }

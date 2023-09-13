@@ -187,6 +187,21 @@ class TableModel extends BoxModel implements IForm
     }
   }
   bool get filterBar => _filterBar?.get() ?? false;
+
+  // display shadow
+  BooleanObservable? _shadow;
+  set shadow(dynamic v)
+  {
+    if (_shadow != null)
+    {
+      _shadow!.set(v);
+    }
+    else if (v != null)
+    {
+      _shadow = BooleanObservable(Binding.toKey(id, 'shadow'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get shadow => _shadow?.get() ?? false;
   
   // current row selected
   TableRowModel? selectedRow;
@@ -277,11 +292,11 @@ class TableModel extends BoxModel implements IForm
     }
     else if (v != null)
     {
-      _pageSize = IntegerObservable(Binding.toKey(id, 'pagesize'), v, scope: scope, listener: onPropertyChange);
+      _pageSize = IntegerObservable(Binding.toKey(id, 'pagesize'), v, scope: scope, listener: onPageSizeChange);
     }
   }
   int get pageSize => _pageSize?.get() ?? 0;
-
+  
   TableModel(WidgetModel parent, String? id) : super(parent, id)
   {
     // instantiate busy observable
@@ -318,6 +333,7 @@ class TableModel extends BoxModel implements IForm
     draggable  = Xml.get(node: xml, tag: 'draggable');
     resizeable = Xml.get(node: xml, tag: 'resizeable');
     editable   = Xml.get(node: xml, tag: 'editable');
+    shadow     = Xml.get(node: xml, tag: 'shadow');
 
     // used in simple grids
     textSize   = Xml.get(node: xml, tag: 'textSize') ?? Xml.get(node: xml, tag: 'fontSize');
@@ -486,6 +502,24 @@ class TableModel extends BoxModel implements IForm
             if (bytes != null) Platform.fileSaveAs(bytes, "${S.newId()}.pdf");
             break;
         }
+      }
+    }
+    catch(e)
+    {
+      print (e);
+    }
+    return true;
+  }
+
+  // export to excel
+  bool autosize(String? mode)
+  {
+    try
+    {
+      var view = findListenerOfExactType(TableViewState);
+      if (view is TableViewState)
+      {
+        view.autosize(mode);
       }
     }
     catch(e)
@@ -726,8 +760,32 @@ class TableModel extends BoxModel implements IForm
         var format = S.toStr(S.item(arguments, 0));
         await export(format);
         return true;
+
+      // export the data
+      case "autofit" :
+      case "autosize" :
+        var mode = S.toStr(S.item(arguments, 0));
+        autosize(mode);
+        return true;
     }
+    
     return super.execute(caller, propertyOrFunction, arguments);
+  }
+
+  void onPageSizeChange(Observable observable)
+  {
+    try
+    {
+      var view = findListenerOfExactType(TableViewState);
+      if (view is TableViewState)
+      {
+        view.setPageSize(pageSize);
+      }
+    }
+    catch(e)
+    {
+      print (e);
+    }
   }
 
   @override

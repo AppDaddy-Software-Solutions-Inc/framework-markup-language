@@ -32,6 +32,12 @@ class TableRowCellModel extends BoxModel
   @override
   String? get valign => super.valign ?? row?.valign;
 
+  @override
+  double? get width => null;
+
+  @override
+  double? get height => null;
+
   // Position in Row
   int? get index
   {

@@ -337,6 +337,7 @@ class BoxModel extends DecoratedWidgetModel
     bordercolor = Xml.get(node: xml, tag: 'bordercolor');
     borderwidth = Xml.get(node: xml, tag: 'borderwidth');
     border = Xml.get(node: xml, tag: 'border');
+
     elevation = Xml.get(node: xml, tag: 'elevation');
     shadowcolor = Xml.get(node: xml, tag: 'shadowcolor');
     shadowy = Xml.get(node: xml, tag: 'shadowy');

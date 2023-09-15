@@ -1,235 +1,81 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
-import 'dart:ui';
-import 'package:collection/collection.dart' show IterableExtension;
-import 'package:fml/event/manager.dart';
+import 'dart:collection';
+import 'dart:convert';
+import 'dart:math';
+import 'package:flutter/services.dart';
+import 'package:fml/data/data.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
-import 'package:fml/phrase.dart';
-import 'package:fml/event/event.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/alignment/alignment.dart';
+import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
+import 'package:fml/widgets/table/table_footer_cell_model.dart';
+import 'package:fml/widgets/table/table_header_cell_model.dart';
+import 'package:fml/widgets/table/table_header_group_model.dart';
+import 'package:fml/widgets/table/table_row_cell_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/table/table_model.dart';
-import 'package:fml/widgets/table/header/table_header_view.dart';
-import 'package:fml/widgets/table/header/cell/table_header_cell_model.dart';
-import 'package:fml/widgets/table/header/cell/table_header_cell_view.dart';
-import 'package:fml/widgets/table/row/table_row_model.dart';
-import 'package:fml/widgets/table/row/table_row_view.dart';
-import 'package:fml/widgets/table/row/cell/table_row_cell_view.dart';
-import 'package:fml/helper/measured.dart';
-import 'package:fml/widgets/scrollbar/scrollbar_view.dart';
-import 'package:fml/system.dart';
-import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
+import 'package:pluto_grid/pluto_grid.dart';
+import 'package:pluto_grid_export/pluto_grid_export.dart' as pluto_grid_export;
+import 'package:csv/csv.dart';
 
-class MyCustomScrollBehavior extends MaterialScrollBehavior {
-  @override
-  Widget buildScrollbar(
-      BuildContext context, Widget child, ScrollableDetails details) {
-    return child;
-  }
-}
+enum Toggle {on, off}
 
-class TableView extends StatefulWidget implements IWidgetView {
+class TableView extends StatefulWidget implements IWidgetView
+{
   @override
   final TableModel model;
   TableView(this.model) : super(key: ObjectKey(model));
 
   @override
-  State<TableView> createState() => _TableViewState();
+  State<TableView> createState() => TableViewState();
 }
 
-class _TableViewState extends WidgetState<TableView>
-    implements IEventScrolling {
+class TableViewState extends WidgetState<TableView>
+{
   Widget? busy;
-  Future<TableModel>? future;
-  bool startup = true;
 
-  ScrollController? hScroller;
-  ScrollController? vScroller;
+  // indicates if grid is paged or not
+  bool paged = false;
 
-  int visibleRows = 0;
+  /// [PlutoGridStateManager] has many methods and properties to dynamically manipulate the grid.
+  /// You can manipulate the grid dynamically at runtime by passing this through the [onLoadedHandler] callback.
+  PlutoGridStateManager? stateManager;
 
-  @override
-  void initState() {
-    super.initState();
+  // pluto grid
+  PlutoGrid? grid;
 
-    hScroller = ScrollController();
-    vScroller = ScrollController();
-  }
+  // list of Pluto Columns
+  final List<PlutoColumnGroup> groups = [];
 
-  @override
-  didChangeDependencies() {
-    // register event listeners
-    EventManager.of(widget.model)
-        ?.registerEventListener(EventTypes.scroll, onScroll);
-    EventManager.of(widget.model)
-        ?.registerEventListener(EventTypes.complete, onComplete);
-    EventManager.of(widget.model)
-        ?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
+  // list of Pluto Columns
+  final List<PlutoColumn> columns = [];
 
-    super.didChangeDependencies();
-  }
+  // list of Pluto Rows
+  final List<PlutoRow> rows = [];
 
-  @override
-  void didUpdateWidget(TableView oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if ((oldWidget.model != widget.model)) {
-      // remove old event listeners
-      EventManager.of(oldWidget.model)
-          ?.removeEventListener(EventTypes.scroll, onScroll);
-      EventManager.of(oldWidget.model)
-          ?.removeEventListener(EventTypes.complete, onComplete);
-      EventManager.of(oldWidget.model)
-          ?.removeEventListener(EventTypes.scrollto, onScrollTo);
+  // maps PlutoColumn -> TableHeaderModel
+  // this is necessary since PlutoColumns can be re-ordered
+  final HashMap<PlutoColumn, TableHeaderCellModel> map = HashMap<PlutoColumn, TableHeaderCellModel>();
 
-      // register new event listeners
-      EventManager.of(widget.model)
-          ?.registerEventListener(EventTypes.scroll, onScroll);
-      EventManager.of(widget.model)
-          ?.registerEventListener(EventTypes.complete, onComplete);
-      EventManager.of(widget.model)
-          ?.registerEventListener(EventTypes.scrollto, onScrollTo, priority: 0);
-    }
-  }
+  final HashMap<TableRowCellModel, Widget> views = HashMap<TableRowCellModel, Widget>();
 
-  @override
-  void dispose() {
-    // remove event listeners
-    EventManager.of(widget.model)
-        ?.removeEventListener(EventTypes.scroll, onScroll);
-    EventManager.of(widget.model)
-        ?.removeEventListener(EventTypes.complete, onComplete);
-    EventManager.of(widget.model)
-        ?.removeEventListener(EventTypes.scrollto, onScrollTo);
+  // hold a pointer to the last selected cell;
+  PlutoCell? _lastSelectedCell;
 
-    hScroller?.dispose();
-    vScroller?.dispose();
-
-    super.dispose();
-  }
-
-  closeKeyboard() async {
-    try {
-      FocusScope.of(context).unfocus();
-    } catch (e) {
-      Log().exception(e);
-    }
-  }
-
-  /// Takes an event (onscroll) and uses the id to scroll to that widget
-  onScrollTo(Event event) {
-    // BuildContext context;
-    event.handled = true;
-    if (event.parameters!.containsKey('id')) {
-      String? id = event.parameters!['id'];
-      var child = widget.model.findDescendantOfExactType(null, id: id);
-
-      // if there is an error with this, we need to check _controller.hasClients as it must not be false when using [ScrollPosition],such as [position], [offset], [animateTo], and [jumpTo],
-      if ((child != null) && (child.context != null)) {
-        Scrollable.ensureVisible(child.context,
-            duration: Duration(seconds: 1), alignment: 0.2);
-      }
-    }
-  }
-
-  Future<bool> onComplete(Event event) async
-  {
-    bool ok = true;
-
-    // Specific Complete?
-    if ((event.parameters != null) &&
-        (!S.isNullOrEmpty(event.parameters!['id'])) &&
-        (event.parameters!['id'] != widget.model.id)) return ok;
-
-    // Mark Event as Handled
-    event.handled = true;
-
-    // Force Close
-    await closeKeyboard();
-
-    // Confirm
-    //int response = await DialogService().show(type: DialogType.info, title: phrase.confirmTableComplete, buttons: [Text(phrase.yes, style: TextStyle(fontSize: 18, color: Colors.white)),Text(phrase.no, style: TextStyle(fontSize: 18, color: Colors.white))]);
-
-    ok = true;
-
-    // Row Level Event?
-    TableRowModel? row;
-    if (event.model != null)
-    {
-      row = event.model!.findAncestorOfExactType(TableRowModel);
-    }
-
-    // Complete the Table
-    if (ok)
-    {
-      if (row != null)
-      {
-        ok = await row.complete();
-      }
-      else
-      {
-        ok = await widget.model.complete();
-      }
-    }
-
-    // Fire OnComplete
-    if (ok)
-    {
-      if (row != null)
-      {
-        ok = await row.onComplete();
-      }
-      else
-      {
-        //ok = await widget.model.onComplete(context);
-      }
-    }
-
-    return ok;
-  }
-
-  @override
-  void onScroll(Event event) async
-  {
-    if (hScroller != null && vScroller != null)
-    {
-      scroll(event, hScroller, vScroller);
-    }
-    event.handled = true;
-  }
-
-  scroll(Event event, ScrollController? hScroller, ScrollController? vScroller) async
+  closeKeyboard() async
   {
     try
     {
-      if (event.parameters!.containsKey("direction") &&
-          event.parameters!.containsKey("pixels")) {
-        String? direction = event.parameters!["direction"];
-        double distance = double.parse(event.parameters!["pixels"]!);
-        if (direction != null) {
-          if (direction == 'left' || direction == 'right') {
-            double offset = hScroller!.offset;
-            double moveToPosition =
-                offset + (direction == 'left' ? -distance : distance);
-            hScroller.animateTo(moveToPosition,
-                duration: Duration(milliseconds: 300), curve: Curves.easeOut);
-          } else if (direction == 'up' || direction == 'down') {
-            double offset = vScroller!.offset;
-            double moveToPosition =
-                offset + (direction == 'up' ? -distance : distance);
-            vScroller.animateTo(moveToPosition,
-                duration: Duration(milliseconds: 300), curve: Curves.easeOut);
-          }
-        }
-      }
+      FocusScope.of(context).unfocus();
     }
-    catch (e)
+    catch(e)
     {
-      Log().error('onScroll Error: ');
-      Log().exception(e, caller: 'View');
+      Log().exception(e);
     }
   }
 
@@ -237,664 +83,946 @@ class _TableViewState extends WidgetState<TableView>
   @override
   onModelChange(WidgetModel model, {String? property, dynamic value})
   {
-    try
-    {
-      var b = Binding.fromString(property);
-      if (b?.property == 'busy') return;
-      if (mounted) setState(() {});
-    }
-    catch (e)
-    {
-      Log().exception(e, caller: ' onModelChange(WidgetModel model,{String? property, dynamic value})');
-    }
+    var b = Binding.fromString(property);
+    if (b?.property == 'busy') return;
+    super.onModelChange(model);
   }
 
-  onProxyHeaderSize(Size size, {dynamic data})
+  PlutoColumnType getColumnType(TableHeaderCellModel model)
   {
-    setState(()
+    var type = model.type?.toLowerCase().trim();
+    switch (type)
     {
-      widget.model.proxyheader = size;
-    });
+      case "number":
+      case "numeric":
+        return PlutoColumnType.number(format: "#", applyFormatOnInit: false);
+      case "money":
+      case "currency":
+        return PlutoColumnType.currency();
+      case "date":
+        return PlutoColumnType.date();
+      case "time":
+        return PlutoColumnType.time();
+      case "text":
+      case "string":
+      default:
+        return PlutoColumnType.text();
+    }
   }
 
-  onProxyRowSize(Size size, {dynamic data})
+  // build all rows
+  void buildAllRows() => buildOutRows(widget.model.getDataRowCount());
+
+  void buildOutRows(int length)
   {
-    setState(()
+    // build rows
+    while (rows.length < length)
     {
-      widget.model.proxyrow = size;
-    });
+      var row = buildRow(rows.length);
+      if (row == null) break;
+    }
   }
 
-  _setWidth(int index, double width)
+  PlutoRow? buildRow(int rowIdx)
   {
-    TableHeaderCellModel? cell = widget.model.header!.cells[index];
-    double? cellwidth = cell.width;
-    if (!widget.model.widths.containsKey(index))
-    {
-      widget.model.widths[index] = cellwidth ?? width;
-    }
-    if (width > widget.model.widths[index]!)
-    {
-      widget.model.widths[index] = cellwidth ?? width;
-    }
-  }
+    // row already created
+    if (rowIdx < rows.length) return rows[rowIdx];
 
-  onProxyHeaderCellSize(Size size, {dynamic data}) {
-    if (size.height > widget.model.heights['header']!) {
-      widget.model.heights['header'] = size.height;
-    }
-    if (data is int) {
-      double width = size.width;
-      if (!S.isNullOrEmpty(widget.model.header!.cells[data].sort)) {
-        width += 16;
+    PlutoRow? row;
+
+    // get the data row
+    dynamic data = widget.model.getData(rowIdx);
+
+    // create the row
+    if (data != null)
+    {
+      Map<String, PlutoCell> cells = {};
+
+      // get row model
+      for (var column in columns)
+      {
+        dynamic value;
+
+        // get column index
+        var colIdx = map.containsKey(column) ? map[column]!.index : -1;
+
+        // get column model
+        var model = widget.model.header?.cell(colIdx);
+
+        // simple grid
+        if (model?.usesRenderer ?? false)
+        {
+          var model = widget.model.getRowCellModel(rowIdx, colIdx);
+          value = model?.value;
+        }
+        else
+        {
+          value = Data.readValue(data, column.field) ?? "";
+        }
+
+        cells[column.field] = PlutoCell(value: value);
+        colIdx++;
       }
-      _setWidth(data, width);
+      row = PlutoRow(cells: cells, sortIdx: rowIdx);
+      rows.add(row);
+    }
+
+    return row;
+  }
+
+  onTap(PlutoCell cell, int rowIdx) async
+  {
+    stateManager?.setCurrentCell(cell, rowIdx);
+  }
+
+  Widget cellBuilder(PlutoColumnRendererContext context)
+  {
+    // get row and column indexes
+    var rowIdx = rows.indexOf(context.row);
+    var colIdx = map.containsKey(context.column) ? map[context.column]!.index : -1;
+
+    // not found
+    if (rowIdx.isNegative || colIdx.isNegative) return Text("");
+
+    // get cell model
+    TableRowCellModel? model = widget.model.getRowCellModel(rowIdx, colIdx);
+    if (model == null) return Text("");
+
+    // return the view
+    if (!views.containsKey(model))
+    {
+      // build the view
+      Widget view = RepaintBoundary(child: BoxView(model));
+
+      // cache the view
+      views[model] = view;
+    }
+
+    // we must wrap the cell in a listener to select the row on tap
+    // this isn't necessarily required if the cell doesn't have a gesture detector, onclick, etc
+    // without this, the onTap (select) is consumed by the child view
+    var cell = Listener(child: views[model],onPointerDown: (_) => onTap(context.cell, context.rowIdx));
+
+    return cell;
+  }
+
+  List<PlutoRow> applyFilters(List<PlutoRow> list)
+  {
+    if (stateManager != null)
+    {
+      final filterRows = stateManager!.filterRows;
+      final filterCols = stateManager!.refColumns;
+      final filter = FilterHelper.convertRowsToFilter(filterRows,filterCols);
+      if (filter != null) return list.where(filter).toList();
+    }
+    return list;
+  }
+
+  List<PlutoRow> applySort(List<PlutoRow> list)
+  {
+    if (stateManager != null)
+    {
+      PlutoColumn? column = stateManager?.getSortedColumn;
+      if (column != null)
+      {
+        list = [...list];
+        list.sort((a, b)
+        {
+          final sortA = column.sort.isAscending ? a : b;
+          final sortB = column.sort.isAscending ? b : a;
+          return column.type.compare(sortA.cells[column.field]!.valueForSorting, sortB.cells[column.field]!.valueForSorting);
+        });
+      }
+    }
+    return list;
+  }
+
+  Future<PlutoInfinityScrollRowsResponse> onLazyLoad(PlutoInfinityScrollRowsRequest request) async
+  {
+    // rows are filtered?
+    var filter = request.filterRows.isNotEmpty;
+
+    // rows are sorted?
+    var sort = request.sortColumn != null && !request.sortColumn!.sort.isNone;
+
+    // number of records to fetch
+    var fetchSize = 50;
+
+    // index of last row fetched
+    var rowIdx = 0;
+    if (request.lastRow != null)
+    {
+      var row = request.lastRow!;
+      rowIdx = rows.contains(row) ? rows.indexOf(row) : 0;
+    }
+
+    // build rows
+    if (filter || sort)
+    {
+      // build all
+      buildAllRows();
+    }
+    else
+    {
+      buildOutRows(rowIdx + fetchSize);
+    }
+
+    // build the list
+    List<PlutoRow> tempList = rows.toList();
+
+    // filter the list
+    if (filter)
+    {
+      tempList = applyFilters(tempList);
+    }
+
+    // sort the list
+    if (sort)
+    {
+      tempList = applySort(tempList);
+    }
+
+    // Data needs to be implemented so that the next row
+    // to be fetched by the user is fetched from the server according to the value of lastRow.
+    //
+    // If [request.lastRow] is null, it corresponds to the first page.
+    // After that, implement request.lastRow to get the next row from the server.
+    //
+    // How many are fetched is not a concern in PlutoGrid.
+    // The user just needs to bring as many as they can get at one time.
+    //
+    // To convert data from server to PlutoRow
+    // You can convert it using [PlutoRow.fromJson].
+    // In the example, PlutoRow is already created, so it is not created separately.
+    Iterable<PlutoRow> fetchedRows = tempList.skipWhile((row) => request.lastRow != null && row.key != request.lastRow!.key);
+
+    if (request.lastRow == null)
+    {
+      fetchedRows = fetchedRows.take(fetchSize);
+    }
+    else
+    {
+      fetchedRows = fetchedRows.skip(1).take(fetchSize);
+    }
+
+    // await Future.delayed(const Duration(milliseconds: 500));
+
+    // The return value returns the PlutoInfinityScrollRowsResponse class.
+    // isLast should be true when there is no more data to load.
+    // rows should pass a List<PlutoRow>.
+    // total number of rows
+    final bool isLast = fetchedRows.isEmpty || widget.model.getDataRowCount() < rows.length;
+
+    // notify the user
+    if (isLast && mounted)
+    {
+      //ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Last Page!')));
+    }
+
+    // convert to list
+    var list = fetchedRows.toList();
+
+    return Future.value(PlutoInfinityScrollRowsResponse(isLast: isLast, rows: list));
+  }
+
+  Future<PlutoLazyPaginationResponse> onPageLoad(PlutoLazyPaginationRequest request) async
+  {
+    // rows are filtered?
+    var filter = request.filterRows.isNotEmpty;
+
+    // rows are sorted?
+    var sort = request.sortColumn != null && !request.sortColumn!.sort.isNone;
+
+    // total number of rows
+    var rows = widget.model.getDataRowCount();
+
+    // page size
+    var pageSize = widget.model.pageSize;
+    if (pageSize <= 0) pageSize = 10;
+
+    // total number of pages
+    var pages = (rows / pageSize).ceil();
+
+    // build rows
+    if (filter || sort)
+    {
+      // build all
+      buildAllRows();
+    }
+    else
+    {
+      // build only as many as required
+      buildOutRows(pageSize * request.page);
+    }
+
+    // build the list
+    List<PlutoRow> tempList = this.rows.toList();
+
+    // filter the list
+    if (filter)
+    {
+      tempList = applyFilters(tempList);
+
+      pages = (tempList.length / pageSize).ceil();
+      if (pages < 0) pages = 1;
+    }
+
+    // sort the list
+    if (sort)
+    {
+      tempList = applySort(tempList);
+    }
+
+    final page  = request.page;
+    final start = (page - 1) * pageSize;
+    final end   = start + pageSize;
+
+    // get list of rows
+    var fetchedRows = tempList.getRange(max(0, start), min(tempList.length, end)).toList();
+
+    return Future.value(PlutoLazyPaginationResponse(totalPage: pages, rows: fetchedRows));
+  }
+
+  // called when grid is loaded
+  void onLoadedHandler(PlutoGridOnLoadedEvent event)
+  {
+    stateManager = event.stateManager;
+
+    // autosize columns
+    stateManager?.activateColumnsAutoSize();
+
+    // show filter bar
+    stateManager?.setShowColumnFilter(widget.model.filterBar);
+
+    stateManager?.removeListener(onSelectedHandler);
+    stateManager?.addListener(onSelectedHandler);
+  }
+
+  // called when a field changes via edit.
+  // only applies to simple grid
+  void onChangedHandler(final PlutoGridOnChangedEvent event) async
+  {
+    var rowIdx = rows.indexOf(event.row);
+    var colIdx = map.containsKey(event.column) ? map[event.column]!.index : -1;
+    await widget.model.onChangeHandler(rowIdx, colIdx, event.value, event.oldValue);
+    onSelectedHandler(force: true);
+  }
+
+  void onDeselectHandler(PlutoGridOnRowDoubleTapEvent event)
+  {
+      // de-select all rows
+      for (var row in stateManager!.checkedRows)
+      {
+        stateManager!.setRowChecked(row, false);
+      }
+
+      // clear model selection
+      widget.model.onDeSelect();
+
+      // clear grid cell
+      stateManager!.clearCurrentCell();
+
+      // clear last cell selected
+      _lastSelectedCell = null;
+  }
+
+  void onSelectedHandler({bool force = false})
+  {
+    if (stateManager == null || stateManager!.currentRow == null || stateManager!.currentCell == null) return;
+
+    // deselect
+    if (stateManager!.currentCell == _lastSelectedCell && !force) return;
+
+    // remember last cell selected
+    _lastSelectedCell = stateManager!.currentCell!;
+
+    // check/uncheck rows
+    for (var row in stateManager!.checkedRows)
+    {
+      if (row != stateManager!.currentRow)
+      {
+        stateManager!.setRowChecked(row, false);
+      }
+    }
+
+    // check this row
+    if (stateManager!.currentRow!.checked != true)
+    {
+      stateManager!.setRowChecked(stateManager!.currentRow!, true);
+    }
+
+    // get row index
+    var rowIdx = rows.indexOf(stateManager!.currentRow!);
+
+    // get column index
+    var colIdx = map.containsKey(stateManager!.currentCell!.column) ? map[stateManager!.currentCell!.column]!.index : -1;
+
+    // set model selection
+    widget.model.onSelect(rowIdx, colIdx);
+
+    // remember last cell selected
+    _lastSelectedCell = stateManager!.currentCell!;
+  }
+
+  // called when a field sort operation happens
+  void onSortedHandler(PlutoGridOnSortedEvent event) async
+  {
+    views.clear();
+  }
+
+  void rebuild()
+  {
+    grid = null;
+    rows.clear();
+    super.onModelChange(widget.model);
+  }
+
+  // forces the lazy/page loaders to refire
+  void refresh()
+  {
+    // force a page reload
+    stateManager?.eventManager?.addEvent(PlutoGridSetColumnFilterEvent(filterRows: []));
+  }
+
+  List<String> getColumnTitles(PlutoGridStateManager state) => getVisibleColumns(state).map((e) => e.title).toList();
+
+  List<PlutoColumn> getVisibleColumns(PlutoGridStateManager state) => state.columns.where((element) => !element.hide).toList();
+
+  List<String?> getSerializedRow(PlutoGridStateManager state, PlutoRow plutoRow)
+  {
+    List<String?> serializedRow = [];
+
+    // Order is important, so we iterate over columns
+    for (PlutoColumn column in getVisibleColumns(state))
+    {
+      dynamic value = plutoRow.cells[column.field]?.value;
+      serializedRow.add(column.formattedValueForDisplay(value));
+    }
+    return serializedRow;
+  }
+
+  void autosize(String? mode)
+  {
+    // format mode
+    mode = mode?.trim().toLowerCase();
+
+    switch (mode)
+    {
+      case "scale":
+        stateManager?.setColumnSizeConfig(PlutoGridColumnSizeConfig(autoSizeMode: PlutoAutoSizeMode.scale, resizeMode: _getResizeMode()));
+        break;
+
+      case "equal":
+        stateManager?.setColumnSizeConfig(PlutoGridColumnSizeConfig(autoSizeMode: PlutoAutoSizeMode.equal, resizeMode: _getResizeMode()));
+        break;
+
+      case "fit":
+      for (PlutoColumn column in columns)
+      {
+        stateManager?.autoFitColumn(context, column);
+      }
+      break;
+
+      case "none":
+      default:
+      stateManager?.setColumnSizeConfig(PlutoGridColumnSizeConfig(autoSizeMode: PlutoAutoSizeMode.none, resizeMode: _getResizeMode()));
+      break;
     }
   }
 
-  onProxyRowCellSize(Size size, {dynamic data}) {
-    if (size.height > widget.model.heights['row']!) {
-      widget.model.heights['row'] = size.height;
+  // sets the page size
+  void setFilterBar(bool? on)
+  {
+    // toggle filter bar
+    stateManager?.setShowColumnFilter(on == true);
+  }
+
+  // sets the page size
+  void setPageSize(int size)
+  {
+    bool doRebuild = (size > 0 && !paged) || (size <= 0 && paged);
+
+    // rebuild the grid
+    if (doRebuild)
+    {
+      grid = null;
+      setState(() {});
+      return;
     }
-    if (data is int) {
-      double width = size.width;
-      if (!S.isNullOrEmpty(widget.model.header!.cells[data].sort)) {
-        width += 16;
+
+    // change the page size
+    if (paged)
+    {
+      stateManager?.setPageSize(size);
+      refresh();
+    }
+  }
+
+  Future<String?> exportToCSV() async
+  {
+    if (stateManager == null) return null;
+
+    // This ensures we have built out all rows
+    buildAllRows();
+
+    // filter the list
+    var list = applyFilters(rows);
+
+    // sort the list
+    list = applySort(list);
+
+    // serialize the list
+    List<List<String?>> serialized = [];
+    for (var row in list)
+    {
+      serialized.add(getSerializedRow(stateManager!, row));
+    }
+
+    String csv = const ListToCsvConverter().convert(
+      [
+        getColumnTitles(stateManager!),
+        ...serialized,
+      ],
+      delimitAllFields: true);
+
+    return csv;
+  }
+
+  Future<Uint8List?> exportToCSVBytes() async
+  {
+    var file = await exportToCSV();
+    if (file == null) return null;
+    return const Utf8Encoder().convert(file);
+  }
+
+  Future<Uint8List?> exportToPDF() async
+  {
+    if (stateManager == null) return null;
+
+    // This ensures we have built out all rows
+    buildAllRows();
+
+    // filter the list
+    var list = applyFilters(rows);
+
+    // sort the list
+    list = applySort(list);
+
+    // serialize the list
+    List<List<String?>> serialized = [];
+    for (var row in list)
+    {
+      serialized.add(getSerializedRow(stateManager!, row));
+    }
+
+    // get the fonts
+    //final fontRegular = await rootBundle.load('assets/fonts/open_sans/OpenSans-Regular.ttf');
+    //final fontBold = await rootBundle.load('assets/fonts/open_sans/OpenSans-Bold.ttf');
+    //final themeData = pluto_grid_export.ThemeData.withFont(base: pluto_grid_export.Font.ttf(fontRegular), bold: pluto_grid_export.Font.ttf(fontBold));
+
+    // build the theme
+    final themeData = pluto_grid_export.ThemeData.base();
+
+    // these should be passed not hard coded
+    var title   = "Table Export";
+    var creator = "Futter Markup Language";
+    var format  = pluto_grid_export.PdfPageFormat.a4.landscape;
+
+    // generate the report
+    var bytes = pluto_grid_export.GenericPdfController(
+      title: title,
+      creator: creator,
+      format: format,
+      columns: getColumnTitles(stateManager!),
+      rows: serialized,
+      themeData: themeData,
+    ).generatePdf();
+
+    return bytes;
+  }
+
+  PlutoLazyPagination _pageLoader(PlutoGridStateManager stateManager)
+  {
+    var loader = PlutoLazyPagination(
+
+        stateManager: stateManager,
+
+        // fetch routine called on
+        // page change
+        fetch: onPageLoad,
+
+        // Determine the first page.
+        // Default is 1.
+        initialPage: 1,
+
+        // First call the fetch function to determine whether to load the page.
+        // Default is true.
+        initialFetch: true,
+
+        // Decide whether sorting will be handled by the server.
+        // If false, handle sorting on the client side.
+        // Default is true.
+        fetchWithSorting: true,
+
+        // Decide whether filtering is handled by the server.
+        // If false, handle filtering on the client side.
+        // Default is true.
+        fetchWithFiltering: true,
+
+        // Determines the page size to move to the previous and next page buttons.
+        // Default value is null. In this case,
+        // it moves as many as the number of page buttons visible on the screen.
+        pageSizeToMove: null
+    );
+
+    return loader;
+  }
+
+  PlutoInfinityScrollRows _lazyLoader(PlutoGridStateManager stateManager)
+  {
+    var loader = PlutoInfinityScrollRows(
+
+      stateManager: stateManager,
+
+      // fetch routine called on
+      // page change
+      fetch: onLazyLoad,
+
+      // First call the fetch function to determine whether to load the page.
+      // Default is true.
+      initialFetch: true,
+
+      // Decide whether sorting will be handled by the server.
+      // If false, handle sorting on the client side.
+      // Default is true.
+      fetchWithSorting: true,
+
+      // Decide whether filtering is handled by the server.
+      // If false, handle filtering on the client side.
+      // Default is true.
+      fetchWithFiltering: true,
+    );
+
+    return loader;
+  }
+
+  PlutoColumnTextAlign _getAlignment()
+  {
+    var align = WidgetAlignment(widget.model.layoutType, widget.model.center, widget.model.halign, widget.model.valign);
+    if (align.aligned == Alignment.topCenter || align.aligned == Alignment.center || align.aligned == Alignment.bottomCenter) return PlutoColumnTextAlign.center;
+    if (align.aligned == Alignment.topLeft   || align.aligned == Alignment.centerLeft || align.aligned == Alignment.bottomLeft) return PlutoColumnTextAlign.left;
+    if (align.aligned == Alignment.topRight  || align.aligned == Alignment.centerRight || align.aligned == Alignment.bottomRight) return PlutoColumnTextAlign.right;
+    return PlutoColumnTextAlign.center;
+  }
+
+  PlutoResizeMode _getResizeMode()
+  {
+    var resize = PlutoResizeMode.normal;
+    switch (widget.model.header?.resize?.trim().toLowerCase())
+    {
+      case "none":
+        resize = PlutoResizeMode.none;
+        break;
+
+      case "pushpull":
+        resize = PlutoResizeMode.pushAndPull;
+        break;
+
+      case "normal":
+      default:
+        resize = PlutoResizeMode.normal;
+        break;
+    }
+    return resize;
+  }
+
+  PlutoGridConfiguration _buildConfig()
+  {
+    var colHeight    = widget.model.header?.height ?? PlutoGridSettings.rowHeight;
+    var rowHeight    = widget.model.getRowModel(0)?.height ?? colHeight;
+
+    var borderRadius = BorderRadius.circular(widget.model.radiusTopRight);
+    var borderColor  = widget.model.bordercolor ?? Color(0xFFDDE2EB);
+
+    var textStyle    = TextStyle(fontSize: widget.model.textSize, color: widget.model.textColor);
+
+    // row colors
+    var rowColor     = widget.model.color ?? Colors.white;
+    var oddRowColor  = widget.model.color != null && widget.model.color2 != null ? widget.model.color : null;
+    var evenRowColor = widget.model.color != null && widget.model.color2 != null ? widget.model.color : null;
+
+    var primaryColor = Color(0xFFDCF5FF);
+    var primaryBorderColor = Colors.lightBlue;
+
+    // style
+    var style = PlutoGridStyleConfig(
+
+      defaultCellPadding: EdgeInsets.all(0),
+
+      columnHeight: colHeight,
+
+      rowHeight: rowHeight,
+
+      cellTextStyle: textStyle,
+
+      borderColor: borderColor,
+
+      gridBorderRadius: borderRadius,
+
+      columnAscendingIcon: Icon(Icons.arrow_downward_rounded),
+
+      columnDescendingIcon: Icon(Icons.arrow_upward_rounded),
+
+      rowColor: rowColor,
+
+      oddRowColor: oddRowColor,
+
+      evenRowColor: evenRowColor,
+
+      checkedColor: primaryColor,
+
+      //inactivatedBorderColor: primaryBorderColor,
+
+      activatedColor: primaryColor,
+
+      //activatedBorderColor: primaryBorderColor,
+
+      //cellColorInReadOnlyState: primaryColor,
+
+      //cellColorInEditState: primaryColor,
+
+      enableGridBorderShadow: widget.model.shadow,
+    );
+
+    // column fit
+    var fit = PlutoAutoSizeMode.scale;
+    switch (widget.model.header?.fit?.trim().toLowerCase())
+    {
+      case "equal":
+        fit = PlutoAutoSizeMode.equal;
+        break;
+
+      case "none":
+        fit = PlutoAutoSizeMode.none;
+        break;
+
+      case "scale":
+      default:
+        fit = PlutoAutoSizeMode.scale;
+        break;
+    }
+
+    // config
+    return PlutoGridConfiguration(style: style, columnSize: PlutoGridColumnSizeConfig(autoSizeMode: fit, resizeMode: _getResizeMode()));
+  }
+
+  PlutoColumnGroup? _buildColumnGroup(TableHeaderGroupModel model)
+  {
+    // ignore this group
+    if (!model.hasDescendantCells()) return null;
+
+    List<PlutoColumnGroup> groups = [];
+    List<String> fields = [];
+
+    // iterate through groups
+    for (var mdl in model.groups)
+    {
+      var group = _buildColumnGroup(mdl);
+      if (group != null) groups.add(group);
+    }
+
+    // iterate through groups
+    for (var mdl in model.cells)
+    {
+      for (var entry in map.entries)
+      {
+        if (entry.value == mdl)
+        {
+          var column = entry.key;
+          fields.add(column.field);
+          break;
+        }
       }
-      _setWidth(data, width);
+    }
+
+    // something went wrong
+    if (groups.isEmpty && fields.isEmpty) return null;
+
+    var title  = model.title;
+    var header = WidgetSpan(child:BoxView(model));
+
+    var group = PlutoColumnGroup(
+      title: title ?? "",
+      titleSpan: header,
+      fields: fields.isNotEmpty ? fields: null,
+      children: fields.isNotEmpty ? null : groups.isNotEmpty ? groups : null,
+      expandedColumn:  false,
+      backgroundColor: model.color,
+      titlePadding: EdgeInsets.all(1),
+    );
+
+    return group;
+  }
+
+  Widget _footerBuilder(PlutoColumnFooterRendererContext context, TableFooterCellModel model)
+  {
+    var view = WidgetSpan(child:BoxView(model));
+
+    var footer = PlutoAggregateColumnFooter(
+      rendererContext: context,
+      type: PlutoAggregateColumnType.max,
+      format: '#,###',
+      alignment: Alignment.center,
+      titleSpanBuilder: (text) => [view]);
+
+    return footer;
+  }
+
+  void _buildColumns()
+  {
+    groups.clear();
+    columns.clear();
+    map.clear();
+
+    if (widget.model.header == null) return;
+
+    List<String> fields = [];
+    for (var cell in widget.model.header!.cells)
+    {
+      var height = widget.model.header?.height ?? PlutoGridSettings.rowHeight;
+      var header = WidgetSpan(child:BoxView(cell));
+      var title  = cell.title ?? cell.field ?? "Column ${cell.index}";
+
+      // field names must be unique across columns
+      var field  = cell.field ?? cell.title ?? title;
+      int i = 1;
+      while (fields.contains(field))
+      {
+        field = "$field-${i++}";
+      }
+      fields.add(field);
+
+      // cell builder - for performance reasons, tables without defined
+      // table rows can be rendered much quicker
+      var builder = cell.usesRenderer ? (rendererContext) => cellBuilder(rendererContext) : null;
+
+      // cell is editable
+      var editable = !cell.usesRenderer && cell.editable;
+
+      // cell is resizeable
+      var resizeable = cell.resizeable;
+
+      // show context menu?
+      var showMenu = cell.menu;
+
+      // get cell alignment
+      var alignment = _getAlignment();
+
+      // footer builder
+      TableFooterCellModel? footer;
+      if (widget.model.footer?.cells != null && cell.index < widget.model.footer!.cells.length)
+      {
+        footer = widget.model.footer!.cells[cell.index];
+      }
+      var footerBuilder = footer != null ? (PlutoColumnFooterRendererContext context) => _footerBuilder(context, footer!) : null;
+
+      // build the column
+      var column = PlutoColumn(
+          title: title,
+          sort: PlutoColumnSort.none,
+          titleSpan: header,
+          field: field,
+          type: getColumnType(cell),
+          textAlign: alignment,
+          enableSorting: cell.sortable,
+          enableFilterMenuItem: cell.filter,
+          enableEditingMode: editable,
+          enableAutoEditing: false,
+          enableContextMenu: showMenu,
+          enableDropToResize: resizeable,
+          readOnly: !editable,
+          titlePadding: EdgeInsets.all(1),
+          cellPadding: EdgeInsets.all(0),
+          backgroundColor: cell.color,
+          width: cell.widthOuter ?? PlutoGridSettings.columnWidth,
+          minWidth: PlutoGridSettings.minColumnWidth,
+          renderer: builder,
+          footerRenderer: footerBuilder);
+
+      // add to the column list
+      map[column] = cell;
+
+      // add to columns
+      columns.add(column);
+    }
+
+    // build column groups
+    for (var model in widget.model.header!.groups)
+    {
+      var group = _buildColumnGroup(model);
+      if (group != null)
+      {
+        groups.add(group);
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(builder: builder);
 
-  Widget builder(BuildContext context, BoxConstraints constraints) {
-    // Clear Padding
-    widget.model.cellpadding.clear();
-
-    // save system constraints
-    onLayout(constraints);
-
-    double? viewportHeight =
-        widget.model.height ?? widget.model.myMaxHeightOrDefault;
-
+  Widget builder(BuildContext context, BoxConstraints constraints)
+  {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    // Proxy Header
-    if (widget.model.proxyheader == null) return headerBuilder(proxy: true);
+    // set system sizing
+    onLayout(constraints);
 
-    // Content Size
-    double contentWidth = widget.model.getContentWidth();
+    // build style
+    if (grid == null)
+    {
+      // build the columns
+      _buildColumns();
 
-    // Viewport Size
-    double viewportWidth = constraints.maxWidth;
-    if (((widget.model.height ?? 0) > 0) &&
-        ((widget.model.height ?? 0) < viewportHeight)) {
-      viewportHeight = widget.model.height;
-    }
+      var config = _buildConfig();
 
-    // Set Padding to Fill Viewport
-    double padding = viewportWidth - contentWidth;
-    widget.model.calculatePadding(padding);
-    if (padding.isNegative) padding = 0;
-
-    // Header Size
-    double headerHeight = widget.model.heights['header']!;
-    double headerWidth = contentWidth + padding;
-
-    // Horizontal Scroll Bar
-    ScrollbarView hslider = ScrollbarView(
-        Direction.horizontal, hScroller, viewportWidth, headerWidth);
-    double trackHeight = hslider.isVisible() ? (isMobile ? 25 : 15) : 0;
-
-    // Footer Size
-    double? footerHeight = widget.model.heights['footer'];
-    double footerWidth = contentWidth + padding;
-    if (widget.model.paged == false) footerHeight = 0;
-
-    // Body Size
-    double bodyHeight =
-        viewportHeight! - headerHeight - footerHeight! - trackHeight;
-    double bodyWidth = contentWidth + padding;
-    visibleRows = (bodyHeight / widget.model.heights['row']!).floor();
-
-    // Build Header
-    Widget header = headerBuilder();
-
-    // Vertical Scroll Bar
-    Widget vslider = Container();
-    if (widget.model.proxyrow != null) {
-      var height = widget.model.heights['row']!;
-      var rows = widget.model.data?.length ?? 0;
-      int pagesize = widget.model.pagesize ?? rows;
-      if (pagesize > rows) pagesize = rows;
-      double theoreticalHeight = pagesize * height;
-      if (theoreticalHeight > 0) {
-        vslider = ScrollbarView(
-            Direction.vertical, vScroller, bodyHeight, theoreticalHeight,
-            itemExtent: widget.model.heights['row']);
-      }
-    }
-
-    // Build Body
-    Widget list;
-
-    list = ListView.builder(
-        physics: widget.model.onpulldown != null
-            ? const AlwaysScrollableScrollPhysics()
-            : null,
-        scrollDirection: Axis.vertical,
-        controller: vScroller,
-        itemExtent: widget.model.heights['row'],
-        itemBuilder: rowBuilder);
-
-    if (widget.model.onpulldown != null) {
-      list = RefreshIndicator(
-          onRefresh: () => widget.model.onPull(context), child: list);
-    }
-
-    ScrollBehavior behavior =
-        (widget.model.onpulldown != null || widget.model.draggable)
-            ? MyCustomScrollBehavior().copyWith(dragDevices: {
-                PointerDeviceKind.touch,
-                PointerDeviceKind.mouse,
-              })
-            : MyCustomScrollBehavior();
-
-    Widget body = UnconstrainedBox(
-        child: SizedBox(
-            width: bodyWidth,
-            height: bodyHeight,
-            child: ScrollConfiguration(behavior: behavior, child: list)));
-
-    // Build Horizontal Scroll Track
-    Widget htrack = Container();
-    if (trackHeight > 0) {
-      htrack = Container(width: footerWidth, height: trackHeight);
-    }
-
-    // Build Footer
-    Widget footer = footerBuilder(footerWidth, footerHeight);
-
-    // Overlays
-    Widget footerOverlay1 = Container(
-        width: viewportWidth,
-        height: footerHeight,
-        child: Center(child: footerPageSize()));
-    Widget footerOverlay2 = Container(
-        width: viewportWidth,
-        height: footerHeight,
-        child: footerRecordsDisplayed());
-    Widget footerOverlay3 = Container(
-        width: viewportWidth,
-        height: footerHeight,
-        child: Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [footerPrevPage(), footerCurrPage(), footerNextPage()]));
-
-    // Busy
-    busy ??= BusyModel(widget.model,
-        visible: widget.model.busy, observable: widget.model.busyObservable).getView();
-
-    // Table
-    Widget table = Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [header, body, htrack, footer]);
-
-    // Scrolled Table
-    Widget scrolledTable;
-
-    scrolledTable = SingleChildScrollView(
-        scrollDirection: Axis.horizontal, child: table, controller: hScroller);
-
-    if (widget.model.onpulldown != null || widget.model.draggable) {
-      scrolledTable = ScrollConfiguration(
-        behavior: ScrollConfiguration.of(context).copyWith(
-          dragDevices: {
-            PointerDeviceKind.touch,
-            PointerDeviceKind.mouse,
-          },
-        ),
-        child: scrolledTable,
-      );
-    }
-
-    // View
-    return Stack(children: [
-      scrolledTable,
-      Positioned(top: headerHeight, right: 0, child: vslider),
-      Positioned(bottom: footerHeight, left: 0, child: hslider),
-      Positioned(bottom: 0, left: 0, child: footerOverlay1),
-      Positioned(bottom: 0, left: 0, child: footerOverlay2),
-      Positioned(bottom: 0, left: 0, child: footerOverlay3),
-      Center(child: busy)
-    ]);
-  }
-
-  Widget headerBuilder({bool proxy = false}) {
-    if ((proxy) == true) {
-      List<Widget> children = [];
-
-      // Proxy Each Cell in the Header
-      int i = 0;
-      for (var model in widget.model.header!.cells) {
-        Widget view = TableHeaderCellView(model);
-        var width = model.width;
-        var height = model.height;
-        if ((width ?? 0) > 0 || (height ?? 0) > 0) {
-          view = SizedBox(child: view, width: width, height: height);
-        }
-
-        final int index = i++;
-        children.add(MeasuredView(
-            UnconstrainedBox(child: view), onProxyHeaderCellSize,
-            data: index));
+      // Busy / Loading Indicator
+      if (widget.model.showBusy)
+      {
+        busy ??= BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable).getView();
       }
 
-      // Proxy the Header
-      children.add(MeasuredView(
-          UnconstrainedBox(
-              child:
-                  TableHeaderView(widget.model.header, null, null, null)),
-          onProxyHeaderSize));
+      // paged grid
+      paged = widget.model.pageSize > 0;
 
-      // Return Offstage
-      return Offstage(
-          child: Row(mainAxisSize: MainAxisSize.min, children: children));
-    } else {
-      return TableHeaderView(
-          widget.model.header,
-          widget.model.heights['header'],
-          widget.model.widths,
-          widget.model.cellpadding);
-    }
-  }
-
-  Widget? rowBuilder(BuildContext context, int index) {
-    // Get Row Model
-    TableRowModel? model = getRowModel(index);
-    if (model == null) return null;
-
-    bool proxy = false;
-    if ((widget.model.proxyrow == null) &&
-        (widget.model.data != null) &&
-        (widget.model.data.isNotEmpty) &&
-        (index == 0)) proxy = true;
-
-    // Proxy Row
-    if (proxy) {
-      List<Widget> children = [];
-
-      // Proxy Row
-      children.add(MeasuredView(
-          UnconstrainedBox(child: TableRowView(model, null, null, null, null)),
-          onProxyRowSize));
-
-      // Proxy Each Cell in the Row
-      int i = 0;
-      for (var m in model.cells) {
-        final int index = i++;
-        children.add(MeasuredView(
-            UnconstrainedBox(child: TableRowCellView(m, null)),
-            onProxyRowCellSize,
-            data: index));
-      }
-
-      // Return Offstage
-      return Offstage(
-          child: UnconstrainedBox(
-              child: Row(mainAxisSize: MainAxisSize.min, children: children)));
-    } else {
-      return TableRowView(
-          model,
-          index,
-          widget.model.height ?? widget.model.heights['row'],
-          widget.model.widths,
-          widget.model.cellpadding);
-    }
-  }
-
-  Widget footerBuilder(double width, double? height) {
-    Color? color = widget.model.header?.color ??
-        Theme.of(context).colorScheme.secondaryContainer;
-
-    Color? bordercolor =
-        widget.model.header!.bordercolor ?? Colors.transparent;
-    if ((widget.model.footer != null) &&
-        (widget.model.footer!.bordercolor != null)) {
-      bordercolor = widget.model.footer!.bordercolor;
-    }
-    bordercolor ??= Theme.of(context).colorScheme.outline;
-
-    return Container(
-        width: width,
-        height: height,
-        decoration: BoxDecoration(
-            color: color, border: Border.all(color: bordercolor)));
-  }
-
-  Widget footerPageSize() {
-    int records = widget.model.data != null ? widget.model.data.length : 0;
-    if (records > 0) {
-      // Page
-      int page = widget.model.page ?? 1;
-      if (page.isNegative) page = 1;
-
-      // Page Increments
-      int i = widget.model.pagesize ?? 10;
-      List<DropdownMenuItem<int>> items = [];
-      while (i < records) {
-        var item = DropdownMenuItem<int>(value: i, child: Text(i.toString()));
-        items.add(item);
-        i = i * 2;
-      }
-
-      // Show All
-      var item = DropdownMenuItem<int>(
-          value: records, child: Text(records.toString()));
-      bool exists = items.firstWhereOrNull((e) => e.value == records) != null;
-      if (!exists) items.add(item);
-
-      // Selected Value
-      DropdownMenuItem? selected = items.firstWhereOrNull(
-          (item) => (item.value! >= (widget.model.pagesize ?? 0)));
-      selected ??= items.first;
-
-      return Padding(
-          padding: EdgeInsets.only(left: 10),
-          child: Row(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                    child: Text(phrase.pagesize,
-                        style: TextStyle(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurfaceVariant)),
-                    padding: EdgeInsets.only(right: 6)),
-                MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: UnconstrainedBox(
-                        clipBehavior: Clip.hardEdge,
-                        child: DropdownButton<int>(
-                            value: selected.value,
-                            underline: Container(),
-                            borderRadius: BorderRadius.all(Radius.circular(4)),
-                            style: TextStyle(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurfaceVariant,
-                                fontSize: 15),
-                            icon: Icon(Icons.keyboard_arrow_down,
-                                color: items.length > 1
-                                    ? Theme.of(context)
-                                        .colorScheme
-                                        .onPrimaryContainer
-                                    : Theme.of(context)
-                                        .colorScheme
-                                        .onSecondaryContainer
-                                        .withOpacity(0.2)),
-                            iconSize: 20,
-                            items: items,
-                            onChanged: (int? newValue) {
-                              widget.model.page = 1;
-                              widget.model.pagesize = newValue;
-                            })))
-              ]));
-    }
-    return Container();
-  }
-
-  Widget footerPrevPage() {
-    List<Widget> children = [];
-    children.add(Container());
-
-    int pagesize = widget.model.pagesize ?? 0;
-    if (pagesize > 0) {
-      int page = widget.model.page ?? 1;
-      if (page.isNegative) page = 1;
-
-      // Prev Page
-      if (page > 1) {
-        return MouseRegion(
-            cursor: SystemMouseCursors.click,
-            child: GestureDetector(
-                child: Padding(
-                    child: Icon(Icons.navigate_before,
-                        color:
-                            Theme.of(context).colorScheme.onSecondaryContainer),
-                    padding: EdgeInsets.only(left: 5, right: 5)),
-                onTap: () => widget.model.page = page - 1));
-      } else {
-        return Padding(
-            child: Icon(Icons.navigate_before,
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSecondaryContainer
-                    .withOpacity(0.2)),
-            padding: EdgeInsets.only(left: 5, right: 5));
-      }
-    }
-    return Container();
-  }
-
-  Widget footerNextPage() {
-    List<Widget> children = [];
-    children.add(Container());
-
-    int pagesize = widget.model.pagesize ?? 0;
-    if (pagesize > 0) {
-      int? records = widget.model.data != null ? widget.model.data.length : 0;
-      int pagesize = widget.model.pagesize ?? records!;
-
-      int page = widget.model.page ?? 1;
-      if (page.isNegative) page = 1;
-
-      int pages = (pagesize > 0) ? (records! / pagesize).ceil() : 0;
-
-      // Next Page
-      if (page < pages) {
-        return MouseRegion(
-            cursor: SystemMouseCursors.click,
-            child: GestureDetector(
-                child: Padding(
-                    child: Icon(Icons.navigate_next,
-                        color:
-                            Theme.of(context).colorScheme.onSecondaryContainer),
-                    padding: EdgeInsets.only(left: 5, right: 5)),
-                onTap: () => widget.model.page = page + 1));
-      } else {
-        return Padding(
-            child: Icon(Icons.navigate_next,
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSecondaryContainer
-                    .withOpacity(0.2)),
-            padding: EdgeInsets.only(left: 5, right: 5));
-      }
-    }
-    return Container();
-  }
-
-  Widget footerCurrPage() {
-    if (widget.model.pagesize != null && widget.model.pagesize! > 0) {
-      int? records = widget.model.data != null ? widget.model.data.length : 0;
-      int? pageSize = widget.model.pagesize ?? records;
-      int? pages =
-          (widget.model.pagesize! > 0) ? (records! / pageSize!).ceil() : null;
-      return Padding(
-          padding: EdgeInsets.all(5),
-          child: Text(
-              '${widget.model.page ?? ''}${(pages != null && pages > 0) ? '/$pages' : ''}',
-              style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant)));
-    }
-    return Container();
-  }
-
-  Widget footerRecordsDisplayed() {
-    int pagesize = widget.model.pagesize ?? 0;
-    if (pagesize > 0) {
-      int records = widget.model.data != null ? widget.model.data.length : 0;
-      if (pagesize > records) pagesize = records;
-
-      int page = widget.model.page ?? 1;
-      if (page.isNegative) page = 1;
-
-      // Records Displayed
-      if (records == 0) {
-        return Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Padding(
-                  padding: EdgeInsets.only(left: 10),
-                  child: Text('${phrase.no} ${phrase.records}'))
-            ]);
-      }
-      int start = 1;
-      int end = pagesize;
-      if (page > 1) {
-        start = pagesize * (page - 1) + 1;
-        end = start + pagesize - 1;
-        if (end > records) end = records;
-      }
-      return Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Padding(
-                padding: EdgeInsets.only(left: 10),
-                child: Text(
-                  '${phrase.records} ${start.toString()} to ${end.toString()} ${phrase.of} ${records.toString()}',
-                  style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant),
-                ))
-          ]);
-    }
-    return Container();
-  }
-
-  void afterFirstLayout(BuildContext context) {
-    // Initial Vertical Scroll Position
-    ScrollController? controller = vScroller;
-    if (controller != null) {
-      _handleScrollNotification(ScrollUpdateNotification(
-          metrics: FixedScrollMetrics(
-              minScrollExtent: controller.position.minScrollExtent,
-              devicePixelRatio: View.of(context).devicePixelRatio,
-              maxScrollExtent: controller.position.maxScrollExtent,
-              pixels: controller.position.pixels,
-              viewportDimension: controller.position.viewportDimension,
-              axisDirection: controller.position.axisDirection),
-          context: context,
-          scrollDelta: 0.0));
+      // build the grid
+      grid = PlutoGrid(key: GlobalKey(),
+          configuration: config,
+          columnGroups: groups,
+          columns: columns,
+          rows: [],
+          mode: PlutoGridMode.normal,
+          onLoaded: onLoadedHandler,
+          onSorted: onSortedHandler,
+          onChanged: onChangedHandler,
+          onRowDoubleTap: onDeselectHandler,
+          //onSelected: onSelectedHandler,
+          noRowsWidget: widget.model.norows?.getView(),
+          createFooter: paged ?  _pageLoader : _lazyLoader);
     }
 
-    // Initial Horizontal Scroll Position
-    controller = hScroller;
-    if (controller != null) {
-      _handleScrollNotification(ScrollUpdateNotification(
-          metrics: FixedScrollMetrics(
-              minScrollExtent: controller.position.minScrollExtent,
-              devicePixelRatio: View.of(context).devicePixelRatio,
-              maxScrollExtent: controller.position.maxScrollExtent,
-              pixels: controller.position.pixels,
-              viewportDimension: controller.position.viewportDimension,
-              axisDirection: controller.position.axisDirection),
-          context: context,
-          scrollDelta: 0.0));
-    }
-  }
+    // apply constraints
+    var view = applyConstraints(grid!, widget.model.constraints);
 
-  void updateShadowPostframe(BuildContext context) {
-    // Initial Scroll Position
-    ScrollController? controller = vScroller;
-    if (controller != null && controller.hasClients) {
-      _handleScrollNotification(ScrollUpdateNotification(
-          metrics: FixedScrollMetrics(
-              minScrollExtent: controller.position.minScrollExtent,
-              devicePixelRatio: View.of(context).devicePixelRatio,
-              maxScrollExtent: controller.position.maxScrollExtent,
-              pixels: controller.position.pixels,
-              viewportDimension: controller.position.viewportDimension,
-              axisDirection: controller.position.axisDirection),
-          context: context,
-          scrollDelta: 0.0));
-    }
-    controller = hScroller;
-    if (controller != null && controller.hasClients) {
-      _handleScrollNotification(ScrollUpdateNotification(
-          metrics: FixedScrollMetrics(
-              minScrollExtent: controller.position.minScrollExtent,
-              devicePixelRatio: View.of(context).devicePixelRatio,
-              maxScrollExtent: controller.position.maxScrollExtent,
-              pixels: controller.position.pixels,
-              viewportDimension: controller.position.viewportDimension,
-              axisDirection: controller.position.axisDirection),
-          context: context,
-          scrollDelta: 0.0));
-    }
-  }
+    // add margins around the entire widget
+    view = addMargins(view);
 
-  bool _handleScrollNotification(ScrollNotification notification) {
-    if (notification.metrics.hasViewportDimension) {
-      if ((notification.metrics.axisDirection == AxisDirection.left) ||
-          (notification.metrics.axisDirection == AxisDirection.right)) {
-        widget.model.moreLeft = ((notification.metrics.maxScrollExtent > 0) &&
-            (((notification.metrics.atEdge == true) &&
-                    (notification.metrics.pixels > 0)) ||
-                (notification.metrics.atEdge == false)));
-        widget.model.moreRight = ((notification.metrics.maxScrollExtent > 0) &&
-            (((notification.metrics.atEdge == true) &&
-                    (notification.metrics.pixels <= 0)) ||
-                (notification.metrics.atEdge == false)));
-      } else {
-        widget.model.moreUp = ((notification.metrics.maxScrollExtent > 0) &&
-            (((notification.metrics.atEdge == true) &&
-                    (notification.metrics.pixels > 0)) ||
-                (notification.metrics.atEdge == false)));
-        widget.model.moreDown = ((notification.metrics.maxScrollExtent > 0) &&
-            (((notification.metrics.atEdge == true) &&
-                    (notification.metrics.pixels <= 0)) ||
-                (notification.metrics.atEdge == false)));
-      }
-    }
-    return true;
-  }
-
-  TableRowModel? getRowModel(int index)
-  {
-    int records = widget.model.data != null ? widget.model.data.length : 0;
-    int pagesize = widget.model.pagesize ?? records;
-
-    int page = widget.model.page ?? 1;
-    if (page.isNegative) page = 1;
-
-    if (index >= records) return getEmptyRowModel(index, index);
-
-    int from = (page - 1) * pagesize;
-    int to = from + pagesize - 1;
-
-    int offset = from + index;
-    if ((offset > to) || (offset >= records)) {
-      return getEmptyRowModel(offset - from, index);
+    // display busy widget over table
+    if (widget.model.showBusy)
+    {
+      view = Stack(children: [view, Center(child: busy)]);
     }
 
-    return widget.model.getRowModel(offset);
-  }
-
-  TableRowModel? getEmptyRowModel(int offset, index) {
-    if ((visibleRows - offset) > 0) {
-      var model = widget.model.getEmptyRowModel();
-      if (model != null) model.index = index;
-      return model;
-    }
-    return null;
+    return view;
   }
 }

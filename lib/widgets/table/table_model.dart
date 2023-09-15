@@ -1,279 +1,301 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:collection';
 import 'dart:convert';
+import 'dart:math';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
+import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/form/form_interface.dart';
-import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/table/table_footer_model.dart';
+import 'package:fml/widgets/table/table_norows_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:fml/datasources/transforms/sort.dart' as sort_transform;
-import 'package:fml/event/handler.dart' ;
 import 'package:fml/widgets/table/table_view.dart';
-import 'package:fml/widgets/table/header/table_header_model.dart';
-import 'package:fml/widgets/table/header/cell/table_header_cell_model.dart';
-import 'package:fml/widgets/table/footer/table_footer_model.dart';
-import 'package:fml/widgets/table/row/table_row_model.dart';
-import 'package:fml/widgets/table/row/cell/table_row_cell_model.dart';
+import 'package:fml/widgets/table/table_header_model.dart';
+import 'package:fml/widgets/table/table_header_cell_model.dart';
+import 'package:fml/widgets/table/table_row_model.dart';
+import 'package:fml/widgets/table/table_row_cell_model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-
-enum PaddingType { none, first, last, evenly, proportionately }
-
-class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
+class TableModel extends BoxModel implements IForm
 {
-  // prototype
-  XmlElement? prototypeHeaderCell;
-  XmlElement? prototypeRowCell;
-  XmlElement? prototypeRow;
+  @override
+  bool get canExpandInfinitelyWide => !hasBoundedWidth;
 
+  @override
+  bool get canExpandInfinitelyHigh => !hasBoundedHeight;
+
+  // holds header
   TableHeaderModel? header;
+
+  // holds header
+  TableNoRowsModel? norows;
+
+  // holds footer
   TableFooterModel? footer;
 
+  // holds first row prototype
+  XmlElement? prototype;
+
+  // holds list of rows
   final HashMap<int, TableRowModel> rows = HashMap<int, TableRowModel>();
 
-  Size? proxyrow;
-  Size? proxyheader;
-  Map<String, double> heights = {'header': 48, 'row': 38, 'footer': 48};
-  Map<int, double> widths = HashMap<int, double>();
-  Map<int, double> cellpadding = HashMap<int, double>();
+  final double defaultPadding = 4;
 
+  // dynamically generated headers
+  bool get hasDynamicHeaders => header?.isDynamic ?? false;
+
+  // table has a data source
+  bool get hasDataSource => !S.isNullOrEmpty(datasource);
+
+  @override
+  double? get paddingTop => super.paddingTop ?? defaultPadding;
+
+  @override
+  double? get paddingRight => super.paddingRight ?? defaultPadding;
+
+  @override
+  double? get paddingBottom => super.paddingBottom ?? defaultPadding;
+
+  @override
+  double? get paddingLeft => super.paddingLeft ?? defaultPadding;
+
+  @override
+  String get radius => super.radius ?? "10";
+
+  @override
+  String get halign => super.halign ?? "center";
+
+  @override
+  String get valign => super.valign ?? "center";
+
+  // text color
+  ColorObservable? _textColor;
+  set textColor(dynamic v)
+  {
+    if (_textColor != null) {
+      _textColor!.set(v);
+    } else if (v != null) {
+      _textColor = ColorObservable(Binding.toKey(id, 'textcolor'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  Color get textColor => _textColor?.get() ?? Colors.black;
+  
+  // text Size
+  DoubleObservable? _textSize;
+  set textSize(dynamic v)
+  {
+    if (_textSize != null) {
+      _textSize!.set(v);
+    } else if (v != null) {
+      _textSize = DoubleObservable(Binding.toKey(id, 'textsize'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  double get textSize => _textSize?.get() ?? 14;
+
+  // show busy spinner by default
+  BooleanObservable? _showBusy;
+  set showBusy(dynamic v)
+  {
+    if (_showBusy != null)
+    {
+      _showBusy!.set(v);
+    }
+    else if (v != null)
+    {
+      _showBusy = BooleanObservable(Binding.toKey(id, 'showbusy'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get showBusy => _showBusy?.get() ?? true;
+  
+  // show column menu by default
+  BooleanObservable? _menu;
+  set menu(dynamic v)
+  {
+    if (_menu != null)
+    {
+      _menu!.set(v);
+    }
+    else if (v != null)
+    {
+      _menu = BooleanObservable(Binding.toKey(id, 'menu'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get menu => _menu?.get() ?? true;
+
+  // allow sorting
+  BooleanObservable? _sortable;
+  set sortable(dynamic v)
+  {
+    if (_sortable != null)
+    {
+      _sortable!.set(v);
+    }
+    else if (v != null)
+    {
+      _sortable = BooleanObservable(Binding.toKey(id, 'sortable'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get sortable => _sortable?.get() ?? true;
+
+  // allow reordering
+  BooleanObservable? _draggable;
+  set draggable(dynamic v)
+  {
+    if (_draggable != null)
+    {
+      _draggable!.set(v);
+    }
+    else if (v != null)
+    {
+      _draggable = BooleanObservable(Binding.toKey(id, 'draggable'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get draggable => _draggable?.get() ?? true;
+
+  // allow resizing
+  BooleanObservable? _resizeable;
+  set resizeable(dynamic v)
+  {
+    if (_resizeable != null)
+    {
+      _resizeable!.set(v);
+    }
+    else if (v != null)
+    {
+      _resizeable = BooleanObservable(Binding.toKey(id, 'resizeable'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get resizeable => _resizeable?.get() ?? true;
+
+  // editable - used on non row prototype only
+  BooleanObservable? _editable;
+  set editable(dynamic v)
+  {
+    if (_editable != null)
+    {
+      _editable!.set(v);
+    }
+    else if (v != null)
+    {
+      _editable = BooleanObservable(Binding.toKey(id, 'editable'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool? get editable => _editable?.get();
+
+  // allow filtering
+  BooleanObservable? _filter;
+  set filter(dynamic v)
+  {
+    if (_filter != null)
+    {
+      _filter!.set(v);
+    }
+    else if (v != null)
+    {
+      _filter = BooleanObservable(Binding.toKey(id, 'filter'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get filter => _filter?.get() ?? false;
+
+  // show filter bar
+  BooleanObservable? _filterBar;
+  set filterBar(dynamic v)
+  {
+    if (_filterBar != null)
+    {
+      _filterBar!.set(v);
+    }
+    else if (v != null)
+    {
+      _filterBar = BooleanObservable(Binding.toKey(id, 'filterbar'), v, scope: scope, listener: onFilterBarChange);
+    }
+  }
+  bool get filterBar => _filterBar?.get() ?? false;
+
+  // display shadow
+  BooleanObservable? _shadow;
+  set shadow(dynamic v)
+  {
+    if (_shadow != null)
+    {
+      _shadow!.set(v);
+    }
+    else if (v != null)
+    {
+      _shadow = BooleanObservable(Binding.toKey(id, 'shadow'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get shadow => _shadow?.get() ?? false;
+  
+  // current row selected
   TableRowModel? selectedRow;
+
+  // current column selected
   TableRowCellModel? selectedCell;
 
-  PaddingType _paddingType = PaddingType.proportionately;
-  PaddingType get paddingType {
-    return _paddingType;
+  // data map from the row that is currently selected
+  ListObservable? _selected;
+  set selected(dynamic v)
+  {
+    if (_selected != null)
+    {
+      _selected!.set(v);
+    }
+    else if (v != null)
+    {
+      // we don't want this to update the table view so don't add listener: onPropertyChange
+      _selected = ListObservable(Binding.toKey(id, 'selected'), null, scope: scope);
+      _selected!.set(v);
+    }
   }
+  dynamic get selected => _selected?.get();
 
-  set paddingType(dynamic t) {
-    PaddingType? type;
-    if (t is String) type = S.toEnum(t, PaddingType.values);
-    if (t is PaddingType) type = t;
-    if (type != null) _paddingType = type;
+  // onChange - only used for simple data grid
+  StringObservable? _onChange;
+  set onChange(dynamic v)
+  {
+    if (_onChange != null)
+    {
+      _onChange!.set(v);
+    }
+    else if (v != null)
+    {
+      _onChange = StringObservable(Binding.toKey(id, 'onchange'), v, scope: scope);
+    }
   }
-
+  String? get onChange => _onChange?.get();
   
-  // slt color 
-  
-  ColorObservable? _altcolor;
-  set altcolor(dynamic v) {
-    if (_altcolor != null) {
-      _altcolor!.set(v);
-    } else if (v != null) {
-      _altcolor = ColorObservable(Binding.toKey(id, 'altcolor'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  Color? get altcolor => _altcolor?.get();
-
-  // selected color
-  ColorObservable? _selectedcolor;
-  set selectedcolor(dynamic v) {
-    if (_selectedcolor != null) {
-      _selectedcolor!.set(v);
-    } else if (v != null) {
-      _selectedcolor = ColorObservable(Binding.toKey(id, 'selectedcolor'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  Color? get selectedcolor => _selectedcolor?.get();
-
-  // selected border color
-  ColorObservable? _selectedbordercolor;
-  set selectedbordercolor(dynamic v) {
-    if (_selectedbordercolor != null) {
-      _selectedbordercolor!.set(v);
-    } else if (v != null) {
-      _selectedbordercolor = ColorObservable(
-          Binding.toKey(id, 'selectedbordercolor'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  Color? get selectedbordercolor => _selectedbordercolor?.get();
-
-  // border color
-  ColorObservable? _bordercolor;
-  set bordercolor(dynamic v) {
-    if (_bordercolor != null) {
-      _bordercolor!.set(v);
-    } else if (v != null) {
-      _bordercolor = ColorObservable(Binding.toKey(id, 'bordercolor'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  Color? get bordercolor => _bordercolor?.get();
-
-  // border width
-  DoubleObservable? _borderwidth;
-  set borderwidth(dynamic v) {
-    if (_borderwidth != null) {
-      _borderwidth!.set(v);
-    } else if (v != null) {
-      _borderwidth = DoubleObservable(Binding.toKey(id, 'borderwidth'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  double? get borderwidth => _borderwidth?.get();
-
-  // override
-  @override
-  String get valign => super.valign ?? 'center';
-
-  /// Center attribute allows a simple boolean override for halign and valign both being center. halign and valign will override center if given.
-  BooleanObservable? _center;
-  set center(dynamic v) {
-    if (_center != null) {
-      _center!.set(v);
-    } else if (v != null) {
-      _center = BooleanObservable(Binding.toKey(id, 'center'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get center => _center?.get() ?? false;
-
-  /// wrap is a boolean that dictates if the widget will wrap or not.
-  BooleanObservable? _wrap;
-  set wrap(dynamic v) {
-    if (_wrap != null) {
-      _wrap!.set(v);
-    } else if (v != null) {
-      _wrap = BooleanObservable(Binding.toKey(id, 'wrap'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get wrap => _wrap?.get() ?? false;
-
-  BooleanObservable? _scrollButtons;
-  set scrollButtons(dynamic v) {
-    if (_scrollButtons != null) {
-      _scrollButtons!.set(v);
-    } else if (v != null) {
-      _scrollButtons = BooleanObservable(Binding.toKey(id, 'scrollbuttons'), v,
-          scope: scope);
-    }
-  }
-  bool get scrollButtons => _scrollButtons?.get() ?? false;
-
-  BooleanObservable? _scrollShadows;
-  set scrollShadows(dynamic v) {
-    if (_scrollShadows != null) {
-      _scrollShadows!.set(v);
-    } else if (v != null) {
-      _scrollShadows = BooleanObservable(Binding.toKey(id, 'scrollshadows'), v,
-          scope: scope);
-    }
-  }
-  bool get scrollShadows => _scrollShadows?.get() ?? false;
-
-  // moreup
-  BooleanObservable? _moreUp;
-  @override
-  set moreUp(dynamic v)
-  {
-    if (_moreUp != null)
-    {
-      _moreUp!.set(v);
-    }
-    else if (v != null)
-    {
-      _moreUp = BooleanObservable(Binding.toKey(id, 'moreup'), v, scope: scope);
-    }
-  }
-  @override
-  bool? get moreUp=> _moreUp?.get();
-
-  // moreDown
-  BooleanObservable? _moreDown;
-  @override
-  set moreDown(dynamic v)
-  {
-    if (_moreDown != null)
-    {
-      _moreDown!.set(v);
-    }
-    else if (v != null)
-    {
-      _moreDown = BooleanObservable(Binding.toKey(id, 'moredown'), v, scope: scope);
-    }
-  }
-  @override
-  bool? get moreDown => _moreDown?.get();
-
-  // moreLeft
-  BooleanObservable? _moreLeft;
-  @override
-  set moreLeft(dynamic v)
-  {
-    if (_moreLeft != null) {
-      _moreLeft!.set(v);
-    } else if (v != null) {
-      _moreLeft = BooleanObservable(Binding.toKey(id, 'moreleft'), v, scope: scope);
-    }
-  }
-  @override
-  bool? get moreLeft => _moreLeft?.get();
-
-  // moreRight
-  BooleanObservable? _moreRight;
-  @override
-  set moreRight(dynamic v)
-  {
-    if (_moreRight != null)
-    {
-      _moreRight!.set(v);
-    }
-    else if (v != null)
-    {
-      _moreRight = BooleanObservable(Binding.toKey(id, 'moreright'), v, scope: scope);
-    }
-  }
-  @override
-  bool? get moreRight => _moreRight?.get();
-
-  // Multi-Select
-  bool _multiselect = false;
-  set multiselect(dynamic v) {
-    bool? b = S.toBool(v);
-    if (b != null) _multiselect = b;
-  }
-
-  get multiselect => _multiselect;
-
-  // onccomplete
-  StringObservable? _oncomplete;
-  set oncomplete(dynamic v) {
-    if (_oncomplete != null) {
-      _oncomplete!.set(v);
-    } else if (v != null) {
-      _oncomplete = StringObservable(Binding.toKey(id, 'oncomplete'), v,
-          scope: scope, lazyEval: true);
-    }
-  }
-  String? get oncomplete => _oncomplete?.get();
-
   // dirty
   @override
   BooleanObservable? get dirtyObservable => _dirty;
   BooleanObservable? _dirty;
   @override
-  set dirty(dynamic v) {
-    if (_dirty != null) {
+  set dirty(dynamic v)
+  {
+    if (_dirty != null)
+    {
       _dirty!.set(v);
-    } else if (v != null) {
+    }
+    else if (v != null)
+    {
       _dirty = BooleanObservable(Binding.toKey(id, 'dirty'), v, scope: scope);
     }
   }
   @override
   bool get dirty => _dirty?.get() ?? false;
 
-  void onDirtyListener(Observable property) {
+  void onDirtyListener(Observable property)
+  {
     bool isDirty = false;
-    for (var entry in rows.entries) {
-      if ((entry.value.dirty == true)) {
+    for (var entry in rows.entries)
+    {
+      if ((entry.value.dirty == true))
+      {
         isDirty = true;
         break;
       }
@@ -283,172 +305,31 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
 
   // Clean
   @override
-  set clean(bool b) {
+  set clean(bool b)
+  {
     dirty = false;
     rows.forEach((index, row) => row.dirty = false);
   }
 
-  // paged
-  BooleanObservable? _paged;
-  set paged(dynamic v) {
-    if (_paged != null) {
-      _paged!.set(v);
-    } else if (v != null) {
-      _paged = BooleanObservable(null, v, scope: scope);
-    }
-  }
-  bool get paged => _paged?.get() ?? true;
-
-  // pagesize
-  IntegerObservable? _pagesize;
-  set pagesize(dynamic v) {
-    if (_pagesize != null) {
-      _pagesize!.set(v);
-    } else if (v != null) {
-      _pagesize = IntegerObservable(Binding.toKey(id, 'pagesize'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-  int? get pagesize
+  // page size - used for paging
+  IntegerObservable? _pageSize;
+  set pageSize(dynamic v)
   {
-    if (_pagesize == null)
+    if (_pageSize != null)
     {
-      if ((data != null) && (data.isNotEmpty)) return data.length;
-      return null;
-    }
-    return _pagesize?.get();
-  }
-
-  // page
-  IntegerObservable? _page;
-  set page(dynamic v) {
-    if (_page != null) {
-      _page!.set(v);
-    } else if (v != null) {
-      _page = IntegerObservable(Binding.toKey(id, 'page'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  int? get page
-  {
-    if (_page == null)
-    {
-      if ((data != null) && (data.isNotEmpty)) return 1;
-      return null;
-    }
-    return _page?.get();
-  }
-
-  // margin
-  DoubleObservable? _margin;
-  set margin(dynamic v) {
-    if (_margin != null) {
-      _margin!.set(v);
-    } else if (v != null) {
-      _margin = DoubleObservable(null, v, scope: scope);
-    }
-  }
-  double get margin => _margin?.get() ?? 24;
-
-  // spacing
-  DoubleObservable? _spacing;
-  set spacing(dynamic v) {
-    if (_spacing != null) {
-      _spacing!.set(v);
-    } else if (v != null) {
-      _spacing = DoubleObservable(null, v, scope: scope);
-    }
-  }
-  double get spacing => _spacing?.get() ?? 56;
-
-  // sortButtons
-  BooleanObservable? _sortButtons;
-  set sortButtons(dynamic v) {
-    if (_sortButtons != null) {
-      _sortButtons!.set(v);
-    } else if (v != null) {
-      _sortButtons = BooleanObservable(null, v, scope: scope);
-    }
-  }
-  bool get sortButtons => _sortButtons?.get() ?? true;
-
-  StringObservable? _onpulldown;
-  set onpulldown (dynamic v)
-  {
-    if (_onpulldown != null)
-    {
-      _onpulldown!.set(v);
+      _pageSize!.set(v);
     }
     else if (v != null)
     {
-      _onpulldown = StringObservable(Binding.toKey(id, 'onpulldown'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
+      _pageSize = IntegerObservable(Binding.toKey(id, 'pagesize'), v, scope: scope, listener: onPageSizeChange);
     }
   }
-  dynamic get onpulldown => _onpulldown?.get();
-
-  BooleanObservable? _draggable;
-  set draggable(dynamic v) {
-    if (_draggable != null) {
-      _draggable!.set(v);
-    } else if (v != null) {
-      _draggable = BooleanObservable(Binding.toKey(id, 'draggable'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get draggable => _draggable?.get() ?? false;
-
-  /// Contains the data map from the row that is selected
-  ListObservable? _selected;
-  set selected(dynamic v) {
-    if (_selected != null) {
-      _selected!.set(v);
-    } else if (v != null) {
-      _selected = ListObservable(Binding.toKey(id, 'selected'), null,
-          scope: scope, listener: onPropertyChange);
-      _selected!.set(v);
-    }
-  }
-  dynamic get selected => _selected?.get();
-
-  TableModel(WidgetModel parent, String? id,
-      {dynamic selected,
-      dynamic draggable,
-      dynamic width,
-      dynamic height,
-      dynamic oncomplete,
-      dynamic center,
-      dynamic wrap,
-      dynamic onpulldown,
-      dynamic margin,
-      dynamic altcolor,
-      dynamic spacing,
-      dynamic sortButtons,
-      dynamic scrollButtons,
-      dynamic scrollShadows})
-      : super(parent, id) {
+  int get pageSize => _pageSize?.get() ?? 0;
+  
+  TableModel(WidgetModel parent, String? id) : super(parent, id)
+  {
     // instantiate busy observable
     busy = false;
-
-    if (width  != null) this.width  = width;
-    if (height != null) this.height = height;
-
-    this.selected = selected;
-    this.draggable = draggable;
-    this.onpulldown = onpulldown;
-    this.oncomplete = oncomplete;
-    dirty = false;
-    this.margin = margin;
-    this.spacing = spacing;
-    this.altcolor = altcolor;
-    this.center = center;
-    this.wrap = wrap;
-    this.sortButtons = sortButtons;
-    this.scrollButtons = scrollButtons;
-    this.scrollShadows = scrollShadows;
-    moreUp = false;
-    moreDown = false;
-    moreLeft = false;
-    moreRight = false;
   }
 
   static TableModel? fromXml(WidgetModel parent, XmlElement xml) {
@@ -468,112 +349,135 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml) {
+  void deserialize(XmlElement xml)
+  {
     busy = false;
 
     // deserialize
     super.deserialize(xml);
 
     // properties
-    selected = Xml.get(node: xml, tag: 'selected');
-    draggable = Xml.get(node:xml, tag: 'draggable');
-    onpulldown = Xml.get(node: xml, tag: 'onpulldown');
-    pagesize = Xml.get(node: xml, tag: 'pagesize');
-    paged = Xml.get(node: xml, tag: 'paged');
+    menu       = Xml.get(node: xml, tag: 'menu');
+    sortable   = Xml.get(node: xml, tag: 'sortable');
+    draggable  = Xml.get(node: xml, tag: 'draggable');
+    resizeable = Xml.get(node: xml, tag: 'resizeable');
+    editable   = Xml.get(node: xml, tag: 'editable');
+    shadow     = Xml.get(node: xml, tag: 'shadow');
+    showBusy   = Xml.get(node: xml, tag: 'showBusy');
 
-    if (width != null)  width  = Xml.get(node: xml, tag: 'width');
-    if (height != null) height = Xml.get(node: xml, tag: 'height');
+    // used in simple grids
+    textSize   = Xml.get(node: xml, tag: 'textSize') ?? Xml.get(node: xml, tag: 'fontSize');
+    textColor  = Xml.get(node: xml, tag: 'textColor') ?? Xml.get(node: xml, tag: 'fontColor');
 
-    center = Xml.get(node: xml, tag: 'center');
-    altcolor = Xml.get(node: xml, tag: 'altcolor');
-    wrap = Xml.get(node: xml, tag: 'wrap');
-    selectedcolor = Xml.get(node: xml, tag: 'selectedcolor');
-    bordercolor = Xml.get(node: xml, tag: 'bordercolor');
-    selectedbordercolor = Xml.get(node: xml, tag: 'selectedbordercolor');
-    borderwidth = Xml.get(node: xml, tag: 'borderwidth');
-    oncomplete = Xml.get(node: xml, tag: 'oncomplete');
-    margin = Xml.get(node: xml, tag: 'margin');
-    spacing = Xml.get(node: xml, tag: 'spacing');
-    paddingType = Xml.get(node: xml, tag: 'pad');
-    sortButtons = Xml.get(node: xml, tag: 'sortButtons');
-    scrollButtons = Xml.get(node: xml, tag: 'scrollbuttons');
-    scrollShadows = Xml.get(node: xml, tag: 'scrollshadows');
-
-    // Get Table Header
-    List<TableHeaderModel> headers = findChildrenOfExactType(TableHeaderModel).cast<TableHeaderModel>();
-    if (headers.isNotEmpty)
+    // legacy support
+    String? size  = "0";
+    var paged = S.toBool(Xml.get(node: xml, tag: 'paged'));
+    if (paged != false)
     {
-      header = headers.first;
-      if (header!.cells.length == 1)
-      {
-        prototypeHeaderCell = header!.cells.first.element;
-      }
+      size = Xml.get(node: xml, tag: 'pagesize');
+      if (size == null && paged == true) size = "20";
     }
+    pageSize = size ?? "0";
 
-    // Get Table Footer
-    List<TableFooterModel> footers = findChildrenOfExactType(TableFooterModel).cast<TableFooterModel>();
-    if (footers.isNotEmpty)
-    {
-      footer = footers.first;
-    }
+    // events
+    onChange = Xml.get(node: xml, tag: 'onchange');
 
-    // dynamic?
-    List<TableRowModel> rows = findChildrenOfExactType(TableRowModel).cast<TableRowModel>();
-    if (rows.isNotEmpty)
-    {
-      prototypeRow = WidgetModel.prototypeOf(rows.first.element);
-      if (rows.first.cells.length == 1)
-      {
-        prototypeRowCell = rows.first.cells.first.element;
-      }
-    }
+    // filter
+    filter = Xml.get(node: xml, tag: 'filter');
+    filterBar = Xml.get(node: xml, tag: 'filterbar');
+
+    // set header
+    header = findChildOfExactType(TableHeaderModel);
+
+    // set no rows widget
+    norows = findChildOfExactType(TableNoRowsModel);
+
+    // set footer
+    footer = findChildOfExactType(TableFooterModel);
+
+    // build initial rows
+    _setInitialRows();
   }
 
-  TableRowModel? getEmptyRowModel()
+  void _setInitialRows()
   {
-    // build model
-    TableRowModel? model = TableRowModel.fromXml(this, prototypeRow, data: null);
-    if (model?.cells != null)
-    {for (var cell in model!.cells)
+    // get all child rows
+    List<TableRowModel> rows = findChildrenOfExactType(TableRowModel).cast<TableRowModel>();
+
+    // iterate through all rows
+    for (var row in rows)
     {
-      cell.visible = false;
-    }}
-    return model;
+      var isFirstRow = rows.first == row;
+
+      // first row?
+      // set header as simple
+      if (isFirstRow)
+      {
+        // set usesRenderer
+        for (var cell in row.cells)
+        {
+          var cellIdx = row.cells.indexOf(cell);
+          var column  = header != null && cellIdx < header!.cells.length ? header!.cells[cellIdx] : null;
+          column?.usesRenderer = TableRowCellModel.usesRenderer(cell);
+        }
+      }
+
+      // create the row prototype
+      if (isFirstRow && hasDataSource)
+      {
+        // create the row prototype
+        prototype = WidgetModel.prototypeOf(row.element);
+
+        // dispose of the row
+        row.dispose();
+
+        // remove it from the child list
+        children?.remove(row);
+      }
+
+      // add the row to the list
+      else
+      {
+        this.rows[this.rows.length] = row;
+      }
+    }
   }
 
   TableRowModel? getRowModel(int index)
   {
     // model exists?
-    if (data == null) return null;
-    if (data.length < (index + 1)) return null;
     if (rows.containsKey(index)) return rows[index];
-    if ((index.isNegative) || (data.length < index)) return null;
 
-    // build row model
-    TableRowModel? model = TableRowModel.fromXml(this, prototypeRow, data: data[index]);
+    // prototype exists?
+    if (prototype == null) return null;
 
-    // defined height
-    var height = S.toDouble(Xml.get(node: prototypeRow, tag: "height"));
-    if (height != null)
+    // get data
+    var data = (index >= 0 && this.data is Data && index < (this.data as Data).length) ? this.data[index] : null;
+    if (data == null) return null;
+
+    // build the row model
+    TableRowModel? model = TableRowModel.fromXml(this, prototype, data: data);
+
+    // register a listener to dirty field
+    if (model?.dirtyObservable != null)
     {
-      heights['row'] = height;
+      model?.dirtyObservable!.registerListener(onDirtyListener);
     }
 
-    // Register Listener to Dirty Field
-    if (model?.dirtyObservable != null) model?.dirtyObservable!.registerListener(onDirtyListener);
-
-    if (model != null) rows[index] = model;
+    // add it to the list of rows
+    if (model != null)
+    {
+      rows[index] = model;
+    }
 
     return model;
   }
 
-  TableHeaderCellModel? getHeaderCell(int col)
+  TableRowCellModel? getRowCellModel(int rowIdx, int cellIdx)
   {
-    if ((header != null) && (col < header!.cells.length))
-    {
-      return header!.cells[col];
-    }
-    return null;
+    TableRowModel? model = getRowModel(rowIdx);
+    if (model == null || cellIdx > model.cells.length) return null;
+    return model.cells[max(cellIdx,0)];
   }
 
   Future<bool> _build(IDataSource source, Data? data) async
@@ -588,10 +492,16 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
       rows.forEach((_,row) => row.dispose());
       rows.clear();
 
-      page = 1;
       this.data = data;
     }
-    notifyListeners('list', null);
+
+    // this forces a table refresh
+    var view = findListenerOfExactType(TableViewState);
+    if (view is TableViewState)
+    {
+      hasDynamicHeaders ? view.rebuild() : view.refresh();
+    }
+
     return true;
   }
 
@@ -602,71 +512,57 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     return true;
   }
 
-  Future<void> sort(final int index, context) async {
-    busy = true;
+  // export to excel
+  Future<bool> export(String? format) async
+  {
+    try
+    {
+      var view = findListenerOfExactType(TableViewState);
+      if (view is TableViewState)
+      {
+        switch (format?.toLowerCase().trim())
+        {
+          case "raw" :
+            var file  = await Data.toCsv(Data.from(data));
+            var bytes = utf8.encode(file);
+            Platform.fileSaveAs(bytes, "${S.newId()}.csv");
+            break;
 
-    int i = 0;
-    TableHeaderCellModel? model;
-    while ((model = getHeaderCell(i)) != null) {
-      if (i == index) {
-        model = getHeaderCell(index);
-        if (model != null) {
-          model.sorted = true;
-          model.sortAscending = !model.sortAscending;
-          model.isSorting = true;
+          case "csv" :
+            var bytes = await view.exportToCSVBytes();
+            if (bytes != null) Platform.fileSaveAs(bytes, "${S.newId()}.csv");
+            break;
+
+          case "pdf":
+          default:
+            var bytes = await view.exportToPDF();
+            if (bytes != null) Platform.fileSaveAs(bytes, "${S.newId()}.pdf");
+            break;
         }
-
-
-        sort_transform.Sort sort = sort_transform.Sort(null,
-            field: model?.sort,
-            type: model?.sortType,
-            ascending: model?.sortAscending,
-            casesensitive: false);
-
-        await sort.apply(data);
-      } else {
-        model?.sorted = false;
-      }
-      i = i + 1;
-    }
-
-    // clear rows
-    rows.forEach((_,row) => row.dispose());
-    rows.clear();
-
-    // Notify Listeners of Change
-    notifyListeners('list', null);
-
-    busy = false;
-  }
-
-  void updatedSortedBy(ascending, index) {
-    dynamic currCol;
-    int i = 0;
-    while ((currCol = getHeaderCell(i++)) != null) {
-      if (i == index) {
-        currCol.sortAscending = ascending;
-        currCol.sortedColumn = true;
-      } else {
-        currCol.sortedColumn = false;
       }
     }
+    catch(e)
+    {
+      print (e);
+    }
+    return true;
   }
 
   // export to excel
-  Future<bool> export() async
+  bool autosize(String? mode)
   {
-    var data = Data.from(this.data);
-
-    // convert to data
-    String csv = await Data.toCsv(data);
-
-    // encode
-    var csvBytes = utf8.encode(csv);
-
-    // save to file
-    Platform.fileSaveAs(csvBytes, "${S.newId()}.csv");
-
+    try
+    {
+      var view = findListenerOfExactType(TableViewState);
+      if (view is TableViewState)
+      {
+        view.autosize(mode);
+      }
+    }
+    catch(e)
+    {
+      print (e);
+    }
     return true;
   }
 
@@ -686,19 +582,21 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
 
   @override
-  Future<bool> complete() async {
+  Future<bool> complete() async
+  {
     busy = true;
 
     bool ok = true;
 
-    ///
-    // Post the Form 
-    ///
-    if (dirty){
-      for (var entry in rows.entries) {
-        ok = await entry.value.complete();
+    // post the form
+    if (dirty)
+    {
+      for (var model in rows.values)
+      {
+        ok = await model.complete();
       }
-  }
+    }
+
     busy = false;
     return ok;
   }
@@ -709,188 +607,182 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
   @override
   Future<bool> save() async => true;
 
-  void setCellWidth(int cellindex, double width) {
-    if ((width >= 0) && (cellindex < widths.length)) widths[cellindex] = width;
-  }
-
-  void setCellPadding(int cellindex, double padding) {
-    if ((padding >= 0) && (cellindex < cellpadding.length)) {
-      cellpadding[cellindex] = padding;
-    }
-  }
-
-  double getCellPosition(int cellindex) {
-    double offset = 0;
-    for (int i = 0; i < cellindex; i++) {
-      offset += (widths[i] ?? 0) + (cellpadding[i] ?? 0);
-    }
-    return offset;
-  }
-
-  double? getCellWidth(int cellindex) {
-    double? width = 0;
-    if (widths.containsKey(cellindex)) width = widths[cellindex];
-    return width;
-  }
-
-  double getContentWidth() {
-    double width = 0;
-    widths.forEach((key, cellwidth) => width += cellwidth);
-    return width;
-  }
-
-  double? getCellPadding(int cellindex) {
-    double? pad = 0;
-    if (cellpadding.containsKey(cellindex)) pad = cellpadding[cellindex];
-    return pad;
-  }
-
-  Future<bool> onSort(int index) async {
-    busy = true;
-    await sort(index, null);
-    busy = false;
-    return true;
-  }
-
-  void onSelect(TableRowModel row, TableRowCellModel cell) {
-    if (selectedRow == row && selectedCell == cell) {
-      // Deselect
-      selectedRow?.selected = false;
-      selectedCell?.selected = false;
-      selectedRow = null;
-      selectedCell = null;
-      selected = [];
-    } else {
-      // new selection
-      // Unselect the previous selected row/cell models
-      selectedRow?.selected = false;
-      selectedCell?.selected = false;
-      // Set selected on the new row/cell selection
-      row.selected = true;
-      cell.selected = true;
-      // Update our table selected row/cell models so we have easy access to them
-      selectedRow = row;
-      selectedCell = cell;
-      // Update the bindables to the selected row data
-      selected = selectedRow!.data;
-    }
-  }
-
-  Future<void> _buildDynamic(Data? data) async
+  void _buildDynamicHeaders(Data? data)
   {
-    // both header and row prototypes must be defined
-    if (prototypeHeaderCell == null || prototypeRowCell == null) return;
+    // header has no dynamic fields?
+    if (header == null || !header!.isDynamic) return;
 
-    // clear old header cells
+    // cleanup
     for (var cell in header!.cells)
     {
       cell.dispose();
     }
     header!.cells.clear();
 
-    // clear prototype row cells
-    prototypeRow ??= XmlElement(XmlName("ROW"));
-    prototypeRow!.children.clear();
-
-    if (data != null && data.isNotEmpty)
+    // build new header cells
+    for (var prototype in header!.prototypes)
     {
-      var headerCell = prototypeHeaderCell.toString();
-      var rowCell = prototypeRowCell.toString();
-      data[0].forEach((key, value)
+      // build xml
+      bool isDynamic = Xml.hasAttribute(node: prototype, tag: "dynamic");
+      if (isDynamic)
       {
-        if (key != 'xml' && key != 'rownum')
+        bool hasData = (data?.isNotEmpty ?? false) && (data?.first is Map);
+        if (hasData)
         {
-          // header cell
-          var xml = headerCell.replaceAll("{field}", key);
-          var m1 = TableHeaderCellModel.fromXmlString(this, xml);
-
-          // row cells
-          xml = rowCell.replaceAll("{field}", "{data.$key}");
-          var m2 = Xml.tryParse(xml);
-
-          if (m1 != null && m2 != null)
+          // replace wildcards
+          var keys = (data!.first as Map).keys.where((key) => key != 'xml' && key != 'rownum');
+          for (var key in keys)
           {
-            header?.cells.add(m1);
-            prototypeRow!.children.add(m2.rootElement.copy());
+            var xml = prototype.toString().replaceAll("{field}", key).replaceAll("{*}", key);
+
+            // build the cell
+            var model = TableHeaderCellModel.fromXmlString(header!, xml) ?? TableHeaderCellModel(header!, null);
+            header!.cells.add(model);
           }
         }
-      });
-    }
+      }
 
-    // make prototype conversions
-    prototypeRow = WidgetModel.prototypeOf(prototypeRow);
-
-    // Force View to Resize
-    proxyheader = null;
-    proxyrow = null;
-  }
-
-  void calculatePadding(double pad) {
-
-    // Clear Padding
-    cellpadding.clear();
-
-    // Do Nothing
-    if (pad == 0) return;
-    
-    // Shrink
-    if (pad.isNegative) return shrinkBy(pad);
-
-    if (paddingType == PaddingType.none) return;
-
-    switch (paddingType) {
-      case PaddingType.none:
-        break;
-
-      // Pad First Column
-      case PaddingType.first:
-        {
-          cellpadding[0] = pad;
-          break;
-        }
-
-      // Pad Last Column
-      case PaddingType.last:
-        {
-          cellpadding[widths.length - 1] = pad;
-          break;
-        }
-
-      // Pad Each Column Evenly
-      case PaddingType.evenly:
-        {
-          double p = pad / widths.length;
-          widths.forEach((key, value) => cellpadding[key] = p);
-          break;
-        }
-
-      // Pad Each Proportionate to its Size
-      case PaddingType.proportionately:
-        {
-          double totalWidth = 0;
-          widths.forEach((key, width) => totalWidth += width);
-          widths.forEach((key, width) {
-            double percentageWidth = (width) / totalWidth;
-            double p = pad * percentageWidth;
-            cellpadding[key] = p;
-          });
-        }
+      // static header
+      else
+      {
+        var model = TableHeaderCellModel.fromXml(header!, prototype) ?? TableHeaderCellModel(header!, null);
+        header!.cells.add(model);
+      }
     }
   }
 
-  void shrinkBy(double pixels) {
-    double currentWidth = getContentWidth();
-    double targetWidth = currentWidth - pixels.abs();
-    double percentReduction = targetWidth / currentWidth;
-    for (int i = 0; i < widths.length; i++) {
-      widths[i] = (widths[i]! * percentReduction).roundToDouble();
-    }
-  }
-
-  Future<void> onPull(BuildContext context) async
+  void _buildRowPrototype(Data? data)
   {
-    await EventHandler(this).execute(_onpulldown);
+    if (prototype == null) return;
+
+    // create new row with no cell elements
+    var tr = prototype!.copy();
+    tr.children.clear();
+
+    // build row prototype cells
+    bool hasData = (data?.isNotEmpty ?? false);
+    if (hasData)
+    {
+      // build row model
+      TableRowModel? model = TableRowModel.fromXml(this, prototype, data: data!.first);
+      if (model == null) return;
+
+      // process each cell
+      int cellIdx = 0;
+      for (var cell in model.cells)
+      {
+        var td = cell.element?.toString() ?? XmlElement(XmlName("TD")).toString();
+
+        // dynamic cell
+        bool isDynamic = td.contains("{field}") || td.contains("{*}");
+        if (isDynamic)
+        {
+          var map = data.first is Map ? data.first as Map : null;
+
+          // replace wildcards
+          var keys = map?.keys.where((key) => key != 'xml' && key != 'rownum') ?? [];
+          for (var key in keys)
+          {
+              var xml  = td.replaceAll("{field}", "{data.$key}").replaceAll("{*}", "{data.$key}");
+              var doc  = Xml.tryParse(xml);
+              var node = doc?.rootElement.copy() ?? XmlElement(XmlName("TD"));
+              tr.children.add(node);
+
+              var column  = header != null && cellIdx < header!.cells.length ? header!.cells[cellIdx] : null;
+              column?.usesRenderer = TableRowCellModel.usesRenderer(cell);
+              cellIdx++;
+          }
+        }
+
+        // static cell
+        else
+        {
+          var node = cell.element?.copy();
+          if (node != null) tr.children.add(node);
+
+          var column  = header != null && cellIdx < header!.cells.length ? header!.cells[cellIdx] : null;
+          column?.usesRenderer = TableRowCellModel.usesRenderer(cell);
+          cellIdx++;
+        }
+      }
+
+      // cleanup
+      model.dispose();
+    }
+
+    // apply prototype conversions
+    // and set the main row prototype
+    prototype = WidgetModel.prototypeOf(tr);
   }
+
+  Future<void> _buildDynamic(Data? data) async
+  {
+    // build dynamic headers
+    _buildDynamicHeaders(data);
+
+    // build row model prototype
+    _buildRowPrototype(data);
+  }
+
+  Future<bool> onChangeHandler(int rowIdx, int colIdx, dynamic value, dynamic oldValue) async
+  {
+    bool ok = true;
+    var data = getData(rowIdx);
+    var col  = header?.cell(colIdx);
+    var fld  = col?.field;
+
+    if (data != null && col != null && fld != null)
+    {
+      Data.writeValue(data, fld, value);
+
+      // fire the onchange event
+      if (_onChange != null)
+      {
+        bool ok = await col.onChangeHandler();
+        if (ok) await EventHandler(this).execute(_onChange);
+      }
+    }
+    return ok;
+  }
+
+  void onSelect(int rowIdx, int cellIdx)
+  {
+    // set row selection
+    var row = getRowModel(rowIdx);
+    if (row != selectedRow) selectedRow?.selected = false;
+    row?.selected = true;
+    selectedRow = row;
+
+    // set cell selection
+    var cell = getRowCellModel(rowIdx, cellIdx);
+    if (cell != selectedCell) selectedCell?.selected = false;
+    cell?.selected = true;
+    selectedCell = cell;
+
+    // set selected
+    selected = getData(rowIdx) ?? [];
+    _selected?.notifyListeners();
+  }
+
+  void onDeSelect()
+  {
+    // set row selection
+    selectedRow?.selected = false;
+    selectedRow = null;
+
+    // set cell selection
+    selectedCell?.selected = false;
+    selectedCell = null;
+
+    // set selected
+    selected = [];
+  }
+
+  // returns the specified row in data
+  dynamic getData(int rowIdx) => (rowIdx >= 0 && data is Data && rowIdx < data.length) ? data[rowIdx] : null;
+
+  // returns the length of the dataset
+  int getDataRowCount() => data is Data ? (data as Data).length : 0;
 
   @override
   Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
@@ -903,10 +795,51 @@ class TableModel extends DecoratedWidgetModel implements IForm, IScrolling
     {
       // export the data
       case "export" :
-        await export();
+        var format = S.toStr(S.item(arguments, 0));
+        await export(format);
+        return true;
+
+      // export the data
+      case "autofit" :
+      case "autosize" :
+        var mode = S.toStr(S.item(arguments, 0));
+        autosize(mode);
         return true;
     }
+    
     return super.execute(caller, propertyOrFunction, arguments);
+  }
+
+  void onPageSizeChange(Observable observable)
+  {
+    try
+    {
+      var view = findListenerOfExactType(TableViewState);
+      if (view is TableViewState)
+      {
+        view.setPageSize(pageSize);
+      }
+    }
+    catch(e)
+    {
+      print (e);
+    }
+  }
+
+  void onFilterBarChange(Observable observable)
+  {
+    try
+    {
+      var view = findListenerOfExactType(TableViewState);
+      if (view is TableViewState)
+      {
+        view.setFilterBar(filterBar);
+      }
+    }
+    catch(e)
+    {
+      print (e);
+    }
   }
 
   @override

@@ -49,7 +49,11 @@ dependencies:
   # Updated 2022/05/26
   crypto: ^3.0.2
   # BSD-3-Clause
-  
+
+  # Updated 2023/09/05
+  csv: ^5.0.2
+  # MIT
+
   # Updated 2022/05/26
   decimal: ^1.5.0
   # Apache-2.0
@@ -61,11 +65,11 @@ dependencies:
 
   # Microsoft Logon
   # Updated 2023/06/06
-  firebase_auth: ^4.6.3
+  firebase_auth: ^4.9.0
   # Updated 2023/06/23
-  firebase_core: ^2.14.0
+  firebase_core: ^2.15.1
   # Updated 2023/06/06
-  firebase_core_platform_interface: ^4.8.0
+  # firebase_core_platform_interface: ^4.8.0
   # BSD-3-Clause
 
   # Updated 2023/02/02
@@ -85,7 +89,7 @@ dependencies:
   # MIT
 
   # Updated 2022/12/29
-  flutter_image_transform: ^1.0.0
+  flutter_image_transform: ^1.0.1
   # MIT
 
   # Added 2023/06/06
@@ -147,11 +151,11 @@ dependencies:
   # BSD-3-Clause
 
   # Updated 2022/11/06 // Our library "flutter_image_transform" is blocking this update
-  image: ^3.2.2
+  image: ^4.0.17
   # MIT
 
-  # Updated 2022/06/11
-  intl: ^0.17.0
+  # Updated 2023/08/31
+  intl: ^0.18.0
   # BSD-3-Clause
 
   # Updated 2022/01/29
@@ -204,6 +208,14 @@ dependencies:
 
   # Updated 2022/05/26
   photo_view: ^0.14.0
+  # MIT
+
+  # Updated 2023/08/31
+  pluto_grid: ^7.0.2
+  # MIT
+
+  # Updated 2023/08/31
+  pluto_grid_export: ^1.0.6
   # MIT
 
   # Updated 2022/05/26
@@ -271,7 +283,7 @@ dependencies:
   # MIT
 
   # Updated 2021/09/23
-  zxing_lib: ^0.6.0
+  zxing_lib: ^0.9.0
   # Apache 2.0
 
 dev_dependencies:

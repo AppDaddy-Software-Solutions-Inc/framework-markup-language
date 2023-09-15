@@ -46,6 +46,10 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
   onModelChange(WidgetModel model, {String? property, dynamic value})
   {
     if (mounted) setState((){});
+    // if (mounted)
+    // {
+    //   WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+    // }
   }
 
   // applies margins to the view based on the widget model

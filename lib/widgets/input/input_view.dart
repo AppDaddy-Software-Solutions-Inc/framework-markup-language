@@ -127,14 +127,16 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
 
     //grab the property that is changing
     var b = Binding.fromString(property);
-    if (b?.property == 'value') {
+    if (b?.property == 'value')
+    {
       if (widget.model.controller?.text == value) return;
-      //set the controllers value to the model value.
-      //this acts in cases where the value changes based on an eval or set.
-      widget.model.controller?.value = TextEditingValue(text: widget.model.value ?? "",);
+
+      // set the controllers value to the model value.
+      // this acts in cases where the value changes based on an eval or set.
+      widget.model.controller?.value = TextEditingValue(text: widget.model.value ?? "");
     }
-    //call setstate with no effects (ovverriden from widget model onmodel change)
-    setState(() {});
+
+    super.onModelChange(model);
   }
 
   @override

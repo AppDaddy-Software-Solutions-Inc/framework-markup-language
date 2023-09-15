@@ -7,6 +7,8 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/helper/common_helpers.dart';
 
+enum SortTypes {none, ascending, descending}
+
 class Sort extends TransformModel implements ITransform
 {
   ///////////////

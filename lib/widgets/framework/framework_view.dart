@@ -179,15 +179,8 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   @override
   onModelChange(WidgetModel model,{String? property, dynamic value})
   {
-    try
-    {
-      var b = Binding.fromString(property);
-      if (widget.model.initialized && mounted && b?.property != 'busy') setState(() {});
-    }
-    catch(e)
-    {
-      Log().exception(e, caller: 'Framework.View');
-    }
+    var b = Binding.fromString(property);
+    if (widget.model.initialized && mounted && b?.property != 'busy') setState(() {});
   }
 
   bool onScroll (ScrollNotification notification)

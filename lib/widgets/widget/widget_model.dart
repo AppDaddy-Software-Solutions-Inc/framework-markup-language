@@ -8,6 +8,7 @@ import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/datasources/datasource_listener_interface.dart';
 import 'package:fml/datasources/stash/stash_model.dart';
 import 'package:fml/datasources/log/log_model.dart';
+import 'package:fml/datasources/test/test_data_model.dart';
 import 'package:fml/datasources/transforms/subquery.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/datasources/detectors/barcode/barcode_detector_model.dart';
@@ -40,10 +41,6 @@ import 'package:fml/widgets/chart/chart_model.dart';
 import 'package:fml/widgets/chart/axis/chart_axis_model.dart';
 import 'package:fml/widgets/chart/label/chart_label_model.dart';
 import 'package:fml/widgets/chart/series/chart_series_model.dart';
-
-// import 'package:fml/widgets/chart_syncfusion/chart_model.dart' as SFCHART;
-// import 'package:fml/widgets/chart_syncfusion/axis/chart_axis_model.dart' as SFCHART;
-// import 'package:fml/widgets/chart_syncfusion/series/chart_series_model.dart' as SFCHART;
 import 'package:fml/widgets/checkbox/checkbox_model.dart';
 import 'package:fml/widgets/column/column_model.dart';
 import 'package:fml/widgets/box/box_model.dart';
@@ -93,12 +90,15 @@ import 'package:fml/widgets/slider/slider_model.dart';
 import 'package:fml/widgets/splitview/split_model.dart';
 import 'package:fml/widgets/stack/stack_model.dart';
 import 'package:fml/widgets/switch/switch_model.dart';
-import 'package:fml/widgets/table/footer/table_footer_model.dart';
-import 'package:fml/widgets/table/header/cell/table_header_cell_model.dart';
-import 'package:fml/widgets/table/header/table_header_model.dart';
+import 'package:fml/widgets/table/table_footer_cell_model.dart';
+import 'package:fml/widgets/table/table_footer_model.dart';
+import 'package:fml/widgets/table/table_header_cell_model.dart';
+import 'package:fml/widgets/table/table_header_group_model.dart';
+import 'package:fml/widgets/table/table_header_model.dart';
 import 'package:fml/widgets/table/table_model.dart';
-import 'package:fml/widgets/table/row/cell/table_row_cell_model.dart';
-import 'package:fml/widgets/table/row/table_row_model.dart';
+import 'package:fml/widgets/table/table_norows_model.dart';
+import 'package:fml/widgets/table/table_row_cell_model.dart';
+import 'package:fml/widgets/table/table_row_model.dart';
 import 'package:fml/widgets/tabview/tab_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/theme/theme_model.dart';
@@ -674,6 +674,10 @@ class WidgetModel implements IDataSourceListener {
         if (parent is HttpGetModel) model = Query.fromXml(parent, node);
         break;
 
+      case "testdata":
+        model = TestDataModel.fromXml(parent, node);
+        break;
+
       case "transform":
         if (parent is AnimationModel) {
           model = TransformModel.fromXml(parent, node);
@@ -808,27 +812,51 @@ class WidgetModel implements IDataSourceListener {
 
       case "th":
       case "tableheader":
-        model = TableHeaderModel.fromXml(parent, node);
+        if (parent is TableModel) {
+          model = TableHeaderModel.fromXml(parent, node);
+        }
         break;
 
       case "tr":
       case "tablerow":
-        model = TableRowModel.fromXml(parent, node);
+        if (parent is TableModel) {
+          model = TableRowModel.fromXml(parent, node);
+        }
         break;
 
       case "tf":
       case "tablefooter":
-        model = TableFooterModel.fromXml(parent, node);
+        if (parent is TableModel) {
+          model = TableFooterModel.fromXml(parent, node);
+        }
+        break;
+
+      case "nodata":
+      case "norows":
+        if (parent is TableModel) {
+          model = TableNoRowsModel.fromXml(parent, node);
+        }
         break;
 
       case "td":
       case "tabledata":
       case "cell":
-        if (parent is TableHeaderModel) {
+        if (parent is TableHeaderModel || parent is TableHeaderGroupModel)
+        {
           model = TableHeaderCellModel.fromXml(parent, node);
         }
         if (parent is TableRowModel) {
           model = TableRowCellModel.fromXml(parent, node);
+        }
+        if (parent is TableFooterModel) {
+          model = TableFooterCellModel.fromXml(parent, node);
+        }
+        break;
+
+      case "tg":
+      case "group":
+        if (parent is TableHeaderModel || parent is TableHeaderGroupModel) {
+          model = TableHeaderGroupModel.fromXml(parent, node);
         }
         break;
 
@@ -1131,14 +1159,21 @@ class WidgetModel implements IDataSourceListener {
 
   dynamic findDescendantOfExactType(Type? T, {String? id}) {
     List<dynamic>? list = findDescendantsOfExactType(T, id: id);
-    return ((list != null) && (list.isNotEmpty)) ? list.first : null;
+    return list.isNotEmpty ? list.first : null;
   }
 
-  List<dynamic>? findDescendantsOfExactType(Type? T, {String? id}) {
+  List<dynamic> findDescendantsOfExactType(Type? T, {String? id, Type? breakOn})
+  {
     List<dynamic> list = [];
-    if (children == null) return null;
-    for (var child in children!) {
-      list.addAll(child._findDescendantsOfExactType(T, id));
+    if (children != null)
+    {
+      for (var child in children!)
+      {
+        if (child.runtimeType != breakOn)
+        {
+          list.addAll(child._findDescendantsOfExactType(T, id));
+        }
+      }
     }
     return list;
   }
@@ -1169,17 +1204,22 @@ class WidgetModel implements IDataSourceListener {
   }
 
   dynamic findChildOfExactType(Type T, {String? id}) {
-    if (children != null) {
-      return children!.firstWhereOrNull(
-          (child) => child.runtimeType == T && (child.id == (id ?? child.id)));
+    if (children != null)
+    {
+      var child = children!.firstWhereOrNull((child) => child.runtimeType == (T) && (child.id == (id ?? child.id)));
+      return child;
     }
+    return null;
   }
 
   List<dynamic> findChildrenOfExactType(Type T, {String? id}) {
     List<dynamic> list = [];
-    if (children != null) {
-      for (WidgetModel child in children!) {
-        if ((child.runtimeType == (T)) && (child.id == (id ?? child.id))) {
+    if (children != null)
+    {
+      for (WidgetModel child in children!)
+      {
+        if ((child.runtimeType == (T)) && (child.id == (id ?? child.id)))
+        {
           list.add(child);
         }
       }
@@ -1580,6 +1620,8 @@ class WidgetModel implements IDataSourceListener {
       case "sse":
         return true;
       case 'stash':
+        return true;
+      case "testdata":
         return true;
       case "zebra":
         return true;

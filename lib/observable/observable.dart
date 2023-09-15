@@ -156,12 +156,11 @@ class Observable
 
   notifyListeners()
   {
-    if (listeners != null){
+    if (listeners == null) return;
     for (OnChangeCallback callback in listeners!)
     {
       callback(this);
     }
-  }
   }
 
   registerListener(OnChangeCallback callback)

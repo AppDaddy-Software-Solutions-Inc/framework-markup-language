@@ -28,13 +28,6 @@ class ChartDataPoint {
 class PieChartSeriesModel extends ChartPainterSeriesModel
 {
   List<PieChartSectionData> pieDataPoint = [];
-  List<dynamic> xValues = [];
-  Function? plotFunction;
-  dynamic dataList;
-  double maxY = 0;
-  double minY = 0;
-
-  String? type;
 
   PieChartSeriesModel(
       WidgetModel parent,
@@ -46,7 +39,6 @@ class PieChartSeriesModel extends ChartPainterSeriesModel
         dynamic radius,
         dynamic size,
         dynamic label,
-        this.type,
         dynamic tooltips,
         dynamic animated,
         dynamic name,

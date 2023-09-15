@@ -7,7 +7,6 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart_painter/axis/chart_axis_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:xml/xml.dart';
 import '../chart_model.dart';
@@ -133,32 +132,6 @@ class LineChartModel extends ChartPainterModel
       yMax = S.toInt(yaxis.max);
       yMin = S.toInt(yaxis.min);
     }
-  }
-
-  /// Contains the data map from the row (point) that is selected
-  ListObservable? _selected;
-  set selected(dynamic v)
-  {
-    if (_selected != null)
-    {
-      _selected!.set(v);
-    }
-    else if (v != null)
-    {
-      _selected = ListObservable(Binding.toKey(id, 'selected'), null, scope: scope, listener: onPropertyChange);
-      _selected!.set(v);
-    }
-  }
-  get selected => _selected?.get();
-
-  setSelected(dynamic v)
-  {
-    if (_selected == null)
-    {
-      _selected = ListObservable(Binding.toKey(id, 'selected'), null, scope: scope);
-      _selected!.registerListener(onPropertyChange);
-    }
-    _selected?.set(v, notify:false);
   }
 
   /// Called when the databroker returns a successful result

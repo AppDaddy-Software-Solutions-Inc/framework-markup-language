@@ -7,7 +7,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
-import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
 /// ChartDataPoint Object
@@ -30,9 +29,6 @@ class LineChartSeriesModel extends ChartPainterSeriesModel
   List<FlSpot> lineDataPoint = [];
   Map<int, dynamic> xValueMap = {};
   @override
-  dynamic dataList;
-  double maxY = 0;
-  double minY = 0;
 
   LineChartSeriesModel(
       WidgetModel parent,

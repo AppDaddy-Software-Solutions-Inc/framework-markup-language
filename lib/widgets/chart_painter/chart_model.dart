@@ -1,5 +1,4 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart' hide Axis;
 import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
@@ -17,8 +16,6 @@ import '../chart/chart_model.dart';
 class ChartPainterModel extends BoxModel
 {
   List uniqueValues = [];
-  List<LineChartBarData> lineDataList = [];
-  PieChartData pieData = PieChartData();
 
   @override
   bool get canExpandInfinitelyWide

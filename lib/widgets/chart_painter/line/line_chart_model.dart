@@ -7,7 +7,6 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart_painter/axis/chart_axis_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:xml/xml.dart';
 import '../chart_model.dart';
@@ -134,92 +133,6 @@ class LineChartModel extends ChartPainterModel
       yMin = S.toInt(yaxis.min);
     }
   }
-
-  /// Contains the data map from the row (point) that is selected
-  ListObservable? _selected;
-  set selected(dynamic v)
-  {
-    if (_selected != null)
-    {
-      _selected!.set(v);
-    }
-    else if (v != null)
-    {
-      _selected = ListObservable(Binding.toKey(id, 'selected'), null, scope: scope, listener: onPropertyChange);
-      _selected!.set(v);
-    }
-  }
-  get selected => _selected?.get();
-
-  setSelected(dynamic v)
-  {
-    if (_selected == null)
-    {
-      _selected = ListObservable(Binding.toKey(id, 'selected'), null, scope: scope);
-      _selected!.registerListener(onPropertyChange);
-    }
-    _selected?.set(v, notify:false);
-  }
-
-  /// If the chart should animate it's series
-  BooleanObservable? _animated;
-  set animated (dynamic v)
-  {
-    if (_animated != null)
-    {
-      _animated!.set(v);
-    }
-    else if (v != null)
-    {
-      _animated = BooleanObservable(Binding.toKey(id, 'animated'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get animated => _animated?.get() ?? false;
-
-  /// If the chart should display horizontally
-  BooleanObservable? _horizontal;
-  set horizontal (dynamic v)
-  {
-    if (_horizontal != null)
-    {
-      _horizontal!.set(v);
-    }
-    else if (v != null)
-    {
-      _horizontal = BooleanObservable(Binding.toKey(id, 'horizontal'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get horizontal => _horizontal?.get() ?? false;
-
-  /// If not false displays a legend of each [ChartSeriesModel] `id`, you can put top/bottom/left/right to signify a placement
-  StringObservable? _showlegend;
-  set showlegend (dynamic v)
-  {
-    if (_showlegend != null)
-    {
-      _showlegend!.set(v);
-    }
-    else if (v != null)
-    {
-      _showlegend = StringObservable(Binding.toKey(id, 'showlegend'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  String get showlegend => _showlegend?.get() ?? 'bottom';
-
-  /// Sets the font size of the legend labels
-  IntegerObservable? _legendsize;
-  set legendsize (dynamic v)
-  {
-    if (_legendsize != null)
-    {
-      _legendsize!.set(v);
-    }
-    else if (v != null)
-    {
-      _legendsize = IntegerObservable(Binding.toKey(id, 'legendsize'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  int? get legendsize => _legendsize?.get();
 
   /// Called when the databroker returns a successful result
   ///

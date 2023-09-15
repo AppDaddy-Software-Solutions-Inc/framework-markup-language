@@ -19,7 +19,6 @@ import '../chart_model.dart';
 class PieChartModel extends ChartPainterModel
 {
   final List<PieChartSeriesModel> series = [];
-  @override
   PieChartData pieData = PieChartData();
 
   @override
@@ -108,8 +107,8 @@ class PieChartModel extends ChartPainterModel
     showlegend      = Xml.get(node: xml, tag: 'showlegend');
     legendsize      = Xml.get(node: xml, tag: 'legendsize');
     type            = Xml.get(node: xml, tag: 'type');
-    spacing         = Xml.get(node: xml, tag: 'spacing');;
-    centerRadius    = Xml.get(node: xml, tag: 'centerradius');;
+    spacing         = Xml.get(node: xml, tag: 'spacing');
+    centerRadius    = Xml.get(node: xml, tag: 'centerradius');
 
     // Set Series
     this.series.clear();

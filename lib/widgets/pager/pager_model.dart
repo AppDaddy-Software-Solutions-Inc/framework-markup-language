@@ -76,7 +76,7 @@ class PagerModel extends BoxModel
       _transition = StringObservable(Binding.toKey(id, 'transition'), v, scope: scope);
     }
   }
-  String get transition =>  _transition?.get() ?? 'slide';
+  String get transition =>  _transition?.get() ?? 'jump';
 
   dynamic _pageSetter(dynamic value)
   {
@@ -167,18 +167,65 @@ class PagerModel extends BoxModel
     /// setter
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
-    switch (function) {
+    switch (function)
+    {
+      case "pageto":
       case "page":
         var view = findListenerOfExactType(PagerViewState);
-        if (view is PagerViewState) {
+        if (view is PagerViewState)
+        {
+          int page = 0;
+          String transition = this.transition;
 
-          dynamic page;
+          // page
           if (arguments.isNotEmpty)
           {
-            page = arguments[0];
+            page = S.toInt(arguments[0]) ?? 0;
+          }
+
+          // transition
+          if (arguments.length > 1)
+          {
+            transition = S.toStr(arguments[1]) ?? this.transition;
+          }
+
+          view.pageTo(page, transition);
+        }
+        break;
+
+      case "jumpto":
+      case "jump":
+        var view = findListenerOfExactType(PagerViewState);
+        if (view is PagerViewState)
+        {
+          int page = 0;
+          String transition = "jump";
+
+          // page
+          if (arguments.isNotEmpty)
+          {
+            page = S.toInt(arguments[0]) ?? 0;
           }
           view.pageTo(page, transition);
         }
+        break;
+
+      case "slideto":
+      case "slide":
+        var view = findListenerOfExactType(PagerViewState);
+        if (view is PagerViewState)
+        {
+          int page = 0;
+          String transition = "slide";
+
+          // page
+          if (arguments.isNotEmpty)
+          {
+            page = S.toInt(arguments[0]) ?? 0;
+          }
+          view.pageTo(page, transition);
+        }
+        break;
     }
     return super.execute(caller, propertyOrFunction, arguments);
   }

@@ -8,6 +8,8 @@ import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/form/form_interface.dart';
+import 'package:fml/widgets/table/table_footer_model.dart';
+import 'package:fml/widgets/table/table_norows_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/table/table_view.dart';
 import 'package:fml/widgets/table/table_header_model.dart';
@@ -21,8 +23,20 @@ import 'package:fml/helper/common_helpers.dart';
 
 class TableModel extends BoxModel implements IForm
 {
+  @override
+  bool get canExpandInfinitelyWide => !hasBoundedWidth;
+
+  @override
+  bool get canExpandInfinitelyHigh => !hasBoundedHeight;
+
   // holds header
   TableHeaderModel? header;
+
+  // holds header
+  TableNoRowsModel? norows;
+
+  // holds footer
+  TableFooterModel? footer;
 
   // holds first row prototype
   XmlElement? prototype;
@@ -70,7 +84,7 @@ class TableModel extends BoxModel implements IForm
     }
   }
   Color get textColor => _textColor?.get() ?? Colors.black;
-
+  
   // text Size
   DoubleObservable? _textSize;
   set textSize(dynamic v)
@@ -83,7 +97,22 @@ class TableModel extends BoxModel implements IForm
   }
   double get textSize => _textSize?.get() ?? 14;
 
-  // allow sorting
+  // show busy spinner by default
+  BooleanObservable? _showBusy;
+  set showBusy(dynamic v)
+  {
+    if (_showBusy != null)
+    {
+      _showBusy!.set(v);
+    }
+    else if (v != null)
+    {
+      _showBusy = BooleanObservable(Binding.toKey(id, 'showbusy'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get showBusy => _showBusy?.get() ?? true;
+  
+  // show column menu by default
   BooleanObservable? _menu;
   set menu(dynamic v)
   {
@@ -183,7 +212,7 @@ class TableModel extends BoxModel implements IForm
     }
     else if (v != null)
     {
-      _filterBar = BooleanObservable(Binding.toKey(id, 'filterbar'), v, scope: scope, listener: onPropertyChange);
+      _filterBar = BooleanObservable(Binding.toKey(id, 'filterbar'), v, scope: scope, listener: onFilterBarChange);
     }
   }
   bool get filterBar => _filterBar?.get() ?? false;
@@ -334,19 +363,21 @@ class TableModel extends BoxModel implements IForm
     resizeable = Xml.get(node: xml, tag: 'resizeable');
     editable   = Xml.get(node: xml, tag: 'editable');
     shadow     = Xml.get(node: xml, tag: 'shadow');
+    showBusy   = Xml.get(node: xml, tag: 'showBusy');
 
     // used in simple grids
     textSize   = Xml.get(node: xml, tag: 'textSize') ?? Xml.get(node: xml, tag: 'fontSize');
     textColor  = Xml.get(node: xml, tag: 'textColor') ?? Xml.get(node: xml, tag: 'fontColor');
 
     // legacy support
-    var paged = S.toBool(Xml.get(node: xml, tag: 'pagesize'));
+    String? size  = "0";
+    var paged = S.toBool(Xml.get(node: xml, tag: 'paged'));
     if (paged != false)
     {
-      var size = Xml.get(node: xml, tag: 'pagesize');
+      size = Xml.get(node: xml, tag: 'pagesize');
       if (size == null && paged == true) size = "20";
-      pageSize = size;
     }
+    pageSize = size ?? "0";
 
     // events
     onChange = Xml.get(node: xml, tag: 'onchange');
@@ -357,6 +388,12 @@ class TableModel extends BoxModel implements IForm
 
     // set header
     header = findChildOfExactType(TableHeaderModel);
+
+    // set no rows widget
+    norows = findChildOfExactType(TableNoRowsModel);
+
+    // set footer
+    footer = findChildOfExactType(TableFooterModel);
 
     // build initial rows
     _setInitialRows();
@@ -724,6 +761,7 @@ class TableModel extends BoxModel implements IForm
 
     // set selected
     selected = getData(rowIdx) ?? [];
+    _selected?.notifyListeners();
   }
 
   void onDeSelect()
@@ -780,6 +818,22 @@ class TableModel extends BoxModel implements IForm
       if (view is TableViewState)
       {
         view.setPageSize(pageSize);
+      }
+    }
+    catch(e)
+    {
+      print (e);
+    }
+  }
+
+  void onFilterBarChange(Observable observable)
+  {
+    try
+    {
+      var view = findListenerOfExactType(TableViewState);
+      if (view is TableViewState)
+      {
+        view.setFilterBar(filterBar);
       }
     }
     catch(e)

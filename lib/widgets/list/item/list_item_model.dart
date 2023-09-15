@@ -237,18 +237,16 @@ class ListItemModel extends BoxModel
 
     // find all descendants
     List<dynamic>? fields = findDescendantsOfExactType(null);
-    if (fields != null) {
-      for (var field in fields) {
-        // form field?
-        if (field is IFormField)
-        {
-          // Build Fields
-          if (this.fields == null) this.fields = [];
-          this.fields!.add(field);
+    for (var field in fields) {
+      // form field?
+      if (field is IFormField)
+      {
+        // Build Fields
+        if (this.fields == null) this.fields = [];
+        this.fields!.add(field);
 
-          // Register Listener to Dirty Field
-          if (field.dirtyObservable != null) field.dirtyObservable!.registerListener(onDirtyListener);
-        }
+        // Register Listener to Dirty Field
+        if (field.dirtyObservable != null) field.dirtyObservable!.registerListener(onDirtyListener);
       }
     }
   }

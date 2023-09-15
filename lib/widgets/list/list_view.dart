@@ -152,7 +152,8 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
         } else if (S.isNullOrEmpty(itemModel.title))
         {
           List<dynamic>? descendants = itemModel.findDescendantsOfExactType(TextModel);
-          if (descendants != null && descendants.isNotEmpty) {
+          if (descendants.isNotEmpty)
+          {
             int i = 0;
             while (i < descendants.length && descendants[i].value == null) {
               i++;

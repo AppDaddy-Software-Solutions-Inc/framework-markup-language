@@ -90,9 +90,13 @@ import 'package:fml/widgets/slider/slider_model.dart';
 import 'package:fml/widgets/splitview/split_model.dart';
 import 'package:fml/widgets/stack/stack_model.dart';
 import 'package:fml/widgets/switch/switch_model.dart';
+import 'package:fml/widgets/table/table_footer_cell_model.dart';
+import 'package:fml/widgets/table/table_footer_model.dart';
 import 'package:fml/widgets/table/table_header_cell_model.dart';
+import 'package:fml/widgets/table/table_header_group_model.dart';
 import 'package:fml/widgets/table/table_header_model.dart';
 import 'package:fml/widgets/table/table_model.dart';
+import 'package:fml/widgets/table/table_norows_model.dart';
 import 'package:fml/widgets/table/table_row_cell_model.dart';
 import 'package:fml/widgets/table/table_row_model.dart';
 import 'package:fml/widgets/tabview/tab_model.dart';
@@ -808,22 +812,51 @@ class WidgetModel implements IDataSourceListener {
 
       case "th":
       case "tableheader":
-        model = TableHeaderModel.fromXml(parent, node);
+        if (parent is TableModel) {
+          model = TableHeaderModel.fromXml(parent, node);
+        }
         break;
 
       case "tr":
       case "tablerow":
-        model = TableRowModel.fromXml(parent, node);
+        if (parent is TableModel) {
+          model = TableRowModel.fromXml(parent, node);
+        }
+        break;
+
+      case "tf":
+      case "tablefooter":
+        if (parent is TableModel) {
+          model = TableFooterModel.fromXml(parent, node);
+        }
+        break;
+
+      case "nodata":
+      case "norows":
+        if (parent is TableModel) {
+          model = TableNoRowsModel.fromXml(parent, node);
+        }
         break;
 
       case "td":
       case "tabledata":
       case "cell":
-        if (parent is TableHeaderModel) {
+        if (parent is TableHeaderModel || parent is TableHeaderGroupModel)
+        {
           model = TableHeaderCellModel.fromXml(parent, node);
         }
         if (parent is TableRowModel) {
           model = TableRowCellModel.fromXml(parent, node);
+        }
+        if (parent is TableFooterModel) {
+          model = TableFooterCellModel.fromXml(parent, node);
+        }
+        break;
+
+      case "tg":
+      case "group":
+        if (parent is TableHeaderModel || parent is TableHeaderGroupModel) {
+          model = TableHeaderGroupModel.fromXml(parent, node);
         }
         break;
 
@@ -1126,14 +1159,21 @@ class WidgetModel implements IDataSourceListener {
 
   dynamic findDescendantOfExactType(Type? T, {String? id}) {
     List<dynamic>? list = findDescendantsOfExactType(T, id: id);
-    return ((list != null) && (list.isNotEmpty)) ? list.first : null;
+    return list.isNotEmpty ? list.first : null;
   }
 
-  List<dynamic>? findDescendantsOfExactType(Type? T, {String? id}) {
+  List<dynamic> findDescendantsOfExactType(Type? T, {String? id, Type? breakOn})
+  {
     List<dynamic> list = [];
-    if (children == null) return null;
-    for (var child in children!) {
-      list.addAll(child._findDescendantsOfExactType(T, id));
+    if (children != null)
+    {
+      for (var child in children!)
+      {
+        if (child.runtimeType != breakOn)
+        {
+          list.addAll(child._findDescendantsOfExactType(T, id));
+        }
+      }
     }
     return list;
   }

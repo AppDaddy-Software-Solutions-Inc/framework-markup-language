@@ -10,7 +10,10 @@ import 'package:fml/observable/binding.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
 import 'package:fml/widgets/box/box_view.dart';
+import 'package:fml/widgets/busy/busy_model.dart';
+import 'package:fml/widgets/table/table_footer_cell_model.dart';
 import 'package:fml/widgets/table/table_header_cell_model.dart';
+import 'package:fml/widgets/table/table_header_group_model.dart';
 import 'package:fml/widgets/table/table_row_cell_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
@@ -36,12 +39,18 @@ class TableViewState extends WidgetState<TableView>
 {
   Widget? busy;
 
+  // indicates if grid is paged or not
+  bool paged = false;
+
   /// [PlutoGridStateManager] has many methods and properties to dynamically manipulate the grid.
   /// You can manipulate the grid dynamically at runtime by passing this through the [onLoadedHandler] callback.
   PlutoGridStateManager? stateManager;
 
   // pluto grid
   PlutoGrid? grid;
+
+  // list of Pluto Columns
+  final List<PlutoColumnGroup> groups = [];
 
   // list of Pluto Columns
   final List<PlutoColumn> columns = [];
@@ -56,14 +65,7 @@ class TableViewState extends WidgetState<TableView>
   final HashMap<TableRowCellModel, Widget> views = HashMap<TableRowCellModel, Widget>();
 
   // hold a pointer to the last selected cell;
-  PlutoCell? lastCell;
-
-  @override
-  void dispose()
-  {
-    super.dispose();
-    stateManager?.removeListener(onSelectedHandler);
-  }
+  PlutoCell? _lastSelectedCell;
 
   closeKeyboard() async
   {
@@ -83,7 +85,6 @@ class TableViewState extends WidgetState<TableView>
   {
     var b = Binding.fromString(property);
     if (b?.property == 'busy') return;
-
     super.onModelChange(model);
   }
 
@@ -169,6 +170,11 @@ class TableViewState extends WidgetState<TableView>
     return row;
   }
 
+  onTap(PlutoCell cell, int rowIdx) async
+  {
+    stateManager?.setCurrentCell(cell, rowIdx);
+  }
+
   Widget cellBuilder(PlutoColumnRendererContext context)
   {
     // get row and column indexes
@@ -183,15 +189,21 @@ class TableViewState extends WidgetState<TableView>
     if (model == null) return Text("");
 
     // return the view
-    if (views.containsKey(model)) return views[model]!;
+    if (!views.containsKey(model))
+    {
+      // build the view
+      Widget view = RepaintBoundary(child: BoxView(model));
 
-    // build the view
-    var view = RepaintBoundary(child: BoxView(model));
+      // cache the view
+      views[model] = view;
+    }
 
-    // cache the view
-    views[model] = view;
+    // we must wrap the cell in a listener to select the row on tap
+    // this isn't necessarily required if the cell doesn't have a gesture detector, onclick, etc
+    // without this, the onTap (select) is consumed by the child view
+    var cell = Listener(child: views[model],onPointerDown: (_) => onTap(context.cell, context.rowIdx));
 
-    return view;
+    return cell;
   }
 
   List<PlutoRow> applyFilters(List<PlutoRow> list)
@@ -310,13 +322,6 @@ class TableViewState extends WidgetState<TableView>
     // convert to list
     var list = fetchedRows.toList();
 
-    // set selected
-    var lastRow = lastCell?.row;
-    if (list.contains(lastRow))
-    {
-      stateManager?.setCurrentCell(lastCell, list.indexOf(lastRow!));
-    }
-
     return Future.value(PlutoInfinityScrollRowsResponse(isLast: isLast, rows: list));
   }
 
@@ -375,13 +380,6 @@ class TableViewState extends WidgetState<TableView>
     // get list of rows
     var fetchedRows = tempList.getRange(max(0, start), min(tempList.length, end)).toList();
 
-    // set selected
-    var lastRow = lastCell?.row;
-    if (fetchedRows.contains(lastRow))
-    {
-      stateManager?.setCurrentCell(lastCell, fetchedRows.indexOf(lastRow!));
-    }
-
     return Future.value(PlutoLazyPaginationResponse(totalPage: pages, rows: fetchedRows));
   }
 
@@ -390,91 +388,80 @@ class TableViewState extends WidgetState<TableView>
   {
     stateManager = event.stateManager;
 
-    // add selection handler
-    stateManager?.removeListener(onSelectedHandler);
-    stateManager?.addListener(onSelectedHandler);
-
+    // autosize columns
     stateManager?.activateColumnsAutoSize();
 
     // show filter bar
-    if (widget.model.filterBar)
-    {
-      stateManager!.setShowColumnFilter(true);
-    }
+    stateManager?.setShowColumnFilter(widget.model.filterBar);
+
+    stateManager?.removeListener(onSelectedHandler);
+    stateManager?.addListener(onSelectedHandler);
   }
 
   // called when a field changes via edit.
   // only applies to simple grid
   void onChangedHandler(final PlutoGridOnChangedEvent event) async
   {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp)
-    {
-      var rowIdx = rows.indexOf(event.row);
-      var colIdx = map.containsKey(event.column) ? map[event.column]!.index : -1;
-      widget.model.onChangeHandler(rowIdx, colIdx, event.value, event.oldValue);
-
-      // we need this to force an update
-      // of the selected data
-      debounce?.cancel();
-      onSelectedHandler();
-    });
+    var rowIdx = rows.indexOf(event.row);
+    var colIdx = map.containsKey(event.column) ? map[event.column]!.index : -1;
+    await widget.model.onChangeHandler(rowIdx, colIdx, event.value, event.oldValue);
+    onSelectedHandler(force: true);
   }
 
-  Timer? debounce;
-  void onSelectedHandler()
+  void onDeselectHandler(PlutoGridOnRowDoubleTapEvent event)
   {
-    if (stateManager == null) return;
+      // de-select all rows
+      for (var row in stateManager!.checkedRows)
+      {
+        stateManager!.setRowChecked(row, false);
+      }
 
-    // we get multiple onSelect calls
-    if (debounce?.isActive ?? false) return;
-    debounce = Timer(Duration(milliseconds: 250),(){});
+      // clear model selection
+      widget.model.onDeSelect();
 
-    // get row and column
-    var row  = stateManager!.currentRow;
-    var cell = stateManager!.currentCell;
+      // clear grid cell
+      stateManager!.clearCurrentCell();
 
-    // edit mode
-    if (stateManager!.isEditing) return;
+      // clear last cell selected
+      _lastSelectedCell = null;
+  }
 
-    // field is editable
-    bool editing = (cell != null && cell == lastCell && stateManager!.isEditableCell(cell));
+  void onSelectedHandler({bool force = false})
+  {
+    if (stateManager == null || stateManager!.currentRow == null || stateManager!.currentCell == null) return;
 
-    // set toggle state
-    Toggle toggle = cell == lastCell ? Toggle.off : Toggle.on;
-    if (editing) toggle = Toggle.on;
+    // deselect
+    if (stateManager!.currentCell == _lastSelectedCell && !force) return;
 
-    // manage toggle state
-    switch (toggle)
+    // remember last cell selected
+    _lastSelectedCell = stateManager!.currentCell!;
+
+    // check/uncheck rows
+    for (var row in stateManager!.checkedRows)
     {
-      case Toggle.off :
-
-        // clear state
-        stateManager?.clearCurrentCell(notify: false);
-
-        // clear model selection
-        widget.model.onDeSelect();
-
-        // clear selected
-        lastCell = null;
-
-        break;
-
-      case Toggle.on :
-
-        // get row index
-        var rowIdx = row != null ? rows.indexOf(row) : -1;
-
-        // get column index
-        var colIdx = map.containsKey(cell?.column) ? map[cell?.column]!.index : -1;
-
-        // set model selection
-        widget.model.onSelect(rowIdx, colIdx);
-
-        // remember last selected
-        lastCell = cell;
-
-        break;
+      if (row != stateManager!.currentRow)
+      {
+        stateManager!.setRowChecked(row, false);
+      }
     }
+
+    // check this row
+    if (stateManager!.currentRow!.checked != true)
+    {
+      stateManager!.setRowChecked(stateManager!.currentRow!, true);
+    }
+
+    // get row index
+    var rowIdx = rows.indexOf(stateManager!.currentRow!);
+
+    // get column index
+    var colIdx = map.containsKey(stateManager!.currentCell!.column) ? map[stateManager!.currentCell!.column]!.index : -1;
+
+    // set model selection
+    widget.model.onSelect(rowIdx, colIdx);
+
+    // remember last cell selected
+    _lastSelectedCell = stateManager!.currentCell!;
   }
 
   // called when a field sort operation happens
@@ -522,11 +509,11 @@ class TableViewState extends WidgetState<TableView>
     switch (mode)
     {
       case "scale":
-        stateManager?.setColumnSizeConfig(PlutoGridColumnSizeConfig(autoSizeMode: PlutoAutoSizeMode.scale));
+        stateManager?.setColumnSizeConfig(PlutoGridColumnSizeConfig(autoSizeMode: PlutoAutoSizeMode.scale, resizeMode: _getResizeMode()));
         break;
 
       case "equal":
-        stateManager?.setColumnSizeConfig(PlutoGridColumnSizeConfig(autoSizeMode: PlutoAutoSizeMode.equal));
+        stateManager?.setColumnSizeConfig(PlutoGridColumnSizeConfig(autoSizeMode: PlutoAutoSizeMode.equal, resizeMode: _getResizeMode()));
         break;
 
       case "fit":
@@ -538,16 +525,37 @@ class TableViewState extends WidgetState<TableView>
 
       case "none":
       default:
-      stateManager?.setColumnSizeConfig(PlutoGridColumnSizeConfig(autoSizeMode: PlutoAutoSizeMode.none));
+      stateManager?.setColumnSizeConfig(PlutoGridColumnSizeConfig(autoSizeMode: PlutoAutoSizeMode.none, resizeMode: _getResizeMode()));
       break;
     }
   }
 
   // sets the page size
+  void setFilterBar(bool? on)
+  {
+    // toggle filter bar
+    stateManager?.setShowColumnFilter(on == true);
+  }
+
+  // sets the page size
   void setPageSize(int size)
   {
-    if (size <= 0) return;
-    stateManager?.setPageSize(size);
+    bool doRebuild = (size > 0 && !paged) || (size <= 0 && paged);
+
+    // rebuild the grid
+    if (doRebuild)
+    {
+      grid = null;
+      setState(() {});
+      return;
+    }
+
+    // change the page size
+    if (paged)
+    {
+      stateManager?.setPageSize(size);
+      refresh();
+    }
   }
 
   Future<String?> exportToCSV() async
@@ -707,6 +715,27 @@ class TableViewState extends WidgetState<TableView>
     return PlutoColumnTextAlign.center;
   }
 
+  PlutoResizeMode _getResizeMode()
+  {
+    var resize = PlutoResizeMode.normal;
+    switch (widget.model.header?.resize?.trim().toLowerCase())
+    {
+      case "none":
+        resize = PlutoResizeMode.none;
+        break;
+
+      case "pushpull":
+        resize = PlutoResizeMode.pushAndPull;
+        break;
+
+      case "normal":
+      default:
+        resize = PlutoResizeMode.normal;
+        break;
+    }
+    return resize;
+  }
+
   PlutoGridConfiguration _buildConfig()
   {
     var colHeight    = widget.model.header?.height ?? PlutoGridSettings.rowHeight;
@@ -721,6 +750,9 @@ class TableViewState extends WidgetState<TableView>
     var rowColor     = widget.model.color ?? Colors.white;
     var oddRowColor  = widget.model.color != null && widget.model.color2 != null ? widget.model.color : null;
     var evenRowColor = widget.model.color != null && widget.model.color2 != null ? widget.model.color : null;
+
+    var primaryColor = Color(0xFFDCF5FF);
+    var primaryBorderColor = Colors.lightBlue;
 
     // style
     var style = PlutoGridStyleConfig(
@@ -747,15 +779,108 @@ class TableViewState extends WidgetState<TableView>
 
       evenRowColor: evenRowColor,
 
+      checkedColor: primaryColor,
+
+      //inactivatedBorderColor: primaryBorderColor,
+
+      activatedColor: primaryColor,
+
+      //activatedBorderColor: primaryBorderColor,
+
+      //cellColorInReadOnlyState: primaryColor,
+
+      //cellColorInEditState: primaryColor,
+
       enableGridBorderShadow: widget.model.shadow,
     );
 
+    // column fit
+    var fit = PlutoAutoSizeMode.scale;
+    switch (widget.model.header?.fit?.trim().toLowerCase())
+    {
+      case "equal":
+        fit = PlutoAutoSizeMode.equal;
+        break;
+
+      case "none":
+        fit = PlutoAutoSizeMode.none;
+        break;
+
+      case "scale":
+      default:
+        fit = PlutoAutoSizeMode.scale;
+        break;
+    }
+
     // config
-    return PlutoGridConfiguration(style: style);
+    return PlutoGridConfiguration(style: style, columnSize: PlutoGridColumnSizeConfig(autoSizeMode: fit, resizeMode: _getResizeMode()));
+  }
+
+  PlutoColumnGroup? _buildColumnGroup(TableHeaderGroupModel model)
+  {
+    // ignore this group
+    if (!model.hasDescendantCells()) return null;
+
+    List<PlutoColumnGroup> groups = [];
+    List<String> fields = [];
+
+    // iterate through groups
+    for (var mdl in model.groups)
+    {
+      var group = _buildColumnGroup(mdl);
+      if (group != null) groups.add(group);
+    }
+
+    // iterate through groups
+    for (var mdl in model.cells)
+    {
+      for (var entry in map.entries)
+      {
+        if (entry.value == mdl)
+        {
+          var column = entry.key;
+          fields.add(column.field);
+          break;
+        }
+      }
+    }
+
+    // something went wrong
+    if (groups.isEmpty && fields.isEmpty) return null;
+
+    var title  = model.title;
+    var header = WidgetSpan(child:BoxView(model));
+
+    var group = PlutoColumnGroup(
+      title: title ?? "",
+      titleSpan: header,
+      fields: fields.isNotEmpty ? fields: null,
+      children: fields.isNotEmpty ? null : groups.isNotEmpty ? groups : null,
+      expandedColumn:  false,
+      backgroundColor: model.color,
+      titlePadding: EdgeInsets.all(1),
+    );
+
+    return group;
+  }
+
+  Widget _footerBuilder(PlutoColumnFooterRendererContext context, TableFooterCellModel model)
+  {
+    var view = WidgetSpan(child:BoxView(model));
+
+    var footer = PlutoAggregateColumnFooter(
+      rendererContext: context,
+      type: PlutoAggregateColumnType.max,
+      format: '#,###',
+      alignment: Alignment.center,
+      titleSpanBuilder: (text) => [view]);
+
+    return footer;
   }
 
   void _buildColumns()
   {
+    groups.clear();
     columns.clear();
     map.clear();
 
@@ -765,7 +890,7 @@ class TableViewState extends WidgetState<TableView>
     for (var cell in widget.model.header!.cells)
     {
       var height = widget.model.header?.height ?? PlutoGridSettings.rowHeight;
-      var header = WidgetSpan(child: SizedBox(height: height, child:BoxView(cell)));
+      var header = WidgetSpan(child:BoxView(cell));
       var title  = cell.title ?? cell.field ?? "Column ${cell.index}";
 
       // field names must be unique across columns
@@ -793,6 +918,14 @@ class TableViewState extends WidgetState<TableView>
       // get cell alignment
       var alignment = _getAlignment();
 
+      // footer builder
+      TableFooterCellModel? footer;
+      if (widget.model.footer?.cells != null && cell.index < widget.model.footer!.cells.length)
+      {
+        footer = widget.model.footer!.cells[cell.index];
+      }
+      var footerBuilder = footer != null ? (PlutoColumnFooterRendererContext context) => _footerBuilder(context, footer!) : null;
+
       // build the column
       var column = PlutoColumn(
           title: title,
@@ -808,17 +941,29 @@ class TableViewState extends WidgetState<TableView>
           enableContextMenu: showMenu,
           enableDropToResize: resizeable,
           readOnly: !editable,
-          titlePadding: EdgeInsets.all(0),
+          titlePadding: EdgeInsets.all(1),
           cellPadding: EdgeInsets.all(0),
+          backgroundColor: cell.color,
           width: cell.widthOuter ?? PlutoGridSettings.columnWidth,
           minWidth: PlutoGridSettings.minColumnWidth,
-          renderer: builder);
+          renderer: builder,
+          footerRenderer: footerBuilder);
 
       // add to the column list
       map[column] = cell;
 
       // add to columns
       columns.add(column);
+    }
+
+    // build column groups
+    for (var model in widget.model.header!.groups)
+    {
+      var group = _buildColumnGroup(model);
+      if (group != null)
+      {
+        groups.add(group);
+      }
     }
   }
 
@@ -841,16 +986,29 @@ class TableViewState extends WidgetState<TableView>
 
       var config = _buildConfig();
 
+      // Busy / Loading Indicator
+      if (widget.model.showBusy)
+      {
+        busy ??= BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable).getView();
+      }
+
+      // paged grid
+      paged = widget.model.pageSize > 0;
+
       // build the grid
       grid = PlutoGrid(key: GlobalKey(),
           configuration: config,
+          columnGroups: groups,
           columns: columns,
           rows: [],
           mode: PlutoGridMode.normal,
           onLoaded: onLoadedHandler,
           onSorted: onSortedHandler,
           onChanged: onChangedHandler,
-          createFooter: widget.model.pageSize > 0 ?  _pageLoader : _lazyLoader);
+          onRowDoubleTap: onDeselectHandler,
+          //onSelected: onSelectedHandler,
+          noRowsWidget: widget.model.norows?.getView(),
+          createFooter: paged ?  _pageLoader : _lazyLoader);
     }
 
     // apply constraints
@@ -858,6 +1016,12 @@ class TableViewState extends WidgetState<TableView>
 
     // add margins around the entire widget
     view = addMargins(view);
+
+    // display busy widget over table
+    if (widget.model.showBusy)
+    {
+      view = Stack(children: [view, Center(child: busy)]);
+    }
 
     return view;
   }

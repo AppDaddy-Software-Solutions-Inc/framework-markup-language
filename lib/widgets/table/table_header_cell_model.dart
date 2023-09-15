@@ -5,6 +5,7 @@ import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/boolean.dart';
 import 'package:fml/observable/observables/string.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/table/table_header_group_model.dart';
 import 'package:fml/widgets/table/table_header_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -16,7 +17,7 @@ enum ColumnTypes {string, numeric, date, time}
 class TableHeaderCellModel extends BoxModel
 {
   // header
-  TableHeaderModel? get hdr => parent is TableHeaderModel ? parent as TableHeaderModel : null;
+  TableHeaderModel? get hdr => parent is TableHeaderModel ? parent as TableHeaderModel : parent is TableHeaderGroupModel ? (parent as TableHeaderGroupModel).hdr : null;
 
   // cell is dynamic?
   bool get isDynamic => ((element?.toString().contains("{*}") ?? false) || (element?.toString().contains("{field}") ?? false)) && (hdr?.table?.hasDataSource ?? false);

@@ -2,6 +2,7 @@
 import 'package:collection/collection.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/table/table_header_group_model.dart';
 import 'package:fml/widgets/table/table_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/table/table_header_cell_model.dart';
@@ -13,6 +14,9 @@ class TableHeaderModel extends BoxModel
 {
   @override
   String? get layout => super.layout ?? "column";
+
+  // rendered group models
+  final List<TableHeaderGroupModel> groups = [];
 
   // rendered cell models
   final List<TableHeaderCellModel> cells = [];
@@ -135,7 +139,7 @@ class TableHeaderModel extends BoxModel
   }
   bool get filter => _filter?.get() ?? table?.filter ?? false;
 
-  // page size - used for paging
+  // size - defines how columns are fitted
   StringObservable? _fit;
   set fit(dynamic v)
   {
@@ -150,6 +154,21 @@ class TableHeaderModel extends BoxModel
   }
   String? get fit => _fit?.get();
 
+  // resize - defines how columns resized
+  StringObservable? _resize;
+  set resize(dynamic v)
+  {
+    if (_resize != null)
+    {
+      _resize!.set(v);
+    }
+    else if (v != null)
+    {
+      _resize = StringObservable(Binding.toKey(id, 'resize'), v, scope: scope, listener: onFitChange);
+    }
+  }
+  String? get resize => _resize?.get();
+  
   TableHeaderModel(WidgetModel parent, String? id) : super(parent, id, scope: Scope(parent: parent.scope));
 
   static TableHeaderModel? fromXml(WidgetModel parent, XmlElement xml, {Map<dynamic, dynamic>? data})
@@ -183,9 +202,13 @@ class TableHeaderModel extends BoxModel
     editable   = Xml.get(node: xml, tag: 'editable');
     filter     = Xml.get(node: xml, tag: 'filter');
     fit        = Xml.get(node: xml, tag: 'fit');
+    resize     = Xml.get(node: xml, tag: 'resize');
 
     // get header cells
-    cells.addAll(findChildrenOfExactType(TableHeaderCellModel).cast<TableHeaderCellModel>());
+    cells.addAll(findDescendantsOfExactType(TableHeaderCellModel,breakOn: TableModel).cast<TableHeaderCellModel>());
+
+    // get cell groups
+    groups.addAll(findDescendantsOfExactType(TableHeaderGroupModel,breakOn: TableModel).cast<TableHeaderGroupModel>());
 
     // remove cells from child list
     removeChildrenOfExactType(TableHeaderCellModel);

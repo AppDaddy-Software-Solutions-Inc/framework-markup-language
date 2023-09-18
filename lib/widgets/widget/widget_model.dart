@@ -374,6 +374,10 @@ class WidgetModel implements IDataSourceListener {
         model = CenterModel.fromXml(parent, node);
         break;
 
+      case "chart":
+        model = ChartModel.fromXml(parent, node);
+        break;
+
       case "linechart":
         model = LineChartModel.fromXml(parent, node);
         break;

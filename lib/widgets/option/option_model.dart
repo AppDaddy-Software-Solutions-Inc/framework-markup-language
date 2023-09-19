@@ -2,6 +2,7 @@
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
+import 'package:pluto_grid_export/pluto_grid_export.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/row/row_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
@@ -36,9 +37,7 @@ class OptionModel extends ViewableWidgetModel
     return null;
   }
 
-  //////////
   // tags 
-  //////////
   StringObservable? _tags;
   set tags(dynamic v) {
     if (_tags != null) {
@@ -91,19 +90,44 @@ class OptionModel extends ViewableWidgetModel
     String? label = Xml.attribute(node: xml, tag: 'label');
     if (label == null)
     {
+      // legacy
       XmlElement? node = Xml.getElement(node: xml, tag: 'label');
       if (node != null)
       {
-        if (Xml.hasChildElements(node)) {
+        if (Xml.hasChildElements(node))
+        {
           this.label = RowModel.fromXml(this, node);
-        } else {
+        }
+        else
+        {
           this.label = TextModel(this, null, value: Xml.getText(node));
         }
       }
+
+      // OPTION child elements do
+      // no need to be wrapped in label
+      else if (viewableChildren.isNotEmpty)
+      {
+        // one child
+        if (viewableChildren.length == 1)
+        {
+          this.label = viewableChildren.first.model as ViewableWidgetModel;
+        }
+        // multiple children
+        else
+        {
+          this.label = RowModel(this,null);
+          this.label!.children = viewableChildren.toList();
+        }
+      }
     }
-    else {
+    else
+    {
       this.label = TextModel(this, null, value: label);
     }
+
+    // remove viewable children
+    children?.removeWhere((child) => viewableChildren.contains(child));
 
     // Empty?
     if (this.label == null)
@@ -118,7 +142,8 @@ class OptionModel extends ViewableWidgetModel
       labelValue = Xml.get(node: xml, tag: 'value');
       this.label = TextModel(this, null, value: labelValue);
     }
-    // Value
+
+    // value
     String? value = Xml.get(node: xml, tag: 'value');
     if (value == null) {
       this.value = label;
@@ -130,5 +155,15 @@ class OptionModel extends ViewableWidgetModel
     labelValue = label;
 
     tags = Xml.get(node: xml, tag: 'tags');
+  }
+
+  @override
+  void dispose()
+  {
+    // dispose of label children
+    label?.dispose();
+
+    // dispose of animations
+    super.dispose();
   }
 }

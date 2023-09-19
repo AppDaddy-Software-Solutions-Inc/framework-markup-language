@@ -341,7 +341,6 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
       // clone the data so the datasource does not manipulate its inherited widgets data in the original source.
       data = data.clone();
     }
-
     onSuccess(data, code: HttpStatus.ok);
     return data;
   }

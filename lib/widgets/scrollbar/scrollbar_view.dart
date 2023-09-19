@@ -2,7 +2,6 @@
 import 'dart:async';
 import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/widgets/widget/widget_state.dart';
 
 typedef OnChangeCallback = void Function (double percent);
@@ -76,13 +75,6 @@ class _ScrollbarViewState extends WidgetState<ScrollbarView>
       onMouseExit(null);
     });
     }
-  }
-
-  /// Callback to fire the [_ScrollbarViewState.build] when the [ScrollbarModel] changes
-  @override
-  onModelChange(WidgetModel model, {String? property, dynamic value})
-  {
-    if (mounted) setState((){});
   }
 
   double toLocal(double value)

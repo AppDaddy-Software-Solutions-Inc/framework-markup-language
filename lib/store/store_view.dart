@@ -19,6 +19,7 @@ import 'package:fml/widgets/menu/menu_model.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
 import 'package:provider/provider.dart';
 import 'package:fml/helper/common_helpers.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 final bool enableTestPlayground = false;
 
@@ -127,7 +128,15 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
             body: SafeArea(child: Stack(children: [Container(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.bottomRight, end: Alignment.topLeft, stops: [0.4, 1.0], colors: [/*Theme.of(context).colorScheme.inversePrimary*/Theme.of(context).colorScheme.surfaceVariant, Theme.of(context).colorScheme.surface])),),
               Center(child: Opacity(opacity: 0.03, child: Image(image: AssetImage('assets/images/fml-logo.png')))),
               Center(child: apps.isEmpty ? noAppDisplay : storeDisplay),
-              Align(alignment: Alignment.bottomLeft, child: Padding(padding: EdgeInsets.only(left: 5), child: Text('${phrase.version} $version', style: TextStyle(color: Colors.black26))),),
+              Align(alignment: Alignment.bottomLeft, child: Column(mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(padding: EdgeInsets.only(left: 5), child: InkWell(
+                      child: Text('Privacy Policy', style: TextStyle(color: Colors.blueAccent, decoration: TextDecoration.underline)),
+                      onTap: () => launchUrl(Uri(scheme: 'https', host: 'fml.dev' , path: '/privacy.html'))
+                  ),),
+                  Padding(padding: EdgeInsets.only(left: 5), child: Text('${phrase.version} $version', style: TextStyle(color: Colors.black26)))
+                ],
+              ),),
               Center(child: BusyModel(Store(), visible: Store().busy, observable: Store().busyObservable, modal: true).getView())]))
         )
     );

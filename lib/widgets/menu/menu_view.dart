@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/menu/menu_model.dart';
 import 'package:fml/widgets/menu/item/menu_item_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
@@ -94,12 +93,6 @@ class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling
     } catch(e) {
       Log().error('onScroll Error: $e');
     }
-  }
-
-  /// Callback function for when the model changes, used to force a rebuild with setState()
-  @override
-  onModelChange(WidgetModel model, {String? property, dynamic value}) {
-    if (mounted) setState(() {});
   }
 
   Widget _buildMenuItems(double width) {

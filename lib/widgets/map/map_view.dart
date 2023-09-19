@@ -42,12 +42,10 @@ class _MapViewState extends WidgetState<MapView>
   @override
   onModelChange(WidgetModel model,{String? property, dynamic value})
   {
-    if (mounted)
-    {
-      var b = Binding.fromString(property);
-      if (b?.property == 'busy') return;
-      setState(() {});
-    }
+    var b = Binding.fromString(property);
+    if (b?.property == 'busy') return;
+
+    super.onModelChange(model);
   }
 
   FlutterMap? _buildMap()

@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
-import 'package:fml/widgets/widget/widget_model.dart'    ;
 import 'package:fml/event/event.dart'             ;
 import 'package:fml/widgets/framework/framework_model.dart' ;
 import 'package:fml/widgets/box/box_view.dart';
@@ -173,12 +172,6 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
         closeDrawer('bottom');
       }
     }
-  }
-  /// Callback function for when the model changes, used to force a rebuild with setState()
-  @override
-  onModelChange(WidgetModel model,{String? property, dynamic value})
-  {
-    if (mounted) setState((){});
   }
 
   preventPop() {
@@ -770,6 +763,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
+    print('building drawer...');
     // save system constraints
     onLayout(constraints);
 

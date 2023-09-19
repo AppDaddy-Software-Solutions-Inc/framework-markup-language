@@ -179,15 +179,8 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   @override
   onModelChange(WidgetModel model,{String? property, dynamic value})
   {
-    try
-    {
-      var b = Binding.fromString(property);
-      if (widget.model.initialized && mounted && b?.property != 'busy') setState(() {});
-    }
-    catch(e)
-    {
-      Log().exception(e, caller: 'Framework.View');
-    }
+    var b = Binding.fromString(property);
+    if (widget.model.initialized && mounted && b?.property != 'busy') setState(() {});
   }
 
   bool onScroll (ScrollNotification notification)
@@ -386,29 +379,30 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     SystemChrome.setPreferredOrientations(myOrientation);
   }
 
-  GestureDetector _getGestureDetector(Widget view, DrawerView? drawer)
+  Widget _buildDrawers(Widget view)
   {
-    late final GestureDetector detector;
+    // drawer defined
+    if (widget.model.drawer == null) return view;
 
-    // gesture detector is used to control the drawer
-    if (drawer != null)
-    {
-      detector = GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onTap: () =>  WidgetModel.unfocus(),
-          onVerticalDragStart: (dragStartDetails) => drawer.onDragOpen(dragStartDetails, 'vertical'),
-          onHorizontalDragStart: (dragStartDetails) => drawer.onDragOpen(dragStartDetails, 'horizontal'),
-          onVerticalDragUpdate: (dragUpdateDetails) => drawer.onDragSheet(dragUpdateDetails, 'vertical', true),
-          onHorizontalDragUpdate: (dragUpdateDetails) => drawer.onDragSheet(dragUpdateDetails, 'horizontal', true),
-          onVerticalDragEnd: (dragEndDetails) => drawer.onDragEnd(dragEndDetails, 'vertical', false),
-          onHorizontalDragEnd: (dragEndDetails) => drawer.onDragEnd(dragEndDetails, 'horizontal', false),
-          onLongPressStart: kDebugMode ? (_) => onLongPressStart() : null,
-          onLongPressEnd:   kDebugMode ? (_) => onLongPressEnd()   : null,
-          child: view);
+    // wrap view in stacked view
+    var drawer = DrawerView(widget.model.drawer!, view);
 
-      return detector;
-    }
+    return GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () =>  WidgetModel.unfocus(),
+        onVerticalDragStart: (dragStartDetails) => drawer.onDragOpen(dragStartDetails, 'vertical'),
+        onHorizontalDragStart: (dragStartDetails) => drawer.onDragOpen(dragStartDetails, 'horizontal'),
+        onVerticalDragUpdate: (dragUpdateDetails) => drawer.onDragSheet(dragUpdateDetails, 'vertical', true),
+        onHorizontalDragUpdate: (dragUpdateDetails) => drawer.onDragSheet(dragUpdateDetails, 'horizontal', true),
+        onVerticalDragEnd: (dragEndDetails) => drawer.onDragEnd(dragEndDetails, 'vertical', false),
+        onHorizontalDragEnd: (dragEndDetails) => drawer.onDragEnd(dragEndDetails, 'horizontal', false),
+        onLongPressStart: kDebugMode ? (_) => onLongPressStart() : null,
+        onLongPressEnd:   kDebugMode ? (_) => onLongPressEnd()   : null,
+        child: drawer);
+  }
 
+  GestureDetector _setGestures(Widget view)
+  {
     // simulate a swipe to move back on all desktop applications
     // and mobile IOS applications
     bool enableSwipeBack = isDesktop || (isMobile && System().useragent == "ios");
@@ -416,7 +410,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     // gesture detector is swipe back on IOS
     if (enableSwipeBack)
     {
-      detector = GestureDetector(behavior: HitTestBehavior.translucent,
+      return GestureDetector(behavior: HitTestBehavior.translucent,
           onHorizontalDragStart: onDragStart,
           onHorizontalDragEnd: onDragEnd,
           onHorizontalDragUpdate: onDragUpdate,
@@ -424,18 +418,14 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
           onLongPressStart: kDebugMode ? (_) => onLongPressStart() : null,
           onLongPressEnd:   kDebugMode ? (_) => onLongPressEnd()   : null,
           child: view);
-
-      return detector;
     }
 
     // standard gesture detector for commit
-    detector = GestureDetector(behavior: HitTestBehavior.translucent,
+    return GestureDetector(behavior: HitTestBehavior.translucent,
         onTap: () =>  WidgetModel.unfocus(),
         onLongPressStart: kDebugMode ? (_) => onLongPressStart() : null,
         onLongPressEnd:   kDebugMode ? (_) => onLongPressEnd()   : null,
         child: view);
-
-    return detector;
   }
 
   @override
@@ -491,17 +481,15 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     // framework is header, body, footer stacked in a single column inside a fixed frame
     Widget view = Column(children: [header, body, footer]);
 
-    // We need to provide the stacks children to drawer because positioned
-    // widgets must be direct children but the drawer uses a builder widget
-    DrawerView? drawer;
+    // wrapped drawer view?
     if (widget.model.drawer != null)
     {
-      drawer = DrawerView(widget.model.drawer!, view);
-      view = Stack(children: [view,drawer]);
+      view = _buildDrawers(view);
     }
-
-    // wrap view in gesture detector
-    view = _getGestureDetector(view,drawer);
+    else
+    {
+      view = _setGestures(view);
+    }
 
     //check to ensure framework is null before applying SA
     if (widget.model.framework == null) view = SafeArea(child: view);

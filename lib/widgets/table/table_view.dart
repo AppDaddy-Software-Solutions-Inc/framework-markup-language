@@ -474,6 +474,7 @@ class TableViewState extends WidgetState<TableView>
   {
     grid = null;
     rows.clear();
+    views.clear();
     super.onModelChange(widget.model);
   }
 
@@ -482,6 +483,14 @@ class TableViewState extends WidgetState<TableView>
   {
     // force a page reload
     stateManager?.eventManager?.addEvent(PlutoGridSetColumnFilterEvent(filterRows: []));
+  }
+
+  // forces the lazy/page loaders to refire
+  void reload()
+  {
+    rows.clear();
+    views.clear();
+    refresh();
   }
 
   List<String> getColumnTitles(PlutoGridStateManager state) => getVisibleColumns(state).map((e) => e.title).toList();
@@ -996,7 +1005,7 @@ class TableViewState extends WidgetState<TableView>
       paged = widget.model.pageSize > 0;
 
       // build the grid
-      grid = PlutoGrid(key: GlobalKey(),
+      grid = PlutoGrid(
           configuration: config,
           columnGroups: groups,
           columns: columns,

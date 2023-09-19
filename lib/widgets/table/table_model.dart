@@ -499,7 +499,7 @@ class TableModel extends BoxModel implements IForm
     var view = findListenerOfExactType(TableViewState);
     if (view is TableViewState)
     {
-      hasDynamicHeaders ? view.rebuild() : view.refresh();
+      hasDynamicHeaders ? view.rebuild() : view.reload();
     }
 
     return true;

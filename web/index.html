@@ -137,7 +137,7 @@
                 onEntrypointLoaded: async function(engineInitializer)
                 {
                     // if (loadingText != null) loadingText.textContent = "Initializing engine...";
-                    let config = { renderer: renderer, useColorEmoji: true }
+                    let config = { renderer: renderer, useColorEmoji: true, canvasKitBaseUrl: "/canvaskit/"}
                     let appRunner = await engineInitializer.initializeEngine(config)
 
                     // remove loading image and text

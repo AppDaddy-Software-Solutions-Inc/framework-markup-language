@@ -38,9 +38,17 @@ import 'package:fml/widgets/camera/camera_model.dart';
 import 'package:fml/widgets/card/card_model.dart';
 import 'package:fml/widgets/center/center_model.dart';
 import 'package:fml/widgets/chart/chart_model.dart';
-import 'package:fml/widgets/chart/axis/chart_axis_model.dart';
+import 'package:fml/widgets/chart_painter/axis/chart_axis_model.dart';
 import 'package:fml/widgets/chart/label/chart_label_model.dart';
 import 'package:fml/widgets/chart/series/chart_series_model.dart';
+import 'package:fml/widgets/chart_painter/bar/bar_chart_model.dart';
+import 'package:fml/widgets/chart_painter/bar/bar_series.dart';
+import 'package:fml/widgets/chart_painter/chart_model.dart';
+import 'package:fml/widgets/chart_painter/pie/pie_chart_model.dart';
+
+// import 'package:fml/widgets/chart_syncfusion/chart_model.dart' as SFCHART;
+// import 'package:fml/widgets/chart_syncfusion/axis/chart_axis_model.dart' as SFCHART;
+// import 'package:fml/widgets/chart_syncfusion/series/chart_series_model.dart' as SFCHART;
 import 'package:fml/widgets/checkbox/checkbox_model.dart';
 import 'package:fml/widgets/column/column_model.dart';
 import 'package:fml/widgets/box/box_model.dart';
@@ -129,6 +137,10 @@ import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
+
+import '../chart_painter/line/line_chart_model.dart';
+import '../chart_painter/line/line_series.dart';
+import '../chart_painter/pie/pie_series.dart';
 
 abstract class IModelListener {
   onModelChange(WidgetModel model, {String? property, dynamic value});
@@ -368,6 +380,18 @@ class WidgetModel implements IDataSourceListener {
 
       case "chart":
         model = ChartModel.fromXml(parent, node);
+        break;
+
+      case "linechart":
+        model = LineChartModel.fromXml(parent, node);
+        break;
+
+      case "piechart":
+        model = PieChartModel.fromXml(parent, node);
+        break;
+
+      case "barchart":
+        model = BarChartModel.fromXml(parent, node);
         break;
 
       // case "sfchart":
@@ -774,6 +798,12 @@ class WidgetModel implements IDataSourceListener {
       case "series":
         if (parent is ChartModel) {
           model = ChartSeriesModel.fromXml(parent, node);
+        }else if (parent is BarChartModel){
+          model = BarChartSeriesModel.fromXml(parent, node);
+        } else if (parent is LineChartModel){
+          model = LineChartSeriesModel.fromXml(parent, node);
+        }else if (parent is PieChartModel){
+          model = PieChartSeriesModel.fromXml(parent, node);
         }
         // else if (parent is SFCHART.ChartModel) model = SFCHART.ChartSeriesModel.fromXml(parent, node);
         break;
@@ -924,14 +954,14 @@ class WidgetModel implements IDataSourceListener {
         break;
 
       case "xaxis":
-        if (parent is ChartModel) {
+        if (parent is ChartPainterModel) {
           model = ChartAxisModel.fromXml(parent, node, ChartAxis.X);
         }
         // else if (parent is SFCHART.ChartModel) model = SFCHART.ChartAxisModel.fromXml(parent, node, SFCHART.Axis.X);
         break;
 
       case "yaxis":
-        if (parent is ChartModel) {
+        if (parent is ChartPainterModel) {
           model = ChartAxisModel.fromXml(parent, node, ChartAxis.Y);
         }
         // else if (parent is SFCHART.ChartModel) model = SFCHART.ChartAxisModel.fromXml(parent, node, SFCHART.Axis.Y);

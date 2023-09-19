@@ -206,7 +206,15 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     );
   }
 
-  _handleSubmit(String _) {
+  void _handleOnChange(String value)
+  {
+    if (widget.model.editable == false)
+    {
+      widget.model.controller?.value = TextEditingValue(text: widget.model.value);
+    }
+  }
+
+  void _handleSubmit(String _) {
     try {
       if (S.isNullOrEmpty(widget.model.keyboardInput) ||
           widget.model.keyboardInput!.toLowerCase() == 'done' ||
@@ -278,28 +286,6 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
 
     // reset the timer
     commitTimer = Timer(Duration(milliseconds: 1000), () async => _commit());
-  }
-
-  onValue(String text)
-  {
-    if (widget.onChangeCallback != null)
-    {
-      widget.onChangeCallback(widget.model, text);
-    }
-
-    var editable = (widget.model.editable != false);
-    if (!editable)
-    {
-      setState(()
-      {
-        var oldcursorPos = widget.model.controller!.selection.base.offset;
-        widget.model.controller!.value = TextEditingValue(
-            text: widget.model.value ?? "",
-            selection:
-                TextSelection.fromPosition(TextPosition(offset: oldcursorPos)));
-      });
-      return;
-    }
   }
 
   void onClear()
@@ -406,7 +392,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
   {
     var keyboardType = widget.model.keyboardType?.trim().toLowerCase();
 
-    // keyboartd based on format type
+    // keyboard based on format type
     switch (widget.model.formatType)
     {
       case 'expire':
@@ -654,6 +640,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
         minLines: minLines,
         maxLengthEnforcement: length != null ? MaxLengthEnforcement.enforced : MaxLengthEnforcement.none,
         decoration: _getDecoration(),
+        onChanged: _handleOnChange,
         onSubmitted: _handleSubmit);
 
     if (widget.model.dense) view = Padding(padding: EdgeInsets.all(4), child: view);

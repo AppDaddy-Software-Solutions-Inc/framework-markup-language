@@ -22,6 +22,8 @@ class ScribbleView extends StatefulWidget implements IWidgetView
 
 class _ScribbleViewState extends WidgetState<ScribbleView>
 {
+  double width  = 300;
+  double height = 200;
 
   @override
   void dispose()
@@ -80,11 +82,7 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
         options: options,
         color: Colors.black // Hardcode color to black for export a there will be no background/theming
     );
-
-    var constraints = widget.model.constraints;
-    return await painter.export(Size(
-        widget.model.width ?? constraints.maxWidth ?? constraints.minWidth ?? 300,
-        widget.model.height ?? constraints.maxHeight?? constraints.minHeight?? 200));
+    return await painter.export(Size(width,height));
   }
 
   Future<void> updateSizeOption(double size) async {
@@ -121,20 +119,11 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
   void onPointerMove(PointerMoveEvent details) {
     if (canScribble == true)
     {
-      var constraints = widget.model.constraints;
-
       final box = context.findRenderObject() as RenderBox;
       final offset = box.globalToLocal(details.position);
       late final Point point;
-      double w = widget.model.width ??
-          constraints.maxWidth ??
-          constraints.minWidth ??
-          300;
-      double h = widget.model.height ??
-          constraints.maxHeight??
-          constraints.minHeight??
-          200;
-      if (offset.dx < w && offset.dx > 0 && offset.dy < h && offset.dy > 0) {
+      if (offset.dx < width && offset.dx > 0 && offset.dy < height && offset.dy > 0)
+      {
         if (details.kind == PointerDeviceKind.stylus) {
           point = Point(
             offset.dx,
@@ -159,7 +148,8 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
     }
   }
 
-  Widget buildCurrentPath(BuildContext context) {
+  Widget buildCurrentPath(BuildContext context)
+  {
     return Listener(
       onPointerDown: onPointerDown,
       onPointerMove: onPointerMove,
@@ -167,8 +157,8 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
       child: RepaintBoundary(
         child: Container(
             color: Colors.transparent,
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
+            width: width,
+            height: height,
             child: StreamBuilder<Stroke>(
                 stream: currentLineStreamController.stream,
                 builder: (context, snapshot) {
@@ -184,11 +174,12 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
     );
   }
 
-  Widget buildAllPaths(BuildContext context) {
+  Widget buildAllPaths(BuildContext context)
+  {
     return RepaintBoundary(
       child: SizedBox(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
+        width: width,
+        height: height,
         child: StreamBuilder<List<Stroke>>(
           stream: linesStreamController.stream,
           builder: (context, snapshot) {
@@ -388,8 +379,14 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
       Icon(Icons.mode_edit_outlined, size: 64, color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5))],);
 
     BorderSide borderSide = BorderSide(width: 2, color: Theme.of(context).colorScheme.surfaceVariant);
-    
-    Widget view = Container(decoration: BoxDecoration(
+
+    width  = widget.model.getWidth(widthParent: constraints.maxWidth) ?? width;
+    height = widget.model.getHeight(heightParent: constraints.maxHeight) ?? height;
+
+    Widget view = Container(
+      width: width,
+      height:height,
+      decoration: BoxDecoration(
       color: Theme.of(context).colorScheme.surface,
       borderRadius: BorderRadius.all(Radius.circular(8)
       ),

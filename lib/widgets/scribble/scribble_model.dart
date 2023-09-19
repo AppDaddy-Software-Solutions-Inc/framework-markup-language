@@ -11,20 +11,9 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:perfect_freehand/perfect_freehand.dart';
 
-// enum PointType { tap, move }
-//
-// class Point
-// {
-//   Offset offset;
-//   PointType type;
-//   Point(this.offset, this.type);
-// }
-
 class ScribbleModel extends FormFieldModel implements IFormField
 {
-  ///////////
-  /* Value */
-  ///////////
+  // Value 
   StringObservable? _value;
   @override
   set value (dynamic v)
@@ -40,17 +29,12 @@ class ScribbleModel extends FormFieldModel implements IFormField
   }
   @override
   dynamic get value => _value?.get() ?? defaultValue;
-
-
-  ///////////////////
-  /* Default Value */
-  ///////////////////
+  
+  // Default Value
   @override
   dynamic get defaultValue => null;
 
-  ///////////
-  /* hint */
-  ///////////
+  // hint
   StringObservable? _hint;
   set hint (dynamic v)
   {
@@ -65,9 +49,7 @@ class ScribbleModel extends FormFieldModel implements IFormField
   }
   String? get hint => _hint?.get();
 
-  ///////////////
-  /* font size */
-  ///////////////
+  // font size
   DoubleObservable? _size;
   set size (dynamic v)
   {
@@ -82,9 +64,7 @@ class ScribbleModel extends FormFieldModel implements IFormField
   }
   double? get size => _size?.get();
 
-  ///////////////////
-  /* font weight */
-  ///////////////////
+  // font weight
   StringObservable? _weight;
   set weight (dynamic v)
   {
@@ -99,9 +79,7 @@ class ScribbleModel extends FormFieldModel implements IFormField
   }
   String? get weight => _weight?.get();
 
-  ////////////////
-  /* font style */
-  ////////////////
+  // font style
   StringObservable? _style;
   set style (dynamic v)
   {

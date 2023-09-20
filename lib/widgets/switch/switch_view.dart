@@ -20,15 +20,10 @@ class SwitchView extends StatefulWidget implements IWidgetView
 class _SwitchViewState extends WidgetState<SwitchView> with WidgetsBindingObserver
 {
   @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints)
+  Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
-
-    // save system constraints
-    onLayout(constraints);
 
     bool value = widget.model.value;
     String? label = widget.model.label;

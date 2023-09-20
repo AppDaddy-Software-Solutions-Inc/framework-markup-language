@@ -145,13 +145,8 @@ class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling
   }
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints)
+  Widget build(BuildContext context)
   {
-    // save system constraints
-    onLayout(constraints);
-
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 

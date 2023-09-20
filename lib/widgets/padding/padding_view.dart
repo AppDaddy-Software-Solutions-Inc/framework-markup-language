@@ -20,15 +20,10 @@ class PaddingView extends StatefulWidget implements IWidgetView
 class _PaddingViewState extends WidgetState<PaddingView>
 {
   @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints) 
+  Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
-
-    // set constraints
-    onLayout(constraints);
 
     double pTop    = max(widget.model.marginTop ?? 0, 0);
     double pBottom = max(widget.model.marginBottom ?? 0, 0);

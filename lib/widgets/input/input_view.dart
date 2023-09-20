@@ -582,15 +582,10 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
   }
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints)
+  Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
-
-    // save system constraints
-    onLayout(constraints);
 
     // set the text color arrays
     Color? enabledTextColor = widget.model.textcolor;

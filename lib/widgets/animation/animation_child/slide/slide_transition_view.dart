@@ -121,9 +121,8 @@ class SlideTransitionViewState extends State<SlideTransitionView>
   }
 
   @override
-Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints) {
+Widget build(BuildContext context)
+  {
     _direction = widget.model.direction?.toLowerCase();
 
     if (_direction == "right") {

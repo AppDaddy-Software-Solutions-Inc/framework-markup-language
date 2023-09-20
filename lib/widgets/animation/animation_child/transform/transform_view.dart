@@ -131,13 +131,11 @@ class TransformViewState extends State<TransformView>
   }
 
   @override
-Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints) {
-    // Tween
-
+Widget build(BuildContext context)
+  {
     double begin = widget.model.begin;
     double end = widget.model.end;
+
     // default warp is 0.0015, 0 is no warping. This could potentially be made smarter
     double warp = (widget.model.warp ?? 15) / 10000;
     Curve curve = AnimationHelper.getCurve(widget.model.curve);

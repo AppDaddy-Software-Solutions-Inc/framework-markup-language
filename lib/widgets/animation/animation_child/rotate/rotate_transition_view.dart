@@ -121,9 +121,8 @@ class RotateTransitionViewState extends State<RotateTransitionView>
   }
 
   @override
-Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints) {
+Widget build(BuildContext context)
+  {
     // Tween
     double from = widget.model.from;
     double to = widget.model.to;

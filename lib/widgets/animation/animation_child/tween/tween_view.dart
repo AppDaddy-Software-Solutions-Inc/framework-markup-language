@@ -135,11 +135,9 @@ class TweenViewState extends State<TweenView>
   }
 
   @override
-Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints) {
+Widget build(BuildContext context)
+  {
     // Tween
-
     double begin = widget.model.begin;
     double end = widget.model.end;
     Curve curve = AnimationHelper.getCurve(widget.model.curve);

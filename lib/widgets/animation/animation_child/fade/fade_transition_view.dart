@@ -145,9 +145,8 @@ class FadeTransitionViewState extends State<FadeTransitionView>
   }
 
   @override
-Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints) {
+Widget build(BuildContext context)
+  {
     // Build View
     Widget? view;
 

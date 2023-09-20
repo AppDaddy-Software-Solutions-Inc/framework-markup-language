@@ -3,13 +3,17 @@ import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/popover/popover_model.dart';
+import 'package:fml/widgets/row/row_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class PopoverItemModel extends WidgetModel
+class PopoverItemModel extends RowModel
 {
+  @override
+  bool get expand => false;
+
   // label
   StringObservable? _label;
   set label(dynamic v) {
@@ -81,6 +85,7 @@ class PopoverItemModel extends WidgetModel
 
     // properties
     label = Xml.get(node: xml, tag: 'label');
+    icon  = Xml.get(node: xml, tag: 'icon');
     onclick = Xml.get(node: xml, tag: 'onclick');
   }
 

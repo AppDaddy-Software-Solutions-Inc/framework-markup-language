@@ -364,15 +364,10 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
   }
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints)
+  Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
-
-    // save system constraints
-    onLayout(constraints);
 
     Widget icon = Row(mainAxisSize: MainAxisSize.min, children: [
       Icon(Icons.gesture, size: 64, color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5)),
@@ -380,12 +375,12 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
 
     BorderSide borderSide = BorderSide(width: 2, color: Theme.of(context).colorScheme.surfaceVariant);
 
-    width  = widget.model.getWidth(widthParent: constraints.maxWidth) ?? width;
-    height = widget.model.getHeight(heightParent: constraints.maxHeight) ?? height;
+    // view width & height are set by
+    // the box layout
+    width  = widget.model.viewWidth  ?? width;
+    height = widget.model.viewHeight ?? height;
 
     Widget view = Container(
-      width: width,
-      height:height,
       decoration: BoxDecoration(
       color: Theme.of(context).colorScheme.surface,
       borderRadius: BorderRadius.all(Radius.circular(8)

@@ -23,17 +23,14 @@ class _RadioViewState extends WidgetState<RadioView>
   List<Widget>? options;
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints)
+  Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    // save system constraints
-    onLayout(constraints);
     Color selectedColor = widget.model.setErrorBorderColor(context, widget.model.color ?? Theme.of(context).colorScheme.primary);
     Color unselectedColor = widget.model.setErrorBorderColor(context, Theme.of(context).colorScheme.outline);
+
     // Options
     if (widget.model.options.isNotEmpty) {
 

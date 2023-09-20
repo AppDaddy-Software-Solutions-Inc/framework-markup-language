@@ -21,11 +21,41 @@ class _PopoverViewState extends WidgetState<PopoverView>
 {
   Widget _buildPopover()
   {
+    var color = Theme.of(context).colorScheme.onSecondaryContainer;
+
     List<PopupMenuEntry> itemsList = [];
     for (var item in widget.model.items)
     {
-      var view = PopupMenuItem(child: Text(item.label, style: TextStyle(color: Theme.of(context).colorScheme.onSecondaryContainer)), value: item);
-      itemsList.add(view);
+      if (item.visible)
+      {
+        Widget child;
+        if (item.viewableChildren.isNotEmpty)
+        {
+          // note: children cannot use LayoutBuilder
+          // this causes the Popover to crash
+          List<Widget> children = [];
+          for (var model in item.viewableChildren)
+          {
+            var view = model.getView();
+            if (view != null)
+            {
+              children.add(view);
+            }
+          }
+          child = ListTile(title: Row(mainAxisSize: MainAxisSize.min, children: children));
+        }
+        else
+        {
+          child = Text(item.label, style: TextStyle(color: color));
+          if (item.icon != null)
+          {
+            child = ListTile(title: child, leading: Icon(item.icon, color: color));
+          }
+        }
+
+        var view = PopupMenuItem(child: child, value: item);
+        itemsList.add(view);
+      }
     }
 
     var icon = Column(

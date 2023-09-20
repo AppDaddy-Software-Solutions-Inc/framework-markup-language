@@ -22,9 +22,7 @@ class PositionedView extends StatefulWidget implements IWidgetView
 class _PositionedViewState extends WidgetState<PositionedView>
 {
   @override
-  Widget build(BuildContext context) => builder(context, null);
-
-  Widget builder(BuildContext context, BoxConstraints? constraints)
+  Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();

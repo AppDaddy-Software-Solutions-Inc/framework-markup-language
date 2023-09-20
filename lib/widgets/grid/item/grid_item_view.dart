@@ -17,7 +17,5 @@ class GridItemView extends StatefulWidget implements IWidgetView
 class _GridItemViewState extends WidgetState<GridItemView>
 {
   @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints) => widget.model.getView();
+  Widget build(BuildContext context) => widget.model.getView();
 }

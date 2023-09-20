@@ -926,6 +926,7 @@ class TableViewState extends WidgetState<TableView>
 
       // get cell alignment
       var alignment = _getAlignment();
+      if (cell.usesRenderer) alignment = PlutoColumnTextAlign.left;
 
       // footer builder
       TableFooterCellModel? footer;
@@ -977,15 +978,10 @@ class TableViewState extends WidgetState<TableView>
   }
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints)
+  Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
-
-    // set system sizing
-    onLayout(constraints);
 
     // build style
     if (grid == null)

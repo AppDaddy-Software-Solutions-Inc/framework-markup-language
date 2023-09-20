@@ -46,15 +46,10 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
   }
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints)
+  Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
-
-    // save system constraints
-    onLayout(constraints);
 
     //this must go after the children are determined
     var alignment = WidgetAlignment(widget.model.layoutType, widget.model.center, widget.model.halign, widget.model.valign);

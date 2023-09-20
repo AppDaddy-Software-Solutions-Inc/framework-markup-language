@@ -763,7 +763,6 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    print('building drawer...');
     // save system constraints
     onLayout(constraints);
 

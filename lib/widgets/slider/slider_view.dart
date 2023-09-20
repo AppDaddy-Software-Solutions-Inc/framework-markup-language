@@ -20,15 +20,10 @@ class SliderView extends StatefulWidget implements IWidgetView
 class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserver
 {
   @override
-  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
-
-  Widget builder(BuildContext context, BoxConstraints constraints)
+  Widget build(BuildContext context)
   {
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
-
-    // save system constraints
-    onLayout(constraints);
 
     var min   = S.toDouble(widget.model.minimum) ?? 0;
     var max   = S.toDouble(widget.model.maximum) ?? 0;

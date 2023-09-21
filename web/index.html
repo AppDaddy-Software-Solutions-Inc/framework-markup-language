@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <!-- Do not cache INDEX.html -->
+    <meta http-equiv="Cache-control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+
     <!--
       If you are serving your web app in a path other than the root, change the
       href value below to reflect the base path you are serving from.
@@ -38,7 +42,8 @@
     <script type="text/javascript">
 
         // default title if config.xml does not contain an `APPLICATION_NAME`
-        var title = "Flutter Markup Language";
+        var title   = "Flutter Markup Language";
+        var version = "";
         try
         {
             // read config.xml
@@ -48,8 +53,11 @@
             var xmlDoc = xhttp.responseXML;
 
             // read title
-            var e = xmlDoc.getElementsByTagName("APPLICATION_NAME");
-            if (e != null) title = e[0].getAttribute('value');
+            var titleNode = xmlDoc.getElementsByTagName("APPLICATION_NAME");
+            if (titleNode != null) title = titleNode[0].getAttribute('value');
+
+            var versionNode = xmlDoc.getElementsByTagName("VERSION");
+            if (versionNode != null) version = versionNode[0].getAttribute('value');
         }
         catch(e) {}
 
@@ -75,10 +83,13 @@
         // uncomment to include this functionality
         // document.head.appendChild(script);
 
+        // change -> createScriptURL(k+j+e) to createScriptURL(k+j+e+`?v=${serviceWorkerVersion}`) in main.dart.js
+        // after build. This adds the version # to the deferred parts
+
         // add flutter.js script
         var script      = document.createElement("script");
         script.type     = "text/javascript";
-        script.src      = "flutter.js?version=" + serviceWorkerVersion;
+        script.src      = `flutter.js?v=${serviceWorkerVersion}`;
         script.defer    = true;
         document.head.appendChild(script);
     </script>

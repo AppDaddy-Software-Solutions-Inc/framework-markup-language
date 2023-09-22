@@ -332,11 +332,15 @@ class BoxModel extends DecoratedWidgetModel
     end = Xml.get(node: xml, tag: 'end');
     blur = Xml.get(node: xml, tag: 'blur');
 
-    /// Border and Shadow Attributes
+    /// Set Border Attributes
     radius = Xml.get(node: xml, tag: 'radius');
     bordercolor = Xml.get(node: xml, tag: 'bordercolor');
     borderwidth = Xml.get(node: xml, tag: 'borderwidth');
     border = Xml.get(node: xml, tag: 'border');
+    if (_border == null && (_radius != null || _bordercolor != null || _borderwidth != null))
+    {
+      border = "all";
+    }
 
     elevation = Xml.get(node: xml, tag: 'elevation');
     shadowcolor = Xml.get(node: xml, tag: 'shadowcolor');

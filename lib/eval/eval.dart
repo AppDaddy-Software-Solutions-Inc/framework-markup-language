@@ -557,7 +557,7 @@ class Eval
   static dynamic _case(dynamic value, [dynamic v0, dynamic r0, dynamic v1, dynamic r1, dynamic v2, dynamic r2, dynamic v3, dynamic r3, dynamic v4, dynamic r4, dynamic v5, dynamic r5, dynamic v6, dynamic r6, dynamic v7, dynamic r7, dynamic v8, dynamic r8, dynamic v9, dynamic r9])
   {
     // legacy k1, v2, k2, v2 ... up to 10 values
-    if (v0 is! List) return _case(value, [v0,v1,v2,v3,v4,v5,v6,v7,v8,v9]);
+    if (v0 is! List) return _case(value, [v0,v1,v2,v3,v4,v5,v6,v7,v8,v9], [r0,r1,r2,r3,r4,r5,r6,r7,r8,r9]);
 
     // 2 lists
     if (v0 is List && r0 is List)

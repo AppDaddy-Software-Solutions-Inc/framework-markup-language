@@ -385,6 +385,7 @@ class TableModel extends BoxModel implements IForm
     // filter
     filter = Xml.get(node: xml, tag: 'filter');
     filterBar = Xml.get(node: xml, tag: 'filterbar');
+    if (_filterBar != null && _filter == null) filter=true;
 
     // set header
     header = findChildOfExactType(TableHeaderModel);

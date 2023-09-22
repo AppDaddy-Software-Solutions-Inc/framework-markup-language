@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:math';
+import 'package:collection/collection.dart';
 import 'package:fml/crypto/crypto.dart';
 import 'package:fml/helper/time.dart';
 import 'package:fml/system.dart';
@@ -147,12 +148,12 @@ class Eval
   }
 
   // TODO: describe what this does
-  static dynamic _toDate([dynamic datetime, dynamic format, dynamic outputFormat])
+  static dynamic _toDate([dynamic datetime, dynamic inputFormat, dynamic outputFormat])
   {
     if (datetime == null) return null;
     DateTime? result;
 
-    if (format is String) format = format.replaceAll('Y', 'y');
+    if (inputFormat is String) inputFormat = inputFormat.replaceAll('Y', 'y');
     if (outputFormat is String) outputFormat = outputFormat.replaceAll('Y', 'y');
 
     if (S.isNumber(datetime))
@@ -161,7 +162,7 @@ class Eval
     }
     else if (datetime is String)
     {
-      result = S.toDate(datetime, format: format);
+      result = S.toDate(datetime, format: inputFormat);
     }
     return S.toChar(result, format: outputFormat);
   }
@@ -550,18 +551,55 @@ class Eval
     return s;
   }
 
+  static final RegExp nonQuotedColons = RegExp(r"\):(?=([^'\\]*(\\.|'([^'\\]*\\.)*[^'\\]*'))*[^']*$)");
+  static final String nonQuotedPlaceholder = "!~!";
+
   static dynamic _case(dynamic value, [dynamic v0, dynamic r0, dynamic v1, dynamic r1, dynamic v2, dynamic r2, dynamic v3, dynamic r3, dynamic v4, dynamic r4, dynamic v5, dynamic r5, dynamic v6, dynamic r6, dynamic v7, dynamic r7, dynamic v8, dynamic r8, dynamic v9, dynamic r9])
   {
-    if (value == v0) return r0;
-    if (value == v1) return r1;
-    if (value == v2) return r2;
-    if (value == v3) return r3;
-    if (value == v4) return r4;
-    if (value == v5) return r5;
-    if (value == v6) return r6;
-    if (value == v7) return r7;
-    if (value == v8) return r8;
-    if (value == v9) return r9;
+    // legacy k1, v2, k2, v2 ... up to 10 values
+    if (v0 is! List) return _case(value, [v0,v1,v2,v3,v4,v5,v6,v7,v8,v9]);
+
+    // 2 lists
+    if (v0 is List && r0 is List)
+    {
+      var keys   = v0 as List;
+      var values = r0 as List;
+
+      // evaluate
+      var key = keys.firstWhereOrNull((key) => key == value);
+      if (key != null)
+      {
+        var i = values.indexOf(key);
+        if (!i.isNegative && i < values.length) return values[i];
+      }
+      return null;
+    }
+
+    if (v0 is List && r0 is! List)
+    {
+      var list = v0 as List;
+
+      // build keys list
+      var keys = [];
+      int i = 0;
+      while (i < list.length)
+      {
+        keys.add(list[i]);
+        i = i + 2;
+      }
+
+      // build values list
+      var values = [];
+      var j = 1;
+      while (j < list.length)
+      {
+        values.add(list[j]);
+        j = j + 2;
+      }
+
+      return _case(value,keys,values);
+    }
+
     return null;
   }
 

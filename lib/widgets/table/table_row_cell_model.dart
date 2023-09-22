@@ -125,6 +125,9 @@ class TableRowCellModel extends BoxModel
 
     var xml = cell.children!.first.element!;
 
+    // value is an eval
+    if (cell.valueIsEval) return true;
+
     // text model has attributes other than text="" or label=""
     if (xml.attributes.firstWhereOrNull((a) => a.name.local.toLowerCase() != "label" && a.name.local.toLowerCase() != "value") != null) return true;
 
@@ -133,6 +136,7 @@ class TableRowCellModel extends BoxModel
 
     return false;
   }
+  bool get valueIsEval => _value?.isEval ?? false;
 
   @override
   dispose()

@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:convert';
 import 'package:fml/widgets/widget/iwidget_view.dart';
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:universal_html/html.dart' as universal_html;
 import 'package:universal_html/js.dart' as universal_js;
@@ -13,8 +14,8 @@ import 'package:fml/helper/common_helpers.dart';
 
 InlineFrameView getView(model) => InlineFrameView(model);
 
-class InlineFrameView extends StatefulWidget
-    implements widget_view.View, IWidgetView {
+class InlineFrameView extends StatefulWidget implements widget_view.View, IWidgetView
+{
   @override
   final InlineFrameModel model;
 
@@ -24,8 +25,16 @@ class InlineFrameView extends StatefulWidget
   State<InlineFrameView> createState() => _InlineFrameViewState();
 }
 
-class _InlineFrameViewState extends WidgetState<InlineFrameView> {
+class _InlineFrameViewState extends WidgetState<InlineFrameView>
+{
   IFrameWidget? iframe;
+
+  @override
+  void dispose()
+  {
+    super.dispose();
+    iframe?.dispose();
+  }
 
   @override
   Widget build(BuildContext context)
@@ -40,10 +49,7 @@ class _InlineFrameViewState extends WidgetState<InlineFrameView> {
     Widget view = iframe!;
 
     // basic view
-    view = Container(
-        child: view,
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height);
+    view = Container(child: view, width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.height);
 
     // apply user defined constraints
     view = applyConstraints(view, widget.model.constraints);
@@ -52,7 +58,8 @@ class _InlineFrameViewState extends WidgetState<InlineFrameView> {
   }
 }
 
-class IFrameWidget extends StatelessWidget {
+class IFrameWidget extends StatelessWidget implements IModelListener
+{
   final InlineFrameModel model;
 
   final String id = S.newId();
@@ -63,22 +70,26 @@ class IFrameWidget extends StatelessWidget {
 
   IFrameWidget({required this.model});
 
-  void dispose() {
-    Log().debug('disposing of iframe ...');
+  @override
+  onModelChange(WidgetModel model,{String? property, dynamic value})
+  {
+    iframe.src = this.model.url;
+  }
+
+  void dispose()
+  {
     universal_html.window.removeEventListener('message', receive);
     iframe.remove();
+    model.removeListener(this);
   }
 
   @override
-  Widget build(BuildContext context) {
-    /////////////////////////////
-    /* Create an iFrame widget */
-    /////////////////////////////
+  Widget build(BuildContext context)
+  {
+    // create an iFrame widget
     iFrame = HtmlElementView(key: UniqueKey(), viewType: id);
 
-    ///////////////////////////
-    /* Create IFrame Element */
-    ///////////////////////////
+    // create IFrame element
     iframe = universal_html.IFrameElement()
       ..style.border = 'none'
       // ..style.boxShadow = '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.19)'
@@ -87,51 +98,50 @@ class IFrameWidget extends StatelessWidget {
       ..style.height = '100%';
     iframe.src = model.url;
 
-    /////////////////////////////////////
-    /* Contructor Callback from Script */
-    /////////////////////////////////////
-    universal_js.context["flutter"] = (content) {
-      //////////////////
-      /* Add Listener */
-      //////////////////
+    // contructor callback from script
+    universal_js.context["flutter"] = (content)
+    {
+      // add listener
       universal_html.window.removeEventListener('message', receive);
       universal_html.window.addEventListener('message', receive);
-
       return id;
     };
 
-    /////////////////////
-    /* Register IFrame */
-    /////////////////////
+    // register the IFrame
     // ignore: undefined_prefixed_name
-    dart_ui.platformViewRegistry
-        .registerViewFactory(id, (int viewId) => iframe);
+    dart_ui.platformViewRegistry.registerViewFactory(id, (int viewId) => iframe);
+
+    // register a model listener
+    model.registerListener(this);
 
     return iFrame;
   }
 
   void receive(dynamic event) {
-    try {
-      ////////////////////
-      /* Decode Message */
-      ////////////////////
+    try
+    {
+      // decode message
       Map<String?, dynamic> map = <String?, dynamic>{};
-      if (event.data is Map) {
-        (event.data as Map).forEach((key, value) {
+      if (event.data is Map)
+      {
+        (event.data as Map).forEach((key, value)
+        {
           String? k = S.toStr(key);
           String? v = S.toStr(value);
           if (!S.isNullOrEmpty(k)) map[k] = v;
         });
-      } else if (event.data is String) {
+      }
+      else if (event.data is String)
+      {
         var data = jsonDecode(event.data);
         if (data is Map) map.addAll(data as Map<String?, dynamic>);
       }
 
-      /////////////
-      /* Set Map */
-      /////////////
+      // set map
       model.data = map;
-    } catch (e) {
+    }
+    catch (e)
+    {
       Log().exception(e);
     }
   }

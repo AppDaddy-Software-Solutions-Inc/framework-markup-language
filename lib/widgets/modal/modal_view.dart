@@ -27,7 +27,8 @@ class ModalViewState extends WidgetState<ModalView>
   static double headerSize = 30;
   static double headerIconSize = headerSize - 10;
   static double headerIconDividerSize = 5;
-  static double minimumSize = (headerIconSize * 3) + (headerIconDividerSize * 4);
+  static double minimumWidth  = (headerIconSize * 3) + (headerIconDividerSize * 4);
+  static double minimumHeight = headerIconSize;
 
   Widget? body;
 
@@ -195,8 +196,8 @@ class ModalViewState extends WidgetState<ModalView>
   onResizeBR(DragUpdateDetails details)
   {
     if (widget.model.resizeable == false) return;
-    if (((width  ?? 0) + details.delta.dx) < minimumSize) return;
-    if (((height ?? 0) + details.delta.dy) < minimumSize) return;
+    if (((width  ?? 0) + details.delta.dx) < minimumWidth) return;
+    if (((height ?? 0) + details.delta.dy) < minimumHeight) return;
 
     setState(()
     {
@@ -214,8 +215,8 @@ class ModalViewState extends WidgetState<ModalView>
   onResizeBL(DragUpdateDetails details)
   {
     if (widget.model.resizeable == false) return;
-    if (((width  ?? 0) - details.delta.dx) < minimumSize) return;
-    if (((height ?? 0) + details.delta.dy) < minimumSize) return;
+    if (((width  ?? 0) - details.delta.dx) < minimumWidth) return;
+    if (((height ?? 0) + details.delta.dy) < minimumHeight) return;
 
     setState(()
     {
@@ -233,8 +234,8 @@ class ModalViewState extends WidgetState<ModalView>
   onResizeTL(DragUpdateDetails details)
   {
     if (widget.model.resizeable == false) return;
-    if (((width  ?? 0) - details.delta.dx) < minimumSize) return;
-    if (((height ?? 0) + details.delta.dy) < minimumSize) return;
+    if (((width  ?? 0) - details.delta.dx) < minimumWidth) return;
+    if (((height ?? 0) + details.delta.dy) < minimumHeight) return;
 
     setState(()
     {
@@ -255,8 +256,8 @@ class ModalViewState extends WidgetState<ModalView>
   onResizeTR(DragUpdateDetails details)
   {
     if (widget.model.resizeable == false) return;
-    if (((width  ?? 0) + details.delta.dx) < minimumSize) return;
-    if (((height ?? 0) - details.delta.dy) < minimumSize) return;
+    if (((width  ?? 0) + details.delta.dx) < minimumWidth) return;
+    if (((height ?? 0) - details.delta.dy) < minimumHeight) return;
 
     setState(()
     {
@@ -274,7 +275,7 @@ class ModalViewState extends WidgetState<ModalView>
   onResizeT(DragUpdateDetails details)
   {
     if (widget.model.resizeable == false) return;
-    if (((height ?? 0) - details.delta.dy) < minimumSize) return;
+    if (((height ?? 0) - details.delta.dy) < minimumHeight) return;
     setState(()
     {
       height = (height ?? 0) - details.delta.dy;
@@ -287,7 +288,7 @@ class ModalViewState extends WidgetState<ModalView>
   onResizeB(DragUpdateDetails details)
   {
     if (widget.model.resizeable == false) return;
-    if (((height ?? 0) + details.delta.dy) < minimumSize) return;
+    if (((height ?? 0) + details.delta.dy) < minimumHeight) return;
 
     setState(()
     {
@@ -299,7 +300,7 @@ class ModalViewState extends WidgetState<ModalView>
   onResizeL(DragUpdateDetails details)
   {
     if (widget.model.resizeable == false) return;
-    if (((width  ?? 0) - details.delta.dx) < minimumSize) return;
+    if (((width  ?? 0) - details.delta.dx) < minimumWidth) return;
     setState(()
     {
       width  = (width  ?? 0) - details.delta.dx;
@@ -312,7 +313,7 @@ class ModalViewState extends WidgetState<ModalView>
   onResizeR(DragUpdateDetails details)
   {
     if (widget.model.resizeable == false) return;
-    if (((width  ?? 0) + details.delta.dx) < minimumSize) return;
+    if (((width  ?? 0) + details.delta.dx) < minimumWidth) return;
     setState(()
     {
       width  = (width  ?? 0) + details.delta.dx;
@@ -429,8 +430,8 @@ class ModalViewState extends WidgetState<ModalView>
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    // Size
-    if ((width == null) || (height == null))
+    // compute size
+    if (width == null || height == null)
     {
       return UnconstrainedBox(child: MeasuredView(Material(child: BoxView(widget.model)), onMeasured));
     }
@@ -454,7 +455,7 @@ class ModalViewState extends WidgetState<ModalView>
       atMaxWidth = true;
       width = (maxWidth - (padding * 4));
     }
-    if (width! <= 0) width = minimumSize;
+    if (width! <= minimumWidth) width = minimumWidth;
 
     // Exceeds Height of Viewport
     atMaxHeight = false;
@@ -464,7 +465,7 @@ class ModalViewState extends WidgetState<ModalView>
       atMaxHeight = true;
       height = (maxHeight - (padding * 4));
     }
-    if (height! <= 0) height = minimumSize;
+    if (height! <= minimumHeight) height = minimumHeight;
 
     // Content Box
     body ??= Material(child: BoxView(widget.model));

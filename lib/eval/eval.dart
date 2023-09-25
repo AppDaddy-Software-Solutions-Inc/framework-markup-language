@@ -559,25 +559,9 @@ class Eval
     // legacy k1, v2, k2, v2 ... up to 10 values
     if (v0 is! List) return _case(value, [v0,v1,v2,v3,v4,v5,v6,v7,v8,v9], [r0,r1,r2,r3,r4,r5,r6,r7,r8,r9]);
 
-    // 2 lists
-    if (v0 is List && r0 is List)
+    if (r0 is! List)
     {
-      var keys   = v0 as List;
-      var values = r0 as List;
-
-      // evaluate
-      var key = keys.firstWhereOrNull((key) => key == value);
-      if (key != null)
-      {
-        var i = values.indexOf(key);
-        if (!i.isNegative && i < values.length) return values[i];
-      }
-      return null;
-    }
-
-    if (v0 is List && r0 is! List)
-    {
-      var list = v0 as List;
+      var list = v0;
 
       // build keys list
       var keys = [];
@@ -600,6 +584,17 @@ class Eval
       return _case(value,keys,values);
     }
 
+    // 2 lists
+    var keys   = v0;
+    var values = r0;
+
+    // evaluate
+    var key = keys.firstWhereOrNull((key) => key == value);
+    if (key != null)
+    {
+      var i = values.indexOf(key);
+      if (!i.isNegative && i < values.length) return values[i];
+    }
     return null;
   }
 

@@ -554,6 +554,7 @@ class WidgetModel implements IDataSourceListener {
         model = IconModel.fromXml(parent, node);
         break;
 
+      case "webview":
       case "iframe":
         model = InlineFrameModel.fromXml(parent, node);
         break;

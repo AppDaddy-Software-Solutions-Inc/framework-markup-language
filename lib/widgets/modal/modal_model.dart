@@ -218,7 +218,7 @@ class ModalModel extends BoxModel
 
     // properties
     title        = Xml.get(node: xml, tag: 'title');
-    dismissable  = Xml.get(node: xml, tag: 'resizeable');
+    dismissable  = Xml.get(node: xml, tag: 'dismissable');
     resizeable   = Xml.get(node: xml, tag: 'resizeable');
     closeable    = Xml.get(node: xml, tag: 'closable');
     draggable    = Xml.get(node: xml, tag: 'draggable');
@@ -292,9 +292,8 @@ class ModalModel extends BoxModel
           // modal
           if (arguments.length > 5) modal = S.toBool(arguments[5]) ?? true;
 
-          view = ModalView(this);
+          open(ModalView(this));
         }
-        open(view);
         return true;
 
       case "close" :

@@ -86,6 +86,23 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
     return model;
   }
 
+
+
+  /// bar width
+  DoubleObservable? width_;
+  set width (dynamic v)
+  {
+    if (width_ != null)
+    {
+      width_!.set(v);
+    }
+    else if (v != null)
+    {
+      width_ = DoubleObservable(Binding.toKey(id, 'width'), v, scope: scope);
+    }
+  }
+  double get width => width_?.get() ?? 3.5;
+
   /// Deserializes the FML template elements, attributes and children
   @override
   void deserialize(XmlElement xml)
@@ -116,20 +133,7 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
     // Setup the Series type and some internal properties for supporting it
     if (type != null) type = type?.trim().toLowerCase();
   }
-  /// bar width
-  DoubleObservable? width_;
-  set width (dynamic v)
-  {
-    if (width_ != null)
-    {
-      width_!.set(v);
-    }
-    else if (v != null)
-    {
-      width_ = DoubleObservable(Binding.toKey(id, 'width'), v, scope: scope);
-    }
-  }
-  double get width => width_?.get() ?? 3.5;
+
 
 
   @override

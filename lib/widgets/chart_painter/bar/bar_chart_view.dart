@@ -38,6 +38,7 @@ class _ChartViewState extends WidgetState<BarChartView>
       axisSide: meta.axisSide,
       fitInside: SideTitleFitInsideData.fromTitleMeta(meta),
       angle: widget.model.xaxis.labelrotation,
+      space: 10,
       child: Text(text, style: style),
     );
   }
@@ -46,7 +47,7 @@ class _ChartViewState extends WidgetState<BarChartView>
     var style = TextStyle(fontSize: widget.model.yaxis.labelsize ?? 8, color: Theme.of(context).colorScheme.outline);
     return SideTitleWidget(
       axisSide: meta.axisSide,
-      space: 8,
+      space: widget.model.yaxis.spacing ?? 8,
       angle: widget.model.yaxis.labelrotation,
       fitInside: SideTitleFitInsideData.fromTitleMeta(meta),
       child: Text(value.toString(), style: style, textAlign: TextAlign.center),

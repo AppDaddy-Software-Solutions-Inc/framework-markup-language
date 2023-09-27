@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/datasources/detectors/barcode/barcode_detector.dart';
@@ -28,11 +29,12 @@ class Reader
   {
     try
     {
-      methodChannel ??= MethodChannel('co.appdaddy.fml/command');
-      scanChannel ??= EventChannel('co.appdaddy.fml/scan');
+      methodChannel = MethodChannel('co.appdaddy.fml/command');
+      scanChannel = EventChannel('co.appdaddy.fml/scan');
 
       scanChannel!.receiveBroadcastStream().listen(_onEvent, onError: _onError);
-      _send("com.symbol.datawedge.api.CREATEPROFILE", "co.appdaddy.fml");
+      _send("com.symbol.datawedge.api.CREATE_PROFILE", "co.appdaddy.fml");
+      _send("com.symbol.datawedge.api.SET_CONFIG", "");
     }
     catch(e)
     {
@@ -54,12 +56,12 @@ class Reader
 
   Reader.startScan()
   {
-      _send("com.symbol.datawedge.api.SOFT_SCAN_TRIGGER", "START_SCANNING");
+      _send("com.symbol.datawedge.api.SOFT_RFID_TRIGGER", "START_SCANNING");
   }
 
   Reader.stopScan()
   {
-      _send("com.symbol.datawedge.api.SOFT_SCAN_TRIGGER", "STOP_SCANNING");
+      _send("com.symbol.datawedge.api.SOFT_RFID_TRIGGER", "STOP_SCANNING");
   }
 
   Future<void> _send(String command, String parameter) async
@@ -67,7 +69,7 @@ class Reader
     try
     {
       String argumentAsJson = jsonEncode({"command": command, "parameter": parameter});
-      await methodChannel!.invokeMethod('ZEBRA', argumentAsJson);
+      await methodChannel?.invokeMethod('ZEBRARF', argumentAsJson);
     }
     catch(e)
     {

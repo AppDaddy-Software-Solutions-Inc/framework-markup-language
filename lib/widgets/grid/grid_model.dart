@@ -17,9 +17,6 @@ import 'package:fml/helper/common_helpers.dart';
 
 class GridModel extends BoxModel implements IScrolling
 {
-  // prototype
-  XmlElement? prototype;
-
   // full list of data
   // pointing to data broker data
   Data? _dataset;
@@ -254,20 +251,27 @@ class GridModel extends BoxModel implements IScrolling
     draggable = Xml.get(node: xml, tag: 'draggable');
 
     // clear items
-    this.items.forEach((_,item) => item.dispose());
-    this.items.clear();
+    items.forEach((_,item) => item.dispose());
+    items.clear();
 
     // Build items
-    int i = 0;
+    setPrototype();
+  }
+
+  @override
+  void setPrototype()
+  {
     List<GridItemModel> items = findChildrenOfExactType(GridItemModel).cast<GridItemModel>();
 
     // set prototype
     if (!S.isNullOrEmpty(datasource) && items.isNotEmpty)
     {
-      prototype = WidgetModel.prototypeOf(items[0].element);
+      prototype = WidgetModel.prototypeOf(items.first.element);
       items.removeAt(0);
     }
+
     // build items
+    int i=0;
     for (var item in items) {
       this.items[i++] = item;
     }

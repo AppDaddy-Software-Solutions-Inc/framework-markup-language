@@ -19,9 +19,6 @@ import 'package:fml/helper/common_helpers.dart';
 /// Defines the properties used to build a [CHECKBOX.CheckboxView]
 class CheckboxModel extends FormFieldModel implements IFormField
 {
-  // prototype
-  XmlElement? prototype;
-
   // options
   final List<OptionModel> options = [];
 
@@ -355,7 +352,6 @@ class CheckboxModel extends FormFieldModel implements IFormField
   @override
   void deserialize(XmlElement xml)
   {
-
     // deserialize
     super.deserialize(xml);
 
@@ -384,27 +380,31 @@ class CheckboxModel extends FormFieldModel implements IFormField
     size  = Xml.get(node: xml, tag: 'size');
 
     // clear options
-    for (var option in this.options) {
+    for (var option in options) {
       option.dispose();
     }
-    this.options.clear();
+    options.clear();
 
+    // build options
+    setPrototype();
+  }
+
+  @override
+  void setPrototype()
+  {
     // Build options
     List<OptionModel> options = findChildrenOfExactType(OptionModel).cast<OptionModel>();
 
     // set prototype
     if ((!S.isNullOrEmpty(datasource)) && (options.isNotEmpty))
     {
-      prototype = WidgetModel.prototypeOf(options[0].element);
+      prototype = WidgetModel.prototypeOf(options.first.element);
       options.removeAt(0);
     }
 
     // build options
-    for (var option in options) {
-      this.options.add(option);
-    }
+    this.options.addAll(options);
   }
-
 
   @override
   Future<bool> onDataSourceSuccess(IDataSource source, dynamic list) async

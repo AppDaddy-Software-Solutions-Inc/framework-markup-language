@@ -18,9 +18,6 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
 {
   final HashMap<int,ListItemModel> items = HashMap<int,ListItemModel>();
 
-  // prototype
-  XmlElement? prototype;
-
   // full list of data
   // pointing to data broker data
   Data? _dataset;
@@ -298,25 +295,32 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     reverse  = Xml.get(node: xml, tag: 'reverse');
 
     // clear items
-    this.items.forEach((_,item) => item.dispose());
-    this.items.clear();
+    items.forEach((_,item) => item.dispose());
+    items.clear();
 
-    // Process Items
-    int i = 0;
+    // build items
+    setPrototype();
+  }
+
+  @override
+  void setPrototype()
+  {
     List<ListItemModel> items = findChildrenOfExactType(ListItemModel).cast<ListItemModel>();
 
     // set prototype
     if ((!S.isNullOrEmpty(datasource)) && (items.isNotEmpty))
     {
-      prototype = WidgetModel.prototypeOf(items[0].element);
+      prototype = WidgetModel.prototypeOf(items.first.element);
       items.removeAt(0);
     }
 
     // build items
+    int i = 0;
     for (var item in items) {
       this.items[i++] = item;
     }
   }
+
 
   ListItemModel? getItemModel(int index)
   {

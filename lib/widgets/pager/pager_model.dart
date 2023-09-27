@@ -24,9 +24,6 @@ class PagerModel extends BoxModel
 
   PageController? controller;
 
-  // prototype
-  XmlElement? prototype;
-
   List<PageModel> pages = [];
   
   // pager
@@ -133,22 +130,33 @@ class PagerModel extends BoxModel
     // properties
     pager = Xml.get(node: xml, tag: 'pager');
     transition = Xml.get(node: xml, tag: 'transition');
+    currentpage = Xml.get(node: xml, tag: 'initialpage') ?? 1;
 
+    // clear options
+    for (var page in pages) {
+      page.dispose();
+    }
+    pages.clear();
+
+    // set prototype
+    setPrototype();
+  }
+
+  @override
+  void setPrototype()
+  {
     // build pages
     List<PageModel> pages = findChildrenOfExactType(PageModel).cast<PageModel>();
 
     // set prototype
     if ((!S.isNullOrEmpty(datasource)) && (pages.isNotEmpty))
     {
-      prototype = WidgetModel.prototypeOf(pages[0].element);
+      prototype = WidgetModel.prototypeOf(pages.first.element);
       pages.removeAt(0);
     }
 
     // build items
-    for (var page in pages) {
-      this.pages.add(page);
-    }
-
+    this.pages.addAll(pages);
 
     if (pages.isEmpty)
     {
@@ -156,8 +164,6 @@ class PagerModel extends BoxModel
       var page = PageModel.fromXml(this, missingXml.rootElement);
       if (page != null) this.pages.add(page);
     }
-
-    currentpage = Xml.get(node: xml, tag: 'initialpage') ?? 1;
   }
 
   //we need a reset function to set the controller back to 0 without ticking.

@@ -15,9 +15,6 @@ class MenuModel extends DecoratedWidgetModel
   static final String typeList   = "list";
   static final String typeButton = "button";
 
-  // prototype
-  XmlElement? prototype;
-
   // items
   List<MenuItemModel> items = [];
 
@@ -89,25 +86,30 @@ class MenuModel extends DecoratedWidgetModel
     super.deserialize(xml);
 
     // clear items
-    for (var item in this.items) {
+    for (var item in items) {
       item.dispose();
     }
-    this.items.clear();
+    items.clear();
 
+    // build items
+    setPrototype();
+  }
+
+  @override
+  void setPrototype()
+  {
     // build items
     List<MenuItemModel> items = findChildrenOfExactType(MenuItemModel).cast<MenuItemModel>();
 
     // set prototype
     if ((!S.isNullOrEmpty(datasource)) && (items.isNotEmpty))
     {
-      prototype = WidgetModel.prototypeOf(items[0].element);
+      prototype = WidgetModel.prototypeOf(items.first.element);
       items.removeAt(0);
     }
 
     // build items
-    for (var item in items) {
-      this.items.add(item);
-    }
+    this.items.addAll(items);
   }
 
   @override

@@ -163,6 +163,7 @@ class MainActivity: FlutterActivity() {
         profileConfig.putString("PROFILE_NAME", profileName)
         profileConfig.putString("PROFILE_ENABLED", "true") //  These are all strings
         profileConfig.putString("CONFIG_MODE", "UPDATE")
+        profileConfig.putString("RESET_CONFIG", "true")
 
 
         val rfidConfig = Bundle()
@@ -174,6 +175,12 @@ class MainActivity: FlutterActivity() {
         rfidProps.putString("rfid_input_enabled", "true")
         rfidProps.putString("rfid_beeper_enable", "true")
         rfidProps.putString("rfid_hardware_trigger_enabled", "true")
+        rfidProps.putString("rfid_led_enable", "true")
+        rfidProps.putString("rfid_antenna_transmit_power", "30")
+        rfidProps.putString("rfid_memory_bank", "2")
+        rfidProps.putString("rfid_session", "1")
+        rfidProps.putString("rfid_trigger_mode", "0")
+        rfidProps.putString("rfid_filter_duplicate_tags", "true")
         rfidConfig.putBundle("PARAM_LIST", rfidProps)
         profileConfig.putBundle("PLUGIN_CONFIG", rfidConfig)
 

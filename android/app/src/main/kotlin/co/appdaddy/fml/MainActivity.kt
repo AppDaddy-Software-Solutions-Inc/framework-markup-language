@@ -164,6 +164,7 @@ class MainActivity: FlutterActivity() {
         profileConfig.putString("PROFILE_NAME", profileName)
         profileConfig.putString("PROFILE_ENABLED", "true") //  These are all strings
         profileConfig.putString("CONFIG_MODE", "UPDATE")
+        profileConfig.putString("RESET_CONFIG", "true")
 
         val rfidConfig = Bundle()
         rfidConfig.putString("PLUGIN_NAME", "RFID")
@@ -179,6 +180,7 @@ class MainActivity: FlutterActivity() {
         rfidProps.putString("rfid_trigger_mode", "0")
         rfidProps.putString("rfid_filter_duplicate_tags", "true")
         rfidProps.putString("rfid_hardware_trigger_enabled", "true")
+<<<<<<< HEAD
         rfidProps.putString("rfid_tag_read_duration", "1000")
         rfidProps.putString("rfid_link_profile", "0")
 
@@ -195,6 +197,14 @@ class MainActivity: FlutterActivity() {
         //rfidProps.putString("rfid_post_filter_no_of_tags_to_read", "2")
         //rfidProps.putString("rfid_post_filter_rssi", "-54")
 
+=======
+        rfidProps.putString("rfid_led_enable", "true")
+        rfidProps.putString("rfid_antenna_transmit_power", "30")
+        rfidProps.putString("rfid_memory_bank", "2")
+        rfidProps.putString("rfid_session", "1")
+        rfidProps.putString("rfid_trigger_mode", "0")
+        rfidProps.putString("rfid_filter_duplicate_tags", "true")
+>>>>>>> c6d90b8df111de1dc5ef07d9cee3f7b3cdb93d37
         rfidConfig.putBundle("PARAM_LIST", rfidProps)
         profileConfig.putBundle("PLUGIN_CONFIG", rfidConfig)
 

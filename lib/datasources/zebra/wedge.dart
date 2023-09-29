@@ -1,10 +1,10 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:convert';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/datasources/detectors/barcode/barcode_detector.dart';
 import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/system.dart';
 
 abstract class IZebraListener
 {
@@ -105,26 +105,50 @@ class Reader
     if (data == null) Log().debug('Zebra Wedge Payload is null');
   }
 
-  Payload? getPayload(Map? barcode)
+  Payload? getPayload(Map? result)
   {
-    if ((barcode == null) || (barcode.isEmpty)) return null;
+    if ((result == null) || (result.isEmpty)) return null;
 
+    String? source  = result.containsKey("source") ? S.toStr(result["source"])?.toUpperCase()  : null;
+    System.toast("Source is $source");
+
+    return source == "RFID" ? rfidPayload(result) : barcodePayload(result);
+  }
+
+  Payload barcodePayload(Map result)
+  {
+    System.toast("inside barcode");
+
+    String? barcode = result.containsKey("barcode") ? S.toStr(result["barcode"]) : "";
+
+    String? fmt = result.containsKey("format")  ? S.toStr(result["format"])  : null;
+    if (S.isNullOrEmpty(fmt)) fmt = "UNKNOWN";
+    fmt = fmt?.trim().toUpperCase().replaceAll("LABEL-TYPE-", "");
+    var format = S.fromEnum(S.toEnum(fmt, BarcodeFormats.values) ?? BarcodeFormats.unknown);
+
+    // add barcode to payload
     Payload payload = Payload();
-    Barcode bc = Barcode();
+    payload.barcodes.add(Barcode(type: 0, format: format, display: barcode, barcode: barcode));
+    return payload;
+  }
 
-    String? display = barcode.containsKey("barcode") ? S.toStr(barcode["barcode"]) : "";
+  Payload? rfidPayload(Map result)
+  {
+    Payload payload = Payload();
 
-    String? format = barcode.containsKey("format") ? S.toStr(barcode["format"]) : null;
-    if (S.isNullOrEmpty(format)) format = "UNKNOWN";
-    format = format!.trim().toUpperCase().replaceAll("LABEL-TYPE-", "");
+    String? value = result.containsKey("barcode") ? S.toStr(result["barcode"]) : "";
+    if (S.isNullOrEmpty(value)) return payload;
 
-    BarcodeFormats fmt = S.toEnum(format, BarcodeFormats.values) ?? BarcodeFormats.unknown;
-
-    bc.type    = 0;
-    bc.format  = S.fromEnum(fmt);
-    bc.display = display;
-    bc.barcode = display;
-    payload.barcodes.add(bc);
+    // split barcode into multiple
+    var barcodes = value!.split("\n");
+    for (var barcode in barcodes)
+    {
+      barcode = barcode.trim();
+      if (!S.isNullOrEmpty(barcode))
+      {
+        payload.barcodes.add(Barcode(type: 0, format: null, display: barcode, barcode: barcode));
+      }
+    }
     return payload;
   }
 }

@@ -14,6 +14,8 @@ import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 import android.util.*
+import java.util.ArrayList
+import android.util.Log
 
 //  This sample implementation is heavily based on the flutter demo at
 //  https://github.com/flutter/flutter/blob/master/examples/platform_channel/android/app/src/main/java/com/example/platformchannel/MainActivity.java
@@ -73,29 +75,28 @@ class MainActivity: FlutterActivity() {
         }
     }
 
-    private fun createDataWedgeBroadcastReceiver(events: EventSink?): BroadcastReceiver? {
-        Log.d("WEDGE", "SETTING INTENT PROFILE")
+    private fun createDataWedgeBroadcastReceiver(events: EventSink?): BroadcastReceiver?
+    {
         return object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
-                Log.d("WEDGE", "GETTING INTENT RECIEVED")
                 if (intent.action.equals(PROFILE_INTENT_ACTION))
                 {
                     //  A barcode has been scanned
+                    var source  = intent.getStringExtra(DWInterface.DATAWEDGE_SCAN_EXTRA_SOURCE).toString()
                     var barcode = intent.getStringExtra(DWInterface.DATAWEDGE_SCAN_EXTRA_DATA_STRING).toString()
-                    Log.d("WEDGE", "GETTING INTENT $barcode")
                     var format  = intent.getStringExtra(DWInterface.DATAWEDGE_SCAN_EXTRA_LABEL_TYPE).toString()
 
                     var date    = Calendar.getInstance().getTime()
                     var df      = SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
                     var dateTimeString = df.format(date)
 
-                    var currentScan = Scan(barcode, format, dateTimeString);
-                    events?.success(currentScan.toJson())
-                }
-                //  Could handle return values from DW here such as RETURN_GET_ACTIVE_PROFILE
-                //  or RETURN_ENUMERATE_SCANNERS
-            }
+                    var currentScan = Scan(source, barcode, format, dateTimeString);
+                    var data = currentScan.toJson();
 
+                    // send the result
+                    events?.success(data)
+                }
+            }
         }
     }
 
@@ -164,16 +165,36 @@ class MainActivity: FlutterActivity() {
         profileConfig.putString("PROFILE_ENABLED", "true") //  These are all strings
         profileConfig.putString("CONFIG_MODE", "UPDATE")
 
-
         val rfidConfig = Bundle()
-
         rfidConfig.putString("PLUGIN_NAME", "RFID")
-        rfidConfig.putString("RESET_CONFIG", "true")
+        rfidConfig.putString("RESET_CONFIG", "true") //  This is the default but never hurts to specify
 
         val rfidProps = Bundle()
         rfidProps.putString("rfid_input_enabled", "true")
         rfidProps.putString("rfid_beeper_enable", "true")
+        rfidProps.putString("rfid_led_enable", "true")
+        rfidProps.putString("rfid_antenna_transmit_power", "30")
+        rfidProps.putString("rfid_memory_bank", "0")
+        rfidProps.putString("rfid_session", "1")
+        rfidProps.putString("rfid_trigger_mode", "0")
+        rfidProps.putString("rfid_filter_duplicate_tags", "true")
         rfidProps.putString("rfid_hardware_trigger_enabled", "true")
+        rfidProps.putString("rfid_tag_read_duration", "1000")
+        rfidProps.putString("rfid_link_profile", "0")
+
+        // Pre-filter
+        rfidProps.putString("rfid_pre_filter_enable", "false")
+        //rfidProps.putString("rfid_pre_filter_tag_pattern", "3EC")
+        //rfidProps.putString("rfid_pre_filter_target", "2")
+        //rfidProps.putString("rfid_pre_filter_memory_bank", "2")
+        //rfidProps.putString("rfid_pre_filter_offset", "2")
+        //rfidProps.putString("rfid_pre_filter_action", "2")
+
+        // Post-filter
+        rfidProps.putString("rfid_post_filter_enable", "false")
+        //rfidProps.putString("rfid_post_filter_no_of_tags_to_read", "2")
+        //rfidProps.putString("rfid_post_filter_rssi", "-54")
+
         rfidConfig.putBundle("PARAM_LIST", rfidProps)
         profileConfig.putBundle("PLUGIN_CONFIG", rfidConfig)
 

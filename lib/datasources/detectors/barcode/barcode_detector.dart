@@ -35,6 +35,8 @@ class Barcode
   String? display;
   String? format;
   Map<String, String?>? parameters;
+
+  Barcode({this.type, this. barcode, this.display, this.format});
 }
 
 class Payload

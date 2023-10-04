@@ -465,6 +465,7 @@ class ViewableWidgetModel extends ConstraintModel
     flexfit   = Xml.get(node: xml, tag: 'flexfit');
     onscreen  = Xml.get(node: xml, tag: 'onscreen');
     offscreen = Xml.get(node: xml, tag: 'offscreen');
+    var tooltip = Xml.attribute(node: xml, tag: 'tip') ?? Xml.attribute(node: xml, tag: 'tootip');
 
     // view sizing and position
     // these are treated differently for efficiency reasons
@@ -490,12 +491,26 @@ class ViewableWidgetModel extends ConstraintModel
     var padding = Xml.attribute(node: xml, tag: 'pad') ?? Xml.attribute(node: xml, tag: 'padding') ?? Xml.attribute(node: xml, tag: 'padd');
     this.padding = padding;
 
-    // tip
+    // tooltip
     List<TooltipModel> tips = findChildrenOfExactType(TooltipModel).cast<TooltipModel>();
     if (tips.isNotEmpty)
     {
       tipModel = tips.first;
       removeChildrenOfExactType(TooltipModel);
+    }
+    else if (tooltip != null)
+    {
+      // build tooltip
+      XmlElement eTip  = XmlElement(XmlName("TOOLTIP"));
+
+      // build text
+      tooltip = tooltip.replaceAll("{this.id}", id);
+      XmlElement eText = XmlElement(XmlName("TEXT"));
+      eText.attributes.add(XmlAttribute(XmlName("value"), tooltip));
+      eTip.children.add(eText);
+
+      var model = WidgetModel.fromXml(this, eTip);
+      tipModel = (model is TooltipModel) ? model : null;
     }
 
     // add animations

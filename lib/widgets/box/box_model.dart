@@ -354,6 +354,7 @@ class BoxModel extends DecoratedWidgetModel
     expand = Xml.get(node: xml, tag: 'expand');
   }
 
+
   @override
   List<Widget> inflate()
   {
@@ -403,5 +404,4 @@ class BoxModel extends DecoratedWidgetModel
 
   @override
   Widget getView({Key? key}) => getReactiveView(BoxView(this));
-  //Widget getView({Key? key}) => BoxView(this);
 }

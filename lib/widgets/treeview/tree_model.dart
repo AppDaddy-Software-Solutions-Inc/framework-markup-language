@@ -15,9 +15,6 @@ import 'package:fml/helper/common_helpers.dart';
 
 class TreeModel extends BoxModel
 {
-  // Data sourced prototype
-  XmlElement? prototype;
-
   // Icon
   IconObservable? _icon;
   set icon (dynamic v)
@@ -83,6 +80,13 @@ class TreeModel extends BoxModel
     // Build Nodes and find the youngestGeneration
     _buildNodes();
 
+    // build the prototype
+    setPrototype();
+  }
+
+  @override
+  void setPrototype()
+  {
     // build the prototype
     if (datasource != null && nodes.isNotEmpty)
     {

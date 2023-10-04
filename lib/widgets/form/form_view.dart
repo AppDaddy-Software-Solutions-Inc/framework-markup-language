@@ -79,7 +79,7 @@ class FormViewState extends WidgetState<FormView> implements IGpsListener
     try {
       bool found = false;
 
-      for (IFormField field in widget.model.fields) {
+      for (IFormField field in widget.model.formFields) {
         if (field == model) {
           found = true;
           try {

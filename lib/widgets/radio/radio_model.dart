@@ -13,10 +13,8 @@ import 'package:fml/widgets/radio/radio_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 
-class RadioModel extends FormFieldModel implements IFormField {
-  // prototype
-  XmlElement? prototype;
-
+class RadioModel extends FormFieldModel implements IFormField
+{
   // options
   List<OptionModel> options = [];
 
@@ -192,22 +190,30 @@ class RadioModel extends FormFieldModel implements IFormField {
     size = Xml.get(node: xml, tag: 'size');
 
     // clear options
-    for (var option in this.options) {
+    for (var option in options) {
       option.dispose();
     }
-    this.options.clear();
+    options.clear();
 
-    // Build options
-    List<OptionModel> options =
-        findChildrenOfExactType(OptionModel).cast<OptionModel>();
+    // build options
+    setPrototype();
+  }
+
+  @override
+  void setPrototype()
+  {
+    List<OptionModel> options = findChildrenOfExactType(OptionModel).cast<OptionModel>();
 
     // set prototype
-    if ((!S.isNullOrEmpty(datasource)) && (options.isNotEmpty)) {
-      prototype = WidgetModel.prototypeOf(options[0].element);
+    if ((!S.isNullOrEmpty(datasource)) && (options.isNotEmpty))
+    {
+      prototype = WidgetModel.prototypeOf(options.first.element);
       options.removeAt(0);
     }
+
     // build options
-    for (var option in options) {
+    for (var option in options)
+    {
       this.options.add(option);
     }
   }

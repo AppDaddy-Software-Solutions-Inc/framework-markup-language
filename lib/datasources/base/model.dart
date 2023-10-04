@@ -757,10 +757,18 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
           Data? d = Data.from(jsonOrXml);
           if (data != null)
           {
-            if (index > d.length) index = d.length;
             if (index.isNegative) index = 0;
-            for (var element in d) {
-              data!.insert(index++, element);
+            for (var element in d)
+            {
+              if (index < data!.length)
+              {
+                data!.insert(index, element);
+              }
+              else
+              {
+                data!.add(element);
+              }
+              index++;
             }
           }
           else {
@@ -774,7 +782,7 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
 
       // remove from the list
       case "remove":
-        int index = S.toInt(S.item(arguments, 1)) ?? (data != null ? data!.length : 0);
+        int index = S.toInt(S.item(arguments, 0)) ?? (data != null ? data!.length : 0);
         if (data != null)
         {
           if (index >= data!.length) index = data!.length - 1;

@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
+import android.util.*
 
 //  This sample implementation is heavily based on the flutter demo at
 //  https://github.com/flutter/flutter/blob/master/examples/platform_channel/android/app/src/main/java/com/example/platformchannel/MainActivity.java
@@ -52,6 +53,7 @@ class MainActivity: FlutterActivity() {
 
             if (call.method == "ZEBRA")
             {
+                Log.d("FML","TEST");
                 val arguments = JSONObject(call.arguments.toString())
                 val command:   String = arguments.get("command") as String
                 val parameter: String = arguments.get("parameter") as String

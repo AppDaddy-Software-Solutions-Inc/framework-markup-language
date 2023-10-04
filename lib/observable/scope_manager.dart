@@ -82,7 +82,7 @@ class ScopeManager
     }
   }
 
-  Observable? named(Observable? target, String? scopeId, String? observableKey)
+  Observable? findObservableInScope(Observable? target, String? scopeId, String? observableKey)
   {
     // Find Scope 
     Scope? scope = _directory.containsKey(scopeId) ? _directory[scopeId]!.last : null;
@@ -107,11 +107,11 @@ class ScopeManager
     return observable;
   }
 
-  Observable? scoped(Scope? scope, String? key)
+  Observable? findObservable(Scope? scope, String? key)
   {
     if ((scope == null) || (S.isNullOrEmpty(key))) return null;
     if (scope.observables.containsKey(key)) return scope.observables[key];
-    return scoped(scope.parent, key);
+    return findObservable(scope.parent, key);
   }
 
   bool hasScope(String? id)

@@ -1,16 +1,22 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
+import 'package:fml/data/data.dart';
+import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/widgets/animation/animation_model.dart';
+import 'package:fml/widgets/form/form_model.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
+import 'package:fml/widgets/scope/scope_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_view.dart';
 import 'package:fml/widgets/constraints/constraint_model.dart';
+import 'package:fml/widgets/variable/variable_model.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:collection/collection.dart';
 
 class ViewableWidgetModel extends ConstraintModel
 {
@@ -19,6 +25,9 @@ class ViewableWidgetModel extends ConstraintModel
 
   // holds animations
   List<AnimationModel>? animations;
+
+  // data sourced prototype
+  XmlElement? prototype;
 
   // viewable children
   List<ViewableWidgetModel> get viewableChildren
@@ -448,6 +457,9 @@ class ViewableWidgetModel extends ConstraintModel
     // deserialize
     super.deserialize(xml);
 
+    // build prototype if defined
+    if (datasource != null) setPrototype();
+
     // set constraints
     width     = Xml.get(node: xml, tag: 'width');
     height    = Xml.get(node: xml, tag: 'height');
@@ -646,6 +658,111 @@ class ViewableWidgetModel extends ConstraintModel
       viewX      = offset.dx;
       viewY      = offset.dy;
     }
+  }
+
+  // sets the prototype node
+  // several widgets override this method in order to
+  // build their own prototypes
+  void setPrototype()
+  {
+    // if the node has a datasource and a single
+    // element its considered a prototype
+    if (S.isNullOrEmpty(datasource)) return;
+    if (children?.length != 1) return;
+
+    // create scope widget with single child
+    var e = XmlElement(XmlName("SCOPE"));
+    var c = children!.first.element?.copy();
+    if (c != null) e.children.add(c);
+
+    prototype = WidgetModel.prototypeOf(e);
+
+    children!.clear();
+    children = null;
+  }
+
+  @override
+  Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async
+  {
+    if (prototype == null || source.id != datasource) return super.onDataSourceSuccess(source, list);
+
+    // set busy
+    busy = true;
+
+    // build chidlren from datasource
+    List<WidgetModel> models = [];
+    if (list != null)
+    {
+      int index = 0;
+      for (var data in list)
+      {
+        var model = children?.firstWhereOrNull((child)
+        {
+          if (child.data == data) return true;
+          if (child.data is List && (child.data as List).isNotEmpty && (child.data as List).first == data) return true;
+          return false;
+        });
+
+        if (model == null)
+        {
+          // add variable for index
+          var prototype = this.prototype!.copy();
+
+          // add index variable
+          var variable = XmlElement(XmlName("VAR"));
+          variable.attributes.add(XmlAttribute(XmlName("id"), "index"));
+          variable.attributes.add(XmlAttribute(XmlName("value"), index.toString()));
+          prototype.children.insert(0, variable);
+
+          // build the model
+          model = ScopeModel.fromXml(this, prototype, data: data);
+          if (model != null)
+          {
+            models.add(model);
+          }
+        }
+        else
+        {
+          // set the index
+          VariableModel? variable = model.findChildOfExactType(VariableModel,id: "index");
+          if (variable != null)
+          {
+            variable.value = index;
+          }
+          models.add(model);
+        }
+
+        index++;
+      }
+    }
+
+    // dispose of unused children
+    children ??= [];
+    for (var child in children!)
+    {
+      if (!models.contains(child))
+      {
+        child.dispose();
+      }
+    }
+    children!.clear();
+    children!.addAll(models);
+
+    // rebuild form fields
+    // this could be done differently
+    var form = findAncestorOfExactType(FormModel);
+    if (form is FormModel)
+    {
+      form.setFormFields();
+    }
+
+    // notify listeners
+    notifyListeners("list", children);
+
+    // clear busy
+    busy = false;
+
+    return true;
   }
 
   Widget? getView() => throw("getView() Not Implemented");

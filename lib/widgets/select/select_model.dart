@@ -38,9 +38,6 @@ class SelectModel extends DecoratedInputModel implements IFormField
   get data => _data?.get();
 
 
-  // prototype
-  XmlElement? prototype;
-
   // options
   final List<OptionModel> options = [];
 
@@ -151,28 +148,33 @@ class SelectModel extends DecoratedInputModel implements IFormField
     if (S.isBool(empty)) addempty = S.toBool(empty);
 
     // clear options
-    for (var option in this.options) {
+    for (var option in options) {
       option.dispose();
     }
-    this.options.clear();
+    options.clear();
 
+    // build options
+    setPrototype();
+
+    // Set selected option
+    setData();
+  }
+
+  @override
+  void setPrototype()
+  {
     // Build options
     List<OptionModel> options = findChildrenOfExactType(OptionModel).cast<OptionModel>();
 
     // set prototype
     if ((!S.isNullOrEmpty(datasource)) && (options.isNotEmpty))
     {
-      prototype = WidgetModel.prototypeOf(options[0].element);
+      prototype = WidgetModel.prototypeOf(options.first.element);
       options.removeAt(0);
     }
 
     // build options
-    for (var option in options) {
-      this.options.add(option);
-    }
-
-    // Set selected option
-    setData();
+    this.options.addAll(options);
   }
 
   @override

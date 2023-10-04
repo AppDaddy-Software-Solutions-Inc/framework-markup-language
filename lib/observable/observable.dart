@@ -71,9 +71,12 @@ class Observable
 
   dynamic get()
   {
-    if (getter == null) {
+    if (getter == null) 
+    {
       return _value;
-    } else {
+    } 
+    else 
+    {
       return getter!();
     }
   }
@@ -86,23 +89,8 @@ class Observable
       if (this is! BlobObservable) bindings = Binding.getBindings(value, scope: scope);
       if (bindings != null)
       {
-        // replace the "this" operator
-        if (value.contains("this") && key != null)
-        {
-          String id = key!.split(".").first;
-
-          // replace "this" with the id in the signature
-          for(Binding binding in bindings!) {
-            if (binding.source == "this")
-          {
-            var signature = binding.signature.replaceFirst("this",id);
-            value = (value as String).replaceAll(binding.signature, signature);
-          }
-          }
-
-          // requery the bindings
-          bindings = Binding.getBindings(value, scope: scope);
-        }
+        // replace the "this" and "parent" operators
+        value = replaceReferences(this, scope, value);
 
         // save the signature
         signature = value;
@@ -116,9 +104,7 @@ class Observable
         signature = value;
       }
 
-      ///////////
-      /* 2-way */
-      ///////////
+      // 2-way 
       String t = '@{';
       if ((bindings != null) && (bindings!.length == 1) && (value.trim().toLowerCase().startsWith(t)) && (value.trim().toLowerCase().endsWith('}')))
       {
@@ -128,30 +114,76 @@ class Observable
       }
     }
 
-    ///////////////////
-    /* Set the Value */
-    ///////////////////
+    // Set the Value 
     if (bindings == null) _value = to(value);
-
-    ////////////////////////
-    /* Perform Evaluation */
-    ////////////////////////
+    
+    // Perform Evaluation 
     if ((isEval) || bindings != null) onObservableChange(null);
-
-    //////////////////
-    /* Add Listener */
-    //////////////////
+    
+    // Add Listener 
     if (listener != null) registerListener(listener);
 
-    //////////////
-    /* Register */
-    //////////////
+    // Register 
     if (scope != null) scope!.register(this);
-
-    ////////////
-    /* Notify */
-    ////////////
+    
+    // Notify 
     notifyListeners();
+  }
+
+  static String replaceReferences(Observable observable, Scope? scope, String value)
+  {
+    if (scope == null || observable.key == null || observable.bindings == null) return value;
+
+    bool requery = false;
+    for (Binding binding in observable.bindings!)
+    {
+      // replace "this" with the id in the signature
+      if (binding.source == "this" || binding.source == "parent")
+      {
+        requery = true;
+
+        // get source id
+        String sourceId = observable.key!.split(".").first;
+        if (binding.source == "parent") sourceId = parentId(scope, sourceId);
+        if (binding.property == "parent")
+        {
+          sourceId = parentId(scope, sourceId);
+          for (var segment in binding.dotnotation ?? [])
+          {
+            if (segment.name != "parent") break;
+            sourceId = parentId(scope, sourceId);
+          }
+        }
+
+        // build signature
+        var signature = sourceId;
+        if (binding.property != "parent") signature = "$sourceId.${binding.property}";
+        if (binding.dotnotation != null)
+        {
+          int i = 0;
+
+          // skip parent dotnotation
+          while (i < binding.dotnotation!.length && binding.dotnotation![i].name == "parent") i++;
+
+          // append non-parent dotnotation
+          while (i < binding.dotnotation!.length) signature = "$signature.${binding.dotnotation![i++].name}";
+        }
+
+        // replace signature
+        value = value.replaceAll(binding.signature, "{$signature}");
+      }
+    }
+
+    // requery the bindings
+    if (requery) observable.bindings = Binding.getBindings(value, scope: scope);
+
+    return value;
+  }
+
+  static String parentId(Scope scope, String id)
+  {
+    if (!scope.models.containsKey(id)) return id;
+    return scope.models[id]!.parent?.id ?? id;
   }
 
   notifyListeners()
@@ -323,12 +355,14 @@ class Observable
   Map<String?, dynamic> getVariables()
   {
     Map<String?, dynamic> variables =  <String?, dynamic>{};
-    if (bindings != null) {
-      for (var binding in bindings!) {
-      Observable? source;
-      if (sources != null) source = sources!.firstWhereOrNull((observable) => observable.key == binding.key);
-      variables[binding.signature] = (source != null)  ? binding.translate(source.get()) : null;
-    }
+    if (bindings != null) 
+    {
+      for (var binding in bindings!) 
+      {
+        Observable? source;
+        if (sources != null) source = sources!.firstWhereOrNull((observable) => observable.key == binding.key);
+        variables[binding.signature] = (source != null)  ? binding.translate(source.get()) : null;
+      }
     }
     return variables;
   }

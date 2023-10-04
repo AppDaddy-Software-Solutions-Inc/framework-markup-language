@@ -35,10 +35,8 @@ final String applicationTitle = "Flutter Markup Language $version";
 
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
-// Set this to file://applications/<app> to use the asset applications
+// Set this to file://app
 String get defaultDomain => 'http://test.appdaddy.co';
-//String get defaultDomain => 'http://socialcircle.appdaddy.co';
-
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup

@@ -756,9 +756,14 @@ class TableViewState extends WidgetState<TableView>
     var textStyle    = TextStyle(fontSize: widget.model.textSize, color: widget.model.textColor);
 
     // row colors
-    var rowColor     = widget.model.color ?? Colors.white;
-    var oddRowColor  = widget.model.color != null && widget.model.color2 != null ? widget.model.color : null;
-    var evenRowColor = widget.model.color != null && widget.model.color2 != null ? widget.model.color : null;
+    Color  rowColor = widget.model.color ?? Colors.white;
+    Color? oddRowColor;
+    Color? evenRowColor;
+    if (widget.model.color2 != null)
+    {
+      oddRowColor  = rowColor;
+      evenRowColor = widget.model.color2;
+    }
 
     var primaryColor = Color(0xFFDCF5FF);
     var primaryBorderColor = Colors.lightBlue;

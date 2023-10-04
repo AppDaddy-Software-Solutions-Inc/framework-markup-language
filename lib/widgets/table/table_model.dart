@@ -38,9 +38,6 @@ class TableModel extends BoxModel implements IForm
   // holds footer
   TableFooterModel? footer;
 
-  // holds first row prototype
-  XmlElement? prototype;
-
   // holds list of rows
   final HashMap<int, TableRowModel> rows = HashMap<int, TableRowModel>();
 

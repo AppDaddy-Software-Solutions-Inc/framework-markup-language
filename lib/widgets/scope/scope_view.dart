@@ -27,9 +27,9 @@ class _ScopeViewState extends WidgetState<ScopeView>
     List<Widget> children = widget.model.inflate();
     if (children.isEmpty) children.add(Container());
 
-    //////////
-    /* View */
-    ///////////
-    return children.length == 1 ? children[0] : Column(children: children, mainAxisSize: MainAxisSize.min);
+    // view
+    var view = children.length == 1 ? children[0] : Column(children: children, mainAxisSize: MainAxisSize.min);
+
+    return view;
   }
 }

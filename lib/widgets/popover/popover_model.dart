@@ -16,9 +16,6 @@ class PopoverModel extends DecoratedWidgetModel implements IModelListener
 {
   List<PopoverItemModel> items = [];
 
-  // prototype
-  XmlElement? prototype;
-
   // label
   StringObservable? _label;
   set label (dynamic v)
@@ -92,25 +89,30 @@ class PopoverModel extends DecoratedWidgetModel implements IModelListener
     label   = Xml.get(node: xml, tag: 'label');
     icon    = Xml.get(node: xml, tag: 'icon');
 
-    // dispose of old items
-    for(PopoverItemModel i in items) {
-      i.dispose();
+    // clear items
+    for (var item in items) {
+      item.dispose();
     }
     items.clear();
 
     // Get Items from XML
-    List<PopoverItemModel> popoverItems = findChildrenOfExactType(PopoverItemModel).cast<PopoverItemModel>();
+    setPrototype();
+  }
+
+  @override
+  void setPrototype()
+  {
+    List<PopoverItemModel> items = findChildrenOfExactType(PopoverItemModel).cast<PopoverItemModel>();
 
     // build datasource popover items
-    if (!S.isNullOrEmpty(datasource) && popoverItems.isNotEmpty) {
-      prototype = WidgetModel.prototypeOf(popoverItems[0].element);
-      popoverItems.removeAt(0);
+    if (!S.isNullOrEmpty(datasource) && items.isNotEmpty)
+    {
+      prototype = WidgetModel.prototypeOf(items.first.element);
+      items.removeAt(0);
     }
 
-    // add models
-    for (PopoverItemModel model in popoverItems) {
-      items.add(model);
-    }
+    // add items
+    this.items.addAll(items);
   }
 
   @override

@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/services.dart';
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
-import 'package:fml/models/custom_exception.dart';
 import 'package:ndef/ndef.dart' as ndef;
 import 'package:fml/log/manager.dart';
 import 'nfc_listener_interface.dart';
@@ -199,4 +198,11 @@ class Writer
       }
     }
   }
+}
+
+class CustomException
+{
+  final int? code;
+  final String? message;
+  const CustomException({this.code, this.message = ""});
 }

@@ -90,8 +90,8 @@ class Binding
       // scoped?
       var myScope = parts[0].trim();
       if (System.app != null && parts.length > 1 && System.app!.scopeManager.hasScope(myScope)) {
-      scope = myScope;
-      parts.removeAt(0);
+        scope = myScope;
+        parts.removeAt(0);
       }
 
       // source id
@@ -183,17 +183,18 @@ class Binding
     if (s == null) return null;
     List<Binding>? bindings;
     List<String?>? bindingStrings = getBindingStrings(s);
-    if (bindingStrings != null){
-      for (String? binding in bindingStrings)
+    if (bindingStrings != null)
+    {
+      for (String? str in bindingStrings)
       {
-        Binding? property = Binding.fromString(binding, bindingscope: scope);
-
-        if (property != null)
+        Binding? binding = Binding.fromString(str, bindingscope: scope);
+        if (binding != null)
         {
           bindings ??= [];
-          bindings.add(property);
+          bindings.add(binding);
         }
-      }}
+      }
+    }
     return bindings;
   }
 

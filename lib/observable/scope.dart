@@ -150,10 +150,13 @@ class Scope
 
         // Find Bind Source
         Observable? source;
-        if (binding.scope != null) {
-          source = System.app?.scopeManager.named(target, binding.scope, binding.key);
-        } else {
-          source = System.app?.scopeManager.scoped(this, binding.key);
+        if (binding.scope != null)
+        {
+          source = System.app?.scopeManager.findObservableInScope(target, binding.scope, binding.key);
+        }
+        else
+        {
+          source = System.app?.scopeManager.findObservable(this, binding.key);
         }
 
         // resolved
@@ -287,11 +290,11 @@ class Scope
 
   Observable? getObservable(Binding binding, {Observable? requestor})
   {
-    if (binding.scope == null) {
-      return System.app?.scopeManager.scoped(this, binding.key);
-    } else {
-      return System.app?.scopeManager.named(requestor, binding.scope, binding.key);
-    }
+    // look up the scope tree
+    if (binding.scope == null) return System.app?.scopeManager.findObservable(this, binding.key);
+
+    // named scope
+    return System.app?.scopeManager.findObservableInScope(requestor, binding.scope, binding.key);
   }
 
   Future<String?> replaceFileReferences(String? body) async

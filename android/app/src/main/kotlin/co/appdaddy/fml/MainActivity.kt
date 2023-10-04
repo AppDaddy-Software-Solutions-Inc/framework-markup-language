@@ -17,6 +17,7 @@ import android.util.*
 import java.util.ArrayList
 import android.util.Log
 
+
 //  This sample implementation is heavily based on the flutter demo at
 //  https://github.com/flutter/flutter/blob/master/examples/platform_channel/android/app/src/main/java/com/example/platformchannel/MainActivity.java
 
@@ -54,6 +55,7 @@ class MainActivity: FlutterActivity() {
             .setMethodCallHandler { call, result ->
             if (call.method == "ZEBRA")
             {
+                Log.d("FML","TEST");
                 val arguments = JSONObject(call.arguments.toString())
                 val command:   String = arguments.get("command") as String
                 val parameter: String = arguments.get("parameter") as String
@@ -180,7 +182,6 @@ class MainActivity: FlutterActivity() {
         rfidProps.putString("rfid_trigger_mode", "0")
         rfidProps.putString("rfid_filter_duplicate_tags", "true")
         rfidProps.putString("rfid_hardware_trigger_enabled", "true")
-<<<<<<< HEAD
         rfidProps.putString("rfid_tag_read_duration", "1000")
         rfidProps.putString("rfid_link_profile", "0")
 
@@ -197,14 +198,6 @@ class MainActivity: FlutterActivity() {
         //rfidProps.putString("rfid_post_filter_no_of_tags_to_read", "2")
         //rfidProps.putString("rfid_post_filter_rssi", "-54")
 
-=======
-        rfidProps.putString("rfid_led_enable", "true")
-        rfidProps.putString("rfid_antenna_transmit_power", "30")
-        rfidProps.putString("rfid_memory_bank", "2")
-        rfidProps.putString("rfid_session", "1")
-        rfidProps.putString("rfid_trigger_mode", "0")
-        rfidProps.putString("rfid_filter_duplicate_tags", "true")
->>>>>>> c6d90b8df111de1dc5ef07d9cee3f7b3cdb93d37
         rfidConfig.putBundle("PARAM_LIST", rfidProps)
         profileConfig.putBundle("PLUGIN_CONFIG", rfidConfig)
 

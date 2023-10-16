@@ -115,6 +115,9 @@ class Reader
     // barcode format
     String? format = (result.containsKey("format") ? S.toStr(result["format"]) : null)?.trim().toLowerCase().replaceAll("label-type-", "");
 
+    // source
+    String? source = result.containsKey("source") ? S.toStr(result["source"]) : "";
+
     // get barcode(s) - RFID concatenates barcodes together and seperates by a newline
     var barcodes = LineSplitter.split(barcode);
     for (var barcode in barcodes)
@@ -124,6 +127,7 @@ class Reader
       {
         Barcode bc = Barcode();
         bc.type    = 0;
+        bc.source  = source;
         bc.format  = S.fromEnum(S.toEnum(format, BarcodeFormats.values) ?? BarcodeFormats.unknown);
         bc.display = barcode;
         bc.barcode = barcode;

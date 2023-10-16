@@ -119,6 +119,7 @@ class Reader
     var barcodes = LineSplitter.split(barcode);
     for (var barcode in barcodes)
     {
+      barcode = barcode.trim();
       if (!S.isNullOrEmpty(barcode))
       {
         Barcode bc = Barcode();

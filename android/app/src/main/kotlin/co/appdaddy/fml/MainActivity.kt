@@ -53,7 +53,6 @@ class MainActivity: FlutterActivity() {
 
             if (call.method == "ZEBRA")
             {
-                Log.d("FML","TEST");
                 val arguments = JSONObject(call.arguments.toString())
                 val command:   String = arguments.get("command") as String
                 val parameter: String = arguments.get("parameter") as String
@@ -72,6 +71,7 @@ class MainActivity: FlutterActivity() {
                 if (intent.action.equals(PROFILE_INTENT_ACTION))
                 {
                     //  A barcode has been scanned
+                    var source  = intent.getStringExtra(DWInterface.DATAWEDGE_SCAN_EXTRA_SOURCE).toString()
                     var barcode = intent.getStringExtra(DWInterface.DATAWEDGE_SCAN_EXTRA_DATA_STRING).toString()
                     var format  = intent.getStringExtra(DWInterface.DATAWEDGE_SCAN_EXTRA_LABEL_TYPE).toString()
 
@@ -79,11 +79,12 @@ class MainActivity: FlutterActivity() {
                     var df      = SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
                     var dateTimeString = df.format(date)
 
-                    var currentScan = Scan(barcode, format, dateTimeString);
-                    events?.success(currentScan.toJson())
+                    var currentScan = Scan(source, barcode, format, dateTimeString);
+                    var data = currentScan.toJson();
+
+                    // send the result
+                    events?.success(data)
                 }
-                //  Could handle return values from DW here such as RETURN_GET_ACTIVE_PROFILE
-                //  or RETURN_ENUMERATE_SCANNERS
             }
         }
     }

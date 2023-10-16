@@ -512,7 +512,7 @@ class FormModel extends BoxModel implements IForm
     // complete subforms
     for (IForm form in forms)
     {
-     // ok = await form.complete();
+      //ok = await form.complete();
       if (!ok) break;
     }
 

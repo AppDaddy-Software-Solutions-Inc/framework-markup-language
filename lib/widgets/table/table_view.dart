@@ -766,7 +766,7 @@ class TableViewState extends WidgetState<TableView>
     }
 
     var primaryColor = Color(0xFFDCF5FF);
-    var primaryBorderColor = Colors.lightBlue;
+    //var primaryBorderColor = Colors.lightBlue;
 
     // style
     var style = PlutoGridStyleConfig(
@@ -903,7 +903,7 @@ class TableViewState extends WidgetState<TableView>
     List<String> fields = [];
     for (var cell in widget.model.header!.cells)
     {
-      var height = widget.model.header?.height ?? PlutoGridSettings.rowHeight;
+      //var height = widget.model.header?.height ?? PlutoGridSettings.rowHeight;
       var header = WidgetSpan(child:BoxView(cell));
       var title  = cell.title ?? cell.field ?? "Column ${cell.index}";
 

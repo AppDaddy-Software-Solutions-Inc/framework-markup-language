@@ -103,26 +103,32 @@ class Reader
     if (data == null) Log().debug('Zebra Wedge Payload is null');
   }
 
-  Payload? getPayload(Map? barcode)
+  Payload? getPayload(Map? result)
   {
-    if ((barcode == null) || (barcode.isEmpty)) return null;
+    if ((result == null) || (result.isEmpty)) return null;
 
     Payload payload = Payload();
-    Barcode bc = Barcode();
 
-    String? display = barcode.containsKey("barcode") ? S.toStr(barcode["barcode"]) : "";
+    // barcode
+    String barcode = (result.containsKey("barcode") ? S.toStr(result["barcode"]) : null) ?? "";
 
-    String? format = barcode.containsKey("format") ? S.toStr(barcode["format"]) : null;
-    if (S.isNullOrEmpty(format)) format = "UNKNOWN";
-    format = format!.trim().toUpperCase().replaceAll("LABEL-TYPE-", "");
+    // barcode format
+    String? format = (result.containsKey("format") ? S.toStr(result["format"]) : null)?.trim().toLowerCase().replaceAll("label-type-", "");
 
-    BarcodeFormats fmt = S.toEnum(format, BarcodeFormats.values) ?? BarcodeFormats.unknown;
-
-    bc.type    = 0;
-    bc.format  = S.fromEnum(fmt);
-    bc.display = display;
-    bc.barcode = display;
-    payload.barcodes.add(bc);
+    // get barcode(s) - RFID concatenates barcodes together and seperates by a newline
+    var barcodes = LineSplitter.split(barcode);
+    for (var barcode in barcodes)
+    {
+      if (!S.isNullOrEmpty(barcode))
+      {
+        Barcode bc = Barcode();
+        bc.type    = 0;
+        bc.format  = S.fromEnum(S.toEnum(format, BarcodeFormats.values) ?? BarcodeFormats.unknown);
+        bc.display = barcode;
+        bc.barcode = barcode;
+        payload.barcodes.add(bc);
+      }
+    }
     return payload;
   }
 }

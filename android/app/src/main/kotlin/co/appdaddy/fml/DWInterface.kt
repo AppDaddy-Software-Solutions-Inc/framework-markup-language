@@ -15,6 +15,7 @@ class DWInterface() {
         const val DATAWEDGE_SCAN_EXTRA_LABEL_TYPE = "com.symbol.datawedge.label_type"
         const val DATAWEDGE_SEND_CREATE_PROFILE = "com.symbol.datawedge.api.CREATE_PROFILE"
         const val DATAWEDGE_SEND_SET_CONFIG = "com.symbol.datawedge.api.SET_CONFIG"
+        const val DATAWEDGE_SEND_SCANNER_COMMAND = "com.symbol.datawedge.api.SCANNER_INPUT_PLUGIN"
     }
 
     fun sendCommandString(context: Context, command: String, parameter: String, sendResult: Boolean = false) {

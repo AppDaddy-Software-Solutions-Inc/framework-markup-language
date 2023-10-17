@@ -14,6 +14,8 @@ import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 import android.util.*
+import java.util.ArrayList
+
 
 //  This sample implementation is heavily based on the flutter demo at
 //  https://github.com/flutter/flutter/blob/master/examples/platform_channel/android/app/src/main/java/com/example/platformchannel/MainActivity.java
@@ -91,48 +93,48 @@ class MainActivity: FlutterActivity() {
 
     private fun createDataWedgeProfile(profileName: String)
     {
-        //  Create and configure the DataWedge profile associated with this application
-        //  For readability's sake, I have not defined each of the keys in the DWInterface file
+        //  create and configure the DataWedge profile associated with this application
         dwInterface.sendCommandString(this, DWInterface.DATAWEDGE_SEND_CREATE_PROFILE, profileName)
 
-        // create the device profile
-        val profile = Bundle()
-        profile.putString("PROFILE_NAME", profileName)
-        profile.putString("PROFILE_ENABLED", "true") //  These are all strings
-        profile.putString("CONFIG_MODE", "UPDATE")
+        // configure the DataWedge profile
+        val dwProfile = Bundle()
+        dwProfile.putString("PROFILE_NAME", profileName)
+        dwProfile.putString("PROFILE_ENABLED", "true") //  These are all strings
+        dwProfile.putString("CONFIG_MODE", "UPDATE")
 
         //  associate the profile with this app
         val appConfig = Bundle()
         appConfig.putString("PACKAGE_NAME", packageName)
         appConfig.putStringArray("ACTIVITY_LIST", arrayOf("*"))
-        profile.putParcelableArray("APP_LIST", arrayOf(appConfig))
+        dwProfile.putParcelableArray("APP_LIST", arrayOf(appConfig))
 
-        // update the profile
-        dwInterface.sendCommandBundle(this, DWInterface.DATAWEDGE_SEND_SET_CONFIG, profile)
+        // build plugins
+        val plugins: ArrayList<Bundle> = ArrayList<Bundle>()
 
-        // create barcode plugin
+        // intent plugin
+        val intentPluginProperyties = Bundle()
+        intentPluginProperyties.putString("intent_output_enabled", "true")
+        intentPluginProperyties.putString("intent_action", PROFILE_INTENT_ACTION)
+        intentPluginProperyties.putString("intent_delivery", PROFILE_INTENT_BROADCAST)
+
+        val intentPlugin = Bundle()
+        intentPlugin.putString("PLUGIN_NAME", "INTENT")
+        intentPlugin.putString("RESET_CONFIG", "true")
+        intentPlugin.putBundle("PARAM_LIST", intentPluginProperyties)
+        plugins.add(intentPlugin)
+
+        // barcode plugin
+        val barcodePluginProperties = Bundle()
+        barcodePluginProperties.putString("scanner_input_enabled", "true")
+        barcodePluginProperties.putString("scanner_selection", "auto")
+
         val barcodePlugin = Bundle()
         barcodePlugin.putString("PLUGIN_NAME", "BARCODE")
-        barcodePlugin.putString("RESET_CONFIG", "true") //  This is the default but never hurts to specify
-
-        // configure barcode plugin properties
-        val barcodePluginProperties = Bundle()
-
-        // add properties to the plugin
+        barcodePlugin.putString("RESET_CONFIG", "true")
         barcodePlugin.putBundle("PARAM_LIST", barcodePluginProperties)
+        plugins.add(barcodePlugin)
 
-        // add plugin to the profile
-        profile.putBundle("PLUGIN_CONFIG", barcodePlugin)
-
-        //  You can only configure one plugin at a time in some versions of DW
-        profile.remove("PLUGIN_CONFIG")
-
-        // create rfid plugin
-        val rfidPlugin = Bundle()
-        rfidPlugin.putString("PLUGIN_NAME", "RFID")
-        rfidPlugin.putString("RESET_CONFIG", "true")
-
-        // configure rfid plugin properties
+        // rfid plugin
         val rfidPluginProperties = Bundle()
         rfidPluginProperties.putString("rfid_input_enabled", "true")
         rfidPluginProperties.putString("rfid_beeper_enable", "true")
@@ -145,71 +147,33 @@ class MainActivity: FlutterActivity() {
         rfidPluginProperties.putString("rfid_hardware_trigger_enabled", "true")
         rfidPluginProperties.putString("rfid_tag_read_duration", "1000")
         rfidPluginProperties.putString("rfid_link_profile", "0")
-
-        // pre-filter properties
         rfidPluginProperties.putString("rfid_pre_filter_enable", "false")
-        //rfidProps.putString("rfid_pre_filter_tag_pattern", "3EC")
-        //rfidProps.putString("rfid_pre_filter_target", "2")
-        //rfidProps.putString("rfid_pre_filter_memory_bank", "2")
-        //rfidProps.putString("rfid_pre_filter_offset", "2")
-        //rfidProps.putString("rfid_pre_filter_action", "2")
-
-        // post-filter properties
         rfidPluginProperties.putString("rfid_post_filter_enable", "false")
-        //rfidProps.putString("rfid_post_filter_no_of_tags_to_read", "2")
-        //rfidProps.putString("rfid_post_filter_rssi", "-54")
 
-        // add properties to the plugin
+        val rfidPlugin = Bundle()
+        rfidPlugin.putString("PLUGIN_NAME", "RFID")
+        rfidPlugin.putString("RESET_CONFIG", "true")
         rfidPlugin.putBundle("PARAM_LIST", rfidPluginProperties)
+        plugins.add(rfidPlugin)
 
-        // add plugin to the profile
-        profile.putBundle("PLUGIN_CONFIG", rfidPlugin)
-
-        // update the profile
-        dwInterface.sendCommandBundle(this, DWInterface.DATAWEDGE_SEND_SET_CONFIG, profile)
-
-        //  You can only configure one plugin at a time in some versions of DW
-        profile.remove("PLUGIN_CONFIG")
-
-        // create intent plugin
-        val intentPlugin = Bundle()
-        intentPlugin.putString("PLUGIN_NAME", "INTENT")
-        intentPlugin.putString("RESET_CONFIG", "true")
-
-        // configure intent plugin properties
-        val intentPluginProperyties = Bundle()
-        intentPluginProperyties.putString("intent_output_enabled", "true")
-        intentPluginProperyties.putString("intent_action", PROFILE_INTENT_ACTION)
-        intentPluginProperyties.putString("intent_delivery", PROFILE_INTENT_BROADCAST)  //  "2"
-
-        // add properties to the plugin
-        intentPlugin.putBundle("PARAM_LIST", intentPluginProperyties)
-
-        // add plugin to the profile
-        profile.putBundle("PLUGIN_CONFIG", intentPlugin)
-
-        // update the profile
-        dwInterface.sendCommandBundle(this, DWInterface.DATAWEDGE_SEND_SET_CONFIG, profile)
-
-        //  You can only configure one plugin at a time in some versions of DW
-        profile.remove("PLUGIN_CONFIG")
-
-        // create keystroke plugin
-        val keystrokePlugin = Bundle()
-        keystrokePlugin.putString("PLUGIN_NAME", "KEYSTROKE")
-        keystrokePlugin.putString("RESET_CONFIG", "true")
-
-        // configure keystroke plugin properties
+        // keystroke plugin
         val keystrokePluginProperties = Bundle()
         keystrokePluginProperties.putString("keystroke_output_enabled", "false")
 
-        // add properties to the plugin
+        val keystrokePlugin = Bundle()
+        keystrokePlugin.putString("PLUGIN_NAME", "KEYSTROKE")
+        keystrokePlugin.putString("RESET_CONFIG", "true")
         keystrokePlugin.putBundle("PARAM_LIST", keystrokePluginProperties)
+        plugins.add(keystrokePlugin)
 
-        // add plugin to the profile
-        profile.putBundle("PLUGIN_CONFIG", keystrokePlugin)
+        // add plugins to the profile
+        dwProfile.putParcelableArrayList("PLUGIN_CONFIG", plugins);
 
         // update the profile
-        dwInterface.sendCommandBundle(this, DWInterface.DATAWEDGE_SEND_SET_CONFIG, profile)
+        dwInterface.sendCommandBundle(this, DWInterface.DATAWEDGE_SEND_SET_CONFIG, dwProfile)
+
+        // this enables the scanner
+        // hack to fix scanner not enabled
+        dwInterface.sendCommandString(this, DWInterface.DATAWEDGE_SEND_SCANNER_COMMAND, "ENABLE_PLUGIN")
     }
 }

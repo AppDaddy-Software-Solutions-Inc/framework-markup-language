@@ -52,12 +52,12 @@ class Reader
   {
   }
 
-  Reader.startScan()
+  startScan()
   {
       _send("com.symbol.datawedge.api.SOFT_SCAN_TRIGGER", "START_SCANNING");
   }
 
-  Reader.stopScan()
+  stopScan()
   {
       _send("com.symbol.datawedge.api.SOFT_SCAN_TRIGGER", "STOP_SCANNING");
   }
@@ -67,7 +67,7 @@ class Reader
     try
     {
       String argumentAsJson = jsonEncode({"command": command, "parameter": parameter});
-      await methodChannel!.invokeMethod('ZEBRA', argumentAsJson);
+      await methodChannel?.invokeMethod('ZEBRA', argumentAsJson);
     }
     catch(e)
     {

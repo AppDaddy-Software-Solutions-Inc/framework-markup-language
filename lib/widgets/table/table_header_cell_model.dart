@@ -243,8 +243,8 @@ class TableHeaderCellModel extends BoxModel
       title = text?.value;
     }
 
-      // field - used to drive simple tables for performance
-    field = Xml.get(node:xml, tag: 'field');
+    // field - used to drive simple tables for performance
+    field = Xml.get(node:xml, tag: 'field') ?? title;
 
     //type - denotes the field type. used for sorting
     type = Xml.get(node:xml, tag: 'type');

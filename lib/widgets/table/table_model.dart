@@ -724,21 +724,39 @@ class TableModel extends BoxModel implements IForm
 
   Future<bool> onChangeHandler(int rowIdx, int colIdx, dynamic value, dynamic oldValue) async
   {
-    bool ok = true;
     var data = getData(rowIdx);
     var col  = header?.cell(colIdx);
     var fld  = col?.field;
 
+    bool ok = true;
     if (data != null && col != null && fld != null)
     {
+      // save selected row
+      var tmp = selected;
+
+      // set selected to current data
+      selected = data;
+
+      // write new value
       Data.writeValue(data, fld, value);
 
-      // fire the onchange event
-      if (_onChange != null)
+      // fire column change handler
+      bool ok = await col.onChangeHandler();
+
+      // fire table change handler
+      if (ok && _onChange != null)
       {
-        bool ok = await col.onChangeHandler();
-        if (ok) await EventHandler(this).execute(_onChange);
+        ok = await EventHandler(this).execute(_onChange);
       }
+
+      // on fail, restore old value
+      if (!ok)
+      {
+        Data.writeValue(data, fld, oldValue);
+      }
+
+      // reset originally selected row
+      selected = tmp;
     }
     return ok;
   }
@@ -839,6 +857,9 @@ class TableModel extends BoxModel implements IForm
       print (e);
     }
   }
+
+  @override
+  void setPrototype() {}
 
   @override
   Widget getView({Key? key}) => getReactiveView(TableView(this));

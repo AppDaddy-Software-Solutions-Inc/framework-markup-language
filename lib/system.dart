@@ -36,8 +36,12 @@ final String applicationTitle = "Flutter Markup Language $version";
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://app
+<<<<<<< HEAD
 //String get defaultDomain => 'http://test.appdaddy.co';
 String get defaultDomain => 'http://10.69.4.245:81/';
+=======
+String get defaultDomain => 'https://test.appdaddy.co';
+>>>>>>> fix-input-padding
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup

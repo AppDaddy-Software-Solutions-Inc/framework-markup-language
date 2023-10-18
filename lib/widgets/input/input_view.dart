@@ -497,7 +497,6 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     Color? hintTextColor = widget.model.textcolor?.withOpacity(0.7) ?? Theme.of(context).colorScheme.onSurfaceVariant;
     Color? errorTextColor = Theme.of(context).colorScheme.error;
 
-    double pad = 4;
     double additionalTopPad = widget.model.border == "bottom" || widget.model.border == "underline" ? 3 : 15;
     double additionalBottomPad = widget.model.border == "bottom" || widget.model.border == "underline" ? 14 : 15;
 
@@ -511,9 +510,9 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
       filled: true,
       contentPadding: widget.model.dense == true
           ? EdgeInsets.only(
-          left: pad + 10, top: pad + 8, right: pad +10, bottom: pad + 21)
+          left: 6, top: 0, right: 6, bottom: 0)
           : EdgeInsets.only(
-          left: pad + 10, top: pad + additionalTopPad, right: pad + 10, bottom: pad + additionalBottomPad),
+          left: 10, top: additionalTopPad, right: 10, bottom: additionalBottomPad),
       alignLabelWithHint: true,
       labelText: widget.model.dense ? null : hint,
       labelStyle: TextStyle(

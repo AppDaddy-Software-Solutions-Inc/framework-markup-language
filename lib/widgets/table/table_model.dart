@@ -417,6 +417,7 @@ class TableModel extends BoxModel implements IForm
           var cellIdx = row.cells.indexOf(cell);
           var column  = header != null && cellIdx < header!.cells.length ? header!.cells[cellIdx] : null;
           column?.usesRenderer = TableRowCellModel.usesRenderer(cell);
+          column?.hasEnterableFields = TableRowCellModel.hasEnterableFields(cell);
         }
       }
 
@@ -688,6 +689,7 @@ class TableModel extends BoxModel implements IForm
 
               var column  = header != null && cellIdx < header!.cells.length ? header!.cells[cellIdx] : null;
               column?.usesRenderer = TableRowCellModel.usesRenderer(cell);
+              column?.hasEnterableFields = TableRowCellModel.hasEnterableFields(cell);
               cellIdx++;
           }
         }
@@ -700,6 +702,7 @@ class TableModel extends BoxModel implements IForm
 
           var column  = header != null && cellIdx < header!.cells.length ? header!.cells[cellIdx] : null;
           column?.usesRenderer = TableRowCellModel.usesRenderer(cell);
+          column?.hasEnterableFields = TableRowCellModel.hasEnterableFields(cell);
           cellIdx++;
         }
       }

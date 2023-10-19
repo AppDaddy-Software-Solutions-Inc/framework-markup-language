@@ -12,6 +12,8 @@ import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/helper/common_helpers.dart';
 
+import '../input/input_model.dart';
+
 enum ColumnTypes {string, numeric, date, time}
 
 class TableHeaderCellModel extends BoxModel
@@ -24,6 +26,9 @@ class TableHeaderCellModel extends BoxModel
 
   // column has a user defined layout
   bool usesRenderer = false;
+
+  // column render contains enterable fields (input, etc)
+  bool hasEnterableFields = false;
 
   @override
   double? get paddingTop => super.paddingTop ?? hdr?.paddingTop;
@@ -243,8 +248,8 @@ class TableHeaderCellModel extends BoxModel
       title = text?.value;
     }
 
-      // field - used to drive simple tables for performance
-    field = Xml.get(node:xml, tag: 'field');
+    // field - used to drive simple tables for performance
+    field = Xml.get(node:xml, tag: 'field') ?? title;
 
     //type - denotes the field type. used for sorting
     type = Xml.get(node:xml, tag: 'type');

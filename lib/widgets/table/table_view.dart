@@ -208,12 +208,6 @@ class TableViewState extends WidgetState<TableView>
     return hasEnterableFields ? FocusScope(child: cell, onKey: (FocusNode focusNode, RawKeyEvent event) => KeyEventResult.skipRemainingHandlers) : cell;
   }
 
-  KeyEventResult _handleGridFocusOnKey(FocusNode focusNode, RawKeyEvent event)
-  {
-    return KeyEventResult.skipRemainingHandlers;
-  }
-
-
   List<PlutoRow> applyFilters(List<PlutoRow> list)
   {
     if (stateManager != null)

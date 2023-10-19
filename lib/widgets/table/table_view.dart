@@ -175,7 +175,7 @@ class TableViewState extends WidgetState<TableView>
     stateManager?.setCurrentCell(cell, rowIdx);
   }
 
-  Widget cellBuilder(PlutoColumnRendererContext context)
+  Widget cellBuilder(PlutoColumnRendererContext context, bool hasEnterableFields)
   {
     // get row and column indexes
     var rowIdx = rows.indexOf(context.row);
@@ -203,7 +203,9 @@ class TableViewState extends WidgetState<TableView>
     // without this, the onTap (select) is consumed by the child view
     var cell = Listener(child: views[model],onPointerDown: (_) => onTap(context.cell, context.rowIdx));
 
-    return cell;
+    // we override the key listener in order to enable input on
+    // enterable fields
+    return hasEnterableFields ? FocusScope(child: cell, onKey: (FocusNode focusNode, RawKeyEvent event) => KeyEventResult.skipRemainingHandlers) : cell;
   }
 
   List<PlutoRow> applyFilters(List<PlutoRow> list)
@@ -918,7 +920,7 @@ class TableViewState extends WidgetState<TableView>
 
       // cell builder - for performance reasons, tables without defined
       // table rows can be rendered much quicker
-      var builder = cell.usesRenderer ? (rendererContext) => cellBuilder(rendererContext) : null;
+      var builder = cell.usesRenderer ? (rendererContext) => cellBuilder(rendererContext, cell.hasEnterableFields) : null;
 
       // cell is editable
       var editable = !cell.usesRenderer && cell.editable;

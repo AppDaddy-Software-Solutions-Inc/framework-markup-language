@@ -2,6 +2,7 @@
 import 'package:collection/collection.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/input/input_model.dart';
 import 'package:fml/widgets/table/table_row_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -136,7 +137,12 @@ class TableRowCellModel extends BoxModel
 
     return false;
   }
+
+  // returns true is the model has input fields
+  static bool hasEnterableFields(TableRowCellModel cell) => cell.findDescendantsOfExactType(InputModel).isNotEmpty;
+
   bool get valueIsEval => _value?.isEval ?? false;
+
 
   @override
   dispose()

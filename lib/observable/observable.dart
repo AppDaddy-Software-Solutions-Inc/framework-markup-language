@@ -163,10 +163,16 @@ class Observable
           int i = 0;
 
           // skip parent dotnotation
-          while (i < binding.dotnotation!.length && binding.dotnotation![i].name == "parent") i++;
+          while (i < binding.dotnotation!.length && binding.dotnotation![i].name == "parent")
+          {
+            i++;
+          }
 
           // append non-parent dotnotation
-          while (i < binding.dotnotation!.length) signature = "$signature.${binding.dotnotation![i++].name}";
+          while (i < binding.dotnotation!.length)
+          {
+            signature = "$signature.${binding.dotnotation![i++].name}";
+          }
         }
 
         // replace signature

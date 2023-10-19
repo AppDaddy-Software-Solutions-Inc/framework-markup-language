@@ -34,6 +34,7 @@ class Barcode
   String? barcode;
   String? display;
   String? format;
+  String? source;
   Map<String, String?>? parameters;
 }
 

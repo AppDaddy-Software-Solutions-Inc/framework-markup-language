@@ -734,14 +734,11 @@ class TableModel extends BoxModel implements IForm
     bool ok = true;
     if (data != null && col != null && fld != null)
     {
-      // save selected row
-      var tmp = selected;
+      // write new value
+      Data.writeValue(data, fld, value);
 
       // set selected to current data
       selected = data;
-
-      // write new value
-      Data.writeValue(data, fld, value);
 
       // fire column change handler
       bool ok = await col.onChangeHandler();
@@ -756,10 +753,10 @@ class TableModel extends BoxModel implements IForm
       if (!ok)
       {
         Data.writeValue(data, fld, oldValue);
-      }
 
-      // reset originally selected row
-      selected = tmp;
+        // set selected to current data
+        selected = data;
+      }
     }
     return ok;
   }

@@ -87,21 +87,12 @@ class Binding
       // split binding signature int source.property
       List<String> parts = binding.split('.');
 
-      // scoped binding?
-      // scoped bindings have format <scopeId>@<sourceId>.<propertyId>.<propertyId> ...
-      if (parts[0].contains("@"))
+      // scoped?
+      var myScope = parts[0].trim();
+      if (System.app != null && parts.length > 1 && System.app!.scopeManager.hasScope(myScope))
       {
-        // get scope name
-        var myScope = parts[0].split("@")[0];
-
-        // remove scope name from parts[0]
-        parts[0] = parts[0].replaceFirst("$myScope@", "");
-
-        // lookup scope by name
-        if (System.app?.scopeManager.hasScope(myScope.trim()) ?? false)
-        {
-          scope = myScope.trim();
-        }
+        scope = myScope;
+        parts.removeAt(0);
       }
 
       // source id

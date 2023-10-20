@@ -1661,6 +1661,9 @@ class WidgetModel implements IDataSourceListener {
   {
     if (prototype == null) return null;
 
+    // is this a SCOPE element prototype
+    bool isScopeElement = prototype.name.local.toLowerCase() == "scope";
+
     // get the id
     var id = Xml.attribute(node: prototype, tag: "id");
 
@@ -1683,7 +1686,14 @@ class WidgetModel implements IDataSourceListener {
         if (binding.source == 'data' && !processed.contains(binding.signature))
         {
           processed.add(binding.signature);
-          var signature = "{$id.data.${binding.property}${(binding.dotnotation?.signature != null ? ".${binding.dotnotation!.signature}" : "")}}";
+
+          // this is an oddball case where
+          // we need to double up on the id if the element
+          // is a SCOPE element since the scope part gets removed
+          var source = (isScopeElement) ? "$id.$id" : id;
+
+          // set the signature
+          var signature = "{$source.data.${binding.property}${(binding.dotnotation?.signature != null ? ".${binding.dotnotation!.signature}" : "")}}";
           xml = xml.replaceAll(binding.signature, signature);
         }
       }

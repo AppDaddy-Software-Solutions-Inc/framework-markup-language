@@ -53,6 +53,22 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
   bool get scrollButtons => _scrollButtons?.get() ?? false;
 
+  /// Post tells the form whether or not to include the field in the posting body. If post is null, visible determines post.
+  BooleanObservable? _post;
+  set post(dynamic v)
+  {
+    if (_post != null)
+    {
+      _post!.set(v);
+    }
+    else if (v != null)
+    {
+      _post = BooleanObservable(Binding.toKey(id, 'post'), v, scope: scope);
+    }
+  }
+  @override
+  bool? get post => _post?.get();
+
 
   // moreup 
   BooleanObservable? _moreUp;
@@ -293,6 +309,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     collapsed = Xml.get(node: xml, tag: 'collapsed');
     onpulldown  = Xml.get(node: xml, tag: 'onpulldown');
     reverse  = Xml.get(node: xml, tag: 'reverse');
+    post  = Xml.get(node: xml, tag: 'post');
 
     // clear items
     items.forEach((_,item) => item.dispose());

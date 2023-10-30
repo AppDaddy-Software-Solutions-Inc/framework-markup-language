@@ -19,6 +19,9 @@ class ListItemModel extends BoxModel
   String? type;
   List<IFormField>? fields;
 
+  // table
+  ListModel? get list => parent is ListModel ? parent as ListModel : null;
+
   // posting source source
   List<String>? _postbrokers;
   set postbrokers(dynamic v)
@@ -283,11 +286,11 @@ class ListItemModel extends BoxModel
       for (String id in postbrokers!)
       {
         IDataSource? source = scope!.getDataSource(id);
-        if ((source != null) && (ok))
+        if (source != null && ok && list != null)
         {
           if (!source.custombody)
           {
-            source.body = await FormModel.buildPostingBody(fields, rootname: source.root ?? "FORM");
+            source.body = await FormModel.buildPostingBody(list!, fields, rootname: source.root ?? "FORM");
           }
           ok = await source.start();
         }

@@ -115,19 +115,6 @@ class FormFieldModel extends DecoratedWidgetModel
   }
   bool? get post => _post?.get();
 
-  /// visible determining if postable. This is not a settable attribute but part of post.
-  bool get postable
-  {
-    if (S.isNullOrEmpty(id)) return false;
-    if (post != null) return post!;
-    if ((value == null) || value is List && value.isEmpty) return false;
-    WidgetModel model = this;
-    while (model.parent != null) {
-      model = model.parent!;
-    }
-    return true;
-  }
-
   /// GeoCode for each [iFormField] which is set on answer
   Payload? geocode;
 

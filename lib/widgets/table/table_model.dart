@@ -70,6 +70,22 @@ class TableModel extends BoxModel implements IForm
   @override
   String get valign => super.valign ?? "center";
 
+  /// Post tells the form whether or not to include the field in the posting body. If post is null, visible determines post.
+  BooleanObservable? _post;
+  set post(dynamic v)
+  {
+    if (_post != null)
+    {
+      _post!.set(v);
+    }
+    else if (v != null)
+    {
+      _post = BooleanObservable(Binding.toKey(id, 'post'), v, scope: scope);
+    }
+  }
+  @override
+  bool? get post => _post?.get();
+
   // text color
   ColorObservable? _textColor;
   set textColor(dynamic v)
@@ -361,6 +377,7 @@ class TableModel extends BoxModel implements IForm
     editable   = Xml.get(node: xml, tag: 'editable');
     shadow     = Xml.get(node: xml, tag: 'shadow');
     showBusy   = Xml.get(node: xml, tag: 'showBusy');
+    post       = Xml.get(node: xml, tag: 'post');
 
     // used in simple grids
     textSize   = Xml.get(node: xml, tag: 'textSize') ?? Xml.get(node: xml, tag: 'fontSize');
@@ -727,6 +744,7 @@ class TableModel extends BoxModel implements IForm
 
   Future<bool> onChangeHandler(int rowIdx, int colIdx, dynamic value, dynamic oldValue) async
   {
+    var row  = (rowIdx >= 0 && rowIdx < rows.length) ? rows[rowIdx] : null;
     var data = getData(rowIdx);
     var col  = header?.cell(colIdx);
     var fld  = col?.field;
@@ -736,6 +754,9 @@ class TableModel extends BoxModel implements IForm
     {
       // write new value
       Data.writeValue(data, fld, value);
+
+      // set current data
+      row?.data = data;
 
       // set selected to current data
       selected = data;
@@ -754,7 +775,10 @@ class TableModel extends BoxModel implements IForm
       {
         Data.writeValue(data, fld, oldValue);
 
-        // set selected to current data
+        // reset current row data
+        row?.data = data;
+
+        // reset selected
         selected = data;
       }
     }

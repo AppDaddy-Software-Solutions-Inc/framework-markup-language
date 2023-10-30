@@ -10,6 +10,9 @@ abstract class IForm
   // Clean
   set clean(bool b);
 
+  // Default Post
+  bool? get post;
+
   // Routines
   Future<bool> save();
   Future<bool> complete();

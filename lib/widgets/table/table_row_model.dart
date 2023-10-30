@@ -264,11 +264,11 @@ class TableRowModel extends BoxModel
       for (String id in postbrokers!)
       {
         IDataSource? source = scope!.getDataSource(id);
-        if ((source != null) && (ok))
+        if (source != null && ok && table != null)
         {
           if (!source.custombody)
           {
-            source.body = await FormModel.buildPostingBody(fields, rootname: source.root ?? "FORM");
+            source.body = await FormModel.buildPostingBody(table!, fields, rootname: source.root ?? "FORM");
           }
           ok = await source.start();
         }

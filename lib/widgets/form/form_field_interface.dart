@@ -66,7 +66,6 @@ abstract class IFormField
 
   // field is postable?
   bool? post;
-  bool? get postable;
 
   // field name overrides id if specified
   String? field;

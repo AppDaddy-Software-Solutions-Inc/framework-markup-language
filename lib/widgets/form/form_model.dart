@@ -32,6 +32,22 @@ class FormModel extends BoxModel implements IForm
 
   List<IForm> forms = [];
 
+  /// Post tells the form whether or not to include the field in the posting body. If post is null, visible determines post.
+  BooleanObservable? _post;
+  set post(dynamic v)
+  {
+    if (_post != null)
+    {
+      _post!.set(v);
+    }
+    else if (v != null)
+    {
+      _post = BooleanObservable(Binding.toKey(id, 'post'), v, scope: scope);
+    }
+  }
+  @override
+  bool? get post => _post?.get();
+
   // dirty
   @override
   BooleanObservable? get dirtyObservable => _dirty;
@@ -149,7 +165,7 @@ class FormModel extends BoxModel implements IForm
     dirty = isDirty;
 
     // auto save?
-    if (isDirty && autosave == true) _save();
+    if (isDirty && autosave == true) _saveForm();
   }
 
   @override
@@ -332,6 +348,7 @@ class FormModel extends BoxModel implements IForm
     status      = Xml.get(node: xml, tag: 'status');
     autosave    = Xml.get(node: xml, tag: 'autosave');
     mandatory   = Xml.get(node: xml, tag: 'mandatory');
+    post        = Xml.get(node: xml, tag: 'post');
     geocode     = Xml.get(node: xml, tag: 'geocode');
     postbrokers = Xml.attribute(node: xml, tag: 'post') ?? Xml.attribute(node: xml, tag: 'postbroker');
     data        = Xml.attribute(node: xml, tag: 'data');
@@ -448,7 +465,7 @@ class FormModel extends BoxModel implements IForm
     return forms;
   }
 
-  Future<bool> _post(hive.Form? form, {bool? commit}) async
+  Future<bool> _postForm(hive.Form? form, {bool? commit}) async
   {
     bool ok = true;
     if ((scope != null) && (postbrokers != null))
@@ -460,7 +477,7 @@ class FormModel extends BoxModel implements IForm
         {
           if (!source.custombody)
           {
-            source.body = await buildPostingBody(formFields, rootname: source.root ?? "FORM");
+            source.body = await buildPostingBody(this, formFields, rootname: source.root ?? "FORM");
           }
           ok = await source.start(key: form!.key);
         }
@@ -521,10 +538,10 @@ class FormModel extends BoxModel implements IForm
 
     // save the form and pass the validation check so validate is not called a second time. This is so the form is always saved on complete.
     hive.Form? form;
-    if (ok) form = await _save();
+    if (ok) form = await _saveForm();
 
     // Post the Form
-    if (ok) ok = await _post(form);
+    if (ok) ok = await _postForm(form);
 
     // Set Clean
     if (ok == true) clean = true;
@@ -555,7 +572,7 @@ class FormModel extends BoxModel implements IForm
     return model;
   }
 
-  static bool _serializeAnswers(XmlElement node, List<IFormField> fields) {
+  static bool _serializeAnswers(XmlElement node, IForm form, List<IFormField> fields) {
     bool ok = true;
 
     // Remove Old Answers
@@ -569,17 +586,19 @@ class FormModel extends BoxModel implements IForm
     });
 
     // Insert New Answers
-    for (var field in fields) {
-      _insertAnswers(node, field);
+    for (var field in fields)
+    {
+      _insertAnswers(node, form, field);
     }
 
     return ok;
   }
 
-  static bool _insertAnswers(XmlElement root, IFormField field) {
+  static bool _insertAnswers(XmlElement root, IForm form, IFormField field) {
     try {
       // field is postable?
-      if ((field.postable ?? false) && (field.values != null)) {
+      if (isPostable(form,field) && (field.values != null))
+      {
         for (var value in field.values!) {
           // create new element
           XmlElement node = XmlElement(XmlName("ANSWER"));
@@ -642,18 +661,27 @@ class FormModel extends BoxModel implements IForm
     return true;
   }
 
-  static Future<String?> serialize(
-      XmlElement? node, List<IFormField> fields) async {
+  static Future<String?> serialize(XmlElement? node, IForm form, List<IFormField> fields) async
+  {
     if (node == null) return null;
 
     // Serialize Answers
-    _serializeAnswers(node, fields);
+    _serializeAnswers(node, form, fields);
 
     // Return Formatted Xml
     return node.toXmlString(pretty: true);
   }
 
-  static Future<String?> buildPostingBody(List<IFormField>? fields, {String rootname = "FORM"}) async
+  static bool isPostable(IForm form, IFormField field)
+  {
+    if (field.post != null) return field.post!;
+    if (form.post  != null) return form.post!;
+    if (field.value == null) return false;
+    if (field is List && (field as List).isEmpty) return false;
+    return true;
+  }
+
+  static Future<String?> buildPostingBody(IForm form, List<IFormField>? fields, {String rootname = "FORM"}) async
   {
     try
     {
@@ -667,7 +695,7 @@ class FormModel extends BoxModel implements IForm
         for (var field in fields)
         {
           // postable?
-          if (field.postable == true)
+          if (isPostable(form, field) == true)
           {
             if (field.values != null)
             {
@@ -827,16 +855,16 @@ class FormModel extends BoxModel implements IForm
   @override
   Future<bool> save() async
   {
-    var form = await _save();
+    var form = await _saveForm();
     return form != null;
   }
 
-  Future<hive.Form?> _save() async
+  Future<hive.Form?> _saveForm() async
   {
     hive.Form? form;
 
     // Serialize the Form
-    await serialize(element, formFields);
+    await serialize(element, this, formFields);
 
     // Serialize Outer Xml
     String xml = framework!.element!.toXmlString(pretty: true);

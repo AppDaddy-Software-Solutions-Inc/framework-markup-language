@@ -1,4 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'dart:math';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/data/data.dart';
@@ -27,6 +29,7 @@ class ChartDataPoint {
 class LineChartSeriesModel extends ChartPainterSeriesModel
 {
   List<FlSpot> lineDataPoint = [];
+  List<String> labels = [];
   Map<int, dynamic> xValueMap = {};
   @override
 
@@ -155,19 +158,25 @@ class LineChartSeriesModel extends ChartPainterSeriesModel
 
   void plotDatePoints(dynamic dataList, {String? format}){
     xValues.clear();
+    labels.clear();
     lineDataPoint.clear();
     for (var i=0; i< dataList.length; i++) {
       //set the data of the series for databinding
       data = dataList[i];
-          x = S.toDate(x, format: format ?? 'yyyy/MM/dd')?.millisecondsSinceEpoch;
-          //plot the point as a point object based on the desired function based on series and chart type.
-        plot();
+          try {
+            x = S.toDate(x, format: format ?? 'yyyy/MM/dd')?.millisecondsSinceEpoch;
+            //plot the point as a point object based on the desired function based on series and chart type.
+            plot();
+          } catch (e){
+            print('error formatting date to plot point');
+          }
     }
     dataList = null;
   }
 
   void plotPoints(dynamic dataList){
     xValues.clear();
+    labels.clear();
     lineDataPoint.clear();
     for (var i=0; i< dataList.length; i++) {
       //set the data of the series for databinding
@@ -179,6 +188,7 @@ class LineChartSeriesModel extends ChartPainterSeriesModel
   }
 
   void plot(){
+    labels.add(label ?? "");
     FlSpot point = FlSpot(S.toDouble(x) ?? 0, S.toDouble(y) ?? 0);
     lineDataPoint.add(point);
   }

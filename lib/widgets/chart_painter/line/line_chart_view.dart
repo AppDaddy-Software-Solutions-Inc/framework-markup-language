@@ -37,7 +37,13 @@ class _LineChartViewState extends WidgetState<LineChartView>
     //int? index = S.toInt(value);
     String text = "";
     if(widget.model.xaxis.type == 'date') {
-      text = DateFormat(widget.model.xaxis.format ?? 'yyyy/MM/dd').format(DateTime.fromMillisecondsSinceEpoch(value.toInt())).toString();
+      try {
+        text = DateFormat(widget.model.xaxis.format ?? 'yyyy/MM/dd')
+            .format(DateTime.fromMillisecondsSinceEpoch(value.toInt()))
+            .toString();
+      } catch(e){
+        print('Error formatting date when creating bottom titles widget');
+      }
     } else if (widget.model.xaxis.type == 'category' || widget.model.xaxis.type == 'raw'){
       text = value.toInt() <= widget.model.uniqueValues.length && widget.model.uniqueValues.isNotEmpty ? widget.model.uniqueValues.elementAt(value.toInt()).toString(): value.toString();
     } else {
@@ -68,11 +74,22 @@ class _LineChartViewState extends WidgetState<LineChartView>
     LineChart chart = LineChart(
       LineChartData(
         lineBarsData: widget.model.lineDataList,
+        lineTouchData: LineTouchData(
+          touchTooltipData: LineTouchTooltipData(
+            getTooltipItems: (value) {
+              value;
+              return [LineTooltipItem(
+                  "HELLO", TextStyle())];
+            },
+            //tooltipBgColor: AppColour.mainBlue,
+          ),
+        ),
+
         //the series must determine the min and max y
-        minY: S.toDouble(widget.model.yaxis.min),
-        maxY: S.toDouble(widget.model.yaxis.max),
-        minX: S.toDouble(widget.model.xaxis.min),
-        maxX: S.toDouble(widget.model.xaxis.max),
+        // minY: S.toDouble(widget.model.yaxis.min),
+        // maxY: S.toDouble(widget.model.yaxis.max),
+        // minX: S.toDouble(widget.model.xaxis.min),
+        // maxX: S.toDouble(widget.model.xaxis.max),
         borderData: FlBorderData(
           show: true,
         ),
@@ -86,9 +103,9 @@ class _LineChartViewState extends WidgetState<LineChartView>
               axisNameWidget: !S.isNullOrEmpty(widget.model.yaxis.title) ? Text(widget.model.yaxis.title!, style: TextStyle(fontSize: 12),): null,
               sideTitles: SideTitles(
                 interval: S.toDouble(widget.model.yaxis.interval),
-                reservedSize: 24,
+                reservedSize: 30,
                 showTitles: true,
-                getTitlesWidget: leftTitles,
+                //getTitlesWidget: leftTitles,
               )
           ),
           bottomTitles: AxisTitles(

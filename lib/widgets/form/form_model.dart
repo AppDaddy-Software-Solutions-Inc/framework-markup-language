@@ -995,5 +995,8 @@ class FormModel extends BoxModel implements IForm
   }
 
   @override
+  void setPrototype() {}
+
+  @override
   Widget getView({Key? key}) => getReactiveView(FormView(this));
 }

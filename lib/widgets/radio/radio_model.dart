@@ -20,108 +20,90 @@ class RadioModel extends FormFieldModel implements IFormField
 
   /// Center attribute allows a simple boolean override for halign and valign both being center. halign and valign will override center if given.
   BooleanObservable? _center;
-  set center(dynamic v) {
-    if (_center != null) {
+  set center(dynamic v)
+  {
+    if (_center != null)
+    {
       _center!.set(v);
-    } else if (v != null) {
-      _center = BooleanObservable(Binding.toKey(id, 'center'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else if (v != null)
+    {
+      _center = BooleanObservable(Binding.toKey(id, 'center'), v, scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get center => _center?.get() ?? false;
 
   /// if the widget will wrap its children rather than clipping the overflow
   BooleanObservable? _wrap;
-  set wrap(dynamic v) {
-    if (_wrap != null) {
+  set wrap(dynamic v)
+  {
+    if (_wrap != null)
+    {
       _wrap!.set(v);
-    } else if (v != null) {
-      _wrap = BooleanObservable(Binding.toKey(id, 'wrap'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else if (v != null)
+    {
+      _wrap = BooleanObservable(Binding.toKey(id, 'wrap'), v, scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get wrap => _wrap?.get() ?? false;
 
   /// Layout determines the widgets childrens layout. Can be `row`, `column`, `col`, or `stack`. Defaulted to `column`. If set to `stack` it can take `POSITIONED` as a child.
-  LayoutType get layoutType =>
-      BoxModel.getLayoutType(layout, defaultLayout: LayoutType.column);
+  LayoutType get layoutType => BoxModel.getLayoutType(layout, defaultLayout: LayoutType.column);
   StringObservable? _layout;
-  set layout(dynamic v) {
-    if (_layout != null) {
+  set layout(dynamic v)
+  {
+    if (_layout != null)
+    {
       _layout!.set(v);
-    } else if (v != null) {
-      _layout = StringObservable(Binding.toKey(id, 'layout'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else if (v != null)
+    {
+      _layout = StringObservable(Binding.toKey(id, 'layout'), v, scope: scope, listener: onPropertyChange);
     }
   }
-
   String get layout => _layout?.get()?.toLowerCase() ?? 'column';
 
   /// the value of the widget. The label becomes the value if not specified. If specified, the options will reflect the value.
   StringObservable? _value;
-  @override
-  set value(dynamic v) {
-    if (_value != null) {
-      _value!.set(v);
 
-      if (v != null) v = v.toString();
-      dynamic data;
-      for (var option in options) {
-        if (option.value == v) data = option.data;
-      }
-      this.data = data;
-    } else {
-      if ((v != null) ||
-          (WidgetModel.isBound(this, Binding.toKey(id, 'value')))) {
-        _value = StringObservable(Binding.toKey(id, 'value'), v,
-            scope: scope, listener: onPropertyChange);
-      }
+  @override
+  set value(dynamic v)
+  {
+    if (_value != null)
+    {
+      _value!.set(v);
+    }
+    else if (v != null || WidgetModel.isBound(this, Binding.toKey(id, 'value')))
+    {
+      _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onValueChange);
     }
   }
-
   @override
-  dynamic get value {
-    if (_value == null) return defaultValue;
-    if (!dirty && S.isNullOrEmpty(_value?.get()) && !S.isNullOrEmpty(defaultValue)) _value!.set(defaultValue);
-    return _value?.get();
-  }
+  dynamic get value => dirty ? _value?.get() : _value?.get() ?? defaultValue;
 
   /// the size of the options radio button
   DoubleObservable? _size;
-  set size(dynamic v) {
-    if (_size != null) {
+  set size(dynamic v)
+  {
+    if (_size != null)
+    {
       _size!.set(v);
-    } else {
-      if (v != null) {
-        _size = DoubleObservable(Binding.toKey(id, 'size'), v,
-            scope: scope, listener: onPropertyChange);
+    }
+    else
+    {
+      if (v != null)
+      {
+        _size = DoubleObservable(Binding.toKey(id, 'size'), v, scope: scope, listener: onPropertyChange);
       }
     }
   }
-
-  double get size {
+  double get size
+  {
     double? s = _size?.get();
-    if ((s == null) || (s < 0)) s = 24.0;
+    if (s == null || s < 0) s = 24.0;
     return s;
   }
-
-  // bindable data
-  ListObservable? _data;
-  @override
-  set data(dynamic v) {
-    if (_data != null) {
-      _data!.set(v);
-    } else if (v != null) {
-      _data = ListObservable(Binding.toKey(id, 'data'), null,
-          scope: scope, listener: onPropertyChange);
-      _data!.set(v);
-    }
-  }
-
-  @override
-  dynamic get data => _data?.get();
 
   RadioModel(
     WidgetModel parent,
@@ -164,73 +146,99 @@ class RadioModel extends FormFieldModel implements IFormField
     dirty = false;
   }
 
-  static RadioModel? fromXml(WidgetModel parent, XmlElement xml) {
-    RadioModel? model;
-    try {
-      model = RadioModel(parent, Xml.get(node: xml, tag: 'id'));
-      model.deserialize(xml);
-    } catch (e) {
-      Log().exception(e, caller: 'radio.Model');
-      model = null;
-    }
+  static RadioModel? fromXml(WidgetModel parent, XmlElement xml)
+  {
+    RadioModel? model = RadioModel(parent, Xml.get(node: xml, tag: 'id'));
+    model.deserialize(xml);
     return model;
   }
 
   /// Deserializes the FML template elements, attributes and children
   @override
-  void deserialize(XmlElement xml) {
+  void deserialize(XmlElement xml)
+  {
     // deserialize
     super.deserialize(xml);
 
     // set properties
-    value = Xml.get(node: xml, tag: 'value');
+    value  = Xml.get(node: xml, tag: 'value');
     layout = Xml.get(node: xml, tag: 'layout');
     center = Xml.get(node: xml, tag: 'center');
-    wrap = Xml.get(node: xml, tag: 'wrap');
-    size = Xml.get(node: xml, tag: 'size');
-
-    // clear options
-    for (var option in options) {
-      option.dispose();
-    }
-    options.clear();
-
-    // build options
-    setPrototype();
+    wrap   = Xml.get(node: xml, tag: 'wrap');
+    size   = Xml.get(node: xml, tag: 'size');
   }
 
   @override
   void setPrototype()
   {
+    // clear options
+    _clearOptions();
+
+    // find option models
     List<OptionModel> options = findChildrenOfExactType(OptionModel).cast<OptionModel>();
 
     // set prototype
-    if ((!S.isNullOrEmpty(datasource)) && (options.isNotEmpty))
+    if (!S.isNullOrEmpty(datasource) && options.isNotEmpty)
     {
       prototype = WidgetModel.prototypeOf(options.first.element);
       options.removeAt(0);
     }
 
     // build options
-    for (var option in options)
+    this.options.addAll(options);
+  }
+
+  void onValueChange(Observable observable)
+  {
+    // set the selected option
+    _setSelectedOption(setValue: false);
+
+    // notify listeners
+    onPropertyChange(observable);
+  }
+
+  void _setSelectedOption({bool setValue = true})
+  {
+    OptionModel? selectedOption;
+    if (options.isNotEmpty)
     {
-      this.options.add(option);
+      for (var option in options)
+      {
+        if (option.value == value)
+        {
+          selectedOption = option;
+          break;
+        }
+      }
+
+      // not found? default to the first option
+      selectedOption ??= options[0];
     }
+
+    // set values
+    if (setValue) value = selectedOption?.value;
+    data  = selectedOption?.data;
+  }
+
+  void _clearOptions()
+  {
+    for (var option in options) {
+      option.dispose();
+    }
+    options.clear();
   }
 
   @override
   Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async {
-    try {
+    try
+    {
       if (prototype == null) return true;
 
       // clear options
-      for (var option in options) {
-        option.dispose();
-      }
-      options.clear();
+      _clearOptions();
 
       // build options
-      if ((list != null)) 
+      if (list != null)
       {
         // build options
         for (var row in list) 
@@ -240,58 +248,25 @@ class RadioModel extends FormFieldModel implements IFormField
         }
       }
 
-      // Set value to first option or null if the current value is not in option list
-      if (!containsOption()) {
-        value = options.isNotEmpty ? options[0].value : null;
-      }
-
-      // set the data
-      setData();
-
-      // notify listeners
-      notifyListeners('options', options);
-    } catch (e) {
+      // set selected option
+      _setSelectedOption();
+    }
+    catch (e)
+    {
       Log().error('Error building list. Error is $e', caller: 'RADIO');
     }
     return true;
   }
 
-  @override
-  dispose() {
-// Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
-  }
-
-  Future<bool> onCheck(OptionModel option) async {
+  Future<bool> onCheck(OptionModel option) async
+  {
     // set answer
     bool ok = await answer(option.value);
-
-    // set data
-    if (ok == true) ok = await setData();
 
     // fire onchange
     if (ok == true) ok = await onChange(context);
 
     return ok;
-  }
-
-  bool containsOption() {
-    bool contains = false;
-    for (var option in options) {
-      if (option.value == value) contains = true;
-    }
-    return contains;
-  }
-
-  Future<bool> setData() async {
-    // set the data
-    List<dynamic> data = [];
-    for (var option in options) {
-      bool contains = (value == option.value);
-      if ((contains) && (option.data != null)) data.add(option.data);
-    }
-    this.data = data;
-    return true;
   }
 
   @override

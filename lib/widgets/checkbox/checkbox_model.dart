@@ -271,24 +271,6 @@ class CheckboxModel extends FormFieldModel implements IFormField
   }
   List? get label => _label?.get();
 
-  // bindable data
-  ListObservable? _data;
-  @override
-  set data(dynamic v)
-  {
-    if (_data != null)
-    {
-      _data!.set(v);
-    }
-    else if (v != null)
-    {
-      _data = ListObservable(Binding.toKey(id, 'data'), null, scope: scope, listener: onPropertyChange);
-      _data!.set(v);
-    }
-  }
-  @override
-  dynamic get data => _data?.get();
-
   CheckboxModel(
     WidgetModel parent,
     String? id, {
@@ -378,25 +360,19 @@ class CheckboxModel extends FormFieldModel implements IFormField
 
     /// styling attributes
     size  = Xml.get(node: xml, tag: 'size');
-
-    // clear options
-    for (var option in options) {
-      option.dispose();
-    }
-    options.clear();
-
-    // build options
-    setPrototype();
   }
 
   @override
   void setPrototype()
   {
+    // clear options
+    _clearOptions();
+
     // Build options
     List<OptionModel> options = findChildrenOfExactType(OptionModel).cast<OptionModel>();
 
     // set prototype
-    if ((!S.isNullOrEmpty(datasource)) && (options.isNotEmpty))
+    if (!S.isNullOrEmpty(datasource) && options.isNotEmpty)
     {
       prototype = WidgetModel.prototypeOf(options.first.element);
       options.removeAt(0);
@@ -404,6 +380,14 @@ class CheckboxModel extends FormFieldModel implements IFormField
 
     // build options
     this.options.addAll(options);
+  }
+
+  void _clearOptions()
+  {
+    for (var option in options) {
+      option.dispose();
+    }
+    options.clear();
   }
 
   @override
@@ -414,10 +398,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
       if (prototype == null) return true;
 
       // clear options
-      for (var option in options) {
-        option.dispose();
-      }
-      options.clear();
+      _clearOptions();
 
       // build options
       if ((list != null))

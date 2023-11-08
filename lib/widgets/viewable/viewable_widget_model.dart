@@ -457,8 +457,8 @@ class ViewableWidgetModel extends ConstraintModel
     // deserialize
     super.deserialize(xml);
 
-    // build prototype if defined
-    if (datasource != null) setPrototype();
+    // build prototype (options) if defined
+    setPrototype();
 
     // set constraints
     width     = Xml.get(node: xml, tag: 'width');

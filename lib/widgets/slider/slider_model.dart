@@ -88,20 +88,14 @@ class SliderModel extends FormFieldModel implements IFormField
     {
       _value!.set(v);
     }
-    else
+    else if (v != null || WidgetModel.isBound(this, Binding.toKey(id, 'value')))
     {
-      if ((v != null) || (WidgetModel.isBound(this, Binding.toKey(id, 'value')))) _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange);
+      _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange);
     }
   }
 
   @override
-  dynamic get value
-  {
-    // if (_range?.get() == true && _startvalue != null && _endvalue != null) return '${_startvalue?.get()},${_endvalue?.get()}';
-    if (_value == null) return defaultValue;
-    if (!dirty && S.isNullOrEmpty(_value?.get()) && !S.isNullOrEmpty(defaultValue)) _value!.set(defaultValue);
-    return _value?.get();
-  }
+  dynamic get value => dirty ? _value?.get() : _value?.get() ?? defaultValue;
 
   ////////////
   /* Answer */

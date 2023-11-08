@@ -17,105 +17,63 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
   @override
   bool get canExpandInfinitelyWide => !hasBoundedWidth;
 
-  bool? addempty = true;
-
-  // bindable data
-  ListObservable? _data;
-  @override
-  set data(dynamic v)
-  {
-    if (_data != null)
-    {
-      _data!.set(v);
-    }
-    else if (v != null)
-    {
-      _data = ListObservable(Binding.toKey(id, 'data'), null, scope: scope, listener: onPropertyChange);
-      _data!.set(v);
-    }
-  }
-  @override
-  get data => _data?.get();
+  bool addempty = true;
 
   // options
   final List<OptionModel> options = [];
 
-  //////////////////
-  /* inputenabled */
-  //////////////////
+  // inputenabled
   BooleanObservable? _inputenabled;
-  set inputenabled(dynamic v) {
-    if (_inputenabled != null) {
+  set inputenabled(dynamic v)
+  {
+    if (_inputenabled != null)
+    {
       _inputenabled!.set(v);
-    } else if (v != null) {
-      _inputenabled = BooleanObservable(
-          Binding.toKey(id, 'inputenabled'), v,
-          scope: scope, listener: onPropertyChange);
+    }
+    else if (v != null)
+    {
+      _inputenabled = BooleanObservable(Binding.toKey(id, 'inputenabled'), v, scope: scope, listener: onPropertyChange);
     }
   }
   bool get inputenabled => _inputenabled?.get() ?? false;
 
-  ///////////
-  /* Value */
-  ///////////
+  // value
   StringObservable? _value;
   @override
-  set value(dynamic v) {
+  set value(dynamic v)
+  {
     if (_value != null)
     {
       _value!.set(v);
     }
+    else if (v != null || WidgetModel.isBound(this, Binding.toKey(id, 'value')))
+    {
+      _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onValueChange);
+    }
+  }
+
+  @override
+  dynamic get value => dirty ? _value?.get() : _value?.get() ?? defaultValue;
+
+  //  match type
+  StringObservable? _matchtype;
+  set matchtype(dynamic v)
+  {
+    if (_matchtype != null)
+    {
+      _matchtype!.set(v);
+    }
     else
     {
-      if ((v != null) || (WidgetModel.isBound(this, Binding.toKey(id, 'value')))) _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange);
-    }
-    setData();
-  }
-  @override
-  dynamic get value
-  {
-    if (_value == null) return defaultValue;
-    if (!dirty && S.isNullOrEmpty(_value?.get()) && !S.isNullOrEmpty(defaultValue)) _value!.set(defaultValue);
-    return _value?.get();
-  }
-
-  ////////////
-  /* length */
-  ////////////
-  IntegerObservable? _length;
-  set length(dynamic v) {
-    if (_length != null) {
-      _length!.set(v);
-    } else {
-      if (v != null) {
-        _length = IntegerObservable(Binding.toKey(id, 'length'), v,
-            scope: scope, listener: onPropertyChange);
-      }
-    }
-  }
-  int? get length => _length?.get();
-
-
-  //
-  //  Match Type
-  //
-  StringObservable? _matchtype;
-  set matchtype(dynamic v) {
-    if (_matchtype != null) {
-      _matchtype!.set(v);
-    } else {
-      if (v != null) {
-        matchtype = StringObservable(Binding.toKey(id, 'matchtype'), v,
-            scope: scope, listener: onPropertyChange);
+      if (v != null)
+      {
+        matchtype = StringObservable(Binding.toKey(id, 'matchtype'), v, scope: scope, listener: onPropertyChange);
       }
     }
   }
   String? get matchtype => _matchtype?.get();
 
-
-  TypeaheadModel(WidgetModel parent, String? id,
-      {
-        dynamic inputenabled,
+  TypeaheadModel(WidgetModel parent, String? id, {dynamic inputenabled,
         dynamic value,
         dynamic defaultValue,
         String? postbroker,
@@ -136,18 +94,10 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
     dirty    = false;
   }
 
-  static TypeaheadModel? fromXml(WidgetModel parent, XmlElement xml) {
-    TypeaheadModel? model;
-    try
-    {
-      model = TypeaheadModel(parent, Xml.get(node: xml, tag: 'id'));
-      model.deserialize(xml);
-    }
-    catch(e)
-    {
-      Log().exception(e,  caller: 'select.Model');
-      model = null;
-    }
+  static TypeaheadModel? fromXml(WidgetModel parent, XmlElement xml)
+  {
+    TypeaheadModel? model = TypeaheadModel(parent, Xml.get(node: xml, tag: 'id'));
+    model.deserialize(xml);
     return model;
   }
 
@@ -167,26 +117,48 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
     radius = Xml.get(node: xml, tag: 'radius');
     inputenabled = Xml.get(node: xml, tag: 'inputenabled');
     matchtype = Xml.get(node: xml, tag: 'matchtype') ?? Xml.get(node: xml, tag: 'searchtype');
+    addempty  = S.toBool(Xml.get(node: xml, tag: 'addempty')) ?? true;
+  }
 
-    String? empty = Xml.get(node: xml, tag: 'addempty');
-    if (S.isBool(empty)) addempty = S.toBool(empty);
+  void onValueChange(Observable observable)
+  {
+    // set the selected option
+    _setSelectedOption(setValue: false);
 
-    // clear options
-    for (var option in options) {
-      option.dispose();
+    // notify listeners
+    onPropertyChange(observable);
+  }
+
+  void _setSelectedOption({bool setValue = true})
+  {
+    OptionModel? selectedOption;
+    if (options.isNotEmpty)
+    {
+      for (var option in options)
+      {
+        if (option.value == value)
+        {
+          selectedOption = option;
+          break;
+        }
+      }
+
+      // not found? default to the first option
+      selectedOption ??= options[0];
     }
-    options.clear();
 
-    // build options
-    setPrototype();
-
-    // Set selected option
-    setData();
+    // set values
+    if (setValue) value = selectedOption?.value;
+    data  = selectedOption?.data;
+    label = selectedOption?.labelValue;
   }
 
   @override
   void setPrototype()
   {
+    // clear options
+    _clearOptions;
+
     // Build options
     List<OptionModel> options = findChildrenOfExactType(OptionModel).cast<OptionModel>();
 
@@ -201,6 +173,15 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
     this.options.addAll(options);
   }
 
+  void _clearOptions()
+  {
+    for (var option in options)
+    {
+      option.dispose();
+    }
+    options.clear();
+  }
+
   @override
   Future<bool> onDataSourceSuccess(IDataSource? source, Data? list) async
   {
@@ -209,22 +190,19 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
       if (prototype == null) return true;
 
       // clear options
-      for (var option in options) {
-        option.dispose();
-      }
-      options.clear();
+      _clearOptions;
 
+      // add empty option to list
       int i = 0;
-      if (addempty == true)
+      if (addempty)
       {
         options.add(OptionModel(this, "$id-$i", value: ''));
         i = i + 1;
       }
 
       // build options
-      if ((list != null) && (source != null))
+      if (list != null && source != null)
       {
-        // build options
         for (var row in list)
         {
           var model = OptionModel.fromXml(this, prototype, data: row);
@@ -232,11 +210,8 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
         }
       }
 
-      // sets the data
-      setData();
-
-      // notify listeners
-      notifyListeners('options', options);
+      // set selected option
+      _setSelectedOption();
     }
     catch(e)
     {
@@ -245,58 +220,11 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
     return true;
   }
 
-
   @override
-  onDataSourceException(IDataSource source, Exception exception) {
+  onDataSourceException(IDataSource source, Exception exception)
+  {
     // Clear the List - Olajos 2021-09-04
     onDataSourceSuccess(null, null);
-  }
-
-  void setData()
-  {
-    // value is not in data?
-    if (!_containsOption())
-    {
-      //put this in so if input is allowed we accept the inputs value.
-      if(inputenabled && dirty) return;
-
-
-      var value = options.isNotEmpty ? options[0].value : null;
-
-      // set to first entry if no datasource
-      if (datasource == null)
-      {
-        // if we set value to itself it will cause an infinite loop
-        if (this.value != value) this.value = value;
-      }
-
-      // set to first entry after data has been returned
-      else if (options.isNotEmpty)
-      {
-        // if we set value to itself it will cause an infinite loop
-        if (this.value != value) this.value = value;
-      }
-    }
-
-    dynamic data;
-    for (var option in options) {
-      if (option.value == value)
-      {
-        data = option.data;
-        label = option.labelValue;
-      }
-    }
-    this.data = data;
-  }
-
-  bool _containsOption()
-  {
-    bool contains = false;
-    for (var option in options) {
-      //we could potentially match the label vs the value with typeing, or give the option on which to match on?
-      if (option.value == value) contains = true;
-    }
-    return contains;
   }
 
   @override

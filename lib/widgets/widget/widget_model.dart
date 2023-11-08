@@ -984,7 +984,7 @@ class WidgetModel implements IDataSourceListener {
     element = xml;
 
     // Global Properties
-    datasource = Xml.attribute(node: xml, tag: 'data');
+    datasource = Xml.attribute(node: xml, tag: 'data') ?? Xml.attribute(node: xml, tag: 'datasource');
     debug = Xml.get(node: xml, tag: 'debug');
     depth = Xml.get(node: xml, tag: 'depth');
 

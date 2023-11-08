@@ -351,7 +351,6 @@ class FormModel extends BoxModel implements IForm
     post        = Xml.get(node: xml, tag: 'post');
     geocode     = Xml.get(node: xml, tag: 'geocode');
     postbrokers = Xml.attribute(node: xml, tag: 'post') ?? Xml.attribute(node: xml, tag: 'postbroker');
-    data        = Xml.attribute(node: xml, tag: 'data');
 
     // events
     onComplete  = Xml.get(node: xml, tag: 'oncomplete');
@@ -363,7 +362,12 @@ class FormModel extends BoxModel implements IForm
     setFormFields();
 
     // fill all empty fields with the datasource if specified
-    if (data != null) _fillEmptyFields();
+    var datasource = Xml.attribute(node: xml, tag: 'data') ?? Xml.attribute(node: xml, tag: 'datasource');
+    if (datasource != null)
+    {
+      IDataSource? source = scope?.getDataSource(datasource);
+      if (source != null) source.register(this);
+    }
 
     // get forms
     forms.addAll(getForms(children));
@@ -903,51 +907,6 @@ class FormModel extends BoxModel implements IForm
     return form;
   }
 
-  Future<void> _fillEmptyFields() async
-  {
-    //display busy
-    busy = true;
-    bool ok = false;
-
-    if ((scope != null) && (data != null))
-    {
-      //for a single datasource grab the scope
-      IDataSource? source = scope!.getDataSource(data[0]);
-      if (source != null)
-      {
-        // start the datasource
-        ok = await source.start();
-      }
-
-      // if the data is null do not fill fields
-      if (source?.data == null || source == null) ok = false;
-
-      if (ok)
-      {
-        for (var field in formFields)
-        {
-          // check to see if the field is not assigned a by the developer, even if that value is null, and is not answered.
-          if (isNull(field.value) && !field.touched)
-          {
-            //create the binding string based on the fields ID.
-            String binding = '${field.id}';
-
-            //assign the signature of the source to the field and grab it from the data. Data will generally return a list, so we must grab the 0th element.
-            dynamic sourceData = Data.fromDotNotation(source!.data!, DotNotation.fromString(binding)!)?.elementAt(0);
-
-            //data can return a jsonmap as part of the data's list if it fails to grab the binding. If this is the case, do not set the value.
-            if (sourceData != null && sourceData is! Map)
-            {
-              field.value = sourceData.toString();
-            }
-          }
-        }
-      }
-    }
-    //Set busy to false
-    busy = false;
-  }
-
   List<IFormField> _getAlarmingFields()
   {
     List<IFormField> list = [];
@@ -964,6 +923,33 @@ class FormModel extends BoxModel implements IForm
     }
     return list;
   }
+
+  void _fillEmptyFields(Data? data)
+  {
+    // if the data is null do not fill fields
+    if (data != null)
+    {
+      for (var field in formFields)
+      {
+        // check to see if the field is not assigned a by the developer, even if that value is null, and is not answered.
+        if (isNull(field.value) && !field.touched)
+        {
+          //create the binding string based on the fields ID.
+          String binding = '${field.id}';
+
+          //assign the signature of the source to the field and grab it from the data. Data will generally return a list, so we must grab the 0th element.
+          dynamic sourceData = Data.fromDotNotation(data, DotNotation.fromString(binding)!)?.elementAt(0);
+
+          //data can return a jsonmap as part of the data's list if it fails to grab the binding. If this is the case, do not set the value.
+          if (sourceData != null && sourceData is! Map)
+          {
+            field.value = sourceData.toString();
+          }
+        }
+      }
+    }
+  }
+
 
   @override
   Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
@@ -989,8 +975,18 @@ class FormModel extends BoxModel implements IForm
   }
 
   @override
-  Future<bool> onDataSourceSuccess(IDataSource source, Data? list) {
-    clean = true;
+  Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async
+  {
+    // fill empty fields?
+    if (source.id == datasource)
+    {
+      _fillEmptyFields(list);
+      source.remove(this);
+    }
+
+    // set form clean
+    else clean = true;
+
     return super.onDataSourceSuccess(source, list);
   }
 

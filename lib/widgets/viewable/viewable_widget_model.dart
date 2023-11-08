@@ -689,7 +689,7 @@ class ViewableWidgetModel extends ConstraintModel
     // set busy
     busy = true;
 
-    // build chidlren from datasource
+    // build children from datasource
     List<WidgetModel> models = [];
     if (list != null)
     {

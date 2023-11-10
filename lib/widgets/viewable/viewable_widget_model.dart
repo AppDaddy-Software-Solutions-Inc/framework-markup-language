@@ -457,8 +457,8 @@ class ViewableWidgetModel extends ConstraintModel
     // deserialize
     super.deserialize(xml);
 
-    // build prototype if defined
-    if (datasource != null) setPrototype();
+    // build prototype (options) if defined
+    setPrototype();
 
     // set constraints
     width     = Xml.get(node: xml, tag: 'width');
@@ -689,7 +689,7 @@ class ViewableWidgetModel extends ConstraintModel
     // set busy
     busy = true;
 
-    // build chidlren from datasource
+    // build children from datasource
     List<WidgetModel> models = [];
     if (list != null)
     {

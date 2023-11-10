@@ -36,15 +36,21 @@ final String applicationTitle = "Flutter Markup Language $version";
 // This url is used to locate config.xml on startup
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://app
-String get defaultDomain => 'http://socialcircle.appdaddy.co';
+//String get defaultDomain => 'http://10.69.4.245:81';
+String get defaultDomain => 'http://10.67.130.75:8081';
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
 final ApplicationTypes appType = ApplicationTypes.multiApp;
+
 enum ApplicationTypes { singleApp, multiApp }
 
 // platform
-String get platform => isWeb ? "web" : isMobile ? "mobile" : "desktop";
+String get platform => isWeb
+    ? "web"
+    : isMobile
+        ? "mobile"
+        : "desktop";
 
 bool get isWeb => kIsWeb;
 bool get isMobile => !isWeb && (io.Platform.isAndroid || io.Platform.isIOS);

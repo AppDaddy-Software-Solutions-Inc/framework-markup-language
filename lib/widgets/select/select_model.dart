@@ -17,88 +17,29 @@ class SelectModel extends DecoratedInputModel implements IFormField
   @override
   bool get canExpandInfinitelyWide => !hasBoundedWidth;
 
-  bool? addempty = true;
-
-  // bindable data
-  ListObservable? _data;
-  @override
-  set data(dynamic v)
-  {
-    if (_data != null)
-    {
-      _data!.set(v);
-    }
-    else if (v != null)
-    {
-      _data = ListObservable(Binding.toKey(id, 'data'), null, scope: scope, listener: onPropertyChange);
-      _data!.set(v);
-    }
-  }
-  @override
-  get data => _data?.get();
-
+  // add empty value
+  bool addempty = true;
 
   // options
   final List<OptionModel> options = [];
 
-  ///////////
-  /* Value */
-  ///////////
+  // value
   StringObservable? _value;
   @override
-  set value(dynamic v) {
+  set value(dynamic v)
+  {
     if (_value != null)
     {
       _value!.set(v);
     }
-    else
+    else if (v != null || WidgetModel.isBound(this, Binding.toKey(id, 'value')))
     {
-      if ((v != null) || (WidgetModel.isBound(this, Binding.toKey(id, 'value')))) _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange);
+        _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onValueChange);
     }
-    setData();
   }
+
   @override
-  dynamic get value
-  {
-    if (_value == null) return defaultValue;
-    if (!dirty && S.isNullOrEmpty(_value?.get()) && !S.isNullOrEmpty(defaultValue)) _value!.set(defaultValue);
-    return _value?.get();
-  }
-
-
-  ////////////
-  /* length */
-  ////////////
-  IntegerObservable? _length;
-  set length(dynamic v) {
-    if (_length != null) {
-      _length!.set(v);
-    } else {
-      if (v != null) {
-        _length = IntegerObservable(Binding.toKey(id, 'length'), v,
-            scope: scope, listener: onPropertyChange);
-      }
-    }
-  }
-  int? get length => _length?.get();
-
-
-  //
-  //  Match Type
-  //
-  StringObservable? _matchtype;
-  set matchtype(dynamic v) {
-    if (_matchtype != null) {
-      _matchtype!.set(v);
-    } else {
-      if (v != null) {
-        matchtype = StringObservable(Binding.toKey(id, 'matchtype'), v,
-            scope: scope, listener: onPropertyChange);
-      }
-    }
-  }
-  String? get matchtype => _matchtype?.get();
-
+  dynamic get value => dirty ? _value?.get() : _value?.get() ?? defaultValue;
 
   SelectModel(WidgetModel parent, String? id,
       { dynamic value,
@@ -115,7 +56,6 @@ class SelectModel extends DecoratedInputModel implements IFormField
     if (bordercolor   != null)  this.bordercolor  = bordercolor;
     if (value         != null)  this.value         = value;
     if (defaultValue  != null)  this.defaultValue  = defaultValue;
-    if (matchtype     != null)  this.matchtype     = matchtype;
   }
 
   static SelectModel? fromXml(WidgetModel parent, XmlElement xml) {
@@ -141,33 +81,54 @@ class SelectModel extends DecoratedInputModel implements IFormField
     super.deserialize(xml);
 
     // set properties
-    value = Xml.get(node: xml, tag: 'value');
-    matchtype = Xml.get(node: xml, tag: 'matchtype') ?? Xml.get(node: xml, tag: 'searchtype');
+    value     = Xml.get(node: xml, tag: 'value');
+    addempty  = S.toBool(Xml.get(node: xml, tag: 'addempty')) ?? true;
+  }
 
-    String? empty = Xml.get(node: xml, tag: 'addempty');
-    if (S.isBool(empty)) addempty = S.toBool(empty);
+  void onValueChange(Observable observable)
+  {
+    // set the selected option
+    _setSelectedOption(setValue: false);
 
-    // clear options
-    for (var option in options) {
-      option.dispose();
+    // notify listeners
+    onPropertyChange(observable);
+  }
+
+  void _setSelectedOption({bool setValue = true})
+  {
+    OptionModel? selectedOption;
+    if (options.isNotEmpty)
+    {
+      for (var option in options)
+      {
+        if (option.value == value)
+        {
+          selectedOption = option;
+          break;
+        }
+      }
+
+      // not found? default to the first option
+      selectedOption ??= options[0];
     }
-    options.clear();
 
-    // build options
-    setPrototype();
-
-    // Set selected option
-    setData();
+    // set values
+    if (setValue) value = selectedOption?.value;
+    data  = selectedOption?.data;
+    label = selectedOption?.labelValue;
   }
 
   @override
   void setPrototype()
   {
-    // Build options
+    // clear options
+    _clearOptions();
+
+    // build options
     List<OptionModel> options = findChildrenOfExactType(OptionModel).cast<OptionModel>();
 
     // set prototype
-    if ((!S.isNullOrEmpty(datasource)) && (options.isNotEmpty))
+    if (!S.isNullOrEmpty(datasource) && options.isNotEmpty)
     {
       prototype = WidgetModel.prototypeOf(options.first.element);
       options.removeAt(0);
@@ -185,22 +146,19 @@ class SelectModel extends DecoratedInputModel implements IFormField
       if (prototype == null) return true;
 
       // clear options
-      for (var option in options) {
-        option.dispose();
-      }
-      options.clear();
+      _clearOptions();
 
+      // add empty option to list
       int i = 0;
-      if (addempty == true)
+      if (addempty)
       {
         options.add(OptionModel(this, "$id-$i", value: ''));
         i = i + 1;
       }
 
       // build options
-      if ((list != null) && (source != null))
+      if (list != null && source != null)
       {
-        // build options
         for (var row in list)
         {
           var model = OptionModel.fromXml(this, prototype, data: row);
@@ -208,11 +166,8 @@ class SelectModel extends DecoratedInputModel implements IFormField
         }
       }
 
-      // sets the data
-      setData();
-
-      // notify listeners
-      notifyListeners('options', options);
+      // set selected option
+      _setSelectedOption();
     }
     catch(e)
     {
@@ -221,63 +176,18 @@ class SelectModel extends DecoratedInputModel implements IFormField
     return true;
   }
 
+  void _clearOptions()
+  {
+    for (var option in options) {
+      option.dispose();
+    }
+    options.clear();
+  }
+
   @override
   onDataSourceException(IDataSource source, Exception exception) {
     // Clear the List - Olajos 2021-09-04
     onDataSourceSuccess(null, null);
-  }
-
-  void setData()
-  {
-    // value is not in data?
-    if (!_containsOption())
-    {
-      dynamic value;
-
-      if(options.isNotEmpty){
-        value = options[0].value;
-      }
-
-      // set to first entry if no datasource
-      if (datasource == null)
-      {
-
-        // if we set value to itself it will cause an infinite loop
-        if (this.value != value)
-        {
-        this.value = value;
-        }
-
-      }
-
-      // set to first entry after data has been returned
-      else if (options.isNotEmpty)
-      {
-        // if we set value to itself it will cause an infinite loop
-        if (this.value != value) this.value = value;
-        //tell the form that I have set my own value outside of a user choice;
-
-      }
-    }
-
-    dynamic data;
-    for (var option in options) {
-      if (option.value == value)
-      {
-        data = option.data;
-        label = option.labelValue;
-      }
-    }
-    this.data = data;
-  }
-
-  bool _containsOption()
-  {
-    bool contains = false;
-    for (var option in options) {
-      if (option.value == value) contains = true;
-    }
-    return contains;
   }
 
   @override

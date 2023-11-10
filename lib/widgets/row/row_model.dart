@@ -32,15 +32,15 @@ class RowModel extends BoxModel
     return flexible;
   }
 
-  RowModel(WidgetModel parent, String? id, {Scope?  scope}) : super(parent, id, scope: scope);
+  RowModel(WidgetModel parent, String? id, {Scope? scope, dynamic data}) : super(parent, id, scope: scope, data: data);
 
-  static RowModel? fromXml(WidgetModel parent, XmlElement xml)
+  static RowModel? fromXml(WidgetModel parent, XmlElement xml, {Scope? scope, dynamic data})
   {
     RowModel? model;
     try
     {
       // build model
-      model = RowModel(parent, Xml.get(node: xml, tag: 'id'));
+      model = RowModel(parent, Xml.get(node: xml, tag: 'id'), scope: scope, data: data);
       model.deserialize(xml);
     }
     catch(e)

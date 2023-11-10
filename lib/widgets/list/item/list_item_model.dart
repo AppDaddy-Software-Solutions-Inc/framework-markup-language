@@ -84,8 +84,6 @@ class ListItemModel extends BoxModel
   }
   String? get onclick => _onclick?.get();
 
-
-
   // dataset  index
   // This property indicates your position on the dataset, 0 being the top
   IntegerObservable? get indexObservable => _index;

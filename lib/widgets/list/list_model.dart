@@ -22,6 +22,9 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
   // pointing to data broker data
   Data? _dataset;
 
+  // data sourced prototype
+  XmlElement? prototype;
+
   // returns the number of records in the dataset
   int? get records => _dataset?.length;
 
@@ -315,12 +318,11 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     items.forEach((_,item) => item.dispose());
     items.clear();
 
-    // build items
-    setPrototype();
+    // build list items
+    _buildItems();
   }
 
-  @override
-  void setPrototype()
+  void _buildItems()
   {
     List<ListItemModel> items = findChildrenOfExactType(ListItemModel).cast<ListItemModel>();
 

@@ -16,6 +16,9 @@ class PopoverModel extends DecoratedWidgetModel implements IModelListener
 {
   List<PopoverItemModel> items = [];
 
+  // data sourced prototype
+  XmlElement? prototype;
+
   // label
   StringObservable? _label;
   set label (dynamic v)
@@ -95,12 +98,11 @@ class PopoverModel extends DecoratedWidgetModel implements IModelListener
     }
     items.clear();
 
-    // Get Items from XML
-    setPrototype();
+    // build popover items
+    _buildItems();
   }
 
-  @override
-  void setPrototype()
+  void _buildItems()
   {
     List<PopoverItemModel> items = findChildrenOfExactType(PopoverItemModel).cast<PopoverItemModel>();
 

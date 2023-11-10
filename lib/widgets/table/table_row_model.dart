@@ -64,21 +64,6 @@ class TableRowModel extends BoxModel
   }
   List<String>? get postbrokers => _postbrokers;
 
-  // index
-  IntegerObservable? _index;
-  set index(dynamic v)
-  {
-    if (_index != null)
-    {
-      _index!.set(v);
-    }
-    else
-    {
-      _index = IntegerObservable(Binding.toKey(id, 'index'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  int? get index => _index?.get() ?? 0;
-
   // selected
   BooleanObservable? _selected;
   set selected(dynamic v)

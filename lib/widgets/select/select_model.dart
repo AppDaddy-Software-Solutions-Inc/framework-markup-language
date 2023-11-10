@@ -23,6 +23,9 @@ class SelectModel extends DecoratedInputModel implements IFormField
   // options
   final List<OptionModel> options = [];
 
+  // data sourced prototype
+  XmlElement? prototype;
+
   // value
   StringObservable? _value;
   @override
@@ -83,6 +86,12 @@ class SelectModel extends DecoratedInputModel implements IFormField
     // set properties
     value     = Xml.get(node: xml, tag: 'value');
     addempty  = S.toBool(Xml.get(node: xml, tag: 'addempty')) ?? true;
+
+    // build select options
+    _buildOptions();
+
+    // set the default selected option
+    if (datasource == null) _setSelectedOption();
   }
 
   void onValueChange(Observable observable)
@@ -118,8 +127,7 @@ class SelectModel extends DecoratedInputModel implements IFormField
     label = selectedOption?.labelValue;
   }
 
-  @override
-  void setPrototype()
+  void _buildOptions()
   {
     // clear options
     _clearOptions();
@@ -131,6 +139,7 @@ class SelectModel extends DecoratedInputModel implements IFormField
     if (!S.isNullOrEmpty(datasource) && options.isNotEmpty)
     {
       prototype = WidgetModel.prototypeOf(options.first.element);
+      options.first.dispose();
       options.removeAt(0);
     }
 

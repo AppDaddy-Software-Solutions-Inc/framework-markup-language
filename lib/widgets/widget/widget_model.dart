@@ -84,6 +84,7 @@ import 'package:fml/widgets/popover/popover_model.dart';
 import 'package:fml/widgets/positioned/positioned_model.dart';
 import 'package:fml/datasources/http/put/model.dart';
 import 'package:fml/datasources/http/post/model.dart';
+import 'package:fml/widgets/prototype/prototype_model.dart';
 import 'package:fml/widgets/radio/radio_model.dart';
 import 'package:fml/widgets/row/row_model.dart';
 import 'package:fml/widgets/scope/scope_model.dart';
@@ -185,6 +186,10 @@ class WidgetModel implements IDataSourceListener {
     }
   }
   get data => _data?.get();
+  void onDataChange()
+  {
+    _data != null ? _data!.notifyListeners() : null;
+  }
 
   // listeners
   List<IModelListener>? _listeners;
@@ -298,9 +303,10 @@ class WidgetModel implements IDataSourceListener {
     return id!;
   }
 
-  static WidgetModel? fromXml(WidgetModel parent, XmlElement node) {
+  static WidgetModel? fromXml(WidgetModel parent, XmlElement node, {Scope? scope, dynamic data})
+  {
     // clone node?
-    node = cloneNode(node, parent.scope);
+    node = cloneNode(node, scope ?? parent.scope);
 
     // exclude this element?
     if (excludeFromTemplate(node, parent.scope)) return null;
@@ -338,7 +344,8 @@ class WidgetModel implements IDataSourceListener {
 
       case "box": // Preferred Case
       case "container": // Container may be deprecated
-        model = BoxModel.fromXml(parent, node);
+        bool isPrototype = Xml.hasAttribute(node: node, tag: "data") || Xml.hasAttribute(node: node, tag: "datasource");
+        model = isPrototype ? PrototypeModel.fromXml(parent, node) : BoxModel.fromXml(parent, node, scope: scope, data: data);
         break;
 
       case "breadcrumb":
@@ -414,7 +421,8 @@ class WidgetModel implements IDataSourceListener {
 
       case "column":
       case "col": //shorthand case
-        model = ColumnModel.fromXml(parent, node);
+        bool isPrototype = Xml.hasAttribute(node: node, tag: "data") || Xml.hasAttribute(node: node, tag: "datasource");
+        model = isPrototype ? PrototypeModel.fromXml(parent, node) : ColumnModel.fromXml(parent, node, scope: scope, data: data);
         break;
 
       case "condition":
@@ -772,7 +780,8 @@ class WidgetModel implements IDataSourceListener {
         break;
 
       case "row":
-        model = RowModel.fromXml(parent, node);
+        bool isPrototype = Xml.hasAttribute(node: node, tag: "data") || Xml.hasAttribute(node: node, tag: "datasource");
+        model = isPrototype ? PrototypeModel.fromXml(parent, node) : RowModel.fromXml(parent, node, scope: scope, data: data);
         break;
 
       case "scope":
@@ -1081,21 +1090,16 @@ class WidgetModel implements IDataSourceListener {
   rebuild() => notifyListeners("rebuild", true);
 
   notifyListeners(String? property, dynamic value, {bool notify = false}) {
-    if (notify && _listeners == null) print('listeners is null');
-    if (notify && _listeners != null) {
-      print('listeners has ${_listeners!.length} members');
-    }
-    if (_listeners != null) {
-      for (var listener in _listeners!) {
+    if (_listeners != null)
+    {
+      for (var listener in _listeners!)
+      {
         listener.onModelChange(this, property: property, value: value);
       }
     }
   }
 
-  void onPropertyChange(Observable observable)
-  {
-    notifyListeners(observable.key, observable.get());
-  }
+  void onPropertyChange(Observable observable) => notifyListeners(observable.key, observable.get());
 
   Future<void> initialize() async {
     // start datasources

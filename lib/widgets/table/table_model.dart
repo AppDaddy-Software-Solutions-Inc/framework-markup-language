@@ -29,6 +29,9 @@ class TableModel extends BoxModel implements IForm
   @override
   bool get canExpandInfinitelyHigh => !hasBoundedHeight;
 
+  // data sourced prototype
+  XmlElement? prototype;
+
   // holds header
   TableHeaderModel? header;
 
@@ -881,9 +884,6 @@ class TableModel extends BoxModel implements IForm
       print (e);
     }
   }
-
-  @override
-  void setPrototype() {}
 
   @override
   Widget getView({Key? key}) => getReactiveView(TableView(this));

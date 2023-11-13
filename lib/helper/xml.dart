@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:collection/collection.dart';
 import 'package:fml/log/manager.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/helper/common_helpers.dart';
@@ -320,6 +321,23 @@ class Xml {
     catch(e)
     {
       Log().exception(e, caller: 'xml.dart => String attribute({XmlElement node, String tag})');
+    }
+  }
+
+  /// Changes an [XmlElement] attribute value
+  static void removeAttribute(XmlElement? node, String tag)
+  {
+    try
+    {
+      if (node != null)
+      {
+        var attribute = node.attributes.firstWhereOrNull((attribute) => attribute.name.local == tag || attribute.name.local.toLowerCase() == tag || attribute.name.local.toUpperCase() == tag);
+        if (attribute != null) node.attributes.remove(attribute);
+      }
+    }
+    catch(e)
+    {
+      Log().exception(e, caller: 'xml.dart => removeAttribute({XmlElement node, String tag})');
     }
   }
 

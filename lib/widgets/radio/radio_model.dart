@@ -18,6 +18,9 @@ class RadioModel extends FormFieldModel implements IFormField
   // options
   List<OptionModel> options = [];
 
+  // data sourced prototype
+  XmlElement? prototype;
+
   /// Center attribute allows a simple boolean override for halign and valign both being center. halign and valign will override center if given.
   BooleanObservable? _center;
   set center(dynamic v)
@@ -166,10 +169,15 @@ class RadioModel extends FormFieldModel implements IFormField
     center = Xml.get(node: xml, tag: 'center');
     wrap   = Xml.get(node: xml, tag: 'wrap');
     size   = Xml.get(node: xml, tag: 'size');
+
+    // build radio options
+    _buildOptions();
+
+    // set the default selected option
+    if (datasource == null) _setSelectedOption();
   }
 
-  @override
-  void setPrototype()
+  void _buildOptions()
   {
     // clear options
     _clearOptions();
@@ -181,6 +189,7 @@ class RadioModel extends FormFieldModel implements IFormField
     if (!S.isNullOrEmpty(datasource) && options.isNotEmpty)
     {
       prototype = WidgetModel.prototypeOf(options.first.element);
+      options.first.dispose();
       options.removeAt(0);
     }
 

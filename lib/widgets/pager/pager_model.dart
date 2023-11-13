@@ -22,6 +22,9 @@ class PagerModel extends BoxModel
   @override
   bool get center => true;
 
+  // data sourced prototype
+  XmlElement? prototype;
+
   PageController? controller;
 
   List<PageModel> pages = [];
@@ -138,12 +141,11 @@ class PagerModel extends BoxModel
     }
     pages.clear();
 
-    // set prototype
-    setPrototype();
+    // build pages
+    _buildPages();
   }
 
-  @override
-  void setPrototype()
+  void _buildPages()
   {
     // build pages
     List<PageModel> pages = findChildrenOfExactType(PageModel).cast<PageModel>();

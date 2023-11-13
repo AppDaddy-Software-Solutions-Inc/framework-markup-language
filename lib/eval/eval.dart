@@ -2,6 +2,7 @@
 import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:fml/crypto/crypto.dart';
+import 'package:fml/data/data.dart';
 import 'package:fml/helper/time.dart';
 import 'package:fml/system.dart';
 import 'package:intl/intl.dart';
@@ -24,7 +25,7 @@ class Eval
   static final ExpressionEvaluator evaluator = const ExpressionEvaluator();
 
   /// The String value mapping of all the functions
-  static final Map<String, dynamic> functions = {'abs': _abs, 'acos': acos, 'addTime': _addTime, 'addtime': _addTime, 'asin': asin, 'atan': atan, 'bit': _bit, 'bytes': _bytes, 'case' : _case, 'ceil': _ceil, 'contains': _contains, 'cos': cos, 'decrypt': _decrypt, 'distance': _distance, 'encrypt': _encrypt, 'endsWith': _endsWith, 'endswith': _endsWith, 'floor': _floor, 'hash' : _hash, 'if': _if, 'isAfter': _isAfter, 'isafter': _isAfter, 'isBefore': _isBefore, 'isbefore': _isBefore, 'isBool' : _isBool, 'isbool' : _isBool, 'isBoolean' : _isBool, 'isboolean' : _isBool, 'isPhone' : _isValidPhone, 'isCard' : _isValidCreditCard, 'isPassword' : _isValidPassword, 'isEmail' : _isValidEmail, 'isExpiryDate' : _isValidExpiryDate, 'isNull': _isNull, 'isnull': _isNull, 'isNullOrEmpty': _isNullOrEmpty, 'isnullorempty': _isNullOrEmpty, 'isNum' : _isNumeric, 'isnum' : _isNumeric, 'isNumeric' : _isNumeric, 'isnumeric' : _isNumeric, 'join': _join, 'length': _length, 'mod': _mod, 'noe': _isNullOrEmpty, 'number': _number, 'nvl': _nvl, 'pi': pi / 5, 'regex': _regex, 'replace': _replace, 'round': _round, 'sin': sin, 'startsWith': _startsWith, 'startswith': _startsWith, 'substring': _substring, 'subtractTime': _subtractTime, 'subtracttime': _subtractTime, 'tan': tan, 'timeBetween': _timeBetween, 'timebetween': _timeBetween, 'toBool': _toBool, 'tobool': _toBool, 'toBoolean': _toBool, 'toboolean': _toBool, 'toDate': _toDate, 'todate': _toDate, 'toEpoch': _toEpoch, 'toepoch': _toEpoch, 'toLower' : _toLower, 'tolower': _toLower, 'toNum': _toNum, 'tonum': _toNum, 'toNumber': _toNum, 'tonumber': _toNum, 'toStr': _toString, 'tostr': _toString, 'toString': _toString, 'tostring': _toString, 'toUpper' : _toUpper, 'toupper': _toUpper, 'truncate': _truncate,};
+  static final Map<String, dynamic> functions = {'abs': _abs, 'acos': acos, 'addTime': _addTime, 'addtime': _addTime, 'asin': asin, 'atan': atan, 'bit': _bit, 'bytes': _bytes, 'case' : _case, 'ceil': _ceil, 'contains': _contains, 'cos': cos, 'decrypt': _decrypt, 'distance': _distance, 'encrypt': _encrypt, 'endsWith': _endsWith, 'endswith': _endsWith, 'floor': _floor, 'hash' : _hash, 'indexOf': _indexOf, 'if': _if, 'isAfter': _isAfter, 'isafter': _isAfter, 'isBefore': _isBefore, 'isbefore': _isBefore, 'isBool' : _isBool, 'isbool' : _isBool, 'isBoolean' : _isBool, 'isboolean' : _isBool, 'isPhone' : _isValidPhone, 'isCard' : _isValidCreditCard, 'isPassword' : _isValidPassword, 'isEmail' : _isValidEmail, 'isExpiryDate' : _isValidExpiryDate, 'isNull': _isNull, 'isnull': _isNull, 'isNullOrEmpty': _isNullOrEmpty, 'isnullorempty': _isNullOrEmpty, 'isNum' : _isNumeric, 'isnum' : _isNumeric, 'isNumeric' : _isNumeric, 'isnumeric' : _isNumeric, 'join': _join, 'length': _length, 'mod': _mod, 'noe': _isNullOrEmpty, 'number': _number, 'nvl': _nvl, 'pi': pi / 5, 'regex': _regex, 'replace': _replace, 'round': _round, 'sin': sin, 'startsWith': _startsWith, 'startswith': _startsWith, 'substring': _substring, 'subtractTime': _subtractTime, 'subtracttime': _subtractTime, 'tan': tan, 'timeBetween': _timeBetween, 'timebetween': _timeBetween, 'toBool': _toBool, 'tobool': _toBool, 'toBoolean': _toBool, 'toboolean': _toBool, 'toDate': _toDate, 'todate': _toDate, 'toEpoch': _toEpoch, 'toepoch': _toEpoch, 'toLower' : _toLower, 'tolower': _toLower, 'toNum': _toNum, 'tonum': _toNum, 'toNumber': _toNum, 'tonumber': _toNum, 'toStr': _toString, 'tostr': _toString, 'toString': _toString, 'tostring': _toString, 'toUpper' : _toUpper, 'toXml' : _toXml, 'toupper': _toUpper, 'truncate': _truncate,};
 
   static dynamic evaluate(String? expression, {Map<String?, dynamic>? variables, Map<String?, dynamic>? altFunctions})
   {
@@ -483,6 +484,11 @@ class Eval
     return S.toStr(value)?.toUpperCase() ?? value;
   }
 
+  /// Returns an all uppercase String
+  static dynamic _toXml(dynamic value)
+  {
+    return value is Data ? Data.toXml(value) : null;
+  }
 
   /// Returns the modular of a number and a divisor
   static dynamic _mod(dynamic num, dynamic div)
@@ -631,13 +637,26 @@ class Eval
     return myString;
   }
 
-  /// null-safe String length
+  /// null-safe object length
+  /// string or list
   static int _length(dynamic s)
   {
     if (s == null) return 0;
     if (s is List) return s.length;
     s = S.toStr(s);
     return s?.length ?? 0;
+  }
+
+  /// index of object in list
+  static int _indexOf(dynamic object, dynamic list)
+  {
+    if (list is List)
+    {
+       if (list.contains(object)) return list.indexOf(object);
+       if (object is List && object.isNotEmpty && list.contains(object.first)) return list.indexOf(object.first);
+    }
+    if (list != null && list == object) return 0;
+    return -1;
   }
 
   /// null-safe String length

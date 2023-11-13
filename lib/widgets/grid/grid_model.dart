@@ -21,6 +21,9 @@ class GridModel extends BoxModel implements IScrolling
   // pointing to data broker data
   Data? _dataset;
 
+  // data sourced prototype
+  XmlElement? prototype;
+
   // returns the number of records in the dataset
   int? get records => _dataset?.length;
 
@@ -254,12 +257,11 @@ class GridModel extends BoxModel implements IScrolling
     items.forEach((_,item) => item.dispose());
     items.clear();
 
-    // Build items
-    setPrototype();
+    // build grid items
+    _buildItems();
   }
 
-  @override
-  void setPrototype()
+  void _buildItems()
   {
     List<GridItemModel> items = findChildrenOfExactType(GridItemModel).cast<GridItemModel>();
 

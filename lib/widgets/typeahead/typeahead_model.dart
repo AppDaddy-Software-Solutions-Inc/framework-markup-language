@@ -14,6 +14,9 @@ import 'package:fml/helper/common_helpers.dart';
 
 class TypeaheadModel extends DecoratedInputModel implements IFormField
 {
+  // data sourced prototype
+  XmlElement? prototype;
+
   @override
   bool get canExpandInfinitelyWide => !hasBoundedWidth;
 
@@ -118,6 +121,12 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
     inputenabled = Xml.get(node: xml, tag: 'inputenabled');
     matchtype = Xml.get(node: xml, tag: 'matchtype') ?? Xml.get(node: xml, tag: 'searchtype');
     addempty  = S.toBool(Xml.get(node: xml, tag: 'addempty')) ?? true;
+
+    // build select options
+    _buildOptions();
+
+    // set the default selected option
+    if (datasource == null) _setSelectedOption();
   }
 
   void onValueChange(Observable observable)
@@ -153,8 +162,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
     label = selectedOption?.labelValue;
   }
 
-  @override
-  void setPrototype()
+  void _buildOptions()
   {
     // clear options
     _clearOptions;

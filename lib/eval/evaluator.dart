@@ -59,9 +59,11 @@ class ExpressionEvaluator {
     return context['this'];
   }
 
-  dynamic evalMemberExpression(
-      MemberExpression expression, Map<String?, dynamic> context) {
-    throw UnsupportedError('Member expressions not supported');
+  dynamic evalMemberExpression(MemberExpression expression, Map<String?, dynamic> context)
+  {
+    // updated by olajos
+    return expression.toString();
+    //throw UnsupportedError('Member expressions not supported');
   }
 
   dynamic evalIndexExpression(
@@ -164,6 +166,8 @@ class ExpressionEvaluator {
         return left << right();
       case '>>':
         return left >> right();
+      case '=': // added by olajos
+        return set(context, left, right());
       case '+':
         return Decimal.parse(left.toString()) + Decimal.parse(right().toString());
       case '-':
@@ -177,6 +181,12 @@ class ExpressionEvaluator {
     }
     throw ArgumentError(
         'Unknown operator ${expression.operator} in expression');
+  }
+
+  dynamic set(Map<String?, dynamic> context, dynamic left, dynamic right)
+  {
+    var fn = context.containsKey("execute") ? context["execute"] : null;
+    return fn is Function ? Function.apply(fn, [left, 'set', [right]]) : false;
   }
 
   dynamic evalConditionalExpression(

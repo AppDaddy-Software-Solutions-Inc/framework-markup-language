@@ -520,6 +520,88 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     return true;
   }
 
+  Future<bool> insert(String? jsonOrXml, int? index) async
+  {
+    if (jsonOrXml == null) return true;
+    index ??= data?.length ?? 0;
+    if (index.isNegative) index = 0;
+
+    // add to existing data set
+    data ??= Data();
+    for (var item in Data.from(jsonOrXml))
+    {
+      if (index! < data!.length)
+      {
+        data!.insert(index, item);
+      }
+      else
+      {
+        data!.add(item);
+      }
+      index++;
+    }
+
+    // notify listeners of data change
+    notify();
+    onDataChange();
+
+    return true;
+  }
+
+  Future<bool> delete(int? index) async
+  {
+    index ??= data?.length ?? 0;
+    if (index.isNegative) index = 0;
+    if (index >= data!.length) index = data!.length - 1;
+    if (data != null)
+    {
+      if (index >= data!.length) index = data!.length - 1;
+      if (index.isNegative) index = 0;
+      data!.removeAt(index);
+    }
+
+    // notify listeners of data change
+    notify();
+    onDataChange();
+
+    return true;
+  }
+
+  Future<bool> move(int? indexFrom, int? indexTo) async
+  {
+    if (data == null) return true;
+
+    // from
+    if (indexFrom == null || indexFrom.isNegative || indexFrom >= data!.length) return true;
+
+    // get from element
+    var elementFrom = data!.elementAt(indexFrom);
+
+    // to
+    if (indexTo == null || indexTo < 0 || indexTo >= data!.length) return true;
+
+    // remove element
+    data!.remove(elementFrom);
+    data!.insert(indexTo, element);
+
+    // notify listeners of data change
+    notify();
+    onDataChange();
+
+    return true;
+  }
+
+  Future<bool> reverse() async
+  {
+    data = data?.reversed;
+
+    // notify listeners of data change
+    notify();
+    onDataChange();
+
+    return true;
+  }
+
   @override
   Future<bool> onSuccess(Data data, {int? code, String? message, Observable? onSuccessOverride}) async
   {
@@ -744,62 +826,29 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     {
       // clear the list
       case "clear":
-        int? start = S.toInt(S.item(arguments, 0));
-        int? end = S.toInt(S.item(arguments, 1));
-        return await clear(start: start, end: end);
+        return await clear(start: S.toInt(S.item(arguments, 0)), end: S.toInt(S.item(arguments, 1)));
 
-      // add to the list
+      // add element to the list
       case "add":
-        String? jsonOrXml  = S.toStr(S.item(arguments, 0));
-        int index = S.toInt(S.item(arguments, 1)) ?? (data != null ? data!.length : 0);
-        if (jsonOrXml != null)
-        {
-          Data? d = Data.from(jsonOrXml);
-          if (data != null)
-          {
-            if (index.isNegative) index = 0;
-            for (var element in d)
-            {
-              if (index < data!.length)
-              {
-                data!.insert(index, element);
-              }
-              else
-              {
-                data!.add(element);
-              }
-              index++;
-            }
-          }
-          else {
-            data = Data.from(d);
-          }
+      case "insert":
+        return await insert(S.toStr(S.item(arguments, 0)), S.toInt(S.item(arguments, 1)));
 
-          // notify listeners of data change
-          notify();
-        }
-        return true;
-
-      // remove from the list
+      // remove element from the list
+      case "delete":
       case "remove":
-        int index = S.toInt(S.item(arguments, 0)) ?? (data != null ? data!.length : 0);
-        if (data != null)
-        {
-          if (index >= data!.length) index = data!.length - 1;
-          if (index.isNegative) index = 0;
-          data!.removeAt(index);
-          notify();
-        }
+        return await delete(S.toInt(S.item(arguments, 0)));
+
+      // move element in the list
+      case "move":
+        return await move(S.toInt(S.item(arguments, 0)), S.toInt(S.item(arguments, 1)));
+
+      // foreach element in the list
+      case "foreach":
         return true;
 
       // reverse the list
       case "reverse":
-        if (data != null)
-        {
-          data = data!.reversed;
-          notify();
-        }
-        return true;
+        return await reverse();
     }
     return super.execute(caller, propertyOrFunction, arguments);
   }

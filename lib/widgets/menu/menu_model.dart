@@ -18,6 +18,9 @@ class MenuModel extends DecoratedWidgetModel
   // items
   List<MenuItemModel> items = [];
 
+  // data sourced prototype
+  XmlElement? prototype;
+
   @override
   bool get canExpandInfinitelyWide => !hasBoundedWidth;
 
@@ -91,12 +94,11 @@ class MenuModel extends DecoratedWidgetModel
     }
     items.clear();
 
-    // build items
-    setPrototype();
+    // build menu items
+    _buildItems();
   }
 
-  @override
-  void setPrototype()
+  void _buildItems()
   {
     // build items
     List<MenuItemModel> items = findChildrenOfExactType(MenuItemModel).cast<MenuItemModel>();

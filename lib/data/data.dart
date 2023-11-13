@@ -4,12 +4,15 @@ import 'dart:math';
 import 'package:fml/data/dotnotation.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
+import 'package:xml/xml.dart';
 import 'package:xml2json/xml2json.dart';
 import 'dart:convert';
 
 class Data with ListMixin<dynamic>
 {
   List<dynamic> _list = [];
+
+  String? root;
 
   Data({dynamic data})
   {
@@ -119,7 +122,13 @@ class Data with ListMixin<dynamic>
       if (dotnotation != null) data = fromDotNotation(data, dotnotation);
     }
 
-    return (data != null) ? data : Data(data: data);
+    // build default data set
+    data ??= Data(data: null);
+
+    // save root name
+    data.root = root;
+    
+    return data;
   }
 
   static Data? fromXml(String xml)
@@ -162,6 +171,93 @@ class Data with ListMixin<dynamic>
       Log().error('Invalid Format, unable to decode json string data.');
       return null;
     }
+  }
+
+  static String toJson(Data? data)
+  {
+    var json = "{}";
+    try
+    {
+      if (data != null) json = jsonEncode(data);
+    }
+    catch(e)
+    {
+      Log().error('Invalid Format, unable to decode json string data.');
+    }
+    return json;
+  }
+
+  static _toXml(XmlElement node, dynamic data, {String? name})
+  {
+    // map
+    if (data is Map)
+    {
+      data.forEach((key, value)
+      {
+        key = key.toString();
+        if (value is Map)
+        {
+          var element = XmlElement(XmlName(key));
+          node.children.add(element);
+          _toXml(element,value);
+        }
+
+        else if (value is List)
+        {
+          _toXml(node, value, name: key);
+        }
+
+        else
+        {
+          value = value.toString();
+          if (key.startsWith("_"))
+          {
+            key = key.replaceFirst("_", "");
+            var attribute = XmlAttribute(XmlName(key),value);
+            node.attributes.add(attribute);
+          }
+          else
+          {
+            if (key == "value")
+            {
+              node.innerText = value;
+            }
+            else
+            {
+              var element = XmlElement(XmlName(key));
+              element.innerText = value;
+              node.children.add(element);
+            }
+          }
+        }
+      });
+    }
+
+    // list
+    else if (data is List)
+    {
+      for (var item in data)
+      {
+        var element = XmlElement(XmlName(name ?? "NODEX"));
+        node.children.add(element);
+        _toXml(element, item);
+      }
+    }
+  }
+
+  static String toXml(Data? data)
+  {
+    var root = data?.root?.split(".")[0];
+    var xml = XmlElement(XmlName(root ?? "ROOT"));
+    try
+    {
+      if (data != null) _toXml(xml, data, name: data.root?.split(".").last);
+    }
+    catch(e)
+    {
+      Log().error('Invalid Format, unable to decode json string data.');
+    }
+    return xml.toXmlString();
   }
 
   static Data? fromDotNotation(Data data, DotNotation dotnotation)

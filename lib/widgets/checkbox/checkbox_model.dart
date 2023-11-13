@@ -22,6 +22,9 @@ class CheckboxModel extends FormFieldModel implements IFormField
   // options
   final List<OptionModel> options = [];
 
+  // data sourced prototype
+  XmlElement? prototype;
+
   /// The value of the widget. The label becomes the value if not specified. Returns an array if multiple checked. Can also set the initial options
   ListObservable? _value;
   @override
@@ -360,10 +363,12 @@ class CheckboxModel extends FormFieldModel implements IFormField
 
     /// styling attributes
     size  = Xml.get(node: xml, tag: 'size');
+
+    // set the options
+    _setOptions();
   }
 
-  @override
-  void setPrototype()
+  void _setOptions()
   {
     // clear options
     _clearOptions();

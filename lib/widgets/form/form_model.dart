@@ -985,13 +985,13 @@ class FormModel extends BoxModel implements IForm
     }
 
     // set form clean
-    else clean = true;
+    else
+    {
+      clean = true;
+    }
 
     return super.onDataSourceSuccess(source, list);
   }
-
-  @override
-  void setPrototype() {}
 
   @override
   Widget getView({Key? key}) => getReactiveView(FormView(this));

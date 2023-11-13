@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart' deferred as fbauth;
 import 'package:firebase_core/firebase_core.dart' deferred as fbcore;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:fml/dialog/manager.dart';
 import 'package:fml/eval/evaluator.dart';
 import 'package:fml/eval/expressions.dart';
@@ -33,8 +34,8 @@ import 'package:fml/helper/common_helpers.dart';
 class EventHandler extends Eval
 {
   static final RegExp thisDot = RegExp(r"\b[t^\.\w]his\.\b");
-  static final RegExp nonQuotedSemiColons = RegExp(r"\);(?=([^'\\]*(\\.|'([^'\\]*\\.)*[^'\\]*'))*[^']*$)");
-  static final RegExp nonQuotedPlusSigns  = RegExp(r"\)\+(?=([^'\\]*(\\.|'([^'\\]*\\.)*[^'\\]*'))*[^']*$)");
+  static final RegExp nonQuotedSemiColons = RegExp(r"\;(?=([^'\\]*(\\.|'([^'\\]*\\.)*[^'\\]*'))*[^']*$)");
+
   final WidgetModel model;
 
   static final ExpressionEvaluator evaluator = const ExpressionEvaluator();
@@ -64,12 +65,12 @@ class EventHandler extends Eval
     expression = await evaluate(expression, variables);
 
     // get event strings
-    List<String> events = getEvents(expression);
+    List<String> events = expression!.split(nonQuotedSemiColons);
 
     // process each event
     for (String event in events)
     {
-      dynamic ok = await executeEvent(event, variables: variables);
+      dynamic ok = await executeEvent(event.trim(), variables: variables);
       if (ok == false) break;
     }
 
@@ -139,14 +140,11 @@ class EventHandler extends Eval
   {
     try
     {
-      // replace non-quoted ');' with ')+' to trick parser into thinking its a binary expression
-      expression = expression.replaceAll(nonQuotedSemiColons, ")+");
-      while (expression.contains(")+ ")) {
-        expression = expression.replaceAll(")+ ",")+");
+      // remove trailing seperators
+      while (expression.endsWith(";"))
+      {
+        expression = expression.removeLast().trim();
       }
-      expression = expression.replaceAll("+?", "?");
-      expression = expression.replaceAll("+:", ":");
-      if (expression.endsWith("+")) expression = expression.substring(0,expression.length - 1);
 
       // build variable map and modify expression
       Map<String, dynamic> variables0 = <String, dynamic>{};
@@ -162,21 +160,22 @@ class EventHandler extends Eval
       variables.addAll(variables0);
 
       // pre-parse the expression
-      var parsed = Expression.tryParse(expression);
+      var parsedExpression = Expression.tryParse(expression);
 
       // Unable to preparse
-      if (parsed == null) {
+      if (parsedExpression == null)
+      {
         Log().debug('Unable to pre-parse conditionals $expression');
         return null;
       }
 
       // format call and conditional expressions as string variables
-      if (parsed is ConditionalExpression)
+      if (parsedExpression is ConditionalExpression)
       {
         // build event expressions as variables
-        var events = getConditionals(parsed);
+        var events = getConditionals(parsedExpression);
         events.sort((a, b) => Comparable.compare(b.length, a.length));
-        expression = parsed.toString();
+        expression = parsedExpression.toString();
         for (var e in events) {
           i++;
           var key = "___V$i";
@@ -187,9 +186,6 @@ class EventHandler extends Eval
         // execute the expression and get events string
         expression = await Eval.evaluate(expression, variables: variables0);
       }
-
-      // replace non-quoted + with ;. This might be problematic. Needs testing
-      expression = expression.replaceAll(nonQuotedPlusSigns, ");");
     }
     catch(e)
     {
@@ -212,18 +208,6 @@ class EventHandler extends Eval
       s.add(parsed.toString());
     }
     return s;
-  }
-
-  static List<String> getEvents(String? expression)
-  {
-    List<String> events = [];
-    if (expression is String)
-    {
-      const String dummySeperator = '!~^';
-      expression = expression.replaceAll(nonQuotedSemiColons, ")$dummySeperator");
-      events = expression.split(dummySeperator);
-    }
-    return events;
   }
 
   void _broadcast(EventTypes type)

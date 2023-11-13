@@ -52,7 +52,7 @@ class _DraggableViewState extends WidgetState<DraggableView>
     List<Widget> children = widget.model.inflate();
     if (children.isEmpty) children.add(Container());
 
-    return MouseRegion(cursor: cursor, child: Draggable(child: Stack(children: children), feedback: Transform.rotate(angle: -0.07, child: Card(elevation: 20, color: Colors.transparent, child: Stack(children: children))), childWhenDragging: Container(), data: widget.model, onDragCompleted: onDragCompleted, onDragStarted: () { setState(() => cursor = SystemMouseCursors.grabbing); widget.model.onDrag(context); }, onDragEnd: (_) => setState(() => cursor = SystemMouseCursors.grab),));
+    return MouseRegion(cursor: cursor, child: Draggable(child: Stack(children: children), feedback: Transform.rotate(angle: -0.07, child: Card(elevation: 20, color: Colors.transparent, child: Stack(children: children))), data: widget.model, onDragCompleted: onDragCompleted, onDragStarted: () { setState(() => cursor = SystemMouseCursors.grabbing); widget.model.onDrag(context); }, onDragEnd: (_) => setState(() => cursor = SystemMouseCursors.grab),));
   }
 
   void onDragCompleted()

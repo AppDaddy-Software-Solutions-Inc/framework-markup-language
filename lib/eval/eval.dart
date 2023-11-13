@@ -29,7 +29,11 @@ class Eval
 
   static dynamic evaluate(String? expression, {Map<String?, dynamic>? variables, Map<String?, dynamic>? altFunctions})
   {
-    if (expression == null) return null;
+    // expressions with leading spaces fail parse
+    expression = expression?.trim();
+
+    // no expression specified?
+    if (expression == null || expression.isEmpty) return null;
 
     dynamic result;
     var myExpression = expression;

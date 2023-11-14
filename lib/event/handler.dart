@@ -140,10 +140,10 @@ class EventHandler extends Eval
   {
     try
     {
-      // remove trailing seperators
-      while (expression.endsWith(";"))
+      // format the expression
+      if (expression.contains(nonQuotedSemiColons))
       {
-        expression = expression.removeLast().trim();
+        expression = formatExpression(expression);
       }
 
       // build variable map and modify expression
@@ -160,12 +160,13 @@ class EventHandler extends Eval
       variables.addAll(variables0);
 
       // pre-parse the expression
-      var parsedExpression = Expression.tryParse(expression);
+      var result = Expression.tryParse(expression);
+      var parsedExpression = result.isSuccess ? result.value : null;
 
       // Unable to preparse
       if (parsedExpression == null)
       {
-        Log().debug('Unable to pre-parse conditionals $expression');
+        Log().debug('Failed to parse $parsedExpression. Error is ${result.message}');
         return null;
       }
 
@@ -194,6 +195,35 @@ class EventHandler extends Eval
     }
 
     return expression;
+  }
+
+  static String formatExpression(String expression)
+  {
+    final placeholder = "[[;]]";
+
+    // replace unquotes ";" characters with special placeholder
+    expression = expression.replaceAll(nonQuotedSemiColons, placeholder);
+
+    // remove trailing spaces after all placeholders
+    while (expression.contains("$placeholder "))
+    {
+      expression = expression.replaceAll("$placeholder ", placeholder);
+    }
+
+    // remove placeholder with adjacent "?" operators
+    expression = expression.replaceAll("$placeholder?", " ?");
+
+    // remove placeholder with adjacent ":" operators
+    expression = expression.replaceAll("$placeholder:", " :");
+
+    // remove trailing placeholders
+    while (expression.endsWith(placeholder))
+    {
+      expression = expression.removeLast().trim();
+    }
+
+    // replace placeholders with ";" characters
+    return expression.replaceAll(placeholder, ";");
   }
 
   static List<String> getConditionals(Expression? parsed)

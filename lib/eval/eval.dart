@@ -37,7 +37,6 @@ class Eval
 
     dynamic result;
     var myExpression = expression;
-    Expression? myParsed;
     var i = 0;
     var myVariables = <String, dynamic>{};
     var myFunctions = <String?, dynamic>{};
@@ -65,16 +64,17 @@ class Eval
       altFunctions?.forEach((key, value) => myFunctions.containsKey(key) ? null : myFunctions[key] = value);
 
       // parse the expression
-      myParsed  = Expression.tryParse(myExpression);
+      var result = Expression.tryParse(myExpression);
+      var parsedExpression = result.isSuccess ? result.value : null;
 
       // failed parse?
-      if (myParsed == null) throw(Exception('Failed to parse $myExpression'));
+      if (parsedExpression == null) throw(Exception('Failed to parse $myExpression. Error is ${result.message}'));
 
       // required to replace quoted string observables
-      myParsed = replaceInLiterals(myParsed, myVariables);
+      parsedExpression = replaceInLiterals(parsedExpression, myVariables);
 
       // evaluate the expression
-      result = evaluator.eval(myParsed, myFunctions);
+      result = evaluator.eval(parsedExpression, myFunctions);
     }
     catch(e)
     {

@@ -122,6 +122,7 @@ class ExpressionEvaluator {
       case '-':
         return -argument;
       case '+':
+      case ';': // added by olajos
         return argument;
       case '!':
        // if(argument == null) argument = false; removed by Isaac as we have null aware operator now.
@@ -169,6 +170,7 @@ class ExpressionEvaluator {
       case '=': // added by olajos
         return set(context, left, right());
       case '+':
+      case ';':// added by olajos
         return Decimal.parse(left.toString()) + Decimal.parse(right().toString());
       case '-':
         return Decimal.parse(left.toString()) - Decimal.parse(right().toString());

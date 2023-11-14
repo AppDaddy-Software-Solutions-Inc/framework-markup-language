@@ -175,7 +175,7 @@ class ExpressionParser {
 
   // Use a quickly-accessible map to store all of the unary operators
   // Values are set to `true` (it really doesn't matter)
-  static const _unaryOperations = ['-', '!', '~', '+'];
+  static const _unaryOperations = ['-', '!', '~', '+', ';'];
 
   Parser<UnaryExpression> get unaryExpression => _unaryOperations
       .map<Parser<String>>((v) => string(v))

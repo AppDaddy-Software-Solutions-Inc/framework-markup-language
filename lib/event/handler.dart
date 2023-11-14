@@ -138,29 +138,31 @@ class EventHandler extends Eval
 
   Future<String?> evaluate(String expression, Map<String?, dynamic> variables) async
   {
+    var i = 0;
+    var myExpression = expression;
+    var myVariables = <String, dynamic>{};
+
     try
     {
       // format the expression
-      if (expression.contains(nonQuotedSemiColons))
+      if (myExpression.contains(nonQuotedSemiColons))
       {
-        expression = formatExpression(expression);
+        myExpression = formatExpression(myExpression);
       }
 
       // build variable map and modify expression
-      Map<String, dynamic> myVariables = <String, dynamic>{};
-      int i = 0;
       variables.forEach((key,value)
       {
         i++;
         var myKey = "___V$i";
         myVariables[myKey] = _isNumeric(value) ? _toNum(value) : _isBool(value) ? _toBool(value) : value;
-        expression = expression.replaceAll("$key", myKey);
+        myExpression = myExpression.replaceAll("$key", myKey);
       });
       variables.clear();
       variables.addAll(myVariables);
 
       // parse the expression
-      var myParsedResult = Expression.tryParse(expression);
+      var myParsedResult = Expression.tryParse(myExpression);
       var myParsedExpression = myParsedResult.isSuccess ? myParsedResult.value : null;
 
       // Unable to preparse
@@ -176,16 +178,16 @@ class EventHandler extends Eval
         // build event expressions as variables
         var events = getConditionals(myParsedExpression);
         events.sort((a, b) => Comparable.compare(b.length, a.length));
-        expression = myParsedExpression.toString();
+        myExpression = myParsedExpression.toString();
         for (var e in events) {
           i++;
           var key = "___V$i";
           myVariables[key] = e;
-          expression = expression.replaceAll(e, key);
+          myExpression = myExpression.replaceAll(e, key);
         }
 
         // execute the expression and return the result
-        return await Eval.evaluate(expression, variables: myVariables);
+        myExpression = (await Eval.evaluate(myExpression, variables: myVariables)).toString();
       }
     }
     catch(e)
@@ -193,6 +195,8 @@ class EventHandler extends Eval
       Log().exception(e);
       return '';
     }
+
+    return myExpression;
   }
 
   static String formatExpression(String expression)

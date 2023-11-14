@@ -29,7 +29,7 @@ class Eval
 
   static dynamic evaluate(String? expression, {Map<String?, dynamic>? variables, Map<String?, dynamic>? altFunctions})
   {
-    // expressions with leading spaces fail parse
+    // expressions with leading or trailing spaces fail parse
     expression = expression?.trim();
 
     // no expression specified?
@@ -43,16 +43,13 @@ class Eval
     try
     {
       // setup variable substitutions
-      if (variables != null)
+      variables?.forEach((key,value)
       {
-        variables.forEach((key,value)
-        {
-          i++;
-          var mKey = "___V$i";
-          myVariables[mKey] = S.toNum(value) ?? S.toBool(value) ?? value;
-          myExpression = myExpression.replaceAll(key!, mKey);
-        });
-      }
+        i++;
+        var mKey = "___V$i";
+        myVariables[mKey] = S.toNum(value) ?? S.toBool(value) ?? value;
+        myExpression = myExpression.replaceAll(key!, mKey);
+      });
 
       // add variables
       myFunctions.addAll(myVariables);
@@ -79,7 +76,7 @@ class Eval
     catch(e)
     {
       String? msg;
-      if (variables != null) variables.forEach((key, value) => msg = "${msg ?? ""}${msg == null ? "" : ",  "}$key=${value.toString()}");
+      variables?.forEach((key, value) => msg = "${msg ?? ""}${msg == null ? "" : ",  "}$key=${value.toString()}");
       Log().debug("eval($expression) [$msg] failed. Error is $e");
       return null;
     }

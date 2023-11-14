@@ -88,7 +88,7 @@ class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener
       map["format"]  = barcode.format;
       map["display"] = barcode.display;
       map["barcode"] = barcode.barcode != null ? barcode.barcode!.trim() : "";
-      if (barcode.parameters != null) barcode.parameters!.forEach((key, value) => map[key] = value);
+      barcode.parameters?.forEach((key, value) => map[key] = value);
       data.add(map);
     }
 

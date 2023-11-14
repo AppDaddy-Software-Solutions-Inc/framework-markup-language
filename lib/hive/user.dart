@@ -26,8 +26,7 @@ class User
     _map["rights"]   = rights;
 
     // user defined values
-    if (map != null) {
-      map.forEach((key, value)
+    map?.forEach((key, value)
     {
       if (key != "key" &&
           key != "username" &&
@@ -35,7 +34,6 @@ class User
           key != "langauge" &&
           key != "rights") _map[key] = value;
     });
-    }
   }
 
   Future<bool> insert() async => (await Database().insert(tableName, key, _map) == null);

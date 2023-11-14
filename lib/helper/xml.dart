@@ -325,7 +325,7 @@ class Xml {
   }
 
   /// Changes an [XmlElement] attribute value
-  static void removeAttribute(XmlElement? node, String tag)
+  static XmlElement? removeAttribute(XmlElement? node, String tag)
   {
     try
     {
@@ -339,6 +339,7 @@ class Xml {
     {
       Log().exception(e, caller: 'xml.dart => removeAttribute({XmlElement node, String tag})');
     }
+    return node;
   }
 
   /// Changes an [XmlElement] attribute value

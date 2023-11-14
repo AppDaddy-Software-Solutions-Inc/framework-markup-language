@@ -136,7 +136,7 @@ class SelectModel extends DecoratedInputModel implements IFormField
     List<OptionModel> options = findChildrenOfExactType(OptionModel).cast<OptionModel>();
 
     // set prototype
-    if (!S.isNullOrEmpty(datasource) && options.isNotEmpty)
+    if (!S.isNullOrEmpty(this.datasource) && options.isNotEmpty)
     {
       prototype = WidgetModel.prototypeOf(options.first.element);
       options.first.dispose();
@@ -145,10 +145,17 @@ class SelectModel extends DecoratedInputModel implements IFormField
 
     // build options
     this.options.addAll(options);
+
+    // announce data for late binding
+    var datasource = scope?.getDataSource(this.datasource);
+    if (datasource?.data?.isNotEmpty ?? false)
+    {
+      onDataSourceSuccess(datasource!, datasource.data);
+    }
   }
 
   @override
-  Future<bool> onDataSourceSuccess(IDataSource? source, Data? list) async
+  Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async
   {
     try
     {
@@ -166,7 +173,7 @@ class SelectModel extends DecoratedInputModel implements IFormField
       }
 
       // build options
-      if (list != null && source != null)
+      if (list != null)
       {
         for (var row in list)
         {
@@ -194,9 +201,10 @@ class SelectModel extends DecoratedInputModel implements IFormField
   }
 
   @override
-  onDataSourceException(IDataSource source, Exception exception) {
+  onDataSourceException(IDataSource source, Exception exception)
+  {
     // Clear the List - Olajos 2021-09-04
-    onDataSourceSuccess(null, null);
+    onDataSourceSuccess(source, null);
   }
 
   @override

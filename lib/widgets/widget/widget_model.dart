@@ -87,7 +87,6 @@ import 'package:fml/datasources/http/post/model.dart';
 import 'package:fml/widgets/prototype/prototype_model.dart';
 import 'package:fml/widgets/radio/radio_model.dart';
 import 'package:fml/widgets/row/row_model.dart';
-import 'package:fml/widgets/scope/scope_model.dart';
 import 'package:fml/widgets/scribble/scribble_model.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/select/select_model.dart';
@@ -784,10 +783,6 @@ class WidgetModel implements IDataSourceListener {
         model = isPrototype ? PrototypeModel.fromXml(parent, node) : RowModel.fromXml(parent, node, scope: scope, data: data);
         break;
 
-      case "scope":
-        model = ScopeModel.fromXml(parent, node);
-        break;
-
       case "scribble":
         model = ScribbleModel.fromXml(parent, node);
         break;
@@ -1062,13 +1057,9 @@ class WidgetModel implements IDataSourceListener {
     // remove model and all of its bindables from the scope
     scope?.unregisterModel(this);
 
-    // dispose of children
-    if (children != null) {
-      for (var child in children!) {
-        child.dispose();
-      }
-      children!.clear();
-    }
+    // dispose of all children
+    children?.forEach((child) => child.dispose());
+    children?.clear();
   }
 
   registerListener(IModelListener listener) {
@@ -1442,9 +1433,10 @@ class WidgetModel implements IDataSourceListener {
 
       case 'removechildren':
 
-        // dispose of existing children
+        // dispose of all children
         children?.forEach((child) => child.dispose());
-        children = [];
+        children?.clear();
+
 
         // force parent rebuild
         parent?.notifyListeners("rebuild", "true");
@@ -1498,13 +1490,9 @@ class WidgetModel implements IDataSourceListener {
 
         if (xml == null || xml is! String) return true;
 
-        // check for children then remove them
-        if (children != null) {
-          for (var child in children!) {
-            child.dispose();
-          }
-          children = [];
-        }
+        // dispose of all children
+        children?.forEach((child) => child.dispose());
+        children?.clear();
 
         // add elements
         await _appendXml(xml, null, silent);
@@ -1661,50 +1649,66 @@ class WidgetModel implements IDataSourceListener {
     }
   }
 
-  static XmlElement? prototypeOf(XmlElement? prototype)
+  static XmlElement? prototypeOf(XmlElement? node)
   {
-    if (prototype == null) return null;
-
-    // is this a SCOPE element prototype
-    bool isScopeElement = prototype.name.local.toLowerCase() == "scope";
+    if (node == null) return null;
 
     // get the id
-    var id = Xml.attribute(node: prototype, tag: "id");
+    var id = Xml.attribute(node: node, tag: "id");
 
     // if missing, assign it a unique key
     if (id == null)
     {
       id = S.newId();
-      Xml.setAttribute(prototype, "id", id);
+      Xml.setAttribute(node, "id", id);
     }
 
     // process data bindings
-    var xml = prototype.toString();
+    var xml = node.toString();
     var bindings = Binding.getBindings(xml);
     List<String?> processed = [];
+
     if (bindings != null)
     {
+      bool doReplace = false;
+
       // process each binding
       for (var binding in bindings)
       {
         if (binding.source == 'data' && !processed.contains(binding.signature))
         {
+          doReplace = true;
+
           processed.add(binding.signature);
 
-          // this is an oddball case where
-          // we need to double up on the id if the element
-          // is a SCOPE element since the scope part gets removed
-          var source = (isScopeElement) ? "$id.$id" : id;
-
           // set the signature
-          var signature = "{$source.data.${binding.property}${(binding.dotnotation?.signature != null ? ".${binding.dotnotation!.signature}" : "")}}";
+          var signature = "{$id.data.${binding.property}${(binding.dotnotation?.signature != null ? ".${binding.dotnotation!.signature}" : "")}}";
           xml = xml.replaceAll(binding.signature, signature);
         }
       }
 
       // parse the new xml
-      prototype = Xml.tryParse(xml)?.rootElement ?? prototype;
+      var newNode = Xml.tryParse(xml)?.rootElement;
+
+      // if valid node, we need to replace this node in the tree so
+      // ancestor prototypes don't translate data incorrectly
+      if (newNode != null)
+      {
+        if (doReplace)
+        {
+          var parent = node.parent;
+          var index  = node.parent?.children.indexOf(node) ?? -1;
+          newNode = newNode.copy();
+          if (index >= 0 && parent != null)
+          {
+            parent.children.removeAt(index);
+            parent.children.insert(index, newNode);
+          }
+        }
+        node = newNode;
+      }
     }
-    return prototype;
+
+    return node;
   }
 }

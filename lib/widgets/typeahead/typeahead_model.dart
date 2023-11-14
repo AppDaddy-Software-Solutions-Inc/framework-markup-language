@@ -171,7 +171,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
     List<OptionModel> options = findChildrenOfExactType(OptionModel).cast<OptionModel>();
 
     // set prototype
-    if ((!S.isNullOrEmpty(datasource)) && (options.isNotEmpty))
+    if ((!S.isNullOrEmpty(this.datasource)) && (options.isNotEmpty))
     {
       prototype = WidgetModel.prototypeOf(options.first.element);
       options.removeAt(0);
@@ -179,6 +179,13 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
 
     // build options
     this.options.addAll(options);
+
+    // announce data for late binding
+    var datasource = scope?.getDataSource(this.datasource);
+    if (datasource?.data?.isNotEmpty ?? false)
+    {
+      onDataSourceSuccess(datasource!, datasource.data);
+    }
   }
 
   void _clearOptions()

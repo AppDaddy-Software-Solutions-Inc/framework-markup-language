@@ -147,45 +147,45 @@ class EventHandler extends Eval
       }
 
       // build variable map and modify expression
-      Map<String, dynamic> variables0 = <String, dynamic>{};
+      Map<String, dynamic> myVariables = <String, dynamic>{};
       int i = 0;
       variables.forEach((key,value)
       {
         i++;
         var myKey = "___V$i";
-        variables0[myKey] = _isNumeric(value) ? _toNum(value) : _isBool(value) ? _toBool(value) : value;
+        myVariables[myKey] = _isNumeric(value) ? _toNum(value) : _isBool(value) ? _toBool(value) : value;
         expression = expression.replaceAll("$key", myKey);
       });
       variables.clear();
-      variables.addAll(variables0);
+      variables.addAll(myVariables);
 
-      // pre-parse the expression
-      var result = Expression.tryParse(expression);
-      var parsedExpression = result.isSuccess ? result.value : null;
+      // parse the expression
+      var myParsedResult = Expression.tryParse(expression);
+      var myParsedExpression = myParsedResult.isSuccess ? myParsedResult.value : null;
 
       // Unable to preparse
-      if (parsedExpression == null)
+      if (myParsedExpression == null)
       {
-        Log().debug('Failed to parse $parsedExpression. Error is ${result.message}');
+        Log().debug('Failed to parse $myParsedExpression. Error is ${myParsedResult.message}');
         return null;
       }
 
       // format call and conditional expressions as string variables
-      if (parsedExpression is ConditionalExpression)
+      if (myParsedExpression is ConditionalExpression)
       {
         // build event expressions as variables
-        var events = getConditionals(parsedExpression);
+        var events = getConditionals(myParsedExpression);
         events.sort((a, b) => Comparable.compare(b.length, a.length));
-        expression = parsedExpression.toString();
+        expression = myParsedExpression.toString();
         for (var e in events) {
           i++;
           var key = "___V$i";
-          variables0[key] = e;
+          myVariables[key] = e;
           expression = expression.replaceAll(e, key);
         }
 
-        // execute the expression and get events string
-        expression = await Eval.evaluate(expression, variables: variables0);
+        // execute the expression and return the result
+        return await Eval.evaluate(expression, variables: myVariables);
       }
     }
     catch(e)
@@ -193,8 +193,6 @@ class EventHandler extends Eval
       Log().exception(e);
       return '';
     }
-
-    return expression;
   }
 
   static String formatExpression(String expression)

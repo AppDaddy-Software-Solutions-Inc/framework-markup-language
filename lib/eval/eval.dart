@@ -35,23 +35,23 @@ class Eval
     // no expression specified?
     if (expression == null || expression.isEmpty) return null;
 
-    dynamic result;
-    var myExpression = expression;
     var i = 0;
-    var myVariables = <String, dynamic>{};
-    var myFunctions = <String?, dynamic>{};
+    var myExpression = expression;
+    var myVariables  = <String, dynamic>{};
+    var myFunctions  = <String?, dynamic>{};
 
     try
     {
       // setup variable substitutions
-      if (variables != null) {
-        variables.forEach((key,value)
+      if (variables != null)
       {
-        i++;
-        var mKey = "___V$i";
-        myVariables[mKey] = S.toNum(value) ?? S.toBool(value) ?? value;
-        myExpression = myExpression.replaceAll(key!, mKey);
-      });
+        variables.forEach((key,value)
+        {
+          i++;
+          var mKey = "___V$i";
+          myVariables[mKey] = S.toNum(value) ?? S.toBool(value) ?? value;
+          myExpression = myExpression.replaceAll(key!, mKey);
+        });
       }
 
       // add variables
@@ -64,26 +64,25 @@ class Eval
       altFunctions?.forEach((key, value) => myFunctions.containsKey(key) ? null : myFunctions[key] = value);
 
       // parse the expression
-      var result = Expression.tryParse(myExpression);
-      var parsedExpression = result.isSuccess ? result.value : null;
+      var myParsedResult = Expression.tryParse(myExpression);
+      var myParsedExpression = myParsedResult.isSuccess ? myParsedResult.value : null;
 
       // failed parse?
-      if (parsedExpression == null) throw(Exception('Failed to parse $myExpression. Error is ${result.message}'));
+      if (myParsedExpression == null) throw(Exception('Failed to parse $myExpression. Error is ${myParsedResult.message}'));
 
       // required to replace quoted string observables
-      parsedExpression = replaceInLiterals(parsedExpression, myVariables);
+      myParsedExpression = replaceInLiterals(myParsedExpression, myVariables);
 
       // evaluate the expression
-      result = evaluator.eval(parsedExpression, myFunctions);
+      return evaluator.eval(myParsedExpression, myFunctions);
     }
     catch(e)
     {
       String? msg;
       if (variables != null) variables.forEach((key, value) => msg = "${msg ?? ""}${msg == null ? "" : ",  "}$key=${value.toString()}");
       Log().debug("eval($expression) [$msg] failed. Error is $e");
-      result = null;
+      return null;
     }
-    return result;
   }
 
   static Expression? replaceInLiterals(dynamic expression, Map<String, dynamic> variables)

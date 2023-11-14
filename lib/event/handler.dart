@@ -138,53 +138,56 @@ class EventHandler extends Eval
 
   Future<String?> evaluate(String expression, Map<String?, dynamic> variables) async
   {
+    var i = 0;
+    var myExpression = expression;
+    var myVariables = <String, dynamic>{};
+
     try
     {
-      // remove trailing seperators
-      while (expression.endsWith(";"))
+      // format the expression
+      if (myExpression.contains(nonQuotedSemiColons))
       {
-        expression = expression.removeLast().trim();
+        myExpression = formatExpression(myExpression);
       }
 
       // build variable map and modify expression
-      Map<String, dynamic> variables0 = <String, dynamic>{};
-      int i = 0;
       variables.forEach((key,value)
       {
         i++;
         var myKey = "___V$i";
-        variables0[myKey] = _isNumeric(value) ? _toNum(value) : _isBool(value) ? _toBool(value) : value;
-        expression = expression.replaceAll("$key", myKey);
+        myVariables[myKey] = _isNumeric(value) ? _toNum(value) : _isBool(value) ? _toBool(value) : value;
+        myExpression = myExpression.replaceAll("$key", myKey);
       });
       variables.clear();
-      variables.addAll(variables0);
+      variables.addAll(myVariables);
 
-      // pre-parse the expression
-      var parsedExpression = Expression.tryParse(expression);
+      // parse the expression
+      var myParsedResult = Expression.tryParse(myExpression);
+      var myParsedExpression = myParsedResult.isSuccess ? myParsedResult.value : null;
 
       // Unable to preparse
-      if (parsedExpression == null)
+      if (myParsedExpression == null)
       {
-        Log().debug('Unable to pre-parse conditionals $expression');
+        Log().debug('Failed to parse $myParsedExpression. Error is ${myParsedResult.message}');
         return null;
       }
 
       // format call and conditional expressions as string variables
-      if (parsedExpression is ConditionalExpression)
+      if (myParsedExpression is ConditionalExpression)
       {
         // build event expressions as variables
-        var events = getConditionals(parsedExpression);
+        var events = getConditionals(myParsedExpression);
         events.sort((a, b) => Comparable.compare(b.length, a.length));
-        expression = parsedExpression.toString();
+        myExpression = myParsedExpression.toString();
         for (var e in events) {
           i++;
           var key = "___V$i";
-          variables0[key] = e;
-          expression = expression.replaceAll(e, key);
+          myVariables[key] = e;
+          myExpression = myExpression.replaceAll(e, key);
         }
 
-        // execute the expression and get events string
-        expression = await Eval.evaluate(expression, variables: variables0);
+        // execute the expression and return the result
+        myExpression = (await Eval.evaluate(myExpression, variables: myVariables)).toString();
       }
     }
     catch(e)
@@ -193,7 +196,36 @@ class EventHandler extends Eval
       return '';
     }
 
-    return expression;
+    return myExpression;
+  }
+
+  static String formatExpression(String expression)
+  {
+    final placeholder = "[[;]]";
+
+    // replace unquotes ";" characters with special placeholder
+    expression = expression.replaceAll(nonQuotedSemiColons, placeholder);
+
+    // remove trailing spaces after all placeholders
+    while (expression.contains("$placeholder "))
+    {
+      expression = expression.replaceAll("$placeholder ", placeholder);
+    }
+
+    // remove placeholder with adjacent "?" operators
+    expression = expression.replaceAll("$placeholder?", " ?");
+
+    // remove placeholder with adjacent ":" operators
+    expression = expression.replaceAll("$placeholder:", " :");
+
+    // remove trailing placeholders
+    while (expression.endsWith(placeholder))
+    {
+      expression = expression.removeLast().trim();
+    }
+
+    // replace placeholders with ";" characters
+    return expression.replaceAll(placeholder, ";");
   }
 
   static List<String> getConditionals(Expression? parsed)

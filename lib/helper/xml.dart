@@ -247,24 +247,23 @@ class Xml {
     XmlDocument document = XmlDocument();
     XmlElement root = XmlElement(XmlName(rootName));
     document.children.add(root);
-    if (map != null) {
-      map.forEach((key,value)
+
+    map?.forEach((key,value)
+    {
+      if (value != null)
       {
-        if (value != null)
+        try
         {
-          try
-          {
-            XmlElement node = XmlElement(XmlName(key.toString()));
-            node.children.add(XmlCDATA(value.toString()));
-            root.children.add(node);
-          }
-          catch(e)
-          {
-            Log().exception(e, caller: "xml.dart => XmlDocument fromMap({Map map, String rootName = 'ROOT'})");
-          }
+          XmlElement node = XmlElement(XmlName(key.toString()));
+          node.children.add(XmlCDATA(value.toString()));
+          root.children.add(node);
         }
-      });
-    }
+        catch(e)
+        {
+          Log().exception(e, caller: "xml.dart => XmlDocument fromMap({Map map, String rootName = 'ROOT'})");
+        }
+      }
+    });
     return document;
   }
 

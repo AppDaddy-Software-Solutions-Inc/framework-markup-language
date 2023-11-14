@@ -114,10 +114,10 @@ class PrototypeModel extends BoxModel
 
     // notify of data changes
     // this forces an index change
-    for (var child in children!)
-    {
-      // child.onDataChange();
-    }
+    // for (var child in children!)
+    // {
+    //   // child.onDataChange();
+    // }
 
     // rebuild form fields
     // this could be done differently

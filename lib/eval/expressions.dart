@@ -24,9 +24,10 @@ abstract class Expression {
 
   static final ExpressionParser _parser = ExpressionParser();
 
-  static Expression? tryParse(String formattedString) {
+  static Result<Expression?> tryParse(String formattedString)
+  {
     final Result<Expression?> result = _parser.expression.end().parse(formattedString);
-    return result.isSuccess ? result.value : null;
+    return result;
   }
 
   static Expression? parse(String formattedString) =>

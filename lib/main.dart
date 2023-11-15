@@ -11,6 +11,8 @@ import 'package:fml/theme/theme.dart' as fml_theme;
 import 'package:fml/theme/themenotifier.dart';
 import 'package:fml/phrase.dart';
 
+final RegExp nonQuotedSemiColons = RegExp(r"''(?=([^'\\]*(\\.|'([^'\\]*\\.)*[^'\\]*'))*[^']*$)");
+
 main()
 {
   ErrorWidget.builder = (FlutterErrorDetails details) {

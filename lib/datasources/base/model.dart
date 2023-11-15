@@ -389,21 +389,27 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     }
     else if (v != null)
     {
-      _body = StringObservable(Binding.toKey(id, 'body'), v, scope: scope, listener: onPropertyChange);
+      var formatter = _bodyType != null ? _encodeBody : null;
+      _body = StringObservable(Binding.toKey(id, 'body'), v, scope: scope, listener: onPropertyChange, formatter: formatter);
     }
   }
   @override
   String? get body => _body?.get();
 
-  bool _custombody = false;
+  bool _bodyIsCustom = false;
   @override
-  bool get custombody => _custombody;
+  bool get custombody => _bodyIsCustom;
+
+  // body type
+  String? _bodyType;
 
   DataSourceModel(WidgetModel parent, String? id) : super(parent, id);
 
   @override
   void deserialize(XmlElement xml)
   {
+    // extract body
+
     // deserialize
     super.deserialize(xml);
 
@@ -430,18 +436,17 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     if (body != null)
     {
       // set body type
-      _custombody = true;
+      _bodyIsCustom = true;
+
+      // body format
+      _bodyType = Xml.attribute(node: body, tag: 'type')?.trim().toLowerCase();
 
       // body is all text (cdata or text only)?
       bool isText = (body.children.firstWhereOrNull((child) => (child is XmlCDATA || child is XmlText || child is XmlComment) ? false : true) == null);
-      if (isText) {
-        this.body = body.innerText.trim();
-      } else {
-        this.body = body.innerXml.trim();
-      }
+      this.body = isText ? body.innerText.trim() : body.innerXml.trim();
     }
 
-    // This Line Ensures Future Bodies that Contain Bindables won't Bind
+    // ensure future bodies that contain bindables don't bind
     if (_body == null) this.body = "";
 
     // register the datasource with the scope manager
@@ -807,6 +812,25 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
       hive.Data d = hive.Data(key: key, value: data, expires: DateTime.now().millisecondsSinceEpoch + timetolive);
       await d.insert();
     }
+  }
+
+  String? _encodeBody(dynamic value)
+  {
+    String? text = S.toStr(value);
+    if (text == null) return value;
+
+    switch (_bodyType)
+    {
+      case "json":
+        text = S.escapeTextForJson(text);
+        break;
+      case "xml":
+        text = Xml.encodeIllegalCharacters(text);
+        break;
+      default:
+        break;
+    }
+    return text;
   }
 
   // override this function

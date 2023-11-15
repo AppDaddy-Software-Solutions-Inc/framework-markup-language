@@ -396,7 +396,15 @@ class WidgetModel implements IDataSourceListener {
         model = BarChartModel.fromXml(parent, node);
         break;
 
-      // case "sfchart":
+      case "body":
+        // we dont want to deserialize datasorce body models
+        // in the future we may wish to have a BODY element
+        // for now just return null
+        if (parent is! IDataSource) model = null;
+        model = null;
+        break;
+
+    // case "sfchart":
       //   model = SFCHART.ChartModel.fromXml(parent, node);
       //   break;
 

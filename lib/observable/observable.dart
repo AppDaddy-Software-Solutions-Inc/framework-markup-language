@@ -10,6 +10,7 @@ import 'package:fml/helper/common_helpers.dart';
 
 typedef Getter = dynamic Function();
 typedef Setter = dynamic Function(dynamic value);
+typedef Formatter = dynamic Function(dynamic value);
 typedef OnChangeCallback = void Function (Observable value);
 
 class ObservableDefault
@@ -24,6 +25,7 @@ class Observable
 
   Getter? getter;
   Setter? setter;
+  Formatter? formatter;
 
   final String? key;
   String? signature;
@@ -81,7 +83,7 @@ class Observable
     }
   }
 
-  Observable(this.key, dynamic value, {this.scope, OnChangeCallback? listener, this.getter, this.setter, this.lazyEvaluation = false})
+  Observable(this.key, dynamic value, {this.scope, OnChangeCallback? listener, this.getter, this.setter, this.formatter, this.lazyEvaluation = false})
   {
     if (value is String)
     {
@@ -262,41 +264,44 @@ class Observable
     {
       for (Binding binding in bindings!)
       {
-        dynamic v;
+        dynamic replacementValue;
 
         // get binding source
         Observable? source = scope!.getObservable(binding, requestor: observable);
         if (source != null)
         {
-          dynamic myValue = source.get();
-          v = binding.translate(myValue);
+          replacementValue = binding.translate(source.get());
+          if (formatter != null)
+          {
+            replacementValue = formatter!(replacementValue);
+          }
         }
 
         // is this an eval?
         if (isEval)
         {
           variables ??= <String?, dynamic>{};
-          if ((source is BlobObservable) && (!S.isNullOrEmpty(v)))
+          if ((source is BlobObservable) && (!S.isNullOrEmpty(replacementValue)))
           {
             variables[binding.signature] = 'blob';
           }
           else
           {
-            variables[binding.signature] = v;
+            variables[binding.signature] = replacementValue;
           }
         }
 
         else if (this is! StringObservable && bindings!.length == 1 && signature != null && signature!.replaceFirst(binding.signature, "").trim().isEmpty)
         {
-          value = v ?? source?.get();
+          value = replacementValue ?? source?.get();
           break;
         }
 
         // simple replacement of string values
         else
         {
-          v = S.toStr(v) ?? "";
-          value = value!.replaceAll(binding.signature, v);
+          replacementValue = S.toStr(replacementValue) ?? "";
+          value = value!.replaceAll(binding.signature, replacementValue);
         }
       }
     }

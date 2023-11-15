@@ -352,6 +352,17 @@ class S {
     }
   }
 
+  static String escapeTextForJson(String text)
+  {
+    var text1 = text.replaceAll('\n', '\\\\n');
+    text1 = text1.replaceAll(r'\', r'\\');
+    text1 = text1.replaceAll(r'"', r'\"');
+    text1 = text1.replaceAll('\r', '\\\\r');
+    text1 = text1.replaceAll('\t', '\\\\t');
+    text1 = text1.replaceAll('\b', '\\\\f');
+    return text1;
+  }
+
   /// toBase64() but safe to use on null
   static String? toBase64(dynamic s) {
     try {

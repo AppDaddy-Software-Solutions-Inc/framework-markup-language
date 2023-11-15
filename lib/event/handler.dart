@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart' deferred as fbauth;
 import 'package:firebase_core/firebase_core.dart' deferred as fbcore;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:fml/dialog/manager.dart';
 import 'package:fml/eval/evaluator.dart';
 import 'package:fml/eval/expressions.dart';
@@ -65,13 +64,16 @@ class EventHandler extends Eval
     expression = await evaluate(expression, variables);
 
     // get event strings
-    List<String> events = expression!.split(nonQuotedSemiColons);
+    List<String>? events = expression?.split(nonQuotedSemiColons);
 
     // process each event
-    for (String event in events)
+    if (events != null)
     {
-      dynamic ok = await executeEvent(event.trim(), variables: variables);
-      if (ok == false) break;
+      for (String event in events)
+      {
+        dynamic ok = await executeEvent(event.trim(), variables: variables);
+        if (ok == false) break;
+      }
     }
 
     return ok;
@@ -221,7 +223,7 @@ class EventHandler extends Eval
     // remove trailing placeholders
     while (expression.endsWith(placeholder))
     {
-      expression = expression.removeLast().trim();
+      expression = expression.replaceFirst(placeholder, "", expression.lastIndexOf(placeholder));
     }
 
     // replace placeholders with ";" characters

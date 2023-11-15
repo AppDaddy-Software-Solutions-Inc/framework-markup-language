@@ -403,6 +403,9 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
   // body type
   String? _bodyType;
 
+  // data records
+  Map<String, String>? records;
+
   DataSourceModel(WidgetModel parent, String? id) : super(parent, id);
 
   @override
@@ -448,6 +451,21 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
 
     // ensure future bodies that contain bindables don't bind
     if (_body == null) this.body = "";
+
+    // data records
+    List<XmlElement>? records = Xml.getChildElements(node: xml, tag: 'record');
+    records?.forEach((record)
+    {
+      var id = Xml.attribute(node: record, tag: "id");
+      var isText = (record.children.firstWhereOrNull((child) => (child is XmlCDATA || child is XmlText || child is XmlComment) ? false : true) == null);
+      var body = isText ? record.innerText.trim() : record.innerXml.trim();
+      var data = body.startsWith('<') ? Data.fromXml(body) : Data.fromJson(body);
+      if (id != null && data != null)
+      {
+        this.records ??= {};
+        this.records![id] = body;
+      }
+    });
 
     // register the datasource with the scope manager
     if (scope != null) scope!.registerDataSource(this);
@@ -846,6 +864,15 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
   {
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
+
+    // record reference
+    if (records?.containsKey(function) ?? false)
+    {
+      arguments.clear();
+      arguments.add(records![function]);
+      function = "add";
+    }
+
     switch (function)
     {
       // clear the list

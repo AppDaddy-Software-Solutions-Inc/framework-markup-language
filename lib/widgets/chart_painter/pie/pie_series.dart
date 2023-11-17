@@ -8,7 +8,7 @@ import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 /// ChartDataPoint Object
 ///
@@ -126,8 +126,8 @@ class PieChartSeriesModel extends ChartPainterSeriesModel
   //     //set the data of the series for databinding
   //     data = pointData;
   //     //ensure the value is in the list, it always should be.
-  //     if (uniqueXValueList.contains(S.toInt(x))) {
-  //       x = uniqueXValueList.toList().indexOf(S.toInt(x));
+  //     if (uniqueXValueList.contains(toInt(x))) {
+  //       x = uniqueXValueList.toList().indexOf(toInt(x));
   //       //plot the point as a point object based on the desired function based on series and chart type.
   //       pointFromPieData();
   //     }
@@ -148,7 +148,7 @@ class PieChartSeriesModel extends ChartPainterSeriesModel
   }
 
   void plot(){
-    PieChartSectionData point = PieChartSectionData(value: S.toDouble(y) ?? 0, title: x, radius: radius, color: color ?? ColorHelper.fromString('random'));
+    PieChartSectionData point = PieChartSectionData(value: toDouble(y) ?? 0, title: x, radius: radius, color: color ?? ColorHelper.fromString('random'));
     pieDataPoint.add(point);
   }
 

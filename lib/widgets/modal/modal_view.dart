@@ -1,8 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart';
-import 'package:fml/helper/measured.dart';
-import 'package:fml/helper/string.dart';
+import 'package:fml/widgets/measure/measure_view.dart';
+import 'package:fml/helpers/string.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
@@ -372,7 +372,7 @@ class ModalViewState extends WidgetState<ModalView>
   void onCloseEvent(Event event)
   {
     String? id = (event.parameters != null)  ? event.parameters!['id'] : null;
-    if ((S.isNullOrEmpty(id)) || (id == widget.model.id))
+    if ((isNullOrEmpty(id)) || (id == widget.model.id))
     {
       event.handled = true;
       onClose();
@@ -433,7 +433,7 @@ class ModalViewState extends WidgetState<ModalView>
     // compute size
     if (width == null || height == null)
     {
-      return UnconstrainedBox(child: MeasuredView(Material(child: BoxView(widget.model)), onMeasured));
+      return UnconstrainedBox(child: MeasureView(Material(child: BoxView(widget.model)), onMeasured));
     }
 
     ColorScheme t = Theme.of(context).colorScheme;

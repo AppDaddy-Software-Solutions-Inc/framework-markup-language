@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:fml/hive/database.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 enum Fields {key, username, password, rights, language}
 
@@ -19,7 +19,7 @@ class User
 
   User({String? key, String? username, String? password, int? rights, String? language, Map<String,dynamic>? map})
   {
-    _map["key"]      = key ?? S.newId();
+    _map["key"]      = key ?? newId();
     _map["username"] = username;
     _map["password"] = password;
     _map["language"] = language;
@@ -45,7 +45,7 @@ class User
   static User? _fromMap(dynamic map)
   {
     User? user;
-    if (map is Map<String, dynamic>) user = User(key: S.mapVal(map, "key"), username: S.mapVal(map, "username"), password: S.mapVal(map, "password"), language: S.mapVal(map, "language"), rights: S.mapInt(map, "rights"), map: map);
+    if (map is Map<String, dynamic>) user = User(key: fromMap(map, "key"), username: fromMap(map, "username"), password: fromMap(map, "password"), language: fromMap(map, "language"), rights: fromMapAsInt(map, "rights"), map: map);
     return user;
   }
 

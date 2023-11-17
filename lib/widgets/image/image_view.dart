@@ -10,7 +10,7 @@ import 'package:fml/observable/scope.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/image/image_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 /// [IMAGE] view
 class ImageView extends StatefulWidget implements IWidgetView
@@ -132,7 +132,7 @@ class ImageView extends StatefulWidget implements IWidgetView
   static BoxFit getFit(String? fit) {
     var boxFit = BoxFit.cover;
 
-    if (S.isNullOrEmpty(fit)) return boxFit;
+    if (isNullOrEmpty(fit)) return boxFit;
     fit = fit!.toLowerCase();
 
     switch (fit) {

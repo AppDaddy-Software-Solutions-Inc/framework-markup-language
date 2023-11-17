@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:math';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class TextValue {
   List<String> styles = [];
@@ -123,7 +123,7 @@ void extractStyles(String value, List<String> styleList) {
     if(leastIndex.isNotEmpty) i = leastIndex.reduce(min);
 
     if(leastIndex.isEmpty) { //check for no matches
-      if (S.isNullOrEmpty(value)) return;
+      if (isNullOrEmpty(value)) return;
       textValues.add(TextValue(List.from(styles), value.substring(0)));
       return;
     }

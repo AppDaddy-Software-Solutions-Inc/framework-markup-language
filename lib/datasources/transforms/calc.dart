@@ -8,7 +8,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class Calc extends TransformModel implements ITransform
 {
@@ -64,7 +64,7 @@ class Calc extends TransformModel implements ITransform
 
     String? group;
     for (var f in groups!) {
-      var value = Data.readValue(data, f);
+      var value = Data.read(data, f);
       if (value != null) group = "${group ?? ""}[$value]";
     }
     return group;
@@ -83,7 +83,7 @@ class Calc extends TransformModel implements ITransform
     var results = HashMap<String,double>();
     for (var row in list) {
       var group = _getGroup(row);
-      var value = S.toDouble(Data.readValue(row, source));
+      var value = toDouble(Data.read(row, source));
       if (group != null && value != null)
       {
         if (!results.containsKey(group)) results[group] = value;
@@ -99,7 +99,7 @@ class Calc extends TransformModel implements ITransform
     var results = HashMap<String,double>();
     for (var row in list) {
       var group = _getGroup(row);
-      var value = S.toDouble(Data.readValue(row, source));
+      var value = toDouble(Data.read(row, source));
       if (group != null && value != null)
       {
         if (!results.containsKey(group)) results[group] = value;
@@ -115,7 +115,7 @@ class Calc extends TransformModel implements ITransform
     HashMap<String,double> results = HashMap<String,double>();
     for (var row in list) {
       var group = _getGroup(row);
-      var value = Data.readValue(row, source);
+      var value = Data.read(row, source);
       if (group != null && value != null)
       {
         if (!results.containsKey(group)) results[group] = 0;
@@ -132,7 +132,7 @@ class Calc extends TransformModel implements ITransform
     Map duplicates = {};
 
     for (var element in list) {
-      var value = Data.readValue(element, source);
+      var value = Data.read(element, source);
       if(!duplicates.containsKey(value)) {
         duplicates[value] = 1;
       } else {
@@ -149,7 +149,7 @@ class Calc extends TransformModel implements ITransform
     HashMap<String,double> results = HashMap<String,double>();
     for (var row in list) {
       var group = _getGroup(row);
-      var value = S.toDouble(Data.readValue(row, source));
+      var value = toDouble(Data.read(row, source));
       if (group != null && value != null)
       {
         if (!results.containsKey(group)) results[group] = 0;
@@ -169,13 +169,13 @@ class Calc extends TransformModel implements ITransform
     var results = HashMap<String,double?>();
     if ((sum != null) && (cnt != null)) {
       for (var point in list) {
-      if ((point != null) && (point.containsKey(source)) && (point[source] != null) && (S.isNumber(point[source])))
+      if ((point != null) && (point.containsKey(source)) && (point[source] != null) && (isNumeric(point[source])))
       {
         String? group = _getGroup(point);
         if ((group != null) && (sum.containsKey(group)) && (cnt.containsKey(group)) && (cnt[group] != 0))
         {
           results[group] = sum[group]! / cnt[group]!;
-          if (precision != null && S.toInt(precision) != null) results[group] = fml_eval.Eval.evaluate("round(${results[group]}, ${precision!})");
+          if (precision != null && toInt(precision) != null) results[group] = fml_eval.Eval.evaluate("round(${results[group]}, ${precision!})");
         }
       }
     }
@@ -191,7 +191,7 @@ class Calc extends TransformModel implements ITransform
     if (map != null) {
       for (var row in list) {
         String? group = _getGroup(row);
-        if ((_inGroup(row, group)) && (map.containsKey(group))) Data.writeValue(row, target, map[group!]);
+        if ((_inGroup(row, group)) && (map.containsKey(group))) Data.write(row, target, map[group!]);
       }
     }
   }
@@ -204,7 +204,7 @@ class Calc extends TransformModel implements ITransform
     if (map != null) {
       for (var row in list) {
         String? group = _getGroup(row);
-        if ((_inGroup(row, group)) && (map.containsKey(group))) Data.writeValue(row, target, map[group!]);
+        if ((_inGroup(row, group)) && (map.containsKey(group))) Data.write(row, target, map[group!]);
       }
     }
   }
@@ -217,7 +217,7 @@ class Calc extends TransformModel implements ITransform
     if (map != null) {
       for (var row in list) {
         String? group = _getGroup(row);
-        if ((_inGroup(row, group)) && (map.containsKey(group))) Data.writeValue(row, target, S.toInt(map[group!]));
+        if ((_inGroup(row, group)) && (map.containsKey(group))) Data.write(row, target, toInt(map[group!]));
       }
     }
   }
@@ -231,9 +231,9 @@ class Calc extends TransformModel implements ITransform
     if (map != null) {
       for (var row in list) {
         String? group = _getGroup(row);
-        var value = Data.readValue(row, source);
+        var value = Data.read(row, source);
         if ((_inGroup(row, group)) && map.containsKey(value)) {
-          Data.writeValue(row, target, S.toInt(map[value]));
+          Data.write(row, target, toInt(map[value]));
         }
       }
     }
@@ -247,7 +247,7 @@ class Calc extends TransformModel implements ITransform
     if (map != null) {
       for (var row in list) {
         String? group = _getGroup(row);
-        if ((_inGroup(row, group)) && (map.containsKey(group))) Data.writeValue(row, target, map[group!]);
+        if ((_inGroup(row, group)) && (map.containsKey(group))) Data.write(row, target, map[group!]);
       }
     }
   }
@@ -261,17 +261,17 @@ class Calc extends TransformModel implements ITransform
       try
       {
         // get variables
-        Map<String?, dynamic> variables = Data.readValues(bindings, row);
+        Map<String?, dynamic> variables = Data.find(bindings, row);
 
         // evaluate
         dynamic value;
-        if (precision != null && S.toInt(precision) != null) {
+        if (precision != null && toInt(precision) != null) {
           value = fml_eval.Eval.evaluate("round(${source!}, ${precision!})", variables: variables);
         } else {
           value = fml_eval.Eval.evaluate(source, variables: variables);
         }
 
-        Data.writeValue(row, target, value);
+        Data.write(row, target, value);
       }
       catch(e) {
         Log().debug('$e');
@@ -287,7 +287,7 @@ class Calc extends TransformModel implements ITransform
     if (map != null) {
       for (var row in list) {
         String? group = _getGroup(row);
-        if ((_inGroup(row, group)) && (map.containsKey(group))) Data.writeValue(row, target, map[group!]);
+        if ((_inGroup(row, group)) && (map.containsKey(group))) Data.write(row, target, map[group!]);
       }
     }
   }

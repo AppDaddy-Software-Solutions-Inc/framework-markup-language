@@ -11,14 +11,13 @@ import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/form/form_interface.dart';
-import 'package:validators/validators.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/hive/form.dart' as hive;
 import 'package:fml/widgets/form/form_view.dart';
 import 'package:fml/widgets/input/input_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 enum StatusCodes { incomplete, complete }
 
@@ -77,7 +76,7 @@ class FormModel extends BoxModel implements IForm
       _postbrokers = [];
       for (var e in values)
       {
-        if (!S.isNullOrEmpty(e)) _postbrokers!.add(e.trim());
+        if (!isNullOrEmpty(e)) _postbrokers!.add(e.trim());
       }
     }
   }
@@ -87,9 +86,9 @@ class FormModel extends BoxModel implements IForm
   StringObservable? _status;
   set status(dynamic v)
   {
-    StatusCodes? status = S.toEnum(v.toString(), StatusCodes.values);
+    StatusCodes? status = toEnum(v.toString(), StatusCodes.values);
     status ??= StatusCodes.incomplete;
-    v = S.fromEnum(status);
+    v = fromEnum(status);
     if (_status != null)
     {
       _status!.set(v);
@@ -103,7 +102,7 @@ class FormModel extends BoxModel implements IForm
   String? get status => _status?.get();
 
   BooleanObservable? _completed;
-  bool get completed => (S.toEnum(status, StatusCodes.values) == StatusCodes.complete);
+  bool get completed => (toEnum(status, StatusCodes.values) == StatusCodes.complete);
 
   // editable
   BooleanObservable? _editable;
@@ -269,7 +268,7 @@ class FormModel extends BoxModel implements IForm
 
     for (var field in formFields)
     {
-      if ((field.elementName != "attachment") && (!S.isNullOrEmpty(field.value)))
+      if ((field.elementName != "attachment") && (!isNullOrEmpty(field.value)))
       {
         String? value;
 
@@ -413,10 +412,10 @@ class FormModel extends BoxModel implements IForm
 
       /// GeoCode for each [iFormField] which is set on answer
       field.geocode = Payload(
-          latitude: S.toDouble(Xml.attribute(node: node, tag: 'latitude')),
-          longitude: S.toDouble(Xml.attribute(node: node, tag: 'longitude')),
-          altitude: S.toDouble(Xml.attribute(node: node, tag: 'altitude')),
-          epoch: S.toInt(Xml.attribute(node: node, tag: 'epoch')));
+          latitude: toDouble(Xml.attribute(node: node, tag: 'latitude')),
+          longitude: toDouble(Xml.attribute(node: node, tag: 'longitude')),
+          altitude: toDouble(Xml.attribute(node: node, tag: 'altitude')),
+          epoch: toInt(Xml.attribute(node: node, tag: 'epoch')));
     }
 
     // mark form clean
@@ -613,18 +612,18 @@ class FormModel extends BoxModel implements IForm
           }
 
           // field
-          if (!S.isNullOrEmpty(field.field)) {
+          if (!isNullOrEmpty(field.field)) {
             node.attributes.add(XmlAttribute(XmlName("field"), field.field!));
           }
 
           // field type
-          if (!S.isNullOrEmpty(field.elementName)) {
+          if (!isNullOrEmpty(field.elementName)) {
             node.attributes
                 .add(XmlAttribute(XmlName('type'), field.elementName));
           }
 
           // field meta data
-          if (!S.isNullOrEmpty(field.metaData)) {
+          if (!isNullOrEmpty(field.metaData)) {
             node.attributes.add(XmlAttribute(XmlName('meta'), field.metaData));
           }
 
@@ -691,7 +690,7 @@ class FormModel extends BoxModel implements IForm
     {
       // build xml document
       XmlDocument document = XmlDocument();
-      XmlElement root = XmlElement(XmlName(S.isNullOrEmpty(rootname) ? "FORM" : rootname));
+      XmlElement root = XmlElement(XmlName(isNullOrEmpty(rootname) ? "FORM" : rootname));
       document.children.add(root);
 
       if (fields != null)
@@ -710,7 +709,7 @@ class FormModel extends BoxModel implements IForm
                 try
                 {
                   // valid element name?
-                  if (!S.isNumber(name.substring(0, 1))) {
+                  if (!isNumeric(name.substring(0, 1))) {
                     node = XmlElement(XmlName(name));
                   } else {
                     node = XmlElement(XmlName("FIELD"));
@@ -724,7 +723,7 @@ class FormModel extends BoxModel implements IForm
                 }
 
                 // add field type
-                if (!S.isNullOrEmpty(field.elementName))
+                if (!isNullOrEmpty(field.elementName))
                 {
                   node.attributes.add(XmlAttribute(XmlName('type'), field.elementName));
                 }
@@ -733,7 +732,7 @@ class FormModel extends BoxModel implements IForm
                 if (field.geocode != null) field.geocode!.serialize(node);
 
                 // add meta data
-                if (!S.isNullOrEmpty(field.metaData))
+                if (!isNullOrEmpty(field.metaData))
                 {
                   node.attributes.add(XmlAttribute(XmlName('meta'), field.metaData));
                 }
@@ -777,7 +776,7 @@ class FormModel extends BoxModel implements IForm
               try
               {
                 // Valid Element Name
-                if (!S.isNumber(name.substring(0, 1)))
+                if (!isNumeric(name.substring(0, 1)))
                 {
                   node = XmlElement(XmlName(name));
                 }
@@ -797,7 +796,7 @@ class FormModel extends BoxModel implements IForm
               }
 
               // Add Field Type
-              if (!S.isNullOrEmpty(field.elementName))
+              if (!isNullOrEmpty(field.elementName))
               {
                 node.attributes.add(XmlAttribute(XmlName('type'), field.elementName));
               }

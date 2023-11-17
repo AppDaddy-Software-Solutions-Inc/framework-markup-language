@@ -7,7 +7,7 @@ import 'package:fml/widgets/drawer/item/drawer_item_model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class DrawerModel extends DecoratedWidgetModel 
 {
@@ -142,26 +142,26 @@ class DrawerModel extends DecoratedWidgetModel
           {
             case 'left':
               idLeft     = Xml.attribute(node: node, tag: 'id');
-              handleLeft = S.toBool(Xml.attribute(node: node, tag: 'handle')) == true;
-              sizeLeft   = S.toDouble(Xml.attribute(node: node, tag: 'size'));
+              handleLeft = toBool(Xml.attribute(node: node, tag: 'handle')) == true;
+              sizeLeft   = toDouble(Xml.attribute(node: node, tag: 'size'));
               break;
 
             case 'right':
               idRight     = Xml.attribute(node: node, tag: 'id');
-              handleRight = S.toBool(Xml.attribute(node: node, tag: 'handle')) == true;
-              sizeRight  = S.toDouble(Xml.attribute(node: node, tag: 'size'));
+              handleRight = toBool(Xml.attribute(node: node, tag: 'handle')) == true;
+              sizeRight  = toDouble(Xml.attribute(node: node, tag: 'size'));
               break;
 
             case 'top':
               idTop     = Xml.attribute(node: node, tag: 'id');
-              handleTop = S.toBool(Xml.attribute(node: node, tag: 'handle')) == true;
-              sizeTop   = S.toDouble(Xml.attribute(node: node, tag: 'size'));
+              handleTop = toBool(Xml.attribute(node: node, tag: 'handle')) == true;
+              sizeTop   = toDouble(Xml.attribute(node: node, tag: 'size'));
               break;
 
             case 'bottom':
               idBottom     = Xml.attribute(node: node, tag: 'id');
-              handleBottom = S.toBool(Xml.attribute(node: node, tag: 'handle')) == true;
-              sizeBottom   = S.toDouble(Xml.attribute(node: node, tag: 'size'));
+              handleBottom = toBool(Xml.attribute(node: node, tag: 'handle')) == true;
+              sizeBottom   = toDouble(Xml.attribute(node: node, tag: 'size'));
               break;
           }
 

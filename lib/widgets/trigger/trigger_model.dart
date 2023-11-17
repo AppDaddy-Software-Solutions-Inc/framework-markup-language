@@ -4,7 +4,7 @@ import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/event/handler.dart' ;
 import 'package:fml/widgets/trigger/condition/trigger_condition_model.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class TriggerModel extends WidgetModel {
 
@@ -16,10 +16,10 @@ class TriggerModel extends WidgetModel {
   static TriggerModel? fromXml(WidgetModel parent, XmlElement e)
   {
     String? id = Xml.get(node: e, tag: 'id');
-    if (S.isNullOrEmpty(id))
+    if (isNullOrEmpty(id))
     {
       Log().warning('<TRIGGER> missing required id');
-      id = S.newId();
+      id = newId();
     }
 
     TriggerModel trigger = TriggerModel
@@ -58,7 +58,7 @@ class TriggerModel extends WidgetModel {
     {
       if (cases[i].when != null && cases[i].call != null)
       {
-        if (S.toBool(cases[i].when) == true)
+        if (toBool(cases[i].when) == true)
         {
           await EventHandler(this).execute(cases[i].callObservable);
           if (type == 'single')

@@ -9,7 +9,7 @@ import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 enum LayoutType { none, row, column, stack }
 
@@ -154,7 +154,7 @@ class BoxModel extends DecoratedWidgetModel
     if (radius == null) return 0;
     var radii = radius!.split(',');
     if (radii.isEmpty) return 0;
-    return S.toDouble(radii[0]) ?? 0;
+    return toDouble(radii[0]) ?? 0;
   }
 
   double get radiusBottomRight
@@ -164,11 +164,11 @@ class BoxModel extends DecoratedWidgetModel
     if (radii.isEmpty) return 0;
     if (radii.length == 1)
     {
-      return S.toDouble(radii[0]) ?? 0;
+      return toDouble(radii[0]) ?? 0;
     }
     if (radii.length > 1)
     {
-      return S.toDouble(radii[1]) ?? 0;
+      return toDouble(radii[1]) ?? 0;
     }
     return 0;
   }
@@ -180,11 +180,11 @@ class BoxModel extends DecoratedWidgetModel
     if (radii.isEmpty) return 0;
     if (radii.length == 1)
     {
-      return S.toDouble(radii[0]) ?? 0;
+      return toDouble(radii[0]) ?? 0;
     }
     if (radii.length > 2)
     {
-      return S.toDouble(radii[2]) ?? 0;
+      return toDouble(radii[2]) ?? 0;
     }
     return 0;
   }
@@ -196,11 +196,11 @@ class BoxModel extends DecoratedWidgetModel
     if (radii.isEmpty) return 0;
     if (radii.length == 1)
     {
-      return S.toDouble(radii[0]) ?? 0;
+      return toDouble(radii[0]) ?? 0;
     }
     if (radii.length > 3)
     {
-      return S.toDouble(radii[3]) ?? 0;
+      return toDouble(radii[3]) ?? 0;
     }
     return 0;
   }

@@ -6,7 +6,7 @@ import 'package:fml/datasources/transforms/transform_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class Filter extends TransformModel implements ITransform
 {
@@ -63,7 +63,7 @@ class Filter extends TransformModel implements ITransform
   static Filter? fromXml(WidgetModel? parent, XmlElement xml)
   {
     String? id = Xml.get(node: xml, tag: 'id');
-    if (S.isNullOrEmpty(id)) id = S.newId();
+    if (isNullOrEmpty(id)) id = newId();
     Filter model = Filter(parent, id: id, enabled: Xml.get(node: xml, tag: 'enabled'), filter : Xml.get(node: xml, tag: 'filter'));
     model.deserialize(xml);
     return model;

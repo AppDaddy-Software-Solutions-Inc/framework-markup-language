@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:fml/hive/post.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/hive/database.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class Form implements Comparable
 {
@@ -28,7 +28,7 @@ class Form implements Comparable
 
   Form({String? key, String? parent, bool? complete, int? created, int? updated, String? template, Map<String,dynamic>? data})
   {
-    _map["key"]      = key ?? S.newId();
+    _map["key"]      = key ?? newId();
     _map["parent"]   = parent;
     _map["complete"] = complete ?? false;
     _map["created"]  = created ?? DateTime.now().millisecondsSinceEpoch;
@@ -46,12 +46,12 @@ class Form implements Comparable
     Form? form;
     if (map is Map<String, dynamic>) {
       form = Form(
-          key:      S.mapVal(map, "key"),
-          parent:   S.mapVal(map, "parent"),
-          complete: S.mapBoo(map, "complete"),
-          created:  S.mapInt(map, "created"),
-          updated:  S.mapInt(map, "updated"),
-          template: S.mapVal(map, "template"),
+          key:      fromMap(map, "key"),
+          parent:   fromMap(map, "parent"),
+          complete: fromMapAsBool(map, "complete"),
+          created:  fromMapAsInt(map, "created"),
+          updated:  fromMapAsInt(map, "updated"),
+          template: fromMap(map, "template"),
           data:     map.containsKey("data") && map["data"] is Map<String,dynamic> ? map["data"] : null);
     }
     return form;

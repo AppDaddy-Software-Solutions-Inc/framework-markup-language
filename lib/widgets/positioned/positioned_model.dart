@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/widgets/positioned/positioned_view.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class PositionedModel extends DecoratedWidgetModel 
 {
@@ -40,7 +40,7 @@ class PositionedModel extends DecoratedWidgetModel
     }
     else if (v != null)
     {
-      if (S.isPercentage(v))
+      if (isPercent(v))
       {
         // _leftIsPercent = true;
         v = v.split("%")[0];
@@ -63,7 +63,7 @@ class PositionedModel extends DecoratedWidgetModel
     }
     else if (v != null)
     {
-      if (S.isPercentage(v))
+      if (isPercent(v))
       {
         // _rightIsPercent = true;
         v = v.split("%")[0];
@@ -86,7 +86,7 @@ class PositionedModel extends DecoratedWidgetModel
     }
     else if (v != null)
     {
-      if (S.isPercentage(v))
+      if (isPercent(v))
       {
         // _topIsPercent = true;
         v = v.split("%")[0];
@@ -109,7 +109,7 @@ class PositionedModel extends DecoratedWidgetModel
     }
     else if (v != null)
     {
-      if (S.isPercentage(v))
+      if (isPercent(v))
       {
         // _bottomIsPercent = true;
         v = v.split("%")[0];

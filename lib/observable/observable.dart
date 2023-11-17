@@ -6,10 +6,10 @@ import 'binding.dart';
 import 'scope.dart';
 import 'package:fml/eval/eval.dart'       as fml_eval;
 import 'package:fml/observable/blob.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 typedef Getter = dynamic Function();
-typedef Setter = dynamic Function(dynamic value);
+typedef Setter = dynamic Function(dynamic value, {Observable? setter});
 typedef Formatter = dynamic Function(dynamic value);
 typedef OnChangeCallback = void Function (Observable value);
 
@@ -56,11 +56,11 @@ class Observable
     return to(_value);
   }
 
-  set(dynamic value, {bool notify = true})
+  set(dynamic value, {bool notify = true, Observable? setter})
   {
-    if (setter != null)
+    if (this.setter != null)
     {
-      value = setter!(value);
+      value = this.setter!(value, setter: setter);
     }
     value = to(value);
     if (value is Exception) return;
@@ -281,7 +281,7 @@ class Observable
         if (isEval)
         {
           variables ??= <String?, dynamic>{};
-          if ((source is BlobObservable) && (!S.isNullOrEmpty(replacementValue)))
+          if ((source is BlobObservable) && (!isNullOrEmpty(replacementValue)))
           {
             variables[binding.signature] = 'blob';
           }
@@ -300,20 +300,29 @@ class Observable
         // simple replacement of string values
         else
         {
-          replacementValue = S.toStr(replacementValue) ?? "";
+          replacementValue = toStr(replacementValue) ?? "";
           value = value!.replaceAll(binding.signature, replacementValue);
         }
       }
     }
 
-    // set the value
-    value = (isEval) ? doEvaluation(signature, variables: variables) : value;
+    // perform the evaluation
+    if (isEval)
+    {
+      value = doEvaluation(signature, variables: variables);
+    }
 
     // 2-way binding?
-    if (observable?.twoway == this) value = observable!.value;
+    if (observable?.twoway == this)
+    {
+      set(observable!.value,setter: observable);
+    }
 
     // set the target value
-    set(value);
+    else
+    {
+      set(value);
+    }
   }
 
   static bool isEvalSignature(String? value)

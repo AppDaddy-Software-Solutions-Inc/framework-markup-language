@@ -4,11 +4,12 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/event/handler.dart' ;
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class VariableModel extends WidgetModel
 {
   late final bool constant;
+  String? type;
 
   // value
   StringObservable? _value;
@@ -24,7 +25,8 @@ class VariableModel extends WidgetModel
       {
         dynamic setter;
         if (constant) setter = (_) => v;
-        _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange, setter: setter);
+        var formatter = type != null ? _encodeBody : null;
+        _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange, setter: setter, formatter: formatter);
       }
     }
   }
@@ -88,7 +90,8 @@ class VariableModel extends WidgetModel
     super.deserialize(xml);
 
     // properties
-    value      = Xml.get(node: xml, tag: 'value');
+    type = Xml.get(node: xml, tag: 'type')?.trim().toLowerCase();
+    value = Xml.get(node: xml, tag: 'value', innerXmlAsText: true);
     onchange   = Xml.get(node: xml, tag: 'onchange');
     returnas   = Xml.get(node: xml, tag: 'return');
   }
@@ -97,7 +100,7 @@ class VariableModel extends WidgetModel
   {
     bool ok = true;
 
-    if (!S.isNullOrEmpty(onchange))
+    if (!isNullOrEmpty(onchange))
     {
       // This is Hack in Case Onchange Is Bound to Its own Value
       if (_onchange!.bindings != null) _onchange!.onObservableChange(null);
@@ -107,6 +110,25 @@ class VariableModel extends WidgetModel
     }
 
     return ok;
+  }
+
+  // encode segments
+  String? _encodeBody(dynamic value) => encode(value, type);
+  static String? encode(dynamic value, String? type)
+  {
+    if (value == null || value is! String || type == null) return value;
+    switch (type)
+    {
+      case "json":
+        value = Json.escape(value);
+        break;
+      case "xml":
+        value = Xml.encodeIllegalCharacters(value);
+        break;
+      default:
+        break;
+    }
+    return value;
   }
 
   @override

@@ -12,7 +12,7 @@ import 'mqtt_interface.dart';
 import 'mqtt_listener_interface.dart';
 import 'payload.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
 {
@@ -253,7 +253,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
     var subscriptions = Xml.get(node: xml, tag: 'subscriptions')?.split(",");
     subscriptions?.forEach((subscription)
     {
-      if (!S.isNullOrEmpty(subscription) && !this.subscriptions.contains(subscription.trim())) this.subscriptions.add(subscription.trim());
+      if (!isNullOrEmpty(subscription) && !this.subscriptions.contains(subscription.trim())) this.subscriptions.add(subscription.trim());
     });
   }
 
@@ -292,19 +292,19 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
     {
       case "write":
       case "publish":
-        String? topic   = S.toStr(S.item(arguments, 0));
-        String? message = S.toStr(S.item(arguments, 1));
+        String? topic   = toStr(elementAt(arguments, 0));
+        String? message = toStr(elementAt(arguments, 1));
         if (mqtt != null && topic != null && message != null) mqtt!.publish(topic,message);
         return true;
 
       case "read":
       case "subscribe":
-        String? topic = S.toStr(S.item(arguments, 0));
-        if (!S.isNullOrEmpty(topic)) mqtt?.subscribe(topic!);
+        String? topic = toStr(elementAt(arguments, 0));
+        if (!isNullOrEmpty(topic)) mqtt?.subscribe(topic!);
         return true;
 
       case "unsubscribe":
-        String? topic = S.toStr(S.item(arguments, 0));
+        String? topic = toStr(elementAt(arguments, 0));
         if (mqtt != null && topic != null) mqtt!.unsubscribe(topic);
         return true;
 
@@ -350,7 +350,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
     for (var topic in subscriptions) {
       await mqtt?.subscribe(topic);
     }
-    if (!S.isNullOrEmpty(onconnected))
+    if (!isNullOrEmpty(onconnected))
     {
       EventHandler handler = EventHandler(this);
       await handler.execute(_onconnected);
@@ -360,7 +360,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
   @override
   onDisconnected(String origin) async
   {
-    if (!S.isNullOrEmpty(ondisconnected))
+    if (!isNullOrEmpty(ondisconnected))
     {
       EventHandler handler = EventHandler(this);
       await handler.execute(_ondisconnected);
@@ -371,7 +371,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
   @override
   onPublished(String topic, String message) async
   {
-    if (!S.isNullOrEmpty(onpublished))
+    if (!isNullOrEmpty(onpublished))
     {
       EventHandler handler = EventHandler(this);
       await handler.execute(_onpublished);
@@ -381,7 +381,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
   @override
   onSubscribed(String topic) async
   {
-    if (!S.isNullOrEmpty(onsubscribed))
+    if (!isNullOrEmpty(onsubscribed))
     {
       EventHandler handler = EventHandler(this);
       await handler.execute(_onsubscribed);
@@ -391,7 +391,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
   @override
   onUnsubscribed(String topic) async
   {
-    if (!S.isNullOrEmpty(onunsubscribed))
+    if (!isNullOrEmpty(onunsubscribed))
     {
       EventHandler handler = EventHandler(this);
       await handler.execute(_onunsubscribed);
@@ -401,7 +401,7 @@ class MqttModel extends DataSourceModel implements IDataSource, IMqttListener
   @override
   onError(String error) async
   {
-    if (!S.isNullOrEmpty(onerror))
+    if (!isNullOrEmpty(onerror))
     {
       EventHandler handler = EventHandler(this);
       await handler.execute(_onerror);

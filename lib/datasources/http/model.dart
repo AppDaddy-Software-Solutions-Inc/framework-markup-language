@@ -11,7 +11,7 @@ import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 enum Methods {get, put, post, patch, delete}
 enum Types   {background, foreground, either}
@@ -134,8 +134,8 @@ class HttpModel extends DataSourceModel implements IDataSource
     method     = Xml.attribute(node: xml, tag: 'method');
     timeout    = Xml.get(node: xml, tag: 'timeout');
     url        = Xml.get(node: xml, tag: 'url');
-    foreground = S.toBool(Xml.get(node: xml, tag: 'foreground'));
-    background = S.toBool(Xml.get(node: xml, tag: 'background'));
+    foreground = toBool(Xml.get(node: xml, tag: 'foreground'));
+    background = toBool(Xml.get(node: xml, tag: 'background'));
 
     // build headers
     var headers = Xml.getChildElements(node: xml, tag: 'header');
@@ -147,7 +147,7 @@ class HttpModel extends DataSourceModel implements IDataSource
         if (this.headers == null) this.headers = <String,String>{};
         String? key   = Xml.get(node: node, tag: 'key');
         String? value = Xml.get(node: node, tag: 'value');
-        if (!S.isNullOrEmpty(key) && !S.isNullOrEmpty(value)) this.headers![key!] = value!;
+        if (!isNullOrEmpty(key) && !isNullOrEmpty(value)) this.headers![key!] = value!;
       }
     }
   }
@@ -200,7 +200,7 @@ class HttpModel extends DataSourceModel implements IDataSource
       Map<String, String> headers = Http.encodeHeaders(this.headers);
 
       // save transaction
-      Post post = Post(key: S.newId(), formKey: key, status: Post.statusINCOMPLETE, method: S.fromEnum(this.method), url: this.url, headers: headers, body: body, date: DateTime.now().millisecondsSinceEpoch, attempts: 0);
+      Post post = Post(key: newId(), formKey: key, status: Post.statusINCOMPLETE, method: fromEnum(this.method), url: this.url, headers: headers, body: body, date: DateTime.now().millisecondsSinceEpoch, attempts: 0);
       bool ok = await post.insert();
       if (ok) System().postmaster.start();
       return true;
@@ -216,7 +216,7 @@ class HttpModel extends DataSourceModel implements IDataSource
     busy = true;
 
     HttpResponse? response;
-    Methods method = S.toEnum(this.method, Methods.values) ?? Methods.get;
+    Methods method = toEnum(this.method, Methods.values) ?? Methods.get;
     switch (method)
     {
       case Methods.get:
@@ -250,7 +250,7 @@ class HttpModel extends DataSourceModel implements IDataSource
     // changed by olajos - January 28, 2023
     String? msg = response.statusMessage;
     if (data.isEmpty && response.body is String) msg = response.body;
-    if (S.isNullOrEmpty(msg)) msg = (response.statusCode == HttpStatus.ok) ? "ok" : "error #${response.statusCode ?? 0}";
+    if (isNullOrEmpty(msg)) msg = (response.statusCode == HttpStatus.ok) ? "ok" : "error #${response.statusCode ?? 0}";
 
     // save response data to the hive cache
     if (response.statusCode == HttpStatus.ok) toHive(url, response.body);
@@ -269,7 +269,7 @@ class HttpModel extends DataSourceModel implements IDataSource
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
 
-    bool refresh = S.toBool(S.item(arguments,0)) ?? false;
+    bool refresh = toBool(elementAt(arguments,0)) ?? false;
     switch (function)
     {
       case "start" : return await start(refresh: refresh);

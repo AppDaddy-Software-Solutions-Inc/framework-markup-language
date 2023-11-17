@@ -7,7 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 /// ChartDataPoint Object
 ///
@@ -159,7 +159,7 @@ class LineChartSeriesModel extends ChartPainterSeriesModel
     for (var i=0; i< dataList.length; i++) {
       //set the data of the series for databinding
       data = dataList[i];
-          x = S.toDate(x, format: format ?? 'yyyy/MM/dd')?.millisecondsSinceEpoch;
+          x = toDate(x, format: format ?? 'yyyy/MM/dd')?.millisecondsSinceEpoch;
           //plot the point as a point object based on the desired function based on series and chart type.
         plot();
     }
@@ -179,7 +179,7 @@ class LineChartSeriesModel extends ChartPainterSeriesModel
   }
 
   void plot(){
-    FlSpot point = FlSpot(S.toDouble(x) ?? 0, S.toDouble(y) ?? 0);
+    FlSpot point = FlSpot(toDouble(x) ?? 0, toDouble(y) ?? 0);
     lineDataPoint.add(point);
   }
 }

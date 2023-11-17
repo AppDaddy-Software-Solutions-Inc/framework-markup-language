@@ -2,7 +2,7 @@
 import 'package:collection/collection.dart';
 import 'package:fml/log/manager.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 /// XML Helpers
 ///
@@ -220,7 +220,7 @@ class Xml {
 
     try
     {
-      if (S.isNullOrEmpty(root)) root = getRootElement(document.rootElement);
+      if (isNullOrEmpty(root)) root = getRootElement(document.rootElement);
       Iterable<XmlElement> nodes = document.findAllElements(root!, namespace: "*");
       for (XmlNode node in nodes)
       {
@@ -361,7 +361,7 @@ class Xml {
   }
 
   /// Returns the value of a child [XmlElement] element
-  static String? element({required XmlElement node, required String tag})
+  static String? element({required XmlElement node, required String tag, bool innerXmlAsText = false})
   {
     String? v;
     try
@@ -369,7 +369,7 @@ class Xml {
       XmlElement? child = getChildElement(node: node, tag: tag);
       child ??= getChildElement(node: node, tag: tag.toLowerCase());
       child ??= getChildElement(node: node, tag: tag.toUpperCase());
-      if (child != null) v = getText(child);
+      if (child != null) v = getText(child, innerXmlAsText: innerXmlAsText);
     }
     catch(e) {
       v = null;
@@ -395,13 +395,13 @@ class Xml {
   }
 
   /// Gets the value of a attribute else a child element
-  static String? get({XmlElement? node, String? tag})
+  static String? get({XmlElement? node, String? tag, bool innerXmlAsText = false})
   {
     String? v;
     try
     {
       v ??= attribute(node: node!, tag: tag!);
-      v ??= element(node: node!, tag: tag!);
+      v ??= element(node: node!, tag: tag!, innerXmlAsText: innerXmlAsText);
     }
     catch(e)
     {
@@ -525,9 +525,21 @@ class Xml {
   }
 
   /// Given an [XmlNode] this will return the raw [XmlNodeType.TEXT] String
-  static String? getText(XmlNode? node)
+  static String? getText(XmlNode? node,{bool innerXmlAsText = false})
   {
-    if ((node?.nodeType == XmlNodeType.TEXT) || (node?.nodeType == XmlNodeType.CDATA)) return node?.value;
+    // node is text or cdata
+    if (node?.nodeType == XmlNodeType.TEXT || node?.nodeType == XmlNodeType.CDATA) return node?.value;
+
+    // return node inner xml as text
+    if (innerXmlAsText)
+    {
+      bool isText = (node?.children.firstWhereOrNull((child) => (child is XmlCDATA || child is XmlText || child is XmlComment) ? false : true) == null);
+      var text = isText ? node?.innerText.trim() : node?.innerXml.trim();
+      //text = text?.replaceAll('\r', '').replaceAll('\t', '').replaceAll('\n', '').trim();
+      return text;
+    }
+
+    // traverse child nodes
     if ((node?.children.isNotEmpty == true))
     {
       String? text;

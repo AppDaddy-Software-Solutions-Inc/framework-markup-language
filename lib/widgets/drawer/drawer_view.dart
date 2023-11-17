@@ -6,7 +6,7 @@ import 'package:fml/event/event.dart'             ;
 import 'package:fml/widgets/framework/framework_model.dart' ;
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/drawer/drawer_model.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class DrawerView extends StatefulWidget implements IDragListener, IWidgetView
@@ -128,7 +128,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
   {
     if (event.parameters == null) return;
 
-    if (!S.isNullOrEmpty(event.parameters!['url']))
+    if (!isNullOrEmpty(event.parameters!['url']))
     {
       if (event.parameters!['url'] == widget.model.idLeft) {
         event.handled = true;
@@ -153,7 +153,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
   {
     if (event.parameters == null) return;
 
-    if (!S.isNullOrEmpty(event.parameters!['window']))
+    if (!isNullOrEmpty(event.parameters!['window']))
     {
       if (event.parameters!['window'] == widget.model.idLeft) {
         event.handled = true;

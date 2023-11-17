@@ -2,13 +2,13 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:fml/event/event.dart';
+import 'package:fml/helpers/mime.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:universal_html/html.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:universal_html/js.dart';
-import 'package:fml/helper/common_helpers.dart';
 import 'package:fml/event/manager.dart';
 
 class Platform
@@ -54,7 +54,7 @@ class Platform
     try
     {
       // make the file name safe
-      filename = S.toSafeFileName(filename);
+      filename = Mime.toSafeFileName(filename);
 
       final blob   = Blob([bytes]);
       final url    = Url.createObjectUrlFromBlob(blob);

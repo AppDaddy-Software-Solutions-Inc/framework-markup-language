@@ -16,7 +16,7 @@ import 'package:fml/widgets/icon/icon_view.dart';
 import 'package:fml/datasources/file/file.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
 if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
@@ -210,7 +210,7 @@ class CameraViewState extends WidgetState<CameraView>
         if (index.isNegative)
         {
           // get the camera
-          CameraLensDirection direction = S.toEnum(widget.model.direction, CameraLensDirection.values) ?? CameraLensDirection.back;
+          CameraLensDirection direction = toEnum(widget.model.direction, CameraLensDirection.values) ?? CameraLensDirection.back;
           var camera = cameras!.firstWhereOrNull((camera) => camera.lensDirection == direction);
           if (camera != null) {
             index = cameras!.indexOf(camera);
@@ -235,7 +235,7 @@ class CameraViewState extends WidgetState<CameraView>
         CameraDescription camera = cameras![widget.model.index!];
 
         // front facing camera
-        widget.model.direction = (camera.lensDirection == CameraLensDirection.external) || (camera.lensDirection == CameraLensDirection.front) ? S.fromEnum(CameraLensDirection.front) : S.fromEnum(CameraLensDirection.back);
+        widget.model.direction = (camera.lensDirection == CameraLensDirection.external) || (camera.lensDirection == CameraLensDirection.front) ? fromEnum(CameraLensDirection.front) : fromEnum(CameraLensDirection.back);
 
         // camera name
         widget.model.name = camera.name;
@@ -245,7 +245,7 @@ class CameraViewState extends WidgetState<CameraView>
         if (kIsWeb) format = ImageFormatGroup.jpeg;
 
         // default the resolution
-        ResolutionPreset resolution = S.toEnum(widget.model.resolution, ResolutionPreset.values) ?? ResolutionPreset.medium;
+        ResolutionPreset resolution = toEnum(widget.model.resolution, ResolutionPreset.values) ?? ResolutionPreset.medium;
         if (widget.model.stream) resolution = (kIsWeb) ? ResolutionPreset.medium : ResolutionPreset.low;
 
         // build the controller
@@ -333,7 +333,7 @@ class CameraViewState extends WidgetState<CameraView>
         widget.model.renderheight = controller!.value.previewSize!.height;
 
         // set orientation
-        widget.model.orientation = S.fromEnum(controller!.value.deviceOrientation);
+        widget.model.orientation = fromEnum(controller!.value.deviceOrientation);
 
         // start stream
         if (widget.model.stream)

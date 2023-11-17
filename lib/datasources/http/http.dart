@@ -6,7 +6,7 @@ import 'package:fml/system.dart';
 import 'package:fml/token/token.dart';
 import 'package:http/http.dart';
 import 'package:http/http.dart' as dart_http;
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 int defaultTimeout = 60;
 
@@ -193,7 +193,7 @@ class Http
 
     Map<String, dynamic> parameters = {};
     parameters.addAll(uri.queryParameters);
-    if (refresh == true) parameters["refresh"] = S.newId();
+    if (refresh == true) parameters["refresh"] = newId();
     parameters.forEach((key, value) => Uri.encodeComponent(value));
     return uri.replace(queryParameters: parameters);
   }
@@ -216,7 +216,7 @@ class Http
 
   static void decodeHeaders(Response response) {
     if ((!response.headers.containsKey(HttpHeaders.authorizationHeader)) ||
-        (S.isNullOrEmpty(response.headers[HttpHeaders.authorizationHeader]))) {
+        (isNullOrEmpty(response.headers[HttpHeaders.authorizationHeader]))) {
       return;
     }
 

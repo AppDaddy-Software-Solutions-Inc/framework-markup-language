@@ -10,7 +10,7 @@ import 'package:fml/widgets/scroller/scroller_view.dart';
 import 'package:fml/event/event.dart'           ;
 import 'package:fml/event/handler.dart'         ;
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 /// Button [ScrollerModel]
 ///
@@ -131,7 +131,7 @@ class ScrollerModel extends BoxModel
 
   Future<bool> scrolledToEnd(BuildContext context) async
   {
-    if (S.isNullOrEmpty(onscrolledtoend)) return false;
+    if (isNullOrEmpty(onscrolledtoend)) return false;
     return await EventHandler(this).execute(_onscrolledtoend);
   }
 

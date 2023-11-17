@@ -3,6 +3,8 @@ export 'image.dart';
 export 'string.dart';
 export 'uri.dart';
 export 'xml.dart';
+export 'json.dart';
+export 'map.dart';
 export 'color.dart';
 
 // platform

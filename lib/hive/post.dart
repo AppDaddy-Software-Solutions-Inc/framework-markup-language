@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:fml/hive/database.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 enum Fields {key, formKey, status, title, format, method, headers, url, body, date, attempts, info}
 
@@ -50,7 +50,7 @@ class Post
     String? body,
     String? info})
   {
-    _map["key"]      = key ?? S.newId();
+    _map["key"]      = key ?? newId();
     _map["formKey"]  = formKey;
     _map["status"]   = status;
     _map["title"]    = title;
@@ -74,18 +74,18 @@ class Post
     Post? post;
     if (map is Map<String, dynamic>) {
       post = Post(
-          key:      S.mapVal(map, S.fromEnum(Fields.key)),
-          formKey:  S.mapVal(map, S.fromEnum(Fields.formKey)),
-          status:   S.mapInt(map, S.fromEnum(Fields.status)),
-          title:    S.mapVal(map, S.fromEnum(Fields.title)),
-          date:     S.mapInt(map, S.fromEnum(Fields.date)),
-          attempts: S.mapInt(map, S.fromEnum(Fields.attempts)),
-          format:   S.mapVal(map, S.fromEnum(Fields.format)),
-          method:   S.mapVal(map, S.fromEnum(Fields.method)),
-          headers:  S.mapVal(map, S.fromEnum(Fields.headers)),
-          url:      S.mapVal(map, S.fromEnum(Fields.url)),
-          body:     S.mapVal(map, S.fromEnum(Fields.body)),
-          info:     S.mapVal(map, S.fromEnum(Fields.info))
+          key:      fromMap(map, fromEnum(Fields.key)),
+          formKey:  fromMap(map, fromEnum(Fields.formKey)),
+          status:   fromMapAsInt(map, fromEnum(Fields.status)),
+          title:    fromMap(map, fromEnum(Fields.title)),
+          date:     fromMapAsInt(map, fromEnum(Fields.date)),
+          attempts: fromMapAsInt(map, fromEnum(Fields.attempts)),
+          format:   fromMap(map, fromEnum(Fields.format)),
+          method:   fromMap(map, fromEnum(Fields.method)),
+          headers:  fromMap(map, fromEnum(Fields.headers)),
+          url:      fromMap(map, fromEnum(Fields.url)),
+          body:     fromMap(map, fromEnum(Fields.body)),
+          info:     fromMap(map, fromEnum(Fields.info))
       );
     }
     return post;
@@ -94,18 +94,18 @@ class Post
   Map<String?, dynamic> toMap()
   {
     var map = <String?, dynamic>{};
-    map[S.fromEnum(Fields.key)]       = key;
-    map[S.fromEnum(Fields.formKey)]  = formKey;
-    map[S.fromEnum(Fields.status)]    = status;
-    map[S.fromEnum(Fields.title)]     = title;
-    map[S.fromEnum(Fields.date)]      = date;
-    map[S.fromEnum(Fields.attempts)]  = attempts;
-    map[S.fromEnum(Fields.format)]    = format;
-    map[S.fromEnum(Fields.method)]    = method;
-    map[S.fromEnum(Fields.headers)]   = headers;
-    map[S.fromEnum(Fields.url)]       = url;
-    map[S.fromEnum(Fields.body)]      = body;
-    map[S.fromEnum(Fields.info)]      = info;
+    map[fromEnum(Fields.key)]       = key;
+    map[fromEnum(Fields.formKey)]  = formKey;
+    map[fromEnum(Fields.status)]    = status;
+    map[fromEnum(Fields.title)]     = title;
+    map[fromEnum(Fields.date)]      = date;
+    map[fromEnum(Fields.attempts)]  = attempts;
+    map[fromEnum(Fields.format)]    = format;
+    map[fromEnum(Fields.method)]    = method;
+    map[fromEnum(Fields.headers)]   = headers;
+    map[fromEnum(Fields.url)]       = url;
+    map[fromEnum(Fields.body)]      = body;
+    map[fromEnum(Fields.info)]      = info;
     return map;
   }
 

@@ -7,7 +7,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart_painter/axis/chart_axis_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 import 'package:xml/xml.dart';
 import '../chart_model.dart';
 import 'line_chart_view.dart';
@@ -129,8 +129,8 @@ class LineChartModel extends ChartPainterModel
       if (axis.axis == ChartAxis.X) xaxis = axis;
 
       if (axis.axis == ChartAxis.Y) yaxis = axis;
-      yMax = S.toInt(yaxis.max);
-      yMin = S.toInt(yaxis.min);
+      yMax = toInt(yaxis.max);
+      yMin = toInt(yaxis.min);
     }
   }
 

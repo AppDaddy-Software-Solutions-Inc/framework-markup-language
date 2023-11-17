@@ -10,7 +10,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/googlemap/map_view.dart';
 import 'package:fml/widgets/googlemap/location/map_location_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 enum MapTypes { satellite, hybrid, terrain, roadmap }
 
@@ -123,14 +123,14 @@ class MapModel extends DecoratedWidgetModel
     zoom = Xml.get(node: xml, tag: 'zoom');
     latitude = Xml.get(node: xml, tag: 'latitude');
     longitude = Xml.get(node: xml, tag: 'longitude');
-    mapType = S.toEnum(Xml.get(node: xml, tag: 'type'), MapTypes.values);
-    showAll = S.toBool(Xml.get(node: xml, tag: 'showallpoints')) == false ? false : true;
+    mapType = toEnum(Xml.get(node: xml, tag: 'type'), MapTypes.values);
+    showAll = toBool(Xml.get(node: xml, tag: 'showallpoints')) == false ? false : true;
 
     // build locations
     List<MapLocationModel> locations = findChildrenOfExactType(MapLocationModel).cast<MapLocationModel>();
     for (var model in locations) {
       // data driven prototype location
-      if (!S.isNullOrEmpty(model.datasource))
+      if (!isNullOrEmpty(model.datasource))
       {
         if (!prototypes.containsKey(model.datasource)) prototypes[model.datasource] = [];
 

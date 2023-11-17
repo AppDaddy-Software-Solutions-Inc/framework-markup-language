@@ -8,7 +8,7 @@ import 'package:fml/observable/observables/boolean.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'barcode_detector.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
 if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
@@ -83,7 +83,7 @@ class BarcodeDetectorModel extends DetectorModel implements IDetectable
     for (String format in formats)
     {
       format = format.trim().toUpperCase();
-      BarcodeFormats? f = S.toEnum(format, BarcodeFormats.values);
+      BarcodeFormats? f = toEnum(format, BarcodeFormats.values);
       if (f != null)
       {
         barcodeFormats ??= [];

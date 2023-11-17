@@ -12,7 +12,7 @@ import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class MapView extends StatefulWidget implements IWidgetView
 {
@@ -207,7 +207,7 @@ class _MapViewState extends WidgetState<MapView>
           /////////////////
           /* Info Window */
           /////////////////
-          InfoWindow? info = ((!S.isNullOrEmpty(location.title)) || (!S.isNullOrEmpty(location.description)) || (location.onTap != null)) ? InfoWindow(title:location.title, snippet: location.description) : null;
+          InfoWindow? info = ((!isNullOrEmpty(location.title)) || (!isNullOrEmpty(location.description)) || (location.onTap != null)) ? InfoWindow(title:location.title, snippet: location.description) : null;
 
           //////////
           /* Icon */

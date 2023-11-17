@@ -5,7 +5,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/datasources/base/model.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class LogModel extends DataSourceModel implements IDataSource
 {
@@ -47,13 +47,13 @@ class LogModel extends DataSourceModel implements IDataSource
     switch (function)
     {
       case "write":
-        String? message = S.toStr(S.item(arguments, 0));
+        String? message = toStr(elementAt(arguments, 0));
         if (message != null) Log().info(message, caller: id);
         return true;
 
       case "export":
-        String format  =  S.toStr(S.item(arguments, 0))?.toLowerCase() ?? "html";
-        bool   history =  S.toBool(S.item(arguments, 1)) ?? false;
+        String format  =  toStr(elementAt(arguments, 0))?.toLowerCase() ?? "html";
+        bool   history =  toBool(elementAt(arguments, 1)) ?? false;
         Log().export(format: format, withHistory: history);
         return true;
 

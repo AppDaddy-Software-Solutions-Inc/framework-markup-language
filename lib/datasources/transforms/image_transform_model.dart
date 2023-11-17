@@ -7,7 +7,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class ImageTransformModel extends TransformModel
 {
@@ -60,7 +60,7 @@ class ImageTransformModel extends TransformModel
   // reads the image and applies the transform
   Future<Uint8List?> _toBytes(dynamic row) async
   {
-    var v = Data.readValue(row, source);
+    var v = Data.read(row, source);
     v ??= source;
 
     v = v.toString();
@@ -86,7 +86,7 @@ class ImageTransformModel extends TransformModel
   {
     // legacy
     var target = this.target ?? 'file';
-    Data.writeValue(row, target, uri);
+    Data.write(row, target, uri);
   }
 
   // grayscale transform

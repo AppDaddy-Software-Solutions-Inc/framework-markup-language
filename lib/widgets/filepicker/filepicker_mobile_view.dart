@@ -2,11 +2,11 @@
 import 'package:cross_file/cross_file.dart';
 import 'package:file_picker/file_picker.dart' as file_picker;
 import 'package:fml/datasources/detectors/detector_interface.dart';
+import 'package:fml/helpers/mime.dart';
 import 'package:fml/log/manager.dart';
 import 'package:path/path.dart';
 import 'filepicker_view.dart';
 import 'package:fml/datasources/file/file.dart';
-import 'package:fml/helper/common_helpers.dart';
 
 import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
 if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
@@ -48,7 +48,7 @@ class FilePickerView implements FilePicker
         // set file
         XFile  file = XFile(result.files.single.path!);
         String url  = "file:${file.path}";
-        String type = (await S.mimetype(file.path)).toLowerCase();
+        String type = (await Mime.type(file.path)).toLowerCase();
         String name = basename(file.path);
         int    size = await file.length();
 

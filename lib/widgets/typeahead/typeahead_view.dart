@@ -10,7 +10,7 @@ import 'package:fml/widgets/typeahead/typeahead_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class TypeaheadView extends StatefulWidget implements IWidgetView
@@ -145,7 +145,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
   bool match(String tag, String pat) {
     if (tag == '' || tag == 'null') {
       return false;
-    } else if (S.isNullOrEmpty(widget.model.matchtype) || widget.model.matchtype!.toLowerCase() == 'contains') {
+    } else if (isNullOrEmpty(widget.model.matchtype) || widget.model.matchtype!.toLowerCase() == 'contains') {
       return tag.contains(pat.toLowerCase());
     }
     else if (widget.model.matchtype!.toLowerCase() == 'startswith') {
@@ -165,13 +165,13 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
     // Try getting the label string
     value = (model.label is TextModel) ? (model.label as TextModel).value ?? '' : '';
     // Try getting the label from TEXT children
-    if (S.isNullOrEmpty(value))
+    if (isNullOrEmpty(value))
     {
       var models = (model.label as WidgetModel).findDescendantsOfExactType(TextModel);
       for (var text in models) {
         if (text is TextModel)
         {
-          String v = S.toStr(text.value) ?? "";
+          String v = toStr(text.value) ?? "";
           if (!value.contains(v)) value += v;
           modelColor = text.color;
         }
@@ -346,7 +346,7 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
       );
     }
 
-    if(!S.isNullOrEmpty(widget.model.alarmText))
+    if(!isNullOrEmpty(widget.model.alarmText))
     {
       Widget? errorText = Padding(padding: EdgeInsets.only(top: 6.0 , bottom: 2.0),
         child: Text("${widget.model.alarmText}", style: TextStyle(color: Theme.of(context).colorScheme.error),),);

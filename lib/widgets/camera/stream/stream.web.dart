@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'package:fml/helpers/mime.dart';
 import 'package:universal_html/html.dart';
 import 'dart:typed_data';
 import 'package:fml/data/data.dart';
@@ -13,7 +14,7 @@ import 'package:fml/datasources/file/file.dart';
 import 'package:fml/widgets/camera/camera_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/camera/stream/stream.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
 if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
@@ -42,7 +43,7 @@ class ViewState extends WidgetState<View>
   bool detectInImage = false;
   num detectedFrame = 0;
 
-  final String id = S.newId();
+  final String id = newId();
   num lastFrame = 0;
 
   Widget? videoWidget;
@@ -175,7 +176,7 @@ class ViewState extends WidgetState<View>
             canvas2.height = height;
             canvas2.context2D.putImageData(image, 0, 0);
             Blob blob = await canvas2.toBlob('image/png', 1.0);
-            await Platform.fileSaveAsFromBlob(blob, "${S.newId()}-.png");
+            await Platform.fileSaveAsFromBlob(blob, "${newId()}-.png");
           }
 
           // process stream image
@@ -226,8 +227,8 @@ class ViewState extends WidgetState<View>
 
         if (widget.model.scale)
         {
-          canvas.width = S.toInt(videoRenderSize["width"]);
-          canvas.height = S.toInt(videoRenderSize["height"]);
+          canvas.width = toInt(videoRenderSize["width"]);
+          canvas.height = toInt(videoRenderSize["height"]);
           canvas.context2D.drawImageScaled(video, xOffset, 0,
               videoRenderSize["width"], videoRenderSize["height"]);
         } else {
@@ -364,7 +365,7 @@ class ViewState extends WidgetState<View>
 
         if (widget.model.debug == true) {
           Blob blob = await canvas2.toBlob('image/png', 1.0);
-          await Platform.fileSaveAsFromBlob(blob, "${S.newId()}-.png");
+          await Platform.fileSaveAsFromBlob(blob, "${newId()}-.png");
         }
 
         ImageData image2 =
@@ -419,9 +420,9 @@ class ViewState extends WidgetState<View>
     Blob blob = Blob(bytes);
     final url = Url.createObjectUrlFromBlob(blob);
 
-    String name = "${S.newId()}.pdf";
+    String name = "${newId()}.pdf";
 
-    var file = File(blob, url, name, await S.mimetype(name), bytes.length);
+    var file = File(blob, url, name, await Mime.type(name), bytes.length);
     widget.model.onFile(file);
   }
 }

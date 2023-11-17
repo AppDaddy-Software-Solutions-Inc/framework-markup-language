@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
-import 'package:fml/helper/color.dart';
-import 'package:fml/helper/string.dart';
+import 'package:fml/helpers/color.dart';
+import 'package:fml/helpers/string.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/animation/animation_helper.dart';
 import 'package:fml/widgets/animation/animation_child/tween/tween_model.dart';
@@ -156,8 +156,8 @@ Widget build(BuildContext context)
         end: to,
       );
     } else {
-      from = S.toDouble(widget.model.from) ?? 0;
-      to = S.toDouble(widget.model.to) ?? 1;
+      from = toDouble(widget.model.from) ?? 0;
+      to = toDouble(widget.model.to) ?? 1;
       newTween = Tween<double>(
         begin: from,
         end: to,
@@ -187,9 +187,9 @@ Widget build(BuildContext context)
     if (event.parameters == null) return;
 
     String? id = (event.parameters != null) ? event.parameters!['id'] : null;
-    if ((S.isNullOrEmpty(id)) || (id == widget.model.id)) {
+    if ((isNullOrEmpty(id)) || (id == widget.model.id)) {
       bool? enabled = (event.parameters != null)
-          ? S.toBool(event.parameters!['enabled'])
+          ? toBool(event.parameters!['enabled'])
           : true;
       if (enabled != false) {
         start();
@@ -202,7 +202,7 @@ Widget build(BuildContext context)
 
   void onReset(Event event) {
     String? id = (event.parameters != null) ? event.parameters!['id'] : null;
-    if ((S.isNullOrEmpty(id)) || (id == widget.model.id)) {
+    if ((isNullOrEmpty(id)) || (id == widget.model.id)) {
       reset();
     }
   }

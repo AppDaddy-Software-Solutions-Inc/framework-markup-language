@@ -9,7 +9,7 @@ import 'package:fml/datasources/base/model.dart';
 import 'package:xml/xml.dart';
 import 'gps_litener_interface.dart';
 import 'payload.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class GpsModel extends DataSourceModel implements IDataSource, IGpsListener
 {

@@ -4,7 +4,7 @@ import 'package:fml/widgets/drawer/drawer_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 enum DrawerPositions {top, bottom, left, right}
 
@@ -43,12 +43,12 @@ class DrawerItemModel extends BoxModel
     {
       case "open" :
         DrawerViewState? drawer = parent?.findListenerOfExactType(DrawerViewState);
-        if (drawer != null) return await drawer.openDrawer(S.fromEnum(position));
+        if (drawer != null) return await drawer.openDrawer(fromEnum(position));
         break;
 
       case "close" :
         DrawerViewState? drawer = parent?.findListenerOfExactType(DrawerViewState);
-        if (drawer != null) return await drawer.closeDrawer(S.fromEnum(position));
+        if (drawer != null) return await drawer.closeDrawer(fromEnum(position));
         break;
 
     }

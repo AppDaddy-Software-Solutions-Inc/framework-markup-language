@@ -8,7 +8,7 @@ import 'package:fml/observable/binding.dart';
 
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class Query extends TransformModel implements ITransform
 {
@@ -66,7 +66,7 @@ class Query extends TransformModel implements ITransform
         await ds!.start(refresh: true);
 
         // save to the data set
-        if (ds!.statuscode == 200) Data.writeValue(row, target, ds!.data);
+        if (ds!.statuscode == 200) Data.write(row, target, ds!.data);
       }
     }
   }

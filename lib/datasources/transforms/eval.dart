@@ -7,7 +7,7 @@ import 'package:fml/observable/binding.dart';
 
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class Eval extends TransformModel implements ITransform
 {
@@ -46,14 +46,13 @@ class Eval extends TransformModel implements ITransform
     for (var row in list)
     {
       // get variables
-
-      Map<String?, dynamic> variables = Data.readValues(bindings, row);
+      Map<String?, dynamic> variables = Data.find(bindings, row);
 
       // evaluate
       var value = fml_eval.Eval.evaluate(source, variables: variables);
 
       // save to the data set
-      Data.writeValue(row, target, value);
+      Data.write(row, target, value);
     }
   }
 

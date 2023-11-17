@@ -7,7 +7,7 @@ import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/pager/pager_model.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class PagerView extends StatefulWidget implements IWidgetView
@@ -46,7 +46,7 @@ class PagerViewState extends WidgetState<PagerView>
   void pageTo(dynamic page, String transition)
   {
     int currentPage = _controller!.page!.toInt() + 1;
-    int? pageNum = S.toInt(page);
+    int? pageNum = toInt(page);
     int pages = widget.model.pages.length;
 
     if (pageNum == null && page is String) {

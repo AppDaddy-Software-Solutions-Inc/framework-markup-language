@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/input/input_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 import 'package:xml/xml.dart';
 
 enum CapitalizationTypes { mixed, camel, upper, lower, sentences, words }
@@ -25,7 +25,7 @@ class InputModel extends DecoratedInputModel implements IFormField {
   set capitalization(dynamic v)
   {
     if (v is CapitalizationTypes) _capitalization = v;
-    _capitalization = S.toEnum(v, CapitalizationTypes.values);
+    _capitalization = toEnum(v, CapitalizationTypes.values);
   }
   CapitalizationTypes? get capitalization => _capitalization;
 
@@ -299,14 +299,14 @@ class InputModel extends DecoratedInputModel implements IFormField {
     super.deserialize(xml);
 
     // set properties
-    format = Xml.get(node: xml, tag: S.fromEnum('type'));
+    format = Xml.get(node: xml, tag: fromEnum('type'));
     if (formatType == "xml")
     {
       String? xml;
       XmlElement? child;
-      child ??= Xml.getChildElement(node: element!, tag: S.fromEnum('value')!.toUpperCase());
-      child ??= Xml.getChildElement(node: element!, tag: S.fromEnum('value')!.toLowerCase());
-      child ??= Xml.getChildElement(node: element!, tag: S.fromEnum('value')!);
+      child ??= Xml.getChildElement(node: element!, tag: fromEnum('value')!.toUpperCase());
+      child ??= Xml.getChildElement(node: element!, tag: fromEnum('value')!.toLowerCase());
+      child ??= Xml.getChildElement(node: element!, tag: fromEnum('value')!);
       if (child != null) xml = child.innerXml;
       if (xml != null)
       {
@@ -318,7 +318,7 @@ class InputModel extends DecoratedInputModel implements IFormField {
     }
     else
     {
-      value = Xml.get(node: xml, tag: S.fromEnum('value'));
+      value = Xml.get(node: xml, tag: fromEnum('value'));
     }
 
     // set validator

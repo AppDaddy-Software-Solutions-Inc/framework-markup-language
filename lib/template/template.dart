@@ -8,7 +8,7 @@ import 'package:fml/template/template_manager.dart';
 import 'package:validators/validators.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class Template
 {
@@ -43,7 +43,7 @@ class Template
       // Replace System Uuid
       String s = Binding.toKey(System.myId, 'uuid')!;
       while (xml!.contains(s)) {
-        xml = xml.replaceFirst(s, S.newId());
+        xml = xml.replaceFirst(s, newId());
       }
 
       // Convert Xml String to Xml Document

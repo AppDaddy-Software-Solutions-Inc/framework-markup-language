@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:fml/datasources/http/http.dart';
+import 'package:fml/helpers/mime.dart';
 import 'package:path/path.dart';
-import 'package:fml/helper/common_helpers.dart';
 
 extension URI on Uri
 {
@@ -179,7 +179,7 @@ extension URI on Uri
         if (filepath == null) return null;
         var file  = File(filepath);
         var bytes = await file.readAsBytes();
-        var mime  = await S.mimetype(url);
+        var mime  = await Mime.type(url);
         return UriData.fromBytes(bytes,mimeType: mime);
       }
 
@@ -188,7 +188,7 @@ extension URI on Uri
       {
         var assetpath = "${uri.scheme}/${uri.host}${uri.path}";
         ByteData bytes = await rootBundle.load(assetpath);
-        var mime  = await S.mimetype(url);
+        var mime  = await Mime.type(url);
         return UriData.fromBytes(bytes.buffer.asUint8List(),mimeType: mime);
       }
 
@@ -197,7 +197,7 @@ extension URI on Uri
       if (response.statusCode == HttpStatus.ok)
       {
         var bytes = response.bytes;
-        var mime  = await S.mimetype(url);
+        var mime  = await Mime.type(url);
         return UriData.fromBytes(bytes, mimeType: mime);
       }
     }

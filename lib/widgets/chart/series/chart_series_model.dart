@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 /// Chart Series Types
 enum ChartSeriesType {
@@ -119,33 +119,33 @@ class ChartSeriesModel extends WidgetModel
 
     // Setup the Series type and some internal properties for supporting it
     if (type != null) type = type?.trim().toLowerCase();
-    switch (S.toEnum(type, ChartSeriesType.values)) {
+    switch (toEnum(type, ChartSeriesType.values)) {
       case ChartSeriesType.area:
-        type = S.fromEnum(ChartSeriesType.area);
+        type = fromEnum(ChartSeriesType.area);
         break;
 
       case ChartSeriesType.bar:
-        type = S.fromEnum(ChartSeriesType.bar);
+        type = fromEnum(ChartSeriesType.bar);
         break;
 
       case ChartSeriesType.label:
-        type = S.fromEnum(ChartSeriesType.label);
+        type = fromEnum(ChartSeriesType.label);
         break;
 
       case ChartSeriesType.line:
-        type = S.fromEnum(ChartSeriesType.line);
+        type = fromEnum(ChartSeriesType.line);
         break;
 
       case ChartSeriesType.pie:
-        type = S.fromEnum(ChartSeriesType.pie);
+        type = fromEnum(ChartSeriesType.pie);
         break;
 
       case ChartSeriesType.plot:
-        type = S.fromEnum(ChartSeriesType.plot);
+        type = fromEnum(ChartSeriesType.plot);
         break;
 
       case ChartSeriesType.waterfall:
-        type = S.fromEnum(ChartSeriesType.waterfall);
+        type = fromEnum(ChartSeriesType.waterfall);
         break;
 
       default:

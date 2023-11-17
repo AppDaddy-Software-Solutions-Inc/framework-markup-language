@@ -10,7 +10,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/text/text_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class TextModel extends DecoratedWidgetModel 
 {
@@ -49,7 +49,7 @@ class TextModel extends DecoratedWidgetModel
       _size!.set(v);
       width = v;
     } else if (v != null) {
-      if (S.isPercentage(v)) {
+      if (isPercent(v)) {
         _sizeIsPercent = true;
         v = v.split("%")[0];
       }

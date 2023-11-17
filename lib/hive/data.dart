@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/hive/database.dart';
 import 'package:fml/crypto/crypto.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 String _cacheHashKey = 'FUQK70bxp6e3dUeyXqqNjPbDLhDfYTA1';
 
 class Data
@@ -16,7 +16,7 @@ class Data
 
   Data({String? key, String? value, int? expires})
   {
-    key ??= S.newId();
+    key ??= newId();
     if (key.length > 256) key = Cryptography.hash(key: _cacheHashKey, text: key);
     _map["key"]     = key;
     _map["value"]   = value ?? "";
@@ -32,7 +32,7 @@ class Data
   static Data? _fromMap(dynamic map)
   {
     Data? data;
-    if (map is Map<String, dynamic>) data = Data(key: S.mapVal(map, "key"), value: S.mapVal(map, "value"), expires: S.mapInt(map, "expires"));
+    if (map is Map<String, dynamic>) data = Data(key: fromMap(map, "key"), value: fromMap(map, "value"), expires: fromMapAsInt(map, "expires"));
     return data;
   }
 

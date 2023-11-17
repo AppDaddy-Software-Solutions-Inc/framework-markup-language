@@ -181,6 +181,7 @@ class FormModel extends BoxModel implements IForm
     {
       form.clean = false;
     }
+    dirty = false;
   }
 
   // gps

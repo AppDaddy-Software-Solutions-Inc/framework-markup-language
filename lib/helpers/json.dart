@@ -60,7 +60,14 @@ class Json
     }
   }
 
-  static void toXml(XmlElement node, dynamic data, {String? name})
+  static String toXml(dynamic data, {String? defaultRootName, String? defaultNodeName})
+  {
+    var root = XmlElement(XmlName(defaultRootName ?? defaultRootName ?? "ROOT"));
+    _toXml(root, data, defaultNodeName: defaultNodeName);
+    return root.toXmlString();
+  }
+
+  static void _toXml(XmlElement node, dynamic data, {String? defaultNodeName})
   {
     // map
     if (data is Map)
@@ -72,12 +79,12 @@ class Json
         {
           var element = XmlElement(XmlName(key));
           node.children.add(element);
-          toXml(element,value);
+          _toXml(element,value);
         }
 
         else if (value is List)
         {
-          toXml(node, value, name: key);
+          _toXml(node, value, defaultNodeName: key);
         }
 
         else
@@ -111,9 +118,9 @@ class Json
     {
       for (var item in data)
       {
-        var element = XmlElement(XmlName(name ?? "NODEX"));
+        var element = XmlElement(XmlName(defaultNodeName ?? "NODE"));
         node.children.add(element);
-        toXml(element, item);
+        _toXml(element, item);
       }
     }
   }

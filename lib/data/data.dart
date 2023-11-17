@@ -90,16 +90,10 @@ class Data with ListMixin<dynamic>
 
   static Data? fromXml(String xml) => Data.fromJson(Json.fromXml(xml) ?? "{}");
 
-  static String toXml(Data? data)
-  {
-    var root = data?.root?.split(".")[0];
-    var xml = XmlElement(XmlName(root ?? "ROOT"));
-    if (data != null)
-    {
-      Json.toXml(xml, data, name: data.root?.split(".").last);
-    }
-    return xml.toXmlString();
-  }
+  static String toXml(Data? data, {String? defaultRootName, String? defaultNodeName}) =>
+      Json.toXml(data,
+          defaultRootName: defaultRootName ?? data?.root?.split(".").first,
+          defaultNodeName: defaultNodeName ?? data?.root?.split(".").last);
 
   static Data? fromDotNotation(Data data, DotNotation dotnotation)
   {

@@ -10,7 +10,7 @@ import connectivity_plus_macos
 import firebase_auth
 import firebase_core
 import geolocator_apple
-import path_provider_foundation
+import path_provider_macos
 import printing
 import url_launcher_macos
 

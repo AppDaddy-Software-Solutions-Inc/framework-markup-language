@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:fml/hive/database.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class ThemeData
 {
@@ -65,7 +65,7 @@ class ThemeData
     String? onErrorContainer
   })
   {
-    _map["key"] = key ?? S.newId();
+    _map["key"] = key ?? newId();
     _map["background"] = background;
     _map["onBackground"] = onBackground;
     _map["shadow"] = shadow;
@@ -103,32 +103,32 @@ class ThemeData
     ThemeData? theme;
     if (map is Map<String, dynamic>) {
       theme = ThemeData(
-          key: S.mapVal(map, 'key'),
-          background: S.mapVal(map, 'background'),
-          onBackground: S.mapVal(map, 'onBackground'),
-          shadow: S.mapVal(map, 'shadow'),
-          outline: S.mapVal(map, 'outline'),
-          surface: S.mapVal(map, 'surface'),
-          onSurface: S.mapVal(map, 'onSurface'),
-          surfaceVariant: S.mapVal(map, 'surfaceVariant'),
-          onSurfaceVariant: S.mapVal(map, 'onSurfaceVariant'),
-          inverseSurface: S.mapVal(map, 'inverseSurface'),
-          onInverseSurface: S.mapVal(map, 'onInverseSurface'),
-          primary: S.mapVal(map, 'primary'),
-          onPrimary: S.mapVal(map, 'onPrimary'),
-          primaryContainer: S.mapVal(map, 'primaryContainer'),
-          onPrimaryContainer: S.mapVal(map, 'onPrimaryContainer'),
-          inversePrimary: S.mapVal(map, 'inversePrimary'),
-          secondary: S.mapVal(map, 'secondary'),
-          onSecondary: S.mapVal(map, 'onSecondary'),
-          secondaryContainer: S.mapVal(map, 'secondaryContainer'),
-          onSecondaryContainer: S.mapVal(map, 'onSecondaryContainer'),
-          tertiaryContainer: S.mapVal(map, 'tertiaryContainer'),
-          onTertiaryContainer: S.mapVal(map, 'onTertiaryContainer'),
-          error: S.mapVal(map, 'error'),
-          onError: S.mapVal(map, 'onError'),
-          errorContainer: S.mapVal(map, 'errorContainer'),
-          onErrorContainer: S.mapVal(map, 'onErrorContainer'));
+          key: fromMap(map, 'key'),
+          background: fromMap(map, 'background'),
+          onBackground: fromMap(map, 'onBackground'),
+          shadow: fromMap(map, 'shadow'),
+          outline: fromMap(map, 'outline'),
+          surface: fromMap(map, 'surface'),
+          onSurface: fromMap(map, 'onSurface'),
+          surfaceVariant: fromMap(map, 'surfaceVariant'),
+          onSurfaceVariant: fromMap(map, 'onSurfaceVariant'),
+          inverseSurface: fromMap(map, 'inverseSurface'),
+          onInverseSurface: fromMap(map, 'onInverseSurface'),
+          primary: fromMap(map, 'primary'),
+          onPrimary: fromMap(map, 'onPrimary'),
+          primaryContainer: fromMap(map, 'primaryContainer'),
+          onPrimaryContainer: fromMap(map, 'onPrimaryContainer'),
+          inversePrimary: fromMap(map, 'inversePrimary'),
+          secondary: fromMap(map, 'secondary'),
+          onSecondary: fromMap(map, 'onSecondary'),
+          secondaryContainer: fromMap(map, 'secondaryContainer'),
+          onSecondaryContainer: fromMap(map, 'onSecondaryContainer'),
+          tertiaryContainer: fromMap(map, 'tertiaryContainer'),
+          onTertiaryContainer: fromMap(map, 'onTertiaryContainer'),
+          error: fromMap(map, 'error'),
+          onError: fromMap(map, 'onError'),
+          errorContainer: fromMap(map, 'errorContainer'),
+          onErrorContainer: fromMap(map, 'onErrorContainer'));
     }
 
     return theme;

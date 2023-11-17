@@ -2,7 +2,7 @@
 import 'package:fml/log/manager.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart' as google_barcode;
 import 'barcode_detector.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 BarcodeDetector getDetector() => BarcodeDetector();
 
@@ -95,7 +95,7 @@ class BarcodeDetector implements IBarcodeDetector
     for (var barcode in barcodes) {
       Barcode bc = Barcode();
       bc.type    = barcode.type.index;
-      bc.format  = S.fromEnum(barcode.format);
+      bc.format  = fromEnum(barcode.format);
       bc.display = barcode.displayValue;
       bc.barcode = barcode.rawValue;
       payload.barcodes.add(bc);

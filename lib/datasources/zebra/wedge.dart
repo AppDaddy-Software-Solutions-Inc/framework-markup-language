@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/datasources/detectors/barcode/barcode_detector.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 abstract class IZebraListener
 {
@@ -66,7 +66,7 @@ class Reader
   {
     try
     {
-      String argumentAsJson = jsonEncode({"command": command, "parameter": parameter});
+      String argumentAsJson = Json.encode({"command": command, "parameter": parameter});
       await methodChannel?.invokeMethod('ZEBRA', argumentAsJson);
     }
     catch(e)
@@ -110,25 +110,25 @@ class Reader
     Payload payload = Payload();
 
     // barcode
-    String barcode = (result.containsKey("barcode") ? S.toStr(result["barcode"]) : null) ?? "";
+    String barcode = (result.containsKey("barcode") ? toStr(result["barcode"]) : null) ?? "";
 
     // barcode format
-    String? format = (result.containsKey("format") ? S.toStr(result["format"]) : null)?.trim().toLowerCase().replaceAll("label-type-", "");
+    String? format = (result.containsKey("format") ? toStr(result["format"]) : null)?.trim().toLowerCase().replaceAll("label-type-", "");
 
     // source
-    String? source = result.containsKey("source") ? S.toStr(result["source"]) : "";
+    String? source = result.containsKey("source") ? toStr(result["source"]) : "";
 
     // get barcode(s) - RFID concatenates barcodes together and seperates by a newline
     var barcodes = LineSplitter.split(barcode);
     for (var barcode in barcodes)
     {
       barcode = barcode.trim();
-      if (!S.isNullOrEmpty(barcode))
+      if (!isNullOrEmpty(barcode))
       {
         Barcode bc = Barcode();
         bc.type    = 0;
         bc.source  = source;
-        bc.format  = S.fromEnum(S.toEnum(format, BarcodeFormats.values) ?? BarcodeFormats.unknown);
+        bc.format  = fromEnum(toEnum(format, BarcodeFormats.values) ?? BarcodeFormats.unknown);
         bc.display = barcode;
         bc.barcode = barcode;
         payload.barcodes.add(bc);

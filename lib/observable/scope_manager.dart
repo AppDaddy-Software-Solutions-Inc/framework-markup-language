@@ -2,7 +2,7 @@
 import 'dart:collection';
 import 'package:fml/observable/observable.dart';
 import 'package:fml/observable/scope.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class ScopeManager
 {
@@ -39,7 +39,7 @@ class ScopeManager
 
   register(Observable observable)
   {
-    if ((S.isNullOrEmpty(observable.key)) || (observable.scope == null)) return null;
+    if ((isNullOrEmpty(observable.key)) || (observable.scope == null)) return null;
 
     // Notify 
     _notifyDescendants(observable.scope!, observable);
@@ -109,7 +109,7 @@ class ScopeManager
 
   Observable? findObservable(Scope? scope, String? key)
   {
-    if ((scope == null) || (S.isNullOrEmpty(key))) return null;
+    if ((scope == null) || (isNullOrEmpty(key))) return null;
     if (scope.observables.containsKey(key)) return scope.observables[key];
     return findObservable(scope.parent, key);
   }

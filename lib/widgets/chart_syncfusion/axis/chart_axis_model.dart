@@ -5,7 +5,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 enum Axis {X, Y}
 enum AxisType {category, numeric, datetime, date, time, logarithmic}
@@ -265,7 +265,7 @@ class ChartAxisModel extends WidgetModel
     AxisType? axisType = axis == Axis.Y ? AxisType.numeric : AxisType.category;
     if (type != null && type is String) {
       type = type.trim().toLowerCase();
-      axisType = S.toEnum(type, AxisType.values);
+      axisType = toEnum(type, AxisType.values);
     }
     else if (type != null && type is AxisType) {
       axisType = type;

@@ -157,7 +157,7 @@ class TableViewState extends WidgetState<TableView>
         }
         else
         {
-          value = Data.readValue(data, column.field) ?? "";
+          value = Data.read(data, column.field) ?? "";
         }
 
         cells[column.field] = PlutoCell(value: value);

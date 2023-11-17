@@ -132,7 +132,7 @@ import 'package:fml/widgets/span/span_model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 import '../chart_painter/line/line_chart_model.dart';
 import '../chart_painter/line/line_series.dart';
@@ -161,10 +161,8 @@ class WidgetModel implements IDataSourceListener {
 
   // xml node
   XmlElement? element;
-  String get elementName =>
-      element != null ? element!.localName.toUpperCase() : '$runtimeType';
-  String? get elementNamespace =>
-      element != null ? element!.namespacePrefix!.toLowerCase() : null;
+  String get elementName => element?.localName.toUpperCase() ?? '$runtimeType';
+  String? get elementNamespace => element?.namespacePrefix?.toLowerCase();
 
   // datasource
   List<IDataSource>? datasources;
@@ -180,15 +178,31 @@ class WidgetModel implements IDataSourceListener {
     }
     else if (v != null)
     {
-      _data = ListObservable(Binding.toKey(id, 'data'), null, scope: scope, listener: onPropertyChange);
+      final key = Binding.toKey(id, 'data');
+
+      _data = ListObservable(Binding.toKey(id, 'data'),
+          null,
+          scope: scope,
+          listener: onPropertyChange,
+
+          // inline setter
+          // used to set values within the data element
+          // when twoway binding is used
+          setter: (dynamic value, {Observable? setter})
+          {
+            if (setter?.twoway == null) return value;
+            var bdg = Binding.fromString(setter?.signature);
+            var tag = bdg?.toString().replaceFirst("$key.", "");
+            Data.write(data, tag, value);
+            return data;
+          });
+
+      // set the value
       _data!.set(v);
     }
   }
   get data => _data?.get();
-  void onDataChange()
-  {
-    _data != null ? _data!.notifyListeners() : null;
-  }
+  void onDataChange() => _data?.notifyListeners();
 
   // listeners
   List<IModelListener>? _listeners;
@@ -288,7 +302,7 @@ class WidgetModel implements IDataSourceListener {
   static RegExp onlyAlpha = RegExp(r'''[^a-zA-Z0-9\s.]''');
   String _toId(String? id)
   {
-    if (S.isNullOrEmpty(id))
+    if (isNullOrEmpty(id))
     {
       String prefix = "auto";
       if (kDebugMode)
@@ -297,7 +311,7 @@ class WidgetModel implements IDataSourceListener {
         prefix = prefix.replaceAll(onlyAlpha,'');
         if (prefix.endsWith('model')) prefix = prefix.substring(0, prefix.lastIndexOf('model'));
       }
-      id = S.newId(prefix: prefix);
+      id = newId(prefix: prefix);
     }
     return id!;
   }
@@ -1140,7 +1154,7 @@ class WidgetModel implements IDataSourceListener {
 
   /// Returns true if the template references observable => key
   static bool isBound(WidgetModel model, String? key) {
-    if ((model.framework == null) || (S.isNullOrEmpty(key))) return false;
+    if ((model.framework == null) || (isNullOrEmpty(key))) return false;
     return model.framework!.bindables!.contains(key);
   }
 
@@ -1378,12 +1392,12 @@ class WidgetModel implements IDataSourceListener {
     switch (function) {
       case 'set':
         // value
-        var value = S.item(arguments, 0);
+        var value = elementAt(arguments, 0);
 
         // property - default is value
         // we can now use dot notation to specify the property
         // rather than pass it as an attribute
-        var property = S.item(arguments, 1);
+        var property = elementAt(arguments, 1);
         property ??= Binding.fromString(caller)?.key ?? property;
 
         Scope? scope = Scope.of(this);
@@ -1396,13 +1410,13 @@ class WidgetModel implements IDataSourceListener {
       case 'addchild':
 
         // fml
-        var xml = S.item(arguments, 0);
+        var xml = elementAt(arguments, 0);
 
         // if index is null, add to end of list.
-        int? index = S.toInt(S.item(arguments, 1));
+        int? index = toInt(elementAt(arguments, 1));
 
         // silent
-        bool silent = S.toBool(S.item(arguments, 2)) ?? true;
+        bool silent = toBool(elementAt(arguments, 2)) ?? true;
 
         if (xml == null || xml is! String) return true;
 
@@ -1417,7 +1431,7 @@ class WidgetModel implements IDataSourceListener {
       case 'removechild':
 
         // if index is null, remove all children before replacement.
-        int? index = S.toInt(S.item(arguments, 0));
+        int? index = toInt(elementAt(arguments, 0));
 
         // check for children then remove them
         if (children != null && index == null) {
@@ -1453,13 +1467,13 @@ class WidgetModel implements IDataSourceListener {
       case 'replacechild':
 
         // fml
-        var xml = S.item(arguments, 0);
+        var xml = elementAt(arguments, 0);
 
         // if index is null, remove last child before replacement.
-        int? index = S.toInt(S.item(arguments, 1));
+        int? index = toInt(elementAt(arguments, 1));
 
         // silent
-        bool silent = S.toBool(S.item(arguments, 2)) ?? true;
+        bool silent = toBool(elementAt(arguments, 2)) ?? true;
 
         if (xml == null || xml is! String) return true;
 
@@ -1491,10 +1505,10 @@ class WidgetModel implements IDataSourceListener {
       case 'replacechildren':
 
         // fml
-        var xml = S.item(arguments, 0);
+        var xml = elementAt(arguments, 0);
 
         // silent
-        bool silent = S.toBool(S.item(arguments, 1)) ?? true;
+        bool silent = toBool(elementAt(arguments, 1)) ?? true;
 
         if (xml == null || xml is! String) return true;
 
@@ -1531,7 +1545,7 @@ class WidgetModel implements IDataSourceListener {
       case 'replacewidget':
 
         // fml
-        var xml = S.item(arguments, 0);
+        var xml = elementAt(arguments, 0);
 
         // get my position in my parents child list
         int? index = (parent?.children?.contains(this) ?? false)
@@ -1539,7 +1553,7 @@ class WidgetModel implements IDataSourceListener {
             : null;
 
         // silent
-        bool silent = S.toBool(S.item(arguments, 1)) ?? true;
+        bool silent = toBool(elementAt(arguments, 1)) ?? true;
 
         if (xml == null || xml is! String) return true;
 
@@ -1667,7 +1681,7 @@ class WidgetModel implements IDataSourceListener {
     // if missing, assign it a unique key
     if (id == null)
     {
-      id = S.newId();
+      id = newId();
       Xml.setAttribute(node, "id", id);
     }
 

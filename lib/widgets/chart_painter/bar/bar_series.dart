@@ -7,7 +7,7 @@ import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 /// ChartDataPoint Object
 ///
@@ -141,7 +141,7 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
   void plotPoints(dynamic dataList, List uniqueValues){
     xValues.clear();
     barDataPoint.clear();
-    if (type == 'bar' || S.isNullOrEmpty(type)) {
+    if (type == 'bar' || isNullOrEmpty(type)) {
       plotFunction = pointFromBarData;
     } else if (type == 'stacked') {
       stackDataPoint.clear();
@@ -180,7 +180,7 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
   void pointFromBarData()
   {
     //barchartrodstackitem allows stacking within series group.
-    BarChartGroupData point = BarChartGroupData(x: S.toInt(x) ?? 0, barRods: [BarChartRodData(fromY: S.toDouble(y0) ?? 0,toY: S.toDouble(y) ?? 0, width: width, color: color ?? ColorHelper.fromString('random'))]);
+    BarChartGroupData point = BarChartGroupData(x: toInt(x) ?? 0, barRods: [BarChartRodData(fromY: toDouble(y0) ?? 0,toY: toDouble(y) ?? 0, width: width, color: color ?? ColorHelper.fromString('random'))]);
     barDataPoint.add(point);
 
   }
@@ -188,21 +188,21 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
   void pointFromWaterfallBarData()
   {
     //barchartrodstackitem allows stacking within series group.
-    BarChartGroupData point = BarChartGroupData(x: S.toInt(x) ?? 0, barRods: [BarChartRodData(fromY: barDataPoint.isNotEmpty ? barDataPoint[(barDataPoint.length - 1)].barRods[0].toY : 0,toY: S.toDouble(y) ?? 0, width: width, color: color ?? ColorHelper.fromString('random'))]);
+    BarChartGroupData point = BarChartGroupData(x: toInt(x) ?? 0, barRods: [BarChartRodData(fromY: barDataPoint.isNotEmpty ? barDataPoint[(barDataPoint.length - 1)].barRods[0].toY : 0,toY: toDouble(y) ?? 0, width: width, color: color ?? ColorHelper.fromString('random'))]);
     barDataPoint.add(point);
   }
 
   void pointFromGroupedBarData()
   {
     //barchartrodstackitem allows stacking within series group.
-    BarChartRodData point = BarChartRodData(fromY: S.toDouble(y0) ?? 0, toY: S.toDouble(y) ?? 0, color: color ?? ColorHelper.fromString('random'));
+    BarChartRodData point = BarChartRodData(fromY: toDouble(y0) ?? 0, toY: toDouble(y) ?? 0, color: color ?? ColorHelper.fromString('random'));
     rodDataPoint.add(point);
   }
 
   void pointFromStackedBarData()
   {
     //barchartrodstackitem allows stacking within series group.
-    BarChartRodStackItem point = BarChartRodStackItem(S.toDouble(y0) ?? 0, S.toDouble(y) ?? 0, color ?? ColorHelper.fromString('random') ?? Colors.blue);
+    BarChartRodStackItem point = BarChartRodStackItem(toDouble(y0) ?? 0, toDouble(y) ?? 0, color ?? ColorHelper.fromString('random') ?? Colors.blue);
     stackDataPoint.add(point);
   }
 }

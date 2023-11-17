@@ -4,7 +4,7 @@ import 'package:camera/camera.dart' show CameraDescription;
 import 'package:zxing_lib/common.dart' show HybridBinarizer;
 import 'package:zxing_lib/zxing.dart'  show RGBLuminanceSource;
 import 'package:zxing_lib/zxing.dart'  show BinaryBitmap;
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class DetectableImage
 {

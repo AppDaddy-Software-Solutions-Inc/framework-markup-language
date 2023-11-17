@@ -17,7 +17,7 @@ import 'package:fml/widgets/chart_syncfusion/chart_model.dart' as CHART;
 import 'package:fml/widgets/chart_syncfusion/series/chart_series_model.dart' as SERIES;
 import 'package:fml/widgets/chart_syncfusion/axis/chart_axis_model.dart' as AXIS;
 import 'package:fml/widgets/chart_syncfusion/excerpts/functions.dart' as EXCERPT;
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 import 'axis/chart_axis_model.dart';
 
@@ -189,7 +189,7 @@ class _ChartViewState extends State<ChartView> implements IModelListener
   Widget tooltipBuilder(dynamic data, dynamic point, dynamic series, int pointIndex, int seriesIndex)
   {
     COLUMN.ColumnModel? model = widget.model.buildTooltip(series, pointIndex);
-    return COLUMN.ColumnView(model ?? COLUMN.ColumnModel(null, S.newId()));
+    return COLUMN.ColumnView(model ?? COLUMN.ColumnModel(null, newId()));
   }
 
   /// Parser for databroker data to convert it from a String to appropriate data type if need be
@@ -200,7 +200,7 @@ class _ChartViewState extends State<ChartView> implements IModelListener
       return num.tryParse(val!) ?? 0;
     } else if (type == AXIS.AxisType.date || type == AXIS.AxisType.time || type == AXIS.AxisType.datetime) {
       DateTime? formatted;
-      formatted = S.toDate(val, format: 'yMd Hm');
+      formatted = toDate(val, format: 'yMd Hm');
       return formatted; //DateTime.tryParse(val);
     }
   }
@@ -247,19 +247,19 @@ class _ChartViewState extends State<ChartView> implements IModelListener
         // Loop through each point
         for (SERIES.Point plot in series.points) {
           // Parse x and y data values from the databroker string values
-          if (!S.isNullOrEmpty(plot.x)) { // y value can be null, creating a gap in the chart
+          if (!isNullOrEmpty(plot.x)) { // y value can be null, creating a gap in the chart
             var xParsed;
             var yParsed;
             try {
               xParsed = parsePlotPoint(plot.x, widget.model.xaxis.type);
             } catch(e) { Log().error(e.toString()); Log().info("chart view source parsing x val: ${plot.x?.toString() ?? 'null'}"); break; }
             try {
-              yParsed = S.isNullOrEmpty(plot.y) ? null : parsePlotPoint(plot.y, widget.model.yaxis.type);
+              yParsed = isNullOrEmpty(plot.y) ? null : parsePlotPoint(plot.y, widget.model.yaxis.type);
             } catch(e) { Log().error(e.toString()); Log().info("chart view source parsing y val: ${plot.y?.toString() ?? 'null'}"); break; }
             var xVal = xParsed;
             var yVal = yParsed;
             // get label
-            var label = S.isNullOrEmpty(plot.label) ? null : plot.label.trim();
+            var label = isNullOrEmpty(plot.label) ? null : plot.label.trim();
             // Add to point list
             if (series.labelled != true || label != null)
               chartSFSeriesList.add(SFChartDataPoint(xVal, yVal,
@@ -500,7 +500,7 @@ class _ChartViewState extends State<ChartView> implements IModelListener
 
     // Background image
     var backgroundImage;
-    if (!S.isNullOrEmpty(widget.model.backgroundimage)) backgroundImage = AssetImage(widget.model.backgroundimage!); // backgroundImage = System().getImage(widget.model.backgroundimage, fade: false, fit: "cover");
+    if (!isNullOrEmpty(widget.model.backgroundimage)) backgroundImage = AssetImage(widget.model.backgroundimage!); // backgroundImage = System().getImage(widget.model.backgroundimage, fade: false, fit: "cover");
 
     // Build Chart
     var chart = buildSFChart(plotBg: backgroundImage ?? null, chartType: widget.model.type, context: context);

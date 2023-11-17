@@ -6,7 +6,7 @@ import 'package:fml/widgets/animation/animation_child/flip/flip_card_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 /// Animation Model
 /// Defines the properties of an [ANIMATION.AnimationView]

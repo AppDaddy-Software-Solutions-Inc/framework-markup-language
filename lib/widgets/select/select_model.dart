@@ -10,7 +10,7 @@ import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/select/select_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class SelectModel extends DecoratedInputModel implements IFormField
 {
@@ -85,7 +85,7 @@ class SelectModel extends DecoratedInputModel implements IFormField
 
     // set properties
     value     = Xml.get(node: xml, tag: 'value');
-    addempty  = S.toBool(Xml.get(node: xml, tag: 'addempty')) ?? true;
+    addempty  = toBool(Xml.get(node: xml, tag: 'addempty')) ?? true;
 
     // build select options
     _buildOptions();
@@ -136,7 +136,7 @@ class SelectModel extends DecoratedInputModel implements IFormField
     List<OptionModel> options = findChildrenOfExactType(OptionModel).cast<OptionModel>();
 
     // set prototype
-    if (!S.isNullOrEmpty(this.datasource) && options.isNotEmpty)
+    if (!isNullOrEmpty(this.datasource) && options.isNotEmpty)
     {
       prototype = WidgetModel.prototypeOf(options.first.element);
       options.first.dispose();

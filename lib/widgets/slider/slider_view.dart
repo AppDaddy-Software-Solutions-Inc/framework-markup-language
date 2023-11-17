@@ -4,7 +4,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/slider/slider_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart' ;
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class SliderView extends StatefulWidget implements IWidgetView
 {
@@ -25,11 +25,11 @@ class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserv
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    var min   = S.toDouble(widget.model.minimum) ?? 0;
-    var max   = S.toDouble(widget.model.maximum) ?? 0;
+    var min   = toDouble(widget.model.minimum) ?? 0;
+    var max   = toDouble(widget.model.maximum) ?? 0;
     List values = widget.model.value?.split(',') ?? [min];
-    double value1 = S.toDouble(values[0]) ?? min;
-    double value2 = (values.length > 1 ?  S.toDouble(values[1]) : value1) ?? max;
+    double value1 = toDouble(values[0]) ?? min;
+    double value2 = (values.length > 1 ?  toDouble(values[1]) : value1) ?? max;
 
     String? label;
 
@@ -61,13 +61,13 @@ class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserv
     Widget view;
     if (widget.model.range) {
       view = RangeSlider(
-          values: RangeValues(S.toDouble(value1)!,
-              S.toDouble(value2)!),
+          values: RangeValues(toDouble(value1)!,
+              toDouble(value2)!),
           min: min,
           max: max,
-          divisions: !S.isNullOrEmpty(widget.model.divisions) &&
-              S.toInt(widget.model.divisions)! > 0
-              ? S.toInt(widget.model.divisions)
+          divisions: !isNullOrEmpty(widget.model.divisions) &&
+              toInt(widget.model.divisions)! > 0
+              ? toInt(widget.model.divisions)
               : null,
           labels: RangeLabels(value1.toString(),
               value2.toString()),
@@ -79,9 +79,9 @@ class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserv
         value: value1,
         min: min,
         max: max,
-        divisions: !S.isNullOrEmpty(widget.model.divisions) &&
-            S.toInt(widget.model.divisions)! > 0
-            ? S.toInt(widget.model.divisions)
+        divisions: !isNullOrEmpty(widget.model.divisions) &&
+            toInt(widget.model.divisions)! > 0
+            ? toInt(widget.model.divisions)
             : null,
         label: label,
         onChanged: onChange,
@@ -138,11 +138,11 @@ class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserv
 
   onRangeChange(RangeValues values) async {
     List modelValues = widget.model.value?.split(',') ?? [widget.model.minimum, widget.model.maximum];
-    double value1 = S.toDouble(modelValues[0]) ??  widget.model.minimum ?? 0;
-    double value2 = (modelValues.length > 1 ?  S.toDouble(modelValues[1]) : value1) ??  widget.model.maximum ?? 0;
+    double value1 = toDouble(modelValues[0]) ??  widget.model.minimum ?? 0;
+    double value2 = (modelValues.length > 1 ?  toDouble(modelValues[1]) : value1) ??  widget.model.maximum ?? 0;
     if (widget.model.editable == false || widget.model.enabled == false) {
       return;
-    } else if (S.toDouble(value1) != values.start) {
+    } else if (toDouble(value1) != values.start) {
       ///////////////////////////
       /* Retain Rollback Value */
       ///////////////////////////
@@ -158,7 +158,7 @@ class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserv
     ////////////////////////
     /* End Value Changed? */
     ////////////////////////
-    else if (S.toDouble(value2) != values.end) {
+    else if (toDouble(value2) != values.end) {
       ///////////////////////////
       /* Retain Rollback Value */
       ///////////////////////////

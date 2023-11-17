@@ -19,7 +19,7 @@ import 'package:fml/widgets/table/table_row_cell_model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class TableModel extends BoxModel implements IForm
 {
@@ -50,7 +50,7 @@ class TableModel extends BoxModel implements IForm
   bool get hasDynamicHeaders => header?.isDynamic ?? false;
 
   // table has a data source
-  bool get hasDataSource => !S.isNullOrEmpty(datasource);
+  bool get hasDataSource => !isNullOrEmpty(datasource);
 
   @override
   double? get paddingTop => super.paddingTop ?? defaultPadding;
@@ -388,7 +388,7 @@ class TableModel extends BoxModel implements IForm
 
     // legacy support
     String? size  = "0";
-    var paged = S.toBool(Xml.get(node: xml, tag: 'paged'));
+    var paged = toBool(Xml.get(node: xml, tag: 'paged'));
     if (paged != false)
     {
       size = Xml.get(node: xml, tag: 'pagesize');
@@ -501,7 +501,7 @@ class TableModel extends BoxModel implements IForm
 
   Future<bool> _build(IDataSource source, Data? data) async
   {
-    if (S.isNullOrEmpty(datasource) || datasource == source.id)
+    if (isNullOrEmpty(datasource) || datasource == source.id)
     {
       await _buildDynamic(data);
 
@@ -544,18 +544,18 @@ class TableModel extends BoxModel implements IForm
           case "raw" :
             var file  = await Data.toCsv(Data.from(data));
             var bytes = utf8.encode(file);
-            Platform.fileSaveAs(bytes, "${S.newId()}.csv");
+            Platform.fileSaveAs(bytes, "${newId()}.csv");
             break;
 
           case "csv" :
             var bytes = await view.exportToCSVBytes();
-            if (bytes != null) Platform.fileSaveAs(bytes, "${S.newId()}.csv");
+            if (bytes != null) Platform.fileSaveAs(bytes, "${newId()}.csv");
             break;
 
           case "pdf":
           default:
             var bytes = await view.exportToPDF();
-            if (bytes != null) Platform.fileSaveAs(bytes, "${S.newId()}.pdf");
+            if (bytes != null) Platform.fileSaveAs(bytes, "${newId()}.pdf");
             break;
         }
       }
@@ -756,7 +756,7 @@ class TableModel extends BoxModel implements IForm
     if (data != null && col != null && fld != null)
     {
       // write new value
-      Data.writeValue(data, fld, value);
+      Data.write(data, fld, value);
 
       // set current data
       row?.data = data;
@@ -776,7 +776,7 @@ class TableModel extends BoxModel implements IForm
       // on fail, restore old value
       if (!ok)
       {
-        Data.writeValue(data, fld, oldValue);
+        Data.write(data, fld, oldValue);
 
         // reset current row data
         row?.data = data;
@@ -838,14 +838,14 @@ class TableModel extends BoxModel implements IForm
     {
       // export the data
       case "export" :
-        var format = S.toStr(S.item(arguments, 0));
+        var format = toStr(elementAt(arguments, 0));
         await export(format);
         return true;
 
       // export the data
       case "autofit" :
       case "autosize" :
-        var mode = S.toStr(S.item(arguments, 0));
+        var mode = toStr(elementAt(arguments, 0));
         autosize(mode);
         return true;
     }

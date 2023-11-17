@@ -18,7 +18,7 @@ import 'package:fml/widgets/framework/framework_view.dart' ;
 import 'package:fml/store/store_view.dart';
 import 'package:fml/page404/page404_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNotifier, PopNavigatorRouterDelegateMixin<PageConfiguration>
 {
@@ -57,7 +57,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
 
       // document is linkable?
       // default - if singlePageApplication then false, otherwise true
-      bool linkable = S.toBool(Xml.attribute(node: template.document!.rootElement, tag: "linkable")) ?? System.app?.singlePage ?? false;
+      bool linkable = toBool(Xml.attribute(node: template.document!.rootElement, tag: "linkable")) ?? System.app?.singlePage ?? false;
 
       // set start page = home page if not linkable
       if (!linkable) startPage = homePage;
@@ -343,14 +343,14 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     bool ok = true;
     parameters ??= <String, String>{};
 
-    String url         = S.mapVal(parameters,'url',defaultValue: "");
-    bool?   modal      = S.mapBoo(parameters,'modal', defaultValue: false);
-    String? transition = S.mapVal(parameters,'transition');
-    String? width      = S.mapVal(parameters,'width');
-    String? height     = S.mapVal(parameters,'height');
-    int?  index        = S.mapInt(parameters,'index');
-    bool? replace      = S.mapBoo(parameters,'replace', defaultValue: false);
-    bool? replaceAll   = S.mapBoo(parameters,'replaceall', defaultValue: false);
+    String url         = fromMap(parameters,'url',defaultValue: "");
+    bool?   modal      = fromMapAsBool(parameters,'modal', defaultValue: false);
+    String? transition = fromMap(parameters,'transition');
+    String? width      = fromMap(parameters,'width');
+    String? height     = fromMap(parameters,'height');
+    int?  index        = fromMapAsInt(parameters,'index');
+    bool? replace      = fromMapAsBool(parameters,'replace', defaultValue: false);
+    bool? replaceAll   = fromMapAsBool(parameters,'replaceall', defaultValue: false);
 
     var uri = URI.parse(url);
     if (uri == null) return false;
@@ -366,7 +366,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     String? template = uri.domain.toLowerCase();
 
     // missing template?
-    if (S.isNullOrEmpty(template))
+    if (isNullOrEmpty(template))
     {
       //await DialogService().show(type: DialogType.error, title: phrase.missingTemplate, description: url, buttons: [Text(phrase.ok)]);
       return ok;
@@ -461,7 +461,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
       // match by index
       if (until.startsWith('[') && until.endsWith(']'))
       {
-        int? pageIndex = S.toInt(until.substring(1, until.length - 1));
+        int? pageIndex = toInt(until.substring(1, until.length - 1));
         pages = pageIndex != null ? (_pages.length) - pageIndex : -1;
       }
 
@@ -563,7 +563,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
 
  void setPageTitle(BuildContext context, String? title)
   {
-    if (!S.isNullOrEmpty(title))
+    if (!isNullOrEmpty(title))
     {
       Page? page = getPage(context);
       if ((page is MaterialPage) && (page.arguments is PageConfiguration)) (page.arguments as PageConfiguration).title = title;

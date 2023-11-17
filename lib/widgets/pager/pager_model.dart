@@ -9,7 +9,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/pager/pager_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class PagerModel extends BoxModel
 {
@@ -78,9 +78,9 @@ class PagerModel extends BoxModel
   }
   String get transition =>  _transition?.get() ?? 'jump';
 
-  dynamic _pageSetter(dynamic value)
+  dynamic _pageSetter(dynamic value, {Observable? setter})
   {
-    int? v = S.toInt(value);
+    int? v = toInt(value);
     if (v == null) {
       return value;
     }
@@ -151,7 +151,7 @@ class PagerModel extends BoxModel
     List<PageModel> pages = findChildrenOfExactType(PageModel).cast<PageModel>();
 
     // set prototype
-    if ((!S.isNullOrEmpty(datasource)) && (pages.isNotEmpty))
+    if ((!isNullOrEmpty(datasource)) && (pages.isNotEmpty))
     {
       prototype = WidgetModel.prototypeOf(pages.first.element);
       pages.removeAt(0);
@@ -188,13 +188,13 @@ class PagerModel extends BoxModel
           // page
           if (arguments.isNotEmpty)
           {
-            page = S.toInt(arguments[0]) ?? 0;
+            page = toInt(arguments[0]) ?? 0;
           }
 
           // transition
           if (arguments.length > 1)
           {
-            transition = S.toStr(arguments[1]) ?? this.transition;
+            transition = toStr(arguments[1]) ?? this.transition;
           }
 
           view.pageTo(page, transition);
@@ -212,7 +212,7 @@ class PagerModel extends BoxModel
           // page
           if (arguments.isNotEmpty)
           {
-            page = S.toInt(arguments[0]) ?? 0;
+            page = toInt(arguments[0]) ?? 0;
           }
           view.pageTo(page, transition);
         }
@@ -229,7 +229,7 @@ class PagerModel extends BoxModel
           // page
           if (arguments.isNotEmpty)
           {
-            page = S.toInt(arguments[0]) ?? 0;
+            page = toInt(arguments[0]) ?? 0;
           }
           view.pageTo(page, transition);
         }

@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:fml/widgets/chart_syncfusion/chart_view.dart' as VIEW;
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 /// Cartesian Chart
 ///
@@ -103,10 +103,10 @@ final ZoomPanBehavior zoomPanBehavior = ZoomPanBehavior(
 NumericAxis numericAxis(VIEW.Axis axis) {
   return NumericAxis(
     name: axis.name,
-    minimum: S.toDouble(axis.minimum),
-    maximum: S.toDouble(axis.maximum),
-    visibleMinimum: S.toDouble(axis.visibleMinimum),
-    visibleMaximum: S.toDouble(axis.visibleMaximum),
+    minimum: toDouble(axis.minimum),
+    maximum: toDouble(axis.maximum),
+    visibleMinimum: toDouble(axis.visibleMinimum),
+    visibleMaximum: toDouble(axis.visibleMaximum),
     interval: axis.interval,
     // decimalPlaces: 1,
     // rangePadding: ChartRangePadding.none,
@@ -163,7 +163,7 @@ DateTimeAxis dateTimeAxis(axis) {
 
   return DateTimeAxis(
     name: axis.name,
-    dateFormat: axis.format != null ? DateFormat(axis.format) : (S.fromEnum(axis.dataType) == 'date' ? DateFormat.yMd() : (S.fromEnum(axis.dataType) == 'time' ? DateFormat.jm() : DateFormat.yMd().add_Hm())),
+    dateFormat: axis.format != null ? DateFormat(axis.format) : (fromEnum(axis.dataType) == 'date' ? DateFormat.yMd() : (fromEnum(axis.dataType) == 'time' ? DateFormat.jm() : DateFormat.yMd().add_Hm())),
     // TODO: add more support for min/max/interval to DateTimeAxis
     // https://help.syncfusion.com/flutter/chart/axis-types#customizing-range-1
     // doubles should work

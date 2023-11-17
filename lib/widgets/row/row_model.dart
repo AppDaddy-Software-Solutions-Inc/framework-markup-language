@@ -4,7 +4,7 @@ import 'package:fml/observable/scope.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class RowModel extends BoxModel
 {

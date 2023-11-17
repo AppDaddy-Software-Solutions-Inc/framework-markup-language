@@ -8,7 +8,7 @@ import 'package:fml/widgets/positioned/positioned_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 import 'modal_view.dart';
 
 class ModalModel extends BoxModel
@@ -275,22 +275,22 @@ class ModalModel extends BoxModel
         if (view == null)
         {
           // modal width
-          if (arguments.isNotEmpty) width = S.toStr(arguments[0]);
+          if (arguments.isNotEmpty) width = toStr(arguments[0]);
 
           // modal height
-          if (arguments.length > 1) height = S.toStr(arguments[1]);
+          if (arguments.length > 1) height = toStr(arguments[1]);
 
           // resizeable
-          if (arguments.length > 2) resizeable = S.toBool(arguments[2]) ?? true;
+          if (arguments.length > 2) resizeable = toBool(arguments[2]) ?? true;
 
           // closeable
-          if (arguments.length > 3) closeable = S.toBool(arguments[3]) ?? true;
+          if (arguments.length > 3) closeable = toBool(arguments[3]) ?? true;
 
           // draggable
-          if (arguments.length > 4) draggable = S.toBool(arguments[4]) ?? true;
+          if (arguments.length > 4) draggable = toBool(arguments[4]) ?? true;
 
           // modal
-          if (arguments.length > 5) modal = S.toBool(arguments[5]) ?? true;
+          if (arguments.length > 5) modal = toBool(arguments[5]) ?? true;
 
           open(ModalView(this));
         }

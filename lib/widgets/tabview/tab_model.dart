@@ -11,7 +11,7 @@ import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/tabview/tab_view.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class TabModel extends BoxModel
 {
@@ -24,7 +24,7 @@ class TabModel extends BoxModel
   IntegerObservable? _index;
   set index(dynamic v)
   {
-    int? i = S.toInt(v);
+    int? i = toInt(v);
     if (i != null && (i >= views.length || i < 0)) v = null;
     if (_index != null) {
       _index!.set(v);

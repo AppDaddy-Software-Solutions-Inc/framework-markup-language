@@ -11,7 +11,7 @@ import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/radio/radio_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class RadioModel extends FormFieldModel implements IFormField
 {
@@ -186,7 +186,7 @@ class RadioModel extends FormFieldModel implements IFormField
     List<OptionModel> options = findChildrenOfExactType(OptionModel).cast<OptionModel>();
 
     // set prototype
-    if (!S.isNullOrEmpty(this.datasource) && options.isNotEmpty)
+    if (!isNullOrEmpty(this.datasource) && options.isNotEmpty)
     {
       prototype = WidgetModel.prototypeOf(options.first.element);
       options.first.dispose();

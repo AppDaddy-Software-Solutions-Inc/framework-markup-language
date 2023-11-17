@@ -5,7 +5,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/event/handler.dart' ;
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class TimerModel extends WidgetModel
 {
@@ -39,9 +39,9 @@ class TimerModel extends WidgetModel
      if (factor > 1) frequency = (frequency.length > 1) ? frequency.substring(0, frequency.length - 1) : null;
     }
 
-    if (S.isNumber(frequency))
+    if (isNumeric(frequency))
     {
-      int v = S.toInt(frequency)! * factor;
+      int v = toInt(frequency)! * factor;
       if (v >= 0)
       {
         if (_frequency != null)
@@ -129,7 +129,7 @@ class TimerModel extends WidgetModel
     bool ok = true;
 
     // fire event
-    if (!S.isNullOrEmpty(action)) ok = await EventHandler(this).execute(_action);
+    if (!isNullOrEmpty(action)) ok = await EventHandler(this).execute(_action);
 
     // start a new timer
     start();

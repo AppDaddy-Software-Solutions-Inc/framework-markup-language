@@ -7,7 +7,7 @@ import 'package:fml/observable/observables/string.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/datasources/file/file.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 import 'binding.dart';
 
 class Scope
@@ -39,7 +39,7 @@ class Scope
 
   Scope({this.parent, String? id})
   {
-    this.id = id ?? S.newId();
+    this.id = id ?? newId();
 
     // add me as a child of my parent
     parent?.addChild(this);
@@ -299,7 +299,7 @@ class Scope
 
   Future<String?> replaceFileReferences(String? body) async
   {
-    if (S.isNullOrEmpty(body) || (files.isEmpty)) return body;
+    if (isNullOrEmpty(body) || (files.isEmpty)) return body;
     for (String key in files.keys)
     {
       var file = files[key];

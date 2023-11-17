@@ -8,7 +8,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/event/handler.dart' ;
 import 'package:fml/widgets/link/link_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class LinkModel extends ColumnModel
 {
@@ -160,7 +160,7 @@ class LinkModel extends ColumnModel
   }
 
   Future<bool> onClick(BuildContext context) async {
-    if (!S.isNullOrEmpty(url))
+    if (!isNullOrEmpty(url))
     {
       if (url!.startsWith('tel:') || url!.startsWith('geo:') ||
           url!.startsWith('mailto:') || url!.startsWith('smsto:') ||

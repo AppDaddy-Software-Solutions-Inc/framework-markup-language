@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:collection';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class NotationSegment
 {
@@ -63,7 +63,7 @@ class DotNotation with ListMixin<NotationSegment>
         {
           String offset = subparts[0].trim();
           if (offset == "*") offset = "-1";
-          property.offset = S.toInt(offset) ?? 0;
+          property.offset = toInt(offset) ?? 0;
           subparts.removeAt(0);
         }
 
@@ -72,5 +72,21 @@ class DotNotation with ListMixin<NotationSegment>
       }
     }
     return dotnotation;
+  }
+
+  @override
+  String toString()
+  {
+    var k = "";
+    if (isNotEmpty)
+    {
+      String dn = "";
+      for (var segment in this)
+      {
+        dn = "$dn.${segment.name}";
+      }
+      k = "$k$dn";
+    }
+    return k;
   }
 }

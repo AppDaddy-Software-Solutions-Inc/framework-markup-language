@@ -8,7 +8,7 @@ import 'package:fml/observable/observables/boolean.dart';
 import 'package:fml/observable/observables/integer.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class PostMaster
 {
@@ -192,7 +192,7 @@ class PostMaster
   Future<bool> formPostable(String? key) async
   {
     // No Associated Form 
-    if (S.isNullOrEmpty(key)) return true;
+    if (isNullOrEmpty(key)) return true;
 
     // Lookup the Form 
     hive_pack.Form? form = await hive_pack.Form.find(key);

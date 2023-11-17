@@ -24,7 +24,7 @@ import 'package:fml/sound/sound.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 /// EventHandler performs the executions of events and contains the functions for each event [Type]
 ///
@@ -52,7 +52,7 @@ class EventHandler extends Eval
 
     // get expression
     String? expression = (observable.isEval) ? observable.value : (observable.signature ?? observable.value);
-    if (S.isNullOrEmpty(expression)) return ok;
+    if (isNullOrEmpty(expression)) return ok;
 
     // replace 'this' pointer with the parent model id
     if (expression!.contains(thisDot)) expression = expression.replaceAll(thisDot, "${model.id}.");
@@ -93,44 +93,44 @@ class EventHandler extends Eval
     // initialize event handlers
     if (!initialized)
     {
-      functions[S.fromEnum(EventTypes.alert)]         = _handleEventAlert;
-      functions[S.fromEnum(EventTypes.animate)]       = _handleEventAnimate;
-      functions[S.fromEnum(EventTypes.back)]          = _handleEventBack;
-      functions[S.fromEnum(EventTypes.build)]         = _handleEventBuild;
-      functions[S.fromEnum(EventTypes.close)]         = _handleEventClose;
-      functions[S.fromEnum(EventTypes.cont)]          = _handleEventContinue;
+      functions[fromEnum(EventTypes.alert)]         = _handleEventAlert;
+      functions[fromEnum(EventTypes.animate)]       = _handleEventAnimate;
+      functions[fromEnum(EventTypes.back)]          = _handleEventBack;
+      functions[fromEnum(EventTypes.build)]         = _handleEventBuild;
+      functions[fromEnum(EventTypes.close)]         = _handleEventClose;
+      functions[fromEnum(EventTypes.cont)]          = _handleEventContinue;
       functions['continue']                           = _handleEventContinue;
-      functions[S.fromEnum(EventTypes.copy)]          = _handleEventCopy;
-      functions[S.fromEnum(EventTypes.execute)]       = _handleEventExecute;
-      functions[S.fromEnum(EventTypes.focusnode)]     = _handleEventFocusNode;
-      functions[S.fromEnum(EventTypes.keypress)]      = _handleEventKeyPress;
-      functions[S.fromEnum(EventTypes.signInWithJwt)] = _handleEventSignInWithJwt;
-      functions[S.fromEnum(EventTypes.logoff)]        = _handleEventLogoff;
-      functions[S.fromEnum(EventTypes.signInWithFirebase)] = _handleEventSignInWithFirebase;
-      functions[S.fromEnum(EventTypes.open)]          = _handleEventOpen;
-      functions[S.fromEnum(EventTypes.openjstemplate)]= _handleEventOpenJsTemplate;
+      functions[fromEnum(EventTypes.copy)]          = _handleEventCopy;
+      functions[fromEnum(EventTypes.execute)]       = _handleEventExecute;
+      functions[fromEnum(EventTypes.focusnode)]     = _handleEventFocusNode;
+      functions[fromEnum(EventTypes.keypress)]      = _handleEventKeyPress;
+      functions[fromEnum(EventTypes.signInWithJwt)] = _handleEventSignInWithJwt;
+      functions[fromEnum(EventTypes.logoff)]        = _handleEventLogoff;
+      functions[fromEnum(EventTypes.signInWithFirebase)] = _handleEventSignInWithFirebase;
+      functions[fromEnum(EventTypes.open)]          = _handleEventOpen;
+      functions[fromEnum(EventTypes.openjstemplate)]= _handleEventOpenJsTemplate;
       // replace (legacy) overlaps with Eval() function replace. use replaceRoute()
-      functions[S.fromEnum(EventTypes.replace)]       = _handleEventReplace;
-      functions[S.fromEnum(EventTypes.replaceroute)]  = _handleEventReplace;
-      functions[S.fromEnum(EventTypes.refresh)]       = _handleEventRefresh;
-      functions[S.fromEnum(EventTypes.reset)]         = _handleEventReset;
-      functions[S.fromEnum(EventTypes.saveas)]        = _handleEventSaveAs;
-      functions[S.fromEnum(EventTypes.scroll)]        = _handleEventScroll;
-      functions[S.fromEnum(EventTypes.scrollto)]      = _handleEventScrollTo;
-      functions[S.fromEnum(EventTypes.set)]           = _handleEventSet;
-      functions[S.fromEnum(EventTypes.showdebug)]     = _handleEventShowDebug;
-      functions[S.fromEnum(EventTypes.showlog)]       = _handleEventShowLog;
-      functions[S.fromEnum(EventTypes.showtemplate)]  = _handleEventShowTemplate;
-      functions[S.fromEnum(EventTypes.sound)]         = _handleEventSound;
-      functions[S.fromEnum(EventTypes.stash)]         = _handleEventStash;
-      functions[S.fromEnum(EventTypes.theme)]         = _handleEventTheme;
-      functions[S.fromEnum(EventTypes.toast)]         = _handleEventToast;
-      functions[S.fromEnum(EventTypes.trigger)]       = _handleEventTrigger;
-      functions[S.fromEnum(EventTypes.wait)]          = _handleEventWait;
+      functions[fromEnum(EventTypes.replace)]       = _handleEventReplace;
+      functions[fromEnum(EventTypes.replaceroute)]  = _handleEventReplace;
+      functions[fromEnum(EventTypes.refresh)]       = _handleEventRefresh;
+      functions[fromEnum(EventTypes.reset)]         = _handleEventReset;
+      functions[fromEnum(EventTypes.saveas)]        = _handleEventSaveAs;
+      functions[fromEnum(EventTypes.scroll)]        = _handleEventScroll;
+      functions[fromEnum(EventTypes.scrollto)]      = _handleEventScrollTo;
+      functions[fromEnum(EventTypes.set)]           = _handleEventSet;
+      functions[fromEnum(EventTypes.showdebug)]     = _handleEventShowDebug;
+      functions[fromEnum(EventTypes.showlog)]       = _handleEventShowLog;
+      functions[fromEnum(EventTypes.showtemplate)]  = _handleEventShowTemplate;
+      functions[fromEnum(EventTypes.sound)]         = _handleEventSound;
+      functions[fromEnum(EventTypes.stash)]         = _handleEventStash;
+      functions[fromEnum(EventTypes.theme)]         = _handleEventTheme;
+      functions[fromEnum(EventTypes.toast)]         = _handleEventToast;
+      functions[fromEnum(EventTypes.trigger)]       = _handleEventTrigger;
+      functions[fromEnum(EventTypes.wait)]          = _handleEventWait;
 
       // broadcast events
       for (var type in EventTypes.values) {
-        String? t = S.fromEnum(type);
+        String? t = fromEnum(type);
         if (!functions.containsKey(t)) functions[t] = () => _broadcast(type);
       }
 
@@ -249,40 +249,40 @@ class EventHandler extends Eval
     EventManager.of(model)?.broadcastEvent(model,Event(type, model: model));
   }
 
-  /// Returns a bool from a dynamic value using [S.toBool]
+  /// Returns a bool from a dynamic value using [toBool]
   static dynamic _toBool(dynamic value)
   {
-    return S.toBool(value);
+    return toBool(value);
   }
 
-  /// Returns a Nul from a dynamic value using [S.toNum]
+  /// Returns a Nul from a dynamic value using [toNum]
   static dynamic _toNum(dynamic value)
   {
-    return S.toNum(value);
+    return toNum(value);
   }
 
   /// Returns true if the value is numeric
   static bool _isNumeric(dynamic value)
   {
-    return S.isNumber(value);
+    return isNumeric(value);
   }
 
-  /// Returns a bool from a dynamic value using [S.isBool]
+  /// Returns a bool from a dynamic value using [isBool]
   static bool _isBool(dynamic value)
   {
-    return S.isBool(value);
+    return isBool(value);
   }
 
   /// Sets an [Observable] value given an id
   Future<bool> _handleEventSet([dynamic variable, dynamic value, dynamic global]) async
   {
     bool ok = true;
-    if (S.isNullOrEmpty(variable)) return ok;
+    if (isNullOrEmpty(variable)) return ok;
 
     // removed global references
     // this is all done in the global.xml file now
     //WidgetModel model = this.model;
-    //if ((!S.isNullOrEmpty(global)) && (S.toBool(global) == true))
+    //if ((!isNullOrEmpty(global)) && (toBool(global) == true))
     //{
     //  model = System();
     //}
@@ -302,14 +302,14 @@ class EventHandler extends Eval
   /// Creates an alert dialog
   Future<bool> _handleEventAlert([dynamic type, dynamic title, dynamic message]) async
   {
-    await model.framework?.show(type: S.toEnum(S.toStr(type), DialogType.values), title: S.toStr(title), description: S.toStr(message));
+    await model.framework?.show(type: toEnum(toStr(type), DialogType.values), title: toStr(title), description: toStr(message));
     return true;
   }
 
   /// Creates a toast dialog
   Future<bool> _handleEventToast([dynamic message, dynamic duration]) async
   {
-    System.toast(S.toStr(message), duration: S.toInt(duration ?? 2));
+    System.toast(toStr(message), duration: toInt(duration ?? 2));
     return true;
   }
 
@@ -324,13 +324,13 @@ class EventHandler extends Eval
     var context = System().context;
     if (context != null) color = Theme.of(context).buttonTheme.colorScheme?.inversePrimary ?? Theme.of(context).colorScheme.inversePrimary;
 
-    var no  = Text(S.toStr(phrase1) ?? phrase.no, style: TextStyle(fontSize: 18, color: color));
-    var yes = Text(S.toStr(phrase2) ?? phrase.yes, style: TextStyle(fontSize: 18, color: color));
+    var no  = Text(toStr(phrase1) ?? phrase.no, style: TextStyle(fontSize: 18, color: color));
+    var yes = Text(toStr(phrase2) ?? phrase.yes, style: TextStyle(fontSize: 18, color: color));
 
     int? response = await model.framework?.show(
-        type: S.toEnum(S.toStr(type), DialogType.values),
-        title: S.toStr(title),
-        description: S.toStr(message),
+        type: toEnum(toStr(type), DialogType.values),
+        title: toStr(title),
+        description: toStr(message),
         buttons: [no, yes]);
 
     if (response == 0)  ok = false;
@@ -365,8 +365,8 @@ class EventHandler extends Eval
         factor = 1000;
       } // seconds
 
-      if (S.isNumber(time)) {
-        int t = S.toInt((S.toDouble(time) ?? 1) * factor) ?? 1000;
+      if (isNumeric(time)) {
+        int t = toInt((toDouble(time) ?? 1) * factor) ?? 1000;
         if (t >= 0) wait = t;
       }
 
@@ -384,13 +384,13 @@ class EventHandler extends Eval
   Future<bool> _handleEventSignInWithFirebase([dynamic provider, dynamic refresh]) async
   {
     String? token;
-    if (!S.isNullOrEmpty(provider))
+    if (!isNullOrEmpty(provider))
     {
       var user = await _firebaseLogon(provider,<String>['email', 'profile']);
       if (user != null) token = await user.getIdToken();
     }
     if (token == null) return false;
-    return await _logon(token, false, false, S.toBool(refresh));
+    return await _logon(token, false, false, toBool(refresh));
   }
 
   Future<bool> _handleEventSignInWithJwt([dynamic token, dynamic validateSignature, dynamic validateAge, dynamic refresh]) async
@@ -411,7 +411,7 @@ class EventHandler extends Eval
       System.app?.logon(jwt);
 
       // refresh the framework
-      if (S.toBool(refresh) != false) EventManager.of(model)?.broadcastEvent(model,Event(EventTypes.refresh, parameters: null, model: model));
+      if (toBool(refresh) != false) EventManager.of(model)?.broadcastEvent(model,Event(EventTypes.refresh, parameters: null, model: model));
 
       return true;
     }
@@ -428,7 +428,7 @@ class EventHandler extends Eval
     bool ok = await System.app?.logoff() ?? true;
 
     // Refresh the Framework
-    if ((ok) && (S.toBool(refresh) != false)) EventManager.of(model)?.broadcastEvent(model,Event(EventTypes.refresh, parameters: null, model: model));
+    if ((ok) && (toBool(refresh) != false)) EventManager.of(model)?.broadcastEvent(model,Event(EventTypes.refresh, parameters: null, model: model));
 
     return ok;
   }
@@ -496,9 +496,9 @@ class EventHandler extends Eval
   {
     Log().debug("Framework onSound()");
 
-    file      = S.toStr(file);
-    url       = S.toStr(url);
-    duration  = S.toInt(duration)  ?? 0;
+    file      = toStr(file);
+    url       = toStr(url);
+    duration  = toInt(duration)  ?? 0;
 
     try
     {
@@ -512,7 +512,7 @@ class EventHandler extends Eval
       //////////////////////
       /* Play Local Sound */
       //////////////////////
-      if (!S.isNullOrEmpty(file))
+      if (!isNullOrEmpty(file))
       {
         Sound.playLocal('/assets/audio/$file', duration: duration);
         return true;
@@ -521,7 +521,7 @@ class EventHandler extends Eval
       ///////////////////////
       /* Play Remote Sound */
       ///////////////////////
-      if (!S.isNullOrEmpty(url))
+      if (!isNullOrEmpty(url))
       {
         Sound.playRemote(url, duration: duration);
         return true;
@@ -547,11 +547,11 @@ class EventHandler extends Eval
   Future<bool> _handleEventOpen([dynamic url, dynamic modal, dynamic transition, dynamic replace, dynamic replaceall]) async
   {
     Map<String,String?> parameters     = <String,String?>{};
-    parameters['url']        = S.toStr(url);
-    parameters['modal']      = S.toStr(modal);
-    parameters['transition'] = S.toStr(transition);
-    parameters['replace']    = S.toStr(replace);
-    parameters['replaceall'] = S.toStr(replaceall);
+    parameters['url']        = toStr(url);
+    parameters['modal']      = toStr(modal);
+    parameters['transition'] = toStr(transition);
+    parameters['replace']    = toStr(replace);
+    parameters['replaceall'] = toStr(replaceall);
     if (url != null && url != '') EventManager.of(model)?.broadcastEvent(model,Event(EventTypes.open, parameters: parameters, model: model));
     return true;
   }
@@ -561,7 +561,7 @@ class EventHandler extends Eval
   {
     Map<String,String?> parameters     = {};
 
-    parameters['templ8']        = S.toStr(templ8);
+    parameters['templ8']        = toStr(templ8);
     if (templ8 != null && templ8 != '') EventManager.of(model)?.broadcastEvent(model,Event(EventTypes.openjstemplate, parameters: parameters, model: model));
     return true;
   }
@@ -570,8 +570,8 @@ class EventHandler extends Eval
   Future<bool> _handleEventReplace([dynamic url, dynamic transition]) async
   {
     Map<String,String?> parameters     = <String,String?>{};
-    parameters['url']        = S.toStr(url);
-    parameters['transition'] = S.toStr(transition);
+    parameters['url']        = toStr(url);
+    parameters['transition'] = toStr(transition);
     parameters['replace']    = "true";
     if (url != null && url != '') EventManager.of(model)?.broadcastEvent(model,Event(EventTypes.open, parameters: parameters, model: model));
     return true;
@@ -581,7 +581,7 @@ class EventHandler extends Eval
   Future<bool> _handleEventBuild([dynamic xml, dynamic isModal, dynamic transition]) async
   {
     var document = XmlDocument.parse(xml);
-    String uuid = "${S.newId()}.xml";
+    String uuid = "${newId()}.xml";
     TemplateManager().toMemory(uuid, document);
     return _handleEventOpen(uuid, isModal, transition);
   }
@@ -591,8 +591,8 @@ class EventHandler extends Eval
   {
     Map<String,String?> parameters = <String,String?>{};
     // We set both parameters here and let the nearest listener choose how to handle it
-    parameters['until'] = S.toStr(p); // pop until
-    parameters['window'] = S.toStr(p); // close specific window
+    parameters['until'] = toStr(p); // pop until
+    parameters['window'] = toStr(p); // close specific window
     EventManager.of(model)?.broadcastEvent(model,Event(EventTypes.close, parameters: parameters));
     return true;
   }
@@ -630,7 +630,7 @@ class EventHandler extends Eval
   Future<bool> _handleEventKeyPress([dynamic key]) async
   {
     Map<String,String?> parameters   = <String,String?>{};
-    parameters['key']      = S.toStr(key);
+    parameters['key']      = toStr(key);
     EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.keypress, parameters: parameters));
     return true;
   }
@@ -639,8 +639,8 @@ class EventHandler extends Eval
   Future<bool> _handleEventScroll([dynamic direction, dynamic pixels]) async
   {
     Map<String,String?> parameters     = <String,String?>{};
-    parameters['direction']  = S.toStr(direction);
-    parameters['pixels']     = S.toStr(pixels);
+    parameters['direction']  = toStr(direction);
+    parameters['pixels']     = toStr(pixels);
     EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.scroll, parameters: parameters));
     return true;
   }
@@ -649,8 +649,8 @@ class EventHandler extends Eval
   Future<bool> _handleEventAnimate([dynamic id, dynamic enabled]) async
   {
     Map<String,String?> parameters = <String,String?>{};
-    parameters['id']      = S.toStr(id);
-    parameters['enabled'] = S.toStr(enabled);
+    parameters['id']      = toStr(id);
+    parameters['enabled'] = toStr(enabled);
     EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.animate, parameters: parameters));
     return true;
   }
@@ -659,8 +659,8 @@ class EventHandler extends Eval
   Future<bool> _handleEventReset([dynamic id, dynamic enabled]) async
   {
     Map<String,String?> parameters = <String,String?>{};
-    parameters['id']      = S.toStr(id);
-    parameters['enabled'] = S.toStr(enabled);
+    parameters['id']      = toStr(id);
+    parameters['enabled'] = toStr(enabled);
     EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.reset, parameters: parameters));
     return true;
   }
@@ -669,7 +669,7 @@ class EventHandler extends Eval
   Future<bool> _handleEventScrollTo([dynamic id]) async
   {
     Map<String,String?> parameters     = <String,String?>{};
-    parameters['id']  = S.toStr(id);
+    parameters['id']  = toStr(id);
     EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.scrollto, parameters: parameters));
     return true;
   }
@@ -684,7 +684,7 @@ class EventHandler extends Eval
     if (trigger == null)
     {
       Map<String,String?> parameters = <String,String?>{};
-      parameters['id'] = S.toStr(id);
+      parameters['id'] = toStr(id);
       EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.trigger, parameters: parameters));
     }
     else
@@ -700,10 +700,10 @@ class EventHandler extends Eval
   {
     try
     {
-      String? label = S.toStr(value);
+      String? label = toStr(value);
       if (label != null && label.isNotEmpty) {
         Clipboard.setData(ClipboardData(text: label));
-        System.toast('"${S.toStr(value)!}" ${phrase.copiedToClipboard}');
+        System.toast('"${toStr(value)!}" ${phrase.copiedToClipboard}');
       }
     }
     catch(e) {
@@ -717,8 +717,8 @@ class EventHandler extends Eval
   {
     try {
       Map<String,String?> parameters = <String,String?>{};
-      parameters['brightness']  = S.toStr(brightness);
-      parameters['color']  = S.toStr(color);
+      parameters['brightness']  = toStr(brightness);
+      parameters['color']  = toStr(color);
       EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.theme, parameters: parameters));
     } catch(e) {
       Log().debug('$e');
@@ -731,7 +731,7 @@ class EventHandler extends Eval
   {
     try {
       Map<String,String?> parameters = <String,String?>{};
-      parameters['key']  = S.toStr(node);
+      parameters['key']  = toStr(node);
       EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.focusnode, parameters: parameters));
     } catch(e) {
       Log().debug('$e');

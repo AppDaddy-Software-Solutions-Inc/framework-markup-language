@@ -2,7 +2,7 @@
 import 'package:fml/datasources/http/http.dart';
 import 'package:fml/log/manager.dart';
 import 'asset.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class Mirror
 {
@@ -19,7 +19,7 @@ class Mirror
 
   void execute() async
   {
-    if (S.isNullOrEmpty(url)) return;
+    if (isNullOrEmpty(url)) return;
 
     // load assets from the remote
     Assets assets = Assets();

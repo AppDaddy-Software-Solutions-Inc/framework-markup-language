@@ -9,7 +9,7 @@ import 'package:fml/widgets/constraints/constraint_model.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 
 class ViewableWidgetModel extends ConstraintModel
@@ -479,7 +479,7 @@ class ViewableWidgetModel extends ConstraintModel
     
     // view requires a VisibilityDetector if either onstage or offstage is set or
     // someone is bound to my visibility
-    _addVisibilityDetector = visible && (!S.isNullOrEmpty(onscreen) || !S.isNullOrEmpty(offscreen) || WidgetModel.isBound(this, Binding.toKey(id, 'visiblearea')) || WidgetModel.isBound(this, Binding.toKey(id, 'visibleheight')) || WidgetModel.isBound(this, Binding.toKey(id, 'visiblewidth')));
+    _addVisibilityDetector = visible && (!isNullOrEmpty(onscreen) || !isNullOrEmpty(offscreen) || WidgetModel.isBound(this, Binding.toKey(id, 'visiblearea')) || WidgetModel.isBound(this, Binding.toKey(id, 'visibleheight')) || WidgetModel.isBound(this, Binding.toKey(id, 'visiblewidth')));
 
     // set margins. Can be comma separated top,left,bottom,right
     // space around the widget
@@ -546,9 +546,9 @@ class ViewableWidgetModel extends ConstraintModel
       case "animate":
         if (animations != null)
         {
-          var id = S.item(arguments, 0);
+          var id = elementAt(arguments, 0);
           AnimationModel? animation;
-          if (!S.isNullOrEmpty(id))
+          if (!isNullOrEmpty(id))
           {
             var list = animations!.where((animation) => animation.id == id);
             if (list.isNotEmpty) animation = list.first;
@@ -580,12 +580,12 @@ class ViewableWidgetModel extends ConstraintModel
 
     if (visibleArea! > 1 && !hasGoneOnscreen)
     {
-      if (!S.isNullOrEmpty(_onscreen)) EventHandler(this).execute(_onscreen);
+      if (!isNullOrEmpty(_onscreen)) EventHandler(this).execute(_onscreen);
       hasGoneOnscreen = true;
     }
     else if (visibleArea! == 0 && hasGoneOnscreen)
     {
-      if (!S.isNullOrEmpty(_offscreen)) EventHandler(this).execute(_offscreen);
+      if (!isNullOrEmpty(_offscreen)) EventHandler(this).execute(_offscreen);
       hasGoneOnscreen = false;
     }
   }

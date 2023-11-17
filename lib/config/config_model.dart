@@ -3,7 +3,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:xml/xml.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class ConfigModel
 {
@@ -54,8 +54,8 @@ class ConfigModel
       String key   = node.localName;
       String? value = Xml.get(node: node, tag: 'value');
 
-      if (S.isNullOrEmpty(value)) value = Xml.getText(node);
-      if (!S.isNullOrEmpty(key) && (key.toLowerCase() != 'parameter')) settings[key] = value;
+      if (isNullOrEmpty(value)) value = Xml.getText(node);
+      if (!isNullOrEmpty(key) && (key.toLowerCase() != 'parameter')) settings[key] = value;
     }
     }
 
@@ -65,21 +65,21 @@ class ConfigModel
       for (var element in nodes) {
       String? key   = Xml.get(node: element, tag: 'key');
       String? value = Xml.get(node: element, tag: 'value');
-      if (S.isNullOrEmpty(value)) value = Xml.getText(element);
-      if (!S.isNullOrEmpty(key)) parameters[key!] = value ?? "";
+      if (isNullOrEmpty(value)) value = Xml.getText(element);
+      if (!isNullOrEmpty(key)) parameters[key!] = value ?? "";
     }
     }
   }
 
   String? get(String key)
   {
-    if (S.isNullOrEmpty(key)) return null;
+    if (isNullOrEmpty(key)) return null;
     return settings.containsKey(key) ? settings[key] : null;
   }
 
   void set(String key, String value)
   {
-    if (S.isNullOrEmpty(key)) return;
+    if (isNullOrEmpty(key)) return;
     settings[key] = value;
   }
 }

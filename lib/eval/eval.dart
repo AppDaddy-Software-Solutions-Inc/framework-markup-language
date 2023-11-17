@@ -1,20 +1,18 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'dart:convert';
 import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:fml/crypto/crypto.dart';
 import 'package:fml/data/data.dart';
-import 'package:fml/helper/time.dart';
+import 'package:fml/helpers/time.dart';
 import 'package:fml/system.dart';
 import 'package:intl/intl.dart';
 import 'package:fml/eval/evaluator.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/eval/expressions.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 import 'package:fml/widgets/input/input_formatters.dart';
 import 'package:flutter_multi_formatter/formatters/credit_card_number_input_formatter.dart';
 import 'package:flutter_multi_formatter/formatters/phone_input_formatter.dart';
-import 'package:xml2json/xml2json.dart';
 
 /// Eval parses evaluation strings from FML templates
 ///
@@ -27,7 +25,7 @@ class Eval
   static final ExpressionEvaluator evaluator = const ExpressionEvaluator();
 
   /// The String value mapping of all the functions
-  static final Map<String, dynamic> functions = {'abs': _abs, 'acos': acos, 'addTime': _addTime, 'addtime': _addTime, 'asin': asin, 'atan': atan, 'bit': _bit, 'bytes': _bytes, 'case' : _case, 'ceil': _ceil, 'contains': _contains, 'cos': cos, 'decrypt': _decrypt, 'distance': _distance, 'encrypt': _encrypt, 'endsWith': _endsWith, 'endswith': _endsWith, 'floor': _floor, 'hash' : _hash, 'indexOf': _indexOf, 'if': _if, 'isAfter': _isAfter, 'isafter': _isAfter, 'isBefore': _isBefore, 'isbefore': _isBefore, 'isBool' : _isBool, 'isbool' : _isBool, 'isBoolean' : _isBool, 'isboolean' : _isBool, 'isPhone' : _isValidPhone, 'isCard' : _isValidCreditCard, 'isPassword' : _isValidPassword, 'isEmail' : _isValidEmail, 'isExpiryDate' : _isValidExpiryDate, 'isNull': _isNull, 'isnull': _isNull, 'isNullOrEmpty': _isNullOrEmpty, 'isnullorempty': _isNullOrEmpty, 'isNum' : _isNumeric, 'isnum' : _isNumeric, 'isNumeric' : _isNumeric, 'isnumeric' : _isNumeric, 'join': _join, 'length': _length, 'mod': _mod, 'noe': _isNullOrEmpty, 'number': _number, 'nvl': _nvl, 'pi': pi / 5, 'regex': _regex, 'replace': _replace, 'round': _round, 'serialize' : _serialize, 'sin': sin, 'startsWith': _startsWith, 'startswith': _startsWith, 'substring': _substring, 'subtractTime': _subtractTime, 'subtracttime': _subtractTime, 'tan': tan, 'timeBetween': _timeBetween, 'timebetween': _timeBetween, 'toBool': _toBool, 'tobool': _toBool, 'toBoolean': _toBool, 'toboolean': _toBool, 'toDate': _toDate, 'todate': _toDate, 'toEpoch': _toEpoch, 'toepoch': _toEpoch, 'toLower' : _toLower, 'tolower': _toLower, 'toNum': _toNum, 'tonum': _toNum, 'toNumber': _toNum, 'tonumber': _toNum, 'toStr': _toString, 'tostr': _toString, 'toString': _toString, 'tostring': _toString, 'toUpper' : _toUpper, 'toupper': _toUpper, 'truncate': _truncate,};
+  static final Map<String, dynamic> functions = {'abs': _abs, 'acos': acos, 'addTime': _addTime, 'addtime': _addTime, 'asin': asin, 'atan': atan, 'bit': _bit, 'bytes': _bytes, 'case' : _case, 'ceil': _ceil, 'contains': _contains, 'cos': cos, 'decrypt': _decrypt, 'distance': _distance, 'elementAt': _elementAt, 'encrypt': _encrypt, 'endsWith': _endsWith, 'endswith': _endsWith, 'floor': _floor, 'hash' : _hash, 'indexOf': _indexOf, 'if': _if, 'isAfter': _isAfter, 'isafter': _isAfter, 'isBefore': _isBefore, 'isbefore': _isBefore, 'isBool' : _isBool, 'isbool' : _isBool, 'isBoolean' : _isBool, 'isboolean' : _isBool, 'isPhone' : _isValidPhone, 'isCard' : _isValidCreditCard, 'isPassword' : _isValidPassword, 'isEmail' : _isValidEmail, 'isExpiryDate' : _isValidExpiryDate, 'isNull': _isNull, 'isnull': _isNull, 'isNullOrEmpty': _isNullOrEmpty, 'isnullorempty': _isNullOrEmpty, 'isNum' : _isNumeric, 'isnum' : _isNumeric, 'isNumeric' : _isNumeric, 'isnumeric' : _isNumeric, 'join': _join, 'length': _length, 'mod': _mod, 'noe': _isNullOrEmpty, 'number': _number, 'nvl': _nvl, 'pi': pi / 5, 'regex': _regex, 'replace': _replace, 'round': _round, 'serialize' : _serialize, 'sin': sin, 'startsWith': _startsWith, 'startswith': _startsWith, 'substring': _substring, 'subtractTime': _subtractTime, 'subtracttime': _subtractTime, 'tan': tan, 'timeBetween': _timeBetween, 'timebetween': _timeBetween, 'toBool': _toBool, 'tobool': _toBool, 'toBoolean': _toBool, 'toboolean': _toBool, 'toDate': _toDate, 'todate': _toDate, 'toEpoch': _toEpoch, 'toepoch': _toEpoch, 'toLower' : _toLower, 'tolower': _toLower, 'toNum': _toNum, 'tonum': _toNum, 'toNumber': _toNum, 'tonumber': _toNum, 'toStr': _toString, 'tostr': _toString, 'toString': _toString, 'tostring': _toString, 'toUpper' : _toUpper, 'toupper': _toUpper, 'truncate': _truncate,};
 
   static dynamic evaluate(String? expression, {Map<String?, dynamic>? variables, Map<String?, dynamic>? altFunctions})
   {
@@ -49,7 +47,7 @@ class Eval
       {
         i++;
         var mKey = "___V$i";
-        myVariables[mKey] = S.toNum(value) ?? S.toBool(value) ?? value;
+        myVariables[mKey] = toNum(value) ?? toBool(value) ?? value;
         myExpression = myExpression.replaceAll(key!, mKey);
       });
 
@@ -159,15 +157,15 @@ class Eval
     if (inputFormat is String) inputFormat = inputFormat.replaceAll('Y', 'y');
     if (outputFormat is String) outputFormat = outputFormat.replaceAll('Y', 'y');
 
-    if (S.isNumber(datetime))
+    if (isNumeric(datetime))
     {
-      result = DateTime.fromMillisecondsSinceEpoch(S.toNum(datetime) as int);
+      result = DateTime.fromMillisecondsSinceEpoch(toNum(datetime) as int);
     }
     else if (datetime is String)
     {
-      result = S.toDate(datetime, format: inputFormat);
+      result = toDate(datetime, format: inputFormat);
     }
-    return S.toChar(result, format: outputFormat);
+    return toChar(result, format: outputFormat);
   }
 
   // TODO: WIP
@@ -201,7 +199,7 @@ class Eval
   /// Returns a null safe String representation of a value
   static dynamic _toString(dynamic value)
   {
-    return S.toStr(value);
+    return toStr(value);
   }
 
   /// XOR binary function
@@ -214,10 +212,10 @@ class Eval
   static dynamic _bit(dynamic operator, dynamic left, dynamic right)
   {
     if (operator == null) return null;
-    if (left == null || !S.isNumber(left)) return null;
-    if (operator != '~' && (right == null || !S.isNumber(right))) return null;
-    var l = S.toInt(left)!;
-    var r = S.toInt(right) ?? 0;
+    if (left == null || !isNumeric(left)) return null;
+    if (operator != '~' && (right == null || !isNumeric(right))) return null;
+    var l = toInt(left)!;
+    var r = toInt(right) ?? 0;
     switch (operator) {
       case '&':
         return (l&r);
@@ -235,22 +233,22 @@ class Eval
     return null;
   }
 
-  /// Returns a bool from a dynamic value using [S.toBool]
+  /// Returns a bool from a dynamic value using [toBool]
   static dynamic _toBool(dynamic value)
   {
-    return S.toBool(value);
+    return toBool(value);
   }
 
-  /// Returns a Nul from a dynamic value using [S.toNum]
+  /// Returns a Nul from a dynamic value using [toNum]
   static dynamic _toNum(dynamic value)
   {
-    return S.toNum(value);
+    return toNum(value);
   }
 
   /// Returns the nearest integer value rounding up
   static dynamic _ceil(dynamic value)
   {
-    var n = S.toNum(value);
+    var n = toNum(value);
     if (n != null) {
       return n.ceil();
     } else {
@@ -261,7 +259,7 @@ class Eval
   /// Returns the nearest integer value rounding down
   static dynamic _floor(dynamic value)
   {
-    var n = S.toNum(value);
+    var n = toNum(value);
     if (n != null) {
       return n.floor();
     } else {
@@ -272,10 +270,10 @@ class Eval
   /// Returns the absolute value of a number
   static dynamic _abs(dynamic value)
   {
-    if (!S.isNumber(value)) return null;
+    if (!isNumeric(value)) return null;
     try
     {
-      var v = S.toNum(value);
+      var v = toNum(value);
       return v?.abs();
     }
     catch(e)
@@ -335,32 +333,32 @@ class Eval
   /// Returns true if the value is null or '' otherwise returns false
   static bool _isNullOrEmpty(dynamic value)
   {
-    return S.isNullOrEmpty(value) ? true : false;
+    return isNullOrEmpty(value) ? true : false;
   }
 
   /// Returns a defaultValue if the value is null or '' otherwise returns the null-safe value
   static dynamic _nvl(dynamic value, dynamic defaultValue)
   {
     value = value?.toString();
-    return S.isNullOrEmpty(value) ? defaultValue : value;
+    return isNullOrEmpty(value) ? defaultValue : value;
   }
 
   /// Returns true if the value is numeric
   static bool _isNumeric(dynamic value)
   {
-    return S.isNumber(value);
+    return isNumeric(value);
   }
 
-  /// Returns a bool from a dynamic value using [S.isBool]
+  /// Returns a bool from a dynamic value using [isBool]
   static bool _isBool(dynamic value)
   {
-    return S.isBool(value);
+    return isBool(value);
   }
 
   /// Returns a or b depending on the if condition value
   static dynamic _if(dynamic value, dynamic a, dynamic b)
   {
-    return S.toBool(value) ?? false ? a : b;
+    return toBool(value) ?? false ? a : b;
   }
 
 
@@ -373,8 +371,8 @@ class Eval
   static dynamic _round(dynamic value, dynamic precision, [dynamic pad]) {
     try {
       if ((value == null) || (value == 'null')) return null;
-      dynamic v = S.toDouble(value);
-      int? p = S.toInt(precision);
+      dynamic v = toDouble(value);
+      int? p = toInt(precision);
       bool? z = pad != null && pad >= 0;
       if (v != null && p != null) {
         double power = pow(10.0, p) as double;
@@ -403,8 +401,8 @@ class Eval
   static dynamic _truncate(dynamic value, dynamic precision, [dynamic pad]) {
     try {
       if ((value == null) || (value == 'null')) return null;
-      dynamic v = S.toDouble(value);
-      int? p = S.toInt(precision);
+      dynamic v = toDouble(value);
+      int? p = toInt(precision);
       bool? z = pad != null && pad >= 0;
       if (v != null && p != null) {
         double power = pow(10.0, p) as double;
@@ -428,9 +426,9 @@ class Eval
   static dynamic _substring(dynamic value, [dynamic startIndex, dynamic endIndex])
   {
     String val = value.toString();
-    if (S.isNullOrEmpty(val)) return '';
-    int start = S.toInt(startIndex) ?? 0;
-    int end   = S.toInt(endIndex) ?? val.length;
+    if (isNullOrEmpty(val)) return '';
+    int start = toInt(startIndex) ?? 0;
+    int end   = toInt(endIndex) ?? val.length;
     if (start < 0 && (start * -1) <= val.length) {
       start = val.length + start;
     }
@@ -451,7 +449,7 @@ class Eval
   /// Returns an all lowercase String
   static dynamic _toLower(dynamic value)
   {
-    return S.toStr(value)?.toLowerCase() ?? value;
+    return toStr(value)?.toLowerCase() ?? value;
   }
 
   /// Returns distance in meters between two coordinates in degrees
@@ -459,11 +457,11 @@ class Eval
   {
 
     //haversine formula
-    double? lat1 = S.toDouble(latitude1);
-    double? lon1 = S.toDouble(longitude1);
+    double? lat1 = toDouble(latitude1);
+    double? lon1 = toDouble(longitude1);
 
-    double? lat2 = S.toDouble(latitude2);
-    double? lon2 = S.toDouble(longitude2);
+    double? lat2 = toDouble(latitude2);
+    double? lon2 = toDouble(longitude2);
 
     if(lat1 == null || lon1 == null || lat2 == null || lon2 == null ) return null;
 
@@ -483,63 +481,34 @@ class Eval
   /// Returns an all uppercase String
   static dynamic _toUpper(dynamic value)
   {
-    return S.toStr(value)?.toUpperCase() ?? value;
+    return toStr(value)?.toUpperCase() ?? value;
   }
 
   /// Returns value as a valid json string
   static dynamic _toJson(dynamic value)
   {
     // convert from xml
-    if (value is String && value.startsWith("<"))
+    if (value is String)
     {
-      final Xml2Json parser = Xml2Json();
-
-      // parse value as xml
-      try
-      {
-        parser.parse(value);
-        var result = parser.toParkerWithAttrs();
-        return result;
-      }
-      catch(_){}
-
-      // // parse value as xml w/ added root
-      try
-      {
-        parser.parse("<root>$value</root>");
-        var result = parser.toParkerWithAttrs();
-        return result.substring(result.indexOf(":") + 1, result.lastIndexOf("}")).trim();
-      }
-      catch(_){}
-
-      return null;
+      return Json.decode(value);
     }
 
-    // convert from xml
-    if (value is String && value.startsWith("{"))
+    if (value is Data)
     {
-      try
-      {
-        jsonDecode(value);
-        return value;
-      }
-      catch(_){}
-
-      return null;
+      return Data.toJson(value);
     }
 
     return null;
   }
 
-  /// Returns value as a valid json string
+  /// Returns value as a valid xml string
   static dynamic _toXml(dynamic value)
   {
     // parse and validate
-    if (value is String && value.startsWith("<"))
+    if (value is String)
     {
       var doc = Xml.tryParse(value);
-      if (doc != null) return value;
-      return null;
+      return doc?.toString();
     }
 
     // convert from Data to xml
@@ -554,19 +523,23 @@ class Eval
   // deserializes the value to string
   static dynamic _serialize(dynamic value, [dynamic format = "json"])
   {
-    bool asJson = format is String && format.trim().toUpperCase() == "json";
-    if (asJson) return _toJson(value);
-
-    bool asXml = format is String && format.trim().toUpperCase() == "xml";
-    if (asXml)  return _toXml(value);
+    format = format?.toString().toLowerCase().trim();
+    switch (format)
+    {
+      case "xml":
+        var x = _toXml(value);
+        return x;
+      case "json":
+        return _toJson(value);
+    }
     return null;
   }
 
   /// Returns the modular of a number and a divisor
   static dynamic _mod(dynamic num, dynamic div)
   {
-    int? number  = S.toInt(num);
-    int? divisor = S.toInt(div);
+    int? number  = toInt(num);
+    int? divisor = toInt(div);
     if ((number != null) && (divisor != null) && (divisor != 0)) {
       return number%divisor;
     }
@@ -576,7 +549,7 @@ class Eval
   // TODO: define this with a better name perhaps
   static String? normalize(dynamic expression)
   {
-    expression = S.toStr(expression);
+    expression = toStr(expression);
     if (expression == null) return null;
 
     //////////////////////////////////////////////
@@ -587,8 +560,8 @@ class Eval
 
   /// Replace all [Pattern] occurrences in a String with a String
   static String _replace(dynamic s, dynamic pattern, dynamic replace) {
-    pattern = S.toStr(pattern);
-    replace = S.toStr(replace);
+    pattern = toStr(pattern);
+    replace = toStr(replace);
     try {
       s = s.replaceAll(pattern, replace);
     }
@@ -604,7 +577,7 @@ class Eval
   {
     key ??= System.app?.settings("HASHKEY");
     if (key == null) return null;
-    key = S.toStr(key);
+    key = toStr(key);
     try
     {
       s = Cryptography.hash(text: s, key: key);
@@ -619,7 +592,7 @@ class Eval
   static String? _encrypt(dynamic s, dynamic key)
   {
     if (key == null) return null;
-    key = S.toStr(key);
+    key = toStr(key);
     try
     {
       s = Cryptography.encrypt(text: s, secretkey: key, vector: key);
@@ -634,7 +607,7 @@ class Eval
   static String? _decrypt(dynamic s, dynamic key)
   {
     if (key == null) return null;
-    key = S.toStr(key);
+    key = toStr(key);
     try
     {
       s = Cryptography.decrypt(text: s, secretkey: key, vector: key);
@@ -715,7 +688,7 @@ class Eval
   {
     if (s == null) return 0;
     if (s is List) return s.length;
-    s = S.toStr(s);
+    s = toStr(s);
     return s?.length ?? 0;
   }
 
@@ -729,6 +702,19 @@ class Eval
     }
     if (list != null && list == object) return 0;
     return -1;
+  }
+
+  /// object in list at specified index
+  static dynamic _elementAt(dynamic list, dynamic index)
+  {
+    if (list is List && isNumeric(index))
+    {
+      int i = toInt(index)!;
+      if (i.isNegative) return null;
+      if (i >= list.length) return null;
+      return list.elementAt(index);
+    }
+    return null;
   }
 
   /// null-safe String length
@@ -770,7 +756,7 @@ class Eval
         } else if (compact != true && currency == true) {
           f = NumberFormat.simpleCurrency(locale: locale);
         }
-        if (value is String) value = S.toDouble(value);
+        if (value is String) value = toDouble(value);
         return f.format(value);
       }
       catch(e) {
@@ -783,7 +769,7 @@ class Eval
   /// Returns the epoch of a DateTime String
   static int? _toEpoch(dynamic dts) {
     if (dts == null || dts is! String) return null;
-    DateTime? dt = S.toDate(dts);
+    DateTime? dt = toDate(dts);
     if (dt == null) return null;
     return dt.millisecondsSinceEpoch;
   }
@@ -792,8 +778,8 @@ class Eval
   /// otherwise it returns false except, when an input is an invalid format it will return null.
   static bool? _isAfter(dynamic dts1, dynamic dts2) {
     if (dts1 == null || dts1 is! String || dts2 == null || dts2 is! String) return null;
-    DateTime? dt1 = S.toDate(dts1);
-    DateTime? dt2 = S.toDate(dts2);
+    DateTime? dt1 = toDate(dts1);
+    DateTime? dt2 = toDate(dts2);
     if (dt1 == null || dt2 == null) return null;
     return DT.isAfter(dt1, dt2);
   }
@@ -802,8 +788,8 @@ class Eval
   /// otherwise it returns false, except when an input is an invalid format it will return null.
   static bool? _isBefore(dynamic dts1, dynamic dts2) {
     if (dts1 == null || dts1 is! String || dts2 == null || dts2 is! String) return null;
-    DateTime? dt1 = S.toDate(dts1);
-    DateTime? dt2 = S.toDate(dts2);
+    DateTime? dt1 = toDate(dts1);
+    DateTime? dt2 = toDate(dts2);
     if (dt1 == null || dt2 == null) return null;
     return DT.isBefore(dt1, dt2);
   }
@@ -812,8 +798,8 @@ class Eval
   /// When either input is an invalid format it will return null.
   static String? _timeBetween(dynamic dts1, dynamic dts2) {
     if (dts1 == null || dts1 is! String || dts2 == null || dts2 is! String) return null;
-    DateTime? dt1 = S.toDate(dts1);
-    DateTime? dt2 = S.toDate(dts2);
+    DateTime? dt1 = toDate(dts1);
+    DateTime? dt2 = toDate(dts2);
     if (dt1 == null || dt2 == null) return null;
     return DT.timeBetween(dt1, dt2);
   }
@@ -824,7 +810,7 @@ class Eval
     if (add == null || add is! String || dts == null || dts is! String) return null;
     TimeUnitDuration addTUD = TimeUnitDuration.fromString(add);
     if (addTUD.amount == 0) return null;
-    DateTime? dt = S.toDate(dts);
+    DateTime? dt = toDate(dts);
     if (dt == null) return null;
     return DT.add(dt, addTUD).toString();
   }
@@ -835,7 +821,7 @@ class Eval
     if (subtract == null || subtract is! String || dts == null || dts is! String) return null;
     TimeUnitDuration addTUD = TimeUnitDuration.fromString(subtract);
     if (addTUD.amount == 0) return null;
-    DateTime? dt = S.toDate(dts);
+    DateTime? dt = toDate(dts);
     if (dt == null) return null;
     return DT.subtract(dt, addTUD).toString();
   }

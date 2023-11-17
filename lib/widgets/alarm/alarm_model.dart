@@ -3,7 +3,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:xml/xml.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 enum AlarmType {generic, mandatory, validation, server}
 
@@ -80,7 +80,7 @@ class AlarmModel extends WidgetModel
   {
     // set type
     this.type = AlarmType.generic;
-    if (type is String)    this.type = S.toEnum(type.trim().toLowerCase(), AlarmType.values) ?? AlarmType.generic;
+    if (type is String)    this.type = toEnum(type.trim().toLowerCase(), AlarmType.values) ?? AlarmType.generic;
     if (type is AlarmType) this.type = type;
 
     if (text  != null) this.text = text;

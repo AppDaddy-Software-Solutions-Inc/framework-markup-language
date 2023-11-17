@@ -5,7 +5,7 @@ import 'package:universal_html/html.dart' as universal_html;
 import 'package:universal_html/js.dart' as universal_js;
 import 'dart:ui' as dart_ui;
 import 'package:fml/log/manager.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 typedef OnMessageCallback = void Function(Map<String, dynamic> data, [String? type]);
 
@@ -17,7 +17,7 @@ class Bridge
   universal_js.JsObject? _connector;
 
   final HashMap<String, List<OnMessageCallback>> _listeners = HashMap<String, List<OnMessageCallback>>();
-  final id = S.newId();
+  final id = newId();
 
   Bridge(this.script)
   {
@@ -132,11 +132,9 @@ class Bridge
   {
     try
     {
-      ////////////////////
-      /* Decode Message */
-      ////////////////////
+      // decode message
       var json = event.data;
-      var data = jsonDecode(json);
+      var data = Json.decode(json);
 
       Map<String, dynamic> map = <String, dynamic>{};
       if (data is Map) map.addAll(data as Map<String, dynamic>);
@@ -147,10 +145,8 @@ class Bridge
       String? from      =  ((map.containsKey('message:from')) && (map['message:from'] is String)) ? (map['message:from'] as String?) : null;
       String? to        =  ((map.containsKey('message:to'))   && (map['message:to']   is String)) ? (map['message:to']   as String?) : null;
 
-      /////////////////////
-      /* Message for Me? */
-      /////////////////////
-      if ((to == me) && (!S.isNullOrEmpty(from)))
+      // message is for me?
+      if ((to == me) && (!isNullOrEmpty(from)))
       {
         Log().debug('Message Received From: $from To: $to -> $json');
         map.remove('from');
@@ -161,10 +157,8 @@ class Bridge
         Log().debug('Message Received From: $from To: $to -> Wrong Address');
       }
 
-      ////////////////
-      /* Return Map */
-      ////////////////
-      return jsonDecode(json);
+      // return map
+      return Json.decode(json);
     }
     catch(e)
     {

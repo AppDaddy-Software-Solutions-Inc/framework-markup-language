@@ -8,7 +8,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/event/event.dart' ;
 import 'package:fml/event/handler.dart' ;
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class MenuItemModel extends DecoratedWidgetModel
 {
@@ -258,7 +258,7 @@ class MenuItemModel extends DecoratedWidgetModel
     this.backgroundcolor  = backgroundcolor;
     this.radius           = radius;
     this.enabled          = enabled;
-    if (image != null) this.image = S.toDataUri(image);
+    if (image != null) this.image = toDataUri(image);
   }
 
   static MenuItemModel? fromXml(WidgetModel parent, XmlElement? xml, {dynamic data, dynamic onTap, dynamic onLongPress})

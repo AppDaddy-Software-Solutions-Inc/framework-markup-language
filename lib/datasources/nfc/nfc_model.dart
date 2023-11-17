@@ -11,7 +11,7 @@ import 'payload.dart';
 import 'nfc_listener_interface.dart';
 import 'nfc.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class NcfModel extends DataSourceModel implements IDataSource, INfcListener
 {
@@ -162,7 +162,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
 
   Future<bool> _write(String? message, {bool restart = false}) async
   {
-    if (!S.isNullOrEmpty(message))
+    if (!isNullOrEmpty(message))
     {
       Log().debug('NFC WRITE: Polling for 60 seconds');
       String stripTags = message!.replaceAll('\r', '').replaceAll('\t', '').replaceAll('\n', '').replaceAll(RegExp("<[^>]*>", caseSensitive: false), '');
@@ -172,7 +172,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
 
         // write succeeded
         if (ok) {
-          if(!S.isNullOrEmpty(onsuccess) || !S.isNullOrEmpty(onwritesuccess)) {
+          if(!isNullOrEmpty(onsuccess) || !isNullOrEmpty(onwritesuccess)) {
             EventHandler handler = EventHandler(this);
             await handler.execute(onSuccessObservable);
             await handler.execute(onWriteSuccessObservable);
@@ -183,7 +183,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
 
         // write failed
         else if (!ok) {
-          if(!S.isNullOrEmpty(onfail) || !S.isNullOrEmpty(onwritefail)) {
+          if(!isNullOrEmpty(onfail) || !isNullOrEmpty(onwritefail)) {
             EventHandler handler = EventHandler(this);
             await handler.execute(onFailObservable);
             await handler.execute(onWriteFailObservable);
@@ -193,7 +193,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
         }
       } on CustomException catch(e){
         if (e.code == 408){
-          if(!S.isNullOrEmpty(ontimeout)) {
+          if(!isNullOrEmpty(ontimeout)) {
           EventHandler handler = EventHandler(this);
           await handler.execute(onTimeoutObservable);
           }
@@ -201,7 +201,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
           if(restart) start();
         }
         if (e.code == 405) {
-          if(!S.isNullOrEmpty(onfail) || !S.isNullOrEmpty(onwritefail)){
+          if(!isNullOrEmpty(onfail) || !isNullOrEmpty(onwritefail)){
           EventHandler handler = EventHandler(this);
           await handler.execute(onFailObservable);
           await handler.execute(onWriteFailObservable);
@@ -247,7 +247,7 @@ class NcfModel extends DataSourceModel implements IDataSource, INfcListener
     String function = propertyOrFunction.toLowerCase().trim();
     if (function == "write") {
       statusmessage = "Approach an NFC tag to Write";
-      String? message = S.toStr(S.item(arguments, 0));
+      String? message = toStr(elementAt(arguments, 0));
       return await _write(message, restart: true);
     } else if (method?.toLowerCase().trim() == "read")
     {

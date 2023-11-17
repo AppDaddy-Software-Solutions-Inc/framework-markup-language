@@ -5,7 +5,7 @@ import 'package:fml/datasources/transforms/transform_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 enum SortTypes {none, ascending, descending}
 
@@ -35,7 +35,7 @@ class Sort extends TransformModel implements ITransform
   set type(dynamic v)
   {
     Type sortType = String;
-    if (!S.isNullOrEmpty(v))
+    if (!isNullOrEmpty(v))
     {
       v = v.toLowerCase().trim();
       if (v == 'string')   sortType = String;
@@ -71,7 +71,7 @@ class Sort extends TransformModel implements ITransform
   bool? _casesensitive;
   set casesensitive(dynamic v)
   {
-    _casesensitive = S.toBool(v);
+    _casesensitive = toBool(v);
   }
   bool get casesensitive => _casesensitive ?? false;
 
@@ -113,8 +113,8 @@ class Sort extends TransformModel implements ITransform
 
     list.sort((a, b)
     {
-      dynamic v1 = Data.readValue(a, field);
-      dynamic v2 = Data.readValue(b, field);
+      dynamic v1 = Data.read(a, field);
+      dynamic v2 = Data.read(b, field);
 
       int? result = 0;
       if (type == String)
@@ -124,23 +124,23 @@ class Sort extends TransformModel implements ITransform
       }
       else if (type == int)
       {
-        v1 = (S.isNumber(v1) == true) ? S.toInt(v1) : null;
-        v2 = (S.isNumber(v2) == true) ? S.toInt(v2) : null;
+        v1 = (isNumeric(v1) == true) ? toInt(v1) : null;
+        v2 = (isNumeric(v2) == true) ? toInt(v2) : null;
       }
       else if (type == double)
       {
-        v1 = (S.isNumber(v1) == true) ? S.toDouble(v1) : null;
-        v2 = (S.isNumber(v2) == true) ? S.toDouble(v2) : null;
+        v1 = (isNumeric(v1) == true) ? toDouble(v1) : null;
+        v2 = (isNumeric(v2) == true) ? toDouble(v2) : null;
       }
       else if (type == num)
       {
-        v1 = (S.isNumber(v1) == true) ? S.toNum(v1) : null;
-        v2 = (S.isNumber(v2) == true) ? S.toNum(v2) : null;
+        v1 = (isNumeric(v1) == true) ? toNum(v1) : null;
+        v2 = (isNumeric(v2) == true) ? toNum(v2) : null;
       }
       else if (type == DateTime)
       {
-        v1 = S.toDate(v1);
-        v2 = S.toDate(v2);
+        v1 = toDate(v1);
+        v2 = toDate(v2);
       }
 
       try

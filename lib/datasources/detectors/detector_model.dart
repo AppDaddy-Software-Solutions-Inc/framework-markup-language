@@ -6,7 +6,7 @@ import 'package:fml/datasources/base/model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 enum DetectorSources {image, stream, any}
 
@@ -75,7 +75,7 @@ class DetectorModel extends DataSourceModel implements IDataSource
     super.deserialize(xml);
 
     enabled   = Xml.get(node: xml, tag: 'enabled');
-    source    = S.toEnum(Xml.get(node: xml, tag: 'source'), DetectorSources.values) ?? DetectorSources.any;
+    source    = toEnum(Xml.get(node: xml, tag: 'source'), DetectorSources.values) ?? DetectorSources.any;
   }
 
   Future<bool> onDetected(Data data) async

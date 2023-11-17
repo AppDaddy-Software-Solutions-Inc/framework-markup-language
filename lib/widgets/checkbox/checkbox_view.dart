@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/helper/string.dart';
+import 'package:fml/helpers/string.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/checkbox/checkbox_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
@@ -90,7 +90,7 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
 
     String? errorTextValue = widget.model.alarmText;
 
-    if(!S.isNullOrEmpty(errorTextValue)) {
+    if(!isNullOrEmpty(errorTextValue)) {
       Widget? errorText = Text(
         "     $errorTextValue", style: TextStyle(color: Theme
           .of(context)

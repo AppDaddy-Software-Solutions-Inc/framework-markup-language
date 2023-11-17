@@ -10,7 +10,7 @@ import 'package:fml/widgets/chart_painter/chart_model.dart';
 import 'package:fml/widgets/chart_painter/axis/chart_axis_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/chart_painter/bar/bar_chart_view.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 import 'package:xml/xml.dart';
 
 /// Chart [ChartModel]
@@ -114,8 +114,8 @@ class BarChartModel extends ChartPainterModel
       if (axis.axis == ChartAxis.X) xaxis = axis;
 
       if (axis.axis == ChartAxis.Y) yaxis = axis;
-      yMax = S.toInt(yaxis.max) ?? 0;
-      yMin = S.toInt(yaxis.min) ?? 0;
+      yMax = toInt(yaxis.max) ?? 0;
+      yMin = toInt(yaxis.min) ?? 0;
     }
   }
 

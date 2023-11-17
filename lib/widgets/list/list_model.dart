@@ -12,7 +12,7 @@ import 'package:fml/widgets/list/list_view.dart';
 import 'package:fml/widgets/list/item/list_item_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart'     ;
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
 {
@@ -327,7 +327,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     List<ListItemModel> items = findChildrenOfExactType(ListItemModel).cast<ListItemModel>();
 
     // set prototype
-    if ((!S.isNullOrEmpty(datasource)) && (items.isNotEmpty))
+    if ((!isNullOrEmpty(datasource)) && (items.isNotEmpty))
     {
       prototype = WidgetModel.prototypeOf(items.first.element);
       items.removeAt(0);
@@ -344,7 +344,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
   ListItemModel? getItemModel(int index)
   {
     // fixed list?
-    if (S.isNullOrEmpty(datasource)) return (index < items.length) ? items[index] : null;
+    if (isNullOrEmpty(datasource)) return (index < items.length) ? items[index] : null;
 
     // item model exists?
     if (_dataset == null) return null;
@@ -480,7 +480,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     {
       // selects the item by index
       case "select" :
-        int index = S.toInt(S.item(arguments, 0)) ?? -1;
+        int index = toInt(elementAt(arguments, 0)) ?? -1;
         if (index >= 0 && index < items.length)
         {
           var model = items[index];
@@ -490,7 +490,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
 
       // de-selects the item by index
       case "deselect" :
-        int index = S.toInt(S.item(arguments, 0)) ?? -1;
+        int index = toInt(elementAt(arguments, 0)) ?? -1;
         if (index >= 0 && _dataset != null && index < _dataset!.length)
         {
           var model = items[index];

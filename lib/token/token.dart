@@ -2,7 +2,7 @@
 import 'dart:convert';
 import 'package:fml/log/manager.dart';
 import 'package:jaguar_jwt/jaguar_jwt.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 // Json web token - oauth2
 class Jwt
@@ -19,13 +19,13 @@ class Jwt
       //final JwtClaim decClaimSet = verifyJwtHS256Signature(token, key);
 
       var parts = token.split(".");
-      Map json = jsonDecode(S.fromBase64(parts[0])!);
+      Map json = jsonDecode(fromBase64(parts[0])!);
       json.forEach((key, value)
       {
         claims[key] = value.toString();
       });
 
-      json = jsonDecode(S.fromBase64(parts[1])!);
+      json = jsonDecode(fromBase64(parts[1])!);
       json.forEach((key, value)
       {
         claims[key] = value.toString();

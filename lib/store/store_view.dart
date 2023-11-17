@@ -18,7 +18,7 @@ import 'package:fml/widgets/menu/menu_view.dart';
 import 'package:fml/widgets/menu/menu_model.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
 import 'package:provider/provider.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 final bool enableTestPlayground = false;
@@ -111,7 +111,7 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
 
     Widget storeDisplay = MenuView(menuModel);
 
-    storeButton = ButtonModel(null, null, enabled: !S.isNullOrEmpty(appURLInput.value), label: phrase.loadApp, buttontype: "raised", color: Theme.of(context).colorScheme.secondary);
+    storeButton = ButtonModel(null, null, enabled: !isNullOrEmpty(appURLInput.value), label: phrase.loadApp, buttontype: "raised", color: Theme.of(context).colorScheme.secondary);
 
     Widget noAppDisplay = Center(
         child: AnimatedOpacity(
@@ -269,7 +269,7 @@ class AppFormState extends State<AppForm>
     errorText = '';
 
     // missing title
-    if (S.isNullOrEmpty(title))
+    if (isNullOrEmpty(title))
     {
       errorText = "Title must be supplied";
       return errorText;
@@ -294,7 +294,7 @@ class AppFormState extends State<AppForm>
     }
 
     // missing url
-    if (S.isNullOrEmpty(url))
+    if (isNullOrEmpty(url))
     {
       errorText = phrase.missingURL;
       return errorText;
@@ -317,7 +317,7 @@ class AppFormState extends State<AppForm>
     }
 
     // missing host
-    if (S.isNullOrEmpty(uri.authority))
+    if (isNullOrEmpty(uri.authority))
     {
       errorText = 'Missing host in address';
       return errorText;

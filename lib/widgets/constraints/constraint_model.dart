@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:fml/helper/string.dart';
-import 'package:fml/helper/xml.dart';
+import 'package:fml/helpers/string.dart';
+import 'package:fml/helpers/xml.dart';
 import 'package:fml/observable/binding.dart';
+import 'package:fml/observable/observable.dart';
 import 'package:fml/observable/observables/double.dart';
 import 'package:fml/observable/observables/integer.dart';
 import 'package:fml/observable/observables/string.dart';
@@ -83,20 +84,20 @@ class ConstraintModel extends WidgetModel
 
   // this routine enforces the min and max width
   // constraints from the template
-  dynamic _widthSetter(dynamic value)
+  dynamic _widthSetter(dynamic value, {Observable? setter})
   {
     // is the value a percentage?
     _widthPercentage = null;
-    if (S.isPercentage(value))
+    if (isPercent(value))
     {
-      _widthPercentage = S.toDouble(value.split("%")[0]);
+      _widthPercentage = toDouble(value.split("%")[0]);
       value = null;
     }
 
     // is the value a number?
-    if (S.isNumber(value))
+    if (isNumeric(value))
     {
-      double v = S.toDouble(value)!;
+      double v = toDouble(value)!;
 
       // must be greater than minWidth
       if (minWidth != null && v < minWidth!) v = minWidth!;
@@ -107,7 +108,7 @@ class ConstraintModel extends WidgetModel
       // cannot be negative
       if (v.isNegative) v = 0;
 
-      if (v != S.toDouble(value)) value = v;
+      if (v != toDouble(value)) value = v;
     }
 
     return value;
@@ -133,20 +134,20 @@ class ConstraintModel extends WidgetModel
 
   // this routine enforces the min and max height
   // constraints from the template
-  dynamic _heightSetter(dynamic value)
+  dynamic _heightSetter(dynamic value, {Observable? setter})
   {
     // is the value a percentage?
     _heightPercentage = null;
-    if (S.isPercentage(value))
+    if (isPercent(value))
     {
-      _heightPercentage = S.toDouble(value.split("%")[0]);
+      _heightPercentage = toDouble(value.split("%")[0]);
       value = null;
     }
 
     // is the value a number?
-    if (S.isNumber(value))
+    if (isNumeric(value))
     {
-      double v = S.toDouble(value)!;
+      double v = toDouble(value)!;
 
       // must be greater than minHeight
       if (minHeight != null && v < minHeight!) v = minHeight!;
@@ -157,7 +158,7 @@ class ConstraintModel extends WidgetModel
       // cannot be negative
       if (v.isNegative) v = 0;
 
-      if (v != S.toDouble(value)) value = v;
+      if (v != toDouble(value)) value = v;
     }
 
     return value;
@@ -224,9 +225,9 @@ class ConstraintModel extends WidgetModel
   {
     if (v != null)
     {
-      if (S.isPercentage(v))
+      if (isPercent(v))
       {
-        _minWidthPercentage = S.toDouble(v.split("%")[0]);
+        _minWidthPercentage = toDouble(v.split("%")[0]);
         v = null;
       }
       else {
@@ -249,9 +250,9 @@ class ConstraintModel extends WidgetModel
   {
     if (v != null)
     {
-      if (S.isPercentage(v))
+      if (isPercent(v))
       {
-        _maxWidthPercentage = S.toDouble(v.split("%")[0]);
+        _maxWidthPercentage = toDouble(v.split("%")[0]);
         v = null;
       }
       else {
@@ -274,9 +275,9 @@ class ConstraintModel extends WidgetModel
   {
     if (v != null)
     {
-      if (S.isPercentage(v))
+      if (isPercent(v))
       {
-        _minHeightPercentage = S.toDouble(v.split("%")[0]);
+        _minHeightPercentage = toDouble(v.split("%")[0]);
         v = null;
       }
       else {
@@ -299,9 +300,9 @@ class ConstraintModel extends WidgetModel
   {
     if (v != null)
     {
-      if (S.isPercentage(v))
+      if (isPercent(v))
       {
-        _maxHeightPercentage = S.toDouble(v.split("%")[0]);
+        _maxHeightPercentage = toDouble(v.split("%")[0]);
         v = null;
       }
       else {

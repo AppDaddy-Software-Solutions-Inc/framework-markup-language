@@ -7,7 +7,7 @@ import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/animation/animation_model.dart' as base_animation_model;
 import 'package:fml/event/event.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 /// Animation View
 ///
@@ -125,9 +125,9 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
     if (event.parameters == null) return;
 
     String? id = (event.parameters != null) ? event.parameters!['id'] : null;
-    if ((S.isNullOrEmpty(id)) || (id == widget.model.id)) {
+    if ((isNullOrEmpty(id)) || (id == widget.model.id)) {
       bool? enabled = (event.parameters != null)
-          ? S.toBool(event.parameters!['enabled'])
+          ? toBool(event.parameters!['enabled'])
           : true;
       if (enabled != false) {
         start();
@@ -140,7 +140,7 @@ class AnimationViewState extends WidgetState<AnimationView> with TickerProviderS
 
   void onReset(Event event) {
     String? id = (event.parameters != null) ? event.parameters!['id'] : null;
-    if ((S.isNullOrEmpty(id)) || (id == widget.model.id)) {
+    if ((isNullOrEmpty(id)) || (id == widget.model.id)) {
       reset();
     }
   }

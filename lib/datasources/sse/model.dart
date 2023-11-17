@@ -9,7 +9,7 @@ import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/boolean.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:xml/xml.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class SseModel extends HttpModel implements IDataSource
 {
@@ -144,7 +144,7 @@ class SseModel extends HttpModel implements IDataSource
     if (scope == null) return null;
     String function = propertyOrFunction.toLowerCase().trim();
 
-    bool refresh = S.toBool(S.item(arguments,0)) ?? false;
+    bool refresh = toBool(elementAt(arguments,0)) ?? false;
     switch (function)
     {
       case "start" : return await start(refresh: refresh);

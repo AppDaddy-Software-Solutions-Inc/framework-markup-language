@@ -9,7 +9,7 @@ import 'package:fml/event/handler.dart' ;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class VideoModel extends DecoratedWidgetModel implements ViewableWidgetModel
 {
@@ -127,7 +127,7 @@ class VideoModel extends DecoratedWidgetModel implements ViewableWidgetModel
         case "stop"     : return await player!.stop();
         case "pause"    : return await player!.pause();
         case "rewind"   : return await player!.seek(0);
-        case "seek"     : return await player!.seek(S.toInt(S.item(arguments, 0)) ?? 0);
+        case "seek"     : return await player!.seek(toInt(elementAt(arguments, 0)) ?? 0);
       }
     }
     return super.execute(caller, propertyOrFunction, arguments);

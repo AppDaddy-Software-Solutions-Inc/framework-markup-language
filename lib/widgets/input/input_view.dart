@@ -15,7 +15,7 @@ import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class InputView extends StatefulWidget implements IWidgetView
 {
@@ -216,7 +216,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
 
   void _handleSubmit(String _) {
     try {
-      if (S.isNullOrEmpty(widget.model.keyboardInput) ||
+      if (isNullOrEmpty(widget.model.keyboardInput) ||
           widget.model.keyboardInput!.toLowerCase() == 'done' ||
           widget.model.keyboardInput!.toLowerCase() == 'go' ||
           widget.model.keyboardInput!.toLowerCase() == 'search' ||
@@ -263,7 +263,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
 
   Future<bool> _commit() async
   {
-    String? value = widget.model.controller != null ? widget.model.controller!.text : null;
+    String? value = widget.model.controller?.text;
 
     // value changed?
     if (widget.model.value != value)

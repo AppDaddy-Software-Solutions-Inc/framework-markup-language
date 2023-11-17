@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/treeview/node/tree_node_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
@@ -89,7 +89,7 @@ class _TreeNodeViewState extends WidgetState<TreeNodeView>
     Widget view = Row(crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.start, children: children, mainAxisSize: MainAxisSize.min);
     if (nodes.isNotEmpty)
     {
-      if (S.isNullOrEmpty(widget.model.onclick) && widget.model.children == null) {
+      if (isNullOrEmpty(widget.model.onclick) && widget.model.children == null) {
         view = Opacity(opacity: 0.5, child: view); // Disable treeview nav links without onclick properties
       } else {
         view = MouseRegion(cursor: SystemMouseCursors.click, child: GestureDetector(child: view, onTap: () => onTap()));
@@ -104,7 +104,7 @@ class _TreeNodeViewState extends WidgetState<TreeNodeView>
       view = MouseRegion(cursor: SystemMouseCursors.click, child: GestureDetector(child: view, onTap: () => onClick()));
     }
 
-    if (S.isNullOrEmpty(widget.model.onclick) && widget.model.children == null) {
+    if (isNullOrEmpty(widget.model.onclick) && widget.model.children == null) {
       view = Opacity(opacity: 0.5, child: view); // Disable treeview nav links without onclick properties
     }
     return view;

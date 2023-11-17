@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/data/data.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 import 'package:fml/data/dotnotation.dart';
 import 'package:fml/observable/scope.dart';
 import 'package:fml/system.dart';
@@ -43,20 +43,10 @@ class Binding
   final bool? isEval;
   final int? offset;
 
-  String? get key  => toKey(source, property);
-  String? get name
-  {
-    var k = toKey(source, property);
-    if (dotnotation != null && dotnotation!.isNotEmpty)
-    {
-       String dn = "";
-       for (var segment in dotnotation!) {
-         dn = "$dn.${segment.name}";
-       }
-       k = "$k$dn";
-    }
-    return k;
-  }
+  String? get key => toKey(source, property);
+
+  @override
+  String toString() => (key ?? "") + (dotnotation?.toString() ?? "");
 
   static String? toKey(String? source, [String? property])
   {
@@ -104,7 +94,7 @@ class Binding
         {
           List<String> parts = source.split(':');
           source = parts[0].trim();
-          offset = S.toInt(parts[1]);
+          offset = toInt(parts[1]);
         }
       }
 
@@ -117,7 +107,7 @@ class Binding
         {
           List<String> parts = property.split(':');
           property = parts[0].trim();
-          offset = S.toInt(parts[1]);
+          offset = toInt(parts[1]);
         }
       }
 
@@ -133,7 +123,7 @@ class Binding
       }
 
       // default property is "value"
-      if (S.isNullOrEmpty(property)) property = 'value';
+      if (isNullOrEmpty(property)) property = 'value';
 
       // create the bindable
       if (source!.isNotEmpty) return Binding(scope: scope, signature: signature, source: source, property: property!, dotnotation: subproperties, offset: offset);
@@ -160,7 +150,7 @@ class Binding
       if (v is List)
       {
         if ((offset != null) && (offset! >= 0) && (v.length > offset!)) v = v[offset!];
-        if (dotnotation != null) v = Data.readValue(v,dotnotation?.signature);
+        if (dotnotation != null) v = Data.read(v,dotnotation?.signature);
       }
 
       // nothing
@@ -221,9 +211,9 @@ class Binding
       keys = [];
       for (var binding in bindings) {
         var key  = binding.key;
-        var name = binding.name;
+        var name = binding.toString();
         if (key  != null && !keys.contains(key))  keys.add(key);
-        if (name != null && !keys.contains(name)) keys.add(name);
+        if (name.isNotEmpty && !keys.contains(name)) keys.add(name);
       }
     }
     return keys;
@@ -234,7 +224,7 @@ class Binding
     if ((map != null) && (xml != null)) {
       map.forEach((key, value)
       {
-        String oldValue = "{${S.isNullOrEmpty(prefix) ? (S.isNullOrEmpty(source) ? '' : '${source!}.') : prefix!}$key}";
+        String oldValue = "{${isNullOrEmpty(prefix) ? (isNullOrEmpty(source) ? '' : '${source!}.') : prefix!}$key}";
         String? newValue = (value ?? '').toString();
         if ((encode) && (Xml.hasIllegalCharacters(newValue))) newValue = Xml.encodeIllegalCharacters(newValue);
 

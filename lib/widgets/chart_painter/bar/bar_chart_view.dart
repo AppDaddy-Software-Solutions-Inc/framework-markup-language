@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/helper/string.dart';
+import 'package:fml/helpers/string.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart_painter/bar/bar_chart_model.dart';
@@ -57,24 +57,24 @@ class _ChartViewState extends WidgetState<BarChartView>
     BarChart chart = BarChart(
       BarChartData(
         barGroups: widget.model.barDataList,
-        minY: S.toDouble(widget.model.yaxis.min),
-        maxY: S.toDouble(widget.model.yaxis.max),
+        minY: toDouble(widget.model.yaxis.min),
+        maxY: toDouble(widget.model.yaxis.max),
 
         titlesData: FlTitlesData(
-          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false),  axisNameWidget: !S.isNullOrEmpty(widget.model.title) ? Text(widget.model.title!, style: TextStyle(fontSize: 12),): null,),
+          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false),  axisNameWidget: !isNullOrEmpty(widget.model.title) ? Text(widget.model.title!, style: TextStyle(fontSize: 12),): null,),
           rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
           leftTitles: AxisTitles(
-              axisNameWidget: !S.isNullOrEmpty(widget.model.yaxis.title) ? Text(widget.model.yaxis.title!, style: TextStyle(fontSize: 12),): null,
+              axisNameWidget: !isNullOrEmpty(widget.model.yaxis.title) ? Text(widget.model.yaxis.title!, style: TextStyle(fontSize: 12),): null,
               sideTitles: SideTitles(
-                interval: S.toDouble(widget.model.yaxis.interval),
+                interval: toDouble(widget.model.yaxis.interval),
                 showTitles: widget.model.yaxis.labelvisible,
                 getTitlesWidget: leftTitles,
               )
           ),
           bottomTitles: AxisTitles(
-              axisNameWidget: !S.isNullOrEmpty(widget.model.xaxis.title) ? Text(widget.model.xaxis.title!, style: TextStyle(fontSize: 12),): null,
+              axisNameWidget: !isNullOrEmpty(widget.model.xaxis.title) ? Text(widget.model.xaxis.title!, style: TextStyle(fontSize: 12),): null,
               sideTitles: SideTitles(
-                interval: S.toDouble(widget.model.xaxis.interval),
+                interval: toDouble(widget.model.xaxis.interval),
                 showTitles: widget.model.xaxis.labelvisible,
                 getTitlesWidget: bottomTitles,
               )

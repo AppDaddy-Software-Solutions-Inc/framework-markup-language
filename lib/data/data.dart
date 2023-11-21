@@ -2,21 +2,26 @@
 import 'dart:collection';
 import 'dart:math';
 import 'package:fml/data/dotnotation.dart';
+import 'package:fml/helpers/json.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
-import 'package:xml2json/xml2json.dart';
-import 'dart:convert';
+import 'package:xml/xml.dart';
 
 class Data with ListMixin<dynamic>
 {
   List<dynamic> _list = [];
 
+  String? root;
+
   Data({dynamic data})
   {
     _list = [];
-    if (data is List) {
+    if (data is List)
+    {
       _list = data;
-    } else if (data != null) {
+    }
+    else if (data != null)
+    {
       _list.add(data);
     }
   }
@@ -40,52 +45,7 @@ class Data with ListMixin<dynamic>
   int get length => _list.length;
 
   // shallow copy clone of the list
-  Data clone()
-  {
-    Data clone = Data();
-    forEach((element)
-    {
-           if (element is List) {
-             clone.add(_cloneList(element));
-           } else if (element is Map) {
-        clone.add(_cloneMap(element));
-      } else {
-        clone.add(element);
-      }
-    });
-    return clone;
-  }
-
-  List _cloneList(List list)
-  {
-    List clone = [];
-    for (var element in list) {
-           if (element is List) {
-             clone.add(_cloneList(element));
-           } else if (element is Map) {
-        clone.add(_cloneMap(element));
-      } else {
-        clone.add(element);
-      }
-    }
-    return clone;
-  }
-
-  Map _cloneMap(Map map)
-  {
-    Map clone = {};
-    map.forEach((key, value)
-    {
-           if (value is List) {
-             clone[key] = _cloneList(value);
-           } else if (value is Map) {
-        clone[key] = _cloneMap(value);
-      } else {
-        clone[key] = value;
-      }
-    });
-    return clone;
-  }
+  Data clone() => Data(data: Json.copy(_list));
 
   static Data from(dynamic value, {String? root})
   {
@@ -95,12 +55,8 @@ class Data with ListMixin<dynamic>
     if (value is Data)    data = value;
     if (value is String)
     {
-      if (value.trim().startsWith('<')) {
-        data = Data.fromXml(value);
-      } else
-      {
-        data = Data.fromJson(value);
-      }
+      var isXml = value.trim().startsWith('<');
+      data = isXml ? Data.fromXml(value) : Data.fromJson(value);
     }
 
     // default
@@ -119,50 +75,25 @@ class Data with ListMixin<dynamic>
       if (dotnotation != null) data = fromDotNotation(data, dotnotation);
     }
 
-    return (data != null) ? data : Data(data: data);
+    // build default data set
+    data ??= Data(data: null);
+
+    // save root name
+    data.root = root;
+    
+    return data;
   }
 
-  static Data? fromXml(String xml)
-  {
-    try
-    {
-      final Xml2Json parser = Xml2Json();
-      parser.parse(xml);
-      return Data.fromJson(parser.toParkerWithAttrs());
-    }
-    catch(e)
-    {
-      Log().error('Unable to parse data document from string to xml document');
-      return null;
-    }
-  }
+  static Data? fromJson(String json) => Data(data: Json.decode(json) ?? []);
 
-  static Data? fromJson(String jsonString)
-  {
-    try
-    {
-       var json = jsonDecode(jsonString);
+  static String toJson(Data? data) => Json.encode(data);
 
-       List<Map<String, dynamic>> list = [];
+  static Data? fromXml(String xml) => Data.fromJson(Json.fromXml(xml) ?? "{}");
 
-       // list
-       if (json is List) {
-         for (var element in json) {
-         if (element is Map) list.add(element as Map<String, dynamic>);
-       }
-       } else if (json is Map)
-       {
-         list.add(json as Map<String, dynamic>);
-       }
-
-       return Data(data: list);
-    }
-    catch(e)
-    {
-      Log().error('Invalid Format, unable to decode json string data.');
-      return null;
-    }
-  }
+  static String toXml(Data? data, {String? defaultRootName, String? defaultNodeName}) =>
+      Json.toXml(data,
+          defaultRootName: defaultRootName ?? data?.root?.split(".").first,
+          defaultNodeName: defaultNodeName ?? data?.root?.split(".").last);
 
   static Data? fromDotNotation(Data data, DotNotation dotnotation)
   {
@@ -323,122 +254,35 @@ class Data with ListMixin<dynamic>
       return string;
   }
 
-  static dynamic readValue(dynamic data, String? tag)
-  {
-    if (data == null || (data is List && data.isEmpty) || tag == null) return null;
+  // reads a value from the data list
+  static void write(dynamic data, String? tag, dynamic value) => Json.write(data, tag, value);
 
-    // Get Dot Notation
-    DotNotation? dotNotation = DotNotation.fromString(tag);
+  // reads a value from the data list
+  static dynamic read(dynamic data, String? tag) => Json.read(data, tag);
 
-    if (data is List<dynamic>) data = data.isNotEmpty ? data[0] : null;
-
-    if (dotNotation != null){
-      for (NotationSegment? property in dotNotation) {
-        if (property != null)
-        {
-          if (data is Map)
-          {
-            // attributes are named with an underscore
-            // to make it easier for the user, we first look for the
-            // property by name, then if not found, look for it by _name
-            var name  = property.name;
-            var myName = "_$name";
-            if (!data.containsKey(name) && (!data.containsKey(myName)))
-            {
-              data = null;
-              break;
-            }
-            data = data.containsKey(name) ? data[name] : data[myName];
-
-            if ((data is Map)  && (property.offset > 0)) data = null;
-            if ((data is List) && (property.offset > data.length)) data = null;
-            if ((data is List) && (property.offset < data.length) && (property.offset >= 0))  data = data[property.offset];
-          }
-
-          else if (data is List)
-          {
-            if (data.length < property.offset)
-            {
-              data = null;
-              break;
-            }
-            data = data[property.offset];
-            if ((data is Map) && (data.containsKey(property.name))) data = data[property.name];
-          }
-
-          else
-          {
-            data = null;
-            break;
-          }
-        }
-      }}
-
-    // this is a very odd case. if the element contains attributes, the element value will be put into a
-    // map field called "value" and its attributes will be mapped to underscore (_) names _attributename
-    if ((data is Map) && (data.containsKey('value'))) data = data['value'];
-
-    // return result;
-    return data;
-  }
-
-  static writeValue(dynamic data, String? tag, dynamic value)
-  {
-    // get segments
-    DotNotation? segments = DotNotation.fromString(tag);
-    if (segments == null || segments.isEmpty) return data;
-
-    // build map segments
-    for (int i = 0; i < segments.length - 1; i++)
-    {
-      var property = segments[i];
-      if (data is Map)
-      {
-        if (property.offset > 0)
-        {
-          data = null;
-          break;
-        }
-        if (!data.containsKey(property.name)) data[property.name] = "";
-        data = data[property.name];
-      }
-      if (data is List)
-      {
-        if (property.offset > data.length)
-        {
-          data = null;
-          break;
-        }
-        if (property.offset < data.length && property.offset >= 0) data = data[property.offset];
-      }
-    }
-
-    // write the value
-    var name = segments.last.name;
-    if (data is Map) data[name] = value;
-  }
-
-
-  static Map<String?, dynamic> readValues(List<Binding>? bindings, dynamic data)
+  static Map<String?, dynamic> find(List<Binding>? bindings, dynamic data)
   {
     Map<String?, dynamic> values = <String?, dynamic>{};
     List<String?> processed = [];
-    if (bindings != null) {
-      for (Binding binding in bindings) {
+    if (bindings != null)
+    {
+      for (Binding binding in bindings)
+      {
         // fully qualified data binding name (datasource.data.field1.field2.field3...fieldn)
-        if ((binding.source == 'data')) {
-          String? signature = binding.property +
-              (binding.dotnotation?.signature != null ? ".${binding.dotnotation!
-                  .signature}" : "");
-          if (!processed.contains(binding.signature)) {
+        if ((binding.source == 'data'))
+        {
+          String? signature = binding.property + (binding.dotnotation?.signature != null ? ".${binding.dotnotation!.signature}" : "");
+          if (!processed.contains(binding.signature))
+          {
             processed.add(binding.signature);
-            var value = readValue(data, signature) ?? "";
+            var value = read(data, signature) ?? "";
             values[binding.signature] = value;
           }
         }
       }
     }
-      return values;
+
+    return values;
   }
 
   static Data testData(int rows)

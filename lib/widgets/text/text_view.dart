@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
-import 'package:fml/helper/string.dart';
+import 'package:fml/helpers/string.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
@@ -62,7 +62,7 @@ class _TextViewState extends WidgetState<TextView>
 
     try
     {
-      if (value?.contains(':') ?? false) value = S.parseEmojis(value!);
+      if (value?.contains(':') ?? false) value = parseEmojis(value!);
       markupTextValues = [];
       parse.textValues = [];
       parse.matchElements(value ?? '');

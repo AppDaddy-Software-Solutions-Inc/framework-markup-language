@@ -3,7 +3,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 enum ChartAxis {X, Y}
 enum ChartAxisType {category, numeric, datetime, date, time}
@@ -206,9 +206,9 @@ class ChartAxisModel extends WidgetModel
     // this.zoomfactor     = zoomfactor;
     // this.zoomposition   = zoomposition;
 
-    if (S.isNullOrEmpty(type)) type = type?.trim().toLowerCase();
+    if (isNullOrEmpty(type)) type = type?.trim().toLowerCase();
     try {
-      switch (S.toEnum(type, ChartAxisType.values))
+      switch (toEnum(type, ChartAxisType.values))
       {
         case ChartAxisType.category:
           this.type = ChartAxisType.category;

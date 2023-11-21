@@ -2,6 +2,7 @@
 import 'package:camera/camera.dart' show CameraLensDirection;
 import 'package:camera/camera.dart' show XFile;
 import 'package:fml/datasources/camera/model.dart';
+import 'package:fml/helpers/mime.dart';
 import 'package:fml/widgets/camera/camera_view.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -13,7 +14,7 @@ import 'package:fml/datasources/detectors/detector_model.dart' ;
 import 'package:image/image.dart' as image_pack;
 import 'package:fml/datasources/file/file.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
 if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
@@ -384,7 +385,7 @@ class CameraModel extends CameraImageModel
     image_pack.Image? image;
 
     //  image is mirrored. this is a stop gap measure. should be a transform
-    if ((direction ?? "") == S.fromEnum(CameraLensDirection.front))
+    if ((direction ?? "") == fromEnum(CameraLensDirection.front))
     {
       image = image_pack.decodeJpg(await file.readAsBytes());
       image = image_pack.flipHorizontal(image!);
@@ -392,10 +393,10 @@ class CameraModel extends CameraImageModel
       // encode back to jpg
       var bytes = image_pack.encodeJpg(image);
 
-      var name = basename(S.isNullOrEmpty(file.name) ? "${S.newId()}.jpg" : file.name);
-      var uri  = UriData.fromBytes(bytes, mimeType: await S.mimetype(name));
+      var name = basename(isNullOrEmpty(file.name) ? "${newId()}.jpg" : file.name);
+      var uri  = UriData.fromBytes(bytes, mimeType: await Mime.type(name));
       var url  = uri.toString();
-      var type = await S.mimetype(name);
+      var type = await Mime.type(name);
       var size = bytes.length;
 
       // save the image
@@ -408,8 +409,8 @@ class CameraModel extends CameraImageModel
     {
       // set file - 'file:' required so image widget will decode as a file path.
       var url  = file.path.startsWith("blob:") ? file.path : "file:${file.path}";
-      var name = basename(S.isNullOrEmpty(file.name) ? "${S.newId()}.jpg" : file.name);
-      var type = await S.mimetype(name);
+      var name = basename(isNullOrEmpty(file.name) ? "${newId()}.jpg" : file.name);
+      var type = await Mime.type(name);
       var size = await file.length();
 
       // save the image

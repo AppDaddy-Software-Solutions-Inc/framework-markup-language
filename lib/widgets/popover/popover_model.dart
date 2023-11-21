@@ -10,11 +10,14 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/popover/popover_view.dart';
 import 'package:fml/widgets/popover/item/popover_item_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class PopoverModel extends DecoratedWidgetModel implements IModelListener
 {
   List<PopoverItemModel> items = [];
+
+  // data sourced prototype
+  XmlElement? prototype;
 
   // label
   StringObservable? _label;
@@ -95,17 +98,16 @@ class PopoverModel extends DecoratedWidgetModel implements IModelListener
     }
     items.clear();
 
-    // Get Items from XML
-    setPrototype();
+    // build popover items
+    _buildItems();
   }
 
-  @override
-  void setPrototype()
+  void _buildItems()
   {
     List<PopoverItemModel> items = findChildrenOfExactType(PopoverItemModel).cast<PopoverItemModel>();
 
     // build datasource popover items
-    if (!S.isNullOrEmpty(datasource) && items.isNotEmpty)
+    if (!isNullOrEmpty(datasource) && items.isNotEmpty)
     {
       prototype = WidgetModel.prototypeOf(items.first.element);
       items.removeAt(0);

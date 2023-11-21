@@ -15,7 +15,7 @@ import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/event/handler.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 enum ListTypes { replace, lifo, fifo, append, prepend }
 
@@ -223,13 +223,13 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
       if (factor > 1) ttl = (ttl.length > 1) ? ttl.substring(0, ttl.length - 1) : null;
     }
 
-    if (S.isNumber(ttl))
+    if (isNumeric(ttl))
     {
-      int t = S.toInt(ttl)! * factor;
+      int t = toInt(ttl)! * factor;
       if (t >= 0) _timetolive = t;
     }
   }
-  int get timetolive => S.toInt(_timetolive) ?? 0;
+  int get timetolive => toInt(_timetolive) ?? 0;
 
   // autoexecute
   BooleanObservable? _autoexecute;
@@ -278,9 +278,9 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
       }
     }
 
-    if (S.isNumber(autoquery))
+    if (isNumeric(autoquery))
     {
-      int t = S.toInt(autoquery)! * factor;
+      int t = toInt(autoquery)! * factor;
       if (t >= 0) _autoquery = t;
     }
   }
@@ -332,7 +332,10 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     }
   }
 
-  dynamic _valueSetter(dynamic jsonOrXml)
+  // stores a serialized copy of the first item
+  String? template;
+
+  dynamic _valueSetter(dynamic jsonOrXml, {Observable? setter})
   {
     var data = Data.from(jsonOrXml, root: root);
 
@@ -389,21 +392,27 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     }
     else if (v != null)
     {
-      _body = StringObservable(Binding.toKey(id, 'body'), v, scope: scope, listener: onPropertyChange);
+      var formatter = _bodyType != null ? _encodeBody : null;
+      _body = StringObservable(Binding.toKey(id, 'body'), v, scope: scope, listener: onPropertyChange, formatter: formatter);
     }
   }
   @override
   String? get body => _body?.get();
 
-  bool _custombody = false;
+  bool _bodyIsCustom = false;
   @override
-  bool get custombody => _custombody;
+  bool get custombody => _bodyIsCustom;
+
+  // body type
+  String? _bodyType;
 
   DataSourceModel(WidgetModel parent, String? id) : super(parent, id);
 
   @override
   void deserialize(XmlElement xml)
   {
+    // extract body
+
     // deserialize
     super.deserialize(xml);
 
@@ -412,7 +421,7 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     // properties
     queuetype = Xml.get(node: xml, tag: 'queuetype');
     timetolive = Xml.get(node: xml, tag: 'ttl');
-    timetoidle = S.toInt(Xml.get(node: xml, tag: 'tti'));
+    timetoidle = toInt(Xml.get(node: xml, tag: 'tti'));
     autoexecute = Xml.get(node: xml, tag: 'autoexecute');
     autoquery = Xml.get(node: xml, tag: 'autoquery');
     onsuccess = Xml.get(node: xml, tag: 'onsuccess');
@@ -424,37 +433,37 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     maxrecords = Xml.get(node: xml, tag: 'maxrecords');
     root = Xml.attribute(node: xml, tag: 'root');
     value = Xml.get(node: xml, tag: 'value');
+    template = Xml.get(node: xml, tag: 'template');
 
     // custom body defined?
     XmlElement? body = Xml.getChildElement(node: xml, tag: 'body');
     if (body != null)
     {
       // set body type
-      _custombody = true;
+      _bodyIsCustom = true;
+
+      // body format
+      _bodyType = Xml.attribute(node: body, tag: 'type')?.trim().toLowerCase();
 
       // body is all text (cdata or text only)?
       bool isText = (body.children.firstWhereOrNull((child) => (child is XmlCDATA || child is XmlText || child is XmlComment) ? false : true) == null);
-      if (isText) {
-        this.body = body.innerText.trim();
-      } else {
-        this.body = body.innerXml.trim();
-      }
+      this.body = isText ? body.innerText.trim() : body.innerXml.trim();
     }
 
-    // This Line Ensures Future Bodies that Contain Bindables won't Bind
+    // ensure future bodies that contain bindables don't bind
     if (_body == null) this.body = "";
-
+    
     // register the datasource with the scope manager
     if (scope != null) scope!.registerDataSource(this);
 
     // disable in background
-    enabledInBackground = S.toBool(Xml.get(node: xml, tag: 'background')) ?? enabledInBackground;
+    enabledInBackground = toBool(Xml.get(node: xml, tag: 'background')) ?? enabledInBackground;
     if (!enabledInBackground) framework?.indexObservable?.registerListener(onIndexChange);
   }
 
   void onIndexChange(Observable index)
   {
-    _isInBackground = (S.toInt(index.get()) != 0);
+    _isInBackground = (toInt(index.get()) != 0);
   }
 
   @override
@@ -520,6 +529,137 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     return true;
   }
 
+  /// finds the element in data either by object or by index
+  dynamic getElement(dynamic element)
+  {
+    if (data == null) return null;
+
+    // by object
+    if (data!.contains(element))
+    {
+      return element;
+    }
+
+    // by index
+    if (isNumeric(element))
+    {
+      var index = toInt(element) ?? -1;
+      return (!index.isNegative && index < data!.length) ? data![index] : null;
+    }
+
+    // by first item in a list
+    if (element is List && element.isNotEmpty && element.length == 1 && data!.contains(element.first))
+    {
+      return element.first;
+    }
+
+    return null;
+  }
+
+  Future<bool> copy(dynamic from, dynamic to) async
+  {
+    var fromElement = getElement(from);
+    if (fromElement == null) return false;
+
+    // get json
+    var json = Json.encode(Json.copy(fromElement, withValues: true));
+
+    // get index
+    int? index = isNumeric(to) ? toInt(to) : null;
+
+    // before specific object?
+    if (index == null)
+    {
+      var toElement = getElement(to);
+      if (toElement != null) index = data?.indexOf(toElement);
+    }
+
+    // insert the values
+    return await insert(json, index);
+  }
+
+  Future<bool> insert(String? jsonOrXml, int? index) async
+  {
+    // make a copy of the first item if no
+    // jsonOrXml is specified
+    if (isNullOrEmpty(jsonOrXml))
+    {
+      jsonOrXml = (data?.isNotEmpty ?? true) ? Json.encode(Json.copy(data![0], withValues: false)) : null;
+    }
+    if (isNullOrEmpty(jsonOrXml)) return true;
+
+    // set the index
+    index ??= data?.length ?? 0;
+    if (index.isNegative) index = 0;
+
+    // add to existing data set
+    data ??= Data();
+    for (var item in Data.from(jsonOrXml))
+    {
+      if (index! < data!.length)
+      {
+        data!.insert(index, item);
+      }
+      else
+      {
+        data!.add(item);
+      }
+      index++;
+    }
+
+    // template the first record
+    template ??= (data?.isEmpty ?? true) ? null : Json.encode(Json.copy(data![0], withValues: false));
+
+    // notify listeners of data change
+    notify();
+    onDataChange();
+
+    return true;
+  }
+
+  Future<bool> delete(dynamic from) async
+  {
+    var element = getElement(from);
+    if (element != null)
+    {
+      data!.remove(element);
+
+      // notify listeners of data change
+      notify();
+      onDataChange();
+    }
+    return true;
+  }
+
+  Future<bool> move(dynamic from, dynamic to) async
+  {
+    var fromElement = getElement(from);
+    var toElement = getElement(to);
+    if (fromElement != null && toElement != null)
+    {
+      // remove element
+      data!.remove(fromElement);
+      data!.insert(data!.indexOf(toElement), fromElement);
+
+      // notify listeners of data change
+      notify();
+      onDataChange();
+    }
+
+    return true;
+  }
+
+  Future<bool> reverse() async
+  {
+    data = data?.reversed;
+
+    // notify listeners of data change
+    notify();
+    onDataChange();
+
+    return true;
+  }
+
   @override
   Future<bool> onSuccess(Data data, {int? code, String? message, Observable? onSuccessOverride}) async
   {
@@ -540,7 +680,7 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
       }}
 
     // type - default is replace
-    ListTypes? type = S.toEnum(queuetype, ListTypes.values);
+    ListTypes? type = toEnum(queuetype, ListTypes.values);
 
     // Fifo - Oldest -> Newest
     if (type == ListTypes.fifo) {
@@ -625,7 +765,7 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     Log().exception("$statusmessage [$statuscode] id: $id, object: 'DataBroker'");
 
     // fire on fail event
-    if (onFailOverride != null || !S.isNullOrEmpty(onfail))
+    if (onFailOverride != null || !isNullOrEmpty(onfail))
     {
       EventHandler handler = EventHandler(this);
       await handler.execute(onFailOverride ?? _onfail);
@@ -670,7 +810,7 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     notify();
 
     // fire on success event
-    if (onSuccessOverride != null || !S.isNullOrEmpty(onsuccess))
+    if (onSuccessOverride != null || !isNullOrEmpty(onsuccess))
     {
       EventHandler handler = EventHandler(this);
       await handler.execute(onSuccessOverride ?? _onsuccess);
@@ -727,6 +867,24 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     }
   }
 
+  String? _encodeBody(dynamic value) => encode(value, _bodyType);
+  static String? encode(dynamic value, String? type)
+  {
+    if (value == null || value is! String || type == null) return value;
+    switch (type)
+    {
+      case "json":
+        value = Json.escape(value);
+        break;
+      case "xml":
+        value = Xml.encodeIllegalCharacters(value);
+        break;
+      default:
+        break;
+    }
+    return value;
+  }
+
   // override this function
   @override
   Future<bool> start({bool refresh = false, String? key}) async => true;
@@ -740,66 +898,61 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
   {
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
+
+    // template the first record
+    template ??= (data?.isEmpty ?? true) ? null : Json.encode(Json.copy(data![0], withValues: false));
+
     switch (function)
     {
       // clear the list
       case "clear":
-        int? start = S.toInt(S.item(arguments, 0));
-        int? end = S.toInt(S.item(arguments, 1));
-        return await clear(start: start, end: end);
+        return await clear(start: toInt(elementAt(arguments, 0)), end: toInt(elementAt(arguments, 1)));
 
-      // add to the list
+      // add element to the list
       case "add":
-        String? jsonOrXml  = S.toStr(S.item(arguments, 0));
-        int index = S.toInt(S.item(arguments, 1)) ?? (data != null ? data!.length : 0);
-        if (jsonOrXml != null)
-        {
-          Data? d = Data.from(jsonOrXml);
-          if (data != null)
-          {
-            if (index.isNegative) index = 0;
-            for (var element in d)
-            {
-              if (index < data!.length)
-              {
-                data!.insert(index, element);
-              }
-              else
-              {
-                data!.add(element);
-              }
-              index++;
-            }
-          }
-          else {
-            data = Data.from(d);
-          }
+      case "insert":
+        var jsonOrXml = toStr(elementAt(arguments, 0)) ?? template;
+        return await insert(jsonOrXml, toInt(elementAt(arguments, 1)));
 
-          // notify listeners of data change
-          notify();
-        }
+      // add element to the list
+      case "copy":
+        return await copy(elementAt(arguments,0), elementAt(arguments, 1));
+
+      // remove element from the list
+      case "delete":
+      case "remove":
+        return await delete(elementAt(arguments, 0));
+
+      // remove last element from the list
+      case "deletelast":
+      case "removelast":
+        return data != null ? await delete(data!.length - 1) : true;
+
+      // remove first element from the list
+      case "deletefirst":
+      case "removefirst":
+        return await delete(0);
+
+      // remove where
+      case "deletewhere":
+      case "removewhere":
+        // todo
         return true;
 
-      // remove from the list
-      case "remove":
-        int index = S.toInt(S.item(arguments, 0)) ?? (data != null ? data!.length : 0);
-        if (data != null)
-        {
-          if (index >= data!.length) index = data!.length - 1;
-          if (index.isNegative) index = 0;
-          data!.removeAt(index);
-          notify();
-        }
+    // move element in the list
+      case "move":
+        return await move(elementAt(arguments, 0), toInt(elementAt(arguments, 1)));
+
+      // foreach element in the list
+      case "foreach":
+        // todo
         return true;
 
       // reverse the list
       case "reverse":
-        if (data != null)
-        {
-          data = data!.reversed;
-          notify();
-        }
-        return true;
+      case "reversed":
+        return await reverse();
+
     }
     return super.execute(caller, propertyOrFunction, arguments);
   }

@@ -8,7 +8,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/integer.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 import 'package:xml/xml.dart';
 import 'beacon.dart';
 
@@ -93,7 +93,7 @@ class BeaconModel extends DataSourceModel implements IDataSource, IBeaconListene
     // properties
     major    = Xml.get(node: xml, tag: 'major');
     minor    = Xml.get(node: xml, tag: 'minor');
-    distance = S.toInt(Xml.get(node: xml, tag: 'distance'));
+    distance = toInt(Xml.get(node: xml, tag: 'distance'));
   }
 
   @override

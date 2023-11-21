@@ -8,7 +8,7 @@ import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/menu/menu_view.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class MenuModel extends DecoratedWidgetModel
 {
@@ -17,6 +17,9 @@ class MenuModel extends DecoratedWidgetModel
 
   // items
   List<MenuItemModel> items = [];
+
+  // data sourced prototype
+  XmlElement? prototype;
 
   @override
   bool get canExpandInfinitelyWide => !hasBoundedWidth;
@@ -51,7 +54,7 @@ class MenuModel extends DecoratedWidgetModel
     MenuModel? model;
     try
     {
-      model = MenuModel(parent, S.newId());
+      model = MenuModel(parent, newId());
       model.unmap(map);
     }
     catch(e)
@@ -68,7 +71,7 @@ class MenuModel extends DecoratedWidgetModel
     {
       MenuItemModel item = MenuItemModel(
         this,
-        S.newId(),
+        newId(),
         // url: ,
         title: key,
         // subtitle: ,
@@ -91,18 +94,17 @@ class MenuModel extends DecoratedWidgetModel
     }
     items.clear();
 
-    // build items
-    setPrototype();
+    // build menu items
+    _buildItems();
   }
 
-  @override
-  void setPrototype()
+  void _buildItems()
   {
     // build items
     List<MenuItemModel> items = findChildrenOfExactType(MenuItemModel).cast<MenuItemModel>();
 
     // set prototype
-    if ((!S.isNullOrEmpty(datasource)) && (items.isNotEmpty))
+    if ((!isNullOrEmpty(datasource)) && (items.isNotEmpty))
     {
       prototype = WidgetModel.prototypeOf(items.first.element);
       items.removeAt(0);

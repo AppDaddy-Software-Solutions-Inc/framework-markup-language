@@ -13,13 +13,16 @@ import 'package:fml/datasources/transforms/sort.dart' as sort_transform;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class GridModel extends BoxModel implements IScrolling
 {
   // full list of data
   // pointing to data broker data
   Data? _dataset;
+
+  // data sourced prototype
+  XmlElement? prototype;
 
   // returns the number of records in the dataset
   int? get records => _dataset?.length;
@@ -254,17 +257,16 @@ class GridModel extends BoxModel implements IScrolling
     items.forEach((_,item) => item.dispose());
     items.clear();
 
-    // Build items
-    setPrototype();
+    // build grid items
+    _buildItems();
   }
 
-  @override
-  void setPrototype()
+  void _buildItems()
   {
     List<GridItemModel> items = findChildrenOfExactType(GridItemModel).cast<GridItemModel>();
 
     // set prototype
-    if (!S.isNullOrEmpty(datasource) && items.isNotEmpty)
+    if (!isNullOrEmpty(datasource) && items.isNotEmpty)
     {
       prototype = WidgetModel.prototypeOf(items.first.element);
       items.removeAt(0);
@@ -370,7 +372,7 @@ class GridModel extends BoxModel implements IScrolling
     var csvBytes = utf8.encode(csv);
 
     // save to file
-    Platform.fileSaveAs(csvBytes, "${S.newId()}.csv");
+    Platform.fileSaveAs(csvBytes, "${newId()}.csv");
 
     return true;
   }
@@ -408,7 +410,7 @@ class GridModel extends BoxModel implements IScrolling
 
       // selects the item by index
       case "select" :
-        int index = S.toInt(S.item(arguments, 0)) ?? -1;
+        int index = toInt(elementAt(arguments, 0)) ?? -1;
         if (index >= 0 && index < items.length)
         {
           var model = items[index];
@@ -418,7 +420,7 @@ class GridModel extends BoxModel implements IScrolling
 
       // de-selects the item by index
       case "deselect" :
-        int index = S.toInt(S.item(arguments, 0)) ?? -1;
+        int index = toInt(elementAt(arguments, 0)) ?? -1;
         if (index >= 0 && _dataset != null && index < _dataset!.length)
         {
           var model = items[index];

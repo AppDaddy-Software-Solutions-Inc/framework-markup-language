@@ -2,7 +2,7 @@
 import 'dart:convert';
 import 'package:fml/data/data.dart';
 import 'package:fml/hive/log.dart' as hive_log;
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 import 'package:fml/system.dart';
 
 class Log
@@ -124,8 +124,8 @@ class Log
   static const String wildcard = "%";
   bool _filter(String? filter, String? value)
   {
-    if (S.isNullOrEmpty(filter)) return true;
-    if (S.isNullOrEmpty(value))  return false;
+    if (isNullOrEmpty(filter)) return true;
+    if (isNullOrEmpty(value))  return false;
 
     filter = filter!.toLowerCase();
     value  = value!.toLowerCase();
@@ -187,7 +187,7 @@ class Log
   export({String format = "html", bool withHistory = false}) async
   {
     var logs = (withHistory) ? await hive_log.Log.query(orderby: "epoch") : queue;
-    var filename = "log-${S.toChar(DateTime.now(),format: 'yyyy-MM-dd HHmmss')}";
+    var filename = "log-${toChar(DateTime.now(),format: 'yyyy-MM-dd HHmmss')}";
 
     // export to html
     if (format.trim().toLowerCase() != "excel")

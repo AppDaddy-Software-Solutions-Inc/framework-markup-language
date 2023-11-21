@@ -6,7 +6,7 @@ import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/splitview/split_model.dart';
 import 'package:fml/event/event.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
@@ -32,8 +32,8 @@ class SplitViewState extends WidgetState<SplitView>
   void onBack(Event event)
   {
     event.handled = true;
-    String? pages = S.mapVal(event.parameters, 'until');
-    if (!S.isNullOrEmpty(pages)) NavigationManager().back(pages);
+    String? pages = fromMap(event.parameters, 'until');
+    if (!isNullOrEmpty(pages)) NavigationManager().back(pages);
   }
 
   void onClose(Event event)

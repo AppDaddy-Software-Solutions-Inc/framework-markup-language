@@ -4,8 +4,8 @@ import '../observable.dart' ;
 
 class StringObservable extends Observable
 {
-  StringObservable(String? name, dynamic value, {Scope? scope, OnChangeCallback? listener, Getter? getter, Setter? setter, bool lazyEval = false})
-      : super(name, value, scope: scope, listener: listener, getter: getter, setter: setter, lazyEvaluation: lazyEval);
+  StringObservable(String? name, dynamic value, {Scope? scope, OnChangeCallback? listener, Getter? getter, Setter? setter, Formatter? formatter, bool lazyEval = false})
+      : super(name, value, scope: scope, listener: listener, getter: getter, setter: setter, formatter: formatter, lazyEvaluation: lazyEval);
 
   @override
   String? get()

@@ -3,7 +3,7 @@ import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/button/button_model.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 /// Button View
@@ -61,14 +61,14 @@ class _ButtonViewState extends WidgetState<ButtonView>
     }) : null;
     
     // Button Type Styling
-    var foregroundColorStyle = (!S.isNullOrEmpty(model.color) && model.buttontype != 'elevated') ?
+    var foregroundColorStyle = (!isNullOrEmpty(model.color) && model.buttontype != 'elevated') ?
     MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states)
     {
       if (states.contains(MaterialState.disabled)) return Theme.of(context).colorScheme.surfaceVariant;
       return model.color;// not sure if this is the correct color scheme for text.
     }) : null;
 
-    var backgroundColorStyle = (!S.isNullOrEmpty(model.color) && model.buttontype == 'elevated') ?
+    var backgroundColorStyle = (!isNullOrEmpty(model.color) && model.buttontype == 'elevated') ?
     MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states)
     {
       if (states.contains(MaterialState.hovered)) return model.color!.withOpacity(0.85);

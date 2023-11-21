@@ -10,7 +10,7 @@ import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/select/select_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class SelectModel extends DecoratedInputModel implements IFormField
 {
@@ -22,6 +22,9 @@ class SelectModel extends DecoratedInputModel implements IFormField
 
   // options
   final List<OptionModel> options = [];
+
+  // data sourced prototype
+  XmlElement? prototype;
 
   // value
   StringObservable? _value;
@@ -82,7 +85,13 @@ class SelectModel extends DecoratedInputModel implements IFormField
 
     // set properties
     value     = Xml.get(node: xml, tag: 'value');
-    addempty  = S.toBool(Xml.get(node: xml, tag: 'addempty')) ?? true;
+    addempty  = toBool(Xml.get(node: xml, tag: 'addempty')) ?? true;
+
+    // build select options
+    _buildOptions();
+
+    // set the default selected option
+    if (datasource == null) _setSelectedOption();
   }
 
   void onValueChange(Observable observable)
@@ -118,8 +127,7 @@ class SelectModel extends DecoratedInputModel implements IFormField
     label = selectedOption?.labelValue;
   }
 
-  @override
-  void setPrototype()
+  void _buildOptions()
   {
     // clear options
     _clearOptions();
@@ -128,18 +136,26 @@ class SelectModel extends DecoratedInputModel implements IFormField
     List<OptionModel> options = findChildrenOfExactType(OptionModel).cast<OptionModel>();
 
     // set prototype
-    if (!S.isNullOrEmpty(datasource) && options.isNotEmpty)
+    if (!isNullOrEmpty(this.datasource) && options.isNotEmpty)
     {
       prototype = WidgetModel.prototypeOf(options.first.element);
+      options.first.dispose();
       options.removeAt(0);
     }
 
     // build options
     this.options.addAll(options);
+
+    // announce data for late binding
+    var datasource = scope?.getDataSource(this.datasource);
+    if (datasource?.data?.isNotEmpty ?? false)
+    {
+      onDataSourceSuccess(datasource!, datasource.data);
+    }
   }
 
   @override
-  Future<bool> onDataSourceSuccess(IDataSource? source, Data? list) async
+  Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async
   {
     try
     {
@@ -157,7 +173,7 @@ class SelectModel extends DecoratedInputModel implements IFormField
       }
 
       // build options
-      if (list != null && source != null)
+      if (list != null)
       {
         for (var row in list)
         {
@@ -185,9 +201,10 @@ class SelectModel extends DecoratedInputModel implements IFormField
   }
 
   @override
-  onDataSourceException(IDataSource source, Exception exception) {
+  onDataSourceException(IDataSource source, Exception exception)
+  {
     // Clear the List - Olajos 2021-09-04
-    onDataSourceSuccess(null, null);
+    onDataSourceSuccess(source, null);
   }
 
   @override

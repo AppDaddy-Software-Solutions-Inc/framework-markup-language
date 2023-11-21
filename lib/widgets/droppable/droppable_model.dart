@@ -1,22 +1,24 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fml/log/manager.dart';
+import 'package:collection/collection.dart';
 import 'package:fml/event/handler.dart' ;
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/variable/variable_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/draggable/draggable_model.dart';
 import 'package:fml/widgets/droppable/droppable_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class DroppableModel extends DecoratedWidgetModel 
 {
   List<String>? accept;
 
-  /////////////
-  /* ondrop */
-  /////////////
+  // variables
+  List<VariableModel> get variables => findChildrenOfExactType(VariableModel).cast<VariableModel>();
+
+  // ondrop
   StringObservable? _ondrop;
   set ondrop (dynamic v)
   {
@@ -38,22 +40,12 @@ class DroppableModel extends DecoratedWidgetModel
 
   static DroppableModel? fromXml(WidgetModel parent, XmlElement xml)
   {
-    DroppableModel? model;
-    try
-    {
-// build model
-      model = DroppableModel(parent, Xml.get(node: xml, tag: 'id'));
-      model.deserialize(xml);
-    }
-    catch(e)
-    {
-      Log().exception(e,  caller: 'droppable.Model');
-      model = null;
-    }
+    DroppableModel? model = DroppableModel(parent, Xml.get(node: xml, tag: 'id'));
+    model.deserialize(xml);
     return model;
   }
 
-  /// Deserializes the FML template elements, attributes and children
+   /// Deserializes the FML template elements, attributes and children
   @override
   void deserialize(XmlElement xml)
   {
@@ -75,27 +67,36 @@ class DroppableModel extends DecoratedWidgetModel
   {
       bool ok = true;
 
-      EventHandler e = EventHandler(this);
+      // set drop variables
+      var dropVariables = variables;
+      var dragVariables = draggable.variables;
+      var dropValues    = <VariableModel, dynamic>{};
+      for (var dragVariable in dragVariables)
+      {
+          var dropVariable = dropVariables.firstWhereOrNull((dropVariable) => dropVariable.id == dragVariable.id);
+          if (dropVariable != null)
+          {
+            // save old values
+            dropValues[dropVariable] = dropVariable.value;
 
-      //////////////////////
-      /* Fire Drop Events */
-      //////////////////////
-      if ((ok) && (!S.isNullOrEmpty(ondrop))) ok = await e.execute(_ondrop);
+            // set new value
+            dropVariable.value = dragVariable.value;
+          }
+      }
 
-      //////////////////////
-      /* Fire Drag Events */
-      //////////////////////
-      // requires fix
-      //if ((ok) && (draggable != null) && (!S.isNullOrEmpty(draggable.ondrop))) ok = await e.execute(draggable.ondrop);
+      // fire drop event
+      if (ok) ok = await EventHandler(this).execute(_ondrop);
+
+      // fire draggables drop event
+      if (ok) ok = await draggable.onDrop(context, this);
+
+      // restore old values
+      if (!ok)
+      {
+        dropValues.forEach((dropVariable, oldValue) => dropVariable.value = oldValue);
+      }
 
       return ok;
-  }
-
-  @override
-  dispose()
-  {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
   }
 
   @override

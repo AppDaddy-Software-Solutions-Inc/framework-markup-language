@@ -11,7 +11,7 @@ import 'package:fml/widgets/list/list_model.dart';
 import 'package:fml/widgets/list/item/list_item_view.dart';
 import 'package:fml/widgets/list/item/list_item_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class ListLayoutView extends StatefulWidget implements IWidgetView
@@ -147,9 +147,9 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
       if (itemModel != null) {
         var listItem = ListItemView(itemModel);
         Text? title;
-        if (!S.isNullOrEmpty(itemModel.title)) {
+        if (!isNullOrEmpty(itemModel.title)) {
           title = Text(itemModel.title!);
-        } else if (S.isNullOrEmpty(itemModel.title))
+        } else if (isNullOrEmpty(itemModel.title))
         {
           List<dynamic>? descendants = itemModel.findDescendantsOfExactType(TextModel);
           if (descendants.isNotEmpty)
@@ -164,7 +164,7 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
                 .onBackground),);
           }
         }
-        else if (S.isNullOrEmpty(itemModel.title)) {
+        else if (isNullOrEmpty(itemModel.title)) {
           title = Text(index.toString());
         }
         ListTile header = ListTile(title: title);

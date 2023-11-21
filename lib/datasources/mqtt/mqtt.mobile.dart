@@ -6,7 +6,7 @@ import 'package:mqtt_client/mqtt_server_client.dart';
 import 'mqtt_listener_interface.dart';
 import 'payload.dart';
 import 'mqtt_interface.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 IMqtt? getMqtt(String url, IMqttListener listener, {String? username, String? password}) => MqttMobile(url, listener, username: username, password: password);
 
@@ -16,7 +16,7 @@ class MqttMobile implements IMqtt
   final String url;
   final String? username;
   final String? password;
-  final String identifier = "${System.app?.user.claim('name') ?? 'unknown'} : ${S.newId()}";
+  final String identifier = "${System.app?.user.claim('name') ?? 'unknown'} : ${newId()}";
   final int    keepalive = 60;
 
   bool connected = false;

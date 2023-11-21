@@ -12,7 +12,7 @@ import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/checkbox/checkbox_view.dart';
 import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 /// Button [CheckboxModel]
 ///
@@ -21,6 +21,9 @@ class CheckboxModel extends FormFieldModel implements IFormField
 {
   // options
   final List<OptionModel> options = [];
+
+  // data sourced prototype
+  XmlElement? prototype;
 
   /// The value of the widget. The label becomes the value if not specified. Returns an array if multiple checked. Can also set the initial options
   ListObservable? _value;
@@ -219,7 +222,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
     List<String>? list;
     if (value != null) {
       value.forEach((v) {
-        if (!S.isNullOrEmpty(v?.toString())) {
+        if (!isNullOrEmpty(v?.toString())) {
           list ??= [];
           list!.add(v.toString());
         }
@@ -233,7 +236,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
   bool get answered
   {
     if (value == null) return false;
-    return (value.isNotEmpty) && (!S.isNullOrEmpty(value[0]));
+    return (value.isNotEmpty) && (!isNullOrEmpty(value[0]));
   }
 
   /// the size of the options checks
@@ -342,7 +345,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
     if (values != null) {
       for (var element in values) {
       String? v = Xml.getText(element);
-      if (!S.isNullOrEmpty(v))
+      if (!isNullOrEmpty(v))
       {
         if (_value == null) {
           value = v;
@@ -360,10 +363,12 @@ class CheckboxModel extends FormFieldModel implements IFormField
 
     /// styling attributes
     size  = Xml.get(node: xml, tag: 'size');
+
+    // set the options
+    _setOptions();
   }
 
-  @override
-  void setPrototype()
+  void _setOptions()
   {
     // clear options
     _clearOptions();
@@ -372,7 +377,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
     List<OptionModel> options = findChildrenOfExactType(OptionModel).cast<OptionModel>();
 
     // set prototype
-    if (!S.isNullOrEmpty(datasource) && options.isNotEmpty)
+    if (!isNullOrEmpty(datasource) && options.isNotEmpty)
     {
       prototype = WidgetModel.prototypeOf(options.first.element);
       options.removeAt(0);

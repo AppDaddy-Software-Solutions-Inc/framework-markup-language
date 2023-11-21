@@ -11,12 +11,15 @@ import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/radio/radio_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class RadioModel extends FormFieldModel implements IFormField
 {
   // options
   List<OptionModel> options = [];
+
+  // data sourced prototype
+  XmlElement? prototype;
 
   /// Center attribute allows a simple boolean override for halign and valign both being center. halign and valign will override center if given.
   BooleanObservable? _center;
@@ -166,10 +169,15 @@ class RadioModel extends FormFieldModel implements IFormField
     center = Xml.get(node: xml, tag: 'center');
     wrap   = Xml.get(node: xml, tag: 'wrap');
     size   = Xml.get(node: xml, tag: 'size');
+
+    // build radio options
+    _buildOptions();
+
+    // set the default selected option
+    if (datasource == null) _setSelectedOption();
   }
 
-  @override
-  void setPrototype()
+  void _buildOptions()
   {
     // clear options
     _clearOptions();
@@ -178,14 +186,22 @@ class RadioModel extends FormFieldModel implements IFormField
     List<OptionModel> options = findChildrenOfExactType(OptionModel).cast<OptionModel>();
 
     // set prototype
-    if (!S.isNullOrEmpty(datasource) && options.isNotEmpty)
+    if (!isNullOrEmpty(this.datasource) && options.isNotEmpty)
     {
       prototype = WidgetModel.prototypeOf(options.first.element);
+      options.first.dispose();
       options.removeAt(0);
     }
 
     // build options
     this.options.addAll(options);
+
+    // announce data for late binding
+    var datasource = scope?.getDataSource(this.datasource);
+    if (datasource?.data?.isNotEmpty ?? false)
+    {
+      onDataSourceSuccess(datasource!, datasource.data);
+    }
   }
 
   void onValueChange(Observable observable)

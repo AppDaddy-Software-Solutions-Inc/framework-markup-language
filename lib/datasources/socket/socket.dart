@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 import 'socket_listener_interface.dart';
 
@@ -33,13 +33,13 @@ class Socket
   Socket(String? url, this.listener)
   {
     uri = url;
-    if (!S.isNullOrEmpty(url) && uri == null) Log().error('SOCKET:: Invalid Url');
+    if (!isNullOrEmpty(url) && uri == null) Log().error('SOCKET:: Invalid Url');
   }
 
   Future reconnect(String? url) async
   {
     // set the uri if url is passed and reconnect
-    if (!S.isNullOrEmpty(url))
+    if (!isNullOrEmpty(url))
     {
       Log().info('SOCKET:: Attempting Reconnect ...');
 
@@ -170,7 +170,7 @@ class Socket
       int? code = _socket?.closeCode;
 
       // The close reason must be no longer than 123 bytes
-      String? msg = S.isNullOrEmpty(_socket?.closeReason) ? lastMessage : _socket?.closeReason;
+      String? msg = isNullOrEmpty(_socket?.closeReason) ? lastMessage : _socket?.closeReason;
 
       listener.onDisconnected(code, msg);
     }

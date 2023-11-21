@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
-import 'package:fml/helper/string.dart';
+import 'package:fml/helpers/string.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/animation/animation_helper.dart';
 import 'package:fml/widgets/animation/animation_child/slide/slide_transition_model.dart';
@@ -149,11 +149,11 @@ Widget build(BuildContext context)
     }
 
     Offset fromOffset = Offset(
-        S.toDouble(from.elementAt(0)) ?? _defaultFrom[0],
-        S.toDouble(from.elementAt(1)) ?? _defaultFrom[1]);
+        toDouble(from.elementAt(0)) ?? _defaultFrom[0],
+        toDouble(from.elementAt(1)) ?? _defaultFrom[1]);
     List<String>? to = widget.model.to.split(",");
     Offset toOffset = Offset(
-        S.toDouble(to.elementAt(0)) ?? 0, S.toDouble(to.elementAt(1)) ?? 0);
+        toDouble(to.elementAt(0)) ?? 0, toDouble(to.elementAt(1)) ?? 0);
     double begin = widget.model.begin;
     double end = widget.model.end;
     Curve curve = AnimationHelper.getCurve(widget.model.curve);
@@ -193,9 +193,9 @@ Widget build(BuildContext context)
     if (event.parameters == null) return;
 
     String? id = (event.parameters != null) ? event.parameters!['id'] : null;
-    if ((S.isNullOrEmpty(id)) || (id == widget.model.id)) {
+    if ((isNullOrEmpty(id)) || (id == widget.model.id)) {
       bool? enabled = (event.parameters != null)
-          ? S.toBool(event.parameters!['enabled'])
+          ? toBool(event.parameters!['enabled'])
           : true;
       if (enabled != false) {
         start();
@@ -208,7 +208,7 @@ Widget build(BuildContext context)
 
   void onReset(Event event) {
     String? id = (event.parameters != null) ? event.parameters!['id'] : null;
-    if ((S.isNullOrEmpty(id)) || (id == widget.model.id)) {
+    if ((isNullOrEmpty(id)) || (id == widget.model.id)) {
       reset();
     }
   }

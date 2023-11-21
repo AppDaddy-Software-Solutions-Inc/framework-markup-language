@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'inline_frame_model.dart';
 import 'inline_frame_view.dart' as widget_view;
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 InlineFrameView getView(model) => InlineFrameView(model);
 
@@ -62,7 +62,7 @@ class IFrameWidget extends StatelessWidget implements IModelListener
 {
   final InlineFrameModel model;
 
-  final String id = S.newId();
+  final String id = newId();
 
   late final Widget iFrame;
   late final universal_html.IFrameElement iframe;
@@ -126,9 +126,9 @@ class IFrameWidget extends StatelessWidget implements IModelListener
       {
         (event.data as Map).forEach((key, value)
         {
-          String? k = S.toStr(key);
-          String? v = S.toStr(value);
-          if (!S.isNullOrEmpty(k)) map[k] = v;
+          String? k = toStr(key);
+          String? v = toStr(value);
+          if (!isNullOrEmpty(k)) map[k] = v;
         });
       }
       else if (event.data is String)

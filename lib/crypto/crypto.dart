@@ -8,7 +8,7 @@ import 'package:pointycastle/block/aes.dart';
 import 'package:pointycastle/padded_block_cipher/padded_block_cipher_impl.dart';
 import 'package:pointycastle/paddings/pkcs7.dart';
 import 'package:pointycastle/block/modes/cbc.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class Cryptography
 {
@@ -25,7 +25,7 @@ class Cryptography
 
   static String encrypt({String? secretkey = _sharedkey, String? vector = _sharedkey, String? text})
   {
-    if (S.isNullOrEmpty(text)) return "";
+    if (isNullOrEmpty(text)) return "";
 
     Uint8List plainText = Uint8List.fromList(utf8.encode(text!));
     Uint8List key       = Uint8List.fromList(utf8.encode(secretkey!));

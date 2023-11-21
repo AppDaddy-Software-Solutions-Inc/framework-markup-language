@@ -4,8 +4,8 @@ import 'dart:math';
 import 'package:community_charts_common/community_charts_common.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
-import 'package:fml/helper/common_helpers.dart';
-import 'package:fml/helper/time.dart';
+import 'package:fml/helpers/helpers.dart';
+import 'package:fml/helpers/time.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart/chart_model.dart';
@@ -104,7 +104,7 @@ class _ChartViewState extends WidgetState<ChartView>
   charts_flutter.NumericAxisSpec yNumericAxisSpec({int? ticks}) => charts_flutter.NumericAxisSpec(
       tickProviderSpec: charts_flutter.BasicNumericTickProviderSpec(zeroBound: !widget.model.yaxis.truncate, dataIsInWholeNumbers: true, desiredTickCount: ticks),
       viewport: widget.model.yaxis.min != null && widget.model.yaxis.max != null
-          ? charts_flutter.NumericExtents(S.toNum(widget.model.yaxis.min!)!, S.toNum(widget.model.yaxis.max!)!) : null,
+          ? charts_flutter.NumericExtents(toNum(widget.model.yaxis.min!)!, toNum(widget.model.yaxis.max!)!) : null,
       renderSpec: charts_flutter.SmallTickRendererSpec( // GridlineRendererSpec(
           tickLengthPx: 4,
           lineStyle: charts_flutter.LineStyleSpec(dashPattern: []),
@@ -118,7 +118,7 @@ class _ChartViewState extends WidgetState<ChartView>
   charts_flutter.NumericAxisSpec xNumComboAxisSpec({int? ticks}) => charts_flutter.NumericAxisSpec(
       tickProviderSpec: charts_flutter.BasicNumericTickProviderSpec(dataIsInWholeNumbers: false, desiredTickCount: ticks),
       viewport: widget.model.yaxis.min != null && widget.model.yaxis.max != null
-          ? charts_flutter.NumericExtents(S.toNum(widget.model.yaxis.min!)!, S.toNum(widget.model.yaxis.max!)!) : null,
+          ? charts_flutter.NumericExtents(toNum(widget.model.yaxis.min!)!, toNum(widget.model.yaxis.max!)!) : null,
       renderSpec: charts_flutter.SmallTickRendererSpec(
         axisLineStyle: charts_flutter.LineStyleSpec(
             color: charts_flutter.ColorUtil.fromDartColor(
@@ -249,22 +249,22 @@ class _ChartViewState extends WidgetState<ChartView>
       // Calculate Numeric Y Axis Ticks
       if (widget.model.yaxis.interval != null && s.dataPoint.isNotEmpty) {
         num ySeriesMin = s.dataPoint.fold(
-            S.toNum(s.dataPoint[0].y) ?? yMin, (num previous, ChartDataPoint current) =>
-        previous < (S.toNum(current.y) ?? yMin) ? previous : (S.toNum(current.y) ?? yMin));
+            toNum(s.dataPoint[0].y) ?? yMin, (num previous, ChartDataPoint current) =>
+        previous < (toNum(current.y) ?? yMin) ? previous : (toNum(current.y) ?? yMin));
         yMin = ySeriesMin < yMin ? ySeriesMin : yMin;
 
         num ySeriesMax = s.dataPoint.fold(
-            S.toNum(s.dataPoint[0].y) ?? yMin, (num previous, ChartDataPoint current) =>
-        previous > (S.toNum(current.y) ?? yMin) ? previous : (S.toNum(current.y) ?? yMin));
+            toNum(s.dataPoint[0].y) ?? yMin, (num previous, ChartDataPoint current) =>
+        previous > (toNum(current.y) ?? yMin) ? previous : (toNum(current.y) ?? yMin));
         yMax = ySeriesMax > yMax ? ySeriesMax : yMax;
       }
     }
 
     // Determine Y Axis Ticks dynamically based on the value range and interval
     if (widget.model.yaxis.interval != null) {
-      num range = (S.toNum(widget.model.yaxis.max) ?? yMax) - (S.toNum(widget.model.yaxis.min) ?? yMin);
+      num range = (toNum(widget.model.yaxis.max) ?? yMax) - (toNum(widget.model.yaxis.min) ?? yMin);
       if (range.isFinite) {
-        yTicksCount = (range / (S.toNum(widget.model.yaxis.interval) ?? 1) + 1).ceil();
+        yTicksCount = (range / (toNum(widget.model.yaxis.interval) ?? 1) + 1).ceil();
       }
     }
 
@@ -307,41 +307,41 @@ class _ChartViewState extends WidgetState<ChartView>
       // Calculate Numeric X Axis Ticks
       if (widget.model.xaxis.interval != null && s.dataPoint.isNotEmpty) {
         num xSeriesMin = s.dataPoint.fold(
-            S.toNum(s.dataPoint[0].x) ?? xMin, (num previous, ChartDataPoint current) =>
-        previous < (S.toNum(current.x) ?? xMin) ? previous : (S.toNum(current.x) ?? xMin));
+            toNum(s.dataPoint[0].x) ?? xMin, (num previous, ChartDataPoint current) =>
+        previous < (toNum(current.x) ?? xMin) ? previous : (toNum(current.x) ?? xMin));
         xMin = xSeriesMin < xMin ? xSeriesMin : xMin;
 
         num xSeriesMax = s.dataPoint.fold(
-            S.toNum(s.dataPoint[0].x) ?? xMin, (num previous, ChartDataPoint current) =>
-        previous > (S.toNum(current.x) ?? xMin) ? previous : (S.toNum(current.x) ?? xMin));
+            toNum(s.dataPoint[0].x) ?? xMin, (num previous, ChartDataPoint current) =>
+        previous > (toNum(current.x) ?? xMin) ? previous : (toNum(current.x) ?? xMin));
         xMax = xSeriesMax > xMax ? xSeriesMax : xMax;
       }
       // Calculate Numeric Y Axis Ticks
       if (widget.model.yaxis.interval != null && s.dataPoint.isNotEmpty) {
         num ySeriesMin = s.dataPoint.fold(
-            S.toNum(s.dataPoint[0].y) ?? yMin, (num previous, ChartDataPoint current) =>
-        previous < (S.toNum(current.y) ?? yMin) ? previous : (S.toNum(current.y) ?? yMin));
+            toNum(s.dataPoint[0].y) ?? yMin, (num previous, ChartDataPoint current) =>
+        previous < (toNum(current.y) ?? yMin) ? previous : (toNum(current.y) ?? yMin));
         yMin = ySeriesMin < yMin ? ySeriesMin : yMin;
 
         num ySeriesMax = s.dataPoint.fold(
-            S.toNum(s.dataPoint[0].y) ?? yMin, (num previous, ChartDataPoint current) =>
-        previous > (S.toNum(current.y) ?? yMin) ? previous : (S.toNum(current.y) ?? yMin));
+            toNum(s.dataPoint[0].y) ?? yMin, (num previous, ChartDataPoint current) =>
+        previous > (toNum(current.y) ?? yMin) ? previous : (toNum(current.y) ?? yMin));
         yMax = ySeriesMax > yMax ? ySeriesMax : yMax;
       }
     }
 
     // Determine Y Axis Ticks dynamically based on the value range and interval
     if (widget.model.yaxis.interval != null) {
-      num range = (S.toNum(widget.model.yaxis.max) ?? yMax) - (S.toNum(widget.model.yaxis.min) ?? yMin);
+      num range = (toNum(widget.model.yaxis.max) ?? yMax) - (toNum(widget.model.yaxis.min) ?? yMin);
       if (range.isFinite) {
-        yTicksCount = (range / (S.toNum(widget.model.yaxis.interval) ?? 1) + 1).ceil();
+        yTicksCount = (range / (toNum(widget.model.yaxis.interval) ?? 1) + 1).ceil();
       }
     }
     // Determine X Axis Ticks dynamically based on the value range and interval
     if (widget.model.xaxis.interval != null) {
-      num range = (S.toNum(widget.model.xaxis.max) ?? xMax) - (S.toNum(widget.model.xaxis.min) ?? xMin);
+      num range = (toNum(widget.model.xaxis.max) ?? xMax) - (toNum(widget.model.xaxis.min) ?? xMin);
       if (range.isFinite) {
-        xTicksCount = (range / (S.toNum(widget.model.xaxis.interval) ?? 1) + 1).ceil();
+        xTicksCount = (range / (toNum(widget.model.xaxis.interval) ?? 1) + 1).ceil();
       }
     }
 
@@ -377,22 +377,22 @@ class _ChartViewState extends WidgetState<ChartView>
       // Calculate Numeric Y Axis Ticks
       if (widget.model.yaxis.interval != null && s.dataPoint.isNotEmpty) {
         num ySeriesMin = s.dataPoint.fold(
-            S.toNum(s.dataPoint[0].y) ?? yMin, (num previous, ChartDataPoint current) =>
-        previous < (S.toNum(current.y) ?? yMin) ? previous : (S.toNum(current.y) ?? yMin));
+            toNum(s.dataPoint[0].y) ?? yMin, (num previous, ChartDataPoint current) =>
+        previous < (toNum(current.y) ?? yMin) ? previous : (toNum(current.y) ?? yMin));
         yMin = ySeriesMin < yMin ? ySeriesMin : yMin;
 
         num ySeriesMax = s.dataPoint.fold(
-            S.toNum(s.dataPoint[0].y) ?? yMin, (num previous, ChartDataPoint current) =>
-        previous > (S.toNum(current.y) ?? yMin) ? previous : (S.toNum(current.y) ?? yMin));
+            toNum(s.dataPoint[0].y) ?? yMin, (num previous, ChartDataPoint current) =>
+        previous > (toNum(current.y) ?? yMin) ? previous : (toNum(current.y) ?? yMin));
         yMax = ySeriesMax > yMax ? ySeriesMax : yMax;
       }
     }
 
     // Determine Y Axis Ticks dynamically based on the value range and interval
     if (widget.model.yaxis.interval != null) {
-      num range = (S.toNum(widget.model.yaxis.max) ?? yMax) - (S.toNum(widget.model.yaxis.min) ?? yMin);
+      num range = (toNum(widget.model.yaxis.max) ?? yMax) - (toNum(widget.model.yaxis.min) ?? yMin);
       if (range.isFinite) {
-        yTicksCount = (range / (S.toNum(widget.model.yaxis.interval) ?? 1) + 1).ceil();
+        yTicksCount = (range / (toNum(widget.model.yaxis.interval) ?? 1) + 1).ceil();
       }
     }
 
@@ -431,17 +431,17 @@ class _ChartViewState extends WidgetState<ChartView>
       seriesRenderers.add(config);
       // Map all the x values for the ticks
       for (ChartDataPoint x in s.dataPoint) {
-        DateTime? xDateTime = S.toDate(x.x);
+        DateTime? xDateTime = toDate(x.x);
         if (xDateTime != null) {
           int epoch = xDateTime.toUtc().millisecondsSinceEpoch;
           // Ignore date/time data ticks before the min datetime on the x axis
           if (widget.model.xaxis.min != null
-              && DT.isBefore(xDateTime, S.toDate(widget.model.xaxis.min!)!)) {
+              && DT.isBefore(xDateTime, toDate(widget.model.xaxis.min!)!)) {
             continue;
           }
           // Ignore date/time data ticks after the max datetime on the x axis
           if (widget.model.xaxis.max != null
-              && DT.isAfter(xDateTime, S.toDate(widget.model.xaxis.max!)!)) {
+              && DT.isAfter(xDateTime, toDate(widget.model.xaxis.max!)!)) {
             continue;
           }
           ticksMap[epoch] = xDateTime;
@@ -453,13 +453,13 @@ class _ChartViewState extends WidgetState<ChartView>
       // Calculate Numeric Y Axis Ticks
       if (widget.model.yaxis.interval != null && s.dataPoint.isNotEmpty) {
         num ySeriesMin = s.dataPoint.fold(
-            S.toNum(s.dataPoint[0].y) ?? yMin, (num previous, ChartDataPoint current) =>
-        previous < (S.toNum(current.y) ?? yMin) ? previous : (S.toNum(current.y) ?? yMin));
+            toNum(s.dataPoint[0].y) ?? yMin, (num previous, ChartDataPoint current) =>
+        previous < (toNum(current.y) ?? yMin) ? previous : (toNum(current.y) ?? yMin));
         yMin = ySeriesMin < yMin ? ySeriesMin : yMin;
 
         num ySeriesMax = s.dataPoint.fold(
-            S.toNum(s.dataPoint[0].y) ?? yMin, (num previous, ChartDataPoint current) =>
-        previous > (S.toNum(current.y) ?? yMin) ? previous : (S.toNum(current.y) ?? yMin));
+            toNum(s.dataPoint[0].y) ?? yMin, (num previous, ChartDataPoint current) =>
+        previous > (toNum(current.y) ?? yMin) ? previous : (toNum(current.y) ?? yMin));
         yMax = ySeriesMax > yMax ? ySeriesMax : yMax;
       }
     }
@@ -471,9 +471,9 @@ class _ChartViewState extends WidgetState<ChartView>
 
     // Determine Y Axis Ticks dynamically based on the value range and interval
     if (widget.model.yaxis.interval != null) {
-      num range = (S.toNum(widget.model.yaxis.max) ?? yMax) - (S.toNum(widget.model.yaxis.min) ?? yMin);
+      num range = (toNum(widget.model.yaxis.max) ?? yMax) - (toNum(widget.model.yaxis.min) ?? yMin);
       if (range.isFinite) {
-        yTicksCount = (range / (S.toNum(widget.model.yaxis.interval) ?? 1) + 1).ceil();
+        yTicksCount = (range / (toNum(widget.model.yaxis.interval) ?? 1) + 1).ceil();
       }
     }
 
@@ -550,7 +550,7 @@ class _ChartViewState extends WidgetState<ChartView>
       // Loop through each point
       for (ChartDataPoint point in series.dataPoint) {
         // Parse x and y data values from the databroker string values
-        if (!S.isNullOrEmpty(point.x)) {
+        if (!isNullOrEmpty(point.x)) {
           // y value can be null, creating a gap in the chart
           dynamic xParsed;
           dynamic yParsed;
@@ -562,7 +562,7 @@ class _ChartViewState extends WidgetState<ChartView>
             break;
           }
           try {
-            yParsed = S.isNullOrEmpty(point.y)
+            yParsed = isNullOrEmpty(point.y)
                 ? null
                 : parsePlotPoint(point.y, widget.model.yaxis.type);
           } catch(e) {
@@ -578,7 +578,7 @@ class _ChartViewState extends WidgetState<ChartView>
               widget.model.xaxis.type == ChartAxisType.date ||
               widget.model.xaxis.type == ChartAxisType.time) &&
               widget.model.xaxis.min != null && xParsed != null
-              && DT.isBefore(xParsed, S.toDate(widget.model.xaxis.min!)!)) {
+              && DT.isBefore(xParsed, toDate(widget.model.xaxis.min!)!)) {
             continue;
           }
           // Ignore date/time data points after the max datetime on the x axis
@@ -586,7 +586,7 @@ class _ChartViewState extends WidgetState<ChartView>
               widget.model.xaxis.type == ChartAxisType.date ||
               widget.model.xaxis.type == ChartAxisType.time) &&
               widget.model.xaxis.max != null && xParsed != null
-              && DT.isAfter(xParsed, S.toDate(widget.model.xaxis.max!)!)) {
+              && DT.isAfter(xParsed, toDate(widget.model.xaxis.max!)!)) {
             continue;
           }
           // get label
@@ -712,13 +712,13 @@ class _ChartViewState extends WidgetState<ChartView>
     if (type == ChartAxisType.category) {
       return val;
     } else if (type == ChartAxisType.numeric) {
-      return S.toNum(val!) ?? 0;
+      return toNum(val!) ?? 0;
       // return num.tryParse(val!) ?? 0;
     } else if (type == ChartAxisType.date ||
         type == ChartAxisType.time ||
         type == ChartAxisType.datetime) {
       DateTime? formatted;
-      formatted = S.toDate(val); //, format: 'yMd Hm');
+      formatted = toDate(val); //, format: 'yMd Hm');
       return formatted; //DateTime.tryParse(val);
     }
   }
@@ -916,7 +916,7 @@ class _ChartViewState extends WidgetState<ChartView>
       // Loop through each label from the dataset
       for (ChartDataLabel label in labels.dataLabel) {
         // Check label has a positional value
-        if (S.isNullOrEmpty(label.x) && S.isNullOrEmpty(label.x1) && S.isNullOrEmpty(label.x2) && S.isNullOrEmpty(label.y) && S.isNullOrEmpty(label.y1) && S.isNullOrEmpty(label.y2)) {
+        if (isNullOrEmpty(label.x) && isNullOrEmpty(label.x1) && isNullOrEmpty(label.x2) && isNullOrEmpty(label.y) && isNullOrEmpty(label.y1) && isNullOrEmpty(label.y2)) {
           continue;
         }
 
@@ -939,22 +939,22 @@ class _ChartViewState extends WidgetState<ChartView>
         dynamic y2Parsed;
 
         try {
-          if (hasX && !S.isNullOrEmpty(label.x)) {
+          if (hasX && !isNullOrEmpty(label.x)) {
             xParsed = parsePlotPoint(label.x, widget.model.xaxis.type);
           }
-          if (hasX && !S.isNullOrEmpty(label.x1)) {
+          if (hasX && !isNullOrEmpty(label.x1)) {
             x1Parsed = parsePlotPoint(label.x1, widget.model.xaxis.type);
           }
-          if (hasX && hasX2 && !S.isNullOrEmpty(label.x2)) {
+          if (hasX && hasX2 && !isNullOrEmpty(label.x2)) {
             x2Parsed = parsePlotPoint(label.x2, widget.model.xaxis.type);
           }
-          if (hasY && !S.isNullOrEmpty(label.y)) {
+          if (hasY && !isNullOrEmpty(label.y)) {
             yParsed = parsePlotPoint(label.y, widget.model.yaxis.type);
           }
-          if (hasY && !S.isNullOrEmpty(label.y1)) {
+          if (hasY && !isNullOrEmpty(label.y1)) {
             y1Parsed = parsePlotPoint(label.y1, widget.model.yaxis.type);
           }
-          if (hasY && hasY2 && !S.isNullOrEmpty(label.y2)) {
+          if (hasY && hasY2 && !isNullOrEmpty(label.y2)) {
             y2Parsed = parsePlotPoint(label.y2, widget.model.yaxis.type);
           }
         }

@@ -10,10 +10,13 @@ import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/typeahead/typeahead_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class TypeaheadModel extends DecoratedInputModel implements IFormField
 {
+  // data sourced prototype
+  XmlElement? prototype;
+
   @override
   bool get canExpandInfinitelyWide => !hasBoundedWidth;
 
@@ -117,7 +120,13 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
     radius = Xml.get(node: xml, tag: 'radius');
     inputenabled = Xml.get(node: xml, tag: 'inputenabled');
     matchtype = Xml.get(node: xml, tag: 'matchtype') ?? Xml.get(node: xml, tag: 'searchtype');
-    addempty  = S.toBool(Xml.get(node: xml, tag: 'addempty')) ?? true;
+    addempty  = toBool(Xml.get(node: xml, tag: 'addempty')) ?? true;
+
+    // build select options
+    _buildOptions();
+
+    // set the default selected option
+    if (datasource == null) _setSelectedOption();
   }
 
   void onValueChange(Observable observable)
@@ -153,8 +162,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
     label = selectedOption?.labelValue;
   }
 
-  @override
-  void setPrototype()
+  void _buildOptions()
   {
     // clear options
     _clearOptions;
@@ -163,7 +171,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
     List<OptionModel> options = findChildrenOfExactType(OptionModel).cast<OptionModel>();
 
     // set prototype
-    if ((!S.isNullOrEmpty(datasource)) && (options.isNotEmpty))
+    if ((!isNullOrEmpty(this.datasource)) && (options.isNotEmpty))
     {
       prototype = WidgetModel.prototypeOf(options.first.element);
       options.removeAt(0);
@@ -171,6 +179,13 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
 
     // build options
     this.options.addAll(options);
+
+    // announce data for late binding
+    var datasource = scope?.getDataSource(this.datasource);
+    if (datasource?.data?.isNotEmpty ?? false)
+    {
+      onDataSourceSuccess(datasource!, datasource.data);
+    }
   }
 
   void _clearOptions()

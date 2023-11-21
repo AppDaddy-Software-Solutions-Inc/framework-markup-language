@@ -40,12 +40,12 @@ class MeasureObject extends RenderProxyBox
   }
 }
 
-class MeasuredView extends SingleChildRenderObjectWidget
+class MeasureView extends SingleChildRenderObjectWidget
 {
   final OnWidgetSizeChange onChange;
   final dynamic data;
 
-  const MeasuredView(Widget widget,this.onChange,{Key? key, this.data}) : super(key: key, child: widget);
+  const MeasureView(Widget widget,this.onChange,{Key? key, this.data}) : super(key: key, child: widget);
 
   @override
   RenderObject createRenderObject(BuildContext context)

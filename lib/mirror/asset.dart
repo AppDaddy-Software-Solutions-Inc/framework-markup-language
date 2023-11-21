@@ -2,7 +2,7 @@
 import 'package:fml/log/manager.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/datasources/http/http.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class Asset
 {
@@ -48,7 +48,7 @@ class Asset
 
     tag = 'updated';
     String? updated = Xml.get(node: xml, tag: tag);
-    if (S.isNumber(updated)) epoch = S.toDouble(updated);
+    if (isNumeric(updated)) epoch = toDouble(updated);
   }
 }
 

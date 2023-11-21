@@ -6,7 +6,7 @@ import 'package:zxing_lib/pdf417.dart' deferred as pdf417;
 import 'package:zxing_lib/qrcode.dart' deferred as qrcode;
 import 'package:zxing_lib/zxing.dart'  deferred as zxing;
 import 'barcode_detector.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 import 'package:fml/datasources/detectors/image/detectable_image.stub.dart'
 if (dart.library.io)   'package:fml/datasources/detectors/image/detectable_image.mobile.dart'
@@ -123,27 +123,26 @@ class BarcodeDetector implements IBarcodeDetector
               break;
             case "DBA":
               barcode.parameters!["expiration"] =
-                  S.toStr(S.toDate(value, format: "yyyyMMdd"));
+                  toStr(toDate(value, format: "yyyyMMdd"));
               break;
             case "DCS":
-              barcode.parameters!["last_name"] = S.toTitleCase(value);
+              barcode.parameters!["last_name"] = toTitleCase(value);
               break;
             case "DAC":
-              barcode.parameters!["first_name"] = S.toTitleCase(value);
+              barcode.parameters!["first_name"] = toTitleCase(value);
               break;
             case "DCT":
-              barcode.parameters!["first_name"] = S.toTitleCase(value);
+              barcode.parameters!["first_name"] = toTitleCase(value);
               break;
             case "DAD":
-              barcode.parameters!["middle_name"] = S.toTitleCase(value);
+              barcode.parameters!["middle_name"] = toTitleCase(value);
               break;
             case "DBD":
-              barcode.parameters!["issue_date"] =
-                  S.toStr(S.toDate(value, format: "yyyyMMdd"));
+              barcode.parameters!["issue_date"] = toStr(toDate(value, format: "yyyyMMdd"));
               break;
             case "DBB":
               barcode.parameters!["date_of_birth"] =
-                  S.toStr(S.toDate(value, format: "yyyyMMdd"));
+                  toStr(toDate(value, format: "yyyyMMdd"));
               break;
             case "DBC":
               barcode.parameters!["sex"] = (value == "1")
@@ -159,10 +158,10 @@ class BarcodeDetector implements IBarcodeDetector
               barcode.parameters!["height"] = value;
               break;
             case "DAG":
-              barcode.parameters!["address"] = S.toTitleCase(value);
+              barcode.parameters!["address"] = toTitleCase(value);
               break;
             case "DAI":
-              barcode.parameters!["city"] = S.toTitleCase(value);
+              barcode.parameters!["city"] = toTitleCase(value);
               break;
             case "DAJ":
               barcode.parameters!["province"] = "Ontario";
@@ -177,7 +176,7 @@ class BarcodeDetector implements IBarcodeDetector
               barcode.parameters!["discrimination"] = value;
               break;
             case "DCG":
-              barcode.parameters!["country"] = S.toTitleCase(value);
+              barcode.parameters!["country"] = toTitleCase(value);
               break;
             case "DCK":
               barcode.parameters!["inventory_control"] = value;
@@ -238,7 +237,7 @@ class BarcodeDetector implements IBarcodeDetector
   {
     Barcode barcode = Barcode();
     barcode.barcode = result.text;
-    barcode.format = S.fromEnum(result.barcodeFormat);
+    barcode.format = fromEnum(result.barcodeFormat);
 
     Payload payload = Payload();
     payload.barcodes.add(barcode);

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:fml/helper/string.dart';
+import 'package:fml/helpers/string.dart';
 
 class AnimationHelper {
   static Curve getCurve(curve) {
-    CurveEnum? transitionCurve = S.toEnum(curve, CurveEnum.values);
+    CurveEnum? transitionCurve = toEnum(curve, CurveEnum.values);
     switch (transitionCurve) {
       case CurveEnum.linear:
         return Curves.linear;

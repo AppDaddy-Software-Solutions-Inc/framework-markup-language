@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:fml/data/data.dart';
 import 'package:intl/intl.dart';
 import 'package:fml/hive/database.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class Log
 {
@@ -24,7 +24,7 @@ class Log
 
   Log({String? key, String? type, int? epoch, String? message, String? caller})
   {
-    _map["key"]     = key ?? S.newId();
+    _map["key"]     = key ?? newId();
     _map["type"]    = type    ?? "error";
     _map["epoch"]   = epoch   ?? DateTime.now().millisecondsSinceEpoch;
     _map["date"]    = DateFormat("yyyy-MM-dd HH:mm:ss.sss").format(DateTime.fromMillisecondsSinceEpoch(this.epoch));
@@ -41,7 +41,7 @@ class Log
   static Log? _fromMap(dynamic map)
   {
     Log? log;
-    if (map is Map) log = Log(key: S.mapVal(map, "key"), type: S.mapVal(map, "type"), epoch: S.mapInt(map, "epoch"), message: S.mapVal(map, "message"), caller: S.mapVal(map, "caller"));
+    if (map is Map) log = Log(key: fromMap(map, "key"), type: fromMap(map, "type"), epoch: fromMapAsInt(map, "epoch"), message: fromMap(map, "message"), caller: fromMap(map, "caller"));
     return log;
   }
 

@@ -2,12 +2,12 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:fml/helpers/mime.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:fml/helper/common_helpers.dart';
 import 'dart:io' as io;
 
 class Platform
@@ -37,7 +37,7 @@ class Platform
   static Future<dynamic> fileSaveAs(List<int> bytes, String filepath) async
   {
     // make the file name safe
-    filepath = S.toSafeFileName(filepath);
+    filepath = Mime.toSafeFileName(filepath);
 
     String? folder;
     try

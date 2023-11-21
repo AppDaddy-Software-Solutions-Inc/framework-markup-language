@@ -12,7 +12,7 @@ import 'package:fml/datasources/socket/socket.dart';
 import 'package:fml/datasources/file/file.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 import 'socket_listener_interface.dart';
 
 class SocketModel extends DataSourceModel implements IDataSource, ISocketListener
@@ -394,7 +394,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
   @override
   onConnected() async
   {
-    if (!S.isNullOrEmpty(onconnected))
+    if (!isNullOrEmpty(onconnected))
     {
       EventHandler handler = EventHandler(this);
       await handler.execute(_onconnected);
@@ -405,7 +405,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
   @override
   onDisconnected(int? code, String? message) async
   {
-    if (!S.isNullOrEmpty(ondisconnected))
+    if (!isNullOrEmpty(ondisconnected))
     {
       EventHandler handler = EventHandler(this);
       await handler.execute(_ondisconnected);
@@ -427,7 +427,7 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
   @override
   onError(String error) async
   {
-    if (!S.isNullOrEmpty(onerror))
+    if (!isNullOrEmpty(onerror))
     {
       EventHandler handler = EventHandler(this);
       await handler.execute(_onerror);
@@ -445,10 +445,10 @@ class SocketModel extends DataSourceModel implements IDataSource, ISocketListene
     {
       case "send":
       case "write":
-        String? message     = S.toStr(S.item(arguments, 0)) ?? body;
-        bool?   asBinary    = S.toBool(S.item(arguments, 1));
-        int?    maxPartSize = S.toInt(S.item(arguments, 2));
-        if (!S.isNullOrEmpty(message)) send(message!, asBinary: asBinary, maxPartSize: maxPartSize);
+        String? message     = toStr(elementAt(arguments, 0)) ?? body;
+        bool?   asBinary    = toBool(elementAt(arguments, 1));
+        int?    maxPartSize = toInt(elementAt(arguments, 2));
+        if (!isNullOrEmpty(message)) send(message!, asBinary: asBinary, maxPartSize: maxPartSize);
         return true;
 
       case "read":

@@ -10,7 +10,7 @@ import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/widgets/slider/slider_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 enum InputTypes { numeric, integer, text, boolean}
 
@@ -25,7 +25,7 @@ class SliderModel extends FormFieldModel implements IFormField
   InputTypes? _inputtype;
   set inputtype(dynamic v) {
     if (v is InputTypes) _inputtype = v;
-    _inputtype = S.toEnum(v, InputTypes.values);
+    _inputtype = toEnum(v, InputTypes.values);
   }
 
   InputTypes? get inputtype {
@@ -115,8 +115,8 @@ class SliderModel extends FormFieldModel implements IFormField
       }
       else if (range == true && v != null) {
         List answerValues = v?.split(',') ?? [minimum, maximum];
-        double value1 = S.toDouble(answerValues[0]) ??  minimum ?? 0;
-        double value2 = (answerValues.length > 1 ?  S.toDouble(answerValues[1]) : value1) ??  maximum ?? 0;
+        double value1 = toDouble(answerValues[0]) ??  minimum ?? 0;
+        double value2 = (answerValues.length > 1 ?  toDouble(answerValues[1]) : value1) ??  maximum ?? 0;
         value = '${value1.round()},${value2.round()}';
       }
 

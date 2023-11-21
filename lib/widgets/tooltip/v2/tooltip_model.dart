@@ -11,7 +11,7 @@ import 'package:fml/widgets/tooltip/v2/tooltip_view.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 enum OpenMethods {tap, longpress, hover, manual}
 
@@ -155,7 +155,7 @@ class TooltipModel extends ViewableWidgetModel
     timeout  = Xml.get(node: xml, tag: 'timeout');
     distance = Xml.get(node: xml, tag: 'distance');
     arrow    = Xml.get(node: xml, tag: 'arrow');
-    openMethod = S.toEnum(Xml.get(node: xml, tag: 'openMethod'), OpenMethods.values);
+    openMethod = toEnum(Xml.get(node: xml, tag: 'openMethod'), OpenMethods.values);
   }
 
   @override

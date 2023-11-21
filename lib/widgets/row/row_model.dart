@@ -4,7 +4,7 @@ import 'package:fml/observable/scope.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class RowModel extends BoxModel
 {
@@ -32,15 +32,15 @@ class RowModel extends BoxModel
     return flexible;
   }
 
-  RowModel(WidgetModel parent, String? id, {Scope?  scope}) : super(parent, id, scope: scope);
+  RowModel(WidgetModel parent, String? id, {Scope? scope, dynamic data}) : super(parent, id, scope: scope, data: data);
 
-  static RowModel? fromXml(WidgetModel parent, XmlElement xml)
+  static RowModel? fromXml(WidgetModel parent, XmlElement xml, {Scope? scope, dynamic data})
   {
     RowModel? model;
     try
     {
       // build model
-      model = RowModel(parent, Xml.get(node: xml, tag: 'id'));
+      model = RowModel(parent, Xml.get(node: xml, tag: 'id'), scope: scope, data: data);
       model.deserialize(xml);
     }
     catch(e)

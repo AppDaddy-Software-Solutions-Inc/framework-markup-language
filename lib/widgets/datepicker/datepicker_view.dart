@@ -4,7 +4,7 @@ import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/datepicker/datepicker_model.dart';
 import 'package:flutter/services.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class DatepickerView extends StatefulWidget implements IWidgetView {
@@ -38,7 +38,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
 
       // Set initial value to the controller
       if (cont!.text != widget.model.value) {
-        cont!.text = S.toStr(widget.model.value) ?? "";
+        cont!.text = toStr(widget.model.value) ?? "";
       }
     }
   }

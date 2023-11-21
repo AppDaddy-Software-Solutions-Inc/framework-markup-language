@@ -10,7 +10,7 @@ import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class FormFieldModel extends DecoratedWidgetModel
 {
@@ -292,12 +292,12 @@ class FormFieldModel extends DecoratedWidgetModel
   // values
   List<String>? get values
   {
-    if (!S.isNullOrEmpty(value?.toString())) return [value.toString()];
+    if (!isNullOrEmpty(value?.toString())) return [value.toString()];
     return null;
   }
 
   // question was answered
-  bool get answered => !S.isNullOrEmpty(value);
+  bool get answered => !isNullOrEmpty(value);
 
   Future<bool> onChange(BuildContext? context) async => await EventHandler(this).execute(_onchange);
 

@@ -2,7 +2,7 @@
 import 'dart:math';
 import 'dart:ui';
 import 'package:fml/event/manager.dart';
-import 'package:fml/helper/scroll_behavior.dart';
+import 'package:fml/widgets/scroller/scroll_behavior.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart';
@@ -10,12 +10,12 @@ import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/scrollshadow/scroll_shadow_view.dart';
 import 'package:fml/widgets/scrollshadow/scroll_shadow_model.dart';
-import 'package:fml/helper/measured.dart';
+import 'package:fml/widgets/measure/measure_view.dart';
 import 'package:fml/widgets/grid/grid_model.dart';
 import 'package:fml/widgets/grid/item/grid_item_view.dart';
 import 'package:fml/widgets/grid/item/grid_item_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class GridView extends StatefulWidget implements IWidgetView {
   @override
@@ -122,8 +122,8 @@ class _GridViewState extends WidgetState<GridView> {
       String? ascending = event.parameters!.containsKey('ascending')
           ? event.parameters!['ascending']
           : 'true';
-      if (!S.isNullOrEmpty(field)) {
-        widget.model.sort(field, type, S.toBool(ascending));
+      if (!isNullOrEmpty(field)) {
+        widget.model.sort(field, type, toBool(ascending));
       }
     }
   }
@@ -267,7 +267,7 @@ class _GridViewState extends WidgetState<GridView> {
         var model = GridItemModel.fromXml(widget.model, widget.model.prototype);
         if (model != null)
         {
-          prototypeGrid = Offstage(child: MeasuredView(UnconstrainedBox(child: GridItemView(model)), onMeasuredItem));
+          prototypeGrid = Offstage(child: MeasureView(UnconstrainedBox(child: GridItemView(model)), onMeasuredItem));
         }
       }
       catch (e)

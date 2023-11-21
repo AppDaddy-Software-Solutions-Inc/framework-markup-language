@@ -6,7 +6,7 @@ import 'package:fml/log/manager.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class Pivot extends TransformModel implements ITransform
 {
@@ -101,7 +101,7 @@ class Pivot extends TransformModel implements ITransform
       String? mField;
 
       // lookup column
-      var value = Data.readValue(row,column);
+      var value = Data.read(row,column);
       if (value != null)
       {
         myColumn = value.toString();
@@ -109,7 +109,7 @@ class Pivot extends TransformModel implements ITransform
       }
 
       // lookup row
-      value = Data.readValue(row,this.row);
+      value = Data.read(row,this.row);
       if (value != null)
       {
         myRow = value.toString();
@@ -117,7 +117,7 @@ class Pivot extends TransformModel implements ITransform
       }
 
       // lookup field
-      value = Data.readValue(row,field);
+      value = Data.read(row,field);
       if (value != null)
       {
         mField = value.toString();
@@ -126,7 +126,7 @@ class Pivot extends TransformModel implements ITransform
 
       if (myRow != null)
       {
-        double? v = (mField is String) ? S.toDouble(mField) : null;
+        double? v = (mField is String) ? toDouble(mField) : null;
         if (!statistics.containsKey(myRow)) statistics[myRow] = <String?, Map<String, double?>>{};
         if (!statistics[myRow]!.containsKey(myColumn))
         {
@@ -182,7 +182,7 @@ class Pivot extends TransformModel implements ITransform
       row.forEach((key, value)
       {
         if (!totals.containsKey(key)) totals[key] = null;
-        double? sum = S.toDouble(value);
+        double? sum = toDouble(value);
         if (sum != null) totals[key] = (totals[key] ?? 0) + sum;
       });
     }

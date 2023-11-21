@@ -11,7 +11,7 @@ import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
 import 'package:fml/widgets/tabview/tab_model.dart';
 import 'package:fml/widgets/framework/framework_view.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class TabView extends StatefulWidget implements IWidgetView
 {
@@ -99,7 +99,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
 
     // modal
     bool? modal = false;
-    if ((event.parameters != null) && (event.parameters!.containsKey('modal'))) modal = S.toBool(event.parameters!['modal']);
+    if ((event.parameters != null) && (event.parameters!.containsKey('modal'))) modal = toBool(event.parameters!['modal']);
     if ((modal != true) && (event.model != null)) modal = (event.model!.findDescendantOfExactType(ModalModel, id: url) != null);
 
     // allow framework to handle open if fully qualified
@@ -241,7 +241,7 @@ class _TabViewState extends WidgetState<TabView> with TickerProviderStateMixin
       Uri uri = URI.parse(url)!;
 
       // Has delete button?
-      bool closeable = S.toBool(uri.queryParameters['closeable']) ?? true;
+      bool closeable = toBool(uri.queryParameters['closeable']) ?? true;
       Widget delete = (closeable == false) ? Container()
       : Padding(padding: EdgeInsets.only(right: 5), child: Container(width: 26, height: 26,
           child: IconButton(onPressed: () => _onDelete(view), padding: EdgeInsets.all(1.5), icon: Icon(Icons.close, size: 22, color: Theme.of(context).colorScheme.onSurfaceVariant))));

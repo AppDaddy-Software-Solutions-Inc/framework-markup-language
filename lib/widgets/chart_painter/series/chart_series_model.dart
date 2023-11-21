@@ -6,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 /// ChartDataPoint Object
 ///
@@ -396,8 +396,8 @@ class ChartPainterSeriesModel extends WidgetModel
       //set the data of the series for databinding
       data = pointData;
       //ensure the value is in the list, it always should be.
-      if (uniqueXValueList.contains(S.toInt(x))) {
-        x = uniqueXValueList.toList().indexOf(S.toInt(x));
+      if (uniqueXValueList.contains(toInt(x))) {
+        x = uniqueXValueList.toList().indexOf(toInt(x));
         //plot the point as a point object based on the desired function based on series and chart type.
         plotFunction!();
       }

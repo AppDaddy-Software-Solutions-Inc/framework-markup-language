@@ -23,7 +23,7 @@ import 'package:fml/datasources/gps/gps.dart';
 import 'package:fml/datasources/gps/payload.dart';
 import 'package:fml/application/application_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 import 'dart:io' as io;
 
 // application build version
@@ -37,7 +37,9 @@ final String applicationTitle = "Flutter Markup Language $version";
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://app
 //String get defaultDomain => 'http://10.69.4.245:81';
-String get defaultDomain => 'http://10.67.130.75:8081';
+//String get defaultDomain => 'http://10.67.130.75:8081';
+String get defaultDomain => 'https://test.appdaddy.co';
+//String get defaultDomain => 'http://hbrmdsweb.appdaddy.co';
 
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
@@ -271,8 +273,8 @@ class System extends WidgetModel implements IEventManager {
         scope: scope);
     _version =
         StringObservable(Binding.toKey('version'), version, scope: scope);
-    _uuid = StringObservable(Binding.toKey('uuid'), S.newId(),
-        scope: scope, getter: S.newId);
+    _uuid = StringObservable(Binding.toKey('uuid'), newId(),
+        scope: scope, getter: newId);
     // this satisfies/eliminates the compiler warning
     if (_uuid == null) print(_uuid);
 
@@ -380,7 +382,7 @@ class System extends WidgetModel implements IEventManager {
 
   void setApplicationTitle(String? title) async {
     title = title ?? app?.settings("APPLICATION_NAME");
-    if (!S.isNullOrEmpty(title)) {
+    if (!isNullOrEmpty(title)) {
       // print('setting title to $title');
       SystemChrome.setApplicationSwitcherDescription(
           ApplicationSwitcherDescription(

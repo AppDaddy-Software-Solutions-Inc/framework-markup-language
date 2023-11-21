@@ -19,7 +19,7 @@ import 'package:fml/event/handler.dart';
 import 'package:fml/widgets/variable/variable_model.dart';
 import 'package:fml/widgets/framework/framework_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class FrameworkModel extends BoxModel implements IModelListener, IEventManager
 {
@@ -253,7 +253,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
     List<dynamic>? variables = findDescendantsOfExactType(VariableModel);
     for (var variable in variables) {
       VariableModel v = (variable as VariableModel);
-      if (!S.isNullOrEmpty(v.returnas))
+      if (!isNullOrEmpty(v.returnas))
       {
         String? name  = v.returnas;
         String value = v.value ?? "";
@@ -314,7 +314,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
       var xml = template.document!.rootElement;
 
       // template requires rights?
-      int? requiredRights = S.toInt(Xml.attribute(node: xml, tag: 'rights'));
+      int? requiredRights = toInt(Xml.attribute(node: xml, tag: 'rights'));
       if (requiredRights != null)
       {
         int myrights   = System.app?.user.rights ?? 0;
@@ -325,7 +325,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
         {
           // fetch logon template
           var login = System.app?.loginPage;
-          if (!S.isNullOrEmpty(login)) template = await Template.fetch(url:login!, refresh: refresh);
+          if (!isNullOrEmpty(login)) template = await Template.fetch(url:login!, refresh: refresh);
           xml = template.document!.rootElement;
         }
 
@@ -334,7 +334,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
         {
           // fetch not authorized template
           var unauthorized = System.app?.unauthorizedPage;
-          if (!S.isNullOrEmpty(unauthorized)) template = await Template.fetch(url: unauthorized!, refresh: refresh);
+          if (!isNullOrEmpty(unauthorized)) template = await Template.fetch(url: unauthorized!, refresh: refresh);
           xml = template.document!.rootElement;
         }
       }
@@ -424,7 +424,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
     super.deserialize(xml);
 
     // properties
-    key          = xml.getAttribute('key')                ?? key ?? S.newId();
+    key          = xml.getAttribute('key')                ?? key ?? newId();
     dependency   = xml.getAttribute('dependency')         ?? dependency;
     title        = Xml.get(node: xml, tag: 'title')       ?? title;
     version      = Xml.get(node: xml, tag: 'version')     ?? version;
@@ -510,7 +510,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
     if ((scope != null)) parameters.forEach((key, value) => scope!.setObservable(key, value));
 
     // fire OnReturn event
-    if (!S.isNullOrEmpty(onreturn)) EventHandler(this).execute(_onreturn);
+    if (!isNullOrEmpty(onreturn)) EventHandler(this).execute(_onreturn);
 
     return true;
   }

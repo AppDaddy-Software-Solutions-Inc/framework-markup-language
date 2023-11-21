@@ -8,7 +8,7 @@ import 'package:fml/datasources/zebra/wedge.dart' as zebra;
 import 'package:fml/datasources/detectors/barcode/barcode_detector.dart';
 import 'package:fml/datasources/zebra/wedge.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener
 {
@@ -88,7 +88,7 @@ class ZebraModel extends DataSourceModel implements IDataSource, IZebraListener
       map["format"]  = barcode.format;
       map["display"] = barcode.display;
       map["barcode"] = barcode.barcode != null ? barcode.barcode!.trim() : "";
-      if (barcode.parameters != null) barcode.parameters!.forEach((key, value) => map[key] = value);
+      barcode.parameters?.forEach((key, value) => map[key] = value);
       data.add(map);
     }
 

@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/helper/string.dart';
+import 'package:fml/helpers/string.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/radio/radio_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
@@ -137,7 +137,7 @@ class _RadioViewState extends WidgetState<RadioView>
       }
     }
 
-    if(!S.isNullOrEmpty(widget.model.alarmText))
+    if(!isNullOrEmpty(widget.model.alarmText))
     {
       Widget? errorText = Text("${widget.model.alarmText}", style: TextStyle(color: Theme.of(context).colorScheme.error));
       view = Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [view, errorText]);

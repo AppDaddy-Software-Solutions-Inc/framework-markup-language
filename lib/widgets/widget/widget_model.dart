@@ -84,9 +84,9 @@ import 'package:fml/widgets/popover/popover_model.dart';
 import 'package:fml/widgets/positioned/positioned_model.dart';
 import 'package:fml/datasources/http/put/model.dart';
 import 'package:fml/datasources/http/post/model.dart';
+import 'package:fml/widgets/prototype/prototype_model.dart';
 import 'package:fml/widgets/radio/radio_model.dart';
 import 'package:fml/widgets/row/row_model.dart';
-import 'package:fml/widgets/scope/scope_model.dart';
 import 'package:fml/widgets/scribble/scribble_model.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/select/select_model.dart';
@@ -132,7 +132,7 @@ import 'package:fml/widgets/span/span_model.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 import '../chart_painter/line/line_chart_model.dart';
 import '../chart_painter/line/line_series.dart';
@@ -161,10 +161,8 @@ class WidgetModel implements IDataSourceListener {
 
   // xml node
   XmlElement? element;
-  String get elementName =>
-      element != null ? element!.localName.toUpperCase() : '$runtimeType';
-  String? get elementNamespace =>
-      element != null ? element!.namespacePrefix!.toLowerCase() : null;
+  String get elementName => element?.localName.toUpperCase() ?? '$runtimeType';
+  String? get elementNamespace => element?.namespacePrefix?.toLowerCase();
 
   // datasource
   List<IDataSource>? datasources;
@@ -180,11 +178,31 @@ class WidgetModel implements IDataSourceListener {
     }
     else if (v != null)
     {
-      _data = ListObservable(Binding.toKey(id, 'data'), null, scope: scope, listener: onPropertyChange);
+      final key = Binding.toKey(id, 'data');
+
+      _data = ListObservable(Binding.toKey(id, 'data'),
+          null,
+          scope: scope,
+          listener: onPropertyChange,
+
+          // inline setter
+          // used to set values within the data element
+          // when twoway binding is used
+          setter: (dynamic value, {Observable? setter})
+          {
+            if (setter?.twoway == null) return value;
+            var bdg = Binding.fromString(setter?.signature);
+            var tag = bdg?.toString().replaceFirst("$key.", "");
+            Data.write(data, tag, value);
+            return data;
+          });
+
+      // set the value
       _data!.set(v);
     }
   }
   get data => _data?.get();
+  void onDataChange() => _data?.notifyListeners();
 
   // listeners
   List<IModelListener>? _listeners;
@@ -284,7 +302,7 @@ class WidgetModel implements IDataSourceListener {
   static RegExp onlyAlpha = RegExp(r'''[^a-zA-Z0-9\s.]''');
   String _toId(String? id)
   {
-    if (S.isNullOrEmpty(id))
+    if (isNullOrEmpty(id))
     {
       String prefix = "auto";
       if (kDebugMode)
@@ -293,14 +311,15 @@ class WidgetModel implements IDataSourceListener {
         prefix = prefix.replaceAll(onlyAlpha,'');
         if (prefix.endsWith('model')) prefix = prefix.substring(0, prefix.lastIndexOf('model'));
       }
-      id = S.newId(prefix: prefix);
+      id = newId(prefix: prefix);
     }
     return id!;
   }
 
-  static WidgetModel? fromXml(WidgetModel parent, XmlElement node) {
+  static WidgetModel? fromXml(WidgetModel parent, XmlElement node, {Scope? scope, dynamic data})
+  {
     // clone node?
-    node = cloneNode(node, parent.scope);
+    node = cloneNode(node, scope ?? parent.scope);
 
     // exclude this element?
     if (excludeFromTemplate(node, parent.scope)) return null;
@@ -338,7 +357,8 @@ class WidgetModel implements IDataSourceListener {
 
       case "box": // Preferred Case
       case "container": // Container may be deprecated
-        model = BoxModel.fromXml(parent, node);
+        bool isPrototype = Xml.hasAttribute(node: node, tag: "data") || Xml.hasAttribute(node: node, tag: "datasource");
+        model = isPrototype ? PrototypeModel.fromXml(parent, node) : BoxModel.fromXml(parent, node, scope: scope, data: data);
         break;
 
       case "breadcrumb":
@@ -390,7 +410,15 @@ class WidgetModel implements IDataSourceListener {
         model = BarChartModel.fromXml(parent, node);
         break;
 
-      // case "sfchart":
+      case "body":
+        // we dont want to deserialize datasorce body models
+        // in the future we may wish to have a BODY element
+        // for now just return null
+        if (parent is! IDataSource) model = null;
+        model = null;
+        break;
+
+    // case "sfchart":
       //   model = SFCHART.ChartModel.fromXml(parent, node);
       //   break;
 
@@ -414,7 +442,8 @@ class WidgetModel implements IDataSourceListener {
 
       case "column":
       case "col": //shorthand case
-        model = ColumnModel.fromXml(parent, node);
+        bool isPrototype = Xml.hasAttribute(node: node, tag: "data") || Xml.hasAttribute(node: node, tag: "datasource");
+        model = isPrototype ? PrototypeModel.fromXml(parent, node) : ColumnModel.fromXml(parent, node, scope: scope, data: data);
         break;
 
       case "condition":
@@ -772,11 +801,8 @@ class WidgetModel implements IDataSourceListener {
         break;
 
       case "row":
-        model = RowModel.fromXml(parent, node);
-        break;
-
-      case "scope":
-        model = ScopeModel.fromXml(parent, node);
+        bool isPrototype = Xml.hasAttribute(node: node, tag: "data") || Xml.hasAttribute(node: node, tag: "datasource");
+        model = isPrototype ? PrototypeModel.fromXml(parent, node) : RowModel.fromXml(parent, node, scope: scope, data: data);
         break;
 
       case "scribble":
@@ -1053,13 +1079,9 @@ class WidgetModel implements IDataSourceListener {
     // remove model and all of its bindables from the scope
     scope?.unregisterModel(this);
 
-    // dispose of children
-    if (children != null) {
-      for (var child in children!) {
-        child.dispose();
-      }
-      children!.clear();
-    }
+    // dispose of all children
+    children?.forEach((child) => child.dispose());
+    children?.clear();
   }
 
   registerListener(IModelListener listener) {
@@ -1081,21 +1103,16 @@ class WidgetModel implements IDataSourceListener {
   rebuild() => notifyListeners("rebuild", true);
 
   notifyListeners(String? property, dynamic value, {bool notify = false}) {
-    if (notify && _listeners == null) print('listeners is null');
-    if (notify && _listeners != null) {
-      print('listeners has ${_listeners!.length} members');
-    }
-    if (_listeners != null) {
-      for (var listener in _listeners!) {
+    if (_listeners != null)
+    {
+      for (var listener in _listeners!)
+      {
         listener.onModelChange(this, property: property, value: value);
       }
     }
   }
 
-  void onPropertyChange(Observable observable)
-  {
-    notifyListeners(observable.key, observable.get());
-  }
+  void onPropertyChange(Observable observable) => notifyListeners(observable.key, observable.get());
 
   Future<void> initialize() async {
     // start datasources
@@ -1137,7 +1154,7 @@ class WidgetModel implements IDataSourceListener {
 
   /// Returns true if the template references observable => key
   static bool isBound(WidgetModel model, String? key) {
-    if ((model.framework == null) || (S.isNullOrEmpty(key))) return false;
+    if ((model.framework == null) || (isNullOrEmpty(key))) return false;
     return model.framework!.bindables!.contains(key);
   }
 
@@ -1375,12 +1392,12 @@ class WidgetModel implements IDataSourceListener {
     switch (function) {
       case 'set':
         // value
-        var value = S.item(arguments, 0);
+        var value = elementAt(arguments, 0);
 
         // property - default is value
         // we can now use dot notation to specify the property
         // rather than pass it as an attribute
-        var property = S.item(arguments, 1);
+        var property = elementAt(arguments, 1);
         property ??= Binding.fromString(caller)?.key ?? property;
 
         Scope? scope = Scope.of(this);
@@ -1393,13 +1410,13 @@ class WidgetModel implements IDataSourceListener {
       case 'addchild':
 
         // fml
-        var xml = S.item(arguments, 0);
+        var xml = elementAt(arguments, 0);
 
         // if index is null, add to end of list.
-        int? index = S.toInt(S.item(arguments, 1));
+        int? index = toInt(elementAt(arguments, 1));
 
         // silent
-        bool silent = S.toBool(S.item(arguments, 2)) ?? true;
+        bool silent = toBool(elementAt(arguments, 2)) ?? true;
 
         if (xml == null || xml is! String) return true;
 
@@ -1414,7 +1431,7 @@ class WidgetModel implements IDataSourceListener {
       case 'removechild':
 
         // if index is null, remove all children before replacement.
-        int? index = S.toInt(S.item(arguments, 0));
+        int? index = toInt(elementAt(arguments, 0));
 
         // check for children then remove them
         if (children != null && index == null) {
@@ -1438,9 +1455,10 @@ class WidgetModel implements IDataSourceListener {
 
       case 'removechildren':
 
-        // dispose of existing children
+        // dispose of all children
         children?.forEach((child) => child.dispose());
-        children = [];
+        children?.clear();
+
 
         // force parent rebuild
         parent?.notifyListeners("rebuild", "true");
@@ -1449,13 +1467,13 @@ class WidgetModel implements IDataSourceListener {
       case 'replacechild':
 
         // fml
-        var xml = S.item(arguments, 0);
+        var xml = elementAt(arguments, 0);
 
         // if index is null, remove last child before replacement.
-        int? index = S.toInt(S.item(arguments, 1));
+        int? index = toInt(elementAt(arguments, 1));
 
         // silent
-        bool silent = S.toBool(S.item(arguments, 2)) ?? true;
+        bool silent = toBool(elementAt(arguments, 2)) ?? true;
 
         if (xml == null || xml is! String) return true;
 
@@ -1487,20 +1505,16 @@ class WidgetModel implements IDataSourceListener {
       case 'replacechildren':
 
         // fml
-        var xml = S.item(arguments, 0);
+        var xml = elementAt(arguments, 0);
 
         // silent
-        bool silent = S.toBool(S.item(arguments, 1)) ?? true;
+        bool silent = toBool(elementAt(arguments, 1)) ?? true;
 
         if (xml == null || xml is! String) return true;
 
-        // check for children then remove them
-        if (children != null) {
-          for (var child in children!) {
-            child.dispose();
-          }
-          children = [];
-        }
+        // dispose of all children
+        children?.forEach((child) => child.dispose());
+        children?.clear();
 
         // add elements
         await _appendXml(xml, null, silent);
@@ -1531,7 +1545,7 @@ class WidgetModel implements IDataSourceListener {
       case 'replacewidget':
 
         // fml
-        var xml = S.item(arguments, 0);
+        var xml = elementAt(arguments, 0);
 
         // get my position in my parents child list
         int? index = (parent?.children?.contains(this) ?? false)
@@ -1539,7 +1553,7 @@ class WidgetModel implements IDataSourceListener {
             : null;
 
         // silent
-        bool silent = S.toBool(S.item(arguments, 1)) ?? true;
+        bool silent = toBool(elementAt(arguments, 1)) ?? true;
 
         if (xml == null || xml is! String) return true;
 
@@ -1657,50 +1671,66 @@ class WidgetModel implements IDataSourceListener {
     }
   }
 
-  static XmlElement? prototypeOf(XmlElement? prototype)
+  static XmlElement? prototypeOf(XmlElement? node)
   {
-    if (prototype == null) return null;
-
-    // is this a SCOPE element prototype
-    bool isScopeElement = prototype.name.local.toLowerCase() == "scope";
+    if (node == null) return null;
 
     // get the id
-    var id = Xml.attribute(node: prototype, tag: "id");
+    var id = Xml.attribute(node: node, tag: "id");
 
     // if missing, assign it a unique key
     if (id == null)
     {
-      id = S.newId();
-      Xml.setAttribute(prototype, "id", id);
+      id = newId();
+      Xml.setAttribute(node, "id", id);
     }
 
     // process data bindings
-    var xml = prototype.toString();
+    var xml = node.toString();
     var bindings = Binding.getBindings(xml);
     List<String?> processed = [];
+
     if (bindings != null)
     {
+      bool doReplace = false;
+
       // process each binding
       for (var binding in bindings)
       {
         if (binding.source == 'data' && !processed.contains(binding.signature))
         {
+          doReplace = true;
+
           processed.add(binding.signature);
 
-          // this is an oddball case where
-          // we need to double up on the id if the element
-          // is a SCOPE element since the scope part gets removed
-          var source = (isScopeElement) ? "$id.$id" : id;
-
           // set the signature
-          var signature = "{$source.data.${binding.property}${(binding.dotnotation?.signature != null ? ".${binding.dotnotation!.signature}" : "")}}";
+          var signature = "{$id.data.${binding.property}${(binding.dotnotation?.signature != null ? ".${binding.dotnotation!.signature}" : "")}}";
           xml = xml.replaceAll(binding.signature, signature);
         }
       }
 
       // parse the new xml
-      prototype = Xml.tryParse(xml)?.rootElement ?? prototype;
+      var newNode = Xml.tryParse(xml)?.rootElement;
+
+      // if valid node, we need to replace this node in the tree so
+      // ancestor prototypes don't translate data incorrectly
+      if (newNode != null)
+      {
+        if (doReplace)
+        {
+          var parent = node.parent;
+          var index  = node.parent?.children.indexOf(node) ?? -1;
+          newNode = newNode.copy();
+          if (index >= 0 && parent != null)
+          {
+            parent.children.removeAt(index);
+            parent.children.insert(index, newNode);
+          }
+        }
+        node = newNode;
+      }
     }
-    return prototype;
+
+    return node;
   }
 }

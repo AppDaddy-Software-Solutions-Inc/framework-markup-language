@@ -13,7 +13,7 @@ import 'package:fml/widgets/framework/framework_view.dart';
 import 'package:provider/provider.dart';
 import 'package:fml/event/event.dart' ;
 import 'package:fml/widgets/framework/framework_model.dart' ;
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class ApplicationManager extends StatefulWidget
 {

@@ -6,7 +6,7 @@ import 'package:fml/hive/stash.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/datasources/base/model.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class StashModel extends DataSourceModel implements IDataSource
 {
@@ -50,8 +50,8 @@ class StashModel extends DataSourceModel implements IDataSource
     {
 
       // case "export":
-      //   String format  =  S.toStr(S.item(arguments, 0))?.toLowerCase() ?? "html";
-      //   bool   history =  S.toBool(S.item(arguments, 1)) ?? false;
+      //   String format  =  toStr(elementAt(arguments, 0))?.toLowerCase() ?? "html";
+      //   bool   history =  toBool(elementAt(arguments, 1)) ?? false;
       //   Stash().export(format: format, withHistory: history);
       //   return true;
 

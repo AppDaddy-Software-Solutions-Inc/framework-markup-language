@@ -4,7 +4,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/datasources/http/model.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class HttpPatchModel extends HttpModel implements IDataSource
 {
@@ -42,7 +42,7 @@ class HttpPatchModel extends HttpModel implements IDataSource
     if (scope == null) return null;
     var function = propertyOrFunction.toLowerCase().trim();
 
-    bool refresh = S.toBool(S.item(arguments,0)) ?? false;
+    bool refresh = toBool(elementAt(arguments,0)) ?? false;
     switch (function)
     {
       case "patch" : return await start(refresh: refresh);

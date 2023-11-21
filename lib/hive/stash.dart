@@ -51,9 +51,7 @@ class Stash
   {
     Stash stash = await getStash();
     Data data = Data();
-    // data.addAll();
     stash.map.forEach((k, v) { data.add({'key': k, 'value': v}); });
-    // data.addAll(stash.map);
     return data;
   }
 

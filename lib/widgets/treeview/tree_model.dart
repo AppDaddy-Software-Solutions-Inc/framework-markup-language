@@ -11,10 +11,13 @@ import 'package:fml/widgets/treeview/tree_view.dart';
 import 'package:fml/widgets/treeview/node/tree_node_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class TreeModel extends BoxModel
 {
+  // data sourced prototype
+  XmlElement? prototype;
+
   // Icon
   IconObservable? _icon;
   set icon (dynamic v)
@@ -80,12 +83,11 @@ class TreeModel extends BoxModel
     // Build Nodes and find the youngestGeneration
     _buildNodes();
 
-    // build the prototype
-    setPrototype();
+    // build prototype
+    _buildPrototype();
   }
 
-  @override
-  void setPrototype()
+  void _buildPrototype()
   {
     // build the prototype
     if (datasource != null && nodes.isNotEmpty)

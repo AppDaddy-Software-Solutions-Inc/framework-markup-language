@@ -4,7 +4,7 @@ import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:xml/xml.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class CameraImageModel extends FileModel implements IDataSource
 {

@@ -3,7 +3,7 @@ import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/tooltip/v1/tooltip_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class TooltipView extends StatefulWidget implements IWidgetView
@@ -29,7 +29,7 @@ class _TooltipViewState extends WidgetState<TooltipView>
     List<Widget> children = widget.model.inflate();
 
     Widget child = children.length == 1 ? children[0] : Column(children: children, mainAxisSize: MainAxisSize.min);
-    if (S.isNullOrEmpty(widget.model.label)) {
+    if (isNullOrEmpty(widget.model.label)) {
       return child;
     }
 

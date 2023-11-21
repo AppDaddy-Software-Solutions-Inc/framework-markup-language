@@ -6,7 +6,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/icon/icon_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class IconModel extends DecoratedWidgetModel  
 {
@@ -42,7 +42,7 @@ class IconModel extends DecoratedWidgetModel
   double? get size => _size?.get() ?? 24;
 
   dynamic _sizeGetter() => width;
-  dynamic _sizeSetter(dynamic value)
+  dynamic _sizeSetter(dynamic value, {Observable? setter})
   {
     width  = value;
     height = value;

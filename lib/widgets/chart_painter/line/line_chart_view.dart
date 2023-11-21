@@ -1,6 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/helper/string.dart';
+import 'package:fml/helpers/string.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
@@ -34,7 +34,7 @@ class _LineChartViewState extends WidgetState<LineChartView>
 
   Widget bottomTitles(double value, TitleMeta meta) {
     var style = TextStyle(fontSize: widget.model.xaxis.labelsize ?? 8, color: Theme.of(context).colorScheme.outline);
-    //int? index = S.toInt(value);
+    //int? index = toInt(value);
     String text = "";
     if(widget.model.xaxis.type == 'date') {
       try {
@@ -86,10 +86,10 @@ class _LineChartViewState extends WidgetState<LineChartView>
         ),
 
         //the series must determine the min and max y
-        // minY: S.toDouble(widget.model.yaxis.min),
-        // maxY: S.toDouble(widget.model.yaxis.max),
-        // minX: S.toDouble(widget.model.xaxis.min),
-        // maxX: S.toDouble(widget.model.xaxis.max),
+        minY: toDouble(widget.model.yaxis.min),
+        maxY: toDouble(widget.model.yaxis.max),
+        minX: toDouble(widget.model.xaxis.min),
+        maxX: toDouble(widget.model.xaxis.max),
         borderData: FlBorderData(
           show: true,
         ),
@@ -97,21 +97,21 @@ class _LineChartViewState extends WidgetState<LineChartView>
           show: true,
         ),
         titlesData: FlTitlesData(
-          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false), axisNameWidget: !S.isNullOrEmpty(widget.model.title) ? Text(widget.model.title!, style: TextStyle(fontSize: 12),): null,),
+          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false), axisNameWidget: !isNullOrEmpty(widget.model.title) ? Text(widget.model.title!, style: TextStyle(fontSize: 12),): null,),
           rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
           leftTitles: AxisTitles(
-              axisNameWidget: !S.isNullOrEmpty(widget.model.yaxis.title) ? Text(widget.model.yaxis.title!, style: TextStyle(fontSize: 12),): null,
+              axisNameWidget: !isNullOrEmpty(widget.model.yaxis.title) ? Text(widget.model.yaxis.title!, style: TextStyle(fontSize: 12),): null,
               sideTitles: SideTitles(
-                interval: S.toDouble(widget.model.yaxis.interval),
-                reservedSize: 30,
+                interval: toDouble(widget.model.yaxis.interval),
+                reservedSize: 24,
                 showTitles: true,
                 //getTitlesWidget: leftTitles,
               )
           ),
           bottomTitles: AxisTitles(
-            axisNameWidget: !S.isNullOrEmpty(widget.model.xaxis.title) ? Text(widget.model.xaxis.title!, style: TextStyle(fontSize: 12),): null,
+            axisNameWidget: !isNullOrEmpty(widget.model.xaxis.title) ? Text(widget.model.xaxis.title!, style: TextStyle(fontSize: 12),): null,
               sideTitles: SideTitles(
-                interval: widget.model.xaxis.type == 'category' || widget.model.xaxis.type == 'raw' ? 1 : S.toDouble(widget.model.xaxis.interval),
+                interval: widget.model.xaxis.type == 'category' || widget.model.xaxis.type == 'raw' ? 1 : toDouble(widget.model.xaxis.interval),
                 showTitles: true,
                 reservedSize: 24,
                 getTitlesWidget: bottomTitles,

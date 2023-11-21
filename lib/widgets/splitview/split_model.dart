@@ -7,7 +7,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/splitview/split_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class SplitModel extends BoxModel
 {
@@ -64,7 +64,7 @@ class SplitModel extends BoxModel
   }
   double get dividerWidth
   {
-    var width = _dividerWidth?.get() ?? (System().useragent == 'desktop' || S.isNullOrEmpty(System().useragent) ? 6.0 : 12.0);
+    var width = _dividerWidth?.get() ?? (System().useragent == 'desktop' || isNullOrEmpty(System().useragent) ? 6.0 : 12.0);
     if (width % 2 != 0) width = width + 1;
     return width;
   }

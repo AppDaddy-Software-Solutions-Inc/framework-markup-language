@@ -5,7 +5,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/datasources/base/model.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class TestDataModel extends DataSourceModel implements IDataSource
 {
@@ -22,7 +22,7 @@ class TestDataModel extends DataSourceModel implements IDataSource
       model = TestDataModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
 
-      var rows = S.toInt(Xml.get(node: xml, tag: 'rows')) ?? 100;
+      var rows = toInt(Xml.get(node: xml, tag: 'rows')) ?? 100;
       model.data = Data.testData(rows);
     }
     catch(e)

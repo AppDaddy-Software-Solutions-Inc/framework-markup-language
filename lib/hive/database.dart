@@ -3,7 +3,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:hive/hive.dart';
 import 'package:fml/eval/eval.dart' as fml_eval;
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class Database
 {
@@ -180,10 +180,10 @@ class Database
       Iterable values = box.values.where((map)
       {
         bool? ok = true;
-        if (!S.isNullOrEmpty(where))
+        if (!isNullOrEmpty(where))
         {
           String? sql = Binding.applyMap(where, map, caseSensitive: false);
-          ok = S.toBool(fml_eval.Eval.evaluate(sql));
+          ok = toBool(fml_eval.Eval.evaluate(sql));
         }
         return ok!;
       });
@@ -196,7 +196,7 @@ class Database
       }
 
       // order by clause
-      if (!S.isNullOrEmpty(orderby))
+      if (!isNullOrEmpty(orderby))
       {
         // get ordre by field and descending clause
         orderby = orderby!.trim();

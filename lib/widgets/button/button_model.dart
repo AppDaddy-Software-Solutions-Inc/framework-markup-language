@@ -4,6 +4,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/event/event.dart' ;
 import 'package:fml/event/handler.dart' ;
 import 'package:flutter/material.dart';
+import 'package:fml/system.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/column/column_model.dart';
 import 'package:fml/widgets/row/row_model.dart';
@@ -13,7 +14,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/button/button_view.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 /// Button [ButtonModel]
 ///
@@ -112,7 +113,7 @@ class ButtonModel extends BoxModel
     String? l = _label?.get();
     try
     {
-      if ((l is String) && (l.contains(':'))) l = S.parseEmojis(l);
+      if ((l is String) && (l.contains(':'))) l = parseEmojis(l);
     }
     catch(e)
     {
@@ -273,17 +274,24 @@ class ButtonModel extends BoxModel
     return await EventHandler(this).execute(_onexit);
   }
 
-  Color getTextColor() {
-    if (context == null) {
-      return Colors.grey;
+  Color getTextColor()
+  {
+    try
+    {
+      if (System().context == null) return Colors.grey;
+      switch (buttontype)
+      {
+        case 'elevated':
+          return Theme.of(System().context!).colorScheme.onPrimary;
+        case 'outlined':
+        case 'text':
+        default:
+          return color ?? Theme.of(System().context!).colorScheme.primary;
+      }
     }
-    switch (buttontype) {
-      case 'elevated':
-        return Theme.of(context!).colorScheme.onPrimary;
-      case 'outlined':
-      case 'text':
-      default:
-        return color ?? Theme.of(context!).colorScheme.primary;
+    catch(e)
+    {
+      return Colors.grey;
     }
   }
 

@@ -11,7 +11,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/widgets/map/map_view.dart';
 import 'package:fml/widgets/map/marker/map_marker_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 enum MapTypes { satellite, hybrid, terrain, roadmap }
 
@@ -150,7 +150,7 @@ class MapModel extends BoxModel
     List<MapMarkerModel> markers = findChildrenOfExactType(MapMarkerModel).cast<MapMarkerModel>();
     for (var model in markers) {
       // data driven prototype location
-      if (!S.isNullOrEmpty(model.datasource))
+      if (!isNullOrEmpty(model.datasource))
       {
         if (!prototypes.containsKey(model.datasource)) prototypes[model.datasource] = [];
 

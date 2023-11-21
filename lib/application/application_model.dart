@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fml/config/config_model.dart';
 import 'package:fml/hive/database.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 import 'package:fml/hive/stash.dart';
 import 'package:fml/mirror/mirror.dart';
 import 'package:fml/observable/binding.dart';
@@ -49,8 +49,8 @@ class ApplicationModel extends WidgetModel {
   bool get secure => scheme == "https" || scheme == "wss";
 
   // forces pages to repaint every visit
-  bool get autoRefresh => S.toBool(settings("REFRESH")) ?? false;
-  bool get singlePage => S.toBool(settings('SINGLE_PAGE_APPLICATION')) ?? false;
+  bool get autoRefresh => toBool(settings("REFRESH")) ?? false;
+  bool get singlePage => toBool(settings('SINGLE_PAGE_APPLICATION')) ?? false;
 
   late String url;
 
@@ -209,6 +209,21 @@ class ApplicationModel extends WidgetModel {
     return true;
   }
 
+  // converts versions of 0.0.0 to a number
+  static int? toVersionNumber(String? version) {
+    if (version == null) return null;
+    try {
+      version = version.replaceAll("+", "");
+      List versionCells = version.split('.');
+      versionCells = versionCells.map((i) => int.parse(i)).toList();
+      return versionCells[0] * 100000 +
+          versionCells[1] * 1000 +
+          versionCells[2];
+    } catch (e) {
+      return null;
+    }
+  }
+
   // loads the config
   Future<ConfigModel?> _getConfig(bool refresh) async {
     ConfigModel? model;
@@ -227,7 +242,7 @@ class ApplicationModel extends WidgetModel {
     // model created?
     if (model != null) {
       // set fml version support level
-      fmlVersion = S.toVersionNumber(model.settings["FML_VERSION"]);
+      fmlVersion = toVersionNumber(model.settings["FML_VERSION"]);
 
       // get the icon
       var icon = model.settings["APP_ICON"];
@@ -310,7 +325,7 @@ class ApplicationModel extends WidgetModel {
     bool ok = true;
     try {
       // key must be supplied
-      if (S.isNullOrEmpty(key)) return ok;
+      if (isNullOrEmpty(key)) return ok;
 
       if (value == null) {
         _stash.map.remove(key);
@@ -407,13 +422,13 @@ class ApplicationModel extends WidgetModel {
     ApplicationModel? app;
     if (map is Map<String, dynamic>) {
       app = ApplicationModel(System(),
-          key: S.mapVal(map, "key"),
-          url: S.mapVal(map, "url"),
-          title: S.mapVal(map, "title"),
-          icon: S.mapVal(map, "icon"),
-          page: S.mapVal(map, "page"),
-          order: S.mapInt(map, "order"),
-          jwt: S.mapVal(map, "jwt"));
+          key: fromMap(map, "key"),
+          url: fromMap(map, "url"),
+          title: fromMap(map, "title"),
+          icon: fromMap(map, "icon"),
+          page: fromMap(map, "page"),
+          order: fromMapAsInt(map, "order"),
+          jwt: fromMap(map, "jwt"));
       await app.initialized;
     }
     return app;

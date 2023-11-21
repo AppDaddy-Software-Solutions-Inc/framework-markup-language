@@ -7,7 +7,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/datasources/http/http.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:fml/hive/form.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class TemplateManager
 {

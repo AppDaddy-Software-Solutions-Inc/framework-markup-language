@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/services.dart';
 import 'package:fml/eval/eval.dart';
-import 'package:fml/helper/common_helpers.dart';
+import 'package:fml/helpers/helpers.dart';
 
 class UpperCaseTextFormatter extends TextInputFormatter {
   @override
@@ -49,7 +49,7 @@ class TextToNumericFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
       TextEditingValue oldValue, TextEditingValue newValue) {
-    if (S.isNullOrEmpty(newValue.text)) {
+    if (isNullOrEmpty(newValue.text)) {
       return TextEditingValue(
           text: newValue.text, selection: newValue.selection);
     }
@@ -57,7 +57,7 @@ class TextToNumericFormatter extends TextInputFormatter {
       return TextEditingValue(
           text: newValue.text, selection: newValue.selection);
     }
-    if (S.isNumber(newValue.text)) {
+    if (isNumeric(newValue.text)) {
       return TextEditingValue(
           text: newValue.text, selection: newValue.selection);
     } else {
@@ -71,7 +71,7 @@ class TextToIntegerFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
       TextEditingValue oldValue, TextEditingValue newValue) {
-    if (S.isNullOrEmpty(newValue.text)) {
+    if (isNullOrEmpty(newValue.text)) {
       return TextEditingValue(
           text: newValue.text, selection: newValue.selection);
     }
@@ -79,9 +79,9 @@ class TextToIntegerFormatter extends TextInputFormatter {
       return TextEditingValue(
           text: newValue.text, selection: newValue.selection);
     }
-    if (S.isNumber(newValue.text)) {
+    if (isNumeric(newValue.text)) {
       return TextEditingValue(
-          text: S.toStr(S.toInt(newValue.text))!, selection: newValue.selection);
+          text: toStr(toInt(newValue.text))!, selection: newValue.selection);
     } else {
       return TextEditingValue(
           text: oldValue.text, selection: oldValue.selection);
@@ -93,13 +93,13 @@ class TextToBooleanFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
       TextEditingValue oldValue, TextEditingValue newValue) {
-    if (S.isNullOrEmpty(newValue.text)) {
+    if (isNullOrEmpty(newValue.text)) {
       return TextEditingValue(
           text: newValue.text, selection: newValue.selection);
     }
-    if (S.isBool(newValue.text)) {
+    if (isBool(newValue.text)) {
       return TextEditingValue(
-          text: S.toStr(S.toInt(newValue.text))!, selection: newValue.selection);
+          text: toStr(toInt(newValue.text))!, selection: newValue.selection);
     } else {
       return TextEditingValue(
           text: oldValue.text, selection: oldValue.selection);
@@ -137,11 +137,11 @@ class CustomFormatter extends TextInputFormatter {
     dynamic v = newValue.text;
     dynamic s = newValue.selection;
 
-    if (S.isNullOrEmpty(v)) return TextEditingValue(text: v, selection: s);
+    if (isNullOrEmpty(v)) return TextEditingValue(text: v, selection: s);
 
     var formatters = format.split(';');
     for (String fmt in formatters) {
-      if (!S.isNullOrEmpty(fmt)) {
+      if (!isNullOrEmpty(fmt)) {
         fmt = fmt.replaceAll('()', '(\'$v\')');
         fmt = fmt.trim();
         v = Eval.evaluate(fmt);
@@ -150,7 +150,7 @@ class CustomFormatter extends TextInputFormatter {
           s = oldValue.selection;
           break;
         } else {
-          v = S.toStr(v);
+          v = toStr(v);
         }
       }
     }

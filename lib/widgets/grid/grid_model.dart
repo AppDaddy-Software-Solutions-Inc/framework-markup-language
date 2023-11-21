@@ -6,6 +6,8 @@ import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/grid/grid_view.dart';
+import 'package:fml/widgets/scroller/iscrollable.dart';
 import 'package:fml/widgets/widget/widget_model.dart'     ;
 import 'package:fml/widgets/grid/grid_view.dart' as grid_view;
 import 'package:fml/widgets/grid/item/grid_item_model.dart';
@@ -15,7 +17,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class GridModel extends BoxModel implements IScrolling
+class GridModel extends BoxModel implements IScrolling, IScrollable
 {
   // full list of data
   // pointing to data broker data
@@ -436,6 +438,50 @@ class GridModel extends BoxModel implements IScrolling
 
     return super.execute(caller, propertyOrFunction, arguments);
   }
+
+  @override
+  void scrollUp(int pixels)
+  {
+    GridViewState? view = findListenerOfExactType(GridViewState);
+    if (view == null) return;
+
+    // already at top
+    if (view.controller.offset == 0) return;
+
+    var to = view.controller.offset - pixels;
+    to = (to < 0) ? 0 : to;
+
+    view.controller.jumpTo(to);
+  }
+
+  @override
+  void scrollDown(int pixels)
+  {
+    GridViewState? view = findListenerOfExactType(GridViewState);
+    if (view == null) return;
+
+    if (view.controller.position.pixels >= view.controller.position.maxScrollExtent) return;
+
+    var to = view.controller.offset + pixels;
+    to = (to > view.controller.position.maxScrollExtent) ? view.controller.position.maxScrollExtent : to;
+
+    view.controller.jumpTo(to);
+  }
+
+  @override
+  Offset? positionOf()
+  {
+    GridViewState? view = findListenerOfExactType(GridViewState);
+    return view?.positionOf();
+  }
+
+  @override
+  Size? sizeOf()
+  {
+    GridViewState? view = findListenerOfExactType(GridViewState);
+    return view?.sizeOf();
+  }
+
 
   @override
   Widget getView({Key? key}) => getReactiveView(grid_view.GridView(this));

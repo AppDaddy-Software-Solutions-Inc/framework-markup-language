@@ -964,6 +964,7 @@ class TableViewState extends WidgetState<TableView>
           width: cell.widthOuter ?? PlutoGridSettings.columnWidth,
           minWidth: PlutoGridSettings.minColumnWidth,
           renderer: builder,
+          enableRowDrag: cell.draggable,
           footerRenderer: footerBuilder);
 
       // add to the column list

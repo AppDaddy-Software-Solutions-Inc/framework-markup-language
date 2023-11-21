@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/widgets/animation/animation_model.dart';
+import 'package:fml/widgets/draggable/draggable_view.dart';
+import 'package:fml/widgets/droppable/droppable_view.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_view.dart';
@@ -439,6 +441,60 @@ class ViewableWidgetModel extends ConstraintModel
 
   bool get enabled => _enabled?.get() ?? true;
 
+  // draggable
+  BooleanObservable? _draggable;
+  set draggable(dynamic v) {
+    if (_draggable != null) {
+      _draggable!.set(v);
+    } else if (v != null) {
+      _draggable = BooleanObservable(Binding.toKey(id, 'draggable'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get draggable => _draggable?.get() ?? false;
+
+  // ondrag
+  StringObservable? _ondrag;
+  set ondrag (dynamic v)
+  {
+    if (_ondrag != null)
+    {
+      _ondrag!.set(v);
+    }
+    else if (v != null)
+    {
+      _ondrag = StringObservable(Binding.toKey(id, 'ondrag'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
+    }
+  }
+  String? get ondrag => _ondrag?.get();
+  
+  // droppable
+  BooleanObservable? _droppable;
+  set droppable(dynamic v) {
+    if (_droppable != null) {
+      _droppable!.set(v);
+    } else if (v != null) {
+      _droppable = BooleanObservable(Binding.toKey(id, 'droppable'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get droppable => _droppable?.get() ?? false;
+  
+  // ondrop
+  StringObservable? _ondrop;
+  set ondrop (dynamic v)
+  {
+    if (_ondrop != null)
+    {
+      _ondrop!.set(v);
+    }
+    else if (v != null)
+    {
+      _ondrop = StringObservable(Binding.toKey(id, 'ondrop'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
+    }
+  }
+  String? get ondrop => _ondrop?.get();
+
+  List<String>? accept;
+  
   ViewableWidgetModel(WidgetModel? parent, String? id, {Scope? scope}) : super(parent, id, scope: scope);
 
   /// Deserializes the FML template elements, attributes and children
@@ -465,7 +521,21 @@ class ViewableWidgetModel extends ConstraintModel
     flexfit   = Xml.get(node: xml, tag: 'flexfit');
     onscreen  = Xml.get(node: xml, tag: 'onscreen');
     offscreen = Xml.get(node: xml, tag: 'offscreen');
-    var tooltip = Xml.attribute(node: xml, tag: 'tip') ?? Xml.attribute(node: xml, tag: 'tootip');
+
+    // drag
+    draggable = Xml.get(node: xml, tag: 'draggable');
+    if (draggable)
+    {
+      ondrag = Xml.get(node: xml, tag: 'onDrag');
+    }
+
+    // drop
+    droppable = Xml.get(node: xml, tag: 'droppable');
+    if (droppable)
+    {
+      ondrop = Xml.get(node: xml, tag: 'onDrop');
+      accept = Xml.attribute(node: xml, tag: 'accept')?.split(',');
+    }
 
     // view sizing and position
     // these are treated differently for efficiency reasons
@@ -476,7 +546,7 @@ class ViewableWidgetModel extends ConstraintModel
     if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewheight'))) _viewHeightObservable = DoubleObservable(key, null, scope: scope);
     if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewx')))      _viewXObservable      = DoubleObservable(key, null, scope: scope);
     if (WidgetModel.isBound(this, key = Binding.toKey(id, 'viewy')))      _viewYObservable      = DoubleObservable(key, null, scope: scope);
-    
+
     // view requires a VisibilityDetector if either onstage or offstage is set or
     // someone is bound to my visibility
     _addVisibilityDetector = visible && (!isNullOrEmpty(onscreen) || !isNullOrEmpty(offscreen) || WidgetModel.isBound(this, Binding.toKey(id, 'visiblearea')) || WidgetModel.isBound(this, Binding.toKey(id, 'visibleheight')) || WidgetModel.isBound(this, Binding.toKey(id, 'visiblewidth')));
@@ -492,6 +562,7 @@ class ViewableWidgetModel extends ConstraintModel
     this.padding = padding;
 
     // tooltip
+    var tooltip = Xml.attribute(node: xml, tag: 'tip') ?? Xml.attribute(node: xml, tag: 'tootip');
     List<TooltipModel> tips = findChildrenOfExactType(TooltipModel).cast<TooltipModel>();
     if (tips.isNotEmpty)
     {
@@ -609,6 +680,18 @@ class ViewableWidgetModel extends ConstraintModel
     // wrap in tooltip?
     if (tipModel != null) view = TooltipView(tipModel!, view);
 
+    // droppable?
+    if (droppable && view is! DroppableView)
+    {
+      view = DroppableView(this, view);
+    }
+
+    // draggable?
+    if (draggable && view is! DraggableView)
+    {
+      view = DraggableView(this, view);
+    }
+
     // wrap animations.
     if (animations != null)
     {
@@ -647,6 +730,37 @@ class ViewableWidgetModel extends ConstraintModel
       viewY      = offset.dy;
     }
   }
+
+  static bool willAccept(ViewableWidgetModel droppable, String? id)
+  {
+    // accept is not defined
+    if (isNullOrEmpty(droppable.accept)) return true;
+
+    // accept is defined and contains the drop id
+    if (droppable.accept!.contains(id))  return true;
+
+    // do not accept this drop
+    return false;
+  }
+
+  static Future<bool> onDrop(BuildContext context, ViewableWidgetModel droppable, ViewableWidgetModel draggable) async
+  {
+    bool ok = true;
+
+    // same object dropped on itself
+    if (draggable == droppable) return ok;
+
+    // fire drop event
+    if (ok) ok = await EventHandler(droppable).execute(draggable._ondrop);
+
+    // fire drag event
+    //if (ok) ok = await draggable.onDrop(context, this);
+
+    return ok;
+  }
+
+  // on drag event
+  static Future<bool> onDrag(BuildContext context, ViewableWidgetModel model) async => await EventHandler(model).execute(model._ondrag);
 
   Widget? getView() => throw("getView() Not Implemented");
 }

@@ -1,16 +1,16 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/droppable/droppable_model.dart';
-import 'package:fml/widgets/draggable/draggable_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/iwidget_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class DroppableView extends StatefulWidget implements IWidgetView
 {
   @override
-  final DroppableModel model;
+  final ViewableWidgetModel model;
+  final Widget view;
 
-  DroppableView(this.model) : super(key: ObjectKey(model));
+  DroppableView(this.model, this.view) : super(key: ObjectKey(model));
 
   @override
   State<DroppableView> createState() => _DroppableViewState();
@@ -28,31 +28,21 @@ class _DroppableViewState extends WidgetState<DroppableView>
     return DragTarget(onWillAccept: onWillAccept, onAccept: onAccept, builder: onBuild);
   }
 
-  bool onWillAccept(DraggableModel? draggable)
+  bool onWillAccept(ViewableWidgetModel? draggable)
   {
     if (draggable == null) return false;
-    return widget.model.willAccept(draggable.id);
+    return ViewableWidgetModel.willAccept(widget.model, draggable.id);
   }
 
-  Future<bool> onAccept(DraggableModel draggable) async
+  Future<bool> onAccept(ViewableWidgetModel draggable) async
   {
     draggable.busy = true;
 
-    //////////
-    /* Drop */
-    //////////
-    bool ok = await widget.model.onDrop(context, draggable);
+    bool ok = await ViewableWidgetModel.onDrop(context, widget.model, draggable);
     setState(() {});
 
     return ok;
   }
 
-  Widget onBuild(context, List<dynamic> cd, List<dynamic> rd)
-  {
-    // build the child views
-    List<Widget> children = widget.model.inflate();
-    if (children.isEmpty) children.add(Container());
-
-    return Stack(children: children);
-  }
+  Widget onBuild(context, List<dynamic> cd, List<dynamic> rd) => widget.view;
 }

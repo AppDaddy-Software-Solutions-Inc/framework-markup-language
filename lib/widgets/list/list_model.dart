@@ -6,6 +6,7 @@ import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/form/form_interface.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/scroller/iscrollable.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/event/handler.dart'            ;
 import 'package:fml/widgets/list/list_view.dart';
@@ -14,7 +15,7 @@ import 'package:fml/widgets/widget/widget_model.dart'     ;
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
+class ListModel extends DecoratedWidgetModel implements IForm, IScrolling, IScrollable
 {
   final HashMap<int,ListItemModel> items = HashMap<int,ListItemModel>();
 
@@ -504,6 +505,49 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
         return true;
     }
     return super.execute(caller, propertyOrFunction, arguments);
+  }
+
+  @override
+  void scrollUp(int pixels)
+  {
+    ListLayoutViewState? view = findListenerOfExactType(ListLayoutViewState);
+    if (view == null) return;
+
+    // already at top
+    if (view.controller.offset == 0) return;
+
+    var to = view.controller.offset - pixels;
+    to = (to < 0) ? 0 : to;
+
+    view.controller.jumpTo(to);
+  }
+
+  @override
+  void scrollDown(int pixels)
+  {
+    ListLayoutViewState? view = findListenerOfExactType(ListLayoutViewState);
+    if (view == null) return;
+
+    if (view.controller.position.pixels >= view.controller.position.maxScrollExtent) return;
+
+    var to = view.controller.offset + pixels;
+    to = (to > view.controller.position.maxScrollExtent) ? view.controller.position.maxScrollExtent : to;
+
+    view.controller.jumpTo(to);
+  }
+
+  @override
+  Offset? positionOf()
+  {
+    ListLayoutViewState? view = findListenerOfExactType(ListLayoutViewState);
+    return view?.positionOf();
+  }
+
+  @override
+  Size? sizeOf()
+  {
+    ListLayoutViewState? view = findListenerOfExactType(ListLayoutViewState);
+    return view?.sizeOf();
   }
 
   @override

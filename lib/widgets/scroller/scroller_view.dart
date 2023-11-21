@@ -23,12 +23,12 @@ class ScrollerView extends StatefulWidget implements IWidgetView
   ScrollerView(this.model) : super(key: ObjectKey(model));
 
   @override
-  State<ScrollerView> createState() => _ScrollerViewState();
+  State<ScrollerView> createState() => ScrollerViewState();
 }
 
-class _ScrollerViewState extends WidgetState<ScrollerView>
+class ScrollerViewState extends WidgetState<ScrollerView>
 {
-  final ScrollController _scrollController = ScrollController();
+  final ScrollController controller = ScrollController();
 
   /// When true the scroller has been scrolled to the end
   bool hasScrolledThrough = false;
@@ -36,7 +36,7 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
   @override
   void initState()
   {
-    _scrollController.addListener(_scrollListener);
+    controller.addListener(_scrollListener);
     super.initState();
   }
 
@@ -68,7 +68,7 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
   {
     // remove event listeners
     EventManager.of(widget.model)?.removeEventListener(EventTypes.scrollto, onScrollTo);
-    _scrollController.dispose();
+    controller.dispose();
     super.dispose();
   }
 
@@ -93,9 +93,9 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
   // Listener for detecting if the scroller has reached the end
   _scrollListener() {
     if (hasScrolledThrough != true &&
-        _scrollController.offset >=
-            _scrollController.position.maxScrollExtent &&
-        !_scrollController.position.outOfRange) {
+        controller.offset >=
+            controller.position.maxScrollExtent &&
+        !controller.position.outOfRange) {
       if (hasScrolledThrough != true) widget.model.scrolledToEnd(context);
       setState(() {
         hasScrolledThrough = true;
@@ -130,8 +130,8 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
             child: Stack(fit: StackFit.loose,
                 children: [
                   view,
-                  ScrollShadow(_scrollController, 'top', Axis.vertical, widget.model.shadowcolor),
-                  ScrollShadow(_scrollController, 'bottom', Axis.vertical, widget.model.shadowcolor),
+                  ScrollShadow(controller, 'top', Axis.vertical, widget.model.shadowcolor),
+                  ScrollShadow(controller, 'bottom', Axis.vertical, widget.model.shadowcolor),
                   SizedBox.expand(),
                 ]));
         break;
@@ -144,8 +144,8 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
             fit: StackFit.loose,
             children: [
               view,
-              ScrollShadow(_scrollController, 'top', Axis.horizontal, widget.model.shadowcolor),
-              ScrollShadow(_scrollController, 'bottom', Axis.horizontal, widget.model.shadowcolor),
+              ScrollShadow(controller, 'top', Axis.horizontal, widget.model.shadowcolor),
+              ScrollShadow(controller, 'bottom', Axis.horizontal, widget.model.shadowcolor),
               SizedBox.expand(),
             ],
           ),
@@ -169,17 +169,17 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
               physics: const AlwaysScrollableScrollPhysics(),
               child: child,
               scrollDirection: direction,
-              controller: _scrollController));
+              controller: controller));
     }
     else
     {
-      view = SingleChildScrollView(child: child, scrollDirection: direction, controller: _scrollController);
+      view = SingleChildScrollView(child: child, scrollDirection: direction, controller: controller);
     }
 
     // add scroll bar
     if (widget.model.scrollbar)
     {
-      view = Container(child: Scrollbar(controller: _scrollController, thumbVisibility: widget.model.scrollbar, child: view));
+      view = Container(child: Scrollbar(controller: controller, thumbVisibility: widget.model.scrollbar, child: view));
       view = Listener(behavior: HitTestBehavior.translucent,
         onPointerSignal: (ps) {},
         child: Stack(fit: StackFit.loose, children: [view, SizedBox.shrink()]));
@@ -195,6 +195,18 @@ class _ScrollerViewState extends WidgetState<ScrollerView>
     view = ScrollConfiguration(behavior: _getScrollBehaviour(direction), child: view);
 
     return view;
+  }
+
+  Offset? positionOf()
+  {
+    RenderBox? render = context.findRenderObject() as RenderBox?;
+    return render?.localToGlobal(Offset.zero);
+  }
+
+  Size? sizeOf()
+  {
+    RenderBox? render = context.findRenderObject() as RenderBox?;
+    return render?.size;
   }
 
   @override

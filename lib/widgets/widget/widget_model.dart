@@ -50,8 +50,6 @@ import 'package:fml/widgets/column/column_model.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/datepicker/datepicker_model.dart';
 import 'package:fml/datasources/http/delete/model.dart';
-import 'package:fml/widgets/draggable/draggable_model.dart';
-import 'package:fml/widgets/droppable/droppable_model.dart';
 import 'package:fml/widgets/editor/editor_model.dart';
 import 'package:fml/widgets/field/field_model.dart';
 import 'package:fml/widgets/filepicker/filepicker_model.dart';
@@ -467,16 +465,6 @@ class WidgetModel implements IDataSourceListener {
 
       case "distinct":
         if (parent is IDataSource) model = Distinct.fromXml(parent, node);
-        break;
-
-      case "drag": // Preferred case.
-      case "draggable": // draggable may be deprecated
-        model = DraggableModel.fromXml(parent, node);
-        break;
-
-      case "drop": // Preferred case.
-      case "droppable": // droppable may be deprecated.
-        model = DroppableModel.fromXml(parent, node);
         break;
 
       case "editor":
@@ -1157,6 +1145,14 @@ class WidgetModel implements IDataSourceListener {
     if ((model.framework == null) || (isNullOrEmpty(key))) return false;
     return model.framework!.bindables!.contains(key);
   }
+
+  dynamic firstAncestorWhere(Function(dynamic element) test)
+  {
+    if (parent == null) return null;
+    if (test(parent)) return parent;
+    return parent?.firstAncestorWhere(test);
+  }
+
 
   dynamic findAncestorOfExactType(Type T,
       {String? id, bool includeSiblings = false}) {

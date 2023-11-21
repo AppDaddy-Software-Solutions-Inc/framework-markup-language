@@ -5,7 +5,6 @@ import 'package:fml/data/dotnotation.dart';
 import 'package:fml/helpers/json.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
-import 'package:xml/xml.dart';
 
 class Data with ListMixin<dynamic>
 {

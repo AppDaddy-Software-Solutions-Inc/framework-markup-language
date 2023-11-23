@@ -157,22 +157,7 @@ class TableModel extends BoxModel implements IForm
     }
   }
   bool get sortable => _sortable?.get() ?? true;
-
-  // allow reordering
-  BooleanObservable? _draggable;
-  set draggable(dynamic v)
-  {
-    if (_draggable != null)
-    {
-      _draggable!.set(v);
-    }
-    else if (v != null)
-    {
-      _draggable = BooleanObservable(Binding.toKey(id, 'draggable'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get draggable => _draggable?.get() ?? true;
-
+  
   // allow resizing
   BooleanObservable? _resizeable;
   set resizeable(dynamic v)
@@ -375,7 +360,6 @@ class TableModel extends BoxModel implements IForm
     // properties
     menu       = Xml.get(node: xml, tag: 'menu');
     sortable   = Xml.get(node: xml, tag: 'sortable');
-    draggable  = Xml.get(node: xml, tag: 'draggable');
     resizeable = Xml.get(node: xml, tag: 'resizeable');
     editable   = Xml.get(node: xml, tag: 'editable');
     shadow     = Xml.get(node: xml, tag: 'shadow');
@@ -445,7 +429,7 @@ class TableModel extends BoxModel implements IForm
       if (isFirstRow && hasDataSource)
       {
         // create the row prototype
-        prototype = WidgetModel.prototypeOf(row.element);
+        prototype = prototypeOf(row.element);
 
         // dispose of the row
         row.dispose();
@@ -733,7 +717,7 @@ class TableModel extends BoxModel implements IForm
 
     // apply prototype conversions
     // and set the main row prototype
-    prototype = WidgetModel.prototypeOf(tr);
+    prototype = prototypeOf(tr);
   }
 
   Future<void> _buildDynamic(Data? data) async

@@ -5,7 +5,7 @@ import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart'        ;
-import 'package:fml/widgets/widget/iwidget_view.dart';
+import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/list/list_model.dart';
 import 'package:fml/widgets/list/item/list_item_view.dart';
@@ -21,21 +21,14 @@ class ListLayoutView extends StatefulWidget implements IWidgetView
   ListLayoutView(this.model) : super(key: ObjectKey(model));
 
   @override
-  State<ListLayoutView> createState() => _ListLayoutViewState();
+  State<ListLayoutView> createState() => ListLayoutViewState();
 }
 
-class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEventScrolling
+class ListLayoutViewState extends WidgetState<ListLayoutView> implements IEventScrolling
 {
   Future<ListModel>? listViewModel;
   Widget? busy;
-  ScrollController? scroller;
-
-  @override
-  void initState()
-  {
-    super.initState();
-    scroller = ScrollController();
-  }
+  final ScrollController controller = ScrollController();
 
   @override
   didChangeDependencies()
@@ -70,7 +63,7 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
     EventManager.of(widget.model)?.removeEventListener(EventTypes.scroll,  onScroll);
     EventManager.of(widget.model)?.removeEventListener(EventTypes.scrollto, onScrollTo);
 
-    scroller?.dispose();
+    controller.dispose();
     super.dispose();
   }
 
@@ -92,7 +85,7 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
   @override
   void onScroll(Event event) async
   {
-    if (scroller != null) scroll(event, scroller);
+    scroll(event, controller);
     event.handled = true;
   }
 
@@ -203,7 +196,7 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
             expandedHeaderPadding: EdgeInsets.all(4),
             children: expansionItems(context)));
     } else {
-      view = ListView.builder(reverse: widget.model.reverse, physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null, scrollDirection: direction, controller: scroller, itemBuilder: itemBuilder);
+      view = ListView.builder(reverse: widget.model.reverse, physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null, scrollDirection: direction, controller: controller, itemBuilder: itemBuilder);
     }
 
 
@@ -213,7 +206,7 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
         child: view);
     }
 
-    if(widget.model.onpulldown != null || widget.model.draggable) {
+    if(widget.model.onpulldown != null || widget.model.allowDrag) {
       view = ScrollConfiguration(
       behavior: ScrollConfiguration.of(context).copyWith(
         dragDevices: {
@@ -240,5 +233,17 @@ class _ListLayoutViewState extends WidgetState<ListLayoutView> implements IEvent
     view = applyConstraints(view, widget.model.tightestOrDefault);
 
     return view;
+  }
+
+  Offset? positionOf()
+  {
+    RenderBox? render = context.findRenderObject() as RenderBox?;
+    return render?.localToGlobal(Offset.zero);
+  }
+
+  Size? sizeOf()
+  {
+    RenderBox? render = context.findRenderObject() as RenderBox?;
+    return render?.size;
   }
 }

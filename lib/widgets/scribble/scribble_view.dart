@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:fml/phrase.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/scribble/scribble_model.dart';
-import 'package:fml/widgets/widget/iwidget_view.dart';
+import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui';

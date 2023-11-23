@@ -11,7 +11,8 @@ import 'package:fml/helpers/helpers.dart';
 typedef Getter = dynamic Function();
 typedef Setter = dynamic Function(dynamic value, {Observable? setter});
 typedef Formatter = dynamic Function(dynamic value);
-typedef OnChangeCallback = void Function (Observable value);
+typedef OnChangeCallback = void Function(Observable value);
+typedef OnGetVariables = Map<String, dynamic> Function();
 
 class ObservableDefault
 {
@@ -356,7 +357,7 @@ class Observable
     return null;
   }
 
-  static dynamic doEvaluation(dynamic expression, {Map<String?, dynamic>? variables})
+  static dynamic doEvaluation(dynamic expression, {Map<String?, dynamic>? variables, Scope? scope})
   {
     dynamic result;
     try
@@ -372,16 +373,16 @@ class Observable
     return result;
   }
 
-  Map<String?, dynamic> getVariables()
+  Map<String, dynamic> getVariables()
   {
-    Map<String?, dynamic> variables =  <String?, dynamic>{};
+    Map<String, dynamic> variables =  <String, dynamic>{};
     if (bindings != null) 
     {
       for (var binding in bindings!) 
       {
         Observable? source;
         if (sources != null) source = sources!.firstWhereOrNull((observable) => observable.key == binding.key);
-        variables[binding.signature] = (source != null)  ? binding.translate(source.get()) : null;
+        variables[binding.signature] = binding.translate(source?.get());
       }
     }
     return variables;

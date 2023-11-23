@@ -15,7 +15,7 @@ import 'package:fml/widgets/table/table_footer_cell_model.dart';
 import 'package:fml/widgets/table/table_header_cell_model.dart';
 import 'package:fml/widgets/table/table_header_group_model.dart';
 import 'package:fml/widgets/table/table_row_cell_model.dart';
-import 'package:fml/widgets/widget/iwidget_view.dart';
+import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/table/table_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
@@ -964,6 +964,7 @@ class TableViewState extends WidgetState<TableView>
           width: cell.widthOuter ?? PlutoGridSettings.columnWidth,
           minWidth: PlutoGridSettings.minColumnWidth,
           renderer: builder,
+          enableRowDrag: cell.draggable,
           footerRenderer: footerBuilder);
 
       // add to the column list

@@ -74,7 +74,7 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
     BarChartSeriesModel? model;
     try
     {
-      xml = WidgetModel.prototypeOf(xml) ?? xml;
+      xml = prototypeOf(xml) ?? xml;
       model = BarChartSeriesModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }

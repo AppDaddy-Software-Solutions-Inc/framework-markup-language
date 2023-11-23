@@ -189,9 +189,8 @@ class ListItemModel extends BoxModel
   }
   String? get title => _title?.get();
 
-  ListItemModel(WidgetModel parent, String?  id, {dynamic data, dynamic selected, dynamic onclick, this.type, dynamic title, dynamic backgroundcolor, dynamic margin}) : super(parent, id, scope: Scope(parent: parent.scope))
+  ListItemModel(WidgetModel parent, String?  id, {dynamic data, dynamic selected, dynamic onclick, this.type, dynamic title, dynamic backgroundcolor, dynamic margin}) : super(parent, id, scope: Scope(parent: parent.scope), data: data)
   {
-    this.data             = data;
     this.backgroundcolor  = backgroundcolor;
     dirty                 = false;
     this.margin           = margin;

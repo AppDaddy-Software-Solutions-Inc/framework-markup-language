@@ -5,7 +5,7 @@ import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/flex/flex_object.dart';
 import 'package:fml/widgets/box/stack/stack_object.dart';
 import 'package:fml/widgets/box/wrap/wrap_object.dart';
-import 'package:fml/widgets/widget/iwidget_view.dart';
+import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
 

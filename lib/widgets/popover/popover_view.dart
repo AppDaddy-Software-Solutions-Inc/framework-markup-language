@@ -2,7 +2,7 @@
 import 'package:fml/widgets/popover/item/popover_item_model.dart';
 import 'package:fml/widgets/popover/popover_model.dart';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/iwidget_view.dart';
+import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class PopoverView extends StatefulWidget implements IWidgetView

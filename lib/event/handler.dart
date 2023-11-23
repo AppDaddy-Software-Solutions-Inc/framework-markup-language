@@ -58,7 +58,7 @@ class EventHandler extends Eval
     if (expression!.contains(thisDot)) expression = expression.replaceAll(thisDot, "${model.id}.");
 
     // get variables from observable
-    Map<String?, dynamic> variables = observable.getVariables();
+    Map<String, dynamic> variables = observable.getVariables();
 
     // evaluate the expression
     expression = await evaluate(expression, variables);

@@ -6,6 +6,7 @@ import 'package:fml/application/application_model.dart';
 import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/navigation/page.dart';
 import 'package:fml/system.dart';
+import 'package:fml/widgets/widget/widget_model_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 
 class Store extends WidgetModel implements IModelListener

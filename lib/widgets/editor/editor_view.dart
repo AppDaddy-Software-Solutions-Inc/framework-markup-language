@@ -2,7 +2,7 @@
 import 'package:flutter_code_editor/flutter_code_editor.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/widgets/editor/editor_model.dart';
-import 'package:fml/widgets/widget/iwidget_view.dart';
+import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_highlight/theme_map.dart';

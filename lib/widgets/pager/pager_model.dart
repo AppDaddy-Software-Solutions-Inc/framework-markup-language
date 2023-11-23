@@ -153,7 +153,7 @@ class PagerModel extends BoxModel
     // set prototype
     if ((!isNullOrEmpty(datasource)) && (pages.isNotEmpty))
     {
-      prototype = WidgetModel.prototypeOf(pages.first.element);
+      prototype = prototypeOf(pages.first.element);
       pages.removeAt(0);
     }
 

@@ -2,11 +2,11 @@
 import 'dart:math';
 import 'dart:ui';
 import 'package:fml/event/manager.dart';
-import 'package:fml/widgets/scroller/scroll_behavior.dart';
+import 'package:fml/widgets/scroller/scroller_behavior.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart';
-import 'package:fml/widgets/widget/iwidget_view.dart';
+import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/scrollshadow/scroll_shadow_view.dart';
 import 'package:fml/widgets/scrollshadow/scroll_shadow_model.dart';
@@ -23,13 +23,15 @@ class GridView extends StatefulWidget implements IWidgetView {
   GridView(this.model) : super(key: ObjectKey(model));
 
   @override
-  State<GridView> createState() => _GridViewState();
+  State<GridView> createState() => GridViewState();
 }
 
-class _GridViewState extends WidgetState<GridView> {
+class GridViewState extends WidgetState<GridView> {
+
   Widget? busy;
   bool startup = true;
-  ScrollController? scroller;
+  final ScrollController controller = ScrollController();
+
   late ScrollShadowModel scrollShadow;
   late double gridWidth;
   late double gridHeight;
@@ -39,10 +41,10 @@ class _GridViewState extends WidgetState<GridView> {
   dynamic direction = Axis.vertical;
 
   @override
-  void initState() {
+  void initState()
+  {
     super.initState();
 
-    scroller = ScrollController();
     // Clean
     widget.model.clean = true;
   }
@@ -91,7 +93,7 @@ class _GridViewState extends WidgetState<GridView> {
     EventManager.of(widget.model)
         ?.removeEventListener(EventTypes.scrollto, onScrollTo);
 
-    scroller?.dispose();
+    controller.dispose();
     super.dispose();
   }
 
@@ -130,7 +132,7 @@ class _GridViewState extends WidgetState<GridView> {
 
   void onScroll(Event event) async
   {
-    if (scroller != null) scroll(event, scroller);
+    scroll(event, controller);
     event.handled = true;
   }
 
@@ -203,9 +205,8 @@ class _GridViewState extends WidgetState<GridView> {
     }
   }
 
-  void afterFirstLayout(BuildContext context) {
-    ScrollController? controller = scroller;
-    if (controller != null) {
+  void afterFirstLayout(BuildContext context)
+  {
       _handleScrollNotification(ScrollUpdateNotification(
           metrics: FixedScrollMetrics(
               minScrollExtent: controller.position.minScrollExtent,
@@ -216,7 +217,6 @@ class _GridViewState extends WidgetState<GridView> {
               axisDirection: controller.position.axisDirection),
           context: context,
           scrollDelta: 0.0));
-    }
   }
 
   onMeasuredItem(Size size, {dynamic data}) {
@@ -320,14 +320,9 @@ class _GridViewState extends WidgetState<GridView> {
     busy ??= BusyModel(widget.model,
         visible: widget.model.busy, observable: widget.model.busyObservable).getView();
 
-
-    //////////
-    /* View */
-    //////////
-
     // Build the Grid Rows
     Widget view = ListView.builder(scrollDirection: direction, physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null,
-        controller: scroller,
+        controller: controller,
         itemBuilder: itemBuilder);
 
     if (widget.model.onpulldown != null)
@@ -335,7 +330,7 @@ class _GridViewState extends WidgetState<GridView> {
       view = RefreshIndicator(onRefresh: () => widget.model.onPull(context), child: view);
     }
 
-    if (widget.model.onpulldown != null || widget.model.draggable) {
+    if (widget.model.onpulldown != null || widget.model.allowDrag) {
       view = ScrollConfiguration(
         behavior: ProperScrollBehavior().copyWith(
           dragDevices: {
@@ -370,5 +365,17 @@ class _GridViewState extends WidgetState<GridView> {
     view = Stack(children: children);
 
     return view;
+  }
+
+  Offset? positionOf()
+  {
+    RenderBox? render = context.findRenderObject() as RenderBox?;
+    return render?.localToGlobal(Offset.zero);
+  }
+
+  Size? sizeOf()
+  {
+    RenderBox? render = context.findRenderObject() as RenderBox?;
+    return render?.size;
   }
 }

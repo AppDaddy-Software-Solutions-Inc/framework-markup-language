@@ -97,21 +97,6 @@ class TableHeaderCellModel extends BoxModel
     }
   }
   bool get sortable => _sortable?.get() ?? hdr?.sortable ?? true;
-  
-  // allow reordering
-  BooleanObservable? _draggable;
-  set draggable(dynamic v)
-  {
-    if (_draggable != null)
-    {
-      _draggable!.set(v);
-    }
-    else if (v != null)
-    {
-      _draggable = BooleanObservable(Binding.toKey(id, 'draggable'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get draggable => _draggable?.get() ?? hdr?.draggable ?? true;
 
   // allow resizing
   BooleanObservable? _resizeable;
@@ -255,7 +240,6 @@ class TableHeaderCellModel extends BoxModel
     // context menu
     menu       = Xml.get(node:xml, tag: 'menu');
     sortable   = Xml.get(node:xml, tag: 'sortable');
-    draggable  = Xml.get(node:xml, tag: 'draggable');
     resizeable = Xml.get(node:xml, tag: 'resizeable');
     editable   = Xml.get(node:xml, tag: 'editable');
     filter     = Xml.get(node:xml, tag: 'filter');

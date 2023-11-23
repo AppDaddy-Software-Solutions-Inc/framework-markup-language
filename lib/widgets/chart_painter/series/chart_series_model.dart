@@ -97,7 +97,7 @@ class ChartPainterSeriesModel extends WidgetModel
     ChartPainterSeriesModel? model;
     try
     {
-      xml = WidgetModel.prototypeOf(xml) ?? xml;
+      xml = prototypeOf(xml) ?? xml;
       model = ChartPainterSeriesModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }

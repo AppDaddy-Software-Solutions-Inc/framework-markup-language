@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/constraints/constraint.dart';
-import 'package:fml/widgets/widget/iwidget_view.dart';
+import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
+import 'package:fml/widgets/widget/widget_model_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 
 abstract class WidgetState<T extends StatefulWidget> extends State<T> implements IModelListener

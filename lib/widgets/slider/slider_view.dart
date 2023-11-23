@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/slider/slider_model.dart';
-import 'package:fml/widgets/widget/iwidget_view.dart';
+import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/widget/widget_state.dart' ;
 import 'package:fml/helpers/helpers.dart';
 

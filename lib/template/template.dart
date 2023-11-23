@@ -7,7 +7,6 @@ import 'package:fml/system.dart';
 import 'package:fml/template/template_manager.dart';
 import 'package:validators/validators.dart';
 import 'package:xml/xml.dart';
-import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/helpers/helpers.dart';
 
 class Template
@@ -199,7 +198,7 @@ class Template
     for (XmlElement element in includes)
     {
       // exclude?
-      bool exclude = WidgetModel.excludeFromTemplate(element, System().scope);
+      bool exclude = excludeFromTemplate(element, System().scope);
       if (!exclude)
       {
         // get template segment

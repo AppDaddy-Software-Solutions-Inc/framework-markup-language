@@ -72,7 +72,7 @@ class PieChartSeriesModel extends ChartPainterSeriesModel
     PieChartSeriesModel? model;
     try
     {
-      xml = WidgetModel.prototypeOf(xml) ?? xml;
+      xml = prototypeOf(xml) ?? xml;
       model = PieChartSeriesModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }

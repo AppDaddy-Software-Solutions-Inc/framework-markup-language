@@ -6,6 +6,7 @@ export 'xml.dart';
 export 'json.dart';
 export 'map.dart';
 export 'color.dart';
+export 'template.dart';
 
 // platform
 export 'package:fml/platform/platform.stub.dart'

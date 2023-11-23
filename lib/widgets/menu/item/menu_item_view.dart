@@ -4,7 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fml/helpers/color.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
-import 'package:fml/widgets/widget/iwidget_view.dart';
+import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/widget/widget_state.dart';
 
@@ -225,4 +225,6 @@ class _MenuItemViewState extends WidgetState<MenuItemView>
     WidgetModel.unfocus();
     widget.model.onClick();
   }
+
+  Widget? getView() => throw("getView() Not Implemented");
 }

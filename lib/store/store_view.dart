@@ -4,6 +4,7 @@ import 'package:fml/observable/observables/boolean.dart';
 import 'package:fml/theme/themenotifier.dart';
 import 'package:fml/navigation/navigation_observer.dart';
 import 'package:fml/widgets/theme/theme_model.dart';
+import 'package:fml/widgets/widget/widget_model_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

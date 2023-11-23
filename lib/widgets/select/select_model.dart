@@ -138,7 +138,7 @@ class SelectModel extends DecoratedInputModel implements IFormField
     // set prototype
     if (!isNullOrEmpty(this.datasource) && options.isNotEmpty)
     {
-      prototype = WidgetModel.prototypeOf(options.first.element);
+      prototype = prototypeOf(options.first.element);
       options.first.dispose();
       options.removeAt(0);
     }

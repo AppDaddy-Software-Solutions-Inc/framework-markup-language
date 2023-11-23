@@ -6,7 +6,7 @@ import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/scroller/scroller_shadow_view.dart';
-import 'package:fml/widgets/widget/iwidget_view.dart';
+import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/event/event.dart' ;
 import 'package:fml/widgets/widget/widget_state.dart';
 
@@ -107,9 +107,9 @@ class ScrollerViewState extends WidgetState<ScrollerView>
   {
     late ScrollBehavior behavior;
 
-    // Check to see if pulldown is enabled, draggable is enabled, or horizontal is enabled (as web doesnt support device horizontal scrolling) and enable
+    // Check to see if pulldown is enabled, allowDrag is enabled, or horizontal is enabled (as web doesnt support device horizontal scrolling) and enable
     // dragging for the scroller.
-    if(widget.model.onpulldown != null || widget.model.draggable == true || direction == Axis.horizontal)
+    if(widget.model.onpulldown != null || widget.model.allowDrag || direction == Axis.horizontal)
     {
       behavior = ScrollConfiguration.of(context).copyWith(scrollbars: widget.model.scrollbar == false ? false : true, dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse});
     }

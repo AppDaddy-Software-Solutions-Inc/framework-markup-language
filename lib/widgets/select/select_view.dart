@@ -2,7 +2,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
-import 'package:fml/widgets/widget/iwidget_view.dart';
+import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/select/select_model.dart';
 import 'package:fml/widgets/option/option_model.dart';

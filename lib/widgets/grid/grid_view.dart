@@ -6,7 +6,7 @@ import 'package:fml/widgets/scroller/scroll_behavior.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart';
-import 'package:fml/widgets/widget/iwidget_view.dart';
+import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/scrollshadow/scroll_shadow_view.dart';
 import 'package:fml/widgets/scrollshadow/scroll_shadow_model.dart';
@@ -320,11 +320,6 @@ class GridViewState extends WidgetState<GridView> {
     busy ??= BusyModel(widget.model,
         visible: widget.model.busy, observable: widget.model.busyObservable).getView();
 
-
-    //////////
-    /* View */
-    //////////
-
     // Build the Grid Rows
     Widget view = ListView.builder(scrollDirection: direction, physics: widget.model.onpulldown != null ? const AlwaysScrollableScrollPhysics() : null,
         controller: controller,
@@ -335,7 +330,7 @@ class GridViewState extends WidgetState<GridView> {
       view = RefreshIndicator(onRefresh: () => widget.model.onPull(context), child: view);
     }
 
-    if (widget.model.onpulldown != null || widget.model.draggable) {
+    if (widget.model.onpulldown != null || widget.model.allowDrag) {
       view = ScrollConfiguration(
         behavior: ProperScrollBehavior().copyWith(
           dragDevices: {

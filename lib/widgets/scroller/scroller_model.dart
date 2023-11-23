@@ -3,7 +3,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/column/column_model.dart';
 import 'package:fml/widgets/row/row_model.dart';
-import 'package:fml/widgets/scroller/iscrollable.dart';
+import 'package:fml/widgets/scroller/scrollable_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -20,6 +20,19 @@ class ScrollerModel extends BoxModel implements IScrollable
 {
   // holds the inner child content
   BoxModel? _body;
+
+  // to be implemented
+  @override
+  bool moreUp = false;
+
+  @override
+  bool moreDown = false;
+
+  @override
+  bool moreLeft = false;
+
+  @override
+  bool moreRight = false;
 
   @override
   set layout(dynamic v)
@@ -85,15 +98,16 @@ class ScrollerModel extends BoxModel implements IScrollable
   }
   dynamic get onpulldown => _onpulldown?.get();
 
-  BooleanObservable? _draggable;
-  set draggable(dynamic v) {
-    if (_draggable != null) {
-      _draggable!.set(v);
+  // allowDrag
+  BooleanObservable? _allowDrag;
+  set allowDrag(dynamic v) {
+    if (_allowDrag != null) {
+      _allowDrag!.set(v);
     } else if (v != null) {
-      _draggable = BooleanObservable(Binding.toKey(id, 'draggable'), v, scope: scope, listener: onPropertyChange);
+      _allowDrag = BooleanObservable(Binding.toKey(id, 'allowdrag'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  bool get draggable => _draggable?.get() ?? false;
+  bool get allowDrag => _allowDrag?.get() ?? false;
 
   ScrollerModel(WidgetModel parent, String? id) : super(parent, id);
 
@@ -127,7 +141,7 @@ class ScrollerModel extends BoxModel implements IScrollable
     onscrolledtoend = Xml.get(node: xml, tag: 'onscrolledtoend');
     shadowcolor     = Xml.get(node: xml, tag: 'shadowcolor');
     onpulldown      = Xml.get(node: xml, tag: 'onpulldown');
-    draggable       = Xml.get(node: xml, tag: 'draggable');
+    allowDrag       = Xml.get(node: xml, tag: 'allowDrag');
   }
 
   Future<bool> scrolledToEnd(BuildContext context) async

@@ -5,7 +5,7 @@ import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart'        ;
-import 'package:fml/widgets/widget/iwidget_view.dart';
+import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/list/list_model.dart';
 import 'package:fml/widgets/list/item/list_item_view.dart';
@@ -206,7 +206,7 @@ class ListLayoutViewState extends WidgetState<ListLayoutView> implements IEventS
         child: view);
     }
 
-    if(widget.model.onpulldown != null || widget.model.draggable) {
+    if(widget.model.onpulldown != null || widget.model.allowDrag) {
       view = ScrollConfiguration(
       behavior: ScrollConfiguration.of(context).copyWith(
         dragDevices: {

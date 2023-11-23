@@ -3,17 +3,33 @@ import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/observable/binding.dart';
+import 'package:fml/observable/observables/boolean.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/scroller/scrollable_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/menu/menu_view.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class MenuModel extends DecoratedWidgetModel
+class MenuModel extends DecoratedWidgetModel implements IScrollable
 {
   static final String typeList   = "list";
   static final String typeButton = "button";
+
+  // to be implemented
+  @override
+  bool moreUp = false;
+
+  @override
+  bool moreDown = false;
+
+  @override
+  bool moreLeft = false;
+
+  @override
+  bool moreRight = false;
 
   // items
   List<MenuItemModel> items = [];
@@ -26,6 +42,17 @@ class MenuModel extends DecoratedWidgetModel
 
   @override
   bool get canExpandInfinitelyHigh => !hasBoundedHeight;
+
+  // allow drag
+  BooleanObservable? _allowDrag;
+  set allowDrag(dynamic v) {
+    if (_allowDrag != null) {
+      _allowDrag!.set(v);
+    } else if (v != null) {
+      _allowDrag = BooleanObservable(Binding.toKey(id, 'allowdrag'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get allowDrag => _allowDrag?.get() ?? false;
 
   MenuModel(WidgetModel? parent, String?  id) : super(parent, id)
   {
@@ -88,6 +115,9 @@ class MenuModel extends DecoratedWidgetModel
     // deserialize 
     super.deserialize(xml);
 
+    // allow mouse drag
+    allowDrag = Xml.get(node: xml, tag: 'allowDrag');
+
     // clear items
     for (var item in items) {
       item.dispose();
@@ -106,7 +136,7 @@ class MenuModel extends DecoratedWidgetModel
     // set prototype
     if ((!isNullOrEmpty(datasource)) && (items.isNotEmpty))
     {
-      prototype = WidgetModel.prototypeOf(items.first.element);
+      prototype = prototypeOf(items.first.element);
       items.removeAt(0);
     }
 
@@ -155,6 +185,49 @@ class MenuModel extends DecoratedWidgetModel
     items.clear();
 
     super.dispose();
+  }
+
+  @override
+  void scrollUp(int pixels)
+  {
+    MenuViewState? view = findListenerOfExactType(MenuViewState);
+    if (view == null) return;
+
+    // already at top
+    if (view.controller.offset == 0) return;
+
+    var to = view.controller.offset - pixels;
+    to = (to < 0) ? 0 : to;
+
+    view.controller.jumpTo(to);
+  }
+
+  @override
+  void scrollDown(int pixels)
+  {
+    MenuViewState? view = findListenerOfExactType(MenuViewState);
+    if (view == null) return;
+
+    if (view.controller.position.pixels >= view.controller.position.maxScrollExtent) return;
+
+    var to = view.controller.offset + pixels;
+    to = (to > view.controller.position.maxScrollExtent) ? view.controller.position.maxScrollExtent : to;
+
+    view.controller.jumpTo(to);
+  }
+
+  @override
+  Offset? positionOf()
+  {
+    MenuViewState? view = findListenerOfExactType(MenuViewState);
+    return view?.positionOf();
+  }
+
+  @override
+  Size? sizeOf()
+  {
+    MenuViewState? view = findListenerOfExactType(MenuViewState);
+    return view?.sizeOf();
   }
 
   @override

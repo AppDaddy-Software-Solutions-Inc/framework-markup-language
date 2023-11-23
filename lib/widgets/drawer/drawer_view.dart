@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
-import 'package:fml/widgets/widget/iwidget_view.dart';
+import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/event/event.dart'             ;
 import 'package:fml/widgets/framework/framework_model.dart' ;
 import 'package:fml/widgets/box/box_view.dart';

@@ -6,7 +6,7 @@ import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/treeview/tree_model.dart';
 import 'package:fml/widgets/treeview/node/tree_node_view.dart';
-import 'package:fml/widgets/widget/iwidget_view.dart';
+import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class TreeView extends StatefulWidget implements IWidgetView

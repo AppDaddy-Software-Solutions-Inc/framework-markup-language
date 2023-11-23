@@ -1,9 +1,10 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
+import 'package:fml/data/data.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/widgets/animation/animation_model.dart';
-import 'package:fml/widgets/draggable/draggable_view.dart';
-import 'package:fml/widgets/droppable/droppable_view.dart';
+import 'package:fml/widgets/dragdrop/draggable_view.dart';
+import 'package:fml/widgets/dragdrop/droppable_view.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_view.dart';
@@ -443,10 +444,14 @@ class ViewableWidgetModel extends ConstraintModel
 
   // draggable
   BooleanObservable? _draggable;
-  set draggable(dynamic v) {
-    if (_draggable != null) {
+  set draggable(dynamic v)
+  {
+    if (_draggable != null)
+    {
       _draggable!.set(v);
-    } else if (v != null) {
+    }
+    else if (v != null)
+    {
       _draggable = BooleanObservable(Binding.toKey(id, 'draggable'), v, scope: scope, listener: onPropertyChange);
     }
   }
@@ -462,7 +467,7 @@ class ViewableWidgetModel extends ConstraintModel
     }
     else if (v != null)
     {
-      _ondrag = StringObservable(Binding.toKey(id, 'ondrag'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
+      _ondrag = StringObservable(Binding.toKey(id, 'ondrag'), v, scope: scope, lazyEval: true);
     }
   }
   String? get ondrag => _ondrag?.get();
@@ -472,7 +477,8 @@ class ViewableWidgetModel extends ConstraintModel
   set droppable(dynamic v) {
     if (_droppable != null) {
       _droppable!.set(v);
-    } else if (v != null) {
+    }
+    else if (v != null) {
       _droppable = BooleanObservable(Binding.toKey(id, 'droppable'), v, scope: scope, listener: onPropertyChange);
     }
   }
@@ -488,14 +494,32 @@ class ViewableWidgetModel extends ConstraintModel
     }
     else if (v != null)
     {
-      _ondrop = StringObservable(Binding.toKey(id, 'ondrop'), v, scope: scope, listener: onPropertyChange, lazyEval: true);
+      _ondrop = StringObservable(Binding.toKey(id, 'ondrop'), v, scope: scope, lazyEval: true);
     }
   }
   String? get ondrop => _ondrop?.get();
 
+  // drop element
+  ListObservable? _drop;
+  set drop(dynamic v)
+  {
+    if (_drop != null)
+    {
+      _drop!.set(v);
+    }
+    else if (v != null)
+    {
+      _drop = ListObservable(Binding.toKey(id, 'drop'), null, scope: scope);
+
+      // set the value
+      _drop!.set(v);
+    }
+  }
+  get drop => _drop?.get();
+
   List<String>? accept;
   
-  ViewableWidgetModel(WidgetModel? parent, String? id, {Scope? scope}) : super(parent, id, scope: scope);
+  ViewableWidgetModel(WidgetModel? parent, String? id, {Scope? scope, dynamic data}) : super(parent, id, scope: scope, data: data);
 
   /// Deserializes the FML template elements, attributes and children
   @override
@@ -535,6 +559,7 @@ class ViewableWidgetModel extends ConstraintModel
     {
       ondrop = Xml.get(node: xml, tag: 'onDrop');
       accept = Xml.attribute(node: xml, tag: 'accept')?.split(',');
+      drop   = Data();
     }
 
     // view sizing and position
@@ -615,21 +640,8 @@ class ViewableWidgetModel extends ConstraintModel
     switch (function)
     {
       case "animate":
-        if (animations != null)
-        {
-          var id = elementAt(arguments, 0);
-          AnimationModel? animation;
-          if (!isNullOrEmpty(id))
-          {
-            var list = animations!.where((animation) => animation.id == id);
-            if (list.isNotEmpty) animation = list.first;
-          }
-          else {
-            animation = animations!.first;
-          }
-          animation?.execute(caller, propertyOrFunction, arguments);
-        }
-        return true;
+        animate(this, caller, propertyOrFunction, arguments);
+        break;
     }
     return super.execute(caller, propertyOrFunction, arguments);
   }
@@ -747,20 +759,50 @@ class ViewableWidgetModel extends ConstraintModel
   {
     bool ok = true;
 
+    // original data
+    var original = droppable.drop;
+
     // same object dropped on itself
     if (draggable == droppable) return ok;
 
-    // fire drop event
-    if (ok) ok = await EventHandler(droppable).execute(draggable._ondrop);
+    // set drop data
+    if (ok) droppable.drop = draggable.data;
 
-    // fire drag event
-    //if (ok) ok = await draggable.onDrop(context, this);
+    // fire onDrop event of the droppable
+    if (ok) ok = await EventHandler(droppable).execute(droppable._ondrop);
+
+    // fire onDrop event of the draggable
+    //if (ok) ok = await EventHandler(draggable).execute(droppable._ondrop);
+
+    // undo data
+    if (!ok) droppable.drop = original;
 
     return ok;
   }
 
   // on drag event
   static Future<bool> onDrag(BuildContext context, ViewableWidgetModel model) async => await EventHandler(model).execute(model._ondrag);
+
+  // animate the model
+  static bool animate(ViewableWidgetModel model, String caller, String propertyOrFunction, List<dynamic> arguments)
+  {
+    var animations = model.animations;
+    if (animations != null)
+    {
+      var id = elementAt(arguments, 0);
+      AnimationModel? animation;
+      if (!isNullOrEmpty(id))
+      {
+        var list = animations.where((animation) => animation.id == id);
+        if (list.isNotEmpty) animation = list.first;
+      }
+      else {
+        animation = animations.first;
+      }
+      animation?.execute(caller, propertyOrFunction, arguments);
+    }
+    return true;
+  }
 
   Widget? getView() => throw("getView() Not Implemented");
 }

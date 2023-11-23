@@ -155,7 +155,7 @@ class MapModel extends BoxModel
         if (!prototypes.containsKey(model.datasource)) prototypes[model.datasource] = [];
 
         // build prototype
-        var prototype = WidgetModel.prototypeOf(model.element) ?? model.element;
+        var prototype = prototypeOf(model.element) ?? model.element;
 
         // add location model
         if (prototype != null)

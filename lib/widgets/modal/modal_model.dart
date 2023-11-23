@@ -141,21 +141,6 @@ class ModalModel extends BoxModel
   }
   bool get closeable => _closeable?.get() ?? true;
 
-  // draggable 
-  BooleanObservable? _draggable;
-  set draggable (dynamic v)
-  {
-    if (_draggable != null)
-    {
-      _draggable!.set(v);
-    }
-    else if (v != null)
-    {
-      _draggable = BooleanObservable(Binding.toKey(id, 'draggable'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get draggable => _draggable?.get() ?? true;
-
   bool get minimized
   {
     var view = findListenerOfExactType(ModalViewState);
@@ -221,7 +206,6 @@ class ModalModel extends BoxModel
     dismissable  = Xml.get(node: xml, tag: 'dismissable');
     resizeable   = Xml.get(node: xml, tag: 'resizeable');
     closeable    = Xml.get(node: xml, tag: 'closable');
-    draggable    = Xml.get(node: xml, tag: 'draggable');
     modal        = Xml.get(node: xml, tag: 'modal');
   }
 
@@ -333,4 +317,18 @@ class ModalModel extends BoxModel
   /// Returns the [MODAL] View
   @override
   Widget getView({Key? key}) => getReactiveView(ModalView(this));
+
+  @override
+  Widget getReactiveView(Widget view)
+  {
+    // wrap animations.
+    if (animations != null)
+    {
+      var animations = this.animations!.reversed;
+      for (var model in animations) {
+        view = model.getAnimatedView(view);
+      }
+    }
+    return view;
+  }
 }

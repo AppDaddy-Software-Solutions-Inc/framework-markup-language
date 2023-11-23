@@ -1,13 +1,14 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:flutter/gestures.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/event/event.dart' ;
 import 'package:flutter/material.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
-import 'package:fml/widgets/widget/iwidget_view.dart';
+import 'package:fml/widgets/scroller/scroll_behavior.dart';
+import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/menu/menu_model.dart';
-import 'package:fml/widgets/menu/item/menu_item_view.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class MenuView extends StatefulWidget implements IWidgetView
@@ -17,21 +18,14 @@ class MenuView extends StatefulWidget implements IWidgetView
   MenuView(this.model);
 
   @override
-  State<MenuView> createState() => _MenuViewState();
+  State<MenuView> createState() => MenuViewState();
 }
 
-class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling
+class MenuViewState extends WidgetState<MenuView> implements IEventScrolling
 {
   Widget? busy;
-  ScrollController? vScroller;
-
-  @override
-  void initState()
-  {
-    super.initState();
-    vScroller = ScrollController();
-  }
-
+  final ScrollController controller = ScrollController();
+  
   @override
   didChangeDependencies()
   {
@@ -61,7 +55,7 @@ class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling
     // remove event listeners
     EventManager.of(widget.model)?.removeEventListener(EventTypes.scroll, onScroll);
 
-    vScroller?.dispose();
+    controller.dispose();
 
     super.dispose();
   }
@@ -69,7 +63,7 @@ class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling
   @override
   void onScroll(Event event) async
   {
-    if (vScroller != null) scroll(event, vScroller);
+    scroll(event, controller);
     event.handled = true;
   }
 
@@ -96,12 +90,11 @@ class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling
   }
 
   Widget _buildMenuItems(double width) {
-    List<MenuItemView> tilesList = []; //list of tiles
+    List<Widget> tilesList = []; //list of tiles
     List<Widget> tileRows = []; // row of tiles from list
     List<Row> rowsList = []; // list of rows containing tiles
     for (var item in widget.model.items) {
-      MenuItemView tile = MenuItemView(item);
-      tilesList.add(tile);
+      tilesList.add(item.getView());
     }
     double menuColPadding = isMobile ? 0.0 : 25.0;
     double tilePadding = isMobile ? 5.0 : 0;
@@ -144,6 +137,18 @@ class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling
     );
   }
 
+  Offset? positionOf()
+  {
+    RenderBox? render = context.findRenderObject() as RenderBox?;
+    return render?.localToGlobal(Offset.zero);
+  }
+
+  Size? sizeOf()
+  {
+    RenderBox? render = context.findRenderObject() as RenderBox?;
+    return render?.size;
+  }
+
   @override
   Widget build(BuildContext context)
   {
@@ -155,14 +160,31 @@ class _MenuViewState extends WidgetState<MenuView> implements IEventScrolling
     /// Busy / Loading Indicator
     busy ??= BusyModel(widget.model, visible: widget.model.busy, observable: widget.model.busyObservable).getView();
 
-    //////////
-    /* View */
-    //////////
+    // view
     Widget view = Stack(children: [
       _buildMenuItems(widget.model.myMaxWidthOrDefault),
       Center(child: busy)
     ]);
 
-    return Container(color: widget.model.color ?? Theme.of(context).colorScheme.background, child: Center(child: SingleChildScrollView(controller: vScroller, child: view)));
+    // scrollable
+    view = SingleChildScrollView(controller: controller, child: view);
+    
+    // allow mouse drag
+    if (widget.model.allowDrag)
+    {
+      view = ScrollConfiguration(
+        behavior: ProperScrollBehavior().copyWith(
+          dragDevices: {
+            PointerDeviceKind.touch,
+            PointerDeviceKind.mouse,
+          },
+        ),
+        child: view,
+      );
+    } else {
+      view = ScrollConfiguration(behavior: ProperScrollBehavior(), child: view);
+    }
+
+    return Container(color: widget.model.color ?? Theme.of(context).colorScheme.background, child: Center(child: view));
   }
 }

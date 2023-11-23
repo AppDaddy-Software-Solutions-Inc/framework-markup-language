@@ -5,7 +5,7 @@ import 'package:fml/widgets/icon/icon_model.dart';
 import 'package:fml/widgets/icon/icon_view.dart';
 import 'package:fml/widgets/video/ivideo_player.dart';
 import 'package:fml/widgets/video/video_model.dart';
-import 'package:fml/widgets/widget/iwidget_view.dart';
+import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:video_player/video_player.dart';

@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
-import 'package:fml/widgets/widget/iwidget_view.dart';
+import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class DroppableView extends StatefulWidget implements IWidgetView
@@ -36,11 +36,7 @@ class _DroppableViewState extends WidgetState<DroppableView>
 
   Future<bool> onAccept(ViewableWidgetModel draggable) async
   {
-    draggable.busy = true;
-
     bool ok = await ViewableWidgetModel.onDrop(context, widget.model, draggable);
-    setState(() {});
-
     return ok;
   }
 

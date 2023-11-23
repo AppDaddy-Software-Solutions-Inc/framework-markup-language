@@ -6,4 +6,9 @@ abstract class IScrollable
   void scrollDown(int pixels);
   Offset? positionOf();
   Size? sizeOf();
+
+  bool moreUp = false;
+  bool moreDown = false;
+  bool moreLeft = false;
+  bool moreRight = false;
 }

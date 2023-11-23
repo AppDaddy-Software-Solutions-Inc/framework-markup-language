@@ -7,7 +7,7 @@ import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/grid/grid_view.dart';
-import 'package:fml/widgets/scroller/iscrollable.dart';
+import 'package:fml/widgets/scroller/scrollable_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart'     ;
 import 'package:fml/widgets/grid/grid_view.dart' as grid_view;
 import 'package:fml/widgets/grid/item/grid_item_model.dart';
@@ -17,7 +17,7 @@ import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class GridModel extends BoxModel implements IScrolling, IScrollable
+class GridModel extends BoxModel implements IScrollable
 {
   // full list of data
   // pointing to data broker data
@@ -103,7 +103,7 @@ class GridModel extends BoxModel implements IScrolling, IScrollable
     }
   }
   @override
-  bool? get moreUp =>  _moreUp?.get();
+  bool get moreUp =>  _moreUp?.get() ?? false;
 
   //////////////
   /* moreDown */
@@ -123,7 +123,7 @@ class GridModel extends BoxModel implements IScrolling, IScrollable
     }
   }
   @override
-  bool? get moreDown => _moreDown?.get();
+  bool get moreDown => _moreDown?.get() ?? false;
 
   ///////////
   /* moreLeft */
@@ -143,7 +143,7 @@ class GridModel extends BoxModel implements IScrolling, IScrollable
     }
   }
   @override
-  bool? get moreLeft => _moreLeft?.get();
+  bool get moreLeft => _moreLeft?.get() ?? false;
 
   ///////////
   /* moreRight */
@@ -163,7 +163,7 @@ class GridModel extends BoxModel implements IScrolling, IScrollable
     }
   }
   @override
-  bool? get moreRight =>_moreRight?.get();
+  bool get moreRight =>_moreRight?.get() ?? false;
 
   ///////////////
   /* Direction */
@@ -196,19 +196,20 @@ class GridModel extends BoxModel implements IScrolling, IScrollable
   }
   dynamic get onpulldown => _onpulldown?.get();
 
-  BooleanObservable? _draggable;
-  set draggable(dynamic v) {
-    if (_draggable != null) {
-      _draggable!.set(v);
+  // allow drag
+  BooleanObservable? _allowDrag;
+  set allowDrag(dynamic v) {
+    if (_allowDrag != null) {
+      _allowDrag!.set(v);
     } else if (v != null) {
-      _draggable = BooleanObservable(Binding.toKey(id, 'draggable'), v, scope: scope, listener: onPropertyChange);
+      _allowDrag = BooleanObservable(Binding.toKey(id, 'allowdrag'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  bool get draggable => _draggable?.get() ?? false;
+  bool get allowDrag => _allowDrag?.get() ?? false;
 
   Size? size;
 
-  GridModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic direction, dynamic scrollShadows, dynamic scrollButtons, dynamic onpulldown, dynamic draggable}) : super(parent, id)
+  GridModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic direction, dynamic scrollShadows, dynamic scrollButtons, dynamic onpulldown, dynamic allowDrag}) : super(parent, id)
   {
     // instantiate busy observable
     busy = false;
@@ -216,7 +217,7 @@ class GridModel extends BoxModel implements IScrolling, IScrollable
     if (width  != null) this.width  = width;
     if (height != null) this.height = height;
 
-    this.draggable = draggable;
+    this.allowDrag = allowDrag;
     this.onpulldown    = onpulldown;
     this.direction = direction;
     this.scrollShadows = scrollShadows;
@@ -252,8 +253,8 @@ class GridModel extends BoxModel implements IScrolling, IScrollable
     // properties
     direction      = Xml.get(node: xml, tag: 'direction');
     scrollShadows  = Xml.get(node: xml, tag: 'scrollshadows');
-    onpulldown  = Xml.get(node: xml, tag: 'onpulldown');
-    draggable = Xml.get(node: xml, tag: 'draggable');
+    onpulldown     = Xml.get(node: xml, tag: 'onpulldown');
+    allowDrag      = Xml.get(node: xml, tag: 'allowDrag');
 
     // clear items
     items.forEach((_,item) => item.dispose());
@@ -270,7 +271,7 @@ class GridModel extends BoxModel implements IScrolling, IScrollable
     // set prototype
     if (!isNullOrEmpty(datasource) && items.isNotEmpty)
     {
-      prototype = WidgetModel.prototypeOf(items.first.element);
+      prototype = prototypeOf(items.first.element);
       items.removeAt(0);
     }
 

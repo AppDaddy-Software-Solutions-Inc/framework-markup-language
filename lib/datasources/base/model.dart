@@ -941,7 +941,7 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
 
     // move element in the list
       case "move":
-        return await move(elementAt(arguments, 0), toInt(elementAt(arguments, 1)));
+        return await move(elementAt(arguments, 0), elementAt(arguments, 1));
 
       // foreach element in the list
       case "foreach":

@@ -1,9 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/scroller/iscrollable.dart';
+import 'package:fml/widgets/scroller/scrollable_interface.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
-import 'package:fml/widgets/widget/iwidget_view.dart';
+import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:flutter/services.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 
@@ -23,6 +23,9 @@ class _DraggableViewState extends WidgetState<DraggableView>
 {
   Timer? autoscroll;
 
+  double? width;
+  double? height;
+
   bool dragging = false;
   SystemMouseCursor cursor = SystemMouseCursors.grab;
 
@@ -38,6 +41,8 @@ class _DraggableViewState extends WidgetState<DraggableView>
   {
     dragging = false;
     super.didChangeDependencies();
+    width  = null;
+    height = null;
   }
 
   @override
@@ -45,14 +50,28 @@ class _DraggableViewState extends WidgetState<DraggableView>
   {
     super.didUpdateWidget(oldWidget);
     dragging = false;
+    width  = null;
+    height = null;
   }
-  
+
   @override
-  Widget build(BuildContext context)
+  Widget build(BuildContext context) => LayoutBuilder(builder: builder);
+
+  Widget builder(BuildContext context, BoxConstraints constraints)
   {
+    width  ??= constraints.maxWidth;
+    height ??= constraints.maxHeight;
+
+    var child = widget.view;
+    if (width != null && height != null)
+    {
+      child = ConstrainedBox(child: widget.view, constraints: BoxConstraints(maxWidth: width!, maxHeight: height!));
+    }
+
+    // build the draggable
     var draggable = Draggable(
         child: widget.view,
-        feedback: widget.view,
+        feedback: child,
         data: widget.model,
         onDragCompleted: onDragCompleted,
         onDragStarted: onDragStarted,

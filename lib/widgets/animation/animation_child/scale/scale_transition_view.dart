@@ -6,6 +6,7 @@ import 'package:fml/helpers/string.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/animation/animation_helper.dart';
 import 'package:fml/widgets/animation/animation_child/scale/scale_transition_model.dart';
+import 'package:fml/widgets/widget/widget_model_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 
 /// Animation View

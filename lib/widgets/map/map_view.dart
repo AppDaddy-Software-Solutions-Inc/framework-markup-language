@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/map/map_model.dart';
-import 'package:fml/widgets/widget/iwidget_view.dart';
+import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/map/marker/map_marker_model.dart';

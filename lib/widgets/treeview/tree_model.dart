@@ -92,7 +92,7 @@ class TreeModel extends BoxModel
     // build the prototype
     if (datasource != null && nodes.isNotEmpty)
     {
-      prototype = WidgetModel.prototypeOf(nodes.first.element);
+      prototype = prototypeOf(nodes.first.element);
       nodes.removeAt(0);
     }
   }

@@ -2,7 +2,7 @@
 import 'package:fml/system.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/tooltip/v1/tooltip_model.dart';
-import 'package:fml/widgets/widget/iwidget_view.dart';
+import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 

@@ -3,6 +3,7 @@ import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/menu/item/menu_item_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/event/event.dart' ;
@@ -241,9 +242,8 @@ class MenuItemModel extends DecoratedWidgetModel
     dynamic radius,
     dynamic enabled,
     String? image
-  }) : super(parent, id, scope: Scope(parent: parent.scope))
+  }) : super(parent, id, scope: Scope(parent: parent.scope), data: data)
   {
-    this.data             = data;
     this.title            = title;
     this.subtitle         = subtitle;
     this.url              = url;
@@ -329,4 +329,7 @@ class MenuItemModel extends DecoratedWidgetModel
     // Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
   }
+
+  @override
+  Widget getView({Key? key}) => getReactiveView(MenuItemView(this));
 }

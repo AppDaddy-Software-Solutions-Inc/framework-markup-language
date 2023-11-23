@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/widget/iwidget_view.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
+import 'package:fml/widgets/widget/widget_view_interface.dart';
+import 'package:fml/widgets/widget/widget_model_interface.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/animation/animation_model.dart' as base_animation_model;
 import 'package:fml/event/event.dart';

@@ -6,7 +6,7 @@ import 'package:fml/phrase.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:fml/widgets/pager/page/page_model.dart';
-import 'package:fml/widgets/widget/iwidget_view.dart';
+import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/system.dart';

@@ -3,6 +3,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/column/column_model.dart';
 import 'package:fml/widgets/row/row_model.dart';
+import 'package:fml/widgets/scroller/scroller_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -15,10 +16,23 @@ import 'package:fml/helpers/helpers.dart';
 /// Button [ScrollerModel]
 ///
 /// Defines the properties used to build a [SCROLLER.ScrollerView]
-class ScrollerModel extends BoxModel
+class ScrollerModel extends BoxModel implements IScrollable
 {
   // holds the inner child content
   BoxModel? _body;
+
+  // to be implemented
+  @override
+  bool moreUp = false;
+
+  @override
+  bool moreDown = false;
+
+  @override
+  bool moreLeft = false;
+
+  @override
+  bool moreRight = false;
 
   @override
   set layout(dynamic v)
@@ -84,15 +98,16 @@ class ScrollerModel extends BoxModel
   }
   dynamic get onpulldown => _onpulldown?.get();
 
-  BooleanObservable? _draggable;
-  set draggable(dynamic v) {
-    if (_draggable != null) {
-      _draggable!.set(v);
+  // allowDrag
+  BooleanObservable? _allowDrag;
+  set allowDrag(dynamic v) {
+    if (_allowDrag != null) {
+      _allowDrag!.set(v);
     } else if (v != null) {
-      _draggable = BooleanObservable(Binding.toKey(id, 'draggable'), v, scope: scope, listener: onPropertyChange);
+      _allowDrag = BooleanObservable(Binding.toKey(id, 'allowdrag'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  bool get draggable => _draggable?.get() ?? false;
+  bool get allowDrag => _allowDrag?.get() ?? false;
 
   ScrollerModel(WidgetModel parent, String? id) : super(parent, id);
 
@@ -126,7 +141,7 @@ class ScrollerModel extends BoxModel
     onscrolledtoend = Xml.get(node: xml, tag: 'onscrolledtoend');
     shadowcolor     = Xml.get(node: xml, tag: 'shadowcolor');
     onpulldown      = Xml.get(node: xml, tag: 'onpulldown');
-    draggable       = Xml.get(node: xml, tag: 'draggable');
+    allowDrag       = Xml.get(node: xml, tag: 'allowDrag');
   }
 
   Future<bool> scrolledToEnd(BuildContext context) async
@@ -160,8 +175,51 @@ class ScrollerModel extends BoxModel
     return _body!;
   }
 
- @override
- Widget getView({Key? key}) => getReactiveView(ScrollerView(this));
+  @override
+  void scrollUp(int pixels)
+  {
+    ScrollerViewState? view = findListenerOfExactType(ScrollerViewState);
+    if (view == null) return;
+
+    // already at top
+    if (view.controller.offset == 0) return;
+
+    var to = view.controller.offset - pixels;
+    to = (to < 0) ? 0 : to;
+
+    view.controller.jumpTo(to);
+  }
+
+  @override
+  void scrollDown(int pixels)
+  {
+    ScrollerViewState? view = findListenerOfExactType(ScrollerViewState);
+    if (view == null) return;
+
+    if (view.controller.position.pixels >= view.controller.position.maxScrollExtent) return;
+
+    var to = view.controller.offset + pixels;
+    to = (to > view.controller.position.maxScrollExtent) ? view.controller.position.maxScrollExtent : to;
+
+    view.controller.jumpTo(to);
+  }
+
+  @override
+  Offset? positionOf()
+  {
+    ScrollerViewState? view = findListenerOfExactType(ScrollerViewState);
+    return view?.positionOf();
+  }
+
+  @override
+  Size? sizeOf()
+  {
+    ScrollerViewState? view = findListenerOfExactType(ScrollerViewState);
+    return view?.sizeOf();
+  }
+
+  @override
+  Widget getView({Key? key}) => getReactiveView(ScrollerView(this));
 }
 
 

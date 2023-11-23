@@ -41,7 +41,7 @@ class PrototypeModel extends BoxModel
     // get the data source
     datasource = Xml.attribute(node: xml, tag: 'data') ?? Xml.attribute(node: xml, tag: 'datasource');
 
-    // thsi is necessary since lower level child nodes may have
+    // this is necessary since lower level child nodes may have
     // which use the proptotypeOf() method and change
     // necessary "data.xxx" references.
     super.deserialize(xml);
@@ -58,7 +58,7 @@ class PrototypeModel extends BoxModel
     Xml.removeAttribute(xml, "datasource");
 
     // build the prototype
-    prototype = WidgetModel.prototypeOf(xml);
+    prototype = prototypeOf(xml);
 
     // dispose of all children
     children?.forEach((child) => child.dispose());

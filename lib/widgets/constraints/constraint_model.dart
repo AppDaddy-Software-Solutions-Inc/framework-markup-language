@@ -15,7 +15,7 @@ import 'package:xml/xml.dart';
 
 class ConstraintModel extends WidgetModel
 {
-  ConstraintModel(WidgetModel? parent, String? id, {Scope? scope}) : super(parent, id, scope: scope);
+  ConstraintModel(WidgetModel? parent, String? id, {Scope? scope, dynamic data}) : super(parent, id, scope: scope, data: data);
 
   final Constraints system = Constraints();
 

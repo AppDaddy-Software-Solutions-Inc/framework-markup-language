@@ -379,7 +379,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
     // set prototype
     if (!isNullOrEmpty(datasource) && options.isNotEmpty)
     {
-      prototype = WidgetModel.prototypeOf(options.first.element);
+      prototype = prototypeOf(options.first.element);
       options.removeAt(0);
     }
 

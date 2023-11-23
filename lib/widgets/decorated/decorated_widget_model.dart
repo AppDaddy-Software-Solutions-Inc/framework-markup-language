@@ -87,7 +87,7 @@ class DecoratedWidgetModel extends ViewableWidgetModel
   }
   double? get opacity => _opacity?.get();
 
-  DecoratedWidgetModel(WidgetModel? parent, String? id, {Scope?  scope}) : super(parent, id, scope: scope);
+  DecoratedWidgetModel(WidgetModel? parent, String? id, {Scope?  scope, dynamic data}) : super(parent, id, scope: scope, data: data);
 
   /// Deserializes the FML template elements, attributes and children
   @override

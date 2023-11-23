@@ -6,6 +6,7 @@ import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/form/form_interface.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/scroller/scroller_interface.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/event/handler.dart'            ;
 import 'package:fml/widgets/list/list_view.dart';
@@ -14,7 +15,7 @@ import 'package:fml/widgets/widget/widget_model.dart'     ;
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
+class ListModel extends DecoratedWidgetModel implements IForm, IScrollable
 {
   final HashMap<int,ListItemModel> items = HashMap<int,ListItemModel>();
 
@@ -88,7 +89,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     }
   }
   @override
-  bool? get moreUp => _moreUp?.get();
+  bool get moreUp => _moreUp?.get() ?? false;
 
   // moreDown 
   BooleanObservable? _moreDown;
@@ -105,7 +106,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     }
   }
   @override
-  bool? get moreDown => _moreDown?.get();
+  bool get moreDown => _moreDown?.get() ?? false;
 
   // moreLeft 
   BooleanObservable? _moreLeft;
@@ -122,7 +123,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     }
   }
   @override
-  bool? get moreLeft => _moreLeft?.get();
+  bool get moreLeft => _moreLeft?.get() ?? false;
 
   // moreRight 
   BooleanObservable? _moreRight;
@@ -139,7 +140,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     }
   }
   @override
-  bool? get moreRight => _moreRight?.get();
+  bool get moreRight => _moreRight?.get() ?? false;
 
   // dirty 
   @override
@@ -241,15 +242,16 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
   dynamic get onpulldown => _onpulldown?.get();
 
-  BooleanObservable? _draggable;
-  set draggable(dynamic v) {
-    if (_draggable != null) {
-      _draggable!.set(v);
+  // allowDrag
+  BooleanObservable? _allowDrag;
+  set allowDrag(dynamic v) {
+    if (_allowDrag != null) {
+      _allowDrag!.set(v);
     } else if (v != null) {
-      _draggable = BooleanObservable(Binding.toKey(id, 'draggable'), v, scope: scope, listener: onPropertyChange);
+      _allowDrag = BooleanObservable(Binding.toKey(id, 'allowdrag'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  bool get draggable => _draggable?.get() ?? false;
+  bool get allowDrag => _allowDrag?.get() ?? false;
 
   BooleanObservable? _reverse;
   set reverse(dynamic v) {
@@ -261,14 +263,14 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
   }
   bool get reverse => _reverse?.get() ?? false;
 
-  ListModel(WidgetModel? parent, String? id, {dynamic direction, dynamic reverse, dynamic draggable, dynamic scrollShadows, dynamic onpulldown}) : super(parent, id)
+  ListModel(WidgetModel? parent, String? id, {dynamic direction, dynamic reverse, dynamic allowDrag, dynamic scrollShadows, dynamic onpulldown}) : super(parent, id)
   {
     // instantiate busy observable
     busy = false;
 
     this.direction = direction;
     this.reverse = reverse;
-    this.draggable = draggable;
+    this.allowDrag = allowDrag;
     this.onpulldown = onpulldown;
     this.scrollShadows = scrollShadows;
     scrollButtons = scrollButtons;
@@ -306,7 +308,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
 
     // properties
     direction  = Xml.get(node: xml, tag: 'direction');
-    draggable = Xml.get(node: xml, tag: 'draggable');
+    allowDrag = Xml.get(node: xml, tag: 'allowDrag');
     scrollShadows = Xml.get(node: xml, tag: 'scrollshadows');
     scrollButtons = Xml.get(node: xml, tag: 'scrollbuttons');
     collapsed = Xml.get(node: xml, tag: 'collapsed');
@@ -329,7 +331,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
     // set prototype
     if ((!isNullOrEmpty(datasource)) && (items.isNotEmpty))
     {
-      prototype = WidgetModel.prototypeOf(items.first.element);
+      prototype = prototypeOf(items.first.element);
       items.removeAt(0);
     }
 
@@ -383,11 +385,11 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
   {
     busy = true;
 
-      clean = true;
+    clean = true;
 
-      // clear items
-      items.forEach((_,item) => item.dispose());
-      items.clear();
+    // clear items
+    items.forEach((_,item) => item.dispose());
+    items.clear();
 
     if (list != null)
     {
@@ -504,6 +506,49 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrolling
         return true;
     }
     return super.execute(caller, propertyOrFunction, arguments);
+  }
+
+  @override
+  void scrollUp(int pixels)
+  {
+    ListLayoutViewState? view = findListenerOfExactType(ListLayoutViewState);
+    if (view == null) return;
+
+    // already at top
+    if (view.controller.offset == 0) return;
+
+    var to = view.controller.offset - pixels;
+    to = (to < 0) ? 0 : to;
+
+    view.controller.jumpTo(to);
+  }
+
+  @override
+  void scrollDown(int pixels)
+  {
+    ListLayoutViewState? view = findListenerOfExactType(ListLayoutViewState);
+    if (view == null) return;
+
+    if (view.controller.position.pixels >= view.controller.position.maxScrollExtent) return;
+
+    var to = view.controller.offset + pixels;
+    to = (to > view.controller.position.maxScrollExtent) ? view.controller.position.maxScrollExtent : to;
+
+    view.controller.jumpTo(to);
+  }
+
+  @override
+  Offset? positionOf()
+  {
+    ListLayoutViewState? view = findListenerOfExactType(ListLayoutViewState);
+    return view?.positionOf();
+  }
+
+  @override
+  Size? sizeOf()
+  {
+    ListLayoutViewState? view = findListenerOfExactType(ListLayoutViewState);
+    return view?.sizeOf();
   }
 
   @override

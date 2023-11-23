@@ -4,7 +4,7 @@ import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/pager/page/page_model.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
-import 'package:fml/widgets/widget/iwidget_view.dart';
+import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/pager/pager_model.dart';
 import 'package:fml/helpers/helpers.dart';

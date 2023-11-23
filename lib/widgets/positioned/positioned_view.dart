@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/widgets/box/box_data.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/stack/stack_model.dart';
-import 'package:fml/widgets/widget/iwidget_view.dart';
+import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'positioned_model.dart';
 

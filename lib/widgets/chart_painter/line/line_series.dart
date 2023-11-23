@@ -70,7 +70,7 @@ class LineChartSeriesModel extends ChartPainterSeriesModel {
   static LineChartSeriesModel? fromXml(WidgetModel parent, XmlElement xml) {
     LineChartSeriesModel? model;
     try {
-      xml = WidgetModel.prototypeOf(xml) ?? xml;
+      xml = prototypeOf(xml) ?? xml;
       model = LineChartSeriesModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     } catch (e) {

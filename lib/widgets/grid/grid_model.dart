@@ -7,7 +7,7 @@ import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/grid/grid_view.dart';
-import 'package:fml/widgets/scroller/scrollable_interface.dart';
+import 'package:fml/widgets/scroller/scroller_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart'     ;
 import 'package:fml/widgets/grid/grid_view.dart' as grid_view;
 import 'package:fml/widgets/grid/item/grid_item_model.dart';

@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/scroller/scrollable_interface.dart';
+import 'package:fml/widgets/scroller/scroller_interface.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:flutter/services.dart';

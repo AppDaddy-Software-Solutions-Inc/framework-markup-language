@@ -2,7 +2,7 @@
 import 'dart:math';
 import 'dart:ui';
 import 'package:fml/event/manager.dart';
-import 'package:fml/widgets/scroller/scroll_behavior.dart';
+import 'package:fml/widgets/scroller/scroller_behavior.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart';

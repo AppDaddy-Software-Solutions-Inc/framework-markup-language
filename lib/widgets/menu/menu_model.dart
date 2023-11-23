@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/boolean.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
-import 'package:fml/widgets/scroller/scrollable_interface.dart';
+import 'package:fml/widgets/scroller/scroller_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/menu/menu_view.dart';
 import 'package:xml/xml.dart';

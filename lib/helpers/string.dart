@@ -39,16 +39,15 @@ bool isNullOrEmpty(dynamic s)
   return false;
 }
 
-bool? toBool(dynamic s)
+bool? toBool(dynamic s, {List<String> allowTrue = const ['true','1','yes'], List<String> allowFalse = const ['false','0','no']})
 {
-  try {
+  try
+  {
     if (s == null) return null;
     if (s is bool) return s;
-
-    String b = s.toString();
-    b = b.trim().toLowerCase();
-    if ((b == 'false') || (b == '0')) return false;
-    if ((b == 'true') || (b == '1'))  return true;
+    s = s.toString().trim().toLowerCase();
+    if (allowTrue.contains(s))  return true;
+    if (allowFalse.contains(s)) return false;
     return null;
   } catch (e) {
     return null;
@@ -56,19 +55,15 @@ bool? toBool(dynamic s)
 }
 
 /// Dynamic check for a boolean from a String/bool
-bool isBool(dynamic b) {
+bool isBool(dynamic b, {List<String> allow = const ['true','false','1','0','yes','no']}) {
   try {
     if (b == null) return false;
     if (b is bool) return true;
-    b = b.toString();
-    b = b.trim().toLowerCase();
-    return ((b == 'false') ||
-        (b == '0') ||
-        (b == 'no') ||
-        (b == 'true') ||
-        (b == '1') ||
-        (b == 'yes'));
-  } catch (e) {
+    b = b.toString().trim().toLowerCase();
+    return allow.contains(b);
+  }
+  catch (e)
+  {
     return false;
   }
 }
@@ -96,14 +91,31 @@ int? toInt(dynamic s) {
   }
 }
 
+var hasAlpha = RegExp(r'[a-z]');
+
 /// Takes a value typically a String and if its numeric parsed will output a num
-num? toNum(dynamic s) {
+num? toNum(dynamic s, {allowMalformed = true}) {
   try {
     if (s == null || s == '' || s == 'null') return null;
     if (s is num) return s;
-    if (s is String) return num.parse(s);
+    if (s is String)
+    {
+      var n = num.parse(s.trim());
+      if (!allowMalformed)
+      {
+        s = s.toLowerCase().trim();
+        if (s.startsWith('0') && s.length > 1) return null;
+        if (s.startsWith('.') || s.endsWith('.')) return null;
+        if (s.startsWith('+')) return null;
+        if (s.contains(hasAlpha)) return null;
+        return n;
+      }
+      return n;
+    }
     return toNum(s.toString());
-  } catch (e) {
+  }
+  catch (e)
+  {
     return null;
   }
 }

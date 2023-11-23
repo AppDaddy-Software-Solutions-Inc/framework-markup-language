@@ -157,7 +157,7 @@ class EventHandler extends Eval
       {
         i++;
         var myKey = "___V$i";
-        myVariables[myKey] = _isNumeric(value) ? _toNum(value) : _isBool(value) ? _toBool(value) : value;
+        myVariables[myKey] = toNum(value, allowMalformed: false) ?? toBool(value, allowFalse: ['false'], allowTrue: ['true']) ?? value;
         myExpression = myExpression.replaceAll("$key", myKey);
       });
       variables.clear();
@@ -247,30 +247,6 @@ class EventHandler extends Eval
   void _broadcast(EventTypes type)
   {
     EventManager.of(model)?.broadcastEvent(model,Event(type, model: model));
-  }
-
-  /// Returns a bool from a dynamic value using [toBool]
-  static dynamic _toBool(dynamic value)
-  {
-    return toBool(value);
-  }
-
-  /// Returns a Nul from a dynamic value using [toNum]
-  static dynamic _toNum(dynamic value)
-  {
-    return toNum(value);
-  }
-
-  /// Returns true if the value is numeric
-  static bool _isNumeric(dynamic value)
-  {
-    return isNumeric(value);
-  }
-
-  /// Returns a bool from a dynamic value using [isBool]
-  static bool _isBool(dynamic value)
-  {
-    return isBool(value);
   }
 
   /// Sets an [Observable] value given an id

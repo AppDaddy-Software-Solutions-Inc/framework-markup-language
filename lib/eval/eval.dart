@@ -46,9 +46,9 @@ class Eval
       variables?.forEach((key,value)
       {
         i++;
-        var mKey = "___V$i";
-        myVariables[mKey] = toNum(value) ?? toBool(value) ?? value;
-        myExpression = myExpression.replaceAll(key!, mKey);
+        var myKey = "___V$i";
+        myVariables[myKey] = toNum(value, allowMalformed: false) ?? toBool(value, allowFalse: ['false'], allowTrue: ['true']) ?? value;
+        myExpression = myExpression.replaceAll(key!, myKey);
       });
 
       // add variables
@@ -84,12 +84,11 @@ class Eval
 
   static Expression? replaceInLiterals(dynamic expression, Map<String, dynamic> variables)
   {
-
     Type? expressionType;
 
-         if (expression is ConditionalExpression) {
-           expressionType = ConditionalExpression;
-         } else if (expression is BinaryExpression) {
+    if (expression is ConditionalExpression) {
+      expressionType = ConditionalExpression;
+    } else if (expression is BinaryExpression) {
       expressionType = BinaryExpression;
     } else if (expression is CallExpression) {
       expressionType = CallExpression;
@@ -132,11 +131,12 @@ class Eval
         if (expression.value is String)
         {
           String v = expression.value ?? "";
-          //loop backwards in the string so v1 does not replace the start of v10
-        for (String key in variables.keys.toList().reversed) {
-          //replace the keys in the string with the value of the variables map
-            v = v.replaceAll(key, _toString(variables[key]) ?? key);
-            v;
+
+          // loop backwards in the string so v1 does not replace the start of v10
+          for (String key in variables.keys.toList().reversed) {
+            // replace the keys in the string with the value of the variables map
+            // replace missing variables with a blank string (formerly the key name)
+            v = v.replaceAll(key, _toString(variables[key]) ?? "");
           }
           expression = Literal(v,v);
         }

@@ -5,6 +5,8 @@ import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/event/event.dart'        ;
+import 'package:fml/widgets/dragdrop/draggable_view.dart';
+import 'package:fml/widgets/dragdrop/droppable_view.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/list/list_model.dart';
@@ -125,8 +127,22 @@ class ListLayoutViewState extends WidgetState<ListLayoutView> implements IEventS
     if (model == null) return null;
 
     Widget view = ListItemView(model);
+
+    // droppable?
+    if (model.droppable)
+    {
+      view = DroppableView(model, view);
+    }
+
+    // draggable?
+    if (model.draggable)
+    {
+      view = DraggableView(model, view);
+    }
+
     view = MouseRegion(cursor: SystemMouseCursors.click, child: view);
     view = GestureDetector(onTap: () => model.onTap(), child: view, behavior: HitTestBehavior.translucent);
+
     return view;
   }
 

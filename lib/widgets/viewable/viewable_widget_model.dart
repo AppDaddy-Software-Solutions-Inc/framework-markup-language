@@ -2,8 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/event/handler.dart';
-import 'package:fml/system.dart';
 import 'package:fml/widgets/animation/animation_model.dart';
+import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
+import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/dragdrop/draggable_view.dart';
 import 'package:fml/widgets/dragdrop/droppable_view.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
@@ -16,7 +17,7 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 
-class ViewableWidgetModel extends ConstraintModel
+class ViewableWidgetModel extends ConstraintModel implements IDragDrop
 {
   // model holding the tooltip
   TooltipModel? tipModel;
@@ -459,19 +460,20 @@ class ViewableWidgetModel extends ConstraintModel
   bool get draggable => _draggable?.get() ?? false;
 
   // ondrag
-  StringObservable? _ondrag;
+  @override
+  StringObservable? onDragObservable;
   set ondrag (dynamic v)
   {
-    if (_ondrag != null)
+    if (onDragObservable != null)
     {
-      _ondrag!.set(v);
+      onDragObservable!.set(v);
     }
     else if (v != null)
     {
-      _ondrag = StringObservable(Binding.toKey(id, 'ondrag'), v, scope: scope, lazyEval: true);
+      onDragObservable = StringObservable(Binding.toKey(id, 'ondrag'), v, scope: scope, lazyEval: true);
     }
   }
-  String? get ondrag => _ondrag?.get();
+  String? get ondrag => onDragObservable?.get();
   
   // droppable
   BooleanObservable? _droppable;
@@ -486,37 +488,41 @@ class ViewableWidgetModel extends ConstraintModel
   bool get droppable => _droppable?.get() ?? false;
   
   // ondrop - fired on the droppable when the draggable is dropped and after accept
-  StringObservable? _ondrop;
+  @override
+  StringObservable? onDropObservable;
   set ondrop (dynamic v)
   {
-    if (_ondrop != null)
+    if (onDropObservable != null)
     {
-      _ondrop!.set(v);
+      onDropObservable!.set(v);
     }
     else if (v != null)
     {
-      _ondrop = StringObservable(Binding.toKey(id, 'ondrop'), v, scope: scope, lazyEval: true);
+      onDropObservable = StringObservable(Binding.toKey(id, 'ondrop'), v, scope: scope, lazyEval: true);
     }
   }
-  String? get ondrop => _ondrop?.get();
+  String? get ondrop => onDropObservable?.get();
 
   // ondropped - fired on the draggable after the ondrop
-  StringObservable? _ondropped;
+  @override
+  StringObservable? onDroppedObservable;
   set ondropped (dynamic v)
   {
-    if (_ondropped != null)
+    if (onDroppedObservable != null)
     {
-      _ondropped!.set(v);
+      onDroppedObservable!.set(v);
     }
     else if (v != null)
     {
-      _ondropped = StringObservable(Binding.toKey(id, 'ondropped'), v, scope: scope, lazyEval: true);
+      onDroppedObservable = StringObservable(Binding.toKey(id, 'ondropped'), v, scope: scope, lazyEval: true);
     }
   }
-  String? get ondropped => _ondropped?.get();
+  String? get ondropped => onDroppedObservable?.get();
   
   // drop element
   ListObservable? _drop;
+
+  @override
   set drop(dynamic v)
   {
     if (_drop != null)
@@ -531,7 +537,8 @@ class ViewableWidgetModel extends ConstraintModel
       _drop!.set(v);
     }
   }
-  get drop => _drop?.get();
+  @override
+  dynamic get drop => _drop?.get();
 
   List<String>? accept;
   
@@ -760,107 +767,6 @@ class ViewableWidgetModel extends ConstraintModel
     }
   }
 
-  static bool willAccept(ViewableWidgetModel droppable, String? id)
-  {
-    // accept is not defined
-    if (isNullOrEmpty(droppable.accept)) return true;
-
-    // accept is defined and contains the drop id
-    if (droppable.accept!.contains(id))  return true;
-
-    // do not accept this drop
-    return false;
-  }
-
-  static Future<bool> onDrop(ViewableWidgetModel droppable, ViewableWidgetModel draggable) async
-  {
-    bool ok = true;
-
-    // same object dropped on itself
-    if (draggable == droppable) return ok;
-
-    // original data
-    var original = droppable.drop;
-
-    // set drop data
-    droppable.drop = draggable.data;
-
-    // fire onDrop event of the droppable
-    if (ok) 
-    {
-      // expression
-      var expression = droppable._ondrop?.signature ?? droppable._ondrop?.value;
-
-      // bindings
-      var bindings = draggable._ondrop?.bindings;
-
-      // variables
-      var variables = EventHandler.getVariables(bindings, droppable, draggable, localAliasNames: ['this','drop'], remoteAliasNames: ['drag']);
-
-      // execute event
-      ok = await EventHandler(droppable).executeExpression(expression, variables);
-    }
-
-    // fire onDropped event of the draggable
-    if (ok)
-    {
-      // expression
-      var expression = draggable._ondropped?.signature ?? draggable._ondropped?.value;
-
-      // bindings
-      var bindings = draggable._ondropped?.bindings;
-
-      // variables
-      var variables = EventHandler.getVariables(bindings, draggable, droppable, localAliasNames: ['this','drag'], remoteAliasNames: ['drop']);
-
-      // execute event
-      ok = await EventHandler(draggable).executeExpression(expression, variables);
-    }
-
-    // undo data
-    if (!ok) droppable.drop = original;
-
-    return ok;
-  }
-
-  static Map<String, dynamic> getSourceTargetVariables(WidgetModel source, WidgetModel target, List<String> sourceAliasNames, List<String> targetAliasNames, List<Binding>? bindings)
-  {
-    var variables = Map<String, dynamic>();
-
-    // get variables
-    bindings?.forEach((binding)
-    {
-      var key   = binding.key;
-      var scope = source.scope;
-      var name  = binding.source.toLowerCase();
-      
-      var i = sourceAliasNames.indexOf(name);
-      if (i >= 0)
-      {
-        key = key?.replaceFirst(sourceAliasNames[i], "${source.id}");
-        scope = source.scope;
-      }
-
-      i = targetAliasNames.indexOf(name);
-      if (i >= 0)
-      {
-        key = key?.replaceFirst(targetAliasNames[i], "${target.id}");
-        scope = target.scope;
-      }
-      
-      // find the observable
-      var observable = System.app?.scopeManager.findObservable(scope, key);
-      
-      // add to the list
-      variables[binding.toString()] = observable?.get(); 
-    });
-    
-    return variables;
-  }
-  
-  // on drag event
-  static Future<bool> onDrag(BuildContext context, ViewableWidgetModel model) async => await EventHandler(model).execute(model._ondrag);
-
   // animate the model
   static bool animate(ViewableWidgetModel model, String caller, String propertyOrFunction, List<dynamic> arguments)
   {
@@ -882,6 +788,19 @@ class ViewableWidgetModel extends ConstraintModel
     return true;
   }
 
+  // on will accept during drop
+  @override
+  bool willAccept(IDragDrop draggable) => DragDrop.willAccept(this, draggable);
+
+  // on drop event
+  @override
+  Future<bool> onDrop(IDragDrop draggable) async => await DragDrop.onDrop(this, draggable);
+
+  // on drag event
+  @override
+  Future<bool> onDrag() async => await DragDrop.onDrag(this);
+
+  // get the view
   Widget? getView() => throw("getView() Not Implemented");
 }
 

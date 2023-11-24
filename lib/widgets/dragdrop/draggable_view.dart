@@ -101,7 +101,7 @@ class _DraggableViewState extends WidgetState<DraggableView>
       dragging = true;
       cursor = SystemMouseCursors.grabbing;
     });
-    ViewableWidgetModel.onDrag(context, widget.model);
+    widget.model.onDrag();
   }
 
   void onDragEnd(DraggableDetails details)

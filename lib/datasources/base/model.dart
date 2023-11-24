@@ -631,6 +631,7 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     return true;
   }
 
+  @override
   Future<bool> move(dynamic from, dynamic to, {bool notifyListeners = true}) async
   {
     var fromElement = getElement(from);

@@ -3,6 +3,7 @@ import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/list/list_model.dart';
@@ -306,6 +307,16 @@ class ListItemModel extends BoxModel
       (parent as ListModel).onTap(this);
     }
     await EventHandler(this).execute(_onclick);
+    return true;
+  }
+
+  @override
+  Future<bool> onDrop(IDragDrop draggable) async
+  {
+    if (parent is ListModel)
+    {
+      return (parent as ListModel).onDragDrop(this, draggable);
+    }
     return true;
   }
 

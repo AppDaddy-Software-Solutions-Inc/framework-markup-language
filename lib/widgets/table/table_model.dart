@@ -7,10 +7,10 @@ import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/form/form_interface.dart';
 import 'package:fml/widgets/table/table_footer_model.dart';
 import 'package:fml/widgets/table/table_norows_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/table/table_view.dart';
 import 'package:fml/widgets/table/table_header_model.dart';
@@ -794,7 +794,8 @@ class TableModel extends BoxModel implements IForm
     var droppable = getRowModel(dropIndex);
     if (draggable != null && droppable != null)
     {
-      ViewableWidgetModel.onDrop(droppable, draggable);
+      // fire onDrop event
+      await DragDrop.onDrop(droppable, draggable);
 
       // move the cell in the dataset
       iDataSource?.move(dragIndex, dropIndex, notifyListeners: false);

@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
@@ -28,15 +29,15 @@ class _DroppableViewState extends WidgetState<DroppableView>
     return DragTarget(onWillAccept: onWillAccept, onAccept: onAccept, builder: onBuild);
   }
 
-  bool onWillAccept(ViewableWidgetModel? draggable)
+  bool onWillAccept(IDragDrop? draggable)
   {
     if (draggable == null) return false;
-    return ViewableWidgetModel.willAccept(widget.model, draggable.id);
+    return widget.model.willAccept(draggable);
   }
 
-  Future<bool> onAccept(ViewableWidgetModel draggable) async
+  Future<bool> onAccept(IDragDrop draggable) async
   {
-    bool ok = await ViewableWidgetModel.onDrop(widget.model, draggable);
+    bool ok = await widget.model.onDrop(draggable);
     return ok;
   }
 

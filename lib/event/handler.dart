@@ -92,7 +92,7 @@ class EventHandler extends Eval
   // returns a list of variables based on source and target alias names
   static Map<String, dynamic> getVariables(List<Binding>? bindings, WidgetModel local, WidgetModel remote, {List<String> localAliasNames = const ['this', 'source', 'src'], List<String> remoteAliasNames = const ['target', 'trg']})
   {
-    var variables = Map<String, dynamic>();
+    var variables = <String, dynamic>{};
 
     // get variables
     bindings?.forEach((binding)
@@ -105,7 +105,7 @@ class EventHandler extends Eval
       var i = localAliasNames.indexOf(name);
       if (i >= 0)
       {
-        key = key?.replaceFirst(localAliasNames[i], "${local.id}");
+        key = key?.replaceFirst(localAliasNames[i], local.id);
         scope = local.scope;
       }
 
@@ -113,7 +113,7 @@ class EventHandler extends Eval
       i = remoteAliasNames.indexOf(name);
       if (i >= 0)
       {
-        key = key?.replaceFirst(remoteAliasNames[i], "${remote.id}");
+        key = key?.replaceFirst(remoteAliasNames[i], remote.id);
         scope = remote.scope;
       }
 
@@ -121,7 +121,7 @@ class EventHandler extends Eval
       var observable = System.app?.scopeManager.findObservable(scope, key);
 
       // add to the list
-      variables[binding.signature] = binding.translate(observable?.get());;
+      variables[binding.signature] = binding.translate(observable?.get());
     });
 
     return variables;

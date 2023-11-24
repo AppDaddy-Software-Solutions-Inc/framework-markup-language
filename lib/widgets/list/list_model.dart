@@ -1,9 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:collection';
+import 'package:collection/collection.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
+import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/form/form_interface.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/scroller/scroller_interface.dart';
@@ -28,6 +31,9 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable
 
   // returns the number of records in the dataset
   int? get records => _dataset?.length;
+
+  // IDataSource
+  IDataSource? iDataSource;
 
   BooleanObservable? _scrollShadows;
   set scrollShadows (dynamic v)
@@ -288,7 +294,6 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable
     {
       model = ListModel(parent, Xml.get(node: xml, tag: 'id'));
 
-
       model.deserialize(xml);
     }
     catch(e)
@@ -385,6 +390,9 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable
   {
     busy = true;
 
+    // save pointer to data source
+    iDataSource = source;
+
     clean = true;
 
     // clear items
@@ -468,6 +476,61 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable
          item.selected = false;
        }
     });
+    return true;
+  }
+
+  Future<bool> onDragDrop(IDragDrop droppable, IDragDrop draggable) async
+  {
+     if (droppable is ListItemModel && draggable is ListItemModel)
+     {
+       // fire onDrop event
+       await DragDrop.onDrop(droppable, draggable);
+
+       // get drag and drop index
+       var dragIndex = items.entries.firstWhereOrNull((element) => element.value == draggable)?.key;
+       var dropIndex = items.entries.firstWhereOrNull((element) => element.value == droppable)?.key;
+
+       // move the cell in the items list
+       if (dragIndex != null && dropIndex != null && dragIndex != dropIndex)
+       {
+         // move the cell in the dataset
+         iDataSource?.move(dragIndex, dropIndex, notifyListeners: false);
+
+         var moveUp = (dragIndex < dropIndex);
+
+         // remove drag item from the list
+         items.remove(dragIndex);
+
+         // re-sequence the list
+         var map = HashMap<int,ListItemModel>();
+         items.entries.forEach((entry)
+         {
+           // move item up in the list
+           if (moveUp)
+           {
+             var key = (entry.key > dragIndex && entry.key < dropIndex) ? entry.key - 1 : entry.key;
+             map[key] = entry.value;
+           }
+
+           // move item down in the list
+           else
+           {
+             var key = (entry.key >= dropIndex && entry.key < dragIndex) ? entry.key + 1 : entry.key;
+             map[key] = entry.value;
+           }
+         });
+         items.clear();
+         items.addAll(map);
+
+         // add drag item back into the list
+         var key = moveUp ? dropIndex - 1 : dropIndex;
+         items[key] = draggable;
+
+         // notify listeners
+         notifyListeners('list', items);
+       }
+     }
+
     return true;
   }
 

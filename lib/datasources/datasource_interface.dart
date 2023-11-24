@@ -27,5 +27,7 @@ abstract class IDataSource
   Future<bool> onSuccess(Data data, {int? code, String? message, Observable? onSuccessOverride});
   notify();
   dispose();
-  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments);
+
+  // move an item in the list
+  Future<bool> move(dynamic from, dynamic to, {bool notifyListeners = true});
 }

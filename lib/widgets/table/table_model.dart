@@ -10,6 +10,7 @@ import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/form/form_interface.dart';
 import 'package:fml/widgets/table/table_footer_model.dart';
 import 'package:fml/widgets/table/table_norows_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/table/table_view.dart';
 import 'package:fml/widgets/table/table_header_model.dart';
@@ -41,6 +42,9 @@ class TableModel extends BoxModel implements IForm
   // holds footer
   TableFooterModel? footer;
 
+  // draggable rows?
+  bool draggableRows = false;
+
   // holds list of rows
   final HashMap<int, TableRowModel> rows = HashMap<int, TableRowModel>();
 
@@ -51,6 +55,9 @@ class TableModel extends BoxModel implements IForm
 
   // table has a data source
   bool get hasDataSource => !isNullOrEmpty(datasource);
+
+  // IDataSource
+  IDataSource? iDataSource;
 
   @override
   double? get paddingTop => super.paddingTop ?? defaultPadding;
@@ -425,6 +432,12 @@ class TableModel extends BoxModel implements IForm
         }
       }
 
+      // draggable rows?
+      if (isFirstRow && row.draggable)
+      {
+        draggableRows = true;
+      }
+
       // create the row prototype
       if (isFirstRow && hasDataSource)
       {
@@ -487,6 +500,9 @@ class TableModel extends BoxModel implements IForm
   {
     if (isNullOrEmpty(datasource) || datasource == source.id)
     {
+      // save pointer to data source
+      iDataSource = source;
+
       await _buildDynamic(data);
 
       clean = true;
@@ -770,6 +786,20 @@ class TableModel extends BoxModel implements IForm
       }
     }
     return ok;
+  }
+
+  Future<bool> onDragDrop(int dragIndex, int dropIndex) async
+  {
+    var draggable = getRowModel(dragIndex);
+    var droppable = getRowModel(dropIndex);
+    if (draggable != null && droppable != null)
+    {
+      ViewableWidgetModel.onDrop(droppable, draggable);
+
+      // move the cell in the dataset
+      iDataSource?.move(dragIndex, dropIndex, notifyListeners: false);
+    }
+    return true;
   }
 
   void onSelect(int rowIdx, int cellIdx)

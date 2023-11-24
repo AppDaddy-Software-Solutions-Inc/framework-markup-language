@@ -430,7 +430,7 @@ XmlElement? prototypeOf(XmlElement? node)
     for (var binding in bindings)
     {
       // special case
-      if ((binding.source == 'data' || binding.source == 'drop' || binding.source == 'drag') && !processed.contains(binding.signature))
+      if ((binding.source == 'data') && !processed.contains(binding.signature))
       {
         doReplace = true;
 

@@ -410,6 +410,13 @@ class TableViewState extends WidgetState<TableView>
     onSelectedHandler(force: true);
   }
 
+  void onRowsMoved(PlutoGridOnRowsMovedEvent event)
+  {
+    var dragIndex = rows.indexOf(event.rows.first);
+    var dropIndex = event.idx;
+    widget.model.onDragDrop(dragIndex, dropIndex);
+  }
+
   void onDeselectHandler(PlutoGridOnRowDoubleTapEvent event)
   {
       // de-select all rows
@@ -964,7 +971,7 @@ class TableViewState extends WidgetState<TableView>
           width: cell.widthOuter ?? PlutoGridSettings.columnWidth,
           minWidth: PlutoGridSettings.minColumnWidth,
           renderer: builder,
-          enableRowDrag: cell.draggable,
+          enableRowDrag: columns.isEmpty && widget.model.draggableRows,
           footerRenderer: footerBuilder);
 
       // add to the column list
@@ -1019,6 +1026,7 @@ class TableViewState extends WidgetState<TableView>
           onSorted: onSortedHandler,
           onChanged: onChangedHandler,
           onRowDoubleTap: onDeselectHandler,
+          onRowsMoved: onRowsMoved,
           //onSelected: onSelectedHandler,
           noRowsWidget: widget.model.norows?.getView(),
           createFooter: paged ?  _pageLoader : _lazyLoader);

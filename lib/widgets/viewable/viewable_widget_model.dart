@@ -772,7 +772,7 @@ class ViewableWidgetModel extends ConstraintModel
     return false;
   }
 
-  static Future<bool> onDrop(BuildContext context, ViewableWidgetModel droppable, ViewableWidgetModel draggable) async
+  static Future<bool> onDrop(ViewableWidgetModel droppable, ViewableWidgetModel draggable) async
   {
     bool ok = true;
 

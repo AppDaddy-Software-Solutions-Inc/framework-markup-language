@@ -36,7 +36,7 @@ class _DroppableViewState extends WidgetState<DroppableView>
 
   Future<bool> onAccept(ViewableWidgetModel draggable) async
   {
-    bool ok = await ViewableWidgetModel.onDrop(context, widget.model, draggable);
+    bool ok = await ViewableWidgetModel.onDrop(widget.model, draggable);
     return ok;
   }
 

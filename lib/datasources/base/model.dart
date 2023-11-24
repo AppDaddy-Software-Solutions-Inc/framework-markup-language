@@ -631,7 +631,7 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     return true;
   }
 
-  Future<bool> move(dynamic from, dynamic to) async
+  Future<bool> move(dynamic from, dynamic to, {bool notifyListeners = true}) async
   {
     var fromElement = getElement(from);
     var toElement = getElement(to);
@@ -642,8 +642,11 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
       data!.insert(data!.indexOf(toElement), fromElement);
 
       // notify listeners of data change
-      notify();
-      onDataChange();
+      if (notifyListeners)
+      {
+        notify();
+        onDataChange();
+      }
     }
 
     return true;

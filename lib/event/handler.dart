@@ -60,11 +60,21 @@ class EventHandler extends Eval
     // get variables from observable
     Map<String, dynamic> variables = observable.getVariables();
 
+    // execute the expression
+    return executeExpression(expression, variables);
+  }
+
+  Future<bool> executeExpression(String? expression, Map<String, dynamic> variables) async
+  {
+    if (isNullOrEmpty(expression)) return true;
+
+    bool ok = true;
+
     // evaluate the expression
-    expression = await evaluate(expression, variables);
+    var result = await evaluate(expression!, variables);
 
     // get event strings
-    List<String>? events = expression?.split(nonQuotedSemiColons);
+    List<String>? events = result?.split(nonQuotedSemiColons);
 
     // process each event
     if (events != null)
@@ -77,6 +87,44 @@ class EventHandler extends Eval
     }
 
     return ok;
+  }
+
+  // returns a list of variables based on source and target alias names
+  static Map<String, dynamic> getVariables(List<Binding>? bindings, WidgetModel local, WidgetModel remote, {List<String> localAliasNames = const ['this', 'source', 'src'], List<String> remoteAliasNames = const ['target', 'trg']})
+  {
+    var variables = Map<String, dynamic>();
+
+    // get variables
+    bindings?.forEach((binding)
+    {
+      var key   = binding.key;
+      var scope = local.scope;
+      var name  = binding.source.toLowerCase();
+
+      // local alias
+      var i = localAliasNames.indexOf(name);
+      if (i >= 0)
+      {
+        key = key?.replaceFirst(localAliasNames[i], "${local.id}");
+        scope = local.scope;
+      }
+
+      // remove alias
+      i = remoteAliasNames.indexOf(name);
+      if (i >= 0)
+      {
+        key = key?.replaceFirst(remoteAliasNames[i], "${remote.id}");
+        scope = remote.scope;
+      }
+
+      // find the observable
+      var observable = System.app?.scopeManager.findObservable(scope, key);
+
+      // add to the list
+      variables[binding.signature] = binding.translate(observable?.get());;
+    });
+
+    return variables;
   }
 
   Future<dynamic> executeEvent(String event, {Map<String?, dynamic>? variables}) async

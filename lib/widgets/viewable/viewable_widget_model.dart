@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/event/handler.dart';
+import 'package:fml/system.dart';
 import 'package:fml/widgets/animation/animation_model.dart';
 import 'package:fml/widgets/dragdrop/draggable_view.dart';
 import 'package:fml/widgets/dragdrop/droppable_view.dart';
@@ -484,7 +485,7 @@ class ViewableWidgetModel extends ConstraintModel
   }
   bool get droppable => _droppable?.get() ?? false;
   
-  // ondrop
+  // ondrop - fired on the droppable when the draggable is dropped and after accept
   StringObservable? _ondrop;
   set ondrop (dynamic v)
   {
@@ -499,6 +500,21 @@ class ViewableWidgetModel extends ConstraintModel
   }
   String? get ondrop => _ondrop?.get();
 
+  // ondropped - fired on the draggable after the ondrop
+  StringObservable? _ondropped;
+  set ondropped (dynamic v)
+  {
+    if (_ondropped != null)
+    {
+      _ondropped!.set(v);
+    }
+    else if (v != null)
+    {
+      _ondropped = StringObservable(Binding.toKey(id, 'ondropped'), v, scope: scope, lazyEval: true);
+    }
+  }
+  String? get ondropped => _ondropped?.get();
+  
   // drop element
   ListObservable? _drop;
   set drop(dynamic v)
@@ -551,6 +567,7 @@ class ViewableWidgetModel extends ConstraintModel
     if (draggable)
     {
       ondrag = Xml.get(node: xml, tag: 'onDrag');
+      ondropped = Xml.get(node: xml, tag: 'onDropped');
     }
 
     // drop
@@ -755,24 +772,50 @@ class ViewableWidgetModel extends ConstraintModel
     return false;
   }
 
-  static Future<bool> onDrop(BuildContext context, ViewableWidgetModel droppable, ViewableWidgetModel draggable) async
+  static Future<bool> onDrop(ViewableWidgetModel droppable, ViewableWidgetModel draggable) async
   {
     bool ok = true;
-
-    // original data
-    var original = droppable.drop;
 
     // same object dropped on itself
     if (draggable == droppable) return ok;
 
+    // original data
+    var original = droppable.drop;
+
     // set drop data
-    if (ok) droppable.drop = draggable.data;
+    droppable.drop = draggable.data;
 
     // fire onDrop event of the droppable
-    if (ok) ok = await EventHandler(droppable).execute(droppable._ondrop);
+    if (ok) 
+    {
+      // expression
+      var expression = droppable._ondrop?.signature ?? droppable._ondrop?.value;
 
-    // fire onDrop event of the draggable
-    //if (ok) ok = await EventHandler(draggable).execute(droppable._ondrop);
+      // bindings
+      var bindings = draggable._ondrop?.bindings;
+
+      // variables
+      var variables = EventHandler.getVariables(bindings, droppable, draggable, localAliasNames: ['this','drop'], remoteAliasNames: ['drag']);
+
+      // execute event
+      ok = await EventHandler(droppable).executeExpression(expression, variables);
+    }
+
+    // fire onDropped event of the draggable
+    if (ok)
+    {
+      // expression
+      var expression = draggable._ondropped?.signature ?? draggable._ondropped?.value;
+
+      // bindings
+      var bindings = draggable._ondropped?.bindings;
+
+      // variables
+      var variables = EventHandler.getVariables(bindings, draggable, droppable, localAliasNames: ['this','drag'], remoteAliasNames: ['drop']);
+
+      // execute event
+      ok = await EventHandler(draggable).executeExpression(expression, variables);
+    }
 
     // undo data
     if (!ok) droppable.drop = original;
@@ -780,6 +823,41 @@ class ViewableWidgetModel extends ConstraintModel
     return ok;
   }
 
+  static Map<String, dynamic> getSourceTargetVariables(WidgetModel source, WidgetModel target, List<String> sourceAliasNames, List<String> targetAliasNames, List<Binding>? bindings)
+  {
+    var variables = Map<String, dynamic>();
+
+    // get variables
+    bindings?.forEach((binding)
+    {
+      var key   = binding.key;
+      var scope = source.scope;
+      var name  = binding.source.toLowerCase();
+      
+      var i = sourceAliasNames.indexOf(name);
+      if (i >= 0)
+      {
+        key = key?.replaceFirst(sourceAliasNames[i], "${source.id}");
+        scope = source.scope;
+      }
+
+      i = targetAliasNames.indexOf(name);
+      if (i >= 0)
+      {
+        key = key?.replaceFirst(targetAliasNames[i], "${target.id}");
+        scope = target.scope;
+      }
+      
+      // find the observable
+      var observable = System.app?.scopeManager.findObservable(scope, key);
+      
+      // add to the list
+      variables[binding.toString()] = observable?.get(); 
+    });
+    
+    return variables;
+  }
+  
   // on drag event
   static Future<bool> onDrag(BuildContext context, ViewableWidgetModel model) async => await EventHandler(model).execute(model._ondrag);
 

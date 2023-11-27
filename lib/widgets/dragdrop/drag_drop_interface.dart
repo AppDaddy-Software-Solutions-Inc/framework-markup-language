@@ -1,3 +1,4 @@
+import 'package:flutter/rendering.dart';
 import 'package:fml/observable/observables/string.dart';
 
 abstract class IDragDrop {
@@ -16,6 +17,6 @@ abstract class IDragDrop {
   List<String>? accept;
 
   bool willAccept(IDragDrop draggable);
-  Future<bool> onDrop(IDragDrop draggable);
-  Future<bool> onDrag();
+  void onDrop(IDragDrop draggable, {Offset? dropSpot});
+  void onDrag();
 }

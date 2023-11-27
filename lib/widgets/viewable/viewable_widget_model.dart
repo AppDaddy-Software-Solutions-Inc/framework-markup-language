@@ -8,6 +8,7 @@ import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/dragdrop/draggable_view.dart';
 import 'package:fml/widgets/dragdrop/droppable_view.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
+import 'package:fml/widgets/prototype/prototype_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_view.dart';
 import 'package:fml/widgets/constraints/constraint_model.dart';
@@ -540,6 +541,7 @@ class ViewableWidgetModel extends ConstraintModel implements IDragDrop
   @override
   dynamic get drop => _drop?.get();
 
+  @override
   List<String>? accept;
   
   ViewableWidgetModel(WidgetModel? parent, String? id, {Scope? scope, dynamic data}) : super(parent, id, scope: scope, data: data);
@@ -794,11 +796,18 @@ class ViewableWidgetModel extends ConstraintModel implements IDragDrop
 
   // on drop event
   @override
-  Future<bool> onDrop(IDragDrop draggable) async => await DragDrop.onDrop(this, draggable);
+  void onDrop(IDragDrop draggable, {Offset? dropSpot})
+  {
+    if (parent is PrototypeModel)
+    {
+      (parent as PrototypeModel).onDragDrop(this, draggable, dropSpot: dropSpot);
+    }
+    else DragDrop.onDrop(this, draggable, dropSpot: dropSpot);
+  }
 
   // on drag event
   @override
-  Future<bool> onDrag() async => await DragDrop.onDrag(this);
+  void onDrag() async => await DragDrop.onDrag(this);
 
   // get the view
   Widget? getView() => throw("getView() Not Implemented");

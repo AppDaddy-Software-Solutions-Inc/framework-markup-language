@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/observable/observables/boolean.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
+import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/scroller/scroller_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/menu/menu_view.dart';
@@ -36,6 +38,9 @@ class MenuModel extends DecoratedWidgetModel implements IScrollable
 
   // data sourced prototype
   XmlElement? prototype;
+
+  // IDataSource
+  IDataSource? iDataSource;
 
   @override
   bool get canExpandInfinitelyWide => !hasBoundedWidth;
@@ -149,6 +154,9 @@ class MenuModel extends DecoratedWidgetModel implements IScrollable
   {
     busy = true;
 
+    // save pointer to data source
+    iDataSource = source;
+
     // build options
     if ((list != null))
     {
@@ -228,6 +236,39 @@ class MenuModel extends DecoratedWidgetModel implements IScrollable
   {
     MenuViewState? view = findListenerOfExactType(MenuViewState);
     return view?.sizeOf();
+  }
+
+  void onDragDrop(IDragDrop droppable, IDragDrop draggable, {Offset? dropSpot}) async
+  {
+    if (droppable is MenuItemModel && draggable is MenuItemModel)
+    {
+      // fire onDrop event
+      await DragDrop.onDrop(droppable, draggable, dropSpot: dropSpot);
+
+      // get drag and drop index
+      var dragIndex = items.indexOf(draggable);
+      var dropIndex = items.indexOf(droppable);
+
+      //var center = DragDrop.getPercentOffset(dropBox, dropSpot);
+
+      // move the cell in the items list
+      if (dragIndex >= 0 && dropIndex >= 0 && dragIndex != dropIndex)
+      {
+        // move the cell in the dataset
+        iDataSource?.move(dragIndex, dropIndex, notifyListeners: false);
+
+        // remove drag item from the list
+        items.remove(draggable);
+
+        // add drag item back into the list at drop index
+        var moveUp = (dragIndex < dropIndex);
+        var index = moveUp ? dropIndex - 1 : dropIndex;
+        items.insert(index, draggable);
+
+        // notify listeners
+        notifyListeners('list', items);
+      }
+    }
   }
 
   @override

@@ -26,7 +26,7 @@ class _DroppableViewState extends WidgetState<DroppableView>
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    return DragTarget(onWillAccept: onWillAccept, onAccept: onAccept, builder: onBuild);
+    return DragTarget(onWillAccept: onWillAccept, onAcceptWithDetails: onAccept, builder: onBuild);
   }
 
   bool onWillAccept(IDragDrop? draggable)
@@ -35,10 +35,9 @@ class _DroppableViewState extends WidgetState<DroppableView>
     return widget.model.willAccept(draggable);
   }
 
-  Future<bool> onAccept(IDragDrop draggable) async
+  void onAccept(DragTargetDetails<IDragDrop> details)
   {
-    bool ok = await widget.model.onDrop(draggable);
-    return ok;
+    return widget.model.onDrop(details.data, dropSpot: details.offset);
   }
 
   Widget onBuild(context, List<dynamic> cd, List<dynamic> rd) => widget.view;

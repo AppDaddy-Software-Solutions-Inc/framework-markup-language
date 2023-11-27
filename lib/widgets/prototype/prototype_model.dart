@@ -1,10 +1,13 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:collection/collection.dart';
+import 'package:flutter/animation.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/scope.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
+import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/form/form_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
@@ -14,6 +17,9 @@ class PrototypeModel extends BoxModel
 {
   // data sourced prototype
   XmlElement? prototype;
+
+  // IDataSource
+  IDataSource? iDataSource;
 
   PrototypeModel(WidgetModel parent, String? id) : super(parent, id, scope: parent.scope);
 
@@ -69,6 +75,9 @@ class PrototypeModel extends BoxModel
   Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async
   {
     if (prototype == null || source.id != datasource) return super.onDataSourceSuccess(source, list);
+
+    // save pointer to data source
+    iDataSource = source;
 
     // set busy
     busy = true;
@@ -131,5 +140,25 @@ class PrototypeModel extends BoxModel
     busy = false;
 
     return true;
+  }
+
+  void onDragDrop(IDragDrop droppable, IDragDrop draggable, {Offset? dropSpot}) async
+  {
+    // fire onDrop event
+    await DragDrop.onDrop(droppable, draggable, dropSpot: dropSpot);
+
+    // get drag and drop index
+    var dragIndex = children?.contains(draggable as WidgetModel) ?? false ? children?.indexOf(draggable as WidgetModel) : null;
+    var dropIndex = children?.contains(droppable as WidgetModel) ?? false ? children?.indexOf(droppable as WidgetModel) : null;
+
+    // move the cell in the items list
+    if (dragIndex != null && dropIndex != null && dragIndex != dropIndex)
+    {
+      // swap?
+      if (dragIndex + 1 == dropIndex) dropIndex = dropIndex + 1;
+
+      // move the cell in the dataset
+      iDataSource?.move(dragIndex, dropIndex, notifyListeners: true);
+    }
   }
 }

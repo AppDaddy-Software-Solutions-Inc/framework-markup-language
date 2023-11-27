@@ -1,3 +1,4 @@
+import 'package:flutter/rendering.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/helpers/string.dart';
 import 'package:fml/observable/binding.dart';
@@ -19,7 +20,7 @@ class DragDrop
     return false;
   }
 
-  static Future<bool> onDrop(IDragDrop droppable, IDragDrop draggable) async
+  static Future<bool> onDrop(IDragDrop droppable, IDragDrop draggable, {RenderBox? dragBox, RenderBox? dropBox, Offset? dropSpot}) async
   {
     bool ok = true;
 
@@ -109,5 +110,25 @@ class DragDrop
   static Future<bool> onDrag(IDragDrop draggable) async 
   {
     return await EventHandler(draggable as WidgetModel).execute(draggable.onDragObservable);
+  }
+
+  // given 2 objects, returns the +/- offset from center expressed as a percentage
+  static Offset? getPercentOffset(RenderBox? droppedOn, Offset? droppedAt)
+  {
+    if (droppedOn == null || droppedAt == null) return null;
+
+    final offset = droppedOn.localToGlobal(Offset.zero);
+
+    final center = Offset(droppedOn.size.width/2 + offset.dx, droppedOn.size.height/2 + offset.dy);
+
+    // dx is +/- percent offset from center
+    // dx = offset (droppedAt) - offset (center) / (width (droppedOn) / 2)
+    final dx = ((droppedAt.dx - center.dx) / (droppedOn.size.width / 2)) * 100;
+
+    // dy is +/- percent offset from center
+    // dy = offset (droppedAt) - offset (center) / (width (droppedOn) / 2)
+    final dy = ((droppedAt.dy - center.dy) / (droppedOn.size.height / 2)) * 100;
+
+    return Offset(dx, dy);
   }
 }

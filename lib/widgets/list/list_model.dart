@@ -479,12 +479,12 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable
     return true;
   }
 
-  Future<bool> onDragDrop(IDragDrop droppable, IDragDrop draggable) async
+  void onDragDrop(IDragDrop droppable, IDragDrop draggable, {Offset? dropSpot}) async
   {
      if (droppable is ListItemModel && draggable is ListItemModel)
      {
        // fire onDrop event
-       await DragDrop.onDrop(droppable, draggable);
+       await DragDrop.onDrop(droppable, draggable, dropSpot: dropSpot);
 
        // get drag and drop index
        var dragIndex = items.entries.firstWhereOrNull((element) => element.value == draggable)?.key;
@@ -503,7 +503,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable
 
          // re-sequence the list
          var map = HashMap<int,ListItemModel>();
-         items.entries.forEach((entry)
+         for (var entry in items.entries)
          {
            // move item up in the list
            if (moveUp)
@@ -518,7 +518,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable
              var key = (entry.key >= dropIndex && entry.key < dragIndex) ? entry.key + 1 : entry.key;
              map[key] = entry.value;
            }
-         });
+         }
          items.clear();
          items.addAll(map);
 
@@ -530,8 +530,6 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable
          notifyListeners('list', items);
        }
      }
-
-    return true;
   }
 
   @override

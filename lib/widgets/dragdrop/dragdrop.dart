@@ -2,6 +2,7 @@ import 'package:flutter/rendering.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/helpers/string.dart';
 import 'package:fml/observable/binding.dart';
+import 'package:fml/observable/observable.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
@@ -10,14 +11,24 @@ class DragDrop
 {
   static bool willAccept(IDragDrop droppable, IDragDrop draggable)
   {
+    bool ok = true;
+
+    var expression = droppable.canDropObservable?.signature;
+
     // accept is not defined
-    if (isNullOrEmpty(droppable.accept)) return true;
+    if (isNullOrEmpty(expression)) return ok;
 
-    // accept is defined and contains the drop id
-    if (droppable.accept!.contains(draggable.id))  return true;
+    // bindings
+    var bindings = droppable.canDropObservable?.bindings;
 
-    // do not accept this drop
-    return false;
+    // variables
+    var variables = EventHandler.getVariables(bindings, droppable as WidgetModel, draggable as WidgetModel, localAliasNames: ['this','drop'], remoteAliasNames: ['drag']);
+
+    // execute will accept
+    ok = toBool(Observable.doEvaluation(expression, variables: variables)) ?? true;
+
+    // return result
+    return ok;
   }
 
   static Future<bool> onDrop(IDragDrop droppable, IDragDrop draggable, {RenderBox? dragBox, RenderBox? dropBox, Offset? dropSpot}) async

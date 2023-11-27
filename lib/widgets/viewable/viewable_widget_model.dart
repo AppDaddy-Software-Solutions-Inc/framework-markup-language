@@ -541,8 +541,21 @@ class ViewableWidgetModel extends ConstraintModel implements IDragDrop
   @override
   dynamic get drop => _drop?.get();
 
+  // onWillAcceptObservable
   @override
-  List<String>? accept;
+  BooleanObservable? canDropObservable;
+  set canDrop(dynamic v)
+  {
+    if (canDropObservable != null)
+    {
+      canDropObservable!.set(v);
+    }
+    else if (v != null)
+    {
+      canDropObservable = BooleanObservable(Binding.toKey(id, 'candrop'), v, scope: scope);
+    }
+  }
+  bool? get canDrop => canDropObservable?.get();
   
   ViewableWidgetModel(WidgetModel? parent, String? id, {Scope? scope, dynamic data}) : super(parent, id, scope: scope, data: data);
 
@@ -583,9 +596,9 @@ class ViewableWidgetModel extends ConstraintModel implements IDragDrop
     droppable = Xml.get(node: xml, tag: 'droppable');
     if (droppable)
     {
-      ondrop = Xml.get(node: xml, tag: 'onDrop');
-      accept = Xml.attribute(node: xml, tag: 'accept')?.split(',');
-      drop   = Data();
+      ondrop  = Xml.get(node: xml, tag: 'onDrop');
+      canDrop = Xml.get(node: xml, tag: 'canDrop');
+      drop    = Data();
     }
 
     // view sizing and position

@@ -1,4 +1,5 @@
 import 'package:flutter/rendering.dart';
+import 'package:fml/observable/observables/boolean.dart';
 import 'package:fml/observable/observables/string.dart';
 
 abstract class IDragDrop {
@@ -14,7 +15,7 @@ abstract class IDragDrop {
   StringObservable? onDropObservable;
   StringObservable? onDroppedObservable;
   StringObservable? onDragObservable;
-  List<String>? accept;
+  BooleanObservable? canDropObservable;
 
   bool willAccept(IDragDrop draggable);
   void onDrop(IDragDrop draggable, {Offset? dropSpot});

@@ -2,6 +2,8 @@
 import 'dart:math';
 import 'dart:ui';
 import 'package:fml/event/manager.dart';
+import 'package:fml/widgets/dragdrop/draggable_view.dart';
+import 'package:fml/widgets/dragdrop/droppable_view.dart';
 import 'package:fml/widgets/scroller/scroller_behavior.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
@@ -180,6 +182,18 @@ class GridViewState extends WidgetState<GridView> {
         // create the view
         var model = widget.model.items[i]!;
         Widget view = GridItemView(model);
+
+        // droppable?
+        if (model.droppable)
+        {
+          view = DroppableView(model, view);
+        }
+
+        // draggable?
+        if (model.draggable)
+        {
+          view = DraggableView(model, view);
+        }
 
         // wrap for selectable
         view = MouseRegion(cursor: SystemMouseCursors.click, child: view);

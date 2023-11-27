@@ -1,6 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:flutter/rendering.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/grid/grid_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:xml/xml.dart';
@@ -133,5 +135,14 @@ class GridItemModel extends BoxModel
       (parent as GridModel).onTap(this);
     }
     return true;
+  }
+
+  @override
+  void onDrop(IDragDrop draggable, {Offset? dropSpot})
+  {
+    if (parent is GridModel)
+    {
+     (parent as GridModel).onDragDrop(this, draggable, dropSpot: dropSpot);
+    }
   }
 }

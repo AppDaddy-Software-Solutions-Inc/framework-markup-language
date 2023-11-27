@@ -8,6 +8,7 @@ import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/dragdrop/draggable_view.dart';
 import 'package:fml/widgets/dragdrop/droppable_view.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
+import 'package:fml/widgets/prototype/prototype_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_model.dart';
 import 'package:fml/widgets/tooltip/v2/tooltip_view.dart';
 import 'package:fml/widgets/constraints/constraint_model.dart';
@@ -540,7 +541,21 @@ class ViewableWidgetModel extends ConstraintModel implements IDragDrop
   @override
   dynamic get drop => _drop?.get();
 
-  List<String>? accept;
+  // onWillAcceptObservable
+  @override
+  BooleanObservable? canDropObservable;
+  set canDrop(dynamic v)
+  {
+    if (canDropObservable != null)
+    {
+      canDropObservable!.set(v);
+    }
+    else if (v != null)
+    {
+      canDropObservable = BooleanObservable(Binding.toKey(id, 'candrop'), v, scope: scope);
+    }
+  }
+  bool? get canDrop => canDropObservable?.get();
   
   ViewableWidgetModel(WidgetModel? parent, String? id, {Scope? scope, dynamic data}) : super(parent, id, scope: scope, data: data);
 
@@ -581,9 +596,9 @@ class ViewableWidgetModel extends ConstraintModel implements IDragDrop
     droppable = Xml.get(node: xml, tag: 'droppable');
     if (droppable)
     {
-      ondrop = Xml.get(node: xml, tag: 'onDrop');
-      accept = Xml.attribute(node: xml, tag: 'accept')?.split(',');
-      drop   = Data();
+      ondrop  = Xml.get(node: xml, tag: 'onDrop');
+      canDrop = Xml.get(node: xml, tag: 'canDrop');
+      drop    = Data();
     }
 
     // view sizing and position
@@ -794,11 +809,18 @@ class ViewableWidgetModel extends ConstraintModel implements IDragDrop
 
   // on drop event
   @override
-  Future<bool> onDrop(IDragDrop draggable) async => await DragDrop.onDrop(this, draggable);
+  void onDrop(IDragDrop draggable, {Offset? dropSpot})
+  {
+    if (parent is PrototypeModel)
+    {
+      (parent as PrototypeModel).onDragDrop(this, draggable, dropSpot: dropSpot);
+    }
+    else DragDrop.onDrop(this, draggable, dropSpot: dropSpot);
+  }
 
   // on drag event
   @override
-  Future<bool> onDrag() async => await DragDrop.onDrag(this);
+  void onDrag() async => await DragDrop.onDrag(this);
 
   // get the view
   Widget? getView() => throw("getView() Not Implemented");

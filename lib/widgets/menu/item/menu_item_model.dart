@@ -3,7 +3,9 @@ import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
+import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/menu/item/menu_item_view.dart';
+import 'package:fml/widgets/menu/menu_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/event/event.dart' ;
@@ -328,6 +330,15 @@ class MenuItemModel extends DecoratedWidgetModel
   {
     // Log().debug('dispose called on => <$elementName id="$id">');
     super.dispose();
+  }
+
+  @override
+  void onDrop(IDragDrop draggable, {Offset? dropSpot})
+  {
+    if (parent is MenuModel)
+    {
+      (parent as MenuModel).onDragDrop(this, draggable, dropSpot: dropSpot);
+    }
   }
 
   @override

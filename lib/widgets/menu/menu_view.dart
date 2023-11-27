@@ -90,20 +90,27 @@ class MenuViewState extends WidgetState<MenuView> implements IEventScrolling
   }
 
   Widget _buildMenuItems(double width) {
+
     List<Widget> tilesList = []; //list of tiles
     List<Widget> tileRows = []; // row of tiles from list
     List<Row> rowsList = []; // list of rows containing tiles
-    for (var item in widget.model.items) {
+
+    // build menu tiles
+    for (var item in widget.model.items)
+    {
       tilesList.add(item.getView());
     }
+
     double menuColPadding = isMobile ? 0.0 : 25.0;
     double tilePadding = isMobile ? 5.0 : 0;
+
     int tilesPerRow =
         ((/*MediaQuery.of(context).size.*/ width - (menuColPadding * 2)) ~/
             (isMobile
                 ? (170 + (tilePadding * 2))
                 : (270 + (tilePadding * 2))));
     int tileCountForRow = 0;
+
     for (int i = 0; i < tilesList.length; i++) {
       tileRows.add(
           Padding(padding: EdgeInsets.all(tilePadding), child: tilesList[i]));
@@ -126,14 +133,14 @@ class MenuViewState extends WidgetState<MenuView> implements IEventScrolling
     }
 
     return Center(
-      child: Padding(
-        padding: EdgeInsets.all(menuColPadding),
-        child: Column(
-          children: rowsList,
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Padding(
+            padding: EdgeInsets.all(menuColPadding),
+            child: Column(
+              children: rowsList,
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+            )
         )
-      )
     );
   }
 

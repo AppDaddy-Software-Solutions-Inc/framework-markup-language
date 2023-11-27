@@ -311,13 +311,12 @@ class ListItemModel extends BoxModel
   }
 
   @override
-  Future<bool> onDrop(IDragDrop draggable) async
+  void onDrop(IDragDrop draggable, {Offset? dropSpot}) async
   {
     if (parent is ListModel)
     {
-      return (parent as ListModel).onDragDrop(this, draggable);
+      (parent as ListModel).onDragDrop(this, draggable, dropSpot: dropSpot);
     }
-    return true;
   }
 
   @override

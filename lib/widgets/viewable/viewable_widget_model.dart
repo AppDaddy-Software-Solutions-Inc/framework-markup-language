@@ -815,7 +815,10 @@ class ViewableWidgetModel extends ConstraintModel implements IDragDrop
     {
       (parent as PrototypeModel).onDragDrop(this, draggable, dropSpot: dropSpot);
     }
-    else DragDrop.onDrop(this, draggable, dropSpot: dropSpot);
+    else
+    {
+      DragDrop.onDrop(this, draggable, dropSpot: dropSpot);
+    }
   }
 
   // on drag event

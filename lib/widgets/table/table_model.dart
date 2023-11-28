@@ -797,7 +797,10 @@ class TableModel extends BoxModel implements IForm
       // fire onDrop event
       await DragDrop.onDrop(droppable, draggable);
 
-      // move the cell in the dataset
+      // reorder hashmap
+      moveInHashmap(rows, dragIndex, dropIndex);
+
+      // reorder data
       iDataSource?.move(dragIndex, dropIndex, notifyListeners: false);
     }
     return true;

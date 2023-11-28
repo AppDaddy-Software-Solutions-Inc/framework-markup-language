@@ -493,38 +493,11 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable
        // move the cell in the items list
        if (dragIndex != null && dropIndex != null && dragIndex != dropIndex)
        {
-         // move the cell in the dataset
+         // reorder hashmap
+         moveInHashmap(items, dragIndex, dropIndex);
+
+         // reorder data
          iDataSource?.move(dragIndex, dropIndex, notifyListeners: false);
-
-         var moveUp = (dragIndex < dropIndex);
-
-         // remove drag item from the list
-         items.remove(dragIndex);
-
-         // re-sequence the list
-         var map = HashMap<int,ListItemModel>();
-         for (var entry in items.entries)
-         {
-           // move item up in the list
-           if (moveUp)
-           {
-             var key = (entry.key > dragIndex && entry.key < dropIndex) ? entry.key - 1 : entry.key;
-             map[key] = entry.value;
-           }
-
-           // move item down in the list
-           else
-           {
-             var key = (entry.key >= dropIndex && entry.key < dragIndex) ? entry.key + 1 : entry.key;
-             map[key] = entry.value;
-           }
-         }
-         items.clear();
-         items.addAll(map);
-
-         // add drag item back into the list
-         var key = moveUp ? dropIndex - 1 : dropIndex;
-         items[key] = draggable;
 
          // notify listeners
          notifyListeners('list', items);

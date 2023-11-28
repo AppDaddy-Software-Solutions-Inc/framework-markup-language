@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:fml/helpers/string.dart';
 
 /// Returns a key value pair from a map if it exists, otherwise optionally return a default value else null
@@ -44,4 +46,34 @@ double? fromMapAsDouble(Map map, dynamic key, {double? defaultValue}) {
     value = defaultValue;
   }
   return value;
+}
+
+void moveInHashmap(HashMap map, int fromIndex, int toIndex)
+{
+  // re-order hashmap
+  var newMap = HashMap();
+  if (map.containsKey(fromIndex))
+  {
+    // add fromIndex value at toIndex
+    newMap[toIndex] = map[fromIndex]!;
+
+    // remove fromEntry from map
+    map.remove(fromIndex);
+  }
+
+  // build new map
+  var keys = map.keys.toList(growable: false);
+  for (var key in keys)
+  {
+    // define key
+    var k = (toIndex < fromIndex) ? key + (key >= toIndex && key <= fromIndex ? 1 : 0) : key - (key >= fromIndex && key <= toIndex ? 1 : 0);
+    newMap[k] = map[key]!;
+  }
+
+  // add new entries back into original map
+  map.clear();
+  for (var entry in newMap.entries)
+  {
+    map[entry.key] = entry.value;
+  }
 }

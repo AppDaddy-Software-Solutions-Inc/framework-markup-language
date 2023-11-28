@@ -584,7 +584,7 @@ class WidgetModel implements IDataSourceListener {
     // we can now use dot notation to specify the property
     // rather than pass it as an attribute
     var property = elementAt(arguments, 1);
-    property ??= Binding.fromString(caller)?.key ?? property;
+    property ??= Binding.fromString(caller)?.toString() ?? property;
 
     // set the variable
     scope.setObservable(property, value?.toString());

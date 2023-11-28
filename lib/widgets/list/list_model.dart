@@ -1,9 +1,12 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:collection';
+import 'package:collection/collection.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
+import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/form/form_interface.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
 import 'package:fml/widgets/scroller/scroller_interface.dart';
@@ -28,6 +31,9 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable
 
   // returns the number of records in the dataset
   int? get records => _dataset?.length;
+
+  // IDataSource
+  IDataSource? iDataSource;
 
   BooleanObservable? _scrollShadows;
   set scrollShadows (dynamic v)
@@ -288,7 +294,6 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable
     {
       model = ListModel(parent, Xml.get(node: xml, tag: 'id'));
 
-
       model.deserialize(xml);
     }
     catch(e)
@@ -385,6 +390,9 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable
   {
     busy = true;
 
+    // save pointer to data source
+    iDataSource = source;
+
     clean = true;
 
     // clear items
@@ -469,6 +477,32 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable
        }
     });
     return true;
+  }
+
+  void onDragDrop(IDragDrop droppable, IDragDrop draggable, {Offset? dropSpot}) async
+  {
+     if (droppable is ListItemModel && draggable is ListItemModel)
+     {
+       // fire onDrop event
+       await DragDrop.onDrop(droppable, draggable, dropSpot: dropSpot);
+
+       // get drag and drop index
+       var dragIndex = items.entries.firstWhereOrNull((element) => element.value == draggable)?.key;
+       var dropIndex = items.entries.firstWhereOrNull((element) => element.value == droppable)?.key;
+
+       // move the cell in the items list
+       if (dragIndex != null && dropIndex != null && dragIndex != dropIndex)
+       {
+         // reorder hashmap
+         moveInHashmap(items, dragIndex, dropIndex);
+
+         // reorder data
+         iDataSource?.move(dragIndex, dropIndex, notifyListeners: false);
+
+         // notify listeners
+         notifyListeners('list', items);
+       }
+     }
   }
 
   @override

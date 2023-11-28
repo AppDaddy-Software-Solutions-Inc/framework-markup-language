@@ -410,11 +410,16 @@ class TableViewState extends WidgetState<TableView>
     onSelectedHandler(force: true);
   }
 
-  void onRowsMoved(PlutoGridOnRowsMovedEvent event)
+  void onRowsMoved(PlutoGridOnRowsMovedEvent event) async
   {
     var dragIndex = rows.indexOf(event.rows.first);
     var dropIndex = event.idx;
-    widget.model.onDragDrop(dragIndex, dropIndex);
+
+    var row = rows[dragIndex];
+    rows.remove(row);
+    rows.insert(dropIndex, row);
+
+    await widget.model.onDragDrop(dragIndex, dropIndex);
   }
 
   void onDeselectHandler(PlutoGridOnRowDoubleTapEvent event)

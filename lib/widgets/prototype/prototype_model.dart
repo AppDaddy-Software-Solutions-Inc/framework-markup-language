@@ -1,10 +1,13 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:collection/collection.dart';
+import 'package:flutter/animation.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/scope.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
+import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/form/form_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
@@ -14,6 +17,12 @@ class PrototypeModel extends BoxModel
 {
   // data sourced prototype
   XmlElement? prototype;
+
+  // IDataSource
+  IDataSource? iDataSource;
+
+  @override
+  bool get expand => false;
 
   PrototypeModel(WidgetModel parent, String? id) : super(parent, id, scope: parent.scope);
 
@@ -38,13 +47,23 @@ class PrototypeModel extends BoxModel
   @override
   void deserialize(XmlElement xml)
   {
-    // get the data source
-    datasource = Xml.attribute(node: xml, tag: 'data') ?? Xml.attribute(node: xml, tag: 'datasource');
+    // make a copy of the element
+    var root  = XmlElement(XmlName("PROTOTYPE"));
+    var child = xml.copy();
+    root.children.add(child);
 
-    // this is necessary since lower level child nodes may have
-    // which use the proptotypeOf() method and change
+    // add the datasource attribute to the root node
+    root.attributes.add(XmlAttribute(XmlName("datasource"), Xml.attribute(node: xml, tag: 'data') ?? Xml.attribute(node: xml, tag: 'datasource') ?? "missing"));
+
+    // remove the datasource attribute from the child
+    Xml.removeAttribute(child, "data");
+    Xml.removeAttribute(child, "datasource");
+
+    // deserialize the outer root
+    // this is necessary since lower level child nodes may also
+    // use the prototypeOf() method and change
     // necessary "data.xxx" references.
-    super.deserialize(xml);
+    super.deserialize(root);
 
     // register listener
     if (datasource != null && scope != null)
@@ -53,12 +72,8 @@ class PrototypeModel extends BoxModel
       source?.register(this);
     }
 
-    // remove the datasource attribute
-    Xml.removeAttribute(xml, "data");
-    Xml.removeAttribute(xml, "datasource");
-
     // build the prototype
-    prototype = prototypeOf(xml);
+    prototype = prototypeOf(child);
 
     // dispose of all children
     children?.forEach((child) => child.dispose());
@@ -69,6 +84,9 @@ class PrototypeModel extends BoxModel
   Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async
   {
     if (prototype == null || source.id != datasource) return super.onDataSourceSuccess(source, list);
+
+    // save pointer to data source
+    iDataSource = source;
 
     // set busy
     busy = true;
@@ -131,5 +149,22 @@ class PrototypeModel extends BoxModel
     busy = false;
 
     return true;
+  }
+
+  void onDragDrop(IDragDrop droppable, IDragDrop draggable, {Offset? dropSpot}) async
+  {
+    // fire onDrop event
+    await DragDrop.onDrop(droppable, draggable, dropSpot: dropSpot);
+
+    // get drag and drop index
+    var dragIndex = children?.contains(draggable as WidgetModel) ?? false ? children?.indexOf(draggable as WidgetModel) : null;
+    var dropIndex = children?.contains(droppable as WidgetModel) ?? false ? children?.indexOf(droppable as WidgetModel) : null;
+
+    // move the cell in the items list
+    if (dragIndex != null && dropIndex != null && dragIndex != dropIndex)
+    {
+      // move the cell in the dataset
+      iDataSource?.move(dragIndex, dropIndex, notifyListeners: true);
+    }
   }
 }

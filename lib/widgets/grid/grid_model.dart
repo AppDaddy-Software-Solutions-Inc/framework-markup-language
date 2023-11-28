@@ -1,11 +1,14 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:collection';
 import 'dart:convert';
+import 'package:collection/collection.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
+import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/grid/grid_view.dart';
 import 'package:fml/widgets/scroller/scroller_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart'     ;
@@ -25,6 +28,9 @@ class GridModel extends BoxModel implements IScrollable
 
   // data sourced prototype
   XmlElement? prototype;
+
+  // IDataSource
+  IDataSource? iDataSource;
 
   // returns the number of records in the dataset
   int? get records => _dataset?.length;
@@ -292,6 +298,9 @@ class GridModel extends BoxModel implements IScrollable
     busy = true;
     int index = 0;
 
+    // save pointer to data source
+    iDataSource = source;
+
     if (list != null)
     {
       clean = true;
@@ -483,6 +492,31 @@ class GridModel extends BoxModel implements IScrollable
     return view?.sizeOf();
   }
 
+  void onDragDrop(IDragDrop droppable, IDragDrop draggable, {Offset? dropSpot}) async
+  {
+    if (droppable is GridItemModel && draggable is GridItemModel)
+    {
+      // fire onDrop event
+      await DragDrop.onDrop(droppable, draggable, dropSpot: dropSpot);
+
+      // get drag and drop index
+      var dragIndex = items.entries.firstWhereOrNull((element) => element.value == draggable)?.key;
+      var dropIndex = items.entries.firstWhereOrNull((element) => element.value == droppable)?.key;
+
+      // move the cell in the items list
+      if (dragIndex != null && dropIndex != null && dragIndex != dropIndex)
+      {
+        // reorder hashmap
+        moveInHashmap(items, dragIndex, dropIndex);
+
+        // reorder data
+        iDataSource?.move(dragIndex, dropIndex, notifyListeners: false);
+
+        // notify listeners
+        notifyListeners('list', items);
+      }
+    }
+  }
 
   @override
   Widget getView({Key? key}) => getReactiveView(grid_view.GridView(this));

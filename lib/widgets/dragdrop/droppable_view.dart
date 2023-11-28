@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/dragdrop/drag_drop_interface.dart';
 import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
@@ -25,19 +26,18 @@ class _DroppableViewState extends WidgetState<DroppableView>
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    return DragTarget(onWillAccept: onWillAccept, onAccept: onAccept, builder: onBuild);
+    return DragTarget(onWillAccept: onWillAccept, onAcceptWithDetails: onAccept, builder: onBuild);
   }
 
-  bool onWillAccept(ViewableWidgetModel? draggable)
+  bool onWillAccept(IDragDrop? draggable)
   {
     if (draggable == null) return false;
-    return ViewableWidgetModel.willAccept(widget.model, draggable.id);
+    return widget.model.willAccept(draggable);
   }
 
-  Future<bool> onAccept(ViewableWidgetModel draggable) async
+  void onAccept(DragTargetDetails<IDragDrop> details)
   {
-    bool ok = await ViewableWidgetModel.onDrop(widget.model, draggable);
-    return ok;
+    return widget.model.onDrop(details.data, dropSpot: details.offset);
   }
 
   Widget onBuild(context, List<dynamic> cd, List<dynamic> rd) => widget.view;

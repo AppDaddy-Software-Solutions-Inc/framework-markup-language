@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'package:fml/data/dotnotation.dart';
 import 'package:universal_html/html.dart';
 import 'package:collection/collection.dart';
 import 'package:fml/data/data.dart';
@@ -335,7 +336,7 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
   // stores a serialized copy of the first item
   String? template;
 
-  dynamic _valueSetter(dynamic jsonOrXml, {Observable? setter})
+  dynamic _valueSetter(dynamic jsonOrXml, {Observable? setter, DotNotation? dotnotation})
   {
     var data = Data.from(jsonOrXml, root: root);
 
@@ -631,22 +632,21 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     return true;
   }
 
+  @override
   Future<bool> move(dynamic from, dynamic to, {bool notifyListeners = true}) async
   {
     var fromElement = getElement(from);
-    var toElement = getElement(to);
+    var toElement   = getElement(to);
     if (fromElement != null && toElement != null)
     {
       // remove element
+      int i = data!.indexOf(toElement);
       data!.remove(fromElement);
-      data!.insert(data!.indexOf(toElement), fromElement);
+      data!.insert(i, fromElement);
 
       // notify listeners of data change
-      if (notifyListeners)
-      {
-        notify();
-        onDataChange();
-      }
+      if (notifyListeners) notify();
+      onDataChange();
     }
 
     return true;

@@ -21,6 +21,9 @@ class PrototypeModel extends BoxModel
   // IDataSource
   IDataSource? iDataSource;
 
+  @override
+  bool get expand => false;
+
   PrototypeModel(WidgetModel parent, String? id) : super(parent, id, scope: parent.scope);
 
   static PrototypeModel? fromXml(WidgetModel parent, XmlElement xml)
@@ -44,13 +47,23 @@ class PrototypeModel extends BoxModel
   @override
   void deserialize(XmlElement xml)
   {
-    // get the data source
-    datasource = Xml.attribute(node: xml, tag: 'data') ?? Xml.attribute(node: xml, tag: 'datasource');
+    // make a copy of the element
+    var root  = XmlElement(XmlName("PROTOTYPE"));
+    var child = xml.copy();
+    root.children.add(child);
 
-    // this is necessary since lower level child nodes may have
-    // which use the proptotypeOf() method and change
+    // add the datasource attribute to the root node
+    root.attributes.add(XmlAttribute(XmlName("datasource"), Xml.attribute(node: xml, tag: 'data') ?? Xml.attribute(node: xml, tag: 'datasource') ?? "missing"));
+
+    // remove the datasource attribute from the child
+    Xml.removeAttribute(child, "data");
+    Xml.removeAttribute(child, "datasource");
+
+    // deserialize the outer root
+    // this is necessary since lower level child nodes may also
+    // use the prototypeOf() method and change
     // necessary "data.xxx" references.
-    super.deserialize(xml);
+    super.deserialize(root);
 
     // register listener
     if (datasource != null && scope != null)
@@ -59,12 +72,8 @@ class PrototypeModel extends BoxModel
       source?.register(this);
     }
 
-    // remove the datasource attribute
-    Xml.removeAttribute(xml, "data");
-    Xml.removeAttribute(xml, "datasource");
-
     // build the prototype
-    prototype = prototypeOf(xml);
+    prototype = prototypeOf(child);
 
     // dispose of all children
     children?.forEach((child) => child.dispose());
@@ -154,9 +163,6 @@ class PrototypeModel extends BoxModel
     // move the cell in the items list
     if (dragIndex != null && dropIndex != null && dragIndex != dropIndex)
     {
-      // swap?
-      if (dragIndex + 1 == dropIndex) dropIndex = dropIndex + 1;
-
       // move the cell in the dataset
       iDataSource?.move(dragIndex, dropIndex, notifyListeners: true);
     }

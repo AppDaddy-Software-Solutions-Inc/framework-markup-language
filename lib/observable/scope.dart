@@ -1,14 +1,15 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:collection';
+import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/observable.dart';
+import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/observable/observables/string.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/datasources/file/file.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'binding.dart';
 
 class Scope
 {
@@ -282,8 +283,22 @@ class Scope
       }
     }
 
-    // Set the Value
-    else {
+    // set the Value
+    else
+    {
+      // observable is a data element
+      if (observable is ListObservable && observable.isNotEmpty && binding.dotnotation != null)
+      {
+        // get the data
+        var data = observable.first;
+        if (binding.offset != null && binding.offset! > 0 && binding.offset! < observable.length) data = observable[binding.offset!];
+
+        // write to the data list
+        Data.write(data,binding.dotnotation.toString().replaceFirst(".", ""),value);
+        return;
+      }
+
+      // set value
       observable.set(value);
     }
   }

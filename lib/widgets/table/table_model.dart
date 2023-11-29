@@ -57,7 +57,7 @@ class TableModel extends BoxModel implements IForm
   bool get hasDataSource => !isNullOrEmpty(datasource);
 
   // IDataSource
-  IDataSource? iDataSource;
+  IDataSource? myDataSource;
 
   @override
   double? get paddingTop => super.paddingTop ?? defaultPadding;
@@ -501,7 +501,7 @@ class TableModel extends BoxModel implements IForm
     if (isNullOrEmpty(datasource) || datasource == source.id)
     {
       // save pointer to data source
-      iDataSource = source;
+      myDataSource = source;
 
       await _buildDynamic(data);
 
@@ -584,6 +584,50 @@ class TableModel extends BoxModel implements IForm
     }
     return true;
   }
+
+  // delete a row
+  Future<bool> deleteRow(int? rowIndex) async
+  {
+    try
+    {
+      var view = findListenerOfExactType(TableViewState);
+      if (view is TableViewState)
+      {
+        rowIndex = view.deleteRow(rowIndex);
+
+        // row was deleted?
+        if (rowIndex != null)
+        {
+          // lookup the row
+          var row = rows.containsKey(rowIndex) ? rows[rowIndex] : null;
+          if (row != null)
+          {
+            // fire the rows onDelete event
+            bool ok = await row.onDeleteHandler();
+
+            // continue?
+            if (ok)
+            {
+              // reorder hashmap
+              deleteInHashmap(rows, rowIndex);
+
+              // remove the data associated with the row
+              if (data is List && (data as List).isNotEmpty && rowIndex < (data as List).length)
+              {
+                (data as List).removeAt(rowIndex);
+              }
+            }
+          }
+        }
+      }
+    }
+    catch(e)
+    {
+      print (e);
+    }
+    return true;
+  }
+
 
   @override
   dispose()
@@ -801,7 +845,7 @@ class TableModel extends BoxModel implements IForm
       moveInHashmap(rows, dragIndex, dropIndex);
 
       // reorder data
-      iDataSource?.move(dragIndex, dropIndex, notifyListeners: false);
+      myDataSource?.move(dragIndex, dropIndex, notifyListeners: false);
     }
     return true;
   }
@@ -858,6 +902,11 @@ class TableModel extends BoxModel implements IForm
       case "export" :
         var format = toStr(elementAt(arguments, 0));
         await export(format);
+        return true;
+
+    // export the data
+      case "deleterow" :
+        deleteRow(toInt(elementAt(arguments, 0)));
         return true;
 
       // export the data

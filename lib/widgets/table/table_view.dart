@@ -553,6 +553,42 @@ class TableViewState extends WidgetState<TableView>
     }
   }
 
+  // delete the row from the grid
+  int? deleteRow(int? row)
+  {
+    PlutoRow? plutoRow;
+    int? plutoRowIndex;
+
+    if (grid == null) return null;
+
+    // lookup the row to delete
+    if (row != null)
+    {
+      plutoRow = row > 0 && row < grid!.rows.length ? grid!.rows[row] : null;
+    }
+    else
+    {
+      plutoRow = stateManager?.currentRow;
+    }
+
+    // delete the row
+    if (plutoRow != null)
+    {
+      plutoRowIndex = rows.indexOf(plutoRow);
+
+      stateManager?.removeRows([plutoRow]);
+      if (rows.contains(plutoRow))
+      {
+        rows.remove(plutoRow);
+      }
+
+      // get cell model
+      views.clear();
+    }
+
+    return plutoRowIndex;
+  }
+
   // sets the page size
   void setFilterBar(bool? on)
   {

@@ -77,3 +77,30 @@ void moveInHashmap(HashMap map, int fromIndex, int toIndex)
     map[entry.key] = entry.value;
   }
 }
+
+void deleteInHashmap(HashMap map, int index)
+{
+  // re-order hashmap
+  var newMap = HashMap();
+  if (map.containsKey(index))
+  {
+    // remove fromEntry from map
+    map.remove(index);
+
+    // build new map
+    var keys = map.keys.toList(growable: false);
+    for (var key in keys)
+    {
+      // define key
+      var k = key < index ? key : key - 1;
+      newMap[k] = map[key]!;
+    }
+
+    // add new entries back into original map
+    map.clear();
+    for (var entry in newMap.entries)
+    {
+      map[entry.key] = entry.value;
+    }
+  }
+}

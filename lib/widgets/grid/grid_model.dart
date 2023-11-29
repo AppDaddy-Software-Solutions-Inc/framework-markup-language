@@ -30,7 +30,7 @@ class GridModel extends BoxModel implements IScrollable
   XmlElement? prototype;
 
   // IDataSource
-  IDataSource? iDataSource;
+  IDataSource? myDataSource;
 
   // returns the number of records in the dataset
   int? get records => _dataset?.length;
@@ -299,7 +299,7 @@ class GridModel extends BoxModel implements IScrollable
     int index = 0;
 
     // save pointer to data source
-    iDataSource = source;
+    myDataSource = source;
 
     if (list != null)
     {
@@ -510,7 +510,7 @@ class GridModel extends BoxModel implements IScrollable
         moveInHashmap(items, dragIndex, dropIndex);
 
         // reorder data
-        iDataSource?.move(dragIndex, dropIndex, notifyListeners: false);
+        myDataSource?.move(dragIndex, dropIndex, notifyListeners: false);
 
         // notify listeners
         notifyListeners('list', items);

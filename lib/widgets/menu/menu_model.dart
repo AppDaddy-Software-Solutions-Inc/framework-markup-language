@@ -40,7 +40,7 @@ class MenuModel extends DecoratedWidgetModel implements IScrollable
   XmlElement? prototype;
 
   // IDataSource
-  IDataSource? iDataSource;
+  IDataSource? myDataSource;
 
   @override
   bool get canExpandInfinitelyWide => !hasBoundedWidth;
@@ -155,7 +155,7 @@ class MenuModel extends DecoratedWidgetModel implements IScrollable
     busy = true;
 
     // save pointer to data source
-    iDataSource = source;
+    myDataSource = source;
 
     // build options
     if ((list != null))
@@ -255,7 +255,7 @@ class MenuModel extends DecoratedWidgetModel implements IScrollable
       if (dragIndex >= 0 && dropIndex >= 0 && dragIndex != dropIndex)
       {
         // move the cell in the dataset
-        iDataSource?.move(dragIndex, dropIndex, notifyListeners: false);
+        myDataSource?.move(dragIndex, dropIndex, notifyListeners: false);
 
         // remove drag item from the list
         items.remove(draggable);

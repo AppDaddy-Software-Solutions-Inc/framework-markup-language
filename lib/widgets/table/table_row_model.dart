@@ -109,6 +109,21 @@ class TableRowModel extends BoxModel
   }
   String? get oncomplete => _oncomplete?.get();
 
+  // onDelete
+  StringObservable? _onDelete;
+  set onDelete(dynamic v)
+  {
+    if (_onDelete != null)
+    {
+      _onDelete!.set(v);
+    }
+    else if (v != null)
+    {
+      _onDelete = StringObservable(Binding.toKey(id, 'ondelete'), v, scope: scope, lazyEval: true);
+    }
+  }
+  String? get onDelete => _onDelete?.get();
+  
   // dirty
   BooleanObservable? get dirtyObservable => _dirty;
   BooleanObservable? _dirty;
@@ -174,6 +189,7 @@ class TableRowModel extends BoxModel
     oncomplete  = Xml.get(node: xml, tag: 'oncomplete');
     onclick     = Xml.get(node: xml, tag: 'onclick');
     postbrokers = Xml.attribute(node: xml, tag: 'postbroker');
+    onDelete    = Xml.get(node: xml, tag: 'onDelete');
 
     // get cells
     cells.addAll(findChildrenOfExactType(TableRowCellModel).cast<TableRowCellModel>());
@@ -261,6 +277,17 @@ class TableRowModel extends BoxModel
       }}
     else {
       ok = false;
+    }
+    return ok;
+  }
+
+  Future<bool> onDeleteHandler() async
+  {
+    // fire the onchange event
+    bool ok = true;
+    if (_onDelete != null)
+    {
+      ok = await EventHandler(this).execute(_onDelete);
     }
     return ok;
   }

@@ -33,7 +33,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable
   int? get records => _dataset?.length;
 
   // IDataSource
-  IDataSource? iDataSource;
+  IDataSource? myDataSource;
 
   BooleanObservable? _scrollShadows;
   set scrollShadows (dynamic v)
@@ -391,7 +391,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable
     busy = true;
 
     // save pointer to data source
-    iDataSource = source;
+    myDataSource = source;
 
     clean = true;
 
@@ -497,7 +497,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable
          moveInHashmap(items, dragIndex, dropIndex);
 
          // reorder data
-         iDataSource?.move(dragIndex, dropIndex, notifyListeners: false);
+         myDataSource?.move(dragIndex, dropIndex, notifyListeners: false);
 
          // notify listeners
          notifyListeners('list', items);

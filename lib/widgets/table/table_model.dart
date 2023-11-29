@@ -585,50 +585,6 @@ class TableModel extends BoxModel implements IForm
     return true;
   }
 
-  // delete a row
-  Future<bool> deleteRow(int? rowIndex) async
-  {
-    try
-    {
-      var view = findListenerOfExactType(TableViewState);
-      if (view is TableViewState)
-      {
-        rowIndex = view.deleteRow(rowIndex);
-
-        // row was deleted?
-        if (rowIndex != null)
-        {
-          // lookup the row
-          var row = rows.containsKey(rowIndex) ? rows[rowIndex] : null;
-          if (row != null)
-          {
-            // fire the rows onDelete event
-            bool ok = await row.onDeleteHandler();
-
-            // continue?
-            if (ok)
-            {
-              // reorder hashmap
-              deleteInHashmap(rows, rowIndex);
-
-              // remove the data associated with the row
-              if (data is List && (data as List).isNotEmpty && rowIndex < (data as List).length)
-              {
-                (data as List).removeAt(rowIndex);
-              }
-            }
-          }
-        }
-      }
-    }
-    catch(e)
-    {
-      print (e);
-    }
-    return true;
-  }
-
-
   @override
   dispose()
   {
@@ -832,24 +788,6 @@ class TableModel extends BoxModel implements IForm
     return ok;
   }
 
-  Future<bool> onDragDrop(int dragIndex, int dropIndex) async
-  {
-    var draggable = getRowModel(dragIndex);
-    var droppable = getRowModel(dropIndex);
-    if (draggable != null && droppable != null)
-    {
-      // fire onDrop event
-      await DragDrop.onDrop(droppable, draggable);
-
-      // reorder hashmap
-      moveInHashmap(rows, dragIndex, dropIndex);
-
-      // reorder data
-      myDataSource?.move(dragIndex, dropIndex, notifyListeners: false);
-    }
-    return true;
-  }
-
   void onSelect(int rowIdx, int cellIdx)
   {
     // set row selection
@@ -904,12 +842,18 @@ class TableModel extends BoxModel implements IForm
         await export(format);
         return true;
 
-    // export the data
+      // delete a row
       case "deleterow" :
         deleteRow(toInt(elementAt(arguments, 0)));
         return true;
 
-      // export the data
+      // add a row
+      case "addrow" :
+      case "insertrow" :
+        insertRow(toStr(elementAt(arguments, 0)), toInt(elementAt(arguments, 1)));
+        return true;
+
+    // export the data
       case "autofit" :
       case "autosize" :
         var mode = toStr(elementAt(arguments, 0));
@@ -950,6 +894,134 @@ class TableModel extends BoxModel implements IForm
     {
       print (e);
     }
+  }
+
+  // delete a row
+  Future<bool> insertRow(String? jsonOrXml, int? rowIndex) async
+  {
+    try
+    {
+      var view = findListenerOfExactType(TableViewState);
+      if (view is TableViewState)
+      {
+        // get current row index if not specified
+        rowIndex ??= view.currentRowIndex ?? 0;
+
+        // add empty element to the data set
+        // important to do this first as
+        // get row model below depends on an entry
+        // in the dataset at specified index
+        notificationsEnabled = false;
+        myDataSource?.insert(jsonOrXml, rowIndex, notifyListeners: false);
+        data = myDataSource?.data ?? data;
+        notificationsEnabled = true;
+
+        // open up a space for the new model
+        insertInHashmap(rows, rowIndex);
+
+        // create new row
+        var row = getRowModel(rowIndex);
+
+        // add row to rows
+        if (row != null)
+        {
+          rows[rowIndex] = row;
+
+          // fire the rows onInsert event
+          await row.onInsertHandler();
+        }
+
+        //data = myDataSource?.notify();
+
+        // add row to table view
+        rowIndex = view.insertRow(rowIndex);
+      }
+    }
+    catch(e)
+    {
+      print (e);
+    }
+    return true;
+  }
+
+  // delete a row
+  Future<bool> deleteRow(int? rowIndex) async
+  {
+    try
+    {
+      var view = findListenerOfExactType(TableViewState);
+      if (view is TableViewState)
+      {
+        // delete row from table view
+        rowIndex = view.deleteRow(rowIndex);
+
+        // row was deleted?
+        if (rowIndex != null)
+        {
+          // lookup the row
+          var row = rows.containsKey(rowIndex) ? rows[rowIndex] : null;
+          if (row != null)
+          {
+            // fire the rows onDelete event
+            bool ok = await row.onDeleteHandler();
+
+            // continue?
+            if (ok)
+            {
+              // reorder hashmap
+              deleteInHashmap(rows, rowIndex);
+
+              // remove the data associated with the row
+              notificationsEnabled = false;
+              myDataSource?.delete(rowIndex, notifyListeners: false);
+              data = myDataSource?.data ?? data;
+              notificationsEnabled = true;
+            }
+          }
+        }
+      }
+    }
+    catch(e)
+    {
+      print (e);
+    }
+    return true;
+  }
+
+  // delete a row
+  Future<bool> moveRow(int fromIndex, int toIndex) async
+  {
+    try
+    {
+      // reorder hashmap
+      moveInHashmap(rows, fromIndex, toIndex);
+
+      // reorder data
+      notificationsEnabled = false;
+      myDataSource?.move(fromIndex, toIndex, notifyListeners: false);
+      data = myDataSource?.data ?? data;
+      notificationsEnabled = true;
+    }
+    catch(e)
+    {
+      print (e);
+    }
+    return true;
+  }
+
+  Future<bool> onDragDrop(int dragIndex, int dropIndex) async
+  {
+    var draggable = getRowModel(dragIndex);
+    var droppable = getRowModel(dropIndex);
+    if (draggable != null && droppable != null)
+    {
+      // fire onDrop event
+      await DragDrop.onDrop(droppable, draggable);
+
+      // move the row
+      moveRow(dragIndex, dropIndex);
+    }
+    return true;
   }
 
   @override

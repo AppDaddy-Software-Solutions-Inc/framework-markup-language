@@ -128,6 +128,12 @@ class TableViewState extends WidgetState<TableView>
     // row already created
     if (rowIdx < rows.length) return rows[rowIdx];
 
+    // build new row
+    return buildPlutoRow(rowIdx);
+  }
+
+  PlutoRow? buildPlutoRow(int rowIdx)
+  {
     PlutoRow? row;
 
     // get the data row
@@ -164,7 +170,7 @@ class TableViewState extends WidgetState<TableView>
         colIdx++;
       }
       row = PlutoRow(cells: cells, sortIdx: rowIdx);
-      rows.add(row);
+      rows.insert(rowIdx, row);
     }
 
     return row;
@@ -553,6 +559,9 @@ class TableViewState extends WidgetState<TableView>
     }
   }
 
+  // return the current row
+  int? get currentRowIndex => stateManager?.currentRow != null ? rows.indexOf(stateManager!.currentRow!) : null;
+
   // delete the row from the grid
   int? deleteRow(int? row)
   {
@@ -587,6 +596,17 @@ class TableViewState extends WidgetState<TableView>
     }
 
     return plutoRowIndex;
+  }
+
+  // insert the row from the grid
+  int? insertRow(int rowIndex)
+  {
+    var row = buildPlutoRow(rowIndex);
+    if (row != null)
+    {
+      stateManager?.insertRows(rowIndex, [row]);
+    }
+    return row != null ? rowIndex : null;
   }
 
   // sets the page size

@@ -30,4 +30,10 @@ abstract class IDataSource
 
   // move an item in the list
   Future<bool> move(dynamic from, dynamic to, {bool notifyListeners = true});
+
+  // move an item in the list
+  Future<bool> insert(String? jsonOrXml, int? index, {bool notifyListeners = true});
+
+  // move an item in the list
+  Future<bool> delete(int? index, {bool notifyListeners = true});
 }

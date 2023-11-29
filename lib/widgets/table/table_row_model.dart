@@ -109,6 +109,21 @@ class TableRowModel extends BoxModel
   }
   String? get oncomplete => _oncomplete?.get();
 
+  // onInsert
+  StringObservable? _onInsert;
+  set onInsert(dynamic v)
+  {
+    if (_onInsert != null)
+    {
+      _onInsert!.set(v);
+    }
+    else if (v != null)
+    {
+      _onInsert = StringObservable(Binding.toKey(id, 'oninsert'), v, scope: scope, lazyEval: true);
+    }
+  }
+  String? get onInsert => _onInsert?.get();
+  
   // onDelete
   StringObservable? _onDelete;
   set onDelete(dynamic v)
@@ -189,6 +204,7 @@ class TableRowModel extends BoxModel
     oncomplete  = Xml.get(node: xml, tag: 'oncomplete');
     onclick     = Xml.get(node: xml, tag: 'onclick');
     postbrokers = Xml.attribute(node: xml, tag: 'postbroker');
+    onInsert    = Xml.get(node: xml, tag: 'onInsert');
     onDelete    = Xml.get(node: xml, tag: 'onDelete');
 
     // get cells
@@ -281,6 +297,17 @@ class TableRowModel extends BoxModel
     return ok;
   }
 
+  Future<bool> onInsertHandler() async
+  {
+    // fire the onchange event
+    bool ok = true;
+    if (_onInsert != null)
+    {
+      ok = await EventHandler(this).execute(_onInsert);
+    }
+    return ok;
+  }
+
   Future<bool> onDeleteHandler() async
   {
     // fire the onchange event
@@ -291,7 +318,7 @@ class TableRowModel extends BoxModel
     }
     return ok;
   }
-
+  
   @override
   dispose()
   {

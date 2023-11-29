@@ -19,7 +19,7 @@ class PrototypeModel extends BoxModel
   XmlElement? prototype;
 
   // IDataSource
-  IDataSource? iDataSource;
+  IDataSource? myDataSource;
 
   @override
   bool get expand => false;
@@ -86,7 +86,7 @@ class PrototypeModel extends BoxModel
     if (prototype == null || source.id != datasource) return super.onDataSourceSuccess(source, list);
 
     // save pointer to data source
-    iDataSource = source;
+    myDataSource = source;
 
     // set busy
     busy = true;
@@ -164,7 +164,10 @@ class PrototypeModel extends BoxModel
     if (dragIndex != null && dropIndex != null && dragIndex != dropIndex)
     {
       // move the cell in the dataset
-      iDataSource?.move(dragIndex, dropIndex, notifyListeners: true);
+      notificationsEnabled = false;
+      myDataSource?.move(dragIndex, dropIndex, notifyListeners: false);
+      data = myDataSource?.data ?? data;
+      notificationsEnabled = true;
     }
   }
 }

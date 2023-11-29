@@ -31,6 +31,11 @@ class WidgetModel implements IDataSourceListener {
   List<IDataSource>? datasources;
   String? datasource;
 
+  // used to silence notifications
+  // during data manipulation or
+  // batch updates
+  bool notificationsEnabled = true;
+
   // data element
   ListObservable? _data;
   set data(dynamic v)
@@ -296,7 +301,8 @@ class WidgetModel implements IDataSourceListener {
     }
   }
 
-  void onPropertyChange(Observable observable) => notifyListeners(observable.key, observable.get());
+  /// notifies listeners of any changes to a property
+  void onPropertyChange(Observable observable) => notificationsEnabled ? notifyListeners(observable.key, observable.get()) : null;
 
   Future<void> initialize() async {
     // start datasources

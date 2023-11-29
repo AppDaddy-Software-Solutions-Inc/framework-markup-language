@@ -128,6 +128,12 @@ class TableViewState extends WidgetState<TableView>
     // row already created
     if (rowIdx < rows.length) return rows[rowIdx];
 
+    // build new row
+    return buildPlutoRow(rowIdx);
+  }
+
+  PlutoRow? buildPlutoRow(int rowIdx)
+  {
     PlutoRow? row;
 
     // get the data row
@@ -164,7 +170,7 @@ class TableViewState extends WidgetState<TableView>
         colIdx++;
       }
       row = PlutoRow(cells: cells, sortIdx: rowIdx);
-      rows.add(row);
+      rows.insert(rowIdx, row);
     }
 
     return row;
@@ -551,6 +557,56 @@ class TableViewState extends WidgetState<TableView>
       stateManager?.setColumnSizeConfig(PlutoGridColumnSizeConfig(autoSizeMode: PlutoAutoSizeMode.none, resizeMode: _getResizeMode()));
       break;
     }
+  }
+
+  // return the current row
+  int? get currentRowIndex => stateManager?.currentRow != null ? rows.indexOf(stateManager!.currentRow!) : null;
+
+  // delete the row from the grid
+  int? deleteRow(int? row)
+  {
+    PlutoRow? plutoRow;
+    int? plutoRowIndex;
+
+    if (grid == null) return null;
+
+    // lookup the row to delete
+    if (row != null)
+    {
+      plutoRow = row > 0 && row < grid!.rows.length ? grid!.rows[row] : null;
+    }
+    else
+    {
+      plutoRow = stateManager?.currentRow;
+    }
+
+    // delete the row
+    if (plutoRow != null)
+    {
+      plutoRowIndex = rows.indexOf(plutoRow);
+
+      stateManager?.removeRows([plutoRow]);
+      if (rows.contains(plutoRow))
+      {
+        rows.remove(plutoRow);
+      }
+
+      // get cell model
+      views.clear();
+    }
+
+    return plutoRowIndex;
+  }
+
+  // insert the row from the grid
+  int? insertRow(int rowIndex)
+  {
+    var row = buildPlutoRow(rowIndex);
+    if (row != null)
+    {
+      stateManager?.insertRows(rowIndex, [row]);
+    }
+    return row != null ? rowIndex : null;
   }
 
   // sets the page size

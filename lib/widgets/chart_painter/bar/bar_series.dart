@@ -41,7 +41,6 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
         dynamic size,
         dynamic label,
         dynamic type,
-        dynamic tooltips,
         dynamic animated,
         dynamic name,
         dynamic group,
@@ -60,7 +59,6 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
     this.radius = radius;
     this.size = size;
     this.label = label;
-    this.tooltips = tooltips;
     this.name = name;
     this.group = group;
     this.stack = stack;
@@ -74,7 +72,6 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
     BarChartSeriesModel? model;
     try
     {
-      xml = prototypeOf(xml) ?? xml;
       model = BarChartSeriesModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
@@ -90,7 +87,7 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
   @override
   void deserialize(XmlElement xml)
   {
-    //* Deserialize */
+    // deserialize
     super.deserialize(xml);
 
     // properties
@@ -102,7 +99,6 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
     size        = Xml.get(node: xml, tag: 'size');
     type        = Xml.get(node: xml, tag: 'type');
     label       = Xml.get(node: xml, tag: 'label');
-    tooltips    = Xml.get(node: xml, tag: 'tooltips');
     name        = Xml.get(node: xml, tag: 'name');
     group       = Xml.get(node: xml, tag: 'group');
     stack       = Xml.get(node: xml, tag: 'stack');

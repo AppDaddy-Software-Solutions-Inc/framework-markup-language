@@ -28,10 +28,33 @@ class _PieChartViewState extends WidgetState<PieChartView>
   Future<Template>? template;
   Future<PieChartModel>? chartViewModel;
   BusyView? busy;
+  OverlayEntry? tooltip;
 
-  PieChart buildPieChart(seriesData){
+  PieChart buildPieChart(seriesData)
+  {
     PieChart chart = PieChart(widget.model.pieData);
     return chart;
+  }
+
+  @override
+  didChangeDependencies()
+  {
+    super.didChangeDependencies();
+    hideTooltip();
+  }
+
+  @override
+  void didUpdateWidget(dynamic oldWidget)
+  {
+    super.didUpdateWidget(oldWidget);
+    hideTooltip();
+  }
+
+  @override
+  dispose()
+  {
+    hideTooltip();
+    super.dispose();
   }
 
   @override
@@ -48,7 +71,8 @@ class _PieChartViewState extends WidgetState<PieChartView>
     // get the children
     List<Widget> children = widget.model.inflate();
 
-    try {
+    try
+    {
         view = buildPieChart(widget.model.series);
     } catch(e) {
       Log().exception(e, caller: 'chart_view builder() ');
@@ -73,5 +97,29 @@ class _PieChartViewState extends WidgetState<PieChartView>
     view = applyConstraints(view, widget.model.tightestOrDefault);
 
     return view;
+  }
+
+  void showTooltip(List<Widget> views, double x, double y)
+  {
+    // remove old tooltip
+    hideTooltip();
+
+    // show new tooltip
+    if (views.isNotEmpty)
+    {
+      tooltip = OverlayEntry(builder: (context) => Positioned(left: x, top: y, child: Column(children: views, mainAxisSize: MainAxisSize.min)));
+      Overlay.of(context).insert(tooltip!);
+    }
+  }
+
+  void hideTooltip()
+  {
+    // remove old tooltip
+    try
+    {
+      tooltip?.remove();
+      tooltip?.dispose();
+    }
+    catch(e){}
   }
 }

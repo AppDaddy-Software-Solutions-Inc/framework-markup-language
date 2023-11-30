@@ -3,12 +3,13 @@ import 'package:flutter/material.dart' hide Axis;
 import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/chart/series/chart_series_model.dart';
+import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'package:xml/xml.dart';
-
-import '../chart/chart_model.dart';
+import 'series/myspot.dart';
 
 /// Chart [ChartModel]
 ///
@@ -47,7 +48,7 @@ class ChartPainterModel extends BoxModel
   String? get title => _title?.get();
 
 
-  ChartPainterModel(WidgetModel? parent, String? id,
+  ChartPainterModel(WidgetModel parent, String? id,
       {
         dynamic type,
         dynamic showlegend,
@@ -56,7 +57,7 @@ class ChartPainterModel extends BoxModel
         dynamic animated,
         dynamic selected,
         dynamic legendsize,
-      }) : super(parent, id) {
+      }) : super(parent, id, scope: Scope(parent: parent.scope)) {
     this.selected         = selected;
     this.title            = title;
     this.animated         = animated;
@@ -235,8 +236,27 @@ class ChartPainterModel extends BoxModel
   /// to populate the series data from the datasource and
   /// to populate the label data from the datasource data.
 
-  @override
-  Widget getView({Key? key}) {
-    return Offstage();
+  // must be implemented
+  List<Widget> getTooltips(List<MySpot> spots) => throw UnimplementedError("Not implemented");
+
+  // build the tooltip view
+  List<Widget> buildTooltip(ChartPainterSeriesModel? series, MySpot spot)
+  {
+    List<Widget> views = [];
+    if (series == null) return views;
+
+    // get series tooltip
+    var tip = series.tooltip;
+    if (tip != null)
+    {
+      // bind the data to the tip
+      tip.data = spot.data;
+      views.add(tip.getView());
+    }
+
+    return views;
   }
+
+  @override
+  Widget getView({Key? key})  => Offstage();
 }

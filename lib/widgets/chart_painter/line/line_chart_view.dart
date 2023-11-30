@@ -4,6 +4,7 @@ import 'package:fml/helpers/string.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
+import 'package:fml/widgets/chart_painter/series/myspot.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
@@ -31,6 +32,28 @@ class _LineChartViewState extends WidgetState<LineChartView>
   Future<Template>? template;
   Future<LineChartModel>? chartViewModel;
   BusyView? busy;
+  OverlayEntry? tooltip;
+
+  @override
+  didChangeDependencies()
+  {
+    super.didChangeDependencies();
+    hideTooltip();
+  }
+
+  @override
+  void didUpdateWidget(dynamic oldWidget)
+  {
+    super.didUpdateWidget(oldWidget);
+    hideTooltip();
+  }
+
+  @override
+  dispose()
+  {
+    hideTooltip();
+    super.dispose();
+  }
 
   Widget bottomTitles(double value, TitleMeta meta) {
     var style = TextStyle(fontSize: widget.model.xaxis.labelsize ?? 8, color: Theme.of(context).colorScheme.outline);
@@ -75,15 +98,9 @@ class _LineChartViewState extends WidgetState<LineChartView>
       LineChartData(
         lineBarsData: widget.model.lineDataList,
         lineTouchData: LineTouchData(
-          touchTooltipData: LineTouchTooltipData(
-            getTooltipItems: (value) {
-              value;
-              return [LineTooltipItem(
-                  "HELLO", TextStyle())];
-            },
-            //tooltipBgColor: AppColour.mainBlue,
-          ),
-        ),
+            touchCallback: onLineTouch,
+            touchTooltipData: LineTouchTooltipData(getTooltipItems: getTooltipItems)
+            ),
 
         //the series must determine the min and max y
         minY: toDouble(widget.model.yaxis.min),
@@ -122,6 +139,81 @@ class _LineChartViewState extends WidgetState<LineChartView>
       ),
     );
     return chart;
+  }
+
+  void onLineTouch(FlTouchEvent event, LineTouchResponse? response)
+  {
+    bool exit = (response?.lineBarSpots?.isEmpty ?? true) || event is FlPointerExitEvent;
+    bool enter = !exit;
+
+    if (enter)
+    {
+      List<MySpot> spots = [];
+      for (var spot in response!.lineBarSpots!)
+      {
+        var mySpot = spot.bar.spots[spot.spotIndex];
+        if (mySpot is MySpot)
+        {
+          spots.add(mySpot);
+        }
+      }
+
+      RenderBox? render = context.findRenderObject() as RenderBox?;
+      Offset? point = event.localPosition;
+      if (render != null && point != null)
+      {
+        point = render.localToGlobal(point);
+      }
+
+      // show tooltip in post frame callback
+      WidgetsBinding.instance.addPostFrameCallback((_) => showTooltip(widget.model.getTooltips(spots), point?.dx ?? 0, point?.dy ?? 0));
+    }
+
+    // hide tooltip
+    if (exit)
+    {
+      // show tooltip in post frame callback
+      WidgetsBinding.instance.addPostFrameCallback((_) => hideTooltip());
+    }
+  }
+
+  List<LineTooltipItem> getTooltipItems(List<LineBarSpot> touchedSpots)
+  {
+    List<LineTooltipItem> tooltips = [];
+    var showTips = false;
+    for (var spot in touchedSpots)
+    {
+      var mySpot = spot.bar.spots[spot.spotIndex];
+      if (mySpot is MySpot && mySpot.series.tooltips) showTips = true;
+
+      tooltips.add(LineTooltipItem("${spot.x},${spot.y}", TextStyle()));
+    }
+    if (!showTips) tooltips.clear();
+    return tooltips;
+  }
+
+  void showTooltip(List<Widget> views, double x, double y)
+  {
+    // remove old tooltip
+    hideTooltip();
+
+    // show new tooltip
+    if (views.isNotEmpty)
+    {
+      tooltip = OverlayEntry(builder: (context) => Positioned(left: x, top: y + 25, child: Column(children: views, mainAxisSize: MainAxisSize.min)));
+      Overlay.of(context).insert(tooltip!);
+    }
+  }
+
+  void hideTooltip()
+  {
+    // remove old tooltip
+    try
+    {
+      tooltip?.remove();
+      tooltip?.dispose();
+    }
+    catch(e){}
   }
 
   @override

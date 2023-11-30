@@ -39,7 +39,6 @@ class PieChartSeriesModel extends ChartPainterSeriesModel
         dynamic radius,
         dynamic size,
         dynamic label,
-        dynamic tooltips,
         dynamic animated,
         dynamic name,
         dynamic group,
@@ -58,7 +57,6 @@ class PieChartSeriesModel extends ChartPainterSeriesModel
     this.radius = radius;
     this.size = size;
     this.label = label;
-    this.tooltips = tooltips;
     this.name = name;
     this.group = group;
     this.stack = stack;
@@ -72,7 +70,6 @@ class PieChartSeriesModel extends ChartPainterSeriesModel
     PieChartSeriesModel? model;
     try
     {
-      xml = prototypeOf(xml) ?? xml;
       model = PieChartSeriesModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
@@ -88,8 +85,14 @@ class PieChartSeriesModel extends ChartPainterSeriesModel
   @override
   void deserialize(XmlElement xml)
   {
-    //* Deserialize */
+    // deserialize
     super.deserialize(xml);
+
+    // replace data references
+    // important that this goes here as children may also have
+    // prototypes with unresolved {data.xxx} references
+    Xml.setAttribute(xml, "id", id);
+    xml = prototypeOf(xml) ?? xml;
 
     // properties
     x           = Xml.get(node: xml, tag: 'x');
@@ -100,7 +103,6 @@ class PieChartSeriesModel extends ChartPainterSeriesModel
     size        = Xml.get(node: xml, tag: 'size');
     type        = Xml.get(node: xml, tag: 'type');
     label       = Xml.get(node: xml, tag: 'label');
-    tooltips    = Xml.get(node: xml, tag: 'tooltips');
     name        = Xml.get(node: xml, tag: 'name');
     group       = Xml.get(node: xml, tag: 'group');
     stack       = Xml.get(node: xml, tag: 'stack');

@@ -1,12 +1,10 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'dart:math';
-
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
+import 'package:fml/widgets/chart_painter/series/myspot.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -27,7 +25,7 @@ class ChartDataPoint {
 ///
 /// Defines the properties used to build a Charts's Series
 class LineChartSeriesModel extends ChartPainterSeriesModel {
-  List<FlSpot> lineDataPoint = [];
+  List<MySpot> lineDataPoint = [];
   List<String> labels = [];
   Map<int, dynamic> xValueMap = {};
   @override
@@ -41,7 +39,6 @@ class LineChartSeriesModel extends ChartPainterSeriesModel {
     dynamic radius,
     dynamic size,
     dynamic label,
-    dynamic tooltips,
     dynamic animated,
     dynamic name,
     dynamic group,
@@ -58,7 +55,6 @@ class LineChartSeriesModel extends ChartPainterSeriesModel {
     this.radius = radius;
     this.size = size;
     this.label = label;
-    this.tooltips = tooltips;
     this.name = name;
     this.group = group;
     this.stack = stack;
@@ -70,7 +66,6 @@ class LineChartSeriesModel extends ChartPainterSeriesModel {
   static LineChartSeriesModel? fromXml(WidgetModel parent, XmlElement xml) {
     LineChartSeriesModel? model;
     try {
-      xml = prototypeOf(xml) ?? xml;
       model = LineChartSeriesModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     } catch (e) {
@@ -83,7 +78,8 @@ class LineChartSeriesModel extends ChartPainterSeriesModel {
   /// Deserializes the FML template elements, attributes and children
   @override
   void deserialize(XmlElement xml) {
-    //* Deserialize */
+
+    // deserialize
     super.deserialize(xml);
 
     // properties
@@ -95,7 +91,6 @@ class LineChartSeriesModel extends ChartPainterSeriesModel {
     size = Xml.get(node: xml, tag: 'size');
     type = Xml.get(node: xml, tag: 'type');
     label = Xml.get(node: xml, tag: 'label');
-    tooltips = Xml.get(node: xml, tag: 'tooltips');
     name = Xml.get(node: xml, tag: 'name');
     group = Xml.get(node: xml, tag: 'group');
     stack = Xml.get(node: xml, tag: 'stack');
@@ -107,7 +102,9 @@ class LineChartSeriesModel extends ChartPainterSeriesModel {
     if ((datasource != null) &&
         (scope != null) &&
         (scope!.datasources.containsKey(datasource)))
+    {
       scope!.datasources[datasource!]!.remove(this);
+    }
 
     // Setup the Series type and some internal properties for supporting it
     if (type != null) type = type?.trim().toLowerCase();
@@ -129,7 +126,7 @@ class LineChartSeriesModel extends ChartPainterSeriesModel {
         len += 1;
       }
       //plot the point as a point object based on the desired function based on series and chart type.
-      plot();
+      plot(this, data);
     }
     dataList = null;
   }
@@ -144,7 +141,7 @@ class LineChartSeriesModel extends ChartPainterSeriesModel {
       xValues.add(x);
       x = len;
       len += 1;
-      plot();
+      plot(this, data);
     }
     dataList = null;
   }
@@ -160,7 +157,7 @@ class LineChartSeriesModel extends ChartPainterSeriesModel {
       try {
         x = toDate(x, format: format ?? 'yyyy/MM/dd')?.millisecondsSinceEpoch;
         //plot the point as a point object based on the desired function based on series and chart type.
-        plot();
+        plot(this, data);
       } catch (e) {
         print('error formatting date to plot point');
       }
@@ -176,14 +173,14 @@ class LineChartSeriesModel extends ChartPainterSeriesModel {
       //set the data of the series for databinding
       data = dataList[i];
       //plot the point as a point object based on the desired function based on series and chart type.
-      plot();
+      plot(this, data);
     }
     dataList = null;
   }
 
-  void plot() {
+  void plot(dynamic series, dynamic data) {
     labels.add(label ?? "");
-    FlSpot point = FlSpot(toDouble(x) ?? 0, toDouble(y) ?? 0);
+    MySpot point = MySpot(toDouble(x) ?? 0, toDouble(y) ?? 0, series, data);
     lineDataPoint.add(point);
   }
 }

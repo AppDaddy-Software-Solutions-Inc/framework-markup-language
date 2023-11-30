@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:collection/collection.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart' hide Axis;
 import 'package:fml/data/data.dart';
@@ -7,6 +8,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart_painter/pie/pie_chart_view.dart';
 import 'package:fml/widgets/chart_painter/pie/pie_series.dart';
+import 'package:fml/widgets/chart_painter/series/myspot.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -35,7 +37,7 @@ class PieChartModel extends ChartPainterModel
     return true;
   }
 
-  PieChartModel(WidgetModel? parent, String? id,
+  PieChartModel(WidgetModel parent, String? id,
       {
         dynamic type,
         dynamic showlegend,
@@ -187,6 +189,18 @@ class PieChartModel extends ChartPainterModel
       // DialogService().show(type: DialogType.error, title: phrase.error, description: e.message);
     }
     return true;
+  }
+
+  @override
+  List<Widget> getTooltips(List<MySpot> spots)
+  {
+    List<Widget> views = [];
+    for (var spot in spots)
+    {
+      var series = this.series.firstWhereOrNull((element) => element == spot.series);
+      views.addAll(buildTooltip(series, spot));
+    }
+    return views;
   }
 
   @override

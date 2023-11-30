@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:collection/collection.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart' hide Axis;
 import 'package:fml/data/data.dart';
@@ -8,6 +9,7 @@ import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart_painter/bar/bar_series.dart';
 import 'package:fml/widgets/chart_painter/chart_model.dart';
 import 'package:fml/widgets/chart_painter/axis/chart_axis_model.dart';
+import 'package:fml/widgets/chart_painter/series/myspot.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/chart_painter/bar/bar_chart_view.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -25,7 +27,7 @@ class BarChartModel extends ChartPainterModel
   num yMax = 0;
   num yMin = 0;
 
-  BarChartModel(WidgetModel? parent, String? id,
+  BarChartModel(WidgetModel parent, String? id,
       {
         dynamic type,
         dynamic showlegend,
@@ -159,6 +161,18 @@ class BarChartModel extends ChartPainterModel
       // DialogService().show(type: DialogType.error, title: phrase.error, description: e.message);
     }
     return true;
+  }
+
+  @override
+  List<Widget> getTooltips(List<MySpot> spots)
+  {
+    List<Widget> views = [];
+    for (var spot in spots)
+    {
+      var series = this.series.firstWhereOrNull((element) => element == spot.series);
+      views.addAll(buildTooltip(series, spot));
+    }
+    return views;
   }
 
   @override

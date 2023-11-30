@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:fml/widgets/box/box_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/observable/observable_barrel.dart';
@@ -49,6 +50,23 @@ class ChartPainterSeriesModel extends WidgetModel
   }
   bool get curved => _curved?.get() ?? false;
 
+  /// If true points will have a tooltip appear on hover
+  BooleanObservable? _tooltips;
+  set tooltips (dynamic v)
+  {
+    if (_tooltips != null)
+    {
+      _tooltips!.set(v);
+    }
+    else if (v != null)
+    {
+      _tooltips = BooleanObservable(Binding.toKey(id, 'tooltips'), v, scope: scope);
+    }
+  }
+  bool get tooltips => _tooltips?.get() ?? true;
+
+  BoxModel? tooltip;
+
   ChartPainterSeriesModel(
     WidgetModel parent,
     String? id, {
@@ -61,7 +79,6 @@ class ChartPainterSeriesModel extends WidgetModel
       dynamic size,
       dynamic label,
       this.type,
-      dynamic tooltips,
       dynamic animated,
       dynamic name,
       dynamic group,
@@ -83,7 +100,6 @@ class ChartPainterSeriesModel extends WidgetModel
     this.curved = curved;
     this.size = size;
     this.label = label;
-    this.tooltips = tooltips;
     this.name = name;
     this.group = group;
     this.stack = stack;
@@ -97,7 +113,6 @@ class ChartPainterSeriesModel extends WidgetModel
     ChartPainterSeriesModel? model;
     try
     {
-      xml = prototypeOf(xml) ?? xml;
       model = ChartPainterSeriesModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
@@ -113,8 +128,26 @@ class ChartPainterSeriesModel extends WidgetModel
   @override
   void deserialize(XmlElement xml)
   {
+    // get the tooltip
+    var tooltip = Xml.getChildElement(node: xml, tag: "TOOLTIP");
+    if (tooltip != null)
+    {
+      xml.children.remove(tooltip);
+      var prototype = prototypeOf(tooltip);
+      if (prototype != null)
+      {
+        this.tooltip = BoxModel.fromXml(this, prototype, expandDefault: false, scope: Scope(), data: Data());
+      }
+    }
+
     //* Deserialize */
     super.deserialize(xml);
+
+    // replace data references
+    // important that this goes here as children may also have
+    // prototypes with unresolved {data.xxx} references
+    Xml.setAttribute(xml, "id", id);
+    xml = prototypeOf(xml) ?? xml;
 
     // properties
     x           = Xml.get(node: xml, tag: 'x');
@@ -126,7 +159,6 @@ class ChartPainterSeriesModel extends WidgetModel
     size        = Xml.get(node: xml, tag: 'size');
     type        = Xml.get(node: xml, tag: 'type');
     label       = Xml.get(node: xml, tag: 'label');
-    tooltips    = Xml.get(node: xml, tag: 'tooltips');
     name        = Xml.get(node: xml, tag: 'name');
     group       = Xml.get(node: xml, tag: 'group');
     stack       = Xml.get(node: xml, tag: 'stack');
@@ -134,6 +166,7 @@ class ChartPainterSeriesModel extends WidgetModel
     showline    = Xml.get(node: xml, tag: 'showline');
     showpoints  = Xml.get(node: xml, tag: 'showpoints');
     curved      = Xml.get(node: xml, tag: 'curved');
+    tooltips    = Xml.get(node: xml, tag: 'tooltips');
 
     // Remove datasource listener. The parent chart will take care of this.
     if ((datasource != null) && (scope != null) && (scope!.datasources.containsKey(datasource))) scope!.datasources[datasource!]!.remove(this);
@@ -309,21 +342,6 @@ class ChartPainterSeriesModel extends WidgetModel
   }
   bool get showpoints => _showpoints?.get() ?? true;
 
-  /// If true points will have a tooltip appear on hover
-  BooleanObservable? _tooltips;
-  set tooltips (dynamic v)
-  {
-    if (_tooltips != null)
-    {
-      _tooltips!.set(v);
-    }
-    else if (v != null)
-    {
-      _tooltips = BooleanObservable(Binding.toKey(id, 'tooltips'), v, scope: scope);
-    }
-  }
-  bool? get tooltips => _tooltips?.get();
-
   /// The series name, will be displayed in the legend if it is visible
   StringObservable? _name;
   set name (dynamic v)
@@ -406,5 +424,13 @@ class ChartPainterSeriesModel extends WidgetModel
     }
     dataList = null;
     plotFunction = null;
+  }
+
+  @override
+  void dispose()
+  {
+    // dispose of the tooltip
+    tooltip?.dispose();
+    super.dispose();
   }
 }

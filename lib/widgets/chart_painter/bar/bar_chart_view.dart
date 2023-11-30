@@ -4,6 +4,7 @@ import 'package:fml/helpers/string.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart_painter/bar/bar_chart_model.dart';
+import 'package:fml/widgets/chart_painter/series/myspot.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
@@ -29,6 +30,28 @@ class _ChartViewState extends WidgetState<BarChartView>
   Future<Template>? template;
   Future<BarChartModel>? chartViewModel;
   BusyView? busy;
+  OverlayEntry? tooltip;
+
+  @override
+  didChangeDependencies()
+  {
+    super.didChangeDependencies();
+    hideTooltip();
+  }
+
+  @override
+  void didUpdateWidget(dynamic oldWidget)
+  {
+    super.didUpdateWidget(oldWidget);
+    hideTooltip();
+  }
+
+  @override
+  dispose()
+  {
+    hideTooltip();
+    super.dispose();
+  }
 
   Widget bottomTitles(double value, TitleMeta meta) {
     var style = TextStyle(fontSize: widget.model.xaxis.labelsize ?? 8, color: Theme.of(context).colorScheme.outline);
@@ -59,6 +82,7 @@ class _ChartViewState extends WidgetState<BarChartView>
         barGroups: widget.model.barDataList,
         minY: toDouble(widget.model.yaxis.min),
         maxY: toDouble(widget.model.yaxis.max),
+        barTouchData: BarTouchData(touchCallback: onBarTouch),
 
         titlesData: FlTitlesData(
           topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false),  axisNameWidget: !isNullOrEmpty(widget.model.title) ? Text(widget.model.title!, style: TextStyle(fontSize: 12),): null,),
@@ -126,5 +150,61 @@ class _ChartViewState extends WidgetState<BarChartView>
     view = applyConstraints(view, widget.model.tightestOrDefault);
 
     return view;
+  }
+
+  void onBarTouch(FlTouchEvent event, BarTouchResponse? response)
+  {
+    bool exit = response?.spot == null;
+    bool enter = !exit;
+
+    if (enter)
+    {
+      List<MySpot> spots = [];
+      if (response?.spot is MySpot)
+      {
+        spots.add(response?.spot as MySpot);
+      }
+
+      RenderBox? render = context.findRenderObject() as RenderBox?;
+      Offset? point = event.localPosition;
+      if (render != null && point != null)
+      {
+        point = render.localToGlobal(point);
+      }
+
+      // show tooltip in post frame callback
+      WidgetsBinding.instance.addPostFrameCallback((_) => showTooltip(widget.model.getTooltips(spots), point?.dx ?? 0, point?.dy ?? 0));
+    }
+
+    // hide tooltip
+    if (exit)
+    {
+      // show tooltip in post frame callback
+      WidgetsBinding.instance.addPostFrameCallback((_) => hideTooltip());
+    }
+  }
+
+  void showTooltip(List<Widget> views, double x, double y)
+  {
+    // remove old tooltip
+    hideTooltip();
+
+    // show new tooltip
+    if (views.isNotEmpty)
+    {
+      tooltip = OverlayEntry(builder: (context) => Positioned(left: x, top: y, child: Column(children: views, mainAxisSize: MainAxisSize.min)));
+      Overlay.of(context).insert(tooltip!);
+    }
+  }
+
+  void hideTooltip()
+  {
+    // remove old tooltip
+    try
+    {
+      tooltip?.remove();
+      tooltip?.dispose();
+    }
+    catch(e){}
   }
 }

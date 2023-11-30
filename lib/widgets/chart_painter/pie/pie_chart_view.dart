@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart_painter/pie/pie_chart_model.dart';
+import 'package:fml/widgets/chart_painter/series/spot_interface.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
@@ -29,12 +30,7 @@ class _PieChartViewState extends WidgetState<PieChartView>
   Future<PieChartModel>? chartViewModel;
   BusyView? busy;
   OverlayEntry? tooltip;
-
-  PieChart buildPieChart(seriesData)
-  {
-    PieChart chart = PieChart(widget.model.pieData);
-    return chart;
-  }
+  PieChartData? data;
 
   @override
   didChangeDependencies()
@@ -57,6 +53,8 @@ class _PieChartViewState extends WidgetState<PieChartView>
     super.dispose();
   }
 
+  PieChart? chart;
+
   @override
   Widget build(BuildContext context)
   {
@@ -73,8 +71,17 @@ class _PieChartViewState extends WidgetState<PieChartView>
 
     try
     {
-        view = buildPieChart(widget.model.series);
-    } catch(e) {
+      data = PieChartData(
+          sections: widget.model.pieData.toList(),
+          centerSpaceRadius: widget.model.centerRadius,
+          sectionsSpace: widget.model.spacing,
+      //    pieTouchData: PieTouchData(touchCallback: onPieTouch)
+      );
+      chart = PieChart(data!);
+      view = chart;
+    }
+    catch(e)
+    {
       Log().exception(e, caller: 'chart_view builder() ');
       view = Center(child: Icon(Icons.add_chart));
     }
@@ -99,6 +106,39 @@ class _PieChartViewState extends WidgetState<PieChartView>
     return view;
   }
 
+  void onPieTouch(FlTouchEvent event, PieTouchResponse? response)
+  {
+    bool exit = response?.touchedSection == null || event is FlPointerExitEvent;
+    bool enter = !exit;
+
+    if (enter)
+    {
+      List<ISpotInterface> spots = [];
+      var spot = response!.touchedSection;
+      if (spot is ISpotInterface)
+      {
+        spots.add(spot as ISpotInterface);
+      }
+
+      RenderBox? render = context.findRenderObject() as RenderBox?;
+      Offset? point = event.localPosition;
+      if (render != null && point != null)
+      {
+        point = render.localToGlobal(point);
+      }
+
+      // show tooltip in post frame callback
+      WidgetsBinding.instance.addPostFrameCallback((_) => showTooltip(widget.model.getTooltips(spots), point?.dx ?? 0, point?.dy ?? 0));
+    }
+
+    // hide tooltip
+    if (exit)
+    {
+      // show tooltip in post frame callback
+      WidgetsBinding.instance.addPostFrameCallback((_) => hideTooltip());
+    }
+  }
+
   void showTooltip(List<Widget> views, double x, double y)
   {
     // remove old tooltip
@@ -114,6 +154,7 @@ class _PieChartViewState extends WidgetState<PieChartView>
 
   void hideTooltip()
   {
+    return;
     // remove old tooltip
     try
     {

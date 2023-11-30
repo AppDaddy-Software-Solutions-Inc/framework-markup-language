@@ -1,10 +1,11 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
+import 'package:fml/widgets/chart_painter/series/mypie.dart';
+import 'package:fml/widgets/chart_painter/series/spot_interface.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/observable/observable_barrel.dart';
@@ -27,7 +28,7 @@ class ChartDataPoint {
 /// Defines the properties used to build a Charts's Series
 class PieChartSeriesModel extends ChartPainterSeriesModel
 {
-  List<PieChartSectionData> pieDataPoint = [];
+  List<MyPie> pieDataPoint = [];
 
   PieChartSeriesModel(
       WidgetModel parent,
@@ -139,19 +140,19 @@ class PieChartSeriesModel extends ChartPainterSeriesModel
   //   dataList = null;
   // }
 
-  void plotPoints(dynamic dataList){
-    for (var i=0; i< dataList.length; i++) {
+  List<MyPie> plotPoints(dynamic dataList)
+  {
+    List<MyPie> points = [];
+    for (var i=0; i< dataList.length; i++)
+    {
       //set the data of the series for databinding
       data = dataList[i];
-      //plot the point as a point object based on the desired function based on series and chart type.
-      plot();
-    }
-    dataList = null;
-  }
 
-  void plot(){
-    PieChartSectionData point = PieChartSectionData(value: toDouble(y) ?? 0, title: x, radius: radius, color: color ?? ColorHelper.fromString('random'));
-    pieDataPoint.add(point);
+      MyPie point = MyPie(this, data, value: toDouble(y) ?? 0, title: x, radius: radius, color: color ?? ColorHelper.fromString('random'));
+
+      points.add(point);
+    }
+    return points;
   }
 
 }

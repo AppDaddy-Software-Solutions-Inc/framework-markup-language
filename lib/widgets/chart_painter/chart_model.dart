@@ -5,11 +5,11 @@ import 'package:fml/template/template.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/chart/series/chart_series_model.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
+import 'package:fml/widgets/chart_painter/series/spot_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'package:xml/xml.dart';
-import 'series/myspot.dart';
 
 /// Chart [ChartModel]
 ///
@@ -237,10 +237,10 @@ class ChartPainterModel extends BoxModel
   /// to populate the label data from the datasource data.
 
   // must be implemented
-  List<Widget> getTooltips(List<MySpot> spots) => throw UnimplementedError("Not implemented");
+  List<Widget> getTooltips(List<ISpotInterface> spots) => throw UnimplementedError("Not implemented");
 
   // build the tooltip view
-  List<Widget> buildTooltip(ChartPainterSeriesModel? series, MySpot spot)
+  List<Widget> buildTooltip(ChartPainterSeriesModel? series, ISpotInterface spot)
   {
     List<Widget> views = [];
     if (series == null) return views;

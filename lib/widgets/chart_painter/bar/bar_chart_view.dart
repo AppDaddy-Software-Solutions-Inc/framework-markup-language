@@ -4,7 +4,7 @@ import 'package:fml/helpers/string.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart_painter/bar/bar_chart_model.dart';
-import 'package:fml/widgets/chart_painter/series/myspot.dart';
+import 'package:fml/widgets/chart_painter/series/spot_interface.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
@@ -159,10 +159,11 @@ class _ChartViewState extends WidgetState<BarChartView>
 
     if (enter)
     {
-      List<MySpot> spots = [];
-      if (response?.spot is MySpot)
+      List<ISpotInterface> spots = [];
+      var spot = response?.spot;
+      if (spot is ISpotInterface)
       {
-        spots.add(response?.spot as MySpot);
+        spots.add(spot as ISpotInterface);
       }
 
       RenderBox? render = context.findRenderObject() as RenderBox?;

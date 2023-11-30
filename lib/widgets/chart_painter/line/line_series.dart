@@ -180,7 +180,7 @@ class LineChartSeriesModel extends ChartPainterSeriesModel {
 
   void plot(dynamic series, dynamic data) {
     labels.add(label ?? "");
-    MySpot point = MySpot(toDouble(x) ?? 0, toDouble(y) ?? 0, series, data);
+    MySpot point = MySpot(series, data, toDouble(x) ?? 0, toDouble(y) ?? 0);
     lineDataPoint.add(point);
   }
 }

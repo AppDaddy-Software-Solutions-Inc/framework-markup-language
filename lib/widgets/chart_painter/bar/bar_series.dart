@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
+import 'package:fml/widgets/chart_painter/series/mybar.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/observable/observable_barrel.dart';
@@ -26,7 +27,7 @@ class ChartDataPoint {
 /// Defines the properties used to build a Charts's Series
 class BarChartSeriesModel extends ChartPainterSeriesModel
 {
-  List<BarChartGroupData> barDataPoint = [];
+  List<MyBar> barDataPoint = [];
   List<BarChartRodData> rodDataPoint = [];
   List<BarChartRodStackItem> stackDataPoint = [];
 
@@ -143,15 +144,21 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
       stackDataPoint.clear();
       plotFunction = pointFromStackedBarData;
       //sort the values
-    } else if (type == 'grouped') {
+    }
+    else if (type == 'grouped')
+    {
       rodDataPoint.clear();
       plotFunction = pointFromGroupedBarData;
-      barDataPoint.add(BarChartGroupData(x: uniqueValues.length, barRods: rodDataPoint));
-    } else if (type == 'waterfall') {
+      barDataPoint.add(MyBar(this, data, x: uniqueValues.length, barRods: rodDataPoint));
+    }
+    else if (type == 'waterfall')
+    {
       plotFunction = pointFromWaterfallBarData;
     }
+
     int len = uniqueValues.length;
-    for (var i=0; i< dataList.length; i++) {
+    for (var i=0; i< dataList.length; i++)
+    {
       //set the data of the series for databinding
       data = dataList[i];
       if (type == 'bar' ||  type == 'waterfall' || type == null){
@@ -162,12 +169,12 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
         x = len;
       }
       plotFunction!();
-
     }
-    if (type == 'stacked') {
+
+    if (type == 'stacked')
+    {
       stackDataPoint.sort((b, a) => a.toY.compareTo(b.toY));
-      barDataPoint.add(
-          BarChartGroupData(x: uniqueValues.length, barRods: [BarChartRodData(toY: stackDataPoint[0].toY, color: Colors.transparent, rodStackItems: stackDataPoint)]));
+      barDataPoint.add(MyBar(this, data, x: uniqueValues.length, barRods: [BarChartRodData(toY: stackDataPoint[0].toY, color: Colors.transparent, rodStackItems: stackDataPoint)]));
     }
 
       dataList = null;
@@ -176,15 +183,14 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
   void pointFromBarData()
   {
     //barchartrodstackitem allows stacking within series group.
-    BarChartGroupData point = BarChartGroupData(x: toInt(x) ?? 0, barRods: [BarChartRodData(fromY: toDouble(y0) ?? 0,toY: toDouble(y) ?? 0, width: width, color: color ?? ColorHelper.fromString('random'))]);
+    MyBar point = MyBar(this, data, x: toInt(x) ?? 0, barRods: [BarChartRodData(fromY: toDouble(y0) ?? 0,toY: toDouble(y) ?? 0, width: width, color: color ?? ColorHelper.fromString('random'))]);
     barDataPoint.add(point);
-
   }
 
   void pointFromWaterfallBarData()
   {
     //barchartrodstackitem allows stacking within series group.
-    BarChartGroupData point = BarChartGroupData(x: toInt(x) ?? 0, barRods: [BarChartRodData(fromY: barDataPoint.isNotEmpty ? barDataPoint[(barDataPoint.length - 1)].barRods[0].toY : 0,toY: toDouble(y) ?? 0, width: width, color: color ?? ColorHelper.fromString('random'))]);
+    MyBar point = MyBar(this, data, x: toInt(x) ?? 0, barRods: [BarChartRodData(fromY: barDataPoint.isNotEmpty ? barDataPoint[(barDataPoint.length - 1)].barRods[0].toY : 0,toY: toDouble(y) ?? 0, width: width, color: color ?? ColorHelper.fromString('random'))]);
     barDataPoint.add(point);
   }
 

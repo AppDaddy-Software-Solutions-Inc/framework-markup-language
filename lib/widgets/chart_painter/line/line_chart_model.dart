@@ -7,7 +7,7 @@ import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart_painter/axis/chart_axis_model.dart';
-import 'package:fml/widgets/chart_painter/series/myspot.dart';
+import 'package:fml/widgets/chart_painter/series/spot_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/helpers/helpers.dart';
 import 'package:xml/xml.dart';
@@ -187,7 +187,7 @@ class LineChartModel extends ChartPainterModel
   }
 
   @override
-  List<Widget> getTooltips(List<MySpot> spots)
+  List<Widget> getTooltips(List<ISpotInterface> spots)
   {
     List<Widget> views = [];
     for (var spot in spots)

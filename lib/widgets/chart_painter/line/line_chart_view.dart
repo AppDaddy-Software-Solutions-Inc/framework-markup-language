@@ -5,6 +5,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
 import 'package:fml/widgets/chart_painter/series/myspot.dart';
+import 'package:fml/widgets/chart_painter/series/spot_interface.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
@@ -148,13 +149,13 @@ class _LineChartViewState extends WidgetState<LineChartView>
 
     if (enter)
     {
-      List<MySpot> spots = [];
+      List<ISpotInterface> spots = [];
       for (var spot in response!.lineBarSpots!)
       {
         var mySpot = spot.bar.spots[spot.spotIndex];
-        if (mySpot is MySpot)
+        if (mySpot is ISpotInterface)
         {
-          spots.add(mySpot);
+          spots.add(mySpot as ISpotInterface);
         }
       }
 

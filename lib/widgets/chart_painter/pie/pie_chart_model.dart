@@ -1,19 +1,19 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:collection/collection.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart' hide Axis;
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
+import 'package:fml/widgets/chart_painter/chart_model.dart';
 import 'package:fml/widgets/chart_painter/pie/pie_chart_view.dart';
 import 'package:fml/widgets/chart_painter/pie/pie_series.dart';
-import 'package:fml/widgets/chart_painter/series/myspot.dart';
+import 'package:fml/widgets/chart_painter/series/mypie.dart';
+import 'package:fml/widgets/chart_painter/series/spot_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'package:xml/xml.dart';
-import '../chart_model.dart';
 
 /// Chart [ChartModel]
 ///
@@ -21,7 +21,7 @@ import '../chart_model.dart';
 class PieChartModel extends ChartPainterModel
 {
   final List<PieChartSeriesModel> series = [];
-  PieChartData pieData = PieChartData();
+  List<MyPie> pieData = [];
 
   @override
   bool get canExpandInfinitelyWide
@@ -166,22 +166,31 @@ class PieChartModel extends ChartPainterModel
   @override
   Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async
   {
-    try {
-      //here if the data strategy is category, we must fold all of the lists together and create a dummy key value map of every unique value, in order
+    try
+    {
+      // here if the data strategy is category, we must fold all of the lists together and create a dummy key value map of every unique value, in order
       uniqueValues.clear();
-      for (var serie in series) {
+
+      // clear data
+     // pieData.clear();
+
+      for (var serie in series)
+      {
         // build the datapoints for the series, passing in the chart type, index, and data
-        if (serie.datasource == source.id) {
-          serie.plotPoints(list);
+        if (serie.datasource == source.id)
+        {
+          var points = serie.plotPoints(list);
+
+          // add the built x values to a unique list to map to indeces
+          uniqueValues.addAll(serie.xValues);
+
+          pieData.addAll(points);
+
+          serie.xValues.clear();
         }
-        // add the built x values to a unique list to map to indeces
-        uniqueValues.addAll(serie.xValues);
-
-        pieData = PieChartData(sections: serie.pieDataPoint, centerSpaceRadius: centerRadius, sectionsSpace: spacing);
-        serie.xValues.clear();
-
-        notifyListeners('list', null);
       }
+
+      notifyListeners('list', null);
     }
     catch(e)
     {
@@ -192,7 +201,7 @@ class PieChartModel extends ChartPainterModel
   }
 
   @override
-  List<Widget> getTooltips(List<MySpot> spots)
+  List<Widget> getTooltips(List<ISpotInterface> spots)
   {
     List<Widget> views = [];
     for (var spot in spots)

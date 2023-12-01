@@ -42,15 +42,10 @@ abstract class WidgetState<T extends StatefulWidget> extends State<T> implements
     super.dispose();
   }
 
-  /// Callback to fire the [_TooltipViewState.build] when the [TooltipModel] changes
   @override
   onModelChange(WidgetModel model, {String? property, dynamic value})
   {
     if (mounted) setState((){});
-    // if (mounted)
-    // {
-    //   WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
-    // }
   }
 
   // applies margins to the view based on the widget model

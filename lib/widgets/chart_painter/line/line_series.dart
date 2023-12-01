@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:fml/widgets/chart_painter/series/chart_series_extended.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
-import 'package:fml/widgets/chart_painter/series/myspot.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -25,7 +25,7 @@ class ChartDataPoint {
 ///
 /// Defines the properties used to build a Charts's Series
 class LineChartSeriesModel extends ChartPainterSeriesModel {
-  List<MySpot> lineDataPoint = [];
+  List<FlSpotExtended> lineDataPoint = [];
   List<String> labels = [];
   Map<int, dynamic> xValueMap = {};
   @override
@@ -180,7 +180,7 @@ class LineChartSeriesModel extends ChartPainterSeriesModel {
 
   void plot(dynamic series, dynamic data) {
     labels.add(label ?? "");
-    MySpot point = MySpot(series, data, toDouble(x) ?? 0, toDouble(y) ?? 0);
+    FlSpotExtended point = FlSpotExtended(series, data, toDouble(x) ?? 0, toDouble(y) ?? 0);
     lineDataPoint.add(point);
   }
 }

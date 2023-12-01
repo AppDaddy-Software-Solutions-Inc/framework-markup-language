@@ -1,10 +1,11 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/helpers/string.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart_painter/bar/bar_chart_model.dart';
-import 'package:fml/widgets/chart_painter/series/spot_interface.dart';
+import 'package:fml/widgets/chart_painter/series/chart_series_extended.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
@@ -31,6 +32,8 @@ class _ChartViewState extends WidgetState<BarChartView>
   Future<BarChartModel>? chartViewModel;
   BusyView? busy;
   OverlayEntry? tooltip;
+
+  BarChart? chart;
 
   @override
   didChangeDependencies()
@@ -82,7 +85,10 @@ class _ChartViewState extends WidgetState<BarChartView>
         barGroups: widget.model.barDataList,
         minY: toDouble(widget.model.yaxis.min),
         maxY: toDouble(widget.model.yaxis.max),
-        barTouchData: BarTouchData(touchCallback: onBarTouch),
+        barTouchData: BarTouchData(touchCallback: onBarTouch,
+          touchTooltipData: BarTouchTooltipData(getTooltipItem: getTooltipItems)
+
+        ),
 
         titlesData: FlTitlesData(
           topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false),  axisNameWidget: !isNullOrEmpty(widget.model.title) ? Text(widget.model.title!, style: TextStyle(fontSize: 12),): null,),
@@ -111,6 +117,7 @@ class _ChartViewState extends WidgetState<BarChartView>
     return chart;
   }
 
+
   @override
   Widget build(BuildContext context)
   {
@@ -125,9 +132,13 @@ class _ChartViewState extends WidgetState<BarChartView>
     // get the children
     List<Widget> children = widget.model.inflate();
 
-    try {
-        view = buildChart(widget.model.series);
-    } catch(e) {
+    try
+    {
+        chart = buildChart(widget.model.series);
+        view = chart;
+    }
+    catch(e)
+    {
       Log().exception(e, caller: 'bar_chart_view builder() ');
       view = Center(child: Icon(Icons.add_chart));
     }
@@ -152,6 +163,14 @@ class _ChartViewState extends WidgetState<BarChartView>
     return view;
   }
 
+BarTooltipItem getTooltipItems(BarChartGroupData group,
+    int groupIndex,
+    BarChartRodData rod,
+    int rodIndex)
+  {
+    return BarTooltipItem("${rod.fromY}, ${rod.toY}", TextStyle());
+  }
+
   void onBarTouch(FlTouchEvent event, BarTouchResponse? response)
   {
     bool exit = response?.spot == null;
@@ -159,12 +178,24 @@ class _ChartViewState extends WidgetState<BarChartView>
 
     if (enter)
     {
-      List<ISpotInterface> spots = [];
+      List<IExtendedSeriesInterface> spots = [];
       var spot = response?.spot;
-      if (spot is ISpotInterface)
+
+     if (spot?.touchedRodData is IExtendedSeriesInterface)
       {
-        spots.add(spot as ISpotInterface);
+        var item = spot!.touchedRodData as IExtendedSeriesInterface;
+
+        // stacked item?
+        if (spot.touchedRodData.rodStackItems.isNotEmpty)
+        {
+          var x = chart;
+
+          item = spot.touchedRodData.rodStackItems.firstWhereOrNull((e) => e is IExtendedSeriesInterface && e.toY == spot.spot.y) as IExtendedSeriesInterface? ?? item;
+        }
+        spots.add(item);
       }
+
+     // reponse.spot.offset is the top of the bar
 
       RenderBox? render = context.findRenderObject() as RenderBox?;
       Offset? point = event.localPosition;
@@ -199,7 +230,7 @@ class _ChartViewState extends WidgetState<BarChartView>
     // show new tooltip
     if (views.isNotEmpty)
     {
-      tooltip = OverlayEntry(builder: (context) => Positioned(left: x, top: y, child: Column(children: views, mainAxisSize: MainAxisSize.min)));
+      tooltip = OverlayEntry(builder: (context) => Positioned(left: x, top: y + 25, child: Column(children: views, mainAxisSize: MainAxisSize.min)));
       Overlay.of(context).insert(tooltip!);
     }
   }
@@ -211,7 +242,11 @@ class _ChartViewState extends WidgetState<BarChartView>
     {
       tooltip?.remove();
       tooltip?.dispose();
+      tooltip = null;
     }
-    catch(e){}
+    catch(e)
+    {
+      print(e);
+    }
   }
 }

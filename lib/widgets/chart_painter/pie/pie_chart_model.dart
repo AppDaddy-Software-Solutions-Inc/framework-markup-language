@@ -9,8 +9,7 @@ import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart_painter/chart_model.dart';
 import 'package:fml/widgets/chart_painter/pie/pie_chart_view.dart';
 import 'package:fml/widgets/chart_painter/pie/pie_series.dart';
-import 'package:fml/widgets/chart_painter/series/mypie.dart';
-import 'package:fml/widgets/chart_painter/series/spot_interface.dart';
+import 'package:fml/widgets/chart_painter/series/chart_series_extended.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -205,7 +204,7 @@ class PieChartModel extends ChartPainterModel
   }
 
   @override
-  List<Widget> getTooltips(List<ISpotInterface> spots)
+  List<Widget> getTooltips(List<IExtendedSeriesInterface> spots)
   {
     List<Widget> views = [];
     for (var spot in spots)

@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:fml/helpers/string.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
+import 'package:fml/widgets/chart_painter/series/chart_series_extended.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
-import 'package:fml/widgets/chart_painter/series/myspot.dart';
-import 'package:fml/widgets/chart_painter/series/spot_interface.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
@@ -149,13 +148,13 @@ class _LineChartViewState extends WidgetState<LineChartView>
 
     if (enter)
     {
-      List<ISpotInterface> spots = [];
+      List<IExtendedSeriesInterface> spots = [];
       for (var spot in response!.lineBarSpots!)
       {
         var mySpot = spot.bar.spots[spot.spotIndex];
-        if (mySpot is ISpotInterface)
+        if (mySpot is IExtendedSeriesInterface)
         {
-          spots.add(mySpot as ISpotInterface);
+          spots.add(mySpot as IExtendedSeriesInterface);
         }
       }
 
@@ -191,7 +190,7 @@ class _LineChartViewState extends WidgetState<LineChartView>
     for (var spot in touchedSpots)
     {
       var mySpot = spot.bar.spots[spot.spotIndex];
-      if (mySpot is MySpot && mySpot.series.tooltips) showTips = true;
+      if (mySpot is FlSpotExtended && mySpot.series.tooltips) showTips = true;
 
       tooltips.add(LineTooltipItem("${spot.x},${spot.y}", TextStyle()));
     }
@@ -220,7 +219,10 @@ class _LineChartViewState extends WidgetState<LineChartView>
       tooltip?.remove();
       tooltip?.dispose();
     }
-    catch(e){}
+    catch(e)
+    {
+      print(e);
+    }
   }
 
   @override

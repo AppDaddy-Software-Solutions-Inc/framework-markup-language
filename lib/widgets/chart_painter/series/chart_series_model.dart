@@ -410,18 +410,22 @@ class ChartPainterSeriesModel extends WidgetModel
 
   void plotLineCategoryPoints(dynamic uniqueXValueList){
 
-    for (var pointData in dataList) {
+    for (var pointData in dataList)
+    {
       //set the data of the series for databinding
       data = pointData;
-      //ensure the value is in the list, it always should be.
-      if (uniqueXValueList.contains(toInt(x))) {
+
+      // ensure the value is in the list, it always should be.
+      if (uniqueXValueList.contains(toInt(x)))
+      {
         x = uniqueXValueList.toList().indexOf(toInt(x));
-        //plot the point as a point object based on the desired function based on series and chart type.
+
+        // plot the point as a point object based on the desired function based on series and chart type.
         plotFunction!();
       }
       data = null;
-
     }
+
     dataList = null;
     plotFunction = null;
   }

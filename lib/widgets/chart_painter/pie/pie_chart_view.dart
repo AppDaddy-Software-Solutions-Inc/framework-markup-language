@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart_painter/pie/pie_chart_model.dart';
-import 'package:fml/widgets/chart_painter/series/spot_interface.dart';
+import 'package:fml/widgets/chart_painter/series/chart_series_extended.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
@@ -110,12 +110,12 @@ class _PieChartViewState extends WidgetState<PieChartView>
     {
       Offset? point = event.localPosition;
 
-      List<ISpotInterface> spots = [];
+      List<IExtendedSeriesInterface> spots = [];
       var spot = response!.touchedSection?.touchedSection;
 
-      if (spot is ISpotInterface)
+      if (spot is IExtendedSeriesInterface)
       {
-        spots.add(spot as ISpotInterface);
+        spots.add(spot as IExtendedSeriesInterface);
 
         RenderBox? render = context.findRenderObject() as RenderBox?;
         if (render != null && point != null)
@@ -150,7 +150,7 @@ class _PieChartViewState extends WidgetState<PieChartView>
     // show new tooltip
     if (views.isNotEmpty)
     {
-      tooltip = OverlayEntry(builder: (context) => Positioned(left: x, top: y, child: Column(children: views, mainAxisSize: MainAxisSize.min)));
+      tooltip = OverlayEntry(builder: (context) => Positioned(left: x, top: y + 25, child: Column(children: views, mainAxisSize: MainAxisSize.min)));
       Overlay.of(context).insert(tooltip!);
     }
   }
@@ -163,6 +163,9 @@ class _PieChartViewState extends WidgetState<PieChartView>
       tooltip?.remove();
       tooltip?.dispose();
     }
-    catch(e){}
+    catch(e)
+    {
+      print(e);
+    }
   }
 }

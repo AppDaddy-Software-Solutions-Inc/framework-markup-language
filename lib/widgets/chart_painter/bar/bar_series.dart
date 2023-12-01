@@ -27,7 +27,7 @@ class ChartDataPoint {
 /// Defines the properties used to build a Charts's Series
 class BarChartSeriesModel extends ChartPainterSeriesModel
 {
-  List<MyBar> barDataPoint = [];
+  List<BarChartGroupData> barDataPoint = [];
   List<BarChartRodData> rodDataPoint = [];
   List<BarChartRodStackItem> stackDataPoint = [];
 
@@ -177,7 +177,7 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
       barDataPoint.add(MyBar(this, data, x: uniqueValues.length, barRods: [BarChartRodData(toY: stackDataPoint[0].toY, color: Colors.transparent, rodStackItems: stackDataPoint)]));
     }
 
-      dataList = null;
+    dataList = null;
   }
 
   void pointFromBarData()

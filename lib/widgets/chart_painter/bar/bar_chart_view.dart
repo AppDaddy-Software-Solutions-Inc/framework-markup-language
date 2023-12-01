@@ -175,6 +175,9 @@ class _ChartViewState extends WidgetState<BarChartView>
 
       // show tooltip in post frame callback
       WidgetsBinding.instance.addPostFrameCallback((_) => showTooltip(widget.model.getTooltips(spots), point?.dx ?? 0, point?.dy ?? 0));
+
+      // ensure screen updates
+      WidgetsBinding.instance.ensureVisualUpdate();
     }
 
     // hide tooltip
@@ -182,6 +185,9 @@ class _ChartViewState extends WidgetState<BarChartView>
     {
       // show tooltip in post frame callback
       WidgetsBinding.instance.addPostFrameCallback((_) => hideTooltip());
+
+      // ensure screen updates
+      WidgetsBinding.instance.ensureVisualUpdate();
     }
   }
 

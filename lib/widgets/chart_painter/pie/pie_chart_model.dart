@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:collection/collection.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart' hide Axis;
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
@@ -21,7 +22,10 @@ import 'package:xml/xml.dart';
 class PieChartModel extends ChartPainterModel
 {
   final List<PieChartSeriesModel> series = [];
-  List<MyPie> pieData = [];
+
+  // for some reason, it seems important to keep this as List<PieChartSectionData>
+  // rather than List<MyPie>. The pie chart appears briefly, the disappears otherwise.
+  List<PieChartSectionData> pieData = [];
 
   @override
   bool get canExpandInfinitelyWide

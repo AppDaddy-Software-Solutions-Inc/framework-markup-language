@@ -30,7 +30,6 @@ class _PieChartViewState extends WidgetState<PieChartView>
   Future<PieChartModel>? chartViewModel;
   BusyView? busy;
   OverlayEntry? tooltip;
-  PieChartData? data;
 
   @override
   didChangeDependencies()
@@ -53,8 +52,6 @@ class _PieChartViewState extends WidgetState<PieChartView>
     super.dispose();
   }
 
-  PieChart? chart;
-
   @override
   Widget build(BuildContext context)
   {
@@ -71,14 +68,12 @@ class _PieChartViewState extends WidgetState<PieChartView>
 
     try
     {
-      data = PieChartData(
-          sections: widget.model.pieData.toList(),
+      view = PieChart(PieChartData(
+          sections: widget.model.pieData,
           centerSpaceRadius: widget.model.centerRadius,
           sectionsSpace: widget.model.spacing,
-      //    pieTouchData: PieTouchData(touchCallback: onPieTouch)
-      );
-      chart = PieChart(data!);
-      view = chart;
+          pieTouchData: PieTouchData(touchCallback: onPieTouch)
+      ));
     }
     catch(e)
     {
@@ -113,22 +108,27 @@ class _PieChartViewState extends WidgetState<PieChartView>
 
     if (enter)
     {
+      Offset? point = event.localPosition;
+
       List<ISpotInterface> spots = [];
-      var spot = response!.touchedSection;
+      var spot = response!.touchedSection?.touchedSection;
+
       if (spot is ISpotInterface)
       {
         spots.add(spot as ISpotInterface);
-      }
 
-      RenderBox? render = context.findRenderObject() as RenderBox?;
-      Offset? point = event.localPosition;
-      if (render != null && point != null)
-      {
-        point = render.localToGlobal(point);
+        RenderBox? render = context.findRenderObject() as RenderBox?;
+        if (render != null && point != null)
+        {
+          point = render.localToGlobal(point);
+        }
       }
 
       // show tooltip in post frame callback
       WidgetsBinding.instance.addPostFrameCallback((_) => showTooltip(widget.model.getTooltips(spots), point?.dx ?? 0, point?.dy ?? 0));
+
+      // ensure screen updates
+      WidgetsBinding.instance.ensureVisualUpdate();
     }
 
     // hide tooltip
@@ -136,6 +136,9 @@ class _PieChartViewState extends WidgetState<PieChartView>
     {
       // show tooltip in post frame callback
       WidgetsBinding.instance.addPostFrameCallback((_) => hideTooltip());
+
+      // ensure screen updates
+      WidgetsBinding.instance.ensureVisualUpdate();
     }
   }
 
@@ -154,7 +157,6 @@ class _PieChartViewState extends WidgetState<PieChartView>
 
   void hideTooltip()
   {
-    return;
     // remove old tooltip
     try
     {

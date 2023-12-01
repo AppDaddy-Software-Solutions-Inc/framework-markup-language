@@ -212,7 +212,7 @@ class Alert {
 //      ),
     );
     return onWillPopActive
-        ? WillPopScope(onWillPop: () async => false, child: myChild)
+        ? PopScope(canPop: false, child: myChild)
         : myChild;
   }
 

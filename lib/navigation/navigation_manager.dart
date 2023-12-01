@@ -179,7 +179,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
       var configuration = _pages.last.arguments as PageConfiguration;
       if (configuration.route != null)
       {
-        RoutePopDisposition disposition = await configuration.route!.willPop();
+        RoutePopDisposition disposition = configuration.route!.popDisposition;
         if (disposition == RoutePopDisposition.doNotPop) canPop = false;
       }
     }

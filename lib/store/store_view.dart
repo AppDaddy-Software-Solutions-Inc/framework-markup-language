@@ -121,7 +121,7 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
             child: Text(phrase.clickToConnect, style: TextStyle(color: Theme.of(context).colorScheme.outline)))
     );
 
-    return WillPopScope(onWillPop: () => quitDialog().then((value) => value as bool),
+    return PopScope(canPop: quitDialog().then((value) => value as bool),
         child: Scaffold(
             floatingActionButton: !busy
                 ? FloatingActionButton.extended(label: Text('Add App'), icon: Icon(Icons.add), onPressed: () => addAppDialog(), foregroundColor: Theme.of(context).colorScheme.onSurface, backgroundColor: Theme.of(context).colorScheme.onInverseSurface, splashColor: Theme.of(context).colorScheme.inversePrimary, hoverColor: Theme.of(context).colorScheme.surface, focusColor: Theme.of(context).colorScheme.inversePrimary, shape: rrbShape)
@@ -201,7 +201,7 @@ class _ViewState extends State<StoreView> with SingleTickerProviderStateMixin im
     );
   }
 
-  Future<void> quitDialog() async {
+  quitDialog() {
     return showDialog<void>(
       context: context,
       barrierDismissible: true,

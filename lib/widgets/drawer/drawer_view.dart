@@ -966,7 +966,7 @@ class DrawerViewState extends WidgetState<DrawerView> implements IDragListener
     // apply user defined constraints
     view = applyConstraints(view, widget.model.constraints);
 
-    view = WillPopScope(onWillPop: () async => preventPop(), child: view);
+    view = PopScope(canPop: preventPop(), child: view);
 
     return view;
   }

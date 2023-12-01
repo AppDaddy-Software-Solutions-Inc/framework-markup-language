@@ -62,6 +62,7 @@ class _ChartViewState extends WidgetState<BarChartView>
     // replace the value with the x value of the index[value] in the list of data points.
     return SideTitleWidget(
       axisSide: meta.axisSide,
+      space: 8,
       fitInside: SideTitleFitInsideData.fromTitleMeta(meta),
       angle: widget.model.xaxis.labelrotation,
       child: Text(text, style: style),
@@ -96,6 +97,7 @@ class _ChartViewState extends WidgetState<BarChartView>
           leftTitles: AxisTitles(
               axisNameWidget: !isNullOrEmpty(widget.model.yaxis.title) ? Text(widget.model.yaxis.title!, style: TextStyle(fontSize: 12),): null,
               sideTitles: SideTitles(
+                reservedSize: widget.model.yaxis.padding ?? 22,
                 interval: toDouble(widget.model.yaxis.interval),
                 showTitles: widget.model.yaxis.labelvisible,
                 getTitlesWidget: leftTitles,
@@ -104,6 +106,7 @@ class _ChartViewState extends WidgetState<BarChartView>
           bottomTitles: AxisTitles(
               axisNameWidget: !isNullOrEmpty(widget.model.xaxis.title) ? Text(widget.model.xaxis.title!, style: TextStyle(fontSize: 12),): null,
               sideTitles: SideTitles(
+                reservedSize: widget.model.xaxis.padding ?? 22,
                 interval: toDouble(widget.model.xaxis.interval),
                 showTitles: widget.model.xaxis.labelvisible,
                 getTitlesWidget: bottomTitles,
@@ -188,8 +191,6 @@ BarTooltipItem getTooltipItems(BarChartGroupData group,
         // stacked item?
         if (spot.touchedRodData.rodStackItems.isNotEmpty)
         {
-          var x = chart;
-
           item = spot.touchedRodData.rodStackItems.firstWhereOrNull((e) => e is IExtendedSeriesInterface && e.toY == spot.spot.y) as IExtendedSeriesInterface? ?? item;
         }
         spots.add(item);

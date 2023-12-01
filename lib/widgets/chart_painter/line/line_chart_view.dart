@@ -120,7 +120,7 @@ class _LineChartViewState extends WidgetState<LineChartView>
               axisNameWidget: !isNullOrEmpty(widget.model.yaxis.title) ? Text(widget.model.yaxis.title!, style: TextStyle(fontSize: 12),): null,
               sideTitles: SideTitles(
                 interval: toDouble(widget.model.yaxis.interval),
-                reservedSize: 24,
+                reservedSize: widget.model.yaxis.padding ?? 22,
                 showTitles: true,
                 //getTitlesWidget: leftTitles,
               )
@@ -130,7 +130,7 @@ class _LineChartViewState extends WidgetState<LineChartView>
               sideTitles: SideTitles(
                 interval: widget.model.xaxis.type == 'category' || widget.model.xaxis.type == 'raw' ? 1 : toDouble(widget.model.xaxis.interval),
                 showTitles: true,
-                reservedSize: 24,
+                reservedSize: widget.model.xaxis.padding ?? 22,
                 getTitlesWidget: bottomTitles,
               )
           ),

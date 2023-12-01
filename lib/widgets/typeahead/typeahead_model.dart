@@ -205,7 +205,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
       if (prototype == null) return true;
 
       // clear options
-      _clearOptions;
+      _clearOptions();
 
       // add empty option to list
       int i = 0;

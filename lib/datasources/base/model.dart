@@ -579,7 +579,8 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     return await insert(json, index);
   }
 
-  Future<bool> insert(String? jsonOrXml, int? index) async
+  @override
+  Future<bool> insert(String? jsonOrXml, int? index, {bool notifyListeners = true}) async
   {
     // make a copy of the first item if no
     // jsonOrXml is specified
@@ -612,21 +613,22 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     template ??= (data?.isEmpty ?? true) ? null : Json.encode(Json.copy(data![0], withValues: false));
 
     // notify listeners of data change
-    notify();
+    if (notifyListeners) notify();
     onDataChange();
 
     return true;
   }
 
-  Future<bool> delete(dynamic from) async
+  @override
+  Future<bool> delete(dynamic index, {bool notifyListeners = true}) async
   {
-    var element = getElement(from);
+    var element = getElement(index);
     if (element != null)
     {
       data!.remove(element);
 
       // notify listeners of data change
-      notify();
+      if (notifyListeners) notify();
       onDataChange();
     }
     return true;
@@ -956,6 +958,10 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
       case "reversed":
         return await reverse();
 
+      // notify
+      case "notify":
+        notify();
+        return true;
     }
     return super.execute(caller, propertyOrFunction, arguments);
   }

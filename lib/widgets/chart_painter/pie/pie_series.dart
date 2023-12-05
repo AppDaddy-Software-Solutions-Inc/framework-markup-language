@@ -1,9 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/log/manager.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:fml/widgets/chart_painter/series/chart_series_extended.dart';
 import 'package:fml/widgets/chart_painter/series/chart_series_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
@@ -27,7 +27,7 @@ class ChartDataPoint {
 /// Defines the properties used to build a Charts's Series
 class PieChartSeriesModel extends ChartPainterSeriesModel
 {
-  List<PieChartSectionData> pieDataPoint = [];
+  List<PieChartSectionDataExtended> pieDataPoint = [];
 
   PieChartSeriesModel(
       WidgetModel parent,
@@ -39,7 +39,6 @@ class PieChartSeriesModel extends ChartPainterSeriesModel
         dynamic radius,
         dynamic size,
         dynamic label,
-        dynamic tooltips,
         dynamic animated,
         dynamic name,
         dynamic group,
@@ -58,7 +57,6 @@ class PieChartSeriesModel extends ChartPainterSeriesModel
     this.radius = radius;
     this.size = size;
     this.label = label;
-    this.tooltips = tooltips;
     this.name = name;
     this.group = group;
     this.stack = stack;
@@ -72,7 +70,6 @@ class PieChartSeriesModel extends ChartPainterSeriesModel
     PieChartSeriesModel? model;
     try
     {
-      xml = prototypeOf(xml) ?? xml;
       model = PieChartSeriesModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
@@ -88,8 +85,14 @@ class PieChartSeriesModel extends ChartPainterSeriesModel
   @override
   void deserialize(XmlElement xml)
   {
-    //* Deserialize */
+    // deserialize
     super.deserialize(xml);
+
+    // replace data references
+    // important that this goes here as children may also have
+    // prototypes with unresolved {data.xxx} references
+    Xml.setAttribute(xml, "id", id);
+    xml = prototypeOf(xml) ?? xml;
 
     // properties
     x           = Xml.get(node: xml, tag: 'x');
@@ -100,7 +103,6 @@ class PieChartSeriesModel extends ChartPainterSeriesModel
     size        = Xml.get(node: xml, tag: 'size');
     type        = Xml.get(node: xml, tag: 'type');
     label       = Xml.get(node: xml, tag: 'label');
-    tooltips    = Xml.get(node: xml, tag: 'tooltips');
     name        = Xml.get(node: xml, tag: 'name');
     group       = Xml.get(node: xml, tag: 'group');
     stack       = Xml.get(node: xml, tag: 'stack');
@@ -137,19 +139,19 @@ class PieChartSeriesModel extends ChartPainterSeriesModel
   //   dataList = null;
   // }
 
-  void plotPoints(dynamic dataList){
-    for (var i=0; i< dataList.length; i++) {
+  List<PieChartSectionDataExtended> plotPoints(dynamic dataList)
+  {
+    List<PieChartSectionDataExtended> points = [];
+    for (var i=0; i< dataList.length; i++)
+    {
       //set the data of the series for databinding
       data = dataList[i];
-      //plot the point as a point object based on the desired function based on series and chart type.
-      plot();
-    }
-    dataList = null;
-  }
 
-  void plot(){
-    PieChartSectionData point = PieChartSectionData(value: toDouble(y) ?? 0, title: x, radius: radius, color: color ?? ColorHelper.fromString('random'));
-    pieDataPoint.add(point);
+      PieChartSectionDataExtended point = PieChartSectionDataExtended(this, data, value: toDouble(y) ?? 0, title: x, radius: radius, color: color ?? ColorHelper.fromString('random'));
+
+      points.add(point);
+    }
+    return points;
   }
 
 }

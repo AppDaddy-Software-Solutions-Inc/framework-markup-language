@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:collection/collection.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart' hide Axis;
 import 'package:fml/data/data.dart';
@@ -6,6 +7,7 @@ import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart_painter/axis/chart_axis_model.dart';
+import 'package:fml/widgets/chart_painter/series/chart_series_extended.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/helpers/helpers.dart';
 import 'package:xml/xml.dart';
@@ -40,7 +42,7 @@ class LineChartModel extends ChartPainterModel
     return true;
   }
 
-  LineChartModel(WidgetModel? parent, String? id,
+  LineChartModel(WidgetModel parent, String? id,
       {
         dynamic type,
         dynamic showlegend,
@@ -182,6 +184,18 @@ class LineChartModel extends ChartPainterModel
       // DialogService().show(type: DialogType.error, title: phrase.error, description: e.message);
     }
     return true;
+  }
+
+  @override
+  List<Widget> getTooltips(List<IExtendedSeriesInterface> spots)
+  {
+    List<Widget> views = [];
+    for (var spot in spots)
+    {
+      var series = this.series.firstWhereOrNull((element) => element == spot.series);
+      views.addAll(buildTooltip(series, spot));
+    }
+    return views;
   }
 
   @override

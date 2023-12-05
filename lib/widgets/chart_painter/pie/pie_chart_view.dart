@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/template/template.dart';
 import 'package:fml/widgets/chart_painter/pie/pie_chart_model.dart';
+import 'package:fml/widgets/chart_painter/series/chart_series_extended.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/busy/busy_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
@@ -28,10 +29,27 @@ class _PieChartViewState extends WidgetState<PieChartView>
   Future<Template>? template;
   Future<PieChartModel>? chartViewModel;
   BusyView? busy;
+  OverlayEntry? tooltip;
 
-  PieChart buildPieChart(seriesData){
-    PieChart chart = PieChart(widget.model.pieData);
-    return chart;
+  @override
+  didChangeDependencies()
+  {
+    super.didChangeDependencies();
+    hideTooltip();
+  }
+
+  @override
+  void didUpdateWidget(dynamic oldWidget)
+  {
+    super.didUpdateWidget(oldWidget);
+    hideTooltip();
+  }
+
+  @override
+  dispose()
+  {
+    hideTooltip();
+    super.dispose();
   }
 
   @override
@@ -48,9 +66,17 @@ class _PieChartViewState extends WidgetState<PieChartView>
     // get the children
     List<Widget> children = widget.model.inflate();
 
-    try {
-        view = buildPieChart(widget.model.series);
-    } catch(e) {
+    try
+    {
+      view = PieChart(PieChartData(
+          sections: widget.model.pieData,
+          centerSpaceRadius: widget.model.centerRadius,
+          sectionsSpace: widget.model.spacing,
+          pieTouchData: PieTouchData(touchCallback: onPieTouch)
+      ));
+    }
+    catch(e)
+    {
       Log().exception(e, caller: 'chart_view builder() ');
       view = Center(child: Icon(Icons.add_chart));
     }
@@ -73,5 +99,73 @@ class _PieChartViewState extends WidgetState<PieChartView>
     view = applyConstraints(view, widget.model.tightestOrDefault);
 
     return view;
+  }
+
+  void onPieTouch(FlTouchEvent event, PieTouchResponse? response)
+  {
+    bool exit = response?.touchedSection == null || event is FlPointerExitEvent;
+    bool enter = !exit;
+
+    if (enter)
+    {
+      Offset? point = event.localPosition;
+
+      List<IExtendedSeriesInterface> spots = [];
+      var spot = response!.touchedSection?.touchedSection;
+
+      if (spot is IExtendedSeriesInterface)
+      {
+        spots.add(spot as IExtendedSeriesInterface);
+
+        RenderBox? render = context.findRenderObject() as RenderBox?;
+        if (render != null && point != null)
+        {
+          point = render.localToGlobal(point);
+        }
+      }
+
+      // show tooltip in post frame callback
+      WidgetsBinding.instance.addPostFrameCallback((_) => showTooltip(widget.model.getTooltips(spots), point?.dx ?? 0, point?.dy ?? 0));
+
+      // ensure screen updates
+      WidgetsBinding.instance.ensureVisualUpdate();
+    }
+
+    // hide tooltip
+    if (exit)
+    {
+      // show tooltip in post frame callback
+      WidgetsBinding.instance.addPostFrameCallback((_) => hideTooltip());
+
+      // ensure screen updates
+      WidgetsBinding.instance.ensureVisualUpdate();
+    }
+  }
+
+  void showTooltip(List<Widget> views, double x, double y)
+  {
+    // remove old tooltip
+    hideTooltip();
+
+    // show new tooltip
+    if (views.isNotEmpty)
+    {
+      tooltip = OverlayEntry(builder: (context) => Positioned(left: x, top: y + 25, child: Column(children: views, mainAxisSize: MainAxisSize.min)));
+      Overlay.of(context).insert(tooltip!);
+    }
+  }
+
+  void hideTooltip()
+  {
+    // remove old tooltip
+    try
+    {
+      tooltip?.remove();
+      tooltip?.dispose();
+    }
+    catch(e)
+    {
+      print(e);
+    }
   }
 }

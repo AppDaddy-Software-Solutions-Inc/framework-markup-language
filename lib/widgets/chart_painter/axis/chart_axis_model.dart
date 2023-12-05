@@ -109,6 +109,22 @@ class ChartAxisModel extends WidgetModel
   double? get spacing => _spacing?.get();
 
 
+  /// Sets the spacing between labels
+  DoubleObservable? _padding;
+  set padding (dynamic v)
+  {
+    if (_padding != null)
+    {
+      _padding!.set(v);
+    }
+    else if (v != null)
+    {
+      _padding = DoubleObservable(Binding.toKey(id, 'padding'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  double? get padding => _padding?.get();
+
+
   /// axis labels visibility
   BooleanObservable? _labelvisible;
   set labelvisible(dynamic v) {
@@ -200,6 +216,7 @@ class ChartAxisModel extends WidgetModel
         dynamic min,
         dynamic max,
         dynamic truncate,
+        dynamic padding,
       }) : super(parent, id)
 
   {
@@ -214,6 +231,7 @@ class ChartAxisModel extends WidgetModel
     this.max            = max;
     this.truncate       = truncate;
     this.type           = type;
+    this.padding        = padding;
     // this.minimum        = minimum;
     // this.maximum        = maximum;
     // this.visibleminimum = visibleminimum;
@@ -250,6 +268,7 @@ class ChartAxisModel extends WidgetModel
         max             : Xml.get(node: xml, tag: 'max'),
         truncate        : Xml.get(node: xml, tag: 'truncate'),
         spacing         : Xml.get(node: xml, tag: 'spacing'),
+        padding         : Xml.get(node: xml, tag: 'padding'),
         // fontsize        : Xml.get(node: xml, tag: 'fontsize'),
         // fontcolor       : Xml.get(node: xml, tag: 'fontcolor'),
         // format          : Xml.get(node: xml, tag: 'format'),

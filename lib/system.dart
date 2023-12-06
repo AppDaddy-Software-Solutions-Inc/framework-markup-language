@@ -27,7 +27,7 @@ import 'package:fml/helpers/helpers.dart';
 import 'dart:io' as io;
 
 // application build version
-final String version = '3.0.0';
+final String version = '3.0.10';
 
 // application title
 // only used in Android when viewing open applications

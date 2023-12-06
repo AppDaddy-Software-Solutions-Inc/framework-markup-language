@@ -31,6 +31,20 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
   List<BarChartRodData> rodDataPoint = [];
   List<BarChartRodStackItem> stackDataPoint = [];
 
+  DoubleObservable? width_;
+  set width (dynamic v)
+  {
+    if (width_ != null)
+    {
+      width_!.set(v);
+    }
+    else if (v != null)
+    {
+      width_ = DoubleObservable(Binding.toKey(id, 'width'), v, scope: scope);
+    }
+  }
+  double get width => width_?.get() ?? 3.5;
+
   BarChartSeriesModel(
       WidgetModel parent,
       String? id, {
@@ -49,6 +63,7 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
         dynamic showarea,
         dynamic showline,
         dynamic showpoints,
+        dynamic width,
       }
       ) : super(parent, id)
   {
@@ -66,6 +81,7 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
     this.showarea = showarea;
     this.showline = showline;
     this.showpoints = showpoints;
+    this.width = width;
   }
 
   static BarChartSeriesModel? fromXml(WidgetModel parent, XmlElement xml)
@@ -106,6 +122,7 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
     showarea    = Xml.get(node: xml, tag: 'showarea');
     showline    = Xml.get(node: xml, tag: 'showline');
     showpoints  = Xml.get(node: xml, tag: 'showpoints');
+    width       = Xml.get(node: xml, tag: 'width');
 
     // Remove datasource listener. The parent chart will take care of this.
     if ((datasource != null) && (scope != null) && (scope!.datasources.containsKey(datasource))) scope!.datasources[datasource!]!.remove(this);
@@ -114,19 +131,7 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
     if (type != null) type = type?.trim().toLowerCase();
   }
   /// bar width
-  DoubleObservable? width_;
-  set width (dynamic v)
-  {
-    if (width_ != null)
-    {
-      width_!.set(v);
-    }
-    else if (v != null)
-    {
-      width_ = DoubleObservable(Binding.toKey(id, 'width'), v, scope: scope);
-    }
-  }
-  double get width => width_?.get() ?? 3.5;
+
 
 
   @override

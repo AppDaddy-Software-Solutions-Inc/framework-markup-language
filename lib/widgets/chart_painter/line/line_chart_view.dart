@@ -192,7 +192,7 @@ class _LineChartViewState extends WidgetState<LineChartView>
       var mySpot = spot.bar.spots[spot.spotIndex];
       if (mySpot is FlSpotExtended && mySpot.series.tooltips) showTips = true;
 
-      tooltips.add(LineTooltipItem("${spot.x},${spot.y}", TextStyle()));
+      tooltips.add(LineTooltipItem("${spot.y}", TextStyle()));
     }
     if (!showTips) tooltips.clear();
     return tooltips;

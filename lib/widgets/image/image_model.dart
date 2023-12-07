@@ -44,23 +44,6 @@ class ImageModel extends DecoratedWidgetModel
   }
   String? get defaultvalue => _default?.get();
 
-  //////////////
-  /* rotation */
-  //////////////
-  DoubleObservable? _rotation;
-  set rotation (dynamic v)
-  {
-    if (_rotation != null)
-    {
-      _rotation!.set(v);
-    }
-    else if (v != null)
-    {
-      _rotation = DoubleObservable(Binding.toKey(id, 'rotation'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  double? get rotation => _rotation?.get();
-
   /////////
   /* fit */
   /////////
@@ -135,7 +118,6 @@ class ImageModel extends DecoratedWidgetModel
     dynamic defaultvalue,
     dynamic width,
     dynamic height,
-    dynamic rotation,
     dynamic opacity,
     dynamic fit,
     dynamic filter,
@@ -146,7 +128,6 @@ class ImageModel extends DecoratedWidgetModel
     if (width  != null) this.width  = width;
     if (height != null) this.height = height;
 
-    this.rotation     = rotation;
     this.opacity      = opacity;
     this.url          = url;
     this.defaultvalue = defaultvalue;
@@ -183,7 +164,6 @@ class ImageModel extends DecoratedWidgetModel
     // properties
     url           = Xml.get(node: xml, tag: 'url');
     defaultvalue  = Xml.get(node: xml, tag: 'default');
-    rotation      = Xml.get(node: xml, tag: 'rotation');
     opacity       = Xml.get(node: xml, tag: 'opacity');
     fit           = Xml.get(node: xml, tag: 'fit');
     filter        = Xml.get(node: xml, tag: 'filter');

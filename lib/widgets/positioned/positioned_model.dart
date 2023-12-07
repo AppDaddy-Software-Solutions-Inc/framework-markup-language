@@ -10,26 +10,7 @@ import 'package:fml/helpers/helpers.dart';
 
 class PositionedModel extends DecoratedWidgetModel 
 {
-  //////////////
-  /* rotation */
-  //////////////
-  DoubleObservable? _rotation;
-  set rotation (dynamic v)
-  {
-    if (_rotation != null)
-    {
-      _rotation!.set(v);
-    }
-    else if (v != null)
-    {
-      _rotation = DoubleObservable(Binding.toKey(id, 'rotation'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  double? get rotation => _rotation?.get();
-
-  //////////
-  /* left */
-  //////////
+  // left
   // bool _leftIsPercent = false;
   DoubleObservable? _left;
   set left (dynamic v)
@@ -50,9 +31,7 @@ class PositionedModel extends DecoratedWidgetModel
   }
   double? get left => _left?.get();
 
-  ///////////
-  /* right */
-  ///////////
+  // right
   // bool _rightIsPercent = false;
   DoubleObservable? _right;
   set right (dynamic v)
@@ -73,9 +52,7 @@ class PositionedModel extends DecoratedWidgetModel
   }
   double? get right => _right?.get();
 
-  /////////
-  /* top */
-  /////////
+  // top
   // bool _topIsPercent = false;
   DoubleObservable? _top;
   set top (dynamic v)
@@ -96,9 +73,7 @@ class PositionedModel extends DecoratedWidgetModel
   }
   double? get top => _top?.get();
 
-  ////////////
-  /* bottom */
-  ////////////
+  // bottom
   // bool _bottomIsPercent = false;
   DoubleObservable? _bottom;
   set bottom (dynamic v)
@@ -119,9 +94,7 @@ class PositionedModel extends DecoratedWidgetModel
   }
   double? get bottom => _bottom?.get();
 
-  ///////////////////////
-  /* horizontal center */
-  ///////////////////////
+  // horizontal center
   DoubleObservable? _xoffset;
   set xoffset (dynamic v)
   {
@@ -137,9 +110,7 @@ class PositionedModel extends DecoratedWidgetModel
   double? get xoffset => _xoffset?.get();
 
 
-  //////////////////////
-  /* vertical center */
-  ///////////////////////
+  // vertical center
   DoubleObservable? _yoffset;
   set yoffset (dynamic v)
   {
@@ -154,9 +125,7 @@ class PositionedModel extends DecoratedWidgetModel
   }
   double? get yoffset => _yoffset?.get();
 
-  ////////////
-  /* depth */
-  ////////////
+  // depth
   DoubleObservable? _depth;
   @override
   set depth (dynamic v)

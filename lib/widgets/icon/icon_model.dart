@@ -49,21 +49,6 @@ class IconModel extends DecoratedWidgetModel
     return width;
   }
 
-  // rotation
-  DoubleObservable? _rotation;
-  set rotation(dynamic v)
-  {
-    if (_rotation != null)
-    {
-      _rotation!.set(v);
-    }
-    else if (v != null)
-    {
-      _rotation = DoubleObservable(Binding.toKey(id, 'rotation'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  double get rotation => _rotation?.get() ?? 0.0;
-
   IconModel(WidgetModel? parent, String? id,
       {dynamic visible,
       dynamic icon,
@@ -101,7 +86,6 @@ class IconModel extends DecoratedWidgetModel
     icon     = Xml.get(node: xml, tag: 'icon');
     size     = Xml.get(node: xml, tag: 'size');
     opacity  = Xml.get(node: xml, tag: 'opacity');
-    rotation = Xml.get(node: xml, tag: 'rotation');
   }
 
   @override

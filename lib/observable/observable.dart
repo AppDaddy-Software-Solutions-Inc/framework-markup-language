@@ -363,6 +363,7 @@ class Observable
     try
     {
       result = fml_eval.Eval.evaluate(expression, variables: variables);
+      result ??= "";
     }
     catch(e)
     {

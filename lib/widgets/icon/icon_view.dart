@@ -41,12 +41,6 @@ class _IconViewState extends WidgetState<IconView> {
     // view
     Widget view = Icon(value, size: size, color: color);
 
-    // rotation
-    if (widget.model.rotation != 0) {
-      view = Transform.rotate(
-          angle: widget.model.rotation * math.pi / 180, child: view);
-    }
-
     return view;
   }
 }

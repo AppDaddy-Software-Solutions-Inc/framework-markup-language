@@ -538,7 +538,22 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable
         }
         return true;
 
-    // de-selects the item by index
+      // move an item
+      case "move" :
+        moveItem(toInt(elementAt(arguments, 0)) ?? 0, toInt(elementAt(arguments, 1)) ?? 0);
+        return true;
+
+      // delete an item
+      case "delete" :
+        deleteItem(toInt(elementAt(arguments, 0)));
+        return true;
+
+      // add an item
+      case "insert" :
+        insertItem(toStr(elementAt(arguments, 0)), toInt(elementAt(arguments, 1)));
+        return true;
+
+      // de-selects the item by index
       case "clear" :
         onTap(null);
         return true;
@@ -587,6 +602,129 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable
   {
     ListLayoutViewState? view = findListenerOfExactType(ListLayoutViewState);
     return view?.sizeOf();
+  }
+
+  // insert an item
+  Future<bool> insertItem(String? jsonOrXml, int? index) async
+  {
+    try
+    {
+      // get index
+      index ??= myDataSource?.data?.indexOf(data) ?? 0;
+      if (index < 0) index = 0;
+      if (index > items.length) index = items.length;
+
+      // add empty element to the data set
+      // important to do this first as
+      // get row model below depends on an entry
+      // in the dataset at specified index
+      notificationsEnabled = false;
+      myDataSource?.insert(jsonOrXml, index, notifyListeners: false);
+      data = myDataSource?.data ?? data;
+      notificationsEnabled = true;
+
+      // open up a space for the new model
+      insertInHashmap(items, index);
+
+      // create new row
+      var item = getItemModel(index);
+
+      // add row to rows
+      if (item != null)
+      {
+        items[index] = item;
+
+        // fire the rows onInsert event
+        await item.onInsertHandler();
+      }
+
+      // notify
+      data = myDataSource?.notify();
+    }
+    catch(e)
+    {
+      print (e);
+    }
+    return true;
+  }
+
+  // delete a row
+  Future<bool> deleteItem(int? index) async
+  {
+    try
+    {
+      // get index
+      index ??= myDataSource?.data?.indexOf(data) ?? 0;
+      if (index < 0) index = 0;
+      if (index > items.length) index = items.length;
+
+      // lookup the item
+      var item = items.containsKey(index) ? items[index] : null;
+      if (item != null)
+      {
+        // fire the rows onDelete event
+        bool ok = await item.onDeleteHandler();
+
+        // continue?
+        if (ok)
+        {
+          // reorder hashmap
+          deleteInHashmap(items, index);
+
+          // remove the data associated with the row
+          notificationsEnabled = false;
+          myDataSource?.delete(index, notifyListeners: false);
+          data = myDataSource?.data ?? data;
+          notificationsEnabled = true;
+
+          // notify
+          data = myDataSource?.notify();
+        }
+      }
+    }
+    catch(e)
+    {
+      print (e);
+    }
+    return true;
+  }
+
+  // delete a item
+  Future<bool> moveItem(int? fromIndex, int? toIndex) async
+  {
+    try
+    {
+      fromIndex ??= myDataSource?.data?.indexOf(data) ?? 0;
+      toIndex   ??= myDataSource?.data?.indexOf(data) ?? 0;
+      if (fromIndex > toIndex)
+      {
+        var index = fromIndex;
+        fromIndex = toIndex;
+        toIndex   = index;
+      }
+      if (fromIndex < 0) fromIndex = 0;
+      if (fromIndex > items.length) fromIndex = items.length;
+      if (toIndex < 0) toIndex = 0;
+      if (toIndex > items.length) toIndex = items.length;
+      if (fromIndex == toIndex) return true;
+
+      // reorder hashmap
+      moveInHashmap(items, fromIndex, toIndex);
+
+      // reorder data
+      notificationsEnabled = false;
+      myDataSource?.move(fromIndex, toIndex, notifyListeners: false);
+      data = myDataSource?.data ?? data;
+      notificationsEnabled = true;
+
+      // notify
+      data = myDataSource?.notify();
+    }
+    catch(e)
+    {
+      print (e);
+    }
+    return true;
   }
 
   @override

@@ -190,6 +190,36 @@ class ListItemModel extends BoxModel
   }
   String? get title => _title?.get();
 
+  // onInsert
+  StringObservable? _onInsert;
+  set onInsert(dynamic v)
+  {
+    if (_onInsert != null)
+    {
+      _onInsert!.set(v);
+    }
+    else if (v != null)
+    {
+      _onInsert = StringObservable(Binding.toKey(id, 'oninsert'), v, scope: scope, lazyEval: true);
+    }
+  }
+  String? get onInsert => _onInsert?.get();
+
+  // onDelete
+  StringObservable? _onDelete;
+  set onDelete(dynamic v)
+  {
+    if (_onDelete != null)
+    {
+      _onDelete!.set(v);
+    }
+    else if (v != null)
+    {
+      _onDelete = StringObservable(Binding.toKey(id, 'ondelete'), v, scope: scope, lazyEval: true);
+    }
+  }
+  String? get onDelete => _onDelete?.get();
+
   ListItemModel(WidgetModel parent, String?  id, {dynamic data, dynamic selected, dynamic onclick, this.type, dynamic title, dynamic backgroundcolor, dynamic margin}) : super(parent, id, scope: Scope(parent: parent.scope), data: data)
   {
     this.backgroundcolor  = backgroundcolor;
@@ -235,6 +265,8 @@ class ListItemModel extends BoxModel
     selected        = Xml.get(node: xml, tag: 'selected');
     selectable      = Xml.get(node: xml, tag: 'selectable');
     onclick         = Xml.get(node: xml, tag: 'onclick');
+    onInsert        = Xml.get(node: xml, tag: 'onInsert');
+    onDelete        = Xml.get(node: xml, tag: 'onDelete');
 
     // find all descendants
     List<dynamic>? fields = findDescendantsOfExactType(null);
@@ -258,17 +290,13 @@ class ListItemModel extends BoxModel
 
     bool ok = true;
 
-    //////////////////
-    /* Post the Row */
-    //////////////////
+    // post the row
     if (ok) ok = await _post();
 
-    ////////////////
-    /* Mark Clean */
-    ////////////////
+    // mark clean
     if ((ok) && (fields != null)){ for (var field in fields!) {
-   field.dirty = false;
- }}
+      field.dirty = false;
+    }}
 
     busy = false;
 
@@ -317,6 +345,28 @@ class ListItemModel extends BoxModel
     {
       (parent as ListModel).onDragDrop(this, draggable, dropSpot: dropSpot);
     }
+  }
+
+  Future<bool> onInsertHandler() async
+  {
+    // fire the onchange event
+    bool ok = true;
+    if (_onInsert != null)
+    {
+      ok = await EventHandler(this).execute(_onInsert);
+    }
+    return ok;
+  }
+
+  Future<bool> onDeleteHandler() async
+  {
+    // fire the onchange event
+    bool ok = true;
+    if (_onDelete != null)
+    {
+      ok = await EventHandler(this).execute(_onDelete);
+    }
+    return ok;
   }
 
   @override

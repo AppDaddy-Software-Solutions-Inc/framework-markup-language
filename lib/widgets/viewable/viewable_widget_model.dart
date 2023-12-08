@@ -556,7 +556,22 @@ class ViewableWidgetModel extends ConstraintModel implements IDragDrop
     }
   }
   bool? get canDrop => canDropObservable?.get();
-  
+
+  // rotation
+  DoubleObservable? _rotation;
+  set rotation (dynamic v)
+  {
+    if (_rotation != null)
+    {
+      _rotation!.set(v);
+    }
+    else if (v != null)
+    {
+      _rotation = DoubleObservable(Binding.toKey(id, 'rotation'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  double? get rotation => _rotation?.get();
+
   ViewableWidgetModel(WidgetModel? parent, String? id, {Scope? scope, dynamic data}) : super(parent, id, scope: scope, data: data);
 
   /// Deserializes the FML template elements, attributes and children
@@ -583,6 +598,7 @@ class ViewableWidgetModel extends ConstraintModel implements IDragDrop
     flexfit   = Xml.get(node: xml, tag: 'flexfit');
     onscreen  = Xml.get(node: xml, tag: 'onscreen');
     offscreen = Xml.get(node: xml, tag: 'offscreen');
+    rotation  = Xml.get(node: xml, tag: 'rotation');
 
     // drag
     draggable = Xml.get(node: xml, tag: 'draggable');
@@ -741,6 +757,12 @@ class ViewableWidgetModel extends ConstraintModel implements IDragDrop
     if (draggable && view is! DraggableView)
     {
       view = DraggableView(this, view);
+    }
+
+    // rotation
+    if (rotation != null)
+    {
+      view = RotationTransition(turns: AlwaysStoppedAnimation(rotation! / 360), child: view);
     }
 
     // wrap animations.

@@ -199,13 +199,6 @@ class _ImageViewState extends WidgetState<ImageView>
     // Alpha/Opacity
     if (opacity != null) view = Opacity(opacity: opacity, child: view);
 
-    // Rotation
-    if (widget.model.rotation != null) {
-      view = RotationTransition(
-          turns: AlwaysStoppedAnimation(widget.model.rotation! / 360),
-          child: view);
-    }
-
     // Stack Children
     if (widget.model.children != null && widget.model.children!.isNotEmpty) {
       view = Stack(children: [view]);

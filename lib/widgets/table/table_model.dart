@@ -842,12 +842,21 @@ class TableModel extends BoxModel implements IForm
         await export(format);
         return true;
 
-      // delete a row
+      // move a row
+      case "move" :
+      case "moverow" :
+        moveRow(toInt(elementAt(arguments, 0)) ?? 0, toInt(elementAt(arguments, 1)) ?? 0);
+        return true;
+
+    // delete a row
+      case "delete" :
       case "deleterow" :
         deleteRow(toInt(elementAt(arguments, 0)));
         return true;
 
       // add a row
+      case "add" :
+      case "insert" :
       case "addrow" :
       case "insertrow" :
         insertRow(toStr(elementAt(arguments, 0)), toInt(elementAt(arguments, 1)));

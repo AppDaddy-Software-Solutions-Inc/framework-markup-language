@@ -23,7 +23,11 @@ class TableHeaderModel extends BoxModel
 
   // dynamic cells
   bool get isDynamic => prototypes.isNotEmpty;
-  List<XmlElement> prototypes = [];
+  var prototypes = <XmlElement,WidgetModel?>{};
+
+  // list of static cell ids
+  // used in dynamic table creation
+  List<String>? staticFields;
 
   // cell by index
   TableHeaderCellModel? cell(int index) => index >= 0 && index < cells.length ? cells[index] : null;
@@ -211,9 +215,14 @@ class TableHeaderModel extends BoxModel
         var e = cell.element!.copy();
         if (cell.isDynamic)
         {
-          e.attributes.add(XmlAttribute(XmlName("dynamic"), ""));
+          e.attributes.add(XmlAttribute(XmlName("dynamic"), "true"));
         }
-        prototypes.add(e);
+        else
+        {
+          staticFields ??= [];
+          staticFields!.add(cell.id);
+        }
+        prototypes[e] = cell.parent;
       }
     }
   }

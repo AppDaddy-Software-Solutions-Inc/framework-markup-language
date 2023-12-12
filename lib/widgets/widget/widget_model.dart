@@ -141,7 +141,7 @@ class WidgetModel implements IDataSourceListener {
   WidgetModel(this.parent, String? id, {Scope? scope, dynamic data})
   {
     // set the id
-    this.id = _toId(id);
+    this.id = getUniqueId(id);
 
     // set the scope
     this.scope = scope ?? Scope.of(this);
@@ -157,20 +157,20 @@ class WidgetModel implements IDataSourceListener {
   }
 
   static RegExp onlyAlpha = RegExp(r'''[^a-zA-Z0-9\s.]''');
-  String _toId(String? id)
+  String getUniqueId(String? id)
   {
-    if (isNullOrEmpty(id))
+    // user supplied id
+    if (!isNullOrEmpty(id)) return id!;
+
+    // auto generated id
+    String prefix = "auto";
+    if (kDebugMode)
     {
-      String prefix = "auto";
-      if (kDebugMode)
-      {
-        prefix = "$runtimeType".toLowerCase();
-        prefix = prefix.replaceAll(onlyAlpha,'');
-        if (prefix.endsWith('model')) prefix = prefix.substring(0, prefix.lastIndexOf('model'));
-      }
-      id = newId(prefix: prefix);
+      prefix = "$runtimeType";
+      prefix = prefix.replaceAll(onlyAlpha,'');
+      if (prefix.endsWith('model')) prefix = prefix.substring(0, prefix.lastIndexOf('model'));
     }
-    return id!;
+    return newId(prefix: prefix);
   }
 
   static WidgetModel? fromXml(WidgetModel parent, XmlElement node, {Scope? scope, dynamic data})

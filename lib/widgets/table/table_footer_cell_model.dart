@@ -14,7 +14,7 @@ class TableFooterCellModel extends BoxModel
   TableFooterModel? get hdr => parent is TableFooterModel ? parent as TableFooterModel : null;
 
   // cell is dynamic?
-  bool get isDynamic => ((element?.toString().contains("{*}") ?? false) || (element?.toString().contains("{field}") ?? false)) && (hdr?.table?.hasDataSource ?? false);
+  bool get isDynamic => ((element?.toString().contains("[*]") ?? false) || (element?.toString().contains("{field}") ?? false)) && (hdr?.table?.hasDataSource ?? false);
 
   // column has a user defined layout
   bool usesRenderer = false;

@@ -2,8 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/icon/icon_model.dart';
-import 'dart:math' as math;
-
 import 'package:fml/widgets/widget/widget_state.dart';
 
 class IconView extends StatefulWidget implements IWidgetView {

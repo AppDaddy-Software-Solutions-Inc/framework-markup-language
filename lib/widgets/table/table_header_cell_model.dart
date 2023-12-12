@@ -20,7 +20,7 @@ class TableHeaderCellModel extends BoxModel
   TableHeaderModel? get hdr => parent is TableHeaderModel ? parent as TableHeaderModel : parent is TableHeaderGroupModel ? (parent as TableHeaderGroupModel).hdr : null;
 
   // cell is dynamic?
-  bool get isDynamic => ((element?.toString().contains("{*}") ?? false) || (element?.toString().contains("{field}") ?? false)) && (hdr?.table?.hasDataSource ?? false);
+  bool get isDynamic => ((element?.toString().contains("[*]") ?? false) || (element?.toString().contains("{field}") ?? false)) && (hdr?.table?.hasDataSource ?? false);
 
   // column has a user defined layout
   bool usesRenderer = false;
@@ -207,12 +207,6 @@ class TableHeaderCellModel extends BoxModel
       model = null;
     }
     return model;
-  }
-
-  static TableHeaderCellModel? fromXmlString(WidgetModel parent, String xml)
-  {
-    XmlDocument? document = Xml.tryParse(xml);
-    return (document != null) ? TableHeaderCellModel.fromXml(parent, document.rootElement) : null;
   }
 
   /// Deserializes the FML template elements, attributes and children

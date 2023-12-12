@@ -2,7 +2,6 @@
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:math';
-import 'package:collection/collection.dart';
 import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/event/handler.dart';
@@ -22,6 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
+import 'package:fml/helpers/mime.dart';
 
 class TableModel extends BoxModel implements IForm
 {
@@ -533,30 +533,32 @@ class TableModel extends BoxModel implements IForm
   }
 
   // export to excel
-  Future<bool> export(String? format) async
+  Future<bool> export(String? format, String? filename) async
   {
     try
     {
       var view = findListenerOfExactType(TableViewState);
       if (view is TableViewState)
       {
+        if (isNullOrEmpty(filename)) filename = newId();
+        var name = Mime.toSafeFileName(filename!.split(".")[0]);
         switch (format?.toLowerCase().trim())
         {
           case "raw" :
             var file  = await Data.toCsv(Data.from(data));
             var bytes = utf8.encode(file);
-            Platform.fileSaveAs(bytes, "${newId()}.csv");
+            Platform.fileSaveAs(bytes, "$name.csv");
             break;
 
           case "csv" :
             var bytes = await view.exportToCSVBytes();
-            if (bytes != null) Platform.fileSaveAs(bytes, "${newId()}.csv");
+            if (bytes != null) Platform.fileSaveAs(bytes, "$name.csv");
             break;
 
           case "pdf":
           default:
             var bytes = await view.exportToPDF();
-            if (bytes != null) Platform.fileSaveAs(bytes, "${newId()}.pdf");
+            if (bytes != null) Platform.fileSaveAs(bytes, "$name.pdf");
             break;
         }
       }
@@ -568,7 +570,7 @@ class TableModel extends BoxModel implements IForm
     return true;
   }
 
-  // export to excel
+  // autosize
   bool autosize(String? mode)
   {
     try
@@ -882,7 +884,8 @@ class TableModel extends BoxModel implements IForm
       // export the data
       case "export" :
         var format = toStr(elementAt(arguments, 0));
-        await export(format);
+        var filename = toStr(elementAt(arguments, 1));
+        await export(format,filename);
         return true;
 
       // move a row

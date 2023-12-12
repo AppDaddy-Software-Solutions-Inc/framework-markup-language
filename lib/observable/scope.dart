@@ -100,7 +100,7 @@ class Scope
   void unregisterModel(WidgetModel model)
   {
     models.remove(model.id);
-    var observables = this.observables.values.where((observable) => observable.key != null && observable.key!.startsWith("${model.id}.")).toList();
+    var observables = this.observables.values.where((observable) => observable.key != null && observable.key!.startsWith("${model.id.toLowerCase()}.")).toList();
     for (Observable observable in observables)
     {
       observable.listeners?.clear();

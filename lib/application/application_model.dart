@@ -95,9 +95,10 @@ class ApplicationModel extends WidgetModel {
   // fml version support
   int? fmlVersion;
 
-  String get homePage => settings("HOME_PAGE") ?? "main.xml";
+  String  get homePage => settings("HOME_PAGE") ?? "main.xml";
   String? get loginPage => settings("LOGIN_PAGE");
   String? get unauthorizedPage => settings("UNAUTHORIZED_PAGE");
+  String? get errorPage => settings("ERROR_PAGE");
 
   Map<String, String?>? get configParameters => _config?.parameters;
 

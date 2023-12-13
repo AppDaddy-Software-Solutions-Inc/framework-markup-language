@@ -333,7 +333,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
           }
           else
           {
-            xml = Xml.tryParse(Template.errorTemplate('Not Found', "The <LOGIN_PAGE/> is not defined in config.xml",null))!.rootElement;
+            xml = await Template.errorTemplateXml('Not Found', "The <LOGIN_PAGE/> is not defined in config.xml",null);
           }
         }
 
@@ -349,7 +349,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
           }
           else
           {
-            xml = Xml.tryParse(Template.errorTemplate('Unauthorized', "Your are not authorized to view this page", "My Rights: $myrights Required Rights: $requiredRights"))!.rootElement;
+            xml = await Template.errorTemplateXml('Unauthorized', "You are not authorized to view this page", "Rights: $myrights Required Rights: $requiredRights");
           }
         }
       }

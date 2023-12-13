@@ -100,7 +100,7 @@ class Store extends WidgetModel implements IModelListener
     app.refresh();
 
     // launch the page
-    NavigationManager().setNewRoutePath(PageConfiguration(url: page, title: "Store"), source: "store");
+    NavigationManager().setNewRoutePath(PageConfiguration(uri: Uri.tryParse(page), title: "Store"), source: "store");
   }
 
   @override

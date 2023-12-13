@@ -9,13 +9,13 @@ class RouteParser extends RouteInformationParser<PageConfiguration>
   @override
   Future<PageConfiguration> parseRouteInformation(RouteInformation routeInformation)
   {
-    PageConfiguration configuration = PageConfiguration(url: routeInformation.location);
+    PageConfiguration configuration = PageConfiguration(uri: Uri.tryParse(routeInformation.uri.toString()));
     return Future.value(configuration);
   }
 
   @override
   RouteInformation restoreRouteInformation(PageConfiguration configuration)
   {
-    return RouteInformation(location: configuration.url);
+    return RouteInformation(uri: Uri.tryParse(configuration.uri.toString()));
   }
 }

@@ -326,8 +326,15 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
         {
           // fetch logon template
           var login = System.app?.loginPage;
-          if (!isNullOrEmpty(login)) template = await Template.fetch(url:login!, refresh: refresh);
-          xml = template.document!.rootElement;
+          if (!isNullOrEmpty(login))
+          {
+            template = await Template.fetch(url:login!, refresh: refresh);
+            xml = template.document!.rootElement;
+          }
+          else
+          {
+            xml = Xml.tryParse(Template.errorTemplate('Not Found', "The <LOGIN_PAGE/> is not defined in config.xml",null))!.rootElement;
+          }
         }
 
         // authorized?
@@ -335,8 +342,15 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
         {
           // fetch not authorized template
           var unauthorized = System.app?.unauthorizedPage;
-          if (!isNullOrEmpty(unauthorized)) template = await Template.fetch(url: unauthorized!, refresh: refresh);
-          xml = template.document!.rootElement;
+          if (!isNullOrEmpty(unauthorized))
+          {
+            template = await Template.fetch(url: unauthorized!, refresh: refresh);
+            xml = template.document!.rootElement;
+          }
+          else
+          {
+            xml = Xml.tryParse(Template.errorTemplate('Unauthorized', "Your are not authorized to view this page", "My Rights: $myrights Required Rights: $requiredRights"))!.rootElement;
+          }
         }
       }
 

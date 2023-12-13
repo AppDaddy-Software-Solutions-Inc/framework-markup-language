@@ -4,22 +4,16 @@ import 'package:flutter/material.dart';
 class PageConfiguration
 {
   String? title;
-
-  final String? url;
   final String? transition;
 
   Uri? uri;
-
   Route? route;
 
   String get breadcrumb
   {
-    String text = title ?? url ?? "";
+    String text = title ?? uri?.toString() ?? "";
     return text.toLowerCase().split('/').last.split('.xml').first;
   }
 
-  PageConfiguration({required this.url, this.title, this.transition})
-  {
-    if (url != null) uri = Uri.tryParse(url!);
-  }
+  PageConfiguration({required this.uri, this.title, this.transition});
 }

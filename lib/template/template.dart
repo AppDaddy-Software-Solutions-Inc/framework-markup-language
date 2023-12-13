@@ -257,13 +257,13 @@ class Template
         
         <BOX pad="20" center="true">
         
-        <TEXT id="e1" halign="center" size="={SYSTEM.screenwidth} &gt; 700 ? '80' : '50'" color="white" bold="true">
+        <TEXT id="e1" halign="center" size="={SYSTEM.screenwidth} &gt; 700 ? '80' : '40'" color="white" bold="true">
         <VALUE><![CDATA[$err1]]></VALUE>
         </TEXT> 
-        <TEXT id="e2" halign="center" size="={SYSTEM.screenwidth} &gt; 700 ? '80' : '50'" color="white" visible="=!noe({e2})">
+        <TEXT id="e2" halign="center" size="={SYSTEM.screenwidth} &gt; 700 ? '60' : '30'" color="white" visible="=!noe({e2})">
         <VALUE><![CDATA[$err2]]></VALUE>
         </TEXT>
-        <TEXT id="e3" halign="center" size="={SYSTEM.screenwidth} &gt; 700 ? '80' : '50'" color="white"  visible="=!noe({e2})">
+        <TEXT id="e3" halign="center" size="={SYSTEM.screenwidth} &gt; 700 ? '40' : '20'" color="white"  visible="=!noe({e2})">
         <VALUE><![CDATA[$err3]]></VALUE>
         </TEXT> 
         <BOX height="20"/>

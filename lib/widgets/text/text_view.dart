@@ -419,7 +419,8 @@ class _TextViewState extends WidgetState<TextView>
         if (script == "sub") {
           WidgetSpan widgetSpan = WidgetSpan(child: Transform.translate(
             offset: const Offset(2, 4),
-            child: Text(text, textScaleFactor: 0.7,
+            child: Text(text,
+              textScaler: TextScaler.linear(0.7),
               style: TextStyle(
                 color: widget.model.color ?? Theme.of(context).colorScheme.onSurface,
                 wordSpacing: widget.model.wordspace,
@@ -437,7 +438,8 @@ class _TextViewState extends WidgetState<TextView>
         else if (script == "sup") {
           WidgetSpan widgetSpan = WidgetSpan(child: Transform.translate(
             offset: const Offset(2, -4),
-            child: Text(text, textScaleFactor: 0.7,
+            child: Text(text,
+              textScaler: TextScaler.linear(0.7),
               style: TextStyle(
                   color: widget.model.color ?? Theme.of(context).colorScheme.onSurface,
                 wordSpacing: widget.model.wordspace,

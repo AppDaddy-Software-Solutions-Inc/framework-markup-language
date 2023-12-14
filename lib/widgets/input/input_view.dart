@@ -71,8 +71,9 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     // This allows us to get around having to use GlobalKey() on the Input to preserve the controller state
     widget.model.controller ??= TextEditingController();
 
-    // set controller value
+    // set controller value and position to allow the cursor to start at then end of the selection when focused
     widget.model.controller!.value = TextEditingValue(
+        //the controller text value must never be null.
         text: widget.model.value ?? "",
         selection: TextSelection.fromPosition(TextPosition(
             offset: widget.model.controller!.text.characters.length)));
@@ -94,11 +95,14 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
   {
     super.didUpdateWidget(oldWidget);
 
+
+    //this allows us to maintain the same cursor position when closing the keyboard
     var oldcursorPos = widget.model.controller?.selection.base.offset;
     if (oldcursorPos != null)
     {
       widget.model.controller?.value = TextEditingValue(
-          text: widget.model.value ?? "",
+          //this value if the value of the model is given and a commit has not happened, it will throw an error, so we use the current controller text value
+          text: widget.model.controller!.text,
           selection: TextSelection.fromPosition(TextPosition(offset: oldcursorPos)));
     }
   }

@@ -2,22 +2,26 @@
     <CONFIG>
 
         <!-- Settings -->
-        <APPLICATION_NAME 		value="SAMPLE APP" />
-        <VERSION                value="3.0.0"/>
-        <APP_ICON	 			value="assets/images/fml-logo.png" />
-        <HOME_PAGE       		value="templates/main.xml" />
-        <LOGIN_PAGE             value=""/>
-        <UNAUTHORIZED_PAGE      value=""/>
-        <MIRROR_API 	        value="" />
-        <REFRESH                value="true"/>
+        <APPLICATION_NAME value="Flutter Markup Language" />
+        <VERSION value="3.0.0"/>
+        <APP_ICON value="assets/images/fml-logo.png" />
+
+        <!-- Default Pages -->
+        <HOME_PAGE value="templates/main.xml" />
+        <LOGIN_PAGE/>
+        <UNAUTHORIZED_PAGE/>
+        <ERROR_PAGE/>
+
+        <REFRESH value="true"/>
+        <MIRROR_API/>
 
         <!-- Theme -->
-        <COLOR_SCHEME 			value="lightblue" />
-        <BRIGHTNESS 			value="light" /> <!-- dark/light/system/platform -->
-        <FONT                   value="Roboto"/> <!-- Case Sensitive https://fonts.google.com/ Fonts -->
+        <COLOR_SCHEME value="lightblue" />
+        <BRIGHTNESS value="light" /> <!-- dark/light/system/platform -->
+        <FONT value="Roboto"/> <!-- Case Sensitive https://fonts.google.com/ Fonts -->
 
         <!-- Authentication -->
-        <FIREBASE_API_KEY       value=""/>
+        <FIREBASE_API_KEY value=""/>
         <FIREBASE_AUTH_DOMAIN	value=""/>
 
     </CONFIG>

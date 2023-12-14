@@ -110,7 +110,7 @@ class InputModel extends DecoratedInputModel implements IFormField {
   }
 
   @override
-  dynamic get value => dirty ? _value?.get() : _value?.get() ?? defaultValue;
+  dynamic get value => (dirty || !isNullOrEmpty(_value?.get())) ? _value?.get() : defaultValue;
 
   // mask
   StringObservable? _mask;

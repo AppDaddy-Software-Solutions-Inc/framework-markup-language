@@ -26,12 +26,16 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
 {
   /// Event Manager Host
   final EventManager manager = EventManager();
+
   @override
   registerEventListener(EventTypes type, OnEventCallback callback, {int? priority}) => manager.register(type, callback, priority: priority);
+
   @override
   removeEventListener(EventTypes type, OnEventCallback callback) => manager.remove(type, callback);
+
   @override
   broadcastEvent(WidgetModel source, Event event) => manager.broadcast(this, event);
+
   @override
   executeEvent(WidgetModel source, String event) => manager.execute(this, event);
 
@@ -349,7 +353,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
           }
           else
           {
-            xml = await Template.errorTemplateXml('Unauthorized', "You are not authorized to view this page", "Rights: $myrights Required Rights: $requiredRights");
+            xml = await Template.errorTemplateXml("You are not authorized to view this page");
           }
         }
       }

@@ -70,7 +70,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     //if ((System().getNavigationType() == 1) && (!System().singlePageApplication)) page = System().requestedPage;
 
     // open the page
-    setNewRoutePath(PageConfiguration(url: startPage), source: "splash");
+    setNewRoutePath(PageConfiguration(uri: Uri.tryParse(startPage)), source: "splash");
   }
 
   Future<void> onPageLoaded() async
@@ -93,7 +93,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
   @override
   PageConfiguration? get currentConfiguration
   {
-    return _pages.isNotEmpty ? _pages.last.arguments as PageConfiguration? : PageConfiguration(url: "/", title: "Dummy");
+    return _pages.isNotEmpty ? _pages.last.arguments as PageConfiguration? : PageConfiguration(uri: Uri.tryParse("/"), title: "Dummy");
   }
 
   FrameworkView? frameworkOf()
@@ -117,7 +117,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     if (pages.isNotEmpty && pages.first == dummyPage) return _initialize();
 
     // deeplink specified
-    String? url = configuration.url;
+    String? url = configuration.uri?.toString();
     if ((!isWeb) && (source == "system"))
     {
       url = await _buildDeeplinkUrl(url);
@@ -240,7 +240,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
   {
     if (!url.startsWith("/")) url = "/$url";
 
-    var configuration = PageConfiguration(url: url, transition: transition);
+    var configuration = PageConfiguration(uri: Uri.tryParse(url), transition: transition);
     var page = MaterialPage(child: child, name: url, arguments: configuration);
 
     return page;
@@ -251,7 +251,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     PageConfiguration? args = page.arguments as PageConfiguration?;
 
     // if you open the exact same page as was on the top of the stack, simply return
-    if ((_pages.isNotEmpty) && (_pages.last.arguments is PageConfiguration) && ((_pages.last.arguments as PageConfiguration).url == args!.url)) return;
+    if ((_pages.isNotEmpty) && (_pages.last.arguments is PageConfiguration) && ((_pages.last.arguments as PageConfiguration).uri?.toString() == args!.uri?.toString())) return;
 
     if (index != null)
     {
@@ -264,7 +264,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
       } else if (index.isNegative) {
         _pages.insert(_pages.length + index, page);
       } else {
-        Log().error('Unable to add page at index: $index name: ${args!.title}, url: ${args.url}', caller: 'delegate.dart');
+        Log().error('Unable to add page at index: $index name: ${args!.title}, url: ${args.uri?.toString()}', caller: 'delegate.dart');
       }
     }
     else {
@@ -479,7 +479,10 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     }
 
     // go back
-    if (pages != null) ok = await _goback(pages);
+    if (pages != null)
+    {
+      ok = await _goback(pages);
+    }
 
     return ok;
   }
@@ -503,7 +506,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
         _pages.removeLast();
 
         // reload the same page
-        _open(configuration.url, transition: configuration.transition, refresh: true);
+        _open(configuration.uri?.toString(), transition: configuration.transition, refresh: true);
       }
     }
     catch(e)

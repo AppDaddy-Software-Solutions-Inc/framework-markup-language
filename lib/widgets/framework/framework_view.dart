@@ -443,7 +443,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     /// This hack prevents the page that is being navigated away from
     /// from rebuilding
     var index = NavigationManager().positionInStack(context);
-    if (index != 0)
+    if ((index ?? 0) != 0)
     {
       Log().debug('Framework ${widget.model.templateName} was not built since its index ($index) != 0"/>');
       return Offstage();

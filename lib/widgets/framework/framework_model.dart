@@ -26,12 +26,16 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
 {
   /// Event Manager Host
   final EventManager manager = EventManager();
+
   @override
   registerEventListener(EventTypes type, OnEventCallback callback, {int? priority}) => manager.register(type, callback, priority: priority);
+
   @override
   removeEventListener(EventTypes type, OnEventCallback callback) => manager.remove(type, callback);
+
   @override
   broadcastEvent(WidgetModel source, Event event) => manager.broadcast(this, event);
+
   @override
   executeEvent(WidgetModel source, String event) => manager.execute(this, event);
 
@@ -326,8 +330,15 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
         {
           // fetch logon template
           var login = System.app?.loginPage;
-          if (!isNullOrEmpty(login)) template = await Template.fetch(url:login!, refresh: refresh);
-          xml = template.document!.rootElement;
+          if (!isNullOrEmpty(login))
+          {
+            template = await Template.fetch(url:login!, refresh: refresh);
+            xml = template.document!.rootElement;
+          }
+          else
+          {
+            xml = await Template.errorTemplateXml('Not Found', "The <LOGIN_PAGE/> is not defined in config.xml",null);
+          }
         }
 
         // authorized?
@@ -335,8 +346,15 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
         {
           // fetch not authorized template
           var unauthorized = System.app?.unauthorizedPage;
-          if (!isNullOrEmpty(unauthorized)) template = await Template.fetch(url: unauthorized!, refresh: refresh);
-          xml = template.document!.rootElement;
+          if (!isNullOrEmpty(unauthorized))
+          {
+            template = await Template.fetch(url: unauthorized!, refresh: refresh);
+            xml = template.document!.rootElement;
+          }
+          else
+          {
+            xml = await Template.errorTemplateXml("You are not authorized to view this page");
+          }
         }
       }
 

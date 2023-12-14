@@ -175,7 +175,7 @@ class Template
     if (document != null) return Template.fromDocument(name: url, xml: document, parameters: parameters);
 
     // not found - build error template
-    String xml404 = errorTemplate('Page Not Found', null, url);
+    String xml404 = await errorTemplate('Page Not Found', null, url);
 
     // parse the error template created
     try
@@ -184,7 +184,7 @@ class Template
     }
     on  Exception catch(e)
     {
-      xml404 = errorTemplate('Error on Page', url, e.toString());
+      xml404 = await errorTemplate('Error on Page', url, e.toString());
       document = Xml.tryParse(xml404);
     }
 
@@ -243,38 +243,72 @@ class Template
     return true;
   }
 
-  static String errorTemplate(String err1, [String? err2, String? err3])
+  static Future<String> errorTemplate(String err1, [String? err2, String? err3]) async
   {
-    String backbutton = NavigationManager().pages.length > 1 ? '<BUTTON onclick="back()" type="outlined" color="white" ><BOX expand="false" pad="8"><ICON icon="arrow_back" color="white" size="40" /></BOX></BUTTON>' : '';
+    // back button
+    const backButton = '''
+    <BUTTON onclick="back()" type="outlined" color="white" >
+      <BOX expand="false" pad="8">
+        <ICON icon="arrow_back" color="white" size="40" />
+      </BOX>
+    </BUTTON>''';
 
+    // back button is only valid if its not the first page
+    var back = NavigationManager().pages.length > 1 ? backButton : '';
+
+    // fetch error template from the server
+    var error = System.app?.errorPage;
+    if (!isNullOrEmpty(error))
+    {
+      var template = await Template.fetch(url: error!, refresh: false);
+      var xml = template.document?.rootElement.toString();
+      if (xml != null)
+      {
+        xml = xml.replaceAll("{err1}", err1);
+        xml = xml.replaceAll("{err2}", err2 ?? "");
+        xml = xml.replaceAll("{err3}", err3 ?? "");
+        xml = xml.replaceAll("{back}", back);
+        var doc = Xml.tryParse(xml);
+        if (doc != null)
+        {
+          var node = doc.rootElement;
+          Xml.setAttribute(node, "linkable", "true");
+          return node.toString();
+        }
+      }
+    }
+
+    // default error template
     String xml = '''
     <ERROR linkable="true">
-      <BOX width="100%" height="100%" color="#add4de" layout="stack">
-        
+      <BOX width="100%" height="100%" color="#add4de" layout="stack">        
         <POS bottom="0" right="0">
           <IMAGE url="assets/assets/images/404.png" width="={SYSTEM.screenwidth} &lt; 700 ? '100%' : '50%'"/>
-        </POS>
-        
-        <BOX pad="20" center="true">
-        
-        <TEXT id="e1" halign="center" size="={SYSTEM.screenwidth} &gt; 700 ? '80' : '40'" color="white" bold="true">
-        <VALUE><![CDATA[$err1]]></VALUE>
-        </TEXT> 
-        <TEXT id="e2" halign="center" size="={SYSTEM.screenwidth} &gt; 700 ? '60' : '30'" color="white" visible="=!noe({e2})">
-        <VALUE><![CDATA[$err2]]></VALUE>
-        </TEXT>
-        <TEXT id="e3" halign="center" size="={SYSTEM.screenwidth} &gt; 700 ? '40' : '20'" color="white"  visible="=!noe({e2})">
-        <VALUE><![CDATA[$err3]]></VALUE>
-        </TEXT> 
-        <BOX height="20"/>
-        $backbutton
-       
-        <BOX height="80"/>
+        </POS>        
+        <BOX pad="20" center="true">        
+          <TEXT id="e1" halign="center" size="={SYSTEM.screenwidth} &gt; 700 ? '80' : '40'" color="white" bold="true">
+            <VALUE><![CDATA[$err1]]></VALUE>
+          </TEXT> 
+          <TEXT id="e2" halign="center" size="={SYSTEM.screenwidth} &gt; 700 ? '60' : '30'" color="white" visible="=!noe({e2})">
+            <VALUE><![CDATA[$err2]]></VALUE>
+          </TEXT>
+          <TEXT id="e3" halign="center" size="={SYSTEM.screenwidth} &gt; 700 ? '40' : '20'" color="white"  visible="=!noe({e2})">
+            <VALUE><![CDATA[$err3]]></VALUE>
+          </TEXT> 
+          <BOX height="20"/>
+          $back      
+          <BOX height="80"/>        
         </BOX>
-
       </BOX>
-    </ERROR>
-    ''';
+    </ERROR>''';
+
     return xml;
+  }
+
+  static Future<XmlElement> errorTemplateXml(String err1, [String? err2, String? err3]) async
+  {
+    var template = await errorTemplate(err1, err2, err3);
+    var element = Xml.tryParse(template)?.rootElement ?? XmlElement(XmlName("FRAMEWORK"));
+    return element;
   }
 }

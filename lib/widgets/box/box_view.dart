@@ -152,8 +152,8 @@ class _BoxViewState extends WidgetState<BoxView>
     if ((color != null) && (color2 != null))
     {
       gradient = LinearGradient(
-          begin: BoxView.toGradientAlignment(widget.model.start)!,
-          end: BoxView.toGradientAlignment(widget.model.end)!,
+          begin: BoxView.toGradientAlignment(widget.model.gradientStart)!,
+          end: BoxView.toGradientAlignment(widget.model.gradientEnd)!,
           colors: getGradientColors(color, color2, color3, color4),
           tileMode: TileMode.clamp);
 

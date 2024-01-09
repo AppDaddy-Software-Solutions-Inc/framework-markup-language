@@ -105,34 +105,34 @@ class BoxModel extends DecoratedWidgetModel
   bool get blur => _blur?.get() ?? false;
 
   /// The start of the gradient in location, this will be the first `color` position if two colors are given
-  StringObservable? _start;
-  set start(dynamic v)
+  StringObservable? _gradientStart;
+  set gradientStart(dynamic v)
   {
-    if (_start != null)
+    if (_gradientStart != null)
     {
-      _start!.set(v);
+      _gradientStart!.set(v);
     }
     else if (v != null)
     {
-      _start = StringObservable(Binding.toKey(id, 'start'), v, scope: scope, listener: onPropertyChange);
+      _gradientStart = StringObservable(Binding.toKey(id, 'start'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  String get start => _start?.get()?.toLowerCase() ?? 'top';
+  String get gradientStart => _gradientStart?.get()?.toLowerCase() ?? 'top';
 
   /// The end of the gradient in location, this will be the second `color` position if two colors are given
-  StringObservable? _end;
-  set end(dynamic v)
+  StringObservable? _gradientEnd;
+  set gradientEnd(dynamic v)
   {
-    if (_end != null)
+    if (_gradientEnd != null)
     {
-      _end!.set(v);
+      _gradientEnd!.set(v);
     }
     else if (v != null)
     {
-      _end = StringObservable(Binding.toKey(id, 'end'), v, scope: scope, listener: onPropertyChange);
+      _gradientEnd = StringObservable(Binding.toKey(id, 'end'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  String get end => _end?.get()?.toLowerCase() ?? 'bottom';
+  String get gradientEnd => _gradientEnd?.get()?.toLowerCase() ?? 'bottom';
 
   // box radius
   StringObservable? _radius;
@@ -328,14 +328,14 @@ class BoxModel extends DecoratedWidgetModel
     super.deserialize(xml);
 
     /// Style Attributes
-    start = Xml.get(node: xml, tag: 'start');
-    end = Xml.get(node: xml, tag: 'end');
+    gradientStart = Xml.get(node: xml, tag: 'gradientStart') ?? Xml.get(node: xml, tag: 'start');
+    gradientEnd = Xml.get(node: xml, tag: 'gradientEnd') ?? Xml.get(node: xml, tag: 'end');
     blur = Xml.get(node: xml, tag: 'blur');
 
     /// Set Border Attributes
     radius = Xml.get(node: xml, tag: 'radius');
-    bordercolor = Xml.get(node: xml, tag: 'bordercolor');
-    borderwidth = Xml.get(node: xml, tag: 'borderwidth');
+    bordercolor = Xml.get(node: xml, tag: 'borderColor');
+    borderwidth = Xml.get(node: xml, tag: 'borderWidth');
     border = Xml.get(node: xml, tag: 'border');
     if (_border == null && (_radius != null || _bordercolor != null || _borderwidth != null))
     {
@@ -343,9 +343,9 @@ class BoxModel extends DecoratedWidgetModel
     }
 
     elevation = Xml.get(node: xml, tag: 'elevation');
-    shadowcolor = Xml.get(node: xml, tag: 'shadowcolor');
-    shadowy = Xml.get(node: xml, tag: 'shadowy');
-    shadowx = Xml.get(node: xml, tag: 'shadowx');
+    shadowcolor = Xml.get(node: xml, tag: 'shadowColor');
+    shadowx = Xml.get(node: xml, tag: 'shadowX');
+    shadowy = Xml.get(node: xml, tag: 'shadowY');
 
     /// Build the layout
     layout  = Xml.get(node: xml, tag: 'layout');

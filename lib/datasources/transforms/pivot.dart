@@ -94,6 +94,20 @@ class Pivot extends TransformModel implements ITransform
     bool rowFound    = false;
     bool fieldFound  = false;
 
+    // build list of distinct columns
+    List<String> columns = [];
+    for (var row in data)
+    {
+      var name = Data.read(row,column);
+      if (name != null && !columns.contains(name.toString()))
+      {
+        columns.add(name.toString());
+      }
+    }
+
+    // sort the list
+    columns.sort();
+
     Map<String, Map<String?, Map<String, double?>>> statistics = <String, Map<String?, Map<String, double?>>>{};
     for (var row in data) {
       String? myColumn;
@@ -126,25 +140,31 @@ class Pivot extends TransformModel implements ITransform
 
       if (myRow != null)
       {
-        double? v = (mField is String) ? toDouble(mField) : null;
-        if (!statistics.containsKey(myRow)) statistics[myRow] = <String?, Map<String, double?>>{};
-        if (!statistics[myRow]!.containsKey(myColumn))
+        // create new row?
+        if (!statistics.containsKey(myRow))
         {
-          statistics[myRow]![myColumn] = <String, double?>{};
-          statistics[myRow]![myColumn]!["min"] = null;
-          statistics[myRow]![myColumn]!["max"] = null;
-          statistics[myRow]![myColumn]!["cnt"] = 0;
-          statistics[myRow]![myColumn]!["avg"] = null;
-          statistics[myRow]![myColumn]!["sum"] = null;
+          statistics[myRow] = <String?, Map<String, double?>>{};
+          for (var column in columns)
+          {
+            statistics[myRow]![column] = <String, double?>{};
+            statistics[myRow]![column]!["min"] = null;
+            statistics[myRow]![column]!["max"] = null;
+            statistics[myRow]![column]!["cnt"] = null;
+            statistics[myRow]![column]!["avg"] = null;
+            statistics[myRow]![column]!["sum"] = null;
+          }
         }
+
+        // set the values
+        double? v = (mField is String) ? toDouble(mField) : null;
         var p = statistics[myRow]![myColumn]!;
-        p["cnt"] = p["cnt"]! + 1;
         if (v != null)
         {
-          p["sum"] = (p["sum"] != null) ? (p["sum"]! + v) : v;
+          p["cnt"] = p["cnt"] == null ? 1 : p["cnt"]! + 1;
+          p["sum"] = p["sum"] == null ? v : p["sum"]! + v;
+          p["min"] = p["min"] == null || p["min"]! > v ? v : p["min"];
+          p["max"] = p["max"] == null || p["max"]! < v ? v : p["max"];
           p["avg"] = p["sum"]! / p["cnt"]!;
-          p["min"] = (p["min"] == null) || (p["min"]! > v) ? v : p["min"];
-          p["max"] = (p["max"] == null) || (p["max"]! < v) ? v : p["max"];
         }
       }
     }
@@ -165,31 +185,42 @@ class Pivot extends TransformModel implements ITransform
       double count = 0;
       value.forEach((key, value)
       {
-        myrow[key] = value["sum"].toString();
-        sum = sum + (value["sum"] ?? 0);
+        var v = value["sum"];
+        myrow[key] = v != null ? v.toString() : null;
+        sum = sum + (v ?? 0);
         count++;
       });
 
-      myrow["AVG"]   = (count > 0) ? (sum /count).toStringAsFixed(2) : "";
+      myrow["AVG"]   = (count > 0) ? (sum/count).toStringAsFixed(2) : "";
       myrow["TOTAL"] = sum.toString();
       result.add(myrow);
     });
 
     // Column Totals
     Map<String, dynamic> totals   = <String, dynamic>{};
+    Map<String, dynamic> counts   = <String, dynamic>{};
     Map<String, dynamic> averages = <String, dynamic>{};
     for (var row in result) {
       row.forEach((key, value)
       {
         if (!totals.containsKey(key)) totals[key] = null;
+        if (!counts.containsKey(key)) counts[key] = null;
         double? sum = toDouble(value);
-        if (sum != null) totals[key] = (totals[key] ?? 0) + sum;
+        if (sum != null)
+        {
+          totals[key] = (totals[key] ?? 0) + sum;
+          counts[key] = (counts[key] ?? 0) + 1;
+        }
       });
     }
 
     totals.forEach((key, value)
     {
-      if (totals[key] != null) averages[key] = (result.isNotEmpty) ? ((totals[key] / result.length) as double).toStringAsFixed(2) : "0";
+      averages[key] = null;
+      if (totals[key] != null && counts[key] != null && counts[key]! > 0)
+      {
+        averages[key] = ((totals[key] / counts[key]) as double).toStringAsFixed(2);
+      }
     });
 
     totals.forEach((key, value)

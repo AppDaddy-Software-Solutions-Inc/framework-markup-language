@@ -211,6 +211,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     if (widget.model.editable == false)
     {
       widget.model.controller?.value = TextEditingValue(text: widget.model.value);
+      return;
     }
   }
 
@@ -270,6 +271,13 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     {
       // set answer
       await widget.model.answer(value);
+
+      // fire the onChange event
+      if (widget.model.onchange != null)
+      {
+        bool ok = await widget.model.onChange(context);
+        //if (!ok)
+      }
     }
 
     return true;

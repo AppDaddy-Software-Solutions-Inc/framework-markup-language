@@ -697,7 +697,7 @@ class Eval
       int i = toInt(index)!;
       if (i.isNegative) return null;
       if (i >= list.length) return null;
-      return list.elementAt(index);
+      return list.elementAt(i);
     }
     return null;
   }
@@ -709,9 +709,7 @@ class Eval
     if (object is String && character is String)
     {
       var list = (object as String).split(character);
-      if (isNumeric(index))
-           return _elementAt(list, index);
-      else return list;
+      return isNumeric(index) ? _elementAt(list, index) : list;
     }
     return null;
   }

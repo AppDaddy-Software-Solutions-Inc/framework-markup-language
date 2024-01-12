@@ -20,9 +20,9 @@
         <BRIGHTNESS value="light" /> <!-- dark/light/system/platform -->
         <FONT value="Roboto"/> <!-- Case Sensitive https://fonts.google.com/ Fonts -->
 
-        <!-- Authentication -->
-        <FIREBASE_API_KEY value=""/>
-        <FIREBASE_AUTH_DOMAIN	value=""/>
+        <!-- 3rd Party Authentication -->
+        <FIREBASE_API_KEY/>
+        <FIREBASE_AUTH_DOMAIN/>
 
     </CONFIG>
 </FML>

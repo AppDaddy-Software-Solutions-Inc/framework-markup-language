@@ -95,19 +95,19 @@ class TableRowModel extends BoxModel
   String? get onclick => _onClick?.get();
 
   // onComplete
-  StringObservable? _oncomplete;
+  StringObservable? _onComplete;
   set oncomplete(dynamic v)
   {
-    if (_oncomplete != null)
+    if (_onComplete != null)
     {
-      _oncomplete!.set(v);
+      _onComplete!.set(v);
     }
     else if (v != null)
     {
-      _oncomplete = StringObservable(Binding.toKey(id, 'oncomplete'), v, scope: scope, lazyEval: true);
+      _onComplete = StringObservable(Binding.toKey(id, 'oncomplete'), v, scope: scope, lazyEval: true);
     }
   }
-  String? get oncomplete => _oncomplete?.get();
+  String? get oncomplete => _onComplete?.get();
 
   // onInsert
   StringObservable? _onInsert;
@@ -201,8 +201,8 @@ class TableRowModel extends BoxModel
     super.deserialize(xml);
 
     // properties
-    oncomplete  = Xml.get(node: xml, tag: 'oncomplete');
-    onclick     = Xml.get(node: xml, tag: 'onclick');
+    oncomplete  = Xml.get(node: xml, tag: 'onComplete');
+    onclick     = Xml.get(node: xml, tag: 'onClick');
     postbrokers = Xml.attribute(node: xml, tag: 'postbroker');
     onInsert    = Xml.get(node: xml, tag: 'onInsert');
     onDelete    = Xml.get(node: xml, tag: 'onDelete');

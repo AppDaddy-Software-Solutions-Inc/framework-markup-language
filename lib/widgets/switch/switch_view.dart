@@ -84,28 +84,19 @@ class _SwitchViewState extends WidgetState<SwitchView> with WidgetsBindingObserv
     return view;
   }
 
-  onChange(bool value) async {
+  onChange(bool value) async
+  {
     var editable = (widget.model.editable != false);
     if (!editable) return;
 
-      ////////////////////
-      /* Value Changed? */
-      ////////////////////
-    if (widget.model.value != value) {
-      ///////////////////////////
-      /* Retain Rollback Value */
-      ///////////////////////////
-      dynamic old = widget.model.value;
-
-      ////////////////
-      /* Set Answer */
-      ////////////////
+    // value changed?
+    if (widget.model.value != value)
+    {
+      // set answer
       await widget.model.answer(value);
 
-      //////////////////////////
-      /* Fire on Change Event */
-      //////////////////////////
-      if (value != old) await widget.model.onChange(context);
+      // fire the onChange event
+      await widget.model.onChange(context);
     }
   }
 }

@@ -110,29 +110,21 @@ class _SliderViewState extends WidgetState<SliderView> with WidgetsBindingObserv
     return 'field must be supplied';
   }
 
-  onChange(double value) async {
-    if (widget.model.editable == false || widget.model.enabled == false) {
+  onChange(double value) async
+  {
+    if (widget.model.editable == false || widget.model.enabled == false)
+    {
       return;
     }
 
-    ////////////////////
-    /* Value Changed? */
-    ////////////////////
-    if (widget.model.value != value) {
-      ///////////////////////////
-      /* Retain Rollback Value */
-      ///////////////////////////
-      dynamic old = widget.model.value;
-
-      ////////////////
-      /* Set Answer */
-      ////////////////
+    // value changed?
+    if (widget.model.value != value)
+    {
+      // set answer
       await widget.model.answer(value);
 
-      //////////////////////////
-      /* Fire on Change Event */
-      //////////////////////////
-      if (value != old) await widget.model.onChange(context);
+      // fire the onChange event
+      await widget.model.onChange(context);
     }
   }
 

@@ -273,11 +273,7 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
       await widget.model.answer(value);
 
       // fire the onChange event
-      if (widget.model.onchange != null)
-      {
-        bool ok = await widget.model.onChange(context);
-        //if (!ok)
-      }
+      await widget.model.onChange(context);
     }
 
     return true;

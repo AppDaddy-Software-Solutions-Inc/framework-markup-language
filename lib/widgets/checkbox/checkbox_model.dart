@@ -173,9 +173,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
     bool ok = true;
     if ((v != null) && (value is List) && (value as List).contains(v))
     {
-      /////////////////
-      /* Old GeoCode */
-      /////////////////
+      // Old GeoCode
       var oldGeocode = geocode;
       geocode = Payload(
           latitude: System().currentLocation?.latitude,
@@ -185,27 +183,19 @@ class CheckboxModel extends FormFieldModel implements IFormField
           user: System.app?.user.claim('key'),
           username: System.app?.user.claim('name'));
 
-      //////////////////
-      /* Remove Value */
-      //////////////////
+      // Remove Value
       value.remove(v);
 
-      //////////
-      /* Save */
-      //////////
+      // Save
       //ok = await save();
 
-      /////////////////
-      /* Save Failed */
-      /////////////////
+      // Save Failed
       if (ok == false) {
         value.add(v);
         geocode = oldGeocode;
       }
 
-      //////////////////
-      /* Save Success */
-      //////////////////
+      // Save Success
       else {
         dirty = true;
         _value!.notifyListeners();
@@ -214,15 +204,17 @@ class CheckboxModel extends FormFieldModel implements IFormField
     return ok;
   }
 
-  ////////////
-  /* Values */
-  ////////////
+  // Values
   @override
-  List<String>? get values {
+  List<String>? get values
+  {
     List<String>? list;
-    if (value != null) {
-      value.forEach((v) {
-        if (!isNullOrEmpty(v?.toString())) {
+    if (value != null)
+    {
+      value.forEach((v)
+      {
+        if (!isNullOrEmpty(v?.toString()))
+        {
           list ??= [];
           list!.add(v.toString());
         }
@@ -258,9 +250,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
     return s;
   }
 
-  //////////
-  /* label */
-  //////////
+  // label
   ListObservable? _label;
   set label(dynamic v) {
     if (_label != null) {
@@ -461,6 +451,67 @@ class CheckboxModel extends FormFieldModel implements IFormField
     if (ok == true) ok = await onChange(context);
 
     return ok;
+  }
+
+  @override
+  Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async
+  {
+    if (scope == null) return null;
+    var function = propertyOrFunction.toLowerCase().trim();
+
+    switch (function)
+    {
+      case "check":
+        for (var option in options)
+        {
+          // set answer
+          await answer(option.value);
+        }
+
+        // set data
+        await setData();
+
+        // fire onchange
+        await onChange(context);
+
+        return true;
+
+      case "uncheck":
+        for (var option in options)
+        {
+          // clear answer
+          await answer(option.value, delete: true);
+        }
+
+        // set data
+        await setData();
+
+        // fire onchange
+        await onChange(context);
+
+        return true;
+
+      case "toggle":
+
+        for (var option in options)
+        {
+          bool contains = false;
+          if (value is List)   contains = value.contains(option.value);
+          if (value is String) contains = (value == option.value);
+
+          // clear answer
+          await answer(option.value, delete: contains);
+        }
+
+        // set data
+        await setData();
+
+        // fire onchange
+        await onChange(context);
+
+        return true;
+    }
+    return super.execute(caller, propertyOrFunction, arguments);
   }
 
   @override

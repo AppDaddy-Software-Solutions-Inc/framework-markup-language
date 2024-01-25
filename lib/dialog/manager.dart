@@ -11,7 +11,7 @@ class DialogManager
   static void _showDialog(BuildContext context, Completer<AlertResponse> completer, DialogRequest request)
   {
     // build buttons
-    List<DialogButton> buttons = [];
+    List<OutlinedButton> buttons = [];
 
     int i = 0;
 
@@ -19,7 +19,7 @@ class DialogManager
     for (final button in request.buttons!)
     {
       final idx = i;
-      DialogButton b = DialogButton(child: button, onPressed: ()
+      var b = OutlinedButton(child: button, onPressed: ()
       {
         completer.complete(AlertResponse(pressed: idx));
         Navigator.of(context).pop();

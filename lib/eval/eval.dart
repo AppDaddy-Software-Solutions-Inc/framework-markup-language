@@ -708,7 +708,7 @@ class Eval
   {
     if (object is String && character is String)
     {
-      var list = (object as String).split(character);
+      var list = object.split(character);
       return isNumeric(index) ? _elementAt(list, index) : list;
     }
     return null;

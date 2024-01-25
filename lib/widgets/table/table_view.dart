@@ -404,6 +404,38 @@ class TableViewState extends WidgetState<TableView>
 
     stateManager?.removeListener(onSelectedHandler);
     stateManager?.addListener(onSelectedHandler);
+
+    // fit last column to fill table
+    var fit = widget.model.header?.fit?.trim().toLowerCase();
+    if (fit == "fill") _fitLastColumnWidth();
+  }
+
+  void _fitLastColumnWidth()
+  {
+    // fit last column to fill table
+    var fit = widget.model.header?.fit?.trim().toLowerCase();
+    if (fit != "fill") return;
+
+    if (stateManager != null && stateManager!.maxWidth != null)
+    {
+      // get last pluto column
+      var lastColumn = stateManager!.refColumns.isNotEmpty ? stateManager!.refColumns.last : null;
+      if (lastColumn == null) return;
+
+      // compute unused space
+      var availableWidth = stateManager!.maxWidth!;
+      var usedWidth = 0.0;
+      for (final column in stateManager!.refColumns)
+      {
+        if (column != lastColumn) usedWidth += column.width;
+      }
+      var unusedSpace = availableWidth - usedWidth;
+      if (unusedSpace <= 0) return;
+
+      // set the last column width
+      lastColumn.width = unusedSpace;
+      stateManager!.notifyListeners();
+    }
   }
 
   // called when a field changes via edit.
@@ -878,8 +910,17 @@ class TableViewState extends WidgetState<TableView>
       enableGridBorderShadow: widget.model.shadow,
     );
 
+    bool boundedWidth = false;
+    if (widget.model.header != null)
+    {
+      for (var header in widget.model.header!.cells)
+      {
+        if (header.widthOuter != null || header.widthPercentage != null) boundedWidth = true;
+      }
+    }
+
     // column fit
-    var fit = PlutoAutoSizeMode.scale;
+    var fit = boundedWidth ? PlutoAutoSizeMode.none : PlutoAutoSizeMode.scale;
     switch (widget.model.header?.fit?.trim().toLowerCase())
     {
       case "equal":
@@ -887,11 +928,11 @@ class TableViewState extends WidgetState<TableView>
         break;
 
       case "none":
+      case "fill":
         fit = PlutoAutoSizeMode.none;
         break;
 
       case "scale":
-      default:
         fit = PlutoAutoSizeMode.scale;
         break;
     }
@@ -1092,6 +1133,15 @@ class TableViewState extends WidgetState<TableView>
           //onSelected: onSelectedHandler,
           noRowsWidget: widget.model.norows?.getView(),
           createFooter: paged ?  _pageLoader : _lazyLoader);
+    }
+    else
+    {
+      // fit last column to fill table
+      var fit = widget.model.header?.fit?.trim().toLowerCase();
+      if (fit == "fill")
+      {
+        WidgetsBinding.instance.addPostFrameCallback((_) => _fitLastColumnWidth());
+      }
     }
 
     // apply constraints

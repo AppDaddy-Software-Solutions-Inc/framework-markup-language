@@ -274,10 +274,7 @@ class DecoratedInputModel extends FormFieldModel
     if (!enabled) return Theme.of(context).colorScheme.primary.withOpacity(0.5);
 
     // alarm
-    var alarm = this.alarm;
-
-    // alarm
-    if (alarm != null) return Theme.of(context).colorScheme.error;
+    if (!isNullOrEmpty(alarmText)) return Theme.of(context).colorScheme.error;
 
     // user defined
     if (color != null) return color;

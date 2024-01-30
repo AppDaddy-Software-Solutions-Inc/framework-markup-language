@@ -494,7 +494,6 @@ class TableModel extends BoxModel implements IForm
   {
     TableRowModel? model = getRowModel(rowIdx);
     if (model == null || cellIdx >= model.cells.length) return null;
-    var x = model.cells;
     return model.cells[max(cellIdx,0)];
   }
 

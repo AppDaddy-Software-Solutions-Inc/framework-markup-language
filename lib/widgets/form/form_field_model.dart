@@ -61,7 +61,7 @@ class FormFieldModel extends DecoratedWidgetModel
     }
     else if (v != null)
     {
-      _touched = BooleanObservable(Binding.toKey(id, 'touched'), v, scope: scope, listener: onPropertyChange);
+      _touched = BooleanObservable(Binding.toKey(id, 'touched'), v, scope: scope);
     }
   }
   bool get touched => _touched?.get() ?? false;
@@ -179,6 +179,7 @@ class FormFieldModel extends DecoratedWidgetModel
   /// alarm text
   String? get alarmText
   {
+    if (value == null && !touched) return null;
     var alarm = this.alarm;
     if (alarm == null) return null;
     return alarm.text;

@@ -46,20 +46,35 @@ class VideoModel extends DecoratedWidgetModel implements ViewableWidgetModel
   }
   bool get controls => _controls?.get() ?? true;
 
-  // on initialized event
-  StringObservable? _oninitialized;
-  set oninitialized(dynamic v)
+  // loop video
+  BooleanObservable? _loop;
+  set loop(dynamic v)
   {
-    if (_oninitialized != null)
+    if (_loop != null)
     {
-      _oninitialized!.set(v);
+      _loop!.set(v);
     }
     else if (v != null)
     {
-      _oninitialized = StringObservable(Binding.toKey(id, 'oninitialized'), v, scope: scope, lazyEval: true);
+      _loop = BooleanObservable(Binding.toKey(id, 'loop'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  String? get oninitialized => _oninitialized?.get();
+  bool get loop => _loop?.get() ?? true;
+  
+  // on initialized event
+  StringObservable? _onInitialized;
+  set onInitialized(dynamic v)
+  {
+    if (_onInitialized != null)
+    {
+      _onInitialized!.set(v);
+    }
+    else if (v != null)
+    {
+      _onInitialized = StringObservable(Binding.toKey(id, 'oninitialized'), v, scope: scope, lazyEval: true);
+    }
+  }
+  String? get onInitialized => _onInitialized?.get();
 
   VideoModel(WidgetModel parent, String?  id) : super(parent, id)
   {
@@ -72,9 +87,7 @@ class VideoModel extends DecoratedWidgetModel implements ViewableWidgetModel
     VideoModel? model;
     try
     {
-      /////////////////
-      /* Build Model */
-      /////////////////
+      // build model
       model = VideoModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
@@ -97,6 +110,8 @@ class VideoModel extends DecoratedWidgetModel implements ViewableWidgetModel
     url      = Xml.get(node: xml, tag: 'url');
     enabled  = Xml.get(node: xml, tag: 'enabled');
     controls = Xml.get(node: xml, tag: 'controls');
+    loop     = Xml.get(node: xml, tag: 'loop');
+    onInitialized     = Xml.get(node: xml, tag: 'onInitialized');
   }
 
   @override
@@ -133,10 +148,10 @@ class VideoModel extends DecoratedWidgetModel implements ViewableWidgetModel
     return super.execute(caller, propertyOrFunction, arguments);
   }
 
-  Future<bool> onInitialized(BuildContext context) async
+  Future<bool> onInitializedHandler() async
   {
-    if (oninitialized == null) return true;
-    return await EventHandler(this).execute(_oninitialized);
+    if (onInitialized == null) return true;
+    return await EventHandler(this).execute(_onInitialized);
   }
 
   onUrlChange(Observable observable)

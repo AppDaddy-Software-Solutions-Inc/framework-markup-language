@@ -493,7 +493,8 @@ class TableModel extends BoxModel implements IForm
   TableRowCellModel? getRowCellModel(int rowIdx, int cellIdx)
   {
     TableRowModel? model = getRowModel(rowIdx);
-    if (model == null || cellIdx > model.cells.length) return null;
+    if (model == null || cellIdx >= model.cells.length) return null;
+    var x = model.cells;
     return model.cells[max(cellIdx,0)];
   }
 
@@ -719,17 +720,18 @@ class TableModel extends BoxModel implements IForm
   {
     if (prototype == null) return;
 
-    // create new row with no cell elements
-    var tr = prototype!.copy();
-    tr.children.clear();
-
     // build row prototype cells
-    bool hasData = (data?.isNotEmpty ?? false);
-    if (hasData)
+    if (data?.isNotEmpty ?? false)
     {
       // build row model
       TableRowModel? model = TableRowModel.fromXml(this, prototype, data: data!.first);
       if (model == null) return;
+
+      // create new row prototype
+      var tr = prototype!.copy();
+
+      // clear children
+      tr.children.clear();
 
       // process each cell
       int cellIdx = 0;
@@ -774,11 +776,11 @@ class TableModel extends BoxModel implements IForm
 
       // cleanup
       model.dispose();
-    }
 
-    // apply prototype conversions
-    // and set the main row prototype
-    prototype = prototypeOf(tr);
+      // apply prototype conversions
+      // and set the main row prototype
+      prototype = prototypeOf(tr);
+    }
   }
 
   Future<void> _buildDynamic(Data? data) async

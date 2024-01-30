@@ -26,10 +26,15 @@ class CardModel extends BoxModel
 
   //overrides
   double? get margins => super.marginTop ?? 5;
+
   @override
   String  get halign  => super.halign  ?? "start";
+
   @override
   String  get valign  => super.valign  ?? "start";
+
+  @override
+  Color? get color => super.color ?? Colors.white;
 
   CardModel(WidgetModel parent, String? id) : super(parent, id, expandDefault: false);
 

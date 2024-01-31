@@ -37,6 +37,20 @@ class ViewableWidgetModel extends ConstraintModel implements IDragDrop
     return list;
   }
 
+  // Depth - used in stack
+  DoubleObservable? _depth;
+
+  set depth(dynamic v) {
+    if (_depth != null) {
+      _depth!.set(v);
+    } else if (v != null) {
+      _depth = DoubleObservable(Binding.toKey(id, 'depth'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  double? get depth => _depth?.get();
+
   // the flex width
   int? get flexWidth
   {
@@ -588,6 +602,7 @@ class ViewableWidgetModel extends ConstraintModel implements IDragDrop
     maxWidth  = Xml.get(node: xml, tag: 'maxwidth');
     minHeight = Xml.get(node: xml, tag: 'minheight');
     maxHeight = Xml.get(node: xml, tag: 'maxheight');
+    depth     = Xml.get(node: xml, tag: 'depth');
 
     // properties
     visible   = Xml.get(node: xml, tag: 'visible');

@@ -110,20 +110,6 @@ class WidgetModel implements IDataSourceListener {
     return applicationKey.currentContext;
   }
 
-  // Depth
-  DoubleObservable? _depth;
-
-  set depth(dynamic v) {
-    if (_depth != null) {
-      _depth!.set(v);
-    } else if (v != null) {
-      _depth = DoubleObservable(Binding.toKey(id, 'depth'), v,
-          scope: scope, listener: onPropertyChange);
-    }
-  }
-
-  double? get depth => _depth?.get();
-
   // busy
   BooleanObservable? get busyObservable => _busy;
   BooleanObservable? _busy;
@@ -196,16 +182,15 @@ class WidgetModel implements IDataSourceListener {
     // Global Properties
     datasource = Xml.attribute(node: xml, tag: 'data') ?? Xml.attribute(node: xml, tag: 'datasource');
     debug = Xml.get(node: xml, tag: 'debug');
-    depth = Xml.get(node: xml, tag: 'depth');
 
-    var data = Xml.getElement(node: xml, tag: 'data');
-    if (data != null)
-    {
-      this.data = Data.from(data);
-    }
+    //var data = Xml.getElement(node: xml, tag: 'DATA');
+    //if (data != null)
+    //{
+    //  this.data = Data.from(data);
+    //}
 
     // register as datasource
-    if ((this is IDataSource) && (scope != null))
+    if (this is IDataSource && scope != null)
     {
       scope!.registerDataSource(this as IDataSource);
     }
@@ -216,7 +201,7 @@ class WidgetModel implements IDataSourceListener {
     _deserialize(xml);
 
     // register listener
-    if ((datasource != null) && (scope != null)) {
+    if (datasource != null && scope != null) {
       IDataSource? source = scope!.getDataSource(datasource);
       if (source != null) source.register(this);
     }

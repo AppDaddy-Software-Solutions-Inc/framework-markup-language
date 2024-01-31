@@ -258,8 +258,8 @@ dependencies:
   validators: ^3.0.0
   # MIT
 
-  # Updated 2022/12/14
-  video_player: ^2.4.9
+  # Updated 2024/01/30
+  video_player: ^2.8.2
   # BSD-3-Clause
 
   # Updated 2023/4/3

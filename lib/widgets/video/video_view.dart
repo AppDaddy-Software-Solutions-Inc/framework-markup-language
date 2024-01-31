@@ -3,8 +3,11 @@ import 'dart:async';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/icon/icon_model.dart';
 import 'package:fml/widgets/icon/icon_view.dart';
+import 'package:fml/widgets/text/text_model.dart';
+import 'package:fml/widgets/text/text_view.dart';
 import 'package:fml/widgets/video/ivideo_player.dart';
 import 'package:fml/widgets/video/video_model.dart';
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
@@ -25,8 +28,22 @@ class VideoView extends StatefulWidget implements IWidgetView
 class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
 {
   VideoPlayerController? _controller;
-  IconView? shutterbutton;
-  IconModel shutterbuttonmodel = IconModel(null, null, icon: Icons.pause, size: 65, color: Colors.white);
+  IconView? playButton;
+  IconModel playButtonModel = IconModel(null, null, icon: Icons.pause, size: 65, color: Colors.white);
+
+  TextView? speedLabel;
+  TextModel speedLabelModel = TextModel(null, null);
+
+  static const List<double> _playbackRates = <double>[
+    0.25,
+    0.5,
+    1.0,
+    1.5,
+    2.0,
+    3.0,
+    5.0,
+    10.0,
+  ];
 
   @override
   void initState()
@@ -46,11 +63,58 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
   @override
   void dispose()
   {
-    if (_controller != null) return;
-    _controller!.removeListener(onVideoController);
-    _controller!.dispose();
+    _controller?.removeListener(onVideoController);
+    _controller?.dispose();
+    _controller = null;
     super.dispose();
   }
+
+  @override
+  onModelChange(WidgetModel model, {String? property, dynamic value})
+  {
+    if (mounted) setState((){});
+  }
+
+  Widget getPlayButton()
+  {
+    // shutter
+    playButton ??= IconView(playButtonModel);
+    var play = UnconstrainedBox(
+        child: MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(
+                onTap: startstop,
+                child: Stack(alignment: Alignment.center, children: [
+                  Icon(Icons.circle, color: Colors.white38, size: 80),
+                  playButton!
+                ]))));
+    return Positioned(bottom: 0, top: 0, left: 0, right: 0, child: play);
+  }
+
+  Widget getSpeedButton()
+  {
+    speedLabel ??= TextView(speedLabelModel);
+    speedLabelModel.value = '${_controller?.value.playbackSpeed}x';
+
+    var label = Stack(alignment: Alignment.center, children: [
+      Icon(Icons.circle, color: Colors.white38, size: 40), speedLabel!]);
+
+    var popup = PopupMenuButton<double>(
+        initialValue: _controller?.value.playbackSpeed,
+        tooltip: 'Playback speed',
+        onSelected: (double speed)
+        {
+          _controller?.setPlaybackSpeed(speed);
+          speedLabelModel.value = '${speed}x';
+        },
+        itemBuilder: (BuildContext context)
+        {
+          return <PopupMenuItem<double>>[for (final double speed in _playbackRates) PopupMenuItem<double>(value: speed, child: Text('${speed}x'))];
+        },
+        child: label);
+
+      return Positioned(top: 5, right: 5, child: popup);
+    }
 
   @override
   Widget build(BuildContext context)
@@ -59,31 +123,18 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
     if (!widget.model.visible) return Offstage();
 
     // create the view
-    Widget view = (_controller != null && _controller!.value.isInitialized) ? AspectRatio(aspectRatio: _controller!.value.aspectRatio, child: VideoPlayer(_controller!)) : Container();
-
-    //if (_controller.value.isInitialized) _controller.play();
-
-    // get the children
-    List<Widget> children = widget.model.inflate();
-
-    // show controls
-    if (widget.model.controls != false)
+    Widget view = Container();
+    if (_controller != null && _controller!.value.isInitialized)
     {
-      // shutter
-      shutterbutton ??= IconView(shutterbuttonmodel);
-      var shutter = UnconstrainedBox(
-          child: MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: GestureDetector(
-                  onTap: startstop,
-                  child: Stack(alignment: Alignment.center, children: [
-                    Icon(Icons.circle, color: Colors.white38, size: 80),
-                    shutterbutton!
-                  ]))));
-      children.add(Positioned(bottom: 25, left: 0, right: 0, child: shutter));
+      var videoPlayer = VideoPlayer(_controller!);
+      var subTitles   = ClosedCaption(text: _controller!.value.caption.text);
+      var progressBar = widget.model.controls ? VideoProgressIndicator(_controller!, allowScrubbing: true) : Offstage();
+      var playButton  = widget.model.controls ? getPlayButton()  : Offstage();
+      var speedButton = widget.model.controls ? getSpeedButton() : Offstage();
+      var stack = Stack(alignment: Alignment.bottomCenter, children: <Widget>[videoPlayer,subTitles,speedButton, playButton, progressBar]);
+      view = AspectRatio(aspectRatio: _controller!.value.aspectRatio, child: stack);
+      view = GestureDetector(onTap: startstop, child: view);
     }
-
-    view = Stack(children: children);
 
     // add margins
     view = addMargins(view);
@@ -100,15 +151,16 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
     if (_controller == null) return;
     if(!_controller!.value.isPlaying)
     {
-      shutterbuttonmodel.icon = Icons.pause;
-      shutterbuttonmodel.size = 65;
+      playButtonModel.icon = Icons.pause;
+      playButtonModel.size = 65;
       if (_controller!.value.position == _controller!.value.duration) seek(0);
     }
     else
     {
-      shutterbuttonmodel.icon = Icons.play_arrow;
-      shutterbuttonmodel.size = 65;
+      playButtonModel.icon = Icons.play_arrow;
+      playButtonModel.size = 65;
     }
+    _controller!.setLooping(widget.model.loop);
   }
 
   Future<bool> startstop() async
@@ -127,7 +179,7 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
     if (uri != null)
     {
       // initialize the controller
-      _controller = VideoPlayerController.network(url!)..initialize().then((_)
+      _controller = VideoPlayerController.networkUrl(uri)..initialize().then((_)
       {
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
         if (mounted) setState(() {});

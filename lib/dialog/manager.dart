@@ -76,7 +76,7 @@ class DialogManager
       if (request.type == DialogType.success) type = Types.success;
       if (request.type == DialogType.modal)   type = Types.none;
 
-      Alert dialog = Alert(context: context, type: type, style: style, image: request.image, title: request.title ?? '', desc: request.description, content: request.content, buttons: buttons, closeFunction: () {completer.complete(AlertResponse(pressed: -1)); Navigator.of(context).pop();});
+      Alert dialog = Alert(context: context, type: type, style: style, image: request.image, title: request.title, desc: request.description, content: request.content, buttons: buttons, closeFunction: () {completer.complete(AlertResponse(pressed: -1)); Navigator.of(context).pop();});
 
       // display dialog
       dialog.show();

@@ -326,7 +326,22 @@ class EventHandler extends Eval
   /// Creates an alert dialog
   Future<bool> _handleEventAlert([dynamic type, dynamic title, dynamic message]) async
   {
-    await model.framework?.show(type: toEnum(toStr(type), DialogType.values), title: toStr(title), description: toStr(message));
+    var dialogType = toEnum(toStr(type), DialogType.values);
+
+    // alert type not supplied
+    if (dialogType == null)
+    {
+      dialogType = DialogType.none;
+      message = title;
+      title   = type;
+      if (message == null && (toStr(title)?.length ?? 0) > 20)
+      {
+        title = null;
+        message = type;
+      }
+    }
+
+    await model.framework?.show(type: dialogType, title: toStr(title), description: toStr(message));
     return true;
   }
 

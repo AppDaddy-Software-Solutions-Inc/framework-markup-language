@@ -520,89 +520,89 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
 {
   WidgetModel? model;
 
-  switch (node.localName.toLowerCase()) {
+  switch (node.localName) {
 
-    case "alarm":
+    case "ALARM":
       model = AlarmModel.fromXml(parent, node);
       break;
 
-    case "animate": // Preferred Case
-    case "animation": // Animation may be deprecated
+    case "ANIMATE": // Preferred Case
+    case "ANIMATION": // Animation may be deprecated
       model = AnimationModel.fromXml(parent, node);
       break;
 
-    case "autocomplete":
+    case "AUTOCOMPLETE":
       model = InputModel.fromXml(parent, node, type: "autocomplete");
       break;
 
-    case "barcode":
+    case "BARCODE":
       model = BarcodeDetectorModel.fromXml(parent, node);
       break;
 
-    case "beacon":
+    case "BEACON":
       model = BeaconModel.fromXml(parent, node);
       break;
 
-    case "biometic":
+    case "BIOMETRIC":
       model = BiometricsDetectorModel.fromXml(parent, node);
       break;
 
-    case "box": // Preferred Case
-    case "container": // Container may be deprecated
+    case "BOX": // Preferred Case
+    case "CONTAINER": // Container may be deprecated
       bool isPrototype = Xml.hasAttribute(node: node, tag: "data") || Xml.hasAttribute(node: node, tag: "datasource");
       model = isPrototype ? PrototypeModel.fromXml(parent, node) : BoxModel.fromXml(parent, node, scope: scope, data: data);
       break;
 
-    case "breadcrumb":
+    case "BREADCRUMB":
       model = BreadcrumbModel.fromXml(parent, node);
       break;
 
-    case "busy":
+    case "BUSY":
       model = BusyModel.fromXml(parent, node);
       break;
 
-    case "button":
-    case "btn":
+    case "BUTTON":
+    case "BTN":
       model = ButtonModel.fromXml(parent, node);
       break;
 
-    case "buttonstate":
+    case "BUTTONSTATE":
       model = ButtonModel.fromXml(parent, node);
       break;
 
-    case "calc":
+    case "CALC":
       if (parent is IDataSource) model = Calc.fromXml(parent, node);
       break;
 
-    case "camera":
+    case "CAMERA":
       model = CameraModel.fromXml(parent, node);
       break;
 
-    case "card":
+    case "CARD":
       model = CardModel.fromXml(parent, node);
       break;
 
-    case "center":
+    case "CENTER":
       model = CenterModel.fromXml(parent, node);
       break;
 
-    case "chart":
+    case "CHART":
       model = ChartModel.fromXml(parent, node);
       break;
 
-    case "linechart":
+    case "LINECHART":
       model = LineChartModel.fromXml(parent, node);
       break;
 
-    case "piechart":
+    case "PIECHART":
       model = PieChartModel.fromXml(parent, node);
       break;
 
-    case "barchart":
+    case "BARCHART":
       model = BarChartModel.fromXml(parent, node);
       break;
 
-    case "body":
+    case "BODY":
     // we dont want to deserialize datasorce body models
     // in the future we may wish to have a BODY element
     // for now just return null
@@ -614,83 +614,83 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
   //   model = SFCHART.ChartModel.fromXml(parent, node);
   //   break;
 
-    case "html":
+    case "HTML":
       model = HtmlModel.fromXml(parent, node);
       break;
 
-    case "checkbox":
-    case "check":
+    case "CHECKBOX":
+    case "CHECK":
       model = CheckboxModel.fromXml(parent, node);
       break;
 
-    case "const":
-    case "constant":
+    case "CONST":
+    case "CONSTANT":
       model = VariableModel.fromXml(parent, node, constant: true);
       break;
 
-    case "crop":
+    case "CROP":
       if (parent is IDataSource) model = Crop.fromXml(parent, node);
       break;
 
-    case "column":
-    case "col": //shorthand case
+    case "COLUMN":
+    case "COL": //shorthand case
       bool isPrototype = Xml.hasAttribute(node: node, tag: "data") || Xml.hasAttribute(node: node, tag: "datasource");
       model = isPrototype ? PrototypeModel.fromXml(parent, node) : ColumnModel.fromXml(parent, node, scope: scope, data: data);
       break;
 
-    case "condition":
-    case "case":
+    case "CONDITION":
+    case "CASE":
       if (parent is TriggerModel) {
         model = TriggerConditionModel.fromXml(parent, node);
       }
       break;
 
-    case "data":
+    case "DATA":
       model = DataModel.fromXml(parent, node);
       break;
 
-    case "datepicker":
+    case "DATEPICKER":
       model = DatepickerModel.fromXml(parent, node);
       break;
 
-    case "delete":
+    case "DELETE":
       model = HttpDeleteModel.fromXml(parent, node);
       break;
 
-    case "distinct":
+    case "DISTINCT":
       if (parent is IDataSource) model = Distinct.fromXml(parent, node);
       break;
 
-    case "editor":
+    case "EDITOR":
       model = EditorModel.fromXml(parent, node);
       break;
 
   // deprecated. use row/column/box with %sizing or flex
-    case "expand":
-    case "expanded":
+    case "EXPAND":
+    case "EXPANDED":
       model = ColumnModel.fromXml(parent, node);
       if (model is ColumnModel && model.flex == null) model.flex = "1";
       break;
 
-    case "eval":
+    case "EVAL":
       if (parent is IDataSource) model = Eval.fromXml(parent, node);
       break;
 
-    case "field":
+    case "FIELD":
       model = FieldModel.fromXml(parent, node);
       break;
 
-    case "filepicker":
+    case "FILEPICKER":
       model = FilepickerModel.fromXml(parent, node);
       break;
 
-    case "filter":
+    case "FILTER":
       if (parent is IDataSource) {
         model = Filter.fromXml(parent, node);
       }
       break;
 
-    case "flip":
+    case "FLIP":
       if (parent is IDataSource) {
         model = Flip.fromXml(parent, node);
       } else if (parent is AnimationModel) {
@@ -700,7 +700,7 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
       }
       break;
 
-    case "fml":
+    case "FML":
     // <FML> root models are never a child element
     // of another parent element, rather they get created from the FrameworkModel.fromXml() routine.
     // If there is a future reason to do that, this item will need to be revisited. In the meantime,
@@ -708,70 +708,70 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
       model = BoxModel.fromXml(parent, node);
       break;
 
-    case "footer":
+    case "FOOTER":
       if (parent is FrameworkModel) {
         model = FooterModel.fromXml(parent, node);
       }
       break;
 
-    case "form":
+    case "FORM":
       model = FormModel.fromXml(parent, node);
       break;
 
-    case "format":
+    case "FORMAT":
       if (parent is IDataSource) {
         model = Format.fromXml(parent, node);
       }
       break;
 
-    case "gesture":
+    case "GESTURE":
       model = GestureModel.fromXml(parent, node);
       break;
 
-    case "get":
+    case "GET":
       model = HttpGetModel.fromXml(parent, node);
       break;
 
-    case "greyscale":
-    case "grayscale":
+    case "GREYSCALE":
+    case "GRAYSCALE":
       if (parent is IDataSource) {
         model = Grayscale.fromXml(parent, node);
       }
       break;
 
-    case "gps":
+    case "GPS":
       model = GpsModel.fromXml(parent, node);
       break;
 
-    case "grid":
+    case "GRID":
       model = GridModel.fromXml(parent, node);
       break;
 
-    case "header":
+    case "HEADER":
       if (parent is FrameworkModel) {
         model = HeaderModel.fromXml(parent, node);
       }
       break;
 
-    case "http":
+    case "HTTP":
       model = HttpModel.fromXml(parent, node);
       break;
 
-    case "icon":
+    case "ICON":
       model = IconModel.fromXml(parent, node);
       break;
 
-    case "webview":
-    case "iframe":
+    case "WEBVIEW":
+    case "IFRAME":
       model = InlineFrameModel.fromXml(parent, node);
       break;
 
-    case "image":
-    case "img":
+    case "IMAGE":
+    case "IMG":
       model = ImageModel.fromXml(parent, node);
       break;
 
-    case "item":
+    case "ITEM":
       if (parent is GridModel) {
         model = GridItemModel.fromXml(parent, node);
       }
@@ -786,71 +786,71 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
       }
       break;
 
-    case "input":
+    case "INPUT":
       model = InputModel.fromXml(parent, node);
       break;
 
-    case "layout":
+    case "LAYOUT":
       model = BoxModel.fromXml(parent, node);
       break;
 
-    case "label":
+    case "LABEL":
       if (parent is ChartModel) {
         model = ChartLabelModel.fromXml(parent, node);
       }
       break;
 
-    case "link":
+    case "LINK":
       model = LinkModel.fromXml(parent, node);
       break;
 
-    case "list":
+    case "LIST":
       model = ListModel.fromXml(parent, node);
       break;
 
-    case "log":
+    case "LOG":
       model = LogModel.fromXml(parent, node);
       break;
 
-    case "map":
+    case "MAP":
       model = MapModel.fromXml(parent, node);
       break;
 
-    case "menu":
+    case "MENU":
       model = MenuModel.fromXml(parent, node);
       break;
 
-    case "modal":
+    case "MODAL":
       model = ModalModel.fromXml(parent, node);
       break;
 
-    case "mqtt":
+    case "MQTT":
       model = MqttModel.fromXml(parent, node);
       break;
 
-    case "nfc":
+    case "NFC":
       model = NcfModel.fromXml(parent, node);
       break;
 
-    case "node":
+    case "NODE":
       if (parent is TreeModel || parent is TreeNodeModel)
       {
         model = TreeNodeModel.fromXml(parent, node);
       }
       break;
 
-    case "ocr":
+    case "OCR":
       model = TextDetectorModel.fromXml(parent, node);
       break;
 
-    case "option":
+    case "OPTION":
       if (parent is SelectModel ||
           parent is CheckboxModel ||
           parent is RadioModel ||
           parent is TypeaheadModel) model = OptionModel.fromXml(parent, node);
       break;
 
-    case "fade":
+    case "FADE":
       if (parent is AnimationModel) {
         model = FadeTransitionModel.fromXml(parent, node);
       } else {
@@ -858,7 +858,7 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
       }
       break;
 
-    case "rotate":
+    case "ROTATE":
       if (parent is AnimationModel) {
         model = RotateTransitionModel.fromXml(parent, node);
       } else {
@@ -866,12 +866,12 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
       }
       break;
 
-    case "sbox":
-    case "shrinkbox":
+    case "SBOX":
+    case "SHRINKBOX":
       model = BoxModel.fromXml(parent, node, expandDefault: false);
       break;
 
-    case "size":
+    case "SIZE":
       if (parent is AnimationModel) {
         model = SizeTransitionModel.fromXml(parent, node);
       } else {
@@ -879,7 +879,7 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
       }
       break;
 
-    case "slide":
+    case "SLIDE":
       if (parent is AnimationModel) {
         model = SlideTransitionModel.fromXml(
           parent,
@@ -890,7 +890,7 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
       }
       break;
 
-    case "scale":
+    case "SCALE":
       if (parent is AnimationModel) {
         model = ScaleTransitionModel.fromXml(parent, node);
       } else {
@@ -898,19 +898,19 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
       }
       break;
 
-    case "stash":
+    case "STASH":
       model = StashModel.fromXml(parent, node);
       break;
 
-    case "subquery":
+    case "SUBQUERY":
       if (parent is HttpGetModel) model = Query.fromXml(parent, node);
       break;
 
-    case "testdata":
+    case "TESTDATA":
       model = TestDataModel.fromXml(parent, node);
       break;
 
-    case "transform":
+    case "TRANSFORM":
       if (parent is AnimationModel) {
         model = TransformModel.fromXml(parent, node);
       } else {
@@ -918,7 +918,7 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
       }
       break;
 
-    case "tween":
+    case "TWEEN":
       if (parent is AnimationModel) {
         model = TweenModel.fromXml(parent, node);
       } else {
@@ -926,81 +926,81 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
       }
       break;
 
-    case "pad": // Preferred Case.
-    case "padding": // Padding could be deprecated.
+    case "PAD": // Preferred Case.
+    case "PADDING": // Padding could be deprecated.
       model = PaddingModel.fromXml(parent, node);
       break;
 
-    case "page":
+    case "PAGE":
       if (parent is PagerModel)
       {
         model = PageModel.fromXml(parent, node);
       }
       break;
 
-    case "pager":
+    case "PAGER":
       model = PagerModel.fromXml(parent, node);
       break;
 
-    case "pivot":
+    case "PIVOT":
       if (parent is IDataSource) model = Pivot.fromXml(parent, node);
       break;
 
-    case "put":
+    case "PUT":
       model = HttpPutModel.fromXml(parent, node);
       break;
 
-    case "popover":
+    case "POPOVER":
       model = PopoverModel.fromXml(parent, node);
       break;
 
-    case "popoveritem":
+    case "POPOVERITEM":
       model = PopoverItemModel.fromXml(parent, node);
       break;
 
-    case "position": // Preferred case
-    case "pos": // Shorthand case
-    case "positioned": // Positioned may be deprecated
+    case "POSITION": // Preferred case
+    case "POS": // Shorthand case
+    case "POSITIONED": // Positioned may be deprecated
       model = PositionedModel.fromXml(parent, node);
       break;
 
-    case "marker":
+    case "MARKER":
       if (parent is MapModel) {
         model = MapMarkerModel.fromXml(parent, node);
       }
       break;
 
-    case "post":
+    case "POST":
       model = HttpPostModel.fromXml(parent, node);
       break;
 
-    case "radio":
+    case "RADIO":
       model = RadioModel.fromXml(parent, node);
       break;
 
-    case "resize":
+    case "RESIZE":
       if (parent is IDataSource) model = Resize.fromXml(parent, node);
       break;
 
-    case "row":
+    case "ROW":
       bool isPrototype = Xml.hasAttribute(node: node, tag: "data") || Xml.hasAttribute(node: node, tag: "datasource");
       model = isPrototype ? PrototypeModel.fromXml(parent, node) : RowModel.fromXml(parent, node, scope: scope, data: data);
       break;
 
-    case "scribble":
+    case "SCRIBBLE":
       model = ScribbleModel.fromXml(parent, node);
       break;
 
-    case "scroll": // Preferred Case
-    case "scroller": // Scroller may be deprecated.
+    case "SCROLL": // Preferred Case
+    case "SCROLLER": // Scroller may be deprecated.
       model = ScrollerModel.fromXml(parent, node);
       break;
 
-    case "select":
+    case "SELECT":
       model = SelectModel.fromXml(parent, node);
       break;
 
-    case "series":
+    case "SERIES":
       if (parent is ChartModel) {
         model = ChartSeriesModel.fromXml(parent, node);
       }else if (parent is BarChartModel){
@@ -1013,69 +1013,69 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
       // else if (parent is SFCHART.ChartModel) model = SFCHART.ChartSeriesModel.fromXml(parent, node);
       break;
 
-    case "slider":
+    case "SLIDER":
       model = SliderModel.fromXml(parent, node);
       break;
 
-    case "socket":
+    case "SOCKET":
       model = SocketModel.fromXml(parent, node);
       break;
 
-    case "sort":
+    case "SORT":
       if (parent is IDataSource) model = Sort.fromXml(parent, node);
       break;
 
-    case "span":
+    case "SPAN":
       model = SpanModel.fromXml(parent, node);
       break;
 
-    case "sse":
+    case "SSE":
       model = SseModel.fromXml(parent, node);
       break;
 
-    case "stack":
+    case "STACK":
       model = StackModel.fromXml(parent, node);
       break;
 
-    case "splitview":
+    case "SPLITVIEW":
       model = SplitModel.fromXml(parent, node);
       break;
 
-    case "table":
+    case "TABLE":
       model = TableModel.fromXml(parent, node);
       break;
 
-    case "th":
-    case "tableheader":
+    case "TH":
+    case "TABLEHEADER":
       if (parent is TableModel) {
         model = TableHeaderModel.fromXml(parent, node);
       }
       break;
 
-    case "tr":
-    case "tablerow":
+    case "TR":
+    case "TABLEROW":
       if (parent is TableModel) {
         model = TableRowModel.fromXml(parent, node);
       }
       break;
 
-    case "tf":
-    case "tablefooter":
+    case "TF":
+    case "TABLEFOOTER":
       if (parent is TableModel) {
         model = TableFooterModel.fromXml(parent, node);
       }
       break;
 
-    case "nodata":
-    case "norows":
+    case "NODATA":
+    case "NOROWS":
       if (parent is TableModel) {
         model = TableNoRowsModel.fromXml(parent, node);
       }
       break;
 
-    case "td":
-    case "tabledata":
-    case "cell":
+    case "TD":
+    case "TABLEDATA":
+    case "CELL":
       if (parent is TableHeaderModel || parent is TableHeaderGroupModel)
       {
         model = TableHeaderCellModel.fromXml(parent, node);
@@ -1088,37 +1088,37 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
       }
       break;
 
-    case "tg":
-    case "group":
+    case "TG":
+    case "GROUP":
       if (parent is TableHeaderModel || parent is TableHeaderGroupModel) {
         model = TableHeaderGroupModel.fromXml(parent, node);
       }
       break;
 
-    case "tabview":
+    case "TABVIEW":
       model = TabModel.fromXml(parent, node);
       break;
 
-    case "text":
-    case "txt":
+    case "TEXT":
+    case "TXT":
       model = TextModel.fromXml(parent, node);
       break;
 
-    case "theme":
+    case "THEME":
       model = ThemeModel.fromXml(parent, node);
       break;
 
-    case "timer":
+    case "TIMER":
       model = TimerModel.fromXml(parent, node);
       break;
 
-    case "toggle":
-    case "switch":
+    case "TOGGLE":
+    case "SWITCH":
       model = SwitchModel.fromXml(parent, node);
       break;
 
-    case "tip":
-    case "tooltip":
+    case "TIP":
+    case "TOOLTIP":
       if (Xml.attribute(node: node, tag: "label") != null ||
           Xml.attribute(node: node, tag: "text") != null) {
         model = v1.TooltipModel.fromXml(parent, node);
@@ -1127,52 +1127,52 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
       }
       break;
 
-    case "treeview":
+    case "TREEVIEW":
       model = TreeModel.fromXml(parent, node);
       break;
 
-    case "trigger":
+    case "TRIGGER":
       model = TriggerModel.fromXml(parent, node);
       break;
 
-    case "typeahead":
+    case "TYPEAHEAD":
       model = TypeaheadModel.fromXml(parent, node);
       break;
 
-    case "variable":
-    case "var":
+    case "VARIABLE":
+    case "VAR":
       model = VariableModel.fromXml(parent, node);
       break;
 
-    case "video":
+    case "VIDEO":
       model = VideoModel.fromXml(parent, node);
       break;
 
-    case "view":
+    case "VIEW":
       if (parent is SplitModel) {
         model = BoxModel.fromXml(parent, node);
       }
       break;
 
-    case "window":
+    case "WINDOW":
       model = FrameworkModel.fromXml(parent, node);
       break;
 
-    case "xaxis":
+    case "XAXIS":
       if (parent is ChartPainterModel) {
         model = ChartAxisModel.fromXml(parent, node, ChartAxis.X);
       }
       // else if (parent is SFCHART.ChartModel) model = SFCHART.ChartAxisModel.fromXml(parent, node, SFCHART.Axis.X);
       break;
 
-    case "yaxis":
+    case "YAXIS":
       if (parent is ChartPainterModel) {
         model = ChartAxisModel.fromXml(parent, node, ChartAxis.Y);
       }
       // else if (parent is SFCHART.ChartModel) model = SFCHART.ChartAxisModel.fromXml(parent, node, SFCHART.Axis.Y);
       break;
 
-    case "zebra":
+    case "ZEBRA":
       model = ZebraModel.fromXml(parent, node);
       break;
 

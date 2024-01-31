@@ -276,7 +276,6 @@ class Xml {
       v = node.getAttribute(tag);
       // v ??= node.getAttribute(tag.toLowerCase());
       // v ??= node.getAttribute(tag.toUpperCase());
-
     }
     catch(e) {
       v = null;
@@ -291,8 +290,8 @@ class Xml {
     try
     {
       if (node.getAttributeNode(tag) != null) return true;
-      if (node.getAttributeNode(tag.toLowerCase()) != null) return true;
-      if (node.getAttributeNode(tag.toUpperCase()) != null) return true;
+      //if (node.getAttributeNode(tag.toLowerCase()) != null) return true;
+      //if (node.getAttributeNode(tag.toUpperCase()) != null) return true;
     }
     catch(e)
     {
@@ -330,7 +329,8 @@ class Xml {
     {
       if (node != null)
       {
-        var attribute = node.attributes.firstWhereOrNull((attribute) => attribute.name.local == tag || attribute.name.local.toLowerCase() == tag || attribute.name.local.toUpperCase() == tag);
+        var attribute = node.attributes.firstWhereOrNull((attribute) => attribute.name.local == tag);
+        //var attribute = node.attributes.firstWhereOrNull((attribute) => attribute.name.local == tag || attribute.name.local.toLowerCase() == tag || attribute.name.local.toUpperCase() == tag);
         if (attribute != null) node.attributes.remove(attribute);
       }
     }
@@ -367,8 +367,8 @@ class Xml {
     try
     {
       XmlElement? child = getChildElement(node: node, tag: tag);
-      child ??= getChildElement(node: node, tag: tag.toLowerCase());
-      child ??= getChildElement(node: node, tag: tag.toUpperCase());
+      //child ??= getChildElement(node: node, tag: tag.toLowerCase());
+      //child ??= getChildElement(node: node, tag: tag.toUpperCase());
       if (child != null) v = getText(child, innerXmlAsText: innerXmlAsText);
     }
     catch(e) {
@@ -383,9 +383,9 @@ class Xml {
   {
     try
     {
-      if (getChildElement(node: node, tag: tag)               != null) return true;
-      if (getChildElement(node: node, tag: tag.toUpperCase()) != null) return true;
-      if (getChildElement(node: node, tag: tag.toLowerCase()) != null) return true;
+      if (getChildElement(node: node, tag: tag) != null) return true;
+      //if (getChildElement(node: node, tag: tag.toUpperCase()) != null) return true;
+      //if (getChildElement(node: node, tag: tag.toLowerCase()) != null) return true;
     }
     catch(e)
     {
@@ -398,10 +398,11 @@ class Xml {
   static String? get({XmlElement? node, String? tag, bool innerXmlAsText = false})
   {
     String? v;
+    if (node == null || tag == null) return v;
     try
     {
-      v ??= attribute(node: node!, tag: tag!);
-      v ??= element(node: node!, tag: tag!, innerXmlAsText: innerXmlAsText);
+      v ??= attribute(node: node, tag: tag);
+      v ??= element(node: node, tag: tag, innerXmlAsText: innerXmlAsText);
     }
     catch(e)
     {
@@ -450,11 +451,11 @@ class Xml {
       nodes = node.findElements(tag, namespace: "*");
       if (nodes.isNotEmpty) return nodes.first;
 
-      nodes = node.findElements(tag.toUpperCase(), namespace: "*");
-      if (nodes.isNotEmpty) return nodes.first;
+      //nodes = node.findElements(tag.toUpperCase(), namespace: "*");
+      //if (nodes.isNotEmpty) return nodes.first;
 
-      nodes = node.findElements(tag.toLowerCase(), namespace: "*");
-      if (nodes.isNotEmpty) return nodes.first;
+      //nodes = node.findElements(tag.toLowerCase(), namespace: "*");
+      //if (nodes.isNotEmpty) return nodes.first;
     }
     catch(e) {
       Log().exception(e, caller: 'xml.dart => XmlElement getChildElement({XmlElement node, String tag})');
@@ -467,8 +468,8 @@ class Xml {
   {
     try
     {
-      String lower = tag.toLowerCase();
-      String upper = tag.toUpperCase();
+      //String lower = tag.toLowerCase();
+      //String upper = tag.toUpperCase();
 
       List<XmlElement> list = [];
 
@@ -478,20 +479,20 @@ class Xml {
       ///////////////
       /* Lowercase */
       ////////////////
-      if (tag != lower)
-      {
-        nodes = node.findElements(lower, namespace: "*");
-        if (nodes.isNotEmpty) list.addAll(nodes);
-      }
+      //if (tag != lower)
+      //{
+      //  nodes = node.findElements(lower, namespace: "*");
+      //  if (nodes.isNotEmpty) list.addAll(nodes);
+      //}
 
       ///////////////
       /* Uppercase */
       ///////////////
-      if (tag != upper)
-      {
-        nodes = node.findElements(upper, namespace: "*");
-        if (nodes.isNotEmpty) list.addAll(nodes);
-      }
+      //if (tag != upper)
+      //{
+       // nodes = node.findElements(upper, namespace: "*");
+       // if (nodes.isNotEmpty) list.addAll(nodes);
+      //}
 
       return list;
     }
@@ -512,11 +513,11 @@ class Xml {
       nodes = node.findAllElements(tag, namespace: "*");
       if (nodes.isNotEmpty) return nodes.first;
 
-      nodes = node.findAllElements(tag.toUpperCase(), namespace: "*");
-      if (nodes.isNotEmpty) return nodes.first;
+      //nodes = node.findAllElements(tag.toUpperCase(), namespace: "*");
+      //if (nodes.isNotEmpty) return nodes.first;
 
-      nodes = node.findAllElements(tag.toLowerCase(), namespace: "*");
-      if (nodes.isNotEmpty) return nodes.first;
+      //nodes = node.findAllElements(tag.toLowerCase(), namespace: "*");
+      //if (nodes.isNotEmpty) return nodes.first;
     }
     catch(e) {
       Log().exception(e, caller: 'xml.dart => XmlElement getElement({XmlElement node, String tag})');

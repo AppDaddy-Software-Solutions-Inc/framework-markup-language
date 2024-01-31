@@ -274,8 +274,8 @@ class Xml {
     try
     {
       v = node.getAttribute(tag);
-      v ??= node.getAttribute(tag.toLowerCase());
-      v ??= node.getAttribute(tag.toUpperCase());
+      // v ??= node.getAttribute(tag.toLowerCase());
+      // v ??= node.getAttribute(tag.toUpperCase());
 
     }
     catch(e) {

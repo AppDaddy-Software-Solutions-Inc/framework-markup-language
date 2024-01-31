@@ -37,6 +37,20 @@ class ViewableWidgetModel extends ConstraintModel implements IDragDrop
     return list;
   }
 
+  // Depth - used in stack
+  DoubleObservable? _depth;
+
+  set depth(dynamic v) {
+    if (_depth != null) {
+      _depth!.set(v);
+    } else if (v != null) {
+      _depth = DoubleObservable(Binding.toKey(id, 'depth'), v,
+          scope: scope, listener: onPropertyChange);
+    }
+  }
+
+  double? get depth => _depth?.get();
+
   // the flex width
   int? get flexWidth
   {
@@ -588,6 +602,7 @@ class ViewableWidgetModel extends ConstraintModel implements IDragDrop
     maxWidth  = Xml.get(node: xml, tag: 'maxwidth');
     minHeight = Xml.get(node: xml, tag: 'minheight');
     maxHeight = Xml.get(node: xml, tag: 'maxheight');
+    depth     = Xml.get(node: xml, tag: 'depth');
 
     // properties
     visible   = Xml.get(node: xml, tag: 'visible');
@@ -596,24 +611,24 @@ class ViewableWidgetModel extends ConstraintModel implements IDragDrop
     valign    = Xml.get(node: xml, tag: 'valign');
     flex      = Xml.get(node: xml, tag: 'flex');
     flexfit   = Xml.get(node: xml, tag: 'flexfit');
-    onscreen  = Xml.get(node: xml, tag: 'onScreen') ?? Xml.get(node: xml, tag: 'onscreen');
-    offscreen = Xml.get(node: xml, tag: 'offScreen') ?? Xml.get(node: xml, tag: 'offscreen');
+    onscreen  = Xml.get(node: xml, tag: 'onscreen');
+    offscreen = Xml.get(node: xml, tag: 'offscreen');
     rotation  = Xml.get(node: xml, tag: 'rotation');
 
     // drag
     draggable = Xml.get(node: xml, tag: 'draggable');
     if (draggable)
     {
-      ondrag = Xml.get(node: xml, tag: 'onDrag') ?? Xml.get(node: xml, tag: 'ondrag');
-      ondropped = Xml.get(node: xml, tag: 'onDropped') ?? Xml.get(node: xml, tag: 'ondropped');
+      ondrag = Xml.get(node: xml, tag: 'ondrag');
+      ondropped = Xml.get(node: xml, tag: 'ondropped');
     }
 
     // drop
     droppable = Xml.get(node: xml, tag: 'droppable');
     if (droppable)
     {
-      ondrop  = Xml.get(node: xml, tag: 'onDrop') ?? Xml.get(node: xml, tag: 'ondrop');
-      canDrop = Xml.get(node: xml, tag: 'canDrop') ?? Xml.get(node: xml, tag: 'candrop');
+      ondrop  = Xml.get(node: xml, tag: 'ondrop');
+      canDrop = Xml.get(node: xml, tag: 'candrop');
       drop    = Data();
     }
 

@@ -90,7 +90,7 @@ class OptionModel extends ViewableWidgetModel
     if (label == null)
     {
       // legacy
-      XmlElement? node = Xml.getElement(node: xml, tag: 'label');
+      XmlElement? node = Xml.getElement(node: xml, tag: 'LABEL');
       if (node != null)
       {
         if (Xml.hasChildElements(node))

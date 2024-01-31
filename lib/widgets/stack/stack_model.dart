@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -38,9 +39,12 @@ class StackModel extends BoxModel
   {
     // sort children by depth
     if (children != null) {
-      children!.sort((a, b)
+    children!.sort((a, b)
     {
-      if(a.depth != null && b.depth != null) return a.depth?.compareTo(b.depth!) ?? 0;
+      if (a is ViewableWidgetModel && b is ViewableWidgetModel)
+      {
+        if(a.depth != null && b.depth != null) return a.depth?.compareTo(b.depth!) ?? 0;
+      }
       return 0;
     });
     }
@@ -53,12 +57,5 @@ class StackModel extends BoxModel
   {
     // deserialize
     super.deserialize(xml);
-
-    // sort the children
-    children?.sort((a, b)
-    {
-      if(a.depth != null && b.depth != null) return a.depth?.compareTo(b.depth!) ?? 0;
-      return 0;
-    });
   }
 }

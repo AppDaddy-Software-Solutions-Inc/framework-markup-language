@@ -201,11 +201,11 @@ class TableRowModel extends BoxModel
     super.deserialize(xml);
 
     // properties
-    oncomplete  = Xml.get(node: xml, tag: 'onComplete') ?? Xml.get(node: xml, tag: 'oncomplete');
-    onclick     = Xml.get(node: xml, tag: 'onClick') ?? Xml.get(node: xml, tag: 'onclick');
+    oncomplete  = Xml.get(node: xml, tag: 'oncomplete');
+    onclick     = Xml.get(node: xml, tag: 'onclick');
     postbrokers = Xml.attribute(node: xml, tag: 'postbroker');
-    onInsert    = Xml.get(node: xml, tag: 'onInsert') ?? Xml.get(node: xml, tag: 'oninsert');
-    onDelete    = Xml.get(node: xml, tag: 'onDelete') ?? Xml.get(node: xml, tag: 'ondelete');
+    onInsert    = Xml.get(node: xml, tag: 'oninsert');
+    onDelete    = Xml.get(node: xml, tag: 'ondelete');
 
     // get cells
     cells.addAll(findChildrenOfExactType(TableRowCellModel).cast<TableRowCellModel>());

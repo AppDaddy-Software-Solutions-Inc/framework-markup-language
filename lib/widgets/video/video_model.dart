@@ -111,7 +111,7 @@ class VideoModel extends DecoratedWidgetModel implements ViewableWidgetModel
     enabled  = Xml.get(node: xml, tag: 'enabled');
     controls = Xml.get(node: xml, tag: 'controls');
     loop     = Xml.get(node: xml, tag: 'loop');
-    onInitialized     = Xml.get(node: xml, tag: 'onInitialized');
+    onInitialized = Xml.get(node: xml, tag: 'onInitialized') ?? Xml.get(node: xml, tag: 'oninitialized');
   }
 
   @override

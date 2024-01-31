@@ -596,24 +596,24 @@ class ViewableWidgetModel extends ConstraintModel implements IDragDrop
     valign    = Xml.get(node: xml, tag: 'valign');
     flex      = Xml.get(node: xml, tag: 'flex');
     flexfit   = Xml.get(node: xml, tag: 'flexfit');
-    onscreen  = Xml.get(node: xml, tag: 'onscreen');
-    offscreen = Xml.get(node: xml, tag: 'offscreen');
+    onscreen  = Xml.get(node: xml, tag: 'onScreen') ?? Xml.get(node: xml, tag: 'onscreen');
+    offscreen = Xml.get(node: xml, tag: 'offScreen') ?? Xml.get(node: xml, tag: 'offscreen');
     rotation  = Xml.get(node: xml, tag: 'rotation');
 
     // drag
     draggable = Xml.get(node: xml, tag: 'draggable');
     if (draggable)
     {
-      ondrag = Xml.get(node: xml, tag: 'onDrag');
-      ondropped = Xml.get(node: xml, tag: 'onDropped');
+      ondrag = Xml.get(node: xml, tag: 'onDrag') ?? Xml.get(node: xml, tag: 'ondrag');
+      ondropped = Xml.get(node: xml, tag: 'onDropped') ?? Xml.get(node: xml, tag: 'ondropped');
     }
 
     // drop
     droppable = Xml.get(node: xml, tag: 'droppable');
     if (droppable)
     {
-      ondrop  = Xml.get(node: xml, tag: 'onDrop');
-      canDrop = Xml.get(node: xml, tag: 'canDrop');
+      ondrop  = Xml.get(node: xml, tag: 'onDrop') ?? Xml.get(node: xml, tag: 'ondrop');
+      canDrop = Xml.get(node: xml, tag: 'canDrop') ?? Xml.get(node: xml, tag: 'candrop');
       drop    = Data();
     }
 

@@ -371,7 +371,7 @@ class TableModel extends BoxModel implements IForm
     resizeable = Xml.get(node: xml, tag: 'resizeable');
     editable   = Xml.get(node: xml, tag: 'editable');
     shadow     = Xml.get(node: xml, tag: 'shadow');
-    showBusy   = Xml.get(node: xml, tag: 'showBusy');
+    showBusy   = Xml.get(node: xml, tag: 'showBusy') ?? Xml.get(node: xml, tag: 'showbusy');
     post       = Xml.get(node: xml, tag: 'post');
 
     // used in simple grids

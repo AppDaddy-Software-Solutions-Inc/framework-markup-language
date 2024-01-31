@@ -125,9 +125,8 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
     //return if not mounted
     if(!mounted) return;
 
-    //grab the property that is changing
-    var b = Binding.fromString(property);
-    if (b?.property == 'value')
+    // grab the property that is changing
+    if (model == this.model && property == Binding.toKey(this.model?.id, 'value'))
     {
       if (widget.model.controller?.text == value) return;
 
@@ -282,9 +281,6 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
   // triggers when data is typed
   void _debounce()
   {
-    // field has changed
-    widget.model.touched = true;
-
     // this should only trigger with the oninputchange
     if (commitTimer?.isActive ?? false) commitTimer!.cancel();
 

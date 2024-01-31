@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'package:fml/helpers/helpers.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/icon/icon_model.dart';
 import 'package:fml/widgets/icon/icon_view.dart';
@@ -181,7 +182,13 @@ class VideoViewState extends WidgetState<VideoView> implements IVideoPlayer
       // initialize the controller
       _controller = VideoPlayerController.networkUrl(uri)..initialize().then((_)
       {
-        // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+        // fire onInitialized() event
+        if (!isNullOrEmpty(widget.model.onInitialized))
+        {
+          WidgetsBinding.instance.addPostFrameCallback((_) => widget.model.onInitializedHandler());
+        }
+
+        // ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
         if (mounted) setState(() {});
       });
       _controller!.addListener(onVideoController);

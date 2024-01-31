@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:fml/helpers/helpers.dart';
 
 enum Types { error, success, info, warning, none }
 enum Animations {fromRight, fromLeft, fromTop, fromBottom, grow, shrink }
@@ -85,7 +86,7 @@ class Alert {
   final Types? type;
   final AlertStyle style;
   final Widget? image;
-  final String title;
+  final String? title;
   final String? desc;
   final Widget? content;
   final List<Widget>? buttons;
@@ -103,7 +104,7 @@ class Alert {
     this.type,
     this.style = const AlertStyle(),
     this.image,
-    required this.title,
+    this.title,
     this.desc,
     this.content,
     this.buttons,
@@ -144,73 +145,44 @@ class Alert {
     Navigator.of(context, rootNavigator: true).pop();
   }
 
+  Widget _buildTitle()
+  {
+    Widget? view;
+
+    var close   = _getCloseButton();
+    var pad0    = EdgeInsets.fromLTRB(20, (style.isCloseButton ? 0 : 10), 20, 0);
+    var image   = _getImage();
+    var pad1    = isNullOrEmpty(this.title) ? Container() : SizedBox(height: 15);
+    var title   = isNullOrEmpty(this.title) ? Container() : Text(this.title!, style: style.titleStyle, textAlign: style.titleTextAlign);
+    var pad2    = isNullOrEmpty(this.desc)  ? SizedBox(height: 5) : SizedBox(height: 10);
+    var desc    = isNullOrEmpty(this.desc)  ? Container() : Text(this.desc!,  style: style.descStyle, textAlign: style.descTextAlign);
+    var content = this.content ?? Container();
+
+    view = Container(child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[close,
+            Padding(padding: pad0, child: Column(children: <Widget>[image, pad1, title, pad2,desc,content]))])));
+
+    return view;
+  }
+
   // Alert dialog content widget
   Widget _buildDialog()
   {
+    var dialog = AlertDialog(
+        backgroundColor: style.backgroundColor ?? Theme.of(context).dialogBackgroundColor,
+        shape: style.alertBorder ?? _defaultShape(),
+        insetPadding: style.alertPadding,
+        elevation: style.alertElevation,
+        titlePadding: const EdgeInsets.all(0.0),
+        title: _buildTitle(),
+        contentPadding: style.buttonAreaPadding,
+        content: style.buttonsDirection == ButtonsDirection.row ?
+        Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: _getButtons()) :
+        Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: _getButtons()));
+
     final Widget myChild = ConstrainedBox(
-      constraints: style.constraints ??
-          BoxConstraints.expand(width: double.infinity, height: double.infinity), child: Align(alignment: style.alertAlignment,
-//          child: SingleChildScrollView(
-      child: AlertDialog(
-          backgroundColor: style.backgroundColor ??
-              Theme.of(context).dialogBackgroundColor,
-          shape: style.alertBorder ?? _defaultShape(),
-          insetPadding: style.alertPadding,
-          elevation: style.alertElevation,
-          titlePadding: const EdgeInsets.all(0.0),
-          title: Container(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  _getCloseButton(),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(
-                        20, (style.isCloseButton ? 0 : 10), 20, 0),
-                    child: Column(
-                      children: <Widget>[
-                        _getImage(),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        Text(
-                          title,
-                          style: style.titleStyle,
-                          textAlign: style.titleTextAlign,
-                        ),
-                        SizedBox(
-                          height: desc == null ? 5 : 10,
-                        ),
-                        desc == null
-                            ? Container()
-                            : Text(
-                          desc!,
-                          style: style.descStyle,
-                          textAlign: style.descTextAlign,
-                        ),
-                        content == null ? Container() : content!,
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
-          contentPadding: style.buttonAreaPadding,
-          content: style.buttonsDirection == ButtonsDirection.row
-              ? Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: _getButtons(),
-          )
-              : Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: _getButtons(),
-          )),
-    ),
-//      ),
-    );
+      constraints: style.constraints ?? BoxConstraints.expand(width: double.infinity, height: double.infinity), child: Align(alignment: style.alertAlignment,
+      child: dialog));
+
     return onWillPopActive
         ? WillPopScope(onWillPop: () async => false, child: myChild)
         : myChild;

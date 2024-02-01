@@ -5,9 +5,8 @@ import 'dart:io' show Platform;
 
 import 'package:fml/log/manager.dart';
 
-
 class Sound {
-  static AudioCache assetPlayer = AudioCache(); // asset caching for mobile only
+  //static AudioCache assetPlayer = AudioCache(); // asset caching for mobile only
   static AudioPlayer advancedPlayer = AudioPlayer();
 
   init() {
@@ -31,7 +30,7 @@ class Sound {
 //  then play like so: Sound.playLocal('beep.mp3');
   static playLocal(String localPath, {int? duration}) async { // dir
     try {
-      await advancedPlayer.play(localPath, isLocal: true);
+      await advancedPlayer.play(DeviceFileSource(localPath));
       if (duration != null && duration > 0) {
         Future.delayed(Duration(seconds: duration), () => advancedPlayer.stop());
       }
@@ -43,9 +42,9 @@ class Sound {
 //  and then under `assets:` in pubspec.yaml
   static playAsset(String filename, {int? duration}) async { // dir
     try {
-      AudioPlayer ap = await assetPlayer.play(filename);
+      await advancedPlayer.play(AssetSource(filename));
       if (duration != null && duration > 0) {
-        Future.delayed(Duration(seconds: duration), () => ap.stop());
+        Future.delayed(Duration(seconds: duration), () => advancedPlayer.stop());
       }
     } catch(e) { Log().exception(e, caller: 'playAsset($filename)'); }
   }
@@ -53,7 +52,7 @@ class Sound {
 //  To play remote files use a url for the remotePath
   static playRemote(String remotePath, {int? duration}) async { // url
     try {
-      await advancedPlayer.play(remotePath, isLocal: false);
+      await advancedPlayer.play(UrlSource(remotePath));
       if (duration != null && duration > 0) {
         Future.delayed(Duration(seconds: duration), () => advancedPlayer.stop());
       }

@@ -5,7 +5,8 @@
 import FlutterMacOS
 import Foundation
 
-import audioplayers
+import audioplayers_darwin
+import connectivity_plus
 import connectivity_plus_macos
 import firebase_auth
 import firebase_core
@@ -16,7 +17,8 @@ import url_launcher_macos
 import video_player_avfoundation
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
-  AudioplayersPlugin.register(with: registry.registrar(forPlugin: "AudioplayersPlugin"))
+  AudioplayersDarwinPlugin.register(with: registry.registrar(forPlugin: "AudioplayersDarwinPlugin"))
+  ConnectivityPlugin.register(with: registry.registrar(forPlugin: "ConnectivityPlugin"))
   ConnectivityPlugin.register(with: registry.registrar(forPlugin: "ConnectivityPlugin"))
   FLTFirebaseAuthPlugin.register(with: registry.registrar(forPlugin: "FLTFirebaseAuthPlugin"))
   FLTFirebaseCorePlugin.register(with: registry.registrar(forPlugin: "FLTFirebaseCorePlugin"))

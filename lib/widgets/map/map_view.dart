@@ -78,22 +78,21 @@ class _MapViewState extends WidgetState<MapView>
         }
 
         // bounds
-        final FitBoundsOptions boundsOptions = FitBoundsOptions(padding: EdgeInsets.all(50));
+        CameraFit? bounds;
         if (markerBounds != null)
         {
-          var cz = mapController.centerZoomFitBounds(markerBounds!,options: boundsOptions);
-          centerPoint = cz.center;
-          zoom = cz.zoom;
+          bounds = CameraFit.bounds(bounds: markerBounds!, padding: EdgeInsets.all(50));
+          //var cz = bounds.fit(mapController);
+          //centerPoint = cz.center;
+          //zoom = cz.zoom;
         }
 
         // map options
         MapOptions options = MapOptions(
           keepAlive: true,
-          zoom: zoom,
-          center: centerPoint,
-          bounds: markerBounds,
-          boundsOptions: boundsOptions,
-          slideOnBoundaries: true);
+          initialZoom: zoom,
+          initialCenter: centerPoint ?? centerDefault,
+          initialCameraFit: bounds);
 
         // map
         var map = FlutterMap(key: ObjectKey(widget.model), mapController: mapController, children: layers, options: options);
@@ -146,7 +145,7 @@ class _MapViewState extends WidgetState<MapView>
           // build marker
           var point = LatLng(model.latitude!,  model.longitude!);
           points.add(point);
-          var marker = Marker(point: point, width: width, height: height, builder: (context) => _markerBuilder(model));
+          var marker = Marker(point: point, width: width, height: height, child: _markerBuilder(model));
           markers.add(marker);
         }
       }

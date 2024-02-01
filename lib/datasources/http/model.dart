@@ -133,12 +133,12 @@ class HttpModel extends DataSourceModel implements IDataSource
     refresh    = Xml.get(node: xml, tag: 'refresh');
     method     = Xml.attribute(node: xml, tag: 'method');
     timeout    = Xml.get(node: xml, tag: 'timeout');
-    url        = Xml.get(node: xml, tag: 'url');
+    url        = Xml.get(node: xml, tag: 'url') ?? Xml.get(node: xml, tag: 'URL');
     foreground = toBool(Xml.get(node: xml, tag: 'foreground'));
     background = toBool(Xml.get(node: xml, tag: 'background'));
 
     // build headers
-    var headers = Xml.getChildElements(node: xml, tag: 'header');
+    var headers = Xml.getChildElements(node: xml, tag: 'HEADER');
     if (headers != null)
     {
       for (var node in headers)

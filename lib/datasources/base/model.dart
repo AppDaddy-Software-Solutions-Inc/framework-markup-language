@@ -437,7 +437,7 @@ class DataSourceModel extends ViewableWidgetModel implements IDataSource
     template = Xml.get(node: xml, tag: 'template');
 
     // custom body defined?
-    XmlElement? body = Xml.getChildElement(node: xml, tag: 'body');
+    XmlElement? body = Xml.getChildElement(node: xml, tag: 'BODY');
     if (body != null)
     {
       // set body type

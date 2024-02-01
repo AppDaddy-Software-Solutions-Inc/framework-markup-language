@@ -60,7 +60,7 @@ class ConfigModel
     }
 
     // parameters
-    List<XmlElement>? nodes = Xml.getChildElements(node: xml, tag: 'parameter');
+    List<XmlElement>? nodes = Xml.getChildElements(node: xml, tag: 'PARAMETER');
     if (nodes != null) {
       for (var element in nodes) {
       String? key   = Xml.get(node: element, tag: 'key');

@@ -21,6 +21,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
   bool get canExpandInfinitelyWide => !hasBoundedWidth;
 
   bool addempty = true;
+  String? emptylabel = "";
 
   // options
   final List<OptionModel> options = [];
@@ -79,6 +80,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
   TypeaheadModel(WidgetModel parent, String? id, {dynamic inputenabled,
         dynamic value,
         dynamic defaultValue,
+        dynamic emptylabel,
         String? postbroker,
         dynamic matchtype,
       })
@@ -90,7 +92,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
     if (inputenabled  != null) this.inputenabled  = inputenabled;
     if (value         != null) this.value         = value;
     if (defaultValue  != null) this.defaultValue  = defaultValue;
-
+    if (emptylabel     != null) this.emptylabel     = matchtype;
     if (matchtype     != null) this.matchtype     = matchtype;
 
     alarming = false;
@@ -119,6 +121,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
     borderwidth = Xml.get(node: xml, tag: 'borderwidth');
     radius = Xml.get(node: xml, tag: 'radius');
     inputenabled = Xml.get(node: xml, tag: 'inputenabled');
+    emptylabel = Xml.get(node: xml, tag: 'emptylabel');
     matchtype = Xml.get(node: xml, tag: 'matchtype') ?? Xml.get(node: xml, tag: 'searchtype');
     addempty  = toBool(Xml.get(node: xml, tag: 'addempty')) ?? true;
 
@@ -211,7 +214,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
       int i = 0;
       if (addempty)
       {
-        options.add(OptionModel(this, "$id-$i", value: ''));
+        options.add(OptionModel(this, "$id-$i", value: '', labelValue: emptylabel));
         i = i + 1;
       }
 

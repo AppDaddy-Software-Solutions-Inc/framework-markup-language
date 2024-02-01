@@ -20,6 +20,8 @@ class SelectModel extends DecoratedInputModel implements IFormField
   // add empty value
   bool addempty = true;
 
+  String? emptylabel = "";
+
   // options
   final List<OptionModel> options = [];
 
@@ -47,6 +49,7 @@ class SelectModel extends DecoratedInputModel implements IFormField
   SelectModel(WidgetModel parent, String? id,
       { dynamic value,
         dynamic defaultValue,
+        dynamic emptylabel,
         String? postbroker,
         dynamic bordercolor,
         dynamic matchtype,
@@ -58,6 +61,7 @@ class SelectModel extends DecoratedInputModel implements IFormField
 
     if (bordercolor   != null)  this.bordercolor  = bordercolor;
     if (value         != null)  this.value         = value;
+    if (emptylabel         != null)  this.emptylabel         = emptylabel;
     if (defaultValue  != null)  this.defaultValue  = defaultValue;
   }
 
@@ -85,6 +89,7 @@ class SelectModel extends DecoratedInputModel implements IFormField
 
     // set properties
     value     = Xml.get(node: xml, tag: 'value');
+    emptylabel     = Xml.get(node: xml, tag: 'emptylabel');
     addempty  = toBool(Xml.get(node: xml, tag: 'addempty')) ?? true;
 
     // build select options
@@ -168,7 +173,7 @@ class SelectModel extends DecoratedInputModel implements IFormField
       int i = 0;
       if (addempty)
       {
-        options.add(OptionModel(this, "$id-$i", value: ''));
+        options.add(OptionModel(this, "$id-$i", value: '', labelValue: emptylabel));
         i = i + 1;
       }
 

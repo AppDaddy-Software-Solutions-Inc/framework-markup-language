@@ -331,7 +331,7 @@ class CheckboxModel extends FormFieldModel implements IFormField
     super.deserialize(xml);
 
     // checkboxes can have multiple values
-    var values = Xml.getChildElements(node: xml, tag: 'VALUE');
+    var values = Xml.getChildElements(node: xml, tag: 'value');
     if (values != null) {
       for (var element in values) {
       String? v = Xml.getText(element);

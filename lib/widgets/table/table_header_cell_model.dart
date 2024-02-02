@@ -256,14 +256,6 @@ class TableHeaderCellModel extends BoxModel
     }
   }
 
-  Future<bool> onChangeHandler() async
-  {
-    // fire the onchange event
-    bool ok = true;
-    if (_onChange != null)
-    {
-      ok = await EventHandler(this).execute(_onChange);
-    }
-    return ok;
-  }
+  // on change handler - fired on cell edit
+  Future<bool> onChangeHandler() async => _onChange != null ? await EventHandler(this).execute(_onChange) : true;
 }

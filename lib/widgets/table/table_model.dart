@@ -804,12 +804,13 @@ class TableModel extends BoxModel implements IForm
   Future<bool> onChangeHandler(int rowIdx, int colIdx, dynamic value, dynamic oldValue) async
   {
     var row  = (rowIdx >= 0 && rowIdx < rows.length) ? rows[rowIdx] : null;
+    var rowCell = row?.cell(colIdx);
+    var colCell = header?.cell(colIdx);
     var data = getData(rowIdx);
-    var col  = header?.cell(colIdx);
-    var fld  = col?.field;
+    var fld  = colCell?.field;
 
     bool ok = true;
-    if (data != null && col != null && fld != null)
+    if (data != null && colCell != null && fld != null)
     {
       // write new value
       Data.write(data, fld, value);
@@ -821,13 +822,22 @@ class TableModel extends BoxModel implements IForm
       selected = data;
 
       // fire column change handler
-      bool ok = await col.onChangeHandler();
+      bool ok = true;
 
-      // fire table change handler
-      if (ok && _onChange != null)
-      {
-        ok = await EventHandler(this).execute(_onChange);
-      }
+      // fire the row's cell change handler
+      if (ok) ok = await rowCell?.onChangeHandler() ?? true;
+
+      // fire the row's change handler
+      if (ok) ok = await row?.onChangeHandler() ?? true;
+
+      // fire the column's cell change handler
+      if (ok) ok = await colCell.onChangeHandler();
+
+      // fire the column's change handler
+      if (ok) ok = await header?.onChangeHandler() ?? true;
+
+      // fire the table's change handler
+      if (ok) ok = _onChange != null ? await EventHandler(this).execute(_onChange) : true;
 
       // on fail, restore old value
       if (!ok)

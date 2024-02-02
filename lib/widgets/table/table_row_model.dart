@@ -138,7 +138,22 @@ class TableRowModel extends BoxModel
     }
   }
   String? get onDelete => _onDelete?.get();
-  
+
+  // onChange - only used for simple data grid
+  StringObservable? _onChange;
+  set onChange(dynamic v)
+  {
+    if (_onChange != null)
+    {
+      _onChange!.set(v);
+    }
+    else if (v != null)
+    {
+      _onChange = StringObservable(Binding.toKey(id, 'onchange'), v, scope: scope);
+    }
+  }
+  String? get onChange => _onChange?.get();
+
   // dirty
   BooleanObservable? get dirtyObservable => _dirty;
   BooleanObservable? _dirty;
@@ -206,6 +221,7 @@ class TableRowModel extends BoxModel
     postbrokers = Xml.attribute(node: xml, tag: 'postbroker');
     onInsert    = Xml.get(node: xml, tag: 'oninsert');
     onDelete    = Xml.get(node: xml, tag: 'ondelete');
+    onChange    = Xml.get(node:xml, tag: 'onchange');
 
     // get cells
     cells.addAll(findChildrenOfExactType(TableRowCellModel).cast<TableRowCellModel>());
@@ -236,6 +252,9 @@ class TableRowModel extends BoxModel
     if (onclick == null) return true;
     return await EventHandler(this).execute(_onClick);
   }
+
+  // on change handler - fired on cell edit
+  Future<bool> onChangeHandler() async => _onChange != null ? await EventHandler(this).execute(_onChange) : true;
 
   Future<bool> complete() async
   {
@@ -318,7 +337,7 @@ class TableRowModel extends BoxModel
     }
     return ok;
   }
-  
+
   @override
   dispose()
   {

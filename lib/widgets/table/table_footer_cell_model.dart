@@ -2,6 +2,7 @@
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/table/table_footer_model.dart';
+import 'package:fml/widgets/table/table_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -14,7 +15,7 @@ class TableFooterCellModel extends BoxModel
   TableFooterModel? get hdr => parent is TableFooterModel ? parent as TableFooterModel : null;
 
   // cell is dynamic?
-  bool get isDynamic => ((element?.toString().contains("[*]") ?? false) || (element?.toString().contains("{field}") ?? false)) && (hdr?.table?.hasDataSource ?? false);
+  bool get isDynamic => ((element?.toString().contains(TableModel.dynamicTableValue1) ?? false) || (element?.toString().contains(TableModel.dynamicTableValue2) ?? false)) && (hdr?.table?.hasDataSource ?? false);
 
   // column has a user defined layout
   bool usesRenderer = false;

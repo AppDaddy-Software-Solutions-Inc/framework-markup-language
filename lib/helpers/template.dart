@@ -97,7 +97,7 @@ import 'package:fml/widgets/table/table_header_cell_model.dart';
 import 'package:fml/widgets/table/table_header_group_model.dart';
 import 'package:fml/widgets/table/table_header_model.dart';
 import 'package:fml/widgets/table/table_model.dart';
-import 'package:fml/widgets/table/table_norows_model.dart';
+import 'package:fml/widgets/nodata/nodata_model.dart';
 import 'package:fml/widgets/table/table_row_cell_model.dart';
 import 'package:fml/widgets/table/table_row_model.dart';
 import 'package:fml/widgets/tabview/tab_model.dart';
@@ -1067,9 +1067,9 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
       break;
 
     case "NODATA":
-    case "NOROWS":
-      if (parent is TableModel) {
-        model = TableNoRowsModel.fromXml(parent, node);
+      if (parent is TableModel || parent is ListModel)
+      {
+        model = NoDataModel.fromXml(parent, node);
       }
       break;
 

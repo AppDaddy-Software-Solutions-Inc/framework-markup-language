@@ -209,7 +209,7 @@ class TableHeaderModel extends BoxModel
   void _buildDefaultCell()
   {
     var td = XmlElement(XmlName("TD"));
-    Xml.setAttribute(td, "field", "[*]");
+    Xml.setAttribute(td, "field", TableModel.dynamicTableValue2);
     var cell = TableHeaderCellModel.fromXml(this, td);
     if (cell != null) cells.add(cell);
   }

@@ -10,7 +10,7 @@ import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/form/form_interface.dart';
 import 'package:fml/widgets/table/table_footer_model.dart';
-import 'package:fml/widgets/table/table_norows_model.dart';
+import 'package:fml/widgets/nodata/nodata_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/table/table_view.dart';
 import 'package:fml/widgets/table/table_header_model.dart';
@@ -25,6 +25,9 @@ import 'package:fml/helpers/mime.dart';
 
 class TableModel extends BoxModel implements IForm
 {
+  static String dynamicTableValue1 = "{field}";
+  static String dynamicTableValue2 = "[*]";
+
   @override
   bool get canExpandInfinitelyWide => !hasBoundedWidth;
 
@@ -38,7 +41,7 @@ class TableModel extends BoxModel implements IForm
   TableHeaderModel? header;
 
   // holds header
-  TableNoRowsModel? norows;
+  NoDataModel? noData;
 
   // holds footer
   TableFooterModel? footer;
@@ -401,7 +404,7 @@ class TableModel extends BoxModel implements IForm
     if (header == null) _buildDefaultHeader();
 
     // set no rows widget
-    norows = findChildOfExactType(TableNoRowsModel);
+    noData = findChildOfExactType(NoDataModel);
 
     // set footer
     footer = findChildOfExactType(TableFooterModel);
@@ -671,8 +674,8 @@ class TableModel extends BoxModel implements IForm
           var keys = (data!.first as Map).keys.where((key) => key != 'xml' && key != 'rownum');
           for (var key in keys)
           {
-            // replace [*] with key
-            var xml = prototype.toString().replaceAll("{field}", key).replaceAll("[*]", key);
+            // replace [*] and {field} with key
+            var xml = prototype.toString().replaceAll(dynamicTableValue1, key).replaceAll(dynamicTableValue2, key);
 
             // parse the element
             XmlDocument? document = Xml.tryParse(xml);
@@ -746,7 +749,7 @@ class TableModel extends BoxModel implements IForm
         var td = cell.element?.toString() ?? XmlElement(XmlName("TD")).toString();
 
         // dynamic cell
-        bool isDynamic = td.contains("{field}") || td.contains("[*]");
+        bool isDynamic = td.contains(dynamicTableValue1) || td.contains(dynamicTableValue2);
         if (isDynamic)
         {
           var map = data.first is Map ? data.first as Map : null;
@@ -755,7 +758,7 @@ class TableModel extends BoxModel implements IForm
           var keys = map?.keys.where((key) => key != 'xml' && key != 'rownum') ?? [];
           for (var key in keys)
           {
-              var xml  = td.replaceAll("{field}", "{data.$key}").replaceAll("[*]", "{data.$key}");
+              var xml  = td.replaceAll(dynamicTableValue1, "{data.$key}").replaceAll(dynamicTableValue2, "{data.$key}");
               var doc  = Xml.tryParse(xml);
               var node = doc?.rootElement.copy() ?? XmlElement(XmlName("TD"));
               tr.children.add(node);

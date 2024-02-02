@@ -1131,7 +1131,7 @@ class TableViewState extends WidgetState<TableView>
           onRowDoubleTap: onDeselectHandler,
           onRowsMoved: onRowsMoved,
           //onSelected: onSelectedHandler,
-          noRowsWidget: widget.model.norows?.getView(),
+          noRowsWidget: widget.model.noData?.getView(),
           createFooter: paged ?  _pageLoader : _lazyLoader);
     }
     else

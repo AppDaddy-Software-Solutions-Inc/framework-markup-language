@@ -5,21 +5,21 @@ import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class TableNoRowsModel extends BoxModel
+class NoDataModel extends BoxModel
 {
-  TableNoRowsModel(WidgetModel parent, String? id) : super(parent, id);
+  NoDataModel(WidgetModel parent, String? id) : super(parent, id);
 
-  static TableNoRowsModel? fromXml(WidgetModel parent, XmlElement xml)
+  static NoDataModel? fromXml(WidgetModel parent, XmlElement xml)
   {
-    TableNoRowsModel? model;
+    NoDataModel? model;
     try
     {
-      model = TableNoRowsModel(parent, Xml.get(node: xml, tag: 'id'));
+      model = NoDataModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
     catch(e)
     {
-      Log().exception(e,  caller: 'norows.Model');
+      Log().exception(e,  caller: 'empty.Model');
       model = null;
     }
     return model;

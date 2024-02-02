@@ -10,7 +10,7 @@ import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/dragdrop/dragdrop.dart';
 import 'package:fml/widgets/form/form_interface.dart';
 import 'package:fml/widgets/table/table_footer_model.dart';
-import 'package:fml/widgets/table/table_norows_model.dart';
+import 'package:fml/widgets/nodata/nodata_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/widgets/table/table_view.dart';
 import 'package:fml/widgets/table/table_header_model.dart';
@@ -38,7 +38,7 @@ class TableModel extends BoxModel implements IForm
   TableHeaderModel? header;
 
   // holds header
-  TableNoRowsModel? norows;
+  NoDataModel? noData;
 
   // holds footer
   TableFooterModel? footer;
@@ -401,7 +401,7 @@ class TableModel extends BoxModel implements IForm
     if (header == null) _buildDefaultHeader();
 
     // set no rows widget
-    norows = findChildOfExactType(TableNoRowsModel);
+    noData = findChildOfExactType(NoDataModel);
 
     // set footer
     footer = findChildOfExactType(TableFooterModel);

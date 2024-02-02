@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:flutter/cupertino.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
@@ -238,6 +239,21 @@ class TableHeaderCellModel extends BoxModel
     editable   = Xml.get(node:xml, tag: 'editable');
     filter     = Xml.get(node:xml, tag: 'filter');
     onChange   = Xml.get(node:xml, tag: 'onchange');
+
+    // build default cell
+    if (children?.isEmpty ?? true) _buildDefaultBody();
+  }
+
+  void _buildDefaultBody()
+  {
+    var node = XmlElement(XmlName("TEXT"));
+    Xml.setAttribute(node, "value", field);
+    var text = TextModel.fromXml(this, node);
+    if (text != null)
+    {
+      children ??= [];
+      children!.add(text);
+    }
   }
 
   Future<bool> onChangeHandler() async

@@ -375,8 +375,8 @@ class TableModel extends BoxModel implements IForm
     post       = Xml.get(node: xml, tag: 'post');
 
     // used in simple grids
-    textSize   = Xml.get(node: xml, tag: 'textSize') ?? Xml.get(node: xml, tag: 'fontSize');
-    textColor  = Xml.get(node: xml, tag: 'textColor') ?? Xml.get(node: xml, tag: 'fontColor');
+    textSize   = Xml.get(node: xml, tag: 'textsize') ?? Xml.get(node: xml, tag: 'fontsize');
+    textColor  = Xml.get(node: xml, tag: 'textcolor') ?? Xml.get(node: xml, tag: 'fontcolor');
 
     // legacy support
     String? size  = "0";
@@ -398,6 +398,7 @@ class TableModel extends BoxModel implements IForm
 
     // set header
     header = findChildOfExactType(TableHeaderModel);
+    if (header == null) _buildDefaultHeader();
 
     // set no rows widget
     norows = findChildOfExactType(TableNoRowsModel);
@@ -407,6 +408,12 @@ class TableModel extends BoxModel implements IForm
 
     // build initial rows
     _setInitialRows();
+  }
+
+  void _buildDefaultHeader()
+  {
+    var th = XmlElement(XmlName("TH"));
+    header = TableHeaderModel.fromXml(this, th);
   }
 
   void _setInitialRows()

@@ -194,6 +194,7 @@ class TableHeaderModel extends BoxModel
 
     // get header cells
     cells.addAll(findDescendantsOfExactType(TableHeaderCellModel,breakOn: TableModel).cast<TableHeaderCellModel>());
+    if (cells.isEmpty) _buildDefaultCell();
 
     // get cell groups
     groups.addAll(findDescendantsOfExactType(TableHeaderGroupModel,breakOn: TableModel).cast<TableHeaderGroupModel>());
@@ -203,6 +204,14 @@ class TableHeaderModel extends BoxModel
 
     // build dynamic prototypes
     _buildDynamicPrototypes();
+  }
+
+  void _buildDefaultCell()
+  {
+    var td = XmlElement(XmlName("TD"));
+    Xml.setAttribute(td, "field", "[*]");
+    var cell = TableHeaderCellModel.fromXml(this, td);
+    if (cell != null) cells.add(cell);
   }
 
   void _buildDynamicPrototypes()

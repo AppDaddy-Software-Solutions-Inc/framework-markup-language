@@ -289,15 +289,21 @@ class Data with ListMixin<dynamic>
     Data data = Data();
     for (int i = 0; i < rows; i++)
     {
+      var first = names[Random().nextInt(names.length)];
+      var last  = surnames[Random().nextInt(surnames.length)];
+      var user  = "$first.$last${Random().nextInt(100)}".toUpperCase();
+
       var row = <String, dynamic>{};
       row["index"] = "$i";
-      row["user"]  = "";
-      row["age"]   = Random().nextInt(100);
-      row["first"] = names[Random().nextInt(names.length)];
-      row["last"]  = surnames[Random().nextInt(surnames.length)];
-      row["city"]  = cities[Random().nextInt(cities.length)];
-      row["job"]   = jobs[Random().nextInt(jobs.length)];
-      row["company"]   = companies[Random().nextInt(companies.length)];
+      row["rights"] = Random().nextInt(16);
+      row["user"] = user;
+      row["first"] = first;
+      row["last"] = last;
+      row["age"] = Random().nextInt(100);
+      row["city"] = cities[Random().nextInt(cities.length)];
+      row["occupation"] = jobs[Random().nextInt(jobs.length)];
+      row["company"] = companies[Random().nextInt(companies.length)];
+      row["email"] = "$user@gmail.com".toLowerCase();
       data.add(row);
     }
     return data;

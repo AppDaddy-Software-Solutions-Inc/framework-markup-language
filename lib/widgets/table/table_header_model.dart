@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:collection/collection.dart';
+import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/table/table_header_group_model.dart';
@@ -157,7 +158,22 @@ class TableHeaderModel extends BoxModel
     }
   }
   String? get resize => _resize?.get();
-  
+
+  // onChange - only used for simple data grid
+  StringObservable? _onChange;
+  set onChange(dynamic v)
+  {
+    if (_onChange != null)
+    {
+      _onChange!.set(v);
+    }
+    else if (v != null)
+    {
+      _onChange = StringObservable(Binding.toKey(id, 'onchange'), v, scope: scope);
+    }
+  }
+  String? get onChange => _onChange?.get();
+
   TableHeaderModel(WidgetModel parent, String? id) : super(parent, id, scope: Scope(parent: parent.scope));
 
   static TableHeaderModel? fromXml(WidgetModel parent, XmlElement xml, {Map<dynamic, dynamic>? data})
@@ -191,6 +207,7 @@ class TableHeaderModel extends BoxModel
     filter     = Xml.get(node: xml, tag: 'filter');
     fit        = Xml.get(node: xml, tag: 'fit');
     resize     = Xml.get(node: xml, tag: 'resize');
+    onChange   = Xml.get(node: xml, tag: 'onchange');
 
     // get header cells
     cells.addAll(findDescendantsOfExactType(TableHeaderCellModel,breakOn: TableModel).cast<TableHeaderCellModel>());
@@ -205,6 +222,8 @@ class TableHeaderModel extends BoxModel
     // build dynamic prototypes
     _buildDynamicPrototypes();
   }
+  // on change handler - fired on cell edit
+  Future<bool> onChangeHandler() async => _onChange != null ? await EventHandler(this).execute(_onChange) : true;
 
   void _buildDefaultCell()
   {

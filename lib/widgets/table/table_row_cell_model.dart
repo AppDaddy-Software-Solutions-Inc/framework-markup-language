@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:collection/collection.dart';
+import 'package:fml/event/handler.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/input/input_model.dart';
@@ -79,6 +80,20 @@ class TableRowCellModel extends BoxModel
   }
   bool get selected => _selected?.get() ?? false;
 
+  // onChange - only used for simple data grid
+  StringObservable? _onChange;
+  set onChange(dynamic v)
+  {
+    if (_onChange != null)
+    {
+      _onChange!.set(v);
+    }
+    else if (v != null)
+    {
+      _onChange = StringObservable(Binding.toKey(id, 'onchange'), v, scope: scope);
+    }
+  }
+  String? get onChange => _onChange?.get();
 
   TableRowCellModel(WidgetModel parent, String? id) : super(parent, id);
 
@@ -106,12 +121,16 @@ class TableRowCellModel extends BoxModel
 
     // properties
     value = Xml.get(node: xml, tag: 'value');
+    onChange = Xml.get(node:xml, tag: 'onchange');
     if (_value == null)
     {
       var txt = findChildOfExactType(TextModel);
       if (txt is TextModel) value = txt.value;
     }
   }
+
+  // on change handler - fired on cell edit
+  Future<bool> onChangeHandler() async => _onChange != null ? await EventHandler(this).execute(_onChange) : true;
 
   static bool usesRenderer(TableRowCellModel cell)
   {

@@ -251,64 +251,64 @@ class _TypeaheadViewState extends WidgetState<TypeaheadView>
     List<OptionModel>? suggestions;
     view = SizedBox(
         width: widget.model.myMaxWidthOrDefault,
-        child: TypeAheadField(
-          textFieldConfiguration: TextFieldConfiguration(
-              enabled: widget.model.enabled != false,
-              focusNode: focus,
-              controller: controller,
-              textAlignVertical: TextAlignVertical.center,
-              onSubmitted: _inputSelection,
-              onChanged: widget.model.inputenabled ? _onSearchChanged : null,
-              style: TextStyle(
-                  color: widget.model.enabled != false ? widget.model.textcolor ?? Theme
-                      .of(context)
-                      .colorScheme
-                      .onBackground : Theme.of(context).colorScheme.surfaceVariant,
-                  fontSize: widget.model.size),
-              decoration: InputDecoration(
-                  contentPadding: EdgeInsets.only(bottom:2),
-                  isDense: true,
-
-                  hintText: widget.model.hint ?? '',
-                  hintStyle: ts,
-                  border: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  suffixIcon: Icon(Icons.arrow_drop_down, size: 25,))),
-          suggestionsCallback: (pattern) async {
-            suggestions = await getSuggestions(pattern);
-            return suggestions!;
-          },
-          itemBuilder: (context, dynamic suggestion) {
-            Widget? item;
-            if (suggestion is OptionModel) {
-              var option = _list.firstWhereOrNull(
-                      (option) => (option.value == suggestion));
-              item = option?.child;
-            }
-            item ??= Container(height: 12);
-            return Padding(
-                padding: EdgeInsets.only(
-                    left: 12, right: 1, top: 12, bottom: 12),
-                child: item);
-          },
-          autoFlipDirection: true,
-          suggestionsBoxDecoration:
-          SuggestionsBoxDecoration(
-            elevation: 20,
-          ),
-          suggestionsBoxVerticalOffset: 0,
-          onSuggestionSelected: (dynamic suggestion) {
-            if (suggestion is OptionModel) {
-              changedDropDownItem(suggestion);
-            }
-          },
-          transitionBuilder: (context, suggestionsBox, animationController) =>
-              FadeTransition(
-                child: suggestionsBox,
-                opacity: CurvedAnimation(
-                    parent: animationController!, curve: Curves.fastOutSlowIn),
-              ),
-        )
+        // child: TypeAheadField(
+        //   textFieldConfiguration: TextFieldConfiguration(
+        //       enabled: widget.model.enabled != false,
+        //       focusNode: focus,
+        //       controller: controller,
+        //       textAlignVertical: TextAlignVertical.center,
+        //       onSubmitted: _inputSelection,
+        //       onChanged: widget.model.inputenabled ? _onSearchChanged : null,
+        //       style: TextStyle(
+        //           color: widget.model.enabled != false ? widget.model.textcolor ?? Theme
+        //               .of(context)
+        //               .colorScheme
+        //               .onBackground : Theme.of(context).colorScheme.surfaceVariant,
+        //           fontSize: widget.model.size),
+        //       decoration: InputDecoration(
+        //           contentPadding: EdgeInsets.only(bottom:2),
+        //           isDense: true,
+        //
+        //           hintText: widget.model.hint ?? '',
+        //           hintStyle: ts,
+        //           border: InputBorder.none,
+        //           focusedBorder: InputBorder.none,
+        //           suffixIcon: Icon(Icons.arrow_drop_down, size: 25,))),
+        //   suggestionsCallback: (pattern) async {
+        //     suggestions = await getSuggestions(pattern);
+        //     return suggestions!;
+        //   },
+        //   itemBuilder: (context, dynamic suggestion) {
+        //     Widget? item;
+        //     if (suggestion is OptionModel) {
+        //       var option = _list.firstWhereOrNull(
+        //               (option) => (option.value == suggestion));
+        //       item = option?.child;
+        //     }
+        //     item ??= Container(height: 12);
+        //     return Padding(
+        //         padding: EdgeInsets.only(
+        //             left: 12, right: 1, top: 12, bottom: 12),
+        //         child: item);
+        //   },
+        //   autoFlipDirection: true,
+        //   suggestionsBoxDecoration:
+        //   SuggestionsBoxDecoration(
+        //     elevation: 20,
+        //   ),
+        //   suggestionsBoxVerticalOffset: 0,
+        //   onSuggestionSelected: (dynamic suggestion) {
+        //     if (suggestion is OptionModel) {
+        //       changedDropDownItem(suggestion);
+        //     }
+        //   },
+        //   transitionBuilder: (context, suggestionsBox, animationController) =>
+        //       FadeTransition(
+        //         child: suggestionsBox,
+        //         opacity: CurvedAnimation(
+        //             parent: animationController!, curve: Curves.fastOutSlowIn),
+        //       ),
+        // )
     );
     focus.addListener(onFocusChange);
     if (widget.model.border == 'none') {

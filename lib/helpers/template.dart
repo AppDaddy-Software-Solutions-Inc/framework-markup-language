@@ -102,6 +102,7 @@ import 'package:fml/widgets/table/table_row_cell_model.dart';
 import 'package:fml/widgets/table/table_row_model.dart';
 import 'package:fml/widgets/tabview/tab_model.dart';
 import 'package:fml/widgets/text/text_model.dart';
+import 'package:fml/widgets/texteditor/text_editor_model.dart';
 import 'package:fml/widgets/theme/theme_model.dart';
 import 'package:fml/widgets/timer/timer_model.dart';
 import 'package:fml/widgets/tooltip/v1/tooltip_model.dart' as v1;
@@ -662,7 +663,7 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
       break;
 
     case "EDITOR":
-      model = EditorModel.fromXml(parent, node);
+      model = TextEditorModel.fromXml(parent, node);
       break;
 
   // deprecated. use row/column/box with %sizing or flex

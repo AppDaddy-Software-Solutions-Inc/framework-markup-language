@@ -1,7 +1,8 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:convert';
 import 'dart:core';
-import 'package:cross_connectivity/cross_connectivity.dart';
+import 'dart:io';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fml/datasources/log/log_model.dart';
@@ -218,21 +219,33 @@ class System extends WidgetModel implements IEventManager {
     try {
       connection = Connectivity();
 
-      ConnectivityStatus initialConnection =
+      ConnectivityResult initialConnection =
           await connection.checkConnectivity();
-      if (initialConnection == ConnectivityStatus.none) {
+      if (initialConnection == ConnectivityResult.none) {
         System.toast(Phrases().checkConnection, duration: 3);
       }
 
-      // Add connection listener
-      connection.isConnected.listen((isconnected) {
-        Log().info("Connection status changed to $isconnected");
-        _connected?.set(isconnected);
+      // Add connection listener to determine connection
+      connection.onConnectivityChanged.listen((isconnected) async {
+
+        if(isconnected == ConnectivityResult.none){
+          _connected?.set(false);
+        } else {
+          try {
+            var result = await InternetAddress.lookup('google.com');
+            if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+              _connected?.set(true);
+            }
+          } on SocketException catch (_) {
+            //if a connection cannot be established, set connected to false
+            _connected?.set(false);
+          }
+        }
+
+        Log().info("Connection status changed $isconnected connection to the internet is $connected");
+
       });
 
-      // For the initial connectivity test we want to give checkConnection some time
-      // but it still needs to run synchronous so we give it a second
-      await Future.delayed(Duration(seconds: 1));
       Log().debug('initConnectivity status: $connected');
     } catch (e) {
       _connected?.set(false);
@@ -324,8 +337,7 @@ class System extends WidgetModel implements IEventManager {
       folderpath = await Platform.createFolder(folderpath);
 
       // read asset manifest
-      Map<String, dynamic> manifest =
-          json.decode(await rootBundle.loadString('AssetManifest.json'));
+      Map<String, dynamic> manifest = json.decode(await rootBundle.loadString('AssetManifest.json'));
 
       // copy assets
       for (String key in manifest.keys) {

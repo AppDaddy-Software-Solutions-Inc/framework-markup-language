@@ -1,12 +1,14 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/services.dart';
 import 'package:fml/dialog/manager.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/shortcut/shortcut_model.dart';
 import 'package:fml/widgets/widget/widget_model_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/system.dart';
@@ -46,6 +48,10 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
   bool hasHitBusy = false;
 
   List<String>? bindables;
+
+  // shortcuts
+  final List<ShortcutModel> shortcuts = [];
+  final List<LogicalKeyboardKey> keysPressed = [];
 
   // disposed
   bool disposed = false;
@@ -481,8 +487,62 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
     nodes = Xml.getChildElements(node: xml, tag: "DRAWER");
     if (nodes != null && nodes.isNotEmpty) drawer = DrawerModel.fromXmlList(this, nodes);
 
+    // add user defined shortcuts
+    shortcuts.addAll(findChildrenOfExactType(ShortcutModel).cast<ShortcutModel>());
+
+    // refresh - CTRL-ALT-R
+    shortcuts.add(ShortcutModel(this, null, keyset: LogicalKeySet(LogicalKeyboardKey.control,
+            LogicalKeyboardKey.alt, LogicalKeyboardKey.keyR),
+        action: "refresh"));
+
+    // show log - CTRL-ALT-L
+    shortcuts.add(ShortcutModel(this, null,
+        keyset: LogicalKeySet(LogicalKeyboardKey.control,
+            LogicalKeyboardKey.alt, LogicalKeyboardKey.keyL),
+        action: "showlog"));
+
+    // show template - CTRL-ALT-T
+    shortcuts.add(ShortcutModel(this, null,
+        keyset: LogicalKeySet(LogicalKeyboardKey.control,
+            LogicalKeyboardKey.alt, LogicalKeyboardKey.keyT),
+        action: "showtemplate"));
+
+    // show debug log - CTRL-ALT-D
+    shortcuts.add(ShortcutModel(this, null,
+        keyset: LogicalKeySet(LogicalKeyboardKey.control,
+            LogicalKeyboardKey.alt, LogicalKeyboardKey.keyD),
+        action: "DEBUG.open()"));
+
     // ready
     initialized = true;
+  }
+
+  bool onKeyPress(LogicalKeyboardKey logicalKey)
+  {
+    // add the key to the list
+    keysPressed.add(logicalKey);
+
+    // find the shortcut
+    bool clear = true;
+    for (var shortcut in shortcuts) {
+      if (shortcut.matches(keysPressed)) {
+        shortcut.execute("Framework", "execute", []);
+        keysPressed.clear();
+        return true;
+      }
+      if (shortcut.startsWith(keysPressed)) clear = false;
+    }
+
+    var k = "";
+    for (var key in keysPressed) {
+      k = "$k-${key.keyLabel}";
+    }
+    print(k);
+
+    // clear buffer if no shortcut starts with the specified key
+    if (clear) keysPressed.clear();
+
+    return false;
   }
 
   @override

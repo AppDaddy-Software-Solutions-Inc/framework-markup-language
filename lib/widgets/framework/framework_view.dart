@@ -173,7 +173,22 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   void onNavigatorChange()
   {
     widget.model.index = NavigationManager().positionInStack(context);
-    if (widget.model.index == 0) widget.model.onTitleChange(context);
+
+    // top of stack?
+    if (widget.model.index == 0)
+    {
+      // set page title
+      widget.model.onTitleChange(context);
+
+      // listen for keyboard events
+      if (widget.model.shortcuts.isNotEmpty) ServicesBinding.instance.keyboard.addHandler(onKeyPress);
+    }
+
+    else
+    {
+      // remove key press listener
+      ServicesBinding.instance.keyboard.removeHandler(onKeyPress);
+    }
   }
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
@@ -429,6 +444,13 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
         child: view);
   }
 
+  bool onKeyPress(KeyEvent event)
+  {
+    if (event is KeyRepeatEvent || event is KeyUpEvent) return false;
+    widget.model.onKeyPress(event.logicalKey);
+    return false;
+  }
+
   @override
   Widget build(BuildContext context)
   {
@@ -500,6 +522,10 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
     // start listening to model changes
     widget.model.registerListener(this);
+
+    // add keyboard listener
+    ServicesBinding.instance.keyboard.removeHandler(onKeyPress);
+    if (widget.model.shortcuts.isNotEmpty) ServicesBinding.instance.keyboard.addHandler(onKeyPress);
 
     return view;
   }

@@ -6,11 +6,12 @@ list(APPEND FLUTTER_PLUGIN_LIST
   audioplayers_windows
   camera_windows
   connectivity_plus
-  connectivity_plus_windows
   firebase_auth
   firebase_core
   geolocator_windows
+  irondash_engine_context
   printing
+  super_native_extensions
   url_launcher_windows
   video_player_win
 )

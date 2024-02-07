@@ -18,7 +18,7 @@ class TextEditorView extends StatefulWidget implements IWidgetView {
 }
 
 class _TextEditorViewState extends WidgetState<TextEditorView> {
-  QuillController _controller = QuillController.basic();
+  final QuillController _controller = QuillController.basic();
 
   @override
   void dispose() {
@@ -32,7 +32,7 @@ class _TextEditorViewState extends WidgetState<TextEditorView> {
     if (mounted) {
       // value changes as user edits the text
       // we don't want to do a set state after every keystroke
-      if (Binding.fromString(property)?.property == 'value' && _controller?.document == widget.model.value) return;
+     // if (Binding.fromString(property)?.property == 'value' && _controller?.document == widget.model.value) return;
       setState(() {});
     }
   }

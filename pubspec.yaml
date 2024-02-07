@@ -103,7 +103,7 @@ dependencies:
   # MIT
 
   # Updated 2022/05/19
-  flutter_nfc_kit: ^3.3.1
+  flutter_nfc_kit: ^3.4.2
   # MIT
 
   # Updated 2024/02/06

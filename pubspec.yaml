@@ -38,6 +38,7 @@ dependencies:
   community_charts_common: ^1.0.1
   # Apache-2.0
 
+  # Updated 2024/02/06
   connectivity_plus: ^5.0.2
 
   # Updated 2022/05/26

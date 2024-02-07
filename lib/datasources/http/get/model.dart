@@ -36,7 +36,8 @@ class HttpGetModel extends HttpModel implements IDataSource
   /// Deserializes the FML template elements, attributes and children
   @override
   void deserialize(XmlElement xml)
-  {    super.deserialize(xml);
+  {
+    super.deserialize(xml);
   }
 
   @override

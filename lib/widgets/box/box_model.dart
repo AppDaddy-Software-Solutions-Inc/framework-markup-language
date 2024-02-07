@@ -328,14 +328,14 @@ class BoxModel extends DecoratedWidgetModel
     super.deserialize(xml);
 
     /// Style Attributes
-    gradientStart = Xml.get(node: xml, tag: 'gradientStart') ?? Xml.get(node: xml, tag: 'start');
-    gradientEnd = Xml.get(node: xml, tag: 'gradientEnd') ?? Xml.get(node: xml, tag: 'end');
+    gradientStart = Xml.get(node: xml, tag: 'gradientstart') ?? Xml.get(node: xml, tag: 'start');
+    gradientEnd = Xml.get(node: xml, tag: 'gradientend') ?? Xml.get(node: xml, tag: 'end');
     blur = Xml.get(node: xml, tag: 'blur');
 
     /// Set Border Attributes
     radius = Xml.get(node: xml, tag: 'radius');
-    bordercolor = Xml.get(node: xml, tag: 'borderColor');
-    borderwidth = Xml.get(node: xml, tag: 'borderWidth');
+    bordercolor = Xml.get(node: xml, tag: 'bordercolor');
+    borderwidth = Xml.get(node: xml, tag: 'borderwidth');
     border = Xml.get(node: xml, tag: 'border');
     if (_border == null && (_radius != null || _bordercolor != null || _borderwidth != null))
     {
@@ -343,9 +343,9 @@ class BoxModel extends DecoratedWidgetModel
     }
 
     elevation = Xml.get(node: xml, tag: 'elevation');
-    shadowcolor = Xml.get(node: xml, tag: 'shadowColor');
-    shadowx = Xml.get(node: xml, tag: 'shadowX');
-    shadowy = Xml.get(node: xml, tag: 'shadowY');
+    shadowcolor = Xml.get(node: xml, tag: 'shadowcolor');
+    shadowx = Xml.get(node: xml, tag: 'shadowx');
+    shadowy = Xml.get(node: xml, tag: 'shadowy');
 
     /// Build the layout
     layout  = Xml.get(node: xml, tag: 'layout');

@@ -400,7 +400,7 @@ class TableViewState extends WidgetState<TableView>
     stateManager?.activateColumnsAutoSize();
 
     // show filter bar
-    stateManager?.setShowColumnFilter(widget.model.filterBar);
+    stateManager?.setShowColumnFilter(widget.model.filter);
 
     stateManager?.removeListener(onSelectedHandler);
     stateManager?.addListener(onSelectedHandler);

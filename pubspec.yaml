@@ -38,9 +38,8 @@ dependencies:
   community_charts_common: ^1.0.1
   # Apache-2.0
 
-  # Updated 2021/09/23
-  cross_connectivity: ^3.0.5
-  # BSD-3-Clause
+  # Updated 2024/02/06
+  connectivity_plus: ^5.0.2
 
   # Updated 2022/05/26
   cross_file: ^0.3.3+1
@@ -149,7 +148,7 @@ dependencies:
   # MIT
 
   # Updated 2022/05/26
-  hive: ^2.2.1
+  hive: ^2.2.3
   # Apache-2.0
 
   # Updated 2024/01/31

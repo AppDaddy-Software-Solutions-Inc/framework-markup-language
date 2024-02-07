@@ -214,21 +214,6 @@ class TableModel extends BoxModel implements IForm
   }
   bool get filter => _filter?.get() ?? false;
 
-  // show filter bar
-  BooleanObservable? _filterBar;
-  set filterBar(dynamic v)
-  {
-    if (_filterBar != null)
-    {
-      _filterBar!.set(v);
-    }
-    else if (v != null)
-    {
-      _filterBar = BooleanObservable(Binding.toKey(id, 'filterbar'), v, scope: scope, listener: onFilterBarChange);
-    }
-  }
-  bool get filterBar => _filterBar?.get() ?? false;
-
   // display shadow
   BooleanObservable? _shadow;
   set shadow(dynamic v)
@@ -281,6 +266,36 @@ class TableModel extends BoxModel implements IForm
     }
   }
   String? get onChange => _onChange?.get();
+
+  // onInsert
+  StringObservable? _onInsert;
+  set onInsert(dynamic v)
+  {
+    if (_onInsert != null)
+    {
+      _onInsert!.set(v);
+    }
+    else if (v != null)
+    {
+      _onInsert = StringObservable(Binding.toKey(id, 'oninsert'), v, scope: scope, lazyEval: true);
+    }
+  }
+  String? get onInsert => _onInsert?.get();
+
+  // onDelete
+  StringObservable? _onDelete;
+  set onDelete(dynamic v)
+  {
+    if (_onDelete != null)
+    {
+      _onDelete!.set(v);
+    }
+    else if (v != null)
+    {
+      _onDelete = StringObservable(Binding.toKey(id, 'ondelete'), v, scope: scope, lazyEval: true);
+    }
+  }
+  String? get onDelete => _onDelete?.get();
   
   // dirty
   @override
@@ -376,10 +391,9 @@ class TableModel extends BoxModel implements IForm
     shadow     = Xml.get(node: xml, tag: 'shadow');
     showBusy   = Xml.get(node: xml, tag: 'showbusy');
     post       = Xml.get(node: xml, tag: 'post');
-
-    // used in simple grids
     textSize   = Xml.get(node: xml, tag: 'textsize') ?? Xml.get(node: xml, tag: 'fontsize');
     textColor  = Xml.get(node: xml, tag: 'textcolor') ?? Xml.get(node: xml, tag: 'fontcolor');
+    filter     = Xml.get(node: xml, tag: 'filter');
 
     // legacy support
     String? size  = "0";
@@ -392,12 +406,9 @@ class TableModel extends BoxModel implements IForm
     pageSize = size ?? "0";
 
     // events
-    onChange = Xml.get(node: xml, tag: 'onchange');
-
-    // filter
-    filter = Xml.get(node: xml, tag: 'filter');
-    filterBar = Xml.get(node: xml, tag: 'filterbar');
-    if (_filterBar != null && _filter == null) filter=true;
+    onInsert    = Xml.get(node: xml, tag: 'oninsert');
+    onDelete    = Xml.get(node: xml, tag: 'ondelete');
+    onChange    = Xml.get(node:xml, tag: 'onchange');
 
     // set header
     header = findChildOfExactType(TableHeaderModel);
@@ -911,26 +922,20 @@ class TableModel extends BoxModel implements IForm
 
       // move a row
       case "move" :
-      case "moverow" :
         moveRow(toInt(elementAt(arguments, 0)) ?? 0, toInt(elementAt(arguments, 1)) ?? 0);
         return true;
 
     // delete a row
       case "delete" :
-      case "deleterow" :
         deleteRow(toInt(elementAt(arguments, 0)));
         return true;
 
       // add a row
-      case "add" :
       case "insert" :
-      case "addrow" :
-      case "insertrow" :
         insertRow(toStr(elementAt(arguments, 0)), toInt(elementAt(arguments, 1)));
         return true;
 
-    // export the data
-      case "autofit" :
+      // autosize the fields
       case "autosize" :
         var mode = toStr(elementAt(arguments, 0));
         autosize(mode);
@@ -963,7 +968,7 @@ class TableModel extends BoxModel implements IForm
       var view = findListenerOfExactType(TableViewState);
       if (view is TableViewState)
       {
-        view.setFilterBar(filterBar);
+        view.setFilterBar(filter);
       }
     }
     catch(e)

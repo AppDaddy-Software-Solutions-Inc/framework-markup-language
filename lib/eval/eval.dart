@@ -827,7 +827,7 @@ class Eval
   static bool? _isValidPhone(dynamic num) =>  _isNullOrEmpty(num) ? null : isPhoneValid(num);
 
   /// validates credit card number
-  static bool? _isValidCreditCard(dynamic num) =>  _isNullOrEmpty(num) ? null : isCardNumberValid(cardNumber: num);
+  static bool? _isValidCreditCard(dynamic num) =>  _isNullOrEmpty(num) ? null : isCardValidNumber(num);
 
   /// validates email
   static bool? _isValidEmail(dynamic num) =>  _isNullOrEmpty(num) ? null : TextInputValidators().isEmailValid(num);

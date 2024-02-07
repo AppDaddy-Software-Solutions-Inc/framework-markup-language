@@ -40,6 +40,7 @@ dependencies:
 
   # Updated 2024/02/06
   connectivity_plus: ^5.0.2
+  # BSD-3-Clause
 
   # Updated 2022/05/26
   cross_file: ^0.3.3+1

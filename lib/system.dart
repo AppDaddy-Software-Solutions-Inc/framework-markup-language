@@ -215,39 +215,61 @@ class System extends WidgetModel implements IEventManager {
     RendererBinding.instance.mouseTracker.removeListener(onMouseDetected);
   }
 
-  Future _initConnectivity() async {
-    try {
+  Future<bool> _checkInternetConnectivity() async
+  {
+    try
+    {
+      final address = await InternetAddress.lookup('google.com');
+      if (address.isNotEmpty && address.first.rawAddress.isNotEmpty) return true;
+    }
+    catch(e)
+    {
+      Log().info("Error performing Internet lookup. Error is ${e}");
+    }
+    return false;
+  }
+
+  Future _initConnectivity() async
+  {
+    try
+    {
+      // create connectivity
       connection = Connectivity();
 
-      ConnectivityResult initialConnection =
-          await connection.checkConnectivity();
-      if (initialConnection == ConnectivityResult.none) {
+      // check connectivity
+      ConnectivityResult initialConnection = await connection.checkConnectivity();
+
+      // check internet access
+      if (initialConnection != ConnectivityResult.none)
+      {
+        var connected = await _checkInternetConnectivity();
+        _connected?.set(connected);
+      }
+      else
+      {
         System.toast(Phrases().checkConnection, duration: 3);
       }
 
       // Add connection listener to determine connection
-      connection.onConnectivityChanged.listen((isconnected) async {
+      connection.onConnectivityChanged.listen((connectionType) async
+      {
+         if (connectionType != ConnectivityResult.none)
+         {
+           var connected = await _checkInternetConnectivity();
+           _connected?.set(connected);
+         }
+         else
+         {
+           _connected?.set(false);
+         }
 
-        if(isconnected == ConnectivityResult.none){
-          _connected?.set(false);
-        } else {
-          try {
-            var result = await InternetAddress.lookup('google.com');
-            if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-              _connected?.set(true);
-            }
-          } on SocketException catch (_) {
-            //if a connection cannot be established, set connected to false
-            _connected?.set(false);
-          }
-        }
-
-        Log().info("Connection status changed $isconnected connection to the internet is $connected");
-
+         Log().info("Connection status changed. Connection type: $connectionType. Internet is ${connected ? 'connected' : 'disconnected'}");
       });
 
       Log().debug('initConnectivity status: $connected');
-    } catch (e) {
+    }
+    catch (e)
+    {
       _connected?.set(false);
       Log().debug('Error initializing connectivity');
     }

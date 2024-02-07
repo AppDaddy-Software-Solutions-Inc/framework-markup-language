@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:convert';
 import 'dart:core';
-import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fml/connectivity/connectivity.dart';
@@ -10,7 +9,6 @@ import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/navigation_manager.dart';
-import 'package:fml/phrase.dart';
 import 'package:fml/postmaster/postmaster.dart';
 import 'package:fml/janitor/janitor.dart';
 import 'package:flutter/material.dart';

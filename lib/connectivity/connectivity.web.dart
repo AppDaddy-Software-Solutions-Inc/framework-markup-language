@@ -12,7 +12,7 @@ class Internet
     }
     catch(e)
     {
-      Log().info("Error checking navigator online status. Error is ${e}");
+      Log().info("Error checking navigator online status. Error is $e");
       return false;
     }
   }

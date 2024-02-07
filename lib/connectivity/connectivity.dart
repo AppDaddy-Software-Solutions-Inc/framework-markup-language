@@ -1,4 +1,4 @@
-import 'package:connectivity_plus/connectivity_plus.dart' as ConnectivityPlus;
+import 'package:connectivity_plus/connectivity_plus.dart' as cp;
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/phrase.dart';
@@ -10,11 +10,11 @@ if (dart.library.html) 'package:fml/connectivity/connectivity.web.dart';
 
 class Connectivity
 {
-  late final ConnectivityPlus.Connectivity connection;
+  late final cp.Connectivity connection;
   late final BooleanObservable connected;
 
   static final Connectivity _singleton = Connectivity._internal();
-  Connectivity._internal() {}
+  Connectivity._internal();
 
   factory Connectivity(BooleanObservable connected)
   {
@@ -27,13 +27,13 @@ class Connectivity
     try
     {
       // create connectivity
-      connection = ConnectivityPlus.Connectivity();
+      connection = cp.Connectivity();
 
       // check connectivity
-      ConnectivityPlus.ConnectivityResult connectionType = await connection.checkConnectivity();
+      cp.ConnectivityResult connectionType = await connection.checkConnectivity();
 
       // check internet access
-      if (connectionType != ConnectivityPlus.ConnectivityResult.none)
+      if (connectionType != cp.ConnectivityResult.none)
       {
         var isConnected = await Internet.isConnected();
         connected.set(isConnected);
@@ -46,7 +46,7 @@ class Connectivity
       // Add connection listener to determine connection
       connection.onConnectivityChanged.listen((connectionType) async
       {
-        if (connectionType != ConnectivityPlus.ConnectivityResult.none)
+        if (connectionType != cp.ConnectivityResult.none)
         {
           var isConnected = await Internet.isConnected();
           connected.set(isConnected);

@@ -13,7 +13,7 @@ class Internet
     }
     catch(e)
     {
-      Log().info("Error performing Internet lookup. Error is ${e}");
+      Log().info("Error performing Internet lookup. Error is $e");
     }
     return false;
   }

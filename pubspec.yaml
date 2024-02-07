@@ -39,7 +39,7 @@ dependencies:
   # Apache-2.0
 
   # Updated 2021/09/23
-  cross_connectivity: ^3.0.5
+  cross_connectivity: ^3.1.0
   # BSD-3-Clause
 
   # Updated 2022/05/26

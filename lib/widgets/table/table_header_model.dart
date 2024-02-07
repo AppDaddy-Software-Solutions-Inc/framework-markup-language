@@ -174,6 +174,36 @@ class TableHeaderModel extends BoxModel
   }
   String? get onChange => _onChange?.get();
 
+  // onInsert
+  StringObservable? _onInsert;
+  set onInsert(dynamic v)
+  {
+    if (_onInsert != null)
+    {
+      _onInsert!.set(v);
+    }
+    else if (v != null)
+    {
+      _onInsert = StringObservable(Binding.toKey(id, 'oninsert'), v, scope: scope, lazyEval: true);
+    }
+  }
+  String? get onInsert => _onInsert?.get();
+
+  // onDelete
+  StringObservable? _onDelete;
+  set onDelete(dynamic v)
+  {
+    if (_onDelete != null)
+    {
+      _onDelete!.set(v);
+    }
+    else if (v != null)
+    {
+      _onDelete = StringObservable(Binding.toKey(id, 'ondelete'), v, scope: scope, lazyEval: true);
+    }
+  }
+  String? get onDelete => _onDelete?.get();
+
   TableHeaderModel(WidgetModel parent, String? id) : super(parent, id, scope: Scope(parent: parent.scope));
 
   static TableHeaderModel? fromXml(WidgetModel parent, XmlElement xml, {Map<dynamic, dynamic>? data})
@@ -207,7 +237,11 @@ class TableHeaderModel extends BoxModel
     filter     = Xml.get(node: xml, tag: 'filter');
     fit        = Xml.get(node: xml, tag: 'fit');
     resize     = Xml.get(node: xml, tag: 'resize');
-    onChange   = Xml.get(node: xml, tag: 'onchange');
+
+    // events
+    onInsert    = Xml.get(node: xml, tag: 'oninsert');
+    onDelete    = Xml.get(node: xml, tag: 'ondelete');
+    onChange    = Xml.get(node:xml, tag: 'onchange');
 
     // get header cells
     cells.addAll(findDescendantsOfExactType(TableHeaderCellModel,breakOn: TableModel).cast<TableHeaderCellModel>());

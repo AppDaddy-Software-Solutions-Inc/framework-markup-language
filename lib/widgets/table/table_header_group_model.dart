@@ -51,6 +51,51 @@ class TableHeaderGroupModel extends BoxModel
   double? get height => null;
   double? get heightOuter => super.height;
 
+  // onChange - only used for simple data grid
+  StringObservable? _onChange;
+  set onChange(dynamic v)
+  {
+    if (_onChange != null)
+    {
+      _onChange!.set(v);
+    }
+    else if (v != null)
+    {
+      _onChange = StringObservable(Binding.toKey(id, 'onchange'), v, scope: scope);
+    }
+  }
+  String? get onChange => _onChange?.get();
+
+  // onInsert
+  StringObservable? _onInsert;
+  set onInsert(dynamic v)
+  {
+    if (_onInsert != null)
+    {
+      _onInsert!.set(v);
+    }
+    else if (v != null)
+    {
+      _onInsert = StringObservable(Binding.toKey(id, 'oninsert'), v, scope: scope, lazyEval: true);
+    }
+  }
+  String? get onInsert => _onInsert?.get();
+
+  // onDelete
+  StringObservable? _onDelete;
+  set onDelete(dynamic v)
+  {
+    if (_onDelete != null)
+    {
+      _onDelete!.set(v);
+    }
+    else if (v != null)
+    {
+      _onDelete = StringObservable(Binding.toKey(id, 'ondelete'), v, scope: scope, lazyEval: true);
+    }
+  }
+  String? get onDelete => _onDelete?.get();
+
   // name - used by grid display
   StringObservable? _title;
   set title(dynamic v)
@@ -98,6 +143,11 @@ class TableHeaderGroupModel extends BoxModel
       TextModel? text = findChildOfExactType(TextModel);
       title = text?.value;
     }
+
+    // events
+    onInsert    = Xml.get(node: xml, tag: 'oninsert');
+    onDelete    = Xml.get(node: xml, tag: 'ondelete');
+    onChange    = Xml.get(node:xml, tag: 'onchange');
   }
 
   bool hasDescendantCells()

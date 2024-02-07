@@ -1,16 +1,14 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:convert';
 import 'dart:core';
-import 'dart:io';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
+import 'package:fml/connectivity/connectivity.dart';
 import 'package:fml/datasources/log/log_model.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/navigation_manager.dart';
-import 'package:fml/phrase.dart';
 import 'package:fml/postmaster/postmaster.dart';
 import 'package:fml/janitor/janitor.dart';
 import 'package:flutter/material.dart';
@@ -96,8 +94,6 @@ class System extends WidgetModel implements IEventManager {
   // current theme
   static late ThemeModel _theme;
   static ThemeModel get theme => _theme;
-
-  late Connectivity connection;
 
   // post master service
   final PostMaster postmaster = PostMaster();
@@ -190,22 +186,31 @@ class System extends WidgetModel implements IEventManager {
     // not until the moves it or clicks
     // this routine traps that
     RendererBinding.instance.mouseTracker.addListener(onMouseDetected);
+
     // initialize platform
     await Platform.init();
+
     // initialize System Globals
     await _initBindables();
+
     // initialize Hive
     await _initDatabase();
+
     // initialize connectivity
-    await _initConnectivity();
+    await Connectivity(_connected!).initialize();
+
     // create empty applications folder
     if (!isWeb) await _initFolders();
+
     // set initial route
     await _initRoute();
+
     // start the Post Master
     await postmaster.start();
+
     // start the Janitor
     await janitor.start();
+
     // signal complete
     _completer.complete(true);
   }
@@ -213,44 +218,6 @@ class System extends WidgetModel implements IEventManager {
   onMouseDetected() {
     _mouse?.set(true);
     RendererBinding.instance.mouseTracker.removeListener(onMouseDetected);
-  }
-
-  Future _initConnectivity() async {
-    try {
-      connection = Connectivity();
-
-      ConnectivityResult initialConnection =
-          await connection.checkConnectivity();
-      if (initialConnection == ConnectivityResult.none) {
-        System.toast(Phrases().checkConnection, duration: 3);
-      }
-
-      // Add connection listener to determine connection
-      connection.onConnectivityChanged.listen((isconnected) async {
-
-        if(isconnected == ConnectivityResult.none){
-          _connected?.set(false);
-        } else {
-          try {
-            var result = await InternetAddress.lookup('google.com');
-            if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-              _connected?.set(true);
-            }
-          } on SocketException catch (_) {
-            //if a connection cannot be established, set connected to false
-            _connected?.set(false);
-          }
-        }
-
-        Log().info("Connection status changed $isconnected connection to the internet is $connected");
-
-      });
-
-      Log().debug('initConnectivity status: $connected');
-    } catch (e) {
-      _connected?.set(false);
-      Log().debug('Error initializing connectivity');
-    }
   }
 
   Future<bool> _initBindables() async {

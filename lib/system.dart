@@ -2,9 +2,9 @@
 import 'dart:convert';
 import 'dart:core';
 import 'dart:io';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
+import 'package:fml/connectivity/connectivity.dart';
 import 'package:fml/datasources/log/log_model.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
@@ -97,8 +97,6 @@ class System extends WidgetModel implements IEventManager {
   static late ThemeModel _theme;
   static ThemeModel get theme => _theme;
 
-  late Connectivity connection;
-
   // post master service
   final PostMaster postmaster = PostMaster();
 
@@ -190,22 +188,31 @@ class System extends WidgetModel implements IEventManager {
     // not until the moves it or clicks
     // this routine traps that
     RendererBinding.instance.mouseTracker.addListener(onMouseDetected);
+
     // initialize platform
     await Platform.init();
+
     // initialize System Globals
     await _initBindables();
+
     // initialize Hive
     await _initDatabase();
+
     // initialize connectivity
-    await _initConnectivity();
+    await Connectivity(_connected!).initialize();
+
     // create empty applications folder
     if (!isWeb) await _initFolders();
+
     // set initial route
     await _initRoute();
+
     // start the Post Master
     await postmaster.start();
+
     // start the Janitor
     await janitor.start();
+
     // signal complete
     _completer.complete(true);
   }
@@ -213,66 +220,6 @@ class System extends WidgetModel implements IEventManager {
   onMouseDetected() {
     _mouse?.set(true);
     RendererBinding.instance.mouseTracker.removeListener(onMouseDetected);
-  }
-
-  Future<bool> _checkInternetConnectivity() async
-  {
-    try
-    {
-      final address = await InternetAddress.lookup('google.com');
-      if (address.isNotEmpty && address.first.rawAddress.isNotEmpty) return true;
-    }
-    catch(e)
-    {
-      Log().info("Error performing Internet lookup. Error is ${e}");
-    }
-    return false;
-  }
-
-  Future _initConnectivity() async
-  {
-    try
-    {
-      // create connectivity
-      connection = Connectivity();
-
-      // check connectivity
-      ConnectivityResult initialConnection = await connection.checkConnectivity();
-
-      // check internet access
-      if (initialConnection != ConnectivityResult.none)
-      {
-        var connected = await _checkInternetConnectivity();
-        _connected?.set(connected);
-      }
-      else
-      {
-        System.toast(Phrases().checkConnection, duration: 3);
-      }
-
-      // Add connection listener to determine connection
-      connection.onConnectivityChanged.listen((connectionType) async
-      {
-         if (connectionType != ConnectivityResult.none)
-         {
-           var connected = await _checkInternetConnectivity();
-           _connected?.set(connected);
-         }
-         else
-         {
-           _connected?.set(false);
-         }
-
-         Log().info("Connection status changed. Connection type: $connectionType. Internet is ${connected ? 'connected' : 'disconnected'}");
-      });
-
-      Log().debug('initConnectivity status: $connected');
-    }
-    catch (e)
-    {
-      _connected?.set(false);
-      Log().debug('Error initializing connectivity');
-    }
   }
 
   Future<bool> _initBindables() async {

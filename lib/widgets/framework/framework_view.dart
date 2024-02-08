@@ -123,9 +123,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   @override
   void dispose()
   {
-    // Log().debug('Dispose called on framework view => <FML name="${widget.model.templateName}" url="${widget.model.url}"/>');
-
-    // Stop Listening to Route Changes 
+    // Stop Listening to Route Changes
     NavigationObserver().removeListener(this);
 
     if(widget.model.orientation != null)
@@ -160,20 +158,30 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   @override
   Map<String?,String>? onNavigatorPop()
   {
+    // Stop Listening to Route Changes
+    NavigationObserver().removeListener(this);
+
+    // pop the page
     return widget.model.onPop();
   }
 
   @override
   void onNavigatorPush({Map<String?, String>? parameters})
   {
-    if (parameters != null) widget.model.onPush(parameters);
+    return widget.model.onPush(parameters);
   }
 
   @override
   void onNavigatorChange()
   {
     widget.model.index = NavigationManager().positionInStack(context);
-    if (widget.model.index == 0) widget.model.onTitleChange(context);
+
+    // top of stack?
+    if (widget.model.index == 0)
+    {
+      // set page title
+      widget.model.onTitleChange(context);
+    }
   }
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
@@ -210,7 +218,6 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     /* Stop Notification Bubble */
     return false;
   }
-
 
   void onMinimize()
   {
@@ -415,7 +422,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
           onHorizontalDragStart: onDragStart,
           onHorizontalDragEnd: onDragEnd,
           onHorizontalDragUpdate: onDragUpdate,
-          onTap: () =>  WidgetModel.unfocus(),
+          onTap: onTapHandler,
           onLongPressStart: kDebugMode ? (_) => onLongPressStart() : null,
           onLongPressEnd:   kDebugMode ? (_) => onLongPressEnd()   : null,
           child: view);
@@ -423,36 +430,45 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
     // standard gesture detector for commit
     return GestureDetector(behavior: HitTestBehavior.translucent,
-        onTap: () =>  WidgetModel.unfocus(),
+        onTap: onTapHandler,
         onLongPressStart: kDebugMode ? (_) => onLongPressStart() : null,
         onLongPressEnd:   kDebugMode ? (_) => onLongPressEnd()   : null,
         child: view);
+  }
+
+  void onTapHandler()
+  {
+    System().setActiveFramework(widget.model);
+    WidgetModel.unfocus();
   }
 
   @override
   Widget build(BuildContext context)
   {
     super.build(context);
+
+    // model is initializing
+    if (!widget.model.initialized) return Offstage();
+
+    /// Pages on Navigator stack rebuild when a new page is pushed
+    /// https://github.com/flutter/flutter/issues/11655
+    /// This hack prevents the page that is being navigated away from
+    /// from rebuilding
+    if (NavigationManager().positionInStack(context) != 0) return Offstage();
+
+    // model has initialized. show framework
     return LayoutBuilder(builder: builder);
   }
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    /// Pages on Navigator stack rebuild when a new page is pushed
-    /// https://github.com/flutter/flutter/issues/11655
-    /// This hack prevents the page that is being navigated away from
-    /// from rebuilding
-    var index = NavigationManager().positionInStack(context);
-    if ((index ?? 0) != 0)
-    {
-      Log().debug('Framework ${widget.model.templateName} was not built since its index ($index) != 0"/>');
-      return Offstage();
-    }
+    print("Building framework ${widget.model.id} ${widget.model.templateName}");
+
+    // set focused framework
+    System().setActiveFramework(widget.model);
 
     // set the system constraints
     widget.model.setLayoutConstraints(constraints);
-
-    // Log().debug('Build called on framework view => <FML name=${widget.model.templateName} url="${widget.model.url}"/>');
 
     // stop listening during build
     widget.model.removeListener(this);
@@ -492,7 +508,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
       view = _setGestures(view);
     }
 
-    //check to ensure framework is null before applying SA
+    // check to ensure framework is null before applying SA
     if (widget.model.framework == null) view = SafeArea(child: view);
 
     // scaffold with safe area

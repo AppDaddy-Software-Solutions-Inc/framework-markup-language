@@ -7,7 +7,7 @@ class ModalManagerView extends StatefulWidget
 {
   final ModalManagerModel model;
 
-  ModalManagerView(this.model) : super();
+  ModalManagerView(this.model) : super(key: ObjectKey(model));
 
   @override
   ModalManagerViewState createState() => ModalManagerViewState();

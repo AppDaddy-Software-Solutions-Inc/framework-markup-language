@@ -7,6 +7,7 @@ import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
+import 'package:fml/widgets/shortcut/shortcut_model.dart';
 import 'package:fml/widgets/widget/widget_model_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/system.dart';
@@ -46,6 +47,9 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
   bool hasHitBusy = false;
 
   List<String>? bindables;
+
+  // shortcuts
+  List<ShortcutModel>? shortcuts;
 
   // disposed
   bool disposed = false;
@@ -94,19 +98,8 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
   String? get key => _key?.get();
 
   // model is initialized
-  BooleanObservable? _initialized;
-  set initialized (dynamic v)
-  {
-    if (_initialized != null)
-    {
-      _initialized!.set(v);
-    }
-    else if (v != null)
-    {
-      _initialized = BooleanObservable(Binding.toKey(id, 'initialized'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get initialized => _initialized?.get() ?? false;
+  late BooleanObservable _initialized;
+  bool get initialized => _initialized.get() ?? false;
 
   // page stack index
   // This property indicates your position on the stack, 0 being the top
@@ -271,7 +264,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
   FrameworkModel(WidgetModel parent, String? id, {dynamic key, dynamic dependency, dynamic version, dynamic onstart, dynamic onreturn, dynamic orientation}) : super(parent, id, scope: Scope(id: id))
   {
     // model is initializing
-    initialized = false;
+    _initialized = BooleanObservable(Binding.toKey(this.id, 'initialized'), false, scope: scope, listener: onPropertyChange);
 
     this.key         = key;
     this.dependency  = dependency;
@@ -481,8 +474,16 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
     nodes = Xml.getChildElements(node: xml, tag: "DRAWER");
     if (nodes != null && nodes.isNotEmpty) drawer = DrawerModel.fromXmlList(this, nodes);
 
+    // create shortcuts
+    var shortcuts = findChildrenOfExactType(ShortcutModel).cast<ShortcutModel>();
+    if (shortcuts.isNotEmpty)
+    {
+      this.shortcuts = [];
+      this.shortcuts!.addAll(findChildrenOfExactType(ShortcutModel).cast<ShortcutModel>());
+    }
+
     // ready
-    initialized = true;
+    _initialized.set(true);
   }
 
   @override
@@ -523,19 +524,28 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
     return await EventHandler(this).execute(_onstart);
   }
 
-  Future<bool> onPush(Map<String?, String> parameters) async
+  void onPush(Map<String?, String>? parameters)
   {
-    // set variables from return parameters
-    if ((scope != null)) parameters.forEach((key, value) => scope!.setObservable(key, value));
+    if (parameters != null)
+    {
+      // set variables from return parameters
+      if ((scope != null)) parameters.forEach((key, value) => scope!.setObservable(key, value));
 
-    // fire OnReturn event
-    if (!isNullOrEmpty(onreturn)) EventHandler(this).execute(_onreturn);
-
-    return true;
+      // fire OnReturn event
+      if (!isNullOrEmpty(onreturn)) EventHandler(this).execute(_onreturn);
+    }
   }
 
   // get return parameters
-  Map<String?, String> onPop() => parameters;
+  Map<String?, String> onPop()
+  {
+    // this is an important since framework views will rebuild even after popped
+    // the framework view build() method checks this value and returns offstage() when false
+    _initialized.set(false);
+
+    // return parameters
+    return parameters;
+  }
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
   @override
@@ -596,10 +606,9 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
     }
     return super.execute(caller, propertyOrFunction, arguments);
   }
+
   @override
-  Widget getView({Key? key}){
-      return FrameworkView(this);
-  }
+  Widget getView({Key? key}) => FrameworkView(this);
 }
 
 abstract class IDragListener

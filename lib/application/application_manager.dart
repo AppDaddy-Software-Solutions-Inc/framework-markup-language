@@ -1,18 +1,13 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'package:flutter/services.dart';
 import 'package:fml/datasources/datasource_interface.dart';
-import 'package:fml/event/manager.dart';
-import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:fml/navigation/navigation_manager.dart';
 import 'package:fml/system.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/theme/themenotifier.dart';
-import 'package:fml/widgets/framework/framework_view.dart';
 import 'package:provider/provider.dart';
 import 'package:fml/event/event.dart' ;
-import 'package:fml/widgets/framework/framework_model.dart' ;
 import 'package:fml/helpers/helpers.dart';
 
 class ApplicationManager extends StatefulWidget
@@ -127,79 +122,6 @@ class _ApplicationManagerState extends State<ApplicationManager>
     System().screenheight = MediaQuery.of(context).size.height;
     System().screenwidth  = MediaQuery.of(context).size.width;
 
-    // system shortcuts
-    if (kDebugMode) {
-      view = Shortcuts(shortcuts: <LogicalKeySet, Intent>
-    {
-      LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.alt, LogicalKeyboardKey.keyL): ShowLogIntent(),
-      LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.alt, LogicalKeyboardKey.keyT): ShowTemplateIntent(),
-      LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.alt, LogicalKeyboardKey.keyR): RefreshPageIntent(),
-      LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.alt, LogicalKeyboardKey.keyD): DebugWindowIntent(),
-    },
-        child: Actions(actions: <Type, Action<Intent>>{
-          ShowLogIntent: ShowLogAction(),
-          ShowTemplateIntent: ShowTemplateAction(),
-          RefreshPageIntent: RefreshPageAction(),
-          DebugWindowIntent: DebugWindowAction(),
-        }, child: view));
-    }
-
     return view;
-  }
-}
-
-class ShowLogIntent extends Intent {}
-class ShowLogAction extends Action<ShowLogIntent> {
-  ShowLogAction();
-
-  @override
-  void invoke(covariant ShowLogIntent intent)
-  {
-    Log().export();
-  }
-}
-
-class ShowTemplateIntent extends Intent {}
-class ShowTemplateAction extends Action<ShowTemplateIntent>
-{
-  ShowTemplateAction();
-
-  @override
-  void invoke(covariant ShowTemplateIntent intent) async
-  {
-    FrameworkView? framework = NavigationManager().frameworkOf();
-    if (framework != null)
-    {
-       FrameworkModel model = framework.model;
-       EventManager.of(model)?.broadcastEvent(model,Event(EventTypes.showtemplate));
-    }
-    else {
-      System.toast("unable to display template");
-    }
-  }
-}
-
-class RefreshPageIntent extends Intent {}
-class RefreshPageAction extends Action<RefreshPageIntent>
-{
-  @override
-  void invoke(covariant RefreshPageIntent intent)
-  {
-    NavigationManager().refresh();
-  }
-}
-
-class DebugWindowIntent extends Intent {}
-class DebugWindowAction extends Action<DebugWindowIntent>
-{
-  @override
-  void invoke(covariant DebugWindowIntent intent) async
-  {
-    FrameworkView? framework = NavigationManager().frameworkOf();
-    if (framework != null)
-    {
-      FrameworkModel model = framework.model;
-      EventManager.of(model)?.executeEvent(model,"DEBUG.open()");
-    }
   }
 }

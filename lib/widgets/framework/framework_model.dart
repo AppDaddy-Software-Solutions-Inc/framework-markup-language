@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter/services.dart';
 import 'package:fml/dialog/manager.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
@@ -50,8 +49,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
   List<String>? bindables;
 
   // shortcuts
-  final List<ShortcutModel> shortcuts = [];
-  final List<LogicalKeyboardKey> keysPressed = [];
+  List<ShortcutModel>? shortcuts;
 
   // disposed
   bool disposed = false;
@@ -100,19 +98,8 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
   String? get key => _key?.get();
 
   // model is initialized
-  BooleanObservable? _initialized;
-  set initialized (dynamic v)
-  {
-    if (_initialized != null)
-    {
-      _initialized!.set(v);
-    }
-    else if (v != null)
-    {
-      _initialized = BooleanObservable(Binding.toKey(id, 'initialized'), v, scope: scope, listener: onPropertyChange);
-    }
-  }
-  bool get initialized => _initialized?.get() ?? false;
+  late BooleanObservable _initialized;
+  bool get initialized => _initialized.get() ?? false;
 
   // page stack index
   // This property indicates your position on the stack, 0 being the top
@@ -277,7 +264,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
   FrameworkModel(WidgetModel parent, String? id, {dynamic key, dynamic dependency, dynamic version, dynamic onstart, dynamic onreturn, dynamic orientation}) : super(parent, id, scope: Scope(id: id))
   {
     // model is initializing
-    initialized = false;
+    _initialized = BooleanObservable(Binding.toKey(this.id, 'initialized'), false, scope: scope, listener: onPropertyChange);
 
     this.key         = key;
     this.dependency  = dependency;
@@ -487,62 +474,16 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
     nodes = Xml.getChildElements(node: xml, tag: "DRAWER");
     if (nodes != null && nodes.isNotEmpty) drawer = DrawerModel.fromXmlList(this, nodes);
 
-    // add user defined shortcuts
-    shortcuts.addAll(findChildrenOfExactType(ShortcutModel).cast<ShortcutModel>());
-
-    // refresh - CTRL-ALT-R
-    shortcuts.add(ShortcutModel(this, null, keyset: LogicalKeySet(LogicalKeyboardKey.control,
-            LogicalKeyboardKey.alt, LogicalKeyboardKey.keyR),
-        action: "refresh"));
-
-    // show log - CTRL-ALT-L
-    shortcuts.add(ShortcutModel(this, null,
-        keyset: LogicalKeySet(LogicalKeyboardKey.control,
-            LogicalKeyboardKey.alt, LogicalKeyboardKey.keyL),
-        action: "showlog"));
-
-    // show template - CTRL-ALT-T
-    shortcuts.add(ShortcutModel(this, null,
-        keyset: LogicalKeySet(LogicalKeyboardKey.control,
-            LogicalKeyboardKey.alt, LogicalKeyboardKey.keyT),
-        action: "showtemplate"));
-
-    // show debug log - CTRL-ALT-D
-    shortcuts.add(ShortcutModel(this, null,
-        keyset: LogicalKeySet(LogicalKeyboardKey.control,
-            LogicalKeyboardKey.alt, LogicalKeyboardKey.keyD),
-        action: "DEBUG.open()"));
+    // create shortcuts
+    var shortcuts = findChildrenOfExactType(ShortcutModel).cast<ShortcutModel>();
+    if (shortcuts.isNotEmpty)
+    {
+      this.shortcuts = [];
+      this.shortcuts!.addAll(findChildrenOfExactType(ShortcutModel).cast<ShortcutModel>());
+    }
 
     // ready
-    initialized = true;
-  }
-
-  bool onKeyPress(LogicalKeyboardKey logicalKey)
-  {
-    // add the key to the list
-    keysPressed.add(logicalKey);
-
-    // find the shortcut
-    bool clear = true;
-    for (var shortcut in shortcuts) {
-      if (shortcut.matches(keysPressed)) {
-        shortcut.execute("Framework", "execute", []);
-        keysPressed.clear();
-        return true;
-      }
-      if (shortcut.startsWith(keysPressed)) clear = false;
-    }
-
-    var k = "";
-    for (var key in keysPressed) {
-      k = "$k-${key.keyLabel}";
-    }
-    print(k);
-
-    // clear buffer if no shortcut starts with the specified key
-    if (clear) keysPressed.clear();
-
-    return false;
+    _initialized.set(true);
   }
 
   @override
@@ -583,19 +524,28 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
     return await EventHandler(this).execute(_onstart);
   }
 
-  Future<bool> onPush(Map<String?, String> parameters) async
+  void onPush(Map<String?, String>? parameters)
   {
-    // set variables from return parameters
-    if ((scope != null)) parameters.forEach((key, value) => scope!.setObservable(key, value));
+    if (parameters != null)
+    {
+      // set variables from return parameters
+      if ((scope != null)) parameters.forEach((key, value) => scope!.setObservable(key, value));
 
-    // fire OnReturn event
-    if (!isNullOrEmpty(onreturn)) EventHandler(this).execute(_onreturn);
-
-    return true;
+      // fire OnReturn event
+      if (!isNullOrEmpty(onreturn)) EventHandler(this).execute(_onreturn);
+    }
   }
 
   // get return parameters
-  Map<String?, String> onPop() => parameters;
+  Map<String?, String> onPop()
+  {
+    // this is an important since framework views will rebuild even after popped
+    // the framework view build() method checks this value and returns offstage() when false
+    _initialized.set(false);
+
+    // return parameters
+    return parameters;
+  }
 
   /// Callback function for when the model changes, used to force a rebuild with setState()
   @override
@@ -656,10 +606,9 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
     }
     return super.execute(caller, propertyOrFunction, arguments);
   }
+
   @override
-  Widget getView({Key? key}){
-      return FrameworkView(this);
-  }
+  Widget getView({Key? key}) => FrameworkView(this);
 }
 
 abstract class IDragListener

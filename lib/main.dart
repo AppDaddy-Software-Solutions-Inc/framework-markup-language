@@ -59,7 +59,7 @@ void runMainApp()
           return ThemeNotifier(fml_theme.MyTheme().deriveTheme(System.theme.colorscheme));
         }
       },
-      child: Application(key: applicationKey = GlobalKey())));
+      child: Application(key: applicationKey)));
 }
 
 class Application extends StatelessWidget

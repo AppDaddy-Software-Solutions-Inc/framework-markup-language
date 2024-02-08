@@ -13,6 +13,7 @@ import 'package:fml/postmaster/postmaster.dart';
 import 'package:fml/janitor/janitor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fml/widgets/shortcut/shortcut_model.dart';
 import 'package:fml/widgets/theme/theme_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:path/path.dart';
@@ -24,6 +25,8 @@ import 'package:fml/application/application_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 import 'dart:io' as io;
+
+import 'widgets/framework/framework_model.dart';
 
 // application build version
 final String version = '3.0.0';
@@ -213,6 +216,9 @@ class System extends WidgetModel implements IEventManager {
 
     // signal complete
     _completer.complete(true);
+
+    // add keyboard listener
+    ServicesBinding.instance.keyboard.addHandler(onShortcutHandler);
   }
 
   onMouseDetected() {
@@ -414,6 +420,16 @@ class System extends WidgetModel implements IEventManager {
     _scheme?.set(app.scheme);
     _host?.set(app.host);
   }
+
+  // sets the active framework
+  FrameworkModel? activeFramework;
+  void setActiveFramework(FrameworkModel model)
+  {
+    activeFramework = model;
+  }
+
+  // handle key press
+  bool onShortcutHandler(KeyEvent event) => ShortcutHandler.handleKeyPress(event, activeFramework);
 
   /// Event Manager Host
   final EventManager manager = EventManager();

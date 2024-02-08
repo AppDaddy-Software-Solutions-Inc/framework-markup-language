@@ -290,6 +290,7 @@ class WidgetModel implements IDataSourceListener {
   void onPropertyChange(Observable observable) => notificationsEnabled ? notifyListeners(observable.key, observable.get()) : null;
 
   Future<void> initialize() async {
+
     // start datasources
     if (datasources != null) {
       for (var datasource in datasources!) {

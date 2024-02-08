@@ -87,6 +87,7 @@ import 'package:fml/widgets/row/row_model.dart';
 import 'package:fml/widgets/scribble/scribble_model.dart';
 import 'package:fml/widgets/scroller/scroller_model.dart';
 import 'package:fml/widgets/select/select_model.dart';
+import 'package:fml/widgets/shortcut/shortcut_model.dart';
 import 'package:fml/widgets/slider/slider_model.dart';
 import 'package:fml/widgets/splitview/split_model.dart';
 import 'package:fml/widgets/stack/stack_model.dart';
@@ -869,6 +870,10 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
     case "SBOX":
     case "SHRINKBOX":
       model = BoxModel.fromXml(parent, node, expandDefault: false);
+      break;
+
+    case "SHORTCUT":
+      model = ShortcutModel.fromXml(parent, node);
       break;
 
     case "SIZE":

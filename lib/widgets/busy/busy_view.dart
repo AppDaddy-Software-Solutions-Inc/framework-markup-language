@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
+import 'package:fml/helpers/helpers.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'busy_model.dart';
@@ -33,12 +34,12 @@ class _BusyViewState extends WidgetState<BusyView>
 
     // view
     var modal = widget.model.modal;
-    var size  = widget.model.size ?? 100;
-    var col   = Theme.of(context).colorScheme.inversePrimary.withOpacity(0.90);
+    var size  = widget.model.size ?? 32;
+    var col   = Theme.of(context).colorScheme.inversePrimary;
     var color = widget.model.color ?? col;// ?? Theme.of(context).colorScheme.inversePrimary ?? Color(0xFF11CDEF).withOpacity(.95);
 
     if (size < 10) size = 10;
-    double stroke = size / 10.0;
+    double stroke = toDouble(toInt(size / 10.0)) ?? 4.0;
     if (stroke < 1.0) stroke = 1.0;
 
     Widget view = CircularProgressIndicator.adaptive(valueColor: AlwaysStoppedAnimation<Color>(color), strokeWidth: stroke);
@@ -47,7 +48,7 @@ class _BusyViewState extends WidgetState<BusyView>
     if (modal)
     {
       Size s = MediaQuery.of(context).size;
-      curtain = SizedBox(width: s.width, height: s.height, child: Opacity(child: ModalBarrier(dismissible: false, color: Theme.of(context).colorScheme.primary), opacity: .25));
+      curtain = SizedBox(width: s.width, height: s.height, child: Opacity(child: ModalBarrier(dismissible: false, color: Theme.of(context).colorScheme.background), opacity: .50));
     }
     if (curtain != null) children.add(curtain);
 

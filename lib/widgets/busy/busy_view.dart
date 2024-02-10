@@ -41,8 +41,7 @@ class _BusyViewState extends WidgetState<BusyView>
     double stroke = size / 10.0;
     if (stroke < 1.0) stroke = 1.0;
 
-    Widget view = CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(color), strokeWidth: stroke);
-    //Widget view = Image.asset("images/progress.gif");
+    Widget view = CircularProgressIndicator.adaptive(valueColor: AlwaysStoppedAnimation<Color>(color), strokeWidth: stroke);
     var spinner  = SizedBox(width: size + 10, height: size + 10, child: view);
     Widget? curtain;
     if (modal)

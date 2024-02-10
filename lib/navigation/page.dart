@@ -97,27 +97,15 @@ class CustomPageBasedMaterialPageRoute<T> extends PageRoute<T> with MaterialRout
   Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child)
   {
     switch(transition) {
-      case 'ios':
-      case 'macos':
-      case 'slide':
-        return SlideTransition(position: Tween<Offset>(begin: const Offset(-1, 0), end: Offset.zero,).animate(animation), child: child,);
-
-      case 'android':
-        return ScaleTransition(
-            scale: animation.drive(Tween(begin: 0.0, end: 1.0).chain(CurveTween(curve: Curves.ease))),
-            child: FadeTransition(opacity: animation, child: child));
-
       case 'fade':
-      case 'windows':
-      case 'linux':
-        return FadeTransition(opacity: animation, child: child);
-
-      case 'slideleft':
-        return SlideTransition(position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero,).animate(animation), child: child);
+        return FadeUpwardsPageTransitionsBuilder().buildTransitions(this, context, animation, secondaryAnimation, child);
 
       case 'slide':
       case 'slideright':
         return SlideTransition(position: Tween<Offset>(begin: const Offset(-1, 0), end: Offset.zero,).animate(animation), child: child);
+
+      case 'slideleft':
+        return SlideTransition(position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero,).animate(animation), child: child);
 
       case 'zoom':
         return ScaleTransition(scale: Tween<double>(begin: 0.0, end: 1.0,)

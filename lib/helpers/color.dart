@@ -1,8 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:fml/log/manager.dart';
+import 'package:fml/helpers/string.dart';
 
 class ColorHelper {
 
@@ -10,7 +9,7 @@ class ColorHelper {
     try {
       if (value == null)   return null;
       if (value is Color)  return value;
-      if (value is String) return fromString(value);
+      if (value is String) return toColor(value);
       return Exception();
     }
     catch(e) {
@@ -18,48 +17,36 @@ class ColorHelper {
     }
   }
 
-  static Color? fromString(String? color) {
-    Color? c;
-    try {
-      if (color != null && color != '') {
-        // color code
-        if (colors.containsKey(color.toLowerCase())) {
-          c = colors[color.toLowerCase()];
-        }
-        else if (color.toLowerCase() == 'random') {
-          c = colors[colors.keys.elementAt(Random().nextInt(colors.length))];
-        }
-        else if (color.length == 7 && color.startsWith('#')) {
-          c = Color(int.parse(color.substring(1, 7), radix: 16) + 0xFF000000);
-        }
-        else if (color.length == 9 && color.startsWith('#')) {
-          String opacity = color.substring(7,9);
-          String mainColor = color.substring(1,7);
-          c = Color(int.parse('$opacity$mainColor', radix: 16) + 0x00000000);
-        }
-        else if (color.length == 8 && color.startsWith('0x')) {
-          c = Color(int.parse(color.substring(2, 8), radix: 16) + 0xFF000000);
-        }
-        else if (color.length == 10 && color.startsWith('0x')) {
-          c = Color(int.parse(color.substring(2, 10), radix: 16) + 0x00000000);
-        }
-        else if (color.length == 17 && color.startsWith('Color(0x')) {
-          c = Color(int.parse(color.substring(8, 16), radix: 16) + 0x00000000);
-        }
-        else if (color.length == 47 && color.startsWith('MaterialColor(primary value: Color(0x')) {
-          c = Color(int.parse(color.substring(37, 45), radix: 16) + 0x00000000);
-        }
-        else if (color.length == 53 && color.startsWith('MaterialAccentColor(primary value: Color(0x')) {
-          c = Color(int.parse(color.substring(43, 51), radix: 16) + 0x00000000);
-        }
-      }
+  static Color? toColor(String? color)
+  {
+    try
+    {
+      if (isNullOrEmpty(color)) return null;
+
+      color = color!.toLowerCase().trim();
+
+      // color code
+      if (colors.containsKey(color)) return colors[color.toLowerCase()];
+
+      // random color
+      if (color == 'random') return colors[colors.keys.elementAt(Random().nextInt(colors.length))];
+
+      // # hex color w/out alpha
+      if (color.startsWith('#') && color.length == 7) return Color(int.parse(color.substring(1, 7), radix: 16) + 0xFF000000);
+
+      // # hex color w/ alpha
+      if (color.startsWith('#') && color.length == 9) return Color(int.parse('${color.substring(7,9)}${color.substring(1,7)}', radix: 16) + 0x00000000);
+
+      // 0x hex color w/out alpha
+      if (color.startsWith('0x') && color.length == 8) return Color(int.parse(color.substring(2, 8), radix: 16) + 0xFF000000);
+
+      // 0x hex color w/ alpha
+      if (color.startsWith('0x') && color.length == 10) return Color(int.parse(color.substring(2, 10), radix: 16) + 0x00000000);
     }
-    catch(e) {
-      c = null;
-      Log().debug(e.toString(),
-          caller: 'helper/color.dart => Color toColor(String color)');
-    }
-    return c;
+
+    // ignore: empty_catches
+    catch(e) {}
+    return null;
   }
 
   static Color darken(Color color, [double amount = .1]) {

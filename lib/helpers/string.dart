@@ -2,7 +2,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:collection/collection.dart' show IterableExtension;
+import 'package:flutter/material.dart';
 import 'package:fml/emoji.dart';
+import 'package:fml/helpers/color.dart';
 import 'package:fml/log/manager.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
@@ -69,11 +71,16 @@ bool isBool(dynamic b, {List<String> allow = const ['true','false','1','0','yes'
 }
 
 /// toString() but safe to use on null
-String? toStr(dynamic s) {
-  try {
+String? toStr(dynamic s)
+{
+  try
+  {
     if (s == null) return null;
+    if (s is Color) return "#${s.red.toRadixString(16)}${s.green.toRadixString(16)}${s.blue.toRadixString(16)}${s.alpha.toRadixString(16)}";
     return s.toString();
-  } catch (e) {
+  }
+  catch (e)
+  {
     return null;
   }
 }
@@ -89,6 +96,17 @@ int? toInt(dynamic s) {
   } catch (e) {
     return null;
   }
+}
+
+/// Returns an int from a String if it is a numeric value
+Color? toColor(dynamic s)
+{
+  if (s == null) return null;
+  if (s is String) return ColorHelper.toColor(s);
+  if (s is Color) return s;
+  if (s is MaterialColor) return Color.fromRGBO(s.red, s.green, s.blue, s.opacity);
+  if (s is MaterialAccentColor) return Color.fromRGBO(s.red, s.green, s.blue, s.opacity);
+  return null;
 }
 
 var hasAlpha = RegExp(r'[a-z]');

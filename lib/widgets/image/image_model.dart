@@ -10,9 +10,7 @@ import 'package:fml/helpers/helpers.dart';
 
 class ImageModel extends DecoratedWidgetModel 
 {
-  //////////
-  //* url */
-  //////////
+  // url
   StringObservable? _url;
   set url (dynamic v)
   {
@@ -27,9 +25,7 @@ class ImageModel extends DecoratedWidgetModel
   }
   String? get url => _url?.get();
 
-  //////////////
-  //* default */
-  //////////////
+  // default
   StringObservable? _default;
   set defaultvalue (dynamic v)
   {
@@ -44,9 +40,7 @@ class ImageModel extends DecoratedWidgetModel
   }
   String? get defaultvalue => _default?.get();
 
-  /////////
-  /* fit */
-  /////////
+  // fit
   StringObservable? _fit;
   set fit (dynamic v)
   {
@@ -61,9 +55,7 @@ class ImageModel extends DecoratedWidgetModel
   }
   String? get fit => _fit?.get();
 
-  ////////////
-  /* filter */
-  ////////////
+  // filter
   StringObservable? _filter;
   set filter (dynamic v)
   {
@@ -78,9 +70,8 @@ class ImageModel extends DecoratedWidgetModel
   }
   String? get filter => _filter?.get();
 
-  ////////////
-  /* flip */
-  ////////////
+
+  // flip
   StringObservable? _flip;
   set flip (dynamic v)
   {

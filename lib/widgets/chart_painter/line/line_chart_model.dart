@@ -167,7 +167,7 @@ class LineChartModel extends ChartPainterModel
          uniqueValues.addAll(serie.xValues);
 
          serie.lineDataPoint.sort((a, b) => a.x.compareTo(b.x));
-          serie.color ??= ColorHelper.fromString('random');
+          serie.color ??= toColor('random');
           lineDataList.add(LineChartBarData(spots: serie.lineDataPoint,
               isCurved: serie.curved,
               belowBarData: BarAreaData(show: serie.showarea),

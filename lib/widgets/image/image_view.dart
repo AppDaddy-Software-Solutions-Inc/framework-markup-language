@@ -27,7 +27,7 @@ class ImageView extends StatefulWidget implements IWidgetView
   State<ImageView> createState() => _ImageViewState();
 
   /// Get an image widget from any image type
-  static dynamic getImage(String? url, bool animate, {Scope? scope, String? defaultImage, double? width, double? height, String? fit, String? filter, bool fade = true, int? fadeDuration})
+  static dynamic getImage(String? url, bool animate, {Scope? scope, Color? color, String? defaultImage, double? width, double? height, String? fit, String? filter, bool fade = true, int? fadeDuration})
   {
     Widget? image;
 
@@ -86,7 +86,7 @@ class ImageView extends StatefulWidget implements IWidgetView
 
           // svg image?
           if (uri.pageExtension == "svg") {
-            image = SvgPicture.file(file!, fit: getFit(fit), width: width, height: height);
+            image = SvgPicture.file(file!, fit: getFit(fit), width: width, height: height, colorFilter: color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null);
           } else {
             image = Image.file(file, fit: getFit(fit));
           }
@@ -98,7 +98,7 @@ class ImageView extends StatefulWidget implements IWidgetView
 
           // svg image?
           if (uri.pageExtension == "svg") {
-            image = SvgPicture.asset(assetpath, fit: getFit(fit), width: width, height: height);
+            image = SvgPicture.asset(assetpath, fit: getFit(fit), width: width, height: height, colorFilter: color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null);
           } else {
             image = Image.asset(assetpath, fit: getFit(fit), width: width, height: height, errorBuilder: errorHandler);
           }
@@ -107,11 +107,11 @@ class ImageView extends StatefulWidget implements IWidgetView
         /// web image
         default:
           if (uri.pageExtension == "svg") {
-            image = SvgPicture.network(uri.url, fit: getFit(fit), width: width, height: height);
+            image = SvgPicture.network(uri.url, fit: getFit(fit), width: width, height: height, colorFilter: color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null);
           } else
           {
             if (animate) {
-              image = FadeInImage.memoryNetwork(placeholder: placeholder, image: uri.url, fit: getFit(fit), width: width, height: height, fadeInDuration: Duration(milliseconds: fadeDuration ?? 300), imageErrorBuilder: errorHandler);
+              image = FadeInImage.memoryNetwork(placeholder: placeholder, image: uri.url, fit: getFit(fit), width: width, height: height, fadeInDuration: Duration(milliseconds: fadeDuration ?? 300), imageErrorBuilder: errorHandler, );
             } else {
               image = Image.network(uri.url, fit: getFit(fit), width: width, height: height);
             }
@@ -184,7 +184,7 @@ class _ImageViewState extends WidgetState<ImageView>
     Scope? scope = Scope.of(widget.model);
 
     // get the image
-    Widget view = ImageView.getImage(url, widget.model.animations == null, scope: scope, defaultImage: widget.model.defaultvalue, width: width, height: height, fit: fit, filter: filter) ?? Container();
+    Widget view = ImageView.getImage(url, widget.model.animations == null, color: widget.model.color, scope: scope, defaultImage: widget.model.defaultvalue, width: width, height: height, fit: fit, filter: filter) ?? Container();
 
     // Flip
     if (widget.model.flip != null) {
@@ -217,3 +217,4 @@ class _ImageViewState extends WidgetState<ImageView>
     return view;
   }
 }
+

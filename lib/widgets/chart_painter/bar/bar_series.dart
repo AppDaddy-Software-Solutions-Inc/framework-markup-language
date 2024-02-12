@@ -192,26 +192,26 @@ class BarChartSeriesModel extends ChartPainterSeriesModel
 
   void pointFromBarData()
   {
-    BarChartGroupDataExtended point = BarChartGroupDataExtended(this, data, x: toInt(x) ?? 0, barRods: [BarChartRodDataExtended(this, data, fromY: toDouble(y0) ?? 0,toY: toDouble(y) ?? 0, width: width, color: color ?? ColorHelper.fromString('random'))]);
+    BarChartGroupDataExtended point = BarChartGroupDataExtended(this, data, x: toInt(x) ?? 0, barRods: [BarChartRodDataExtended(this, data, fromY: toDouble(y0) ?? 0,toY: toDouble(y) ?? 0, width: width, color: color ?? toColor('random'))]);
     barDataPoint.add(point);
   }
 
   void pointFromWaterfallBarData()
   {
-    BarChartGroupDataExtended point = BarChartGroupDataExtended(this, data, x: toInt(x) ?? 0, barRods: [BarChartRodDataExtended(this, data, fromY: barDataPoint.isNotEmpty ? barDataPoint[(barDataPoint.length - 1)].barRods[0].toY : 0,toY: toDouble(y) ?? 0, width: width, color: color ?? ColorHelper.fromString('random'))]);
+    BarChartGroupDataExtended point = BarChartGroupDataExtended(this, data, x: toInt(x) ?? 0, barRods: [BarChartRodDataExtended(this, data, fromY: barDataPoint.isNotEmpty ? barDataPoint[(barDataPoint.length - 1)].barRods[0].toY : 0,toY: toDouble(y) ?? 0, width: width, color: color ?? toColor('random'))]);
     barDataPoint.add(point);
   }
 
   void pointFromGroupedBarData()
   {
-    BarChartRodDataExtended point = BarChartRodDataExtended(this, data, fromY: toDouble(y0) ?? 0, toY: toDouble(y) ?? 0, color: color ?? ColorHelper.fromString('random'));
+    BarChartRodDataExtended point = BarChartRodDataExtended(this, data, fromY: toDouble(y0) ?? 0, toY: toDouble(y) ?? 0, color: color ?? toColor('random'));
     rodDataPoint.add(point);
   }
 
   void pointFromStackedBarData()
   {
     //barchartrodstackitem allows stacking within series group.
-    BarChartRodStackItemExtended point = BarChartRodStackItemExtended(this, data, toDouble(y0) ?? 0, toDouble(y) ?? 0, color ?? ColorHelper.fromString('random') ?? Colors.blue);
+    BarChartRodStackItemExtended point = BarChartRodStackItemExtended(this, data, toDouble(y0) ?? 0, toDouble(y) ?? 0, color ?? toColor('random') ?? Colors.blue);
     stackDataPoint.add(point);
   }
 }

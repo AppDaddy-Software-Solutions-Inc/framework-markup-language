@@ -322,10 +322,15 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   {
     if (_wait == null)
     {
-      var c1 = ColorHelper.fromString(System.theme.background) ?? Colors.white60;
-      var c2 = ColorHelper.fromString(System.theme.inverseprimary) ?? Colors.black45;
+      var c1 = System.theme.background ?? Colors.white60;
+      var c2 = System.theme.inverseprimary ?? Colors.black45;
 
-      var spinner = CircularProgressIndicator.adaptive(valueColor: AlwaysStoppedAnimation<Color>(c2));
+      var spinner = AnimatedOpacity(
+        opacity: 1.0,
+        duration: const Duration(seconds: 2),
+        curve: Curves.easeInExpo,
+        child: CircularProgressIndicator.adaptive(valueColor: AlwaysStoppedAnimation<Color>(c2)));
+
       _wait = Container(width: 32, height: 32, child: spinner);
       _wait = Container(color: c1, child: Center(child: _wait));
     }

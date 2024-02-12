@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:flutter/material.dart';
-import 'package:fml/helpers/helpers.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'busy_model.dart';
@@ -39,7 +38,7 @@ class _BusyViewState extends WidgetState<BusyView>
     var color = widget.model.color ?? col;// ?? Theme.of(context).colorScheme.inversePrimary ?? Color(0xFF11CDEF).withOpacity(.95);
 
     if (size < 10) size = 10;
-    double stroke = toDouble(toInt(size / 10.0)) ?? 4.0;
+    var stroke = (size / 10.0).ceilToDouble();
     if (stroke < 1.0) stroke = 1.0;
 
     Widget view = CircularProgressIndicator.adaptive(valueColor: AlwaysStoppedAnimation<Color>(color), strokeWidth: stroke);

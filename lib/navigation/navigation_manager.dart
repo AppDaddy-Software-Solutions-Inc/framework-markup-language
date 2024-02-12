@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
-import 'package:fml/template/template.dart';
+import 'package:fml/template/template_manager.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/modal/modal_manager_model.dart';
 import 'package:fml/widgets/modal/modal_manager_view.dart';
@@ -15,7 +15,6 @@ import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/framework/framework_view.dart' ;
 import 'package:fml/store/store_view.dart';
-import 'package:fml/page404/page404_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/helpers/helpers.dart';
 
@@ -66,7 +65,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     if (homePage.split("?")[0].toLowerCase() != startPage.split("?")[0].toLowerCase())
     {
       // fetch the template
-      Template? template = await Template.fetch(url: startPage, refresh: true);
+      var template = await TemplateManager().fetch(url: startPage, refresh: true);
 
       // document is linkable?
       // default - if singlePageApplication then false, otherwise true
@@ -427,10 +426,6 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     {
       case "store":
         view = StoreView();
-        break;
-
-      case "missing":
-        view = Page404View(url);
         break;
 
       default:

@@ -278,7 +278,7 @@ class TemplateManager
 
   Future<Template> _fetchErrorPage(FetchResult result) async
   {
-    var color1 = toStr(toColor(System.theme.onbackground));
+    var color1 = toStr(toColor(System.theme.onBackground));
     var color2 = toStr(toColor(System.theme.primary));
 
     String back = '''

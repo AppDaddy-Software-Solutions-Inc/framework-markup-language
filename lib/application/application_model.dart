@@ -296,18 +296,18 @@ class ApplicationModel extends WidgetModel {
     }
 
     var brightness = theme.brightness;
-    var colorscheme = theme.colorscheme;
+    var colorscheme = theme.colorScheme;
     var font = theme.font;
 
     // theme values from the app
     theme.brightness = cBrightness;
-    theme.colorscheme = settings('PRIMARY_COLOR') ?? 'lightblue'; // backwards compatibility
-    theme.colorscheme = settings('COLOR_SCHEME')  ?? theme.colorscheme;
+    theme.colorScheme = settings('PRIMARY_COLOR') ?? ThemeModel.defaultColor; // backwards compatibility
+    theme.colorScheme = settings('COLOR_SCHEME')  ?? theme.colorScheme;
     theme.font = settings('FONT');
 
     // has the theme changed?
     bool modified = (theme.brightness != brightness ||
-        theme.colorscheme != colorscheme ||
+        theme.colorScheme != colorscheme ||
         theme.font != font);
     if (modified && notify && context != null) {
       // call the theme notifier

@@ -25,15 +25,15 @@ class ThemeModel extends DecoratedWidgetModel
   }
   String? get brightness => _brightness?.get();
 
-  ColorObservable? _colorscheme;
-  set colorscheme(dynamic v) {
-    if (_colorscheme != null) {
-      _colorscheme!.set(v);
+  ColorObservable? _colorScheme;
+  set colorScheme(dynamic v) {
+    if (_colorScheme != null) {
+      _colorScheme!.set(v);
     } else if (v != null) {
-      _colorscheme = ColorObservable(Binding.toKey('colorscheme'), v, scope: scope, listener: onPropertyChange);
+      _colorScheme = ColorObservable(Binding.toKey('colorscheme'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  Color? get colorscheme => _colorscheme?.get();
+  Color? get colorScheme => _colorScheme?.get();
 
   StringObservable? _font;
   set font(dynamic v) {
@@ -55,15 +55,15 @@ class ThemeModel extends DecoratedWidgetModel
   }
   Color? get background => _background?.get();
 
-  ColorObservable? _onbackground;
-  set onbackground(dynamic v) {
-    if (_onbackground != null) {
-      _onbackground!.set(v);
+  ColorObservable? _onBackground;
+  set onBackground(dynamic v) {
+    if (_onBackground != null) {
+      _onBackground!.set(v);
     } else if (v != null) {
-      _onbackground = ColorObservable(Binding.toKey('onbackground'), v, scope: scope, listener: onPropertyChange);
+      _onBackground = ColorObservable(Binding.toKey('onbackground'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  Color? get onbackground => _onbackground?.get();
+  Color? get onBackground => _onBackground?.get();
 
   ColorObservable? _shadow;
   set shadow(dynamic v) {
@@ -95,55 +95,55 @@ class ThemeModel extends DecoratedWidgetModel
   }
   Color? get surface => _surface?.get();
 
-  ColorObservable? _onsurface;
-  set onsurface(dynamic v) {
-    if (_onsurface != null) {
-      _onsurface!.set(v);
+  ColorObservable? _onSurface;
+  set onSurface(dynamic v) {
+    if (_onSurface != null) {
+      _onSurface!.set(v);
     } else if (v != null) {
-      _onsurface = ColorObservable(Binding.toKey('onsurface'), v, scope: scope, listener: onPropertyChange);
+      _onSurface = ColorObservable(Binding.toKey('onsurface'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  Color? get onsurface => _onsurface?.get();
+  Color? get onSurface => _onSurface?.get();
 
-  ColorObservable? _surfacevariant;
-  set surfacevariant(dynamic v) {
-    if (_surfacevariant != null) {
-      _surfacevariant!.set(v);
+  ColorObservable? _surfaceVariant;
+  set surfaceVariant(dynamic v) {
+    if (_surfaceVariant != null) {
+      _surfaceVariant!.set(v);
     } else if (v != null) {
-      _surfacevariant = ColorObservable(Binding.toKey('surfacevariant'), v, scope: scope, listener: onPropertyChange);
+      _surfaceVariant = ColorObservable(Binding.toKey('surfacevariant'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  Color? get surfacevariant => _surfacevariant?.get();
+  Color? get surfaceVariant => _surfaceVariant?.get();
 
-  ColorObservable? _onsurfacevariant;
-  set onsurfacevariant(dynamic v) {
-    if (_onsurfacevariant != null) {
-      _onsurfacevariant!.set(v);
+  ColorObservable? _onSurfaceVariant;
+  set onSurfaceVariant(dynamic v) {
+    if (_onSurfaceVariant != null) {
+      _onSurfaceVariant!.set(v);
     } else if (v != null) {
-      _onsurfacevariant = ColorObservable(Binding.toKey('onsurfacevariant'), v, scope: scope, listener: onPropertyChange);
+      _onSurfaceVariant = ColorObservable(Binding.toKey('onsurfacevariant'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  Color? get onsurfacevariant => _onsurfacevariant?.get();
+  Color? get onSurfaceVariant => _onSurfaceVariant?.get();
 
-  ColorObservable? _inversesurface;
-  set inversesurface(dynamic v) {
-    if (_inversesurface != null) {
-      _inversesurface!.set(v);
+  ColorObservable? _inverseSurface;
+  set inverseSurface(dynamic v) {
+    if (_inverseSurface != null) {
+      _inverseSurface!.set(v);
     } else if (v != null) {
-      _inversesurface = ColorObservable(Binding.toKey('inversesurface'), v, scope: scope, listener: onPropertyChange);
+      _inverseSurface = ColorObservable(Binding.toKey('inversesurface'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  Color? get inversesurface => _inversesurface?.get();
+  Color? get inverseSurface => _inverseSurface?.get();
 
-  ColorObservable? _oninversesurface;
-  set oninversesurface(dynamic v) {
-    if (_oninversesurface != null) {
-      _oninversesurface!.set(v);
+  ColorObservable? _onInverseSurface;
+  set onInverseSurface(dynamic v) {
+    if (_onInverseSurface != null) {
+      _onInverseSurface!.set(v);
     } else if (v != null) {
-      _oninversesurface = ColorObservable(Binding.toKey('oninversesurface'), v, scope: scope, listener: onPropertyChange);
+      _onInverseSurface = ColorObservable(Binding.toKey('oninversesurface'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  Color? get oninversesurface => _oninversesurface?.get();
+  Color? get onInverseSurface => _onInverseSurface?.get();
 
   ColorObservable? _primary;
   set primary(dynamic v) {
@@ -155,45 +155,45 @@ class ThemeModel extends DecoratedWidgetModel
   }
   Color? get primary => _primary?.get();
 
-  ColorObservable? _onprimary;
-  set onprimary(dynamic v) {
-    if (_onprimary != null) {
-      _onprimary!.set(v);
+  ColorObservable? _onPrimary;
+  set onPrimary(dynamic v) {
+    if (_onPrimary != null) {
+      _onPrimary!.set(v);
     } else if (v != null) {
-      _onprimary = ColorObservable(Binding.toKey('onprimary'), v, scope: scope, listener: onPropertyChange);
+      _onPrimary = ColorObservable(Binding.toKey('onprimary'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  Color? get onprimary => _onprimary?.get();
+  Color? get onPrimary => _onPrimary?.get();
 
-  ColorObservable? _primarycontainer;
-  set primarycontainer(dynamic v) {
-    if (_primarycontainer != null) {
-      _primarycontainer!.set(v);
+  ColorObservable? _primaryContainer;
+  set primaryContainer(dynamic v) {
+    if (_primaryContainer != null) {
+      _primaryContainer!.set(v);
     } else if (v != null) {
-      _primarycontainer = ColorObservable(Binding.toKey('primarycontainer'), v, scope: scope, listener: onPropertyChange);
+      _primaryContainer = ColorObservable(Binding.toKey('primarycontainer'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  Color? get primarycontainer => _primarycontainer?.get();
+  Color? get primaryContainer => _primaryContainer?.get();
 
-  ColorObservable? _onprimarycontainer;
-  set onprimarycontainer(dynamic v) {
-    if (_onprimarycontainer != null) {
-      _onprimarycontainer!.set(v);
+  ColorObservable? _onPrimaryContainer;
+  set onPrimaryContainer(dynamic v) {
+    if (_onPrimaryContainer != null) {
+      _onPrimaryContainer!.set(v);
     } else if (v != null) {
-      _onprimarycontainer = ColorObservable(Binding.toKey('onprimarycontainer'), v, scope: scope, listener: onPropertyChange);
+      _onPrimaryContainer = ColorObservable(Binding.toKey('onprimarycontainer'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  Color? get onprimarycontainer => _onprimarycontainer?.get();
+  Color? get onPrimaryContainer => _onPrimaryContainer?.get();
 
-  ColorObservable? _inverseprimary;
-  set inverseprimary(dynamic v) {
-    if (_inverseprimary != null) {
-      _inverseprimary!.set(v);
+  ColorObservable? _inversePrimary;
+  set inversePrimary(dynamic v) {
+    if (_inversePrimary != null) {
+      _inversePrimary!.set(v);
     } else if (v != null) {
-      _inverseprimary = ColorObservable(Binding.toKey('inverseprimary'), v, scope: scope, listener: onPropertyChange);
+      _inversePrimary = ColorObservable(Binding.toKey('inverseprimary'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  Color? get inverseprimary => _inverseprimary?.get();
+  Color? get inversePrimary => _inversePrimary?.get();
 
   ColorObservable? _secondary;
   set secondary(dynamic v) {
@@ -205,55 +205,55 @@ class ThemeModel extends DecoratedWidgetModel
   }
   Color? get secondary => _secondary?.get();
 
-  ColorObservable? _onsecondary;
-  set onsecondary(dynamic v) {
-    if (_onsecondary != null) {
-      _onsecondary!.set(v);
+  ColorObservable? _onSecondary;
+  set onSecondary(dynamic v) {
+    if (_onSecondary != null) {
+      _onSecondary!.set(v);
     } else if (v != null) {
-      _onsecondary = ColorObservable(Binding.toKey('onsecondary'), v, scope: scope, listener: onPropertyChange);
+      _onSecondary = ColorObservable(Binding.toKey('onsecondary'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  Color? get onsecondary => _onsecondary?.get();
+  Color? get onSecondary => _onSecondary?.get();
 
-  ColorObservable? _secondarycontainer;
-  set secondarycontainer(dynamic v) {
-    if (_secondarycontainer != null) {
-      _secondarycontainer!.set(v);
+  ColorObservable? _secondaryContainer;
+  set secondaryContainer(dynamic v) {
+    if (_secondaryContainer != null) {
+      _secondaryContainer!.set(v);
     } else if (v != null) {
-      _secondarycontainer = ColorObservable(Binding.toKey('secondarycontainer'), v, scope: scope, listener: onPropertyChange);
+      _secondaryContainer = ColorObservable(Binding.toKey('secondarycontainer'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  Color? get secondarycontainer => _secondarycontainer?.get();
+  Color? get secondaryContainer => _secondaryContainer?.get();
 
-  ColorObservable? _onsecondarycontainer;
-  set onsecondarycontainer(dynamic v) {
-    if (_onsecondarycontainer != null) {
-      _onsecondarycontainer!.set(v);
+  ColorObservable? _onSecondaryContainer;
+  set onSecondaryContainer(dynamic v) {
+    if (_onSecondaryContainer != null) {
+      _onSecondaryContainer!.set(v);
     } else if (v != null) {
-      _onsecondarycontainer = ColorObservable(Binding.toKey('onsecondarycontainer'), v, scope: scope, listener: onPropertyChange);
+      _onSecondaryContainer = ColorObservable(Binding.toKey('onsecondarycontainer'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  Color? get onsecondarycontainer => _onsecondarycontainer?.get();
+  Color? get onSecondaryContainer => _onSecondaryContainer?.get();
 
-  ColorObservable? _tertiarycontainer;
-  set tertiarycontainer(dynamic v) {
-    if (_tertiarycontainer != null) {
-      _tertiarycontainer!.set(v);
+  ColorObservable? _tertiaryContainer;
+  set tertiaryContainer(dynamic v) {
+    if (_tertiaryContainer != null) {
+      _tertiaryContainer!.set(v);
     } else if (v != null) {
-      _tertiarycontainer = ColorObservable(Binding.toKey('tertiarycontainer'), v, scope: scope, listener: onPropertyChange);
+      _tertiaryContainer = ColorObservable(Binding.toKey('tertiarycontainer'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  Color? get tertiarycontainer => _tertiarycontainer?.get();
+  Color? get tertiaryContainer => _tertiaryContainer?.get();
 
-  ColorObservable? _ontertiarycontainer;
-  set ontertiarycontainer(dynamic v) {
-    if (_ontertiarycontainer != null) {
-      _ontertiarycontainer!.set(v);
+  ColorObservable? _onTertiaryContainer;
+  set onTertiaryContainer(dynamic v) {
+    if (_onTertiaryContainer != null) {
+      _onTertiaryContainer!.set(v);
     } else if (v != null) {
-      _ontertiarycontainer = ColorObservable(Binding.toKey('ontertiarycontainer'), v, scope: scope, listener: onPropertyChange);
+      _onTertiaryContainer = ColorObservable(Binding.toKey('ontertiarycontainer'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  Color? get ontertiarycontainer => _ontertiarycontainer?.get();
+  Color? get onTertiaryContainer => _onTertiaryContainer?.get();
 
   ColorObservable? _error;
   set error(dynamic v) {
@@ -265,92 +265,37 @@ class ThemeModel extends DecoratedWidgetModel
   }
   Color? get error => _error?.get();
 
-  ColorObservable? _onerror;
-  set onerror(dynamic v) {
-    if (_onerror != null) {
-      _onerror!.set(v);
+  ColorObservable? _onError;
+  set onError(dynamic v) {
+    if (_onError != null) {
+      _onError!.set(v);
     } else if (v != null) {
-      _onerror = ColorObservable(Binding.toKey('onerror'), v, scope: scope, listener: onPropertyChange);
+      _onError = ColorObservable(Binding.toKey('onerror'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  Color? get onerror => _onerror?.get();
+  Color? get onError => _onError?.get();
 
-  ColorObservable? _errorcontainer;
-  set errorcontainer(dynamic v) {
-    if (_errorcontainer != null) {
-      _errorcontainer!.set(v);
+  ColorObservable? _errorContainer;
+  set errorContainer(dynamic v) {
+    if (_errorContainer != null) {
+      _errorContainer!.set(v);
     } else if (v != null) {
-      _errorcontainer = ColorObservable(Binding.toKey('errorcontainer'), v, scope: scope, listener: onPropertyChange);
+      _errorContainer = ColorObservable(Binding.toKey('errorcontainer'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  Color? get errorcontainer => _errorcontainer?.get();
+  Color? get errorContainer => _errorContainer?.get();
 
-  ColorObservable? _onerrorcontainer;
-  set onerrorcontainer(dynamic v) {
-    if (_onerrorcontainer != null) {
-      _onerrorcontainer!.set(v);
+  ColorObservable? _onErrorContainer;
+  set onErrorContainer(dynamic v) {
+    if (_onErrorContainer != null) {
+      _onErrorContainer!.set(v);
     } else if (v != null) {
-      _onerrorcontainer = ColorObservable(Binding.toKey('onerrorcontainer'), v, scope: scope, listener: onPropertyChange);
+      _onErrorContainer = ColorObservable(Binding.toKey('onerrorcontainer'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  Color? get onerrorcontainer => _onerrorcontainer?.get();
+  Color? get onErrorContainer => _onErrorContainer?.get();
 
-  ThemeModel(WidgetModel parent, String?  id,
-  {
-    dynamic brightness,
-    dynamic background,
-    dynamic onbackground,
-    dynamic shadow,
-    dynamic outline,
-    dynamic surface,
-    dynamic onsurface,
-    dynamic surfacevariant,
-    dynamic onsurfacevariant,
-    dynamic inversesurface,
-    dynamic oninversesurface,
-    dynamic primary,
-    dynamic onprimary,
-    dynamic primarycontainer,
-    dynamic onprimarycontainer,
-    dynamic inverseprimary,
-    dynamic secondary,
-    dynamic onsecondary,
-    dynamic secondarycontainer,
-    dynamic onsecondarycontainer,
-    dynamic tertiarycontainer,
-    dynamic ontertiarycontainer,
-    dynamic error,
-    dynamic onerror,
-    dynamic errorcontainer,
-    dynamic onerrorcontainer,
-  }) : super(parent, id, scope: Scope(id: myId)) {
-    if (background != null) this.brightness = brightness;
-    if (background != null) this.background = background;
-    if (onbackground != null) this.onbackground = onbackground;
-    if (shadow != null) this.shadow = shadow;
-    if (outline != null) this.outline = outline;
-    if (surface != null) this.surface = surface;
-    if (onsurface != null) this.onsurface = onsurface;
-    if (surfacevariant != null) this.surfacevariant = surfacevariant;
-    if (onsurfacevariant != null) this.onsurfacevariant = onsurfacevariant;
-    if (inversesurface != null) this.inversesurface = inversesurface;
-    if (oninversesurface != null) this.oninversesurface = oninversesurface;
-    if (primary != null) this.primary = primary;
-    if (onprimary != null) this.onprimary = onprimary;
-    if (primarycontainer != null) this.primarycontainer = primarycontainer;
-    if (onprimarycontainer != null) this.onprimarycontainer = onprimarycontainer;
-    if (inverseprimary != null) this.inverseprimary = inverseprimary;
-    if (secondary != null) this.secondary = secondary;
-    if (onsecondary != null) this.onsecondary = onsecondary;
-    if (secondarycontainer != null) this.secondarycontainer = secondarycontainer;
-    if (onsecondarycontainer != null) this.onsecondarycontainer = onsecondarycontainer;
-    if (tertiarycontainer != null) this.tertiarycontainer = tertiarycontainer;
-    if (ontertiarycontainer != null) this.ontertiarycontainer = ontertiarycontainer;
-    if (error != null) this.error = error;
-    if (onerror != null) this.onerror = onerror;
-    if (errorcontainer != null) this.errorcontainer = errorcontainer;
-    if (onerrorcontainer != null) this.onerrorcontainer = onerrorcontainer;
-  } // ; {key: value}
+  ThemeModel(WidgetModel parent, String?  id) : super(parent, id, scope: Scope(id: myId));
 
   // Map<String, dynamic> themeValues = Map<String, dynamic>();
 
@@ -379,30 +324,30 @@ class ThemeModel extends DecoratedWidgetModel
 
     // properties
     background = Xml.get(node: xml, tag: 'background');
-    onbackground  = Xml.get(node: xml, tag: 'onbackground');
+    onBackground  = Xml.get(node: xml, tag: 'onbackground');
     shadow  = Xml.get(node: xml, tag: 'shadow');
     outline = Xml.get(node: xml, tag: 'outline');
     surface = Xml.get(node: xml, tag: 'surface');
-    onsurface = Xml.get(node: xml, tag: 'onsurface');
-    surfacevariant  = Xml.get(node: xml, tag: 'surfacevariant');
-    onsurfacevariant  = Xml.get(node: xml, tag: 'onsurfacevariant');
-    inversesurface  = Xml.get(node: xml, tag: 'inversesurface');
-    oninversesurface  = Xml.get(node: xml, tag: 'oninversesurface');
+    onSurface = Xml.get(node: xml, tag: 'onsurface');
+    surfaceVariant  = Xml.get(node: xml, tag: 'surfacevariant');
+    onSurfaceVariant  = Xml.get(node: xml, tag: 'onsurfacevariant');
+    inverseSurface  = Xml.get(node: xml, tag: 'inversesurface');
+    onInverseSurface  = Xml.get(node: xml, tag: 'oninversesurface');
     primary = Xml.get(node: xml, tag: 'primary');
-    onprimary = Xml.get(node: xml, tag: 'onprimary');
-    primarycontainer  = Xml.get(node: xml, tag: 'primarycontainer');
-    onprimarycontainer  = Xml.get(node: xml, tag: 'onprimarycontainer');
-    inverseprimary  = Xml.get(node: xml, tag: 'inverseprimary');
+    onPrimary = Xml.get(node: xml, tag: 'onprimary');
+    primaryContainer  = Xml.get(node: xml, tag: 'primarycontainer');
+    onPrimaryContainer  = Xml.get(node: xml, tag: 'onprimarycontainer');
+    inversePrimary  = Xml.get(node: xml, tag: 'inverseprimary');
     secondary = Xml.get(node: xml, tag: 'secondary');
-    onsecondary = Xml.get(node: xml, tag: 'onsecondary');
-    secondarycontainer  = Xml.get(node: xml, tag: 'secondarycontainer');
-    onsecondarycontainer  = Xml.get(node: xml, tag: 'onsecondarycontainer');
-    tertiarycontainer = Xml.get(node: xml, tag: 'tertiarycontainer');
-    ontertiarycontainer = Xml.get(node: xml, tag: 'ontertiarycontainer');
+    onSecondary = Xml.get(node: xml, tag: 'onsecondary');
+    secondaryContainer  = Xml.get(node: xml, tag: 'secondarycontainer');
+    onSecondaryContainer  = Xml.get(node: xml, tag: 'onsecondarycontainer');
+    tertiaryContainer = Xml.get(node: xml, tag: 'tertiarycontainer');
+    onTertiaryContainer = Xml.get(node: xml, tag: 'ontertiarycontainer');
     error = Xml.get(node: xml, tag: 'error');
-    onerror = Xml.get(node: xml, tag: 'onerror');
-    errorcontainer  = Xml.get(node: xml, tag: 'errorcontainer');
-    onerrorcontainer  = Xml.get(node: xml, tag: 'onerrorcontainer');
+    onError = Xml.get(node: xml, tag: 'onerror');
+    errorContainer  = Xml.get(node: xml, tag: 'errorcontainer');
+    onErrorContainer  = Xml.get(node: xml, tag: 'onerrorcontainer');
   }
 
   @override

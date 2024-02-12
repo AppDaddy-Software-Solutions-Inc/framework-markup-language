@@ -33,22 +33,21 @@ class _BusyViewState extends WidgetState<BusyView>
 
     // view
     var modal = widget.model.modal;
-    var size  = widget.model.size ?? 100;
-    var col   = Theme.of(context).colorScheme.inversePrimary.withOpacity(0.90);
+    var size  = widget.model.size ?? 32;
+    var col   = Theme.of(context).colorScheme.inversePrimary;
     var color = widget.model.color ?? col;// ?? Theme.of(context).colorScheme.inversePrimary ?? Color(0xFF11CDEF).withOpacity(.95);
 
     if (size < 10) size = 10;
-    double stroke = size / 10.0;
+    var stroke = (size / 10.0).ceilToDouble();
     if (stroke < 1.0) stroke = 1.0;
 
-    Widget view = CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(color), strokeWidth: stroke);
-    //Widget view = Image.asset("images/progress.gif");
+    Widget view = CircularProgressIndicator.adaptive(valueColor: AlwaysStoppedAnimation<Color>(color), strokeWidth: stroke);
     var spinner  = SizedBox(width: size + 10, height: size + 10, child: view);
     Widget? curtain;
     if (modal)
     {
       Size s = MediaQuery.of(context).size;
-      curtain = SizedBox(width: s.width, height: s.height, child: Opacity(child: ModalBarrier(dismissible: false, color: Theme.of(context).colorScheme.primary), opacity: .25));
+      curtain = SizedBox(width: s.width, height: s.height, child: Opacity(child: ModalBarrier(dismissible: false, color: Theme.of(context).colorScheme.background), opacity: .50));
     }
     if (curtain != null) children.add(curtain);
 

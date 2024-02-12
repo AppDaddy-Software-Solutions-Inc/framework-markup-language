@@ -317,6 +317,26 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     onLongPressTimer = null;
   }
 
+  Widget? _wait;
+  Widget _buildWait()
+  {
+    if (_wait == null)
+    {
+      var c1 = System.theme.background ?? Colors.white60;
+      var c2 = System.theme.inverseprimary ?? Colors.black45;
+
+      var spinner = AnimatedOpacity(
+        opacity: 1.0,
+        duration: const Duration(seconds: 2),
+        curve: Curves.easeInExpo,
+        child: CircularProgressIndicator.adaptive(valueColor: AlwaysStoppedAnimation<Color>(c2)));
+
+      _wait = Container(width: 32, height: 32, child: spinner);
+      _wait = Container(color: c1, child: Center(child: _wait));
+    }
+    return _wait!;
+  }
+
   Widget _buildHeader(BoxConstraints constraints)
   {
     var header = widget.model.header;
@@ -442,19 +462,21 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     WidgetModel.unfocus();
   }
 
+  // holds the current view
+  Widget? view;
+
   @override
   Widget build(BuildContext context)
   {
     super.build(context);
 
     // model is initializing
-    if (!widget.model.initialized) return Offstage();
+    if (!widget.model.initialized) return view ?? _buildWait();
 
     /// Pages on Navigator stack rebuild when a new page is pushed
     /// https://github.com/flutter/flutter/issues/11655
-    /// This hack prevents the page that is being navigated away from
-    /// from rebuilding
-    if (NavigationManager().positionInStack(context) != 0) return Offstage();
+    /// This hack prevents rebuiling the page that is being navigated away from.
+    if (NavigationManager().positionInStack(context) != 0)  return view ?? _buildWait();
 
     // model has initialized. show framework
     return LayoutBuilder(builder: builder);
@@ -516,6 +538,9 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
     // start listening to model changes
     widget.model.registerListener(this);
+
+    // assign the current view
+    this.view = view;
 
     return view;
   }

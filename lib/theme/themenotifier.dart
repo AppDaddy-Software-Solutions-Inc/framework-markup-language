@@ -1,8 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:fml/helpers/color.dart';
+import 'package:fml/helpers/string.dart';
 import 'package:fml/hive/settings.dart';
 import 'package:fml/system.dart';
 import 'package:google_fonts/google_fonts.dart' deferred as fonts;
@@ -23,20 +22,17 @@ class ThemeNotifier with ChangeNotifier
     }
 
     // wait for the library to load
-    if (!libraryLoader!.isCompleted) {
-      libraryLoader!.future.whenComplete(()
+    if (!libraryLoader!.isCompleted)
     {
-      setTheme(System.theme.brightness ?? 'light', System.theme.colorscheme ?? 'lightblue');
-    });
+      libraryLoader!.future.whenComplete(() {
+        setTheme(brightness: System.theme.brightness ?? 'light', color: toStr(System.theme.colorscheme ?? 'lightblue'));
+      });
     }
   }
   getTheme() => _themeData;
 
   void mapSystemThemeBindables()
   {
-    // System().brightness           = _themeData.brightness == Brightness.dark ? 'dark' : 'light';
-    // System().colorscheme          = 'lightblue';
-
     System.theme.background           = _themeData.colorScheme.background;
     System.theme.onbackground         = _themeData.colorScheme.onBackground;
     System.theme.shadow               = _themeData.colorScheme.shadow;
@@ -69,33 +65,32 @@ class ThemeNotifier with ChangeNotifier
     System.theme.onerrorcontainer     = _themeData.colorScheme.onErrorContainer;
   }
 
-  setTheme(String sBrightness, [String? sColor, Map<String, String>? schemeColors]) async
+  setTheme({String? brightness, String? color}) async
   {
-    Brightness brightness = await Settings().get('brightness') == 'dark' ? Brightness.dark : Brightness.light;
+    // load google fonts
+    var fontTheme = (libraryLoader?.isCompleted ?? false) ? fonts.GoogleFonts.getTextTheme(System.theme.font) : null;
 
-    TextTheme? fontTheme = (libraryLoader?.isCompleted ?? false) ? fonts.GoogleFonts.getTextTheme(System.theme.font) : null;
-    if (sBrightness.toLowerCase() == 'light')
+    // set system brightness
+    var bn = await Settings().get('brightness') == 'dark' ? Brightness.dark : Brightness.light;
+    brightness = brightness?.toLowerCase().trim();
+    if (brightness == 'light')
     {
-      brightness = Brightness.light;
-      System.theme.brightness = sBrightness.toLowerCase();
+      bn = Brightness.light;
+      System.theme.brightness = brightness;
     }
-    else if (sBrightness.toLowerCase() == 'dark')
+    else if (brightness == 'dark')
     {
-      brightness = Brightness.dark;
-      System.theme.brightness = sBrightness.toLowerCase();
+      bn = Brightness.dark;
+      System.theme.brightness = brightness;
     }
-    Settings().set('brightness', sBrightness);
-    if (sColor != null)
+    Settings().set('brightness', brightness);
+
+    // set system color scheme
+    if (color != null)
     {
-      Color? colorScheme = ColorHelper.fromString(sColor);
-      System.theme.colorscheme = sColor;
-      ThemeData themeData = ThemeData(colorSchemeSeed: colorScheme, brightness: brightness, fontFamily: System.theme.font, textTheme: fontTheme, useMaterial3: true);
-      _themeData = themeData;
-    }
-    else
-    {
-      ThemeData themeData = ThemeData(brightness: brightness, colorSchemeSeed: ColorHelper.fromString(System.theme.colorscheme), fontFamily: System.theme.font, textTheme: fontTheme, useMaterial3: true);
-      _themeData = themeData;
+      // set system color scheme
+      System.theme.colorscheme = toColor(color) ?? System.theme.colorscheme;
+      _themeData = ThemeData(colorSchemeSeed: System.theme.colorscheme, brightness: bn, fontFamily: System.theme.font, textTheme: fontTheme, useMaterial3: true);
     }
     notifyListeners();
   }

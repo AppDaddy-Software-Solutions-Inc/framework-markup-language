@@ -19,8 +19,9 @@ class MyTheme {
   MyTheme._init();
 
   /// Derive theme from a color value and a https://fonts.google.com/ font
-  ThemeData deriveTheme(String? fromValue, {String googleFont = font}) {
-    Color? col = ColorHelper.fromString(fromValue);
+  ThemeData deriveTheme(dynamic fromValue, {String googleFont = font})
+  {
+    Color? col = toColor(fromValue);
     Brightness? b = getBrightness();
 
     return ThemeData(
@@ -81,46 +82,37 @@ ThemeData applyCustomizations(ColorScheme base, ThemeModel m) {
   ThemeData? customizedTheme;
   try {
     customizedTheme = ThemeData.from(
+      useMaterial3: true,
       colorScheme: ColorScheme(
         brightness: m.brightness == 'dark' ? Brightness.dark : Brightness.light,
-        background: ColorHelper.fromString(m.background) ?? base.background,
-        onBackground: ColorHelper.fromString(m.onbackground) ?? base.onBackground,
-        shadow: ColorHelper.fromString(m.shadow) ?? base.shadow,
-        outline: ColorHelper.fromString(m.outline) ?? base.outline,
-        surface: ColorHelper.fromString(m.surface) ?? base.surface,
-        onSurface: ColorHelper.fromString(m.onsurface) ?? base.onSurface,
-        surfaceVariant: ColorHelper.fromString(m.surfacevariant) ?? base.surfaceVariant,
-        onSurfaceVariant:
-            ColorHelper.fromString(m.onsurfacevariant) ?? base.onSurfaceVariant,
-        inverseSurface: ColorHelper.fromString(m.inversesurface) ?? base.inverseSurface,
-        onInverseSurface:
-            ColorHelper.fromString(m.oninversesurface) ?? base.onInverseSurface,
-        primary: ColorHelper.fromString(m.primary) ?? base.primary,
-        onPrimary: ColorHelper.fromString(m.onprimary) ?? base.onPrimary,
-        primaryContainer:
-            ColorHelper.fromString(m.primarycontainer) ?? base.primaryContainer,
-        onPrimaryContainer:
-            ColorHelper.fromString(m.onprimarycontainer) ?? base.onPrimaryContainer,
-        inversePrimary: ColorHelper.fromString(m.inverseprimary) ?? base.inversePrimary,
-        secondary: ColorHelper.fromString(m.secondary) ?? base.secondary,
-        onSecondary: ColorHelper.fromString(m.onsecondary) ?? base.onSecondary,
-        secondaryContainer:
-            ColorHelper.fromString(m.secondarycontainer) ?? base.secondaryContainer,
-        onSecondaryContainer:
-            ColorHelper.fromString(m.onsecondarycontainer) ?? base.onSecondaryContainer,
-        tertiaryContainer:
-            ColorHelper.fromString(m.tertiarycontainer) ?? base.tertiaryContainer,
-        onTertiaryContainer:
-            ColorHelper.fromString(m.ontertiarycontainer) ?? base.onTertiaryContainer,
-        error: ColorHelper.fromString(m.error) ?? base.error,
-        onError: ColorHelper.fromString(m.onerror) ?? base.onError,
-        errorContainer: ColorHelper.fromString(m.errorcontainer) ?? base.errorContainer,
-        onErrorContainer:
-            ColorHelper.fromString(m.onerrorcontainer) ?? base.onErrorContainer,
-      ),
-      useMaterial3: true,
-    );
-  } catch (e) {
+        background: m.background ?? base.background,
+        onBackground: m.onbackground ?? base.onBackground,
+        shadow: m.shadow ?? base.shadow,
+        outline: m.outline ?? base.outline,
+        surface: m.surface ?? base.surface,
+        onSurface: m.onsurface ?? base.onSurface,
+        surfaceVariant: m.surfacevariant ?? base.surfaceVariant,
+        onSurfaceVariant: m.onsurfacevariant ?? base.onSurfaceVariant,
+        inverseSurface: m.inversesurface ?? base.inverseSurface,
+        onInverseSurface: m.oninversesurface ?? base.onInverseSurface,
+        primary: m.primary ?? base.primary,
+        onPrimary: m.onprimary ?? base.onPrimary,
+        primaryContainer: m.primarycontainer ?? base.primaryContainer,
+        onPrimaryContainer: m.onprimarycontainer ?? base.onPrimaryContainer,
+        inversePrimary: m.inverseprimary ?? base.inversePrimary,
+        secondary: m.secondary ?? base.secondary,
+        onSecondary: m.onsecondary ?? base.onSecondary,
+        secondaryContainer: m.secondarycontainer ?? base.secondaryContainer,
+        onSecondaryContainer: m.onsecondarycontainer ?? base.onSecondaryContainer,
+        tertiaryContainer: m.tertiarycontainer ?? base.tertiaryContainer,
+        onTertiaryContainer: m.ontertiarycontainer ?? base.onTertiaryContainer,
+        error: m.error ?? base.error,
+        onError: m.onerror ?? base.onError,
+        errorContainer: m.errorcontainer ?? base.errorContainer,
+        onErrorContainer: m.onerrorcontainer ?? base.onErrorContainer,
+      ));
+  }
+  catch (e) {
     Log().exception(e);
   }
   return customizedTheme ??

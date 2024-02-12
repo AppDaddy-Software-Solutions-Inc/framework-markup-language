@@ -91,6 +91,54 @@ class Phrases
     return 'Missing URL';
   }
 
+  String get missingOrInvalidURL
+  {
+    if (language == french) return '(FR) Missing or Invalid URL';
+    return 'Missing or Invalid URL';
+  }
+
+  String get siteUnreachable
+  {
+    if (language == french) return '(FR) This site can’t be reached';
+    return 'This site can’t be reached';
+  }
+
+  String get errorParsingTemplate
+  {
+    if (language == french) return '(FR) Error parsing template';
+    return 'Error parsing template';
+  }
+
+  String get formNotFound
+  {
+    if (language == french) return '(FR) Form Not Found';
+    return 'Form Not Found';
+  }
+
+  String get assetNotFound
+  {
+    if (language == french) return '(FR) Asset Not Found';
+    return 'Asset Not Found';
+  }
+
+  String get pageNotFound
+  {
+    if (language == french) return '(FR) Page Not Found';
+    return 'Page Not Found';
+  }
+
+  String get fileNotFound
+  {
+    if (language == french) return '(FR) File Not Found';
+    return 'File Not Found';
+  }
+
+  String get notConnected
+  {
+    if (language == french) return '(FR) Not Connected';
+    return 'Not Connected';
+  }
+
   String get cannotLaunchURL
   {
     if (language == french) return '(FR) Cannot Launch URL';

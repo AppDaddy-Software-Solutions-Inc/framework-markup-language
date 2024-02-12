@@ -147,7 +147,7 @@ class PieChartSeriesModel extends ChartPainterSeriesModel
       //set the data of the series for databinding
       data = dataList[i];
 
-      PieChartSectionDataExtended point = PieChartSectionDataExtended(this, data, value: toDouble(y) ?? 0, title: x, radius: radius, color: color ?? ColorHelper.fromString('random'));
+      PieChartSectionDataExtended point = PieChartSectionDataExtended(this, data, value: toDouble(y) ?? 0, title: x, radius: radius, color: color ?? toColor('random'));
 
       points.add(point);
     }

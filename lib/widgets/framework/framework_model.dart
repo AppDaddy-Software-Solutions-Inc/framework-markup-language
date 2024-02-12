@@ -6,12 +6,12 @@ import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/navigation_manager.dart';
+import 'package:fml/template/template_manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/shortcut/shortcut_model.dart';
 import 'package:fml/widgets/widget/widget_model_interface.dart';
 import 'package:fml/widgets/widget/widget_model.dart'  ;
 import 'package:fml/system.dart';
-import 'package:fml/template/template.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/header/header_model.dart';
@@ -306,7 +306,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
       if (uri == null) throw('Error');
 
       // fetch the template
-      Template template = await Template.fetch(url: url, parameters: uri.queryParameters, refresh: refresh);
+      var template = await TemplateManager().fetch(url: url, parameters: uri.queryParameters, refresh: refresh);
 
       // get the xml
       var xml = template.document!.rootElement;
@@ -322,32 +322,16 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
         if (!connected)
         {
           // fetch logon template
-          var login = System.app?.loginPage;
-          if (!isNullOrEmpty(login))
-          {
-            template = await Template.fetch(url:login!, refresh: refresh);
-            xml = template.document!.rootElement;
-          }
-          else
-          {
-            xml = await Template.errorTemplateXml('Not Found', "The <LOGIN_PAGE/> is not defined in config.xml",null);
-          }
+          template = await TemplateManager().fetch(url: System.app?.loginPage ?? "login.xml", refresh: refresh);
+          xml = template.document!.rootElement;
         }
 
         // authorized?
         else if (myrights < requiredRights)
         {
-          // fetch not authorized template
-          var unauthorized = System.app?.unauthorizedPage;
-          if (!isNullOrEmpty(unauthorized))
-          {
-            template = await Template.fetch(url: unauthorized!, refresh: refresh);
-            xml = template.document!.rootElement;
-          }
-          else
-          {
-            xml = await Template.errorTemplateXml("You are not authorized to view this page");
-          }
+          // fetch unauthorized template
+          template = await TemplateManager().fetch(url: System.app?.unauthorizedPage ?? "unauthorized.xml", refresh: refresh);
+          xml = template.document!.rootElement;
         }
       }
 
@@ -386,8 +370,8 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
   {
     try
     {
-      XmlDocument? document = await Template.fetchTemplate(url: '.js', parameters: {'templ8': templ8}, refresh: true);
-      Template template = Template.fromDocument(name: 'js2fml', xml: document);
+      var template = await TemplateManager().fetch(url: 'js2fml', parameters: {'templ8': templ8}, refresh: true);
+
       // get the xml
       var xml = template.document!.rootElement;
 

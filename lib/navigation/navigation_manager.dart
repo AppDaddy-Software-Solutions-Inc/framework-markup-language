@@ -1,7 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
-import 'package:fml/template/template.dart';
+import 'package:fml/template/template_manager.dart';
 import 'package:fml/widgets/framework/framework_model.dart';
 import 'package:fml/widgets/modal/modal_manager_model.dart';
 import 'package:fml/widgets/modal/modal_manager_view.dart';
@@ -11,30 +11,42 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/page.dart';
 import 'package:fml/navigation/navigation_observer.dart';
-import 'package:fml/navigation/transition.dart';
 import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/framework/framework_view.dart' ;
 import 'package:fml/store/store_view.dart';
-import 'package:fml/page404/page404_view.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:fml/helpers/helpers.dart';
 
 class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNotifier, PopNavigatorRouterDelegateMixin<PageConfiguration>
 {
+  GlobalKey<NavigatorState> _key = GlobalKey<NavigatorState>();
+
+  @override
+  GlobalKey<NavigatorState> get navigatorKey => _key;
+
   // singleton
   static final NavigationManager _singleton = NavigationManager._internal();
-  factory NavigationManager() => _singleton;
+  factory NavigationManager({GlobalKey<NavigatorState>? key})
+  {
+    //if (key != null) _singleton._key = key;
+    return _singleton;
+  }
 
   // holds the navigation stack
   final _pages = <Page>[];
   List<Page> get pages => List.unmodifiable(_pages);
-  MaterialPage? dummyPage;
+  CustomMaterialPage? dummyPage;
 
   NavigationManager._internal()
   {
     dummyPage = _buildPage("/", child: Offstage());
     _addPage(dummyPage!);
+  }
+
+  void setKey()
+  {
+    _key = GlobalKey<NavigatorState>();
   }
 
   Future<void> _initialize() async
@@ -53,7 +65,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     if (homePage.split("?")[0].toLowerCase() != startPage.split("?")[0].toLowerCase())
     {
       // fetch the template
-      Template? template = await Template.fetch(url: startPage, refresh: true);
+      var template = await TemplateManager().fetch(url: startPage, refresh: true);
 
       // document is linkable?
       // default - if singlePageApplication then false, otherwise true
@@ -88,9 +100,6 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
   }
 
   @override
-  GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
-  @override
   PageConfiguration? get currentConfiguration
   {
     return _pages.isNotEmpty ? _pages.last.arguments as PageConfiguration? : PageConfiguration(uri: Uri.tryParse("/"), title: "Dummy");
@@ -101,7 +110,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     if (pages.isNotEmpty)
     {
       var page = pages.last;
-      if (page is MaterialPage && page.child is ModalManagerView)
+      if (page is CustomMaterialPage && page.child is ModalManagerView)
       {
          var manager  = page.child as ModalManagerView;
          if (manager.model.child is FrameworkView) return manager.model.child as FrameworkView;
@@ -163,11 +172,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
   }
 
   @override
-  Widget build(BuildContext context)
-  {
-    TransitionDelegate transitionDelegate = Transition();
-    return Navigator(key: navigatorKey, pages: List.of(_pages), onPopPage: _onPopPage,  transitionDelegate: transitionDelegate, observers: [NavigationObserver()],);
-  }
+  Widget build(BuildContext context) => Navigator(key: navigatorKey, pages: List.of(_pages), onPopPage: _onPopPage, observers: [NavigationObserver()],);
 
   Future<bool> _canPop(Page page) async
   {
@@ -236,17 +241,17 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     return true;
   }
 
-  MaterialPage _buildPage(String url, {required child, transition})
+  CustomMaterialPage _buildPage(String url, {required child, transition})
   {
     if (!url.startsWith("/")) url = "/$url";
 
     var configuration = PageConfiguration(uri: Uri.tryParse(url), transition: transition);
-    var page = MaterialPage(child: child, name: url, arguments: configuration);
+    var page = CustomMaterialPage(transition, child: child, name: url, arguments: configuration);
 
     return page;
   }
 
-  void _addPage(MaterialPage page, {int? index})
+  void _addPage(CustomMaterialPage page, {int? index})
   {
     PageConfiguration? args = page.arguments as PageConfiguration?;
 
@@ -255,9 +260,9 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
 
     if (index != null)
     {
-           if (index >= _pages.length) {
-             _pages.add(page);
-           } else if (index < (_pages.length * -1)) {
+      if (index >= _pages.length) {
+        _pages.add(page);
+      } else if (index < (_pages.length * -1)) {
         _pages.insert(0, page);
       } else if (index >= 0) {
         _pages.insert(index, page);
@@ -305,6 +310,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     return true;
   }
 
+
   int? positionInStack(BuildContext context)
   {
     int? index;
@@ -323,6 +329,9 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     }
     return index;
   }
+
+  // top position in stack = 0
+  bool isVisible(BuildContext context) => (positionInStack(context) == 0);
 
   Page? getPage(BuildContext context)
   {
@@ -345,12 +354,13 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
 
     String url         = fromMap(parameters,'url',defaultValue: "");
     bool?   modal      = fromMapAsBool(parameters,'modal', defaultValue: false);
+
     String? transition = fromMap(parameters,'transition');
     String? width      = fromMap(parameters,'width');
     String? height     = fromMap(parameters,'height');
-    int?  index        = fromMapAsInt(parameters,'index');
-    bool? replace      = fromMapAsBool(parameters,'replace', defaultValue: false);
-    bool? replaceAll   = fromMapAsBool(parameters,'replaceall', defaultValue: false);
+    int?    index      = fromMapAsInt(parameters,'index');
+    bool?   replace    = fromMapAsBool(parameters,'replace', defaultValue: false);
+    bool?   replaceAll = fromMapAsBool(parameters,'replaceall', defaultValue: false);
 
     var uri = URI.parse(url);
     if (uri == null) return false;
@@ -418,17 +428,13 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
         view = StoreView();
         break;
 
-      case "missing":
-        view = Page404View(url);
-        break;
-
       default:
         view =  ModalManagerView(ModalManagerModel(FrameworkModel.fromUrl(System.app!, url, refresh: refresh, dependency: dependency).getView()));
         break;
     }
 
     // build page
-    MaterialPage page = _buildPage(url, child: view, transition: transition);
+    CustomMaterialPage page = _buildPage(url, child: view, transition: transition);
 
     // push the page
     _addPage(page, index: index);
@@ -439,7 +445,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     Widget view;
     view = FrameworkModel.fromJs(templ8).getView();
     // build page
-    MaterialPage page = _buildPage('', child: view);
+    CustomMaterialPage page = _buildPage('', child: view);
     // ensure we remove any current template
     if (_pages.length > 1) {
       _pages.removeLast();
@@ -569,7 +575,7 @@ class NavigationManager extends RouterDelegate<PageConfiguration> with ChangeNot
     if (!isNullOrEmpty(title))
     {
       Page? page = getPage(context);
-      if ((page is MaterialPage) && (page.arguments is PageConfiguration)) (page.arguments as PageConfiguration).title = title;
+      if ((page is CustomMaterialPage) && (page.arguments is PageConfiguration)) (page.arguments as PageConfiguration).title = title;
     }
   }
 }

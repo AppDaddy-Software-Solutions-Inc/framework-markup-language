@@ -48,6 +48,7 @@ class Connectivity
       {
         if (connectionType != cp.ConnectivityResult.none)
         {
+          Log().info("Connection status changed: $connectionType");
           var isConnected = await Internet.isConnected();
           connected.set(isConnected);
         }

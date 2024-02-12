@@ -278,12 +278,12 @@ class TemplateManager
 
   Future<Template> _fetchErrorPage(FetchResult result) async
   {
-    var color = toStr(toColor(System.theme.onbackground));
-    var color2 = toStr(toColor(System.theme.onsurface));
+    var color1 = toStr(toColor(System.theme.onbackground));
+    var color2 = toStr(toColor(System.theme.primary));
 
     String back = '''
-    <BUTTON onclick="back()" type="outlined" pas="8" color="$color">
-        <ICON icon="arrow_back" size="40" color="$color"/>
+    <BUTTON onclick="back()" type="outlined" pas="8" color="$color1">
+        <ICON icon="arrow_back" size="40" color="$color1"/>
     </BUTTON>''';
 
     // default error template

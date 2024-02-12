@@ -76,7 +76,14 @@ String? toStr(dynamic s)
   try
   {
     if (s == null) return null;
-    if (s is Color) return "#${s.red.toRadixString(16)}${s.green.toRadixString(16)}${s.blue.toRadixString(16)}${s.alpha.toRadixString(16)}";
+    if (s is Color)
+    {
+      var r = s.red.toRadixString(16).padLeft(2,'0');
+      var g = s.green.toRadixString(16).padLeft(2,'0');
+      var b = s.blue.toRadixString(16).padLeft(2,'0');
+      var o = s.alpha.toRadixString(16).padLeft(2,'0');
+      return "#$r$g$b$o";
+    }
     return s.toString();
   }
   catch (e)

@@ -31,7 +31,7 @@ class TemplateManager
   Future<Template> fetch({required String url, Map<String, String?>? parameters, required bool refresh}) async
   {
     // template is a form saved in the database?
-    if (isUUID(url)) return await _fetchFromDatabase(url);
+    if (isUUID(url)) return await _fetchFromDatabase(url, parameters);
 
     // template from embedded .js
     if (url == 'js2fml' && parameters != null) return await _fetchFromHtml(url, parameters);
@@ -42,7 +42,7 @@ class TemplateManager
     url = uri.url;
 
     // get template from file
-    if (uri.scheme == "file") return _fetchFromFile(url);
+    if (uri.scheme == "file") return _fetchFromFile(url, parameters);
 
     // get template from server (default)
     return await _fetchFromServer(url, uri, parameters, refresh);
@@ -160,7 +160,7 @@ class TemplateManager
     return false;
   }
 
-  Future<Template> _fetchFromDatabase(String url) async
+  Future<Template> _fetchFromDatabase(String url, Map<String, String?>? parameters) async
   {
     Log().info("Querying template from the database");
 
@@ -174,7 +174,7 @@ class TemplateManager
     if (result.isFail) fetchErrorTemplate(result);
 
     // return template
-    return Template.fromXmlDocument(name: url, xml: result.document);
+    return Template.fromXmlDocument(name: url, xml: result.document, parameters: parameters);
   }
 
   Future<Template> _fetchFromHtml(String url, Map<String, String?> parameters) async
@@ -191,14 +191,14 @@ class TemplateManager
       if (result.isFail) fetchErrorTemplate(result);
 
       // return template
-      return Template.fromXmlDocument(name: url, xml: result.document, parameters: parameters);
+      return Template.fromXmlDocument(name: url, xml: result.document);
     }
 
     // return the error page
     return fetchErrorTemplate(FetchResult(code: HttpStatus.notFound));
   }
 
-  Future<Template> _fetchFromFile(String url) async
+  Future<Template> _fetchFromFile(String url, Map<String, String?>? parameters) async
   {
     Log().info("Querying template from the assets or file");
 
@@ -212,7 +212,7 @@ class TemplateManager
     if (result.isFail) fetchErrorTemplate(result);
 
     // return template
-    return Template.fromXmlDocument(name: url, xml: result.document);
+    return Template.fromXmlDocument(name: url, xml: result.document, parameters: parameters);
   }
 
   Future<Template> _fetchFromServer(String url, Uri uri, Map<String, String?>? parameters, bool refresh) async
@@ -273,7 +273,7 @@ class TemplateManager
     await _toMemory(url, result.document);
 
     // return template
-    return Template.fromXmlDocument(name: url, xml: result.document);
+    return Template.fromXmlDocument(name: url, xml: result.document, parameters: parameters);
   }
 
   Future<Template> fetchErrorTemplate(FetchResult result) async

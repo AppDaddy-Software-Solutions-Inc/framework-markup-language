@@ -824,17 +824,17 @@ class Eval
   }
 
   /// validates phone number
-  static bool? _isValidPhone(dynamic num) =>  _isNullOrEmpty(num) ? null : isPhoneValid(num);
+  static bool? _isValidPhone(dynamic num) =>  _isNullOrEmpty(num) ? null : isPhoneValid(num.toString());
 
   /// validates credit card number
-  static bool? _isValidCreditCard(dynamic num) =>  _isNullOrEmpty(num) ? null : isCardNumberValid(cardNumber: num);
+  static bool? _isValidCreditCard(dynamic num) =>  _isNullOrEmpty(num) ? null : isCardNumberValid(cardNumber: toStr(num) ?? "");
 
   /// validates email
-  static bool? _isValidEmail(dynamic num) =>  _isNullOrEmpty(num) ? null : TextInputValidators().isEmailValid(num);
+  static bool? _isValidEmail(dynamic num) =>  _isNullOrEmpty(num) ? null : TextInputValidators().isEmailValid(toStr(num) ?? "");
 
   /// validates password
-  static bool? _isValidPassword(dynamic num) =>  _isNullOrEmpty(num) ? null : TextInputValidators().isPasswordValid(num);
+  static bool? _isValidPassword(dynamic num) =>  _isNullOrEmpty(num) ? null : TextInputValidators().isPasswordValid(toStr(num) ?? "");
 
   /// validates expiry date
-  static bool? _isValidExpiryDate(dynamic num) =>  _isNullOrEmpty(num) ? null : TextInputValidators().isExpiryValid(num);
+  static bool? _isValidExpiryDate(dynamic num) =>  _isNullOrEmpty(num) ? null : TextInputValidators().isExpiryValid(toStr(num) ?? "");
 }

@@ -110,7 +110,7 @@ class TableModel extends BoxModel implements IForm
       _textColor = ColorObservable(Binding.toKey(id, 'textcolor'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  Color get textColor => _textColor?.get() ?? Colors.black;
+  Color? get textColor => _textColor?.get();
   
   // text Size
   DoubleObservable? _textSize;

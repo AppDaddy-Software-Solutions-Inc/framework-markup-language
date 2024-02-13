@@ -103,6 +103,12 @@ class Phrases
     return 'This site can’t be reached';
   }
 
+  String get unauthorizedAccess
+  {
+    if (language == french) return '(FR) You are not authorized to access this page';
+    return 'You are not authorized to access this page';
+  }
+
   String get errorParsingTemplate
   {
     if (language == french) return '(FR) Error parsing template';

@@ -179,10 +179,8 @@ class FormFieldModel extends DecoratedWidgetModel
   /// alarm text
   String? get alarmText
   {
-    if (value == null && !touched) return null;
-    var alarm = this.alarm;
-    if (alarm == null) return null;
-    return alarm.text;
+    if (isNullOrEmpty(value) && !touched) return null;
+    return alarm?.text;
   }
 
   /// The string of events that will be executed when focus is lost.

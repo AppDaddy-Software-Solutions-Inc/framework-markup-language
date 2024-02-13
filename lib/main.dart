@@ -51,12 +51,12 @@ void runMainApp()
         try
         {
           var font = System.theme.font;
-          return ThemeNotifier(fml_theme.MyTheme().deriveTheme(System.theme.colorscheme, googleFont: font));
+          return ThemeNotifier(fml_theme.MyTheme().deriveTheme(System.theme.colorScheme, googleFont: font));
         }
         catch(e)
         {
           Log().debug('Init Theme Error: $e \n(Configured fonts from https://fonts.google.com/ are case sensitive)');
-          return ThemeNotifier(fml_theme.MyTheme().deriveTheme(System.theme.colorscheme));
+          return ThemeNotifier(fml_theme.MyTheme().deriveTheme(System.theme.colorScheme));
         }
       },
       child: Application(key: applicationKey)));

@@ -323,7 +323,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
     if (_wait == null)
     {
       var c1 = System.theme.background ?? Colors.white60;
-      var c2 = System.theme.inverseprimary ?? Colors.black45;
+      var c2 = System.theme.inversePrimary ?? Colors.black45;
 
       var spinner = AnimatedOpacity(
         opacity: 1.0,

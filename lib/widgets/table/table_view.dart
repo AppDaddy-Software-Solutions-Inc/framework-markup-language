@@ -8,6 +8,7 @@ import 'package:fml/data/data.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/observable/binding.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/system.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
 import 'package:fml/widgets/box/box_view.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
@@ -849,66 +850,62 @@ class TableViewState extends WidgetState<TableView>
 
   PlutoGridConfiguration _buildConfig()
   {
+    var theme = Theme.of(context);
+    var dark = theme.brightness == Brightness.dark;
+
+    // define color scheme
+    var borderColor       = widget.model.bordercolor ?? (dark ? Color(0xFFDDE2EB) : Color(0xFFDDE2EB));
+    var textColor         = widget.model.textColor   ?? (dark ? Colors.white      : Colors.black);
+    var backgroundColor   = widget.model.color       ?? (dark ? Color(0xFF111111) : Colors.white);
+    var rowColor          = widget.model.color       ?? (dark ? Color(0xFF111111) : Colors.white);
+    var oddRowColor       = widget.model.color2 != null ? rowColor : null;
+    var evenRowColor      = widget.model.color2;
+    var checkedColor      = widget.model.color3 != null ? widget.model.color3! : theme.colorScheme.surfaceVariant;
+    var activeColor       = widget.model.color3 != null ? widget.model.color3! : theme.colorScheme.surfaceVariant;
+    var activeBorderColor = widget.model.color4 != null ? widget.model.color4! : theme.colorScheme.primary;
+
+    // row and column heights
     var colHeight    = widget.model.header?.height ?? PlutoGridSettings.rowHeight;
     var rowHeight    = widget.model.getRowModel(0)?.height ?? colHeight;
 
-    var borderRadius = BorderRadius.circular(widget.model.radiusTopRight);
-    var borderColor  = widget.model.bordercolor ?? Color(0xFFDDE2EB);
-
-    var textStyle    = TextStyle(fontSize: widget.model.textSize, color: widget.model.textColor);
-
-    // row colors
-    Color  rowColor = widget.model.color ?? Colors.white;
-    Color? oddRowColor;
-    Color? evenRowColor;
-    if (widget.model.color2 != null)
-    {
-      oddRowColor  = rowColor;
-      evenRowColor = widget.model.color2;
-    }
-
-    var primaryColor = Color(0xFFDCF5FF);
-    //var primaryBorderColor = Colors.lightBlue;
-
     // style
-    var style = PlutoGridStyleConfig(
+    var style = dark ?
 
-      defaultCellPadding: EdgeInsets.all(0),
+    PlutoGridStyleConfig.dark(
+        defaultCellPadding: EdgeInsets.all(0),
+        columnHeight: colHeight,
+        rowHeight: rowHeight,
+        gridBorderRadius: BorderRadius.circular(widget.model.radiusTopRight),
+        cellTextStyle: TextStyle(fontSize: widget.model.textSize, color: textColor),
+        columnAscendingIcon: Icon(Icons.arrow_downward_rounded),
+        columnDescendingIcon: Icon(Icons.arrow_upward_rounded),
+        enableGridBorderShadow: widget.model.shadow,
+        borderColor: borderColor,
+        gridBackgroundColor: backgroundColor,
+        rowColor: rowColor,
+        oddRowColor: oddRowColor,
+        evenRowColor: evenRowColor,
+        checkedColor: checkedColor,
+        activatedColor: activeColor,
+        activatedBorderColor: activeBorderColor) :
 
-      columnHeight: colHeight,
-
-      rowHeight: rowHeight,
-
-      cellTextStyle: textStyle,
-
-      borderColor: borderColor,
-
-      gridBorderRadius: borderRadius,
-
-      columnAscendingIcon: Icon(Icons.arrow_downward_rounded),
-
-      columnDescendingIcon: Icon(Icons.arrow_upward_rounded),
-
-      rowColor: rowColor,
-
-      oddRowColor: oddRowColor,
-
-      evenRowColor: evenRowColor,
-
-      checkedColor: primaryColor,
-
-      //inactivatedBorderColor: primaryBorderColor,
-
-      activatedColor: primaryColor,
-
-      //activatedBorderColor: primaryBorderColor,
-
-      //cellColorInReadOnlyState: primaryColor,
-
-      //cellColorInEditState: primaryColor,
-
-      enableGridBorderShadow: widget.model.shadow,
-    );
+    PlutoGridStyleConfig(
+        defaultCellPadding: EdgeInsets.all(0),
+        columnHeight: colHeight,
+        rowHeight: rowHeight,
+        gridBorderRadius: BorderRadius.circular(widget.model.radiusTopRight),
+        cellTextStyle: TextStyle(fontSize: widget.model.textSize, color: textColor),
+        columnAscendingIcon: Icon(Icons.arrow_downward_rounded),
+        columnDescendingIcon: Icon(Icons.arrow_upward_rounded),
+        enableGridBorderShadow: widget.model.shadow,
+        borderColor: borderColor,
+        gridBackgroundColor: backgroundColor,
+        rowColor: rowColor,
+        oddRowColor: oddRowColor,
+        evenRowColor: evenRowColor,
+        checkedColor: checkedColor,
+        activatedColor: activeColor,
+        activatedBorderColor: activeBorderColor);
 
     bool boundedWidth = false;
     if (widget.model.header != null)

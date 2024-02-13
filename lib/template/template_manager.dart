@@ -38,7 +38,7 @@ class TemplateManager
 
     // parse the passed url
     var uri = URI.parse(url);
-    if (uri == null) return _fetchErrorPage(FetchResult(code: HttpStatus.badRequest, message: Phrases().missingOrInvalidURL, detail: url));
+    if (uri == null) return fetchErrorTemplate(FetchResult(code: HttpStatus.badRequest, message: Phrases().missingOrInvalidURL, detail: url));
     url = uri.url;
 
     // get template from file
@@ -171,7 +171,7 @@ class TemplateManager
     if (result.isSuccess) result = _parse(result.template);
 
     // return the error page
-    if (result.isFail) _fetchErrorPage(result);
+    if (result.isFail) fetchErrorTemplate(result);
 
     // return template
     return Template.fromXmlDocument(name: url, xml: result.document);
@@ -188,14 +188,14 @@ class TemplateManager
       var result = _parse(parameters['templ8']);
 
       // return the error page
-      if (result.isFail) _fetchErrorPage(result);
+      if (result.isFail) fetchErrorTemplate(result);
 
       // return template
       return Template.fromXmlDocument(name: url, xml: result.document, parameters: parameters);
     }
 
     // return the error page
-    return _fetchErrorPage(FetchResult(code: HttpStatus.notFound));
+    return fetchErrorTemplate(FetchResult(code: HttpStatus.notFound));
   }
 
   Future<Template> _fetchFromFile(String url) async
@@ -209,7 +209,7 @@ class TemplateManager
     if (result.isFail) result = await _fromDisk(url);
 
     // return the error page
-    if (result.isFail) _fetchErrorPage(result);
+    if (result.isFail) fetchErrorTemplate(result);
 
     // return template
     return Template.fromXmlDocument(name: url, xml: result.document);
@@ -258,13 +258,13 @@ class TemplateManager
     if (result.isSuccess && cache) _toDisk(url, result.template!);
 
     // not found?
-    if (result.isFail) return _fetchErrorPage(result);
+    if (result.isFail) return fetchErrorTemplate(result);
 
     // parse the template
     result = _parse(result.template);
 
     // invalid fml syntax
-    if (result.isFail) return _fetchErrorPage(result);
+    if (result.isFail) return fetchErrorTemplate(result);
 
     // process includes
     await _processIncludes(result.document!, parameters, refresh);
@@ -276,9 +276,9 @@ class TemplateManager
     return Template.fromXmlDocument(name: url, xml: result.document);
   }
 
-  Future<Template> _fetchErrorPage(FetchResult result) async
+  Future<Template> fetchErrorTemplate(FetchResult result) async
   {
-    var color1 = toStr(toColor(System.theme.onbackground));
+    var color1 = toStr(toColor(System.theme.onBackground));
     var color2 = toStr(toColor(System.theme.primary));
 
     String back = '''
@@ -435,9 +435,13 @@ class FetchResult
       case HttpStatus.gatewayTimeout:
         return "cloud_off";
 
+      // user rights
+      case HttpStatus.unauthorized:
+        return "no_encryption_outlined";
+
       // remote http call failed
-      //case HttpStatus.badGateway:
-        //return "unreachable";
+      case HttpStatus.badGateway:
+        return "mood_bad";
 
       // parse error
       case HttpStatus.noContent:

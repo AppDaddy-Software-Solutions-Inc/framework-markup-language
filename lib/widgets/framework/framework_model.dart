@@ -1,11 +1,13 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:fml/dialog/manager.dart';
 import 'package:fml/event/event.dart';
 import 'package:fml/event/manager.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/navigation/navigation_manager.dart';
+import 'package:fml/phrase.dart';
 import 'package:fml/template/template_manager.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/shortcut/shortcut_model.dart';
@@ -330,7 +332,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
         else if (myrights < requiredRights)
         {
           // fetch unauthorized template
-          template = await TemplateManager().fetch(url: System.app?.unauthorizedPage ?? "unauthorized.xml", refresh: refresh);
+          template = await TemplateManager().fetchErrorTemplate(FetchResult(code: HttpStatus.unauthorized, message: Phrases().unauthorizedAccess, detail: "This page requires rights at or above level $requiredRights. You only have rights level $myrights for page $url"));
           xml = template.document!.rootElement;
         }
       }

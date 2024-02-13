@@ -25,7 +25,7 @@ class ThemeNotifier with ChangeNotifier
     if (!libraryLoader!.isCompleted)
     {
       libraryLoader!.future.whenComplete(() {
-        setTheme(brightness: System.theme.brightness ?? 'light', color: toStr(System.theme.colorscheme ?? 'lightblue'));
+        setTheme(brightness: System.theme.brightness ?? 'light', color: toStr(System.theme.colorScheme ?? 'lightblue'));
       });
     }
   }
@@ -34,35 +34,35 @@ class ThemeNotifier with ChangeNotifier
   void mapSystemThemeBindables()
   {
     System.theme.background           = _themeData.colorScheme.background;
-    System.theme.onbackground         = _themeData.colorScheme.onBackground;
+    System.theme.onBackground         = _themeData.colorScheme.onBackground;
     System.theme.shadow               = _themeData.colorScheme.shadow;
     System.theme.outline              = _themeData.colorScheme.outline;
 
     System.theme.surface              = _themeData.colorScheme.surface;
-    System.theme.onsurface            = _themeData.colorScheme.onSurface;
-    System.theme.surfacevariant       = _themeData.colorScheme.surfaceVariant;
-    System.theme.onsurfacevariant     = _themeData.colorScheme.onSurfaceVariant;
-    System.theme.inversesurface       = _themeData.colorScheme.inverseSurface;
-    System.theme.oninversesurface     = _themeData.colorScheme.onInverseSurface;
+    System.theme.onSurface            = _themeData.colorScheme.onSurface;
+    System.theme.surfaceVariant       = _themeData.colorScheme.surfaceVariant;
+    System.theme.onSurfaceVariant     = _themeData.colorScheme.onSurfaceVariant;
+    System.theme.inverseSurface       = _themeData.colorScheme.inverseSurface;
+    System.theme.onInverseSurface     = _themeData.colorScheme.onInverseSurface;
 
     System.theme.primary              = _themeData.colorScheme.primary;
-    System.theme.onprimary            = _themeData.colorScheme.onPrimary;
-    System.theme.primarycontainer     = _themeData.colorScheme.primaryContainer;
-    System.theme.onprimarycontainer   = _themeData.colorScheme.onPrimaryContainer;
-    System.theme.inverseprimary       = _themeData.colorScheme.inversePrimary;
+    System.theme.onPrimary            = _themeData.colorScheme.onPrimary;
+    System.theme.primaryContainer     = _themeData.colorScheme.primaryContainer;
+    System.theme.onPrimaryContainer   = _themeData.colorScheme.onPrimaryContainer;
+    System.theme.inversePrimary       = _themeData.colorScheme.inversePrimary;
 
     System.theme.secondary            = _themeData.colorScheme.secondary;
-    System.theme.onsecondary          = _themeData.colorScheme.onSecondary;
-    System.theme.secondarycontainer   = _themeData.colorScheme.secondaryContainer;
-    System.theme.onsecondarycontainer = _themeData.colorScheme.onSecondaryContainer;
+    System.theme.onSecondary          = _themeData.colorScheme.onSecondary;
+    System.theme.secondaryContainer   = _themeData.colorScheme.secondaryContainer;
+    System.theme.onSecondaryContainer = _themeData.colorScheme.onSecondaryContainer;
 
-    System.theme.tertiarycontainer    = _themeData.colorScheme.tertiaryContainer;
-    System.theme.ontertiarycontainer  = _themeData.colorScheme.onTertiaryContainer;
+    System.theme.tertiaryContainer    = _themeData.colorScheme.tertiaryContainer;
+    System.theme.onTertiaryContainer  = _themeData.colorScheme.onTertiaryContainer;
 
     System.theme.error                = _themeData.colorScheme.error;
-    System.theme.onerror              = _themeData.colorScheme.onError;
-    System.theme.errorcontainer       = _themeData.colorScheme.errorContainer;
-    System.theme.onerrorcontainer     = _themeData.colorScheme.onErrorContainer;
+    System.theme.onError              = _themeData.colorScheme.onError;
+    System.theme.errorContainer       = _themeData.colorScheme.errorContainer;
+    System.theme.onErrorContainer     = _themeData.colorScheme.onErrorContainer;
   }
 
   setTheme({String? brightness, String? color}) async
@@ -89,8 +89,8 @@ class ThemeNotifier with ChangeNotifier
     if (color != null)
     {
       // set system color scheme
-      System.theme.colorscheme = toColor(color) ?? System.theme.colorscheme;
-      _themeData = ThemeData(colorSchemeSeed: System.theme.colorscheme, brightness: bn, fontFamily: System.theme.font, textTheme: fontTheme, useMaterial3: true);
+      System.theme.colorScheme = toColor(color) ?? System.theme.colorScheme;
+      _themeData = ThemeData(colorSchemeSeed: System.theme.colorScheme, brightness: bn, fontFamily: System.theme.font, textTheme: fontTheme, useMaterial3: true);
     }
     notifyListeners();
   }

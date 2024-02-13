@@ -251,20 +251,17 @@ class DecoratedInputModel extends FormFieldModel
     // user defined
     if (color != null) return color!;
 
-    if (enabled != false && border != 'all') {
-      return color ?? Theme
-          .of(context)
-          .colorScheme
-          .surfaceVariant;
-    } else if (border == 'all') {
-      return color ?? Colors.transparent;
-    } else  {
-      return color ?? Theme
-          .of(context)
-          .colorScheme
-          .primary
-          .withOpacity(0.5);
+    if (enabled && border != 'all')
+    {
+      return color ?? Theme.of(context).colorScheme.surfaceVariant;
     }
+
+    if (border == 'all')
+    {
+      return color ?? Colors.transparent;
+    }
+
+    return color ?? Theme.of(context).colorScheme.primary.withOpacity(0.5);
   }
 
   //set the field color based on the error state

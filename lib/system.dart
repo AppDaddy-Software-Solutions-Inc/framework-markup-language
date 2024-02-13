@@ -41,10 +41,10 @@ final String applicationTitle = "Flutter Markup Language $version";
 //String get defaultDomain => 'http://10.69.4.245:81';
 //String get defaultDomain => 'http://10.67.130.75:8081';
 //String get defaultDomain => 'http://10.67.130.75:8081';
-//String get defaultDomain => 'https://test.appdaddy.co';
+String get defaultDomain => 'https://test.appdaddy.co';
 //String get defaultDomain => 'http://hbrapsweb.goodyear.com:8081';
 //String get defaultDomain => 'http://tpkapsweb.tpk.goodyear.com:8081';
-String get defaultDomain => 'http://10.69.4.149:81';
+//String get defaultDomain => 'http://10.69.4.149:81';
 // SingleApp - App initializes from a single domain endpoint (defined in defaultDomain)
 // MultiApp  - (Desktop & Mobile Only) Launches the Store at startup
 final ApplicationTypes appType = ApplicationTypes.multiApp;

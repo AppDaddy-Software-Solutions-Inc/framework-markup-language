@@ -259,6 +259,11 @@ class _InputViewState extends WidgetState<InputView> with WidgetsBindingObserver
       // commit
       if (ok) await _commit();
     }
+    else
+    {
+      // mark field as touched
+      widget.model.touched = true;
+    }
   }
 
   Future<bool> _commit() async

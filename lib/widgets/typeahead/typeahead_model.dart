@@ -51,7 +51,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
     }
     else if (v != null)
     {
-      _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onValueChange);
+      _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, );
     }
   }
 

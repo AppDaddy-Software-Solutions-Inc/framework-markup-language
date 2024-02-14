@@ -149,8 +149,7 @@ class OptionModel extends RowModel
   @override
   Widget getView({Key? key})
   {
-    if (viewableChildren.isEmpty) return Text(label ?? "");
-
+   if (viewableChildren.isEmpty) return Text(label ?? "");
     cachedView ??= super.getView();
     return cachedView!;
   }

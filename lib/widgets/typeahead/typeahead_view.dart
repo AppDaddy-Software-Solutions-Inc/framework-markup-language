@@ -48,8 +48,7 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
 
     if (widget.model.editable && widget.model.enabled && initialized)
     {
-      //_list.add(_input); // custom select input
-      controller.selection = TextSelection.fromPosition(TextPosition(offset: controller.text.length));
+      //controller.selection = TextSelection.fromPosition(TextPosition(offset: controller.text.length));
     }
 
     // add options
@@ -64,8 +63,7 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
 
   Future<List<OptionModel>> buildSuggestions(String pattern) async
   {
-    // case insensitive search
-    pattern = pattern.trim();
+    // case insensitive searpattern = pattern.trim();
     if (!widget.model.caseSensitive) pattern = pattern.toLowerCase();
 
     // hack to force entire list to show
@@ -77,14 +75,7 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
     if (isNullOrEmpty(pattern)) return widget.model.options.toList();
 
     // matching options at top of list
-    Iterable<OptionModel> matching = widget.model.options.where((option)
-    {
-      if (compare(option, pattern)) return true;
-      return false;
-    });
-
-    // return options list
-    return matching.take(5).toList();
+    return widget.model.options.where((option) => compare(option, pattern)).take(5).toList();
   }
 
   bool compare(OptionModel option, String pattern)
@@ -121,23 +112,35 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
   void onSuggestionSelected(OptionModel option) async
   {
     // same option
-    if (option == selected)
-      {
-        int i = 0;
-        return;
-      }
+    if (option == selected) return;
 
     // save the answer
     bool ok = await widget.model.answer(option.value);
     if (ok)
     {
+      // set selected
+      selected = option;
+
       // fire the onchange event
       await widget.model.onChange(context);
-    }
 
-    // force a rebuild
-    setState(() {selected = option;});
+      // set the controller text
+      controller.text = option.label ?? "";
+    }
   }
+
+  Widget listBuilder(BuildContext context, List<Widget> children)
+   {
+     var view = GridView.count(
+       crossAxisCount: 1,
+       crossAxisSpacing: 8,
+       mainAxisSpacing: 8,
+       shrinkWrap: true,
+       children: children,
+     );
+
+     return view;
+   }
 
   Widget itemBuilder(BuildContext context, dynamic suggestion)
   {
@@ -181,6 +184,7 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
         enabled: widget.model.enabled,
         controller: controller,
         focusNode: focusNode,
+        autofocus: false,
         obscureText: widget.model.obscure,
         style: style,
         decoration: decoration,
@@ -260,27 +264,27 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
   @override
   Widget build(BuildContext context)
   {
+    print ('building ...');
+
     // build options
     buildOptions();
 
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    // set the controller text
-    controller.text = selected?.label ?? "";
-
     // build the typeahead
-    var typeahead = TypeAheadField<OptionModel>(
+    Widget view = TypeAheadField<OptionModel>(
         suggestionsCallback: buildSuggestions,
         builder: fieldBuilder,
         itemBuilder: itemBuilder,
+        listBuilder: listBuilder,
         autoFlipDirection: true,
         onSelected: onSuggestionSelected,
+        hideOnSelect: true,
+        showOnFocus: false,
         controller: controller,
-        emptyBuilder: emptyBuilder);
-
-    // constrain width
-    Widget view = SizedBox(width: widget.model.myMaxWidthOrDefault, child: typeahead);
+        emptyBuilder: emptyBuilder
+    );
 
     // add borders
     view = addBorders(view);

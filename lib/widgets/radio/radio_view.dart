@@ -4,7 +4,6 @@ import 'package:fml/helpers/string.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/radio/radio_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
 
@@ -63,26 +62,10 @@ class _RadioViewState extends WidgetState<RadioView>
                     ? checked
                     : unchecked));
 
-        // Label
-        Widget label = Text('');
-        if (option.label is ViewableWidgetModel) 
-        {
-          var view = option.label!.getView();
-          if (view != null) label = view;
-          label = MouseRegion(
-              cursor:
-              widget.model.enabled != false && widget.model.editable != false
-                  ? SystemMouseCursors.click
-                  : SystemMouseCursors.basic,
-              child: GestureDetector(
-                  onTap: () => {
-                    widget.model.enabled != false &&
-                        widget.model.editable != false
-                        ? _onCheck(option)
-                        : () => {}
-                  },
-                  child: label));
-        }
+        // label
+        var label = option.getView();
+        label = MouseRegion(cursor: widget.model.enabled && widget.model.editable ? SystemMouseCursors.click : SystemMouseCursors.basic,
+              child: GestureDetector(onTap: () => widget.model.enabled  && widget.model.editable ? _onCheck(option) : null, child: label));
 
         // Option
         var opt = Row(

@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/select/select_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/helpers/helpers.dart';
@@ -34,26 +33,18 @@ class _SelectViewState extends WidgetState<SelectView>
     _list = [];
 
     // add options
-    if (model.options.isNotEmpty)
+    for (OptionModel option in model.options)
     {
-      for (OptionModel option in model.options)
-      {
-        Widget view = Text('');
-        if (option.label is ViewableWidgetModel)
-        {
-          var myView = option.label!.getView();
-          if (myView != null) view = myView;
-        }
+      Widget view = option.getView();
+      var o = DropdownMenuItem(value: option, child: view);
+      if (model.value == option.value) _selected = option;
+      _list.add(o);
+    }
 
-        var o = DropdownMenuItem(value: option, child: view);
-        if (model.value == option.value) _selected = option;
-        _list.add(o);
-      }
-
-      if (_selected == null && _list.isNotEmpty)
-      {
-        _selected = _list[0].value;
-      }
+    // set first item as selected
+    if (_selected == null && _list.isNotEmpty)
+    {
+      _selected = _list[0].value;
     }
   }
 
@@ -95,8 +86,7 @@ class _SelectViewState extends WidgetState<SelectView>
     Widget child = Text('');
     if (_selected != null && _selected!.label != null)
     {
-      var myView = _selected!.label!.getView();
-      if (myView != null) child = myView;
+      child = _selected!.getView();
     }
 
     view = widget.model.editable != false
@@ -155,8 +145,8 @@ class _SelectViewState extends WidgetState<SelectView>
           color: widget.model.getFieldColor(context),
           border: Border(
             bottom: BorderSide(
-                width: widget.model.borderwidth.toDouble(),
-                color: widget.model.setErrorBorderColor(context, widget.model.bordercolor)),
+                width: widget.model.borderWidth.toDouble(),
+                color: widget.model.setErrorBorderColor(context, widget.model.borderColor)),
           ),),
         child: view,
       );
@@ -166,8 +156,8 @@ class _SelectViewState extends WidgetState<SelectView>
         decoration: BoxDecoration(
           color: widget.model.getFieldColor(context),
           border: Border.all(
-              width: widget.model.borderwidth.toDouble(),
-              color: widget.model.setErrorBorderColor(context, widget.model.bordercolor)),
+              width: widget.model.borderWidth.toDouble(),
+              color: widget.model.setErrorBorderColor(context, widget.model.borderColor)),
           borderRadius: BorderRadius.circular(widget.model.radius.toDouble()),
         ),
         child: view,
@@ -205,6 +195,9 @@ class _SelectViewState extends WidgetState<SelectView>
 
   void changedDropDownItem(OptionModel? selected) async
   {
+    // same option selected
+    if (selected == _selected) return;
+
     // added this in to remove focus from input
     FocusScope.of(context).requestFocus(FocusNode()); // added this in to remove focus from input
 

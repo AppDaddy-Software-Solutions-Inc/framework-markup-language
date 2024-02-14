@@ -179,8 +179,8 @@ class DatepickerModel extends DecoratedInputModel implements IFormField
     newest  = Xml.get(node: xml, tag: 'newest');
     format  = Xml.get(node: xml, tag: 'format');
     mode    = Xml.get(node: xml, tag: 'mode');
-    bordercolor = Xml.get(node: xml, tag: 'bordercolor');
-    borderwidth = Xml.get(node: xml, tag: 'borderwidth');
+    borderColor = Xml.get(node: xml, tag: 'bordercolor');
+    borderWidth = Xml.get(node: xml, tag: 'borderwidth');
     radius = Xml.get(node: xml, tag: 'radius');
     border = Xml.get(node: xml, tag: 'border');
     textcolor = Xml.get(node: xml, tag: 'textcolor');

@@ -48,7 +48,7 @@ class SelectModel extends DecoratedInputModel implements IFormField
       { dynamic value,
         dynamic defaultValue,
         String? postbroker,
-        dynamic bordercolor,
+        dynamic borderColor,
         dynamic matchtype,
         })
       : super(parent, id)
@@ -56,9 +56,9 @@ class SelectModel extends DecoratedInputModel implements IFormField
     // instantiate busy observable
     busy = false;
 
-    if (bordercolor   != null)  this.bordercolor  = bordercolor;
-    if (value         != null)  this.value         = value;
-    if (defaultValue  != null)  this.defaultValue  = defaultValue;
+    if (borderColor   != null)  this.borderColor = borderColor;
+    if (value         != null)  this.value = value;
+    if (defaultValue  != null)  this.defaultValue = defaultValue;
   }
 
   static SelectModel? fromXml(WidgetModel parent, XmlElement xml) {
@@ -124,7 +124,7 @@ class SelectModel extends DecoratedInputModel implements IFormField
     // set values
     if (setValue) value = selectedOption?.value;
     data  = selectedOption?.data;
-    label = selectedOption?.labelValue;
+    label = selectedOption?.value;
   }
 
   void _buildOptions()

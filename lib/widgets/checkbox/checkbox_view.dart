@@ -4,7 +4,6 @@ import 'package:fml/helpers/string.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/checkbox/checkbox_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:fml/widgets/widget/widget_state.dart';
 import 'package:fml/widgets/alignment/alignment.dart';
 
@@ -179,31 +178,12 @@ class CheckBox extends StatelessWidget {
     // child: (widget.checked == true ? checkedIcon : uncheckedIcon));
 
     // Label
-    Widget label = Text('');
-    if (option.label is ViewableWidgetModel)
-    {
-      var view = option.label!.getView();
-      if (view != null) label = view;
-
-      label  = MouseRegion(
-          cursor:
-          model.enabled != false && model.editable != false
-              ? SystemMouseCursors.click
-              : SystemMouseCursors.basic,
-          child: GestureDetector(
-              onTap: () => {
-                model.enabled != false &&
-                    model.editable != false
-                    ? callOnChecked()
-                    : () => {}
-              },
-              child: label));
-    }
+    var label = option.getView();
+    label = MouseRegion(cursor: model.enabled && model.editable ? SystemMouseCursors.click : SystemMouseCursors.basic,
+          child: GestureDetector(onTap: () => model.enabled && model.editable ? callOnChecked() : null, child: label));
 
     // View
-    var chk = Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
+    var chk = Row(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Padding(
@@ -213,15 +193,6 @@ class CheckBox extends StatelessWidget {
               label
             ]);
 
-
-
-
-    return model.editable != false && model.enabled != false ? chk : Opacity(opacity: 0.7, child: chk);
-
-
-
-
-
-
+    return model.editable && model.enabled ? chk : Opacity(opacity: 0.7, child: chk);
   }
 }

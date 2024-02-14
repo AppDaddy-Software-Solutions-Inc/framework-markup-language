@@ -1,65 +1,102 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:flutter/material.dart';
 import 'package:fml/log/manager.dart';
-import 'package:fml/widgets/viewable/viewable_widget_model.dart';
+import 'package:fml/widgets/option/tag_model.dart';
+import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/row/row_model.dart';
-import 'package:fml/widgets/text/text_model.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class OptionModel extends ViewableWidgetModel
+class OptionModel extends RowModel
 {
-  // label
-  ViewableWidgetModel? label;
+  @override
+  bool get expand => false;
 
-  dynamic labelValue;
+  @override
+  String? get valign => super.valign ?? "center";
+
+  // label
+  StringObservable? _label;
+  set label(dynamic v)
+  {
+    if (_label != null)
+    {
+      _label!.set(v);
+    }
+    else if (v != null)
+    {
+      _label = StringObservable(null, v, scope: scope);
+    }
+  }
+  String? get label => _label?.get() ?? labelInner ?? value;
+
+  // list of labels from child text widgets
+  String? get labelInner
+  {
+    String? label;
+    List<TextModel> models = findDescendantsOfExactType(TextModel).cast<TextModel>();
+    for (var model in models)
+    {
+      var text = model.value;
+      if (!isNullOrEmpty(text))
+      {
+        label ??= "";
+        label = "$label $text";
+      }
+    }
+    return label;
+  }
 
   // value
-  dynamic _value;
-  set value (dynamic v)
+  StringObservable? _value;
+  set value(dynamic v)
   {
-         if (_value is StringObservable) {
-           _value.set(v);
-         } else if (_value is String) {
-      _value = v;
-    } else if ((_value == null) && (v != null))
+    if (_value != null)
     {
-      _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onPropertyChange);
+      _value!.set(v);
+    }
+    else if (v != null)
+    {
+      _value = StringObservable(null, v, scope: scope);
     }
   }
-  dynamic get value
+  String? get value => _value?.get();
+
+  // string to search on
+  List<String> get tags
   {
-    if (_value == null) return null;
-    if (_value is StringObservable) return _value.get();
-    if (_value is String) return _value;
-    return null;
-  }
+    List<String> list = [];
 
-  // tags 
-  StringObservable? _tags;
-  set tags(dynamic v) {
-    if (_tags != null) {
-      _tags!.set(v);
-    } else if (v != null) {
-      _tags = StringObservable(Binding.toKey(id, 'tags'), v, scope: scope, listener: onPropertyChange);
+    // child search tags specified
+    List<TagModel> tags = findDescendantsOfExactType(TagModel).cast<TagModel>();
+    if (tags.isNotEmpty)
+    {
+      for (var tag in tags)
+      {
+        if (!isNullOrEmpty(tag.value)) list.add(tag.value!);
+      }
+      return list;
     }
+
+    // search on label
+    if (!isNullOrEmpty(label))
+    {
+      list.add(label!);
+      return list;
+    }
+
+    return list;
   }
 
-  String? get tags {
-    return _tags?.get();
-  }
-
-  OptionModel(WidgetModel? parent, String? id, {dynamic data, dynamic labelValue, ViewableWidgetModel? label, dynamic value, dynamic tags}) : super(parent, id, scope: Scope(parent: parent?.scope))
+  OptionModel(WidgetModel parent, String? id, {dynamic data, String? value}) : super(parent, id, scope: Scope(parent: parent.scope))
   {
     this.data = data;
-    if (label != null) this.label = label;
-    if (labelValue != null) this.labelValue = labelValue;
     if (value != null) this.value = value;
-    if (tags != null) this.tags = tags;
   }
 
-  static OptionModel? fromXml(WidgetModel? parent, XmlElement? xml, {dynamic data})
+  static OptionModel? fromXml(WidgetModel parent, XmlElement? xml, {dynamic data})
   {
     OptionModel? model;
     try
@@ -85,84 +122,36 @@ class OptionModel extends ViewableWidgetModel
     // deserialize 
     super.deserialize(xml);
 
-    // Label
-    String? label = Xml.attribute(node: xml, tag: 'label');
+    // Properties
+    var label = Xml.get(node: xml, tag: 'label');
+    var value = Xml.get(node: xml, tag: 'value');
+
+    // <OPTION>xxx</OPTION> style
     if (label == null)
     {
-      // legacy
-      XmlElement? node = Xml.getElement(node: xml, tag: 'LABEL');
-      if (node != null)
+      var text = Xml.getText(xml);
+      if (!isNullOrEmpty(Xml.getText(xml)))
       {
-        if (Xml.hasChildElements(node))
-        {
-          this.label = RowModel.fromXml(this, node);
-        }
-        else
-        {
-          this.label = TextModel(this, null, value: Xml.getText(node));
-        }
-      }
-
-      // OPTION child elements do
-      // no need to be wrapped in label
-      else if (viewableChildren.isNotEmpty)
-      {
-        // one child
-        if (viewableChildren.length == 1)
-        {
-          this.label = viewableChildren.first.model as ViewableWidgetModel;
-        }
-        // multiple children
-        else
-        {
-          this.label = RowModel(this,null);
-          this.label!.children = viewableChildren.toList();
-        }
-      }
-    }
-    else
-    {
-      this.label = TextModel(this, null, value: label);
-    }
-
-    // remove viewable children
-    children?.removeWhere((child) => viewableChildren.contains(child));
-
-    // Empty?
-    if (this.label == null)
-    {
-      label = Xml.getText(xml);
-      if (label != null) {
-        this.label = TextModel(this, null, value: label);
+        label = text;
+        label = text;
       }
     }
 
-    if (this.label == null && labelValue == null) {
-      labelValue = Xml.get(node: xml, tag: 'value');
-      this.label = TextModel(this, null, value: labelValue);
-    }
+    // label specified but not value
+    if (value == null && label != null) value = label;
 
-    // value
-    String? value = Xml.get(node: xml, tag: 'value');
-    if (value == null) {
-      this.value = label;
-      labelValue = label;
-    }
-    else {
-      this.value = value;
-    }
-    labelValue = label;
-
-    tags = Xml.get(node: xml, tag: 'tags');
+    this.label = label;
+    this.value = value;
   }
 
-  @override
-  void dispose()
-  {
-    // dispose of label children
-    label?.dispose();
+  Widget? cachedView;
 
-    // dispose of animations
-    super.dispose();
+  @override
+  Widget getView({Key? key})
+  {
+    if (viewableChildren.isEmpty) return Text(label ?? "");
+
+    cachedView ??= super.getView();
+    return cachedView!;
   }
 }

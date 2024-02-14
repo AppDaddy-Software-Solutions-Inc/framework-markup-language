@@ -114,29 +114,29 @@ class DecoratedInputModel extends FormFieldModel
   double get radius => _radius?.get() ?? 5;
 
   /// The color of the border for input, defaults to black54. Accepts 4 colors positionally. Enabled, disabled, focused, and error colors.
-  ColorObservable? _bordercolor;
-  set bordercolor(dynamic v)
+  ColorObservable? _borderColor;
+  set borderColor(dynamic v)
   {
-    if (_bordercolor != null) {
-      _bordercolor!.set(v);
+    if (_borderColor != null) {
+      _borderColor!.set(v);
     } else if (v != null) {
-      _bordercolor = ColorObservable(Binding.toKey(id, 'bordercolor'), v,
+      _borderColor = ColorObservable(Binding.toKey(id, 'bordercolor'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
-  Color? get bordercolor => _bordercolor?.get();
+  Color? get borderColor => _borderColor?.get();
 
   /// The width of the containers border, defaults to 2
-  DoubleObservable? _borderwidth;
-  set borderwidth(dynamic v) {
-    if (_borderwidth != null) {
-      _borderwidth!.set(v);
+  DoubleObservable? _borderWidth;
+  set borderWidth(dynamic v) {
+    if (_borderWidth != null) {
+      _borderWidth!.set(v);
     } else if (v != null) {
-      _borderwidth = DoubleObservable(Binding.toKey(id, 'borderwidth'), v,
+      _borderWidth = DoubleObservable(Binding.toKey(id, 'borderwidth'), v,
           scope: scope, listener: onPropertyChange);
     }
   }
-  double get borderwidth => _borderwidth?.get() ?? 1;
+  double get borderWidth => _borderWidth?.get() ?? 1;
 
   /// The border choice, can be `all`, `none`, `top`, `left`, `right`, `bottom`, `vertical`, or `horizontal`
   StringObservable? _border;
@@ -204,8 +204,8 @@ class DecoratedInputModel extends FormFieldModel
     dynamic dense,
     dynamic border,
     dynamic radius,
-    dynamic bordercolor,
-    dynamic borderwidth,
+    dynamic borderColor,
+    dynamic borderWidth,
     dynamic textcolor,
     dynamic label,
 
@@ -225,8 +225,8 @@ class DecoratedInputModel extends FormFieldModel
     if (dense != null) this.dense = dense;
     if (border != null) this.border = border;
     if (radius != null) this.radius = radius;
-    if (bordercolor != null) this.bordercolor = bordercolor;
-    if (borderwidth != null) this.borderwidth = borderwidth;
+    if (borderColor != null) this.borderColor = borderColor;
+    if (borderWidth != null) this.borderWidth = borderWidth;
     if (textcolor != null) this.textcolor = textcolor;
     if (label != null) this.label = label;
   }
@@ -240,8 +240,8 @@ class DecoratedInputModel extends FormFieldModel
 
     hint = Xml.get(node: xml, tag: 'hint');
     border = Xml.get(node: xml, tag: 'border');
-    bordercolor = Xml.get(node: xml, tag: 'bordercolor');
-    borderwidth = Xml.get(node: xml, tag: 'borderwidth');
+    borderColor = Xml.get(node: xml, tag: 'bordercolor');
+    borderWidth = Xml.get(node: xml, tag: 'borderwidth');
     radius = Xml.get(node: xml, tag: 'radius');
   }
 

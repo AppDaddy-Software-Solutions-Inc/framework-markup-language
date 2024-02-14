@@ -25,21 +25,21 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
   // options
   final List<OptionModel> options = [];
 
-  // inputenabled
-  BooleanObservable? _inputenabled;
-  set inputenabled(dynamic v)
+  // value
+  BooleanObservable? _caseSensitive;
+  set caseSensitive(dynamic v)
   {
-    if (_inputenabled != null)
+    if (_caseSensitive != null)
     {
-      _inputenabled!.set(v);
+      _caseSensitive!.set(v);
     }
     else if (v != null)
     {
-      _inputenabled = BooleanObservable(Binding.toKey(id, 'inputenabled'), v, scope: scope, listener: onPropertyChange);
+      _caseSensitive = BooleanObservable(Binding.toKey(id, 'casesensitive'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  bool get inputenabled => _inputenabled?.get() ?? false;
-
+  bool get caseSensitive => _caseSensitive?.get() ?? false;
+  
   // value
   StringObservable? _value;
   @override
@@ -49,7 +49,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
     {
       _value!.set(v);
     }
-    else if (v != null || WidgetModel.isBound(this, Binding.toKey(id, 'value')))
+    else if (v != null)
     {
       _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onValueChange);
     }
@@ -59,43 +59,39 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
   dynamic get value => dirty ? _value?.get() : _value?.get() ?? defaultValue;
 
   //  match type
-  StringObservable? _matchtype;
-  set matchtype(dynamic v)
+  StringObservable? _matchType;
+  set matchType(dynamic v)
   {
-    if (_matchtype != null)
+    if (_matchType != null)
     {
-      _matchtype!.set(v);
+      _matchType!.set(v);
     }
     else
     {
       if (v != null)
       {
-        matchtype = StringObservable(Binding.toKey(id, 'matchtype'), v, scope: scope, listener: onPropertyChange);
+        matchType = StringObservable(Binding.toKey(id, 'matchtype'), v, scope: scope, listener: onPropertyChange);
       }
     }
   }
-  String? get matchtype => _matchtype?.get();
+  String get matchType => _matchType?.get() ?? 'contains';
 
-  TypeaheadModel(WidgetModel parent, String? id, {dynamic inputenabled,
-        dynamic value,
-        dynamic defaultValue,
-        String? postbroker,
-        dynamic matchtype,
-      })
-      : super(parent, id)
+  /// if the input will obscure its characters.
+  BooleanObservable? _obscure;
+  set obscure(dynamic v)
   {
-    // instantiate busy observable
-    busy = false;
-
-    if (inputenabled  != null) this.inputenabled  = inputenabled;
-    if (value         != null) this.value         = value;
-    if (defaultValue  != null) this.defaultValue  = defaultValue;
-
-    if (matchtype     != null) this.matchtype     = matchtype;
-
-    alarming = false;
-    dirty    = false;
+    if (_obscure != null)
+    {
+      _obscure!.set(v);
+    }
+    else if (v != null)
+    {
+      _obscure = BooleanObservable(Binding.toKey(id, 'obscure'), v, scope: scope, listener: onPropertyChange);
+    }
   }
+  bool get obscure => _obscure?.get() ?? false;
+
+  TypeaheadModel(WidgetModel parent, String? id) : super(parent, id);
 
   static TypeaheadModel? fromXml(WidgetModel parent, XmlElement xml)
   {
@@ -115,12 +111,13 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
     value = Xml.get(node: xml, tag: 'value');
     hint = Xml.get(node: xml, tag: 'hint');
     border = Xml.get(node: xml, tag: 'border');
-    bordercolor = Xml.get(node: xml, tag: 'bordercolor');
-    borderwidth = Xml.get(node: xml, tag: 'borderwidth');
+    borderColor = Xml.get(node: xml, tag: 'bordercolor');
+    borderWidth = Xml.get(node: xml, tag: 'borderwidth');
     radius = Xml.get(node: xml, tag: 'radius');
-    inputenabled = Xml.get(node: xml, tag: 'inputenabled');
-    matchtype = Xml.get(node: xml, tag: 'matchtype') ?? Xml.get(node: xml, tag: 'searchtype');
+    matchType = Xml.get(node: xml, tag: 'matchtype') ?? Xml.get(node: xml, tag: 'searchtype');
+    caseSensitive = Xml.get(node: xml, tag: 'casesensitive');
     addempty  = toBool(Xml.get(node: xml, tag: 'addempty')) ?? true;
+    obscure = toBool(Xml.get(node: xml, tag: 'obscure'));
 
     // build select options
     _buildOptions();
@@ -159,7 +156,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
     // set values
     if (setValue) value = selectedOption?.value;
     data  = selectedOption?.data;
-    label = selectedOption?.labelValue;
+    label = selectedOption?.value;
   }
 
   void _buildOptions()

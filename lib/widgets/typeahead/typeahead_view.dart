@@ -1,6 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/typeahead/typeahead_model.dart';
@@ -30,6 +29,9 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
 
   // text editing controller
   final controller = TextEditingController();
+
+  // suggestion controller
+  final suggestionController = SuggestionsController<OptionModel>();
 
   // focus node
   final focus = FocusNode();
@@ -94,9 +96,6 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
 
   void onSuggestionSelected(OptionModel option) async
   {
-    // same option
-    if (option == selected) return;
-
     // save the answer
     bool ok = await widget.model.answer(option.value);
     if (ok)
@@ -238,6 +237,14 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
     return null;
   }
 
+  void onFocusChange()
+  {
+    if (!focus.hasFocus)
+    {
+      controller.text = selected?.label ?? "";
+    }
+  }
+
   @override
   Widget build(BuildContext context)
   {
@@ -251,12 +258,17 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
       if (o != null) controller.text = o.label ?? "";
     }
 
+    // used to change types text back to its original value
+    focus.removeListener(onFocusChange);
+    focus.addListener(onFocusChange);
+
     // build the view
     Widget view = TypeAheadField<OptionModel>(
         key: ObjectKey(widget.model),
         suggestionsCallback: buildSuggestions,
         focusNode: focus,
         controller: controller,
+        suggestionsController: suggestionController,
         showOnFocus: true,
         autoFlipDirection: true,
         onSelected: onSuggestionSelected,

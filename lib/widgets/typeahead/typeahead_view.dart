@@ -25,14 +25,14 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
   // typeahead has been initialized
   bool initialized = false;
 
-  // list of options
-  List<DropdownMenuItem<OptionModel>> options = [];
-
   // selected option
   OptionModel? selected;
 
   // text editing controller
   final controller = TextEditingController();
+
+  // focus node
+  final focus = FocusNode();
 
   @override
   void dispose()
@@ -41,29 +41,12 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
     super.dispose();
   }
 
-  buildOptions()
-  {
-    selected = null;
-    options = [];
-
-    if (widget.model.editable && widget.model.enabled && initialized)
-    {
-      //controller.selection = TextSelection.fromPosition(TextPosition(offset: controller.text.length));
-    }
-
-    // add options
-    for (OptionModel option in widget.model.options)
-    {
-      Widget view = option.getView();
-      var o = DropdownMenuItem(value: option, child: view);
-      if (widget.model.value == option.value) selected = option;
-      options.add(o);
-    }
-  }
-
   Future<List<OptionModel>> buildSuggestions(String pattern) async
   {
-    // case insensitive searpattern = pattern.trim();
+    // trim
+    pattern.trim();
+
+    // case insensitive pattern
     if (!widget.model.caseSensitive) pattern = pattern.toLowerCase();
 
     // hack to force entire list to show
@@ -127,31 +110,15 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
       // set the controller text
       controller.text = option.label ?? "";
     }
+
+    // this forces the selection list to close
+    focus.unfocus();
   }
 
-  Widget listBuilder(BuildContext context, List<Widget> children)
-   {
-     var view = GridView.count(
-       crossAxisCount: 1,
-       crossAxisSpacing: 8,
-       mainAxisSpacing: 8,
-       shrinkWrap: true,
-       children: children,
-     );
-
-     return view;
-   }
-
-  Widget itemBuilder(BuildContext context, dynamic suggestion)
+  Widget itemBuilder(BuildContext context, OptionModel option)
   {
-    Widget? item;
-    if (suggestion is OptionModel)
-    {
-      var option = options.firstWhereOrNull((option) => (option.value == suggestion));
-      item = option?.child;
-    }
-    item ??= Container(height: 12);
-    return Padding(padding: EdgeInsets.only(left: 12, right: 1, top: 12, bottom: 12), child: item);
+    Widget? view = option.getView();
+    return DropdownMenuItem(child: view);
   }
 
   Widget fieldBuilder(BuildContext context, TextEditingController controller, FocusNode focusNode)
@@ -261,30 +228,41 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
     return view;
   }
 
+  OptionModel? getSelectedOption()
+  {
+    // add options
+    for (OptionModel option in widget.model.options)
+    {
+      if (widget.model.value == option.value) return option;
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context)
   {
-    print ('building ...');
-
-    // build options
-    buildOptions();
-
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    // build the typeahead
+    // set initial selection
+    if (selected == null)
+    {
+      var o = getSelectedOption();
+      if (o != null) controller.text = o.label ?? "";
+    }
+
+    // build the view
     Widget view = TypeAheadField<OptionModel>(
+        key: ObjectKey(widget.model),
         suggestionsCallback: buildSuggestions,
-        builder: fieldBuilder,
-        itemBuilder: itemBuilder,
-        listBuilder: listBuilder,
+        focusNode: focus,
+        controller: controller,
+        showOnFocus: true,
         autoFlipDirection: true,
         onSelected: onSuggestionSelected,
-        hideOnSelect: true,
-        showOnFocus: false,
-        controller: controller,
-        emptyBuilder: emptyBuilder
-    );
+        builder: fieldBuilder,
+        itemBuilder: itemBuilder,
+        emptyBuilder: emptyBuilder);
 
     // add borders
     view = addBorders(view);

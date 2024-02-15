@@ -70,7 +70,7 @@ class OptionModel extends RowModel
     List<String> list = [];
 
     // child search tags specified
-    List<TagModel> tags = findDescendantsOfExactType(TagModel).cast<TagModel>();
+    List<TagModel> tags = findChildrenOfExactType(TagModel).cast<TagModel>();
     if (tags.isNotEmpty)
     {
       for (var tag in tags)

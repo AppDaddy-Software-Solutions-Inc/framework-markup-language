@@ -1,5 +1,4 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:fml/widgets/busy/busy_model.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
@@ -34,20 +33,12 @@ class _SelectViewState extends WidgetState<SelectView>
     // resume model change notifications
     widget.model.registerListener(this);
 
+    // unfocus
+    focus.unfocus();
+
     // force a rebuild
     setState(() {});
   }
-
-  onFocusChange() async
-  {
-    var editable = (widget.model.editable != false);
-    if (!editable) return;
-
-    // commit changes on loss of focus
-    if (!focus.hasFocus) await _commit();
-  }
-
-  Future<bool> _commit() async => true;
 
   Widget addBorders(Widget view)
   {
@@ -138,7 +129,7 @@ class _SelectViewState extends WidgetState<SelectView>
 
     // widget is enabled?
     var enabled = (widget.model.enabled && !widget.model.busy);
-    if (!enabled) return widget.model.selectedOption?.getView() ?? Container(height: widget.model.height ?? 48, child: Text(''));
+    if (!enabled) return widget.model.selectedOption?.getView() ?? Container(alignment: Alignment.centerLeft, height: widget.model.height ?? 48, child: hint ?? Text(''), );
 
     // build options
     List<DropdownMenuItem<OptionModel>> options = [];
@@ -153,6 +144,7 @@ class _SelectViewState extends WidgetState<SelectView>
           itemHeight: widget.model.height ?? 48,
           value: widget.model.selectedOption,
           hint: hint,
+          focusNode: focus,
           items: options, // if this is set to null it disables the dropdown but also hides any value
           onChanged: onChangeOption,
           dropdownColor: Theme.of(context).colorScheme.onInverseSurface,
@@ -161,6 +153,9 @@ class _SelectViewState extends WidgetState<SelectView>
           underline: Container(),
           disabledHint: hintDisabled,
           focusColor: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.15));
+
+    // defeat focus colors
+    view = Theme(data: ThemeData(hoverColor: Colors.transparent), child: view);
 
     // show hand cursor
     view = MouseRegion(cursor: SystemMouseCursors.click,child: view);
@@ -211,6 +206,9 @@ class _SelectViewState extends WidgetState<SelectView>
 
     // apply constraints
     view = applyConstraints(view, modelConstraints);
+
+    // unfocus
+    focus.unfocus();
 
     return view;
   }

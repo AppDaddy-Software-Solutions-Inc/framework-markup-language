@@ -72,6 +72,7 @@ import 'package:fml/widgets/map/map_model.dart';
 import 'package:fml/widgets/menu/item/menu_item_model.dart';
 import 'package:fml/widgets/menu/menu_model.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
+import 'package:fml/widgets/nodata/nomatch_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/option/tag_model.dart';
 import 'package:fml/widgets/padding/padding_model.dart';
@@ -1077,10 +1078,11 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
       break;
 
     case "NODATA":
-      if (parent is TableModel || parent is ListModel)
-      {
         model = NoDataModel.fromXml(parent, node);
-      }
+      break;
+
+    case "NOMATCH":
+        model = NoMatchModel.fromXml(parent, node);
       break;
 
     case "TD":

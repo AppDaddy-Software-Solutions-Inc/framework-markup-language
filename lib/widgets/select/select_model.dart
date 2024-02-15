@@ -5,6 +5,7 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/decorated_input_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/nodata/nodata_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -14,6 +15,9 @@ import 'package:fml/helpers/helpers.dart';
 
 class SelectModel extends DecoratedInputModel implements IFormField
 {
+  // holds no data model
+  NoDataModel? noData;
+
   @override
   bool get canExpandInfinitelyWide => !hasBoundedWidth;
 
@@ -89,6 +93,9 @@ class SelectModel extends DecoratedInputModel implements IFormField
     // set properties
     value     = Xml.get(node: xml, tag: 'value');
     addempty  = toBool(Xml.get(node: xml, tag: 'addempty')) ?? true;
+
+    // holds no data model
+    noData = findChildOfExactType(NoDataModel);
 
     // build select options
     _buildOptions();

@@ -254,6 +254,16 @@ class Phrases
     if (language == french) return '(FR) Something went wrong.\n Try going back or restarting the application.\n If this problem persists please contact us.';
     return 'Something went wrong.\n Try going back or restarting the application.\n If this problem persists please contact us.';
   }
+
+  String get noData {
+    if (language == french) return '(FR) No data';
+    return 'No Data';
+  }
+
+  String get noMatchFound {
+    if (language == french) return '(FR) No match found';
+    return 'No match found';
+  }
 }
 
 

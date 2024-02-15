@@ -5,6 +5,8 @@ import 'package:fml/log/manager.dart';
 import 'package:fml/widgets/form/decorated_input_model.dart';
 import 'package:fml/widgets/form/form_field_interface.dart';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/nodata/nodata_model.dart';
+import 'package:fml/widgets/nodata/nomatch_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/widgets/option/option_model.dart';
 import 'package:fml/widgets/widget/widget_model.dart' ;
@@ -17,6 +19,12 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
   // data sourced prototype
   XmlElement? prototype;
 
+  // holds no data model
+  NoDataModel? noData;
+
+  // holds no match model
+  NoMatchModel? noMatch;
+
   @override
   bool get canExpandInfinitelyWide => !hasBoundedWidth;
 
@@ -28,6 +36,21 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
   // selected option
   OptionModel? selectedOption;
 
+  // readonly
+  BooleanObservable? _readonly;
+  set readonly(dynamic v)
+  {
+    if (_readonly != null)
+    {
+      _readonly!.set(v);
+    }
+    else if (v != null)
+    {
+      _readonly = BooleanObservable(Binding.toKey(id, 'readonly'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get readonly => _readonly?.get() ?? false;
+  
   // value
   BooleanObservable? _caseSensitive;
   set caseSensitive(dynamic v)
@@ -57,7 +80,6 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
       _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, );
     }
   }
-
   @override
   dynamic get value => dirty ? _value?.get() : _value?.get() ?? defaultValue;
 
@@ -139,7 +161,14 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
     matchRows = Xml.get(node: xml, tag: 'matchrows');
     caseSensitive = Xml.get(node: xml, tag: 'casesensitive');
     addempty  = toBool(Xml.get(node: xml, tag: 'addempty')) ?? true;
-    obscure = toBool(Xml.get(node: xml, tag: 'obscure'));
+    obscure = Xml.get(node: xml, tag: 'obscure');
+    readonly = Xml.get(node: xml, tag: 'readonly');
+
+    // holds no data model
+    noData = findChildOfExactType(NoDataModel);
+
+    // holds no match model
+    noMatch = findChildOfExactType(NoMatchModel);
 
     // build select options
     _buildOptions();

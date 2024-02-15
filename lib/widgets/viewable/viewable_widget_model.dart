@@ -447,7 +447,6 @@ class ViewableWidgetModel extends ConstraintModel implements IDragDrop
 
   // enabled
   BooleanObservable? _enabled;
-
   set enabled(dynamic v) {
     if (_enabled != null) {
       _enabled!.set(v);
@@ -456,7 +455,6 @@ class ViewableWidgetModel extends ConstraintModel implements IDragDrop
           scope: scope, listener: onPropertyChange);
     }
   }
-
   bool get enabled => _enabled?.get() ?? true;
 
   // draggable

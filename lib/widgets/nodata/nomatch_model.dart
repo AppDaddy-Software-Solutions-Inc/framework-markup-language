@@ -5,21 +5,21 @@ import 'package:fml/widgets/widget/widget_model.dart' ;
 import 'package:xml/xml.dart';
 import 'package:fml/helpers/helpers.dart';
 
-class NoDataModel extends BoxModel
+class NoMatchModel extends BoxModel
 {
-  NoDataModel(WidgetModel parent, String? id) : super(parent, id);
+  NoMatchModel(WidgetModel parent, String? id) : super(parent, id);
 
-  static NoDataModel? fromXml(WidgetModel parent, XmlElement xml)
+  static NoMatchModel? fromXml(WidgetModel parent, XmlElement xml)
   {
-    NoDataModel? model;
+    NoMatchModel? model;
     try
     {
-      model = NoDataModel(parent, Xml.get(node: xml, tag: 'id'));
+      model = NoMatchModel(parent, Xml.get(node: xml, tag: 'id'));
       model.deserialize(xml);
     }
     catch(e)
     {
-      Log().exception(e,  caller: 'NODATA');
+      Log().exception(e,  caller: 'NOMATCH');
       model = null;
     }
     return model;

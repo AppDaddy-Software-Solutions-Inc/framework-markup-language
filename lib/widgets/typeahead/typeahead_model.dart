@@ -84,22 +84,22 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
   dynamic get value => dirty ? _value?.get() : _value?.get() ?? defaultValue;
 
   //  maximum number of match results to show
-  IntegerObservable? _matchRows;
-  set matchRows(dynamic v)
+  IntegerObservable? _rows;
+  set rows(dynamic v)
   {
-    if (_matchRows != null)
+    if (_rows != null)
     {
-      _matchRows!.set(v);
+      _rows!.set(v);
     }
     else
     {
       if (v != null)
       {
-        _matchRows = IntegerObservable(Binding.toKey(id, 'matchrows'), v, scope: scope, listener: onPropertyChange);
+        _rows = IntegerObservable(Binding.toKey(id, 'rows'), v, scope: scope, listener: onPropertyChange);
       }
     }
   }
-  int get matchRows => _matchRows?.get() ?? 5;
+  int get rows => _rows?.get() ?? 5;
   
   //  match type
   StringObservable? _matchType;
@@ -158,7 +158,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
     borderWidth = Xml.get(node: xml, tag: 'borderwidth');
     radius = Xml.get(node: xml, tag: 'radius');
     matchType = Xml.get(node: xml, tag: 'matchtype') ?? Xml.get(node: xml, tag: 'searchtype');
-    matchRows = Xml.get(node: xml, tag: 'matchrows');
+    rows = Xml.get(node: xml, tag: 'rows');
     caseSensitive = Xml.get(node: xml, tag: 'casesensitive');
     addempty  = toBool(Xml.get(node: xml, tag: 'addempty')) ?? true;
     obscure = Xml.get(node: xml, tag: 'obscure');

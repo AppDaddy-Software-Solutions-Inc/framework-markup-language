@@ -1,4 +1,5 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
+import 'package:fml/data/data.dart';
 import 'package:fml/datasources/datasource_interface.dart';
 import 'package:fml/log/manager.dart';
 import 'package:fml/system.dart';
@@ -21,6 +22,9 @@ class CheckboxModel extends FormFieldModel implements IFormField
 {
   // options
   final List<OptionModel> options = [];
+
+  // selected option
+  final List<OptionModel> selectedOptions = [];
 
   // data sourced prototype
   XmlElement? prototype;
@@ -332,33 +336,30 @@ class CheckboxModel extends FormFieldModel implements IFormField
 
     // checkboxes can have multiple values
     var values = Xml.getChildElements(node: xml, tag: 'value');
-    if (values != null) {
-      for (var element in values) {
+    values?.forEach((element)
+    {
       String? v = Xml.getText(element);
       if (!isNullOrEmpty(v))
       {
-        if (_value == null) {
-          value = v;
-        } else if (!_value!.contains(v)) {
-          _value!.add(v);
-        }
+        if (_value == null) value = v;
+        if (_value is List && !_value!.contains(v)) _value!.add(v);
       }
-    }
-    }
+    });
 
-    /// layout attributes
+    // properties
     layout = Xml.get(node: xml, tag: 'layout');
     center = Xml.get(node: xml, tag: 'center');
     wrap = Xml.get(node: xml, tag: 'wrap');
-
-    /// styling attributes
     size  = Xml.get(node: xml, tag: 'size');
 
-    // set the options
-    _setOptions();
+    // build radio options
+    _buildOptions();
+
+    // set the default selected options
+    if (datasource == null) _setSelectedOptions();
   }
 
-  void _setOptions()
+  void _buildOptions()
   {
     // clear options
     _clearOptions();
@@ -383,10 +384,56 @@ class CheckboxModel extends FormFieldModel implements IFormField
       option.dispose();
     }
     options.clear();
+    selectedOptions.clear();
+  }
+
+  void _setSelectedOptions()
+  {
+    selectedOptions.clear();
+    for (var option in options)
+    {
+      bool contains = false;
+      if (value is String && option.value == value) contains = true;
+      if (value is List && value.contains(option.value)) contains = true;
+      if (contains) selectedOptions.add(option);
+    }
+
+    // set data
+    List<dynamic> data = [];
+    for (var option in selectedOptions)
+    {
+      if (option.data != null) data.add(option.data);
+    }
+    this.data = data;
+  }
+
+  Future<bool> setSelectedOption(OptionModel? option) async
+  {
+    if (option == null) return true;
+
+    // set answer
+    bool ok = await answer(option.value, delete: selectedOptions.contains(option));
+    if (ok)
+    {
+      // check/uncheck
+      selectedOptions.contains(option) ? selectedOptions.remove(option) : selectedOptions.add(option);
+
+      // set data
+      List<dynamic> data = [];
+      for (var option in selectedOptions)
+      {
+        if (option.data != null) data.add(option.data);
+      }
+      this.data = data;
+
+      // fire onchange
+      await onChange(context);
+    }
+    return ok;
   }
 
   @override
-  Future<bool> onDataSourceSuccess(IDataSource source, dynamic list) async
+  Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async
   {
     try
     {
@@ -402,52 +449,14 @@ class CheckboxModel extends FormFieldModel implements IFormField
         if (model != null) options.add(model);
       });
 
-      // set data
-      await setData();
-
-      // notify
-      notifyListeners('options', options);
+      // set selected option
+      _setSelectedOptions();
     }
     catch(e)
     {
       Log().error('Error building list. Error is $e', caller: 'CHECKBOX');
     }
     return true;
-  }
-
-  Future<bool> setData() async
-  {
-    // set the data
-    List<dynamic> data = [];
-    for (var option in options) {
-      bool? contains = false;
-      if (value is List)   contains = value.contains(option.value);
-      if (value is String) contains = (value == option.value);
-      if (contains! && (option.data != null)) data.add(option.data);
-    }
-    this.data = data;
-    return true;
-  }
-
-  @override
-  dispose()
-  {
-    // Log().debug('dispose called on => <$elementName id="$id">');
-    super.dispose();
-  }
-
-  Future<bool> onCheck(OptionModel option, bool checked) async
-  {
-    // set answer
-    bool ok = await answer(option.value, delete: (checked == true));
-
-    // set data
-    if (ok == true) ok = await setData();
-
-    // fire onchange
-    if (ok == true) ok = await onChange(context);
-
-    return ok;
   }
 
   @override
@@ -459,53 +468,27 @@ class CheckboxModel extends FormFieldModel implements IFormField
     switch (function)
     {
       case "check":
+        selectedOptions.clear();
         for (var option in options)
         {
-          // set answer
-          await answer(option.value);
+          await setSelectedOption(option);
         }
-
-        // set data
-        await setData();
-
-        // fire onchange
-        await onChange(context);
-
         return true;
 
       case "uncheck":
+        selectedOptions.clear();
+        selectedOptions.addAll(options);
         for (var option in options)
         {
-          // clear answer
-          await answer(option.value, delete: true);
+          await setSelectedOption(option);
         }
-
-        // set data
-        await setData();
-
-        // fire onchange
-        await onChange(context);
-
         return true;
 
       case "toggle":
-
         for (var option in options)
         {
-          bool contains = false;
-          if (value is List)   contains = value.contains(option.value);
-          if (value is String) contains = (value == option.value);
-
-          // clear answer
-          await answer(option.value, delete: contains);
+          await setSelectedOption(option);
         }
-
-        // set data
-        await setData();
-
-        // fire onchange
-        await onChange(context);
-
         return true;
     }
     return super.execute(caller, propertyOrFunction, arguments);

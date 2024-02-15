@@ -291,29 +291,21 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
       _clearOptions();
 
       // add empty option to list
-      int i = 0;
-      if (addempty)
-      {
-        options.add(OptionModel(this, "$id-$i", value: ''));
-        i = i + 1;
-      }
+      if (addempty) options.add(OptionModel(this, "$id-0", value: ''));
 
       // build options
-      if (list != null && source != null)
+      list?.forEach((row)
       {
-        for (var row in list)
-        {
-          var model = OptionModel.fromXml(this, prototype, data: row);
-          if (model != null) options.add(model);
-        }
-      }
+        OptionModel? model = OptionModel.fromXml(this, prototype, data: row);
+        if (model != null) options.add(model);
+      });
 
       // set selected option
       _setSelectedOption();
     }
     catch(e)
     {
-      Log().error('Error building list. Error is $e');
+      Log().error('Error building list. Error is $e', caller: 'TYPEAHEAD');
     }
     return true;
   }

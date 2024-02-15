@@ -22,26 +22,142 @@ class CheckboxView extends StatefulWidget implements IWidgetView
 
 class _CheckboxViewState extends WidgetState<CheckboxView>
 {
-  List<CheckBox> _list = [];
+  void onChangeOption(OptionModel? option) async
+  {
+    // stop model change notifications
+    widget.model.removeListener(this);
 
-  /// Builder for each checkbox [OPTION.OptionModel]
-  _buildOptions() {
-    var model = widget.model;
-    _list = [];
+    // set the selected option
+    await widget.model.setSelectedOption(option);
 
-    if ((model.options.isNotEmpty)) {
-      for (OptionModel option in model.options) {
-        String? value = option.value;
-        bool checked = ((model.value != null) && (model.value.contains(value)));
-        var o = CheckBox(
-            model: model,
-            option: option,
-            checked: checked,
-            onChecked: onChecked,
-            context: context);
-        _list.add(o);
-      }
+    // resume model change notifications
+    widget.model.registerListener(this);
+
+    // force a rebuild
+    setState(() {});
+  }
+
+  Widget addGestures(Widget view, OptionModel option)
+  {
+    if (!widget.model.enabled || !widget.model.editable) return view;
+
+    view = GestureDetector(onTap: () => onChangeOption(option), child: view);
+    view = MouseRegion(cursor: SystemMouseCursors.click, child: view);
+    return view;
+  }
+
+  Widget addAlarmText(Widget view)
+  {
+    if (isNullOrEmpty(widget.model.alarmText)) return view;
+
+    Widget? text = Text("${widget.model.alarmText}", style: TextStyle(color: Theme.of(context).colorScheme.error));
+
+    view = Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [view, text]);
+
+    return view;
+  }
+
+  Widget buildCheckboxButton(OptionModel option)
+  {
+    var selectedColor = widget.model.setErrorBorderColor(context, widget.model.color ?? Theme.of(context).colorScheme.primary);
+    var unselectedColor = widget.model.setErrorBorderColor(context, Theme.of(context).colorScheme.outline);
+
+    var selected = (widget.model.selectedOptions.contains(option));
+    var enabled = (widget.model.editable && widget.model.enabled);
+
+    Widget button = selected ?
+    Icon(Icons.check_box, size: widget.model.size, color: selectedColor) :
+    Icon(Icons.check_box_outline_blank_sharp, size: widget.model.size, color: unselectedColor);
+
+    // add gestures to the button
+    button = addGestures(button, option);
+
+    // set opacity
+    if (!enabled) button = Opacity(opacity: 0.7, child: button);
+
+    // pad icon
+    button = Padding(
+        padding:
+        EdgeInsets.only(top: 8, bottom: 8, right: 8, left: 3),
+        child: button);
+
+    // add label
+    var label = option.getView();
+
+    // add gestures to the button
+    label = addGestures(label, option);
+
+    // Option
+    Widget view = Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [button,label]);
+
+    return view;
+  }
+
+  List<Widget> buildOptions()
+  {
+    // no options specified?
+    if (widget.model.options.isEmpty) return [];
+
+    List<Widget> options = [];
+    for (OptionModel option in widget.model.options)
+    {
+      // build radio button
+      Widget view = buildCheckboxButton(option);
+      options.add(view);
     }
+
+    return options;
+  }
+
+  Widget buildView()
+  {
+    // build radio buttons
+    List<Widget> options = buildOptions();
+
+    //this must go after the children are determined
+    var alignment = WidgetAlignment(widget.model.layoutType, widget.model.center, widget.model.halign, widget.model.valign);
+
+    // wrapped row
+    if (widget.model.layout == 'row' && widget.model.wrap)
+    {
+      return Wrap(
+          children: options,
+          direction: Axis.horizontal,
+          alignment: alignment.mainWrapAlignment,
+          runAlignment: alignment.mainWrapAlignment,
+          crossAxisAlignment: alignment.crossWrapAlignment);
+    }
+
+    // row
+    if (widget.model.layout == 'row' && !widget.model.wrap)
+    {
+      return Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: alignment.crossAlignment,
+          mainAxisAlignment: alignment.mainAlignment,
+          children: options);
+    }
+
+    // wrapped column
+    if (widget.model.wrap)
+    {
+      return Wrap(
+          children: options,
+          direction: Axis.vertical,
+          alignment: alignment.mainWrapAlignment,
+          runAlignment: alignment.mainWrapAlignment,
+          crossAxisAlignment: alignment.crossWrapAlignment);
+    }
+
+    // default - column
+    return Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: alignment.crossAlignment,
+        mainAxisAlignment: alignment.mainAlignment,
+        children: options);
   }
 
   @override
@@ -50,64 +166,11 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    //this must go after the children are determined
-    var alignment = WidgetAlignment(widget.model.layoutType, widget.model.center, widget.model.halign, widget.model.valign);
+    // View
+    Widget view = buildView();
 
-    _buildOptions();
-
-    Widget view;
-    if (widget.model.layout == 'row') {
-      if (widget.model.wrap == true) {
-        view = Wrap(
-                children: _list,
-                direction: Axis.horizontal,
-                alignment: WrapAlignment.start,
-                runAlignment: alignment.mainWrapAlignment,
-                crossAxisAlignment: alignment.crossWrapAlignment);
-      } else {
-        view = Row(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: alignment.crossAlignment,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: _list);
-      }
-    } else {
-      if (widget.model.wrap == true) {
-        view = Wrap(
-                children: _list,
-                direction: Axis.vertical,
-                alignment: WrapAlignment.start,
-                runAlignment: alignment.mainWrapAlignment,
-                crossAxisAlignment: alignment.crossWrapAlignment);
-      } else {
-        view = Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: alignment.mainAlignment,
-                children: _list);
-      }
-    }
-
-    String? errorTextValue = widget.model.alarmText;
-
-    if(!isNullOrEmpty(errorTextValue)) {
-      Widget? errorText = Text(
-        "     $errorTextValue", style: TextStyle(color: Theme
-          .of(context)
-          .colorScheme
-          .error),);
-
-      view = Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [view, errorText],
-      );
-    }
-
-    view = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [view],
-    );
+    // add alarm text
+    view = addAlarmText(view);
 
     // add margins
     view = addMargins(view);
@@ -115,84 +178,7 @@ class _CheckboxViewState extends WidgetState<CheckboxView>
     // apply constraints
     view = applyConstraints(view, widget.model.constraints);
 
+    // return view
     return view;
-  }
-
-  /// Function called when clicking a checkbox
-  Future<void> onChecked(OptionModel option, bool checked) async {
-    await widget.model.onCheck(option, checked);
-  }
-}
-
-class CheckBox extends StatelessWidget {
-  final CheckboxModel model;
-  final OptionModel option;
-
-  final bool checked;
-  final void Function(OptionModel, bool) onChecked;
-
-  final BuildContext context;
-
-  CheckBox(
-      {required this.model,
-      required this.option,
-      required this.checked,
-      required this.onChecked,
-      required this.context})
-      : super(key: UniqueKey());
-
-  /// Callback function called when clicking a [Check]
-  void callOnChecked() {
-    onChecked(option, checked);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-
-    Color fillColorSelected = model.setErrorBorderColor(context, model.color ?? Theme.of(context).colorScheme.primary);
-    Color fillColorUnSelected = model.setErrorBorderColor(context, model.color ?? Colors.transparent);
-    Color borderColor = model.setErrorBorderColor(context, Theme.of(context).colorScheme.outline);
-
-    var checkbox = Checkbox(
-          value: checked,
-          onChanged: (value) =>
-              model.enabled != false && model.editable != false
-                  ? callOnChecked()
-                  : null,
-          checkColor: Theme.of(context).colorScheme.onPrimary,
-          fillColor: MaterialStateColor.resolveWith(
-              (states) => checked ? fillColorSelected : fillColorUnSelected),
-          focusColor: Theme.of(context).colorScheme.onInverseSurface,
-          hoverColor: model.enabled != false && model.editable != false
-              ? Theme.of(context).colorScheme.onInverseSurface
-              : Colors.transparent,
-          side: BorderSide(
-              width: 2,
-              color: checked ? fillColorSelected : borderColor),
-          visualDensity: VisualDensity(horizontal: -2, vertical: -4),
-          splashRadius: 18,
-          mouseCursor: model.enabled != false && model.editable != false
-              ? SystemMouseCursors.click
-              : SystemMouseCursors.basic,
-        );
-    // child: (widget.checked == true ? checkedIcon : uncheckedIcon));
-
-    // Label
-    var label = option.getView();
-    label = MouseRegion(cursor: model.enabled && model.editable ? SystemMouseCursors.click : SystemMouseCursors.basic,
-          child: GestureDetector(onTap: () => model.enabled && model.editable ? callOnChecked() : null, child: label));
-
-    // View
-    var chk = Row(mainAxisAlignment: MainAxisAlignment.start, crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Padding(
-                  padding:
-                      EdgeInsets.only(top: 8, bottom: 8, right: 4, left: 0),
-                  child: checkbox),
-              label
-            ]);
-
-    return model.editable && model.enabled ? chk : Opacity(opacity: 0.7, child: chk);
   }
 }

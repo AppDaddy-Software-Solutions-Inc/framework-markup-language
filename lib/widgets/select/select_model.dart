@@ -108,7 +108,7 @@ class SelectModel extends DecoratedInputModel implements IFormField
 
   void _setSelectedOption({bool setValue = true})
   {
-    OptionModel? selectedOption;
+    selectedOption = null;
     if (options.isNotEmpty)
     {
       for (var option in options)
@@ -168,29 +168,21 @@ class SelectModel extends DecoratedInputModel implements IFormField
       _clearOptions();
 
       // add empty option to list
-      int i = 0;
-      if (addempty)
-      {
-        options.add(OptionModel(this, "$id-$i", value: ''));
-        i = i + 1;
-      }
+      if (addempty) options.add(OptionModel(this, "$id-0", value: ''));
 
       // build options
-      if (list != null)
+      list?.forEach((row)
       {
-        for (var row in list)
-        {
-          var model = OptionModel.fromXml(this, prototype, data: row);
-          if (model != null) options.add(model);
-        }
-      }
+        OptionModel? model = OptionModel.fromXml(this, prototype, data: row);
+        if (model != null) options.add(model);
+      });
 
       // set selected option
       _setSelectedOption();
     }
     catch(e)
     {
-      Log().error('Error building list. Error is $e');
+      Log().error('Error building list. Error is $e', caller: 'SELECT');
     }
     return true;
   }
@@ -201,6 +193,8 @@ class SelectModel extends DecoratedInputModel implements IFormField
       option.dispose();
     }
     options.clear();
+    selectedOption = null;
+    data = null;
   }
 
   Future<bool> setSelectedOption(OptionModel? option) async

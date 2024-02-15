@@ -33,6 +33,9 @@ class _SelectViewState extends WidgetState<SelectView>
 
     // resume model change notifications
     widget.model.registerListener(this);
+
+    // force a rebuild
+    setState(() {});
   }
 
   onFocusChange() async
@@ -110,15 +113,6 @@ class _SelectViewState extends WidgetState<SelectView>
     return view;
   }
 
-  List<Widget> selectedItemBuilder(BuildContext context)
-  {
-    // nothing selected
-    if (widget.model.selectedOption == null) return [Text('')];
-
-    // option view
-    return [widget.model.selectedOption!.getView()];
-  }
-
   Widget buildSelect()
   {
     // hints
@@ -144,6 +138,7 @@ class _SelectViewState extends WidgetState<SelectView>
 
     // widget is enabled?
     var enabled = (widget.model.enabled && !widget.model.busy);
+    if (!enabled) return widget.model.selectedOption?.getView() ?? Container(height: widget.model.height ?? 48, child: Text(''));
 
     // build options
     List<DropdownMenuItem<OptionModel>> options = [];
@@ -155,12 +150,11 @@ class _SelectViewState extends WidgetState<SelectView>
 
     // select
     Widget view = DropdownButton<OptionModel>(
-          selectedItemBuilder: selectedItemBuilder,
-          itemHeight: 48,
+          itemHeight: widget.model.height ?? 48,
           value: widget.model.selectedOption,
           hint: hint,
           items: options, // if this is set to null it disables the dropdown but also hides any value
-          onChanged: enabled ? onChangeOption : null,
+          onChanged: onChangeOption,
           dropdownColor: Theme.of(context).colorScheme.onInverseSurface,
           isExpanded: true,
           borderRadius: borderRadius,
@@ -169,7 +163,7 @@ class _SelectViewState extends WidgetState<SelectView>
           focusColor: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.15));
 
     // show hand cursor
-    if (enabled) view = MouseRegion(cursor: SystemMouseCursors.click,child: view);
+    view = MouseRegion(cursor: SystemMouseCursors.click,child: view);
 
     return view;
   }

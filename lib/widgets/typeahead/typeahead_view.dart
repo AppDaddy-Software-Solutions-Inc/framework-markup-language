@@ -1,7 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/typeahead/typeahead_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
@@ -35,39 +34,20 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
   final focus = FocusNode();
 
   @override
+  void initState()
+  {
+    super.initState();
+
+    // used to change controller text back to its original value
+    focus.addListener(onFocusChange);
+  }
+
+  @override
   void dispose()
   {
     controller.dispose();
+    focus.dispose();
     super.dispose();
-  }
-
-  Future<List<OptionModel>> buildSuggestions(String pattern) async
-  {
-    // hack to force entire list to show
-    // note the SuggestionsControllerOverride override
-    // on the open method below
-    if (controller.text == widget.model.selectedOption?.label) pattern = "";
-
-    // get matching options
-    return widget.model.getMatchingOptions(pattern);
-  }
-
-  void onSuggestionSelected(OptionModel option) async
-  {
-    // stop model change notifications
-    widget.model.removeListener(this);
-
-    // set the selected option
-    await widget.model.setSelectedOption(option);
-
-    // resume model change notifications
-    widget.model.registerListener(this);
-  }
-
-  Widget itemBuilder(BuildContext context, OptionModel option)
-  {
-    Widget? view = option.getView();
-    return DropdownMenuItem(child: view);
   }
 
   Widget fieldBuilder(BuildContext context, TextEditingController controller, FocusNode focusNode)
@@ -177,6 +157,47 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
     return view;
   }
 
+  Future<List<OptionModel>> buildSuggestions(String pattern) async
+  {
+    // hack to force entire list to show
+    // note the SuggestionsControllerOverride override
+    // on the open method below
+    if (controller.text == widget.model.selectedOption?.label) pattern = "";
+
+    // get matching options
+    return widget.model.getMatchingOptions(pattern);
+  }
+
+  void onSuggestionSelected(OptionModel option) async
+  {
+    // stop model change notifications
+    widget.model.removeListener(this);
+
+    // set the selected option
+    bool ok = await widget.model.setSelectedOption(option);
+
+    // set the controller text
+    setControllText(widget.model.selectedOption?.label);
+
+    // resume model change notifications
+    widget.model.registerListener(this);
+
+    // highlight selection
+    WidgetsBinding.instance.addPostFrameCallback((_)
+    {
+      controller.selection = TextSelection(baseOffset: 0, extentOffset: controller.text.length);
+    });
+
+    // hack to close window
+    focus.unfocus();
+  }
+
+  Widget itemBuilder(BuildContext context, OptionModel option)
+  {
+    Widget? view = option.getView();
+    return DropdownMenuItem(child: view);
+  }
+
   OptionModel? getSelectedOption()
   {
     // add options
@@ -187,38 +208,26 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
     return null;
   }
 
+  // set controller text
+  setControllText(String? text)
+  {
+    if (controller.text != text) controller.text = text ?? "";
+  }
+
+  // focus change sets the text to the most recent selection
   void onFocusChange()
   {
-    if (!focus.hasFocus)
-    {
-      controller.text = widget.model.selectedOption?.label ?? "";
-    }
+    setControllText(widget.model.selectedOption?.label);
   }
-
-  @override
-  onModelChange(WidgetModel model, {String? property, dynamic value})
-  {
-    super.onModelChange(model, property: property, value: value);
-  }
-
 
   @override
   Widget build(BuildContext context)
   {
-    print ('>>>>>>>>>>>>>>>>>>>>> building type ahead field');
-
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    // set controller text
-    if (controller.text != widget.model.selectedOption?.label)
-    {
-      controller.text != widget.model.selectedOption?.label;
-    }
-
-    // used to change types text back to its original value
-    focus.removeListener(onFocusChange);
-    focus.addListener(onFocusChange);
+    // set the controller text
+    setControllText(widget.model.selectedOption?.label);
 
     // build the view
     Widget view = TypeAheadField<OptionModel>(

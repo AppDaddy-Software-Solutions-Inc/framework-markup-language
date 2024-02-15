@@ -275,7 +275,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
     if (isNullOrEmpty(pattern)) return options.toList();
 
     // matching options at top of list
-    return options.where((option) => compare(option, pattern)).take(matchRows).toList();
+    return options.where((option) => compare(option, pattern)).take(rows).toList();
   }
 
   bool compare(OptionModel option, String pattern)

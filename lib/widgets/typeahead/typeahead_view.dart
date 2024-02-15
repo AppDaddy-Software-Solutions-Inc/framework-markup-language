@@ -202,6 +202,7 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
   Widget itemBuilder(BuildContext context, OptionModel option)
   {
     Widget? view = option.getView();
+    view = Padding(padding: const EdgeInsets.all(8),child: view);
     return DropdownMenuItem(child: view);
   }
 

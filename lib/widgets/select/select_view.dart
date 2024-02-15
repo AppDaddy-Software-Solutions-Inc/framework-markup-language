@@ -140,6 +140,7 @@ class _SelectViewState extends WidgetState<SelectView>
     for (OptionModel option in widget.model.options)
     {
       Widget view = option.getView();
+
       options.add(DropdownMenuItem(value: option, child: view));
     }
 

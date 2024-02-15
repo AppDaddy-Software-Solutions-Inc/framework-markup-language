@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:fml/phrase.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/typeahead/typeahead_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
@@ -83,19 +84,28 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
         autofocus: false,
         obscureText: widget.model.obscure,
         style: style,
+        readOnly: widget.model.readonly,
         decoration: decoration,
         textAlignVertical: TextAlignVertical.center);
   }
 
   Widget emptyBuilder(BuildContext context)
   {
-    return Padding(
-    padding: const EdgeInsets.all(8),
-    child: Text(
-      'Nothing found!',
-      textAlign: TextAlign.center,
-      style: Theme.of(context).textTheme.titleMedium,
-    ));
+    Widget? view;
+
+    // no data
+    if (widget.model.options.isEmpty)
+    {
+      view = widget.model.noData?.getView();
+      view ??= Text(Phrases().noData, textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleMedium);
+      view = Padding(padding: const EdgeInsets.all(8),child: view);
+      return view;
+    }
+
+    view = widget.model.noMatch?.getView();
+    view ??= Text(Phrases().noMatchFound, textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleMedium);
+    view = Padding(padding: const EdgeInsets.all(8),child: view);
+    return view;
   }
 
   Widget addBorders(Widget view)
@@ -159,6 +169,9 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
 
   Future<List<OptionModel>> buildSuggestions(String pattern) async
   {
+    // if not enable then show no list
+    if (!widget.model.enabled) return [];
+
     // hack to force entire list to show
     // note the SuggestionsControllerOverride override
     // on the open method below
@@ -189,6 +202,7 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
   Widget itemBuilder(BuildContext context, OptionModel option)
   {
     Widget? view = option.getView();
+    view = Padding(padding: const EdgeInsets.all(8),child: view);
     return DropdownMenuItem(child: view);
   }
 

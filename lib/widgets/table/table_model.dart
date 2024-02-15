@@ -40,7 +40,7 @@ class TableModel extends BoxModel implements IForm
   // holds header
   TableHeaderModel? header;
 
-  // holds header
+  // holds no data model
   NoDataModel? noData;
 
   // holds footer

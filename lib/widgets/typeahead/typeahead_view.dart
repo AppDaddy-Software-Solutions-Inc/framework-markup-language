@@ -217,7 +217,11 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
   // focus change sets the text to the most recent selection
   void onFocusChange()
   {
+    // set the label
     setControllText(widget.model.selectedOption?.label);
+
+    // select all
+    if (focus.hasFocus && widget.model.editable) controller.selection = TextSelection(baseOffset: 0, extentOffset: controller.text.length);
   }
 
   @override

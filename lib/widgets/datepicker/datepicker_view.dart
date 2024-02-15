@@ -130,7 +130,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
             color: widget.model.editable == false
                 ? secondaryColor
                 : mainColor,
-            width: widget.model.borderwidth),
+            width: widget.model.borderWidth),
       );}
 
     else {
@@ -139,7 +139,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
         BorderRadius.all(Radius.circular(widget.model.radius)),
         borderSide: BorderSide(
             color: mainColor,
-            width: widget.model.borderwidth),
+            width: widget.model.borderWidth),
       );
     }
 
@@ -153,7 +153,7 @@ class _DatepickerViewState extends WidgetState<DatepickerView> {
 
     // set the border color arrays
     // set the border colors
-    Color? enabledBorderColor = widget.model.bordercolor ?? Theme.of(context).colorScheme.outline;
+    Color? enabledBorderColor = widget.model.borderColor ?? Theme.of(context).colorScheme.outline;
     Color? disabledBorderColor = Theme.of(context).disabledColor;
     Color? focusBorderColor = Theme.of(context).focusColor;
     Color? errorBorderColor = Theme.of(context).colorScheme.error;

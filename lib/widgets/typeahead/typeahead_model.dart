@@ -25,21 +25,24 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
   // options
   final List<OptionModel> options = [];
 
-  // inputenabled
-  BooleanObservable? _inputenabled;
-  set inputenabled(dynamic v)
+  // selected option
+  OptionModel? selectedOption;
+
+  // value
+  BooleanObservable? _caseSensitive;
+  set caseSensitive(dynamic v)
   {
-    if (_inputenabled != null)
+    if (_caseSensitive != null)
     {
-      _inputenabled!.set(v);
+      _caseSensitive!.set(v);
     }
     else if (v != null)
     {
-      _inputenabled = BooleanObservable(Binding.toKey(id, 'inputenabled'), v, scope: scope, listener: onPropertyChange);
+      _caseSensitive = BooleanObservable(Binding.toKey(id, 'casesensitive'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  bool get inputenabled => _inputenabled?.get() ?? false;
-
+  bool get caseSensitive => _caseSensitive?.get() ?? false;
+  
   // value
   StringObservable? _value;
   @override
@@ -49,53 +52,67 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
     {
       _value!.set(v);
     }
-    else if (v != null || WidgetModel.isBound(this, Binding.toKey(id, 'value')))
+    else if (v != null)
     {
-      _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, listener: onValueChange);
+      _value = StringObservable(Binding.toKey(id, 'value'), v, scope: scope, );
     }
   }
 
   @override
   dynamic get value => dirty ? _value?.get() : _value?.get() ?? defaultValue;
 
-  //  match type
-  StringObservable? _matchtype;
-  set matchtype(dynamic v)
+  //  maximum number of match results to show
+  IntegerObservable? _matchRows;
+  set matchRows(dynamic v)
   {
-    if (_matchtype != null)
+    if (_matchRows != null)
     {
-      _matchtype!.set(v);
+      _matchRows!.set(v);
     }
     else
     {
       if (v != null)
       {
-        matchtype = StringObservable(Binding.toKey(id, 'matchtype'), v, scope: scope, listener: onPropertyChange);
+        _matchRows = IntegerObservable(Binding.toKey(id, 'matchrows'), v, scope: scope, listener: onPropertyChange);
       }
     }
   }
-  String? get matchtype => _matchtype?.get();
-
-  TypeaheadModel(WidgetModel parent, String? id, {dynamic inputenabled,
-        dynamic value,
-        dynamic defaultValue,
-        String? postbroker,
-        dynamic matchtype,
-      })
-      : super(parent, id)
+  int get matchRows => _matchRows?.get() ?? 5;
+  
+  //  match type
+  StringObservable? _matchType;
+  set matchType(dynamic v)
   {
-    // instantiate busy observable
-    busy = false;
-
-    if (inputenabled  != null) this.inputenabled  = inputenabled;
-    if (value         != null) this.value         = value;
-    if (defaultValue  != null) this.defaultValue  = defaultValue;
-
-    if (matchtype     != null) this.matchtype     = matchtype;
-
-    alarming = false;
-    dirty    = false;
+    if (_matchType != null)
+    {
+      _matchType!.set(v);
+    }
+    else
+    {
+      if (v != null)
+      {
+        _matchType = StringObservable(Binding.toKey(id, 'matchtype'), v, scope: scope, listener: onPropertyChange);
+      }
+    }
   }
+  String get matchType => _matchType?.get() ?? 'contains';
+
+  /// if the input will obscure its characters.
+  BooleanObservable? _obscure;
+  set obscure(dynamic v)
+  {
+    if (_obscure != null)
+    {
+      _obscure!.set(v);
+    }
+    else if (v != null)
+    {
+      _obscure = BooleanObservable(Binding.toKey(id, 'obscure'), v, scope: scope, listener: onPropertyChange);
+    }
+  }
+  bool get obscure => _obscure?.get() ?? false;
+
+  TypeaheadModel(WidgetModel parent, String? id) : super(parent, id);
 
   static TypeaheadModel? fromXml(WidgetModel parent, XmlElement xml)
   {
@@ -115,12 +132,14 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
     value = Xml.get(node: xml, tag: 'value');
     hint = Xml.get(node: xml, tag: 'hint');
     border = Xml.get(node: xml, tag: 'border');
-    bordercolor = Xml.get(node: xml, tag: 'bordercolor');
-    borderwidth = Xml.get(node: xml, tag: 'borderwidth');
+    borderColor = Xml.get(node: xml, tag: 'bordercolor');
+    borderWidth = Xml.get(node: xml, tag: 'borderwidth');
     radius = Xml.get(node: xml, tag: 'radius');
-    inputenabled = Xml.get(node: xml, tag: 'inputenabled');
-    matchtype = Xml.get(node: xml, tag: 'matchtype') ?? Xml.get(node: xml, tag: 'searchtype');
+    matchType = Xml.get(node: xml, tag: 'matchtype') ?? Xml.get(node: xml, tag: 'searchtype');
+    matchRows = Xml.get(node: xml, tag: 'matchrows');
+    caseSensitive = Xml.get(node: xml, tag: 'casesensitive');
     addempty  = toBool(Xml.get(node: xml, tag: 'addempty')) ?? true;
+    obscure = toBool(Xml.get(node: xml, tag: 'obscure'));
 
     // build select options
     _buildOptions();
@@ -140,7 +159,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
 
   void _setSelectedOption({bool setValue = true})
   {
-    OptionModel? selectedOption;
+    selectedOption = null;
     if (options.isNotEmpty)
     {
       for (var option in options)
@@ -159,7 +178,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
     // set values
     if (setValue) value = selectedOption?.value;
     data  = selectedOption?.data;
-    label = selectedOption?.labelValue;
+    label = selectedOption?.value;
   }
 
   void _buildOptions()
@@ -171,7 +190,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
     List<OptionModel> options = findChildrenOfExactType(OptionModel).cast<OptionModel>();
 
     // set prototype
-    if ((!isNullOrEmpty(this.datasource)) && (options.isNotEmpty))
+    if (!isNullOrEmpty(this.datasource) && options.isNotEmpty)
     {
       prototype = prototypeOf(options.first.element);
       options.removeAt(0);
@@ -197,6 +216,70 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
     options.clear();
   }
 
+  Future<bool> setSelectedOption(OptionModel? option) async
+  {
+    // save the answer
+    bool ok = await answer(option?.value);
+    if (ok)
+    {
+      // set selected
+      selectedOption = option;
+
+      // set data
+      data = option?.data;
+
+      // fire the onchange event
+      await onChange(context);
+    }
+    return ok;
+  }
+
+  Future<List<OptionModel>> getMatchingOptions(String pattern) async
+  {
+    // trim
+    pattern.trim();
+
+    // case insensitive pattern
+    if (!caseSensitive) pattern = pattern.toLowerCase();
+
+    // empty pattern returns all
+    if (isNullOrEmpty(pattern)) return options.toList();
+
+    // matching options at top of list
+    return options.where((option) => compare(option, pattern)).take(matchRows).toList();
+  }
+
+  bool compare(OptionModel option, String pattern)
+  {
+    // not text matches all
+    if (isNullOrEmpty(pattern)) return true;
+
+    // get option search tags
+    for (var tag in option.tags)
+    {
+      if (isNullOrEmpty(tag)) return false;
+      tag = tag.trim();
+      if (!caseSensitive) tag = tag.toLowerCase();
+
+      var type = matchType.trim();
+      if (!caseSensitive) type = type.toLowerCase();
+
+      switch (type)
+      {
+        case 'contains':
+          if (tag.contains(pattern)) return true;
+          break;
+        case 'startswith':
+          if (tag.startsWith(pattern)) return true;
+          break;
+        case 'endswith':
+          if (tag.endsWith(pattern)) return true;
+          break;
+      }
+    }
+    return false;
+  }
+
   @override
   Future<bool> onDataSourceSuccess(IDataSource? source, Data? list) async
   {
@@ -208,29 +291,21 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
       _clearOptions();
 
       // add empty option to list
-      int i = 0;
-      if (addempty)
-      {
-        options.add(OptionModel(this, "$id-$i", value: ''));
-        i = i + 1;
-      }
+      if (addempty) options.add(OptionModel(this, "$id-0", value: ''));
 
       // build options
-      if (list != null && source != null)
+      list?.forEach((row)
       {
-        for (var row in list)
-        {
-          var model = OptionModel.fromXml(this, prototype, data: row);
-          if (model != null) options.add(model);
-        }
-      }
+        OptionModel? model = OptionModel.fromXml(this, prototype, data: row);
+        if (model != null) options.add(model);
+      });
 
       // set selected option
       _setSelectedOption();
     }
     catch(e)
     {
-      Log().error('Error building list. Error is $e');
+      Log().error('Error building list. Error is $e', caller: 'TYPEAHEAD');
     }
     return true;
   }

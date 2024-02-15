@@ -111,8 +111,8 @@ dependencies:
   flutter_svg: ^2.0.9
   # MIT
 
-  # Updated 2023/06/05
-  flutter_typeahead: ^4.6.1
+  # Updated 2024/02/14
+  flutter_typeahead: ^5.2.0
   # BSD-2-Clause
 
   # Updated 2022/12/30

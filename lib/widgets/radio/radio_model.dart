@@ -18,6 +18,9 @@ class RadioModel extends FormFieldModel implements IFormField
   // options
   List<OptionModel> options = [];
 
+  // selected option
+  OptionModel? selectedOption;
+
   // data sourced prototype
   XmlElement? prototype;
 
@@ -215,25 +218,19 @@ class RadioModel extends FormFieldModel implements IFormField
 
   void _setSelectedOption({bool setValue = true})
   {
-    OptionModel? selectedOption;
-    if (options.isNotEmpty)
+    selectedOption = null;
+    for (var option in options)
     {
-      for (var option in options)
+      if (option.value == value)
       {
-        if (option.value == value)
-        {
-          selectedOption = option;
-          break;
-        }
+        selectedOption = option;
+        break;
       }
-
-      // not found? default to the first option
-      selectedOption ??= options[0];
     }
 
     // set values
     if (setValue) value = selectedOption?.value;
-    data  = selectedOption?.data;
+    data = selectedOption?.data;
   }
 
   void _clearOptions()
@@ -242,6 +239,9 @@ class RadioModel extends FormFieldModel implements IFormField
       option.dispose();
     }
     options.clear();
+
+    selectedOption = null;
+    data = null;
   }
 
   @override
@@ -254,15 +254,11 @@ class RadioModel extends FormFieldModel implements IFormField
       _clearOptions();
 
       // build options
-      if (list != null)
+      list?.forEach((row)
       {
-        // build options
-        for (var row in list) 
-        {
-          var model = OptionModel.fromXml(this, prototype, data: row);
-          if (model != null) options.add(model);
-        }
-      }
+        OptionModel? model = OptionModel.fromXml(this, prototype, data: row);
+        if (model != null) options.add(model);
+      });
 
       // set selected option
       _setSelectedOption();
@@ -274,14 +270,21 @@ class RadioModel extends FormFieldModel implements IFormField
     return true;
   }
 
-  Future<bool> onCheck(OptionModel option) async
+  Future<bool> setSelectedOption(OptionModel? option) async
   {
-    // set answer
-    bool ok = await answer(option.value);
+    // save the answer
+    bool ok = await answer(option?.value);
+    if (ok)
+    {
+      // set selected
+      selectedOption = option;
 
-    // fire onchange
-    if (ok == true) ok = await onChange(context);
+      // set data
+      data = option?.data;
 
+      // fire the onchange event
+      await onChange(context);
+    }
     return ok;
   }
 

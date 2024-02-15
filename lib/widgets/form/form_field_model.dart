@@ -131,7 +131,7 @@ class FormFieldModel extends DecoratedWidgetModel
       _editable = BooleanObservable(Binding.toKey(id, 'editable'), v, scope: scope, listener: onPropertyChange);
     }
   }
-  bool? get editable => _editable?.get();
+  bool get editable => _editable?.get() ?? true;
 
   // onchange event
   StringObservable? _onchange;

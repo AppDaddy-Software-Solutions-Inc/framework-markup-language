@@ -73,6 +73,7 @@ import 'package:fml/widgets/menu/item/menu_item_model.dart';
 import 'package:fml/widgets/menu/menu_model.dart';
 import 'package:fml/widgets/modal/modal_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
+import 'package:fml/widgets/option/tag_model.dart';
 import 'package:fml/widgets/padding/padding_model.dart';
 import 'package:fml/widgets/pager/page/page_model.dart';
 import 'package:fml/widgets/pager/pager_model.dart';
@@ -865,6 +866,10 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
       } else {
         model = RotateTransitionModel.fromXml(parent, node);
       }
+      break;
+
+    case "TAG":
+      if (parent is OptionModel) model = TagModel.fromXml(parent, node);
       break;
 
     case "SBOX":

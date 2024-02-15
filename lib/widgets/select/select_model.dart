@@ -23,6 +23,9 @@ class SelectModel extends DecoratedInputModel implements IFormField
   // options
   final List<OptionModel> options = [];
 
+  // selected option
+  OptionModel? selectedOption;
+
   // data sourced prototype
   XmlElement? prototype;
 
@@ -48,7 +51,7 @@ class SelectModel extends DecoratedInputModel implements IFormField
       { dynamic value,
         dynamic defaultValue,
         String? postbroker,
-        dynamic bordercolor,
+        dynamic borderColor,
         dynamic matchtype,
         })
       : super(parent, id)
@@ -56,9 +59,9 @@ class SelectModel extends DecoratedInputModel implements IFormField
     // instantiate busy observable
     busy = false;
 
-    if (bordercolor   != null)  this.bordercolor  = bordercolor;
-    if (value         != null)  this.value         = value;
-    if (defaultValue  != null)  this.defaultValue  = defaultValue;
+    if (borderColor   != null)  this.borderColor = borderColor;
+    if (value         != null)  this.value = value;
+    if (defaultValue  != null)  this.defaultValue = defaultValue;
   }
 
   static SelectModel? fromXml(WidgetModel parent, XmlElement xml) {
@@ -105,7 +108,7 @@ class SelectModel extends DecoratedInputModel implements IFormField
 
   void _setSelectedOption({bool setValue = true})
   {
-    OptionModel? selectedOption;
+    selectedOption = null;
     if (options.isNotEmpty)
     {
       for (var option in options)
@@ -124,7 +127,7 @@ class SelectModel extends DecoratedInputModel implements IFormField
     // set values
     if (setValue) value = selectedOption?.value;
     data  = selectedOption?.data;
-    label = selectedOption?.labelValue;
+    label = selectedOption?.value;
   }
 
   void _buildOptions()
@@ -165,29 +168,21 @@ class SelectModel extends DecoratedInputModel implements IFormField
       _clearOptions();
 
       // add empty option to list
-      int i = 0;
-      if (addempty)
-      {
-        options.add(OptionModel(this, "$id-$i", value: ''));
-        i = i + 1;
-      }
+      if (addempty) options.add(OptionModel(this, "$id-0", value: ''));
 
       // build options
-      if (list != null)
+      list?.forEach((row)
       {
-        for (var row in list)
-        {
-          var model = OptionModel.fromXml(this, prototype, data: row);
-          if (model != null) options.add(model);
-        }
-      }
+        OptionModel? model = OptionModel.fromXml(this, prototype, data: row);
+        if (model != null) options.add(model);
+      });
 
       // set selected option
       _setSelectedOption();
     }
     catch(e)
     {
-      Log().error('Error building list. Error is $e');
+      Log().error('Error building list. Error is $e', caller: 'SELECT');
     }
     return true;
   }
@@ -198,6 +193,26 @@ class SelectModel extends DecoratedInputModel implements IFormField
       option.dispose();
     }
     options.clear();
+    selectedOption = null;
+    data = null;
+  }
+
+  Future<bool> setSelectedOption(OptionModel? option) async
+  {
+    // save the answer
+    bool ok = await answer(option?.value);
+    if (ok)
+    {
+      // set selected
+      selectedOption = option;
+
+      // set data
+      data = option?.data;
+
+      // fire the onchange event
+      await onChange(context);
+    }
+    return ok;
   }
 
   @override

@@ -526,7 +526,7 @@ class Xml {
   }
 
   /// Given an [XmlNode] this will return the raw [XmlNodeType.TEXT] String
-  static String? getText(XmlNode? node,{bool innerXmlAsText = false})
+  static String? getText(XmlNode? node, {bool innerXmlAsText = false})
   {
     // node is text or cdata
     if (node?.nodeType == XmlNodeType.TEXT || node?.nodeType == XmlNodeType.CDATA) return node?.value;

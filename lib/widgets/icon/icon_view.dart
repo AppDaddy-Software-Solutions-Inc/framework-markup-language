@@ -39,6 +39,9 @@ class _IconViewState extends WidgetState<IconView> {
     // view
     Widget view = Icon(value, size: size, color: color);
 
+    // add margins
+    view = addMargins(view);
+
     return view;
   }
 }

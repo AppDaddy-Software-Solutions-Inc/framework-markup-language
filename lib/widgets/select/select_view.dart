@@ -21,111 +21,34 @@ class SelectView extends StatefulWidget implements IWidgetView
 
 class _SelectViewState extends WidgetState<SelectView>
 {
-  List<DropdownMenuItem<OptionModel>> _list = [];
-  OptionModel? _selected;
   FocusNode focus = FocusNode();
 
-  _buildOptions()
+  void onChangeOption(OptionModel? option) async
   {
-    var model = widget.model;
+    // stop model change notifications
+    widget.model.removeListener(this);
 
-    _selected = null;
-    _list = [];
+    // set the selected option
+    await widget.model.setSelectedOption(option);
 
-    // add options
-    for (OptionModel option in model.options)
-    {
-      Widget view = option.getView();
-      var o = DropdownMenuItem(value: option, child: view);
-      if (model.value == option.value) _selected = option;
-      _list.add(o);
-    }
-
-    // set first item as selected
-    if (_selected == null && _list.isNotEmpty)
-    {
-      _selected = _list[0].value;
-    }
+    // resume model change notifications
+    widget.model.registerListener(this);
   }
 
-  @override
-  Widget build(BuildContext context)
+  onFocusChange() async
   {
-    // build options
-    _buildOptions();
+    var editable = (widget.model.editable != false);
+    if (!editable) return;
 
-    // Check if widget is visible before wasting resources on building it
-    if (!widget.model.visible) return Offstage();
+    // commit changes on loss of focus
+    if (!focus.hasFocus) await _commit();
+  }
 
-    // busy?
-    Widget? busy;
-    if (widget.model.busy == true)
-    {
-      busy = BusyModel(widget.model,
-          visible: true,
-          size: 24,
-          color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.5),
-          modal: false).getView();
-    }
+  Future<bool> _commit() async => true;
 
-    bool enabled = (widget.model.enabled != false) && (widget.model.busy != true);
-
-    TextStyle ts = TextStyle(fontSize: widget.model.size,
-        color: widget.model.color != null
-            ? (widget.model.color?.computeLuminance() ?? 1) < 0.4
-              ? Colors.white.withOpacity(0.5)
-              : Colors.black.withOpacity(0.5)
-            : Theme.of(context).colorScheme.onSurfaceVariant
-    );
-
-    // view
-    Widget view;
-
-    OptionModel? dValue = (_selected != null && _selected?.value != null && _selected?.value == '') ? null : _selected;
-
-    Widget child = Text('');
-    if (_selected != null && _selected!.label != null)
-    {
-      child = _selected!.getView();
-    }
-
-    view = widget.model.editable != false
-        ? MouseRegion(
-            cursor: SystemMouseCursors.click,
-            child: DropdownButton<OptionModel>(
-              itemHeight: 48,
-              value: dValue,
-              // value must be null for the hint to show
-              hint: Text(
-                widget.model.hint ?? '',
-                style: ts,
-              ),
-              items: _list, // if this is set to null it disables the dropdown but also hides any value
-              onChanged: enabled ? changedDropDownItem : null, // set this to null to disable dropdown
-              dropdownColor: Theme.of(context).colorScheme.onInverseSurface,
-              isExpanded: true,
-              borderRadius: BorderRadius.circular(widget.model.radius.toDouble() <= 24
-                          ? widget.model.radius.toDouble()
-                          : 24),
-              underline: Container(),
-              disabledHint: widget.model.hint == null
-                  ? Container(height: 10,)
-                  : Text(
-                      widget.model.hint ?? '',
-                      style: TextStyle(
-                          fontSize: 14,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurfaceVariant
-                              .withOpacity(0.50)),
-                    ),
-              focusColor: Theme.of(context)
-                  .colorScheme
-                  .surfaceVariant
-                  .withOpacity(0.15),
-            ))
-        : child;
-
+  Widget addBorders(Widget view)
+  {
+    // no borders
     if (widget.model.border == 'none')
     {
       view = Container(
@@ -136,8 +59,11 @@ class _SelectViewState extends WidgetState<SelectView>
         ),
         child: view,
       );
+      return view;
     }
-    else if (widget.model.border == 'bottom' || widget.model.border == 'underline')
+
+    // only bottom borders
+    if (widget.model.border == 'bottom' || widget.model.border == 'underline')
     {
       view = Container(
         padding: const EdgeInsets.fromLTRB(12, 0, 8, 3),
@@ -150,33 +76,135 @@ class _SelectViewState extends WidgetState<SelectView>
           ),),
         child: view,
       );
-      } else {
-      view = Container(
-        padding: const EdgeInsets.fromLTRB(12, 1, 9, 0),
-        decoration: BoxDecoration(
-          color: widget.model.getFieldColor(context),
-          border: Border.all(
-              width: widget.model.borderWidth.toDouble(),
-              color: widget.model.setErrorBorderColor(context, widget.model.borderColor)),
-          borderRadius: BorderRadius.circular(widget.model.radius.toDouble()),
-        ),
-        child: view,
-      );
+      return view;
     }
+
+    // default - all borders
+    view = Container(
+      padding: const EdgeInsets.fromLTRB(12, 1, 9, 0),
+      decoration: BoxDecoration(
+        color: widget.model.getFieldColor(context),
+        border: Border.all(
+            width: widget.model.borderWidth.toDouble(),
+            color: widget.model.setErrorBorderColor(context, widget.model.borderColor)),
+        borderRadius: BorderRadius.circular(widget.model.radius.toDouble()),
+      ),
+      child: view,
+    );
+
+    return view;
+  }
+
+  Widget addAlarmText(Widget view)
+  {
+    if (isNullOrEmpty(widget.model.alarmText)) return view;
+
+    Widget? errorText = Padding(padding: EdgeInsets.only(top: 6.0 , bottom: 2.0), child: Text("${widget.model.alarmText}", style: TextStyle(color: Theme.of(context).colorScheme.error)));
+    view = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [view, errorText],
+    );
+
+    return view;
+  }
+
+  List<Widget> selectedItemBuilder(BuildContext context)
+  {
+    // nothing selected
+    if (widget.model.selectedOption == null) return [Text('')];
+
+    // option view
+    return [widget.model.selectedOption!.getView()];
+  }
+
+  Widget buildSelect()
+  {
+    // hints
+    Widget? hint;
+    Widget? hintDisabled;
+    if (!isNullOrEmpty(widget.model.hint))
+    {
+      var ts = TextStyle(fontSize: widget.model.size,
+          color: widget.model.color != null
+              ? (widget.model.color?.computeLuminance() ?? 1) < 0.4
+              ? Colors.white.withOpacity(0.5)
+              : Colors.black.withOpacity(0.5)
+              : Theme.of(context).colorScheme.onSurfaceVariant);
+
+      var ts2 = TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.50));
+
+      hint = Text(widget.model.hint!, style: ts);
+      hintDisabled = Text(widget.model.hint!, style: ts2);
+    }
+
+    // border radius
+    var borderRadius = BorderRadius.circular(widget.model.radius.toDouble() <= 24 ? widget.model.radius.toDouble() : 24);
+
+    // widget is enabled?
+    var enabled = (widget.model.enabled && !widget.model.busy);
+
+    // build options
+    List<DropdownMenuItem<OptionModel>> options = [];
+    for (OptionModel option in widget.model.options)
+    {
+      Widget view = option.getView();
+      options.add(DropdownMenuItem(value: option, child: view));
+    }
+
+    // select
+    Widget view = DropdownButton<OptionModel>(
+          selectedItemBuilder: selectedItemBuilder,
+          itemHeight: 48,
+          value: widget.model.selectedOption,
+          hint: hint,
+          items: options, // if this is set to null it disables the dropdown but also hides any value
+          onChanged: enabled ? onChangeOption : null,
+          dropdownColor: Theme.of(context).colorScheme.onInverseSurface,
+          isExpanded: true,
+          borderRadius: borderRadius,
+          underline: Container(),
+          disabledHint: hintDisabled,
+          focusColor: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.15));
+
+    // show hand cursor
+    if (enabled) view = MouseRegion(cursor: SystemMouseCursors.click,child: view);
+
+    return view;
+  }
+
+  Widget? buildBusy()
+  {
+    if (!widget.model.busy) return null;
+
+    var view = BusyModel(widget.model,
+          visible: true,
+          size: 24,
+          color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.5),
+          modal: false).getView();
+
+    return view;
+  }
+
+  @override
+  Widget build(BuildContext context)
+  {
+    // check if widget is visible before wasting resources on building it
+    if (!widget.model.visible) return Offstage();
+
+    // build select
+    Widget view = buildSelect();
+
+    // add borders
+    view = addBorders(view);
 
     // display busy
+    Widget? busy = buildBusy();
     if (busy != null) view = Stack(children: [view, Positioned(top: 0, bottom: 0, left: 0, right: 0, child: busy)]);
 
-    if(!isNullOrEmpty(widget.model.alarmText))
-    {
-      Widget? errorText = Padding(padding: EdgeInsets.only(top: 6.0 , bottom: 2.0), child: Text("${widget.model.alarmText}", style: TextStyle(color: Theme.of(context).colorScheme.error)));
-      view = Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [view, errorText],
-      );
-    }
+    // add alarm text
+    view = addAlarmText(view);
 
     // get the model constraints
     var modelConstraints = widget.model.constraints;
@@ -192,38 +220,4 @@ class _SelectViewState extends WidgetState<SelectView>
 
     return view;
   }
-
-  void changedDropDownItem(OptionModel? selected) async
-  {
-    // same option selected
-    if (selected == _selected) return;
-
-    // added this in to remove focus from input
-    FocusScope.of(context).requestFocus(FocusNode()); // added this in to remove focus from input
-
-    // removed this as it prevents reloading after a user submits a value
-    if (selected == null) return;
-
-    // set the answer
-    bool ok = await widget.model.answer(selected.value);
-    if (ok == false) selected = _selected;
-
-    // fire onchange
-    await widget.model.onChange(context);
-    setState(()
-    {
-      _selected = selected;
-    });
-  }
-
-  onFocusChange() async
-  {
-    var editable = (widget.model.editable != false);
-    if (!editable) return;
-
-    // commit changes on loss of focus
-    if (!focus.hasFocus) await _commit();
-  }
-
-  Future<bool> _commit() async => true;
 }

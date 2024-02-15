@@ -168,25 +168,19 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
     return widget.model.getMatchingOptions(pattern);
   }
 
-  void onSuggestionSelected(OptionModel option) async
+  void onChangeOption(OptionModel option) async
   {
     // stop model change notifications
     widget.model.removeListener(this);
 
     // set the selected option
-    bool ok = await widget.model.setSelectedOption(option);
+    await widget.model.setSelectedOption(option);
 
     // set the controller text
     setControllText(widget.model.selectedOption?.label);
 
     // resume model change notifications
     widget.model.registerListener(this);
-
-    // highlight selection
-    WidgetsBinding.instance.addPostFrameCallback((_)
-    {
-      controller.selection = TextSelection(baseOffset: 0, extentOffset: controller.text.length);
-    });
 
     // hack to close window
     focus.unfocus();
@@ -224,6 +218,25 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
     if (focus.hasFocus && widget.model.editable) controller.selection = TextSelection(baseOffset: 0, extentOffset: controller.text.length);
   }
 
+  Widget buildTypeahead()
+  {
+    Widget view = TypeAheadField<OptionModel>(
+        key: ObjectKey(widget.model),
+        suggestionsCallback: buildSuggestions,
+        focusNode: focus,
+        controller: controller,
+        //suggestionsController: suggestionController,
+        showOnFocus: true,
+        hideOnSelect: true,
+        autoFlipDirection: true,
+        onSelected: onChangeOption,
+        builder: fieldBuilder,
+        itemBuilder: itemBuilder,
+        emptyBuilder: emptyBuilder);
+
+    return view;
+  }
+
   @override
   Widget build(BuildContext context)
   {
@@ -234,19 +247,7 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
     setControllText(widget.model.selectedOption?.label);
 
     // build the view
-    Widget view = TypeAheadField<OptionModel>(
-        key: ObjectKey(widget.model),
-        suggestionsCallback: buildSuggestions,
-        focusNode: focus,
-        controller: controller,
-        //suggestionsController: suggestionController,
-        showOnFocus: true,
-        hideOnSelect: true,
-        autoFlipDirection: true,
-        onSelected: onSuggestionSelected,
-        builder: fieldBuilder,
-        itemBuilder: itemBuilder,
-        emptyBuilder: emptyBuilder);
+    Widget view = buildTypeahead();
 
     // add borders
     view = addBorders(view);

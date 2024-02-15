@@ -23,6 +23,9 @@ class SelectModel extends DecoratedInputModel implements IFormField
   // options
   final List<OptionModel> options = [];
 
+  // selected option
+  OptionModel? selectedOption;
+
   // data sourced prototype
   XmlElement? prototype;
 
@@ -198,6 +201,24 @@ class SelectModel extends DecoratedInputModel implements IFormField
       option.dispose();
     }
     options.clear();
+  }
+
+  Future<bool> setSelectedOption(OptionModel? option) async
+  {
+    // save the answer
+    bool ok = await answer(option?.value);
+    if (ok)
+    {
+      // set selected
+      selectedOption = option;
+
+      // set data
+      data = option?.data;
+
+      // fire the onchange event
+      await onChange(context);
+    }
+    return ok;
   }
 
   @override

@@ -1,6 +1,7 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/widgets/widget/widget_view_interface.dart';
 import 'package:fml/widgets/typeahead/typeahead_model.dart';
 import 'package:fml/widgets/option/option_model.dart';
@@ -24,9 +25,6 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
   // typeahead has been initialized
   bool initialized = false;
 
-  // selected option
-  OptionModel? selected;
-
   // text editing controller
   final controller = TextEditingController();
 
@@ -45,73 +43,25 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
 
   Future<List<OptionModel>> buildSuggestions(String pattern) async
   {
-    // trim
-    pattern.trim();
-
-    // case insensitive pattern
-    if (!widget.model.caseSensitive) pattern = pattern.toLowerCase();
-
     // hack to force entire list to show
     // note the SuggestionsControllerOverride override
     // on the open method below
-    if (controller.text == selected?.label) pattern = "";
+    if (controller.text == widget.model.selectedOption?.label) pattern = "";
 
-    // empty pattern returns all
-    if (isNullOrEmpty(pattern)) return widget.model.options.toList();
-
-    // matching options at top of list
-    return widget.model.options.where((option) => compare(option, pattern)).take(5).toList();
-  }
-
-  bool compare(OptionModel option, String pattern)
-  {
-    // not text matches all
-    if (isNullOrEmpty(pattern)) return true;
-
-    // get option search tags
-    for (var tag in option.tags)
-    {
-      if (isNullOrEmpty(tag)) return false;
-      tag = tag.trim();
-      if (!widget.model.caseSensitive) tag = tag.toLowerCase();
-
-      var type = widget.model.matchType.trim();
-      if (!widget.model.caseSensitive) type = type.toLowerCase();
-
-      switch (type)
-      {
-        case 'contains':
-          if (tag.contains(pattern)) return true;
-          break;
-        case 'startswith':
-          if (tag.startsWith(pattern)) return true;
-          break;
-        case 'endswith':
-          if (tag.endsWith(pattern)) return true;
-          break;
-      }
-    }
-    return false;
+    // get matching options
+    return widget.model.getMatchingOptions(pattern);
   }
 
   void onSuggestionSelected(OptionModel option) async
   {
-    // save the answer
-    bool ok = await widget.model.answer(option.value);
-    if (ok)
-    {
-      // set selected
-      selected = option;
+    // stop model change notifications
+    widget.model.removeListener(this);
 
-      // fire the onchange event
-      await widget.model.onChange(context);
+    // set the selected option
+    await widget.model.setSelectedOption(option);
 
-      // set the controller text
-      controller.text = option.label ?? "";
-    }
-
-    // this forces the selection list to close
-    focus.unfocus();
+    // resume model change notifications
+    widget.model.registerListener(this);
   }
 
   Widget itemBuilder(BuildContext context, OptionModel option)
@@ -241,21 +191,29 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
   {
     if (!focus.hasFocus)
     {
-      controller.text = selected?.label ?? "";
+      controller.text = widget.model.selectedOption?.label ?? "";
     }
   }
 
   @override
+  onModelChange(WidgetModel model, {String? property, dynamic value})
+  {
+    super.onModelChange(model, property: property, value: value);
+  }
+
+
+  @override
   Widget build(BuildContext context)
   {
+    print ('>>>>>>>>>>>>>>>>>>>>> building type ahead field');
+
     // Check if widget is visible before wasting resources on building it
     if (!widget.model.visible) return Offstage();
 
-    // set initial selection
-    if (selected == null)
+    // set controller text
+    if (controller.text != widget.model.selectedOption?.label)
     {
-      var o = getSelectedOption();
-      if (o != null) controller.text = o.label ?? "";
+      controller.text != widget.model.selectedOption?.label;
     }
 
     // used to change types text back to its original value
@@ -268,8 +226,9 @@ class TypeaheadViewState extends WidgetState<TypeaheadView>
         suggestionsCallback: buildSuggestions,
         focusNode: focus,
         controller: controller,
-        suggestionsController: suggestionController,
+        //suggestionsController: suggestionController,
         showOnFocus: true,
+        hideOnSelect: true,
         autoFlipDirection: true,
         onSelected: onSuggestionSelected,
         builder: fieldBuilder,

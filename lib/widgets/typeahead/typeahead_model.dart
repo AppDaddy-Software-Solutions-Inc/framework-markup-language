@@ -25,6 +25,9 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
   // options
   final List<OptionModel> options = [];
 
+  // selected option
+  OptionModel? selectedOption;
+
   // value
   BooleanObservable? _caseSensitive;
   set caseSensitive(dynamic v)
@@ -137,7 +140,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
 
   void _setSelectedOption({bool setValue = true})
   {
-    OptionModel? selectedOption;
+    selectedOption = null;
     if (options.isNotEmpty)
     {
       for (var option in options)
@@ -168,7 +171,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
     List<OptionModel> options = findChildrenOfExactType(OptionModel).cast<OptionModel>();
 
     // set prototype
-    if ((!isNullOrEmpty(this.datasource)) && (options.isNotEmpty))
+    if (!isNullOrEmpty(this.datasource) && options.isNotEmpty)
     {
       prototype = prototypeOf(options.first.element);
       options.removeAt(0);
@@ -192,6 +195,70 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
       option.dispose();
     }
     options.clear();
+  }
+
+  Future<bool> setSelectedOption(OptionModel? option) async
+  {
+    // save the answer
+    bool ok = await answer(option?.value);
+    if (ok)
+    {
+      // set selected
+      selectedOption = option;
+
+      // set data
+      data = option?.data;
+
+      // fire the onchange event
+      await onChange(context);
+    }
+    return ok;
+  }
+
+  Future<List<OptionModel>> getMatchingOptions(String pattern) async
+  {
+    // trim
+    pattern.trim();
+
+    // case insensitive pattern
+    if (!caseSensitive) pattern = pattern.toLowerCase();
+
+    // empty pattern returns all
+    if (isNullOrEmpty(pattern)) return options.toList();
+
+    // matching options at top of list
+    return options.where((option) => compare(option, pattern)).take(5).toList();
+  }
+
+  bool compare(OptionModel option, String pattern)
+  {
+    // not text matches all
+    if (isNullOrEmpty(pattern)) return true;
+
+    // get option search tags
+    for (var tag in option.tags)
+    {
+      if (isNullOrEmpty(tag)) return false;
+      tag = tag.trim();
+      if (!caseSensitive) tag = tag.toLowerCase();
+
+      var type = matchType.trim();
+      if (!caseSensitive) type = type.toLowerCase();
+
+      switch (type)
+      {
+        case 'contains':
+          if (tag.contains(pattern)) return true;
+          break;
+        case 'startswith':
+          if (tag.startsWith(pattern)) return true;
+          break;
+        case 'endswith':
+          if (tag.endsWith(pattern)) return true;
+          break;
+      }
+    }
+    return false;
   }
 
   @override

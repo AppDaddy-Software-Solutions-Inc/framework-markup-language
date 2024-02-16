@@ -72,8 +72,8 @@ class ThemeNotifier with ChangeNotifier
     var fontTheme = (libraryLoader?.isCompleted ?? false) ? fonts.GoogleFonts.getTextTheme(System.theme.font) : null;
 
     // set system brightness
-    var b = System.theme.brightness  ?? await Settings().get('BRIGHTNESS')   ?? 'light';
-    var c = System.theme.colorScheme ?? await Settings().get('COLOR_SCHEME') ?? 'lightblue';
+    var b = System.theme.brightness  ?? ThemeModel.defaultBrightness;
+    var c = System.theme.colorScheme ?? ThemeModel.defaultColor;
     if (brightness != null)
     {
       brightness = brightness.toLowerCase().trim();
@@ -81,7 +81,7 @@ class ThemeNotifier with ChangeNotifier
       if (brightness == 'dark')  b = 'dark';
     }
     if (color != null) c = color;
-    
+
     // set color and brightness
     System.theme.colorScheme = toColor(c);
     System.theme.brightness = b;

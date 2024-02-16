@@ -90,14 +90,13 @@ class _ApplicationManagerState extends State<ApplicationManager>
     if (event.parameters != null) parameters.addAll(event.parameters!);
 
     String templ8 = parameters['templ8'] ?? '<FML><TEXT value="Template Parsing Error" /></FML>';
+
     // open the template
     return NavigationManager().openJsTemplate(templ8);
   }
 
-  void onRefresh(Event event) async
-  {
-    await NavigationManager().refresh();
-  }
+  // refresh the application
+  void onRefresh(Event event) async => await NavigationManager().refresh();
 
   void onTheme(Event event) async
   {

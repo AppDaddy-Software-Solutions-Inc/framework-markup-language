@@ -394,7 +394,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
       // If the model contains any databrokers we fire them before building so we can bind to the data
       // This normally happens in the view initState(), however, since the view builds before the
       // template has been loaded, initState() has already run and we need to do it here.
-      model.initialize();
+      initialize();
     }
     catch(e)
     {

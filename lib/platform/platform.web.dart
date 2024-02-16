@@ -193,7 +193,7 @@ class Platform
       // The script in index.html sets the data value that we assign to doc:
       // `js2fml({'data': `${event.data}`, 'from': `${event.origin}`, 'to': 'fml'});`
       String doc = json['data'];
-      WidgetModel? model = System().model;
+      WidgetModel? model = System();
       EventManager.of(model)?.broadcastEvent(model, Event(EventTypes.openjstemplate, parameters: {'templ8': doc}));
     };
   }

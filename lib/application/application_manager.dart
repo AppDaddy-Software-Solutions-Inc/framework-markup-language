@@ -59,18 +59,16 @@ class _ApplicationManagerState extends State<ApplicationManager>
     }
 
     // build parameters from a data source
-    if ((parameters.containsKey('data')) &&
-        (event.model != null) &&
-        (event.model!.scope != null)) {
+    if (parameters.containsKey('data') && event.model?.scope != null)
+    {
       String? id = parameters['data'];
       IDataSource? source = event.model?.scope?.getDataSource(id);
-      if ((source != null) && (source.data != null) && (source.data?.isNotEmpty ?? false)) {
-        source.data?[0].forEach((key, value) {
+      if (source?.data?.isNotEmpty ?? false)
+      {
+        source?.data?[0].forEach((key, value)
+        {
           var id = Binding.toKey("${source.id}.${'data'}", key);
-          if (value is String && id != null) {
-            parameters[id] =
-                source.data![0][key];
-          }
+          if (value is String && id != null) parameters[id] = source.data?[0][key];
         });
       }
       parameters.remove('data');

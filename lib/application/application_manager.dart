@@ -59,18 +59,16 @@ class _ApplicationManagerState extends State<ApplicationManager>
     }
 
     // build parameters from a data source
-    if ((parameters.containsKey('data')) &&
-        (event.model != null) &&
-        (event.model!.scope != null)) {
+    if (parameters.containsKey('data') && event.model?.scope != null)
+    {
       String? id = parameters['data'];
       IDataSource? source = event.model?.scope?.getDataSource(id);
-      if ((source != null) && (source.data != null) && (source.data?.isNotEmpty ?? false)) {
-        source.data?[0].forEach((key, value) {
+      if (source?.data?.isNotEmpty ?? false)
+      {
+        source?.data?[0].forEach((key, value)
+        {
           var id = Binding.toKey("${source.id}.${'data'}", key);
-          if (value is String && id != null) {
-            parameters[id] =
-                source.data![0][key];
-          }
+          if (value is String && id != null) parameters[id] = source.data?[0][key];
         });
       }
       parameters.remove('data');
@@ -90,14 +88,13 @@ class _ApplicationManagerState extends State<ApplicationManager>
     if (event.parameters != null) parameters.addAll(event.parameters!);
 
     String templ8 = parameters['templ8'] ?? '<FML><TEXT value="Template Parsing Error" /></FML>';
+
     // open the template
     return NavigationManager().openJsTemplate(templ8);
   }
 
-  void onRefresh(Event event) async
-  {
-    await NavigationManager().refresh();
-  }
+  // refresh the application
+  void onRefresh(Event event) async => await NavigationManager().refresh();
 
   void onTheme(Event event) async
   {

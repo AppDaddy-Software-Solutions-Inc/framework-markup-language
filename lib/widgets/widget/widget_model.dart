@@ -13,11 +13,10 @@ import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
 
 class WidgetModel implements IDataSourceListener {
-  // primary identifier
-  late final String id;
 
-  // returns pointer to itself
-  WidgetModel get model => this;
+  // primary identifier
+  // needs to be unique within the scope
+  late final String id;
 
   // framework
   FrameworkModel? framework;
@@ -25,7 +24,6 @@ class WidgetModel implements IDataSourceListener {
   // xml node
   XmlElement? element;
   String get elementName => element?.localName.toUpperCase() ?? '$runtimeType';
-  String? get elementNamespace => element?.namespacePrefix?.toLowerCase();
 
   // datasource
   List<IDataSource>? datasources;
@@ -319,43 +317,34 @@ class WidgetModel implements IDataSourceListener {
     return parent?.firstAncestorWhere(test);
   }
 
-  dynamic findAncestorOfExactType(Type T,
-      {String? id, bool includeSiblings = false}) {
-    List<dynamic>? list =
-        findAncestorsOfExactType(T, id: id, includeSiblings: includeSiblings);
-    return ((list != null) && (list.isNotEmpty)) ? list.first : null;
+  dynamic findAncestorOfExactType(Type T, {String? id, bool includeSiblings = false})
+  {
+    var list = findAncestorsOfExactType(T, id: id, includeSiblings: includeSiblings);
+    return (list?.isNotEmpty ?? false) ? list?.first : null;
   }
 
   List<dynamic>? get ancestors => findAncestorsOfExactType(null);
 
-  List<dynamic>? findAncestorsOfExactType(Type? T,
-      {String? id, bool includeSiblings = false}) {
-    if (parent == null) return null;
-    return parent!._findAncestorsOfExactType(T, id, includeSiblings);
-  }
+  List<dynamic>? findAncestorsOfExactType(Type? T, {String? id, bool includeSiblings = false}) => parent?._findAncestorsOfExactType(T, id, includeSiblings);
 
-  List<dynamic> _findAncestorsOfExactType(
-      Type? T, String? id, bool includeSiblings) {
-    List<dynamic> list = [];
+  List<dynamic> _findAncestorsOfExactType(Type? T, String? id, bool includeSiblings)
+  {
+    var list = [];
 
     // evaluate me
-    if ((runtimeType == (T ?? runtimeType)) && (this.id == (id ?? this.id))) {
-      list.add(this);
-    }
+    if ((runtimeType == (T ?? runtimeType)) && (this.id == (id ?? this.id))) list.add(this);
 
     // evaluate my siblings
-    if ((includeSiblings) && (children != null)) {
-      for (var child in children!) {
-        if ((child.runtimeType == T) && (child.id == (id ?? child.id))) {
-          list.add(child);
-        }
-      }
+    if (includeSiblings)
+    {
+      children?.forEach((child)
+      {
+        if (child.runtimeType == T && child.id == (id ?? child.id)) list.add(child);
+      });
     }
 
     // evaluate my ancestors
-    if (parent != null) {
-      list.addAll(parent!._findAncestorsOfExactType(T, id, includeSiblings));
-    }
+    if (parent != null) list.addAll(parent!._findAncestorsOfExactType(T, id, includeSiblings));
 
     return list;
   }
@@ -363,40 +352,29 @@ class WidgetModel implements IDataSourceListener {
   List<dynamic>? get descendants => findDescendantsOfExactType(null);
 
   dynamic findDescendantOfExactType(Type? T, {String? id}) {
-    List<dynamic>? list = findDescendantsOfExactType(T, id: id);
+    var list = findDescendantsOfExactType(T, id: id);
     return list.isNotEmpty ? list.first : null;
   }
 
   List<dynamic> findDescendantsOfExactType(Type? T, {String? id, Type? breakOn})
   {
-    List<dynamic> list = [];
-    if (children != null)
+    var list = [];
+    children?.forEach((child)
     {
-      for (var child in children!)
-      {
-        if (child.runtimeType != breakOn)
-        {
-          list.addAll(child._findDescendantsOfExactType(T, id));
-        }
-      }
-    }
+      if (child.runtimeType != breakOn) list.addAll(child._findDescendantsOfExactType(T, id));
+    });
     return list;
   }
 
   List<dynamic> _findDescendantsOfExactType(Type? T, String? id) {
-    List<dynamic> list = [];
+
+    var list = [];
 
     // evaluate me
-    if ((runtimeType == (T ?? runtimeType)) && (this.id == (id ?? this.id))) {
-      list.add(this);
-    }
+    if ((runtimeType == (T ?? runtimeType)) && (this.id == (id ?? this.id))) list.add(this);
 
     // evaluate my children
-    if (children != null) {
-      for (WidgetModel child in children!) {
-        list.addAll(child._findDescendantsOfExactType(T, id));
-      }
-    }
+    children?.forEach((child) => list.addAll(child._findDescendantsOfExactType(T, id)));
 
     return list;
   }
@@ -408,35 +386,18 @@ class WidgetModel implements IDataSourceListener {
     return null;
   }
 
-  dynamic findChildOfExactType(Type T, {String? id}) {
-    if (children != null)
-    {
-      var child = children!.firstWhereOrNull((child) => child.runtimeType == (T) && (child.id == (id ?? child.id)));
-      return child;
-    }
-    return null;
-  }
+  dynamic findChildOfExactType(Type T, {String? id}) => children?.firstWhereOrNull((child) => child.runtimeType == (T) && (child.id == (id ?? child.id)));
 
   List<dynamic> findChildrenOfExactType(Type T, {String? id}) {
-    List<dynamic> list = [];
-    if (children != null)
+    var list = [];
+    children?.forEach((child)
     {
-      for (WidgetModel child in children!)
-      {
-        if ((child.runtimeType == (T)) && (child.id == (id ?? child.id)))
-        {
-          list.add(child);
-        }
-      }
-    }
+      if (child.runtimeType == (T) && child.id == (id ?? child.id)) list.add(child);
+    });
     return list;
   }
 
-  void removeChildrenOfExactType(Type T) {
-    if (children != null) {
-      children!.removeWhere((child) => (child.runtimeType == (T)));
-    }
-  }
+  void removeChildrenOfExactType(Type T) => children?.removeWhere((child) => (child.runtimeType == (T)));
 
   dynamic findListenerOfExactType(Type T) {
     if (_listeners != null) {
@@ -450,20 +411,17 @@ class WidgetModel implements IDataSourceListener {
   @override
   Future<bool> onDataSourceSuccess(IDataSource source, Data? list) async {
     busy = false;
-    //notifyListeners('list', list);
     return true;
   }
 
   @override
   onDataSourceException(IDataSource source, Exception exception) {
     busy = false;
-    //notifyListeners('error', exception);
   }
 
   @override
   onDataSourceBusy(IDataSource source, bool busy) {
     this.busy = busy;
-    //notifyListeners('busy', this.busy);
   }
 
   Future<bool?> execute(String caller, String propertyOrFunction, List<dynamic> arguments) async {

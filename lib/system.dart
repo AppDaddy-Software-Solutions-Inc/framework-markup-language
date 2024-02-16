@@ -434,16 +434,14 @@ class System extends WidgetModel implements IEventManager {
   /// Event Manager Host
   final EventManager manager = EventManager();
   @override
-  registerEventListener(EventTypes type, OnEventCallback callback,
-          {int? priority}) =>
-      manager.register(type, callback, priority: priority);
+  registerEventListener(EventTypes type, OnEventCallback callback, {int? priority}) => manager.register(type, callback, priority: priority);
+
   @override
-  removeEventListener(EventTypes type, OnEventCallback callback) =>
-      manager.remove(type, callback);
+  removeEventListener(EventTypes type, OnEventCallback callback) => manager.remove(type, callback);
+
   @override
-  broadcastEvent(WidgetModel source, Event event) =>
-      manager.broadcast(this, event);
+  broadcastEvent(WidgetModel source, Event event) => manager.broadcast(this, event);
+
   @override
-  executeEvent(WidgetModel source, String event) =>
-      manager.execute(this, event);
+  executeEvent(WidgetModel source, String event) => manager.execute(this, event);
 }

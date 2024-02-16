@@ -86,12 +86,12 @@ class ThemeNotifier with ChangeNotifier
     Settings().set('brightness', brightness);
 
     // set system color scheme
-    if (color != null)
-    {
-      // set system color scheme
-      System.theme.colorScheme = toColor(color) ?? System.theme.colorScheme;
-      _themeData = ThemeData(colorSchemeSeed: System.theme.colorScheme, brightness: bn, fontFamily: System.theme.font, textTheme: fontTheme, useMaterial3: true);
-    }
+    if (color != null) System.theme.colorScheme = toColor(color) ?? System.theme.colorScheme;
+
+    // set system theme
+    _themeData = ThemeData(brightness: bn, colorSchemeSeed: System.theme.colorScheme, fontFamily: System.theme.font, textTheme: fontTheme, useMaterial3: true);
+
+    // force repaint
     notifyListeners();
   }
 }

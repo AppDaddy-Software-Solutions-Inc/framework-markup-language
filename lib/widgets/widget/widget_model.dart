@@ -71,6 +71,7 @@ class WidgetModel implements IDataSourceListener {
     }
   }
   get data => _data?.get();
+
   void onDataChange() => _data?.notifyListeners();
 
   // listeners
@@ -173,69 +174,69 @@ class WidgetModel implements IDataSourceListener {
 
   void deserialize(XmlElement xml)
   {
-    // Busy
+    // set busy
     busy = true;
 
-    // retain the xml node
+    // retain a pointer to the xml
     element = xml;
 
-    // Global Properties
-    datasource = Xml.get(node: xml, tag: 'data');
+    // properties
     debug = Xml.get(node: xml, tag: 'debug');
+    datasource = Xml.get(node: xml, tag: 'data');
 
-    // Deserialize Children
-    if (children != null) children!.clear();
-    _deserializeDataSources(xml);
-    _deserialize(xml);
+    // register a listener to the datasource if specified
+    IDataSource? source = scope?.getDataSource(datasource);
+    source?.register(this);
 
-    // register listener
-    if (datasource != null && scope != null) {
-      IDataSource? source = scope!.getDataSource(datasource);
-      if (source != null) source.register(this);
+    // deserialize children
+    // we sort the elements moving vars and datasources to the top of the
+    // deserialization sequence in order to avoid excessive deferred bindings
+    children?.clear();
+    var elements = xml.children.whereType<XmlElement>().toList();
+    if (elements.length > 1) elements.sort((e1,e2) => _compare(e1,e2));
+    for (var element in elements)
+    {
+      // deserialize the model
+      var model = WidgetModel.fromXml(this, element);
+
+      // add model to the datasource list
+      if (model is IDataSource)
+      {
+        datasources ??= [];
+        datasources!.add(model as IDataSource);
+      }
+
+      // add model to the child list
+      else if (model != null)
+      {
+        children ??= [];
+        children!.add(model);
+      }
     }
 
-    // Busy
+    // set idle
     busy = false;
   }
 
-  void _deserializeDataSources(XmlElement xml) {
-    // find and deserialize all datasources
-    for (XmlNode node in xml.children) {
-      if (node is XmlElement && isDataSource(node.localName)) {
-        // build the data source model
-        dynamic model = WidgetModel.fromXml(this, node);
-        if (model is IDataSource) {
-          datasources ??= [];
-          datasources!.add(model);
-        }
-      }
-    }
+  // bubble variables and datasources to the top of the deserialization sequence
+  static final List<String> _topmost = ["VAR","BARCODE","BEACON","BIOMETRIC","DATA","DELETE","DETECTOR","FILEPICKER","GET","GPS","HTTP","LOG","MQTT","NFC","OCR","POST","PUT","SOCKET","SSE","STASH","TESTDATA","ZEBRA"];
+  static int _compare(XmlElement e1, XmlElement e2)
+  {
+    var a = _topmost.contains(e1.name.toString());
+    var b = _topmost.contains(e2.name.toString());
+    if ((!a && !b) || (a && b)) return 0;
+    if (a && !b) return -1;
+    if (!a && b) return 1;
+    return 0;
   }
 
-  void _deserialize(XmlElement xml) {
-    // deserialize all non-datasource children
-    for (XmlNode node in xml.children) {
-      if (node is XmlElement && !isDataSource(node.localName)) {
-        // build the model
-        dynamic model = WidgetModel.fromXml(this, node);
-        if (model is WidgetModel) {
-          children ??= [];
-          children!.add(model);
-        }
-      }
-    }
-  }
-
+  /// disposes of the model releasing resources and removing bindings
   void dispose() {
     // remove listeners
     removeAllListeners();
 
     // dispose of datasources
-    if (datasources != null) {
-      for (var datasource in datasources!) {
-        if (datasource.parent == this) datasource.dispose();
-      }
-    }
+    datasources?.forEach((datasource) => datasource.parent == this ? datasource.dispose() : null);
     datasources?.clear();
 
     // remove model and all of its bindables from the scope
@@ -246,11 +247,16 @@ class WidgetModel implements IDataSourceListener {
     children?.clear();
   }
 
+  /// forces and associated views to rebuild
+  rebuild() => notifyListeners("rebuild", true);
+
+  /// adds a models listener to the list
   registerListener(IModelListener listener) {
     _listeners ??= [];
     if (!_listeners!.contains(listener)) _listeners!.add(listener);
   }
 
+  /// removes a model listener from the list
   removeListener(IModelListener listener) {
     if ((_listeners != null) && (_listeners!.contains(listener))) {
       _listeners!.remove(listener);
@@ -258,50 +264,34 @@ class WidgetModel implements IDataSourceListener {
     }
   }
 
-  removeAllListeners() {
-    if (_listeners != null) _listeners!.clear();
-  }
+  /// removes all model listeners
+  removeAllListeners() => _listeners?.clear();
 
-  rebuild() => notifyListeners("rebuild", true);
+  /// model listener notifications
+  notifyListeners(String? property, dynamic value, {bool notify = false}) => _listeners?.forEach((listener) => listener.onModelChange(this, property: property, value: value));
 
-  notifyListeners(String? property, dynamic value, {bool notify = false}) {
-    if (_listeners != null)
-    {
-      for (var listener in _listeners!)
-      {
-        listener.onModelChange(this, property: property, value: value);
-      }
-    }
-  }
-
-  /// notifies listeners of any changes to a property
+  /// notifies property listeners of any changes to a property
   void onPropertyChange(Observable observable) => notificationsEnabled ? notifyListeners(observable.key, observable.get()) : null;
 
-  Future<void> initialize() async {
-
+  /// initializes the model by starting brokers
+  Future<void> initialize() async
+  {
     // start datasources
-    if (datasources != null) {
-      for (var datasource in datasources!) {
-        // already started?
-        if (!datasource.initialized)
-        {
-          // mark as started
-          datasource.initialized = true;
+    datasources?.forEach((datasource)
+    {
+      // skip if the datasource has already been initialized
+      if (!datasource.initialized)
+      {
+        // mark as started
+        datasource.initialized = true;
 
-          // announce data for late binding
-          if ((datasource.data != null) && (datasource.data!.isNotEmpty))
-          {
-            datasource.notify();
-          }
+        // announce data for late binding
+        if (datasource.data?.isNotEmpty ?? false) datasource.notify();
 
-          // start the datasource if autoexecute = true
-          if (datasource.autoexecute == true)
-          {
-            datasource.start();
-          }
-        }
+        // start the datasource if autoexecute="true"
+        if (datasource.autoexecute == true) datasource.start();
       }
-    }
+    });
   }
 
   static void unfocus()
@@ -328,7 +318,6 @@ class WidgetModel implements IDataSourceListener {
     if (test(parent)) return parent;
     return parent?.firstAncestorWhere(test);
   }
-
 
   dynamic findAncestorOfExactType(Type T,
       {String? id, bool includeSiblings = false}) {

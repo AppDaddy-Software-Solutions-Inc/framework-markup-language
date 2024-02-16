@@ -39,8 +39,8 @@ final String applicationTitle = "Flutter Markup Language $version";
 // Used in SingleApp only and on Web when developing on localhost
 // Set this to file://app
 //String get defaultDomain => 'http://10.69.4.245:81';
-String get defaultDomain => 'http://10.67.130.75:8081';
-//String get defaultDomain => 'https://test.appdaddy.co';
+//String get defaultDomain => 'http://10.67.130.75:8081';
+String get defaultDomain => 'https://test.appdaddy.co';
 //String get defaultDomain => 'http://hbrapsweb.goodyear.com:8081';
 //String get defaultDomain => 'http://ludapsweb.ec.goodyear.com:8081';
 //String get defaultDomain => 'http://tpkapsweb.tpk.goodyear.com:8081';
@@ -434,16 +434,14 @@ class System extends WidgetModel implements IEventManager {
   /// Event Manager Host
   final EventManager manager = EventManager();
   @override
-  registerEventListener(EventTypes type, OnEventCallback callback,
-          {int? priority}) =>
-      manager.register(type, callback, priority: priority);
+  registerEventListener(EventTypes type, OnEventCallback callback, {int? priority}) => manager.register(type, callback, priority: priority);
+
   @override
-  removeEventListener(EventTypes type, OnEventCallback callback) =>
-      manager.remove(type, callback);
+  removeEventListener(EventTypes type, OnEventCallback callback) => manager.remove(type, callback);
+
   @override
-  broadcastEvent(WidgetModel source, Event event) =>
-      manager.broadcast(this, event);
+  broadcastEvent(WidgetModel source, Event event) => manager.broadcast(this, event);
+
   @override
-  executeEvent(WidgetModel source, String event) =>
-      manager.execute(this, event);
+  executeEvent(WidgetModel source, String event) => manager.execute(this, event);
 }

@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'dart:html';
 import 'package:flutter/material.dart';
 import 'package:fml/helpers/string.dart';
 import 'package:fml/hive/settings.dart';
@@ -71,27 +72,24 @@ class ThemeNotifier with ChangeNotifier
     var fontTheme = (libraryLoader?.isCompleted ?? false) ? fonts.GoogleFonts.getTextTheme(System.theme.font) : null;
 
     // set system brightness
-    var bn = await Settings().get('brightness') == 'dark' ? Brightness.dark : Brightness.light;
-    brightness = brightness?.toLowerCase().trim();
-    if (brightness == 'light')
+    var b = System.theme.brightness  ?? ThemeModel.defaultBrightness;
+    var c = System.theme.colorScheme ?? ThemeModel.defaultColor;
+    if (brightness != null)
     {
-      bn = Brightness.light;
-      System.theme.brightness = brightness;
+      brightness = brightness.toLowerCase().trim();
+      if (brightness == 'light') b = 'light';
+      if (brightness == 'dark')  b = 'dark';
     }
-    else if (brightness == 'dark')
-    {
-      bn = Brightness.dark;
-      System.theme.brightness = brightness;
-    }
-    Settings().set('brightness', brightness);
+    if (color != null) c = color;
 
-    // set system color scheme
-    if (color != null)
-    {
-      // set system color scheme
-      System.theme.colorScheme = toColor(color) ?? System.theme.colorScheme;
-      _themeData = ThemeData(colorSchemeSeed: System.theme.colorScheme, brightness: bn, fontFamily: System.theme.font, textTheme: fontTheme, useMaterial3: true);
-    }
+    // set color and brightness
+    System.theme.colorScheme = toColor(c);
+    System.theme.brightness = b;
+
+    // set the theme
+    _themeData = ThemeData(brightness: b == 'light' ? Brightness.light : Brightness.dark, colorSchemeSeed: System.theme.colorScheme, fontFamily: System.theme.font, textTheme: fontTheme, useMaterial3: true);
+
+    // force repaint
     notifyListeners();
   }
 }

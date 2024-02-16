@@ -143,7 +143,7 @@ class TreeModel extends BoxModel
       if (key != null)
       {
         // find node in model tree children
-        TreeNodeModel? node = model.findDescendantOfExactType(TreeNodeModel, id: key);
+        TreeNodeModel? node = findDescendantOfExactType(TreeNodeModel, id: key);
 
         // found? set focus
         if (node != null)

@@ -1,5 +1,6 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
 import 'dart:async';
+import 'dart:html';
 import 'package:flutter/material.dart';
 import 'package:fml/helpers/string.dart';
 import 'package:fml/hive/settings.dart';
@@ -71,25 +72,22 @@ class ThemeNotifier with ChangeNotifier
     var fontTheme = (libraryLoader?.isCompleted ?? false) ? fonts.GoogleFonts.getTextTheme(System.theme.font) : null;
 
     // set system brightness
-    var bn = await Settings().get('brightness') == 'dark' ? Brightness.dark : Brightness.light;
-    brightness = brightness?.toLowerCase().trim();
-    if (brightness == 'light')
+    var b = System.theme.brightness  ?? await Settings().get('BRIGHTNESS')   ?? 'light';
+    var c = System.theme.colorScheme ?? await Settings().get('COLOR_SCHEME') ?? 'lightblue';
+    if (brightness != null)
     {
-      bn = Brightness.light;
-      System.theme.brightness = brightness;
+      brightness = brightness.toLowerCase().trim();
+      if (brightness == 'light') b = 'light';
+      if (brightness == 'dark')  b = 'dark';
     }
-    else if (brightness == 'dark')
-    {
-      bn = Brightness.dark;
-      System.theme.brightness = brightness;
-    }
-    Settings().set('brightness', brightness);
+    if (color != null) c = color;
+    
+    // set color and brightness
+    System.theme.colorScheme = toColor(c);
+    System.theme.brightness = b;
 
-    // set system color scheme
-    if (color != null) System.theme.colorScheme = toColor(color) ?? System.theme.colorScheme;
-
-    // set system theme
-    _themeData = ThemeData(brightness: bn, colorSchemeSeed: System.theme.colorScheme, fontFamily: System.theme.font, textTheme: fontTheme, useMaterial3: true);
+    // set the theme
+    _themeData = ThemeData(brightness: b == 'light' ? Brightness.light : Brightness.dark, colorSchemeSeed: System.theme.colorScheme, fontFamily: System.theme.font, textTheme: fontTheme, useMaterial3: true);
 
     // force repaint
     notifyListeners();

@@ -75,8 +75,8 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   @override
   didChangeDependencies()
   {
-    // register route listener
-    NavigationObserver().registerListener(this);
+    // register model listener
+    widget.model.registerListener(this);
 
     // register event listeners
     widget.model.registerEventListener(EventTypes.home, onHome);
@@ -189,7 +189,7 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
   onModelChange(WidgetModel model,{String? property, dynamic value})
   {
     var b = Binding.fromString(property);
-    if (widget.model.initialized && mounted && b?.property != 'busy') setState(() {});
+    if (mounted && widget.model.initialized && b?.property != 'busy') setState(() {});
   }
 
   bool onScroll (ScrollNotification notification)
@@ -484,8 +484,6 @@ class FrameworkViewState extends State<FrameworkView> with AutomaticKeepAliveCli
 
   Widget builder(BuildContext context, BoxConstraints constraints)
   {
-    print("Building framework ${widget.model.id} ${widget.model.templateName}");
-
     // set focused framework
     System().setActiveFramework(widget.model);
 

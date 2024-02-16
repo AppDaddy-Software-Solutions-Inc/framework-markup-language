@@ -48,6 +48,9 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
   DrawerModel?  drawer;
   bool hasHitBusy = false;
 
+  // model is initialized
+  bool initialized = false;
+
   List<String>? bindables;
 
   // shortcuts
@@ -98,10 +101,6 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
     }
   }
   String? get key => _key?.get();
-
-  // model is initialized
-  late BooleanObservable _initialized;
-  bool get initialized => _initialized.get() ?? false;
 
   // page stack index
   // This property indicates your position on the stack, 0 being the top
@@ -265,9 +264,6 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
 
   FrameworkModel(WidgetModel parent, String? id, {dynamic key, dynamic dependency, dynamic version, dynamic onstart, dynamic onreturn, dynamic orientation}) : super(parent, id, scope: Scope(id: id))
   {
-    // model is initializing
-    _initialized = BooleanObservable(Binding.toKey(this.id, 'initialized'), false, scope: scope, listener: onPropertyChange);
-
     this.key         = key;
     this.dependency  = dependency;
     this.version     = version;
@@ -276,6 +272,14 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
     this.onreturn    = onreturn;
   }
 
+  /// notifies listeners of any changes to a property
+  void onPropertyChange2(Observable observable)
+  {
+    if (notificationsEnabled)
+      {
+        notifyListeners(observable.key, observable.get());
+      }
+  }
   static FrameworkModel? fromXml(WidgetModel parent, XmlElement xml)
   {
     FrameworkModel? model;
@@ -295,11 +299,11 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
   static FrameworkModel fromUrl(WidgetModel parent, String url, {String? id, bool? refresh, String? dependency})
   {
     FrameworkModel model = FrameworkModel(parent, id, dependency: dependency);
-    model._load(url, refresh: refresh ?? false);
+    model.load(url, refresh: refresh ?? false);
     return model;
   }
 
-  Future _load(String url, {required bool refresh, String? dependency}) async
+  Future load(String url, {required bool refresh, String? dependency}) async
   {
     try
     {
@@ -351,7 +355,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
       // If the model contains any databrokers we fire them before building so we can bind to the data
       // This normally happens in the view initState(), however, since the view builds before the
       // template has been loaded, initState() has already run and we need to do it here.
-      model.initialize();
+      initialize();
     }
     catch(e)
     {
@@ -469,7 +473,10 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
     }
 
     // ready
-    _initialized.set(true);
+    initialized = true;
+
+    // force rebuild
+    rebuild();
   }
 
   @override
@@ -527,7 +534,7 @@ class FrameworkModel extends BoxModel implements IModelListener, IEventManager
   {
     // this is an important since framework views will rebuild even after popped
     // the framework view build() method checks this value and returns offstage() when false
-    _initialized.set(false);
+    initialized = false;
 
     // return parameters
     return parameters;

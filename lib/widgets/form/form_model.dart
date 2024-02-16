@@ -362,7 +362,7 @@ class FormModel extends BoxModel implements IForm
     setFormFields();
 
     // fill all empty fields with the datasource if specified
-    var datasource = Xml.attribute(node: xml, tag: 'data') ?? Xml.attribute(node: xml, tag: 'datasource');
+    var datasource = Xml.attribute(node: xml, tag: 'data');
     if (datasource != null)
     {
       IDataSource? source = scope?.getDataSource(datasource);

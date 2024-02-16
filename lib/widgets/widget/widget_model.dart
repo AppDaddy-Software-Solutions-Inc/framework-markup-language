@@ -180,20 +180,8 @@ class WidgetModel implements IDataSourceListener {
     element = xml;
 
     // Global Properties
-    datasource = Xml.get(node: xml, tag: 'data') ?? Xml.get(node: xml, tag: 'datasource');
+    datasource = Xml.get(node: xml, tag: 'data');
     debug = Xml.get(node: xml, tag: 'debug');
-
-    //var data = Xml.getElement(node: xml, tag: 'DATA');
-    //if (data != null)
-    //{
-    //  this.data = Data.from(data);
-    //}
-
-    // register as datasource
-    if (this is IDataSource && scope != null)
-    {
-      scope!.registerDataSource(this as IDataSource);
-    }
 
     // Deserialize Children
     if (children != null) children!.clear();

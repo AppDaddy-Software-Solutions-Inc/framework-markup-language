@@ -552,7 +552,7 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
 
     case "BOX": // Preferred Case
     case "CONTAINER": // Container may be deprecated
-      bool isPrototype = Xml.hasAttribute(node: node, tag: "data") || Xml.hasAttribute(node: node, tag: "datasource");
+      bool isPrototype = Xml.hasAttribute(node: node, tag: "data");
       model = isPrototype ? PrototypeModel.fromXml(parent, node) : BoxModel.fromXml(parent, node, scope: scope, data: data);
       break;
 
@@ -637,7 +637,7 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
 
     case "COLUMN":
     case "COL": //shorthand case
-      bool isPrototype = Xml.hasAttribute(node: node, tag: "data") || Xml.hasAttribute(node: node, tag: "datasource");
+      bool isPrototype = Xml.hasAttribute(node: node, tag: "data");
       model = isPrototype ? PrototypeModel.fromXml(parent, node) : ColumnModel.fromXml(parent, node, scope: scope, data: data);
       break;
 
@@ -994,7 +994,7 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
       break;
 
     case "ROW":
-      bool isPrototype = Xml.hasAttribute(node: node, tag: "data") || Xml.hasAttribute(node: node, tag: "datasource");
+      bool isPrototype = Xml.hasAttribute(node: node, tag: "data");
       model = isPrototype ? PrototypeModel.fromXml(parent, node) : RowModel.fromXml(parent, node, scope: scope, data: data);
       break;
 

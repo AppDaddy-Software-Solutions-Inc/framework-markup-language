@@ -45,6 +45,7 @@ import 'package:fml/widgets/chart_painter/line/line_series.dart';
 import 'package:fml/widgets/chart_painter/pie/pie_chart_model.dart';
 import 'package:fml/widgets/chart_painter/pie/pie_series.dart';
 import 'package:fml/widgets/checkbox/checkbox_model.dart';
+import 'package:fml/widgets/colorpicker/colorpicker_model.dart';
 import 'package:fml/widgets/column/column_model.dart';
 import 'package:fml/widgets/box/box_model.dart';
 import 'package:fml/widgets/datepicker/datepicker_model.dart';
@@ -542,6 +543,10 @@ WidgetModel? fromXmlNode(WidgetModel parent, XmlElement node, Scope? scope, dyna
 
     case "CHART":
       model = ChartModel.fromXml(parent, node);
+      break;
+
+    case "COLORPICKER":
+      model = ColorpickerModel.fromXml(parent, node);
       break;
 
     case "LINECHART":

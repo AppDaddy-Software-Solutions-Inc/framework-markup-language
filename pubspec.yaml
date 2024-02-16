@@ -79,6 +79,10 @@ dependencies:
   flutter_code_editor: ^0.3.1
   # Apache-2.0, MIT
 
+  # Updated 2024/02/16
+  flex_color_picker: 3.3.1
+  # BSD-3-Clause
+
   # Updated 2021/09/23
   flutter_beacon: ^0.5.1
   # BSD-3-Clause

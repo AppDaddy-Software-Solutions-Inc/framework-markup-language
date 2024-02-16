@@ -24,7 +24,10 @@ class PrototypeModel extends BoxModel
   @override
   bool get expand => false;
 
-  PrototypeModel(WidgetModel parent, String? id) : super(parent, id, scope: parent.scope);
+  // prototypes must be in their own scope
+  // since they destroy their children once the prototype is created
+  // in the deserialize().
+  PrototypeModel(WidgetModel parent, String? id) : super(parent, id, scope: Scope(parent: parent.scope));
 
   static PrototypeModel? fromXml(WidgetModel parent, XmlElement xml)
   {
@@ -53,11 +56,10 @@ class PrototypeModel extends BoxModel
     root.children.add(child);
 
     // add the datasource attribute to the root node
-    root.attributes.add(XmlAttribute(XmlName("datasource"), Xml.attribute(node: xml, tag: 'data') ?? Xml.attribute(node: xml, tag: 'datasource') ?? "missing"));
+    root.attributes.add(XmlAttribute(XmlName("data"), Xml.attribute(node: xml, tag: 'data') ?? "missing"));
 
-    // remove the datasource attribute from the child
+    // remove the data attribute from the child
     Xml.removeAttribute(child, "data");
-    Xml.removeAttribute(child, "datasource");
 
     // deserialize the outer root
     // this is necessary since lower level child nodes may also
@@ -147,6 +149,9 @@ class PrototypeModel extends BoxModel
 
     // clear busy
     busy = false;
+
+    // force the parent to rebuild
+    parent?.rebuild();
 
     return true;
   }

@@ -123,8 +123,8 @@ dependencies:
   geolocator: ^9.0.2
   # MIT
 
-  # Updated 2024/01/31
-  google_fonts: ^6.1.0
+  # Updated 2024/03/04
+  google_fonts: 6.1.0
   # Apache-2.0
 
   # Updated 2023/06/23

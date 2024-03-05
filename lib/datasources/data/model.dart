@@ -11,7 +11,7 @@ class DataModel extends DataSourceModel implements IDataSource
   @override
   bool get autoexecute => super.autoexecute ?? true;
 
-  DataModel(WidgetModel parent, String? id, {dynamic datastring}) : super(parent, id);
+  DataModel(super.parent, super.id, {dynamic datastring});
 
   static DataModel? fromXml(WidgetModel parent, XmlElement xml)
   {

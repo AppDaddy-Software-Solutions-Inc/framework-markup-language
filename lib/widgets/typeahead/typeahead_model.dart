@@ -134,7 +134,7 @@ class TypeaheadModel extends DecoratedInputModel implements IFormField
   }
   bool get obscure => _obscure?.get() ?? false;
 
-  TypeaheadModel(WidgetModel parent, String? id) : super(parent, id);
+  TypeaheadModel(WidgetModel super.parent, super.id);
 
   static TypeaheadModel? fromXml(WidgetModel parent, XmlElement xml)
   {

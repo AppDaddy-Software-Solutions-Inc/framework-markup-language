@@ -3,11 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fml/helpers/string.dart';
 import 'package:fml/observable/observable.dart';
-import 'package:fml/observable/scope.dart';
 
 class ColorObservable extends Observable
 {
-  ColorObservable(String? name, dynamic value, {Scope? scope, OnChangeCallback? listener, Getter? getter, Setter? setter}) : super(name, value, scope: scope, listener: listener, getter: getter, setter: setter);
+  ColorObservable(super.name, super.value, {super.scope, super.listener, super.getter, super.setter});
 
   @override
   Color? get() => toColor(super.get());

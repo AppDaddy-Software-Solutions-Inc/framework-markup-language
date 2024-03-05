@@ -14,7 +14,7 @@ if (dart.library.html) 'package:fml/datasources/detectors/image/detectable_image
 
 class TextDetectorModel extends DetectorModel implements IDetectable
 {
-  TextDetectorModel(WidgetModel parent, String? id) : super(parent, id);
+  TextDetectorModel(super.parent, super.id);
 
   static TextDetectorModel? fromXml(WidgetModel parent, XmlElement xml)
   {

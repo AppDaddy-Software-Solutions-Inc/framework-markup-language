@@ -99,8 +99,7 @@ class TransformModel extends AnimationChildModel
   double? get warp => _warp?.get();
 
 
-  TransformModel(WidgetModel parent, String? id)
-      : super(parent, id); // ; {key: value}
+  TransformModel(super.parent, super.id); // ; {key: value}
 
   static TransformModel? fromXml(WidgetModel parent, XmlElement xml) {
     TransformModel? model;

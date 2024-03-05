@@ -8,7 +8,7 @@ class Splash extends StatefulWidget
 {
   final VoidCallback? onInitializationComplete;
 
-  const Splash({Key? key, this.onInitializationComplete}) : super(key: key);
+  const Splash({super.key, this.onInitializationComplete});
 
   @override
   State<Splash> createState() => _SplashState();

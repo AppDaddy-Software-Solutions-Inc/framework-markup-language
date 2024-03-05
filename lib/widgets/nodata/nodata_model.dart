@@ -7,7 +7,7 @@ import 'package:fml/helpers/helpers.dart';
 
 class NoDataModel extends BoxModel
 {
-  NoDataModel(WidgetModel parent, String? id) : super(parent, id);
+  NoDataModel(WidgetModel super.parent, super.id);
 
   static NoDataModel? fromXml(WidgetModel parent, XmlElement xml)
   {

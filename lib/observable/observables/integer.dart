@@ -1,10 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import '../scope.dart';
 import '../observable.dart' ;
 
 class IntegerObservable extends Observable
 {
-  IntegerObservable(String? name, dynamic value, {Scope? scope, OnChangeCallback? listener, Getter? getter, Setter? setter, bool? bindable}) : super(name, value, scope: scope, listener: listener, getter: getter, setter: setter);
+  IntegerObservable(super.name, super.value, {super.scope, super.listener, super.getter, super.setter, bool? bindable});
 
   @override
   int? get()

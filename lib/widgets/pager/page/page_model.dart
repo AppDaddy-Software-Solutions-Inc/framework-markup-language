@@ -31,7 +31,7 @@ class PageModel extends BoxModel
   }
   String? get url => _url?.get();
 
-  PageModel(WidgetModel? parent, String? id, {dynamic data, dynamic url}) : super(parent, id, scope: Scope(parent: parent?.scope))
+  PageModel(super.parent, super.id, {dynamic data, dynamic url}) : super(scope: Scope(parent: parent?.scope))
   {
     this.data = data;
     this.url = url;

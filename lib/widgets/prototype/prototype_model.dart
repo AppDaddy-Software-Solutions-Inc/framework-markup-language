@@ -27,7 +27,7 @@ class PrototypeModel extends BoxModel
   // prototypes must be in their own scope
   // since they destroy their children once the prototype is created
   // in the deserialize().
-  PrototypeModel(WidgetModel parent, String? id) : super(parent, id, scope: Scope(parent: parent.scope));
+  PrototypeModel(WidgetModel super.parent, super.id) : super(scope: Scope(parent: parent.scope));
 
   static PrototypeModel? fromXml(WidgetModel parent, XmlElement xml)
   {

@@ -21,7 +21,7 @@ class TagModel extends WidgetModel
   }
   String? get value => _value?.get();
 
-  TagModel(WidgetModel parent, String? id, {String? value}) : super(parent, id)
+  TagModel(WidgetModel super.parent, super.id, {String? value})
   {
     if (value != null) this.value = value;
   }

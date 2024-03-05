@@ -27,7 +27,7 @@ class BarChartModel extends ChartPainterModel
   num yMax = 0;
   num yMin = 0;
 
-  BarChartModel(WidgetModel parent, String? id,
+  BarChartModel(super.parent, super.id,
       {
         dynamic type,
         dynamic showlegend,
@@ -35,7 +35,7 @@ class BarChartModel extends ChartPainterModel
         dynamic animated,
         dynamic selected,
         dynamic legendsize,
-      }) : super(parent, id) {
+      }) {
     this.selected         = selected;
     this.animated         = animated;
     this.horizontal       = horizontal;

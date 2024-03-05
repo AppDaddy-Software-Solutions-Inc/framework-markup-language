@@ -269,7 +269,7 @@ class ListModel extends DecoratedWidgetModel implements IForm, IScrollable
   }
   bool get reverse => _reverse?.get() ?? false;
 
-  ListModel(WidgetModel? parent, String? id, {dynamic direction, dynamic reverse, dynamic allowDrag, dynamic scrollShadows, dynamic onpulldown}) : super(parent, id)
+  ListModel(super.parent, super.id, {dynamic direction, dynamic reverse, dynamic allowDrag, dynamic scrollShadows, dynamic onpulldown})
   {
     // instantiate busy observable
     busy = false;

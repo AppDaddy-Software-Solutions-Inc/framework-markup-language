@@ -12,7 +12,7 @@ class HttpPutModel extends HttpModel implements IDataSource
   @override
   String get method => "put";
 
-  HttpPutModel(WidgetModel parent, String? id) : super(parent, id);
+  HttpPutModel(super.parent, super.id);
 
   static HttpPutModel? fromXml(WidgetModel parent, XmlElement xml)
   {

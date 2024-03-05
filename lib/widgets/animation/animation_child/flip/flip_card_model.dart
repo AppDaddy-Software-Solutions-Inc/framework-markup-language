@@ -83,8 +83,7 @@ class FlipCardModel extends AnimationChildModel
   double get to => _to?.get() ?? 1.0;
 
 
-  FlipCardModel(WidgetModel parent, String? id)
-      : super(parent, id); // ; {key: value}
+  FlipCardModel(super.parent, super.id); // ; {key: value}
 
   static FlipCardModel? fromXml(WidgetModel parent, XmlElement xml) {
     FlipCardModel? model;

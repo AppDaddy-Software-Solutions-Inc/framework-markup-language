@@ -2,7 +2,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:fml/helpers/string.dart';
-import 'package:fml/hive/settings.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/theme/theme_model.dart';
 import 'package:google_fonts/google_fonts.dart' deferred as fonts;

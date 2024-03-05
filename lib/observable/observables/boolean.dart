@@ -1,10 +1,9 @@
 // © COPYRIGHT 2022 APPDADDY SOFTWARE SOLUTIONS INC. ALL RIGHTS RESERVED.
-import '../scope.dart';
 import '../observable.dart' ;
 
 class BooleanObservable extends Observable
 {
-  BooleanObservable(String? name, dynamic value, {Scope? scope, OnChangeCallback? listener, Getter? getter, Setter? setter}) : super(name, value, scope: scope, listener: listener, getter: getter, setter: setter);
+  BooleanObservable(super.name, super.value, {super.scope, super.listener, super.getter, super.setter});
 
   @override
   bool? get()

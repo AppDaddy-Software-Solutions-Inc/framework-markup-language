@@ -48,7 +48,7 @@ class ChartPainterModel extends BoxModel
   String? get title => _title?.get();
 
 
-  ChartPainterModel(WidgetModel parent, String? id,
+  ChartPainterModel(WidgetModel super.parent, super.id,
       {
         dynamic type,
         dynamic showlegend,
@@ -57,7 +57,7 @@ class ChartPainterModel extends BoxModel
         dynamic animated,
         dynamic selected,
         dynamic legendsize,
-      }) : super(parent, id, scope: Scope(parent: parent.scope)) {
+      }) : super(scope: Scope(parent: parent.scope)) {
     this.selected         = selected;
     this.title            = title;
     this.animated         = animated;

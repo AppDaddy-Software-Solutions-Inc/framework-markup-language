@@ -40,7 +40,7 @@ class PieChartModel extends ChartPainterModel
     return true;
   }
 
-  PieChartModel(WidgetModel parent, String? id,
+  PieChartModel(super.parent, super.id,
       {
         dynamic type,
         dynamic showlegend,
@@ -50,7 +50,7 @@ class PieChartModel extends ChartPainterModel
         dynamic animated,
         dynamic selected,
         dynamic legendsize,
-      }) : super(parent, id) {
+      }) {
     this.selected         = selected;
     this.centerRadius     = centerRadius;
     this.spacing          = spacing;

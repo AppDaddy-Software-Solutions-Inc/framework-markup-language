@@ -51,14 +51,13 @@ class SelectModel extends DecoratedInputModel implements IFormField
   @override
   dynamic get value => dirty ? _value?.get() : _value?.get() ?? defaultValue;
 
-  SelectModel(WidgetModel parent, String? id,
+  SelectModel(WidgetModel super.parent, super.id,
       { dynamic value,
         dynamic defaultValue,
         String? postbroker,
         dynamic borderColor,
         dynamic matchtype,
         })
-      : super(parent, id)
   {
     // instantiate busy observable
     busy = false;

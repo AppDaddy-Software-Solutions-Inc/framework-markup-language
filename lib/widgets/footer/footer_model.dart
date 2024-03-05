@@ -13,7 +13,7 @@ class FooterModel extends BoxModel
   @override
   double get height => super.height ?? maxHeight ?? minHeight ?? 50;
 
-  FooterModel(WidgetModel parent, String? id) : super(parent, id);
+  FooterModel(WidgetModel super.parent, super.id);
 
   static FooterModel? fromXml(WidgetModel parent, XmlElement xml)
   {

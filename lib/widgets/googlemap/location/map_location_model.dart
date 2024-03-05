@@ -77,7 +77,7 @@ class MapLocationModel extends DecoratedWidgetModel
   }
   double? get longitude => _longitude?.get();
 
-  MapLocationModel(WidgetModel parent, String?  id,
+  MapLocationModel(WidgetModel super.parent, super.id,
    {
      dynamic data,
      dynamic latitude,
@@ -87,7 +87,7 @@ class MapLocationModel extends DecoratedWidgetModel
      this.label,
      String? marker,
      dynamic visible
-  }) : super(parent, id, scope: Scope(parent: parent.scope))
+  }) : super(scope: Scope(parent: parent.scope))
   {
     this.data         = data;
     this.latitude     = latitude;

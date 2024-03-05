@@ -49,7 +49,7 @@ class DetectorModel extends DataSourceModel implements IDataSource
   }
   int get detected => _detected?.get() ?? 0;
 
-  DetectorModel(WidgetModel parent, String? id) : super(parent, id);
+  DetectorModel(super.parent, super.id);
 
   static DetectorModel? fromXml(WidgetModel parent, XmlElement xml)
   {

@@ -102,8 +102,8 @@ class ImageModel extends DecoratedWidgetModel
   bool get interactive => _interactive?.get() ?? false;
 
   ImageModel(
-    WidgetModel parent,
-    String?  id,
+    WidgetModel super.parent,
+    super.id,
    {
     dynamic url,
     dynamic defaultvalue,
@@ -114,7 +114,7 @@ class ImageModel extends DecoratedWidgetModel
     dynamic filter,
     dynamic flip,
     dynamic interactive
-   }) : super(parent, id)
+   })
   {
     if (width  != null) this.width  = width;
     if (height != null) this.height = height;

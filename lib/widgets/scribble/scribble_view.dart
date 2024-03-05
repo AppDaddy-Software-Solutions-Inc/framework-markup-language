@@ -99,16 +99,16 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
 
       final box = context.findRenderObject() as RenderBox;
       final offset = box.globalToLocal(details.position);
-      late final Point point;
+      late final PointVector point;
       if (details.kind == PointerDeviceKind.stylus) {
-        point = Point(
+        point = PointVector(
           offset.dx,
           offset.dy,
           (details.pressure - details.pressureMin) /
               (details.pressureMax - details.pressureMin),
         );
       } else {
-        point = Point(offset.dx, offset.dy);
+        point = PointVector(offset.dx, offset.dy);
       }
       final points = [point];
       line = Stroke(points);
@@ -121,18 +121,18 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
     {
       final box = context.findRenderObject() as RenderBox;
       final offset = box.globalToLocal(details.position);
-      late final Point point;
+      late final PointVector point;
       if (offset.dx < width && offset.dx > 0 && offset.dy < height && offset.dy > 0)
       {
         if (details.kind == PointerDeviceKind.stylus) {
-          point = Point(
+          point = PointVector(
             offset.dx,
             offset.dy,
             (details.pressure - details.pressureMin) /
                 (details.pressureMax - details.pressureMin),
           );
         } else {
-          point = Point(offset.dx, offset.dy);
+          point = PointVector(offset.dx, offset.dy);
         }
         final points = [...line!.points, point];
         line = Stroke(points);
@@ -272,40 +272,6 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
                       options.smoothing = value;
                     })
                   }),
-              const Text(
-                'Taper Start',
-                textAlign: TextAlign.start,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-              ),
-              Slider(
-                  value: options.taperStart,
-                  min: 0,
-                  max: 100,
-                  divisions: 100,
-                  label: options.taperStart.toStringAsFixed(2),
-                  onChanged: (double value) => {
-                    setState(() {
-                      options.taperStart = value;
-                    })
-                  }),
-              const Text(
-                'Taper End',
-                textAlign: TextAlign.start,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-              ),
-              Slider(
-                  value: options.taperEnd,
-                  min: 0,
-                  max: 100,
-                  divisions: 100,
-                  label: options.taperEnd.toStringAsFixed(2),
-                  onChanged: (double value) => {
-                    setState(() {
-                      options.taperEnd = value;
-                    })
-                  }),
               buildClearButton(),
               buildSaveButton(),
             ])
@@ -410,59 +376,14 @@ class _ScribbleViewState extends WidgetState<ScribbleView>
 // Supplamentary Sketching Classes
 
 class Stroke {
-  final List<Point> points;
+  final List<PointVector> points;
 
   const Stroke(this.points);
 }
 
-class StrokeOptions {
-  /// The base size (diameter) of the stroke.
-  double size;
-
-  /// The effect of pressure on the stroke's size.
-  double thinning;
-
-  /// Controls the density of points along the stroke's edges.
-  double smoothing;
-
-  /// Controls the level of variation allowed in the input points.
-  double streamline;
-
-  // Whether to simulate pressure or use the point's provided pressures.
-  final bool simulatePressure;
-
-  // The distance to taper the front of the stroke.
-  double taperStart;
-
-  // The distance to taper the end of the stroke.
-  double taperEnd;
-
-  // Whether to add a cap to the start of the stroke.
-  final bool capStart;
-
-  // Whether to add a cap to the end of the stroke.
-  final bool capEnd;
-
-  // Whether the line is complete.
-  final bool isComplete;
-
-  StrokeOptions({
-    this.size = 10,
-    this.thinning = 0.8,
-    this.smoothing = 0.4,
-    this.streamline = 0.4,
-    this.taperStart = 0.2,
-    this.capStart = true,
-    this.taperEnd = 0.8,
-    this.capEnd = true,
-    this.simulatePressure = true,
-    this.isComplete = false,
-  });
-}
-
 class Sketcher extends CustomPainter {
   final List<Stroke> lines;
-  final StrokeOptions options;
+  final StrokeOptions? options;
   final Color color;
 
   Sketcher({required this.lines, required this.options, required this.color});
@@ -472,19 +393,7 @@ class Sketcher extends CustomPainter {
     Paint paint = Paint()..color = color;
 
     for (int i = 0; i < lines.length; ++i) {
-      final outlinePoints = getStroke(
-        lines[i].points,
-        size: options.size,
-        thinning: options.thinning,
-        smoothing: options.smoothing,
-        streamline: options.streamline,
-        taperStart: options.taperStart,
-        capStart: options.capStart,
-        taperEnd: options.taperEnd,
-        capEnd: options.capEnd,
-        simulatePressure: options.simulatePressure,
-        isComplete: options.isComplete,
-      );
+      final outlinePoints = getStroke(lines[i].points, options: options);
 
       final path = Path();
 
@@ -493,16 +402,16 @@ class Sketcher extends CustomPainter {
       } else if (outlinePoints.length < 2) {
         // If the path only has one line, draw a dot.
         path.addOval(Rect.fromCircle(
-            center: Offset(outlinePoints[0].x, outlinePoints[0].y), radius: 1));
+            center: Offset(outlinePoints[0].dx, outlinePoints[0].dy), radius: 1));
       } else {
         // Otherwise, draw a line that connects each point with a curve.
-        path.moveTo(outlinePoints[0].x, outlinePoints[0].y);
+        path.moveTo(outlinePoints[0].dx, outlinePoints[0].dy);
 
         for (int i = 1; i < outlinePoints.length - 1; ++i) {
           final p0 = outlinePoints[i];
           final p1 = outlinePoints[i + 1];
           path.quadraticBezierTo(
-              p0.x, p0.y, (p0.x + p1.x) / 2, (p0.y + p1.y) / 2);
+              p0.dx, p0.dy, (p0.dx + p1.dx) / 2, (p0.dy + p1.dy) / 2);
         }
       }
 

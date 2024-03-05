@@ -303,7 +303,7 @@ class BoxModel extends DecoratedWidgetModel
   }
   double get shadowy => _shadowy?.get() ?? 4;
 
-  BoxModel(WidgetModel? parent, String? id,{Scope?  scope, this.expandDefault = true, dynamic data}) : super(parent, id, scope: scope, data: data);
+  BoxModel(super.parent, super.id,{super.scope, this.expandDefault = true, super.data});
 
   static BoxModel? fromXml(WidgetModel parent, XmlElement xml, {bool expandDefault = true, Scope? scope, dynamic data})
   {

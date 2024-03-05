@@ -102,15 +102,15 @@ class LinkModel extends ColumnModel
   String? get hint => _hint?.get();
 
   LinkModel(
-    WidgetModel parent,
-    String? id, {
+    super.parent,
+    super.id, {
       dynamic url,
     dynamic onclick,
     dynamic enabled,
     dynamic ondoubletap,
     dynamic hint,
     dynamic onlongpress,
-  }) : super(parent, id) {
+  }) {
     this.url = url;
     this.onclick = onclick;
     this.enabled = enabled;

@@ -6,7 +6,6 @@ import 'package:fml/phrase.dart';
 import 'package:fml/system.dart';
 import 'package:fml/widgets/alarm/alarm_model.dart';
 import 'package:fml/widgets/decorated/decorated_widget_model.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
 import 'package:fml/event/handler.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:xml/xml.dart';
@@ -201,7 +200,7 @@ class FormFieldModel extends DecoratedWidgetModel
   // field offset
   Offset? offset;
 
-  FormFieldModel(WidgetModel? parent, String? id,
+  FormFieldModel(super.parent, super.id,
   {
     dynamic editable,
     dynamic enabled,
@@ -209,7 +208,7 @@ class FormFieldModel extends DecoratedWidgetModel
     dynamic mandatory,
     dynamic onchange,
     dynamic onfocuslost
-  }) : super(parent, id)
+  })
   {
     if (editable != null) this.editable = editable;
     if (enabled != null) this.enabled = enabled;

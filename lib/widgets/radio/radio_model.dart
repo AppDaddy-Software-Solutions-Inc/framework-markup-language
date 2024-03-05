@@ -112,8 +112,8 @@ class RadioModel extends FormFieldModel implements IFormField
   }
 
   RadioModel(
-    WidgetModel parent,
-    String? id, {
+    WidgetModel super.parent,
+    super.id, {
     dynamic visible,
     dynamic mandatory,
     dynamic editable,
@@ -131,7 +131,7 @@ class RadioModel extends FormFieldModel implements IFormField
     dynamic halign,
     dynamic valign,
     dynamic wrap,
-  }) : super(parent, id) {
+  }) {
     if (mandatory != null) this.mandatory = mandatory;
     if (editable != null) this.editable = editable;
     if (enabled != null) this.enabled = enabled;

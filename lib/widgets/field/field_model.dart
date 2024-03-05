@@ -30,8 +30,8 @@ class FieldModel extends FormFieldModel implements IFormField
   dynamic get value => dirty ? _value?.get() : _value?.get() ?? defaultValue;
 
   FieldModel(
-      WidgetModel parent,
-      String? id,{dynamic value,}) : super(parent, id){
+      WidgetModel super.parent,
+      super.id,{dynamic value,}){
     if (value         != null) this.value = value;
   }
 

@@ -54,8 +54,7 @@ class AnimationChildModel extends AnimationModel {
   }
 
 
-  AnimationChildModel(WidgetModel parent, String? id)
-      : super(parent, id); // ; {key: value}
+  AnimationChildModel(super.parent, super.id); // ; {key: value}
 
   static AnimationChildModel? fromXml(WidgetModel parent, XmlElement xml) {
     AnimationChildModel? model;

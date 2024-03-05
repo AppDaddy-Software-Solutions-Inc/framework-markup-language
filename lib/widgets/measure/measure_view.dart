@@ -45,7 +45,7 @@ class MeasureView extends SingleChildRenderObjectWidget
   final OnWidgetSizeChange onChange;
   final dynamic data;
 
-  const MeasureView(Widget widget,this.onChange,{Key? key, this.data}) : super(key: key, child: widget);
+  const MeasureView(Widget widget,this.onChange,{super.key, this.data}) : super(child: widget);
 
   @override
   RenderObject createRenderObject(BuildContext context)

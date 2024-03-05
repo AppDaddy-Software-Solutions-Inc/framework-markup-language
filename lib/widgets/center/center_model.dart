@@ -22,7 +22,7 @@ class CenterModel extends BoxModel
   @override
   bool get center => true;
 
-  CenterModel(WidgetModel parent, String?  id, {dynamic flex}) : super(parent, id); // ; {key: value}
+  CenterModel(WidgetModel super.parent, super.id, {dynamic flex}); // ; {key: value}
 
   static CenterModel? fromXml(WidgetModel parent, XmlElement xml, {String? type})
   {

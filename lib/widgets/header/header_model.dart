@@ -14,7 +14,7 @@ class HeaderModel extends BoxModel
   @override
   double get height => super.height ?? maxHeight ?? minHeight ?? 100;
 
-  HeaderModel(WidgetModel parent, String? id) : super(parent, id);
+  HeaderModel(WidgetModel super.parent, super.id);
 
   static HeaderModel? fromXml(WidgetModel parent, XmlElement xml)
   {

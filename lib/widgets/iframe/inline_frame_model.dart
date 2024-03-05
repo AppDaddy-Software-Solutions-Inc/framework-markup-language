@@ -24,7 +24,7 @@ class InlineFrameModel extends DecoratedWidgetModel
   }
   String? get url => _url?.get();
 
-  InlineFrameModel(WidgetModel parent, String? id) : super(parent, id);
+  InlineFrameModel(WidgetModel super.parent, super.id);
 
   static InlineFrameModel? fromXml(WidgetModel parent, XmlElement xml)
   {

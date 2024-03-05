@@ -270,7 +270,7 @@ class CameraModel extends CameraImageModel
   }
   String? get oninitialized => _oninitialized?.get();
   
-  CameraModel(WidgetModel parent, String?  id) : super(parent, id)
+  CameraModel(super.parent, super.id)
   {
     // instantiate busy observable
     busy = false;

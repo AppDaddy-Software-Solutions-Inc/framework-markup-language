@@ -52,7 +52,7 @@ class FilepickerModel extends FileModel implements IDataSource
     return _ondismissed?.get();
   }
   
-  FilepickerModel(WidgetModel parent, String? id) : super(parent, id);
+  FilepickerModel(super.parent, super.id);
 
   static FilepickerModel? fromXml(WidgetModel parent, XmlElement xml)
   {

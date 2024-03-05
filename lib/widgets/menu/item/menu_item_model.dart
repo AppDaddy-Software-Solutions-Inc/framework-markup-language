@@ -223,8 +223,8 @@ class MenuItemModel extends DecoratedWidgetModel
   VoidCallback ? onTap;
   UriData? image;
 
-  MenuItemModel(WidgetModel parent, String? id, {
-    dynamic data,
+  MenuItemModel(WidgetModel super.parent, super.id, {
+    super.data,
     dynamic url,
     dynamic title,
     dynamic onclick,
@@ -244,7 +244,7 @@ class MenuItemModel extends DecoratedWidgetModel
     dynamic radius,
     dynamic enabled,
     String? image
-  }) : super(parent, id, scope: Scope(parent: parent.scope), data: data)
+  }) : super(scope: Scope(parent: parent.scope))
   {
     this.title            = title;
     this.subtitle         = subtitle;

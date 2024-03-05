@@ -63,8 +63,8 @@ class SwitchModel extends FormFieldModel implements IFormField
   String? get label => _label?.get();
 
   SwitchModel(
-    WidgetModel parent,
-    String? id, {
+    WidgetModel super.parent,
+    super.id, {
     String? type,
     dynamic visible,
     dynamic mandatory,
@@ -77,7 +77,7 @@ class SwitchModel extends FormFieldModel implements IFormField
     dynamic color,
     dynamic onchange,
     dynamic post,
-  }) : super(parent, id)
+  })
   {
     if (mandatory    != null) this.mandatory  = mandatory;
     if (editable     != null) this.editable   = editable;

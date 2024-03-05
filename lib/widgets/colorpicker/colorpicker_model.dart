@@ -33,12 +33,13 @@ class ColorpickerModel extends DecoratedInputModel implements IFormField
       }
     }
   }
+  @override
   Color? get value => _value?.get();
 
   @override
   bool get canExpandInfinitelyWide => !hasBoundedWidth;
 
-  ColorpickerModel(WidgetModel parent,String? id) : super(parent, id);
+  ColorpickerModel(WidgetModel super.parent,super.id);
 
   static ColorpickerModel? fromXml(WidgetModel parent, XmlElement xml, {String? type})
   {

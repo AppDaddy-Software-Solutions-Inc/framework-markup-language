@@ -4,7 +4,6 @@ import 'package:fml/widgets/viewable/viewable_widget_model.dart';
 import 'package:xml/xml.dart';
 import 'package:fml/observable/observable_barrel.dart';
 import 'package:fml/helpers/helpers.dart';
-import 'package:fml/widgets/widget/widget_model.dart';
 
 class DecoratedWidgetModel extends ViewableWidgetModel
 {
@@ -87,7 +86,7 @@ class DecoratedWidgetModel extends ViewableWidgetModel
   }
   double? get opacity => _opacity?.get();
 
-  DecoratedWidgetModel(WidgetModel? parent, String? id, {Scope?  scope, dynamic data}) : super(parent, id, scope: scope, data: data);
+  DecoratedWidgetModel(super.parent, super.id, {super.scope, super.data});
 
   /// Deserializes the FML template elements, attributes and children
   @override

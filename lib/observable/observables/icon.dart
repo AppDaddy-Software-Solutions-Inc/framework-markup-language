@@ -3,14 +3,13 @@ import 'dart:async';
 import 'package:fml/graphics.dart' deferred as icons;
 import 'package:flutter/material.dart';
 import 'package:fml/observable/observable.dart';
-import 'package:fml/observable/scope.dart';
 
 class IconObservable extends Observable
 {
   static Completer? libraryLoader;
   String? _pendingIcon;
 
-  IconObservable(String? name, dynamic value, {Scope? scope, OnChangeCallback? listener, Getter? getter, Setter? setter}) : super(name, value, scope: scope, listener: listener, getter: getter, setter: setter)
+  IconObservable(super.name, super.value, {super.scope, super.listener, super.getter, super.setter})
   {
     // load the library
     if (libraryLoader == null)

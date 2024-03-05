@@ -215,7 +215,7 @@ class GridModel extends BoxModel implements IScrollable
 
   Size? size;
 
-  GridModel(WidgetModel parent, String? id, {dynamic width, dynamic height, dynamic direction, dynamic scrollShadows, dynamic scrollButtons, dynamic onpulldown, dynamic allowDrag}) : super(parent, id)
+  GridModel(WidgetModel super.parent, super.id, {dynamic width, dynamic height, dynamic direction, dynamic scrollShadows, dynamic scrollButtons, dynamic onpulldown, dynamic allowDrag})
   {
     // instantiate busy observable
     busy = false;

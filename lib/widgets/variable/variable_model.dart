@@ -56,9 +56,9 @@ class VariableModel extends WidgetModel
   String? get returnas => _returnas;
 
   VariableModel(
-      WidgetModel parent,
-      String? id,
-      {String? type, dynamic value, dynamic onchange, bool? constant}) : super(parent, id)
+      WidgetModel super.parent,
+      super.id,
+      {String? type, dynamic value, dynamic onchange, bool? constant})
   {
     this.constant = constant ?? false;
     if (value    != null) this.value    = value;

@@ -33,8 +33,8 @@ class ChartSeriesModel extends WidgetModel
   String? type = 'bar';
 
   ChartSeriesModel(
-    WidgetModel parent,
-    String? id, {
+    WidgetModel super.parent,
+    super.id, {
       dynamic x,
       dynamic y,
       dynamic color,
@@ -52,7 +52,7 @@ class ChartSeriesModel extends WidgetModel
       dynamic showline,
       dynamic showpoints,
     }
-  ) : super(parent, id)
+  )
   {
     data = Data();
     this.x = x;

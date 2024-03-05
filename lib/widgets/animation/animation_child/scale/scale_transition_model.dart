@@ -59,8 +59,7 @@ class ScaleTransitionModel extends AnimationChildModel
 
   String? get align => _align?.get();
 
-  ScaleTransitionModel(WidgetModel parent, String? id)
-      : super(parent, id); // ; {key: value}
+  ScaleTransitionModel(super.parent, super.id); // ; {key: value}
 
   static ScaleTransitionModel? fromXml(WidgetModel parent, XmlElement xml) {
     ScaleTransitionModel? model;
